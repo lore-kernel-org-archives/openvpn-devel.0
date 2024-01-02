@@ -1,15 +1,16 @@
 From: "plaisthos (Code Review)" <gerrit@...515...>
-Date: Tue, 2 Jan 2024 13:46:39 +0000
-References: <gerrit.1704203193000.I6899c1af65fbd670d434cdb17f81c82b900bfbd4@...2715...>
+Date: Tue, 2 Jan 2024 13:56:24 +0000
+In-Reply-To: <gerrit.1700479678000.I0ad48915004ddee587e97c8ed190ba8ee989e48d@...2715...>
+References: <gerrit.1700479678000.I0ad48915004ddee587e97c8ed190ba8ee989e48d@...2715...>
 Reply-To: arne-openvpn@...1227..., openvpn-devel@lists.sourceforge.net,
  frank@...2641...
-Message-ID: <238dcd1f13f134079d8b0bc6c5c4dc1cc696818b-HTML@...2715...>
+Message-ID: <8471dcd9676ba538b692d14e3d1d4186789cf4b4-EmailReplacePatchSet-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="7OOPwMarMZM="; charset=UTF-8
-Subject: [Openvpn-devel] [M] Change in openvpn[master]: Allow having an
- extra function that is called when an env is freed
+Content-Type: multipart/alternative; boundary="Mh3xiqwLk4I="; charset=UTF-8
+Subject: [Openvpn-devel] [M] Change in openvpn[master]: Allow the TLS
+ session to send out TLS alerts
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -21,545 +22,585 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: flichtenheld <frank@...2641...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---7OOPwMarMZM=
+--Mh3xiqwLk4I=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: flichtenheld.
+Attention is currently required from: plaisthos.
 
 Hello flichtenheld,
 
-I'd like you to do a code review.
-Please visit
+I'd like you to reexamine a change. Please visit
 
-    http://gerrit.openvpn.net/c/openvpn/+/486?usp=3Demail
+    http://gerrit.openvpn.net/c/openvpn/+/449?usp=3Demail
 
-to review the following change.
+to look at the new patch set (#6).
 
 
-Change subject: Allow having an extra function that is called when an env i=
-s freed
+Change subject: Allow the TLS session to send out TLS alerts
 ......................................................................
 
-Allow having an extra function that is called when an env is freed
+Allow the TLS session to send out TLS alerts
 
-Change-Id: I6899c1af65fbd670d434cdb17f81c82b900bfbd4
+Previous OpenVPN versions shut down the TLS control channel immediately
+when encountering an error. This also meant that we would not send out
+TLS alerts to notify a client about potential problems like mismatching
+TLS versions or having no common cipher.
+
+This commit adds a new key_state S_ERROR_PRE which still allows to
+send out the remaining TLS packets of the control session which are
+typically the alert message and then going to S_ERROR. We do not
+wait for retries. So this is more a one-shot notify but that is
+acceptable in this situation.
+
+Sending out alerts is a slight compromise in security as alerts give
+out a bit of information that otherwise is not given
+out. But since all other consumers TLS implementations are already doing th=
+is
+and TLS implementations (nowadays) are very careful not to leak (sensitive)
+information by alerts and since the user experience is much better with
+alerts, this compromise is worth it.
+
+Change-Id: I0ad48915004ddee587e97c8ed190ba8ee989e48d
 Signed-off-by: Arne Schwabe <arne@...1227...>
 ---
-M CMakeLists.txt
-M src/openvpn/env_set.c
-M src/openvpn/env_set.h
-M tests/unit_tests/openvpn/Makefile.am
-M tests/unit_tests/openvpn/test_buffer.c
-5 files changed, 106 insertions(+), 7 deletions(-)
+M Changes.rst
+M src/openvpn/ssl.c
+M src/openvpn/ssl_backend.h
+M src/openvpn/ssl_common.h
+M src/openvpn/ssl_mbedtls.c
+M src/openvpn/ssl_openssl.c
+6 files changed, 87 insertions(+), 19 deletions(-)
 
 
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/49/449/6
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/86/486/1
-
-diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 96328a1..04e9e34 100644
---- a/CMakeLists.txt
-+++ b/CMakeLists.txt
-@@ -685,6 +685,7 @@
-
-     target_sources(test_buffer PRIVATE
-         tests/unit_tests/openvpn/mock_get_random.c
-+        src/openvpn/env_set.c
-         )
-
-     target_sources(test_crypto PRIVATE
-diff --git a/src/openvpn/env_set.c b/src/openvpn/env_set.c
-index 97b011f..fb7cd98 100644
---- a/src/openvpn/env_set.c
-+++ b/src/openvpn/env_set.c
-@@ -112,6 +112,10 @@
-             }
-             if (do_free)
-             {
-+                if (current->free_function)
-+                {
-+                    current->free_function(current);
-+                }
-                 secure_memzero(current->string, strlen(current->string));
-                 free(current->string);
-                 free(current);
-@@ -124,15 +128,37 @@
- }
-
- static void
--add_env_item(char *str, const bool do_alloc, struct env_item **list, struc=
-t gc_arena *gc)
-+env_gc_freefunction_wrapper(void *arg)
-+{
-+    struct env_item *ei =3D arg;
-+    ei->free_function(ei);
-+    free(ei->string);
-+    free(ei);
-+}
+diff --git a/Changes.rst b/Changes.rst
+index 69c811d..52ff8db 100644
+--- a/Changes.rst
++++ b/Changes.rst
+@@ -1,5 +1,14 @@
+ Overview of changes in 2.7
+ =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D
++New features
++------------
++TLS alerts
++    OpenVPN 2.7 will send out TLS alerts to peers informing them if the TLS
++    session shuts down or when the TLS implementation informs the peer abo=
+ut
++    an error in the TLS session (e.g. mismatching TLS versions). This impr=
+oves
++    the user experience as the client shows an error instead of running in=
+to
++    a timeout when the server just stops responding completely.
 +
-+static void
-+add_env_item(char *str, void (*free_function)(struct env_item *),
-+             struct env_item **list, struct gc_arena *gc)
- {
-     struct env_item *item;
+ Deprecated features
+ -------------------
+ ``secret`` support has been removed by default.
+diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
+index 33c8670..f287e4d 100644
+--- a/src/openvpn/ssl.c
++++ b/src/openvpn/ssl.c
+@@ -690,6 +690,9 @@
+         case S_ERROR:
+             return "S_ERROR";
 
-     ASSERT(str);
-     ASSERT(list);
++        case S_ERROR_PRE:
++            return "S_ERROR_PRE";
++
+         case S_GENERATED_KEYS:
+             return "S_GENERATED_KEYS";
 
--    ALLOC_OBJ_GC(item, struct env_item, gc);
--    item->string =3D do_alloc ? string_alloc(str, gc) : str;
-+    if (gc && free_function)
+@@ -2683,6 +2686,25 @@
+ }
+
+ static bool
++check_outgoing_ciphertext(struct key_state *ks, struct tls_session *sessio=
+n,
++                          bool *continue_tls_process)
++{
++    /* Outgoing Ciphertext to reliable buffer */
++    if (ks->state >=3D S_START)
 +    {
-+        /* alloc items manually without gc to allow the gc_wrap_free
-+         * function to free them all in the right order */
-+        ALLOC_OBJ(item, struct env_item);
-+        item->string =3D string_alloc(str, NULL);
-+        gc_addspecial(item, env_gc_freefunction_wrapper, gc);
-+    }
-+    else
-+    {
-+        ALLOC_OBJ_GC(item, struct env_item, gc);
-+        item->string =3D string_alloc(str, gc);
-+    }
-+    item->free_function =3D free_function;
-     item->next =3D *list;
-     *list =3D item;
- }
-@@ -146,10 +172,11 @@
- }
-
- static void
--env_set_add_nolock(struct env_set *es, const char *str)
-+env_set_add_nolock(struct env_set *es, const char *str,
-+                   void (*free_function)(struct env_item *))
- {
-     remove_env_item(str, es->gc =3D=3D NULL, &es->list);
--    add_env_item((char *)str, true, &es->list, es->gc);
-+    add_env_item((char *)str, free_function, &es->list, es->gc);
- }
-
- struct env_set *
-@@ -171,6 +198,10 @@
-         while (e)
-         {
-             struct env_item *next =3D e->next;
-+            if (e->free_function)
++        struct buffer *buf =3D reliable_get_buf_output_sequenced(ks->send_=
+reliable);
++        if (buf)
++        {
++            if (!write_outgoing_tls_ciphertext(session, continue_tls_proce=
+ss))
 +            {
-+                e->free_function(e);
++                return false;
 +            }
-             free(e->string);
-             free(e);
-             e =3D next;
-@@ -194,7 +225,16 @@
- {
-     ASSERT(es);
-     ASSERT(str);
--    env_set_add_nolock(es, str);
-+    env_set_add_nolock(es, str, NULL);
++        }
++    }
++    return true;
 +}
 +
-+void
-+env_set_add_specialfree(struct env_set *es, const char *str,
-+                        void (*free_function)(struct env_item *))
-+{
-+    ASSERT(es);
-+    ASSERT(str);
-+    env_set_add_nolock(es, str, free_function);
- }
++static bool
+ tls_process_state(struct tls_multi *multi,
+                   struct tls_session *session,
+                   struct buffer *to_link,
+@@ -2706,7 +2728,7 @@
+     }
 
- const char *
-@@ -246,7 +286,7 @@
-         e =3D src->list;
-         while (e)
-         {
--            env_set_add_nolock(es, e->string);
-+            env_set_add_nolock(es, e->string, e->free_function);
-             e =3D e->next;
+     /* Are we timed out on receive? */
+-    if (now >=3D ks->must_negotiate && ks->state < S_ACTIVE)
++    if (now >=3D ks->must_negotiate && ks->state >=3D S_UNDEF && ks->state=
+ < S_ACTIVE)
+     {
+         msg(D_TLS_ERRORS,
+             "TLS Error: TLS key negotiation failed to occur within %d seco=
+nds (check your network connectivity)",
+@@ -2760,6 +2782,16 @@
+         return false;
+     }
+
++    if (ks->state =3D=3D S_ERROR_PRE)
++    {
++        /* When we end up here, we had one last chance to send an outstand=
+ing
++         * packet that contained an alert. We do not ensure that this pack=
+et
++         * has been successfully delivered  (ie wait for the ACK etc)
++         * but rather stop processing now */
++        ks->state =3D S_ERROR;
++        return false;
++    }
++
+     /* Write incoming ciphertext to TLS object */
+     struct reliable_entry *entry =3D reliable_get_entry_sequenced(ks->rec_=
+reliable);
+     if (entry)
+@@ -2840,29 +2872,31 @@
+             dmsg(D_TLS_DEBUG, "Outgoing Plaintext -> TLS");
          }
      }
-diff --git a/src/openvpn/env_set.h b/src/openvpn/env_set.h
-index 4599977..27bc4dd 100644
---- a/src/openvpn/env_set.h
-+++ b/src/openvpn/env_set.h
-@@ -36,6 +36,7 @@
+-
+-    /* Outgoing Ciphertext to reliable buffer */
+-    if (ks->state >=3D S_START)
++    if (!check_outgoing_ciphertext(ks, session, &continue_tls_process))
+     {
+-        buf =3D reliable_get_buf_output_sequenced(ks->send_reliable);
+-        if (buf)
+-        {
+-            if (!write_outgoing_tls_ciphertext(session, &continue_tls_proc=
+ess))
+-            {
+-                goto error;
+-            }
+-        }
++        goto error;
+     }
 
- struct env_item {
-     char *string;
-+    void (*free_function)(struct env_item *);
-     struct env_item *next;
- };
+     return continue_tls_process;
+ error:
+     tls_clear_error();
+-    ks->state =3D S_ERROR;
++
++    /* Shut down the TLS session but do a last read from the TLS
++     * object to be able to read potential TLS alerts */
++    key_state_ssl_shutdown(&ks->ks_ssl);
++    check_outgoing_ciphertext(ks, session, &continue_tls_process);
++
++    /* Put ourselves in the pre error state that will only send out the
++     * control channel packets but nothing else */
++    ks->state =3D S_ERROR_PRE;
++
+     msg(D_TLS_ERRORS, "TLS Error: TLS handshake failed");
+     INCR_ERROR;
+-    return false;
+-
++    return true;
+ }
++
++
++
+ /*
+  * This is the primary routine for processing TLS stuff inside the
+  * the main event loop.  When this routine exits
+@@ -2970,7 +3004,7 @@
+     }
 
-@@ -87,6 +88,11 @@
+     /* When should we wake up again? */
+-    if (ks->state >=3D S_INITIAL)
++    if (ks->state >=3D S_INITIAL || ks->state =3D=3D S_ERROR_PRE)
+     {
+         compute_earliest_wakeup(wakeup,
+                                 reliable_send_timeout(ks->send_reliable));
+@@ -3123,7 +3157,7 @@
+              session_id_print(&ks->session_id_remote, &gc),
+              print_link_socket_actual(&ks->remote_addr, &gc));
 
- void env_set_add(struct env_set *es, const char *str);
+-        if (ks->state >=3D S_INITIAL && link_socket_actual_defined(&ks->re=
+mote_addr))
++        if ((ks->state >=3D S_INITIAL || ks->state =3D=3D S_ERROR_PRE) && =
+ link_socket_actual_defined(&ks->remote_addr))
+         {
+             struct link_socket_actual *tla =3D NULL;
 
+@@ -3201,7 +3235,8 @@
+             {
+                 msg(D_TLS_ERRORS, "TLS Error: generate_key_expansion faile=
+d");
+                 ks->authenticated =3D KS_AUTH_FALSE;
+-                ks->state =3D S_ERROR;
++                key_state_ssl_shutdown(&ks->ks_ssl);
++                ks->state =3D S_ERROR_PRE;
+             }
+
+             /* Update auth token on the client if needed on renegotiation
+diff --git a/src/openvpn/ssl_backend.h b/src/openvpn/ssl_backend.h
+index b9466ce..a4d4dd4 100644
+--- a/src/openvpn/ssl_backend.h
++++ b/src/openvpn/ssl_backend.h
+@@ -363,6 +363,13 @@
+                         const struct tls_root_ctx *ssl_ctx, bool is_server=
+, struct tls_session *session);
+
+ /**
++ * Sets a TLS session to be shutdown state, so the TLS library will genera=
+te
++ * a shutdown alert.
++ */
 +void
-+env_set_add_specialfree(struct env_set *es, const char *str,
-+                        void (*free_function)(struct env_item *));
++key_state_ssl_shutdown(struct key_state_ssl *ks_ssl);
 +
-+
- const char *env_set_get(const struct env_set *es, const char *name);
-
- void env_set_print(int msglevel, const struct env_set *es);
-diff --git a/tests/unit_tests/openvpn/Makefile.am b/tests/unit_tests/openvp=
-n/Makefile.am
-index 6667626..c5098a9 100644
---- a/tests/unit_tests/openvpn/Makefile.am
-+++ b/tests/unit_tests/openvpn/Makefile.am
-@@ -52,6 +52,7 @@
- buffer_testdriver_LDFLAGS =3D @TEST_LDFLAGS@ -L$(top_srcdir)/src/openvpn -=
-Wl,--wrap=3Dparse_line
- buffer_testdriver_SOURCES =3D test_buffer.c mock_msg.c mock_msg.h \
- 	mock_get_random.c \
-+	$(top_srcdir)/src/openvpn/env_set.c \
- 	$(top_srcdir)/src/openvpn/win32-util.c \
- 	$(top_srcdir)/src/openvpn/platform.c
-
-diff --git a/tests/unit_tests/openvpn/test_buffer.c b/tests/unit_tests/open=
-vpn/test_buffer.c
-index ee84c1f..e355a43 100644
---- a/tests/unit_tests/openvpn/test_buffer.c
-+++ b/tests/unit_tests/openvpn/test_buffer.c
-@@ -26,13 +26,22 @@
- #endif
-
- #include "syshead.h"
-+#include <stdbool.h>
-
- #include <setjmp.h>
- #include <cmocka.h>
-
- #include "buffer.h"
-+#include "env_set.h"
- #include "buffer.c"
-
-+/* mock this function as it is required by env.c */
-+int
-+script_security(void)
-+{
-+    return 0;
-+}
-+
- static void
- test_buffer_strprefix(void **state)
- {
-@@ -353,6 +362,47 @@
-     assert_string_equal(buf, "There is a .'nice.' \"1234\" [.] year old .t=
-ree!");
++/**
+  * Free the SSL channel part of the given key state.
+  *
+  * @param ks_ssl        The SSL channel's state info to free
+diff --git a/src/openvpn/ssl_common.h b/src/openvpn/ssl_common.h
+index 925660b..ff455b3 100644
+--- a/src/openvpn/ssl_common.h
++++ b/src/openvpn/ssl_common.h
+@@ -74,7 +74,10 @@
+  *
+  * @{
+  */
+-#define S_ERROR          -1     /**< Error state.  */
++#define S_ERROR         (-2)     /**< Error state.  */
++#define S_ERROR_PRE     (-1)     /**< Error state but try to send out aler=
+ts
++                                  *  before killing the keystore and moving
++                                  *  it to S_ERROR */
+ #define S_UNDEF           0     /**< Undefined state, used after a \c
+                                  *   key_state is cleaned up. */
+ #define S_INITIAL         1     /**< Initial \c key_state state after
+diff --git a/src/openvpn/ssl_mbedtls.c b/src/openvpn/ssl_mbedtls.c
+index cc88484..5e6726c 100644
+--- a/src/openvpn/ssl_mbedtls.c
++++ b/src/openvpn/ssl_mbedtls.c
+@@ -1276,6 +1276,14 @@
+                         ssl_bio_read, NULL);
  }
 
-+static bool unit_test_free_called =3D false;
 +
-+static void
-+unit_test_special_free(struct env_item *ei)
++void
++key_state_ssl_shutdown(struct key_state_ssl *ks_ssl)
 +{
-+    assert_string_equal(ei->string, "unit=3Dtest");
-+    unit_test_free_called =3D true;
++    mbedtls_ssl_send_alert_message(ks_ssl->ctx, MBEDTLS_SSL_ALERT_LEVEL_FA=
+TAL,
++                                   MBEDTLS_SSL_ALERT_MSG_CLOSE_NOTIFY);
 +}
 +
-+static void
-+test_env_special_free(void **state)
-+{
-+    /* Test called via env_set_destroy */
-+    struct env_set *es =3D env_set_create(NULL);
-+    env_set_add_specialfree(es, "unit=3Dtest", &unit_test_special_free);
-+    env_set_destroy(es);
-+    assert_true(unit_test_free_called);
-+    unit_test_free_called =3D false;
-+
-+    /* Test called via env_remove */
-+    es =3D env_set_create(NULL);
-+    env_set_add_specialfree(es, "unit=3Dtest", &unit_test_special_free);
-+    env_set_del(es, "unit");
-+    assert_true(unit_test_free_called);
-+    unit_test_free_called =3D false;
-+    env_set_destroy(es);
-+
-+    /* Test for env with GC */
-+    struct gc_arena gc =3D gc_new();
-+    es =3D env_set_create(&gc);
-+    env_set_add_specialfree(es, "unit=3Dtest", &unit_test_special_free);
-+    env_set_destroy(es);
-+
-+    /* The free should be done as part of gc free and not as part of
-+     * the env set destroy */
-+    assert_false(unit_test_free_called);
-+
-+    gc_free(&gc);
-+    assert_true(unit_test_free_called);
-+}
-+
- int
- main(void)
+ void
+ key_state_ssl_free(struct key_state_ssl *ks_ssl)
  {
-@@ -385,6 +435,7 @@
-         cmocka_unit_test(test_buffer_free_gc_two),
-         cmocka_unit_test(test_buffer_gc_realloc),
-         cmocka_unit_test(test_character_class),
-+        cmocka_unit_test(test_env_special_free)
-     };
+diff --git a/src/openvpn/ssl_openssl.c b/src/openvpn/ssl_openssl.c
+index c30e6a9..552d751 100644
+--- a/src/openvpn/ssl_openssl.c
++++ b/src/openvpn/ssl_openssl.c
+@@ -1962,6 +1962,12 @@
+ }
 
-     return cmocka_run_group_tests_name("buffer", tests, NULL, NULL);
+ void
++key_state_ssl_shutdown(struct key_state_ssl *ks_ssl)
++{
++    SSL_set_shutdown(ks_ssl->ssl, SSL_SENT_SHUTDOWN | SSL_RECEIVED_SHUTDOW=
+N);
++}
++
++void
+ key_state_ssl_free(struct key_state_ssl *ks_ssl)
+ {
+     if (ks_ssl->ssl)
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/486?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/449?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings
 
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: I6899c1af65fbd670d434cdb17f81c82b900bfbd4
-Gerrit-Change-Number: 486
-Gerrit-PatchSet: 1
+Gerrit-Change-Id: I0ad48915004ddee587e97c8ed190ba8ee989e48d
+Gerrit-Change-Number: 449
+Gerrit-PatchSet: 6
 Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-MessageType: newchange
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-MessageType: newpatchset
 
---7OOPwMarMZM=
+--Mh3xiqwLk4I=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p> Attention is currently required from: flichtenheld. </p>
-<p>plaisthos would like flichtenheld to <strong>review</strong> this change.
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/486?usp=3Demail">Vi=
-ew Change</a></p><pre style=3D"font-family: monospace,monospace; white-spac=
-e: pre-wrap;">Allow having an extra function that is called when an env is =
-freed<br><br>Change-Id: I6899c1af65fbd670d434cdb17f81c82b900bfbd4<br>Signed=
--off-by: Arne Schwabe &lt;arne@...1227...&gt;<br>---<br>M CMakeLists.txt<br=
->M src/openvpn/env_set.c<br>M src/openvpn/env_set.h<br>M tests/unit_tests/o=
-penvpn/Makefile.am<br>M tests/unit_tests/openvpn/test_buffer.c<br>5 files c=
-hanged, 106 insertions(+), 7 deletions(-)<br><br></pre><pre style=3D"font-f=
-amily: monospace,monospace; white-space: pre-wrap;">git pull ssh://gerrit.o=
-penvpn.net:29418/openvpn refs/changes/86/486/1</pre><pre style=3D"font-fami=
-ly: monospace,monospace; white-space: pre-wrap;"><span>diff --git a/CMakeLi=
-sts.txt b/CMakeLists.txt</span><br><span>index 96328a1..04e9e34 100644</spa=
-n><br><span>--- a/CMakeLists.txt</span><br><span>+++ b/CMakeLists.txt</span=
-><br><span>@@ -685,6 +685,7 @@</span><br><span> </span><br><span>     targe=
-t_sources(test_buffer PRIVATE</span><br><span>         tests/unit_tests/ope=
-nvpn/mock_get_random.c</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+        src/openvpn/env_set.c</span><br><span>         )</span><br><span=
-> </span><br><span>     target_sources(test_crypto PRIVATE</span><br><span>=
-diff --git a/src/openvpn/env_set.c b/src/openvpn/env_set.c</span><br><span>=
-index 97b011f..fb7cd98 100644</span><br><span>--- a/src/openvpn/env_set.c</=
-span><br><span>+++ b/src/openvpn/env_set.c</span><br><span>@@ -112,6 +112,1=
-0 @@</span><br><span>             }</span><br><span>             if (do_fre=
-e)</span><br><span>             {</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+                if (current-&gt;free_function)</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+                {</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+                    current-&gt;free=
-_function(current);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-                }</span><br><span>                 secure_memzero(current-&=
-gt;string, strlen(current-&gt;string));</span><br><span>                 fr=
-ee(current-&gt;string);</span><br><span>                 free(current);</sp=
-an><br><span>@@ -124,15 +128,37 @@</span><br><span> }</span><br><span> </sp=
-an><br><span> static void</span><br><span style=3D"color: hsl(0, 100%, 40%)=
-;">-add_env_item(char *str, const bool do_alloc, struct env_item **list, st=
-ruct gc_arena *gc)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+e=
-nv_gc_freefunction_wrapper(void *arg)</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-    struct env_item *ei =3D arg;</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+    ei-&gt;free_function(ei);</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+    free(ei-&gt;string);</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+    free(ei);</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+static void</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+add_env_item(char *str,=
- void (*free_function)(struct env_item *),</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+             struct env_item **list, struct gc_arena=
- *gc)</span><br><span> {</span><br><span>     struct env_item *item;</span>=
-<br><span> </span><br><span>     ASSERT(str);</span><br><span>     ASSERT(l=
-ist);</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);"=
->-    ALLOC_OBJ_GC(item, struct env_item, gc);</span><br><span style=3D"col=
-or: hsl(0, 100%, 40%);">-    item-&gt;string =3D do_alloc ? string_alloc(st=
-r, gc) : str;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if=
- (gc &amp;&amp; free_function)</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
-     /* alloc items manually without gc to allow the gc_wrap_free</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+         * function to free t=
-hem all in the right order */</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+        ALLOC_OBJ(item, struct env_item);</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+        item-&gt;string =3D string_alloc(=
-str, NULL);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        =
-gc_addspecial(item, env_gc_freefunction_wrapper, gc);</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+    else</span><br><span style=3D"color: hsl(120, 100%,=
+<p> Attention is currently required from: plaisthos. </p>
+<p>plaisthos <strong>uploaded patch set #6</strong> to this change.</p><p><=
+a href=3D"http://gerrit.openvpn.net/c/openvpn/+/449?usp=3Demail">View Chang=
+e</a></p><pre style=3D"font-family: monospace,monospace; white-space: pre-w=
+rap;">Allow the TLS session to send out TLS alerts<br><br>Previous OpenVPN =
+versions shut down the TLS control channel immediately<br>when encountering=
+ an error. This also meant that we would not send out<br>TLS alerts to noti=
+fy a client about potential problems like mismatching<br>TLS versions or ha=
+ving no common cipher.<br><br>This commit adds a new key_state S_ERROR_PRE =
+which still allows to<br>send out the remaining TLS packets of the control =
+session which are<br>typically the alert message and then going to S_ERROR.=
+ We do not<br>wait for retries. So this is more a one-shot notify but that =
+is<br>acceptable in this situation.<br><br>Sending out alerts is a slight c=
+ompromise in security as alerts give<br>out a bit of information that other=
+wise is not given<br>out. But since all other consumers TLS implementations=
+ are already doing this<br>and TLS implementations (nowadays) are very care=
+ful not to leak (sensitive)<br>information by alerts and since the user exp=
+erience is much better with<br>alerts, this compromise is worth it.<br><br>=
+Change-Id: I0ad48915004ddee587e97c8ed190ba8ee989e48d<br>Signed-off-by: Arne=
+ Schwabe &lt;arne@...1227...&gt;<br>---<br>M Changes.rst<br>M src/openvpn/s=
+sl.c<br>M src/openvpn/ssl_backend.h<br>M src/openvpn/ssl_common.h<br>M src/=
+openvpn/ssl_mbedtls.c<br>M src/openvpn/ssl_openssl.c<br>6 files changed, 87=
+ insertions(+), 19 deletions(-)<br><br></pre><pre style=3D"font-family: mon=
+ospace,monospace; white-space: pre-wrap;">git pull ssh://gerrit.openvpn.net=
+:29418/openvpn refs/changes/49/449/6</pre><pre style=3D"font-family: monosp=
+ace,monospace; white-space: pre-wrap;"><span>diff --git a/Changes.rst b/Cha=
+nges.rst</span><br><span>index 69c811d..52ff8db 100644</span><br><span>--- =
+a/Changes.rst</span><br><span>+++ b/Changes.rst</span><br><span>@@ -1,5 +1,=
+14 @@</span><br><span> Overview of changes in 2.7</span><br><span> =3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+New features</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+------------</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+TLS alerts</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+    OpenVPN 2.7 will send out TLS alerts to p=
+eers informing them if the TLS</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+    session shuts down or when the TLS implementation informs th=
+e peer about</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    an =
+error in the TLS session (e.g. mismatching TLS versions). This improves</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+    the user experience=
+ as the client shows an error instead of running into</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    a timeout when the server just stops =
+responding completely.</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+</span><br><span> Deprecated features</span><br><span> -----------------=
+--</span><br><span> ``secret`` support has been removed by default.</span><=
+br><span>diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c</span><br><span=
+>index 33c8670..f287e4d 100644</span><br><span>--- a/src/openvpn/ssl.c</spa=
+n><br><span>+++ b/src/openvpn/ssl.c</span><br><span>@@ -690,6 +690,9 @@</sp=
+an><br><span>         case S_ERROR:</span><br><span>             return &qu=
+ot;S_ERROR&quot;;</span><br><span> </span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+        case S_ERROR_PRE:</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+            return &quot;S_ERROR_PRE&quot;;</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span>         cas=
+e S_GENERATED_KEYS:</span><br><span>             return &quot;S_GENERATED_K=
+EYS&quot;;</span><br><span> </span><br><span>@@ -2683,6 +2686,25 @@</span><=
+br><span> }</span><br><span> </span><br><span> static bool</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+check_outgoing_ciphertext(struct key=
+_state *ks, struct tls_session *session,</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+                          bool *continue_tls_process)<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+    /* Outgoing Ciphertext to reliable=
+ buffer */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (k=
+s-&gt;state &gt;=3D S_START)</span><br><span style=3D"color: hsl(120, 100%,=
  40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
-   ALLOC_OBJ_GC(item, struct env_item, gc);</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+        item-&gt;string =3D string_alloc(str, gc);<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+    item-&gt;free_function =3D fre=
-e_function;</span><br><span>     item-&gt;next =3D *list;</span><br><span> =
-    *list =3D item;</span><br><span> }</span><br><span>@@ -146,10 +172,11 @=
-@</span><br><span> }</span><br><span> </span><br><span> static void</span><=
-br><span style=3D"color: hsl(0, 100%, 40%);">-env_set_add_nolock(struct env=
-_set *es, const char *str)</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+env_set_add_nolock(struct env_set *es, const char *str,</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+                   void (*free_f=
-unction)(struct env_item *))</span><br><span> {</span><br><span>     remove=
-_env_item(str, es-&gt;gc =3D=3D NULL, &amp;es-&gt;list);</span><br><span st=
-yle=3D"color: hsl(0, 100%, 40%);">-    add_env_item((char *)str, true, &amp=
-;es-&gt;list, es-&gt;gc);</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+    add_env_item((char *)str, free_function, &amp;es-&gt;list, es-&gt=
-;gc);</span><br><span> }</span><br><span> </span><br><span> struct env_set =
-*</span><br><span>@@ -171,6 +198,10 @@</span><br><span>         while (e)</=
-span><br><span>         {</span><br><span>             struct env_item *nex=
-t =3D e-&gt;next;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-          if (e-&gt;free_function)</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+            {</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+                e-&gt;free_function(e);</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+            }</span><br><span>             fre=
-e(e-&gt;string);</span><br><span>             free(e);</span><br><span>    =
-         e =3D next;</span><br><span>@@ -194,7 +225,16 @@</span><br><span> =
-{</span><br><span>     ASSERT(es);</span><br><span>     ASSERT(str);</span>=
-<br><span style=3D"color: hsl(0, 100%, 40%);">-    env_set_add_nolock(es, s=
-tr);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    env_set_add=
-_nolock(es, str, NULL);</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+void</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+env_set_add_specialfree(struct env_set *es, cons=
-t char *str,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
-                 void (*free_function)(struct env_item *))</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+    ASSERT(es);</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+    ASSERT(str);</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+    env_set_add_nolock(es, str, free_function);</span><br><sp=
-an> }</span><br><span> </span><br><span> const char *</span><br><span>@@ -2=
-46,7 +286,7 @@</span><br><span>         e =3D src-&gt;list;</span><br><span=
->         while (e)</span><br><span>         {</span><br><span style=3D"col=
-or: hsl(0, 100%, 40%);">-            env_set_add_nolock(es, e-&gt;string);<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+            env_set_=
-add_nolock(es, e-&gt;string, e-&gt;free_function);</span><br><span>        =
-     e =3D e-&gt;next;</span><br><span>         }</span><br><span>     }</s=
-pan><br><span>diff --git a/src/openvpn/env_set.h b/src/openvpn/env_set.h</s=
-pan><br><span>index 4599977..27bc4dd 100644</span><br><span>--- a/src/openv=
-pn/env_set.h</span><br><span>+++ b/src/openvpn/env_set.h</span><br><span>@@=
- -36,6 +36,7 @@</span><br><span> </span><br><span> struct env_item {</span>=
-<br><span>     char *string;</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+    void (*free_function)(struct env_item *);</span><br><span>    =
- struct env_item *next;</span><br><span> };</span><br><span> </span><br><sp=
-an>@@ -87,6 +88,11 @@</span><br><span> </span><br><span> void env_set_add(s=
-truct env_set *es, const char *str);</span><br><span> </span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+void</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+env_set_add_specialfree(struct env_set *es, const char =
-*str,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+              =
-          void (*free_function)(struct env_item *));</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+</span><br><span> const char *env_set_get(const struct env_s=
-et *es, const char *name);</span><br><span> </span><br><span> void env_set_=
-print(int msglevel, const struct env_set *es);</span><br><span>diff --git a=
-/tests/unit_tests/openvpn/Makefile.am b/tests/unit_tests/openvpn/Makefile.a=
-m</span><br><span>index 6667626..c5098a9 100644</span><br><span>--- a/tests=
-/unit_tests/openvpn/Makefile.am</span><br><span>+++ b/tests/unit_tests/open=
-vpn/Makefile.am</span><br><span>@@ -52,6 +52,7 @@</span><br><span> buffer_t=
-estdriver_LDFLAGS =3D @TEST_LDFLAGS@ -L$(top_srcdir)/src/openvpn -Wl,--wrap=
-=3Dparse_line</span><br><span> buffer_testdriver_SOURCES =3D test_buffer.c =
-mock_msg.c mock_msg.h \</span><br><span> 	mock_get_random.c \</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+	$(top_srcdir)/src/openvpn/env_se=
-t.c \</span><br><span> 	$(top_srcdir)/src/openvpn/win32-util.c \</span><br>=
-<span> 	$(top_srcdir)/src/openvpn/platform.c</span><br><span> </span><br><s=
-pan>diff --git a/tests/unit_tests/openvpn/test_buffer.c b/tests/unit_tests/=
-openvpn/test_buffer.c</span><br><span>index ee84c1f..e355a43 100644</span><=
-br><span>--- a/tests/unit_tests/openvpn/test_buffer.c</span><br><span>+++ b=
-/tests/unit_tests/openvpn/test_buffer.c</span><br><span>@@ -26,13 +26,22 @@=
-</span><br><span> #endif</span><br><span> </span><br><span> #include &quot;=
-syshead.h&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#inc=
-lude &lt;stdbool.h&gt;</span><br><span> </span><br><span> #include &lt;setj=
-mp.h&gt;</span><br><span> #include &lt;cmocka.h&gt;</span><br><span> </span=
-><br><span> #include &quot;buffer.h&quot;</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+#include &quot;env_set.h&quot;</span><br><span> #incl=
-ude &quot;buffer.c&quot;</span><br><span> </span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+/* mock this function as it is required by env.c */<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+int</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+script_security(void)</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+    return 0;</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+<=
-/span><br><span> static void</span><br><span> test_buffer_strprefix(void **=
-state)</span><br><span> {</span><br><span>@@ -353,6 +362,47 @@</span><br><s=
-pan>     assert_string_equal(buf, &quot;There is a .&#39;nice.&#39; \&quot;=
-1234\&quot; [.] year old .tree!&quot;);</span><br><span> }</span><br><span>=
- </span><br><span style=3D"color: hsl(120, 100%, 40%);">+static bool unit_t=
-est_free_called =3D false;</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+static void<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+unit_test_special_fr=
-ee(struct env_item *ei)</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_str=
-ing_equal(ei-&gt;string, &quot;unit=3Dtest&quot;);</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+    unit_test_free_called =3D true;</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"c=
+   struct buffer *buf =3D reliable_get_buf_output_sequenced(ks-&gt;send_rel=
+iable);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        if (=
+buf)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        {</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+            if (!write_ou=
+tgoing_tls_ciphertext(session, continue_tls_process))</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+            {</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+                return false;</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+            }</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+        }</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+    return true;</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+static bool</span><br><span> t=
+ls_process_state(struct tls_multi *multi,</span><br><span>                 =
+  struct tls_session *session,</span><br><span>                   struct bu=
+ffer *to_link,</span><br><span>@@ -2706,7 +2728,7 @@</span><br><span>     }=
+</span><br><span> </span><br><span>     /* Are we timed out on receive? */<=
+/span><br><span style=3D"color: hsl(0, 100%, 40%);">-    if (now &gt;=3D ks=
+-&gt;must_negotiate &amp;&amp; ks-&gt;state &lt; S_ACTIVE)</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+    if (now &gt;=3D ks-&gt;must_nego=
+tiate &amp;&amp; ks-&gt;state &gt;=3D S_UNDEF &amp;&amp; ks-&gt;state &lt; =
+S_ACTIVE)</span><br><span>     {</span><br><span>         msg(D_TLS_ERRORS,=
+</span><br><span>             &quot;TLS Error: TLS key negotiation failed t=
+o occur within %d seconds (check your network connectivity)&quot;,</span><b=
+r><span>@@ -2760,6 +2782,16 @@</span><br><span>         return false;</span=
+><br><span>     }</span><br><span> </span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+    if (ks-&gt;state =3D=3D S_ERROR_PRE)</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+        /* When we end up here, we had one last chan=
+ce to send an outstanding</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+         * packet that contained an alert. We do not ensure that this=
+ packet</span><br><span style=3D"color: hsl(120, 100%, 40%);">+         * h=
+as been successfully delivered  (ie wait for the ACK etc)</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+         * but rather stop processing=
+ now */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        ks-&=
+gt;state =3D S_ERROR;</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+        return false;</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br=
+><span>     /* Write incoming ciphertext to TLS object */</span><br><span> =
+    struct reliable_entry *entry =3D reliable_get_entry_sequenced(ks-&gt;re=
+c_reliable);</span><br><span>     if (entry)</span><br><span>@@ -2840,29 +2=
+872,31 @@</span><br><span>             dmsg(D_TLS_DEBUG, &quot;Outgoing Pla=
+intext -&gt; TLS&quot;);</span><br><span>         }</span><br><span>     }<=
+/span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-    /* Outgoing Ciphertext to reliable buff=
+er */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    if (ks-&gt;s=
+tate &gt;=3D S_START)</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+    if (!check_outgoing_ciphertext(ks, session, &amp;continue_tls_process=
+))</span><br><span>     {</span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">-        buf =3D reliable_get_buf_output_sequenced(ks-&gt;send_reliable)=
+;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        if (buf)</sp=
+an><br><span style=3D"color: hsl(0, 100%, 40%);">-        {</span><br><span=
+ style=3D"color: hsl(0, 100%, 40%);">-            if (!write_outgoing_tls_c=
+iphertext(session, &amp;continue_tls_process))</span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-            {</span><br><span style=3D"color: hsl(=
+0, 100%, 40%);">-                goto error;</span><br><span style=3D"color=
+: hsl(0, 100%, 40%);">-            }</span><br><span style=3D"color: hsl(0,=
+ 100%, 40%);">-        }</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+        goto error;</span><br><span>     }</span><br><span> </span><br=
+><span>     return continue_tls_process;</span><br><span> error:</span><br>=
+<span>     tls_clear_error();</span><br><span style=3D"color: hsl(0, 100%, =
+40%);">-    ks-&gt;state =3D S_ERROR;</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+   /* Shut down the TLS session but do a last read from the TLS</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+     * object to be able to rea=
+d potential TLS alerts */</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+    key_state_ssl_shutdown(&amp;ks-&gt;ks_ssl);</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    check_outgoing_ciphertext(ks, session=
+, &amp;continue_tls_process);</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    /* Pu=
+t ourselves in the pre error state that will only send out the</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+     * control channel packets b=
+ut nothing else */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+   ks-&gt;state =3D S_ERROR_PRE;</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+</span><br><span>     msg(D_TLS_ERRORS, &quot;TLS Error: TLS h=
+andshake failed&quot;);</span><br><span>     INCR_ERROR;</span><br><span st=
+yle=3D"color: hsl(0, 100%, 40%);">-    return false;</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+    return true;</span><br><span> }</span><br><span style=3D"c=
 olor: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+static void</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+test_env_special_free(void **state)</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-    /* Test called via env_set_destroy */</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+    struct env_set *es =3D env_set_create(NULL);</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+    env_set_add_specialf=
-ree(es, &quot;unit=3Dtest&quot;, &amp;unit_test_special_free);</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+    env_set_destroy(es);</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_true(unit_test_f=
-ree_called);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    uni=
-t_test_free_called =3D false;</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    /* Te=
-st called via env_remove */</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+    es =3D env_set_create(NULL);</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+    env_set_add_specialfree(es, &quot;unit=3Dtest&quot=
-;, &amp;unit_test_special_free);</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+    env_set_del(es, &quot;unit&quot;);</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    assert_true(unit_test_free_called);</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+    unit_test_free_ca=
-lled =3D false;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-env_set_destroy(es);</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    /* Test for en=
-v with GC */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    str=
-uct gc_arena gc =3D gc_new();</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+    es =3D env_set_create(&amp;gc);</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+    env_set_add_specialfree(es, &quot;unit=3Dtest=
-&quot;, &amp;unit_test_special_free);</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+    env_set_destroy(es);</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+    /* The free should be done as part of gc free and not as part of</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+     * the env set des=
-troy */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_f=
-alse(unit_test_free_called);</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    gc_fre=
-e(&amp;gc);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    asse=
-rt_true(unit_test_free_called);</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span=
-><br><span> int</span><br><span> main(void)</span><br><span> {</span><br><s=
-pan>@@ -385,6 +435,7 @@</span><br><span>         cmocka_unit_test(test_buff=
-er_free_gc_two),</span><br><span>         cmocka_unit_test(test_buffer_gc_r=
-ealloc),</span><br><span>         cmocka_unit_test(test_character_class),</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+        cmocka_unit_t=
-est(test_env_special_free)</span><br><span>     };</span><br><span> </span>=
-<br><span>     return cmocka_run_group_tests_name(&quot;buffer&quot;, tests=
-, NULL, NULL);</span><br><span></span><br></pre><p>To view, visit <a href=
-=3D"http://gerrit.openvpn.net/c/openvpn/+/486?usp=3Demail">change 486</a>. =
-To unsubscribe, or for help writing mail filters, visit <a href=3D"http://g=
-errit.openvpn.net/settings">settings</a>.</p><div itemscope itemtype=3D"htt=
-p://schema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D=
-"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit=
-.openvpn.net/c/openvpn/+/486?usp=3Demail"/><meta itemprop=3D"name" content=
-=3D"View Change"/></div></div>
+, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><b=
+r><span> /*</span><br><span>  * This is the primary routine for processing =
+TLS stuff inside the</span><br><span>  * the main event loop.  When this ro=
+utine exits</span><br><span>@@ -2970,7 +3004,7 @@</span><br><span>     }</s=
+pan><br><span> </span><br><span>     /* When should we wake up again? */</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-    if (ks-&gt;state &gt=
+;=3D S_INITIAL)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+if (ks-&gt;state &gt;=3D S_INITIAL || ks-&gt;state =3D=3D S_ERROR_PRE)</spa=
+n><br><span>     {</span><br><span>         compute_earliest_wakeup(wakeup,=
+</span><br><span>                                 reliable_send_timeout(ks-=
+&gt;send_reliable));</span><br><span>@@ -3123,7 +3157,7 @@</span><br><span>=
+              session_id_print(&amp;ks-&gt;session_id_remote, &amp;gc),</sp=
+an><br><span>              print_link_socket_actual(&amp;ks-&gt;remote_addr=
+, &amp;gc));</span><br><span> </span><br><span style=3D"color: hsl(0, 100%,=
+ 40%);">-        if (ks-&gt;state &gt;=3D S_INITIAL &amp;&amp; link_socket_=
+actual_defined(&amp;ks-&gt;remote_addr))</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+        if ((ks-&gt;state &gt;=3D S_INITIAL || ks-&gt;=
+state =3D=3D S_ERROR_PRE) &amp;&amp;  link_socket_actual_defined(&amp;ks-&g=
+t;remote_addr))</span><br><span>         {</span><br><span>             str=
+uct link_socket_actual *tla =3D NULL;</span><br><span> </span><br><span>@@ =
+-3201,7 +3235,8 @@</span><br><span>             {</span><br><span>         =
+        msg(D_TLS_ERRORS, &quot;TLS Error: generate_key_expansion failed&qu=
+ot;);</span><br><span>                 ks-&gt;authenticated =3D KS_AUTH_FAL=
+SE;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-                ks=
+-&gt;state =3D S_ERROR;</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+                key_state_ssl_shutdown(&amp;ks-&gt;ks_ssl);</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+                ks-&gt;state =
+=3D S_ERROR_PRE;</span><br><span>             }</span><br><span> </span><br=
+><span>             /* Update auth token on the client if needed on renegot=
+iation</span><br><span>diff --git a/src/openvpn/ssl_backend.h b/src/openvpn=
+/ssl_backend.h</span><br><span>index b9466ce..a4d4dd4 100644</span><br><spa=
+n>--- a/src/openvpn/ssl_backend.h</span><br><span>+++ b/src/openvpn/ssl_bac=
+kend.h</span><br><span>@@ -363,6 +363,13 @@</span><br><span>               =
+          const struct tls_root_ctx *ssl_ctx, bool is_server, struct tls_se=
+ssion *session);</span><br><span> </span><br><span> /**</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+ * Sets a TLS session to be shutdown st=
+ate, so the TLS library will generate</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+ * a shutdown alert.</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+ */</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+void</span><br><span style=3D"color: hsl(120, 100%, 40%);">+key_state_ss=
+l_shutdown(struct key_state_ssl *ks_ssl);</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+/**</span><br><span>  * Free the SSL channel part of the given key state=
+.</span><br><span>  *</span><br><span>  * @param ks_ssl        The SSL chan=
+nel&#39;s state info to free</span><br><span>diff --git a/src/openvpn/ssl_c=
+ommon.h b/src/openvpn/ssl_common.h</span><br><span>index 925660b..ff455b3 1=
+00644</span><br><span>--- a/src/openvpn/ssl_common.h</span><br><span>+++ b/=
+src/openvpn/ssl_common.h</span><br><span>@@ -74,7 +74,10 @@</span><br><span=
+>  *</span><br><span>  * @{</span><br><span>  */</span><br><span style=3D"c=
+olor: hsl(0, 100%, 40%);">-#define S_ERROR          -1     /**&lt; Error st=
+ate.  */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#define S_E=
+RROR         (-2)     /**&lt; Error state.  */</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+#define S_ERROR_PRE     (-1)     /**&lt; Error s=
+tate but try to send out alerts</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+                                  *  before killing the keystor=
+e and moving</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
+                           *  it to S_ERROR */</span><br><span> #define S_U=
+NDEF           0     /**&lt; Undefined state, used after a \c</span><br><sp=
+an>                                  *   key_state is cleaned up. */</span>=
+<br><span> #define S_INITIAL         1     /**&lt; Initial \c key_state sta=
+te after</span><br><span>diff --git a/src/openvpn/ssl_mbedtls.c b/src/openv=
+pn/ssl_mbedtls.c</span><br><span>index cc88484..5e6726c 100644</span><br><s=
+pan>--- a/src/openvpn/ssl_mbedtls.c</span><br><span>+++ b/src/openvpn/ssl_m=
+bedtls.c</span><br><span>@@ -1276,6 +1276,14 @@</span><br><span>           =
+              ssl_bio_read, NULL);</span><br><span> }</span><br><span> </sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+void</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+key_state_ssl_shutdown(struct key_state_ssl *ks_ssl)</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    mbedtls_ssl_send_alert_message(ks_ssl=
+-&gt;ctx, MBEDTLS_SSL_ALERT_LEVEL_FATAL,</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+                                   MBEDTLS_SSL_ALERT_M=
+SG_CLOSE_NOTIFY);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> vo=
+id</span><br><span> key_state_ssl_free(struct key_state_ssl *ks_ssl)</span>=
+<br><span> {</span><br><span>diff --git a/src/openvpn/ssl_openssl.c b/src/o=
+penvpn/ssl_openssl.c</span><br><span>index c30e6a9..552d751 100644</span><b=
+r><span>--- a/src/openvpn/ssl_openssl.c</span><br><span>+++ b/src/openvpn/s=
+sl_openssl.c</span><br><span>@@ -1962,6 +1962,12 @@</span><br><span> }</spa=
+n><br><span> </span><br><span> void</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+key_state_ssl_shutdown(struct key_state_ssl *ks_ssl)</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+    SSL_set_shutdown(ks_ssl-&gt;ssl, SSL_SEN=
+T_SHUTDOWN | SSL_RECEIVED_SHUTDOWN);</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+void</span><br><span=
+> key_state_ssl_free(struct key_state_ssl *ks_ssl)</span><br><span> {</span=
+><br><span>     if (ks_ssl-&gt;ssl)</span><br><span></span><br></pre><p>To =
+view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/449?usp=3Demai=
+l">change 449</a>. To unsubscribe, or for help writing mail filters, visit =
+<a href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemsc=
+ope itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"=
+action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" hr=
+ef=3D"http://gerrit.openvpn.net/c/openvpn/+/449?usp=3Demail"/><meta itempro=
+p=3D"name" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I6899c1af65fbd670d434cdb17f8=
-1c82b900bfbd4 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 486 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I0ad48915004ddee587e97c8ed19=
+0ba8ee989e48d </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 449 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 6 </div>
 <div style=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@...1711...=
 27...&gt; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
 1...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
-41...&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: newchange </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
 
 
---7OOPwMarMZM=--
+--Mh3xiqwLk4I=--
 
