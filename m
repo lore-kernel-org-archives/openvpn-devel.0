@@ -1,16 +1,16 @@
 From: "plaisthos (Code Review)" <gerrit@...515...>
-Date: Tue, 2 Jan 2024 13:56:24 +0000
-In-Reply-To: <gerrit.1700479678000.I0ad48915004ddee587e97c8ed190ba8ee989e48d@...2715...>
-References: <gerrit.1700479678000.I0ad48915004ddee587e97c8ed190ba8ee989e48d@...2715...>
+Date: Tue, 2 Jan 2024 16:44:48 +0000
+In-Reply-To: <gerrit.1701865618000.Ia9b3f1813d2d0d492d17c87348b4cebd0bf19ce2@...2715...>
+References: <gerrit.1701865618000.Ia9b3f1813d2d0d492d17c87348b4cebd0bf19ce2@...2715...>
 Reply-To: arne-openvpn@...1227..., openvpn-devel@lists.sourceforge.net,
- frank@...2641...
-Message-ID: <8471dcd9676ba538b692d14e3d1d4186789cf4b4-EmailReplacePatchSet-HTML@...2715...>
+ frank@...2641..., gert@...1296...
+Message-ID: <a1ab27237904e18faf3975baefec0b1e55b6216e-EmailReplacePatchSet-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="Mh3xiqwLk4I="; charset=UTF-8
-Subject: [Openvpn-devel] [M] Change in openvpn[master]: Allow the TLS
- session to send out TLS alerts
+Content-Type: multipart/alternative; boundary="EqyQSTLMOqQ="; charset=UTF-8
+Subject: [Openvpn-devel] [M] Change in openvpn[master]: Implement the
+ --tls-export-cert feature
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,588 +19,820 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: flichtenheld <frank@...2641...>
+To: cron2 <gert@...1296...>, flichtenheld <frank@...2641...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---Mh3xiqwLk4I=
+--EqyQSTLMOqQ=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: plaisthos.
+Attention is currently required from: cron2, plaisthos.
 
-Hello flichtenheld,
+Hello cron2, flichtenheld,
 
 I'd like you to reexamine a change. Please visit
 
-    http://gerrit.openvpn.net/c/openvpn/+/449?usp=3Demail
+    http://gerrit.openvpn.net/c/openvpn/+/466?usp=3Demail
 
-to look at the new patch set (#6).
+to look at the new patch set (#8).
 
 
-Change subject: Allow the TLS session to send out TLS alerts
+Change subject: Implement the --tls-export-cert feature
 ......................................................................
 
-Allow the TLS session to send out TLS alerts
+Implement the --tls-export-cert feature
 
-Previous OpenVPN versions shut down the TLS control channel immediately
-when encountering an error. This also meant that we would not send out
-TLS alerts to notify a client about potential problems like mismatching
-TLS versions or having no common cipher.
+This is a re-implementation of the --tls-export-cert feature. This
+was necessary to due to missing approval to re-license the old
+(now removed) code. The re-implementation is based on the following
+description of the feature provided by David:
 
-This commit adds a new key_state S_ERROR_PRE which still allows to
-send out the remaining TLS packets of the control session which are
-typically the alert message and then going to S_ERROR. We do not
-wait for retries. So this is more a one-shot notify but that is
-acceptable in this situation.
+  Add an option to export certificate in PEM format of the remote
+  peer to a given directory.
 
-Sending out alerts is a slight compromise in security as alerts give
-out a bit of information that otherwise is not given
-out. But since all other consumers TLS implementations are already doing th=
-is
-and TLS implementations (nowadays) are very careful not to leak (sensitive)
-information by alerts and since the user experience is much better with
-alerts, this compromise is worth it.
+  For example: --tls-export-cert /var/tmp
 
-Change-Id: I0ad48915004ddee587e97c8ed190ba8ee989e48d
+  This option should use a randomised filename, which is provided via a
+  "peer_cert" environment variable for the --tls-verify script or the
+  OPENVPN_PLUGIN_TLS_VERIFY plug-in hook.
+
+Once the script or plugin call has completed, OpenVPN should delete
+this file.
+
+Change-Id: Ia9b3f1813d2d0d492d17c87348b4cebd0bf19ce2
 Signed-off-by: Arne Schwabe <arne@...1227...>
 ---
-M Changes.rst
-M src/openvpn/ssl.c
-M src/openvpn/ssl_backend.h
+M doc/man-sections/script-options.rst
+M src/openvpn/init.c
+M src/openvpn/options.c
+M src/openvpn/options.h
 M src/openvpn/ssl_common.h
-M src/openvpn/ssl_mbedtls.c
-M src/openvpn/ssl_openssl.c
-6 files changed, 87 insertions(+), 19 deletions(-)
+M src/openvpn/ssl_verify.c
+M src/openvpn/ssl_verify_backend.h
+M src/openvpn/ssl_verify_mbedtls.c
+M src/openvpn/ssl_verify_openssl.c
+9 files changed, 174 insertions(+), 5 deletions(-)
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/49/449/6
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/66/466/8
 
-diff --git a/Changes.rst b/Changes.rst
-index 69c811d..52ff8db 100644
---- a/Changes.rst
-+++ b/Changes.rst
-@@ -1,5 +1,14 @@
- Overview of changes in 2.7
- =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D
-+New features
-+------------
-+TLS alerts
-+    OpenVPN 2.7 will send out TLS alerts to peers informing them if the TLS
-+    session shuts down or when the TLS implementation informs the peer abo=
-ut
-+    an error in the TLS session (e.g. mismatching TLS versions). This impr=
-oves
-+    the user experience as the client shows an error instead of running in=
-to
-+    a timeout when the server just stops responding completely.
+diff --git a/doc/man-sections/script-options.rst b/doc/man-sections/script-=
+options.rst
+index 6f90e14..53c9f97 100644
+--- a/doc/man-sections/script-options.rst
++++ b/doc/man-sections/script-options.rst
+@@ -423,6 +423,15 @@
+   See the `Environmental Variables`_ section below for additional
+   parameters passed as environmental variables.
+
++--tls-export-cert dir
++  Adds an environment variable ``peer_cert_{x}`` (and an alias
++  ``peer_cert`` for ``peer_cert_0`` for compatibility)  when calling the
++  ``--tls-verify`` script or executing the OPENVPN_PLUGIN_TLS_VERIFY plugin
++  hook to verify the certificate.
 +
- Deprecated features
- -------------------
- ``secret`` support has been removed by default.
-diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
-index 33c8670..f287e4d 100644
---- a/src/openvpn/ssl.c
-+++ b/src/openvpn/ssl.c
-@@ -690,6 +690,9 @@
-         case S_ERROR:
-             return "S_ERROR";
-
-+        case S_ERROR_PRE:
-+            return "S_ERROR_PRE";
++  The environment variable contains the path to a PEM encoded certificate
++  of the current peer certificate in the directory ``dir``.
 +
-         case S_GENERATED_KEYS:
-             return "S_GENERATED_KEYS";
+ --up cmd
+   Run command ``cmd`` after successful TUN/TAP device open (pre ``--user``
+   UID change).
+@@ -763,6 +772,15 @@
+     modifier is specified, and deleted from the environment after the scri=
+pt
+     returns.
 
-@@ -2683,6 +2686,25 @@
++:code:`peer_cert_{n}`
++    If the option ``--tls-export-cert`` is enabled, this option contains
++    the path to the current peer certificate to be verified in PEM format
++    where ``n`` is the verification level.
++
++:code:`peer_cert`
++    Identical to `peer_cert_0` for compatibility with older
++    versions.
++
+ :code:`proto`
+     The ``--proto`` parameter. Set on program initiation and reset on
+     SIGHUP.
+diff --git a/src/openvpn/init.c b/src/openvpn/init.c
+index 9e2b3845..c5cc154 100644
+--- a/src/openvpn/init.c
++++ b/src/openvpn/init.c
+@@ -3336,6 +3336,7 @@
+     to.auth_user_pass_verify_script_via_file =3D options->auth_user_pass_v=
+erify_script_via_file;
+     to.client_crresponse_script =3D options->client_crresponse_script;
+     to.tmp_dir =3D options->tmp_dir;
++    to.export_peer_cert_dir =3D options->tls_export_peer_cert_dir;
+     if (options->ccd_exclusive)
+     {
+         to.client_config_dir_exclusive =3D options->client_config_dir;
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index e498114..ecbc63e 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -1986,6 +1986,7 @@
+     SHOW_STR(cipher_list_tls13);
+     SHOW_STR(tls_cert_profile);
+     SHOW_STR(tls_verify);
++    SHOW_STR(tls_export_peer_cert_path);
+     SHOW_INT(verify_x509_type);
+     SHOW_STR(verify_x509_name);
+     SHOW_STR_INLINE(crl_file);
+@@ -3048,6 +3049,7 @@
+         MUST_BE_UNDEF(cipher_list_tls13);
+         MUST_BE_UNDEF(tls_cert_profile);
+         MUST_BE_UNDEF(tls_verify);
++        MUST_BE_UNDEF(tls_export_peer_cert_path);
+         MUST_BE_UNDEF(verify_x509_name);
+         MUST_BE_UNDEF(tls_timeout);
+         MUST_BE_UNDEF(renegotiate_bytes);
+@@ -4053,6 +4055,13 @@
+                                                 R_OK, "--crl-verify");
+     }
+
++    if (options->tls_export_peer_cert_dir)
++    {
++        errs |=3D check_file_access_chroot(options->chroot_dir, CHKACC_FIL=
+E,
++                                         options->tls_export_peer_cert_dir,
++                                         W_OK, "--tls-export-cert");
++    }
++
+     ASSERT(options->connection_list);
+     for (int i =3D 0; i < options->connection_list->len; ++i)
+     {
+@@ -8997,6 +9006,11 @@
+                         string_substitute(p[1], ',', ' ', &options->gc),
+                         "tls-verify", true);
+     }
++    else if (streq(p[0], "tls-export-cert") && p[1] && !p[2])
++    {
++        VERIFY_PERMISSION(OPT_P_SCRIPT);
++        options->tls_export_peer_cert_dir =3D p[1];
++    }
+     else if (streq(p[0], "compat-names"))
+     {
+         VERIFY_PERMISSION(OPT_P_GENERAL);
+diff --git a/src/openvpn/options.h b/src/openvpn/options.h
+index c4514e1..e52a953 100644
+--- a/src/openvpn/options.h
++++ b/src/openvpn/options.h
+@@ -592,6 +592,7 @@
+     const char *tls_cert_profile;
+     const char *ecdh_curve;
+     const char *tls_verify;
++    const char *tls_export_peer_cert_dir;
+     int verify_x509_type;
+     const char *verify_x509_name;
+     const char *crl_file;
+diff --git a/src/openvpn/ssl_common.h b/src/openvpn/ssl_common.h
+index 925660b..f085e0d 100644
+--- a/src/openvpn/ssl_common.h
++++ b/src/openvpn/ssl_common.h
+@@ -374,6 +374,7 @@
+     const char *client_crresponse_script;
+     bool auth_user_pass_verify_script_via_file;
+     const char *tmp_dir;
++    const char *export_peer_cert_dir;
+     const char *auth_user_pass_file;
+     bool auth_user_pass_file_inline;
+
+diff --git a/src/openvpn/ssl_verify.c b/src/openvpn/ssl_verify.c
+index bd7e512..35d3377 100644
+--- a/src/openvpn/ssl_verify.c
++++ b/src/openvpn/ssl_verify.c
+@@ -31,6 +31,7 @@
+ #endif
+
+ #include "syshead.h"
++#include <string.h>
+
+ #include "base64.h"
+ #include "manage.h"
+@@ -457,6 +458,54 @@
+     gc_free(&gc);
  }
 
- static bool
-+check_outgoing_ciphertext(struct key_state *ks, struct tls_session *sessio=
-n,
-+                          bool *continue_tls_process)
-+{
-+    /* Outgoing Ciphertext to reliable buffer */
-+    if (ks->state >=3D S_START)
-+    {
-+        struct buffer *buf =3D reliable_get_buf_output_sequenced(ks->send_=
-reliable);
-+        if (buf)
-+        {
-+            if (!write_outgoing_tls_ciphertext(session, continue_tls_proce=
-ss))
-+            {
-+                return false;
-+            }
-+        }
-+    }
-+    return true;
-+}
-+
++/**
++ * Exports the certificate in \c peer_cert into the environment and adds
++ * the filname
++ */
 +static bool
- tls_process_state(struct tls_multi *multi,
-                   struct tls_session *session,
-                   struct buffer *to_link,
-@@ -2706,7 +2728,7 @@
-     }
-
-     /* Are we timed out on receive? */
--    if (now >=3D ks->must_negotiate && ks->state < S_ACTIVE)
-+    if (now >=3D ks->must_negotiate && ks->state >=3D S_UNDEF && ks->state=
- < S_ACTIVE)
-     {
-         msg(D_TLS_ERRORS,
-             "TLS Error: TLS key negotiation failed to occur within %d seco=
-nds (check your network connectivity)",
-@@ -2760,6 +2782,16 @@
-         return false;
-     }
-
-+    if (ks->state =3D=3D S_ERROR_PRE)
++verify_cert_cert_export_env(struct env_set *es, openvpn_x509_cert_t *peer_=
+cert,
++                            int cert_depth, const char *pem_export_fname)
++{
++    char envname[64];
++    /* Make copy of the filename to manage that copy by the gc_arena */
++    char *pem_export_filename =3D strdup(pem_export_fname);
++
++    if (!pem_export_filename)
 +    {
-+        /* When we end up here, we had one last chance to send an outstand=
-ing
-+         * packet that contained an alert. We do not ensure that this pack=
-et
-+         * has been successfully delivered  (ie wait for the ACK etc)
-+         * but rather stop processing now */
-+        ks->state =3D S_ERROR;
 +        return false;
 +    }
 +
-     /* Write incoming ciphertext to TLS object */
-     struct reliable_entry *entry =3D reliable_get_entry_sequenced(ks->rec_=
-reliable);
-     if (entry)
-@@ -2840,29 +2872,31 @@
-             dmsg(D_TLS_DEBUG, "Outgoing Plaintext -> TLS");
-         }
-     }
--
--    /* Outgoing Ciphertext to reliable buffer */
--    if (ks->state >=3D S_START)
-+    if (!check_outgoing_ciphertext(ks, session, &continue_tls_process))
-     {
--        buf =3D reliable_get_buf_output_sequenced(ks->send_reliable);
--        if (buf)
--        {
--            if (!write_outgoing_tls_ciphertext(session, &continue_tls_proc=
-ess))
--            {
--                goto error;
--            }
--        }
-+        goto error;
-     }
-
-     return continue_tls_process;
- error:
-     tls_clear_error();
--    ks->state =3D S_ERROR;
++    /* export the path to the certificate in pem file format */
++    openvpn_snprintf(envname, sizeof(envname), "peer_cert_%d", cert_depth);
++    setenv_str(es, envname, pem_export_filename);
 +
-+    /* Shut down the TLS session but do a last read from the TLS
-+     * object to be able to read potential TLS alerts */
-+    key_state_ssl_shutdown(&ks->ks_ssl);
-+    check_outgoing_ciphertext(ks, session, &continue_tls_process);
++    /* compatibility with older scripts/plugins that expect peer_cert with=
+out
++     * suffix */
++    if (cert_depth =3D=3D 0)
++    {
++        setenv_str(es, "peer_cert", pem_export_filename);
++    }
 +
-+    /* Put ourselves in the pre error state that will only send out the
-+     * control channel packets but nothing else */
-+    ks->state =3D S_ERROR_PRE;
++    return backend_x509_write_pem(peer_cert, pem_export_filename) =3D=3D S=
+UCCESS;
++}
 +
-     msg(D_TLS_ERRORS, "TLS Error: TLS handshake failed");
-     INCR_ERROR;
--    return false;
--
-+    return true;
- }
++static void
++verify_cert_cert_delete_env(struct env_set *es, int cert_depth,
++                            const char *pem_export_fname)
++{
++    char envname[64];
++    openvpn_snprintf(envname, sizeof(envname), "peer_cert_%d", cert_depth);
++    env_set_del(es, envname);
 +
-+
++    /* compatibility with older scripts/plugins that expect peer_cert with=
+out
++     * suffix */
++    if (cert_depth =3D=3D 0)
++    {
++        env_set_del(es, "peer_cert");
++    }
++    unlink(pem_export_fname);
++}
 +
  /*
-  * This is the primary routine for processing TLS stuff inside the
-  * the main event loop.  When this routine exits
-@@ -2970,7 +3004,7 @@
-     }
-
-     /* When should we wake up again? */
--    if (ks->state >=3D S_INITIAL)
-+    if (ks->state >=3D S_INITIAL || ks->state =3D=3D S_ERROR_PRE)
-     {
-         compute_earliest_wakeup(wakeup,
-                                 reliable_send_timeout(ks->send_reliable));
-@@ -3123,7 +3157,7 @@
-              session_id_print(&ks->session_id_remote, &gc),
-              print_link_socket_actual(&ks->remote_addr, &gc));
-
--        if (ks->state >=3D S_INITIAL && link_socket_actual_defined(&ks->re=
-mote_addr))
-+        if ((ks->state >=3D S_INITIAL || ks->state =3D=3D S_ERROR_PRE) && =
- link_socket_actual_defined(&ks->remote_addr))
-         {
-             struct link_socket_actual *tla =3D NULL;
-
-@@ -3201,7 +3235,8 @@
-             {
-                 msg(D_TLS_ERRORS, "TLS Error: generate_key_expansion faile=
-d");
-                 ks->authenticated =3D KS_AUTH_FALSE;
--                ks->state =3D S_ERROR;
-+                key_state_ssl_shutdown(&ks->ks_ssl);
-+                ks->state =3D S_ERROR_PRE;
-             }
-
-             /* Update auth token on the client if needed on renegotiation
-diff --git a/src/openvpn/ssl_backend.h b/src/openvpn/ssl_backend.h
-index b9466ce..a4d4dd4 100644
---- a/src/openvpn/ssl_backend.h
-+++ b/src/openvpn/ssl_backend.h
-@@ -363,6 +363,13 @@
-                         const struct tls_root_ctx *ssl_ctx, bool is_server=
-, struct tls_session *session);
-
- /**
-+ * Sets a TLS session to be shutdown state, so the TLS library will genera=
-te
-+ * a shutdown alert.
-+ */
-+void
-+key_state_ssl_shutdown(struct key_state_ssl *ks_ssl);
-+
-+/**
-  * Free the SSL channel part of the given key state.
-  *
-  * @param ks_ssl        The SSL channel's state info to free
-diff --git a/src/openvpn/ssl_common.h b/src/openvpn/ssl_common.h
-index 925660b..ff455b3 100644
---- a/src/openvpn/ssl_common.h
-+++ b/src/openvpn/ssl_common.h
-@@ -74,7 +74,10 @@
-  *
-  * @{
+  * call --tls-verify plug-in(s)
   */
--#define S_ERROR          -1     /**< Error state.  */
-+#define S_ERROR         (-2)     /**< Error state.  */
-+#define S_ERROR_PRE     (-1)     /**< Error state but try to send out aler=
-ts
-+                                  *  before killing the keystore and moving
-+                                  *  it to S_ERROR */
- #define S_UNDEF           0     /**< Undefined state, used after a \c
-                                  *   key_state is cleaned up. */
- #define S_INITIAL         1     /**< Initial \c key_state state after
-diff --git a/src/openvpn/ssl_mbedtls.c b/src/openvpn/ssl_mbedtls.c
-index cc88484..5e6726c 100644
---- a/src/openvpn/ssl_mbedtls.c
-+++ b/src/openvpn/ssl_mbedtls.c
-@@ -1276,6 +1276,14 @@
-                         ssl_bio_read, NULL);
+@@ -572,18 +621,19 @@
+ result_t
+ verify_cert(struct tls_session *session, openvpn_x509_cert_t *cert, int ce=
+rt_depth)
+ {
++    /* need to define these variables here so goto cleanup will always have
++     * them defined */
+     result_t ret =3D FAILURE;
+-    char *subject =3D NULL;
+-    const struct tls_options *opt;
+     struct gc_arena gc =3D gc_new();
++    const char *pem_export_fname =3D NULL;
+
+-    opt =3D session->opt;
++    const struct tls_options *opt =3D session->opt;
+     ASSERT(opt);
+
+     session->verified =3D false;
+
+     /* get the X509 name */
+-    subject =3D x509_get_subject(cert, &gc);
++    char *subject =3D x509_get_subject(cert, &gc);
+     if (!subject)
+     {
+         msg(D_TLS_ERRORS, "VERIFY ERROR: depth=3D%d, could not extract X50=
+9 "
+@@ -706,6 +756,20 @@
+
+     session->verify_maxlevel =3D max_int(session->verify_maxlevel, cert_de=
+pth);
+
++    if (opt->export_peer_cert_dir)
++    {
++        pem_export_fname =3D platform_create_temp_file(opt->export_peer_ce=
+rt_dir,
++                                                     "pef", &gc);
++
++        if (!pem_export_fname
++            || !verify_cert_cert_export_env(opt->es, cert, cert_depth,
++                                            pem_export_fname))
++        {
++            msg(D_TLS_ERRORS, "TLS Error: Failed to export certificate for=
+ "
++                "--tls-export-cert in %s", opt->export_peer_cert_dir);
++            goto cleanup;
++        }
++    }
+     /* export certificate values to the environment */
+     verify_cert_set_env(opt->es, cert, cert_depth, subject, common_name,
+                         opt->x509_track);
+@@ -757,12 +821,13 @@
+     ret =3D SUCCESS;
+
+ cleanup:
+-
++    verify_cert_cert_delete_env(opt->es, cert_depth, pem_export_fname);
+     if (ret !=3D SUCCESS)
+     {
+         tls_clear_error(); /* always? */
+         session->verified =3D false; /* double sure? */
+     }
++
+     gc_free(&gc);
+
+     return ret;
+diff --git a/src/openvpn/ssl_verify_backend.h b/src/openvpn/ssl_verify_back=
+end.h
+index d402b1f..5301a51 100644
+--- a/src/openvpn/ssl_verify_backend.h
++++ b/src/openvpn/ssl_verify_backend.h
+@@ -161,6 +161,17 @@
+                                   struct gc_arena *gc);
+
+ /*
++ * Write the certificate to the file in PEM format.
++ *
++ *
++ * @param cert          Certificate to serialise.
++ *
++ * @return              \c FAILURE, \c or SUCCESS
++ */
++result_t backend_x509_write_pem(openvpn_x509_cert_t *cert,
++                                const char *filename);
++
++/*
+  * Save X509 fields to environment, using the naming convention:
+  *
+  * X509_{cert_depth}_{name}=3D{value}
+diff --git a/src/openvpn/ssl_verify_mbedtls.c b/src/openvpn/ssl_verify_mbed=
+tls.c
+index 5612139..24a89c3 100644
+--- a/src/openvpn/ssl_verify_mbedtls.c
++++ b/src/openvpn/ssl_verify_mbedtls.c
+@@ -218,6 +218,41 @@
+     return buf;
  }
 
-+
-+void
-+key_state_ssl_shutdown(struct key_state_ssl *ks_ssl)
++result_t
++backend_x509_write_pem(openvpn_x509_cert_t *cert, const char *filename)
 +{
-+    mbedtls_ssl_send_alert_message(ks_ssl->ctx, MBEDTLS_SSL_ALERT_LEVEL_FA=
-TAL,
-+                                   MBEDTLS_SSL_ALERT_MSG_CLOSE_NOTIFY);
++    /* mbed TLS does not make it easy to write a certificate in PEM format.
++     * The only way is to directly access the DER encoded raw certificate
++     * and PEM encode it ourselves */
++
++    struct gc_arena gc =3D gc_new();
++    /* just do a very loose upper bound for the base64 based PEM encoding
++     * using 3 times the space for the base64 and 100 bytes for the
++     * headers and footer */
++    struct buffer pem =3D alloc_buf_gc(cert->raw.len * 3 + 100, &gc);
++
++    struct buffer der =3D {};
++    buf_set_read(&der, cert->raw.p, cert->raw.len);
++
++    if (!crypto_pem_encode("CERTIFICATE", &pem,  &der, &gc))
++    {
++        goto err;
++    }
++
++    if (!buffer_write_file(filename, &pem))
++    {
++        goto err;
++    }
++
++    gc_free(&gc);
++    return SUCCESS;
++err:
++    msg(D_TLS_DEBUG_LOW, "Error writing X509 certificate to file %s",
++        filename);
++    gc_free(&gc);
++    return FAILURE;
 +}
 +
- void
- key_state_ssl_free(struct key_state_ssl *ks_ssl)
- {
-diff --git a/src/openvpn/ssl_openssl.c b/src/openvpn/ssl_openssl.c
-index c30e6a9..552d751 100644
---- a/src/openvpn/ssl_openssl.c
-+++ b/src/openvpn/ssl_openssl.c
-@@ -1962,6 +1962,12 @@
+ static struct buffer
+ x509_get_fingerprint(const mbedtls_md_info_t *md_info, mbedtls_x509_crt *c=
+ert,
+                      struct gc_arena *gc)
+diff --git a/src/openvpn/ssl_verify_openssl.c b/src/openvpn/ssl_verify_open=
+ssl.c
+index 5afffc1..00fdec3 100644
+--- a/src/openvpn/ssl_verify_openssl.c
++++ b/src/openvpn/ssl_verify_openssl.c
+@@ -320,6 +320,29 @@
+     return format_hex_ex(asn1_i->data, asn1_i->length, 0, 1, ":", gc);
  }
 
- void
-+key_state_ssl_shutdown(struct key_state_ssl *ks_ssl)
++result_t
++backend_x509_write_pem(openvpn_x509_cert_t *cert, const char *filename)
 +{
-+    SSL_set_shutdown(ks_ssl->ssl, SSL_SENT_SHUTDOWN | SSL_RECEIVED_SHUTDOW=
-N);
++    BIO *out =3D BIO_new_file(filename, "w");
++    if (!out)
++    {
++        goto err;
++    }
++
++    if (!PEM_write_bio_X509(out, cert))
++    {
++        goto err;
++    }
++    BIO_free(out);
++
++    return SUCCESS;
++err:
++    BIO_free(out);
++    crypto_msg(D_TLS_DEBUG_LOW, "Error writing X509 certificate to file %s=
+",
++               filename);
++    return FAILURE;
 +}
 +
-+void
- key_state_ssl_free(struct key_state_ssl *ks_ssl)
+ struct buffer
+ x509_get_sha1_fingerprint(X509 *cert, struct gc_arena *gc)
  {
-     if (ks_ssl->ssl)
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/449?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/466?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings
 
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: I0ad48915004ddee587e97c8ed190ba8ee989e48d
-Gerrit-Change-Number: 449
-Gerrit-PatchSet: 6
+Gerrit-Change-Id: Ia9b3f1813d2d0d492d17c87348b4cebd0bf19ce2
+Gerrit-Change-Number: 466
+Gerrit-PatchSet: 8
 Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
+Gerrit-Reviewer: cron2 <gert@...1296...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Attention: cron2 <gert@...1296...>
 Gerrit-MessageType: newpatchset
 
---Mh3xiqwLk4I=
+--EqyQSTLMOqQ=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p> Attention is currently required from: plaisthos. </p>
-<p>plaisthos <strong>uploaded patch set #6</strong> to this change.</p><p><=
-a href=3D"http://gerrit.openvpn.net/c/openvpn/+/449?usp=3Demail">View Chang=
+<p> Attention is currently required from: cron2, plaisthos. </p>
+<p>plaisthos <strong>uploaded patch set #8</strong> to this change.</p><p><=
+a href=3D"http://gerrit.openvpn.net/c/openvpn/+/466?usp=3Demail">View Chang=
 e</a></p><pre style=3D"font-family: monospace,monospace; white-space: pre-w=
-rap;">Allow the TLS session to send out TLS alerts<br><br>Previous OpenVPN =
-versions shut down the TLS control channel immediately<br>when encountering=
- an error. This also meant that we would not send out<br>TLS alerts to noti=
-fy a client about potential problems like mismatching<br>TLS versions or ha=
-ving no common cipher.<br><br>This commit adds a new key_state S_ERROR_PRE =
-which still allows to<br>send out the remaining TLS packets of the control =
-session which are<br>typically the alert message and then going to S_ERROR.=
- We do not<br>wait for retries. So this is more a one-shot notify but that =
-is<br>acceptable in this situation.<br><br>Sending out alerts is a slight c=
-ompromise in security as alerts give<br>out a bit of information that other=
-wise is not given<br>out. But since all other consumers TLS implementations=
- are already doing this<br>and TLS implementations (nowadays) are very care=
-ful not to leak (sensitive)<br>information by alerts and since the user exp=
-erience is much better with<br>alerts, this compromise is worth it.<br><br>=
-Change-Id: I0ad48915004ddee587e97c8ed190ba8ee989e48d<br>Signed-off-by: Arne=
- Schwabe &lt;arne@...1227...&gt;<br>---<br>M Changes.rst<br>M src/openvpn/s=
-sl.c<br>M src/openvpn/ssl_backend.h<br>M src/openvpn/ssl_common.h<br>M src/=
-openvpn/ssl_mbedtls.c<br>M src/openvpn/ssl_openssl.c<br>6 files changed, 87=
- insertions(+), 19 deletions(-)<br><br></pre><pre style=3D"font-family: mon=
-ospace,monospace; white-space: pre-wrap;">git pull ssh://gerrit.openvpn.net=
-:29418/openvpn refs/changes/49/449/6</pre><pre style=3D"font-family: monosp=
-ace,monospace; white-space: pre-wrap;"><span>diff --git a/Changes.rst b/Cha=
-nges.rst</span><br><span>index 69c811d..52ff8db 100644</span><br><span>--- =
-a/Changes.rst</span><br><span>+++ b/Changes.rst</span><br><span>@@ -1,5 +1,=
-14 @@</span><br><span> Overview of changes in 2.7</span><br><span> =3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+New features</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+------------</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+TLS alerts</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+    OpenVPN 2.7 will send out TLS alerts to p=
-eers informing them if the TLS</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+    session shuts down or when the TLS implementation informs th=
-e peer about</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    an =
-error in the TLS session (e.g. mismatching TLS versions). This improves</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+    the user experience=
- as the client shows an error instead of running into</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    a timeout when the server just stops =
-responding completely.</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+</span><br><span> Deprecated features</span><br><span> -----------------=
---</span><br><span> ``secret`` support has been removed by default.</span><=
-br><span>diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c</span><br><span=
->index 33c8670..f287e4d 100644</span><br><span>--- a/src/openvpn/ssl.c</spa=
-n><br><span>+++ b/src/openvpn/ssl.c</span><br><span>@@ -690,6 +690,9 @@</sp=
-an><br><span>         case S_ERROR:</span><br><span>             return &qu=
-ot;S_ERROR&quot;;</span><br><span> </span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+        case S_ERROR_PRE:</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+            return &quot;S_ERROR_PRE&quot;;</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span>         cas=
-e S_GENERATED_KEYS:</span><br><span>             return &quot;S_GENERATED_K=
-EYS&quot;;</span><br><span> </span><br><span>@@ -2683,6 +2686,25 @@</span><=
-br><span> }</span><br><span> </span><br><span> static bool</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+check_outgoing_ciphertext(struct key=
-_state *ks, struct tls_session *session,</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+                          bool *continue_tls_process)<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+    /* Outgoing Ciphertext to reliable=
- buffer */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (k=
-s-&gt;state &gt;=3D S_START)</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
-   struct buffer *buf =3D reliable_get_buf_output_sequenced(ks-&gt;send_rel=
-iable);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        if (=
-buf)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        {</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+            if (!write_ou=
-tgoing_tls_ciphertext(session, continue_tls_process))</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+            {</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+                return false;</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+            }</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+        }</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+    return true;</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+static bool</span><br><span> t=
-ls_process_state(struct tls_multi *multi,</span><br><span>                 =
-  struct tls_session *session,</span><br><span>                   struct bu=
-ffer *to_link,</span><br><span>@@ -2706,7 +2728,7 @@</span><br><span>     }=
-</span><br><span> </span><br><span>     /* Are we timed out on receive? */<=
-/span><br><span style=3D"color: hsl(0, 100%, 40%);">-    if (now &gt;=3D ks=
--&gt;must_negotiate &amp;&amp; ks-&gt;state &lt; S_ACTIVE)</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+    if (now &gt;=3D ks-&gt;must_nego=
-tiate &amp;&amp; ks-&gt;state &gt;=3D S_UNDEF &amp;&amp; ks-&gt;state &lt; =
-S_ACTIVE)</span><br><span>     {</span><br><span>         msg(D_TLS_ERRORS,=
-</span><br><span>             &quot;TLS Error: TLS key negotiation failed t=
-o occur within %d seconds (check your network connectivity)&quot;,</span><b=
-r><span>@@ -2760,6 +2782,16 @@</span><br><span>         return false;</span=
-><br><span>     }</span><br><span> </span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+    if (ks-&gt;state =3D=3D S_ERROR_PRE)</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+        /* When we end up here, we had one last chan=
-ce to send an outstanding</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+         * packet that contained an alert. We do not ensure that this=
- packet</span><br><span style=3D"color: hsl(120, 100%, 40%);">+         * h=
-as been successfully delivered  (ie wait for the ACK etc)</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+         * but rather stop processing=
- now */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        ks-&=
-gt;state =3D S_ERROR;</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+        return false;</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br=
-><span>     /* Write incoming ciphertext to TLS object */</span><br><span> =
-    struct reliable_entry *entry =3D reliable_get_entry_sequenced(ks-&gt;re=
-c_reliable);</span><br><span>     if (entry)</span><br><span>@@ -2840,29 +2=
-872,31 @@</span><br><span>             dmsg(D_TLS_DEBUG, &quot;Outgoing Pla=
-intext -&gt; TLS&quot;);</span><br><span>         }</span><br><span>     }<=
-/span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-    /* Outgoing Ciphertext to reliable buff=
-er */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    if (ks-&gt;s=
-tate &gt;=3D S_START)</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+    if (!check_outgoing_ciphertext(ks, session, &amp;continue_tls_process=
-))</span><br><span>     {</span><br><span style=3D"color: hsl(0, 100%, 40%)=
-;">-        buf =3D reliable_get_buf_output_sequenced(ks-&gt;send_reliable)=
-;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        if (buf)</sp=
-an><br><span style=3D"color: hsl(0, 100%, 40%);">-        {</span><br><span=
- style=3D"color: hsl(0, 100%, 40%);">-            if (!write_outgoing_tls_c=
-iphertext(session, &amp;continue_tls_process))</span><br><span style=3D"col=
-or: hsl(0, 100%, 40%);">-            {</span><br><span style=3D"color: hsl(=
-0, 100%, 40%);">-                goto error;</span><br><span style=3D"color=
-: hsl(0, 100%, 40%);">-            }</span><br><span style=3D"color: hsl(0,=
- 100%, 40%);">-        }</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+        goto error;</span><br><span>     }</span><br><span> </span><br=
-><span>     return continue_tls_process;</span><br><span> error:</span><br>=
-<span>     tls_clear_error();</span><br><span style=3D"color: hsl(0, 100%, =
-40%);">-    ks-&gt;state =3D S_ERROR;</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-   /* Shut down the TLS session but do a last read from the TLS</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+     * object to be able to rea=
-d potential TLS alerts */</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+    key_state_ssl_shutdown(&amp;ks-&gt;ks_ssl);</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    check_outgoing_ciphertext(ks, session=
-, &amp;continue_tls_process);</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    /* Pu=
-t ourselves in the pre error state that will only send out the</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+     * control channel packets b=
-ut nothing else */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-   ks-&gt;state =3D S_ERROR_PRE;</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+</span><br><span>     msg(D_TLS_ERRORS, &quot;TLS Error: TLS h=
-andshake failed&quot;);</span><br><span>     INCR_ERROR;</span><br><span st=
-yle=3D"color: hsl(0, 100%, 40%);">-    return false;</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+    return true;</span><br><span> }</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><b=
-r><span> /*</span><br><span>  * This is the primary routine for processing =
-TLS stuff inside the</span><br><span>  * the main event loop.  When this ro=
-utine exits</span><br><span>@@ -2970,7 +3004,7 @@</span><br><span>     }</s=
-pan><br><span> </span><br><span>     /* When should we wake up again? */</s=
-pan><br><span style=3D"color: hsl(0, 100%, 40%);">-    if (ks-&gt;state &gt=
-;=3D S_INITIAL)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-if (ks-&gt;state &gt;=3D S_INITIAL || ks-&gt;state =3D=3D S_ERROR_PRE)</spa=
-n><br><span>     {</span><br><span>         compute_earliest_wakeup(wakeup,=
-</span><br><span>                                 reliable_send_timeout(ks-=
-&gt;send_reliable));</span><br><span>@@ -3123,7 +3157,7 @@</span><br><span>=
-              session_id_print(&amp;ks-&gt;session_id_remote, &amp;gc),</sp=
-an><br><span>              print_link_socket_actual(&amp;ks-&gt;remote_addr=
-, &amp;gc));</span><br><span> </span><br><span style=3D"color: hsl(0, 100%,=
- 40%);">-        if (ks-&gt;state &gt;=3D S_INITIAL &amp;&amp; link_socket_=
-actual_defined(&amp;ks-&gt;remote_addr))</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+        if ((ks-&gt;state &gt;=3D S_INITIAL || ks-&gt;=
-state =3D=3D S_ERROR_PRE) &amp;&amp;  link_socket_actual_defined(&amp;ks-&g=
-t;remote_addr))</span><br><span>         {</span><br><span>             str=
-uct link_socket_actual *tla =3D NULL;</span><br><span> </span><br><span>@@ =
--3201,7 +3235,8 @@</span><br><span>             {</span><br><span>         =
-        msg(D_TLS_ERRORS, &quot;TLS Error: generate_key_expansion failed&qu=
-ot;);</span><br><span>                 ks-&gt;authenticated =3D KS_AUTH_FAL=
-SE;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-                ks=
--&gt;state =3D S_ERROR;</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+                key_state_ssl_shutdown(&amp;ks-&gt;ks_ssl);</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+                ks-&gt;state =
-=3D S_ERROR_PRE;</span><br><span>             }</span><br><span> </span><br=
-><span>             /* Update auth token on the client if needed on renegot=
-iation</span><br><span>diff --git a/src/openvpn/ssl_backend.h b/src/openvpn=
-/ssl_backend.h</span><br><span>index b9466ce..a4d4dd4 100644</span><br><spa=
-n>--- a/src/openvpn/ssl_backend.h</span><br><span>+++ b/src/openvpn/ssl_bac=
-kend.h</span><br><span>@@ -363,6 +363,13 @@</span><br><span>               =
-          const struct tls_root_ctx *ssl_ctx, bool is_server, struct tls_se=
-ssion *session);</span><br><span> </span><br><span> /**</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+ * Sets a TLS session to be shutdown st=
-ate, so the TLS library will generate</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+ * a shutdown alert.</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+ */</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+void</span><br><span style=3D"color: hsl(120, 100%, 40%);">+key_state_ss=
-l_shutdown(struct key_state_ssl *ks_ssl);</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+/**</span><br><span>  * Free the SSL channel part of the given key state=
-.</span><br><span>  *</span><br><span>  * @param ks_ssl        The SSL chan=
-nel&#39;s state info to free</span><br><span>diff --git a/src/openvpn/ssl_c=
-ommon.h b/src/openvpn/ssl_common.h</span><br><span>index 925660b..ff455b3 1=
-00644</span><br><span>--- a/src/openvpn/ssl_common.h</span><br><span>+++ b/=
-src/openvpn/ssl_common.h</span><br><span>@@ -74,7 +74,10 @@</span><br><span=
->  *</span><br><span>  * @{</span><br><span>  */</span><br><span style=3D"c=
-olor: hsl(0, 100%, 40%);">-#define S_ERROR          -1     /**&lt; Error st=
-ate.  */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#define S_E=
-RROR         (-2)     /**&lt; Error state.  */</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+#define S_ERROR_PRE     (-1)     /**&lt; Error s=
-tate but try to send out alerts</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+                                  *  before killing the keystor=
-e and moving</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
-                           *  it to S_ERROR */</span><br><span> #define S_U=
-NDEF           0     /**&lt; Undefined state, used after a \c</span><br><sp=
-an>                                  *   key_state is cleaned up. */</span>=
-<br><span> #define S_INITIAL         1     /**&lt; Initial \c key_state sta=
-te after</span><br><span>diff --git a/src/openvpn/ssl_mbedtls.c b/src/openv=
-pn/ssl_mbedtls.c</span><br><span>index cc88484..5e6726c 100644</span><br><s=
-pan>--- a/src/openvpn/ssl_mbedtls.c</span><br><span>+++ b/src/openvpn/ssl_m=
-bedtls.c</span><br><span>@@ -1276,6 +1276,14 @@</span><br><span>           =
-              ssl_bio_read, NULL);</span><br><span> }</span><br><span> </sp=
+rap;">Implement the --tls-export-cert feature<br><br>This is a re-implement=
+ation of the --tls-export-cert feature. This<br>was necessary to due to mis=
+sing approval to re-license the old<br>(now removed) code. The re-implement=
+ation is based on the following<br>description of the feature provided by D=
+avid:<br><br>  Add an option to export certificate in PEM format of the rem=
+ote<br>  peer to a given directory.<br><br>  For example: --tls-export-cert=
+ /var/tmp<br><br>  This option should use a randomised filename, which is p=
+rovided via a<br>  &quot;peer_cert&quot; environment variable for the --tls=
+-verify script or the<br>  OPENVPN_PLUGIN_TLS_VERIFY plug-in hook.<br><br>O=
+nce the script or plugin call has completed, OpenVPN should delete<br>this =
+file.<br><br>Change-Id: Ia9b3f1813d2d0d492d17c87348b4cebd0bf19ce2<br>Signed=
+-off-by: Arne Schwabe &lt;arne@...1227...&gt;<br>---<br>M doc/man-sections/=
+script-options.rst<br>M src/openvpn/init.c<br>M src/openvpn/options.c<br>M =
+src/openvpn/options.h<br>M src/openvpn/ssl_common.h<br>M src/openvpn/ssl_ve=
+rify.c<br>M src/openvpn/ssl_verify_backend.h<br>M src/openvpn/ssl_verify_mb=
+edtls.c<br>M src/openvpn/ssl_verify_openssl.c<br>9 files changed, 174 inser=
+tions(+), 5 deletions(-)<br><br></pre><pre style=3D"font-family: monospace,=
+monospace; white-space: pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/=
+openvpn refs/changes/66/466/8</pre><pre style=3D"font-family: monospace,mon=
+ospace; white-space: pre-wrap;"><span>diff --git a/doc/man-sections/script-=
+options.rst b/doc/man-sections/script-options.rst</span><br><span>index 6f9=
+0e14..53c9f97 100644</span><br><span>--- a/doc/man-sections/script-options.=
+rst</span><br><span>+++ b/doc/man-sections/script-options.rst</span><br><sp=
+an>@@ -423,6 +423,15 @@</span><br><span>   See the `Environmental Variables=
+`_ section below for additional</span><br><span>   parameters passed as env=
+ironmental variables.</span><br><span> </span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+--tls-export-cert dir</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+  Adds an environment variable ``peer_cert_{x}`` (and=
+ an alias</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  ``peer_c=
+ert`` for ``peer_cert_0`` for compatibility)  when calling the</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+  ``--tls-verify`` script or exe=
+cuting the OPENVPN_PLUGIN_TLS_VERIFY plugin</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+  hook to verify the certificate.</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+  The environment variable contains the path to a PEM en=
+coded certificate</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+of the current peer certificate in the directory ``dir``.</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+</span><br><span> --up cmd</span><br>=
+<span>   Run command ``cmd`` after successful TUN/TAP device open (pre ``--=
+user``</span><br><span>   UID change).</span><br><span>@@ -763,6 +772,15 @@=
+</span><br><span>     modifier is specified, and deleted from the environme=
+nt after the script</span><br><span>     returns.</span><br><span> </span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+:code:`peer_cert_{n}`</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+    If the option ``--tls=
+-export-cert`` is enabled, this option contains</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+    the path to the current peer certificate to=
+ be verified in PEM format</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+    where ``n`` is the verification level.</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+:code:`peer_cert`</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+    Identical to `peer_cert_0` for compatibility with older</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+    versions.</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> :code:`proto`<=
+/span><br><span>     The ``--proto`` parameter. Set on program initiation a=
+nd reset on</span><br><span>     SIGHUP.</span><br><span>diff --git a/src/o=
+penvpn/init.c b/src/openvpn/init.c</span><br><span>index 9e2b3845..c5cc154 =
+100644</span><br><span>--- a/src/openvpn/init.c</span><br><span>+++ b/src/o=
+penvpn/init.c</span><br><span>@@ -3336,6 +3336,7 @@</span><br><span>     to=
+.auth_user_pass_verify_script_via_file =3D options-&gt;auth_user_pass_verif=
+y_script_via_file;</span><br><span>     to.client_crresponse_script =3D opt=
+ions-&gt;client_crresponse_script;</span><br><span>     to.tmp_dir =3D opti=
+ons-&gt;tmp_dir;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+ to.export_peer_cert_dir =3D options-&gt;tls_export_peer_cert_dir;</span><b=
+r><span>     if (options-&gt;ccd_exclusive)</span><br><span>     {</span><b=
+r><span>         to.client_config_dir_exclusive =3D options-&gt;client_conf=
+ig_dir;</span><br><span>diff --git a/src/openvpn/options.c b/src/openvpn/op=
+tions.c</span><br><span>index e498114..ecbc63e 100644</span><br><span>--- a=
+/src/openvpn/options.c</span><br><span>+++ b/src/openvpn/options.c</span><b=
+r><span>@@ -1986,6 +1986,7 @@</span><br><span>     SHOW_STR(cipher_list_tls=
+13);</span><br><span>     SHOW_STR(tls_cert_profile);</span><br><span>     =
+SHOW_STR(tls_verify);</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+    SHOW_STR(tls_export_peer_cert_path);</span><br><span>     SHOW_INT(ve=
+rify_x509_type);</span><br><span>     SHOW_STR(verify_x509_name);</span><br=
+><span>     SHOW_STR_INLINE(crl_file);</span><br><span>@@ -3048,6 +3049,7 @=
+@</span><br><span>         MUST_BE_UNDEF(cipher_list_tls13);</span><br><spa=
+n>         MUST_BE_UNDEF(tls_cert_profile);</span><br><span>         MUST_B=
+E_UNDEF(tls_verify);</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++        MUST_BE_UNDEF(tls_export_peer_cert_path);</span><br><span>        =
+ MUST_BE_UNDEF(verify_x509_name);</span><br><span>         MUST_BE_UNDEF(tl=
+s_timeout);</span><br><span>         MUST_BE_UNDEF(renegotiate_bytes);</spa=
+n><br><span>@@ -4053,6 +4055,13 @@</span><br><span>                        =
+                         R_OK, &quot;--crl-verify&quot;);</span><br><span> =
+    }</span><br><span> </span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+    if (options-&gt;tls_export_peer_cert_dir)</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+        errs |=3D check_file_access_chroot(options-&gt;chro=
+ot_dir, CHKACC_FILE,</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++                                         options-&gt;tls_export_peer_cert_=
+dir,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+               =
+                          W_OK, &quot;--tls-export-cert&quot;);</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+</span><br><span>     ASSERT(options-&gt;conn=
+ection_list);</span><br><span>     for (int i =3D 0; i &lt; options-&gt;con=
+nection_list-&gt;len; ++i)</span><br><span>     {</span><br><span>@@ -8997,=
+6 +9006,11 @@</span><br><span>                         string_substitute(p[=
+1], &#39;,&#39;, &#39; &#39;, &amp;options-&gt;gc),</span><br><span>       =
+                  &quot;tls-verify&quot;, true);</span><br><span>     }</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+    else if (streq(p[0]=
+, &quot;tls-export-cert&quot;) &amp;&amp; p[1] &amp;&amp; !p[2])</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+        VERIFY_PERMISSION(OPT_P_SCRIPT);</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+        options-&gt;tls=
+_export_peer_cert_dir =3D p[1];</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+    }</span><br><span>     else if (streq(p[0], &quot;compat-na=
+mes&quot;))</span><br><span>     {</span><br><span>         VERIFY_PERMISSI=
+ON(OPT_P_GENERAL);</span><br><span>diff --git a/src/openvpn/options.h b/src=
+/openvpn/options.h</span><br><span>index c4514e1..e52a953 100644</span><br>=
+<span>--- a/src/openvpn/options.h</span><br><span>+++ b/src/openvpn/options=
+.h</span><br><span>@@ -592,6 +592,7 @@</span><br><span>     const char *tls=
+_cert_profile;</span><br><span>     const char *ecdh_curve;</span><br><span=
+>     const char *tls_verify;</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+    const char *tls_export_peer_cert_dir;</span><br><span>     in=
+t verify_x509_type;</span><br><span>     const char *verify_x509_name;</spa=
+n><br><span>     const char *crl_file;</span><br><span>diff --git a/src/ope=
+nvpn/ssl_common.h b/src/openvpn/ssl_common.h</span><br><span>index 925660b.=
+.f085e0d 100644</span><br><span>--- a/src/openvpn/ssl_common.h</span><br><s=
+pan>+++ b/src/openvpn/ssl_common.h</span><br><span>@@ -374,6 +374,7 @@</spa=
+n><br><span>     const char *client_crresponse_script;</span><br><span>    =
+ bool auth_user_pass_verify_script_via_file;</span><br><span>     const cha=
+r *tmp_dir;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    cons=
+t char *export_peer_cert_dir;</span><br><span>     const char *auth_user_pa=
+ss_file;</span><br><span>     bool auth_user_pass_file_inline;</span><br><s=
+pan> </span><br><span>diff --git a/src/openvpn/ssl_verify.c b/src/openvpn/s=
+sl_verify.c</span><br><span>index bd7e512..35d3377 100644</span><br><span>-=
+-- a/src/openvpn/ssl_verify.c</span><br><span>+++ b/src/openvpn/ssl_verify.=
+c</span><br><span>@@ -31,6 +31,7 @@</span><br><span> #endif</span><br><span=
+> </span><br><span> #include &quot;syshead.h&quot;</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+#include &lt;string.h&gt;</span><br><span> <=
+/span><br><span> #include &quot;base64.h&quot;</span><br><span> #include &q=
+uot;manage.h&quot;</span><br><span>@@ -457,6 +458,54 @@</span><br><span>   =
+  gc_free(&amp;gc);</span><br><span> }</span><br><span> </span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+/**</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+ * Exports the certificate in \c peer_cert into the en=
+vironment and adds</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+* the filname</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ */</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+static bool</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+verify_cert_cert_export_env(st=
+ruct env_set *es, openvpn_x509_cert_t *peer_cert,</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+                            int cert_depth, c=
+onst char *pem_export_fname)</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    char =
+envname[64];</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    /* =
+Make copy of the filename to manage that copy by the gc_arena */</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+    char *pem_export_filename =
+=3D strdup(pem_export_fname);</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (!=
+pem_export_filename)</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        retur=
+n false;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+    /* export the path to the certificate in=
+ pem file format */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+    openvpn_snprintf(envname, sizeof(envname), &quot;peer_cert_%d&quot;, ce=
+rt_depth);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    seten=
+v_str(es, envname, pem_export_filename);</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+    /* compatibility with older scripts/plugins that expect peer_cert wit=
+hout</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     * suffix *=
+/</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (cert_depth=
+ =3D=3D 0)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+        setenv_str(es, =
+&quot;peer_cert&quot;, pem_export_filename);</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    retu=
+rn backend_x509_write_pem(peer_cert, pem_export_filename) =3D=3D SUCCESS;</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+static void</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+verify_cert_cert_delete_env(struct env_set *es, int cert_depth,</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+                      =
+      const char *pem_export_fname)</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+  char envname[64];</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+    openvpn_snprintf(envname, sizeof(envname), &quot;peer_cert_%d&quot;, ce=
+rt_depth);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    env_s=
+et_del(es, envname);</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    /* compatibili=
+ty with older scripts/plugins that expect peer_cert without</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+     * suffix */</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+    if (cert_depth =3D=3D 0)</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+        env_set_del(es, &quot;peer_cert&q=
+uot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+    unlink(pem_export_fname=
+);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> /*</span><br><spa=
+n>  * call --tls-verify plug-in(s)</span><br><span>  */</span><br><span>@@ =
+-572,18 +621,19 @@</span><br><span> result_t</span><br><span> verify_cert(s=
+truct tls_session *session, openvpn_x509_cert_t *cert, int cert_depth)</spa=
+n><br><span> {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    /=
+* need to define these variables here so goto cleanup will always have</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+     * them defined */</=
+span><br><span>     result_t ret =3D FAILURE;</span><br><span style=3D"colo=
+r: hsl(0, 100%, 40%);">-    char *subject =3D NULL;</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-    const struct tls_options *opt;</span><b=
+r><span>     struct gc_arena gc =3D gc_new();</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+    const char *pem_export_fname =3D NULL;</span>=
+<br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-    opt =
+=3D session-&gt;opt;</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++    const struct tls_options *opt =3D session-&gt;opt;</span><br><span>   =
+  ASSERT(opt);</span><br><span> </span><br><span>     session-&gt;verified =
+=3D false;</span><br><span> </span><br><span>     /* get the X509 name */</=
+span><br><span style=3D"color: hsl(0, 100%, 40%);">-    subject =3D x509_ge=
+t_subject(cert, &amp;gc);</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+    char *subject =3D x509_get_subject(cert, &amp;gc);</span><br><spa=
+n>     if (!subject)</span><br><span>     {</span><br><span>         msg(D_=
+TLS_ERRORS, &quot;VERIFY ERROR: depth=3D%d, could not extract X509 &quot;</=
+span><br><span>@@ -706,6 +756,20 @@</span><br><span> </span><br><span>     =
+session-&gt;verify_maxlevel =3D max_int(session-&gt;verify_maxlevel, cert_d=
+epth);</span><br><span> </span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+    if (opt-&gt;export_peer_cert_dir)</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+        pem_export_fname =3D platform_create_temp_file(opt-&gt;exp=
+ort_peer_cert_dir,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+                                                    &quot;pef&quot;, &amp;g=
+c);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+        if (!pem_export_fname</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+            || !verify_ce=
+rt_cert_export_env(opt-&gt;es, cert, cert_depth,</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+                                            pe=
+m_export_fname))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+     {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            m=
+sg(D_TLS_ERRORS, &quot;TLS Error: Failed to export certificate for &quot;</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+                &quot=
+;--tls-export-cert in %s&quot;, opt-&gt;export_peer_cert_dir);</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+            goto cleanup;</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+        }</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span>     /* export=
+ certificate values to the environment */</span><br><span>     verify_cert_=
+set_env(opt-&gt;es, cert, cert_depth, subject, common_name,</span><br><span=
+>                         opt-&gt;x509_track);</span><br><span>@@ -757,12 +=
+821,13 @@</span><br><span>     ret =3D SUCCESS;</span><br><span> </span><br=
+><span> cleanup:</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+    verify_cert_cert_del=
+ete_env(opt-&gt;es, cert_depth, pem_export_fname);</span><br><span>     if =
+(ret !=3D SUCCESS)</span><br><span>     {</span><br><span>         tls_clea=
+r_error(); /* always? */</span><br><span>         session-&gt;verified =3D =
+false; /* double sure? */</span><br><span>     }</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+</span><br><span>     gc_free(&amp;gc);</span>=
+<br><span> </span><br><span>     return ret;</span><br><span>diff --git a/s=
+rc/openvpn/ssl_verify_backend.h b/src/openvpn/ssl_verify_backend.h</span><b=
+r><span>index d402b1f..5301a51 100644</span><br><span>--- a/src/openvpn/ssl=
+_verify_backend.h</span><br><span>+++ b/src/openvpn/ssl_verify_backend.h</s=
+pan><br><span>@@ -161,6 +161,17 @@</span><br><span>                        =
+           struct gc_arena *gc);</span><br><span> </span><br><span> /*</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+ * Write the certificate=
+ to the file in PEM format.</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+ *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+ * @param cert          Ce=
+rtificate to serialise.</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+ *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @return   =
+           \c FAILURE, \c or SUCCESS</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+ */</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++result_t backend_x509_write_pem(openvpn_x509_cert_t *cert,</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+                                con=
+st char *filename);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+/*</span><br><span>=
+  * Save X509 fields to environment, using the naming convention:</span><br=
+><span>  *</span><br><span>  * X509_{cert_depth}_{name}=3D{value}</span><br=
+><span>diff --git a/src/openvpn/ssl_verify_mbedtls.c b/src/openvpn/ssl_veri=
+fy_mbedtls.c</span><br><span>index 5612139..24a89c3 100644</span><br><span>=
+--- a/src/openvpn/ssl_verify_mbedtls.c</span><br><span>+++ b/src/openvpn/ss=
+l_verify_mbedtls.c</span><br><span>@@ -218,6 +218,41 @@</span><br><span>   =
+  return buf;</span><br><span> }</span><br><span> </span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+result_t</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+backend_x509_write_pem(openvpn_x509_cert_t *cert, const=
+ char *filename)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+    /* mbed TLS does =
+not make it easy to write a certificate in PEM format.</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+     * The only way is to directly acces=
+s the DER encoded raw certificate</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+     * and PEM encode it ourselves */</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+    struct gc_arena gc =3D gc_new();</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    /* just do a very loose upper bound f=
+or the base64 based PEM encoding</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+     * using 3 times the space for the base64 and 100 bytes fo=
+r the</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     * headers=
+ and footer */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    s=
+truct buffer pem =3D alloc_buf_gc(cert-&gt;raw.len * 3 + 100, &amp;gc);</sp=
 an><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+void</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+key_state_ssl_shutdown(struct key_state_ssl *ks_ssl)</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    mbedtls_ssl_send_alert_message(ks_ssl=
--&gt;ctx, MBEDTLS_SSL_ALERT_LEVEL_FATAL,</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+                                   MBEDTLS_SSL_ALERT_M=
-SG_CLOSE_NOTIFY);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> vo=
-id</span><br><span> key_state_ssl_free(struct key_state_ssl *ks_ssl)</span>=
-<br><span> {</span><br><span>diff --git a/src/openvpn/ssl_openssl.c b/src/o=
-penvpn/ssl_openssl.c</span><br><span>index c30e6a9..552d751 100644</span><b=
-r><span>--- a/src/openvpn/ssl_openssl.c</span><br><span>+++ b/src/openvpn/s=
-sl_openssl.c</span><br><span>@@ -1962,6 +1962,12 @@</span><br><span> }</spa=
-n><br><span> </span><br><span> void</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+key_state_ssl_shutdown(struct key_state_ssl *ks_ssl)</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+    SSL_set_shutdown(ks_ssl-&gt;ssl, SSL_SEN=
-T_SHUTDOWN | SSL_RECEIVED_SHUTDOWN);</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+void</span><br><span=
-> key_state_ssl_free(struct key_state_ssl *ks_ssl)</span><br><span> {</span=
-><br><span>     if (ks_ssl-&gt;ssl)</span><br><span></span><br></pre><p>To =
-view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/449?usp=3Demai=
-l">change 449</a>. To unsubscribe, or for help writing mail filters, visit =
-<a href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemsc=
-ope itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"=
-action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" hr=
-ef=3D"http://gerrit.openvpn.net/c/openvpn/+/449?usp=3Demail"/><meta itempro=
-p=3D"name" content=3D"View Change"/></div></div>
+=3D"color: hsl(120, 100%, 40%);">+    struct buffer der =3D {};</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+    buf_set_read(&amp;der, cert=
+-&gt;raw.p, cert-&gt;raw.len);</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (=
+!crypto_pem_encode(&quot;CERTIFICATE&quot;, &amp;pem,  &amp;der, &amp;gc))<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+        goto err;</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+    if (!buffer_write_file(filename, &amp;pem))</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+        goto err;</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    gc_free(&am=
+p;gc);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    return SU=
+CCESS;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+err:</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+    msg(D_TLS_DEBUG_LOW, &qu=
+ot;Error writing X509 certificate to file %s&quot;,</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+        filename);</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    gc_free(&amp;gc);</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+    return FAILURE;</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+</span><br><span> static struct buffer</span><br><span> x=
+509_get_fingerprint(const mbedtls_md_info_t *md_info, mbedtls_x509_crt *cer=
+t,</span><br><span>                      struct gc_arena *gc)</span><br><sp=
+an>diff --git a/src/openvpn/ssl_verify_openssl.c b/src/openvpn/ssl_verify_o=
+penssl.c</span><br><span>index 5afffc1..00fdec3 100644</span><br><span>--- =
+a/src/openvpn/ssl_verify_openssl.c</span><br><span>+++ b/src/openvpn/ssl_ve=
+rify_openssl.c</span><br><span>@@ -320,6 +320,29 @@</span><br><span>     re=
+turn format_hex_ex(asn1_i-&gt;data, asn1_i-&gt;length, 0, 1, &quot;:&quot;,=
+ gc);</span><br><span> }</span><br><span> </span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+result_t</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+backend_x509_write_pem(openvpn_x509_cert_t *cert, const char *f=
+ilename)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+    BIO *out =3D BIO_new_file=
+(filename, &quot;w&quot;);</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+    if (!out)</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        goto =
+err;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+    if (!PEM_write_bio_X509(out, cert))</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+        goto err;</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+    BIO_free(out);</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+    return SUCCESS;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+err:</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    BIO_free(ou=
+t);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    crypto_msg(D=
+_TLS_DEBUG_LOW, &quot;Error writing X509 certificate to file %s&quot;,</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+               filename)=
+;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    return FAILURE=
+;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> struct buffer</spa=
+n><br><span> x509_get_sha1_fingerprint(X509 *cert, struct gc_arena *gc)</sp=
+an><br><span> {</span><br><span></span><br></pre><p>To view, visit <a href=
+=3D"http://gerrit.openvpn.net/c/openvpn/+/466?usp=3Demail">change 466</a>. =
+To unsubscribe, or for help writing mail filters, visit <a href=3D"http://g=
+errit.openvpn.net/settings">settings</a>.</p><div itemscope itemtype=3D"htt=
+p://schema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D=
+"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit=
+.openvpn.net/c/openvpn/+/466?usp=3Demail"/><meta itemprop=3D"name" content=
+=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I0ad48915004ddee587e97c8ed19=
-0ba8ee989e48d </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 449 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 6 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: Ia9b3f1813d2d0d492d17c87348b=
+4cebd0bf19ce2 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 466 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 8 </div>
 <div style=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@...1711...=
 27...&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
+ </div>
 <div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
 1...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
 ..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: cron2 &lt;gert@...1296...&gt=
+; </div>
 <div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
 
 
---Mh3xiqwLk4I=--
+--EqyQSTLMOqQ=--
 
