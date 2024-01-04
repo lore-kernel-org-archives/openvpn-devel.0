@@ -1,8 +1,8 @@
-Date: Thu, 4 Jan 2024 16:44:50 +0100 (CET)
-Message-Id: <202401041544.404Fiohh091640@...2054...>
+Date: Thu, 4 Jan 2024 16:44:59 +0100 (CET)
+Message-Id: <202401041544.404FixKl091648@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20240102125149.4595-1-gert@...1296...>
-References: <20240102125149.4595-1-gert@...1296...>
+In-Reply-To: <20240104140214.32196-1-gert@...1296...>
+References: <20240104140214.32196-1-gert@...1296...>
 Subject: [Openvpn-devel] [PATCH applied] Re: Check PRF availability on
  initialisation and add --force-tls-key-material-export
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -39,23 +39,22 @@ what is happening, and what they can do about it.
 For completeness I've tried to test this on a FreeBSD 14 system with
 "--providers fips", but failed to set up OpenSSL/FIPS in a way that
 actually did anything useful...  so I broke check_tls_prf_working()
-manually, and the expected "auto-enable option" part works too.  <<< NAK!
-
+manually, and the expected "auto-enable option" part works too (in v9).
 
 Your patch has been applied to the master and release/2.6 branch (long-
 term compat and better diagnostics).
 
-commit 3278524247f07f6d541d29d8ca8d4fafcb623054 (master)
-commit 425f7d644876755deff1946c0a3aa16f15af4adb (release/2.6)
+commit fa7960961415fa4f368e9bbb39dc4047680ff30c (master)
+commit b29ada314cc79497a1e50e29b4b72dede2955b3d (release/2.6)
 Author: Arne Schwabe
-Date:   Tue Jan 2 13:51:49 2024 +0100
+Date:   Thu Jan 4 15:02:14 2024 +0100
 
      Check PRF availability on initialisation and add --force-tls-key-material-export
 
      Signed-off-by: Arne Schwabe <arne@...1227...>
      Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20240102125149.4595-1-gert@...1296...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg27903.html
+     Message-Id: <20240104140214.32196-1-gert@...1296...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg27924.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
