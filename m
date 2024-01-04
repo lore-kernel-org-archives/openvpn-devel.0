@@ -1,14 +1,14 @@
-From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Wed, 3 Jan 2024 22:45:10 +0000
+From: "plaisthos (Code Review)" <gerrit@...515...>
+Date: Thu, 4 Jan 2024 12:45:44 +0000
 In-Reply-To: <gerrit.1700743197000.I04f8c7c413e7cb62c726262feee6ca89c7e86c70@...2715...>
 References: <gerrit.1700743197000.I04f8c7c413e7cb62c726262feee6ca89c7e86c70@...2715...>
-Reply-To: gert@...1296..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <6d1b9c0efaac3dc6cd3bbffa812b8ede9f26b2db-EmailReviewComments-HTML@...2715...>
+Reply-To: arne-openvpn@...1227..., openvpn-devel@lists.sourceforge.net,
+ frank@...2641..., gert@...1296...
+Message-ID: <b6d8737ab094bb531f172fd414d0b317c78d1e6e-EmailReplacePatchSet-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="XwQxwCeEpF8="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="sdaeP1D0DsY="; charset=UTF-8
 Subject: [Openvpn-devel] [M] Change in openvpn[master]: Check PRF
  availability on initialisation and add --force-tls-key-mate...
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -19,58 +19,237 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: plaisthos <arne-openvpn@...1227...>
-Cc: flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: cron2 <gert@...1296...>, flichtenheld <frank@...2641...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---XwQxwCeEpF8=
+--sdaeP1D0DsY=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 Attention is currently required from: flichtenheld, plaisthos.
 
-cron2 has posted comments on this change. ( http://gerrit.openvpn.net/c/ope=
-nvpn/+/460?usp=3Demail )
+Hello cron2, flichtenheld,
 
-The change is no longer submittable: Code-Review is unsatisfied now.
+I'd like you to reexamine a change. Please visit
+
+    http://gerrit.openvpn.net/c/openvpn/+/460?usp=3Demail
+
+to look at the new patch set (#9).
+
 
 Change subject: Check PRF availability on initialisation and add --force-tl=
 s-key-material-export
 ......................................................................
 
+Check PRF availability on initialisation and add --force-tls-key-material-e=
+xport
 
-Patch Set 8: Code-Review-2
+We now warn a user if the TLS 1.0 PRF is not supported by the cryptographic
+library of the system. Also add the option --force-tls-key-material-export
+that automatically rejects clients that do not support TLS Keying Material
+Export and automatically enable it when TLS 1.0 PRF support is not availabl=
+e.
 
-(2 comments)
-
-Patchset:
-
-PS8:
-sorry... found another one :-(
-
-
-File src/openvpn/crypto.c:
-
-http://gerrit.openvpn.net/c/openvpn/+/460/comment/131b2f38_d4640bad :
-PS8, Line 1809:     return (ret && memcmp(out, expected_out, sizeof(out)) !=
-=3D 0);
-It pains me to return to "-2" again, but there is something really weird go=
-ing on here - to see what happens if the PRF fails, I changed "expected_out=
-[3] to "2" in my tree, and it still succeeds.  Wat.  So I look at the compa=
-rison, and we should be checking for `=3D=3D 0` here ("out =3D=3D expected_=
-out", this is not strcmp()...).
-
-So I fired up gdb with -O0, and this is what it says...
-
-```
-(gdb) print ret
-$1 =3D 1
-(gdb) print out
-$2 =3D "qD\376%@su\225"
-(gdb) print expected_out
-$3 =3D "\340_\037\001\000\000\000"
-```
+Change-Id: I04f8c7c413e7cb62c726262feee6ca89c7e86c70
+Signed-off-by: Arne Schwabe <arne@...1227...>
+---
+M doc/man-sections/protocol-options.rst
+M src/openvpn/crypto.c
+M src/openvpn/crypto.h
+M src/openvpn/multi.c
+M src/openvpn/options.c
+M src/openvpn/options.h
+6 files changed, 84 insertions(+), 0 deletions(-)
 
 
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/60/460/9
+
+diff --git a/doc/man-sections/protocol-options.rst b/doc/man-sections/proto=
+col-options.rst
+index 948c0c8..8b061d2 100644
+--- a/doc/man-sections/protocol-options.rst
++++ b/doc/man-sections/protocol-options.rst
+@@ -242,3 +242,11 @@
+   a key renegotiation begins (default :code:`3600` seconds). This feature
+   allows for a graceful transition from old to new key, and removes the key
+   renegotiation sequence from the critical path of tunnel data forwarding.
++
++--force-tls-key-material-export
++  This option is only available in --mode server and forces to use
++  Keying Material Exporters (RFC 5705) for clients. This can be used to
++  simulate an environment where the cryptographic library does not support
++  the older method to generate data channel keys anymore. This option is
++  intended to be a test option and might be removed in a future OpenVPN
++  version without notice.
+diff --git a/src/openvpn/crypto.c b/src/openvpn/crypto.c
+index e4452d7..2fca131 100644
+--- a/src/openvpn/crypto.c
++++ b/src/openvpn/crypto.c
+@@ -27,6 +27,7 @@
+ #endif
+
+ #include "syshead.h"
++#include <string.h>
+
+ #include "crypto.h"
+ #include "error.h"
+@@ -1789,3 +1790,22 @@
+     gc_free(&gc);
+     return ret;
+ }
++
++bool
++check_tls_prf_working(void)
++{
++    /* Modern TLS libraries might no longer support the TLS 1.0 PRF with
++     * MD5+SHA1. This allows us to establish connections only
++     * with other 2.6.0+ OpenVPN peers.
++     * Do a simple dummy test here to see if it works. */
++    const char *seed =3D "tls1-prf-test";
++    const char *secret =3D "tls1-prf-test-secret";
++    uint8_t out[8];
++    uint8_t expected_out[] =3D { 'q', 'D', '\xfe', '%', '@', 's', 'u', '\x=
+95' };
++
++    int ret =3D ssl_tls1_PRF((uint8_t *)seed, (int) strlen(seed),
++                           (uint8_t *)secret, (int) strlen(secret),
++                           out, sizeof(out));
++
++    return (ret && memcmp(out, expected_out, sizeof(out)) =3D=3D 0);
++}
+diff --git a/src/openvpn/crypto.h b/src/openvpn/crypto.h
+index 9255d38..4201524 100644
+--- a/src/openvpn/crypto.h
++++ b/src/openvpn/crypto.h
+@@ -593,4 +593,12 @@
+     return kt;
+ }
+
++/**
++ * Checks if the current TLS library supports the TLS 1.0 PRF with MD5+SHA1
++ * that OpenVPN uses when TLS Keying Material Export is not available.
++ *
++ * @return  true if supported, false otherwise.
++ */
++bool check_tls_prf_working(void);
++
+ #endif /* CRYPTO_H */
+diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
+index 8b490ed..f4f0b8a 100644
+--- a/src/openvpn/multi.c
++++ b/src/openvpn/multi.c
+@@ -1830,6 +1830,16 @@
+     {
+         o->imported_protocol_flags |=3D CO_USE_TLS_KEY_MATERIAL_EXPORT;
+     }
++    else if (o->force_key_material_export)
++    {
++        msg(M_INFO, "PUSH: client does not support TLS Keying Material "
++            "Exporters but --force-tls-key-material-export is enabled.");
++        auth_set_client_reason(tls_multi, "Client incompatible with this "
++                               "server. Keying Material Exporters (RFC 570=
+5) "
++                               "support missing. Upgrade to a client that "
++                               "supports this feature (OpenVPN 2.6.0+).");
++        return false;
++    }
+     if (proto & IV_PROTO_DYN_TLS_CRYPT)
+     {
+         o->imported_protocol_flags |=3D CO_USE_DYNAMIC_TLS_CRYPT;
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index e498114..1b28a19 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -1561,6 +1561,7 @@
+     SHOW_STR(auth_user_pass_verify_script);
+     SHOW_BOOL(auth_user_pass_verify_script_via_file);
+     SHOW_BOOL(auth_token_generate);
++    SHOW_BOOL(force_key_material_export);
+     SHOW_INT(auth_token_lifetime);
+     SHOW_STR_INLINE(auth_token_secret_file);
+ #if PORT_SHARE
+@@ -2802,6 +2803,11 @@
+         {
+             msg(M_USAGE, "--vlan-tagging requires --mode server");
+         }
++
++        if (options->force_key_material_export)
++        {
++            msg(M_USAGE, "--force-tls-key-material-export requires --mode =
+server");
++        }
+     }
+
+     /*
+@@ -3634,6 +3640,30 @@
+ }
+
+ static void
++options_process_mutate_prf(struct options *o)
++{
++    if (!check_tls_prf_working())
++    {
++        msg(D_TLS_ERRORS, "Warning: TLS 1.0 PRF with MD5+SHA1 PRF is not "
++            "supported by the TLS library. Your system does not support th=
+is "
++            "calculation anymore or your security policy (e.g. FIPS 140-2)=
+ "
++            "forbids it. Connections will only work with peers running "
++            "OpenVPN 2.6.0 or higher)");
++#ifndef HAVE_EXPORT_KEYING_MATERIAL
++        msg(M_FATAL, "Keying Material Exporters (RFC 5705) not available e=
+ither. "
++            "No way to generate data channel keys left.");
++#endif
++        if (o->mode =3D=3D MODE_SERVER)
++        {
++            msg(M_WARN, "Automatically enabling option "
++                "--force-tls-key-material-export");
++            o->force_key_material_export =3D true;
++        }
++
++    }
++}
++
++static void
+ options_postprocess_mutate(struct options *o, struct env_set *es)
+ {
+     int i;
+@@ -3647,6 +3677,7 @@
+
+     options_postprocess_setdefault_ncpciphers(o);
+     options_set_backwards_compatible_options(o);
++    options_process_mutate_prf(o);
+
+     options_postprocess_cipher(o);
+     o->ncp_ciphers =3D mutate_ncp_cipher_list(o->ncp_ciphers, &o->gc);
+@@ -8642,6 +8673,11 @@
+             }
+         }
+     }
++    else if (streq(p[0], "force-tls-key-material-export"))
++    {
++        VERIFY_PERMISSION(OPT_P_GENERAL);
++        options->force_key_material_export =3D true;
++    }
+     else if (streq(p[0], "prng") && p[1] && !p[3])
+     {
+         msg(M_WARN, "NOTICE: --prng option ignored (SSL library PRNG is us=
+ed)");
+diff --git a/src/openvpn/options.h b/src/openvpn/options.h
+index c4514e1..cbfff18 100644
+--- a/src/openvpn/options.h
++++ b/src/openvpn/options.h
+@@ -687,6 +687,8 @@
+     const char *keying_material_exporter_label;
+     int keying_material_exporter_length;
+ #endif
++    /* force using TLS key material export for data channel key generation=
+ */
++    bool force_key_material_export;
+
+     bool vlan_tagging;
+     enum vlan_acceptable_frames vlan_accept;
 
 --
 To view, visit http://gerrit.openvpn.net/c/openvpn/+/460?usp=3Demail
@@ -81,64 +260,218 @@ Gerrit-Project: openvpn
 Gerrit-Branch: master
 Gerrit-Change-Id: I04f8c7c413e7cb62c726262feee6ca89c7e86c70
 Gerrit-Change-Number: 460
-Gerrit-PatchSet: 8
+Gerrit-PatchSet: 9
 Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
 Gerrit-Reviewer: cron2 <gert@...1296...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
 Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Comment-Date: Wed, 03 Jan 2024 22:45:10 +0000
-Gerrit-HasComments: Yes
-Gerrit-Has-Labels: Yes
-Gerrit-MessageType: comment
+Gerrit-MessageType: newpatchset
 
---XwQxwCeEpF8=
+--sdaeP1D0DsY=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <p> Attention is currently required from: flichtenheld, plaisthos. </p>
-<p>Patch set 8:<span style=3D"border-radius: 3px; display: inline-block; ma=
-rgin: 0 2px; padding: 4px;background-color: #ffd4d4;">Code-Review -2</span>=
-</p><p>The change is no longer submittable: Code-Review is unsatisfied now.=
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/460?usp=3Demail">Vi=
-ew Change</a></p><p>2 comments:</p><ul style=3D"list-style: none; padding: =
-0;"><li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-=
-style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p =
-style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvp=
-n/+/460?tab=3Dcomments">Patch Set #8:</a> </p><p style=3D"white-space: pre-=
-wrap; word-wrap: break-word;">sorry... found another one :-(</p></li></ul><=
-/li><li style=3D"margin: 0; padding: 0;"><p>File src/openvpn/crypto.c:</p><=
-ul style=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; padding:=
- 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.ope=
-nvpn.net/c/openvpn/+/460/comment/131b2f38_d4640bad">Patch Set #8, Line 1809=
-:</a> <code style=3D"font-family:monospace,monospace">    return (ret &amp;=
-&amp; memcmp(out, expected_out, sizeof(out)) !=3D 0);</code></p><p style=3D=
-"white-space: pre-wrap; word-wrap: break-word;">It pains me to return to &q=
-uot;-2&quot; again, but there is something really weird going on here - to =
-see what happens if the PRF fails, I changed &quot;expected_out[3] to &quot=
-;2&quot; in my tree, and it still succeeds.  Wat.  So I look at the compari=
-son, and we should be checking for `=3D=3D 0` here (&quot;out =3D=3D expect=
-ed_out&quot;, this is not strcmp()...).</p><p style=3D"white-space: pre-wra=
-p; word-wrap: break-word;">So I fired up gdb with -O0, and this is what it =
-says...</p><p style=3D"white-space: pre-wrap; word-wrap: break-word;">```<b=
-r>(gdb) print ret<br>$1 =3D 1<br>(gdb) print out<br>$2 =3D &quot;qD\376%@su=
-\225&quot;<br>(gdb) print expected_out<br>$3 =3D &quot;\340_\037\001\000\00=
-0\000&quot;<br>```</p></li></ul></li></ul><p>To view, visit <a href=3D"http=
-://gerrit.openvpn.net/c/openvpn/+/460?usp=3Demail">change 460</a>. To unsub=
-scribe, or for help writing mail filters, visit <a href=3D"http://gerrit.op=
-envpn.net/settings">settings</a>.</p><div itemscope itemtype=3D"http://sche=
-ma.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://=
-schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn=
-.net/c/openvpn/+/460?usp=3Demail"/><meta itemprop=3D"name" content=3D"View =
-Change"/></div></div>
+<p>plaisthos <strong>uploaded patch set #9</strong> to this change.</p><p><=
+a href=3D"http://gerrit.openvpn.net/c/openvpn/+/460?usp=3Demail">View Chang=
+e</a></p><pre style=3D"font-family: monospace,monospace; white-space: pre-w=
+rap;">Check PRF availability on initialisation and add --force-tls-key-mate=
+rial-export<br><br>We now warn a user if the TLS 1.0 PRF is not supported b=
+y the cryptographic<br>library of the system. Also add the option --force-t=
+ls-key-material-export<br>that automatically rejects clients that do not su=
+pport TLS Keying Material<br>Export and automatically enable it when TLS 1.=
+0 PRF support is not available.<br><br>Change-Id: I04f8c7c413e7cb62c726262f=
+eee6ca89c7e86c70<br>Signed-off-by: Arne Schwabe &lt;arne@...1227...&gt;<br>=
+---<br>M doc/man-sections/protocol-options.rst<br>M src/openvpn/crypto.c<br=
+>M src/openvpn/crypto.h<br>M src/openvpn/multi.c<br>M src/openvpn/options.c=
+<br>M src/openvpn/options.h<br>6 files changed, 84 insertions(+), 0 deletio=
+ns(-)<br><br></pre><pre style=3D"font-family: monospace,monospace; white-sp=
+ace: pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/openvpn refs/change=
+s/60/460/9</pre><pre style=3D"font-family: monospace,monospace; white-space=
+: pre-wrap;"><span>diff --git a/doc/man-sections/protocol-options.rst b/doc=
+/man-sections/protocol-options.rst</span><br><span>index 948c0c8..8b061d2 1=
+00644</span><br><span>--- a/doc/man-sections/protocol-options.rst</span><br=
+><span>+++ b/doc/man-sections/protocol-options.rst</span><br><span>@@ -242,=
+3 +242,11 @@</span><br><span>   a key renegotiation begins (default :code:`=
+3600` seconds). This feature</span><br><span>   allows for a graceful trans=
+ition from old to new key, and removes the key</span><br><span>   renegotia=
+tion sequence from the critical path of tunnel data forwarding.</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+--force-tls-key-material-export</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+  This option is only available in --m=
+ode server and forces to use</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+  Keying Material Exporters (RFC 5705) for clients. This can be us=
+ed to</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  simulate an =
+environment where the cryptographic library does not support</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+  the older method to generate dat=
+a channel keys anymore. This option is</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+  intended to be a test option and might be removed in a=
+ future OpenVPN</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  ve=
+rsion without notice.</span><br><span>diff --git a/src/openvpn/crypto.c b/s=
+rc/openvpn/crypto.c</span><br><span>index e4452d7..2fca131 100644</span><br=
+><span>--- a/src/openvpn/crypto.c</span><br><span>+++ b/src/openvpn/crypto.=
+c</span><br><span>@@ -27,6 +27,7 @@</span><br><span> #endif</span><br><span=
+> </span><br><span> #include &quot;syshead.h&quot;</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+#include &lt;string.h&gt;</span><br><span> <=
+/span><br><span> #include &quot;crypto.h&quot;</span><br><span> #include &q=
+uot;error.h&quot;</span><br><span>@@ -1789,3 +1790,22 @@</span><br><span>  =
+   gc_free(&amp;gc);</span><br><span>     return ret;</span><br><span> }</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+bool</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+check_tls_prf_working(void)</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+    /* Modern TLS libraries might no longer support the TLS 1.0 PR=
+F with</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     * MD5+SH=
+A1. This allows us to establish connections only</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+     * with other 2.6.0+ OpenVPN peers.</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+     * Do a simple dummy t=
+est here to see if it works. */</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+    const char *seed =3D &quot;tls1-prf-test&quot;;</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+    const char *secret =3D &quo=
+t;tls1-prf-test-secret&quot;;</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+    uint8_t out[8];</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+    uint8_t expected_out[] =3D { &#39;q&#39;, &#39;D&#39;, &#39;\=
+xfe&#39;, &#39;%&#39;, &#39;@&#39;, &#39;s&#39;, &#39;u&#39;, &#39;\x95&#39=
+; };</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+    int ret =3D ssl_tls1_PRF((uint=
+8_t *)seed, (int) strlen(seed),</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+                           (uint8_t *)secret, (int) strlen(secr=
+et),</span><br><span style=3D"color: hsl(120, 100%, 40%);">+               =
+            out, sizeof(out));</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    retu=
+rn (ret &amp;&amp; memcmp(out, expected_out, sizeof(out)) =3D=3D 0);</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span>diff --g=
+it a/src/openvpn/crypto.h b/src/openvpn/crypto.h</span><br><span>index 9255=
+d38..4201524 100644</span><br><span>--- a/src/openvpn/crypto.h</span><br><s=
+pan>+++ b/src/openvpn/crypto.h</span><br><span>@@ -593,4 +593,12 @@</span><=
+br><span>     return kt;</span><br><span> }</span><br><span> </span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+/**</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+ * Checks if the current TLS library supports the=
+ TLS 1.0 PRF with MD5+SHA1</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+ * that OpenVPN uses when TLS Keying Material Export is not availabl=
+e.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+ * @return  true if supported, fal=
+se otherwise.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ */</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+bool check_tls_prf_wor=
+king(void);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><=
+br><span> #endif /* CRYPTO_H */</span><br><span>diff --git a/src/openvpn/mu=
+lti.c b/src/openvpn/multi.c</span><br><span>index 8b490ed..f4f0b8a 100644</=
+span><br><span>--- a/src/openvpn/multi.c</span><br><span>+++ b/src/openvpn/=
+multi.c</span><br><span>@@ -1830,6 +1830,16 @@</span><br><span>     {</span=
+><br><span>         o-&gt;imported_protocol_flags |=3D CO_USE_TLS_KEY_MATER=
+IAL_EXPORT;</span><br><span>     }</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+    else if (o-&gt;force_key_material_export)</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+        msg(M_INFO, &quot;PUSH: client does not =
+support TLS Keying Material &quot;</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+            &quot;Exporters but --force-tls-key-material-exp=
+ort is enabled.&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+        auth_set_client_reason(tls_multi, &quot;Client incompatible wit=
+h this &quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
+                         &quot;server. Keying Material Exporters (RFC 5705)=
+ &quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            =
+                   &quot;support missing. Upgrade to a client that &quot;</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+                     =
+          &quot;supports this feature (OpenVPN 2.6.0+).&quot;);</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+        return false;</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span>     if=
+ (proto &amp; IV_PROTO_DYN_TLS_CRYPT)</span><br><span>     {</span><br><spa=
+n>         o-&gt;imported_protocol_flags |=3D CO_USE_DYNAMIC_TLS_CRYPT;</sp=
+an><br><span>diff --git a/src/openvpn/options.c b/src/openvpn/options.c</sp=
+an><br><span>index e498114..1b28a19 100644</span><br><span>--- a/src/openvp=
+n/options.c</span><br><span>+++ b/src/openvpn/options.c</span><br><span>@@ =
+-1561,6 +1561,7 @@</span><br><span>     SHOW_STR(auth_user_pass_verify_scri=
+pt);</span><br><span>     SHOW_BOOL(auth_user_pass_verify_script_via_file);=
+</span><br><span>     SHOW_BOOL(auth_token_generate);</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    SHOW_BOOL(force_key_material_export);=
+</span><br><span>     SHOW_INT(auth_token_lifetime);</span><br><span>     S=
+HOW_STR_INLINE(auth_token_secret_file);</span><br><span> #if PORT_SHARE</sp=
+an><br><span>@@ -2802,6 +2803,11 @@</span><br><span>         {</span><br><s=
+pan>             msg(M_USAGE, &quot;--vlan-tagging requires --mode server&q=
+uot;);</span><br><span>         }</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
+   if (options-&gt;force_key_material_export)</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+        {</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+            msg(M_USAGE, &quot;--force-tls-key-material-exp=
+ort requires --mode server&quot;);</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+        }</span><br><span>     }</span><br><span> </span><br=
+><span>     /*</span><br><span>@@ -3634,6 +3640,30 @@</span><br><span> }</s=
+pan><br><span> </span><br><span> static void</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+options_process_mutate_prf(struct options *o)</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    if (!check_tls_prf_working())</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+        msg(D_TLS_ERRORS, &quot;Warning: =
+TLS 1.0 PRF with MD5+SHA1 PRF is not &quot;</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+            &quot;supported by the TLS library. You=
+r system does not support this &quot;</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+            &quot;calculation anymore or your security po=
+licy (e.g. FIPS 140-2) &quot;</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+            &quot;forbids it. Connections will only work with pee=
+rs running &quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+          &quot;OpenVPN 2.6.0 or higher)&quot;);</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+#ifndef HAVE_EXPORT_KEYING_MATERIAL</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+        msg(M_FATAL, &quot;Key=
+ing Material Exporters (RFC 5705) not available either. &quot;</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+            &quot;No way to gene=
+rate data channel keys left.&quot;);</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+#endif</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+        if (o-&gt;mode =3D=3D MODE_SERVER)</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+        {</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+            msg(M_WARN, &quot;Automatically enabling optio=
+n &quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+           =
+     &quot;--force-tls-key-material-export&quot;);</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+            o-&gt;force_key_material_export =
+=3D true;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        }<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+static void</sp=
+an><br><span> options_postprocess_mutate(struct options *o, struct env_set =
+*es)</span><br><span> {</span><br><span>     int i;</span><br><span>@@ -364=
+7,6 +3677,7 @@</span><br><span> </span><br><span>     options_postprocess_s=
+etdefault_ncpciphers(o);</span><br><span>     options_set_backwards_compati=
+ble_options(o);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+options_process_mutate_prf(o);</span><br><span> </span><br><span>     optio=
+ns_postprocess_cipher(o);</span><br><span>     o-&gt;ncp_ciphers =3D mutate=
+_ncp_cipher_list(o-&gt;ncp_ciphers, &amp;o-&gt;gc);</span><br><span>@@ -864=
+2,6 +8673,11 @@</span><br><span>             }</span><br><span>         }</=
+span><br><span>     }</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+    else if (streq(p[0], &quot;force-tls-key-material-export&quot;))</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+        VERIFY_PERMISSION(OPT_P_GENERA=
+L);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        options-=
+&gt;force_key_material_export =3D true;</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+    }</span><br><span>     else if (streq(p[0], &quot;p=
+rng&quot;) &amp;&amp; p[1] &amp;&amp; !p[3])</span><br><span>     {</span><=
+br><span>         msg(M_WARN, &quot;NOTICE: --prng option ignored (SSL libr=
+ary PRNG is used)&quot;);</span><br><span>diff --git a/src/openvpn/options.=
+h b/src/openvpn/options.h</span><br><span>index c4514e1..cbfff18 100644</sp=
+an><br><span>--- a/src/openvpn/options.h</span><br><span>+++ b/src/openvpn/=
+options.h</span><br><span>@@ -687,6 +687,8 @@</span><br><span>     const ch=
+ar *keying_material_exporter_label;</span><br><span>     int keying_materia=
+l_exporter_length;</span><br><span> #endif</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+    /* force using TLS key material export for data =
+channel key generation */</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+    bool force_key_material_export;</span><br><span> </span><br><span=
+>     bool vlan_tagging;</span><br><span>     enum vlan_acceptable_frames v=
+lan_accept;</span><br><span></span><br></pre><p>To view, visit <a href=3D"h=
+ttp://gerrit.openvpn.net/c/openvpn/+/460?usp=3Demail">change 460</a>. To un=
+subscribe, or for help writing mail filters, visit <a href=3D"http://gerrit=
+.openvpn.net/settings">settings</a>.</p><div itemscope itemtype=3D"http://s=
+chema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http=
+://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.open=
+vpn.net/c/openvpn/+/460?usp=3Demail"/><meta itemprop=3D"name" content=3D"Vi=
+ew Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
 <div style=3D"display:none"> Gerrit-Change-Id: I04f8c7c413e7cb62c726262feee=
 6ca89c7e86c70 </div>
 <div style=3D"display:none"> Gerrit-Change-Number: 460 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 8 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 9 </div>
 <div style=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@...1711...=
 27...&gt; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
@@ -151,12 +484,8 @@ ts.sourceforge.net&gt; </div>
 ..1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
 41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Wed, 03 Jan 2024 22:45:10=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
+<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
 
 
---XwQxwCeEpF8=--
+--sdaeP1D0DsY=--
 
