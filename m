@@ -1,11 +1,10 @@
+Date: Fri, 5 Jan 2024 15:46:08 +0100 (CET)
+Message-Id: <202401051446.405Ek8FO036056@...2054...>
 From: Gert Doering <gert@...1296...>
-Date: Fri,  5 Jan 2024 15:24:32 +0100
-Message-ID: <20240105142432.26298-1-gert@...1296...>
-In-Reply-To: <gerrit.1704298871000.Ida4d22455c51773b6713caf94a4b4fbe136a6ded@...2715...>
-References: <gerrit.1704298871000.Ida4d22455c51773b6713caf94a4b4fbe136a6ded@...2715...>
-MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v2] Clarify that the tls-crypt-v2-verify has
- a very limited env set
+In-Reply-To: <20240105140540.14757-1-gert@...1296...>
+References: <20240105140540.14757-1-gert@...1296...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Make it more explicit and
+ visible when pkg-config is not found
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,37 +15,35 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Arne Schwabe <arne@...1227...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-From: Arne Schwabe <arne@...1227...>
+This should be really helping clearing up user confusion, which our
+current messages don't do ("but I do have all the libraries, why is
+it still failing?").  Thanks, Antonio, for testing and ACKing.
 
-Change-Id: Ida4d22455c51773b6713caf94a4b4fbe136a6ded
-Signed-off-by: Arne Schwabe <arne@...1227...>
-Acked-by: Gert Doering <gert@...1296...>
----
+I have not explicitly tested anything, just pushed to GHA and buildbot,
+to be sure it's not accidently breaking some oddball plattform.
 
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to master.
+Your patch has been applied to the master and release/2.6 branch.
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/488
-This mail reflects revision 2 of this Change.
-Acked-by according to Gerrit (reflected above):
-Gert Doering <gert@...1296...>
+commit c0f38019b4a2044c1fe873d7d33c13ce571d3386 (master)
+commit d602fc03e9719681fd3c9f45922fbca9470e3afa (release/2.6)
+Author: Arne Schwabe
+Date:   Fri Jan 5 15:05:40 2024 +0100
 
-        
-diff --git a/doc/man-sections/tls-options.rst b/doc/man-sections/tls-options.rst
-index 4c45b10..460cecf 100644
---- a/doc/man-sections/tls-options.rst
-+++ b/doc/man-sections/tls-options.rst
-@@ -538,7 +538,9 @@
-   stack (including the notoriously dangerous X.509 and ASN.1 stacks) to
-   the connecting client.
- 
--  OpenVPN supplies the following environment variables to the command:
-+  OpenVPN supplies the following environment variables to the command (and
-+  only these variables. The normal environment variables available for
-+  other scripts are NOT present):
- 
-   * :code:`script_type` is set to :code:`tls-crypt-v2-verify`
- 
+     Make it more explicit and visible when pkg-config is not found
+
+     Signed-off-by: Arne Schwabe <arne@...1227...>
+     Acked-by: Antonio Quartulli <a@...2181...>
+     Message-Id: <20240105140540.14757-1-gert@...1296...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg27939.html
+     Signed-off-by: Gert Doering <gert@...1296...>
+
+
+--
+kind regards,
+
+Gert Doering
+
 
