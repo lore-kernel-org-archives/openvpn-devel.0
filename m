@@ -1,10 +1,11 @@
 From: Gert Doering <gert@...1296...>
-Date: Fri,  5 Jan 2024 15:23:39 +0100
-Message-ID: <20240105142340.25735-1-gert@...1296...>
-In-Reply-To: <gerrit.1703674237000.Ie44a4b750605c4cc3ac1f75e1fa5ab85804ffa71@...2715...>
-References: <gerrit.1703674237000.Ie44a4b750605c4cc3ac1f75e1fa5ab85804ffa71@...2715...>
+Date: Fri,  5 Jan 2024 15:24:32 +0100
+Message-ID: <20240105142432.26298-1-gert@...1296...>
+In-Reply-To: <gerrit.1704298871000.Ida4d22455c51773b6713caf94a4b4fbe136a6ded@...2715...>
+References: <gerrit.1704298871000.Ida4d22455c51773b6713caf94a4b4fbe136a6ded@...2715...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v1] GHA: increase verbosity for make check
+Subject: [Openvpn-devel] [PATCH v2] Clarify that the tls-crypt-v2-verify has
+ a very limited env set
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,69 +18,35 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-From: Frank Lichtenheld <frank@...2641...>
+From: Arne Schwabe <arne@...1227...>
 
-Make sure we get to see the test-suite.log on
-failure.
-
-Change-Id: Ie44a4b750605c4cc3ac1f75e1fa5ab85804ffa71
-Signed-off-by: Frank Lichtenheld <frank@...2641...>
-Acked-by: Arne Schwabe <arne-openvpn@...1227...>
+Change-Id: Ida4d22455c51773b6713caf94a4b4fbe136a6ded
+Signed-off-by: Arne Schwabe <arne@...1227...>
+Acked-by: Gert Doering <gert@...1296...>
 ---
 
 This change was reviewed on Gerrit and approved by at least one
 developer. I request to merge it to master.
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/485
-This mail reflects revision 1 of this Change.
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/488
+This mail reflects revision 2 of this Change.
 Acked-by according to Gerrit (reflected above):
-Arne Schwabe <arne-openvpn@...1227...>
+Gert Doering <gert@...1296...>
 
         
-diff --git a/.github/workflows/build.yaml b/.github/workflows/build.yaml
-index 4393f5c..51100c3 100644
---- a/.github/workflows/build.yaml
-+++ b/.github/workflows/build.yaml
-@@ -163,7 +163,7 @@
-       - name: make all
-         run: make -j3
-       - name: make check
--        run: make check
-+        run: make check VERBOSE=1
+diff --git a/doc/man-sections/tls-options.rst b/doc/man-sections/tls-options.rst
+index 4c45b10..460cecf 100644
+--- a/doc/man-sections/tls-options.rst
++++ b/doc/man-sections/tls-options.rst
+@@ -538,7 +538,9 @@
+   stack (including the notoriously dangerous X.509 and ASN.1 stacks) to
+   the connecting client.
  
-   ubuntu-clang-asan:
-     strategy:
-@@ -190,7 +190,7 @@
-       - name: make all
-         run: make -j3
-       - name: make check
--        run: make check
-+        run: make check VERBOSE=1
+-  OpenVPN supplies the following environment variables to the command:
++  OpenVPN supplies the following environment variables to the command (and
++  only these variables. The normal environment variables available for
++  other scripts are NOT present):
  
-   macos:
-     strategy:
-@@ -239,7 +239,7 @@
-       - name: make all
-         run: make -j4
-       - name: make check
--        run: make check
-+        run: make check VERBOSE=1
+   * :code:`script_type` is set to :code:`tls-crypt-v2-verify`
  
-   msvc:
-       strategy:
-@@ -348,7 +348,7 @@
-       - name: make all
-         run: make -j3
-       - name: make check
--        run: make check
-+        run: make check VERBOSE=1
- 
-   mbedtls3:
-     strategy:
-@@ -399,4 +399,4 @@
-       - name: make all
-         run: make -j3
-       - name: make check
--        run: make check
-+        run: make check VERBOSE=1
 
