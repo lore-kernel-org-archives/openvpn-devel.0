@@ -1,14 +1,10 @@
-Date: Fri, 5 Jan 2024 15:59:14 +0100
+Date: Fri, 5 Jan 2024 23:14:58 +0100 (CET)
+Message-Id: <202401052214.405MEwCs053531@...2054...>
 From: Gert Doering <gert@...1296...>
-Message-ID: <ZZgZQlE49ZjFriwE@...1296...>
-References: <20240105135742.21174-1-steffan@...1856...>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="KCnKrE/YZq4B0qnd"
-Content-Disposition: inline
 In-Reply-To: <20240105135742.21174-1-steffan@...1856...>
-Subject: Re: [Openvpn-devel] [PATCH] Fix IPv6 route add/delete message log
- level
+References: <20240105135742.21174-1-steffan@...1856...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Fix IPv6 route add/delete
+ message log level
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,53 +13,40 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 To: Steffan Karger <steffan@...1856...>
 Cc: openvpn-devel@lists.sourceforge.net
 
---KCnKrE/YZq4B0qnd
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+Patch looks good, makes sense, thanks for that.
 
-Hi,
+Interesting enough, the old code had weird formatting ("msg( M_INFO")
+which led to weird indenting of the *next* lines - this patch changed
+the msg() call to have no leading blank, and uncrustify complained that
+now the successive lines had whitespace errors... fixed on the fly.
 
-On Fri, Jan 05, 2024 at 02:57:42PM +0100, Steffan Karger wrote:
-> We have D_ROUTE for route addition/deletion messages, which prints at
-> loglevel 3. Use that for IPv6, like we do for IPv4 to reduce terminal
-> spam for non-legacy-networking setups. Prvious code would print the
-> messages at --verb 1.
+Not tested beyond "looks reasonable, compiles, and add_route() indeed
+uses D_ROUTE for informational msg() calls".
 
-Good catch, and a happy new year :-)
+Your patch has been applied to the master and release/2.6 branch.
 
-Acked-By: Gert Doering <gert@...1296...>
+commit b959b02b4f607628896b4092f7ddfa675e87d929 (master)
+commit 9abf74c92c1c13de089523babc1dfeda7bb7255f (release/2.6)
+Author: Steffan Karger
+Date:   Fri Jan 5 14:57:42 2024 +0100
 
-gert
---=20
-"If was one thing all people took for granted, was conviction that if you=20
- feed honest figures into a computer, honest figures come out. Never doubte=
-d=20
- it myself till I met a computer with a sense of humor."
-                             Robert A. Heinlein, The Moon is a Harsh Mistre=
-ss
+     Fix IPv6 route add/delete message log level
 
-Gert Doering - Munich, Germany                             gert@...1296...
+     Signed-off-by: Steffan Karger <steffan@...1856...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <20240105135742.21174-1-steffan@...1856...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg27954.html
+     Signed-off-by: Gert Doering <gert@...1296...>
 
---KCnKrE/YZq4B0qnd
-Content-Type: application/pgp-signature; name="signature.asc"
 
------BEGIN PGP SIGNATURE-----
+--
+kind regards,
 
-iQGcBAEBAgAGBQJlmBlCAAoJEB2Cnv7KVigScK0L/1yn9ostcEa9Q3FjD+9N3Ze9
-O7Sqctf4euvcD02+ZoKZvVu0tQq485f9zhq4PNput51XDv7dDs5KPdCqGORHDTW6
-spvdd0UrH4sA1/vBHqR4UI7CjCRUhZVat4j6vVCruIm4aC5RQf1BoFgwXwlfadU+
-sXdFwaaVpf8nX3wymfnxnXw+dnJRUYzNgv4AYMs0/kQQ7xb63zybo58CRgdU6png
-mJnz6q2Nn/MJpYytGlZSqqSZZbhoMbIbhzzlhqc/U90GuaZOJtcqB6CzXMr6SgVh
-mbtR2Vl8k5Jy65a2H+5SDLk9QxMwHpt4EC97T68oQNtGUsbojtQrK9j3JIbaRZaO
-LhgaEDjr6it8MvNhDbUThvTmNZbo/4gyAew307V1qugsDRuM1fYbrBJzs/mrQUVd
-LUimeK3JLvixBaMY4rjbDTgpyrrDL3Awzxrt6HzqjxywFaR1gp2BXOetA5apLybu
-NIPRZA/VkoEVpvif2o6/SfNh6zw96M+sWUBmdJjoEg==
-=EEH3
------END PGP SIGNATURE-----
+Gert Doering
 
---KCnKrE/YZq4B0qnd--
 
