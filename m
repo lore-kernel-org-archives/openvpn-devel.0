@@ -1,15 +1,16 @@
-Date: Sat, 6 Jan 2024 09:44:42 +0100
-From: Gert Doering <gert@...1296...>
-Message-ID: <ZZkS-i49qnymThV7@...1296...>
-References: <20240105135742.21174-1-steffan@...1856...>
- <202401052214.405MEwCs053531@...2054...>
+From: "flichtenheld (Code Review)" <gerrit@...515...>
+Date: Mon, 8 Jan 2024 16:14:06 +0000
+In-Reply-To: <gerrit.1701971374000.Ie5aa643ab6190262f7c8b9e614bedb398e85859b@...2715...>
+References: <gerrit.1701971374000.Ie5aa643ab6190262f7c8b9e614bedb398e85859b@...2715...>
+Reply-To: frank@...2641..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net
+Message-ID: <31f6e047bf95913bb6ff4f0a720c4b77e1a704fb-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="Gvn9zlxsuPWtArv8"
+Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-In-Reply-To: <202401052214.405MEwCs053531@...2054...>
-Subject: Re: [Openvpn-devel] [PATCH applied] Re: Fix IPv6 route add/delete
- message log level
+Content-Type: multipart/alternative; boundary="IJ/HhtS9Ggg="; charset=UTF-8
+Subject: [Openvpn-devel] [S] Change in openvpn[master]: Use mingw compile
+ definition also to unit tests
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,100 +19,81 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Steffan Karger <steffan@...1856...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: plaisthos <arne-openvpn@...1227...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---Gvn9zlxsuPWtArv8
-Content-Type: text/plain; charset="us-ascii"
+--IJ/HhtS9Ggg=
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
 
-Hi,
+Attention is currently required from: plaisthos.
 
-On Fri, Jan 05, 2024 at 11:14:58PM +0100, Gert Doering wrote:
-> Patch looks good, makes sense, thanks for that.
->=20
-> Interesting enough, the old code had weird formatting ("msg( M_INFO")
-> which led to weird indenting of the *next* lines - this patch changed
-> the msg() call to have no leading blank, and uncrustify complained that
-> now the successive lines had whitespace errors... fixed on the fly.
->=20
-> Not tested beyond "looks reasonable, compiles, and add_route() indeed
-> uses D_ROUTE for informational msg() calls".
->=20
-> Your patch has been applied to the master and release/2.6 branch.
->=20
-> commit b959b02b4f607628896b4092f7ddfa675e87d929 (master)
-> commit 9abf74c92c1c13de089523babc1dfeda7bb7255f (release/2.6)
+flichtenheld has posted comments on this change. ( http://gerrit.openvpn.ne=
+t/c/openvpn/+/469?usp=3Demail )
 
-Unfortunately I fat-fingered cherrypicking and commit-id'ing - "master"
-has
-
-commit 7268e14dba61254b04a0b2db37c12c8ab58423ea (master)
-
-and the ID referenced above is "the patch without the whitespace fixes" -
-which only exists in my local repo, not pushed anywhere.
-
-Doubly unfortunate, I also cherry-picked b959b0, so release/2.6 ended up
-with a commit that was uncrustify-broken.  I'm not going to fix this with
-a force-push, so we have a new commit in 2.6 now...
-
-commit 9fb62e2b32fd4e63ae323ccfbc79dfaba6ce4d91 (HEAD -> release/2.6)
-Author: Gert Doering <gert@...1296...>
-Date:   Sat Jan 6 09:38:41 2024 +0100
-
-    fix uncrustify complaints about previous patch
-
-... which contains the diff b959b0..7268e1:
-
---- a/src/openvpn/route.c
-+++ b/src/openvpn/route.c
-@@ -1939,11 +1939,11 @@ add_route_ipv6(struct route_ipv6 *r6, const struct =
-tuntap *tt,
-=20
- #ifndef _WIN32
-     msg(D_ROUTE, "add_route_ipv6(%s/%d -> %s metric %d) dev %s",
--         network, r6->netbits, gateway, r6->metric, device );
-+        network, r6->netbits, gateway, r6->metric, device );
- #else
-     msg(D_ROUTE, "add_route_ipv6(%s/%d -> %s metric %d) IF %lu",
--         network, r6->netbits, gateway, r6->metric,
--         r6->adapter_index ? r6->adapter_index : tt->adapter_index);
-+        network, r6->netbits, gateway, r6->metric,
-+        r6->adapter_index ? r6->adapter_index : tt->adapter_index);
- #endif
+Change subject: Use mingw compile definition also to unit tests
+......................................................................
 
 
+Patch Set 4: Code-Review+2
 
-apologies for that.
 
-gert
---=20
-"If was one thing all people took for granted, was conviction that if you=20
- feed honest figures into a computer, honest figures come out. Never doubte=
-d=20
- it myself till I met a computer with a sense of humor."
-                             Robert A. Heinlein, The Moon is a Harsh Mistre=
-ss
+--
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/469?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings
 
-Gert Doering - Munich, Germany                             gert@...1296...
+Gerrit-Project: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: Ie5aa643ab6190262f7c8b9e614bedb398e85859b
+Gerrit-Change-Number: 469
+Gerrit-PatchSet: 4
+Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
+Gerrit-Reviewer: flichtenheld <frank@...2641...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Comment-Date: Mon, 08 Jan 2024 16:14:06 +0000
+Gerrit-HasComments: No
+Gerrit-Has-Labels: Yes
+Gerrit-MessageType: comment
 
---Gvn9zlxsuPWtArv8
-Content-Type: application/pgp-signature; name="signature.asc"
+--IJ/HhtS9Ggg=
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
------BEGIN PGP SIGNATURE-----
+<p> Attention is currently required from: plaisthos. </p>
+<p>Patch set 4:<span style=3D"border-radius: 3px; display: inline-block; ma=
+rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/469?usp=3Demail">Vi=
+ew Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To vie=
+w, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/469?usp=3Demail">=
+change 469</a>. To unsubscribe, or for help writing mail filters, visit <a =
+href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope=
+ itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"act=
+ion" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=
+=3D"http://gerrit.openvpn.net/c/openvpn/+/469?usp=3Demail"/><meta itemprop=
+=3D"name" content=3D"View Change"/></div></div>
 
-iQGcBAEBAgAGBQJlmRL6AAoJEB2Cnv7KVigSGycL/0LtGXBseQUmWq/wEndfo3u2
-FP1Y1Ozi3xZDpEICQdHuu3BP5NlS2QswYIRJAUxVX7TYcxMdmGvc0UixhRNb8rWU
-gpTxSdg8eUkcor7+YJKFuxwwVtTe6O1PORoERHI1VxdZ5k3W2mmnppydiDCtgwBL
-EfaCTj2Xt4AZOiC28zZ0XdyXDbgK8iAuoSTCA+zRutNoQgCaXGoRWk5C3dp7yKUS
-vdi6x+dOsvxKQs7KDWL661R0r4qadfKM9BRLJeHELth/+K9JgMddbaFQwCbfQIjA
-jB6+4w4cezhQ1RCm4A9gVYqzUz5dNdOcCLvPYNWomtquGWjTecWnslqaFz/+p0fV
-NhYqYoV/nFpIIgMILu5ibGQ7oRA3T8wCugnoIR9mgyKkRplZ+4sUykIkfw/TpFCF
-goQudZaeaJwOYEiLBABx29qlcB6rflSOmEAKdI5gsWHxqDPaQSciEGXQuf+IBiAv
-cT4IkXbmj4BXLI7RWB4URQqa6Wx1e2ranlkrbTjlHQ==
-=XTLc
------END PGP SIGNATURE-----
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: Ie5aa643ab6190262f7c8b9e614b=
+edb398e85859b </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 469 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 4 </div>
+<div style=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@...1711...=
+27...&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
+1...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Mon, 08 Jan 2024 16:14:06=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: No </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
 
---Gvn9zlxsuPWtArv8--
+
+--IJ/HhtS9Ggg=--
 
