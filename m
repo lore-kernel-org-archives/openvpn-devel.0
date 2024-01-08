@@ -1,16 +1,11 @@
-From: "flichtenheld (Code Review)" <gerrit@...515...>
-Date: Mon, 8 Jan 2024 17:03:27 +0000
+From: Gert Doering <gert@...1296...>
+Date: Mon,  8 Jan 2024 18:13:49 +0100
+Message-ID: <20240108171349.15871-1-gert@...1296...>
 In-Reply-To: <gerrit.1702476419000.I525ccf7872880367b248ebebb0ddc83551498042@...2715...>
 References: <gerrit.1702476419000.I525ccf7872880367b248ebebb0ddc83551498042@...2715...>
-Reply-To: frank@...2641..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, gert@...1296...
-Message-ID: <5ff966161e6357a512f9fdd9ca53aabd30c4e20e-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="VHTpOiuPf+k="; charset=UTF-8
-Subject: [Openvpn-devel] [M] Change in openvpn[master]: Move get_tmp_dir to
- win32-util.c and error out on failure
+Subject: [Openvpn-devel] [PATCH v2] Move get_tmp_dir to win32-util.c and
+ error out on failure
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,99 +14,149 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: plaisthos <arne-openvpn@...1227...>
-Cc: cron2 <gert@...1296...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---VHTpOiuPf+k=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+From: Arne Schwabe <arne@...1227...>
 
-Attention is currently required from: plaisthos.
+Currently we only warn in get_tmp_dir fails and set o->tmp_dir to
+a null pointer. This will not be caught by check_file_access_chroot
+either since that ignores NULL pointers but other parts of OpenVPN
+will assume that tmp_dir is set to a non-NULL string.
 
-flichtenheld has posted comments on this change. ( http://gerrit.openvpn.ne=
-t/c/openvpn/+/481?usp=3Demail )
+Also move get_tmp_dir to ssl-utils.c to use it in unit tests.
 
-Change subject: Move get_tmp_dir to win32-util.c and error out on failure
-......................................................................
+Change-Id: I525ccf7872880367b248ebebb0ddc83551498042
+Signed-off-by: Arne Schwabe <arne@...1227...>
+Acked-by: Frank Lichtenheld <frank@...2641...>
+---
 
+This change was reviewed on Gerrit and approved by at least one
+developer. I request to merge it to master.
 
-Patch Set 2: Code-Review+2
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/481
+This mail reflects revision 2 of this Change.
+Acked-by according to Gerrit (reflected above):
+Frank Lichtenheld <frank@...2641...>
 
-(1 comment)
-
-Patchset:
-
-PS2:
-Looks good to me. I verified that this does not break the Windows client te=
-sts.
-
-
-
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/481?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings
-
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: I525ccf7872880367b248ebebb0ddc83551498042
-Gerrit-Change-Number: 481
-Gerrit-PatchSet: 2
-Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
-Gerrit-Reviewer: cron2 <gert@...1296...>
-Gerrit-Reviewer: flichtenheld <frank@...2641...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Comment-Date: Mon, 08 Jan 2024 17:03:27 +0000
-Gerrit-HasComments: Yes
-Gerrit-Has-Labels: Yes
-Gerrit-MessageType: comment
-
---VHTpOiuPf+k=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<p> Attention is currently required from: plaisthos. </p>
-<p>Patch set 2:<span style=3D"border-radius: 3px; display: inline-block; ma=
-rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/481?usp=3Demail">Vi=
-ew Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0=
-;"><li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-s=
-tyle: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p s=
-tyle=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn=
-/+/481?tab=3Dcomments">Patch Set #2:</a> </p><p style=3D"white-space: pre-w=
-rap; word-wrap: break-word;">Looks good to me. I verified that this does no=
-t break the Windows client tests.</p></li></ul></li></ul><p>To view, visit =
-<a href=3D"http://gerrit.openvpn.net/c/openvpn/+/481?usp=3Demail">change 48=
-1</a>. To unsubscribe, or for help writing mail filters, visit <a href=3D"h=
-ttp://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope itemtype=
-=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"action" item=
-type=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http:/=
-/gerrit.openvpn.net/c/openvpn/+/481?usp=3Demail"/><meta itemprop=3D"name" c=
-ontent=3D"View Change"/></div></div>
-
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I525ccf7872880367b248ebebb0d=
-dc83551498042 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 481 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
-<div style=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@...1711...=
-27...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
- </div>
-<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
-1...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Mon, 08 Jan 2024 17:03:27=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
-
-
---VHTpOiuPf+k=--
+        
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index e498114..79958db 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -885,7 +885,15 @@
+ #ifdef _WIN32
+     /* On Windows, find temp dir via environment variables */
+     o->tmp_dir = win_get_tempdir();
+-#else
++
++    if (!o->tmp_dir)
++    {
++        /* Error out if we can't find a valid temporary directory, which should
++         * be very unlikely. */
++        msg(M_USAGE, "Could not find a suitable temporary directory."
++            " (GetTempPath() failed).  Consider using --tmp-dir");
++    }
++#else  /* ifdef _WIN32 */
+     /* Non-windows platforms use $TMPDIR, and if not set, default to '/tmp' */
+     o->tmp_dir = getenv("TMPDIR");
+     if (!o->tmp_dir)
+diff --git a/src/openvpn/win32-util.c b/src/openvpn/win32-util.c
+index 81e504a..c5e7505 100644
+--- a/src/openvpn/win32-util.c
++++ b/src/openvpn/win32-util.c
+@@ -147,4 +147,26 @@
+     }
+     return true;
+ }
++
++const char *
++win_get_tempdir(void)
++{
++    static char tmpdir[MAX_PATH];
++    WCHAR wtmpdir[MAX_PATH];
++
++    if (!GetTempPathW(_countof(wtmpdir), wtmpdir))
++    {
++        return NULL;
++    }
++
++    if (WideCharToMultiByte(CP_UTF8, 0, wtmpdir, -1, NULL, 0, NULL, NULL) > sizeof(tmpdir))
++    {
++        msg(M_WARN, "Could not get temporary directory. Path is too long."
++            "  Consider using --tmp-dir");
++        return NULL;
++    }
++
++    WideCharToMultiByte(CP_UTF8, 0, wtmpdir, -1, tmpdir, sizeof(tmpdir), NULL, NULL);
++    return tmpdir;
++}
+ #endif /* _WIN32 */
+diff --git a/src/openvpn/win32-util.h b/src/openvpn/win32-util.h
+index ac37979..98bf74b 100644
+--- a/src/openvpn/win32-util.h
++++ b/src/openvpn/win32-util.h
+@@ -40,5 +40,8 @@
+ /* return true if filename is safe to be used on Windows */
+ bool win_safe_filename(const char *fn);
+ 
++/* Find temporary directory */
++const char *win_get_tempdir(void);
++
+ #endif /* OPENVPN_WIN32_UTIL_H */
+ #endif /* ifdef _WIN32 */
+diff --git a/src/openvpn/win32.c b/src/openvpn/win32.c
+index e998d90..6b7ba5e 100644
+--- a/src/openvpn/win32.c
++++ b/src/openvpn/win32.c
+@@ -1137,34 +1137,6 @@
+     set_win_sys_path(buf, es);
+ }
+ 
+-
+-const char *
+-win_get_tempdir(void)
+-{
+-    static char tmpdir[MAX_PATH];
+-    WCHAR wtmpdir[MAX_PATH];
+-
+-    if (!GetTempPathW(_countof(wtmpdir), wtmpdir))
+-    {
+-        /* Warn if we can't find a valid temporary directory, which should
+-         * be unlikely.
+-         */
+-        msg(M_WARN, "Could not find a suitable temporary directory."
+-            " (GetTempPath() failed).  Consider using --tmp-dir");
+-        return NULL;
+-    }
+-
+-    if (WideCharToMultiByte(CP_UTF8, 0, wtmpdir, -1, NULL, 0, NULL, NULL) > sizeof(tmpdir))
+-    {
+-        msg(M_WARN, "Could not get temporary directory. Path is too long."
+-            "  Consider using --tmp-dir");
+-        return NULL;
+-    }
+-
+-    WideCharToMultiByte(CP_UTF8, 0, wtmpdir, -1, tmpdir, sizeof(tmpdir), NULL, NULL);
+-    return tmpdir;
+-}
+-
+ static bool
+ win_block_dns_service(bool add, int index, const HANDLE pipe)
+ {
+diff --git a/src/openvpn/win32.h b/src/openvpn/win32.h
+index 3605966..aa8513b 100644
+--- a/src/openvpn/win32.h
++++ b/src/openvpn/win32.h
+@@ -286,9 +286,6 @@
+ /* call self in a subprocess */
+ void fork_to_self(const char *cmdline);
+ 
+-/* Find temporary directory */
+-const char *win_get_tempdir(void);
+-
+ bool win_wfp_block_dns(const NET_IFINDEX index, const HANDLE msg_channel);
+ 
+ bool win_wfp_uninit(const NET_IFINDEX index, const HANDLE msg_channel);
 
