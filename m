@@ -1,15 +1,15 @@
 From: "flichtenheld (Code Review)" <gerrit@...515...>
-Date: Fri, 12 Jan 2024 14:14:06 +0000
-References: <gerrit.1705068839000.Iefa4930cb1e8c4135056a17ceb4283fc13cc75c8@...2715...>
+Date: Fri, 12 Jan 2024 14:14:08 +0000
+References: <gerrit.1705068839000.I6f402db2fb73f1206fbc1139c47d2bf4378376fa@...2715...>
 Reply-To: frank@...2641..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net
-Message-ID: <1b0f33af4b5532e492ab0c48b11f4f28bf456819-HTML@...2715...>
+Message-ID: <57157c23530a1bdd1e4e62d97ecf23369cd3159e-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="I+xGdGOU+OA="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: NTLM: increase size
- of phase 2 response we can handle
+Content-Type: multipart/alternative; boundary="vCI7bLkr02k="; charset=UTF-8
+Subject: [Openvpn-devel] [S] Change in openvpn[master]:
+ --http-proxy-user-pass: allow to specify in either order with --http-...
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -21,7 +21,7 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: plaisthos <arne-openvpn@...1227...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---I+xGdGOU+OA=
+--vCI7bLkr02k=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
@@ -32,143 +32,111 @@ Hello plaisthos,
 I'd like you to do a code review.
 Please visit
 
-    http://gerrit.openvpn.net/c/openvpn/+/497?usp=3Demail
+    http://gerrit.openvpn.net/c/openvpn/+/499?usp=3Demail
 
 to review the following change.
 
 
-Change subject: NTLM: increase size of phase 2 response we can handle
+Change subject: --http-proxy-user-pass: allow to specify in either order wi=
+th --http-proxy
 ......................................................................
 
-NTLM: increase size of phase 2 response we can handle
+--http-proxy-user-pass: allow to specify in either order with --http-proxy
 
-With NTLMv2 the target information buffer can be rather large
-even with normal domain setups.
+Previously, when using a third argument to --http-proxy other
+than auto/auto-nct, order did matter between --http-proxy and
+--http-proxy-user-pass. Always prefer --http-proxy-user-pass
+when given.
 
-In my test setup it was 152 bytes starting at offset 71.
-Overall the base64 encode phase 2 response was 300 byte long.
-The linked documentation has 98 bytes at offset 60. 128 byte
-is clearly too low.
-
-While here improve the error messaging, so that if the buffer
-is too small at least one can determine that in the log.
-
-Change-Id: Iefa4930cb1e8c4135056a17ceb4283fc13cc75c8
+Change-Id: I6f402db2fb73f1206fbc1139c47d2bf4378376fa
 Signed-off-by: Frank Lichtenheld <frank@...2641...>
 ---
-M src/openvpn/ntlm.c
+M src/openvpn/options.c
 M src/openvpn/proxy.c
-2 files changed, 10 insertions(+), 11 deletions(-)
+M src/openvpn/proxy.h
+3 files changed, 11 insertions(+), 3 deletions(-)
 
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/97/497/1
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/99/499/1
 
-diff --git a/src/openvpn/ntlm.c b/src/openvpn/ntlm.c
-index 99d4ae7..2c6a69d 100644
---- a/src/openvpn/ntlm.c
-+++ b/src/openvpn/ntlm.c
-@@ -205,7 +205,7 @@
-     uint8_t challenge[8];
-     int i, ret_val;
-
--    uint8_t ntlmv2_response[144];
-+    uint8_t ntlmv2_response[256];
-     char userdomain_u[256];     /* for uppercase unicode username and doma=
-in */
-     char userdomain[128];       /* the same as previous but ascii */
-     uint8_t ntlmv2_hash[MD5_DIGEST_LENGTH];
-@@ -255,17 +255,15 @@
-      * the missing bytes will be NULL, as buf2 is known to be zeroed
-      * when this decode happens.
-      */
--    uint8_t buf2[128]; /* decoded reply from proxy */
-+    uint8_t buf2[512]; /* decoded reply from proxy */
-     CLEAR(buf2);
-     ret_val =3D openvpn_base64_decode(phase_2, buf2, -1);
-     if (ret_val < 0)
-     {
-+        msg(M_WARN, "NTLM: base64 decoding of phase 2 response failed");
-         return NULL;
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index f54f276..e393511 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -1649,6 +1649,8 @@
+     SHOW_STR(port);
+     SHOW_STR(auth_method_string);
+     SHOW_STR(auth_file);
++    SHOW_STR(auth_file_up);
++    SHOW_BOOL(inline_creds);
+     SHOW_STR(http_version);
+     SHOW_STR(user_agent);
+     for  (i =3D 0; i < MAX_CUSTOM_HTTP_HEADER && o->custom_headers[i].name=
+; i++)
+@@ -6824,7 +6826,7 @@
+         struct http_proxy_options *ho;
+         VERIFY_PERMISSION(OPT_P_GENERAL|OPT_P_INLINE);
+         ho =3D init_http_proxy_options_once(&options->ce.http_proxy_option=
+s, &options->gc);
+-        ho->auth_file =3D p[1];
++        ho->auth_file_up =3D p[1];
+         ho->inline_creds =3D is_inline;
      }
-
--    /* we can be sure that phase_2 is less than 128
--     * therefore buf2 needs to be (3/4 * 128) */
--
-     /* extract the challenge from bytes 24-31 */
-     for (i =3D 0; i<8; i++)
-     {
-@@ -284,7 +282,7 @@
-     }
-     else
-     {
--        msg(M_INFO, "Warning: Username or domain too long");
-+        msg(M_INFO, "NTLM: Username or domain too long");
-     }
-     unicodize(userdomain_u, userdomain);
-     gen_hmac_md5((uint8_t *)userdomain_u, 2 * strlen(userdomain), md4_hash,
-@@ -319,9 +317,10 @@
-     if ((flags & 0x00800000) =3D=3D 0x00800000)
-     {
-         tib_len =3D buf2[0x28];            /* Get Target Information block=
- size */
--        if (tib_len > 96)
-+        if (tib_len + 0x1c + 16 > sizeof(ntlmv2_response))
-         {
--            tib_len =3D 96;
-+            msg(M_WARN, "NTLM: target information buffer too long for resp=
-onse (len=3D%d)", tib_len);
-+            return NULL;
-         }
-
-         {
-@@ -329,6 +328,7 @@
-             uint8_t tib_pos =3D buf2[0x2c];
-             if (tib_pos + tib_len > sizeof(buf2))
-             {
-+                msg(M_ERR, "NTLM: phase 2 response from server too long (n=
-eed %d bytes at offset %u)", tib_len, tib_pos);
-                 return NULL;
-             }
-             /* Get Target Information block pointer */
+     else if (streq(p[0], "http-proxy-retry") || streq(p[0], "socks-proxy-r=
+etry"))
 diff --git a/src/openvpn/proxy.c b/src/openvpn/proxy.c
-index 5a1b4e1..e081532 100644
+index e081532..e2324f4 100644
 --- a/src/openvpn/proxy.c
 +++ b/src/openvpn/proxy.c
-@@ -752,8 +752,7 @@
+@@ -271,6 +271,11 @@
+     if (!static_proxy_user_pass.defined)
+     {
+         unsigned int flags =3D GET_USER_PASS_MANAGEMENT;
++        const char *auth_file =3D p->options.auth_file;
++        if (p->options.auth_file_up)
++        {
++            auth_file =3D p->options.auth_file_up;
++        }
+         if (p->queried_creds)
          {
- #if NTLM
-             /* look for the phase 2 response */
--            char buf2[129];
--
-+            char buf2[512];
-             while (true)
-             {
-                 if (!recv_line(sd, buf, sizeof(buf), get_server_poll_remai=
-ning_time(server_poll_timeout), true, NULL, signal_received))
-@@ -764,9 +763,9 @@
-                 msg(D_PROXY, "HTTP proxy returned: '%s'", buf);
+             flags |=3D GET_USER_PASS_PREVIOUS_CREDS_FAILED;
+@@ -280,7 +285,7 @@
+             flags |=3D GET_USER_PASS_INLINE_CREDS;
+         }
+         get_user_pass(&static_proxy_user_pass,
+-                      p->options.auth_file,
++                      auth_file,
+                       UP_TYPE_PROXY,
+                       flags);
+         p->queried_creds =3D true;
+diff --git a/src/openvpn/proxy.h b/src/openvpn/proxy.h
+index 7900244..4e78772 100644
+--- a/src/openvpn/proxy.h
++++ b/src/openvpn/proxy.h
+@@ -52,10 +52,11 @@
 
-                 char get[80];
-+                CLEAR(buf2);
-                 openvpn_snprintf(get, sizeof(get), "%%*s NTLM %%%zus", siz=
-eof(buf2) - 1);
-                 nparms =3D sscanf(buf, get, buf2);
--                buf2[128] =3D 0; /* we only need the beginning - ensure it=
-'s null terminated. */
+     const char *auth_method_string;
+     const char *auth_file;
++    const char *auth_file_up; /* specified with --http-proxy-user-pass */
+     const char *http_version;
+     const char *user_agent;
+     struct http_custom_header custom_headers[MAX_CUSTOM_HTTP_HEADER];
+-    bool inline_creds;
++    bool inline_creds; /* auth_file_up is inline credentials */
+ };
 
-                 /* check for "Proxy-Authenticate: NTLM TlRM..." */
-                 if (nparms =3D=3D 1)
+ struct http_proxy_options_simple {
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/497?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/499?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings
 
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: Iefa4930cb1e8c4135056a17ceb4283fc13cc75c8
-Gerrit-Change-Number: 497
+Gerrit-Change-Id: I6f402db2fb73f1206fbc1139c47d2bf4378376fa
+Gerrit-Change-Number: 499
 Gerrit-PatchSet: 1
 Gerrit-Owner: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
@@ -176,113 +144,90 @@ Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
 Gerrit-MessageType: newchange
 
---I+xGdGOU+OA=
+--vCI7bLkr02k=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <p> Attention is currently required from: plaisthos. </p>
 <p>flichtenheld would like plaisthos to <strong>review</strong> this change.
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/497?usp=3Demail">Vi=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/499?usp=3Demail">Vi=
 ew Change</a></p><pre style=3D"font-family: monospace,monospace; white-spac=
-e: pre-wrap;">NTLM: increase size of phase 2 response we can handle<br><br>=
-With NTLMv2 the target information buffer can be rather large<br>even with =
-normal domain setups.<br><br>In my test setup it was 152 bytes starting at =
-offset 71.<br>Overall the base64 encode phase 2 response was 300 byte long.=
-<br>The linked documentation has 98 bytes at offset 60. 128 byte<br>is clea=
-rly too low.<br><br>While here improve the error messaging, so that if the =
-buffer<br>is too small at least one can determine that in the log.<br><br>C=
-hange-Id: Iefa4930cb1e8c4135056a17ceb4283fc13cc75c8<br>Signed-off-by: Frank=
- Lichtenheld &lt;frank@...2641...&gt;<br>---<br>M src/openvpn/ntlm.c<br>M s=
-rc/openvpn/proxy.c<br>2 files changed, 10 insertions(+), 11 deletions(-)<br=
-><br></pre><pre style=3D"font-family: monospace,monospace; white-space: pre=
--wrap;">git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/97/497=
-/1</pre><pre style=3D"font-family: monospace,monospace; white-space: pre-wr=
-ap;"><span>diff --git a/src/openvpn/ntlm.c b/src/openvpn/ntlm.c</span><br><=
-span>index 99d4ae7..2c6a69d 100644</span><br><span>--- a/src/openvpn/ntlm.c=
-</span><br><span>+++ b/src/openvpn/ntlm.c</span><br><span>@@ -205,7 +205,7 =
-@@</span><br><span>     uint8_t challenge[8];</span><br><span>     int i, r=
-et_val;</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%)=
-;">-    uint8_t ntlmv2_response[144];</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+    uint8_t ntlmv2_response[256];</span><br><span>     ch=
-ar userdomain_u[256];     /* for uppercase unicode username and domain */</=
-span><br><span>     char userdomain[128];       /* the same as previous but=
- ascii */</span><br><span>     uint8_t ntlmv2_hash[MD5_DIGEST_LENGTH];</spa=
-n><br><span>@@ -255,17 +255,15 @@</span><br><span>      * the missing bytes=
- will be NULL, as buf2 is known to be zeroed</span><br><span>      * when t=
-his decode happens.</span><br><span>      */</span><br><span style=3D"color=
-: hsl(0, 100%, 40%);">-    uint8_t buf2[128]; /* decoded reply from proxy *=
-/</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    uint8_t buf2[5=
-12]; /* decoded reply from proxy */</span><br><span>     CLEAR(buf2);</span=
-><br><span>     ret_val =3D openvpn_base64_decode(phase_2, buf2, -1);</span=
-><br><span>     if (ret_val &lt; 0)</span><br><span>     {</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+        msg(M_WARN, &quot;NTLM: base=
-64 decoding of phase 2 response failed&quot;);</span><br><span>         ret=
-urn NULL;</span><br><span>     }</span><br><span> </span><br><span style=3D=
-"color: hsl(0, 100%, 40%);">-    /* we can be sure that phase_2 is less tha=
-n 128</span><br><span style=3D"color: hsl(0, 100%, 40%);">-     * therefore=
- buf2 needs to be (3/4 * 128) */</span><br><span style=3D"color: hsl(0, 100=
-%, 40%);">-</span><br><span>     /* extract the challenge from bytes 24-31 =
-*/</span><br><span>     for (i =3D 0; i&lt;8; i++)</span><br><span>     {</=
-span><br><span>@@ -284,7 +282,7 @@</span><br><span>     }</span><br><span> =
-    else</span><br><span>     {</span><br><span style=3D"color: hsl(0, 100%=
-, 40%);">-        msg(M_INFO, &quot;Warning: Username or domain too long&qu=
-ot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        msg(M_=
-INFO, &quot;NTLM: Username or domain too long&quot;);</span><br><span>     =
-}</span><br><span>     unicodize(userdomain_u, userdomain);</span><br><span=
->     gen_hmac_md5((uint8_t *)userdomain_u, 2 * strlen(userdomain), md4_has=
-h,</span><br><span>@@ -319,9 +317,10 @@</span><br><span>     if ((flags &am=
-p; 0x00800000) =3D=3D 0x00800000)</span><br><span>     {</span><br><span>  =
-       tib_len =3D buf2[0x28];            /* Get Target Information block s=
-ize */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        if (tib=
-_len &gt; 96)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
-  if (tib_len + 0x1c + 16 &gt; sizeof(ntlmv2_response))</span><br><span>   =
-      {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            ti=
-b_len =3D 96;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
-      msg(M_WARN, &quot;NTLM: target information buffer too long for respon=
-se (len=3D%d)&quot;, tib_len);</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+            return NULL;</span><br><span>         }</span><br><s=
-pan> </span><br><span>         {</span><br><span>@@ -329,6 +328,7 @@</span>=
-<br><span>             uint8_t tib_pos =3D buf2[0x2c];</span><br><span>    =
-         if (tib_pos + tib_len &gt; sizeof(buf2))</span><br><span>         =
-    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+              =
-  msg(M_ERR, &quot;NTLM: phase 2 response from server too long (need %d byt=
-es at offset %u)&quot;, tib_len, tib_pos);</span><br><span>                =
- return NULL;</span><br><span>             }</span><br><span>             /=
-* Get Target Information block pointer */</span><br><span>diff --git a/src/=
-openvpn/proxy.c b/src/openvpn/proxy.c</span><br><span>index 5a1b4e1..e08153=
-2 100644</span><br><span>--- a/src/openvpn/proxy.c</span><br><span>+++ b/sr=
-c/openvpn/proxy.c</span><br><span>@@ -752,8 +752,7 @@</span><br><span>     =
-    {</span><br><span> #if NTLM</span><br><span>             /* look for th=
-e phase 2 response */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
-            char buf2[129];</span><br><span style=3D"color: hsl(0, 100%, 40=
-%);">-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            c=
-har buf2[512];</span><br><span>             while (true)</span><br><span>  =
-           {</span><br><span>                 if (!recv_line(sd, buf, sizeo=
-f(buf), get_server_poll_remaining_time(server_poll_timeout), true, NULL, si=
-gnal_received))</span><br><span>@@ -764,9 +763,9 @@</span><br><span>       =
-          msg(D_PROXY, &quot;HTTP proxy returned: &#39;%s&#39;&quot;, buf);=
-</span><br><span> </span><br><span>                 char get[80];</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+                CLEAR(buf2);<=
-/span><br><span>                 openvpn_snprintf(get, sizeof(get), &quot;%=
-%*s NTLM %%%zus&quot;, sizeof(buf2) - 1);</span><br><span>                 =
-nparms =3D sscanf(buf, get, buf2);</span><br><span style=3D"color: hsl(0, 1=
-00%, 40%);">-                buf2[128] =3D 0; /* we only need the beginning=
- - ensure it&#39;s null terminated. */</span><br><span> </span><br><span>  =
-               /* check for &quot;Proxy-Authenticate: NTLM TlRM...&quot; */=
-</span><br><span>                 if (nparms =3D=3D 1)</span><br><span></sp=
-an><br></pre><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openv=
-pn/+/497?usp=3Demail">change 497</a>. To unsubscribe, or for help writing m=
-ail filters, visit <a href=3D"http://gerrit.openvpn.net/settings">settings<=
-/a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div ite=
-mscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link =
-itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/497?usp=3Dem=
-ail"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
+e: pre-wrap;">--http-proxy-user-pass: allow to specify in either order with=
+ --http-proxy<br><br>Previously, when using a third argument to --http-prox=
+y other<br>than auto/auto-nct, order did matter between --http-proxy and<br=
+>--http-proxy-user-pass. Always prefer --http-proxy-user-pass<br>when given=
+.<br><br>Change-Id: I6f402db2fb73f1206fbc1139c47d2bf4378376fa<br>Signed-off=
+-by: Frank Lichtenheld &lt;frank@...2641...&gt;<br>---<br>M src/openvpn/opt=
+ions.c<br>M src/openvpn/proxy.c<br>M src/openvpn/proxy.h<br>3 files changed=
+, 11 insertions(+), 3 deletions(-)<br><br></pre><pre style=3D"font-family: =
+monospace,monospace; white-space: pre-wrap;">git pull ssh://gerrit.openvpn.=
+net:29418/openvpn refs/changes/99/499/1</pre><pre style=3D"font-family: mon=
+ospace,monospace; white-space: pre-wrap;"><span>diff --git a/src/openvpn/op=
+tions.c b/src/openvpn/options.c</span><br><span>index f54f276..e393511 1006=
+44</span><br><span>--- a/src/openvpn/options.c</span><br><span>+++ b/src/op=
+envpn/options.c</span><br><span>@@ -1649,6 +1649,8 @@</span><br><span>     =
+SHOW_STR(port);</span><br><span>     SHOW_STR(auth_method_string);</span><b=
+r><span>     SHOW_STR(auth_file);</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+    SHOW_STR(auth_file_up);</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+    SHOW_BOOL(inline_creds);</span><br><span>     SHO=
+W_STR(http_version);</span><br><span>     SHOW_STR(user_agent);</span><br><=
+span>     for  (i =3D 0; i &lt; MAX_CUSTOM_HTTP_HEADER &amp;&amp; o-&gt;cus=
+tom_headers[i].name; i++)</span><br><span>@@ -6824,7 +6826,7 @@</span><br><=
+span>         struct http_proxy_options *ho;</span><br><span>         VERIF=
+Y_PERMISSION(OPT_P_GENERAL|OPT_P_INLINE);</span><br><span>         ho =3D i=
+nit_http_proxy_options_once(&amp;options-&gt;ce.http_proxy_options, &amp;op=
+tions-&gt;gc);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-       =
+ ho-&gt;auth_file =3D p[1];</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+        ho-&gt;auth_file_up =3D p[1];</span><br><span>         ho-&=
+gt;inline_creds =3D is_inline;</span><br><span>     }</span><br><span>     =
+else if (streq(p[0], &quot;http-proxy-retry&quot;) || streq(p[0], &quot;soc=
+ks-proxy-retry&quot;))</span><br><span>diff --git a/src/openvpn/proxy.c b/s=
+rc/openvpn/proxy.c</span><br><span>index e081532..e2324f4 100644</span><br>=
+<span>--- a/src/openvpn/proxy.c</span><br><span>+++ b/src/openvpn/proxy.c</=
+span><br><span>@@ -271,6 +271,11 @@</span><br><span>     if (!static_proxy_=
+user_pass.defined)</span><br><span>     {</span><br><span>         unsigned=
+ int flags =3D GET_USER_PASS_MANAGEMENT;</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+        const char *auth_file =3D p-&gt;options.auth_f=
+ile;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        if (p-&=
+gt;options.auth_file_up)</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+        {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
+       auth_file =3D p-&gt;options.auth_file_up;</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+        }</span><br><span>         if (p-&gt;q=
+ueried_creds)</span><br><span>         {</span><br><span>             flags=
+ |=3D GET_USER_PASS_PREVIOUS_CREDS_FAILED;</span><br><span>@@ -280,7 +285,7=
+ @@</span><br><span>             flags |=3D GET_USER_PASS_INLINE_CREDS;</sp=
+an><br><span>         }</span><br><span>         get_user_pass(&amp;static_=
+proxy_user_pass,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-     =
+                 p-&gt;options.auth_file,</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+                      auth_file,</span><br><span>    =
+                   UP_TYPE_PROXY,</span><br><span>                       fl=
+ags);</span><br><span>         p-&gt;queried_creds =3D true;</span><br><spa=
+n>diff --git a/src/openvpn/proxy.h b/src/openvpn/proxy.h</span><br><span>in=
+dex 7900244..4e78772 100644</span><br><span>--- a/src/openvpn/proxy.h</span=
+><br><span>+++ b/src/openvpn/proxy.h</span><br><span>@@ -52,10 +52,11 @@</s=
+pan><br><span> </span><br><span>     const char *auth_method_string;</span>=
+<br><span>     const char *auth_file;</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+    const char *auth_file_up; /* specified with --http-pr=
+oxy-user-pass */</span><br><span>     const char *http_version;</span><br><=
+span>     const char *user_agent;</span><br><span>     struct http_custom_h=
+eader custom_headers[MAX_CUSTOM_HTTP_HEADER];</span><br><span style=3D"colo=
+r: hsl(0, 100%, 40%);">-    bool inline_creds;</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+    bool inline_creds; /* auth_file_up is inline=
+ credentials */</span><br><span> };</span><br><span> </span><br><span> stru=
+ct http_proxy_options_simple {</span><br><span></span><br></pre><p>To view,=
+ visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/499?usp=3Demail">ch=
+ange 499</a>. To unsubscribe, or for help writing mail filters, visit <a hr=
+ef=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope i=
+temtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"actio=
+n" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D=
+"http://gerrit.openvpn.net/c/openvpn/+/499?usp=3Demail"/><meta itemprop=3D"=
+name" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: Iefa4930cb1e8c4135056a17ceb4=
-283fc13cc75c8 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 497 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I6f402db2fb73f1206fbc1139c47=
+d2bf4378376fa </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 499 </div>
 <div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
 <div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
 .&gt; </div>
@@ -295,5 +240,5 @@ ts.sourceforge.net&gt; </div>
 <div style=3D"display:none"> Gerrit-MessageType: newchange </div>
 
 
---I+xGdGOU+OA=--
+--vCI7bLkr02k=--
 
