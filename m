@@ -1,15 +1,16 @@
 From: "flichtenheld (Code Review)" <gerrit@...515...>
-Date: Fri, 12 Jan 2024 14:14:05 +0000
-References: <gerrit.1705068839000.Icea931d29e3e504e23e045539b21013b42172664@...2715...>
-Reply-To: frank@...2641..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net
-Message-ID: <320bdf33a7061a119b72f102b23372cad33a6722-HTML@...2715...>
+Date: Fri, 12 Jan 2024 16:25:11 +0000
+In-Reply-To: <gerrit.1704761332000.Ic9bf797bfc7e2d471998a84cb0f071db3e4832ba@...2715...>
+References: <gerrit.1704761332000.Ic9bf797bfc7e2d471998a84cb0f071db3e4832ba@...2715...>
+Reply-To: frank@...2641..., arne-openvpn@...1227..., heiko@...515...,
+ openvpn-devel@lists.sourceforge.net, gert@...1296..., lstipakov@...277...
+Message-ID: <488f9fd008f8e8eb960628fb7308c6ed976889a3-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="Z6YF/KpcEr0="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: NTLM: add length
- check to add_security_buffer
+Content-Type: multipart/alternative; boundary="6rnkFMUHsQ4="; charset=UTF-8
+Subject: [Openvpn-devel] [L] Change in openvpn[master]: Windows: enforce
+ 'block-local' with WFP filters
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,177 +19,136 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: plaisthos <arne-openvpn@...1227...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: d12fk <heiko@...515...>
+Cc: stipa <lstipakov@...277...>, cron2 <gert@...1296...>, plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---Z6YF/KpcEr0=
+--6rnkFMUHsQ4=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: plaisthos.
+Attention is currently required from: cron2, d12fk, plaisthos, stipa.
 
-Hello plaisthos,
+flichtenheld has posted comments on this change. ( http://gerrit.openvpn.ne=
+t/c/openvpn/+/489?usp=3Demail )
 
-I'd like you to do a code review.
-Please visit
-
-    http://gerrit.openvpn.net/c/openvpn/+/496?usp=3Demail
-
-to review the following change.
-
-
-Change subject: NTLM: add length check to add_security_buffer
+Change subject: Windows: enforce 'block-local' with WFP filters
 ......................................................................
 
-NTLM: add length check to add_security_buffer
 
-Especially ntlmv2_response can be very big, so make sure
-we not do exceed the size of the phase3 buffer.
+Patch Set 5: Code-Review+1
 
-Change-Id: Icea931d29e3e504e23e045539b21013b42172664
-Signed-off-by: Frank Lichtenheld <frank@...2641...>
----
-M src/openvpn/ntlm.c
-1 file changed, 9 insertions(+), 4 deletions(-)
+(2 comments)
 
+Patchset:
+
+PS5:
+Generally looks fine to me
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/96/496/1
+File src/openvpn/win32.c:
 
-diff --git a/src/openvpn/ntlm.c b/src/openvpn/ntlm.c
-index bc33f41..99d4ae7 100644
---- a/src/openvpn/ntlm.c
-+++ b/src/openvpn/ntlm.c
-@@ -154,8 +154,13 @@
+http://gerrit.openvpn.net/c/openvpn/+/489/comment/4f22baef_1cbaf8d1 :
+PS1, Line 1225:     if (ret =3D=3D false)
+> Yes, but no. The function has a single point of return, let's keep it tha=
+t way. [=E2=80=A6]
+Acknowledged
 
- static void
- add_security_buffer(int sb_offset, void *data, int length,
--                    unsigned char *msg_buf, int *msg_bufpos)
-+                    unsigned char *msg_buf, int *msg_bufpos, size_t msg_bu=
-fsize)
- {
-+    if (*msg_bufpos + length > msg_bufsize)
-+    {
-+        msg(M_WARN, "NTLM: security buffer too big for message buffer");
-+        return;
-+    }
-     /* Adds security buffer data to a message and sets security buffer's
-      * offset and length */
-     msg_buf[sb_offset] =3D (unsigned char)length;
-@@ -362,15 +367,15 @@
 
-     /* NTLMv2 response */
-     add_security_buffer(0x14, ntlmv2_response, ntlmv2_blob_size + 16,
--                        phase3, &phase3_bufpos);
-+                        phase3, &phase3_bufpos, sizeof(phase3));
-
-     /* username in ascii */
-     add_security_buffer(0x24, username, strlen(username), phase3,
--                        &phase3_bufpos);
-+                        &phase3_bufpos, sizeof(phase3));
-
-     /* Set domain. If <domain> is empty, default domain will be used
-      * (i.e. proxy's domain) */
--    add_security_buffer(0x1c, domain, strlen(domain), phase3, &phase3_bufp=
-os);
-+    add_security_buffer(0x1c, domain, strlen(domain), phase3, &phase3_bufp=
-os, sizeof(phase3));
-
-     /* other security buffers will be empty */
-     phase3[0x10] =3D phase3_bufpos;     /* lm not used */
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/496?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/489?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings
 
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: Icea931d29e3e504e23e045539b21013b42172664
-Gerrit-Change-Number: 496
-Gerrit-PatchSet: 1
-Gerrit-Owner: flichtenheld <frank@...2641...>
+Gerrit-Change-Id: Ic9bf797bfc7e2d471998a84cb0f071db3e4832ba
+Gerrit-Change-Number: 489
+Gerrit-PatchSet: 5
+Gerrit-Owner: d12fk <heiko@...515...>
+Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
+Gerrit-CC: cron2 <gert@...1296...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-CC: stipa <lstipakov@...277...>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-MessageType: newchange
+Gerrit-Attention: cron2 <gert@...1296...>
+Gerrit-Attention: d12fk <heiko@...515...>
+Gerrit-Attention: stipa <lstipakov@...277...>
+Gerrit-Comment-Date: Fri, 12 Jan 2024 16:25:11 +0000
+Gerrit-HasComments: Yes
+Gerrit-Has-Labels: Yes
+Comment-In-Reply-To: flichtenheld <frank@...2641...>
+Comment-In-Reply-To: d12fk <heiko@...515...>
+Gerrit-MessageType: comment
 
---Z6YF/KpcEr0=
+--6rnkFMUHsQ4=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p> Attention is currently required from: plaisthos. </p>
-<p>flichtenheld would like plaisthos to <strong>review</strong> this change.
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/496?usp=3Demail">Vi=
-ew Change</a></p><pre style=3D"font-family: monospace,monospace; white-spac=
-e: pre-wrap;">NTLM: add length check to add_security_buffer<br><br>Especial=
-ly ntlmv2_response can be very big, so make sure<br>we not do exceed the si=
-ze of the phase3 buffer.<br><br>Change-Id: Icea931d29e3e504e23e045539b21013=
-b42172664<br>Signed-off-by: Frank Lichtenheld &lt;frank@...2641...&gt;<br>-=
---<br>M src/openvpn/ntlm.c<br>1 file changed, 9 insertions(+), 4 deletions(=
--)<br><br></pre><pre style=3D"font-family: monospace,monospace; white-space=
-: pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/9=
-6/496/1</pre><pre style=3D"font-family: monospace,monospace; white-space: p=
-re-wrap;"><span>diff --git a/src/openvpn/ntlm.c b/src/openvpn/ntlm.c</span>=
-<br><span>index bc33f41..99d4ae7 100644</span><br><span>--- a/src/openvpn/n=
-tlm.c</span><br><span>+++ b/src/openvpn/ntlm.c</span><br><span>@@ -154,8 +1=
-54,13 @@</span><br><span> </span><br><span> static void</span><br><span> ad=
-d_security_buffer(int sb_offset, void *data, int length,</span><br><span st=
-yle=3D"color: hsl(0, 100%, 40%);">-                    unsigned char *msg_b=
-uf, int *msg_bufpos)</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+                    unsigned char *msg_buf, int *msg_bufpos, size_t msg_bu=
-fsize)</span><br><span> {</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+    if (*msg_bufpos + length &gt; msg_bufsize)</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+        msg(M_WARN, &quot;NTLM: security buffer too big=
- for message buffer&quot;);</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+        return;</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+    }</span><br><span>     /* Adds security buffer data to a message an=
-d sets security buffer&#39;s</span><br><span>      * offset and length */</=
-span><br><span>     msg_buf[sb_offset] =3D (unsigned char)length;</span><br=
-><span>@@ -362,15 +367,15 @@</span><br><span> </span><br><span>     /* NTLM=
-v2 response */</span><br><span>     add_security_buffer(0x14, ntlmv2_respon=
-se, ntlmv2_blob_size + 16,</span><br><span style=3D"color: hsl(0, 100%, 40%=
-);">-                        phase3, &amp;phase3_bufpos);</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+                        phase3, &amp;=
-phase3_bufpos, sizeof(phase3));</span><br><span> </span><br><span>     /* u=
-sername in ascii */</span><br><span>     add_security_buffer(0x24, username=
-, strlen(username), phase3,</span><br><span style=3D"color: hsl(0, 100%, 40=
-%);">-                        &amp;phase3_bufpos);</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+                        &amp;phase3_bufpos, =
-sizeof(phase3));</span><br><span> </span><br><span>     /* Set domain. If &=
-lt;domain&gt; is empty, default domain will be used</span><br><span>      *=
- (i.e. proxy&#39;s domain) */</span><br><span style=3D"color: hsl(0, 100%, =
-40%);">-    add_security_buffer(0x1c, domain, strlen(domain), phase3, &amp;=
-phase3_bufpos);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-add_security_buffer(0x1c, domain, strlen(domain), phase3, &amp;phase3_bufpo=
-s, sizeof(phase3));</span><br><span> </span><br><span>     /* other securit=
-y buffers will be empty */</span><br><span>     phase3[0x10] =3D phase3_buf=
-pos;     /* lm not used */</span><br><span></span><br></pre><p>To view, vis=
-it <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/496?usp=3Demail">change=
- 496</a>. To unsubscribe, or for help writing mail filters, visit <a href=
-=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope ite=
-mtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"action"=
- itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"h=
-ttp://gerrit.openvpn.net/c/openvpn/+/496?usp=3Demail"/><meta itemprop=3D"na=
-me" content=3D"View Change"/></div></div>
+<p> Attention is currently required from: cron2, d12fk, plaisthos, stipa. <=
+/p>
+<p>Patch set 5:<span style=3D"border-radius: 3px; display: inline-block; ma=
+rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +1</span>=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/489?usp=3Demail">Vi=
+ew Change</a></p><p>2 comments:</p><ul style=3D"list-style: none; padding: =
+0;"><li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-=
+style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p =
+style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvp=
+n/+/489?tab=3Dcomments">Patch Set #5:</a> </p><p style=3D"white-space: pre-=
+wrap; word-wrap: break-word;">Generally looks fine to me</p></li></ul></li>=
+<li style=3D"margin: 0; padding: 0;"><p>File src/openvpn/win32.c:</p><ul st=
+yle=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 =
+0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.=
+net/c/openvpn/+/489/comment/4f22baef_1cbaf8d1">Patch Set #1, Line 1225:</a>=
+ <code style=3D"font-family:monospace,monospace">    if (ret =3D=3D false)<=
+/code></p><p><blockquote style=3D"border-left: 1px solid #aaa; margin: 10px=
+ 0; padding: 0 10px;">Yes, but no. The function has a single point of retur=
+n, let&#39;s keep it that way. [=E2=80=A6]</blockquote></p><p style=3D"whit=
+e-space: pre-wrap; word-wrap: break-word;">Acknowledged</p></li></ul></li><=
+/ul><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/489?=
+usp=3Demail">change 489</a>. To unsubscribe, or for help writing mail filte=
+rs, visit <a href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><=
+div itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope it=
+emprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=
+=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/489?usp=3Demail"/><m=
+eta itemprop=3D"name" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: Icea931d29e3e504e23e045539b2=
-1013b42172664 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 496 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
-<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
-.&gt; </div>
+<div style=3D"display:none"> Gerrit-Change-Id: Ic9bf797bfc7e2d471998a84cb0f=
+071db3e4832ba </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 489 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 5 </div>
+<div style=3D"display:none"> Gerrit-Owner: d12fk &lt;heiko@...515...&gt; </=
+div>
+<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
+1...&gt; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
 .1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: cron2 &lt;gert@...1296...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: stipa &lt;lstipakov@...277...&gt; <=
+/div>
 <div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
 ..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: newchange </div>
+<div style=3D"display:none"> Gerrit-Attention: cron2 &lt;gert@...1296...&gt=
+; </div>
+<div style=3D"display:none"> Gerrit-Attention: d12fk &lt;heiko@...515...&gt=
+; </div>
+<div style=3D"display:none"> Gerrit-Attention: stipa &lt;lstipakov@...1663...=
+.&gt; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Fri, 12 Jan 2024 16:25:11=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
+<div style=3D"display:none"> Comment-In-Reply-To: flichtenheld &lt;frank@...1186...=
+.2641...&gt; </div>
+<div style=3D"display:none"> Comment-In-Reply-To: d12fk &lt;heiko@...515...=
+&gt; </div>
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
 
 
---Z6YF/KpcEr0=--
+--6rnkFMUHsQ4=--
 
