@@ -1,16 +1,15 @@
 From: "flichtenheld (Code Review)" <gerrit@...515...>
-Date: Fri, 12 Jan 2024 14:13:10 +0000
-In-Reply-To: <gerrit.1704979923000.Ic19f859c3aca8b30aa51b12dcb906a6e7e735019@...2715...>
-References: <gerrit.1704979923000.Ic19f859c3aca8b30aa51b12dcb906a6e7e735019@...2715...>
+Date: Fri, 12 Jan 2024 14:14:07 +0000
+References: <gerrit.1705068839000.I7a754d0b4a76a9227bf922f65176cd9ec4d7670c@...2715...>
 Reply-To: frank@...2641..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, lstipakov@...277...
-Message-ID: <b22f234b37ba7b71a58cac2bf44a2e7d098b5ba4-EmailReviewComments-HTML@...2715...>
+ openvpn-devel@lists.sourceforge.net
+Message-ID: <a42b41a5152820deb8665e21cf723ce39378c935-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="ZlhyJQixSb8="; charset=UTF-8
-Subject: [Openvpn-devel] [XS] Change in openvpn[master]: CMakeLists.txt:
- Don't fail on missing compile_commands.json
+Content-Type: multipart/alternative; boundary="Cra83WZlAvI="; charset=UTF-8
+Subject: [Openvpn-devel] [S] Change in openvpn[master]: proxy-options.rst:
+ Add proper documentation for --http-proxy-user-pass
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,140 +18,230 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: stipa <lstipakov@...277...>
-Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: plaisthos <arne-openvpn@...1227...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---ZlhyJQixSb8=
+--Cra83WZlAvI=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: plaisthos, stipa.
+Attention is currently required from: plaisthos.
 
-flichtenheld has posted comments on this change. ( http://gerrit.openvpn.ne=
-t/c/openvpn/+/495?usp=3Demail )
+Hello plaisthos,
 
-Change subject: CMakeLists.txt: Don't fail on missing compile_commands.json
+I'd like you to do a code review.
+Please visit
+
+    http://gerrit.openvpn.net/c/openvpn/+/498?usp=3Demail
+
+to review the following change.
+
+
+Change subject: proxy-options.rst: Add proper documentation for --http-prox=
+y-user-pass
 ......................................................................
 
+proxy-options.rst: Add proper documentation for --http-proxy-user-pass
 
-Patch Set 2: Code-Review-1
+And extend examples section for authenticated HTTP proxies because
+is was misleading.
 
-(2 comments)
-
-Commit Message:
-
-http://gerrit.openvpn.net/c/openvpn/+/495/comment/ff72c046_d852df10 :
-PS2, Line 7: CMakeLists.txt: Don't fail on missing compile_commands.json
-Change to CMake: Don't fail if compile_commands.json symlink can't be creat=
-ed.
-
-
-http://gerrit.openvpn.net/c/openvpn/+/495/comment/78f9bf15_9a748563 :
-PS2, Line 15: There a two issues:
-I would suggest replacing this whole section with:
-
-<--->
-Creating symlinks on Windows by default requires an elevated prompt,
-which is not normally the case (but it turned out is the case for GHA).
-Without elevated prompt this fails the build.
-Fix by make symlink creation non-fatal by providing variable
-to store result.
-
-Since CMAKE_EXPORT_COMPILE_COMMANDS works only on Ninja and Makefile genera=
-tors and doesn't produce anything on MSVC,
-the symlink is useless in this case anyway.
-<---->
-
-This makes it clearer what the actual issue is, but mentions
-the other issue as justification.
+Change-Id: I7a754d0b4a76a9227bf922f65176cd9ec4d7670c
+Signed-off-by: Frank Lichtenheld <frank@...2641...>
+---
+M doc/man-sections/proxy-options.rst
+1 file changed, 32 insertions(+), 3 deletions(-)
 
 
+
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/98/498/1
+
+diff --git a/doc/man-sections/proxy-options.rst b/doc/man-sections/proxy-op=
+tions.rst
+index 9cf311f..ad49c60 100644
+--- a/doc/man-sections/proxy-options.rst
++++ b/doc/man-sections/proxy-options.rst
+@@ -4,7 +4,7 @@
+   is required, a file name to an ``authfile`` file containing a username
+   and password on 2 lines can be given, or :code:`stdin` to prompt from
+   console. Its content can also be specified in the config file with the
+-  ``--http-proxy-user-pass`` option. (See section on inline files)
++  ``--http-proxy-user-pass`` option (See `INLINE FILE SUPPORT`_).
+
+   The last optional argument is an ``auth-method`` which should be one
+   of :code:`none`, :code:`basic`, or :code:`ntlm2`.
+@@ -25,14 +25,43 @@
+   Examples:
+   ::
+
++     # no authentication
+      http-proxy proxy.example.net 3128
++     # basic authentication, load credentials from file
+      http-proxy proxy.example.net 3128 authfile.txt
++     # basic authentication, ask user for credentials
+      http-proxy proxy.example.net 3128 stdin
+-     http-proxy proxy.example.net 3128 auto basic
+-     http-proxy proxy.example.net 3128 auto-nct ntlm2
++     # NTLM authentication, load credentials from file
++     http-proxy proxy.example.net 3128 authfile.txt ntlm2
++     # determine which authentication is required, ask user for credentials
++     http-proxy proxy.example.net 3128 auto
++     # determine which authentication is required, but reject basic
++     http-proxy proxy.example.net 3128 auto-nct
++     # determine which authentication is required, but set credentials
++     http-proxy proxy.example.net 3128 auto
++     http-proxy-user-pass authfile.txt
++     # basic authentication, specify credentials inline
++     http-proxy proxy.example.net 3128 "" basic
++     <http-proxy-user-pass>
++     username
++     password
++     </http-proxy-user-pass>
+
+   Note that support for NTLMv1 proxies was removed with OpenVPN 2.7.
+
++--http-proxy-user-pass userpass
++  Overwrite the username/password information for ``--http-proxy``. If spe=
+cified
++  as an inline option (see `INLINE FILE SUPPORT`_), it will be interpreted=
+ as
++  username/password separated by a newline. When specified on the command =
+line
++  it is interpreted as a filename same as the third argument to ``--http-p=
+roxy``.
++
++  Example::
++
++    <http-proxy-user-pass>
++    username
++    password
++    </http-proxy-user-pass>
++
+ --http-proxy-option args
+   Set extended HTTP proxy options. Requires an option ``type`` as argument
+   and an optional ``parameter`` to the type.  Repeat to set multiple
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/495?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/498?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings
 
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: Ic19f859c3aca8b30aa51b12dcb906a6e7e735019
-Gerrit-Change-Number: 495
-Gerrit-PatchSet: 2
-Gerrit-Owner: stipa <lstipakov@...277...>
-Gerrit-Reviewer: flichtenheld <frank@...2641...>
+Gerrit-Change-Id: I7a754d0b4a76a9227bf922f65176cd9ec4d7670c
+Gerrit-Change-Number: 498
+Gerrit-PatchSet: 1
+Gerrit-Owner: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: stipa <lstipakov@...277...>
-Gerrit-Comment-Date: Fri, 12 Jan 2024 14:13:10 +0000
-Gerrit-HasComments: Yes
-Gerrit-Has-Labels: Yes
-Gerrit-MessageType: comment
+Gerrit-MessageType: newchange
 
---ZlhyJQixSb8=
+--Cra83WZlAvI=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p> Attention is currently required from: plaisthos, stipa. </p>
-<p>Patch set 2:<span style=3D"border-radius: 3px; display: inline-block; ma=
-rgin: 0 2px; padding: 4px;background-color: #ffd4d4;">Code-Review -1</span>=
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/495?usp=3Demail">Vi=
-ew Change</a></p><p>2 comments:</p><ul style=3D"list-style: none; padding: =
-0;"><li style=3D"margin: 0; padding: 0;"><p>Commit Message:</p><ul style=3D=
-"list-style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px=
-;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/=
-openvpn/+/495/comment/ff72c046_d852df10">Patch Set #2, Line 7:</a> <code st=
-yle=3D"font-family:monospace,monospace">CMakeLists.txt: Don&#39;t fail on m=
-issing compile_commands.json</code></p><p style=3D"white-space: pre-wrap; w=
-ord-wrap: break-word;">Change to CMake: Don&#39;t fail if compile_commands.=
-json symlink can&#39;t be created.</p></li><li style=3D"margin: 0; padding:=
- 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.ope=
-nvpn.net/c/openvpn/+/495/comment/78f9bf15_9a748563">Patch Set #2, Line 15:<=
-/a> <code style=3D"font-family:monospace,monospace">There a two issues:</co=
-de></p><p style=3D"white-space: pre-wrap; word-wrap: break-word;">I would s=
-uggest replacing this whole section with:</p><p style=3D"white-space: pre-w=
-rap; word-wrap: break-word;">&lt;---&gt;<br>Creating symlinks on Windows by=
- default requires an elevated prompt,<br>which is not normally the case (bu=
-t it turned out is the case for GHA).<br>Without elevated prompt this fails=
- the build.<br>Fix by make symlink creation non-fatal by providing variable=
-<br>to store result.</p><p style=3D"white-space: pre-wrap; word-wrap: break=
--word;">Since CMAKE_EXPORT_COMPILE_COMMANDS works only on Ninja and Makefil=
-e generators and doesn&#39;t produce anything on MSVC,<br>the symlink is us=
-eless in this case anyway.<br>&lt;----&gt;</p><p style=3D"white-space: pre-=
-wrap; word-wrap: break-word;">This makes it clearer what the actual issue i=
-s, but mentions<br>the other issue as justification.</p></li></ul></li></ul=
-><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/495?usp=
-=3Demail">change 495</a>. To unsubscribe, or for help writing mail filters,=
- visit <a href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div=
- itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemp=
-rop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"=
-url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/495?usp=3Demail"/><meta =
-itemprop=3D"name" content=3D"View Change"/></div></div>
+<p> Attention is currently required from: plaisthos. </p>
+<p>flichtenheld would like plaisthos to <strong>review</strong> this change.
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/498?usp=3Demail">Vi=
+ew Change</a></p><pre style=3D"font-family: monospace,monospace; white-spac=
+e: pre-wrap;">proxy-options.rst: Add proper documentation for --http-proxy-=
+user-pass<br><br>And extend examples section for authenticated HTTP proxies=
+ because<br>is was misleading.<br><br>Change-Id: I7a754d0b4a76a9227bf922f65=
+176cd9ec4d7670c<br>Signed-off-by: Frank Lichtenheld &lt;frank@...2641...&gt=
+;<br>---<br>M doc/man-sections/proxy-options.rst<br>1 file changed, 32 inse=
+rtions(+), 3 deletions(-)<br><br></pre><pre style=3D"font-family: monospace=
+,monospace; white-space: pre-wrap;">git pull ssh://gerrit.openvpn.net:29418=
+/openvpn refs/changes/98/498/1</pre><pre style=3D"font-family: monospace,mo=
+nospace; white-space: pre-wrap;"><span>diff --git a/doc/man-sections/proxy-=
+options.rst b/doc/man-sections/proxy-options.rst</span><br><span>index 9cf3=
+11f..ad49c60 100644</span><br><span>--- a/doc/man-sections/proxy-options.rs=
+t</span><br><span>+++ b/doc/man-sections/proxy-options.rst</span><br><span>=
+@@ -4,7 +4,7 @@</span><br><span>   is required, a file name to an ``authfil=
+e`` file containing a username</span><br><span>   and password on 2 lines c=
+an be given, or :code:`stdin` to prompt from</span><br><span>   console. It=
+s content can also be specified in the config file with the</span><br><span=
+ style=3D"color: hsl(0, 100%, 40%);">-  ``--http-proxy-user-pass`` option. =
+(See section on inline files)</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+  ``--http-proxy-user-pass`` option (See `INLINE FILE SUPPORT`_).=
+</span><br><span> </span><br><span>   The last optional argument is an ``au=
+th-method`` which should be one</span><br><span>   of :code:`none`, :code:`=
+basic`, or :code:`ntlm2`.</span><br><span>@@ -25,14 +25,43 @@</span><br><sp=
+an>   Examples:</span><br><span>   ::</span><br><span> </span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+     # no authentication</span><br><spa=
+n>      http-proxy proxy.example.net 3128</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+     # basic authentication, load credentials from fi=
+le</span><br><span>      http-proxy proxy.example.net 3128 authfile.txt</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+     # basic authentica=
+tion, ask user for credentials</span><br><span>      http-proxy proxy.examp=
+le.net 3128 stdin</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
+ http-proxy proxy.example.net 3128 auto basic</span><br><span style=3D"colo=
+r: hsl(0, 100%, 40%);">-     http-proxy proxy.example.net 3128 auto-nct ntl=
+m2</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     # NTLM authe=
+ntication, load credentials from file</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+     http-proxy proxy.example.net 3128 authfile.txt ntlm2=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     # determine wh=
+ich authentication is required, ask user for credentials</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+     http-proxy proxy.example.net 3128=
+ auto</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     # determi=
+ne which authentication is required, but reject basic</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+     http-proxy proxy.example.net 3128 au=
+to-nct</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     # determ=
+ine which authentication is required, but set credentials</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+     http-proxy proxy.example.net 312=
+8 auto</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     http-pro=
+xy-user-pass authfile.txt</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+     # basic authentication, specify credentials inline</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+     http-proxy proxy.example.net=
+ 3128 &quot;&quot; basic</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+     &lt;http-proxy-user-pass&gt;</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+     username</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+     password</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+     &lt;/http-proxy-user-pass&gt;</span><br><span> </span><br><span=
+>   Note that support for NTLMv1 proxies was removed with OpenVPN 2.7.</spa=
+n><br><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+--http=
+-proxy-user-pass userpass</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+  Overwrite the username/password information for ``--http-proxy``. I=
+f specified</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  as an =
+inline option (see `INLINE FILE SUPPORT`_), it will be interpreted as</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+  username/password separ=
+ated by a newline. When specified on the command line</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+  it is interpreted as a filename same as=
+ the third argument to ``--http-proxy``.</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+  Example::</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+    &lt;http-proxy-user-p=
+ass&gt;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    username=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    password</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+    &lt;/http-proxy-user-p=
+ass&gt;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><=
+span> --http-proxy-option args</span><br><span>   Set extended HTTP proxy o=
+ptions. Requires an option ``type`` as argument</span><br><span>   and an o=
+ptional ``parameter`` to the type.  Repeat to set multiple</span><br><span>=
+</span><br></pre><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/o=
+penvpn/+/498?usp=3Demail">change 498</a>. To unsubscribe, or for help writi=
+ng mail filters, visit <a href=3D"http://gerrit.openvpn.net/settings">setti=
+ngs</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div=
+ itemscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><l=
+ink itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/498?usp=
+=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: Ic19f859c3aca8b30aa51b12dcb9=
-06a6e7e735019 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 495 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
-<div style=3D"display:none"> Gerrit-Owner: stipa &lt;lstipakov@...277...&gt=
-; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
-1...&gt; </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I7a754d0b4a76a9227bf922f6517=
+6cd9ec4d7670c </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 498 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
+<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
+.&gt; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
 .1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
 ..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: stipa &lt;lstipakov@...1663...=
-.&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Fri, 12 Jan 2024 14:13:10=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
+<div style=3D"display:none"> Gerrit-MessageType: newchange </div>
 
 
---ZlhyJQixSb8=--
+--Cra83WZlAvI=--
 
