@@ -1,14 +1,14 @@
-From: "stipa (Code Review)" <gerrit@...515...>
-Date: Fri, 12 Jan 2024 12:43:22 +0000
+From: "flichtenheld (Code Review)" <gerrit@...515...>
+Date: Fri, 12 Jan 2024 14:13:10 +0000
 In-Reply-To: <gerrit.1704979923000.Ic19f859c3aca8b30aa51b12dcb906a6e7e735019@...2715...>
 References: <gerrit.1704979923000.Ic19f859c3aca8b30aa51b12dcb906a6e7e735019@...2715...>
-Reply-To: lstipakov@...277..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <7fe210802557152c826b3da6c157a0d43f7678a1-EmailReplacePatchSet-HTML@...2715...>
+Reply-To: frank@...2641..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net, lstipakov@...277...
+Message-ID: <b22f234b37ba7b71a58cac2bf44a2e7d098b5ba4-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="JW/yfOUCno0="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="ZlhyJQixSb8="; charset=UTF-8
 Subject: [Openvpn-devel] [XS] Change in openvpn[master]: CMakeLists.txt:
  Don't fail on missing compile_commands.json
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -19,75 +19,54 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: stipa <lstipakov@...277...>
+Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---JW/yfOUCno0=
+--ZlhyJQixSb8=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: flichtenheld, plaisthos.
+Attention is currently required from: plaisthos, stipa.
 
-Hello flichtenheld, plaisthos,
-
-I'd like you to reexamine a change. Please visit
-
-    http://gerrit.openvpn.net/c/openvpn/+/495?usp=3Demail
-
-to look at the new patch set (#2).
-
-The following approvals got outdated and were removed:
-Code-Review-1 by flichtenheld
-
+flichtenheld has posted comments on this change. ( http://gerrit.openvpn.ne=
+t/c/openvpn/+/495?usp=3Demail )
 
 Change subject: CMakeLists.txt: Don't fail on missing compile_commands.json
 ......................................................................
 
-CMakeLists.txt: Don't fail on missing compile_commands.json
 
-Commit
+Patch Set 2: Code-Review-1
 
-    855030f3 ("cmake: create and link compile_commands.json file")
+(2 comments)
 
-added creation of compile commands file and a symbolic link to it.
+Commit Message:
 
-There a two issues:
+http://gerrit.openvpn.net/c/openvpn/+/495/comment/ff72c046_d852df10 :
+PS2, Line 7: CMakeLists.txt: Don't fail on missing compile_commands.json
+Change to CMake: Don't fail if compile_commands.json symlink can't be creat=
+ed.
 
- - CMAKE_EXPORT_COMPILE_COMMANDS works only on Ninja and Makefile
-generators and doesn't produce anything on MSVC.
 
- - creating symlink on Windows by default requires an elevated prompt,
+http://gerrit.openvpn.net/c/openvpn/+/495/comment/78f9bf15_9a748563 :
+PS2, Line 15: There a two issues:
+I would suggest replacing this whole section with:
+
+<--->
+Creating symlinks on Windows by default requires an elevated prompt,
 which is not normally the case (but it turned out is the case for GHA).
 Without elevated prompt this fails the build.
-
 Fix by make symlink creation non-fatal by providing variable
 to store result.
 
-Change-Id: Ic19f859c3aca8b30aa51b12dcb906a6e7e735019
-Signed-off-by: Lev Stipakov <lev@...515...>
----
-M CMakeLists.txt
-1 file changed, 1 insertion(+), 1 deletion(-)
+Since CMAKE_EXPORT_COMPILE_COMMANDS works only on Ninja and Makefile genera=
+tors and doesn't produce anything on MSVC,
+the symlink is useless in this case anyway.
+<---->
+
+This makes it clearer what the actual issue is, but mentions
+the other issue as justification.
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/95/495/2
-
-diff --git a/CMakeLists.txt b/CMakeLists.txt
-index bc46c27..5c6fff0 100644
---- a/CMakeLists.txt
-+++ b/CMakeLists.txt
-@@ -45,7 +45,7 @@
- # Create machine readable compile commands
- set(CMAKE_EXPORT_COMPILE_COMMANDS 1)
- file(CREATE_LINK ${CMAKE_CURRENT_BINARY_DIR}/compile_commands.json
--                 ${CMAKE_CURRENT_SOURCE_DIR}/compile_commands.json SYMBOLI=
-C)
-+                 ${CMAKE_CURRENT_SOURCE_DIR}/compile_commands.json RESULT =
-COMPILE_COMMANDS_CREATED SYMBOLIC)
-
- # AddressSanitize - use CXX=3Dclang++ CC=3Dclang cmake -DCMAKE_BUILD_TYPE=
-=3Dasan to build with ASAN
- set(CMAKE_C_FLAGS_ASAN
 
 --
 To view, visit http://gerrit.openvpn.net/c/openvpn/+/495?usp=3Demail
@@ -104,52 +83,51 @@ Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-MessageType: newpatchset
+Gerrit-Attention: stipa <lstipakov@...277...>
+Gerrit-Comment-Date: Fri, 12 Jan 2024 14:13:10 +0000
+Gerrit-HasComments: Yes
+Gerrit-Has-Labels: Yes
+Gerrit-MessageType: comment
 
---JW/yfOUCno0=
+--ZlhyJQixSb8=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p> Attention is currently required from: flichtenheld, plaisthos. </p>
-<p>stipa <strong>uploaded patch set #2</strong> to this change.</p><p><a hr=
-ef=3D"http://gerrit.openvpn.net/c/openvpn/+/495?usp=3Demail">View Change</a=
-></p><p>The following approvals got outdated and were removed:
-Code-Review-1 by flichtenheld</p><pre style=3D"font-family: monospace,monos=
-pace; white-space: pre-wrap;">CMakeLists.txt: Don&#39;t fail on missing com=
-pile_commands.json<br><br>Commit<br><br>    855030f3 (&quot;cmake: create a=
-nd link compile_commands.json file&quot;)<br><br>added creation of compile =
-commands file and a symbolic link to it.<br><br>There a two issues:<br><br>=
- - CMAKE_EXPORT_COMPILE_COMMANDS works only on Ninja and Makefile<br>genera=
-tors and doesn&#39;t produce anything on MSVC.<br><br> - creating symlink o=
-n Windows by default requires an elevated prompt,<br>which is not normally =
-the case (but it turned out is the case for GHA).<br>Without elevated promp=
-t this fails the build.<br><br>Fix by make symlink creation non-fatal by pr=
-oviding variable<br>to store result.<br><br>Change-Id: Ic19f859c3aca8b30aa5=
-1b12dcb906a6e7e735019<br>Signed-off-by: Lev Stipakov &lt;lev@...515...&gt;<=
-br>---<br>M CMakeLists.txt<br>1 file changed, 1 insertion(+), 1 deletion(-)=
-<br><br></pre><pre style=3D"font-family: monospace,monospace; white-space: =
-pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/95/=
-495/2</pre><pre style=3D"font-family: monospace,monospace; white-space: pre=
--wrap;"><span>diff --git a/CMakeLists.txt b/CMakeLists.txt</span><br><span>=
-index bc46c27..5c6fff0 100644</span><br><span>--- a/CMakeLists.txt</span><b=
-r><span>+++ b/CMakeLists.txt</span><br><span>@@ -45,7 +45,7 @@</span><br><s=
-pan> # Create machine readable compile commands</span><br><span> set(CMAKE_=
-EXPORT_COMPILE_COMMANDS 1)</span><br><span> file(CREATE_LINK ${CMAKE_CURREN=
-T_BINARY_DIR}/compile_commands.json</span><br><span style=3D"color: hsl(0, =
-100%, 40%);">-                 ${CMAKE_CURRENT_SOURCE_DIR}/compile_commands=
-.json SYMBOLIC)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-             ${CMAKE_CURRENT_SOURCE_DIR}/compile_commands.json RESULT COMPI=
-LE_COMMANDS_CREATED SYMBOLIC)</span><br><span> </span><br><span> # AddressS=
-anitize - use CXX=3Dclang++ CC=3Dclang cmake -DCMAKE_BUILD_TYPE=3Dasan to b=
-uild with ASAN</span><br><span> set(CMAKE_C_FLAGS_ASAN</span><br><span></sp=
-an><br></pre><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openv=
-pn/+/495?usp=3Demail">change 495</a>. To unsubscribe, or for help writing m=
-ail filters, visit <a href=3D"http://gerrit.openvpn.net/settings">settings<=
-/a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div ite=
-mscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link =
-itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/495?usp=3Dem=
-ail"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
+<p> Attention is currently required from: plaisthos, stipa. </p>
+<p>Patch set 2:<span style=3D"border-radius: 3px; display: inline-block; ma=
+rgin: 0 2px; padding: 4px;background-color: #ffd4d4;">Code-Review -1</span>=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/495?usp=3Demail">Vi=
+ew Change</a></p><p>2 comments:</p><ul style=3D"list-style: none; padding: =
+0;"><li style=3D"margin: 0; padding: 0;"><p>Commit Message:</p><ul style=3D=
+"list-style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px=
+;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/=
+openvpn/+/495/comment/ff72c046_d852df10">Patch Set #2, Line 7:</a> <code st=
+yle=3D"font-family:monospace,monospace">CMakeLists.txt: Don&#39;t fail on m=
+issing compile_commands.json</code></p><p style=3D"white-space: pre-wrap; w=
+ord-wrap: break-word;">Change to CMake: Don&#39;t fail if compile_commands.=
+json symlink can&#39;t be created.</p></li><li style=3D"margin: 0; padding:=
+ 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.ope=
+nvpn.net/c/openvpn/+/495/comment/78f9bf15_9a748563">Patch Set #2, Line 15:<=
+/a> <code style=3D"font-family:monospace,monospace">There a two issues:</co=
+de></p><p style=3D"white-space: pre-wrap; word-wrap: break-word;">I would s=
+uggest replacing this whole section with:</p><p style=3D"white-space: pre-w=
+rap; word-wrap: break-word;">&lt;---&gt;<br>Creating symlinks on Windows by=
+ default requires an elevated prompt,<br>which is not normally the case (bu=
+t it turned out is the case for GHA).<br>Without elevated prompt this fails=
+ the build.<br>Fix by make symlink creation non-fatal by providing variable=
+<br>to store result.</p><p style=3D"white-space: pre-wrap; word-wrap: break=
+-word;">Since CMAKE_EXPORT_COMPILE_COMMANDS works only on Ninja and Makefil=
+e generators and doesn&#39;t produce anything on MSVC,<br>the symlink is us=
+eless in this case anyway.<br>&lt;----&gt;</p><p style=3D"white-space: pre-=
+wrap; word-wrap: break-word;">This makes it clearer what the actual issue i=
+s, but mentions<br>the other issue as justification.</p></li></ul></li></ul=
+><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/495?usp=
+=3Demail">change 495</a>. To unsubscribe, or for help writing mail filters,=
+ visit <a href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div=
+ itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemp=
+rop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"=
+url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/495?usp=3Demail"/><meta =
+itemprop=3D"name" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
@@ -167,10 +145,14 @@ ail"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
 ts.sourceforge.net&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
 ..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
-41...&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
+<div style=3D"display:none"> Gerrit-Attention: stipa &lt;lstipakov@...1663...=
+.&gt; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Fri, 12 Jan 2024 14:13:10=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
 
 
---JW/yfOUCno0=--
+--ZlhyJQixSb8=--
 
