@@ -1,14 +1,14 @@
 From: "plaisthos (Code Review)" <gerrit@...515...>
-Date: Tue, 16 Jan 2024 14:21:07 +0000
+Date: Tue, 16 Jan 2024 18:07:34 +0000
 In-Reply-To: <gerrit.1701971374000.Ie248d35d063bb6878f3dd42840c77ba0d6fa3381@...2715...>
 References: <gerrit.1701971374000.Ie248d35d063bb6878f3dd42840c77ba0d6fa3381@...2715...>
 Reply-To: arne-openvpn@...1227..., openvpn-devel@lists.sourceforge.net,
  frank@...2641..., gert@...1296...
-Message-ID: <b26d87f51071f8d92733b0949a3fd34370781e5b-EmailReplacePatchSet-HTML@...2715...>
+Message-ID: <579c56c95fadee19386faac1e04d0360e2ac1b42-EmailReplacePatchSet-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="YJ1l9sb7jI0="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="IE3V/UP7i0U="; charset=UTF-8
 Subject: [Openvpn-devel] [L] Change in openvpn[master]: Add test_ssl unit
  test and test export of PEM to file
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -22,7 +22,7 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: cron2 <gert@...1296...>, flichtenheld <frank@...2641...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---YJ1l9sb7jI0=
+--IE3V/UP7i0U=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
@@ -34,7 +34,7 @@ I'd like you to reexamine a change. Please visit
 
     http://gerrit.openvpn.net/c/openvpn/+/471?usp=3Demail
 
-to look at the new patch set (#8).
+to look at the new patch set (#9).
 
 
 Change subject: Add test_ssl unit test and test export of PEM to file
@@ -59,7 +59,7 @@ A tests/unit_tests/openvpn/test_ssl.c
 6 files changed, 322 insertions(+), 2 deletions(-)
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/71/471/8
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/71/471/9
 
 diff --git a/.github/workflows/build.yaml b/.github/workflows/build.yaml
 index 51100c3..cc98813 100644
@@ -123,7 +123,7 @@ index 6f370c3..6a1895a 100644
          src/openvpn/options_util.c
 diff --git a/tests/unit_tests/openvpn/Makefile.am b/tests/unit_tests/openvp=
 n/Makefile.am
-index cecf4dc..f410a78 100644
+index cecf4dc..f81a10f 100644
 --- a/tests/unit_tests/openvpn/Makefile.am
 +++ b/tests/unit_tests/openvpn/Makefile.am
 @@ -9,7 +9,8 @@
@@ -173,8 +173,7 @@ envpn
 +	$(top_srcdir)/src/openvpn/win32-util.c
 +
 +if WIN32
-+	ssl_testdriver_LDADD =3D  -lcrypt32 -lncrypt -lfwpuclnt -liphlpapi -lws2_=
-32
++ssl_testdriver_LDADD =3D  -lcrypt32 -lncrypt -lfwpuclnt -liphlpapi -lws2_32
 +endif
 +
  packet_id_testdriver_CFLAGS  =3D @TEST_CFLAGS@ \
@@ -483,7 +482,7 @@ Gerrit-Project: openvpn
 Gerrit-Branch: master
 Gerrit-Change-Id: Ie248d35d063bb6878f3dd42840c77ba0d6fa3381
 Gerrit-Change-Number: 471
-Gerrit-PatchSet: 8
+Gerrit-PatchSet: 9
 Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
 Gerrit-Reviewer: cron2 <gert@...1296...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
@@ -493,13 +492,13 @@ Gerrit-Attention: cron2 <gert@...1296...>
 Gerrit-Attention: flichtenheld <frank@...2641...>
 Gerrit-MessageType: newpatchset
 
---YJ1l9sb7jI0=
+--IE3V/UP7i0U=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <p> Attention is currently required from: cron2, flichtenheld, plaisthos. <=
 /p>
-<p>plaisthos <strong>uploaded patch set #8</strong> to this change.</p><p><=
+<p>plaisthos <strong>uploaded patch set #9</strong> to this change.</p><p><=
 a href=3D"http://gerrit.openvpn.net/c/openvpn/+/471?usp=3Demail">View Chang=
 e</a></p><pre style=3D"font-family: monospace,monospace; white-space: pre-w=
 rap;">Add test_ssl unit test and test export of PEM to file<br><br>This int=
@@ -514,7 +513,7 @@ ests/openvpn/Makefile.am<br>A tests/unit_tests/openvpn/mock_management.c<br=
 penvpn/test_ssl.c<br>6 files changed, 322 insertions(+), 2 deletions(-)<br>=
 <br></pre><pre style=3D"font-family: monospace,monospace; white-space: pre-=
 wrap;">git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/71/471/=
-8</pre><pre style=3D"font-family: monospace,monospace; white-space: pre-wra=
+9</pre><pre style=3D"font-family: monospace,monospace; white-space: pre-wra=
 p;"><span>diff --git a/.github/workflows/build.yaml b/.github/workflows/bui=
 ld.yaml</span><br><span>index 51100c3..cc98813 100644</span><br><span>--- a=
 /.github/workflows/build.yaml</span><br><span>+++ b/.github/workflows/build=
@@ -571,7 +570,7 @@ an><br><span style=3D"color: hsl(120, 100%, 40%);">+            src/openvpn=
       tests/unit_tests/openvpn/mock_get_random.c</span><br><span>         s=
 rc/openvpn/options_util.c</span><br><span>diff --git a/tests/unit_tests/ope=
 nvpn/Makefile.am b/tests/unit_tests/openvpn/Makefile.am</span><br><span>ind=
-ex cecf4dc..f410a78 100644</span><br><span>--- a/tests/unit_tests/openvpn/M=
+ex cecf4dc..f81a10f 100644</span><br><span>--- a/tests/unit_tests/openvpn/M=
 akefile.am</span><br><span>+++ b/tests/unit_tests/openvpn/Makefile.am</span=
 ><br><span>@@ -9,7 +9,8 @@</span><br><span> endif</span><br><span> </span><=
 br><span> test_binaries +=3D crypto_testdriver packet_id_testdriver auth_to=
@@ -623,17 +622,159 @@ cdir)/src/openvpn/xkey_helper.c \</span><br><span style=3D"color: hsl(120, =
 style=3D"color: hsl(120, 100%, 40%);">+	$(top_srcdir)/src/openvpn/win32-uti=
 l.c</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span=
  style=3D"color: hsl(120, 100%, 40%);">+if WIN32</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+	ssl_testdriver_LDADD =3D  -lcrypt32 -lncrypt =
--lfwpuclnt -liphlpapi -lws2_32</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+endif</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</s=
-pan><br><span> packet_id_testdriver_CFLAGS  =3D @TEST_CFLAGS@ \</span><br><=
-span> 	-I$(top_srcdir)/include -I$(top_srcdir)/src/compat -I$(top_srcdir)/s=
-rc/openvpn</span><br><span> packet_id_testdriver_LDFLAGS =3D @TEST_LDFLAGS@=
-</span><br><span>diff --git a/tests/unit_tests/openvpn/mock_management.c b/=
-tests/unit_tests/openvpn/mock_management.c</span><br><span>new file mode 10=
-0644</span><br><span>index 0000000..8936c3a</span><br><span>--- /dev/null</=
-span><br><span>+++ b/tests/unit_tests/openvpn/mock_management.c</span><br><=
-span>@@ -0,0 +1,51 @@</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+olor: hsl(120, 100%, 40%);">+ssl_testdriver_LDADD =3D  -lcrypt32 -lncrypt -=
+lfwpuclnt -liphlpapi -lws2_32</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+endif</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</sp=
+an><br><span> packet_id_testdriver_CFLAGS  =3D @TEST_CFLAGS@ \</span><br><s=
+pan> 	-I$(top_srcdir)/include -I$(top_srcdir)/src/compat -I$(top_srcdir)/sr=
+c/openvpn</span><br><span> packet_id_testdriver_LDFLAGS =3D @TEST_LDFLAGS@<=
+/span><br><span>diff --git a/tests/unit_tests/openvpn/mock_management.c b/t=
+ests/unit_tests/openvpn/mock_management.c</span><br><span>new file mode 100=
+644</span><br><span>index 0000000..8936c3a</span><br><span>--- /dev/null</s=
+pan><br><span>+++ b/tests/unit_tests/openvpn/mock_management.c</span><br><s=
+pan>@@ -0,0 +1,51 @@</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++/*</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  OpenVPN -- A=
+n application to securely tunnel IP networks</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+ *             over a single UDP port, with suppor=
+t for SSL/TLS-based</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+ *             session authentication and key exchange,</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+ *             packet encryption, packe=
+t authentication, and</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+ *             packet compression.</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+ *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+ *  Copyright (C) 2002-2023 OpenVPN Inc &lt;sales@...515...&gt;</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+ *  This program is free software; you can redis=
+tribute it and/or modify</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+ *  it under the terms of the GNU General Public License version 2</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  as published by the=
+ Free Software Foundation.</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+ *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  This p=
+rogram is distributed in the hope that it will be useful,</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+ *  but WITHOUT ANY WARRANTY; without=
+ even the implied warranty of</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  GNU General Pub=
+lic License for more details.</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+ *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  You=
+ should have received a copy of the GNU General Public License along</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+ *  with this program; if =
+not, write to the Free Software Foundation, Inc.,</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+ *  51 Franklin Street, Fifth Floor, Boston, =
+MA 02110-1301 USA.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+*/</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+/* Minimal set of mocked management =
+function/globals to get unit tests to</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+ * compile */</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#ifdef =
+HAVE_CONFIG_H</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#inclu=
+de &quot;config.h&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+#endif</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+#include &quot;syshead.h&quo=
+t;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+#include &quot;manage.h&quot;</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+#ifdef ENABLE_MANAGEMENT</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+struct management *management; /* GLOBAL */</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+void</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+management_auth_failure(struct management *man, const char *type, con=
+st char *reason)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+    ASSERT(false);</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+char *</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+management_query_pk_sig(struct management *man, const char *b64_data,</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+                      =
+  const char *algorithm)</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    return NU=
+LL;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+#endif</span><br><span>diff --git =
+a/tests/unit_tests/openvpn/mock_ssl_dependencies.c b/tests/unit_tests/openv=
+pn/mock_ssl_dependencies.c</span><br><span>new file mode 100644</span><br><=
+span>index 0000000..9231d65</span><br><span>--- /dev/null</span><br><span>+=
+++ b/tests/unit_tests/openvpn/mock_ssl_dependencies.c</span><br><span>@@ -0=
+,0 +1,67 @@</span><br><span style=3D"color: hsl(120, 100%, 40%);">+/*</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  OpenVPN -- An applica=
+tion to securely tunnel IP networks</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+ *             over a single UDP port, with support for SSL=
+/TLS-based</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *       =
+      session authentication and key exchange,</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+ *             packet encryption, packet authent=
+ication, and</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *     =
+        packet compression.</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+ *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  Copyr=
+ight (C) 2002-2023 OpenVPN Inc &lt;sales@...515...&gt;</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+ *  This program is free software; you can redistribute i=
+t and/or modify</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  =
+it under the terms of the GNU General Public License version 2</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+ *  as published by the Free Sof=
+tware Foundation.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  This program is=
+ distributed in the hope that it will be useful,</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+ *  but WITHOUT ANY WARRANTY; without even the=
+ implied warranty of</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+ *  GNU General Public Licen=
+se for more details.</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++ *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  You should h=
+ave received a copy of the GNU General Public License along</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+ *  with this program; if not, writ=
+e to the Free Software Foundation, Inc.,</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+ *  51 Franklin Street, Fifth Floor, Boston, MA 02110-=
+1301 USA.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ */</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+/* Minimal set of mocked function/globals to =
+get unit tests to</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *=
+ compile that use the ssl_* files */</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#i=
+fdef HAVE_CONFIG_H</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#=
+include &quot;config.h&quot;</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+#endif</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+#include &quot;syshead.=
+h&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+#include &lt;setjmp.h&gt;</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+#include &lt;cmocka.h&gt;=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+#include &quot;ssl.h&quot;</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+#include &quot;ssl_verify.h&quot;</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+int</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+parse_line(const char *line, char **p, const int n, const char *file,</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+           const int =
+line_num, int msglevel, struct gc_arena *gc)</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+    /* Dummy function to get the linker happy, should never be calle=
+d */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_true=
+(false);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    return =
+0;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+int</span><br><span style=3D"color: hsl(120, 100%, 40%);">+pem_password_c=
+allback(char *buf, int size, int rwflag, void *u)</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+    return 0;</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+void</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+cert_hash_remember(struct tls_session *session=
+, const int cert_depth,</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+                   const struct buffer *cert_hash)</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+    assert_false(true);</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+result_t</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+verify_cert(struct tls_sess=
+ion *session, openvpn_x509_cert_t *cert, int cert_depth)</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+    return FAILURE;</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+}</span><br><span>diff --git a/tests/unit_tests/openvpn/=
+test_ssl.c b/tests/unit_tests/openvpn/test_ssl.c</span><br><span>new file m=
+ode 100644</span><br><span>index 0000000..fd2049f</span><br><span>--- /dev/=
+null</span><br><span>+++ b/tests/unit_tests/openvpn/test_ssl.c</span><br><s=
+pan>@@ -0,0 +1,140 @@</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
 >+/*</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  OpenVPN -- =
 An application to securely tunnel IP networks</span><br><span style=3D"colo=
 r: hsl(120, 100%, 40%);">+ *             over a single UDP port, with suppo=
@@ -643,157 +784,15 @@ yle=3D"color: hsl(120, 100%, 40%);">+ *             packet encryption, pack=
 et authentication, and</span><br><span style=3D"color: hsl(120, 100%, 40%);=
 ">+ *             packet compression.</span><br><span style=3D"color: hsl(1=
 20, 100%, 40%);">+ *</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+ *  Copyright (C) 2002-2023 OpenVPN Inc &lt;sales@...515...&gt;</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+ *  This program is free software; you can redi=
-stribute it and/or modify</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+ *  it under the terms of the GNU General Public License version 2</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  as published by th=
-e Free Software Foundation.</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+ *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  This =
-program is distributed in the hope that it will be useful,</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+ *  but WITHOUT ANY WARRANTY; withou=
-t even the implied warranty of</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See th=
-e</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  GNU General Pu=
-blic License for more details.</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+ *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  Yo=
-u should have received a copy of the GNU General Public License along</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  with this program; if=
- not, write to the Free Software Foundation, Inc.,</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+ *  51 Franklin Street, Fifth Floor, Boston,=
- MA 02110-1301 USA.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
- */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+/* Minimal set of mocked management=
- function/globals to get unit tests to</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+ * compile */</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#ifdef=
- HAVE_CONFIG_H</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#incl=
-ude &quot;config.h&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+#endif</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+#include &quot;syshead.h&qu=
-ot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+#include &quot;manage.h&quot;</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+#ifdef ENABLE_MANAGEMENT</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+struct management *management; /* GLOBAL */</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+void</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+management_auth_failure(struct management *man, const char *type, co=
-nst char *reason)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+    ASSERT(false);</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+char *</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+management_query_pk_sig(struct management *man, const char *b64_data,</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+                     =
-   const char *algorithm)</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    return N=
-ULL;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+#endif</span><br><span>diff --git=
- a/tests/unit_tests/openvpn/mock_ssl_dependencies.c b/tests/unit_tests/open=
-vpn/mock_ssl_dependencies.c</span><br><span>new file mode 100644</span><br>=
-<span>index 0000000..9231d65</span><br><span>--- /dev/null</span><br><span>=
-+++ b/tests/unit_tests/openvpn/mock_ssl_dependencies.c</span><br><span>@@ -=
-0,0 +1,67 @@</span><br><span style=3D"color: hsl(120, 100%, 40%);">+/*</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  OpenVPN -- An applic=
-ation to securely tunnel IP networks</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+ *             over a single UDP port, with support for SS=
-L/TLS-based</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *      =
-       session authentication and key exchange,</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+ *             packet encryption, packet authen=
-tication, and</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *    =
-         packet compression.</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+ *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  Copy=
-right (C) 2002-2023 OpenVPN Inc &lt;sales@...515...&gt;</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+ *  This program is free software; you can redistribute =
-it and/or modify</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * =
- it under the terms of the GNU General Public License version 2</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+ *  as published by the Free So=
-ftware Foundation.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-*</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  This program i=
-s distributed in the hope that it will be useful,</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+ *  but WITHOUT ANY WARRANTY; without even th=
-e implied warranty of</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+ *  GNU General Public Lice=
-nse for more details.</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+ *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  You should =
-have received a copy of the GNU General Public License along</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+ *  with this program; if not, wri=
-te to the Free Software Foundation, Inc.,</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+ *  51 Franklin Street, Fifth Floor, Boston, MA 02110=
--1301 USA.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ */</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+/* Minimal set of mocked function/globals to=
- get unit tests to</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-* compile that use the ssl_* files */</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#=
-ifdef HAVE_CONFIG_H</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-#include &quot;config.h&quot;</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+#endif</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+#include &quot;syshead=
-.h&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+#include &lt;setjmp.h&gt;</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+#include &lt;cmocka.h&gt=
-;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+#include &quot;ssl.h&quot;</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+#include &quot;ssl_verify.h&quot;</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+int</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+parse_line(const char *line, char **p, const int n, const char *file,<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+           const int=
- line_num, int msglevel, struct gc_arena *gc)</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+    /* Dummy function to get the linker happy, should never be call=
-ed */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_tru=
-e(false);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    return=
- 0;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+int</span><br><span style=3D"color: hsl(120, 100%, 40%);">+pem_password_=
-callback(char *buf, int size, int rwflag, void *u)</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+    return 0;</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+void</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+cert_hash_remember(struct tls_session *sessio=
-n, const int cert_depth,</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+                   const struct buffer *cert_hash)</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+    assert_false(true);</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+result_t</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+verify_cert(struct tls_ses=
-sion *session, openvpn_x509_cert_t *cert, int cert_depth)</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+    return FAILURE;</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+}</span><br><span>diff --git a/tests/unit_tests/openvpn=
-/test_ssl.c b/tests/unit_tests/openvpn/test_ssl.c</span><br><span>new file =
-mode 100644</span><br><span>index 0000000..fd2049f</span><br><span>--- /dev=
-/null</span><br><span>+++ b/tests/unit_tests/openvpn/test_ssl.c</span><br><=
-span>@@ -0,0 +1,140 @@</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+/*</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  OpenVPN --=
- An application to securely tunnel IP networks</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+ *             over a single UDP port, with supp=
-ort for SSL/TLS-based</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+ *             session authentication and key exchange,</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+ *             packet encryption, pac=
-ket authentication, and</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+ *             packet compression.</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+ *</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+ * Copyright (C) 2023 OpenVPN Inc &lt;sales@...515...&gt;</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+ *  This program is free software; you can redistrib=
-ute it and/or modify</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+ *  it under the terms of the GNU General Public License version 2</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+ *  as published by the Fre=
-e Software Foundation.</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+ *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  This progr=
-am is distributed in the hope that it will be useful,</span><br><span style=
++ * Copyright (C) 2023 OpenVPN Inc &lt;sales@...515...&gt;</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+ *  This program is free software; you can redistribu=
+te it and/or modify</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+ *  it under the terms of the GNU General Public License version 2</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+ *  as published by the Free=
+ Software Foundation.</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+ *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  This progra=
+m is distributed in the hope that it will be useful,</span><br><span style=
 =3D"color: hsl(120, 100%, 40%);">+ *  but WITHOUT ANY WARRANTY; without eve=
 n the implied warranty of</span><br><span style=3D"color: hsl(120, 100%, 40=
 %);">+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</sp=
@@ -952,7 +951,7 @@ openvpn/+/471?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"=
 <div style=3D"display:none"> Gerrit-Change-Id: Ie248d35d063bb6878f3dd42840c=
 77ba0d6fa3381 </div>
 <div style=3D"display:none"> Gerrit-Change-Number: 471 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 8 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 9 </div>
 <div style=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@...1711...=
 27...&gt; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
@@ -970,5 +969,5 @@ ts.sourceforge.net&gt; </div>
 <div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
 
 
---YJ1l9sb7jI0=--
+--IE3V/UP7i0U=--
 
