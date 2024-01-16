@@ -1,14 +1,14 @@
 From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Tue, 16 Jan 2024 11:13:12 +0000
+Date: Tue, 16 Jan 2024 11:13:15 +0000
 In-Reply-To: <gerrit.1701865618000.Ia9b3f1813d2d0d492d17c87348b4cebd0bf19ce2@...2715...>
 References: <gerrit.1701865618000.Ia9b3f1813d2d0d492d17c87348b4cebd0bf19ce2@...2715...>
 Reply-To: gert@...1296..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <c179cac81c63ad6ba0aff8017500c4f63a005889-EmailReplacePatchSet-HTML@...2715...>
+Message-ID: <c179cac81c63ad6ba0aff8017500c4f63a005889-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="nX+Cg46sYM4="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="ACzV3Wr9NlY="; charset=UTF-8
 Subject: [Openvpn-devel] [M] Change in openvpn[master]: Implement the
  --tls-export-cert feature
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -19,19 +19,15 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: plaisthos <arne-openvpn@...1227...>
+Cc: flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---nX+Cg46sYM4=
+--ACzV3Wr9NlY=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-cron2 has uploaded a new patch set (#13) to the change originally created b=
-y plaisthos. ( http://gerrit.openvpn.net/c/openvpn/+/466?usp=3Demail )
-
-The following approvals got outdated and were removed:
-Code-Review+2 by cron2
-
+cron2 has submitted this change. ( http://gerrit.openvpn.net/c/openvpn/+/46=
+6?usp=3Demail )
 
 Change subject: Implement the --tls-export-cert feature
 ......................................................................
@@ -75,7 +71,7 @@ M src/openvpn/ssl_verify_openssl.c
 9 files changed, 145 insertions(+), 5 deletions(-)
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/66/466/13
+
 
 diff --git a/doc/man-sections/script-options.rst b/doc/man-sections/script-=
 options.rst
@@ -302,7 +298,7 @@ e))
                          opt->x509_track);
 @@ -757,12 +796,13 @@
      ret =3D SUCCESS;
-=20
+
  cleanup:
 -
 +    verify_cert_cert_delete_env(opt->es, pem_export_fname);
@@ -437,335 +433,332 @@ Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
 Gerrit-Reviewer: cron2 <gert@...1296...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-MessageType: newpatchset
+Gerrit-MessageType: merged
 
---nX+Cg46sYM4=
+--ACzV3Wr9NlY=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p>cron2 <strong>uploaded patch set #13</strong> to the change originally c=
-reated by plaisthos.</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+=
-/466?usp=3Demail">View Change</a></p><p>The following approvals got outdate=
-d and were removed:
-Code-Review+2 by cron2</p><pre style=3D"font-family: monospace,monospace; w=
-hite-space: pre-wrap;">Implement the --tls-export-cert feature<br><br>This =
-is a re-implementation of the --tls-export-cert feature. This<br>was necess=
-ary to due to missing approval to re-license the old<br>(now removed) code.=
- The re-implementation is based on the following<br>description of the feat=
-ure provided by David:<br><br>  Add an option to export certificate in PEM =
-format of the remote<br>  peer to a given directory.<br><br>  For example: =
---tls-export-cert /var/tmp<br><br>  This option should use a randomised fil=
-ename, which is provided via a<br>  &quot;peer_cert&quot; environment varia=
-ble for the --tls-verify script or the<br>  OPENVPN_PLUGIN_TLS_VERIFY plug-=
-in hook.<br><br>Once the script or plugin call has completed, OpenVPN shoul=
-d delete<br>this file.<br><br>Change-Id: Ia9b3f1813d2d0d492d17c87348b4cebd0=
-bf19ce2<br>Signed-off-by: Arne Schwabe &lt;arne@...1227...&gt;<br>Acked-by:=
- Gert Doering &lt;gert@...1296...&gt;<br>Message-Id: &lt;20240116101556.225=
-7-1-gert@...1296...&gt;<br>URL: https://www.mail-archive.com/openvpn-devel@=
-lists.sourceforge.net/msg28014.html<br>Signed-off-by: Gert Doering &lt;gert=
-@...1296...&gt;<br>---<br>M doc/man-sections/script-options.rst<br>M src/op=
-envpn/init.c<br>M src/openvpn/options.c<br>M src/openvpn/options.h<br>M src=
-/openvpn/ssl_common.h<br>M src/openvpn/ssl_verify.c<br>M src/openvpn/ssl_ve=
-rify_backend.h<br>M src/openvpn/ssl_verify_mbedtls.c<br>M src/openvpn/ssl_v=
-erify_openssl.c<br>9 files changed, 145 insertions(+), 5 deletions(-)<br><b=
-r></pre><pre style=3D"font-family: monospace,monospace; white-space: pre-wr=
-ap;">git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/66/466/13=
-</pre><pre style=3D"font-family: monospace,monospace; white-space: pre-wrap=
-;"><span>diff --git a/doc/man-sections/script-options.rst b/doc/man-section=
-s/script-options.rst</span><br><span>index 6f90e14..e05100a 100644</span><b=
-r><span>--- a/doc/man-sections/script-options.rst</span><br><span>+++ b/doc=
-/man-sections/script-options.rst</span><br><span>@@ -423,6 +423,14 @@</span=
-><br><span>   See the `Environmental Variables`_ section below for addition=
-al</span><br><span>   parameters passed as environmental variables.</span><=
-br><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+--tls-exp=
-ort-cert dir</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  Adds =
-an environment variable ``peer_cert`` when calling the</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+  ``--tls-verify`` script or executing t=
-he OPENVPN_PLUGIN_TLS_VERIFY plugin</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+  hook to verify the certificate.</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+  The environment variable contains the path to a PEM encoded ce=
-rtificate</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  of the c=
-urrent peer certificate in the directory ``dir``.</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+</span><br><span> --up cmd</span><br><span>  =
- Run command ``cmd`` after successful TUN/TAP device open (pre ``--user``</=
-span><br><span>   UID change).</span><br><span>@@ -633,6 +641,7 @@</span><b=
-r><span>     Name of first ``--config`` file. Set on program initiation and=
- reset on</span><br><span>     SIGHUP.</span><br><span> </span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+</span><br><span> :code:`daemon`</span=
-><br><span>     Set to &quot;1&quot; if the ``--daemon`` directive is speci=
-fied, or &quot;0&quot; otherwise.</span><br><span>     Set on program initi=
-ation and reset on SIGHUP.</span><br><span>@@ -763,6 +772,11 @@</span><br><=
-span>     modifier is specified, and deleted from the environment after the=
- script</span><br><span>     returns.</span><br><span> </span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+:code:`peer_cert`</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    If the option ``--tls-export-cert`` i=
-s enabled, this option contains</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+    the path to the current peer certificate to be verified in =
-PEM format.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    See =
-also the argument certificate_depth to the ``--tls-verify`` command.</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> :code:`p=
-roto`</span><br><span>     The ``--proto`` parameter. Set on program initia=
-tion and reset on</span><br><span>     SIGHUP.</span><br><span>diff --git a=
-/src/openvpn/init.c b/src/openvpn/init.c</span><br><span>index 9e2b3845..c5=
-cc154 100644</span><br><span>--- a/src/openvpn/init.c</span><br><span>+++ b=
-/src/openvpn/init.c</span><br><span>@@ -3336,6 +3336,7 @@</span><br><span> =
-    to.auth_user_pass_verify_script_via_file =3D options-&gt;auth_user_pass=
-_verify_script_via_file;</span><br><span>     to.client_crresponse_script =
-=3D options-&gt;client_crresponse_script;</span><br><span>     to.tmp_dir =
-=3D options-&gt;tmp_dir;</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+    to.export_peer_cert_dir =3D options-&gt;tls_export_peer_cert_dir;<=
-/span><br><span>     if (options-&gt;ccd_exclusive)</span><br><span>     {<=
-/span><br><span>         to.client_config_dir_exclusive =3D options-&gt;cli=
-ent_config_dir;</span><br><span>diff --git a/src/openvpn/options.c b/src/op=
-envpn/options.c</span><br><span>index f54f276..6975cbe 100644</span><br><sp=
-an>--- a/src/openvpn/options.c</span><br><span>+++ b/src/openvpn/options.c<=
-/span><br><span>@@ -1995,6 +1995,7 @@</span><br><span>     SHOW_STR(cipher_=
-list_tls13);</span><br><span>     SHOW_STR(tls_cert_profile);</span><br><sp=
-an>     SHOW_STR(tls_verify);</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+    SHOW_STR(tls_export_peer_cert_dir);</span><br><span>     SHOW=
-_INT(verify_x509_type);</span><br><span>     SHOW_STR(verify_x509_name);</s=
-pan><br><span>     SHOW_STR_INLINE(crl_file);</span><br><span>@@ -3062,6 +3=
-063,7 @@</span><br><span>         MUST_BE_UNDEF(cipher_list_tls13);</span><=
-br><span>         MUST_BE_UNDEF(tls_cert_profile);</span><br><span>        =
- MUST_BE_UNDEF(tls_verify);</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+        MUST_BE_UNDEF(tls_export_peer_cert_dir);</span><br><span>  =
-       MUST_BE_UNDEF(verify_x509_name);</span><br><span>         MUST_BE_UN=
-DEF(tls_timeout);</span><br><span>         MUST_BE_UNDEF(renegotiate_bytes)=
-;</span><br><span>@@ -4092,6 +4094,13 @@</span><br><span>                  =
-                               R_OK, &quot;--crl-verify&quot;);</span><br><=
-span>     }</span><br><span> </span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+    if (options-&gt;tls_export_peer_cert_dir)</span><br><span sty=
+<p>cron2 <strong>submitted</strong> this change.</p><p><a href=3D"http://ge=
+rrit.openvpn.net/c/openvpn/+/466?usp=3Demail">View Change</a></p><div style=
+=3D"white-space:pre-wrap"></div><pre style=3D"font-family: monospace,monosp=
+ace; white-space: pre-wrap;">Implement the --tls-export-cert feature<br><br=
+>This is a re-implementation of the --tls-export-cert feature. This<br>was =
+necessary to due to missing approval to re-license the old<br>(now removed)=
+ code. The re-implementation is based on the following<br>description of th=
+e feature provided by David:<br><br>  Add an option to export certificate i=
+n PEM format of the remote<br>  peer to a given directory.<br><br>  For exa=
+mple: --tls-export-cert /var/tmp<br><br>  This option should use a randomis=
+ed filename, which is provided via a<br>  &quot;peer_cert&quot; environment=
+ variable for the --tls-verify script or the<br>  OPENVPN_PLUGIN_TLS_VERIFY=
+ plug-in hook.<br><br>Once the script or plugin call has completed, OpenVPN=
+ should delete<br>this file.<br><br>Change-Id: Ia9b3f1813d2d0d492d17c87348b=
+4cebd0bf19ce2<br>Signed-off-by: Arne Schwabe &lt;arne@...1227...&gt;<br>Ack=
+ed-by: Gert Doering &lt;gert@...1296...&gt;<br>Message-Id: &lt;202401161015=
+56.2257-1-gert@...1296...&gt;<br>URL: https://www.mail-archive.com/openvpn-=
+devel@lists.sourceforge.net/msg28014.html<br>Signed-off-by: Gert Doering &l=
+t;gert@...1296...&gt;<br>---<br>M doc/man-sections/script-options.rst<br>M =
+src/openvpn/init.c<br>M src/openvpn/options.c<br>M src/openvpn/options.h<br=
+>M src/openvpn/ssl_common.h<br>M src/openvpn/ssl_verify.c<br>M src/openvpn/=
+ssl_verify_backend.h<br>M src/openvpn/ssl_verify_mbedtls.c<br>M src/openvpn=
+/ssl_verify_openssl.c<br>9 files changed, 145 insertions(+), 5 deletions(-)=
+<br><br></pre>
+<pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><sp=
+an>diff --git a/doc/man-sections/script-options.rst b/doc/man-sections/scri=
+pt-options.rst</span><br><span>index 6f90e14..e05100a 100644</span><br><spa=
+n>--- a/doc/man-sections/script-options.rst</span><br><span>+++ b/doc/man-s=
+ections/script-options.rst</span><br><span>@@ -423,6 +423,14 @@</span><br><=
+span>   See the `Environmental Variables`_ section below for additional</sp=
+an><br><span>   parameters passed as environmental variables.</span><br><sp=
+an> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+--tls-export-ce=
+rt dir</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  Adds an env=
+ironment variable ``peer_cert`` when calling the</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+  ``--tls-verify`` script or executing the OPE=
+NVPN_PLUGIN_TLS_VERIFY plugin</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+  hook to verify the certificate.</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+  The environment variable contains the path to a PEM encoded certific=
+ate</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  of the current=
+ peer certificate in the directory ``dir``.</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+</span><br><span> --up cmd</span><br><span>   Run c=
+ommand ``cmd`` after successful TUN/TAP device open (pre ``--user``</span><=
+br><span>   UID change).</span><br><span>@@ -633,6 +641,7 @@</span><br><spa=
+n>     Name of first ``--config`` file. Set on program initiation and reset=
+ on</span><br><span>     SIGHUP.</span><br><span> </span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+</span><br><span> :code:`daemon`</span><br><=
+span>     Set to &quot;1&quot; if the ``--daemon`` directive is specified, =
+or &quot;0&quot; otherwise.</span><br><span>     Set on program initiation =
+and reset on SIGHUP.</span><br><span>@@ -763,6 +772,11 @@</span><br><span> =
+    modifier is specified, and deleted from the environment after the scrip=
+t</span><br><span>     returns.</span><br><span> </span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+:code:`peer_cert`</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+    If the option ``--tls-export-cert`` is enab=
+led, this option contains</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+    the path to the current peer certificate to be verified in PEM fo=
+rmat.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    See also t=
+he argument certificate_depth to the ``--tls-verify`` command.</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> :code:`proto`<=
+/span><br><span>     The ``--proto`` parameter. Set on program initiation a=
+nd reset on</span><br><span>     SIGHUP.</span><br><span>diff --git a/src/o=
+penvpn/init.c b/src/openvpn/init.c</span><br><span>index 9e2b3845..c5cc154 =
+100644</span><br><span>--- a/src/openvpn/init.c</span><br><span>+++ b/src/o=
+penvpn/init.c</span><br><span>@@ -3336,6 +3336,7 @@</span><br><span>     to=
+.auth_user_pass_verify_script_via_file =3D options-&gt;auth_user_pass_verif=
+y_script_via_file;</span><br><span>     to.client_crresponse_script =3D opt=
+ions-&gt;client_crresponse_script;</span><br><span>     to.tmp_dir =3D opti=
+ons-&gt;tmp_dir;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+ to.export_peer_cert_dir =3D options-&gt;tls_export_peer_cert_dir;</span><b=
+r><span>     if (options-&gt;ccd_exclusive)</span><br><span>     {</span><b=
+r><span>         to.client_config_dir_exclusive =3D options-&gt;client_conf=
+ig_dir;</span><br><span>diff --git a/src/openvpn/options.c b/src/openvpn/op=
+tions.c</span><br><span>index f54f276..6975cbe 100644</span><br><span>--- a=
+/src/openvpn/options.c</span><br><span>+++ b/src/openvpn/options.c</span><b=
+r><span>@@ -1995,6 +1995,7 @@</span><br><span>     SHOW_STR(cipher_list_tls=
+13);</span><br><span>     SHOW_STR(tls_cert_profile);</span><br><span>     =
+SHOW_STR(tls_verify);</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+    SHOW_STR(tls_export_peer_cert_dir);</span><br><span>     SHOW_INT(ver=
+ify_x509_type);</span><br><span>     SHOW_STR(verify_x509_name);</span><br>=
+<span>     SHOW_STR_INLINE(crl_file);</span><br><span>@@ -3062,6 +3063,7 @@=
+</span><br><span>         MUST_BE_UNDEF(cipher_list_tls13);</span><br><span=
+>         MUST_BE_UNDEF(tls_cert_profile);</span><br><span>         MUST_BE=
+_UNDEF(tls_verify);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+        MUST_BE_UNDEF(tls_export_peer_cert_dir);</span><br><span>         M=
+UST_BE_UNDEF(verify_x509_name);</span><br><span>         MUST_BE_UNDEF(tls_=
+timeout);</span><br><span>         MUST_BE_UNDEF(renegotiate_bytes);</span>=
+<br><span>@@ -4092,6 +4094,13 @@</span><br><span>                          =
+                       R_OK, &quot;--crl-verify&quot;);</span><br><span>   =
+  }</span><br><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+    if (options-&gt;tls_export_peer_cert_dir)</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+        errs |=3D check_file_access_chroot(options-&gt;chroot=
+_dir, CHKACC_FILE,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+                                        options-&gt;tls_export_peer_cert_di=
+r,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+                 =
+                        W_OK, &quot;--tls-export-cert&quot;);</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+</span><br><span>     ASSERT(options-&gt;connec=
+tion_list);</span><br><span>     for (int i =3D 0; i &lt; options-&gt;conne=
+ction_list-&gt;len; ++i)</span><br><span>     {</span><br><span>@@ -9041,6 =
++9050,11 @@</span><br><span>                         string_substitute(p[1]=
+, &#39;,&#39;, &#39; &#39;, &amp;options-&gt;gc),</span><br><span>         =
+                &quot;tls-verify&quot;, true);</span><br><span>     }</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+    else if (streq(p[0], =
+&quot;tls-export-cert&quot;) &amp;&amp; p[1] &amp;&amp; !p[2])</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+        VERIFY_PERMISSION(OPT_P_SCRIPT);</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+        options-&gt;tls_e=
+xport_peer_cert_dir =3D p[1];</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+    }</span><br><span>     else if (streq(p[0], &quot;compat-name=
+s&quot;))</span><br><span>     {</span><br><span>         VERIFY_PERMISSION=
+(OPT_P_GENERAL);</span><br><span>diff --git a/src/openvpn/options.h b/src/o=
+penvpn/options.h</span><br><span>index cbfff18..85de887 100644</span><br><s=
+pan>--- a/src/openvpn/options.h</span><br><span>+++ b/src/openvpn/options.h=
+</span><br><span>@@ -592,6 +592,7 @@</span><br><span>     const char *tls_c=
+ert_profile;</span><br><span>     const char *ecdh_curve;</span><br><span> =
+    const char *tls_verify;</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+    const char *tls_export_peer_cert_dir;</span><br><span>     int =
+verify_x509_type;</span><br><span>     const char *verify_x509_name;</span>=
+<br><span>     const char *crl_file;</span><br><span>diff --git a/src/openv=
+pn/ssl_common.h b/src/openvpn/ssl_common.h</span><br><span>index 925660b..f=
+085e0d 100644</span><br><span>--- a/src/openvpn/ssl_common.h</span><br><spa=
+n>+++ b/src/openvpn/ssl_common.h</span><br><span>@@ -374,6 +374,7 @@</span>=
+<br><span>     const char *client_crresponse_script;</span><br><span>     b=
+ool auth_user_pass_verify_script_via_file;</span><br><span>     const char =
+*tmp_dir;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    const =
+char *export_peer_cert_dir;</span><br><span>     const char *auth_user_pass=
+_file;</span><br><span>     bool auth_user_pass_file_inline;</span><br><spa=
+n> </span><br><span>diff --git a/src/openvpn/ssl_verify.c b/src/openvpn/ssl=
+_verify.c</span><br><span>index bd7e512..75a4b2e 100644</span><br><span>---=
+ a/src/openvpn/ssl_verify.c</span><br><span>+++ b/src/openvpn/ssl_verify.c<=
+/span><br><span>@@ -31,6 +31,7 @@</span><br><span> #endif</span><br><span> =
+</span><br><span> #include &quot;syshead.h&quot;</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+#include &lt;string.h&gt;</span><br><span> </s=
+pan><br><span> #include &quot;base64.h&quot;</span><br><span> #include &quo=
+t;manage.h&quot;</span><br><span>@@ -457,6 +458,30 @@</span><br><span>     =
+gc_free(&amp;gc);</span><br><span> }</span><br><span> </span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+/**</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+ * Exports the certificate in \c peer_cert into the envi=
+ronment and adds</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * =
+the filname</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ */</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+static bool</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+verify_cert_cert_export_env(stru=
+ct env_set *es, openvpn_x509_cert_t *peer_cert,</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+                            const char *pem_exp=
+ort_fname)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+    /* export the path to t=
+he current certificate in pem file format */</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+    setenv_str(es, &quot;peer_cert&quot;, pem_expo=
+rt_fname);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+    return backend_x509_writ=
+e_pem(peer_cert, pem_export_fname) =3D=3D SUCCESS;</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+static=
+ void</span><br><span style=3D"color: hsl(120, 100%, 40%);">+verify_cert_ce=
+rt_delete_env(struct env_set *es, const char *pem_export_fname)</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+    env_set_del(es, &quot;peer_cert&quot;);</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (pem_export_fname)=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+        unlink(pem_export_fname);=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+</span><br><span> /*</span><br><span>  * call --tls=
+-verify plug-in(s)</span><br><span>  */</span><br><span>@@ -572,18 +597,19 =
+@@</span><br><span> result_t</span><br><span> verify_cert(struct tls_sessio=
+n *session, openvpn_x509_cert_t *cert, int cert_depth)</span><br><span> {</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+    /* need to define=
+ these variables here so goto cleanup will always have</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+     * them defined */</span><br><span> =
+    result_t ret =3D FAILURE;</span><br><span style=3D"color: hsl(0, 100%, =
+40%);">-    char *subject =3D NULL;</span><br><span style=3D"color: hsl(0, =
+100%, 40%);">-    const struct tls_options *opt;</span><br><span>     struc=
+t gc_arena gc =3D gc_new();</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+    const char *pem_export_fname =3D NULL;</span><br><span> </span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-    opt =3D session-&gt;opt;=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    const struct tl=
+s_options *opt =3D session-&gt;opt;</span><br><span>     ASSERT(opt);</span=
+><br><span> </span><br><span>     session-&gt;verified =3D false;</span><br=
+><span> </span><br><span>     /* get the X509 name */</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-    subject =3D x509_get_subject(cert, &amp=
+;gc);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    char *subj=
+ect =3D x509_get_subject(cert, &amp;gc);</span><br><span>     if (!subject)=
+</span><br><span>     {</span><br><span>         msg(D_TLS_ERRORS, &quot;VE=
+RIFY ERROR: depth=3D%d, could not extract X509 &quot;</span><br><span>@@ -7=
+06,6 +732,19 @@</span><br><span> </span><br><span>     session-&gt;verify_m=
+axlevel =3D max_int(session-&gt;verify_maxlevel, cert_depth);</span><br><sp=
+an> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (opt-&gt=
+;export_peer_cert_dir)</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        pem=
+_export_fname =3D platform_create_temp_file(opt-&gt;export_peer_cert_dir,</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+                     =
+                                &quot;pef&quot;, &amp;gc);</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+        if (!pem_export_fname</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+            || !verify_cert_cert_export_env(o=
+pt-&gt;es, cert, pem_export_fname))</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+        {</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+            msg(D_TLS_ERRORS, &quot;TLS Error: Failed to export certi=
+ficate for &quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+              &quot;--tls-export-cert in %s&quot;, opt-&gt;export_peer_cert=
+_dir);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            g=
+oto cleanup;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
+ }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><=
+span>     /* export certificate values to the environment */</span><br><spa=
+n>     verify_cert_set_env(opt-&gt;es, cert, cert_depth, subject, common_na=
+me,</span><br><span>                         opt-&gt;x509_track);</span><br=
+><span>@@ -757,12 +796,13 @@</span><br><span>     ret =3D SUCCESS;</span><b=
+r><span> </span><br><span> cleanup:</span><br><span style=3D"color: hsl(0, =
+100%, 40%);">-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    v=
+erify_cert_cert_delete_env(opt-&gt;es, pem_export_fname);</span><br><span> =
+    if (ret !=3D SUCCESS)</span><br><span>     {</span><br><span>         t=
+ls_clear_error(); /* always? */</span><br><span>         session-&gt;verifi=
+ed =3D false; /* double sure? */</span><br><span>     }</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+</span><br><span>     gc_free(&amp;gc);=
+</span><br><span> </span><br><span>     return ret;</span><br><span>diff --=
+git a/src/openvpn/ssl_verify_backend.h b/src/openvpn/ssl_verify_backend.h</=
+span><br><span>index d402b1f..5301a51 100644</span><br><span>--- a/src/open=
+vpn/ssl_verify_backend.h</span><br><span>+++ b/src/openvpn/ssl_verify_backe=
+nd.h</span><br><span>@@ -161,6 +161,17 @@</span><br><span>                 =
+                  struct gc_arena *gc);</span><br><span> </span><br><span> =
+/*</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * Write the cert=
+ificate to the file in PEM format.</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+ *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @param cert     =
+     Certificate to serialise.</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+ *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @re=
+turn              \c FAILURE, \c or SUCCESS</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+ */</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+result_t backend_x509_write_pem(openvpn_x509_cert_t *cert,</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+                            =
+    const char *filename);</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+/*</span><br=
+><span>  * Save X509 fields to environment, using the naming convention:</s=
+pan><br><span>  *</span><br><span>  * X509_{cert_depth}_{name}=3D{value}</s=
+pan><br><span>diff --git a/src/openvpn/ssl_verify_mbedtls.c b/src/openvpn/s=
+sl_verify_mbedtls.c</span><br><span>index 5612139..24a89c3 100644</span><br=
+><span>--- a/src/openvpn/ssl_verify_mbedtls.c</span><br><span>+++ b/src/ope=
+nvpn/ssl_verify_mbedtls.c</span><br><span>@@ -218,6 +218,41 @@</span><br><s=
+pan>     return buf;</span><br><span> }</span><br><span> </span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+result_t</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+backend_x509_write_pem(openvpn_x509_cert_t *cert=
+, const char *filename)</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    /* mbed TL=
+S does not make it easy to write a certificate in PEM format.</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+     * The only way is to directl=
+y access the DER encoded raw certificate</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+     * and PEM encode it ourselves */</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+    struct gc_arena gc =3D gc_new();</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+    /* just do a very loose upper boun=
+d for the base64 based PEM encoding</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+     * using 3 times the space for the base64 and 100 bytes=
+ for the</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     * head=
+ers and footer */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+  struct buffer pem =3D alloc_buf_gc(cert-&gt;raw.len * 3 + 100, &amp;gc);<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+    struct buffer der =3D {};</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+    buf_set_read(&amp;der, ce=
+rt-&gt;raw.p, cert-&gt;raw.len);</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if=
+ (!crypto_pem_encode(&quot;CERTIFICATE&quot;, &amp;pem,  &amp;der, &amp;gc)=
+)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+        goto err;</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+    if (!buffer_write_file(filename, &amp;pem))</span><br><span sty=
 le=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+        errs |=3D check_file_access_chroot(options-&g=
-t;chroot_dir, CHKACC_FILE,</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+                                         options-&gt;tls_export_peer=
-_cert_dir,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+         =
-                                W_OK, &quot;--tls-export-cert&quot;);</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+</span><br><span>     ASSERT(options-&g=
-t;connection_list);</span><br><span>     for (int i =3D 0; i &lt; options-&=
-gt;connection_list-&gt;len; ++i)</span><br><span>     {</span><br><span>@@ =
--9041,6 +9050,11 @@</span><br><span>                         string_substit=
-ute(p[1], &#39;,&#39;, &#39; &#39;, &amp;options-&gt;gc),</span><br><span> =
-                        &quot;tls-verify&quot;, true);</span><br><span>    =
- }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    else if (stre=
-q(p[0], &quot;tls-export-cert&quot;) &amp;&amp; p[1] &amp;&amp; !p[2])</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+        VERIFY_PERMISSION(OPT_P_SCRIPT=
-);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        options-&=
-gt;tls_export_peer_cert_dir =3D p[1];</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+    }</span><br><span>     else if (streq(p[0], &quot;com=
-pat-names&quot;))</span><br><span>     {</span><br><span>         VERIFY_PE=
-RMISSION(OPT_P_GENERAL);</span><br><span>diff --git a/src/openvpn/options.h=
- b/src/openvpn/options.h</span><br><span>index cbfff18..85de887 100644</spa=
-n><br><span>--- a/src/openvpn/options.h</span><br><span>+++ b/src/openvpn/o=
-ptions.h</span><br><span>@@ -592,6 +592,7 @@</span><br><span>     const cha=
-r *tls_cert_profile;</span><br><span>     const char *ecdh_curve;</span><br=
-><span>     const char *tls_verify;</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+    const char *tls_export_peer_cert_dir;</span><br><span> =
-    int verify_x509_type;</span><br><span>     const char *verify_x509_name=
-;</span><br><span>     const char *crl_file;</span><br><span>diff --git a/s=
-rc/openvpn/ssl_common.h b/src/openvpn/ssl_common.h</span><br><span>index 92=
-5660b..f085e0d 100644</span><br><span>--- a/src/openvpn/ssl_common.h</span>=
-<br><span>+++ b/src/openvpn/ssl_common.h</span><br><span>@@ -374,6 +374,7 @=
-@</span><br><span>     const char *client_crresponse_script;</span><br><spa=
-n>     bool auth_user_pass_verify_script_via_file;</span><br><span>     con=
-st char *tmp_dir;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-  const char *export_peer_cert_dir;</span><br><span>     const char *auth_u=
-ser_pass_file;</span><br><span>     bool auth_user_pass_file_inline;</span>=
-<br><span> </span><br><span>diff --git a/src/openvpn/ssl_verify.c b/src/ope=
-nvpn/ssl_verify.c</span><br><span>index bd7e512..75a4b2e 100644</span><br><=
-span>--- a/src/openvpn/ssl_verify.c</span><br><span>+++ b/src/openvpn/ssl_v=
-erify.c</span><br><span>@@ -31,6 +31,7 @@</span><br><span> #endif</span><br=
-><span> </span><br><span> #include &quot;syshead.h&quot;</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+#include &lt;string.h&gt;</span><br><s=
-pan> </span><br><span> #include &quot;base64.h&quot;</span><br><span> #incl=
-ude &quot;manage.h&quot;</span><br><span>@@ -457,6 +458,30 @@</span><br><sp=
-an>     gc_free(&amp;gc);</span><br><span> }</span><br><span> </span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+/**</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+ * Exports the certificate in \c peer_cert into =
-the environment and adds</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+ * the filname</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
- */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+static bool</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+verify_cert_cert_export_=
-env(struct env_set *es, openvpn_x509_cert_t *peer_cert,</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+                            const char =
-*pem_export_fname)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    /* export the p=
-ath to the current certificate in pem file format */</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    setenv_str(es, &quot;peer_cert&quot;,=
- pem_export_fname);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    return backend_=
-x509_write_pem(peer_cert, pem_export_fname) =3D=3D SUCCESS;</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+static void</span><br><span style=3D"color: hsl(120, 100%, 40%);">+verif=
-y_cert_cert_delete_env(struct env_set *es, const char *pem_export_fname)</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+    env_set_del(es, &quot;peer_cert&quot=
-;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (pem_expo=
-rt_fname)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+        unlink(pem_expor=
-t_fname);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+</span><br><span> /*</span><br><span>  * =
-call --tls-verify plug-in(s)</span><br><span>  */</span><br><span>@@ -572,1=
-8 +597,19 @@</span><br><span> result_t</span><br><span> verify_cert(struct =
-tls_session *session, openvpn_x509_cert_t *cert, int cert_depth)</span><br>=
-<span> {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    /* need=
- to define these variables here so goto cleanup will always have</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+     * them defined */</span><=
-br><span>     result_t ret =3D FAILURE;</span><br><span style=3D"color: hsl=
-(0, 100%, 40%);">-    char *subject =3D NULL;</span><br><span style=3D"colo=
-r: hsl(0, 100%, 40%);">-    const struct tls_options *opt;</span><br><span>=
-     struct gc_arena gc =3D gc_new();</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+    const char *pem_export_fname =3D NULL;</span><br><spa=
-n> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-    opt =3D sessio=
-n-&gt;opt;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    const=
- struct tls_options *opt =3D session-&gt;opt;</span><br><span>     ASSERT(o=
-pt);</span><br><span> </span><br><span>     session-&gt;verified =3D false;=
-</span><br><span> </span><br><span>     /* get the X509 name */</span><br><=
-span style=3D"color: hsl(0, 100%, 40%);">-    subject =3D x509_get_subject(=
-cert, &amp;gc);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-char *subject =3D x509_get_subject(cert, &amp;gc);</span><br><span>     if =
-(!subject)</span><br><span>     {</span><br><span>         msg(D_TLS_ERRORS=
-, &quot;VERIFY ERROR: depth=3D%d, could not extract X509 &quot;</span><br><=
-span>@@ -706,6 +732,19 @@</span><br><span> </span><br><span>     session-&g=
-t;verify_maxlevel =3D max_int(session-&gt;verify_maxlevel, cert_depth);</sp=
-an><br><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+    i=
-f (opt-&gt;export_peer_cert_dir)</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-       pem_export_fname =3D platform_create_temp_file(opt-&gt;export_peer_c=
-ert_dir,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+           =
-                                          &quot;pef&quot;, &amp;gc);</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+        if (!pem_export_fname</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+            || !verify_cert_cert_ex=
-port_env(opt-&gt;es, cert, pem_export_fname))</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+        {</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+            msg(D_TLS_ERRORS, &quot;TLS Error: Failed to ex=
-port certificate for &quot;</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+                &quot;--tls-export-cert in %s&quot;, opt-&gt;export=
-_peer_cert_dir);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
-         goto cleanup;</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+        }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</=
-span><br><span>     /* export certificate values to the environment */</spa=
-n><br><span>     verify_cert_set_env(opt-&gt;es, cert, cert_depth, subject,=
- common_name,</span><br><span>                         opt-&gt;x509_track);=
-</span><br><span>@@ -757,12 +796,13 @@</span><br><span>     ret =3D SUCCESS=
-;</span><br><span> </span><br><span> cleanup:</span><br><span style=3D"colo=
-r: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+    verify_cert_cert_delete_env(opt-&gt;es, pem_export_fname);</span><=
-br><span>     if (ret !=3D SUCCESS)</span><br><span>     {</span><br><span>=
-         tls_clear_error(); /* always? */</span><br><span>         session-=
-&gt;verified =3D false; /* double sure? */</span><br><span>     }</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span>     gc_free=
-(&amp;gc);</span><br><span> </span><br><span>     return ret;</span><br><sp=
-an>diff --git a/src/openvpn/ssl_verify_backend.h b/src/openvpn/ssl_verify_b=
-ackend.h</span><br><span>index d402b1f..5301a51 100644</span><br><span>--- =
-a/src/openvpn/ssl_verify_backend.h</span><br><span>+++ b/src/openvpn/ssl_ve=
-rify_backend.h</span><br><span>@@ -161,6 +161,17 @@</span><br><span>       =
-                            struct gc_arena *gc);</span><br><span> </span><=
-br><span> /*</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * Writ=
-e the certificate to the file in PEM format.</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+ *</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+ *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @param=
- cert          Certificate to serialise.</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+ *</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+ * @return              \c FAILURE, \c or SUCCESS</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+ */</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+result_t backend_x509_write_pem(openvpn_x509_cert_t *cert=
-,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+                  =
-              const char *filename);</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+/*=
-</span><br><span>  * Save X509 fields to environment, using the naming conv=
-ention:</span><br><span>  *</span><br><span>  * X509_{cert_depth}_{name}=3D=
-{value}</span><br><span>diff --git a/src/openvpn/ssl_verify_mbedtls.c b/src=
-/openvpn/ssl_verify_mbedtls.c</span><br><span>index 5612139..24a89c3 100644=
-</span><br><span>--- a/src/openvpn/ssl_verify_mbedtls.c</span><br><span>+++=
- b/src/openvpn/ssl_verify_mbedtls.c</span><br><span>@@ -218,6 +218,41 @@</s=
-pan><br><span>     return buf;</span><br><span> }</span><br><span> </span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+result_t</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+backend_x509_write_pem(openvpn_x509_ce=
-rt_t *cert, const char *filename)</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-/* mbed TLS does not make it easy to write a certificate in PEM format.</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+     * The only way is =
-to directly access the DER encoded raw certificate</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+     * and PEM encode it ourselves */</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+    struct gc_arena gc =3D gc_new();</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+    /* just do a very loose =
-upper bound for the base64 based PEM encoding</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+     * using 3 times the space for the base64 and=
- 100 bytes for the</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-    * headers and footer */</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+    struct buffer pem =3D alloc_buf_gc(cert-&gt;raw.len * 3 + 100, =
-&amp;gc);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+    struct buffer der =3D {};=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    buf_set_read(&a=
-mp;der, cert-&gt;raw.p, cert-&gt;raw.len);</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+    if (!crypto_pem_encode(&quot;CERTIFICATE&quot;, &amp;pem,  &amp;der=
-, &amp;gc))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+        goto err;</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+    if (!buffer_write_file(filename, &amp;pem))</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=
+sl(120, 100%, 40%);">+        goto err;</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    gc_free(&=
+amp;gc);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    return =
+SUCCESS;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+err:</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+    msg(D_TLS_DEBUG_LOW, &=
+quot;Error writing X509 certificate to file %s&quot;,</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+        filename);</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    gc_free(&amp;gc);</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+    return FAILURE;</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+</span><br><span> static struct buffer</span><br><span> x=
+509_get_fingerprint(const mbedtls_md_info_t *md_info, mbedtls_x509_crt *cer=
+t,</span><br><span>                      struct gc_arena *gc)</span><br><sp=
+an>diff --git a/src/openvpn/ssl_verify_openssl.c b/src/openvpn/ssl_verify_o=
+penssl.c</span><br><span>index 5afffc1..00fdec3 100644</span><br><span>--- =
+a/src/openvpn/ssl_verify_openssl.c</span><br><span>+++ b/src/openvpn/ssl_ve=
+rify_openssl.c</span><br><span>@@ -320,6 +320,29 @@</span><br><span>     re=
+turn format_hex_ex(asn1_i-&gt;data, asn1_i-&gt;length, 0, 1, &quot;:&quot;,=
+ gc);</span><br><span> }</span><br><span> </span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+result_t</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+backend_x509_write_pem(openvpn_x509_cert_t *cert, const char *f=
+ilename)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+    BIO *out =3D BIO_new_file=
+(filename, &quot;w&quot;);</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+    if (!out)</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        goto =
+err;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+    if (!PEM_write_bio_X509(out, cert))</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=
 =3D"color: hsl(120, 100%, 40%);">+        goto err;</span><br><span style=
 =3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+    gc_free(&amp;gc);</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+    return SUCCESS;</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+err:</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    msg(D_TL=
-S_DEBUG_LOW, &quot;Error writing X509 certificate to file %s&quot;,</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+        filename);</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+    gc_free(&amp;gc);</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+    return FAILURE;</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+</span><br><span> static struct buffer</span=
-><br><span> x509_get_fingerprint(const mbedtls_md_info_t *md_info, mbedtls_=
-x509_crt *cert,</span><br><span>                      struct gc_arena *gc)<=
-/span><br><span>diff --git a/src/openvpn/ssl_verify_openssl.c b/src/openvpn=
-/ssl_verify_openssl.c</span><br><span>index 5afffc1..00fdec3 100644</span><=
-br><span>--- a/src/openvpn/ssl_verify_openssl.c</span><br><span>+++ b/src/o=
-penvpn/ssl_verify_openssl.c</span><br><span>@@ -320,6 +320,29 @@</span><br>=
-<span>     return format_hex_ex(asn1_i-&gt;data, asn1_i-&gt;length, 0, 1, &=
-quot;:&quot;, gc);</span><br><span> }</span><br><span> </span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+result_t</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+backend_x509_write_pem(openvpn_x509_cert_t *cert, =
-const char *filename)</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    BIO *out =3D=
- BIO_new_file(filename, &quot;w&quot;);</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+    if (!out)</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-        goto err;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-  }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+    if (!PEM_write_bio_X509(out, ce=
-rt))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+        goto err;</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+    BIO_free(out);</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+    return SUCCESS;</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+err:</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    B=
-IO_free(out);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    cr=
-ypto_msg(D_TLS_DEBUG_LOW, &quot;Error writing X509 certificate to file %s&q=
-uot;,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+              =
- filename);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    retu=
-rn FAILURE;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> struct b=
-uffer</span><br><span> x509_get_sha1_fingerprint(X509 *cert, struct gc_aren=
-a *gc)</span><br><span> {</span><br><span></span><br></pre><p>To view, visi=
-t <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/466?usp=3Demail">change =
-466</a>. To unsubscribe, or for help writing mail filters, visit <a href=3D=
-"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope itemty=
-pe=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"action" it=
-emtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http=
-://gerrit.openvpn.net/c/openvpn/+/466?usp=3Demail"/><meta itemprop=3D"name"=
- content=3D"View Change"/></div></div>
+(120, 100%, 40%);">+    BIO_free(out);</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+    return SUCCESS;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+err:</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    BIO_free(ou=
+t);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    crypto_msg(D=
+_TLS_DEBUG_LOW, &quot;Error writing X509 certificate to file %s&quot;,</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+               filename)=
+;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    return FAILURE=
+;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> struct buffer</spa=
+n><br><span> x509_get_sha1_fingerprint(X509 *cert, struct gc_arena *gc)</sp=
+an><br><span> {</span><br><span></span><br></pre><p>To view, visit <a href=
+=3D"http://gerrit.openvpn.net/c/openvpn/+/466?usp=3Demail">change 466</a>. =
+To unsubscribe, or for help writing mail filters, visit <a href=3D"http://g=
+errit.openvpn.net/settings">settings</a>.</p><div itemscope itemtype=3D"htt=
+p://schema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D=
+"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit=
+.openvpn.net/c/openvpn/+/466?usp=3Demail"/><meta itemprop=3D"name" content=
+=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
@@ -781,8 +774,8 @@ emtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http=
 1...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
+<div style=3D"display:none"> Gerrit-MessageType: merged </div>
 
 
---nX+Cg46sYM4=--
+--ACzV3Wr9NlY=--
 
