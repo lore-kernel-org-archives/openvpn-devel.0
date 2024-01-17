@@ -1,16 +1,15 @@
-From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Tue, 16 Jan 2024 22:06:46 +0000
-In-Reply-To: <gerrit.1701971374000.Ie248d35d063bb6878f3dd42840c77ba0d6fa3381@...2715...>
-References: <gerrit.1701971374000.Ie248d35d063bb6878f3dd42840c77ba0d6fa3381@...2715...>
-Reply-To: gert@...1296..., arne-openvpn@...1227...,
+From: "d12fk (Code Review)" <gerrit@...515...>
+Date: Wed, 17 Jan 2024 03:49:59 +0000
+References: <gerrit.1705463396000.Ib1a5c788269949d8de95d1da2cb0c32a65bf13f2@...2715...>
+Reply-To: heiko@...515..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <29469c7f51db174a3ee638a364ca86120ebc79b1-HTML@...2715...>
+Message-ID: <9e05cfffe76aed0ef7d93db19560a28a69c9ea41-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="bk+ToWlUj0A="; charset=UTF-8
-Subject: [Openvpn-devel] [L] Change in openvpn[master]: Add test_ssl unit
- test and test export of PEM to file
+Content-Type: multipart/alternative; boundary="gVhIYovbJSI="; charset=UTF-8
+Subject: [Openvpn-devel] [M] Change in openvpn[master]: cmake: symlink whole
+ build dir not just .json file
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,943 +18,464 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: plaisthos <arne-openvpn@...1227...>
-Cc: flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---bk+ToWlUj0A=
+--gVhIYovbJSI=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-cron2 has submitted this change. ( http://gerrit.openvpn.net/c/openvpn/+/47=
-1?usp=3Demail )
+Attention is currently required from: flichtenheld, plaisthos.
 
-Change subject: Add test_ssl unit test and test export of PEM to file
+Hello plaisthos, flichtenheld,
+
+I'd like you to do a code review.
+Please visit
+
+    http://gerrit.openvpn.net/c/openvpn/+/501?usp=3Demail
+
+to review the following change.
+
+
+Change subject: cmake: symlink whole build dir not just .json file
 ......................................................................
 
-Add test_ssl unit test and test export of PEM to file
+cmake: symlink whole build dir not just .json file
 
-This introduces a number of mock function to be able to compile
-ssl_verify_*.c and ssl_mbedtls.c/ssl_openssl.c into a unit and adds
-quite a number of files to that unit. But it allows similar unit tests
-(in term of dependencies) to be added in the future.
+It turned out that symlinking compile_commands.json from the top level
+source dir has some issues:
+  * file is not created on Windows and symlinking may cause an error
+  * some IDEs create their own json and error out b/c a file exists
 
-Change-Id: Ie248d35d063bb6878f3dd42840c77ba0d6fa3381
-Signed-off-by: Arne Schwabe <arne@...1227...>
-Acked-by: Gert Doering <gert@...1296...>
-Message-Id: <20240116214152.27316-1-gert@...1296...>
-URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg28=
-028.html
-Signed-off-by: Gert Doering <gert@...1296...>
+Since clangd also looks for the json in build/ directories by default,
+we now symlink the whole build directory instead, not just the json file.
+
+This approach requires for the existing build/ dir in the repo to
+vanish. Luckily it only contains one automake include file, which is
+moved to the top level source dir.
+
+Lastly, make this an opt-in feature, so that the default configuration
+of the buildsystem never causes a build failure because of this.
+
+Change-Id: Ib1a5c788269949d8de95d1da2cb0c32a65bf13f2
+Signed-off-by: Heiko Hund <heiko@...2662...>
 ---
-M .github/workflows/build.yaml
+M .gitignore
 M CMakeLists.txt
-M tests/unit_tests/openvpn/Makefile.am
-A tests/unit_tests/openvpn/mock_management.c
-A tests/unit_tests/openvpn/mock_ssl_dependencies.c
-A tests/unit_tests/openvpn/test_ssl.c
-6 files changed, 322 insertions(+), 2 deletions(-)
+M Makefile.am
+M README.cmake.md
+D build/Makefile.am
+M configure.ac
+R ltrc.inc
+M src/openvpn/Makefile.am
+M src/openvpnmsica/Makefile.am
+M src/openvpnserv/Makefile.am
+M src/tapctl/Makefile.am
+11 files changed, 32 insertions(+), 25 deletions(-)
 
 
 
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/01/501/1
 
-diff --git a/.github/workflows/build.yaml b/.github/workflows/build.yaml
-index 51100c3..cc98813 100644
---- a/.github/workflows/build.yaml
-+++ b/.github/workflows/build.yaml
-@@ -85,7 +85,7 @@
-       fail-fast: false
-       matrix:
-         arch: [x86, x64]
--        test: [argv, auth_token, buffer, cryptoapi, crypto, misc, ncp, pac=
-ket_id, pkt, provider, tls_crypt]
-+        test: [argv, auth_token, buffer, cryptoapi, crypto, misc, ncp, pac=
-ket_id, pkt, provider, ssl, tls_crypt]
+diff --git a/.gitignore b/.gitignore
+index 4153a3e..92d65bf 100644
+--- a/.gitignore
++++ b/.gitignore
+@@ -40,7 +40,7 @@
+ m4/ltversion.m4
+ m4/lt~obsolete.m4
 
-     runs-on: windows-latest
-     name: "mingw unittest ${{ matrix.test }} - ${{ matrix.arch }} - OSSL"
+-compile_commands.json
++build
+ doc/openvpn-examples.5
+ doc/openvpn-examples.5.html
+ doc/openvpn.8
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 6f370c3..6a1895a 100644
+index bc46c27..4e5c8fa 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -595,6 +595,7 @@
-         "test_packet_id"
-         "test_pkt"
-         "test_provider"
-+        "test_ssl"
-         )
+@@ -43,9 +43,17 @@
+ set(PLUGIN_DIR /usr/local/lib/openvpn/plugins CACHE FILEPATH "Location of =
+the plugin directory")
 
-     if (WIN32)
-@@ -699,6 +700,32 @@
-         src/openvpn/mss.c
-         )
+ # Create machine readable compile commands
+-set(CMAKE_EXPORT_COMPILE_COMMANDS 1)
+-file(CREATE_LINK ${CMAKE_CURRENT_BINARY_DIR}/compile_commands.json
+-                 ${CMAKE_CURRENT_SOURCE_DIR}/compile_commands.json SYMBOLI=
+C)
++option(ENABLE_COMPILE_COMMANDS "Generate compile_commands.json and a symli=
+nk for clangd to find it" OFF)
++if (ENABLE_COMPILE_COMMANDS)
++    if (EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/build AND NOT IS_SYMLINK ${CMAK=
+E_CURRENT_SOURCE_DIR}/build)
++        message(FATAL_ERROR "The top level source directory contains a 'bu=
+ild' file or directory. Please remove or rename it. CMake creates a symlink=
+ with that name during build.")
++    endif()
++    set(CMAKE_EXPORT_COMPILE_COMMANDS 1)
++    add_custom_target(
++        symlink-build-dir ALL
++        ${CMAKE_COMMAND} -E create_symlink ${CMAKE_CURRENT_BINARY_DIR} ${C=
+MAKE_CURRENT_SOURCE_DIR}/build
++        )
++endif ()
 
-+    target_sources(test_ssl PRIVATE
-+            tests/unit_tests/openvpn/mock_management.c
-+            tests/unit_tests/openvpn/mock_ssl_dependencies.c
-+            tests/unit_tests/openvpn/mock_win32_execve.c
-+            src/openvpn/argv.c
-+            src/openvpn/base64.c
-+            src/openvpn/crypto.c
-+            src/openvpn/crypto_mbedtls.c
-+            src/openvpn/crypto_openssl.c
-+            src/openvpn/cryptoapi.c
-+            src/openvpn/env_set.c
-+            src/openvpn/mss.c
-+            src/openvpn/mtu.c
-+            src/openvpn/options_util.c
-+            src/openvpn/otime.c
-+            src/openvpn/packet_id.c
-+            src/openvpn/run_command.c
-+            src/openvpn/ssl_mbedtls.c
-+            src/openvpn/ssl_openssl.c
-+            src/openvpn/ssl_util.c
-+            src/openvpn/ssl_verify_mbedtls.c
-+            src/openvpn/ssl_verify_openssl.c
-+            src/openvpn/xkey_helper.c
-+            src/openvpn/xkey_provider.c
-+    )
-+
-     target_sources(test_misc PRIVATE
-         tests/unit_tests/openvpn/mock_get_random.c
-         src/openvpn/options_util.c
-diff --git a/tests/unit_tests/openvpn/Makefile.am b/tests/unit_tests/openvp=
-n/Makefile.am
-index cecf4dc..f81a10f 100644
---- a/tests/unit_tests/openvpn/Makefile.am
-+++ b/tests/unit_tests/openvpn/Makefile.am
-@@ -9,7 +9,8 @@
+ # AddressSanitize - use CXX=3Dclang++ CC=3Dclang cmake -DCMAKE_BUILD_TYPE=
+=3Dasan to build with ASAN
+ set(CMAKE_C_FLAGS_ASAN
+diff --git a/Makefile.am b/Makefile.am
+index 2305ab4..792588a 100644
+--- a/Makefile.am
++++ b/Makefile.am
+@@ -42,6 +42,7 @@
+ EXTRA_DIST =3D \
+ 	contrib \
+ 	debug \
++	ltrc.inc \
+ 	CMakeLists.txt \
+ 	CMakePresets.json \
+ 	config.h.cmake.in
+@@ -53,7 +54,7 @@
+ 	config-version.h
  endif
 
- test_binaries +=3D crypto_testdriver packet_id_testdriver auth_token_testd=
-river ncp_testdriver misc_testdriver \
--	pkt_testdriver
-+	pkt_testdriver ssl_testdriver
-+
- if HAVE_LD_WRAP_SUPPORT
- if !WIN32
- test_binaries +=3D tls_crypt_testdriver
-@@ -69,6 +70,40 @@
- 	$(top_srcdir)/src/openvpn/win32-util.c \
- 	$(top_srcdir)/src/openvpn/mss.c
+-SUBDIRS =3D build distro include src sample doc tests
++SUBDIRS =3D distro include src sample doc tests
 
-+ssl_testdriver_CFLAGS  =3D @TEST_CFLAGS@ \
-+	-I$(top_srcdir)/include -I$(top_srcdir)/src/compat -I$(top_srcdir)/src/op=
-envpn
-+ssl_testdriver_LDFLAGS =3D @TEST_LDFLAGS@  $(OPTIONAL_CRYPTO_LIBS)
-+ssl_testdriver_SOURCES =3D test_ssl.c mock_msg.c mock_msg.h \
-+	mock_management.c mock_ssl_dependencies.c mock_win32_execve.c \
-+	$(top_srcdir)/src/openvpn/argv.c \
-+	$(top_srcdir)/src/openvpn/base64.c \
-+	$(top_srcdir)/src/openvpn/buffer.c \
-+	$(top_srcdir)/src/compat/compat-strsep.c \
-+	$(top_srcdir)/src/openvpn/crypto.c \
-+	$(top_srcdir)/src/openvpn/cryptoapi.c \
-+	$(top_srcdir)/src/openvpn/crypto_mbedtls.c \
-+	$(top_srcdir)/src/openvpn/crypto_openssl.c \
-+	$(top_srcdir)/src/openvpn/env_set.c \
-+	$(top_srcdir)/src/openvpn/mss.c \
-+	$(top_srcdir)/src/openvpn/mtu.c \
-+	$(top_srcdir)/src/openvpn/otime.c \
-+	$(top_srcdir)/src/openvpn/options_util.c \
-+	$(top_srcdir)/src/openvpn/packet_id.c \
-+	$(top_srcdir)/src/openvpn/platform.c \
-+	$(top_srcdir)/src/openvpn/run_command.c \
-+	$(top_srcdir)/src/openvpn/ssl_openssl.c \
-+	$(top_srcdir)/src/openvpn/ssl_mbedtls.c \
-+	$(top_srcdir)/src/openvpn/ssl_util.c \
-+	$(top_srcdir)/src/openvpn/ssl_verify_mbedtls.c \
-+	$(top_srcdir)/src/openvpn/ssl_verify_openssl.c \
-+	$(top_srcdir)/src/openvpn/xkey_helper.c \
-+	$(top_srcdir)/src/openvpn/xkey_provider.c \
-+	$(top_srcdir)/src/openvpn/win32-util.c
+ dist_doc_DATA =3D \
+ 	README \
+diff --git a/README.cmake.md b/README.cmake.md
+index d181b64..4f41c70 100644
+--- a/README.cmake.md
++++ b/README.cmake.md
+@@ -135,3 +135,17 @@
+ The `unix-native` CMake preset is available for these builds. This preset =
+does
+ not require VCPKG and instead assumes all build-dependencies are provided =
+by
+ the system natively.
 +
-+if WIN32
-+ssl_testdriver_LDADD =3D  -lcrypt32 -lncrypt -lfwpuclnt -liphlpapi -lws2_32
-+endif
++Generating compile_commands.json
++--------------------------------
 +
- packet_id_testdriver_CFLAGS  =3D @TEST_CFLAGS@ \
- 	-I$(top_srcdir)/include -I$(top_srcdir)/src/compat -I$(top_srcdir)/src/op=
-envpn
- packet_id_testdriver_LDFLAGS =3D @TEST_LDFLAGS@
-diff --git a/tests/unit_tests/openvpn/mock_management.c b/tests/unit_tests/=
-openvpn/mock_management.c
-new file mode 100644
-index 0000000..8936c3a
---- /dev/null
-+++ b/tests/unit_tests/openvpn/mock_management.c
-@@ -0,0 +1,51 @@
-+/*
-+ *  OpenVPN -- An application to securely tunnel IP networks
-+ *             over a single UDP port, with support for SSL/TLS-based
-+ *             session authentication and key exchange,
-+ *             packet encryption, packet authentication, and
-+ *             packet compression.
-+ *
-+ *  Copyright (C) 2002-2023 OpenVPN Inc <sales@...515...>
-+ *
-+ *  This program is free software; you can redistribute it and/or modify
-+ *  it under the terms of the GNU General Public License version 2
-+ *  as published by the Free Software Foundation.
-+ *
-+ *  This program is distributed in the hope that it will be useful,
-+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
-+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-+ *  GNU General Public License for more details.
-+ *
-+ *  You should have received a copy of the GNU General Public License along
-+ *  with this program; if not, write to the Free Software Foundation, Inc.,
-+ *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-+ */
++To have the CMake buildsystem generate compile_commands.json you can speci=
+fy
++`-DENABLE_COMPILE_COMMANDS=3DON` on the command line or enable the CMake o=
+ption
++another way you like. For supported generators the file will then be creat=
+ed.
++Additionally, the buildsystem will create a symlink `build/` to the --pres=
+et
++build directory that contains the generated JSON file. This is done so that
++clangd is able to find it.
 +
-+/* Minimal set of mocked management function/globals to get unit tests to
-+ * compile */
-+
-+#ifdef HAVE_CONFIG_H
-+#include "config.h"
-+#endif
-+
-+#include "syshead.h"
-+
-+#include "manage.h"
-+
-+#ifdef ENABLE_MANAGEMENT
-+
-+struct management *management; /* GLOBAL */
-+
-+void
-+management_auth_failure(struct management *man, const char *type, const ch=
-ar *reason)
-+{
-+    ASSERT(false);
-+}
-+
-+char *
-+management_query_pk_sig(struct management *man, const char *b64_data,
-+                        const char *algorithm)
-+{
-+    return NULL;
-+}
-+#endif
-diff --git a/tests/unit_tests/openvpn/mock_ssl_dependencies.c b/tests/unit_=
-tests/openvpn/mock_ssl_dependencies.c
-new file mode 100644
-index 0000000..9231d65
---- /dev/null
-+++ b/tests/unit_tests/openvpn/mock_ssl_dependencies.c
-@@ -0,0 +1,67 @@
-+/*
-+ *  OpenVPN -- An application to securely tunnel IP networks
-+ *             over a single UDP port, with support for SSL/TLS-based
-+ *             session authentication and key exchange,
-+ *             packet encryption, packet authentication, and
-+ *             packet compression.
-+ *
-+ *  Copyright (C) 2002-2023 OpenVPN Inc <sales@...515...>
-+ *
-+ *  This program is free software; you can redistribute it and/or modify
-+ *  it under the terms of the GNU General Public License version 2
-+ *  as published by the Free Software Foundation.
-+ *
-+ *  This program is distributed in the hope that it will be useful,
-+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
-+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-+ *  GNU General Public License for more details.
-+ *
-+ *  You should have received a copy of the GNU General Public License along
-+ *  with this program; if not, write to the Free Software Foundation, Inc.,
-+ *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-+ */
-+
-+/* Minimal set of mocked function/globals to get unit tests to
-+ * compile that use the ssl_* files */
-+
-+#ifdef HAVE_CONFIG_H
-+#include "config.h"
-+#endif
-+
-+#include "syshead.h"
-+
-+#include <setjmp.h>
-+#include <cmocka.h>
-+
-+
-+#include "ssl.h"
-+#include "ssl_verify.h"
-+
-+int
-+parse_line(const char *line, char **p, const int n, const char *file,
-+           const int line_num, int msglevel, struct gc_arena *gc)
-+{
-+    /* Dummy function to get the linker happy, should never be called */
-+    assert_true(false);
-+    return 0;
-+}
-+
-+
-+int
-+pem_password_callback(char *buf, int size, int rwflag, void *u)
-+{
-+    return 0;
-+}
-+
-+void
-+cert_hash_remember(struct tls_session *session, const int cert_depth,
-+                   const struct buffer *cert_hash)
-+{
-+    assert_false(true);
-+}
-+
-+result_t
-+verify_cert(struct tls_session *session, openvpn_x509_cert_t *cert, int ce=
-rt_depth)
-+{
-+    return FAILURE;
-+}
-diff --git a/tests/unit_tests/openvpn/test_ssl.c b/tests/unit_tests/openvpn=
-/test_ssl.c
-new file mode 100644
-index 0000000..fd2049f
---- /dev/null
-+++ b/tests/unit_tests/openvpn/test_ssl.c
-@@ -0,0 +1,140 @@
-+/*
-+ *  OpenVPN -- An application to securely tunnel IP networks
-+ *             over a single UDP port, with support for SSL/TLS-based
-+ *             session authentication and key exchange,
-+ *             packet encryption, packet authentication, and
-+ *             packet compression.
-+ *
-+ * Copyright (C) 2023 OpenVPN Inc <sales@...515...>
-+ *
-+ *  This program is free software; you can redistribute it and/or modify
-+ *  it under the terms of the GNU General Public License version 2
-+ *  as published by the Free Software Foundation.
-+ *
-+ *  This program is distributed in the hope that it will be useful,
-+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
-+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-+ *  GNU General Public License for more details.
-+ *
-+ *  You should have received a copy of the GNU General Public License along
-+ *  with this program; if not, write to the Free Software Foundation, Inc.,
-+ *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-+ */
-+
-+#ifdef HAVE_CONFIG_H
-+#include "config.h"
-+#endif
-+
-+#include "syshead.h"
-+
-+#include <stdio.h>
-+#include <stdlib.h>
-+#include <stdarg.h>
-+#include <string.h>
-+#include <setjmp.h>
-+#include <cmocka.h>
-+
-+#include "crypto.h"
-+#include "options.h"
-+#include "ssl_backend.h"
-+#include "options_util.h"
-+
-+#include "mock_msg.h"
-+#include "mss.h"
-+#include "ssl_verify_backend.h"
-+#include "win32.h"
-+
-+/* Mock function to be allowed to include win32.c which is required for
-+ * getting the temp directory */
-+#ifdef _WIN32
-+struct signal_info siginfo_static; /* GLOBAL */
-+
-+const char *
-+strerror_win32(DWORD errnum, struct gc_arena *gc)
-+{
-+    ASSERT(false);
-+}
-+
-+void
-+throw_signal(const int signum)
-+{
-+    ASSERT(false);
-+}
-+#endif
-+
-+
-+const char *unittest_cert =3D "-----BEGIN CERTIFICATE-----\n"
-+                            "MIIBuTCCAUCgAwIBAgIUTLtjSBzx53qZRvZ6Ur7D9kgoO=
-HkwCgYIKoZIzj0EAwIw\n"
-+                            "EzERMA8GA1UEAwwIdW5pdHRlc3QwIBcNMjMxMTIxMDk1N=
-DQ3WhgPMjA3ODA4MjQw\n"
-+                            "OTU0NDdaMBMxETAPBgNVBAMMCHVuaXR0ZXN0MHYwEAYHK=
-oZIzj0CAQYFK4EEACID\n"
-+                            "YgAEHYB2hn2xx3f4lClXDtdi36P19pMZA+kI1Dkv/Vn10=
-vBZ/j9oa+P99T8duz/e\n"
-+                            "QlPeHpesNJO4fX8iEDj6+vMeWejOT7jAQ4MmG5EZjpcBK=
-xCfwFooEvzu8bVujUcu\n"
-+                            "wTQEo1MwUTAdBgNVHQ4EFgQUPcgBEVXjF5vYfDsInoE3d=
-F6UfQswHwYDVR0jBBgw\n"
-+                            "FoAUPcgBEVXjF5vYfDsInoE3dF6UfQswDwYDVR0TAQH/B=
-AUwAwEB/zAKBggqhkjO\n"
-+                            "PQQDAgNnADBkAjBLPAGrQAyinigqiu0RomoV8TVaknVLF=
-Sq6H6A8jgvzfsFCUK1O\n"
-+                            "dvNZhFPM6idKB+oCME2JLOBANCSV8o7aJzq7SYHKwPyb1=
-J4JFlwKe/0Jpv7oh9b1\n"
-+                            "IJbuaM9Z/VSKbrIXGg=3D=3D\n"
-+                            "-----END CERTIFICATE-----\n";
-+
-+static const char *
-+get_tmp_dir()
-+{
-+    const char *ret;
-+#ifdef _WIN32
-+    ret =3D win_get_tempdir();
-+#else
-+    ret =3D "/tmp";
-+#endif
-+    assert_non_null(ret);
-+    return ret;
-+}
-+
-+static void
-+crypto_pem_encode_certificate(void **state)
-+{
-+    struct gc_arena gc =3D gc_new();
-+
-+    struct tls_root_ctx ctx =3D { 0 };
-+    tls_ctx_client_new(&ctx);
-+    tls_ctx_load_cert_file(&ctx, unittest_cert, true);
-+
-+    openvpn_x509_cert_t *cert =3D NULL;
-+
-+    /* we do not have methods to fetch certificates from ssl contexts, use
-+     * internal TLS library methods for the unit test */
-+#ifdef ENABLE_CRYPTO_OPENSSL
-+    cert =3D SSL_CTX_get0_certificate(ctx.ctx);
-+#elif defined(ENABLE_CRYPTO_MBEDTLS)
-+    cert =3D ctx.crt_chain;
-+#endif
-+
-+    const char *tmpfile =3D platform_create_temp_file(get_tmp_dir(), "ut_p=
-em", &gc);
-+    backend_x509_write_pem(cert, tmpfile);
-+
-+    struct buffer exported_pem =3D buffer_read_from_file(tmpfile, &gc);
-+    assert_string_equal(BSTR(&exported_pem), unittest_cert);
-+
-+    tls_ctx_free(&ctx);
-+    unlink(tmpfile);
-+    gc_free(&gc);
-+}
-+
-+int
-+main(void)
-+{
-+    const struct CMUnitTest tests[] =3D {
-+        cmocka_unit_test(crypto_pem_encode_certificate)
-+    };
-+
-+#if defined(ENABLE_CRYPTO_OPENSSL)
-+    OpenSSL_add_all_algorithms();
-+#endif
-+
-+    int ret =3D cmocka_run_group_tests_name("crypto tests", tests, NULL, N=
-ULL);
-+
-+#if defined(ENABLE_CRYPTO_OPENSSL)
-+    EVP_cleanup();
-+#endif
-+
-+    return ret;
-+}
++Enabling this option may cause an error on Windows, since creating a symli=
+nk
++is a privileged operation there. If you enable Developer Mode for the syst=
+em,
++symlinks can be created by regular users.
+diff --git a/build/Makefile.am b/build/Makefile.am
+deleted file mode 100644
+index e7cc4d8..0000000
+--- a/build/Makefile.am
++++ /dev/null
+@@ -1,15 +0,0 @@
+-#
+-#  OpenVPN -- An application to securely tunnel IP networks
+-#             over a single UDP port, with support for SSL/TLS-based
+-#             session authentication and key exchange,
+-#             packet encryption, packet authentication, and
+-#             packet compression.
+-#
+-#  Copyright (C) 2002-2023 OpenVPN Inc <sales@...515...>
+-#
+-
+-MAINTAINERCLEANFILES =3D \
+-	$(srcdir)/Makefile.in
+-
+-EXTRA_DIST =3D \
+-	ltrc.inc
+diff --git a/configure.ac b/configure.ac
+index 2823f04..0710f71 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -1515,7 +1515,6 @@
+
+ AC_CONFIG_FILES([
+ 	Makefile
+-	build/Makefile
+ 	distro/Makefile
+ 	distro/systemd/Makefile
+ 	doc/Makefile
+diff --git a/build/ltrc.inc b/ltrc.inc
+similarity index 100%
+rename from build/ltrc.inc
+rename to ltrc.inc
+diff --git a/src/openvpn/Makefile.am b/src/openvpn/Makefile.am
+index b953961..1dc1dda 100644
+--- a/src/openvpn/Makefile.am
++++ b/src/openvpn/Makefile.am
+@@ -9,7 +9,7 @@
+ #  Copyright (C) 2006-2012 Alon Bar-Lev <alon.barlev@...277...>
+ #
+
+-include $(top_srcdir)/build/ltrc.inc
++include $(top_srcdir)/ltrc.inc
+
+ MAINTAINERCLEANFILES =3D \
+ 	$(srcdir)/Makefile.in
+diff --git a/src/openvpnmsica/Makefile.am b/src/openvpnmsica/Makefile.am
+index dc53f75..b10ce82 100644
+--- a/src/openvpnmsica/Makefile.am
++++ b/src/openvpnmsica/Makefile.am
+@@ -18,7 +18,7 @@
+ #  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ #
+
+-include $(top_srcdir)/build/ltrc.inc
++include $(top_srcdir)/ltrc.inc
+
+ MAINTAINERCLEANFILES =3D $(srcdir)/Makefile.in
+
+diff --git a/src/openvpnserv/Makefile.am b/src/openvpnserv/Makefile.am
+index d8ba4eb..0c64cce 100644
+--- a/src/openvpnserv/Makefile.am
++++ b/src/openvpnserv/Makefile.am
+@@ -9,7 +9,7 @@
+ #  Copyright (C) 2006-2012 Alon Bar-Lev <alon.barlev@...277...>
+ #
+
+-include $(top_srcdir)/build/ltrc.inc
++include $(top_srcdir)/ltrc.inc
+
+ MAINTAINERCLEANFILES =3D $(srcdir)/Makefile.in
+
+diff --git a/src/tapctl/Makefile.am b/src/tapctl/Makefile.am
+index 69ea161..4c2958b 100644
+--- a/src/tapctl/Makefile.am
++++ b/src/tapctl/Makefile.am
+@@ -18,7 +18,7 @@
+ #  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ #
+
+-include $(top_srcdir)/build/ltrc.inc
++include $(top_srcdir)/ltrc.inc
+
+ MAINTAINERCLEANFILES =3D $(srcdir)/Makefile.in
+
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/471?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/501?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings
 
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: Ie248d35d063bb6878f3dd42840c77ba0d6fa3381
-Gerrit-Change-Number: 471
-Gerrit-PatchSet: 10
-Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
-Gerrit-Reviewer: cron2 <gert@...1296...>
+Gerrit-Change-Id: Ib1a5c788269949d8de95d1da2cb0c32a65bf13f2
+Gerrit-Change-Number: 501
+Gerrit-PatchSet: 1
+Gerrit-Owner: d12fk <heiko@...515...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
+Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-MessageType: merged
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Attention: flichtenheld <frank@...2641...>
+Gerrit-MessageType: newchange
 
---bk+ToWlUj0A=
+--gVhIYovbJSI=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p>cron2 <strong>submitted</strong> this change.</p><p><a href=3D"http://ge=
-rrit.openvpn.net/c/openvpn/+/471?usp=3Demail">View Change</a></p><div style=
-=3D"white-space:pre-wrap"></div><pre style=3D"font-family: monospace,monosp=
-ace; white-space: pre-wrap;">Add test_ssl unit test and test export of PEM =
-to file<br><br>This introduces a number of mock function to be able to comp=
-ile<br>ssl_verify_*.c and ssl_mbedtls.c/ssl_openssl.c into a unit and adds<=
-br>quite a number of files to that unit. But it allows similar unit tests<b=
-r>(in term of dependencies) to be added in the future.<br><br>Change-Id: Ie=
-248d35d063bb6878f3dd42840c77ba0d6fa3381<br>Signed-off-by: Arne Schwabe &lt;=
-arne@...1227...&gt;<br>Acked-by: Gert Doering &lt;gert@...1296...&gt;<br>Me=
-ssage-Id: &lt;20240116214152.27316-1-gert@...1296...&gt;<br>URL: https://ww=
-w.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg28028.html<br>Sig=
-ned-off-by: Gert Doering &lt;gert@...1296...&gt;<br>---<br>M .github/workfl=
-ows/build.yaml<br>M CMakeLists.txt<br>M tests/unit_tests/openvpn/Makefile.a=
-m<br>A tests/unit_tests/openvpn/mock_management.c<br>A tests/unit_tests/ope=
-nvpn/mock_ssl_dependencies.c<br>A tests/unit_tests/openvpn/test_ssl.c<br>6 =
-files changed, 322 insertions(+), 2 deletions(-)<br><br></pre>
-<pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><sp=
-an>diff --git a/.github/workflows/build.yaml b/.github/workflows/build.yaml=
-</span><br><span>index 51100c3..cc98813 100644</span><br><span>--- a/.githu=
-b/workflows/build.yaml</span><br><span>+++ b/.github/workflows/build.yaml</=
-span><br><span>@@ -85,7 +85,7 @@</span><br><span>       fail-fast: false</s=
-pan><br><span>       matrix:</span><br><span>         arch: [x86, x64]</spa=
-n><br><span style=3D"color: hsl(0, 100%, 40%);">-        test: [argv, auth_=
-token, buffer, cryptoapi, crypto, misc, ncp, packet_id, pkt, provider, tls_=
-crypt]</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        test:=
- [argv, auth_token, buffer, cryptoapi, crypto, misc, ncp, packet_id, pkt, p=
-rovider, ssl, tls_crypt]</span><br><span> </span><br><span>     runs-on: wi=
-ndows-latest</span><br><span>     name: &quot;mingw unittest ${{ matrix.tes=
-t }} - ${{ matrix.arch }} - OSSL&quot;</span><br><span>diff --git a/CMakeLi=
-sts.txt b/CMakeLists.txt</span><br><span>index 6f370c3..6a1895a 100644</spa=
+<p> Attention is currently required from: flichtenheld, plaisthos. </p>
+<p>d12fk would like plaisthos and flichtenheld to <strong>review</strong> t=
+his change.
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/501?usp=3Demail">Vi=
+ew Change</a></p><pre style=3D"font-family: monospace,monospace; white-spac=
+e: pre-wrap;">cmake: symlink whole build dir not just .json file<br><br>It =
+turned out that symlinking compile_commands.json from the top level<br>sour=
+ce dir has some issues:<br>  * file is not created on Windows and symlinkin=
+g may cause an error<br>  * some IDEs create their own json and error out b=
+/c a file exists<br><br>Since clangd also looks for the json in build/ dire=
+ctories by default,<br>we now symlink the whole build directory instead, no=
+t just the json file.<br><br>This approach requires for the existing build/=
+ dir in the repo to<br>vanish. Luckily it only contains one automake includ=
+e file, which is<br>moved to the top level source dir.<br><br>Lastly, make =
+this an opt-in feature, so that the default configuration<br>of the buildsy=
+stem never causes a build failure because of this.<br><br>Change-Id: Ib1a5c=
+788269949d8de95d1da2cb0c32a65bf13f2<br>Signed-off-by: Heiko Hund &lt;heiko@=
+...2662...&gt;<br>---<br>M .gitignore<br>M CMakeLists.txt<br>M Makefile.am<=
+br>M README.cmake.md<br>D build/Makefile.am<br>M configure.ac<br>R ltrc.inc=
+<br>M src/openvpn/Makefile.am<br>M src/openvpnmsica/Makefile.am<br>M src/op=
+envpnserv/Makefile.am<br>M src/tapctl/Makefile.am<br>11 files changed, 32 i=
+nsertions(+), 25 deletions(-)<br><br></pre><pre style=3D"font-family: monos=
+pace,monospace; white-space: pre-wrap;">git pull ssh://gerrit.openvpn.net:2=
+9418/openvpn refs/changes/01/501/1</pre><pre style=3D"font-family: monospac=
+e,monospace; white-space: pre-wrap;"><span>diff --git a/.gitignore b/.gitig=
+nore</span><br><span>index 4153a3e..92d65bf 100644</span><br><span>--- a/.g=
+itignore</span><br><span>+++ b/.gitignore</span><br><span>@@ -40,7 +40,7 @@=
+</span><br><span> m4/ltversion.m4</span><br><span> m4/lt~obsolete.m4</span>=
+<br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-compile_co=
+mmands.json</span><br><span style=3D"color: hsl(120, 100%, 40%);">+build</s=
+pan><br><span> doc/openvpn-examples.5</span><br><span> doc/openvpn-examples=
+.5.html</span><br><span> doc/openvpn.8</span><br><span>diff --git a/CMakeLi=
+sts.txt b/CMakeLists.txt</span><br><span>index bc46c27..4e5c8fa 100644</spa=
 n><br><span>--- a/CMakeLists.txt</span><br><span>+++ b/CMakeLists.txt</span=
-><br><span>@@ -595,6 +595,7 @@</span><br><span>         &quot;test_packet_i=
-d&quot;</span><br><span>         &quot;test_pkt&quot;</span><br><span>     =
-    &quot;test_provider&quot;</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+        &quot;test_ssl&quot;</span><br><span>         )</span><br=
-><span> </span><br><span>     if (WIN32)</span><br><span>@@ -699,6 +700,32 =
-@@</span><br><span>         src/openvpn/mss.c</span><br><span>         )</s=
-pan><br><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-target_sources(test_ssl PRIVATE</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+            tests/unit_tests/openvpn/mock_management.c</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+            tests/unit_tests=
-/openvpn/mock_ssl_dependencies.c</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+            tests/unit_tests/openvpn/mock_win32_execve.c</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+            src/openvpn/a=
-rgv.c</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            sr=
-c/openvpn/base64.c</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-           src/openvpn/crypto.c</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+            src/openvpn/crypto_mbedtls.c</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+            src/openvpn/crypto_openssl.c<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+            src/open=
-vpn/cryptoapi.c</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-        src/openvpn/env_set.c</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+            src/openvpn/mss.c</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+            src/openvpn/mtu.c</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+            src/openvpn/options_util.c</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+            src/openvpn/ot=
-ime.c</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            sr=
-c/openvpn/packet_id.c</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+            src/openvpn/run_command.c</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+            src/openvpn/ssl_mbedtls.c</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+            src/openvpn/ssl_openssl.c=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            src/ope=
-nvpn/ssl_util.c</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-        src/openvpn/ssl_verify_mbedtls.c</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+            src/openvpn/ssl_verify_openssl.c</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+            src/openvpn/xkey_=
-helper.c</span><br><span style=3D"color: hsl(120, 100%, 40%);">+           =
- src/openvpn/xkey_provider.c</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+    )</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</spa=
-n><br><span>     target_sources(test_misc PRIVATE</span><br><span>         =
-tests/unit_tests/openvpn/mock_get_random.c</span><br><span>         src/ope=
-nvpn/options_util.c</span><br><span>diff --git a/tests/unit_tests/openvpn/M=
-akefile.am b/tests/unit_tests/openvpn/Makefile.am</span><br><span>index cec=
-f4dc..f81a10f 100644</span><br><span>--- a/tests/unit_tests/openvpn/Makefil=
-e.am</span><br><span>+++ b/tests/unit_tests/openvpn/Makefile.am</span><br><=
-span>@@ -9,7 +9,8 @@</span><br><span> endif</span><br><span> </span><br><sp=
-an> test_binaries +=3D crypto_testdriver packet_id_testdriver auth_token_te=
-stdriver ncp_testdriver misc_testdriver \</span><br><span style=3D"color: h=
-sl(0, 100%, 40%);">-	pkt_testdriver</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+	pkt_testdriver ssl_testdriver</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+</span><br><span> if HAVE_LD_WRAP_SUPPORT</span>=
-<br><span> if !WIN32</span><br><span> test_binaries +=3D tls_crypt_testdriv=
-er</span><br><span>@@ -69,6 +70,40 @@</span><br><span> 	$(top_srcdir)/src/o=
-penvpn/win32-util.c \</span><br><span> 	$(top_srcdir)/src/openvpn/mss.c</sp=
-an><br><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+ssl_t=
-estdriver_CFLAGS  =3D @TEST_CFLAGS@ \</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+	-I$(top_srcdir)/include -I$(top_srcdir)/src/compat -I$(t=
-op_srcdir)/src/openvpn</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+ssl_testdriver_LDFLAGS =3D @TEST_LDFLAGS@  $(OPTIONAL_CRYPTO_LIBS)</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+ssl_testdriver_SOURCES =
-=3D test_ssl.c mock_msg.c mock_msg.h \</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+	mock_management.c mock_ssl_dependencies.c mock_win32_ex=
-ecve.c \</span><br><span style=3D"color: hsl(120, 100%, 40%);">+	$(top_srcd=
-ir)/src/openvpn/argv.c \</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+	$(top_srcdir)/src/openvpn/base64.c \</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+	$(top_srcdir)/src/openvpn/buffer.c \</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+	$(top_srcdir)/src/compat/compat-s=
-trsep.c \</span><br><span style=3D"color: hsl(120, 100%, 40%);">+	$(top_src=
-dir)/src/openvpn/crypto.c \</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+	$(top_srcdir)/src/openvpn/cryptoapi.c \</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+	$(top_srcdir)/src/openvpn/crypto_mbedtls.c \<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+	$(top_srcdir)/src/o=
-penvpn/crypto_openssl.c \</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+	$(top_srcdir)/src/openvpn/env_set.c \</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+	$(top_srcdir)/src/openvpn/mss.c \</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+	$(top_srcdir)/src/openvpn/mtu.c \<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+	$(top_srcdir)/src/o=
-penvpn/otime.c \</span><br><span style=3D"color: hsl(120, 100%, 40%);">+	$(=
-top_srcdir)/src/openvpn/options_util.c \</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+	$(top_srcdir)/src/openvpn/packet_id.c \</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+	$(top_srcdir)/src/openvpn/platfo=
-rm.c \</span><br><span style=3D"color: hsl(120, 100%, 40%);">+	$(top_srcdir=
-)/src/openvpn/run_command.c \</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+	$(top_srcdir)/src/openvpn/ssl_openssl.c \</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+	$(top_srcdir)/src/openvpn/ssl_mbedtls.c =
-\</span><br><span style=3D"color: hsl(120, 100%, 40%);">+	$(top_srcdir)/src=
-/openvpn/ssl_util.c \</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+	$(top_srcdir)/src/openvpn/ssl_verify_mbedtls.c \</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+	$(top_srcdir)/src/openvpn/ssl_verify_ope=
-nssl.c \</span><br><span style=3D"color: hsl(120, 100%, 40%);">+	$(top_srcd=
-ir)/src/openvpn/xkey_helper.c \</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+	$(top_srcdir)/src/openvpn/xkey_provider.c \</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+	$(top_srcdir)/src/openvpn/win32-util.=
-c</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+if WIN32</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+ssl_testdriver_LDADD =3D  -lcrypt32 -lncrypt -lf=
-wpuclnt -liphlpapi -lws2_32</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+endif</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span=
-><br><span> packet_id_testdriver_CFLAGS  =3D @TEST_CFLAGS@ \</span><br><spa=
-n> 	-I$(top_srcdir)/include -I$(top_srcdir)/src/compat -I$(top_srcdir)/src/=
-openvpn</span><br><span> packet_id_testdriver_LDFLAGS =3D @TEST_LDFLAGS@</s=
-pan><br><span>diff --git a/tests/unit_tests/openvpn/mock_management.c b/tes=
-ts/unit_tests/openvpn/mock_management.c</span><br><span>new file mode 10064=
-4</span><br><span>index 0000000..8936c3a</span><br><span>--- /dev/null</spa=
-n><br><span>+++ b/tests/unit_tests/openvpn/mock_management.c</span><br><spa=
-n>@@ -0,0 +1,51 @@</span><br><span style=3D"color: hsl(120, 100%, 40%);">+/=
-*</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  OpenVPN -- An =
-application to securely tunnel IP networks</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+ *             over a single UDP port, with support =
-for SSL/TLS-based</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *=
-             session authentication and key exchange,</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+ *             packet encryption, packet =
-authentication, and</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
- *             packet compression.</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+ *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *=
-  Copyright (C) 2002-2023 OpenVPN Inc &lt;sales@...515...&gt;</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+ *  This program is free software; you can redistr=
-ibute it and/or modify</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+ *  it under the terms of the GNU General Public License version 2</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  as published by the F=
-ree Software Foundation.</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+ *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  This pro=
-gram is distributed in the hope that it will be useful,</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+ *  but WITHOUT ANY WARRANTY; without e=
-ven the implied warranty of</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  GNU General Publi=
-c License for more details.</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+ *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  You s=
-hould have received a copy of the GNU General Public License along</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+ *  with this program; if no=
-t, write to the Free Software Foundation, Inc.,</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+ *  51 Franklin Street, Fifth Floor, Boston, MA=
- 02110-1301 USA.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ */=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+/* Minimal set of mocked management fu=
-nction/globals to get unit tests to</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+ * compile */</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#ifdef HA=
-VE_CONFIG_H</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#include=
- &quot;config.h&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+#endif</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+#include &quot;syshead.h&quot;=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+#include &quot;manage.h&quot;</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+#ifdef ENABLE_MANAGEMENT</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+struct management *management; /* GLOBAL */</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+void</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+management_auth_failure(struct management *man, const char *type, cons=
-t char *reason)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+    ASSERT(false);</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+char *</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+management_query_pk_sig(struct management *man, const char *b64_data,</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+                       =
- const char *algorithm)</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    return NUL=
-L;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+#endif</span><br><span>diff --git a=
-/tests/unit_tests/openvpn/mock_ssl_dependencies.c b/tests/unit_tests/openvp=
-n/mock_ssl_dependencies.c</span><br><span>new file mode 100644</span><br><s=
-pan>index 0000000..9231d65</span><br><span>--- /dev/null</span><br><span>++=
-+ b/tests/unit_tests/openvpn/mock_ssl_dependencies.c</span><br><span>@@ -0,=
-0 +1,67 @@</span><br><span style=3D"color: hsl(120, 100%, 40%);">+/*</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+ *  OpenVPN -- An applicat=
-ion to securely tunnel IP networks</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+ *             over a single UDP port, with support for SSL/=
-TLS-based</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *        =
-     session authentication and key exchange,</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+ *             packet encryption, packet authenti=
-cation, and</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *      =
-       packet compression.</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+ *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  Copyri=
-ght (C) 2002-2023 OpenVPN Inc &lt;sales@...515...&gt;</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+ *  This program is free software; you can redistribute it=
- and/or modify</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  i=
-t under the terms of the GNU General Public License version 2</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+ *  as published by the Free Soft=
-ware Foundation.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  This program is =
-distributed in the hope that it will be useful,</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+ *  but WITHOUT ANY WARRANTY; without even the =
-implied warranty of</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+ *  GNU General Public Licens=
-e for more details.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
- *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  You should ha=
-ve received a copy of the GNU General Public License along</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+ *  with this program; if not, write=
- to the Free Software Foundation, Inc.,</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+ *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1=
-301 USA.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ */</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+/* Minimal set of mocked function/globals to g=
-et unit tests to</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * =
-compile that use the ssl_* files */</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#if=
-def HAVE_CONFIG_H</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#i=
-nclude &quot;config.h&quot;</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+#endif</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+#include &quot;syshead.h=
-&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+#include &lt;setjmp.h&gt;</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+#include &lt;cmocka.h&gt;<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+#include &quot;ssl.h&quot;</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+#include &quot;ssl_verify.h&quot;</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+int</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+parse_line(const char *line, char **p, const int n, const char *file,</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+           const int l=
-ine_num, int msglevel, struct gc_arena *gc)</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+    /* Dummy function to get the linker happy, should never be called=
- */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_true(=
-false);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    return 0=
-;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+int</span><br><span style=3D"color: hsl(120, 100%, 40%);">+pem_password_ca=
-llback(char *buf, int size, int rwflag, void *u)</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+    return 0;</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+void</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+cert_hash_remember(struct tls_session *session,=
- const int cert_depth,</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+                   const struct buffer *cert_hash)</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+    assert_false(true);</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+result_t</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+verify_cert(struct tls_sessi=
-on *session, openvpn_x509_cert_t *cert, int cert_depth)</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+    return FAILURE;</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+}</span><br><span>diff --git a/tests/unit_tests/openvpn/t=
-est_ssl.c b/tests/unit_tests/openvpn/test_ssl.c</span><br><span>new file mo=
-de 100644</span><br><span>index 0000000..fd2049f</span><br><span>--- /dev/n=
-ull</span><br><span>+++ b/tests/unit_tests/openvpn/test_ssl.c</span><br><sp=
-an>@@ -0,0 +1,140 @@</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+/*</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  OpenVPN -- A=
-n application to securely tunnel IP networks</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+ *             over a single UDP port, with suppor=
-t for SSL/TLS-based</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
- *             session authentication and key exchange,</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+ *             packet encryption, packe=
-t authentication, and</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+ *             packet compression.</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+ *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
- * Copyright (C) 2023 OpenVPN Inc &lt;sales@...515...&gt;</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+ *  This program is free software; you can redistribut=
-e it and/or modify</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-*  it under the terms of the GNU General Public License version 2</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+ *  as published by the Free =
-Software Foundation.</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+ *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  This program=
- is distributed in the hope that it will be useful,</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+ *  but WITHOUT ANY WARRANTY; without eve=
-n the implied warranty of</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  GNU General Public =
-License for more details.</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+ *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  You sho=
-uld have received a copy of the GNU General Public License along</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+ *  with this program; if not,=
- write to the Free Software Foundation, Inc.,</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+ *  51 Franklin Street, Fifth Floor, Boston, MA 0=
-2110-1301 USA.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ */</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+#ifdef HAVE_CONFIG_H</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+#include &quot;config.h&quot;</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+#endif</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+#include &quot;syshead.h&quot;</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+#include &lt;stdio.h&gt;</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+#include &lt;stdlib.h&gt;</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+#include &lt;stdarg.h&gt;</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+#include &lt;string.h&gt;</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+#include &lt;setjmp.h&gt;</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+#include &lt;cmocka.h&gt;</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+#include &quot;crypto.h&quot;</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+#include &quot;options.h&quot;</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+#include &quot;ssl_backend.h&q=
-uot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#include &quot;=
-options_util.h&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#include &quot;moc=
-k_msg.h&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#inclu=
-de &quot;mss.h&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+#include &quot;ssl_verify_backend.h&quot;</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+#include &quot;win32.h&quot;</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+/* Mock function to be allowed to include win32.c which is r=
-equired for</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * getti=
-ng the temp directory */</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+#ifdef _WIN32</span><br><span style=3D"color: hsl(120, 100%, 40%);">+s=
-truct signal_info siginfo_static; /* GLOBAL */</span><br><span style=3D"col=
+><br><span>@@ -43,9 +43,17 @@</span><br><span> set(PLUGIN_DIR /usr/local/li=
+b/openvpn/plugins CACHE FILEPATH &quot;Location of the plugin directory&quo=
+t;)</span><br><span> </span><br><span> # Create machine readable compile co=
+mmands</span><br><span style=3D"color: hsl(0, 100%, 40%);">-set(CMAKE_EXPOR=
+T_COMPILE_COMMANDS 1)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
+file(CREATE_LINK ${CMAKE_CURRENT_BINARY_DIR}/compile_commands.json</span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-                 ${CMAKE_CURRE=
+NT_SOURCE_DIR}/compile_commands.json SYMBOLIC)</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+option(ENABLE_COMPILE_COMMANDS &quot;Generate co=
+mpile_commands.json and a symlink for clangd to find it&quot; OFF)</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+if (ENABLE_COMPILE_COMMANDS)=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (EXISTS ${CM=
+AKE_CURRENT_SOURCE_DIR}/build AND NOT IS_SYMLINK ${CMAKE_CURRENT_SOURCE_DIR=
+}/build)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        mes=
+sage(FATAL_ERROR &quot;The top level source directory contains a &#39;build=
+&#39; file or directory. Please remove or rename it. CMake creates a symlin=
+k with that name during build.&quot;)</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+    endif()</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+    set(CMAKE_EXPORT_COMPILE_COMMANDS 1)</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+    add_custom_target(</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+        symlink-build-dir ALL</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+        ${CMAKE_COMMAND} -E cre=
+ate_symlink ${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/build</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+        )</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+endif ()</span><br><span> </spa=
+n><br><span> # AddressSanitize - use CXX=3Dclang++ CC=3Dclang cmake -DCMAKE=
+_BUILD_TYPE=3Dasan to build with ASAN</span><br><span> set(CMAKE_C_FLAGS_AS=
+AN</span><br><span>diff --git a/Makefile.am b/Makefile.am</span><br><span>i=
+ndex 2305ab4..792588a 100644</span><br><span>--- a/Makefile.am</span><br><s=
+pan>+++ b/Makefile.am</span><br><span>@@ -42,6 +42,7 @@</span><br><span> EX=
+TRA_DIST =3D \</span><br><span> 	contrib \</span><br><span> 	debug \</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+	ltrc.inc \</span><br><spa=
+n> 	CMakeLists.txt \</span><br><span> 	CMakePresets.json \</span><br><span>=
+ 	config.h.cmake.in</span><br><span>@@ -53,7 +54,7 @@</span><br><span> 	con=
+fig-version.h</span><br><span> endif</span><br><span> </span><br><span styl=
+e=3D"color: hsl(0, 100%, 40%);">-SUBDIRS =3D build distro include src sampl=
+e doc tests</span><br><span style=3D"color: hsl(120, 100%, 40%);">+SUBDIRS =
+=3D distro include src sample doc tests</span><br><span> </span><br><span> =
+dist_doc_DATA =3D \</span><br><span> 	README \</span><br><span>diff --git a=
+/README.cmake.md b/README.cmake.md</span><br><span>index d181b64..4f41c70 1=
+00644</span><br><span>--- a/README.cmake.md</span><br><span>+++ b/README.cm=
+ake.md</span><br><span>@@ -135,3 +135,17 @@</span><br><span> The `unix-nati=
+ve` CMake preset is available for these builds. This preset does</span><br>=
+<span> not require VCPKG and instead assumes all build-dependencies are pro=
+vided by</span><br><span> the system natively.</span><br><span style=3D"col=
 or: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+const char *</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+strerror_win32(DWORD errnum, struct gc_arena *gc)</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+    ASSERT(false);</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+void</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+throw_signal(const int signum)</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+    ASSERT(false);</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+#endif</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+const char *unittest_cert =3D &quot;-----=
-BEGIN CERTIFICATE-----\n&quot;</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+                            &quot;MIIBuTCCAUCgAwIBAgIUTLtjSBzx53=
-qZRvZ6Ur7D9kgoOHkwCgYIKoZIzj0EAwIw\n&quot;</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+                            &quot;EzERMA8GA1UEAwwIdW=
-5pdHRlc3QwIBcNMjMxMTIxMDk1NDQ3WhgPMjA3ODA4MjQw\n&quot;</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+                            &quot;OTU0ND=
-daMBMxETAPBgNVBAMMCHVuaXR0ZXN0MHYwEAYHKoZIzj0CAQYFK4EEACID\n&quot;</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+                            =
-&quot;YgAEHYB2hn2xx3f4lClXDtdi36P19pMZA+kI1Dkv/Vn10vBZ/j9oa+P99T8duz/e\n&qu=
-ot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+                =
-            &quot;QlPeHpesNJO4fX8iEDj6+vMeWejOT7jAQ4MmG5EZjpcBKxCfwFooEvzu8=
-bVujUcu\n&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-                        &quot;wTQEo1MwUTAdBgNVHQ4EFgQUPcgBEVXjF5vYfDsInoE3d=
-F6UfQswHwYDVR0jBBgw\n&quot;</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+                            &quot;FoAUPcgBEVXjF5vYfDsInoE3dF6UfQswD=
-wYDVR0TAQH/BAUwAwEB/zAKBggqhkjO\n&quot;</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+                            &quot;PQQDAgNnADBkAjBLPAGrQ=
-Ayinigqiu0RomoV8TVaknVLFSq6H6A8jgvzfsFCUK1O\n&quot;</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+                            &quot;dvNZhFP=
-M6idKB+oCME2JLOBANCSV8o7aJzq7SYHKwPyb1J4JFlwKe/0Jpv7oh9b1\n&quot;</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+                            &=
-quot;IJbuaM9Z/VSKbrIXGg=3D=3D\n&quot;</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+                            &quot;-----END CERTIFICATE---=
---\n&quot;;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+static const char *</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+get_tmp_dir()</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+    const char *ret;</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+#ifdef _WIN32</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+    ret =3D win_get_tempdir();</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+#else</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+    ret =3D &quot;/tmp&quot;;</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+#endif</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+    assert_non_null(ret);</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+    return ret;</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+static void</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+crypto_pem_encode_certificate(=
-void **state)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+    struct gc_arena gc =
-=3D gc_new();</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+    struct tls_root_ctx c=
-tx =3D { 0 };</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    tl=
-s_ctx_client_new(&amp;ctx);</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+    tls_ctx_load_cert_file(&amp;ctx, unittest_cert, true);</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+    openvpn_x509_cert_t *cert =3D NULL;</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+    /* we do not have methods to fetch certifi=
-cates from ssl contexts, use</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+     * internal TLS library methods for the unit test */</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+#ifdef ENABLE_CRYPTO_OPENSSL<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+    cert =3D SSL_CTX=
-_get0_certificate(ctx.ctx);</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+#elif defined(ENABLE_CRYPTO_MBEDTLS)</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+    cert =3D ctx.crt_chain;</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+#endif</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+    const char *tmpfile =3D platform_create_temp_file(get_tmp_dir(), &quo=
-t;ut_pem&quot;, &amp;gc);</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+    backend_x509_write_pem(cert, tmpfile);</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+    struct buffer exported_pem =3D buffer_read_from_file(tmpfile,=
- &amp;gc);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    asser=
-t_string_equal(BSTR(&amp;exported_pem), unittest_cert);</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+    tls_ctx_free(&amp;ctx);</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+    unlink(tmpfile);</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+    gc_free(&amp;gc);</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+int</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+main(void)</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+    const struct CMUnitTest tests[] =3D {</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+        cmocka_unit_test(crypt=
-o_pem_encode_certificate)</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+    };</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+#if defined(ENABLE_CRYPTO_=
-OPENSSL)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    OpenSSL=
-_add_all_algorithms();</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+#endif</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+    int ret =3D cmocka_run_gr=
-oup_tests_name(&quot;crypto tests&quot;, tests, NULL, NULL);</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+#if defined(ENABLE_CRYPTO_OPENSSL)</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+    EVP_cleanup();</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+#endif</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+    return ret;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-}</span><br><span></span><br></pre><p>To view, visit <a href=3D"http://gerr=
-it.openvpn.net/c/openvpn/+/471?usp=3Demail">change 471</a>. To unsubscribe,=
+40%);">+Generating compile_commands.json</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+--------------------------------</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+To have the CMake buildsystem generate compile_commands.json=
+ you can specify</span><br><span style=3D"color: hsl(120, 100%, 40%);">+`-D=
+ENABLE_COMPILE_COMMANDS=3DON` on the command line or enable the CMake optio=
+n</span><br><span style=3D"color: hsl(120, 100%, 40%);">+another way you li=
+ke. For supported generators the file will then be created.</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+Additionally, the buildsystem will =
+create a symlink `build/` to the --preset</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+build directory that contains the generated JSON file=
+. This is done so that</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+clangd is able to find it.</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+Enabling =
+this option may cause an error on Windows, since creating a symlink</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+is a privileged operation t=
+here. If you enable Developer Mode for the system,</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+symlinks can be created by regular users.</s=
+pan><br><span>diff --git a/build/Makefile.am b/build/Makefile.am</span><br>=
+<span>deleted file mode 100644</span><br><span>index e7cc4d8..0000000</span=
+><br><span>--- a/build/Makefile.am</span><br><span>+++ /dev/null</span><br>=
+<span>@@ -1,15 +0,0 @@</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
+-#</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#  OpenVPN -- An ap=
+plication to securely tunnel IP networks</span><br><span style=3D"color: hs=
+l(0, 100%, 40%);">-#             over a single UDP port, with support for S=
+SL/TLS-based</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#        =
+     session authentication and key exchange,</span><br><span style=3D"colo=
+r: hsl(0, 100%, 40%);">-#             packet encryption, packet authenticat=
+ion, and</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#            =
+ packet compression.</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#=
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#  Copyright (C) 2002=
+-2023 OpenVPN Inc &lt;sales@...515...&gt;</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-#</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">-MAINTAINERCLEANFILES =
+=3D \</span><br><span style=3D"color: hsl(0, 100%, 40%);">-	$(srcdir)/Makef=
+ile.in</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">-EXTRA_DIST =3D \</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-	ltrc.inc</span><br><span>diff --git a/co=
+nfigure.ac b/configure.ac</span><br><span>index 2823f04..0710f71 100644</sp=
+an><br><span>--- a/configure.ac</span><br><span>+++ b/configure.ac</span><b=
+r><span>@@ -1515,7 +1515,6 @@</span><br><span> </span><br><span> AC_CONFIG_=
+FILES([</span><br><span> 	Makefile</span><br><span style=3D"color: hsl(0, 1=
+00%, 40%);">-	build/Makefile</span><br><span> 	distro/Makefile</span><br><s=
+pan> 	distro/systemd/Makefile</span><br><span> 	doc/Makefile</span><br><spa=
+n>diff --git a/build/ltrc.inc b/ltrc.inc</span><br><span>similarity index 1=
+00%</span><br><span>rename from build/ltrc.inc</span><br><span>rename to lt=
+rc.inc</span><br><span>diff --git a/src/openvpn/Makefile.am b/src/openvpn/M=
+akefile.am</span><br><span>index b953961..1dc1dda 100644</span><br><span>--=
+- a/src/openvpn/Makefile.am</span><br><span>+++ b/src/openvpn/Makefile.am</=
+span><br><span>@@ -9,7 +9,7 @@</span><br><span> #  Copyright (C) 2006-2012 =
+Alon Bar-Lev &lt;alon.barlev@...277...&gt;</span><br><span> #</span><br><sp=
+an> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-include $(top_src=
+dir)/build/ltrc.inc</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+include $(top_srcdir)/ltrc.inc</span><br><span> </span><br><span> MAINTAINE=
+RCLEANFILES =3D \</span><br><span> 	$(srcdir)/Makefile.in</span><br><span>d=
+iff --git a/src/openvpnmsica/Makefile.am b/src/openvpnmsica/Makefile.am</sp=
+an><br><span>index dc53f75..b10ce82 100644</span><br><span>--- a/src/openvp=
+nmsica/Makefile.am</span><br><span>+++ b/src/openvpnmsica/Makefile.am</span=
+><br><span>@@ -18,7 +18,7 @@</span><br><span> #  51 Franklin Street, Fifth =
+Floor, Boston, MA 02110-1301 USA.</span><br><span> #</span><br><span> </spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-include $(top_srcdir)/buil=
+d/ltrc.inc</span><br><span style=3D"color: hsl(120, 100%, 40%);">+include $=
+(top_srcdir)/ltrc.inc</span><br><span> </span><br><span> MAINTAINERCLEANFIL=
+ES =3D $(srcdir)/Makefile.in</span><br><span> </span><br><span>diff --git a=
+/src/openvpnserv/Makefile.am b/src/openvpnserv/Makefile.am</span><br><span>=
+index d8ba4eb..0c64cce 100644</span><br><span>--- a/src/openvpnserv/Makefil=
+e.am</span><br><span>+++ b/src/openvpnserv/Makefile.am</span><br><span>@@ -=
+9,7 +9,7 @@</span><br><span> #  Copyright (C) 2006-2012 Alon Bar-Lev &lt;al=
+on.barlev@...277...&gt;</span><br><span> #</span><br><span> </span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">-include $(top_srcdir)/build/ltrc.inc=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+include $(top_srcdi=
+r)/ltrc.inc</span><br><span> </span><br><span> MAINTAINERCLEANFILES =3D $(s=
+rcdir)/Makefile.in</span><br><span> </span><br><span>diff --git a/src/tapct=
+l/Makefile.am b/src/tapctl/Makefile.am</span><br><span>index 69ea161..4c295=
+8b 100644</span><br><span>--- a/src/tapctl/Makefile.am</span><br><span>+++ =
+b/src/tapctl/Makefile.am</span><br><span>@@ -18,7 +18,7 @@</span><br><span>=
+ #  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.</span><br><=
+span> #</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">-include $(top_srcdir)/build/ltrc.inc</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+include $(top_srcdir)/ltrc.inc</span><br><span> </span=
+><br><span> MAINTAINERCLEANFILES =3D $(srcdir)/Makefile.in</span><br><span>=
+ </span><br><span></span><br></pre><p>To view, visit <a href=3D"http://gerr=
+it.openvpn.net/c/openvpn/+/501?usp=3Demail">change 501</a>. To unsubscribe,=
  or for help writing mail filters, visit <a href=3D"http://gerrit.openvpn.n=
 et/settings">settings</a>.</p><div itemscope itemtype=3D"http://schema.org/=
 EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.=
 org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/=
-openvpn/+/471?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"=
+openvpn/+/501?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"=
 /></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: Ie248d35d063bb6878f3dd42840c=
-77ba0d6fa3381 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 471 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 10 </div>
-<div style=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@...1711...=
-27...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
- </div>
+<div style=3D"display:none"> Gerrit-Change-Id: Ib1a5c788269949d8de95d1da2cb=
+0c32a65bf13f2 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 501 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
+<div style=3D"display:none"> Gerrit-Owner: d12fk &lt;heiko@...515...&gt; </=
+div>
 <div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
 1...&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
+.1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: merged </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
+41...&gt; </div>
+<div style=3D"display:none"> Gerrit-MessageType: newchange </div>
 
 
---bk+ToWlUj0A=--
+--gVhIYovbJSI=--
 
