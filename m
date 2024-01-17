@@ -1,11 +1,17 @@
-From: Gert Doering <gert@...1296...>
-Date: Wed, 17 Jan 2024 09:59:51 +0100
-Message-ID: <20240117085951.27414-1-gert@...1296...>
-In-Reply-To: <gerrit.1705068839000.Icea931d29e3e504e23e045539b21013b42172664@...2715...>
-References: <gerrit.1705068839000.Icea931d29e3e504e23e045539b21013b42172664@...2715...>
+From: "stipa (Code Review)" <gerrit@...515...>
+Date: Wed, 17 Jan 2024 09:05:02 +0000
+In-Reply-To: <gerrit.1704761332000.Ic9bf797bfc7e2d471998a84cb0f071db3e4832ba@...2715...>
+References: <gerrit.1704761332000.Ic9bf797bfc7e2d471998a84cb0f071db3e4832ba@...2715...>
+Reply-To: lstipakov@...277..., arne-openvpn@...1227..., heiko@...515...,
+ openvpn-devel@lists.sourceforge.net, frank@...2641...,
+ gert@...1296...
+Message-ID: <a2ef9659807e2de2651fad14f8b32e6fd585c58d-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v1] NTLM: add length check to
- add_security_buffer
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="0gxVgyN8L24="; charset=UTF-8
+Subject: [Openvpn-devel] [L] Change in openvpn[master]: Windows: enforce
+ 'block-local' with WFP filters
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,65 +20,118 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: d12fk <heiko@...515...>
+Cc: flichtenheld <frank@...2641...>, cron2 <gert@...1296...>, plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-From: Frank Lichtenheld <frank@...2641...>
+--0gxVgyN8L24=
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Especially ntlmv2_response can be very big, so make sure
-we not do exceed the size of the phase3 buffer.
+Attention is currently required from: cron2, d12fk, plaisthos.
 
-Change-Id: Icea931d29e3e504e23e045539b21013b42172664
-Signed-off-by: Frank Lichtenheld <frank@...2641...>
-Acked-by: Gert Doering <gert@...1296...>
----
+stipa has posted comments on this change. ( http://gerrit.openvpn.net/c/ope=
+nvpn/+/489?usp=3Demail )
 
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to master.
+Change subject: Windows: enforce 'block-local' with WFP filters
+......................................................................
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/496
-This mail reflects revision 1 of this Change.
-Acked-by according to Gerrit (reflected above):
-Gert Doering <gert@...1296...>
 
-        
-diff --git a/src/openvpn/ntlm.c b/src/openvpn/ntlm.c
-index bc33f41..99d4ae7 100644
---- a/src/openvpn/ntlm.c
-+++ b/src/openvpn/ntlm.c
-@@ -154,8 +154,13 @@
- 
- static void
- add_security_buffer(int sb_offset, void *data, int length,
--                    unsigned char *msg_buf, int *msg_bufpos)
-+                    unsigned char *msg_buf, int *msg_bufpos, size_t msg_bufsize)
- {
-+    if (*msg_bufpos + length > msg_bufsize)
-+    {
-+        msg(M_WARN, "NTLM: security buffer too big for message buffer");
-+        return;
-+    }
-     /* Adds security buffer data to a message and sets security buffer's
-      * offset and length */
-     msg_buf[sb_offset] = (unsigned char)length;
-@@ -362,15 +367,15 @@
- 
-     /* NTLMv2 response */
-     add_security_buffer(0x14, ntlmv2_response, ntlmv2_blob_size + 16,
--                        phase3, &phase3_bufpos);
-+                        phase3, &phase3_bufpos, sizeof(phase3));
- 
-     /* username in ascii */
-     add_security_buffer(0x24, username, strlen(username), phase3,
--                        &phase3_bufpos);
-+                        &phase3_bufpos, sizeof(phase3));
- 
-     /* Set domain. If <domain> is empty, default domain will be used
-      * (i.e. proxy's domain) */
--    add_security_buffer(0x1c, domain, strlen(domain), phase3, &phase3_bufpos);
-+    add_security_buffer(0x1c, domain, strlen(domain), phase3, &phase3_bufpos, sizeof(phase3));
- 
-     /* other security buffers will be empty */
-     phase3[0x10] = phase3_bufpos;     /* lm not used */
+Patch Set 5:
+
+(1 comment)
+
+Patchset:
+
+PS5:
+Looks good to me. I have compiled it with MSVC and tested following scenari=
+os (with server pushing block-local)
+
+ - access to LAN is blocked (got "general failure" when pinging local gatew=
+ay)
+
+ - traffic to VPN gateway is blocked expect from VPN process (got "general =
+failure" when pinging VPN gateway via its public IP)
+
+
+
+--
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/489?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings
+
+Gerrit-Project: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: Ic9bf797bfc7e2d471998a84cb0f071db3e4832ba
+Gerrit-Change-Number: 489
+Gerrit-PatchSet: 5
+Gerrit-Owner: d12fk <heiko@...515...>
+Gerrit-Reviewer: flichtenheld <frank@...2641...>
+Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
+Gerrit-Reviewer: stipa <lstipakov@...277...>
+Gerrit-CC: cron2 <gert@...1296...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Attention: cron2 <gert@...1296...>
+Gerrit-Attention: d12fk <heiko@...515...>
+Gerrit-Comment-Date: Wed, 17 Jan 2024 09:05:02 +0000
+Gerrit-HasComments: Yes
+Gerrit-Has-Labels: No
+Gerrit-MessageType: comment
+
+--0gxVgyN8L24=
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<p> Attention is currently required from: cron2, d12fk, plaisthos. </p>
+<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/489?usp=3Demail">View C=
+hange</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0;"><=
+li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-style=
+: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p style=
+=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/4=
+89?tab=3Dcomments">Patch Set #5:</a> </p><p style=3D"white-space: pre-wrap;=
+ word-wrap: break-word;">Looks good to me. I have compiled it with MSVC and=
+ tested following scenarios (with server pushing block-local)</p><pre style=
+=3D"font-family: monospace,monospace; white-space: pre-wrap;"> - access to =
+LAN is blocked (got &quot;general failure&quot; when pinging local gateway)=
+<br> <br> - traffic to VPN gateway is blocked expect from VPN process (got =
+&quot;general failure&quot; when pinging VPN gateway via its public IP)</pr=
+e></li></ul></li></ul><p>To view, visit <a href=3D"http://gerrit.openvpn.ne=
+t/c/openvpn/+/489?usp=3Demail">change 489</a>. To unsubscribe, or for help =
+writing mail filters, visit <a href=3D"http://gerrit.openvpn.net/settings">=
+settings</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage"=
+><div itemscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewActio=
+n"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/489=
+?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
+
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: Ic9bf797bfc7e2d471998a84cb0f=
+071db3e4832ba </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 489 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 5 </div>
+<div style=3D"display:none"> Gerrit-Owner: d12fk &lt;heiko@...515...&gt; </=
+div>
+<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
+1...&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
+.1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: stipa &lt;lstipakov@...277...=
+&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: cron2 &lt;gert@...1296...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: cron2 &lt;gert@...1296...&gt=
+; </div>
+<div style=3D"display:none"> Gerrit-Attention: d12fk &lt;heiko@...515...&gt=
+; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Wed, 17 Jan 2024 09:05:02=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: No </div>
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
+
+
+--0gxVgyN8L24=--
 
