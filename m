@@ -1,11 +1,10 @@
+Date: Wed, 17 Jan 2024 14:31:52 +0100 (CET)
+Message-Id: <202401171331.40HDVqUQ089777@...2054...>
 From: Gert Doering <gert@...1296...>
-Date: Wed, 17 Jan 2024 10:49:52 +0100
-Message-ID: <20240117094952.25938-1-gert@...1296...>
-In-Reply-To: <gerrit.1704898621000.Iefa4930cb1e8c4135056a17ceb4283fc13cc75c8@...2715...>
-References: <gerrit.1704898621000.Iefa4930cb1e8c4135056a17ceb4283fc13cc75c8@...2715...>
-MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH/2.6] NTLM: increase size of phase 2 response
- we can handle
+In-Reply-To: <20240117094952.25938-1-gert@...1296...>
+References: <20240117094952.25938-1-gert@...1296...>
+Subject: [Openvpn-devel] [PATCH applied] Re: NTLM: increase size of phase 2
+ response we can handle
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,129 +15,27 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Frank Lichtenheld <frank@...2641...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-From: Frank Lichtenheld <frank@...2641...>
+Your patch has been applied to the release/2.6 branch.
 
-With NTLMv2 the target information buffer can be rather large
-even with normal domain setups.
+commit 62d14fcf253c4ff4055b70c1db947ceae928c776 (release/2.6)
+Author: Frank Lichtenheld
+Date:   Wed Jan 17 10:49:52 2024 +0100
 
-In my test setup it was 152 bytes starting at offset 71.
-Overall the base64 encode phase 2 response was 300 byte long.
-The linked documentation has 98 bytes at offset 60. 128 byte
-is clearly too low.
+     NTLM: increase size of phase 2 response we can handle
 
-While here improve the error messaging, so that if the buffer
-is too small at least one can determine that in the log.
+     Signed-off-by: Frank Lichtenheld <frank@...2641...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <20240117094952.25938-1-gert@...1296...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg28052.html
+     Signed-off-by: Gert Doering <gert@...1296...>
 
-Change-Id: Iefa4930cb1e8c4135056a17ceb4283fc13cc75c8
-Signed-off-by: Frank Lichtenheld <frank@...2641...>
-Acked-by: Gert Doering <gert@...1296...>
----
 
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to release/2.6.
+--
+kind regards,
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/494
-This mail reflects revision 1 of this Change.
-Acked-by according to Gerrit (reflected above):
-Gert Doering <gert@...1296...>
+Gert Doering
 
-        
-diff --git a/src/openvpn/ntlm.c b/src/openvpn/ntlm.c
-index 2b735ec..698abfb 100644
---- a/src/openvpn/ntlm.c
-+++ b/src/openvpn/ntlm.c
-@@ -218,7 +218,7 @@
-     uint8_t challenge[8], ntlm_response[24];
-     int i, ret_val;
- 
--    uint8_t ntlmv2_response[144];
-+    uint8_t ntlmv2_response[256];
-     char userdomain_u[256];     /* for uppercase unicode username and domain */
-     char userdomain[128];       /* the same as previous but ascii */
-     uint8_t ntlmv2_hash[MD5_DIGEST_LENGTH];
-@@ -270,17 +270,15 @@
-      * the missing bytes will be NULL, as buf2 is known to be zeroed
-      * when this decode happens.
-      */
--    uint8_t buf2[128]; /* decoded reply from proxy */
-+    uint8_t buf2[512]; /* decoded reply from proxy */
-     CLEAR(buf2);
-     ret_val = openvpn_base64_decode(phase_2, buf2, -1);
-     if (ret_val < 0)
-     {
-+        msg(M_WARN, "NTLM: base64 decoding of phase 2 response failed");
-         return NULL;
-     }
- 
--    /* we can be sure that phase_2 is less than 128
--     * therefore buf2 needs to be (3/4 * 128) */
--
-     /* extract the challenge from bytes 24-31 */
-     for (i = 0; i<8; i++)
-     {
-@@ -300,7 +298,7 @@
-         }
-         else
-         {
--            msg(M_INFO, "Warning: Username or domain too long");
-+            msg(M_WARN, "NTLM: Username or domain too long");
-         }
-         unicodize(userdomain_u, userdomain);
-         gen_hmac_md5((uint8_t *)userdomain_u, 2 * strlen(userdomain), md4_hash,
-@@ -335,9 +333,10 @@
-         if ((flags & 0x00800000) == 0x00800000)
-         {
-             tib_len = buf2[0x28];            /* Get Target Information block size */
--            if (tib_len > 96)
-+            if (tib_len + 0x1c + 16 > sizeof(ntlmv2_response))
-             {
--                tib_len = 96;
-+                msg(M_WARN, "NTLM: target information buffer too long for response (len=%d)", tib_len);
-+                return NULL;
-             }
- 
-             {
-@@ -345,6 +344,7 @@
-                 uint8_t tib_pos = buf2[0x2c];
-                 if (tib_pos + tib_len > sizeof(buf2))
-                 {
-+                    msg(M_ERR, "NTLM: phase 2 response from server too long (need %d bytes at offset %u)", tib_len, tib_pos);
-                     return NULL;
-                 }
-                 /* Get Target Information block pointer */
-diff --git a/src/openvpn/proxy.c b/src/openvpn/proxy.c
-index 76e27cb..b2e8b3d 100644
---- a/src/openvpn/proxy.c
-+++ b/src/openvpn/proxy.c
-@@ -638,7 +638,6 @@
- {
-     struct gc_arena gc = gc_new();
-     char buf[512];
--    char buf2[129];
-     char get[80];
-     int status;
-     int nparms;
-@@ -758,7 +757,7 @@
-         {
- #if NTLM
-             /* look for the phase 2 response */
--
-+            char buf2[512];
-             while (true)
-             {
-                 if (!recv_line(sd, buf, sizeof(buf), get_server_poll_remaining_time(server_poll_timeout), true, NULL, signal_received))
-@@ -768,9 +767,9 @@
-                 chomp(buf);
-                 msg(D_PROXY, "HTTP proxy returned: '%s'", buf);
- 
--                openvpn_snprintf(get, sizeof get, "%%*s NTLM %%%ds", (int) sizeof(buf2) - 1);
-+                CLEAR(buf2);
-+                openvpn_snprintf(get, sizeof(get), "%%*s NTLM %%%zus", sizeof(buf2) - 1);
-                 nparms = sscanf(buf, get, buf2);
--                buf2[128] = 0; /* we only need the beginning - ensure it's null terminated. */
- 
-                 /* check for "Proxy-Authenticate: NTLM TlRM..." */
-                 if (nparms == 1)
 
