@@ -1,16 +1,17 @@
-From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Wed, 17 Jan 2024 07:25:59 +0000
-In-Reply-To: <gerrit.1704203193000.Ic494d43c835220ae71f10e3afbe53db918887370@...2715...>
-References: <gerrit.1704203193000.Ic494d43c835220ae71f10e3afbe53db918887370@...2715...>
-Reply-To: gert@...1296..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <05cf78c8203e3785b61c1713c867af9f63995c7b-EmailReviewComments-HTML@...2715...>
+From: "stipa (Code Review)" <gerrit@...515...>
+Date: Wed, 17 Jan 2024 08:56:03 +0000
+In-Reply-To: <gerrit.1704761332000.Ic9bf797bfc7e2d471998a84cb0f071db3e4832ba@...2715...>
+References: <gerrit.1704761332000.Ic9bf797bfc7e2d471998a84cb0f071db3e4832ba@...2715...>
+Reply-To: lstipakov@...277..., arne-openvpn@...1227..., heiko@...515...,
+ openvpn-devel@lists.sourceforge.net, frank@...2641...,
+ gert@...1296...
+Message-ID: <3ca22bbd0ddcc7ce19937b3775d0223f4efd363d-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="7rqXfoonq10="; charset=UTF-8
-Subject: [Openvpn-devel] [M] Change in openvpn[master]: Keep exported
- certificate files for following calls
+Content-Type: multipart/alternative; boundary="4BvPvX4MB4c="; charset=UTF-8
+Subject: [Openvpn-devel] [L] Change in openvpn[master]: Windows: enforce
+ 'block-local' with WFP filters
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,110 +20,136 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: plaisthos <arne-openvpn@...1227...>
-Cc: flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: d12fk <heiko@...515...>
+Cc: flichtenheld <frank@...2641...>, cron2 <gert@...1296...>, plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---7rqXfoonq10=
+--4BvPvX4MB4c=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: flichtenheld, plaisthos.
+Attention is currently required from: cron2, d12fk, plaisthos.
 
-cron2 has posted comments on this change. ( http://gerrit.openvpn.net/c/ope=
-nvpn/+/487?usp=3Demail )
+stipa has posted comments on this change. ( http://gerrit.openvpn.net/c/ope=
+nvpn/+/489?usp=3Demail )
 
-Change subject: Keep exported certificate files for following calls
+Change subject: Windows: enforce 'block-local' with WFP filters
 ......................................................................
 
 
-Patch Set 2: Code-Review-1
+Patch Set 5: Code-Review+2
 
-(1 comment)
+(2 comments)
 
-Patchset:
+File include/openvpn-msg.h:
 
-PS2:
-While this does make the script API a bit nicer (because you can have all f=
-iles in one call) it's not a hard necessity since we do get the certificate=
-s one-by-one in subsequent calls.
+http://gerrit.openvpn.net/c/openvpn/+/489/comment/d1fb891c_bb0bba56 :
+PS4, Line 27: #include <windef.h>
+> They define some types used in the header. [=E2=80=A6]
+Acknowledged
 
-OTOH nobody has ever asked for it, and it does make our code more complex, =
-so I would prefer to leave this out.
+
+File src/openvpn/win32.h:
+
+http://gerrit.openvpn.net/c/openvpn/+/489/comment/e3203291_cfd5bef9 :
+PS4, Line 28: #include <iphlpapi.h>
+> They define some types used in the header. [=E2=80=A6]
+Acknowledged
 
 
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/487?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/489?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings
 
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: Ic494d43c835220ae71f10e3afbe53db918887370
-Gerrit-Change-Number: 487
-Gerrit-PatchSet: 2
-Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
-Gerrit-Reviewer: cron2 <gert@...1296...>
+Gerrit-Change-Id: Ic9bf797bfc7e2d471998a84cb0f071db3e4832ba
+Gerrit-Change-Number: 489
+Gerrit-PatchSet: 5
+Gerrit-Owner: d12fk <heiko@...515...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
+Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
+Gerrit-Reviewer: stipa <lstipakov@...277...>
+Gerrit-CC: cron2 <gert@...1296...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Comment-Date: Wed, 17 Jan 2024 07:25:59 +0000
+Gerrit-Attention: cron2 <gert@...1296...>
+Gerrit-Attention: d12fk <heiko@...515...>
+Gerrit-Comment-Date: Wed, 17 Jan 2024 08:56:03 +0000
 Gerrit-HasComments: Yes
 Gerrit-Has-Labels: Yes
+Comment-In-Reply-To: d12fk <heiko@...515...>
+Comment-In-Reply-To: stipa <lstipakov@...277...>
 Gerrit-MessageType: comment
 
---7rqXfoonq10=
+--4BvPvX4MB4c=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p> Attention is currently required from: flichtenheld, plaisthos. </p>
-<p>Patch set 2:<span style=3D"border-radius: 3px; display: inline-block; ma=
-rgin: 0 2px; padding: 4px;background-color: #ffd4d4;">Code-Review -1</span>=
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/487?usp=3Demail">Vi=
-ew Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0=
-;"><li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-s=
-tyle: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p s=
-tyle=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn=
-/+/487?tab=3Dcomments">Patch Set #2:</a> </p><p style=3D"white-space: pre-w=
-rap; word-wrap: break-word;">While this does make the script API a bit nice=
-r (because you can have all files in one call) it&#39;s not a hard necessit=
-y since we do get the certificates one-by-one in subsequent calls.</p><p st=
-yle=3D"white-space: pre-wrap; word-wrap: break-word;">OTOH nobody has ever =
-asked for it, and it does make our code more complex, so I would prefer to =
-leave this out.</p></li></ul></li></ul><p>To view, visit <a href=3D"http://=
-gerrit.openvpn.net/c/openvpn/+/487?usp=3Demail">change 487</a>. To unsubscr=
-ibe, or for help writing mail filters, visit <a href=3D"http://gerrit.openv=
-pn.net/settings">settings</a>.</p><div itemscope itemtype=3D"http://schema.=
-org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://sch=
-ema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.ne=
-t/c/openvpn/+/487?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Cha=
-nge"/></div></div>
+<p> Attention is currently required from: cron2, d12fk, plaisthos. </p>
+<p>Patch set 5:<span style=3D"border-radius: 3px; display: inline-block; ma=
+rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/489?usp=3Demail">Vi=
+ew Change</a></p><p>2 comments:</p><ul style=3D"list-style: none; padding: =
+0;"><li style=3D"margin: 0; padding: 0;"><p>File include/openvpn-msg.h:</p>=
+<ul style=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; padding=
+: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.op=
+envpn.net/c/openvpn/+/489/comment/d1fb891c_bb0bba56">Patch Set #4, Line 27:=
+</a> <code style=3D"font-family:monospace,monospace">#include &lt;windef.h&=
+gt;</code></p><p><blockquote style=3D"border-left: 1px solid #aaa; margin: =
+10px 0; padding: 0 10px;">They define some types used in the header. [=E2=
+=80=A6]</blockquote></p><p style=3D"white-space: pre-wrap; word-wrap: break=
+-word;">Acknowledged</p></li></ul></li><li style=3D"margin: 0; padding: 0;"=
+><p>File src/openvpn/win32.h:</p><ul style=3D"list-style: none; padding: 0;=
+"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p style=3D"margin-bottom: =
+4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/489/comment/e3203291=
+_cfd5bef9">Patch Set #4, Line 28:</a> <code style=3D"font-family:monospace,=
+monospace">#include &lt;iphlpapi.h&gt;</code></p><p><blockquote style=3D"bo=
+rder-left: 1px solid #aaa; margin: 10px 0; padding: 0 10px;">They define so=
+me types used in the header. [=E2=80=A6]</blockquote></p><p style=3D"white-=
+space: pre-wrap; word-wrap: break-word;">Acknowledged</p></li></ul></li></u=
+l><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/489?us=
+p=3Demail">change 489</a>. To unsubscribe, or for help writing mail filters=
+, visit <a href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><di=
+v itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope item=
+prop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D=
+"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/489?usp=3Demail"/><meta=
+ itemprop=3D"name" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: Ic494d43c835220ae71f10e3afbe=
-53db918887370 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 487 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
-<div style=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@...1711...=
-27...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
- </div>
+<div style=3D"display:none"> Gerrit-Change-Id: Ic9bf797bfc7e2d471998a84cb0f=
+071db3e4832ba </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 489 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 5 </div>
+<div style=3D"display:none"> Gerrit-Owner: d12fk &lt;heiko@...515...&gt; </=
+div>
 <div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
 1...&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
+.1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: stipa &lt;lstipakov@...277...=
+&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: cron2 &lt;gert@...1296...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
 ..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
-41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Wed, 17 Jan 2024 07:25:59=
+<div style=3D"display:none"> Gerrit-Attention: cron2 &lt;gert@...1296...&gt=
+; </div>
+<div style=3D"display:none"> Gerrit-Attention: d12fk &lt;heiko@...515...&gt=
+; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Wed, 17 Jan 2024 08:56:03=
  +0000 </div>
 <div style=3D"display:none"> Gerrit-HasComments: Yes </div>
 <div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
+<div style=3D"display:none"> Comment-In-Reply-To: d12fk &lt;heiko@...515...=
+&gt; </div>
+<div style=3D"display:none"> Comment-In-Reply-To: stipa &lt;lstipakov@...1664...=
+7...&gt; </div>
 <div style=3D"display:none"> Gerrit-MessageType: comment </div>
 
 
---7rqXfoonq10=--
+--4BvPvX4MB4c=--
 
