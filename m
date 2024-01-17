@@ -1,15 +1,17 @@
-Date: Wed, 17 Jan 2024 22:23:31 +0100
-From: Gert Doering <gert@...1296...>
-Message-ID: <ZahFU-bb4tYzpuRF@...1296...>
+From: "cron2 (Code Review)" <gerrit@...515...>
+Date: Wed, 17 Jan 2024 21:24:54 +0000
+In-Reply-To: <gerrit.1700494503000.Icb4ae73741dc84ef0ff7ef72721cc12b999f4d03@...2715...>
 References: <gerrit.1700494503000.Icb4ae73741dc84ef0ff7ef72721cc12b999f4d03@...2715...>
- <23e0425453aae49e79eb5754cba15ab588dd1f72-HTML@...2715...>
+Reply-To: gert@...1296..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net, frank@...2641...,
+ max@...2606...
+Message-ID: <b64e2f973b8aac54e467fcbb7f5fb2bfaadc2891-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="p+Oor8mUVAH/owFN"
+Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-In-Reply-To: <23e0425453aae49e79eb5754cba15ab588dd1f72-HTML@...2715...>
-Subject: Re: [Openvpn-devel] [L] Change in openvpn[release/2.6]: Backport
- mbed TLS 3 support to OpenVPN 2.6
+Content-Type: multipart/alternative; boundary="8glJsjcOq3M="; charset=UTF-8
+Subject: [Openvpn-devel] [L] Change in openvpn[release/2.6]: Backport mbed
+ TLS 3 support to OpenVPN 2.6
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,106 +20,105 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: max@...2606..., arne-openvpn@...1227..., openvpn-devel@lists.sourceforge.net, frank@...2641...
+To: MaxF <max@...2606...>
+Cc: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---p+Oor8mUVAH/owFN
-Content-Type: text/plain; charset="us-ascii"
+--8glJsjcOq3M=
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
 
-Hi,
+Attention is currently required from: MaxF, flichtenheld.
 
-On Mon, Nov 20, 2023 at 03:35:05PM +0000, MaxF (Code Review) wrote:
-> Change subject: Backport mbed TLS 3 support to OpenVPN 2.6
-> ......................................................................
->=20
-> Backport mbed TLS 3 support to OpenVPN 2.6
->=20
-> Based on commits
-> - ace7a4f1c271550bb8ad276663e045ab97a46f16
-> - f53f06316dbb804128fc5cbee1d8edb274ce81df
-> - efad93d049c318a3bd9ea5956c6ac8237b8d6d70
-> - b5faf1b2e90fd44c5137a2b8f3da98c7ae482fc1
+cron2 has posted comments on this change. ( http://gerrit.openvpn.net/c/ope=
+nvpn/+/404?usp=3Demail )
 
-So, after discussion with Arne how to proceed, we decided to not
-apply this patch from gerrit "as is", but to do explicit cherry-picking
-of these 4 commits - so git history directly tracks which bits came
-from where.
-
-This brings now 4 new commits in release/2.6:
-
-commit 001950d14eefe60fd71b6a7091161b0546ff5a9e (HEAD -> release/2.6)
-Author: Max Fillinger <maximilian.fillinger@...2507...>
-Date:   Fri Nov 17 10:14:01 2023 +0100
-
-    Enable key export with mbed TLS 3.x.y
-    (cherry picked from commit b5faf1b2e90fd44c5137a2b8f3da98c7ae482fc1)
-
-commit 7fa534dbb81c7e3d526a2e9110f35d11de26105c
-Author: Max Fillinger <maximilian.fillinger@...2507...>
-Date:   Wed Nov 15 16:17:40 2023 +0100
-
-    Disable TLS 1.3 support with mbed TLS
-    (cherry picked from commit efad93d049c318a3bd9ea5956c6ac8237b8d6d70)
-
-commit 1aa2995ebc06a2b8d6df48eb63eb15482fd07865
-Author: Max Fillinger <max@...2606...>
-Date:   Wed Oct 25 14:19:28 2023 +0200
-
-    Update README.mbedtls
-    (cherry picked from commit f53f06316dbb804128fc5cbee1d8edb274ce81df)
-
-commit 2942ef5d405413d990d1fc2fa06976bcdd24742e
-Author: Max Fillinger <max@...2606...>
-Date:   Wed Oct 25 14:18:30 2023 +0200
-
-    Add support for mbedtls 3.X.Y
-    (cherry picked from commit ace7a4f1c271550bb8ad276663e045ab97a46f16)
+Change subject: Backport mbed TLS 3 support to OpenVPN 2.6
+......................................................................
 
 
-I have tested the resulting source tree with mbedTLS 2.28.6 (FreeBSD
-package default) and 3.5.1 (latest 3.x, build from source) - t_client=20
-only, but that should be sufficient - and the result is satisfactory
+Patch Set 3:
 
-OpenVPN 2.6.8 [git:release/2.6/001950d14eefe60f] amd64-unknown-freebsd13.2 =
-[SSL (mbed TLS)] [LZO] [LZ4] [MH/RECVDA] [AEAD] built on Jan 17 2024
-library versions: mbed TLS 3.5.1, LZO 2.10
+(1 comment)
 
-Test sets succeeded: 1 1a 1b 1c 1d 1e 2 2a 2b 2c 2d 2e 2f 3 4 4a 4b 5 6 8 8=
-a 9 9a 9b 9x.
-./t_lpback.sh: tests passed: 21  failed: 0
+Patchset:
 
-(that is the test result with 2.28.6 - with 3.5.1, all tests involving
-BF-CBC fail, as that is no longer a supported cipher, but everything else
-passes just fine)
+PS3:
+as suggested, merged as 4 individual cherry-picks, and replied on the openv=
+pn-devel@ list.
 
-gert
---=20
-"If was one thing all people took for granted, was conviction that if you=20
- feed honest figures into a computer, honest figures come out. Never doubte=
-d=20
- it myself till I met a computer with a sense of humor."
-                             Robert A. Heinlein, The Moon is a Harsh Mistre=
-ss
+Now, how to teach gerrit that this is done?
 
-Gert Doering - Munich, Germany                             gert@...1296...
 
---p+Oor8mUVAH/owFN
-Content-Type: application/pgp-signature; name="signature.asc"
 
------BEGIN PGP SIGNATURE-----
+--
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/404?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings
 
-iQGcBAEBAgAGBQJlqEVTAAoJEB2Cnv7KVigSHO4L/R58ScjLGMvvUZGICCyTQGzc
-ADAAK8CnbTyTpxTWtmi6eerR+zimO3dgXdR9xHfKTdvFjkBZE1uuGvSdG182AIpj
-s8CS+JkM8mWQlbToE3+UM8OiOrUvWFwOcFxfwvhKLH2bQ3Yn8lcB1wMXyw0K6bna
-WMg+YnvSdi8Ja6cx+vyjLX+nP1XqdfAWaAmDjlGP7+v9IPh97UXwt6zTq9J0OGZn
-VYxxJbZF7lssoMubgj4xpDeyZh2AjnaIHMKDbgOWNssxI5BYGeBwlmDTonXVJQiL
-Yw0YjHqjHwfqsm6qNGde+Zt+uG3dxAgu8ieFLYLAG4ncJUfkspXtKVgzPG2//rdH
-Fa/ZlCURMA8QfZ881/awGvj/y4rRajW9YTKkoc2+lKEi//n2qnLF4oS0X7BwTSwL
-I7fRa3vTbjXTdd+0PTUByK9PYuZhpZCYy7lqKwYi/YXyV6UIgFOpyxOd+bfE5k82
-qCTF1QLONPGXLXdnpuUa7PsWkSjcwq/0OyqkMIWVYg==
-=hmY2
------END PGP SIGNATURE-----
+Gerrit-Project: openvpn
+Gerrit-Branch: release/2.6
+Gerrit-Change-Id: Icb4ae73741dc84ef0ff7ef72721cc12b999f4d03
+Gerrit-Change-Number: 404
+Gerrit-PatchSet: 3
+Gerrit-Owner: MaxF <max@...2606...>
+Gerrit-Reviewer: flichtenheld <frank@...2641...>
+Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
+Gerrit-CC: cron2 <gert@...1296...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-Attention: flichtenheld <frank@...2641...>
+Gerrit-Attention: MaxF <max@...2606...>
+Gerrit-Comment-Date: Wed, 17 Jan 2024 21:24:54 +0000
+Gerrit-HasComments: Yes
+Gerrit-Has-Labels: No
+Gerrit-MessageType: comment
 
---p+Oor8mUVAH/owFN--
+--8glJsjcOq3M=
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<p> Attention is currently required from: MaxF, flichtenheld. </p>
+<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/404?usp=3Demail">View C=
+hange</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0;"><=
+li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-style=
+: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p style=
+=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/4=
+04?tab=3Dcomments">Patch Set #3:</a> </p><p style=3D"white-space: pre-wrap;=
+ word-wrap: break-word;">as suggested, merged as 4 individual cherry-picks,=
+ and replied on the openvpn-devel@ list.</p><p style=3D"white-space: pre-wr=
+ap; word-wrap: break-word;">Now, how to teach gerrit that this is done?</p>=
+</li></ul></li></ul><p>To view, visit <a href=3D"http://gerrit.openvpn.net/=
+c/openvpn/+/404?usp=3Demail">change 404</a>. To unsubscribe, or for help wr=
+iting mail filters, visit <a href=3D"http://gerrit.openvpn.net/settings">se=
+ttings</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><=
+div itemscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"=
+><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/404?u=
+sp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
+
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: release/2.6 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: Icb4ae73741dc84ef0ff7ef72721=
+cc12b999f4d03 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 404 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 3 </div>
+<div style=3D"display:none"> Gerrit-Owner: MaxF &lt;max@...2606...&gt; </di=
+v>
+<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
+1...&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
+.1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: cron2 &lt;gert@...1296...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
+41...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: MaxF &lt;max@...2606...&gt; =
+</div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Wed, 17 Jan 2024 21:24:54=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: No </div>
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
+
+
+--8glJsjcOq3M=--
 
