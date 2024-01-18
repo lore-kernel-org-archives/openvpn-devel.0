@@ -1,16 +1,11 @@
-From: "dazo (Code Review)" <gerrit@...515...>
-Date: Thu, 18 Jan 2024 13:36:45 +0000
+From: Gert Doering <gert@...1296...>
+Date: Thu, 18 Jan 2024 14:55:30 +0100
+Message-ID: <20240118135530.3911-1-gert@...1296...>
 In-Reply-To: <gerrit.1705584340000.Ia9c5453dc08679ffb73a275ddd4f28095ff1c1f8@...2715...>
 References: <gerrit.1705584340000.Ia9c5453dc08679ffb73a275ddd4f28095ff1c1f8@...2715...>
-Reply-To: dazo@...2108..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <26a2ccef4e010a3c4bff63768d63e59a56aa1c2f-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="XysnxV5xJ24="; charset=UTF-8
-Subject: [Openvpn-devel] [XS] Change in openvpn[master]: Remove conditional
- text for Apache2 linking exception
+Subject: [Openvpn-devel] [PATCH v1] Remove conditional text for Apache2
+ linking exception
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,87 +14,44 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: plaisthos <arne-openvpn@...1227...>
-Cc: flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---XysnxV5xJ24=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+From: Arne Schwabe <arne@...1227...>
 
-Attention is currently required from: flichtenheld, plaisthos.
+With the reimplementation of the tls-export feature and removal/approval
+or being trivial of the rest of the code, now all the code falls under
+new license. Remove the conditional text of the license to be only valid
+for parts of OpenVPN.
 
-dazo has posted comments on this change. ( http://gerrit.openvpn.net/c/open=
-vpn/+/502?usp=3Demail )
+Change-Id: Ia9c5453dc08679ffb73a275ddd4f28095ff1c1f8
+Acked-by: dazo <dazo@...2108...>
+---
 
-Change subject: Remove conditional text for Apache2 linking exception
-......................................................................
+This change was reviewed on Gerrit and approved by at least one
+developer. I request to merge it to master.
 
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/502
+This mail reflects revision 1 of this Change.
+Acked-by according to Gerrit (reflected above):
+dazo <dazo@...2108...>
 
-Patch Set 1: Code-Review+2
-
-
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/502?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings
-
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: Ia9c5453dc08679ffb73a275ddd4f28095ff1c1f8
-Gerrit-Change-Number: 502
-Gerrit-PatchSet: 1
-Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
-Gerrit-Reviewer: dazo <dazo@...2108...>
-Gerrit-Reviewer: flichtenheld <frank@...2641...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Comment-Date: Thu, 18 Jan 2024 13:36:45 +0000
-Gerrit-HasComments: No
-Gerrit-Has-Labels: Yes
-Gerrit-MessageType: comment
-
---XysnxV5xJ24=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<p> Attention is currently required from: flichtenheld, plaisthos. </p>
-<p>Patch set 1:<span style=3D"border-radius: 3px; display: inline-block; ma=
-rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/502?usp=3Demail">Vi=
-ew Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To vie=
-w, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/502?usp=3Demail">=
-change 502</a>. To unsubscribe, or for help writing mail filters, visit <a =
-href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope=
- itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"act=
-ion" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=
-=3D"http://gerrit.openvpn.net/c/openvpn/+/502?usp=3Demail"/><meta itemprop=
-=3D"name" content=3D"View Change"/></div></div>
-
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: Ia9c5453dc08679ffb73a275ddd4=
-f28095ff1c1f8 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 502 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
-<div style=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@...1711...=
-27...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: dazo &lt;dazo@...2108...&gt; =
-</div>
-<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
-1...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
-41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Thu, 18 Jan 2024 13:36:45=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: No </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
-
-
---XysnxV5xJ24=--
+        
+diff --git a/COPYING b/COPYING
+index ab59cef..28525d7 100644
+--- a/COPYING
++++ b/COPYING
+@@ -33,11 +33,6 @@
+ 
+ Apache2 linking exception:
+ ---------------------------
+-OpenVPN is currently undergoing a license change to add an exception for
+-Apache 2 linking. The following exception is only valid for new contributions
+-after 2023-05-03 and past contribution where the authors have already agreed
+-to the exception.
+-
+   In addition, as a special exception, OpenVPN Inc and the
+   contributors give permission to link the code of this program to
+   libraries (the "Libraries") licensed under the Apache License
 
