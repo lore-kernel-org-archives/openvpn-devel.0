@@ -1,11 +1,16 @@
-From: Gert Doering <gert@...1296...>
-Date: Thu, 18 Jan 2024 16:12:42 +0100
-Message-ID: <20240118151242.12169-1-gert@...1296...>
-In-Reply-To: <gerrit.1705068839000.Iec74e88f86cd15328f993b6cdd0317ebda81563c@...2715...>
-References: <gerrit.1705068839000.Iec74e88f86cd15328f993b6cdd0317ebda81563c@...2715...>
+From: "cron2 (Code Review)" <gerrit@...515...>
+Date: Thu, 18 Jan 2024 16:48:17 +0000
+In-Reply-To: <gerrit.1705068839000.I7a754d0b4a76a9227bf922f65176cd9ec4d7670c@...2715...>
+References: <gerrit.1705068839000.I7a754d0b4a76a9227bf922f65176cd9ec4d7670c@...2715...>
+Reply-To: gert@...1296..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net, frank@...2641...
+Message-ID: <ffdbd0a8bbe5b2ceeb4864bb6d1efe3b92abed4d-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v1] NTLM: when NTLMv1 is requested,
- try NTLMv2 instead
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="aFhBzsIDPN8="; charset=UTF-8
+Subject: [Openvpn-devel] [S] Change in openvpn[master]: proxy-options.rst:
+ Add proper documentation for --http-proxy-user-pass
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,122 +19,102 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: flichtenheld <frank@...2641...>
+Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-From: Frank Lichtenheld <frank@...2641...>
+--aFhBzsIDPN8=
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Commit 21910ebc2ee8a6138eb2af8d38056d2b94e59f9c removed
-support for NTLMv1 authentication. This adjusts the
-behavior for existing configurations that specify
-"ntlm" keyword.
+Attention is currently required from: flichtenheld, plaisthos.
 
-Do not error out hard, instead just try to upgrade. This
-should work fine in many cases and will avoid breaking
-user configs unnecessarily on upgrade.
+cron2 has posted comments on this change. ( http://gerrit.openvpn.net/c/ope=
+nvpn/+/498?usp=3Demail )
 
-In addition it fixes an issue with the mentioned patch
-where "auto" wasn't working correctly for NTLM anymore.
+Change subject: proxy-options.rst: Add proper documentation for --http-prox=
+y-user-pass
+......................................................................
 
-Change-Id: Iec74e88f86cd15328f993b6cdd0317ebda81563c
-Signed-off-by: Frank Lichtenheld <frank@...2641...>
-Acked-by: Arne Schwabe <arne-openvpn@...1227...>
----
 
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to master.
+Patch Set 1: Code-Review+2
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/500
-This mail reflects revision 1 of this Change.
-Acked-by according to Gerrit (reflected above):
-Arne Schwabe <arne-openvpn@...1227...>
+(1 comment)
 
-        
-diff --git a/Changes.rst b/Changes.rst
-index 69c811d..58cb3db 100644
---- a/Changes.rst
-+++ b/Changes.rst
-@@ -12,8 +12,13 @@
-     ``--allow-deprecated-insecure-static-crypto`` but will be removed in
-     OpenVPN 2.8.
- 
--NTLMv1 support has been removed because it is completely insecure.
--    NTLMv2 support is still available, but will removed in a future release.
-+NTLMv1 authentication support for HTTP proxies has been removed.
-+    This is considered an insecure method of authentication that uses
-+    obsolete crypto algorithms.
-+    NTLMv2 support is still available, but will be removed in a future
-+    release.
-+    When configured to authenticate with NTLMv1 (``ntlm`` keyword in
-+    ``--http-proxy``) OpenVPN will try NTLMv2 instead.
- 
- 
- Overview of changes in 2.6
-diff --git a/doc/man-sections/proxy-options.rst b/doc/man-sections/proxy-options.rst
-index ad49c60..38c4578 100644
---- a/doc/man-sections/proxy-options.rst
-+++ b/doc/man-sections/proxy-options.rst
-@@ -48,6 +48,8 @@
-      </http-proxy-user-pass>
- 
-   Note that support for NTLMv1 proxies was removed with OpenVPN 2.7.
-+  :code:`ntlm` now is an alias for :code:`ntlm2`; i.e. OpenVPN will always
-+  attempt to use NTLMv2 authentication.
- 
- --http-proxy-user-pass userpass
-   Overwrite the username/password information for ``--http-proxy``. If specified
-diff --git a/src/openvpn/proxy.c b/src/openvpn/proxy.c
-index e2324f4..eeb3989 100644
---- a/src/openvpn/proxy.c
-+++ b/src/openvpn/proxy.c
-@@ -502,7 +502,7 @@
-         msg(M_FATAL, "HTTP_PROXY: server not specified");
-     }
- 
--    ASSERT( o->port);
-+    ASSERT(o->port);
- 
-     ALLOC_OBJ_CLEAR(p, struct http_proxy_info);
-     p->options = *o;
-@@ -522,7 +522,8 @@
- #if NTLM
-         else if (!strcmp(o->auth_method_string, "ntlm"))
-         {
--            msg(M_FATAL, "ERROR: NTLM v1 support has been removed. For now, you can use NTLM v2 by selecting ntlm2 but it is deprecated as well.");
-+            msg(M_WARN, "NTLM v1 authentication has been removed in OpenVPN 2.7. Will try to use NTLM v2 authentication.");
-+            p->auth_method = HTTP_AUTH_NTLM2;
-         }
-         else if (!strcmp(o->auth_method_string, "ntlm2"))
-         {
-@@ -536,7 +537,9 @@
-         }
-     }
- 
--    /* only basic and NTLM/NTLMv2 authentication supported so far */
-+    /* When basic or NTLMv2 authentication is requested, get credentials now.
-+     * In case of "auto" negotiation credentials will be retrieved later once
-+     * we know whether we need any. */
-     if (p->auth_method == HTTP_AUTH_BASIC || p->auth_method == HTTP_AUTH_NTLM2)
-     {
-         get_user_pass_http(p, true);
-@@ -649,7 +652,8 @@
- 
-     /* get user/pass if not previously given */
-     if (p->auth_method == HTTP_AUTH_BASIC
--        || p->auth_method == HTTP_AUTH_DIGEST)
-+        || p->auth_method == HTTP_AUTH_DIGEST
-+        || p->auth_method == HTTP_AUTH_NTLM2)
-     {
-         get_user_pass_http(p, false);
-     }
-@@ -753,7 +757,7 @@
-         {
-             processed = true;
-         }
--        else if ((p->auth_method == HTTP_AUTH_NTLM2) && !processed) /* check for NTLM */
-+        else if (p->auth_method == HTTP_AUTH_NTLM2 && !processed) /* check for NTLM */
-         {
- #if NTLM
-             /* look for the phase 2 response */
+Patchset:
+
+PS1:
+looks reasonable.  Haven't verified all the combinations :-)
+
+
+
+--
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/498?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings
+
+Gerrit-Project: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: I7a754d0b4a76a9227bf922f65176cd9ec4d7670c
+Gerrit-Change-Number: 498
+Gerrit-PatchSet: 1
+Gerrit-Owner: flichtenheld <frank@...2641...>
+Gerrit-Reviewer: cron2 <gert@...1296...>
+Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Attention: flichtenheld <frank@...2641...>
+Gerrit-Comment-Date: Thu, 18 Jan 2024 16:48:17 +0000
+Gerrit-HasComments: Yes
+Gerrit-Has-Labels: Yes
+Gerrit-MessageType: comment
+
+--aFhBzsIDPN8=
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<p> Attention is currently required from: flichtenheld, plaisthos. </p>
+<p>Patch set 1:<span style=3D"border-radius: 3px; display: inline-block; ma=
+rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/498?usp=3Demail">Vi=
+ew Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0=
+;"><li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-s=
+tyle: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p s=
+tyle=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn=
+/+/498?tab=3Dcomments">Patch Set #1:</a> </p><p style=3D"white-space: pre-w=
+rap; word-wrap: break-word;">looks reasonable.  Haven&#39;t verified all th=
+e combinations :-)</p></li></ul></li></ul><p>To view, visit <a href=3D"http=
+://gerrit.openvpn.net/c/openvpn/+/498?usp=3Demail">change 498</a>. To unsub=
+scribe, or for help writing mail filters, visit <a href=3D"http://gerrit.op=
+envpn.net/settings">settings</a>.</p><div itemscope itemtype=3D"http://sche=
+ma.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://=
+schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn=
+.net/c/openvpn/+/498?usp=3Demail"/><meta itemprop=3D"name" content=3D"View =
+Change"/></div></div>
+
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I7a754d0b4a76a9227bf922f6517=
+6cd9ec4d7670c </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 498 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
+<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
+.&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
+ </div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
+.1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
+41...&gt; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Thu, 18 Jan 2024 16:48:17=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
+
+
+--aFhBzsIDPN8=--
 
