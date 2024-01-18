@@ -1,10 +1,10 @@
-Date: Thu, 18 Jan 2024 18:06:54 +0100 (CET)
-Message-Id: <202401181706.40IH6sid094155@...2054...>
+Date: Thu, 18 Jan 2024 18:49:18 +0100 (CET)
+Message-Id: <202401181749.40IHnI8x009756@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20240118164903.22519-1-gert@...1296...>
-References: <20240118164903.22519-1-gert@...1296...>
-Subject: [Openvpn-devel] [PATCH applied] Re: proxy-options.rst: Add proper
- documentation for --http-proxy-user-pass
+In-Reply-To: <20240118151242.12169-1-gert@...1296...>
+References: <20240118151242.12169-1-gert@...1296...>
+Subject: [Openvpn-devel] [PATCH applied] Re: NTLM: when NTLMv1 is requested,
+ try NTLMv2 instead
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,22 +18,23 @@ Content-Transfer-Encoding: 8bit
 To: Frank Lichtenheld <frank@...2641...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-Your patch has been applied to the master and release/2.6 branch (docs).
+This is "master only", as it is based on the NTLMv1 removal.
 
-(2.6 needed conflict resultion because of the "NTLMv1 has been removed"
-line)
+Haven't tested it beyond "GHA is happy" and "the code change looks
+reasonable and matches what the commit message says".
 
-commit d3f84afedd33734416704d5d92e8d3ac639ef491 (master)
-commit 7b1f2009ce9670e2e0ffea0c01b1c4922a2d4369 (release/2.6)
+Your patch has been applied to the master branch.
+
+commit b541a86948d7e9866b33e876fcf070fad00b3dce
 Author: Frank Lichtenheld
-Date:   Thu Jan 18 17:49:03 2024 +0100
+Date:   Thu Jan 18 16:12:42 2024 +0100
 
-     proxy-options.rst: Add proper documentation for --http-proxy-user-pass
+     NTLM: when NTLMv1 is requested, try NTLMv2 instead
 
      Signed-off-by: Frank Lichtenheld <frank@...2641...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20240118164903.22519-1-gert@...1296...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg28083.html
+     Acked-by: Arne Schwabe <arne-openvpn@...1227...>
+     Message-Id: <20240118151242.12169-1-gert@...1296...>
+     URL: https://www.mail-archive.com/search?l=mid&q=20240118151242.12169-1-gert@...1296...
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
