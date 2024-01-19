@@ -1,16 +1,16 @@
 From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Thu, 18 Jan 2024 17:49:29 +0000
-In-Reply-To: <gerrit.1705068839000.Iec74e88f86cd15328f993b6cdd0317ebda81563c@...2715...>
-References: <gerrit.1705068839000.Iec74e88f86cd15328f993b6cdd0317ebda81563c@...2715...>
+Date: Fri, 19 Jan 2024 08:27:27 +0000
+In-Reply-To: <gerrit.1704798536000.I8ef199463d46303129a3f563fd9eace780a58b8a@...2715...>
+References: <gerrit.1704798536000.I8ef199463d46303129a3f563fd9eace780a58b8a@...2715...>
 Reply-To: gert@...1296..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <6c153abf5da1fc4d1fcdeb34df369739eecfecd7-EmailReplacePatchSet-HTML@...2715...>
+Message-ID: <f458fa8a8f7be41f7713764a5a37ad4fbc20a493-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="Jomh2E6wwq8="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: NTLM: when NTLMv1 is
- requested, try NTLMv2 instead
+Content-Type: multipart/alternative; boundary="08ZE7AXvsms="; charset=UTF-8
+Subject: [Openvpn-devel] [XS] Change in openvpn[master]: phase2_tcp_server:
+ fix Coverity issue "Dereference after null check"
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,291 +19,124 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: flichtenheld <frank@...2641...>, plaisthos <arne-openvpn@...1227...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: flichtenheld <frank@...2641...>
+Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---Jomh2E6wwq8=
+--08ZE7AXvsms=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-cron2 has uploaded a new patch set (#2) to the change originally created by=
- flichtenheld. ( http://gerrit.openvpn.net/c/openvpn/+/500?usp=3Demail )
+Attention is currently required from: flichtenheld, plaisthos.
 
-The following approvals got outdated and were removed:
-Code-Review+2 by plaisthos
+cron2 has posted comments on this change. ( http://gerrit.openvpn.net/c/ope=
+nvpn/+/490?usp=3Demail )
 
-
-Change subject: NTLM: when NTLMv1 is requested, try NTLMv2 instead
+Change subject: phase2_tcp_server: fix Coverity issue "Dereference after nu=
+ll check"
 ......................................................................
 
-NTLM: when NTLMv1 is requested, try NTLMv2 instead
 
-Commit 21910ebc2ee8a6138eb2af8d38056d2b94e59f9c removed
-support for NTLMv1 authentication. This adjusts the
-behavior for existing configurations that specify
-"ntlm" keyword.
+Patch Set 1: Code-Review-1
 
-Do not error out hard, instead just try to upgrade. This
-should work fine in many cases and will avoid breaking
-user configs unnecessarily on upgrade.
+(1 comment)
 
-In addition it fixes an issue with the mentioned patch
-where "auto" wasn't working correctly for NTLM anymore.
+File src/openvpn/socket.c:
 
-Change-Id: Iec74e88f86cd15328f993b6cdd0317ebda81563c
-Signed-off-by: Frank Lichtenheld <frank@...2641...>
-Acked-by: Arne Schwabe <arne-openvpn@...1227...>
-Message-Id: <20240118151242.12169-1-gert@...1296...>
-URL: https://www.mail-archive.com/search?l=3Dmid&q=3D20240118151242.12169-1=
--gert@...1296...
-Signed-off-by: Gert Doering <gert@...1296...>
----
-M Changes.rst
-M doc/man-sections/proxy-options.rst
-M src/openvpn/proxy.c
-3 files changed, 18 insertions(+), 7 deletions(-)
+http://gerrit.openvpn.net/c/openvpn/+/490/comment/49bd721f_a0919cda :
+PS1, Line 2034:                 if (signal_received)
+I do not like checking `signal_received` here if what we're really interest=
+ed is `sig_info` (I do understand that bother are NULL or none of them, but=
+ this way the code is still more confusing than necessary).
+
+This said, if we know `sig_info` is never NULL anyway, because there is onl=
+y a single caller, maybe a better fix would be
+
+```
+ASSERT(sig_info);
+volatile int *signal_received =3D &sig_info->signal_received;
+```
+
+at the beginning of the function.
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/00/500/2
-
-diff --git a/Changes.rst b/Changes.rst
-index 69c811d..58cb3db 100644
---- a/Changes.rst
-+++ b/Changes.rst
-@@ -12,8 +12,13 @@
-     ``--allow-deprecated-insecure-static-crypto`` but will be removed in
-     OpenVPN 2.8.
-
--NTLMv1 support has been removed because it is completely insecure.
--    NTLMv2 support is still available, but will removed in a future releas=
-e.
-+NTLMv1 authentication support for HTTP proxies has been removed.
-+    This is considered an insecure method of authentication that uses
-+    obsolete crypto algorithms.
-+    NTLMv2 support is still available, but will be removed in a future
-+    release.
-+    When configured to authenticate with NTLMv1 (``ntlm`` keyword in
-+    ``--http-proxy``) OpenVPN will try NTLMv2 instead.
-
-
- Overview of changes in 2.6
-diff --git a/doc/man-sections/proxy-options.rst b/doc/man-sections/proxy-op=
-tions.rst
-index ad49c60..38c4578 100644
---- a/doc/man-sections/proxy-options.rst
-+++ b/doc/man-sections/proxy-options.rst
-@@ -48,6 +48,8 @@
-      </http-proxy-user-pass>
-
-   Note that support for NTLMv1 proxies was removed with OpenVPN 2.7.
-+  :code:`ntlm` now is an alias for :code:`ntlm2`; i.e. OpenVPN will always
-+  attempt to use NTLMv2 authentication.
-
- --http-proxy-user-pass userpass
-   Overwrite the username/password information for ``--http-proxy``. If spe=
-cified
-diff --git a/src/openvpn/proxy.c b/src/openvpn/proxy.c
-index e081532..2e8d7a8 100644
---- a/src/openvpn/proxy.c
-+++ b/src/openvpn/proxy.c
-@@ -497,7 +497,7 @@
-         msg(M_FATAL, "HTTP_PROXY: server not specified");
-     }
-
--    ASSERT( o->port);
-+    ASSERT(o->port);
-
-     ALLOC_OBJ_CLEAR(p, struct http_proxy_info);
-     p->options =3D *o;
-@@ -517,7 +517,8 @@
- #if NTLM
-         else if (!strcmp(o->auth_method_string, "ntlm"))
-         {
--            msg(M_FATAL, "ERROR: NTLM v1 support has been removed. For now=
-, you can use NTLM v2 by selecting ntlm2 but it is deprecated as well.");
-+            msg(M_WARN, "NTLM v1 authentication has been removed in OpenVP=
-N 2.7. Will try to use NTLM v2 authentication.");
-+            p->auth_method =3D HTTP_AUTH_NTLM2;
-         }
-         else if (!strcmp(o->auth_method_string, "ntlm2"))
-         {
-@@ -531,7 +532,9 @@
-         }
-     }
-
--    /* only basic and NTLM/NTLMv2 authentication supported so far */
-+    /* When basic or NTLMv2 authentication is requested, get credentials n=
-ow.
-+     * In case of "auto" negotiation credentials will be retrieved later o=
-nce
-+     * we know whether we need any. */
-     if (p->auth_method =3D=3D HTTP_AUTH_BASIC || p->auth_method =3D=3D HTT=
-P_AUTH_NTLM2)
-     {
-         get_user_pass_http(p, true);
-@@ -644,7 +647,8 @@
-
-     /* get user/pass if not previously given */
-     if (p->auth_method =3D=3D HTTP_AUTH_BASIC
--        || p->auth_method =3D=3D HTTP_AUTH_DIGEST)
-+        || p->auth_method =3D=3D HTTP_AUTH_DIGEST
-+        || p->auth_method =3D=3D HTTP_AUTH_NTLM2)
-     {
-         get_user_pass_http(p, false);
-     }
-@@ -748,7 +752,7 @@
-         {
-             processed =3D true;
-         }
--        else if ((p->auth_method =3D=3D HTTP_AUTH_NTLM2) && !processed) /*=
- check for NTLM */
-+        else if (p->auth_method =3D=3D HTTP_AUTH_NTLM2 && !processed) /* c=
-heck for NTLM */
-         {
- #if NTLM
-             /* look for the phase 2 response */
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/500?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/490?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings
 
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: Iec74e88f86cd15328f993b6cdd0317ebda81563c
-Gerrit-Change-Number: 500
-Gerrit-PatchSet: 2
+Gerrit-Change-Id: I8ef199463d46303129a3f563fd9eace780a58b8a
+Gerrit-Change-Number: 490
+Gerrit-PatchSet: 1
 Gerrit-Owner: flichtenheld <frank@...2641...>
+Gerrit-Reviewer: cron2 <gert@...1296...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-MessageType: newpatchset
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Attention: flichtenheld <frank@...2641...>
+Gerrit-Comment-Date: Fri, 19 Jan 2024 08:27:27 +0000
+Gerrit-HasComments: Yes
+Gerrit-Has-Labels: Yes
+Gerrit-MessageType: comment
 
---Jomh2E6wwq8=
+--08ZE7AXvsms=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p>cron2 <strong>uploaded patch set #2</strong> to the change originally cr=
-eated by flichtenheld.</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn=
-/+/500?usp=3Demail">View Change</a></p><p>The following approvals got outda=
-ted and were removed:
-Code-Review+2 by plaisthos</p><pre style=3D"font-family: monospace,monospac=
-e; white-space: pre-wrap;">NTLM: when NTLMv1 is requested, try NTLMv2 inste=
-ad<br><br>Commit 21910ebc2ee8a6138eb2af8d38056d2b94e59f9c removed<br>suppor=
-t for NTLMv1 authentication. This adjusts the<br>behavior for existing conf=
-igurations that specify<br>&quot;ntlm&quot; keyword.<br><br>Do not error ou=
-t hard, instead just try to upgrade. This<br>should work fine in many cases=
- and will avoid breaking<br>user configs unnecessarily on upgrade.<br><br>I=
-n addition it fixes an issue with the mentioned patch<br>where &quot;auto&q=
-uot; wasn&#39;t working correctly for NTLM anymore.<br><br>Change-Id: Iec74=
-e88f86cd15328f993b6cdd0317ebda81563c<br>Signed-off-by: Frank Lichtenheld &l=
-t;frank@...2641...&gt;<br>Acked-by: Arne Schwabe &lt;arne-openvpn@...2477...=
-.&gt;<br>Message-Id: &lt;20240118151242.12169-1-gert@...1296...&gt;<br>URL:=
- https://www.mail-archive.com/search?l=3Dmid&amp;q=3D20240118151242.12169-1=
--gert@...1296...<br>Signed-off-by: Gert Doering &lt;gert@...1296...&gt;<br>=
----<br>M Changes.rst<br>M doc/man-sections/proxy-options.rst<br>M src/openv=
-pn/proxy.c<br>3 files changed, 18 insertions(+), 7 deletions(-)<br><br></pr=
-e><pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;">g=
-it pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/00/500/2</pre><=
-pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><spa=
-n>diff --git a/Changes.rst b/Changes.rst</span><br><span>index 69c811d..58c=
-b3db 100644</span><br><span>--- a/Changes.rst</span><br><span>+++ b/Changes=
-.rst</span><br><span>@@ -12,8 +12,13 @@</span><br><span>     ``--allow-depr=
-ecated-insecure-static-crypto`` but will be removed in</span><br><span>    =
- OpenVPN 2.8.</span><br><span> </span><br><span style=3D"color: hsl(0, 100%=
-, 40%);">-NTLMv1 support has been removed because it is completely insecure=
-.</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    NTLMv2 support i=
-s still available, but will removed in a future release.</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+NTLMv1 authentication support for HTTP=
- proxies has been removed.</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+    This is considered an insecure method of authentication that use=
-s</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    obsolete crypt=
-o algorithms.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    NT=
-LMv2 support is still available, but will be removed in a future</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+    release.</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+    When configured to authenticate w=
-ith NTLMv1 (``ntlm`` keyword in</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+    ``--http-proxy``) OpenVPN will try NTLMv2 instead.</span><b=
-r><span> </span><br><span> </span><br><span> Overview of changes in 2.6</sp=
-an><br><span>diff --git a/doc/man-sections/proxy-options.rst b/doc/man-sect=
-ions/proxy-options.rst</span><br><span>index ad49c60..38c4578 100644</span>=
-<br><span>--- a/doc/man-sections/proxy-options.rst</span><br><span>+++ b/do=
-c/man-sections/proxy-options.rst</span><br><span>@@ -48,6 +48,8 @@</span><b=
-r><span>      &lt;/http-proxy-user-pass&gt;</span><br><span> </span><br><sp=
-an>   Note that support for NTLMv1 proxies was removed with OpenVPN 2.7.</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+  :code:`ntlm` now is =
-an alias for :code:`ntlm2`; i.e. OpenVPN will always</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+  attempt to use NTLMv2 authentication.</=
-span><br><span> </span><br><span> --http-proxy-user-pass userpass</span><br=
-><span>   Overwrite the username/password information for ``--http-proxy``.=
- If specified</span><br><span>diff --git a/src/openvpn/proxy.c b/src/openvp=
-n/proxy.c</span><br><span>index e081532..2e8d7a8 100644</span><br><span>---=
- a/src/openvpn/proxy.c</span><br><span>+++ b/src/openvpn/proxy.c</span><br>=
-<span>@@ -497,7 +497,7 @@</span><br><span>         msg(M_FATAL, &quot;HTTP_=
-PROXY: server not specified&quot;);</span><br><span>     }</span><br><span>=
- </span><br><span style=3D"color: hsl(0, 100%, 40%);">-    ASSERT( o-&gt;po=
-rt);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    ASSERT(o-&g=
-t;port);</span><br><span> </span><br><span>     ALLOC_OBJ_CLEAR(p, struct h=
-ttp_proxy_info);</span><br><span>     p-&gt;options =3D *o;</span><br><span=
->@@ -517,7 +517,8 @@</span><br><span> #if NTLM</span><br><span>         els=
-e if (!strcmp(o-&gt;auth_method_string, &quot;ntlm&quot;))</span><br><span>=
-         {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-           =
- msg(M_FATAL, &quot;ERROR: NTLM v1 support has been removed. For now, you c=
-an use NTLM v2 by selecting ntlm2 but it is deprecated as well.&quot;);</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+            msg(M_WARN,=
- &quot;NTLM v1 authentication has been removed in OpenVPN 2.7. Will try to =
-use NTLM v2 authentication.&quot;);</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+            p-&gt;auth_method =3D HTTP_AUTH_NTLM2;</span><b=
-r><span>         }</span><br><span>         else if (!strcmp(o-&gt;auth_met=
-hod_string, &quot;ntlm2&quot;))</span><br><span>         {</span><br><span>=
-@@ -531,7 +532,9 @@</span><br><span>         }</span><br><span>     }</span=
-><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-    /* on=
-ly basic and NTLM/NTLMv2 authentication supported so far */</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+    /* When basic or NTLMv2 authent=
-ication is requested, get credentials now.</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+     * In case of &quot;auto&quot; negotiation crede=
-ntials will be retrieved later once</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+     * we know whether we need any. */</span><br><span>    =
- if (p-&gt;auth_method =3D=3D HTTP_AUTH_BASIC || p-&gt;auth_method =3D=3D H=
-TTP_AUTH_NTLM2)</span><br><span>     {</span><br><span>         get_user_pa=
-ss_http(p, true);</span><br><span>@@ -644,7 +647,8 @@</span><br><span> </sp=
-an><br><span>     /* get user/pass if not previously given */</span><br><sp=
-an>     if (p-&gt;auth_method =3D=3D HTTP_AUTH_BASIC</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-        || p-&gt;auth_method =3D=3D HTTP_AU=
-TH_DIGEST)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        |=
-| p-&gt;auth_method =3D=3D HTTP_AUTH_DIGEST</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+        || p-&gt;auth_method =3D=3D HTTP_AUTH_NTLM2=
-)</span><br><span>     {</span><br><span>         get_user_pass_http(p, fal=
-se);</span><br><span>     }</span><br><span>@@ -748,7 +752,7 @@</span><br><=
-span>         {</span><br><span>             processed =3D true;</span><br>=
-<span>         }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-     =
-   else if ((p-&gt;auth_method =3D=3D HTTP_AUTH_NTLM2) &amp;&amp; !processe=
-d) /* check for NTLM */</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+        else if (p-&gt;auth_method =3D=3D HTTP_AUTH_NTLM2 &amp;&amp; !p=
-rocessed) /* check for NTLM */</span><br><span>         {</span><br><span> =
-#if NTLM</span><br><span>             /* look for the phase 2 response */</=
-span><br><span></span><br></pre><p>To view, visit <a href=3D"http://gerrit.=
-openvpn.net/c/openvpn/+/500?usp=3Demail">change 500</a>. To unsubscribe, or=
- for help writing mail filters, visit <a href=3D"http://gerrit.openvpn.net/=
-settings">settings</a>.</p><div itemscope itemtype=3D"http://schema.org/Ema=
-ilMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.org=
-/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/ope=
-nvpn/+/500?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/><=
-/div></div>
+<p> Attention is currently required from: flichtenheld, plaisthos. </p>
+<p>Patch set 1:<span style=3D"border-radius: 3px; display: inline-block; ma=
+rgin: 0 2px; padding: 4px;background-color: #ffd4d4;">Code-Review -1</span>=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/490?usp=3Demail">Vi=
+ew Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0=
+;"><li style=3D"margin: 0; padding: 0;"><p>File src/openvpn/socket.c:</p><u=
+l style=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; padding: =
+0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.open=
+vpn.net/c/openvpn/+/490/comment/49bd721f_a0919cda">Patch Set #1, Line 2034:=
+</a> <code style=3D"font-family:monospace,monospace">                if (si=
+gnal_received)</code></p><p style=3D"white-space: pre-wrap; word-wrap: brea=
+k-word;">I do not like checking `signal_received` here if what we&#39;re re=
+ally interested is `sig_info` (I do understand that bother are NULL or none=
+ of them, but this way the code is still more confusing than necessary).</p=
+><p style=3D"white-space: pre-wrap; word-wrap: break-word;">This said, if w=
+e know `sig_info` is never NULL anyway, because there is only a single call=
+er, maybe a better fix would be</p><p style=3D"white-space: pre-wrap; word-=
+wrap: break-word;">```<br>ASSERT(sig_info);<br>volatile int *signal_receive=
+d =3D &amp;sig_info-&gt;signal_received;<br>```</p><p style=3D"white-space:=
+ pre-wrap; word-wrap: break-word;">at the beginning of the function.</p></l=
+i></ul></li></ul><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/o=
+penvpn/+/490?usp=3Demail">change 490</a>. To unsubscribe, or for help writi=
+ng mail filters, visit <a href=3D"http://gerrit.openvpn.net/settings">setti=
+ngs</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div=
+ itemscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><l=
+ink itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/490?usp=
+=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: Iec74e88f86cd15328f993b6cdd0=
-317ebda81563c </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 500 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I8ef199463d46303129a3f563fd9=
+eace780a58b8a </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 490 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
 <div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
 .&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
+ </div>
 <div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
 .1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
+41...&gt; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Fri, 19 Jan 2024 08:27:27=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
 
 
---Jomh2E6wwq8=--
+--08ZE7AXvsms=--
 
