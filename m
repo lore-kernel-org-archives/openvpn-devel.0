@@ -1,11 +1,10 @@
+Date: Fri, 19 Jan 2024 14:10:09 +0100 (CET)
+Message-Id: <202401191310.40JDA9ad045809@...2054...>
 From: Gert Doering <gert@...1296...>
-Date: Fri, 19 Jan 2024 13:03:41 +0100
-Message-ID: <20240119120341.22933-1-gert@...1296...>
-In-Reply-To: <gerrit.1704798536000.I64f094eeb0ca8c3953a94d742adf468faf27dab3@...2715...>
-References: <gerrit.1704798536000.I64f094eeb0ca8c3953a94d742adf468faf27dab3@...2715...>
-MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v1] buf_string_match_head_str: Fix Coverity
- issue "Unsigned compared against 0"
+In-Reply-To: <20240119120341.22933-1-gert@...1296...>
+References: <20240119120341.22933-1-gert@...1296...>
+Subject: [Openvpn-devel] [PATCH applied] Re: buf_string_match_head_str: Fix
+ Coverity issue 'Unsigned compared against 0'
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,43 +15,30 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Frank Lichtenheld <frank@...2641...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-From: Frank Lichtenheld <frank@...2641...>
+Arguably coverity is right here :-)
 
-As Coverity says:
-An unsigned value can never be negative, so this test will always
-evaluate the same way.
+Your patch has been applied to the master and release/2.6 branch (bugfix).
 
-Was changed from int to size_t in commit
-7fc608da4ec388c9209bd009cd5053ac0ff7df38 which triggered warning,
-but the check did not make sense before, either.
+commit bc29bd6a3376158b73d069758122739fbf93c022 (master)
+commit 68b00a54e779325f4ac9d9416b4e85261f771c23 (release/2.6)
+Author: Frank Lichtenheld
+Date:   Fri Jan 19 13:03:41 2024 +0100
 
-Change-Id: I64f094eeb0ca8c3953a94d742adf468faf27dab3
-Signed-off-by: Frank Lichtenheld <frank@...2641...>
-Acked-by: Arne Schwabe <arne-openvpn@...1227...>
----
+     buf_string_match_head_str: Fix Coverity issue 'Unsigned compared against 0'
 
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to master.
+     Signed-off-by: Frank Lichtenheld <frank@...2641...>
+     Acked-by: Arne Schwabe <arne-openvpn@...1227...>
+     Message-Id: <20240119120341.22933-1-gert@...1296...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg28093.html
+     Signed-off-by: Gert Doering <gert@...1296...>
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/491
-This mail reflects revision 1 of this Change.
-Acked-by according to Gerrit (reflected above):
-Arne Schwabe <arne-openvpn@...1227...>
 
-        
-diff --git a/src/openvpn/buffer.c b/src/openvpn/buffer.c
-index 0b94a52..2ad3461 100644
---- a/src/openvpn/buffer.c
-+++ b/src/openvpn/buffer.c
-@@ -822,7 +822,7 @@
- buf_string_match_head_str(const struct buffer *src, const char *match)
- {
-     const size_t size = strlen(match);
--    if (size < 0 || size > src->len)
-+    if (size > src->len)
-     {
-         return false;
-     }
+--
+kind regards,
+
+Gert Doering
+
 
