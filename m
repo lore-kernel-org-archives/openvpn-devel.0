@@ -1,16 +1,11 @@
-From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Mon, 22 Jan 2024 08:28:25 +0000
+From: Gert Doering <gert@...1296...>
+Date: Mon, 22 Jan 2024 10:21:22 +0100
+Message-ID: <20240122092122.8591-1-gert@...1296...>
 In-Reply-To: <gerrit.1705068839000.I6f402db2fb73f1206fbc1139c47d2bf4378376fa@...2715...>
 References: <gerrit.1705068839000.I6f402db2fb73f1206fbc1139c47d2bf4378376fa@...2715...>
-Reply-To: gert@...1296..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <5b21c6bc1021852d6d3cb0dc5bdf067a96ae5fc9-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="e/13bG+I2Ys="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]:
- --http-proxy-user-pass: allow to specify in either order with --http-...
+Subject: [Openvpn-devel] [PATCH v1] --http-proxy-user-pass: allow to specify
+ in either order with --http-proxy
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,111 +14,93 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: flichtenheld <frank@...2641...>
-Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---e/13bG+I2Ys=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+From: Frank Lichtenheld <frank@...2641...>
 
-Attention is currently required from: flichtenheld, plaisthos.
+Previously, when using a third argument to --http-proxy other
+than auto/auto-nct, order did matter between --http-proxy and
+--http-proxy-user-pass. Always prefer --http-proxy-user-pass
+when given.
 
-cron2 has posted comments on this change. ( http://gerrit.openvpn.net/c/ope=
-nvpn/+/499?usp=3Demail )
+Change-Id: I6f402db2fb73f1206fbc1139c47d2bf4378376fa
+Signed-off-by: Frank Lichtenheld <frank@...2641...>
+Acked-by: Gert Doering <gert@...1296...>
+---
 
-Change subject: --http-proxy-user-pass: allow to specify in either order wi=
-th --http-proxy
-......................................................................
+This change was reviewed on Gerrit and approved by at least one
+developer. I request to merge it to master.
 
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/499
+This mail reflects revision 1 of this Change.
+Acked-by according to Gerrit (reflected above):
+Gert Doering <gert@...1296...>
 
-Patch Set 1: Code-Review+2
-
-(1 comment)
-
-Patchset:
-
-PS1:
-I think this is a reasonable change - it ensures config consistency, and th=
-e code looks good (not tested).  The compile fails have been spurious and w=
-ent away on re-run.
-
-I'm not sure yet if this should go to 2.6 as well, though.  Maybe, because =
-"fixing inconsistent behaviour =3D bugfix", and "not very intrusive"?
-
-
-
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/499?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings
-
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: I6f402db2fb73f1206fbc1139c47d2bf4378376fa
-Gerrit-Change-Number: 499
-Gerrit-PatchSet: 1
-Gerrit-Owner: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: cron2 <gert@...1296...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Comment-Date: Mon, 22 Jan 2024 08:28:25 +0000
-Gerrit-HasComments: Yes
-Gerrit-Has-Labels: Yes
-Gerrit-MessageType: comment
-
---e/13bG+I2Ys=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<p> Attention is currently required from: flichtenheld, plaisthos. </p>
-<p>Patch set 1:<span style=3D"border-radius: 3px; display: inline-block; ma=
-rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/499?usp=3Demail">Vi=
-ew Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0=
-;"><li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-s=
-tyle: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p s=
-tyle=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn=
-/+/499?tab=3Dcomments">Patch Set #1:</a> </p><p style=3D"white-space: pre-w=
-rap; word-wrap: break-word;">I think this is a reasonable change - it ensur=
-es config consistency, and the code looks good (not tested).  The compile f=
-ails have been spurious and went away on re-run.</p><p style=3D"white-space=
-: pre-wrap; word-wrap: break-word;">I&#39;m not sure yet if this should go =
-to 2.6 as well, though.  Maybe, because &quot;fixing inconsistent behaviour=
- =3D bugfix&quot;, and &quot;not very intrusive&quot;?</p></li></ul></li></=
-ul><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/499?u=
-sp=3Demail">change 499</a>. To unsubscribe, or for help writing mail filter=
-s, visit <a href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><d=
-iv itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope ite=
-mprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=
-=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/499?usp=3Demail"/><m=
-eta itemprop=3D"name" content=3D"View Change"/></div></div>
-
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I6f402db2fb73f1206fbc1139c47=
-d2bf4378376fa </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 499 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
-<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
-.&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
- </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
-41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Mon, 22 Jan 2024 08:28:25=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
-
-
---e/13bG+I2Ys=--
+        
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index f54f276..e393511 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -1649,6 +1649,8 @@
+     SHOW_STR(port);
+     SHOW_STR(auth_method_string);
+     SHOW_STR(auth_file);
++    SHOW_STR(auth_file_up);
++    SHOW_BOOL(inline_creds);
+     SHOW_STR(http_version);
+     SHOW_STR(user_agent);
+     for  (i = 0; i < MAX_CUSTOM_HTTP_HEADER && o->custom_headers[i].name; i++)
+@@ -6824,7 +6826,7 @@
+         struct http_proxy_options *ho;
+         VERIFY_PERMISSION(OPT_P_GENERAL|OPT_P_INLINE);
+         ho = init_http_proxy_options_once(&options->ce.http_proxy_options, &options->gc);
+-        ho->auth_file = p[1];
++        ho->auth_file_up = p[1];
+         ho->inline_creds = is_inline;
+     }
+     else if (streq(p[0], "http-proxy-retry") || streq(p[0], "socks-proxy-retry"))
+diff --git a/src/openvpn/proxy.c b/src/openvpn/proxy.c
+index e081532..e2324f4 100644
+--- a/src/openvpn/proxy.c
++++ b/src/openvpn/proxy.c
+@@ -271,6 +271,11 @@
+     if (!static_proxy_user_pass.defined)
+     {
+         unsigned int flags = GET_USER_PASS_MANAGEMENT;
++        const char *auth_file = p->options.auth_file;
++        if (p->options.auth_file_up)
++        {
++            auth_file = p->options.auth_file_up;
++        }
+         if (p->queried_creds)
+         {
+             flags |= GET_USER_PASS_PREVIOUS_CREDS_FAILED;
+@@ -280,7 +285,7 @@
+             flags |= GET_USER_PASS_INLINE_CREDS;
+         }
+         get_user_pass(&static_proxy_user_pass,
+-                      p->options.auth_file,
++                      auth_file,
+                       UP_TYPE_PROXY,
+                       flags);
+         p->queried_creds = true;
+diff --git a/src/openvpn/proxy.h b/src/openvpn/proxy.h
+index 7900244..4e78772 100644
+--- a/src/openvpn/proxy.h
++++ b/src/openvpn/proxy.h
+@@ -52,10 +52,11 @@
+ 
+     const char *auth_method_string;
+     const char *auth_file;
++    const char *auth_file_up; /* specified with --http-proxy-user-pass */
+     const char *http_version;
+     const char *user_agent;
+     struct http_custom_header custom_headers[MAX_CUSTOM_HTTP_HEADER];
+-    bool inline_creds;
++    bool inline_creds; /* auth_file_up is inline credentials */
+ };
+ 
+ struct http_proxy_options_simple {
 
