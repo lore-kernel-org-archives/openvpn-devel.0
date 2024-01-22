@@ -1,16 +1,15 @@
-From: "flichtenheld (Code Review)" <gerrit@...515...>
-Date: Mon, 22 Jan 2024 10:08:25 +0000
-In-Reply-To: <gerrit.1704798536000.I8ef199463d46303129a3f563fd9eace780a58b8a@...2715...>
-References: <gerrit.1704798536000.I8ef199463d46303129a3f563fd9eace780a58b8a@...2715...>
-Reply-To: frank@...2641..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, gert@...1296...
-Message-ID: <c492654d000444062e7879056fb2508cc3a710d9-EmailReplacePatchSet-HTML@...2715...>
+From: "plaisthos (Code Review)" <gerrit@...515...>
+Date: Mon, 22 Jan 2024 12:45:12 +0000
+References: <gerrit.1705927509000.I378081f391ad755d0a6fd5613de5c2a8bacc389a@...2715...>
+Reply-To: arne-openvpn@...1227..., openvpn-devel@lists.sourceforge.net,
+ frank@...2641...
+Message-ID: <7ff1e5f7717b7ef3102ae50d125f9728c1424ce0-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="k3ICaOHH5AI="; charset=UTF-8
-Subject: [Openvpn-devel] [XS] Change in openvpn[master]: phase2_tcp_server:
- fix Coverity issue "Dereference after null check"
+Content-Type: multipart/alternative; boundary="qAo/KWW2dWI="; charset=UTF-8
+Subject: [Openvpn-devel] [XS] Change in openvpn[master]: Fix ssl unit tests
+ on OpenSSL 1.0.2
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,167 +18,138 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: plaisthos <arne-openvpn@...1227...>, cron2 <gert@...1296...>
+To: flichtenheld <frank@...2641...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---k3ICaOHH5AI=
+--qAo/KWW2dWI=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: cron2, plaisthos.
+Attention is currently required from: flichtenheld.
 
-Hello cron2, plaisthos,
+Hello flichtenheld,
 
-I'd like you to reexamine a change. Please visit
+I'd like you to do a code review.
+Please visit
 
-    http://gerrit.openvpn.net/c/openvpn/+/490?usp=3Demail
+    http://gerrit.openvpn.net/c/openvpn/+/503?usp=3Demail
 
-to look at the new patch set (#2).
-
-The following approvals got outdated and were removed:
-Code-Review-1 by cron2
+to review the following change.
 
 
-Change subject: phase2_tcp_server: fix Coverity issue "Dereference after nu=
-ll check"
+Change subject: Fix ssl unit tests on OpenSSL 1.0.2
 ......................................................................
 
-phase2_tcp_server: fix Coverity issue "Dereference after null check"
+Fix ssl unit tests on OpenSSL 1.0.2
 
-As Coverity says:
-Either the check against null is unnecessary, or there may be a null
-pointer dereference.
-In phase2_tcp_server: Pointer is checked against null but then
-dereferenced anyway
+OpenSSL 1.1.1 will initialise itself using clever linker magic. For
+OpenSSL 1.0.2 we need to manually initialise the library. For other
+unit tests just doing the OpenSSL_add_all_algorithms is enough but
+this unit test needs a more complete initialisation.
 
-There is only one caller (link_socket_init_phase2) and it already has
-an ASSERT(sig_info). So use that here was well.
-
-v2:
- - fix cleanly by actually asserting that sig_info is defined
-
-Change-Id: I8ef199463d46303129a3f563fd9eace780a58b8a
-Signed-off-by: Frank Lichtenheld <frank@...2641...>
+Change-Id: I378081f391ad755d0a6fd5613de5c2a8bacc389a
 ---
-M src/openvpn/socket.c
-1 file changed, 3 insertions(+), 2 deletions(-)
+M tests/unit_tests/openvpn/test_ssl.c
+1 file changed, 2 insertions(+), 2 deletions(-)
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/90/490/2
 
-diff --git a/src/openvpn/socket.c b/src/openvpn/socket.c
-index 480f4e5..387cb40 100644
---- a/src/openvpn/socket.c
-+++ b/src/openvpn/socket.c
-@@ -2005,7 +2005,8 @@
- phase2_tcp_server(struct link_socket *sock, const char *remote_dynamic,
-                   struct signal_info *sig_info)
- {
--    volatile int *signal_received =3D sig_info ? &sig_info->signal_receive=
-d : NULL;
-+    ASSERT(sig_info);
-+    volatile int *signal_received =3D &sig_info->signal_received;
-     switch (sock->mode)
-     {
-         case LS_MODE_DEFAULT:
-@@ -2031,7 +2032,7 @@
-                                         false);
-             if (!socket_defined(sock->sd))
-             {
--                register_signal(sig_info, SIGTERM, "socket-undefiled");
-+                register_signal(sig_info, SIGTERM, "socket-undefined");
-                 return;
-             }
-             tcp_connection_established(&sock->info.lsa->actual);
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/03/503/1
+
+diff --git a/tests/unit_tests/openvpn/test_ssl.c b/tests/unit_tests/openvpn=
+/test_ssl.c
+index fd2049f..d0c3df7 100644
+--- a/tests/unit_tests/openvpn/test_ssl.c
++++ b/tests/unit_tests/openvpn/test_ssl.c
+@@ -127,13 +127,13 @@
+     };
+
+ #if defined(ENABLE_CRYPTO_OPENSSL)
+-    OpenSSL_add_all_algorithms();
++    tls_init_lib();
+ #endif
+
+     int ret =3D cmocka_run_group_tests_name("crypto tests", tests, NULL, N=
+ULL);
+
+ #if defined(ENABLE_CRYPTO_OPENSSL)
+-    EVP_cleanup();
++    tls_free_lib();
+ #endif
+
+     return ret;
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/490?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/503?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings
 
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: I8ef199463d46303129a3f563fd9eace780a58b8a
-Gerrit-Change-Number: 490
-Gerrit-PatchSet: 2
-Gerrit-Owner: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: cron2 <gert@...1296...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
+Gerrit-Change-Id: I378081f391ad755d0a6fd5613de5c2a8bacc389a
+Gerrit-Change-Number: 503
+Gerrit-PatchSet: 1
+Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
+Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: cron2 <gert@...1296...>
-Gerrit-MessageType: newpatchset
+Gerrit-Attention: flichtenheld <frank@...2641...>
+Gerrit-MessageType: newchange
 
---k3ICaOHH5AI=
+--qAo/KWW2dWI=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p> Attention is currently required from: cron2, plaisthos. </p>
-<p>flichtenheld <strong>uploaded patch set #2</strong> to this change.</p><=
-p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/490?usp=3Demail">View Ch=
-ange</a></p><p>The following approvals got outdated and were removed:
-Code-Review-1 by cron2</p><pre style=3D"font-family: monospace,monospace; w=
-hite-space: pre-wrap;">phase2_tcp_server: fix Coverity issue &quot;Derefere=
-nce after null check&quot;<br><br>As Coverity says:<br>Either the check aga=
-inst null is unnecessary, or there may be a null<br>pointer dereference.<br=
->In phase2_tcp_server: Pointer is checked against null but then<br>derefere=
-nced anyway<br><br>There is only one caller (link_socket_init_phase2) and i=
-t already has<br>an ASSERT(sig_info). So use that here was well.<br><br>v2:=
-<br> - fix cleanly by actually asserting that sig_info is defined<br><br>Ch=
-ange-Id: I8ef199463d46303129a3f563fd9eace780a58b8a<br>Signed-off-by: Frank =
-Lichtenheld &lt;frank@...2641...&gt;<br>---<br>M src/openvpn/socket.c<br>1 =
-file changed, 3 insertions(+), 2 deletions(-)<br><br></pre><pre style=3D"fo=
-nt-family: monospace,monospace; white-space: pre-wrap;">git pull ssh://gerr=
-it.openvpn.net:29418/openvpn refs/changes/90/490/2</pre><pre style=3D"font-=
-family: monospace,monospace; white-space: pre-wrap;"><span>diff --git a/src=
-/openvpn/socket.c b/src/openvpn/socket.c</span><br><span>index 480f4e5..387=
-cb40 100644</span><br><span>--- a/src/openvpn/socket.c</span><br><span>+++ =
-b/src/openvpn/socket.c</span><br><span>@@ -2005,7 +2005,8 @@</span><br><spa=
-n> phase2_tcp_server(struct link_socket *sock, const char *remote_dynamic,<=
-/span><br><span>                   struct signal_info *sig_info)</span><br>=
-<span> {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    volatile =
-int *signal_received =3D sig_info ? &amp;sig_info-&gt;signal_received : NUL=
-L;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    ASSERT(sig_in=
-fo);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    volatile in=
-t *signal_received =3D &amp;sig_info-&gt;signal_received;</span><br><span> =
-    switch (sock-&gt;mode)</span><br><span>     {</span><br><span>         =
-case LS_MODE_DEFAULT:</span><br><span>@@ -2031,7 +2032,7 @@</span><br><span=
->                                         false);</span><br><span>         =
-    if (!socket_defined(sock-&gt;sd))</span><br><span>             {</span>=
-<br><span style=3D"color: hsl(0, 100%, 40%);">-                register_sig=
-nal(sig_info, SIGTERM, &quot;socket-undefiled&quot;);</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+                register_signal(sig_info,=
- SIGTERM, &quot;socket-undefined&quot;);</span><br><span>                 r=
-eturn;</span><br><span>             }</span><br><span>             tcp_conn=
-ection_established(&amp;sock-&gt;info.lsa-&gt;actual);</span><br><span></sp=
-an><br></pre><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openv=
-pn/+/490?usp=3Demail">change 490</a>. To unsubscribe, or for help writing m=
-ail filters, visit <a href=3D"http://gerrit.openvpn.net/settings">settings<=
-/a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div ite=
-mscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link =
-itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/490?usp=3Dem=
-ail"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
+<p> Attention is currently required from: flichtenheld. </p>
+<p>plaisthos would like flichtenheld to <strong>review</strong> this change.
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/503?usp=3Demail">Vi=
+ew Change</a></p><pre style=3D"font-family: monospace,monospace; white-spac=
+e: pre-wrap;">Fix ssl unit tests on OpenSSL 1.0.2<br><br>OpenSSL 1.1.1 will=
+ initialise itself using clever linker magic. For<br>OpenSSL 1.0.2 we need =
+to manually initialise the library. For other<br>unit tests just doing the =
+OpenSSL_add_all_algorithms is enough but<br>this unit test needs a more com=
+plete initialisation.<br><br>Change-Id: I378081f391ad755d0a6fd5613de5c2a8ba=
+cc389a<br>---<br>M tests/unit_tests/openvpn/test_ssl.c<br>1 file changed, 2=
+ insertions(+), 2 deletions(-)<br><br></pre><pre style=3D"font-family: mono=
+space,monospace; white-space: pre-wrap;">git pull ssh://gerrit.openvpn.net:=
+29418/openvpn refs/changes/03/503/1</pre><pre style=3D"font-family: monospa=
+ce,monospace; white-space: pre-wrap;"><span>diff --git a/tests/unit_tests/o=
+penvpn/test_ssl.c b/tests/unit_tests/openvpn/test_ssl.c</span><br><span>ind=
+ex fd2049f..d0c3df7 100644</span><br><span>--- a/tests/unit_tests/openvpn/t=
+est_ssl.c</span><br><span>+++ b/tests/unit_tests/openvpn/test_ssl.c</span><=
+br><span>@@ -127,13 +127,13 @@</span><br><span>     };</span><br><span> </s=
+pan><br><span> #if defined(ENABLE_CRYPTO_OPENSSL)</span><br><span style=3D"=
+color: hsl(0, 100%, 40%);">-    OpenSSL_add_all_algorithms();</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+    tls_init_lib();</span><br><sp=
+an> #endif</span><br><span> </span><br><span>     int ret =3D cmocka_run_gr=
+oup_tests_name(&quot;crypto tests&quot;, tests, NULL, NULL);</span><br><spa=
+n> </span><br><span> #if defined(ENABLE_CRYPTO_OPENSSL)</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-    EVP_cleanup();</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    tls_free_lib();</span><br><span> #end=
+if</span><br><span> </span><br><span>     return ret;</span><br><span></spa=
+n><br></pre><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvp=
+n/+/503?usp=3Demail">change 503</a>. To unsubscribe, or for help writing ma=
+il filters, visit <a href=3D"http://gerrit.openvpn.net/settings">settings</=
+a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div item=
+scope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link i=
+temprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/503?usp=3Dema=
+il"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I8ef199463d46303129a3f563fd9=
-eace780a58b8a </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 490 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
-<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
-.&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
- </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I378081f391ad755d0a6fd5613de=
+5c2a8bacc389a </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 503 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
+<div style=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@...1711...=
+27...&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
+1...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: cron2 &lt;gert@...1296...&gt=
-; </div>
-<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
+<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
+41...&gt; </div>
+<div style=3D"display:none"> Gerrit-MessageType: newchange </div>
 
 
---k3ICaOHH5AI=--
+--qAo/KWW2dWI=--
 
