@@ -1,16 +1,10 @@
-From: "plaisthos (Code Review)" <gerrit@...515...>
-Date: Thu, 25 Jan 2024 10:32:47 +0000
-In-Reply-To: <gerrit.1702310034000.I11e0091482d9acee89ca018374cb8d96d22f8514@...2715...>
-References: <gerrit.1702310034000.I11e0091482d9acee89ca018374cb8d96d22f8514@...2715...>
-Reply-To: arne-openvpn@...1227..., openvpn-devel@lists.sourceforge.net,
- frank@...2641...
-Message-ID: <6b023b33f621b8c240e3d9552a38cb484c2d1605-EmailReviewComments-HTML@...2715...>
+From: Frank Lichtenheld <frank@...2641...>
+Date: Thu, 25 Jan 2024 12:00:36 +0100
+Message-Id: <20240125110036.16070-1-frank@...2641...>
+In-Reply-To: <gerrit.1702310034000.I67d461afbcc9c06b1fc5ab4477141d7b8bd9ba8e@...2715...>
+References: <gerrit.1702310034000.I67d461afbcc9c06b1fc5ab4477141d7b8bd9ba8e@...2715...>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="y2Uy1czXbGk="; charset=UTF-8
-Subject: [Openvpn-devel] [XS] Change in openvpn[master]: forked-test-driver:
- Show test output always
+Subject: [Openvpn-devel] [PATCH v6] tests: fork default automake test-driver
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,81 +13,218 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: flichtenheld <frank@...2641...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
+Cc: Arne Schwabe <arne-openvpn@...1227...>
 
---y2Uy1czXbGk=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+For some of the test we don't like the default log behavior
+and there seems no easy way to change that except to fork
+the driver. The license seems unproblematic since we're
+GPL anyway.
 
-Attention is currently required from: flichtenheld.
+v2:
+ - Do not use forked-test-driver for UTs. Default behavior
+   is fine for those.
 
-plaisthos has posted comments on this change. ( http://gerrit.openvpn.net/c=
-/openvpn/+/479?usp=3Demail )
+Change-Id: I67d461afbcc9c06b1fc5ab4477141d7b8bd9ba8e
+Signed-off-by: Frank Lichtenheld <frank@...2641...>
+Acked-by: Arne Schwabe <arne-openvpn@...1227...>
+---
 
-Change subject: forked-test-driver: Show test output always
-......................................................................
+This change was reviewed on Gerrit and approved by at least one
+developer. I request to merge it to master.
 
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/478
+This mail reflects revision 6 of this Change.
 
-Patch Set 7: Code-Review+2
+Acked-by according to Gerrit (reflected above):
+Arne Schwabe <arne-openvpn@...1227...>
 
-
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/479?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings
-
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: I11e0091482d9acee89ca018374cb8d96d22f8514
-Gerrit-Change-Number: 479
-Gerrit-PatchSet: 7
-Gerrit-Owner: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Comment-Date: Thu, 25 Jan 2024 10:32:47 +0000
-Gerrit-HasComments: No
-Gerrit-Has-Labels: Yes
-Gerrit-MessageType: comment
-
---y2Uy1czXbGk=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<p> Attention is currently required from: flichtenheld. </p>
-<p>Patch set 7:<span style=3D"border-radius: 3px; display: inline-block; ma=
-rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/479?usp=3Demail">Vi=
-ew Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To vie=
-w, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/479?usp=3Demail">=
-change 479</a>. To unsubscribe, or for help writing mail filters, visit <a =
-href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope=
- itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"act=
-ion" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=
-=3D"http://gerrit.openvpn.net/c/openvpn/+/479?usp=3Demail"/><meta itemprop=
-=3D"name" content=3D"View Change"/></div></div>
-
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I11e0091482d9acee89ca018374c=
-b8d96d22f8514 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 479 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 7 </div>
-<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
-.&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
-41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Thu, 25 Jan 2024 10:32:47=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: No </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
-
-
---y2Uy1czXbGk=--
+        
+diff --git a/Makefile.am b/Makefile.am
+index 792588a..d93bd1b 100644
+--- a/Makefile.am
++++ b/Makefile.am
+@@ -45,7 +45,8 @@
+ 	ltrc.inc \
+ 	CMakeLists.txt \
+ 	CMakePresets.json \
+-	config.h.cmake.in
++	config.h.cmake.in \
++	forked-test-driver
+ 
+ .PHONY: config-version.h doxygen
+ 
+diff --git a/forked-test-driver b/forked-test-driver
+new file mode 100755
+index 0000000..be73b80
+--- /dev/null
++++ b/forked-test-driver
+@@ -0,0 +1,153 @@
++#! /bin/sh
++# test-driver - basic testsuite driver script.
++
++scriptversion=2018-03-07.03; # UTC
++
++# Copyright (C) 2011-2021 Free Software Foundation, Inc.
++#
++# This program is free software; you can redistribute it and/or modify
++# it under the terms of the GNU General Public License as published by
++# the Free Software Foundation; either version 2, or (at your option)
++# any later version.
++#
++# This program is distributed in the hope that it will be useful,
++# but WITHOUT ANY WARRANTY; without even the implied warranty of
++# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++# GNU General Public License for more details.
++#
++# You should have received a copy of the GNU General Public License
++# along with this program.  If not, see <https://www.gnu.org/licenses/>.
++
++# As a special exception to the GNU General Public License, if you
++# distribute this file as part of a program that contains a
++# configuration script generated by Autoconf, you may include it under
++# the same distribution terms that you use for the rest of that program.
++
++# This file is maintained in Automake, please report
++# bugs to <bug-automake@...1269...> or send patches to
++# <automake-patches@...1269...>.
++
++# Make unconditional expansion of undefined variables an error.  This
++# helps a lot in preventing typo-related bugs.
++set -u
++
++usage_error ()
++{
++  echo "$0: $*" >&2
++  print_usage >&2
++  exit 2
++}
++
++print_usage ()
++{
++  cat <<END
++Usage:
++  test-driver --test-name NAME --log-file PATH --trs-file PATH
++              [--expect-failure {yes|no}] [--color-tests {yes|no}]
++              [--enable-hard-errors {yes|no}] [--]
++              TEST-SCRIPT [TEST-SCRIPT-ARGUMENTS]
++
++The '--test-name', '--log-file' and '--trs-file' options are mandatory.
++See the GNU Automake documentation for information.
++END
++}
++
++test_name= # Used for reporting.
++log_file=  # Where to save the output of the test script.
++trs_file=  # Where to save the metadata of the test run.
++expect_failure=no
++color_tests=no
++enable_hard_errors=yes
++while test $# -gt 0; do
++  case $1 in
++  --help) print_usage; exit $?;;
++  --version) echo "test-driver $scriptversion"; exit $?;;
++  --test-name) test_name=$2; shift;;
++  --log-file) log_file=$2; shift;;
++  --trs-file) trs_file=$2; shift;;
++  --color-tests) color_tests=$2; shift;;
++  --expect-failure) expect_failure=$2; shift;;
++  --enable-hard-errors) enable_hard_errors=$2; shift;;
++  --) shift; break;;
++  -*) usage_error "invalid option: '$1'";;
++   *) break;;
++  esac
++  shift
++done
++
++missing_opts=
++test x"$test_name" = x && missing_opts="$missing_opts --test-name"
++test x"$log_file"  = x && missing_opts="$missing_opts --log-file"
++test x"$trs_file"  = x && missing_opts="$missing_opts --trs-file"
++if test x"$missing_opts" != x; then
++  usage_error "the following mandatory options are missing:$missing_opts"
++fi
++
++if test $# -eq 0; then
++  usage_error "missing argument"
++fi
++
++if test $color_tests = yes; then
++  # Keep this in sync with 'lib/am/check.am:$(am__tty_colors)'.
++  red='[0;31m' # Red.
++  grn='[0;32m' # Green.
++  lgn='[1;32m' # Light green.
++  blu='[1;34m' # Blue.
++  mgn='[0;35m' # Magenta.
++  std='[m'     # No color.
++else
++  red= grn= lgn= blu= mgn= std=
++fi
++
++do_exit='rm -f $log_file $trs_file; (exit $st); exit $st'
++trap "st=129; $do_exit" 1
++trap "st=130; $do_exit" 2
++trap "st=141; $do_exit" 13
++trap "st=143; $do_exit" 15
++
++# Test script is run here. We create the file first, then append to it,
++# to ameliorate tests themselves also writing to the log file. Our tests
++# don't, but others can (automake bug#35762).
++: >"$log_file"
++"$@" >>"$log_file" 2>&1
++estatus=$?
++
++if test $enable_hard_errors = no && test $estatus -eq 99; then
++  tweaked_estatus=1
++else
++  tweaked_estatus=$estatus
++fi
++
++case $tweaked_estatus:$expect_failure in
++  0:yes) col=$red res=XPASS recheck=yes gcopy=yes;;
++  0:*)   col=$grn res=PASS  recheck=no  gcopy=no;;
++  77:*)  col=$blu res=SKIP  recheck=no  gcopy=yes;;
++  99:*)  col=$mgn res=ERROR recheck=yes gcopy=yes;;
++  *:yes) col=$lgn res=XFAIL recheck=no  gcopy=yes;;
++  *:*)   col=$red res=FAIL  recheck=yes gcopy=yes;;
++esac
++
++# Report the test outcome and exit status in the logs, so that one can
++# know whether the test passed or failed simply by looking at the '.log'
++# file, without the need of also peaking into the corresponding '.trs'
++# file (automake bug#11814).
++echo "$res $test_name (exit status: $estatus)" >>"$log_file"
++
++# Report outcome to console.
++echo "${col}${res}${std}: $test_name"
++
++# Register the test result, and other relevant metadata.
++echo ":test-result: $res" > $trs_file
++echo ":global-test-result: $res" >> $trs_file
++echo ":recheck: $recheck" >> $trs_file
++echo ":copy-in-global-log: $gcopy" >> $trs_file
++
++# Local Variables:
++# mode: shell-script
++# sh-indentation: 2
++# eval: (add-hook 'before-save-hook 'time-stamp)
++# time-stamp-start: "scriptversion="
++# time-stamp-format: "%:y-%02m-%02d.%02H"
++# time-stamp-time-zone: "UTC0"
++# time-stamp-end: "; # UTC"
++# End:
+diff --git a/tests/Makefile.am b/tests/Makefile.am
+index 6c71067..b3b2d74 100644
+--- a/tests/Makefile.am
++++ b/tests/Makefile.am
+@@ -15,6 +15,7 @@
+ SUBDIRS = unit_tests
+ 
+ AM_TESTSUITE_SUMMARY_HEADER = ' for $(PACKAGE_STRING) System Tests'
++LOG_DRIVER = $(SHELL) $(top_srcdir)/forked-test-driver
+ 
+ if !WIN32
+ test_scripts = t_client.sh t_lpback.sh t_cltsrv.sh
 
