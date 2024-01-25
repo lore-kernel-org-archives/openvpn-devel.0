@@ -1,9 +1,16 @@
-From: Kristof Provost <kprovost@...2661...>
-Date: Wed, 24 Jan 2024 16:27:39 +0100
-Message-ID: <20240124152739.28248-1-kprovost@...2661...>
+From: "plaisthos (Code Review)" <gerrit@...515...>
+Date: Thu, 25 Jan 2024 10:30:52 +0000
+In-Reply-To: <gerrit.1702052980000.I8b5570f6314e917f92dce072279efe415d79b22a@...2715...>
+References: <gerrit.1702052980000.I8b5570f6314e917f92dce072279efe415d79b22a@...2715...>
+Reply-To: arne-openvpn@...1227..., openvpn-devel@lists.sourceforge.net,
+ frank@...2641...
+Message-ID: <5d4de4da996b74a63302f71c0290e90ad3994331-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] dco-freebsd: dynamically re-allocate buffer
- if it's too small
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="Xu2YA+9/SmM="; charset=UTF-8
+Subject: [Openvpn-devel] [M] Change in openvpn[master]: test_user_pass: add
+ basic tests for static/dynamic challenges
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,66 +19,97 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: flichtenheld <frank@...2641...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-From: Kristof Provost <kp@...1376...>
+--Xu2YA+9/SmM=
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-It's possible for the buffer we provude for OVPN_GET_PEER_STATS to be
-too small. Handle the error, re-allocate a larger buffer and try again
-rather than failing.
+Attention is currently required from: flichtenheld.
 
-Signed-off-by: Kristof Provost <kprovost@...2661...>
----
- src/openvpn/dco_freebsd.c | 16 ++++++++++++++--
- 1 file changed, 14 insertions(+), 2 deletions(-)
+plaisthos has posted comments on this change. ( http://gerrit.openvpn.net/c=
+/openvpn/+/475?usp=3Demail )
 
-diff --git a/src/openvpn/dco_freebsd.c b/src/openvpn/dco_freebsd.c
-index 3ba1c817..577c65f8 100644
---- a/src/openvpn/dco_freebsd.c
-+++ b/src/openvpn/dco_freebsd.c
-@@ -698,7 +698,8 @@ dco_get_peer_stats_multi(dco_context_t *dco, struct multi_context *m)
- {
- 
-     struct ifdrv drv;
--    uint8_t buf[4096];
-+    uint8_t *buf = NULL;
-+    size_t buf_size = 4096;
-     nvlist_t *nvl;
-     const nvlist_t *const *nvpeers;
-     size_t npeers;
-@@ -712,17 +713,28 @@ dco_get_peer_stats_multi(dco_context_t *dco, struct multi_context *m)
-     CLEAR(drv);
-     snprintf(drv.ifd_name, IFNAMSIZ, "%s", dco->ifname);
-     drv.ifd_cmd = OVPN_GET_PEER_STATS;
--    drv.ifd_len = sizeof(buf);
-+
-+retry:
-+    buf = realloc(buf, buf_size);
-+    drv.ifd_len = buf_size;
-     drv.ifd_data = buf;
- 
-     ret = ioctl(dco->fd, SIOCGDRVSPEC, &drv);
-+    if (ret && errno == ENOSPC)
-+    {
-+        buf_size *= 2;
-+        goto retry;
-+    }
-+
-     if (ret)
-     {
-+        free(buf);
-         msg(M_WARN | M_ERRNO, "Failed to get peer stats");
-         return -EINVAL;
-     }
- 
-     nvl = nvlist_unpack(buf, drv.ifd_len, 0);
-+    free(buf);
-     if (!nvl)
-     {
-         msg(M_WARN, "Failed to unpack nvlist");
--- 
-2.43.0
+Change subject: test_user_pass: add basic tests for static/dynamic challeng=
+es
+......................................................................
 
+
+Patch Set 7: Code-Review+2
+
+(1 comment)
+
+Patchset:
+
+PS7:
+Still essentially same patch. Centos7 build failure is unrelated to this pa=
+tch.
+
+
+
+--
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/475?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings
+
+Gerrit-Project: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: I8b5570f6314e917f92dce072279efe415d79b22a
+Gerrit-Change-Number: 475
+Gerrit-PatchSet: 7
+Gerrit-Owner: flichtenheld <frank@...2641...>
+Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-Attention: flichtenheld <frank@...2641...>
+Gerrit-Comment-Date: Thu, 25 Jan 2024 10:30:52 +0000
+Gerrit-HasComments: Yes
+Gerrit-Has-Labels: Yes
+Gerrit-MessageType: comment
+
+--Xu2YA+9/SmM=
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<p> Attention is currently required from: flichtenheld. </p>
+<p>Patch set 7:<span style=3D"border-radius: 3px; display: inline-block; ma=
+rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/475?usp=3Demail">Vi=
+ew Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0=
+;"><li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-s=
+tyle: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p s=
+tyle=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn=
+/+/475?tab=3Dcomments">Patch Set #7:</a> </p><p style=3D"white-space: pre-w=
+rap; word-wrap: break-word;">Still essentially same patch. Centos7 build fa=
+ilure is unrelated to this patch.</p></li></ul></li></ul><p>To view, visit =
+<a href=3D"http://gerrit.openvpn.net/c/openvpn/+/475?usp=3Demail">change 47=
+5</a>. To unsubscribe, or for help writing mail filters, visit <a href=3D"h=
+ttp://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope itemtype=
+=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"action" item=
+type=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http:/=
+/gerrit.openvpn.net/c/openvpn/+/475?usp=3Demail"/><meta itemprop=3D"name" c=
+ontent=3D"View Change"/></div></div>
+
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I8b5570f6314e917f92dce072279=
+efe415d79b22a </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 475 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 7 </div>
+<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
+.&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
+.1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
+41...&gt; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Thu, 25 Jan 2024 10:30:52=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
+
+
+--Xu2YA+9/SmM=--
 
