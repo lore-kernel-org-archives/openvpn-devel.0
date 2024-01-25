@@ -1,15 +1,15 @@
 From: "plaisthos (Code Review)" <gerrit@...515...>
-Date: Thu, 25 Jan 2024 12:38:19 +0000
-References: <gerrit.1706186293000.I01e258e97351b5aa4b9e561f5b35ddc2318569e2@...2715...>
+Date: Thu, 25 Jan 2024 12:38:17 +0000
+References: <gerrit.1706186293000.I00821d75342daf3f813b829812d648fe298bea81@...2715...>
 Reply-To: arne-openvpn@...1227..., openvpn-devel@lists.sourceforge.net,
  frank@...2641...
-Message-ID: <def1d1e58b22fe5c305eef8e1d776bc30c61d5ba-HTML@...2715...>
+Message-ID: <7b5f4c01bb8b841ba64349804e2d44ecd34178ec-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="C/lK9r8oQBw="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="0tzd33YRv7o="; charset=UTF-8
 Subject: [Openvpn-devel] [M] Change in openvpn[master]: Implement support
- for larger packet counter sizes
+ for AEAD tag at the end
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -21,7 +21,7 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: flichtenheld <frank@...2641...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---C/lK9r8oQBw=
+--0tzd33YRv7o=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
@@ -32,369 +32,270 @@ Hello flichtenheld,
 I'd like you to do a code review.
 Please visit
 
-    http://gerrit.openvpn.net/c/openvpn/+/507?usp=3Demail
+    http://gerrit.openvpn.net/c/openvpn/+/506?usp=3Demail
 
 to review the following change.
 
 
-Change subject: Implement support for larger packet counter sizes
+Change subject: Implement support for AEAD tag at the end
 ......................................................................
 
-Implement support for larger packet counter sizes
+Implement support for AEAD tag at the end
 
-With DCO and possible future hardware assisted OpenVPN acceleration we
-are approaching the point where 32 bit IVs are not cutting it any more.
-
-To illustrate the problem, some back of the envelope math here:
-
-If we want to keep the current 3600s renegotiation interval and have
-a safety margin of 25% (when we trigger renegotiation) we have about
-3.2 million packets (2*32 * 0.7) to work with. That translates to
-about 835k packets per second.
-
-With 1300 Byte packets that translates into 8-9 Gbit/s. That is far
-from unrealistic any more. Current DCO implementations are already in
-spitting distance to that or might even reach (for a single client
-connection) that if you have extremely fast
-single core performance CPU.
-
-This introduces the 64bit packet counters for AEAD data channel
-ciphers in TLS mode ciphers. No effort has been made to support
-larger packet counters in any scenario since the other scenarios
-are all legacy.
-
-While we still keep the old --secret logic around we use the same
-weird unix timestamp + packet counter format to avoid refactoring the
-code now and again when we remove --secret code but DCO
-implementations are free to use just a single 64 bit counter. One
-other small downside of this approach is that when rollover happens
-and we get reordering all the older packets are thrown away since
-the distance between the packet before and after the rollover is
-quite large as we probably jump forward more than 1s (or more than
-2^32 packet ids) forward. But this is an obscure edge that we can
-(currently) live with.
-
-Change-Id: I01e258e97351b5aa4b9e561f5b35ddc2318569e2
+Change-Id: I00821d75342daf3f813b829812d648fe298bea81
 ---
 M src/openvpn/crypto.c
 M src/openvpn/crypto.h
 M src/openvpn/init.c
-M src/openvpn/multi.c
 M src/openvpn/options.c
 M src/openvpn/push.c
-M src/openvpn/ssl.c
-M src/openvpn/ssl_common.h
-M src/openvpn/ssl_ncp.c
+M src/openvpn/ssl.h
 M tests/unit_tests/openvpn/test_ssl.c
-10 files changed, 105 insertions(+), 20 deletions(-)
+7 files changed, 85 insertions(+), 26 deletions(-)
 
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/07/507/1
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/06/506/1
 
 diff --git a/src/openvpn/crypto.c b/src/openvpn/crypto.c
-index 9988ebe..81b33fe 100644
+index 2fca131..9988ebe 100644
 --- a/src/openvpn/crypto.c
 +++ b/src/openvpn/crypto.c
-@@ -68,6 +68,7 @@
-     const struct key_ctx *ctx =3D &opt->key_ctx_bi.encrypt;
-     uint8_t *mac_out =3D NULL;
-     const int mac_len =3D OPENVPN_AEAD_TAG_LENGTH;
-+    bool longiv =3D opt->flags & CO_64_BIT_PKT_ID;
+@@ -104,14 +104,10 @@
+         ASSERT(cipher_ctx_reset(ctx->cipher, iv));
+     }
 
-     /* IV, packet-ID and implicit IV required for this mode. */
-     ASSERT(ctx->cipher);
-@@ -86,7 +87,7 @@
-         buf_set_write(&iv_buffer, iv, iv_len);
+-    /* Reserve space for authentication tag */
+-    mac_out =3D buf_write_alloc(&work, mac_len);
+-    ASSERT(mac_out);
+-
+     dmsg(D_PACKET_CONTENT, "ENCRYPT FROM: %s", format_hex(BPTR(buf), BLEN(=
+buf), 80, &gc));
 
-         /* IV starts with packet id to make the IV unique for packet */
--        if (!packet_id_write(&opt->packet_id.send, &iv_buffer, false, fals=
-e))
-+        if (!packet_id_write(&opt->packet_id.send, &iv_buffer, longiv, fal=
-se))
-         {
-             msg(D_CRYPT_ERRORS, "ENCRYPT ERROR: packet ID roll over");
-             goto err;
-@@ -384,6 +385,8 @@
-     /* IV and Packet ID required for this mode */
-     ASSERT(packet_id_initialized(&opt->packet_id));
+     /* Buffer overflow check */
+-    if (!buf_safe(&work, buf->len + cipher_ctx_block_size(ctx->cipher)))
++    if (!buf_safe(&work, buf->len + mac_len + cipher_ctx_block_size(ctx->c=
+ipher)))
+     {
+         msg(D_CRYPT_ERRORS,
+             "ENCRYPT: buffer size error, bc=3D%d bo=3D%d bl=3D%d wc=3D%d w=
+o=3D%d wl=3D%d",
+@@ -121,9 +117,16 @@
+     }
 
-+    bool longiv =3D opt->flags & CO_64_BIT_PKT_ID;
+     /* For AEAD ciphers, authenticate Additional Data, including opcode */
+-    ASSERT(cipher_ctx_update_ad(ctx->cipher, BPTR(&work), BLEN(&work) - ma=
+c_len));
++    ASSERT(cipher_ctx_update_ad(ctx->cipher, BPTR(&work), BLEN(&work)));
+     dmsg(D_PACKET_CONTENT, "ENCRYPT AD: %s",
+-         format_hex(BPTR(&work), BLEN(&work) - mac_len, 0, &gc));
++         format_hex(BPTR(&work), BLEN(&work), 0, &gc));
 +
-     /* Combine IV from explicit part from packet and implicit part from co=
-ntext */
++    if (!(opt->flags & CO_AEAD_TAG_AT_THE_END))
++    {
++        /* Reserve space for authentication tag */
++        mac_out =3D buf_write_alloc(&work, mac_len);
++        ASSERT(mac_out);
++    }
+
+     /* Encrypt packet ID, payload */
+     ASSERT(cipher_ctx_update(ctx->cipher, BEND(&work), &outlen, BPTR(buf),=
+ BLEN(buf)));
+@@ -133,6 +136,14 @@
+     ASSERT(cipher_ctx_final(ctx->cipher, BEND(&work), &outlen));
+     ASSERT(buf_inc_len(&work, outlen));
+
++    /* if the tag is at end the end, allocate it now */
++    if (opt->flags & CO_AEAD_TAG_AT_THE_END)
++    {
++        /* Reserve space for authentication tag */
++        mac_out =3D buf_write_alloc(&work, mac_len);
++        ASSERT(mac_out);
++    }
++
+     /* Write authentication tag */
+     ASSERT(cipher_ctx_get_tag(ctx->cipher, mac_out, mac_len));
+=20
+@@ -353,7 +364,6 @@
+     static const char error_prefix[] =3D "AEAD Decrypt error";
+     struct packet_id_net pin =3D { 0 };
+     const struct key_ctx *ctx =3D &opt->key_ctx_bi.decrypt;
+-    uint8_t *tag_ptr =3D NULL;
+     int outlen;
+     struct gc_arena gc;
+
+@@ -406,19 +416,29 @@
+
+     /* keep the tag value to feed in later */
+     const int tag_size =3D OPENVPN_AEAD_TAG_LENGTH;
+-    if (buf->len < tag_size)
++    if (buf->len < tag_size + 1)
      {
-         uint8_t iv[OPENVPN_MAX_IV_LENGTH] =3D { 0 };
-@@ -409,7 +412,7 @@
+-        CRYPT_ERROR("missing tag");
++        CRYPT_ERROR("missing tag or no payload");
+     }
+-    tag_ptr =3D BPTR(buf);
+-    ASSERT(buf_advance(buf, tag_size));
++
++    const int ad_size =3D BPTR(buf) - ad_start;
++
++    uint8_t *tag_ptr =3D NULL;
++    int data_len =3D 0;
++
++    if (opt->flags & CO_AEAD_TAG_AT_THE_END)
++    {
++        data_len =3D BLEN(buf) - tag_size;
++        tag_ptr =3D BPTR(buf) + data_len;
++    }
++    else
++    {
++        tag_ptr =3D BPTR(buf);
++        ASSERT(buf_advance(buf, tag_size));
++        data_len =3D BLEN(buf);
++    }
++
+     dmsg(D_PACKET_CONTENT, "DECRYPT MAC: %s", format_hex(tag_ptr, tag_size=
+, 0, &gc));
+-
+-    if (buf->len < 1)
+-    {
+-        CRYPT_ERROR("missing payload");
+-    }
+-
+     dmsg(D_PACKET_CONTENT, "DECRYPT FROM: %s", format_hex(BPTR(buf), BLEN(=
+buf), 0, &gc));
+
+     /* Buffer overflow check (should never fail) */
+@@ -427,20 +447,19 @@
+         CRYPT_ERROR("potential buffer overflow");
      }
 
-     /* Read packet ID from packet */
--    if (!packet_id_read(&pin, buf, false))
-+    if (!packet_id_read(&pin, buf, longiv))
+-    {
+-        /* feed in tag and the authenticated data */
+-        const int ad_size =3D BPTR(buf) - ad_start - tag_size;
+-        ASSERT(cipher_ctx_update_ad(ctx->cipher, ad_start, ad_size));
+-        dmsg(D_PACKET_CONTENT, "DECRYPT AD: %s",
+-             format_hex(BPTR(buf) - ad_size - tag_size, ad_size, 0, &gc));
+-    }
++
++    /* feed in tag and the authenticated data */
++    ASSERT(cipher_ctx_update_ad(ctx->cipher, ad_start, ad_size));
++    dmsg(D_PACKET_CONTENT, "DECRYPT AD: %s",
++         format_hex(ad_start, ad_size, 0, &gc));
+
+     /* Decrypt and authenticate packet */
+     if (!cipher_ctx_update(ctx->cipher, BPTR(&work), &outlen, BPTR(buf),
+-                           BLEN(buf)))
++                           data_len))
      {
-         CRYPT_ERROR("error reading packet-id");
+         CRYPT_ERROR("cipher update failed");
      }
++
+     ASSERT(buf_inc_len(&work, outlen));
+     if (!cipher_ctx_final_check_tag(ctx->cipher, BPTR(&work) + outlen,
+                                     &outlen, tag_ptr, tag_size))
 diff --git a/src/openvpn/crypto.h b/src/openvpn/crypto.h
-index 95a5b31..0ef13e0 100644
+index 4201524..95a5b31 100644
 --- a/src/openvpn/crypto.h
 +++ b/src/openvpn/crypto.h
-@@ -283,6 +283,11 @@
-     /**< Bit-flag indicating that the AEAD tag is at the end of the
-      *   packet.
+@@ -279,6 +279,10 @@
+     /**< Bit-flag indicating that renegotiations are using tls-crypt
+      *   with a TLS-EKM derived key.
       */
-+#define CO_64_BIT_PKT_ID  (1<<9)
-+    /**< Bit-flag indicating that we should use a 64 bit (8 byte) packet
-+     * counter instead of the 32 bit that we normally use.
++#define CO_AEAD_TAG_AT_THE_END  (1<<8)
++    /**< Bit-flag indicating that the AEAD tag is at the end of the
++     *   packet.
 +     */
-+
 
      unsigned int flags;         /**< Bit-flags determining behavior of
                                   *   security operation functions. */
 diff --git a/src/openvpn/init.c b/src/openvpn/init.c
-index cd37b36..7db8d06 100644
+index c5cc154..cd37b36 100644
 --- a/src/openvpn/init.c
 +++ b/src/openvpn/init.c
-@@ -2327,6 +2327,10 @@
+@@ -2323,6 +2323,10 @@
          {
-             buf_printf(&out, " aead-tag-end");
+             buf_printf(&out, " dyn-tls-crypt");
          }
-+        if (o->imported_protocol_flags & CO_64_BIT_PKT_ID)
++        if (o->imported_protocol_flags & CO_AEAD_TAG_AT_THE_END)
 +        {
-+            buf_printf(&out, " pkt-id-64-bit");
++            buf_printf(&out, " aead-tag-end");
 +        }
      }
 
      if (buf_len(&out) > strlen(header))
-@@ -3297,6 +3301,16 @@
-         to.push_peer_info_detail =3D 1;
-     }
-
-+    /* Check if the DCO drivers support the new 64bit packet counter and
-+     * AEAD tag at the end */
-+    if (dco_enabled(options))
-+    {
-+        to.data_v3_features_supported =3D false;
-+    }
-+    else
-+    {
-+        to.data_v3_features_supported =3D true;
-+    }
-
-     /* should we not xmit any packets until we get an initial
-      * response from client? */
-diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
-index 4344126..a80b9f4 100644
---- a/src/openvpn/multi.c
-+++ b/src/openvpn/multi.c
-@@ -1851,6 +1851,13 @@
-         o->imported_protocol_flags |=3D CO_USE_CC_EXIT_NOTIFY;
-     }
-
-+    if (tls_multi->session[TM_ACTIVE].opt->data_v3_features_supported
-+        && (proto & IV_PROTO_DATA_V3))
-+    {
-+        o->imported_protocol_flags |=3D CO_AEAD_TAG_AT_THE_END;
-+        o->imported_protocol_flags |=3D CO_64_BIT_PKT_ID;
-+    }
-+
-     /* Select cipher if client supports Negotiable Crypto Parameters */
-
-     /* if we have already created our key, we cannot *change* our own
 diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index 39f00c0..3f8fccf 100644
+index 2c79a1e..39f00c0 100644
 --- a/src/openvpn/options.c
 +++ b/src/openvpn/options.c
-@@ -8690,6 +8690,10 @@
-             {
-                 options->imported_protocol_flags |=3D CO_AEAD_TAG_AT_THE_E=
-ND;
+@@ -8686,6 +8686,10 @@
+                 options->imported_protocol_flags |=3D CO_USE_DYNAMIC_TLS_C=
+RYPT;
              }
-+            else if (streq(p[j], "pkt-id-64-bit"))
+ #endif
++            else if (streq(p[j], "aead-tag-end"))
 +            {
-+                options->imported_protocol_flags |=3D CO_64_BIT_PKT_ID;
++                options->imported_protocol_flags |=3D CO_AEAD_TAG_AT_THE_E=
+ND;
 +            }
              else
              {
                  msg(msglevel, "Unknown protocol-flags flag: %s", p[j]);
 diff --git a/src/openvpn/push.c b/src/openvpn/push.c
-index e4c122c..5766c97 100644
+index 2249434..e4c122c 100644
 --- a/src/openvpn/push.c
 +++ b/src/openvpn/push.c
-@@ -691,6 +691,10 @@
-     {
-         buf_printf(&proto_flags, " aead-tag-end");
-     }
-+    if (o->imported_protocol_flags & CO_64_BIT_PKT_ID)
-+    {
-+        buf_printf(&proto_flags, " pkt-id-64-bit");
-+    }
+@@ -29,6 +29,7 @@
 
+ #include "push.h"
+ #include "options.h"
++#include "crypto.h"
+ #include "ssl.h"
+ #include "ssl_verify.h"
+ #include "ssl_ncp.h"
+@@ -686,6 +687,11 @@
+         buf_printf(&proto_flags, " dyn-tls-crypt");
+     }
+
++    if (o->imported_protocol_flags & CO_AEAD_TAG_AT_THE_END)
++    {
++        buf_printf(&proto_flags, " aead-tag-end");
++    }
++
      if (buf_len(&proto_flags) > 0)
      {
-diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
-index 33c8670..6579ff9 100644
---- a/src/openvpn/ssl.c
-+++ b/src/openvpn/ssl.c
-@@ -105,9 +105,11 @@
-  * @param ctx                   Encrypt/decrypt key context
-  * @param key                   HMAC key, used to calculate implicit IV
-  * @param key_len               HMAC key length
-+ * @param long_pkt_id           64-bit packet counters are used
-  */
- static void
--key_ctx_update_implicit_iv(struct key_ctx *ctx, uint8_t *key, size_t key_l=
-en);
-+key_ctx_update_implicit_iv(struct key_ctx *ctx, uint8_t *key, size_t key_l=
-en,
-+                           bool long_pkt_id);
+         push_option_fmt(gc, push_list, M_USAGE, "protocol-flags%s", buf_st=
+r(&proto_flags));
+diff --git a/src/openvpn/ssl.h b/src/openvpn/ssl.h
+index 71b99db..a1c67a2 100644
+--- a/src/openvpn/ssl.h
++++ b/src/openvpn/ssl.h
+@@ -107,6 +107,9 @@
+ /** Support to dynamic tls-crypt (renegotiation with TLS-EKM derived tls-c=
+rypt key) */
+ #define IV_PROTO_DYN_TLS_CRYPT   (1<<9)
 
-
- /**
-@@ -1369,13 +1371,15 @@
-     }
-     else
-     {
-+        bool longiv =3D ks->crypto_options.flags & CO_64_BIT_PKT_ID;
-         init_key_ctx_bi(key, key2, key_direction, key_type, "Data Channel"=
-);
-         /* Initialize implicit IVs */
--        key_ctx_update_implicit_iv(&key->encrypt, key2->keys[(int)server].=
-hmac,
--                                   MAX_HMAC_KEY_LENGTH);
-+        key_ctx_update_implicit_iv(&key->encrypt,
-+                                   key2->keys[(int)server].hmac,
-+                                   MAX_HMAC_KEY_LENGTH, longiv);
-         key_ctx_update_implicit_iv(&key->decrypt,
-                                    key2->keys[1 - (int)server].hmac,
--                                   MAX_HMAC_KEY_LENGTH);
-+                                   MAX_HMAC_KEY_LENGTH, longiv);
-     }
- }
-
-@@ -1513,14 +1517,15 @@
- }
-
- static void
--key_ctx_update_implicit_iv(struct key_ctx *ctx, uint8_t *key, size_t key_l=
-en)
-+key_ctx_update_implicit_iv(struct key_ctx *ctx, uint8_t *key,
-+                           size_t key_len, bool longiv)
- {
-     /* Only use implicit IV in AEAD cipher mode, where HMAC key is not use=
-d */
-     if (cipher_ctx_mode_aead(ctx->cipher))
-     {
-         size_t impl_iv_len =3D 0;
-         ASSERT(cipher_ctx_iv_length(ctx->cipher) >=3D OPENVPN_AEAD_MIN_IV_=
-LEN);
--        impl_iv_len =3D cipher_ctx_iv_length(ctx->cipher) - sizeof(packet_=
-id_type);
-+        impl_iv_len =3D cipher_ctx_iv_length(ctx->cipher) - packet_id_size=
-(longiv);
-         ASSERT(impl_iv_len <=3D OPENVPN_MAX_IV_LENGTH);
-         ASSERT(impl_iv_len <=3D key_len);
-         memcpy(ctx->implicit_iv, key, impl_iv_len);
-@@ -1935,6 +1940,12 @@
-         iv_proto |=3D IV_PROTO_DYN_TLS_CRYPT;
- #endif
-
-+        /* support for AEAD tag at the end and 8 byte IV */
-+        if (session->opt->data_v3_features_supported)
-+        {
-+            iv_proto |=3D IV_PROTO_DATA_V3;
-+        }
++/** Suport for the AEAD tag at the end a larger peer id and IV */
++#define IV_PROTO_DATA_V3        (1<<10)
 +
-         buf_printf(&out, "IV_PROTO=3D%d\n", iv_proto);
+ /* Default field in X509 to be username */
+ #define X509_USERNAME_FIELD_DEFAULT "CN"
 
-         if (session->opt->push_peer_info_detail > 1)
-diff --git a/src/openvpn/ssl_common.h b/src/openvpn/ssl_common.h
-index f085e0d..53bf763 100644
---- a/src/openvpn/ssl_common.h
-+++ b/src/openvpn/ssl_common.h
-@@ -311,7 +311,6 @@
-
-     /* from command line */
-     bool single_session;
--    bool disable_occ;
-     int mode;
-     bool pull;
-     /**
-@@ -361,6 +360,8 @@
-     const char *config_ciphername;
-     const char *config_ncp_ciphers;
-=20
-+    bool data_v3_features_supported; /**< dco supports new data channel fe=
-atures */
-+
-     bool tls_crypt_v2;
-     const char *tls_crypt_v2_verify_script;
-
-@@ -490,8 +491,6 @@
-      */
-     int key_id;
-
--    int limit_next;             /* used for traffic shaping on the control=
- channel */
--
-     int verify_maxlevel;
-
-     char *common_name;
-diff --git a/src/openvpn/ssl_ncp.c b/src/openvpn/ssl_ncp.c
-index 0ca6d42..0b4ad8a 100644
---- a/src/openvpn/ssl_ncp.c
-+++ b/src/openvpn/ssl_ncp.c
-@@ -430,6 +430,12 @@
-         session->opt->crypto_flags |=3D CO_USE_CC_EXIT_NOTIFY;
-     }
-
-+    if (session->opt->data_v3_features_supported && (iv_proto_peer & IV_PR=
-OTO_DATA_V3))
-+    {
-+        session->opt->crypto_flags |=3D CO_AEAD_TAG_AT_THE_END;
-+        session->opt->crypto_flags |=3D CO_64_BIT_PKT_ID;
-+    }
-+
- #if defined(HAVE_EXPORT_KEYING_MATERIAL)
-     if (iv_proto_peer & IV_PROTO_TLS_KEY_EXPORT)
-     {
 diff --git a/tests/unit_tests/openvpn/test_ssl.c b/tests/unit_tests/openvpn=
 /test_ssl.c
-index 0ded052..125d24b 100644
+index 8c1fb5b..0ded052 100644
 --- a/tests/unit_tests/openvpn/test_ssl.c
 +++ b/tests/unit_tests/openvpn/test_ssl.c
-@@ -128,9 +128,12 @@
- {
-     cipher_ctx_t *cipher =3D co->key_ctx_bi.encrypt.cipher;
-
-+
-     if (cipher_ctx_mode_aead(cipher))
-     {
--        size_t impl_iv_len =3D cipher_ctx_iv_length(cipher) - sizeof(packe=
-t_id_type);
-+        bool longiv =3D co->flags & CO_64_BIT_PKT_ID;
-+
-+        size_t impl_iv_len =3D cipher_ctx_iv_length(cipher) - packet_id_si=
-ze(longiv);
-         ASSERT(cipher_ctx_iv_length(cipher) <=3D OPENVPN_MAX_IV_LENGTH);
-         ASSERT(cipher_ctx_iv_length(cipher) >=3D OPENVPN_AEAD_MIN_IV_LEN);
-
-@@ -142,6 +145,11 @@
-         memcpy(co->key_ctx_bi.decrypt.implicit_iv,
-                co->key_ctx_bi.encrypt.implicit_iv, OPENVPN_MAX_IV_LENGTH);
-         co->key_ctx_bi.decrypt.implicit_iv_len =3D impl_iv_len;
-+
-+        if (longiv)
-+        {
-+            co->flags |=3D CO_64_BIT_PKT_ID;
-+        }
-     }
+@@ -266,6 +266,19 @@
  }
 
-@@ -280,6 +288,25 @@
- }
 
- static void
-+run_data_channel_with_cipher_end_and_long_pkt_counter(const char *cipher)
++/* This adds a few more methods that strictly necessary but this allows
++ * us to see which exact test was run from the backtrace of the test
++ * when it fails */
++
++static void
++run_data_channel_with_cipher_end(const char *cipher)
 +{
 +    struct crypto_options co =3D init_crypto_options(cipher, "none");
 +    co.flags |=3D CO_AEAD_TAG_AT_THE_END;
@@ -402,77 +303,54 @@ ze(longiv);
 +    uninit_crypto_options(&co);
 +}
 +
-+static void
-+run_data_channel_with_long_pkt_counter(const char *cipher)
-+{
-+    struct crypto_options co =3D init_crypto_options(cipher, "none");
-+    co.flags |=3D CO_64_BIT_PKT_ID;
-+    do_data_channel_round_trip(&co);
-+    uninit_crypto_options(&co);
-+}
-+
-+
-+static void
+ static void
  run_data_channel_with_cipher(const char *cipher, const char *auth)
  {
-     struct crypto_options co =3D init_crypto_options(cipher, auth);
-@@ -289,24 +316,30 @@
+@@ -274,21 +287,25 @@
+     uninit_crypto_options(&co);
+ }
 
-
- static void
-+run_aead_channel_tests(const char *cipher)
-+{
-+    run_data_channel_with_cipher_end(cipher);
-+    run_data_channel_with_cipher(cipher, "none");
-+    run_data_channel_with_cipher_end_and_long_pkt_counter(cipher);
-+    run_data_channel_with_long_pkt_counter(cipher);
-+}
 +
-+static void
+ static void
  test_data_channel_roundtrip_aes_128_gcm(void **state)
  {
--    run_data_channel_with_cipher_end("AES-128-GCM");
--    run_data_channel_with_cipher("AES-128-GCM", "none");
-+    run_aead_channel_tests("AES-128-GCM");
++    run_data_channel_with_cipher_end("AES-128-GCM");
+     run_data_channel_with_cipher("AES-128-GCM", "none");
  }
 
  static void
  test_data_channel_roundtrip_aes_192_gcm(void **state)
  {
--    run_data_channel_with_cipher_end("AES-192-GCM");
--    run_data_channel_with_cipher("AES-192-GCM", "none");
-+    run_aead_channel_tests("AES-192-GCM");
++    run_data_channel_with_cipher_end("AES-192-GCM");
+     run_data_channel_with_cipher("AES-192-GCM", "none");
  }
 
  static void
  test_data_channel_roundtrip_aes_256_gcm(void **state)
  {
--    run_data_channel_with_cipher_end("AES-256-GCM");
--    run_data_channel_with_cipher("AES-256-GCM", "none");
-+    run_aead_channel_tests("AES-256-GCM");
++    run_data_channel_with_cipher_end("AES-256-GCM");
+     run_data_channel_with_cipher("AES-256-GCM", "none");
  }
 
- static void
-@@ -336,8 +369,7 @@
+@@ -318,6 +335,8 @@
+         skip();
          return;
      }
-
--    run_data_channel_with_cipher_end("ChaCha20-Poly1305");
--    run_data_channel_with_cipher("ChaCha20-Poly1305", "none");
-+    run_aead_channel_tests("ChaCha20-Poly1305");
++
++    run_data_channel_with_cipher_end("ChaCha20-Poly1305");
+     run_data_channel_with_cipher("ChaCha20-Poly1305", "none");
  }
 
- static void
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/507?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/506?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings
 
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: I01e258e97351b5aa4b9e561f5b35ddc2318569e2
-Gerrit-Change-Number: 507
+Gerrit-Change-Id: I00821d75342daf3f813b829812d648fe298bea81
+Gerrit-Change-Number: 506
 Gerrit-PatchSet: 1
 Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
@@ -480,356 +358,273 @@ Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: flichtenheld <frank@...2641...>
 Gerrit-MessageType: newchange
 
---C/lK9r8oQBw=
+--0tzd33YRv7o=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <p> Attention is currently required from: flichtenheld. </p>
 <p>plaisthos would like flichtenheld to <strong>review</strong> this change.
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/507?usp=3Demail">Vi=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/506?usp=3Demail">Vi=
 ew Change</a></p><pre style=3D"font-family: monospace,monospace; white-spac=
-e: pre-wrap;">Implement support for larger packet counter sizes<br><br>With=
- DCO and possible future hardware assisted OpenVPN acceleration we<br>are a=
-pproaching the point where 32 bit IVs are not cutting it any more.<br><br>T=
-o illustrate the problem, some back of the envelope math here:<br><br>If we=
- want to keep the current 3600s renegotiation interval and have<br>a safety=
- margin of 25% (when we trigger renegotiation) we have about<br>3.2 million=
- packets (2*32 * 0.7) to work with. That translates to<br>about 835k packet=
-s per second.<br><br>With 1300 Byte packets that translates into 8-9 Gbit/s=
-. That is far<br>from unrealistic any more. Current DCO implementations are=
- already in<br>spitting distance to that or might even reach (for a single =
-client<br>connection) that if you have extremely fast<br>single core perfor=
-mance CPU.<br><br>This introduces the 64bit packet counters for AEAD data c=
-hannel<br>ciphers in TLS mode ciphers. No effort has been made to support<b=
-r>larger packet counters in any scenario since the other scenarios<br>are a=
-ll legacy.<br><br>While we still keep the old --secret logic around we use =
-the same<br>weird unix timestamp + packet counter format to avoid refactori=
-ng the<br>code now and again when we remove --secret code but DCO<br>implem=
-entations are free to use just a single 64 bit counter. One<br>other small =
-downside of this approach is that when rollover happens<br>and we get reord=
-ering all the older packets are thrown away since<br>the distance between t=
-he packet before and after the rollover is<br>quite large as we probably ju=
-mp forward more than 1s (or more than<br>2^32 packet ids) forward. But this=
- is an obscure edge that we can<br>(currently) live with.<br><br>Change-Id:=
- I01e258e97351b5aa4b9e561f5b35ddc2318569e2<br>---<br>M src/openvpn/crypto.c=
-<br>M src/openvpn/crypto.h<br>M src/openvpn/init.c<br>M src/openvpn/multi.c=
-<br>M src/openvpn/options.c<br>M src/openvpn/push.c<br>M src/openvpn/ssl.c<=
-br>M src/openvpn/ssl_common.h<br>M src/openvpn/ssl_ncp.c<br>M tests/unit_te=
-sts/openvpn/test_ssl.c<br>10 files changed, 105 insertions(+), 20 deletions=
-(-)<br><br></pre><pre style=3D"font-family: monospace,monospace; white-spac=
-e: pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/=
-07/507/1</pre><pre style=3D"font-family: monospace,monospace; white-space: =
-pre-wrap;"><span>diff --git a/src/openvpn/crypto.c b/src/openvpn/crypto.c</=
-span><br><span>index 9988ebe..81b33fe 100644</span><br><span>--- a/src/open=
-vpn/crypto.c</span><br><span>+++ b/src/openvpn/crypto.c</span><br><span>@@ =
--68,6 +68,7 @@</span><br><span>     const struct key_ctx *ctx =3D &amp;opt-=
-&gt;key_ctx_bi.encrypt;</span><br><span>     uint8_t *mac_out =3D NULL;</sp=
-an><br><span>     const int mac_len =3D OPENVPN_AEAD_TAG_LENGTH;</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+    bool longiv =3D opt-&gt;fl=
-ags &amp; CO_64_BIT_PKT_ID;</span><br><span> </span><br><span>     /* IV, p=
-acket-ID and implicit IV required for this mode. */</span><br><span>     AS=
-SERT(ctx-&gt;cipher);</span><br><span>@@ -86,7 +87,7 @@</span><br><span>   =
-      buf_set_write(&amp;iv_buffer, iv, iv_len);</span><br><span> </span><b=
-r><span>         /* IV starts with packet id to make the IV unique for pack=
-et */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        if (!pac=
-ket_id_write(&amp;opt-&gt;packet_id.send, &amp;iv_buffer, false, false))</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+        if (!packet_id=
-_write(&amp;opt-&gt;packet_id.send, &amp;iv_buffer, longiv, false))</span><=
-br><span>         {</span><br><span>             msg(D_CRYPT_ERRORS, &quot;=
-ENCRYPT ERROR: packet ID roll over&quot;);</span><br><span>             got=
-o err;</span><br><span>@@ -384,6 +385,8 @@</span><br><span>     /* IV and P=
-acket ID required for this mode */</span><br><span>     ASSERT(packet_id_in=
-itialized(&amp;opt-&gt;packet_id));</span><br><span> </span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    bool longiv =3D opt-&gt;flags &amp; C=
-O_64_BIT_PKT_ID;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</s=
-pan><br><span>     /* Combine IV from explicit part from packet and implici=
-t part from context */</span><br><span>     {</span><br><span>         uint=
-8_t iv[OPENVPN_MAX_IV_LENGTH] =3D { 0 };</span><br><span>@@ -409,7 +412,7 @=
-@</span><br><span>     }</span><br><span> </span><br><span>     /* Read pac=
-ket ID from packet */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
-    if (!packet_id_read(&amp;pin, buf, false))</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+    if (!packet_id_read(&amp;pin, buf, longiv))<=
-/span><br><span>     {</span><br><span>         CRYPT_ERROR(&quot;error rea=
-ding packet-id&quot;);</span><br><span>     }</span><br><span>diff --git a/=
-src/openvpn/crypto.h b/src/openvpn/crypto.h</span><br><span>index 95a5b31..=
-0ef13e0 100644</span><br><span>--- a/src/openvpn/crypto.h</span><br><span>+=
-++ b/src/openvpn/crypto.h</span><br><span>@@ -283,6 +283,11 @@</span><br><s=
-pan>     /**&lt; Bit-flag indicating that the AEAD tag is at the end of the=
-</span><br><span>      *   packet.</span><br><span>      */</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+#define CO_64_BIT_PKT_ID  (1&lt;&lt=
-;9)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    /**&lt; Bit-=
-flag indicating that we should use a 64 bit (8 byte) packet</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+     * counter instead of the 32 bi=
-t that we normally use.</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+     */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><=
-br><span> </span><br><span>     unsigned int flags;         /**&lt; Bit-fla=
-gs determining behavior of</span><br><span>                                =
-  *   security operation functions. */</span><br><span>diff --git a/src/ope=
-nvpn/init.c b/src/openvpn/init.c</span><br><span>index cd37b36..7db8d06 100=
-644</span><br><span>--- a/src/openvpn/init.c</span><br><span>+++ b/src/open=
-vpn/init.c</span><br><span>@@ -2327,6 +2327,10 @@</span><br><span>         =
-{</span><br><span>             buf_printf(&amp;out, &quot; aead-tag-end&quo=
-t;);</span><br><span>         }</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+        if (o-&gt;imported_protocol_flags &amp; CO_64_BIT_PKT_I=
-D)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        {</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+            buf_printf(&amp=
-;out, &quot; pkt-id-64-bit&quot;);</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+        }</span><br><span>     }</span><br><span> </span><br=
-><span>     if (buf_len(&amp;out) &gt; strlen(header))</span><br><span>@@ -=
-3297,6 +3301,16 @@</span><br><span>         to.push_peer_info_detail =3D 1;=
-</span><br><span>     }</span><br><span> </span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+    /* Check if the DCO drivers support the new 64bit=
- packet counter and</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-     * AEAD tag at the end */</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+    if (dco_enabled(options))</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+        to.data_v3_features_supported =3D false;</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+    else</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-    to.data_v3_features_supported =3D true;</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+    }</span><br><span> </span><br><span>     /* sho=
-uld we not xmit any packets until we get an initial</span><br><span>      *=
- response from client? */</span><br><span>diff --git a/src/openvpn/multi.c =
-b/src/openvpn/multi.c</span><br><span>index 4344126..a80b9f4 100644</span><=
-br><span>--- a/src/openvpn/multi.c</span><br><span>+++ b/src/openvpn/multi.=
-c</span><br><span>@@ -1851,6 +1851,13 @@</span><br><span>         o-&gt;imp=
-orted_protocol_flags |=3D CO_USE_CC_EXIT_NOTIFY;</span><br><span>     }</sp=
-an><br><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+    i=
-f (tls_multi-&gt;session[TM_ACTIVE].opt-&gt;data_v3_features_supported</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+        &amp;&amp; (prot=
-o &amp; IV_PROTO_DATA_V3))</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
- o-&gt;imported_protocol_flags |=3D CO_AEAD_TAG_AT_THE_END;</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+        o-&gt;imported_protocol_fla=
-gs |=3D CO_64_BIT_PKT_ID;</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><=
-br><span>     /* Select cipher if client supports Negotiable Crypto Paramet=
-ers */</span><br><span> </span><br><span>     /* if we have already created=
- our key, we cannot *change* our own</span><br><span>diff --git a/src/openv=
-pn/options.c b/src/openvpn/options.c</span><br><span>index 39f00c0..3f8fccf=
- 100644</span><br><span>--- a/src/openvpn/options.c</span><br><span>+++ b/s=
-rc/openvpn/options.c</span><br><span>@@ -8690,6 +8690,10 @@</span><br><span=
->             {</span><br><span>                 options-&gt;imported_proto=
-col_flags |=3D CO_AEAD_TAG_AT_THE_END;</span><br><span>             }</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+            else if (stre=
-q(p[j], &quot;pkt-id-64-bit&quot;))</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+            {</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+                options-&gt;imported_protocol_flags |=3D CO_64_BI=
-T_PKT_ID;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+          =
-  }</span><br><span>             else</span><br><span>             {</span>=
-<br><span>                 msg(msglevel, &quot;Unknown protocol-flags flag:=
- %s&quot;, p[j]);</span><br><span>diff --git a/src/openvpn/push.c b/src/ope=
-nvpn/push.c</span><br><span>index e4c122c..5766c97 100644</span><br><span>-=
--- a/src/openvpn/push.c</span><br><span>+++ b/src/openvpn/push.c</span><br>=
-<span>@@ -691,6 +691,10 @@</span><br><span>     {</span><br><span>         =
-buf_printf(&amp;proto_flags, &quot; aead-tag-end&quot;);</span><br><span>  =
-   }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (o-&gt;i=
-mported_protocol_flags &amp; CO_64_BIT_PKT_ID)</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+        buf_printf(&amp;proto_flags, &quot; pkt-id-64-bit&quot=
-;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br>=
-<span> </span><br><span>     if (buf_len(&amp;proto_flags) &gt; 0)</span><b=
-r><span>     {</span><br><span>diff --git a/src/openvpn/ssl.c b/src/openvpn=
-/ssl.c</span><br><span>index 33c8670..6579ff9 100644</span><br><span>--- a/=
-src/openvpn/ssl.c</span><br><span>+++ b/src/openvpn/ssl.c</span><br><span>@=
-@ -105,9 +105,11 @@</span><br><span>  * @param ctx                   Encryp=
-t/decrypt key context</span><br><span>  * @param key                   HMAC=
- key, used to calculate implicit IV</span><br><span>  * @param key_len     =
-          HMAC key length</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+ * @param long_pkt_id           64-bit packet counters are used</span=
-><br><span>  */</span><br><span> static void</span><br><span style=3D"color=
-: hsl(0, 100%, 40%);">-key_ctx_update_implicit_iv(struct key_ctx *ctx, uint=
-8_t *key, size_t key_len);</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+key_ctx_update_implicit_iv(struct key_ctx *ctx, uint8_t *key, size_t=
- key_len,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+          =
-                 bool long_pkt_id);</span><br><span> </span><br><span> </sp=
-an><br><span> /**</span><br><span>@@ -1369,13 +1371,15 @@</span><br><span> =
-    }</span><br><span>     else</span><br><span>     {</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+        bool longiv =3D ks-&gt;crypto_op=
-tions.flags &amp; CO_64_BIT_PKT_ID;</span><br><span>         init_key_ctx_b=
-i(key, key2, key_direction, key_type, &quot;Data Channel&quot;);</span><br>=
-<span>         /* Initialize implicit IVs */</span><br><span style=3D"color=
-: hsl(0, 100%, 40%);">-        key_ctx_update_implicit_iv(&amp;key-&gt;encr=
-ypt, key2-&gt;keys[(int)server].hmac,</span><br><span style=3D"color: hsl(0=
-, 100%, 40%);">-                                   MAX_HMAC_KEY_LENGTH);</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+        key_ctx_update=
-_implicit_iv(&amp;key-&gt;encrypt,</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+                                   key2-&gt;keys[(int)server=
-].hmac,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            =
-                       MAX_HMAC_KEY_LENGTH, longiv);</span><br><span>      =
-   key_ctx_update_implicit_iv(&amp;key-&gt;decrypt,</span><br><span>       =
-                             key2-&gt;keys[1 - (int)server].hmac,</span><br=
-><span style=3D"color: hsl(0, 100%, 40%);">-                               =
-    MAX_HMAC_KEY_LENGTH);</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+                                   MAX_HMAC_KEY_LENGTH, longiv);</spa=
-n><br><span>     }</span><br><span> }</span><br><span> </span><br><span>@@ =
--1513,14 +1517,15 @@</span><br><span> }</span><br><span> </span><br><span> =
-static void</span><br><span style=3D"color: hsl(0, 100%, 40%);">-key_ctx_up=
-date_implicit_iv(struct key_ctx *ctx, uint8_t *key, size_t key_len)</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+key_ctx_update_implicit_iv(=
-struct key_ctx *ctx, uint8_t *key,</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+                           size_t key_len, bool longiv)</spa=
-n><br><span> {</span><br><span>     /* Only use implicit IV in AEAD cipher =
-mode, where HMAC key is not used */</span><br><span>     if (cipher_ctx_mod=
-e_aead(ctx-&gt;cipher))</span><br><span>     {</span><br><span>         siz=
-e_t impl_iv_len =3D 0;</span><br><span>         ASSERT(cipher_ctx_iv_length=
-(ctx-&gt;cipher) &gt;=3D OPENVPN_AEAD_MIN_IV_LEN);</span><br><span style=3D=
-"color: hsl(0, 100%, 40%);">-        impl_iv_len =3D cipher_ctx_iv_length(c=
-tx-&gt;cipher) - sizeof(packet_id_type);</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+        impl_iv_len =3D cipher_ctx_iv_length(ctx-&gt;c=
-ipher) - packet_id_size(longiv);</span><br><span>         ASSERT(impl_iv_le=
-n &lt;=3D OPENVPN_MAX_IV_LENGTH);</span><br><span>         ASSERT(impl_iv_l=
-en &lt;=3D key_len);</span><br><span>         memcpy(ctx-&gt;implicit_iv, k=
-ey, impl_iv_len);</span><br><span>@@ -1935,6 +1940,12 @@</span><br><span>  =
-       iv_proto |=3D IV_PROTO_DYN_TLS_CRYPT;</span><br><span> #endif</span>=
-<br><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+        =
-/* support for AEAD tag at the end and 8 byte IV */</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+        if (session-&gt;opt-&gt;data_v3_f=
-eatures_supported)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-       {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+           =
- iv_proto |=3D IV_PROTO_DATA_V3;</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+        }</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+</span><br><span>         buf_printf(&amp;out, &quot;IV_PROTO=3D%d\n&quo=
-t;, iv_proto);</span><br><span> </span><br><span>         if (session-&gt;o=
-pt-&gt;push_peer_info_detail &gt; 1)</span><br><span>diff --git a/src/openv=
-pn/ssl_common.h b/src/openvpn/ssl_common.h</span><br><span>index f085e0d..5=
-3bf763 100644</span><br><span>--- a/src/openvpn/ssl_common.h</span><br><spa=
-n>+++ b/src/openvpn/ssl_common.h</span><br><span>@@ -311,7 +311,6 @@</span>=
-<br><span> </span><br><span>     /* from command line */</span><br><span>  =
-   bool single_session;</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
->-    bool disable_occ;</span><br><span>     int mode;</span><br><span>    =
- bool pull;</span><br><span>     /**</span><br><span>@@ -361,6 +360,8 @@</s=
-pan><br><span>     const char *config_ciphername;</span><br><span>     cons=
-t char *config_ncp_ciphers;</span><br><span> </span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+    bool data_v3_features_supported; /**&lt; dco =
-supports new data channel features */</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+</span><br><span>     bool tls_crypt_v2;</span><br><span>=
-     const char *tls_crypt_v2_verify_script;</span><br><span> </span><br><s=
-pan>@@ -490,8 +491,6 @@</span><br><span>      */</span><br><span>     int k=
-ey_id;</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);=
-">-    int limit_next;             /* used for traffic shaping on the contr=
-ol channel */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><=
-br><span>     int verify_maxlevel;</span><br><span> </span><br><span>     c=
-har *common_name;</span><br><span>diff --git a/src/openvpn/ssl_ncp.c b/src/=
-openvpn/ssl_ncp.c</span><br><span>index 0ca6d42..0b4ad8a 100644</span><br><=
-span>--- a/src/openvpn/ssl_ncp.c</span><br><span>+++ b/src/openvpn/ssl_ncp.=
-c</span><br><span>@@ -430,6 +430,12 @@</span><br><span>         session-&gt=
-;opt-&gt;crypto_flags |=3D CO_USE_CC_EXIT_NOTIFY;</span><br><span>     }</s=
-pan><br><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-if (session-&gt;opt-&gt;data_v3_features_supported &amp;&amp; (iv_proto_pee=
-r &amp; IV_PROTO_DATA_V3))</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
- session-&gt;opt-&gt;crypto_flags |=3D CO_AEAD_TAG_AT_THE_END;</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+        session-&gt;opt-&gt;cryp=
-to_flags |=3D CO_64_BIT_PKT_ID;</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</=
-span><br><span> #if defined(HAVE_EXPORT_KEYING_MATERIAL)</span><br><span>  =
-   if (iv_proto_peer &amp; IV_PROTO_TLS_KEY_EXPORT)</span><br><span>     {<=
-/span><br><span>diff --git a/tests/unit_tests/openvpn/test_ssl.c b/tests/un=
-it_tests/openvpn/test_ssl.c</span><br><span>index 0ded052..125d24b 100644</=
-span><br><span>--- a/tests/unit_tests/openvpn/test_ssl.c</span><br><span>++=
-+ b/tests/unit_tests/openvpn/test_ssl.c</span><br><span>@@ -128,9 +128,12 @=
-@</span><br><span> {</span><br><span>     cipher_ctx_t *cipher =3D co-&gt;k=
-ey_ctx_bi.encrypt.cipher;</span><br><span> </span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+</span><br><span>     if (cipher_ctx_mode_aead(ciph=
-er))</span><br><span>     {</span><br><span style=3D"color: hsl(0, 100%, 40=
-%);">-        size_t impl_iv_len =3D cipher_ctx_iv_length(cipher) - sizeof(=
-packet_id_type);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
-     bool longiv =3D co-&gt;flags &amp; CO_64_BIT_PKT_ID;</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+        size_t impl_iv_len =3D cipher_ctx_iv_length(ciph=
-er) - packet_id_size(longiv);</span><br><span>         ASSERT(cipher_ctx_iv=
-_length(cipher) &lt;=3D OPENVPN_MAX_IV_LENGTH);</span><br><span>         AS=
-SERT(cipher_ctx_iv_length(cipher) &gt;=3D OPENVPN_AEAD_MIN_IV_LEN);</span><=
-br><span> </span><br><span>@@ -142,6 +145,11 @@</span><br><span>         me=
-mcpy(co-&gt;key_ctx_bi.decrypt.implicit_iv,</span><br><span>               =
- co-&gt;key_ctx_bi.encrypt.implicit_iv, OPENVPN_MAX_IV_LENGTH);</span><br><=
-span>         co-&gt;key_ctx_bi.decrypt.implicit_iv_len =3D impl_iv_len;</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+        if (longiv)</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+        {</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+            co-&gt;flags |=3D CO_64_BIT_PKT_ID;</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+        }</span><br><sp=
-an>     }</span><br><span> }</span><br><span> </span><br><span>@@ -280,6 +2=
-88,25 @@</span><br><span> }</span><br><span> </span><br><span> static void<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+run_data_channel_wit=
-h_cipher_end_and_long_pkt_counter(const char *cipher)</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+    struct crypto_options co =3D init_crypto_options(cipher=
-, &quot;none&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+    co.flags |=3D CO_AEAD_TAG_AT_THE_END;</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+    do_data_channel_round_trip(&amp;co);</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+    uninit_crypto_options(&amp;=
-co);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+static void</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+run_data_channel_with_long_pkt_counter(const char *cipher)</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+    struct crypto_options co =3D init_c=
-rypto_options(cipher, &quot;none&quot;);</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+    co.flags |=3D CO_64_BIT_PKT_ID;</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+    do_data_channel_round_trip(&amp;co=
-);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    uninit_crypto=
-_options(&amp;co);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+static void</span><br><span> run_data_channel_with_cipher=
-(const char *cipher, const char *auth)</span><br><span> {</span><br><span> =
-    struct crypto_options co =3D init_crypto_options(cipher, auth);</span><=
-br><span>@@ -289,24 +316,30 @@</span><br><span> </span><br><span> </span><b=
-r><span> static void</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+run_aead_channel_tests(const char *cipher)</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+    run_data_channel_with_cipher_end(cipher);</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    run_data_channel_with_cipher(cipher, =
-&quot;none&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-   run_data_channel_with_cipher_end_and_long_pkt_counter(cipher);</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+    run_data_channel_with_lon=
-g_pkt_counter(cipher);</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+static void</span><br><span> test_=
-data_channel_roundtrip_aes_128_gcm(void **state)</span><br><span> {</span><=
-br><span style=3D"color: hsl(0, 100%, 40%);">-    run_data_channel_with_cip=
-her_end(&quot;AES-128-GCM&quot;);</span><br><span style=3D"color: hsl(0, 10=
-0%, 40%);">-    run_data_channel_with_cipher(&quot;AES-128-GCM&quot;, &quot=
-;none&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    ru=
-n_aead_channel_tests(&quot;AES-128-GCM&quot;);</span><br><span> }</span><br=
-><span> </span><br><span> static void</span><br><span> test_data_channel_ro=
-undtrip_aes_192_gcm(void **state)</span><br><span> {</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-    run_data_channel_with_cipher_end(&quot;=
-AES-192-GCM&quot;);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
-  run_data_channel_with_cipher(&quot;AES-192-GCM&quot;, &quot;none&quot;);<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+    run_aead_channel=
-_tests(&quot;AES-192-GCM&quot;);</span><br><span> }</span><br><span> </span=
-><br><span> static void</span><br><span> test_data_channel_roundtrip_aes_25=
-6_gcm(void **state)</span><br><span> {</span><br><span style=3D"color: hsl(=
-0, 100%, 40%);">-    run_data_channel_with_cipher_end(&quot;AES-256-GCM&quo=
-t;);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    run_data_chan=
-nel_with_cipher(&quot;AES-256-GCM&quot;, &quot;none&quot;);</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+    run_aead_channel_tests(&quot;AE=
-S-256-GCM&quot;);</span><br><span> }</span><br><span> </span><br><span> sta=
-tic void</span><br><span>@@ -336,8 +369,7 @@</span><br><span>         retur=
-n;</span><br><span>     }</span><br><span> </span><br><span style=3D"color:=
- hsl(0, 100%, 40%);">-    run_data_channel_with_cipher_end(&quot;ChaCha20-P=
-oly1305&quot;);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    ru=
-n_data_channel_with_cipher(&quot;ChaCha20-Poly1305&quot;, &quot;none&quot;)=
-;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    run_aead_chann=
-el_tests(&quot;ChaCha20-Poly1305&quot;);</span><br><span> }</span><br><span=
-> </span><br><span> static void</span><br><span></span><br></pre><p>To view=
-, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/507?usp=3Demail">c=
-hange 507</a>. To unsubscribe, or for help writing mail filters, visit <a h=
-ref=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope =
-itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"acti=
-on" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=
-=3D"http://gerrit.openvpn.net/c/openvpn/+/507?usp=3Demail"/><meta itemprop=
-=3D"name" content=3D"View Change"/></div></div>
+e: pre-wrap;">Implement support for AEAD tag at the end<br><br>Change-Id: I=
+00821d75342daf3f813b829812d648fe298bea81<br>---<br>M src/openvpn/crypto.c<b=
+r>M src/openvpn/crypto.h<br>M src/openvpn/init.c<br>M src/openvpn/options.c=
+<br>M src/openvpn/push.c<br>M src/openvpn/ssl.h<br>M tests/unit_tests/openv=
+pn/test_ssl.c<br>7 files changed, 85 insertions(+), 26 deletions(-)<br><br>=
+</pre><pre style=3D"font-family: monospace,monospace; white-space: pre-wrap=
+;">git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/06/506/1</p=
+re><pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;">=
+<span>diff --git a/src/openvpn/crypto.c b/src/openvpn/crypto.c</span><br><s=
+pan>index 2fca131..9988ebe 100644</span><br><span>--- a/src/openvpn/crypto.=
+c</span><br><span>+++ b/src/openvpn/crypto.c</span><br><span>@@ -104,14 +10=
+4,10 @@</span><br><span>         ASSERT(cipher_ctx_reset(ctx-&gt;cipher, iv=
+));</span><br><span>     }</span><br><span> </span><br><span style=3D"color=
+: hsl(0, 100%, 40%);">-    /* Reserve space for authentication tag */</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-    mac_out =3D buf_write_a=
+lloc(&amp;work, mac_len);</span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">-    ASSERT(mac_out);</span><br><span style=3D"color: hsl(0, 100%, 40%);=
+">-</span><br><span>     dmsg(D_PACKET_CONTENT, &quot;ENCRYPT FROM: %s&quot=
+;, format_hex(BPTR(buf), BLEN(buf), 80, &amp;gc));</span><br><span> </span>=
+<br><span>     /* Buffer overflow check */</span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">-    if (!buf_safe(&amp;work, buf-&gt;len + cipher_ctx_=
+block_size(ctx-&gt;cipher)))</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+    if (!buf_safe(&amp;work, buf-&gt;len + mac_len + cipher_ctx_bl=
+ock_size(ctx-&gt;cipher)))</span><br><span>     {</span><br><span>         =
+msg(D_CRYPT_ERRORS,</span><br><span>             &quot;ENCRYPT: buffer size=
+ error, bc=3D%d bo=3D%d bl=3D%d wc=3D%d wo=3D%d wl=3D%d&quot;,</span><br><s=
+pan>@@ -121,9 +117,16 @@</span><br><span>     }</span><br><span> </span><br=
+><span>     /* For AEAD ciphers, authenticate Additional Data, including op=
+code */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    ASSERT(cip=
+her_ctx_update_ad(ctx-&gt;cipher, BPTR(&amp;work), BLEN(&amp;work) - mac_le=
+n));</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    ASSERT(ciph=
+er_ctx_update_ad(ctx-&gt;cipher, BPTR(&amp;work), BLEN(&amp;work)));</span>=
+<br><span>     dmsg(D_PACKET_CONTENT, &quot;ENCRYPT AD: %s&quot;,</span><br=
+><span style=3D"color: hsl(0, 100%, 40%);">-         format_hex(BPTR(&amp;w=
+ork), BLEN(&amp;work) - mac_len, 0, &amp;gc));</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+         format_hex(BPTR(&amp;work), BLEN(&amp;w=
+ork), 0, &amp;gc));</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (!(opt-&gt;f=
+lags &amp; CO_AEAD_TAG_AT_THE_END))</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+        /* Reserve space for authentication tag */</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+        mac_out =3D buf_write_alloc(&amp;=
+work, mac_len);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+    ASSERT(mac_out);</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++    }</span><br><span> </span><br><span>     /* Encrypt packet ID, payload=
+ */</span><br><span>     ASSERT(cipher_ctx_update(ctx-&gt;cipher, BEND(&amp=
+;work), &amp;outlen, BPTR(buf), BLEN(buf)));</span><br><span>@@ -133,6 +136=
+,14 @@</span><br><span>     ASSERT(cipher_ctx_final(ctx-&gt;cipher, BEND(&a=
+mp;work), &amp;outlen));</span><br><span>     ASSERT(buf_inc_len(&amp;work,=
+ outlen));</span><br><span> </span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+    /* if the tag is at end the end, allocate it now */</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+    if (opt-&gt;flags &amp; CO=
+_AEAD_TAG_AT_THE_END)</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        /* R=
+eserve space for authentication tag */</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+        mac_out =3D buf_write_alloc(&amp;work, mac_len);=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        ASSERT(mac_=
+out);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span>     /* Wri=
+te authentication tag */</span><br><span>     ASSERT(cipher_ctx_get_tag(ctx=
+-&gt;cipher, mac_out, mac_len));</span><br><span> </span><br><span>@@ -353,=
+7 +364,6 @@</span><br><span>     static const char error_prefix[] =3D &quot=
+;AEAD Decrypt error&quot;;</span><br><span>     struct packet_id_net pin =
+=3D { 0 };</span><br><span>     const struct key_ctx *ctx =3D &amp;opt-&gt;=
+key_ctx_bi.decrypt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
+  uint8_t *tag_ptr =3D NULL;</span><br><span>     int outlen;</span><br><sp=
+an>     struct gc_arena gc;</span><br><span> </span><br><span>@@ -406,19 +4=
+16,29 @@</span><br><span> </span><br><span>     /* keep the tag value to fe=
+ed in later */</span><br><span>     const int tag_size =3D OPENVPN_AEAD_TAG=
+_LENGTH;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    if (buf-&=
+gt;len &lt; tag_size)</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+    if (buf-&gt;len &lt; tag_size + 1)</span><br><span>     {</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-        CRYPT_ERROR(&quot;missing=
+ tag&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
+ CRYPT_ERROR(&quot;missing tag or no payload&quot;);</span><br><span>     }=
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    tag_ptr =3D BPTR(=
+buf);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    ASSERT(buf_a=
+dvance(buf, tag_size));</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    const int a=
+d_size =3D BPTR(buf) - ad_start;</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    ui=
+nt8_t *tag_ptr =3D NULL;</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+    int data_len =3D 0;</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (op=
+t-&gt;flags &amp; CO_AEAD_TAG_AT_THE_END)</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+        data_len =3D BLEN(buf) - tag_size;</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+        tag_ptr =3D BPTR(buf) + data_len;</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+    else</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+        tag_ptr =3D BPTR(buf);</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+        ASSERT(buf_advance(buf, tag_size));</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+        data_len =3D BLEN(=
+buf);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span>     dmsg(D=
+_PACKET_CONTENT, &quot;DECRYPT MAC: %s&quot;, format_hex(tag_ptr, tag_size,=
+ 0, &amp;gc));</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-    if (buf-&gt;len &lt; 1)<=
+/span><br><span style=3D"color: hsl(0, 100%, 40%);">-    {</span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">-        CRYPT_ERROR(&quot;missing payl=
+oad&quot;);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    }</spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span>     dmsg=
+(D_PACKET_CONTENT, &quot;DECRYPT FROM: %s&quot;, format_hex(BPTR(buf), BLEN=
+(buf), 0, &amp;gc));</span><br><span> </span><br><span>     /* Buffer overf=
+low check (should never fail) */</span><br><span>@@ -427,20 +447,19 @@</spa=
+n><br><span>         CRYPT_ERROR(&quot;potential buffer overflow&quot;);</s=
+pan><br><span>     }</span><br><span> </span><br><span style=3D"color: hsl(=
+0, 100%, 40%);">-    {</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
+-        /* feed in tag and the authenticated data */</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-        const int ad_size =3D BPTR(buf) - a=
+d_start - tag_size;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
+      ASSERT(cipher_ctx_update_ad(ctx-&gt;cipher, ad_start, ad_size));</spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-        dmsg(D_PACKET_CONT=
+ENT, &quot;DECRYPT AD: %s&quot;,</span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-             format_hex(BPTR(buf) - ad_size - tag_size, ad_size,=
+ 0, &amp;gc));</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    }</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+    /* feed in tag and the authenticated=
+ data */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    ASSERT(=
+cipher_ctx_update_ad(ctx-&gt;cipher, ad_start, ad_size));</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+    dmsg(D_PACKET_CONTENT, &quot;DECR=
+YPT AD: %s&quot;,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+       format_hex(ad_start, ad_size, 0, &amp;gc));</span><br><span> </span>=
+<br><span>     /* Decrypt and authenticate packet */</span><br><span>     i=
+f (!cipher_ctx_update(ctx-&gt;cipher, BPTR(&amp;work), &amp;outlen, BPTR(bu=
+f),</span><br><span style=3D"color: hsl(0, 100%, 40%);">-                  =
+         BLEN(buf)))</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++                           data_len))</span><br><span>     {</span><br><sp=
+an>         CRYPT_ERROR(&quot;cipher update failed&quot;);</span><br><span>=
+     }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><s=
+pan>     ASSERT(buf_inc_len(&amp;work, outlen));</span><br><span>     if (!=
+cipher_ctx_final_check_tag(ctx-&gt;cipher, BPTR(&amp;work) + outlen,</span>=
+<br><span>                                     &amp;outlen, tag_ptr, tag_si=
+ze))</span><br><span>diff --git a/src/openvpn/crypto.h b/src/openvpn/crypto=
+.h</span><br><span>index 4201524..95a5b31 100644</span><br><span>--- a/src/=
+openvpn/crypto.h</span><br><span>+++ b/src/openvpn/crypto.h</span><br><span=
+>@@ -279,6 +279,10 @@</span><br><span>     /**&lt; Bit-flag indicating that=
+ renegotiations are using tls-crypt</span><br><span>      *   with a TLS-EK=
+M derived key.</span><br><span>      */</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+#define CO_AEAD_TAG_AT_THE_END  (1&lt;&lt;8)</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+    /**&lt; Bit-flag indicatin=
+g that the AEAD tag is at the end of the</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+     *   packet.</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+     */</span><br><span> </span><br><span>     unsigned i=
+nt flags;         /**&lt; Bit-flags determining behavior of</span><br><span=
+>                                  *   security operation functions. */</sp=
+an><br><span>diff --git a/src/openvpn/init.c b/src/openvpn/init.c</span><br=
+><span>index c5cc154..cd37b36 100644</span><br><span>--- a/src/openvpn/init=
+.c</span><br><span>+++ b/src/openvpn/init.c</span><br><span>@@ -2323,6 +232=
+3,10 @@</span><br><span>         {</span><br><span>             buf_printf(=
+&amp;out, &quot; dyn-tls-crypt&quot;);</span><br><span>         }</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+        if (o-&gt;imported_pr=
+otocol_flags &amp; CO_AEAD_TAG_AT_THE_END)</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+        {</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+            buf_printf(&amp;out, &quot; aead-tag-end&quot;);</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+        }</span><br><=
+span>     }</span><br><span> </span><br><span>     if (buf_len(&amp;out) &g=
+t; strlen(header))</span><br><span>diff --git a/src/openvpn/options.c b/src=
+/openvpn/options.c</span><br><span>index 2c79a1e..39f00c0 100644</span><br>=
+<span>--- a/src/openvpn/options.c</span><br><span>+++ b/src/openvpn/options=
+.c</span><br><span>@@ -8686,6 +8686,10 @@</span><br><span>                 =
+options-&gt;imported_protocol_flags |=3D CO_USE_DYNAMIC_TLS_CRYPT;</span><b=
+r><span>             }</span><br><span> #endif</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+            else if (streq(p[j], &quot;aead-tag-=
+end&quot;))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        =
+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+              =
+  options-&gt;imported_protocol_flags |=3D CO_AEAD_TAG_AT_THE_END;</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+            }</span><br><spa=
+n>             else</span><br><span>             {</span><br><span>        =
+         msg(msglevel, &quot;Unknown protocol-flags flag: %s&quot;, p[j]);<=
+/span><br><span>diff --git a/src/openvpn/push.c b/src/openvpn/push.c</span>=
+<br><span>index 2249434..e4c122c 100644</span><br><span>--- a/src/openvpn/p=
+ush.c</span><br><span>+++ b/src/openvpn/push.c</span><br><span>@@ -29,6 +29=
+,7 @@</span><br><span> </span><br><span> #include &quot;push.h&quot;</span>=
+<br><span> #include &quot;options.h&quot;</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+#include &quot;crypto.h&quot;</span><br><span> #inclu=
+de &quot;ssl.h&quot;</span><br><span> #include &quot;ssl_verify.h&quot;</sp=
+an><br><span> #include &quot;ssl_ncp.h&quot;</span><br><span>@@ -686,6 +687=
+,11 @@</span><br><span>         buf_printf(&amp;proto_flags, &quot; dyn-tls=
+-crypt&quot;);</span><br><span>     }</span><br><span> </span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+    if (o-&gt;imported_protocol_flags &=
+amp; CO_AEAD_TAG_AT_THE_END)</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
+   buf_printf(&amp;proto_flags, &quot; aead-tag-end&quot;);</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+</span><br><span>     if (buf_len(&amp;proto_flag=
+s) &gt; 0)</span><br><span>     {</span><br><span>         push_option_fmt(=
+gc, push_list, M_USAGE, &quot;protocol-flags%s&quot;, buf_str(&amp;proto_fl=
+ags));</span><br><span>diff --git a/src/openvpn/ssl.h b/src/openvpn/ssl.h</=
+span><br><span>index 71b99db..a1c67a2 100644</span><br><span>--- a/src/open=
+vpn/ssl.h</span><br><span>+++ b/src/openvpn/ssl.h</span><br><span>@@ -107,6=
+ +107,9 @@</span><br><span> /** Support to dynamic tls-crypt (renegotiation=
+ with TLS-EKM derived tls-crypt key) */</span><br><span> #define IV_PROTO_D=
+YN_TLS_CRYPT   (1&lt;&lt;9)</span><br><span> </span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+/** Suport for the AEAD tag at the end a larger p=
+eer id and IV */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#de=
+fine IV_PROTO_DATA_V3        (1&lt;&lt;10)</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+</span><br><span> /* Default field in X509 to be use=
+rname */</span><br><span> #define X509_USERNAME_FIELD_DEFAULT &quot;CN&quot=
+;</span><br><span> </span><br><span>diff --git a/tests/unit_tests/openvpn/t=
+est_ssl.c b/tests/unit_tests/openvpn/test_ssl.c</span><br><span>index 8c1fb=
+5b..0ded052 100644</span><br><span>--- a/tests/unit_tests/openvpn/test_ssl.=
+c</span><br><span>+++ b/tests/unit_tests/openvpn/test_ssl.c</span><br><span=
+>@@ -266,6 +266,19 @@</span><br><span> }</span><br><span> </span><br><span>=
+ </span><br><span style=3D"color: hsl(120, 100%, 40%);">+/* This adds a few=
+ more methods that strictly necessary but this allows</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+ * us to see which exact test was run fro=
+m the backtrace of the test</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+ * when it fails */</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+static void=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+run_data_channel_wi=
+th_cipher_end(const char *cipher)</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+struct crypto_options co =3D init_crypto_options(cipher, &quot;none&quot;);=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    co.flags |=3D C=
+O_AEAD_TAG_AT_THE_END;</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+    do_data_channel_round_trip(&amp;co);</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+    uninit_crypto_options(&amp;co);</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+</span><br><span> static void</span><br><span> run_da=
+ta_channel_with_cipher(const char *cipher, const char *auth)</span><br><spa=
+n> {</span><br><span>@@ -274,21 +287,25 @@</span><br><span>     uninit_cryp=
+to_options(&amp;co);</span><br><span> }</span><br><span> </span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+</span><br><span> static void</span><=
+br><span> test_data_channel_roundtrip_aes_128_gcm(void **state)</span><br><=
+span> {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    run_data=
+_channel_with_cipher_end(&quot;AES-128-GCM&quot;);</span><br><span>     run=
+_data_channel_with_cipher(&quot;AES-128-GCM&quot;, &quot;none&quot;);</span=
+><br><span> }</span><br><span> </span><br><span> static void</span><br><spa=
+n> test_data_channel_roundtrip_aes_192_gcm(void **state)</span><br><span> {=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    run_data_channe=
+l_with_cipher_end(&quot;AES-192-GCM&quot;);</span><br><span>     run_data_c=
+hannel_with_cipher(&quot;AES-192-GCM&quot;, &quot;none&quot;);</span><br><s=
+pan> }</span><br><span> </span><br><span> static void</span><br><span> test=
+_data_channel_roundtrip_aes_256_gcm(void **state)</span><br><span> {</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+    run_data_channel_with_=
+cipher_end(&quot;AES-256-GCM&quot;);</span><br><span>     run_data_channel_=
+with_cipher(&quot;AES-256-GCM&quot;, &quot;none&quot;);</span><br><span> }<=
+/span><br><span> </span><br><span>@@ -318,6 +335,8 @@</span><br><span>     =
+    skip();</span><br><span>         return;</span><br><span>     }</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+    run_data_channel_with_cipher_end(&quot;Cha=
+Cha20-Poly1305&quot;);</span><br><span>     run_data_channel_with_cipher(&q=
+uot;ChaCha20-Poly1305&quot;, &quot;none&quot;);</span><br><span> }</span><b=
+r><span> </span><br><span></span><br></pre><p>To view, visit <a href=3D"htt=
+p://gerrit.openvpn.net/c/openvpn/+/506?usp=3Demail">change 506</a>. To unsu=
+bscribe, or for help writing mail filters, visit <a href=3D"http://gerrit.o=
+penvpn.net/settings">settings</a>.</p><div itemscope itemtype=3D"http://sch=
+ema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http:/=
+/schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvp=
+n.net/c/openvpn/+/506?usp=3Demail"/><meta itemprop=3D"name" content=3D"View=
+ Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I01e258e97351b5aa4b9e561f5b3=
-5ddc2318569e2 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 507 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I00821d75342daf3f813b829812d=
+648fe298bea81 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 506 </div>
 <div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
 <div style=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@...1711...=
 27...&gt; </div>
@@ -842,5 +637,5 @@ ts.sourceforge.net&gt; </div>
 <div style=3D"display:none"> Gerrit-MessageType: newchange </div>
 
 
---C/lK9r8oQBw=--
+--0tzd33YRv7o=--
 
