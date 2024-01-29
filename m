@@ -1,11 +1,16 @@
-From: Gert Doering <gert@...1296...>
-Date: Mon, 29 Jan 2024 11:53:57 +0100
-Message-ID: <20240129105358.11161-1-gert@...1296...>
-In-Reply-To: <gerrit.1702052980000.Ie8d2d5f6f58679baaf5eb817a7e2ca1afcb8c4db@...2715...>
-References: <gerrit.1702052980000.Ie8d2d5f6f58679baaf5eb817a7e2ca1afcb8c4db@...2715...>
+From: "plaisthos (Code Review)" <gerrit@...515...>
+Date: Mon, 29 Jan 2024 11:18:35 +0000
+In-Reply-To: <gerrit.1706525147000.Id7b4bda38adfbb446bdac635ac5d5207ef3f2f40@...2715...>
+References: <gerrit.1706525147000.Id7b4bda38adfbb446bdac635ac5d5207ef3f2f40@...2715...>
+Reply-To: arne-openvpn@...1227..., openvpn-devel@lists.sourceforge.net,
+ frank@...2641..., gert@...1296...
+Message-ID: <6f95b56b81e0ba0225e49411ff1a4fca2e86c496-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v6] test_user_pass: Add UTs for character
- filtering
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="CbSWDMDH7F0="; charset=UTF-8
+Subject: [Openvpn-devel] [XS] Change in openvpn[master]: gerrit-send-mail:
+ Make output consistent across systems
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,63 +19,87 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: flichtenheld <frank@...2641...>
+Cc: cron2 <gert@...1296...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-From: Frank Lichtenheld <frank@...2641...>
+--CbSWDMDH7F0=
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-For simplicity I implemented them only with the
-inline method, but they actually apply to all methods.
+Attention is currently required from: cron2, flichtenheld.
 
-Change-Id: Ie8d2d5f6f58679baaf5eb817a7e2ca1afcb8c4db
-Signed-off-by: Frank Lichtenheld <frank@...2641...>
-Acked-by: Arne Schwabe <arne-openvpn@...1227...>
-Acked-by: Gert Doering <gert@...1296...>
----
+plaisthos has posted comments on this change. ( http://gerrit.openvpn.net/c=
+/openvpn/+/508?usp=3Demail )
 
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to master.
+Change subject: gerrit-send-mail: Make output consistent across systems
+......................................................................
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/473
-This mail reflects revision 6 of this Change.
-Acked-by according to Gerrit (reflected above):
-Arne Schwabe <arne-openvpn@...1227...>
-Gert Doering <gert@...1296...>
 
-        
-diff --git a/tests/unit_tests/openvpn/test_user_pass.c b/tests/unit_tests/openvpn/test_user_pass.c
-index ab4dfe4..277cb1d 100644
---- a/tests/unit_tests/openvpn/test_user_pass.c
-+++ b/tests/unit_tests/openvpn/test_user_pass.c
-@@ -141,6 +141,29 @@
- 
-     reset_user_pass(&up);
- 
-+    /* Test various valid characters */
-+    /*FIXME: query_user_exec() called even though nothing queued */
-+    will_return(query_user_exec_builtin, true);
-+    /* FIXME? content after first two lines just ignored */
-+    assert_true(get_user_pass_cr(&up, "#iuser and 커뮤니티\n//ipasswörd!\nsome other content\nnot relevant", "UT", flags, NULL));
-+    assert_true(up.defined);
-+    assert_string_equal(up.username, "#iuser and 커뮤니티");
-+    assert_string_equal(up.password, "//ipasswörd!");
-+
-+    reset_user_pass(&up);
-+
-+    /* Test various invalid characters */
-+    /*FIXME: query_user_exec() called even though nothing queued */
-+    will_return(query_user_exec_builtin, true);
-+    /*FIXME? allows arbitrary crap if c > 127 */
-+    /*FIXME? silently removes control characters */
-+    assert_true(get_user_pass_cr(&up, "\tiuser\r\nipass\xffwo\x1erd", "UT", flags, NULL));
-+    assert_true(up.defined);
-+    assert_string_equal(up.username, "iuser");
-+    assert_string_equal(up.password, "ipass\xffword");
-+
-+    reset_user_pass(&up);
-+
-     expect_string(query_user_exec_builtin, query_user[i].prompt, "Enter UT Password:");
-     will_return(query_user_exec_builtin, "cpassword");
-     will_return(query_user_exec_builtin, true);
+Patch Set 1: Code-Review+2
+
+
+--
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/508?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings
+
+Gerrit-Project: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: Id7b4bda38adfbb446bdac635ac5d5207ef3f2f40
+Gerrit-Change-Number: 508
+Gerrit-PatchSet: 1
+Gerrit-Owner: flichtenheld <frank@...2641...>
+Gerrit-Reviewer: cron2 <gert@...1296...>
+Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-Attention: cron2 <gert@...1296...>
+Gerrit-Attention: flichtenheld <frank@...2641...>
+Gerrit-Comment-Date: Mon, 29 Jan 2024 11:18:35 +0000
+Gerrit-HasComments: No
+Gerrit-Has-Labels: Yes
+Gerrit-MessageType: comment
+
+--CbSWDMDH7F0=
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<p> Attention is currently required from: cron2, flichtenheld. </p>
+<p>Patch set 1:<span style=3D"border-radius: 3px; display: inline-block; ma=
+rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/508?usp=3Demail">Vi=
+ew Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To vie=
+w, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/508?usp=3Demail">=
+change 508</a>. To unsubscribe, or for help writing mail filters, visit <a =
+href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope=
+ itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"act=
+ion" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=
+=3D"http://gerrit.openvpn.net/c/openvpn/+/508?usp=3Demail"/><meta itemprop=
+=3D"name" content=3D"View Change"/></div></div>
+
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: Id7b4bda38adfbb446bdac635ac5=
+d5207ef3f2f40 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 508 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
+<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
+.&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
+ </div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
+.1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: cron2 &lt;gert@...1296...&gt=
+; </div>
+<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
+41...&gt; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Mon, 29 Jan 2024 11:18:35=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: No </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
+
+
+--CbSWDMDH7F0=--
 
