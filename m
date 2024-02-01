@@ -1,11 +1,16 @@
+From: "flichtenheld (Code Review)" <gerrit@...515...>
+Date: Thu, 1 Feb 2024 11:41:07 +0000
+In-Reply-To: <gerrit.1706531144000.Ide72b81f497088dd0fd2cdcfff83cbce5b48f145@...2715...>
+References: <gerrit.1706531144000.Ide72b81f497088dd0fd2cdcfff83cbce5b48f145@...2715...>
+Reply-To: frank@...2641..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net
+Message-ID: <2f6052e02f55ac7825b6b540047a7a5ec8cb495f-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-References: <CAAUX2SWqB=3zUqqxcXBEN-p6mq2ea8i-gjy-AX3aBXJzrE-QMA@...278...>
- <ed69cd1c-8817-44c3-a8f9-af1ccb2379be@...2181...>
-In-Reply-To: <ed69cd1c-8817-44c3-a8f9-af1ccb2379be@...2181...>
-From: Tony He <huangya90@...277...>
-Date: Tue, 30 Jan 2024 19:16:51 +0800
-Message-ID: <CAAUX2SUkXNsntKVJFO7RzdLJJbdZ9P-z6sD+wrqj21y-k5-GaQ@...278...>
-Subject: Re: [Openvpn-devel] [ovpn-dco] Can ovpn-dco use all cpu cores?
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="q5b+OW5/ySg="; charset=UTF-8
+Subject: [Openvpn-devel] [S] Change in openvpn[master]: [CMake] Allow unit
+ tests to fall back to hard coded location
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,53 +19,81 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-To: Antonio Quartulli <a@...2181...>
+To: plaisthos <arne-openvpn@...1227...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-Hi Antonio,
+--q5b+OW5/ySg=
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-I think I need to test another platform. It may give us more information.
-I will choose one arm board to have a try when I'm free.
+Attention is currently required from: plaisthos.
 
-Tony
+flichtenheld has posted comments on this change. ( http://gerrit.openvpn.ne=
+t/c/openvpn/+/509?usp=3Demail )
 
-Antonio Quartulli <a@...2181...> =E4=BA=8E2024=E5=B9=B41=E6=9C=8830=E6=97=
-=A5=E5=91=A8=E4=BA=8C 19:02=E5=86=99=E9=81=93=EF=BC=9A
->
-> Hi,
->
-> On 29/01/2024 05:25, Tony He wrote:
-> > Hi Antonio,
-> >
-> > I'm using ovpn-dco which is backported to v4.14 based on your latest
-> > code. My topology is:
-> >
-> > LAN PC -- openwrt router running openvpn server -- WAN PC running openv=
-pn client
-> > Router is with two mips64 cores.
-> >
-> > I use the iperf3 to test speed between LAN PC and WAN PC.
-> > The result is sometime the performance is good(~280Mbps=EF=BC=89 while
-> > sometimes is bad(~140Mbps).
-> >   When the performance is bad, one of two CPUs is 100% idle. When the
-> > performance is good, two CPUs are busy. However=EF=BC=8C I don't see th=
-e issue
-> > when ipsec is tested in the same test env. Two cores are always used
-> > for ipsec. So , can ovpn-dco use all cpu cores to get max performance?
->
-> ovpn-dco uses more than core in order to perform different operations,
-> but more parallelism on traffic processing can definitely be implemented
-> (patches are welcome ;)).
->
-> Now it's hard to tell if what you are seeing is the result of this
-> implementation detail or something else, especially because in some
-> cases you get higher throughput.
->
->
-> Cheers,
->
-> --
-> Antonio Quartulli
+Change subject: [CMake] Allow unit tests to fall back to hard coded location
+......................................................................
+
+
+Patch Set 1: Code-Review+2
+
+
+--
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/509?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings
+
+Gerrit-Project: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: Ide72b81f497088dd0fd2cdcfff83cbce5b48f145
+Gerrit-Change-Number: 509
+Gerrit-PatchSet: 1
+Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
+Gerrit-Reviewer: flichtenheld <frank@...2641...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Comment-Date: Thu, 01 Feb 2024 11:41:07 +0000
+Gerrit-HasComments: No
+Gerrit-Has-Labels: Yes
+Gerrit-MessageType: comment
+
+--q5b+OW5/ySg=
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<p> Attention is currently required from: plaisthos. </p>
+<p>Patch set 1:<span style=3D"border-radius: 3px; display: inline-block; ma=
+rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/509?usp=3Demail">Vi=
+ew Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To vie=
+w, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/509?usp=3Demail">=
+change 509</a>. To unsubscribe, or for help writing mail filters, visit <a =
+href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope=
+ itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"act=
+ion" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=
+=3D"http://gerrit.openvpn.net/c/openvpn/+/509?usp=3Demail"/><meta itemprop=
+=3D"name" content=3D"View Change"/></div></div>
+
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: Ide72b81f497088dd0fd2cdcfff8=
+3cbce5b48f145 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 509 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
+<div style=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@...1711...=
+27...&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
+1...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Thu, 01 Feb 2024 11:41:07=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: No </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
+
+
+--q5b+OW5/ySg=--
 
