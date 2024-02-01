@@ -1,16 +1,9 @@
-From: "flichtenheld (Code Review)" <gerrit@...515...>
-Date: Thu, 1 Feb 2024 11:41:07 +0000
-In-Reply-To: <gerrit.1706531144000.Ide72b81f497088dd0fd2cdcfff83cbce5b48f145@...2715...>
-References: <gerrit.1706531144000.Ide72b81f497088dd0fd2cdcfff83cbce5b48f145@...2715...>
-Reply-To: frank@...2641..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net
-Message-ID: <2f6052e02f55ac7825b6b540047a7a5ec8cb495f-EmailReviewComments-HTML@...2715...>
+From: Frank Lichtenheld <frank@...2641...>
+Date: Thu,  1 Feb 2024 13:30:39 +0100
+Message-Id: <20240201123039.174176-1-frank@...2641...>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="q5b+OW5/ySg="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: [CMake] Allow unit
- tests to fall back to hard coded location
+Subject: [Openvpn-devel] [PATCH] README.cmake.md: Document minimum required
+ CMake version for --preset
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,81 +12,53 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: plaisthos <arne-openvpn@...1227...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---q5b+OW5/ySg=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+CMakePreset.json is supported since 3.19, but we have a version
+3 preset file, so need at least 3.21.
 
-Attention is currently required from: plaisthos.
+Github: OpenVPN/openvpn#489
+Change-Id: I44c555f6ffa08f2aee739c7f687fa3b678c86231
+Signed-off-by: Frank Lichtenheld <frank@...2641...>
+---
+ README.cmake.md | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
 
-flichtenheld has posted comments on this change. ( http://gerrit.openvpn.ne=
-t/c/openvpn/+/509?usp=3Demail )
+diff --git a/README.cmake.md b/README.cmake.md
+index 4f41c701..89d9419d 100644
+--- a/README.cmake.md
++++ b/README.cmake.md
+@@ -17,6 +17,10 @@ also makes cross-building with MinGW on Linux much simpler. However,
+ builds are also possible by providing the build dependencies manually,
+ but that might require specifying more information to CMake.
+ 
++You need at least CMake version 3.21 or newer for the `CMakePreset.json`
++file to be supported. Manual builds might be possible with older CMake
++versions, see `cmake_minimum_required` in `CMakeLists.txt`.
++
+ If you're looking to build the full Windows installer MSI, take a look
+ at https://github.com/OpenVPN/openvpn-build.git .
+ 
+@@ -27,7 +31,7 @@ The following tools are expected to be present on the system, you
+ can install them with a package manager of your choice (e.g.
+ chocolatey, winget) or manually:
+ 
+-* CMake
++* CMake (>= 3.21)
+ * Git
+ * Python (3.x), plus the Python module `docutils`
+ * Visual Studion 17 (2022), C/C++ Enviroment
+@@ -101,6 +105,7 @@ To build the Windows executables on a Linux system:
+     git clone https://github.com/OpenVPN/openvpn.git
+     export VCPKG_ROOT=$PWD/vcpkg
+     cd openvpn
++    # requires CMake 3.21 or newer
+     cmake --preset mingw-x64
+     cmake --build --preset mingw-x64
+     # unit tests are built, but no testPreset is provided. You need to copy
+-- 
+2.34.1
 
-Change subject: [CMake] Allow unit tests to fall back to hard coded location
-......................................................................
-
-
-Patch Set 1: Code-Review+2
-
-
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/509?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings
-
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: Ide72b81f497088dd0fd2cdcfff83cbce5b48f145
-Gerrit-Change-Number: 509
-Gerrit-PatchSet: 1
-Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
-Gerrit-Reviewer: flichtenheld <frank@...2641...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Comment-Date: Thu, 01 Feb 2024 11:41:07 +0000
-Gerrit-HasComments: No
-Gerrit-Has-Labels: Yes
-Gerrit-MessageType: comment
-
---q5b+OW5/ySg=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<p> Attention is currently required from: plaisthos. </p>
-<p>Patch set 1:<span style=3D"border-radius: 3px; display: inline-block; ma=
-rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/509?usp=3Demail">Vi=
-ew Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To vie=
-w, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/509?usp=3Demail">=
-change 509</a>. To unsubscribe, or for help writing mail filters, visit <a =
-href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope=
- itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"act=
-ion" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=
-=3D"http://gerrit.openvpn.net/c/openvpn/+/509?usp=3Demail"/><meta itemprop=
-=3D"name" content=3D"View Change"/></div></div>
-
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: Ide72b81f497088dd0fd2cdcfff8=
-3cbce5b48f145 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 509 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
-<div style=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@...1711...=
-27...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
-1...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Thu, 01 Feb 2024 11:41:07=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: No </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
-
-
---q5b+OW5/ySg=--
 
