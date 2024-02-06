@@ -1,15 +1,9 @@
-Date: Tue, 6 Feb 2024 18:43:45 +0100
-From: Gert Doering <gert@...1296...>
-Message-ID: <ZcJv0WrdeGdNokHV@...1296...>
-References: <20240124152739.28248-1-kprovost@...2661...>
- <419D47E8-C0CE-4380-8896-90C2C6773107@...1376...>
+From: Frank Lichtenheld <frank@...2641...>
+Date: Tue,  6 Feb 2024 18:47:45 +0100
+Message-Id: <20240206174745.74828-1-frank@...2641...>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="5A7ze3fhcp08HDBT"
-Content-Disposition: inline
-In-Reply-To: <419D47E8-C0CE-4380-8896-90C2C6773107@...1376...>
-Subject: Re: [Openvpn-devel] [PATCH] dco-freebsd: dynamically re-allocate
- buffer if it's too small
+Subject: [Openvpn-devel] [PATCH] documentation: Fixes for previous fixes to
+ --push-peer-info
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,50 +12,68 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Kristof Provost <kp@...1249...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---5A7ze3fhcp08HDBT
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+- Clarify compression IV_ settings
+- Clarify which settings might come from --setenv
 
-Hi,
+Change-Id: Id8615515c8df6e38e931e357396811234faad796
+Signed-off-by: Frank Lichtenheld <frank@...2641...>
+---
+ doc/man-sections/client-options.rst | 13 +++++++++----
+ 1 file changed, 9 insertions(+), 4 deletions(-)
 
-On Tue, Feb 06, 2024 at 09:37:47AM -0700, Kristof Provost wrote:
-> Ping?
->=20
-> Does this need anything else before it can land?
+For master and release/2.6
 
-Just time on my side.  Busy weeks, apologies.  Will handle tomorrow.
+diff --git a/doc/man-sections/client-options.rst b/doc/man-sections/client-options.rst
+index cd3e565f..b92b1a46 100644
+--- a/doc/man-sections/client-options.rst
++++ b/doc/man-sections/client-options.rst
+@@ -374,10 +374,11 @@ configuration.
+   :code:`IV_GUI_VER=<gui_id> <version>`
+         The UI version of a UI if one is running, for example
+         :code:`de.blinkt.openvpn 0.5.47` for the Android app.
++        This may be set by the client UI/GUI using ``--setenv``.
+ 
+   :code:`IV_SSO=[crtext,][openurl,][proxy_url]`
+         Additional authentication methods supported by the client.
+-        This may be set by the client UI/GUI using ``--setenv``
++        This may be set by the client UI/GUI using ``--setenv``.
+ 
+   The following flags depend on which compression formats are compiled in
+   and whether compression is allowed by options. See `Protocol options`_
+@@ -388,13 +389,15 @@ configuration.
+ 
+     :code:`IV_LZO_STUB=1`
+         If client was built with LZO stub capability. This is only sent if
+-        ``IV_LZO=1`` is not sent.
++        ``IV_LZO=1`` is not sent. This means the client can talk to a server
++        configured with ``--comp-lzo no``.
+ 
+     :code:`IV_LZ4=1` and :code:`IV_LZ4v2=1`
+         If the client supports LZ4 compression.
+ 
+     :code:`IV_COMP_STUB=1` and :code:`IV_COMP_STUBv2=1`
+-        If the client supports stub compression.
++        If the client supports stub compression. This means the client can talk
++        to a server configured with ``--compress``.
+ 
+   When ``--push-peer-info`` is enabled the additional information consists
+   of the following data:
+@@ -414,7 +417,9 @@ configuration.
+ 
+   :code:`IV_PLAT_VER=x.y`
+         The version of the operating system, e.g. 6.1 for Windows 7.
+-        This is only sent on Windows operating systems.
++        This may be set by the client UI/GUI using ``--setenv``.
++        On Windows systems it is automatically determined by openvpn
++        itself.
+ 
+   :code:`UV_<name>=<value>`
+         Client environment variables whose names start with
+-- 
+2.34.1
 
-gert
---=20
-"If was one thing all people took for granted, was conviction that if you=20
- feed honest figures into a computer, honest figures come out. Never doubte=
-d=20
- it myself till I met a computer with a sense of humor."
-                             Robert A. Heinlein, The Moon is a Harsh Mistre=
-ss
-
-Gert Doering - Munich, Germany                             gert@...1296...
-
---5A7ze3fhcp08HDBT
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQGcBAEBAgAGBQJlwm/RAAoJEB2Cnv7KVigStzMMAKLqCoMBKQuWM0LoCFFKrF+L
-k4ApdDumjJpKilEFtYEsaZvRdEL5NcQlcPYU7x4ytue5AxDPiibWPx5yjctYOkQt
-+V8BrCZpF3J3rtiaQW6P7GVwGpZNwi/gfZXaVw5LeNrL5j3QXjpth2uc2QCdMi7U
-jVpszPfzWOZ+nP+qEfKM/4S6fNdKPjDUhQ8tkIERKtBI/lt305KIayGL8HjyD72I
-KCagQJvZwxqH2bH5EsCD9v2UwCzwEQ2O+asCG/PXrVsvQHrwEmNKTQ7y4MIfPP7Y
-v72AjBOx8CPHewtXv3bsaY6QvG641wk1yBnLuy2OmXmeVmKKR28BLx0N8VqDi0jx
-sFKhK7dZyGHixHNmcf2Okf3lKEFfD3jB93vJMNg/SlaB7DJsz9vqW3aIWXktiYMg
-LNAsK1TKrxMcwQ2bATn8KjxNybUsJ66elvX4PqrA1SYIeEbRFkbYJgd3DtAxkxw1
-l/Iu81gd7SujSsyT6l2hyv/wevh0khD9qtgSVA7qfQ==
-=OuTo
------END PGP SIGNATURE-----
-
---5A7ze3fhcp08HDBT--
 
