@@ -1,16 +1,11 @@
-From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Thu, 8 Feb 2024 08:31:18 +0000
-In-Reply-To: <gerrit.1702052980000.I8b5570f6314e917f92dce072279efe415d79b22a@...2715...>
-References: <gerrit.1702052980000.I8b5570f6314e917f92dce072279efe415d79b22a@...2715...>
-Reply-To: gert@...1296..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <e3668362b6040db71f579e085422982bb0635640-HTML@...2715...>
+From: Gert Doering <gert@...1296...>
+Date: Thu,  8 Feb 2024 09:57:49 +0100
+Message-ID: <20240208085749.869-1-gert@...1296...>
+In-Reply-To: <gerrit.1705939439000.Ifa5ae96165d17b3cae4afc53e844bb34d1610e58@...2715...>
+References: <gerrit.1705939439000.Ifa5ae96165d17b3cae4afc53e844bb34d1610e58@...2715...>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="xLN8nztd52o="; charset=UTF-8
-Subject: [Openvpn-devel] [M] Change in openvpn[master]: test_user_pass: add
- basic tests for static/dynamic challenges
+Subject: [Openvpn-devel] [PATCH v3] Add unit test for encrypting/decrypting
+ data channel
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,277 +14,282 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: flichtenheld <frank@...2641...>
-Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---xLN8nztd52o=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+From: Arne Schwabe <arne@...1227...>
 
-cron2 has submitted this change. ( http://gerrit.openvpn.net/c/openvpn/+/47=
-5?usp=3Demail )
+This test is reusing code from --test-crypto but is modified to not rely
+on the static key functionality and also only tests the most common
+algorithm. So it does not yet completely replace --test-crypto
 
-Change subject: test_user_pass: add basic tests for static/dynamic challeng=
-es
-......................................................................
-
-test_user_pass: add basic tests for static/dynamic challenges
-
-Change-Id: I8b5570f6314e917f92dce072279efe415d79b22a
-Signed-off-by: Frank Lichtenheld <frank@...2641...>
-Acked-by: Arne Schwabe <arne-openvpn@...1227...>
-Message-Id: <20240207171239.86730-1-frank@...2641...>
-URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg28=
-191.html
-Signed-off-by: Gert Doering <gert@...1296...>
+Change-Id: Ifa5ae96165d17b3cae4afc53e844bb34d1610e58
+Acked-by: Frank Lichtenheld <frank@...2641...>
 ---
-M tests/unit_tests/openvpn/test_user_pass.c
-1 file changed, 61 insertions(+), 0 deletions(-)
 
+This change was reviewed on Gerrit and approved by at least one
+developer. I request to merge it to master.
 
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/505
+This mail reflects revision 3 of this Change.
+Acked-by according to Gerrit (reflected above):
+Frank Lichtenheld <frank@...2641...>
 
-
-diff --git a/tests/unit_tests/openvpn/test_user_pass.c b/tests/unit_tests/o=
-penvpn/test_user_pass.c
-index bd4eb1f..5d3f9b6 100644
---- a/tests/unit_tests/openvpn/test_user_pass.c
-+++ b/tests/unit_tests/openvpn/test_user_pass.c
-@@ -267,12 +267,73 @@
-     assert_string_equal(up.password, "fuser");
+        
+diff --git a/tests/unit_tests/openvpn/test_ssl.c b/tests/unit_tests/openvpn/test_ssl.c
+index 18b9ec8..8c1fb5b 100644
+--- a/tests/unit_tests/openvpn/test_ssl.c
++++ b/tests/unit_tests/openvpn/test_ssl.c
+@@ -44,6 +44,9 @@
+ #include "ssl_verify_backend.h"
+ #include "win32.h"
+ #include "test_common.h"
++#include "ssl.h"
++#include "buffer.h"
++#include "packet_id.h"
+ 
+ /* Mock function to be allowed to include win32.c which is required for
+  * getting the temp directory */
+@@ -120,20 +123,238 @@
+     gc_free(&gc);
  }
-
-+#ifdef ENABLE_MANAGEMENT
+ 
 +static void
-+test_get_user_pass_dynamic_challenge(void **state)
++init_implicit_iv(struct crypto_options *co)
 +{
-+    struct user_pass up =3D { 0 };
-+    reset_user_pass(&up);
-+    const char *challenge =3D "CRV1:R,E:Om01u7Fh4LrGBS7uh0SWmzwabUiGiW6l:Y=
-3Ix:Please enter token PIN";
-+    unsigned int flags =3D GET_USER_PASS_DYNAMIC_CHALLENGE;
++    cipher_ctx_t *cipher = co->key_ctx_bi.encrypt.cipher;
 +
-+    expect_string(query_user_exec_builtin, query_user[i].prompt, "CHALLENG=
-E: Please enter token PIN");
-+    will_return(query_user_exec_builtin, "challenge_response");
-+    will_return(query_user_exec_builtin, true);
-+    assert_true(get_user_pass_cr(&up, NULL, "UT", flags, challenge));
-+    assert_true(up.defined);
-+    assert_string_equal(up.username, "cr1");
-+    assert_string_equal(up.password, "CRV1::Om01u7Fh4LrGBS7uh0SWmzwabUiGiW=
-6l::challenge_response");
++    if (cipher_ctx_mode_aead(cipher))
++    {
++        size_t impl_iv_len = cipher_ctx_iv_length(cipher) - sizeof(packet_id_type);
++        ASSERT(cipher_ctx_iv_length(cipher) <= OPENVPN_MAX_IV_LENGTH);
++        ASSERT(cipher_ctx_iv_length(cipher) >= OPENVPN_AEAD_MIN_IV_LEN);
++
++        /* Generate dummy implicit IV */
++        ASSERT(rand_bytes(co->key_ctx_bi.encrypt.implicit_iv,
++                          OPENVPN_MAX_IV_LENGTH));
++        co->key_ctx_bi.encrypt.implicit_iv_len = impl_iv_len;
++
++        memcpy(co->key_ctx_bi.decrypt.implicit_iv,
++               co->key_ctx_bi.encrypt.implicit_iv, OPENVPN_MAX_IV_LENGTH);
++        co->key_ctx_bi.decrypt.implicit_iv_len = impl_iv_len;
++    }
 +}
 +
 +static void
-+test_get_user_pass_static_challenge(void **state)
++init_frame_parameters(struct frame *frame)
 +{
-+    struct user_pass up =3D { 0 };
-+    reset_user_pass(&up);
-+    const char *challenge =3D "Please enter token PIN";
-+    unsigned int flags =3D GET_USER_PASS_STATIC_CHALLENGE;
++    int overhead = 0;
 +
-+    expect_string(query_user_exec_builtin, query_user[i].prompt, "Enter UT=
- Username:");
-+    will_return(query_user_exec_builtin, "cuser");
-+    expect_string(query_user_exec_builtin, query_user[i].prompt, "Enter UT=
- Password:");
-+    will_return(query_user_exec_builtin, "cpassword");
-+    will_return(query_user_exec_builtin, true);
-+    expect_string(query_user_exec_builtin, query_user[i].prompt, "CHALLENG=
-E: Please enter token PIN");
-+    will_return(query_user_exec_builtin, "challenge_response");
-+    will_return(query_user_exec_builtin, true);
-+    assert_true(get_user_pass_cr(&up, NULL, "UT", flags, challenge));
-+    assert_true(up.defined);
-+    assert_string_equal(up.username, "cuser");
-+    /* SCRV1:cpassword:challenge_response but base64-encoded */
-+    assert_string_equal(up.password, "SCRV1:Y3Bhc3N3b3Jk:Y2hhbGxlbmdlX3Jlc=
-3BvbnNl");
++    /* tls-auth and tls-crypt */
++    overhead += 128;
 +
-+    reset_user_pass(&up);
++    /* TCP length field and opcode */
++    overhead += 3;
 +
-+    flags |=3D GET_USER_PASS_INLINE_CREDS;
++    /* ACK array and remote SESSION ID (part of the ACK array) */
++    overhead += ACK_SIZE(RELIABLE_ACK_SIZE);
 +
-+    /*FIXME: query_user_exec() called even though nothing queued */
-+    will_return(query_user_exec_builtin, true);
-+    expect_string(query_user_exec_builtin, query_user[i].prompt, "CHALLENG=
-E: Please enter token PIN");
-+    will_return(query_user_exec_builtin, "challenge_response");
-+    will_return(query_user_exec_builtin, true);
-+    assert_true(get_user_pass_cr(&up, "iuser\nipassword", "UT", flags, cha=
-llenge));
-+    assert_true(up.defined);
-+    assert_string_equal(up.username, "iuser");
-+    /* SCRV1:ipassword:challenge_response but base64-encoded */
-+    assert_string_equal(up.password, "SCRV1:aXBhc3N3b3Jk:Y2hhbGxlbmdlX3Jlc=
-3BvbnNl");
++    /* Previous OpenVPN version calculated the maximum size and buffer of a
++     * control frame depending on the overhead of the data channel frame
++     * overhead and limited its maximum size to 1250. Since control frames
++     * also need to fit into data channel buffer we have the same
++     * default of 1500 + 100 as data channel buffers have. Increasing
++     * control channel mtu beyond this limit also increases the data channel
++     * buffers */
++    int tls_mtu = 1500;
++    frame->buf.payload_size = tls_mtu + 100;
++
++    frame->buf.headroom = overhead;
++    frame->buf.tailroom = overhead;
++
++    frame->tun_mtu = tls_mtu;
++
 +}
-+#endif /* ENABLE_MANAGEMENT */
 +
- const struct CMUnitTest user_pass_tests[] =3D {
-     cmocka_unit_test(test_get_user_pass_defined),
-     cmocka_unit_test(test_get_user_pass_needok),
-     cmocka_unit_test(test_get_user_pass_inline_creds),
-     cmocka_unit_test(test_get_user_pass_authfile_stdin),
-     cmocka_unit_test(test_get_user_pass_authfile_file),
-+#ifdef ENABLE_MANAGEMENT
-+    cmocka_unit_test(test_get_user_pass_dynamic_challenge),
-+    cmocka_unit_test(test_get_user_pass_static_challenge),
-+#endif /* ENABLE_MANAGEMENT */
- };
-
++static void
++do_data_channel_round_trip(struct crypto_options *co)
++{
++    struct gc_arena gc = gc_new();
++
++    /* initialise frame for the test */
++    struct frame frame;
++    init_frame_parameters(&frame);
++
++    struct buffer src = alloc_buf_gc(frame.buf.payload_size, &gc);
++    struct buffer work = alloc_buf_gc(BUF_SIZE(&frame), &gc);
++    struct buffer encrypt_workspace = alloc_buf_gc(BUF_SIZE(&frame), &gc);
++    struct buffer decrypt_workspace = alloc_buf_gc(BUF_SIZE(&frame), &gc);
++    struct buffer buf = clear_buf();
++    void *buf_p;
++
++    /* init work */
++    ASSERT(buf_init(&work, frame.buf.headroom));
++
++    init_implicit_iv(co);
++    update_time();
++
++    /* Test encryption, decryption for all packet sizes */
++    for (int i = 1; i <= frame.buf.payload_size; ++i)
++    {
++
++        /* msg(M_INFO, "TESTING ENCRYPT/DECRYPT of packet length=%d", i); */
++
++        /*
++         * Load src with random data.
++         */
++        ASSERT(buf_init(&src, 0));
++        ASSERT(i <= src.capacity);
++        src.len = i;
++        ASSERT(rand_bytes(BPTR(&src), BLEN(&src)));
++
++        /* copy source to input buf */
++        buf = work;
++        buf_p = buf_write_alloc(&buf, BLEN(&src));
++        ASSERT(buf_p);
++        memcpy(buf_p, BPTR(&src), BLEN(&src));
++
++        /* initialize work buffer with buf.headroom bytes of prepend capacity */
++        ASSERT(buf_init(&encrypt_workspace, frame.buf.headroom));
++
++        /* encrypt */
++        openvpn_encrypt(&buf, encrypt_workspace, co);
++
++        /* decrypt */
++        openvpn_decrypt(&buf, decrypt_workspace, co, &frame, BPTR(&buf));
++
++        /* compare */
++        assert_int_equal(buf.len, src.len);
++        assert_memory_equal(BPTR(&src), BPTR(&buf), i);
++
++    }
++    gc_free(&gc);
++}
++
++
++
++struct crypto_options
++init_crypto_options(const char *cipher, const char *auth)
++{
++    struct key2 key2 = { .n = 2};
++
++    ASSERT(rand_bytes(key2.keys[0].cipher, sizeof(key2.keys[0].cipher)));
++    ASSERT(rand_bytes(key2.keys[0].hmac, sizeof(key2.keys[0].hmac)));
++    ASSERT(rand_bytes(key2.keys[1].cipher, sizeof(key2.keys[1].cipher)));
++    ASSERT(rand_bytes(key2.keys[1].hmac, sizeof(key2.keys)[1].hmac));
++
++    struct crypto_options co = { 0 };
++
++    struct key_type kt = create_kt(cipher, auth, "ssl-test");
++
++    init_key_ctx_bi(&co.key_ctx_bi, &key2, 0, &kt, "unit-test-ssl");
++    packet_id_init(&co.packet_id,  5, 5, "UNITTEST", 0);
++
++    return co;
++}
++
++static void
++uninit_crypto_options(struct crypto_options *co)
++{
++    packet_id_free(&co->packet_id);
++    free_key_ctx_bi(&co->key_ctx_bi);
++
++}
++
++
++static void
++run_data_channel_with_cipher(const char *cipher, const char *auth)
++{
++    struct crypto_options co = init_crypto_options(cipher, auth);
++    do_data_channel_round_trip(&co);
++    uninit_crypto_options(&co);
++}
++
++static void
++test_data_channel_roundtrip_aes_128_gcm(void **state)
++{
++    run_data_channel_with_cipher("AES-128-GCM", "none");
++}
++
++static void
++test_data_channel_roundtrip_aes_192_gcm(void **state)
++{
++    run_data_channel_with_cipher("AES-192-GCM", "none");
++}
++
++static void
++test_data_channel_roundtrip_aes_256_gcm(void **state)
++{
++    run_data_channel_with_cipher("AES-256-GCM", "none");
++}
++
++static void
++test_data_channel_roundtrip_aes_128_cbc(void **state)
++{
++    run_data_channel_with_cipher("AES-128-CBC", "SHA256");
++}
++
++static void
++test_data_channel_roundtrip_aes_192_cbc(void **state)
++{
++    run_data_channel_with_cipher("AES-192-CBC", "SHA256");
++}
++
++static void
++test_data_channel_roundtrip_aes_256_cbc(void **state)
++{
++    run_data_channel_with_cipher("AES-256-CBC", "SHA256");
++}
++
++static void
++test_data_channel_roundtrip_chacha20_poly1305(void **state)
++{
++    if (!cipher_valid("ChaCha20-Poly1305"))
++    {
++        skip();
++        return;
++    }
++    run_data_channel_with_cipher("ChaCha20-Poly1305", "none");
++}
++
++static void
++test_data_channel_roundtrip_bf_cbc(void **state)
++{
++    if (!cipher_valid("BF-CBC"))
++    {
++        skip();
++        return;
++    }
++    run_data_channel_with_cipher("BF-CBC", "SHA1");
++}
++
++
  int
-
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/475?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings
-
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: I8b5570f6314e917f92dce072279efe415d79b22a
-Gerrit-Change-Number: 475
-Gerrit-PatchSet: 9
-Gerrit-Owner: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-MessageType: merged
-
---xLN8nztd52o=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<p>cron2 <strong>submitted</strong> this change.</p><p><a href=3D"http://ge=
-rrit.openvpn.net/c/openvpn/+/475?usp=3Demail">View Change</a></p><div style=
-=3D"white-space:pre-wrap"></div><pre style=3D"font-family: monospace,monosp=
-ace; white-space: pre-wrap;">test_user_pass: add basic tests for static/dyn=
-amic challenges<br><br>Change-Id: I8b5570f6314e917f92dce072279efe415d79b22a=
-<br>Signed-off-by: Frank Lichtenheld &lt;frank@...2641...&gt;<br>Acked-by: =
-Arne Schwabe &lt;arne-openvpn@...1227...&gt;<br>Message-Id: &lt;20240207171=
-239.86730-1-frank@...2641...&gt;<br>URL: https://www.mail-archive.com/openv=
-pn-devel@lists.sourceforge.net/msg28191.html<br>Signed-off-by: Gert Doering=
- &lt;gert@...1296...&gt;<br>---<br>M tests/unit_tests/openvpn/test_user_pas=
-s.c<br>1 file changed, 61 insertions(+), 0 deletions(-)<br><br></pre>
-<pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><sp=
-an>diff --git a/tests/unit_tests/openvpn/test_user_pass.c b/tests/unit_test=
-s/openvpn/test_user_pass.c</span><br><span>index bd4eb1f..5d3f9b6 100644</s=
-pan><br><span>--- a/tests/unit_tests/openvpn/test_user_pass.c</span><br><sp=
-an>+++ b/tests/unit_tests/openvpn/test_user_pass.c</span><br><span>@@ -267,=
-12 +267,73 @@</span><br><span>     assert_string_equal(up.password, &quot;f=
-user&quot;);</span><br><span> }</span><br><span> </span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+#ifdef ENABLE_MANAGEMENT</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+static void</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+test_get_user_pass_dynamic_challenge(void **stat=
-e)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+    struct user_pass up =3D { 0 };<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+    reset_user_pass(=
-&amp;up);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    const =
-char *challenge =3D &quot;CRV1:R,E:Om01u7Fh4LrGBS7uh0SWmzwabUiGiW6l:Y3Ix:Pl=
-ease enter token PIN&quot;;</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+    unsigned int flags =3D GET_USER_PASS_DYNAMIC_CHALLENGE;</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+    expect_string(query_user_exec_builtin, que=
-ry_user[i].prompt, &quot;CHALLENGE: Please enter token PIN&quot;);</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+    will_return(query_user_e=
-xec_builtin, &quot;challenge_response&quot;);</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+    will_return(query_user_exec_builtin, true);</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_true(get_u=
-ser_pass_cr(&amp;up, NULL, &quot;UT&quot;, flags, challenge));</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+    assert_true(up.defined);</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_string_equal=
-(up.username, &quot;cr1&quot;);</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+    assert_string_equal(up.password, &quot;CRV1::Om01u7Fh4LrGBS=
-7uh0SWmzwabUiGiW6l::challenge_response&quot;);</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+static voi=
-d</span><br><span style=3D"color: hsl(120, 100%, 40%);">+test_get_user_pass=
-_static_challenge(void **state)</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    st=
-ruct user_pass up =3D { 0 };</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+    reset_user_pass(&amp;up);</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+    const char *challenge =3D &quot;Please enter token P=
-IN&quot;;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    unsign=
-ed int flags =3D GET_USER_PASS_STATIC_CHALLENGE;</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+    expect_string(query_user_exec_builtin, query_user[i].prompt, =
-&quot;Enter UT Username:&quot;);</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+    will_return(query_user_exec_builtin, &quot;cuser&quot;);</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+    expect_string(que=
-ry_user_exec_builtin, query_user[i].prompt, &quot;Enter UT Password:&quot;)=
-;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    will_return(qu=
-ery_user_exec_builtin, &quot;cpassword&quot;);</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+    will_return(query_user_exec_builtin, true);<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+    expect_string(qu=
-ery_user_exec_builtin, query_user[i].prompt, &quot;CHALLENGE: Please enter =
-token PIN&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-  will_return(query_user_exec_builtin, &quot;challenge_response&quot;);</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+    will_return(query_u=
-ser_exec_builtin, true);</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+    assert_true(get_user_pass_cr(&amp;up, NULL, &quot;UT&quot;, flags,=
- challenge));</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    as=
-sert_true(up.defined);</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+    assert_string_equal(up.username, &quot;cuser&quot;);</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+    /* SCRV1:cpassword:challenge_re=
-sponse but base64-encoded */</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+    assert_string_equal(up.password, &quot;SCRV1:Y3Bhc3N3b3Jk:Y2hh=
-bGxlbmdlX3Jlc3BvbnNl&quot;);</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    reset_=
-user_pass(&amp;up);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    flags |=3D GET_=
-USER_PASS_INLINE_CREDS;</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    /*FIXME: qu=
-ery_user_exec() called even though nothing queued */</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    will_return(query_user_exec_builtin, =
-true);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    expect_st=
-ring(query_user_exec_builtin, query_user[i].prompt, &quot;CHALLENGE: Please=
- enter token PIN&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+    will_return(query_user_exec_builtin, &quot;challenge_response&quot=
-;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    will_return(=
-query_user_exec_builtin, true);</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+    assert_true(get_user_pass_cr(&amp;up, &quot;iuser\nipasswor=
-d&quot;, &quot;UT&quot;, flags, challenge));</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+    assert_true(up.defined);</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    assert_string_equal(up.username, &quo=
-t;iuser&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-/* SCRV1:ipassword:challenge_response but base64-encoded */</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+    assert_string_equal(up.password=
-, &quot;SCRV1:aXBhc3N3b3Jk:Y2hhbGxlbmdlX3Jlc3BvbnNl&quot;);</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+#endif /* ENABLE_MANAGEMENT */</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+</span><br><span> const struct CMUnitTest=
- user_pass_tests[] =3D {</span><br><span>     cmocka_unit_test(test_get_use=
-r_pass_defined),</span><br><span>     cmocka_unit_test(test_get_user_pass_n=
-eedok),</span><br><span>     cmocka_unit_test(test_get_user_pass_inline_cre=
-ds),</span><br><span>     cmocka_unit_test(test_get_user_pass_authfile_stdi=
-n),</span><br><span>     cmocka_unit_test(test_get_user_pass_authfile_file)=
-,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#ifdef ENABLE_MANA=
-GEMENT</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    cmocka_un=
-it_test(test_get_user_pass_dynamic_challenge),</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+    cmocka_unit_test(test_get_user_pass_static_c=
-hallenge),</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#endif /*=
- ENABLE_MANAGEMENT */</span><br><span> };</span><br><span> </span><br><span=
-> int</span><br><span></span><br></pre><p>To view, visit <a href=3D"http://=
-gerrit.openvpn.net/c/openvpn/+/475?usp=3Demail">change 475</a>. To unsubscr=
-ibe, or for help writing mail filters, visit <a href=3D"http://gerrit.openv=
-pn.net/settings">settings</a>.</p><div itemscope itemtype=3D"http://schema.=
-org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://sch=
-ema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.ne=
-t/c/openvpn/+/475?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Cha=
-nge"/></div></div>
-
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I8b5570f6314e917f92dce072279=
-efe415d79b22a </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 475 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 9 </div>
-<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
-.&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: merged </div>
-
-
---xLN8nztd52o=--
+ main(void)
+ {
+     openvpn_unit_test_setup();
+ 
+     const struct CMUnitTest tests[] = {
+-        cmocka_unit_test(crypto_pem_encode_certificate)
++        cmocka_unit_test(crypto_pem_encode_certificate),
++        cmocka_unit_test(test_data_channel_roundtrip_aes_128_gcm),
++        cmocka_unit_test(test_data_channel_roundtrip_aes_192_gcm),
++        cmocka_unit_test(test_data_channel_roundtrip_aes_256_gcm),
++        cmocka_unit_test(test_data_channel_roundtrip_chacha20_poly1305),
++        cmocka_unit_test(test_data_channel_roundtrip_aes_128_cbc),
++        cmocka_unit_test(test_data_channel_roundtrip_aes_192_cbc),
++        cmocka_unit_test(test_data_channel_roundtrip_aes_256_cbc),
++        cmocka_unit_test(test_data_channel_roundtrip_bf_cbc),
+     };
+ 
+ #if defined(ENABLE_CRYPTO_OPENSSL)
+     tls_init_lib();
+ #endif
+ 
+-    int ret = cmocka_run_group_tests_name("crypto tests", tests, NULL, NULL);
++    int ret = cmocka_run_group_tests_name("ssl tests", tests, NULL, NULL);
+ 
+ #if defined(ENABLE_CRYPTO_OPENSSL)
+     tls_free_lib();
 
