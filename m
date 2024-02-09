@@ -1,16 +1,11 @@
-From: "flichtenheld (Code Review)" <gerrit@...515...>
-Date: Fri, 9 Feb 2024 11:09:15 +0000
+From: Frank Lichtenheld <frank@...2641...>
+Date: Fri,  9 Feb 2024 12:10:00 +0100
+Message-Id: <20240209111000.16258-1-frank@...2641...>
 In-Reply-To: <gerrit.1696674325000.Ib5fc0c4b8f164596681ac5ad73002068ec6de1e5@...2715...>
 References: <gerrit.1696674325000.Ib5fc0c4b8f164596681ac5ad73002068ec6de1e5@...2715...>
-Reply-To: frank@...2641..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net
-Message-ID: <f96c8ae337c0e7267d7042fe1a6451f32b32c844-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="Vz8KBSO48YQ="; charset=UTF-8
-Subject: [Openvpn-devel] [M] Change in openvpn[master]: Print SSL peer
- signature information in handshake debug details
+Subject: [Openvpn-devel] [PATCH v9] Print SSL peer signature information in
+ handshake debug details
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,105 +14,148 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: plaisthos <arne-openvpn@...1227...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---Vz8KBSO48YQ=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+From: Arne Schwabe <arne@...1227...>
 
-Attention is currently required from: plaisthos.
+This is more SSL debug information that most people do not really need
+or care about. OpenSSL's own s_client also logs them:
 
-flichtenheld has posted comments on this change. ( http://gerrit.openvpn.ne=
-t/c/openvpn/+/365?usp=3Demail )
+Peer signing digest: SHA256
+Peer signature type: ECDSA
 
-Change subject: Print SSL peer signature information in handshake debug det=
-ails
-......................................................................
+The complete message looks like this:
 
+   Control Channel: TLSv1.3, cipher TLSv1.3 TLS_AES_256_GCM_SHA384, peer certificate: 2048 bits RSA, signature: RSA-SHA256, server temp key: 253 bits X25519, peer signing digest/type: SHA256 RSASSA-PSS
 
-Patch Set 9:
+or when forcing a specific group via tls-groups X448 with a ECDSA server:
 
-(1 comment)
+   Control Channel: TLSv1.3, cipher TLSv1.3 TLS_AES_256_GCM_SHA384, peer certificate: 384 bits ECsecp384r1, signature: ecdsa-with-SHA256, server temp key: 448 bits X448, peer signing digest/type: SHA384 ECDSA
 
-File src/openvpn/ssl_openssl.c:
+Change-Id: Ib5fc0c4b8f164596681ac5ad73002068ec6de1e5
+Signed-off-by: Arne Schwabe <arne@...1227...>
+Acked-by: Frank Lichtenheld <frank@...2641...>
+---
 
-http://gerrit.openvpn.net/c/openvpn/+/365/comment/79df6aa1_3de451d9 :
-PS8, Line 2225:      * linking with an unresolved symbol */
-> Yeah, as noted in the GitHub issue I found the reason. [=E2=80=A6]
-Done
+This change was reviewed on Gerrit and approved by at least one
+developer. I request to merge it to master.
 
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/365
+This mail reflects revision 9 of this Change.
+Acked-by according to Gerrit (reflected above):
+Frank Lichtenheld <frank@...2641...>
 
-
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/365?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings
-
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: Ib5fc0c4b8f164596681ac5ad73002068ec6de1e5
-Gerrit-Change-Number: 365
-Gerrit-PatchSet: 9
-Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
-Gerrit-Reviewer: flichtenheld <frank@...2641...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Comment-Date: Fri, 09 Feb 2024 11:09:15 +0000
-Gerrit-HasComments: Yes
-Gerrit-Has-Labels: No
-Comment-In-Reply-To: plaisthos <arne-openvpn@...1227...>
-Comment-In-Reply-To: flichtenheld <frank@...2641...>
-Gerrit-MessageType: comment
-
---Vz8KBSO48YQ=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<p> Attention is currently required from: plaisthos. </p>
-<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/365?usp=3Demail">View C=
-hange</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0;"><=
-li style=3D"margin: 0; padding: 0;"><p>File src/openvpn/ssl_openssl.c:</p><=
-ul style=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; padding:=
- 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.ope=
-nvpn.net/c/openvpn/+/365/comment/79df6aa1_3de451d9">Patch Set #8, Line 2225=
-:</a> <code style=3D"font-family:monospace,monospace">     * linking with a=
-n unresolved symbol */</code></p><p><blockquote style=3D"border-left: 1px s=
-olid #aaa; margin: 10px 0; padding: 0 10px;">Yeah, as noted in the GitHub i=
-ssue I found the reason. [=E2=80=A6]</blockquote></p><p style=3D"white-spac=
-e: pre-wrap; word-wrap: break-word;">Done</p></li></ul></li></ul><p>To view=
-, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/365?usp=3Demail">c=
-hange 365</a>. To unsubscribe, or for help writing mail filters, visit <a h=
-ref=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope =
-itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"acti=
-on" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=
-=3D"http://gerrit.openvpn.net/c/openvpn/+/365?usp=3Demail"/><meta itemprop=
-=3D"name" content=3D"View Change"/></div></div>
-
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: Ib5fc0c4b8f164596681ac5ad730=
-02068ec6de1e5 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 365 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 9 </div>
-<div style=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@...1711...=
-27...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
-1...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Fri, 09 Feb 2024 11:09:15=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: No </div>
-<div style=3D"display:none"> Comment-In-Reply-To: plaisthos &lt;arne-openvp=
-n@...1227...&gt; </div>
-<div style=3D"display:none"> Comment-In-Reply-To: flichtenheld &lt;frank@...1186...=
-.2641...&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
-
-
---Vz8KBSO48YQ=--
+        
+diff --git a/src/openvpn/ssl_openssl.c b/src/openvpn/ssl_openssl.c
+index c30e6a9..9b6027c 100644
+--- a/src/openvpn/ssl_openssl.c
++++ b/src/openvpn/ssl_openssl.c
+@@ -2166,6 +2166,83 @@
+     EVP_PKEY_free(pkey);
+ }
+ 
++#if !defined(LIBRESSL_VERSION_NUMBER)  && OPENSSL_VERSION_NUMBER >= 0x1010000fL
++/**
++ * Translate an OpenSSL NID into a more human readable name
++ * @param nid
++ * @return
++ */
++static const char *
++get_sigtype(int nid)
++{
++    /* Fix a few OpenSSL names to be better understandable */
++    switch (nid)
++    {
++        case EVP_PKEY_RSA:
++            /* will otherwise say rsaEncryption */
++            return "RSA";
++
++        case EVP_PKEY_DSA:
++            /* dsaEncryption otherwise */
++            return "DSA";
++
++        case EVP_PKEY_EC:
++            /* will say id-ecPublicKey */
++            return "ECDSA";
++
++        case -1:
++            return "(error getting name)";
++
++        default:
++            return OBJ_nid2sn(nid);
++    }
++}
++#endif /* ifndef LIBRESSL_VERSION_NUMBER */
++
++/**
++ * Get the type of the signature that is used by the peer during the
++ * TLS handshake
++ */
++static void
++print_peer_signature(SSL *ssl, char *buf, size_t buflen)
++{
++    int peer_sig_nid = NID_undef, peer_sig_type_nid = NID_undef;
++    const char *peer_sig = "unknown";
++    const char *peer_sig_type = "unknown type";
++
++    /* Even though these methods use the deprecated NIDs instead of using
++     * string as new OpenSSL APIs do, there seem to be no API that replaces
++     * it yet */
++#if !defined(LIBRESSL_VERSION_NUMBER) || LIBRESSL_VERSION_NUMBER > 0x3050400fL
++    if (SSL_get_peer_signature_nid(ssl, &peer_sig_nid)
++        && peer_sig_nid != NID_undef)
++    {
++        peer_sig = OBJ_nid2sn(peer_sig_nid);
++    }
++#endif
++
++#if (!defined(LIBRESSL_VERSION_NUMBER) && OPENSSL_VERSION_NUMBER >= 0x1010000fL) \
++    || (defined(LIBRESSL_VERSION_NUMBER) && LIBRESSL_VERSION_NUMBER >= 0x3090000fL)
++    /* LibreSSL 3.7.x and 3.8.x implement this function but do not export it
++     * and fail linking with an unresolved symbol */
++    if (SSL_get_peer_signature_type_nid(ssl, &peer_sig_type_nid)
++        && peer_sig_type_nid != NID_undef)
++    {
++        peer_sig_type = get_sigtype(peer_sig_type_nid);
++    }
++#endif
++
++    if (peer_sig_nid == NID_undef && peer_sig_type_nid == NID_undef)
++    {
++        return;
++    }
++
++    openvpn_snprintf(buf, buflen, ", peer signing digest/type: %s %s",
++                     peer_sig, peer_sig_type);
++}
++
++
++
+ /* **************************************
+  *
+  * Information functions
+@@ -2180,8 +2257,9 @@
+     char s1[256];
+     char s2[256];
+     char s3[256];
++    char s4[256];
+ 
+-    s1[0] = s2[0] = s3[0] = 0;
++    s1[0] = s2[0] = s3[0] = s4[0] = 0;
+     ciph = SSL_get_current_cipher(ks_ssl->ssl);
+     openvpn_snprintf(s1, sizeof(s1), "%s %s, cipher %s %s",
+                      prefix,
+@@ -2196,8 +2274,9 @@
+         X509_free(cert);
+     }
+     print_server_tempkey(ks_ssl->ssl, s3, sizeof(s3));
++    print_peer_signature(ks_ssl->ssl, s4, sizeof(s4));
+ 
+-    msg(D_HANDSHAKE, "%s%s%s", s1, s2, s3);
++    msg(D_HANDSHAKE, "%s%s%s%s", s1, s2, s3, s4);
+ }
+ 
+ void
 
