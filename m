@@ -1,11 +1,16 @@
-From: Frank Lichtenheld <frank@...2641...>
-Date: Fri,  9 Feb 2024 12:06:29 +0100
-Message-Id: <20240209110629.15364-1-frank@...2641...>
-In-Reply-To: <gerrit.1700595358000.Ic74195a4ed340547c5e862dc2438f95be318c286@...2715...>
-References: <gerrit.1700595358000.Ic74195a4ed340547c5e862dc2438f95be318c286@...2715...>
+From: "flichtenheld (Code Review)" <gerrit@...515...>
+Date: Fri, 9 Feb 2024 11:09:01 +0000
+In-Reply-To: <gerrit.1696674325000.Ib5fc0c4b8f164596681ac5ad73002068ec6de1e5@...2715...>
+References: <gerrit.1696674325000.Ib5fc0c4b8f164596681ac5ad73002068ec6de1e5@...2715...>
+Reply-To: frank@...2641..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net
+Message-ID: <f1830537894a19c0782406967935b171dcb31f2b-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v8] Implement generating TLS 1.0 PRF using
- new OpenSSL 3.0 APIs
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="H+oPI/0NGVI="; charset=UTF-8
+Subject: [Openvpn-devel] [M] Change in openvpn[master]: Print SSL peer
+ signature information in handshake debug details
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,109 +19,82 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: plaisthos <arne-openvpn@...1227...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-From: Arne Schwabe <arne@...1227...>
+--H+oPI/0NGVI=
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-OpenSSL 3.0 introduced a new API for doing key derivation. So this leaves
-us now with three different implementation for 1.0.2, 1.1.x and 3.x.
+Attention is currently required from: plaisthos.
 
-This was initially done to maybe still have a working TLS 1.0 PRF when
-using OpenSSL 3.0 in FIPS but it gives the same error as with the older API.
-But since moving to a new API is always good, we use the new API when using
-OpenSSL 3.0. We also print the internal OpenSSL error message when
-the KDF fails.
+flichtenheld has posted comments on this change. ( http://gerrit.openvpn.ne=
+t/c/openvpn/+/365?usp=3Demail )
 
-This also allows us now to compile an OpenSSL build that has been built with
-OPENSSL_NO_MD5. Which is not yet common but might be in the future.
+Change subject: Print SSL peer signature information in handshake debug det=
+ails
+......................................................................
 
-Change-Id: Ic74195a4ed340547c5e862dc2438f95be318c286
-Signed-off-by: Arne Schwabe <arne@...1227...>
-Acked-by: Frank Lichtenheld <frank@...2641...>
----
 
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to master.
+Patch Set 9: Code-Review+2
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/457
-This mail reflects revision 8 of this Change.
-Acked-by according to Gerrit (reflected above):
-Frank Lichtenheld <frank@...2641...>
 
-Typo fix in commit message added during submission.
+--
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/365?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings
 
-        
-diff --git a/src/openvpn/crypto_openssl.c b/src/openvpn/crypto_openssl.c
-index e8ddf14..4fd5e6b 100644
---- a/src/openvpn/crypto_openssl.c
-+++ b/src/openvpn/crypto_openssl.c
-@@ -54,6 +54,7 @@
- #endif
- #if OPENSSL_VERSION_NUMBER >= 0x30000000L
- #include <openssl/provider.h>
-+#include <openssl/core_names.h>
- #endif
- 
- #if defined(_WIN32) && defined(OPENSSL_NO_EC)
-@@ -1329,8 +1330,57 @@
- {
-     return CRYPTO_memcmp(a, b, size);
- }
-+#if (OPENSSL_VERSION_NUMBER >= 0x30000000L) && !defined(LIBRESSL_VERSION_NUMBER)
-+bool
-+ssl_tls1_PRF(const uint8_t *seed, int seed_len, const uint8_t *secret,
-+             int secret_len, uint8_t *output, int output_len)
-+{
-+    bool ret = true;
-+    EVP_KDF_CTX *kctx = NULL;
- 
--#if (OPENSSL_VERSION_NUMBER >= 0x10100000L) && !defined(LIBRESSL_VERSION_NUMBER)
-+
-+    EVP_KDF *kdf = EVP_KDF_fetch(NULL, "TLS1-PRF", NULL);
-+    if (!kdf)
-+    {
-+        goto err;
-+    }
-+
-+    kctx = EVP_KDF_CTX_new(kdf);
-+
-+    if (!kctx)
-+    {
-+        goto err;
-+    }
-+
-+    OSSL_PARAM params[4];
-+
-+    /* The OpenSSL APIs require us to cast the const aways even though the
-+     * strings are never changed and only read */
-+    params[0] = OSSL_PARAM_construct_utf8_string(OSSL_KDF_PARAM_DIGEST,
-+                                                 SN_md5_sha1, strlen(SN_md5_sha1));
-+    params[1] = OSSL_PARAM_construct_octet_string(OSSL_KDF_PARAM_SECRET,
-+                                                  (uint8_t *) secret, (size_t) secret_len);
-+    params[2] = OSSL_PARAM_construct_octet_string(OSSL_KDF_PARAM_SEED,
-+                                                  (uint8_t *) seed, (size_t) seed_len);
-+    params[3] = OSSL_PARAM_construct_end();
-+
-+    if (EVP_KDF_derive(kctx, output, output_len, params) <= 0)
-+    {
-+        crypto_msg(D_TLS_DEBUG_LOW, "Generating TLS 1.0 PRF using "
-+                   "EVP_KDF_derive failed");
-+        goto err;
-+    }
-+
-+    goto out;
-+
-+err:
-+    ret = false;
-+out:
-+    EVP_KDF_free(kdf);
-+
-+    return ret;
-+}
-+#elif (OPENSSL_VERSION_NUMBER >= 0x10100000L) && !defined(LIBRESSL_VERSION_NUMBER)
- bool
- ssl_tls1_PRF(const uint8_t *seed, int seed_len, const uint8_t *secret,
-              int secret_len, uint8_t *output, int output_len)
+Gerrit-Project: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: Ib5fc0c4b8f164596681ac5ad73002068ec6de1e5
+Gerrit-Change-Number: 365
+Gerrit-PatchSet: 9
+Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
+Gerrit-Reviewer: flichtenheld <frank@...2641...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Comment-Date: Fri, 09 Feb 2024 11:09:01 +0000
+Gerrit-HasComments: No
+Gerrit-Has-Labels: Yes
+Gerrit-MessageType: comment
+
+--H+oPI/0NGVI=
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<p> Attention is currently required from: plaisthos. </p>
+<p>Patch set 9:<span style=3D"border-radius: 3px; display: inline-block; ma=
+rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/365?usp=3Demail">Vi=
+ew Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To vie=
+w, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/365?usp=3Demail">=
+change 365</a>. To unsubscribe, or for help writing mail filters, visit <a =
+href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope=
+ itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"act=
+ion" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=
+=3D"http://gerrit.openvpn.net/c/openvpn/+/365?usp=3Demail"/><meta itemprop=
+=3D"name" content=3D"View Change"/></div></div>
+
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: Ib5fc0c4b8f164596681ac5ad730=
+02068ec6de1e5 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 365 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 9 </div>
+<div style=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@...1711...=
+27...&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
+1...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Fri, 09 Feb 2024 11:09:01=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: No </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
+
+
+--H+oPI/0NGVI=--
 
