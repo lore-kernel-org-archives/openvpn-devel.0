@@ -1,14 +1,14 @@
 From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Sat, 10 Feb 2024 09:13:08 +0000
+Date: Sat, 10 Feb 2024 09:13:06 +0000
 In-Reply-To: <gerrit.1700595358000.Ic74195a4ed340547c5e862dc2438f95be318c286@...2715...>
 References: <gerrit.1700595358000.Ic74195a4ed340547c5e862dc2438f95be318c286@...2715...>
 Reply-To: gert@...1296..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <35178e7fc7e1ea919ae3592781b845ab34926aab-HTML@...2715...>
+Message-ID: <35178e7fc7e1ea919ae3592781b845ab34926aab-EmailReplacePatchSet-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="fLtrOnS1i74="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="VPfR4OwT1nc="; charset=UTF-8
 Subject: [Openvpn-devel] [M] Change in openvpn[master]: Implement generating
  TLS 1.0 PRF using new OpenSSL 3.0 APIs
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -19,15 +19,19 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: plaisthos <arne-openvpn@...1227...>
-Cc: flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---fLtrOnS1i74=
+--VPfR4OwT1nc=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-cron2 has submitted this change. ( http://gerrit.openvpn.net/c/openvpn/+/45=
-7?usp=3Demail )
+cron2 has uploaded a new patch set (#9) to the change originally created by=
+ plaisthos. ( http://gerrit.openvpn.net/c/openvpn/+/457?usp=3Demail )
+
+The following approvals got outdated and were removed:
+Code-Review+2 by flichtenheld
+
 
 Change subject: Implement generating TLS 1.0 PRF using new OpenSSL 3.0 APIs
 ......................................................................
@@ -58,7 +62,7 @@ M src/openvpn/crypto_openssl.c
 1 file changed, 51 insertions(+), 1 deletion(-)
 
 
-
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/57/457/9
 
 diff --git a/src/openvpn/crypto_openssl.c b/src/openvpn/crypto_openssl.c
 index e8ddf14..4fd5e6b 100644
@@ -151,44 +155,47 @@ Gerrit-PatchSet: 9
 Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-MessageType: merged
+Gerrit-MessageType: newpatchset
 
---fLtrOnS1i74=
+--VPfR4OwT1nc=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p>cron2 <strong>submitted</strong> this change.</p><p><a href=3D"http://ge=
-rrit.openvpn.net/c/openvpn/+/457?usp=3Demail">View Change</a></p><div style=
-=3D"white-space:pre-wrap"></div><pre style=3D"font-family: monospace,monosp=
-ace; white-space: pre-wrap;">Implement generating TLS 1.0 PRF using new Ope=
-nSSL 3.0 APIs<br><br>OpenSSL 3.0 introduced a new API for doing key derivat=
-ion. So this leaves<br>us now with three different implementation for 1.0.2=
-, 1.1.x and 3.x.<br><br>This was initially done to maybe still have a worki=
-ng TLS 1.0 PRF when<br>using OpenSSL 3.0 in FIPS but it gives the same erro=
-r as with the older API.<br>But since moving to a new API is always good, w=
-e use the new API when using<br>OpenSSL 3.0. We also print the internal Ope=
-nSSL error message when<br>the KDF fails.<br><br>This also allows us now to=
- compile an OpenSSL build that has been built with<br>OPENSSL_NO_MD5. Which=
- is not yet common but might be in the future.<br><br>Change-Id: Ic74195a4e=
-d340547c5e862dc2438f95be318c286<br>Signed-off-by: Arne Schwabe &lt;arne@...493...=
-1227...&gt;<br>Acked-by: Frank Lichtenheld &lt;frank@...2641...&gt;<br>Mess=
-age-Id: &lt;20240209110629.15364-1-frank@...2641...&gt;<br>URL: https://www=
-.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg28203.html<br>Sign=
-ed-off-by: Gert Doering &lt;gert@...1296...&gt;<br>---<br>M src/openvpn/cry=
-pto_openssl.c<br>1 file changed, 51 insertions(+), 1 deletion(-)<br><br></p=
-re>
-<pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><sp=
-an>diff --git a/src/openvpn/crypto_openssl.c b/src/openvpn/crypto_openssl.c=
-</span><br><span>index e8ddf14..4fd5e6b 100644</span><br><span>--- a/src/op=
-envpn/crypto_openssl.c</span><br><span>+++ b/src/openvpn/crypto_openssl.c</=
-span><br><span>@@ -54,6 +54,7 @@</span><br><span> #endif</span><br><span> #=
-if OPENSSL_VERSION_NUMBER &gt;=3D 0x30000000L</span><br><span> #include &lt=
-;openssl/provider.h&gt;</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+#include &lt;openssl/core_names.h&gt;</span><br><span> #endif</span><br=
-><span> </span><br><span> #if defined(_WIN32) &amp;&amp; defined(OPENSSL_NO=
-_EC)</span><br><span>@@ -1329,8 +1330,57 @@</span><br><span> {</span><br><s=
-pan>     return CRYPTO_memcmp(a, b, size);</span><br><span> }</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+#if (OPENSSL_VERSION_NUMBER &gt;=
+<p>cron2 <strong>uploaded patch set #9</strong> to the change originally cr=
+eated by plaisthos.</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/=
+457?usp=3Demail">View Change</a></p><p>The following approvals got outdated=
+ and were removed:
+Code-Review+2 by flichtenheld</p><pre style=3D"font-family: monospace,monos=
+pace; white-space: pre-wrap;">Implement generating TLS 1.0 PRF using new Op=
+enSSL 3.0 APIs<br><br>OpenSSL 3.0 introduced a new API for doing key deriva=
+tion. So this leaves<br>us now with three different implementation for 1.0.=
+2, 1.1.x and 3.x.<br><br>This was initially done to maybe still have a work=
+ing TLS 1.0 PRF when<br>using OpenSSL 3.0 in FIPS but it gives the same err=
+or as with the older API.<br>But since moving to a new API is always good, =
+we use the new API when using<br>OpenSSL 3.0. We also print the internal Op=
+enSSL error message when<br>the KDF fails.<br><br>This also allows us now t=
+o compile an OpenSSL build that has been built with<br>OPENSSL_NO_MD5. Whic=
+h is not yet common but might be in the future.<br><br>Change-Id: Ic74195a4=
+ed340547c5e862dc2438f95be318c286<br>Signed-off-by: Arne Schwabe &lt;arne@...1186...=
+.1227...&gt;<br>Acked-by: Frank Lichtenheld &lt;frank@...2641...&gt;<br>Mes=
+sage-Id: &lt;20240209110629.15364-1-frank@...2641...&gt;<br>URL: https://ww=
+w.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg28203.html<br>Sig=
+ned-off-by: Gert Doering &lt;gert@...1296...&gt;<br>---<br>M src/openvpn/cr=
+ypto_openssl.c<br>1 file changed, 51 insertions(+), 1 deletion(-)<br><br></=
+pre><pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"=
+>git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/57/457/9</pre=
+><pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><s=
+pan>diff --git a/src/openvpn/crypto_openssl.c b/src/openvpn/crypto_openssl.=
+c</span><br><span>index e8ddf14..4fd5e6b 100644</span><br><span>--- a/src/o=
+penvpn/crypto_openssl.c</span><br><span>+++ b/src/openvpn/crypto_openssl.c<=
+/span><br><span>@@ -54,6 +54,7 @@</span><br><span> #endif</span><br><span> =
+#if OPENSSL_VERSION_NUMBER &gt;=3D 0x30000000L</span><br><span> #include &l=
+t;openssl/provider.h&gt;</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+#include &lt;openssl/core_names.h&gt;</span><br><span> #endif</span><b=
+r><span> </span><br><span> #if defined(_WIN32) &amp;&amp; defined(OPENSSL_N=
+O_EC)</span><br><span>@@ -1329,8 +1330,57 @@</span><br><span> {</span><br><=
+span>     return CRYPTO_memcmp(a, b, size);</span><br><span> }</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+#if (OPENSSL_VERSION_NUMBER &gt;=
 =3D 0x30000000L) &amp;&amp; !defined(LIBRESSL_VERSION_NUMBER)</span><br><sp=
 an style=3D"color: hsl(120, 100%, 40%);">+bool</span><br><span style=3D"col=
 or: hsl(120, 100%, 40%);">+ssl_tls1_PRF(const uint8_t *seed, int seed_len, =
@@ -271,8 +278,8 @@ me" content=3D"View Change"/></div></div>
 1...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: merged </div>
+<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
 
 
---fLtrOnS1i74=--
+--VPfR4OwT1nc=--
 
