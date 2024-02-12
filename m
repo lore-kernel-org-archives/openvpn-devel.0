@@ -1,11 +1,9 @@
-Message-ID: <188809bc-0046-425b-8e84-86a7ced340ac@...1227...>
-Date: Mon, 12 Feb 2024 14:47:21 +0100
-MIME-Version: 1.0
-References: <20240212132522.125903-1-juliusz@...2525...>
-Content-Language: en-GB
-From: Arne Schwabe <arne@...1227...>
+Date: Mon, 12 Feb 2024 18:10:36 +0100 (CET)
+Message-Id: <202402121710.41CHAaHr086518@...2054...>
+From: Gert Doering <gert@...1296...>
 In-Reply-To: <20240212132522.125903-1-juliusz@...2525...>
-Subject: Re: [Openvpn-devel] [PATCH] Change include order for tests
+References: <20240212132522.125903-1-juliusz@...2525...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Change include order for tests
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,20 +12,36 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-To: Juliusz Sosinowicz <juliusz@...2525...>, openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: Juliusz Sosinowicz <juliusz@...2525...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-Am 12.02.24 um 14:25 schrieb Juliusz Sosinowicz:
-> Including "ssl.h" conflicts with the wolfSSL ssl.h header file. The openvpn/src directory needs to be included before include/wolfssl. include/wolfssl needs to be included so that openvpn can pick up wolfSSL compatibility headers instead of OpenSSL headers without changing the paths.
-> 
-> src/openvpn/Makefile.am does not need to be modified because AM_CPPFLAGS is placed before AM_CFLAGS in the output Makefile.
-> 
+Thanks for this updated patch, which fixes the issue in a much nicer
+way.  I'm not sure if you observe the problem in release/2.6 as well
+- if yes, I need a release/2.6-specific patch for that (as half the
+new test drivers are not in that branch).
+
+Quick test with an in-tree build on FreeBSD and GHA builds passes fine.
+
+Your patch has been applied to the master branch.
+
+commit 54475711eb119f6fbb263880fca08d4b10df752a
+Author: Juliusz Sosinowicz
+Date:   Mon Feb 12 14:25:22 2024 +0100
+
+     Change include order for tests
+
+     Signed-off-by: Juliusz Sosinowicz <juliusz@...2525...>
+     Acked-by: Arne Schwabe <arne@...1227...>
+     Message-Id: <20240212132522.125903-1-juliusz@...2525...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg28229.html
+     Signed-off-by: Gert Doering <gert@...1296...>
 
 
-That looks reasonable and having test includes in a more similar order 
-than our normal includes is also a good thing.
+--
+kind regards,
 
-Acked-By: Arne Schwabe <arne@...1227...>
+Gert Doering
 
 
