@@ -1,13 +1,8 @@
-Message-ID: <7c07565a-51b8-4f92-8c53-57eb62667174@...2525...>
-Date: Mon, 12 Feb 2024 19:11:41 +0100
+Date: Tue, 13 Feb 2024 12:32:46 +0100
+From: Frank Lichtenheld <frank@...2641...>
+Message-ID: <ZctTXpCR5vT06JXJ@...2685...>
 MIME-Version: 1.0
-Content-Language: en-US
-References: <20240212132522.125903-1-juliusz@...2525...>
- <202402121710.41CHAaHr086518@...2054...>
-From: Juliusz Sosinowicz <juliusz@...2525...>
-In-Reply-To: <202402121710.41CHAaHr086518@...2054...>
-Subject: Re: [Openvpn-devel] [PATCH applied] Re: Change include order for
- tests
+Subject: [Openvpn-devel] OpenVPN 2.6.9 released
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,44 +11,81 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-To: Gert Doering <gert@...1296...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+To: openvpn-announce@lists.sourceforge.net, openvpn-devel@lists.sourceforge.net, openvpn-users@lists.sourceforge.net
 
-Thanks Gert. I see that our tests for the "release/2.6" branch are 
-passing. This was discovered by testing against the master branch so I 
-don't think this patch needs backporting.
+The OpenVPN community project team is proud to release OpenVPN 2.6.9.
 
-Sincerely
-Juliusz Sosinowicz
+This is a bugfix release containing one security fix for the Windows installer.
 
-On 12/02/2024 18:10, Gert Doering wrote:
-> Thanks for this updated patch, which fixes the issue in a much nicer
-> way.  I'm not sure if you observe the problem in release/2.6 as well
-> - if yes, I need a release/2.6-specific patch for that (as half the
-> new test drivers are not in that branch).
->
-> Quick test with an in-tree build on FreeBSD and GHA builds passes fine.
->
-> Your patch has been applied to the master branch.
->
-> commit 54475711eb119f6fbb263880fca08d4b10df752a
-> Author: Juliusz Sosinowicz
-> Date:   Mon Feb 12 14:25:22 2024 +0100
->
->       Change include order for tests
->
->       Signed-off-by: Juliusz Sosinowicz <juliusz@...2525...>
->       Acked-by: Arne Schwabe <arne@...1227...>
->       Message-Id: <20240212132522.125903-1-juliusz@...2525...>
->       URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg28229.html
->       Signed-off-by: Gert Doering <gert@...1296...>
->
->
-> --
-> kind regards,
->
-> Gert Doering
->
+Security fixes:
+
+* Windows Installer: fix ​CVE-2023-7235 where installing to a non-default directory
+  could lead to a local privilege escalation. Reported by Will Dormann. 
+
+New features:
+
+* Add support for building with mbedTLS 3.x.x
+* New option --force-tls-key-material-export to only accept clients that can do
+  TLS keying material export to generate session keys
+  (mostly an internal option to better deal with TLS 1.0 PRF failures).
+* Windows: bump vcpkg-ports/pkcs11-helper to 1.30
+* Log incoming SSL alerts in easier to understand form and move logging from --verb 8
+  to --verb 3.
+* protocol_dump(): add support for printing --tls-crypt packets 
+
+User visible changes:
+
+* License change is now complete, and all code has been re-licensed under the new license
+  (still GPLv2, but with new linking exception for Apache2 licensed code).
+  See ​COPYING for details. 
+  Code that could not be re-licensed has been removed or rewritten.
+* The original code for the --tls-export-cert feature has been removed (due to the
+  re-licensing effort) and rewritten without looking at the original code.
+  Feature-compatibility has been tested by other developers, looking at both old and
+  new code and documentation, so there *should* not be a user-visible change here.
+* IPv6 route addition/deletion are now logged on the same level (3) as for IPv4.
+  Previously IPv6 was always logged at --verb 1.
+* Better handling of TLS 1.0 PRF failures in the underlying SSL library (e.g. on some
+  FIPS builds) - this is now reported on startup, and clients before 2.6.0 that can not
+  use TLS EKM to generate key material are rejected by the server. Also, error messages
+  are improved to see what exactly failed. 
+
+Notable bug fixes:
+
+* FreeBSD: for servers with multiple clients, reporting of peer traffic statistics would
+  fail due to insufficient buffer space (Github: ​#487) 
+
+Windows MSI changes since 2.6.8:
+
+* Security fix, see above
+* Built against OpenSSL 3.2.0
+* Included openvpn-gui updated to 11.47.0.0
+  * Windows GUI: always update tray icon on state change (Github: ​#openvpn-gui/669)
+    (for persistent connection profiles, "connecting" state would not show) 
+
+More details can be found in the Changes document:
+
+<https://github.com/OpenVPN/openvpn/blob/release/2.6/Changes.rst>
+
+(The Changes document also contains a section with work-arounds for
+common problems encountered when using OpenVPN with OpenSSL 3)
+
+Source code and Windows installers can be downloaded from our download page:
+
+<https://openvpn.net/community-downloads/>
+
+Debian and Ubuntu packages are available in the official apt repositories:
+
+<https://community.openvpn.net/openvpn/wiki/OpenvpnSoftwareRepos#DebianUbuntu:UsingOpenVPNaptrepositories>
+
+On Red Hat derivatives we recommend using the Fedora Copr repository.
+
+<https://copr.fedorainfracloud.org/coprs/dsommers/openvpn-release-2.6/>
+
+Kind regards,
+-- 
+  Frank Lichtenheld
 
