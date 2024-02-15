@@ -1,12 +1,15 @@
-Date: Wed, 14 Feb 2024 17:18:21 +0000
-From: tincantech <tincantech@...2282...>
-Message-ID: <kiuEvfPhyMr8TQIYBbooBK7BOnaHm4Bi18X2pO0ujjEIrGEPSONav0DnpYy97JLoHgDW5vfjaD4amWbxlodG75qHQqtzjjAfFzRci4gbCh4=@protonmail.com>
-In-Reply-To: <Zczam85nBDgD74kE@...2685...>
-References: <Zczam85nBDgD74kE@...2685...>
+From: "its_Giaan (Code Review)" <gerrit@...515...>
+Date: Thu, 15 Feb 2024 08:48:55 +0000
+References: <gerrit.1707986932000.I8a67b82eb4afdc8d82c5a879c18457b41e77cbe7@...2715...>
+Reply-To: gianmarco@...2726..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net, frank@...2641...
+Message-ID: <06ebd3fab9ad0435f8b73ec15f89b60111da4228-HTML@...2715...>
 MIME-Version: 1.0
-Content-Type: multipart/mixed;
- boundary="b1_bL3cgn5lm7LaHwCL7fzpmIhIydMO7q1TYgJTD2TjHr0"
-Subject: Re: [Openvpn-devel] IRC community meeting summary (Feb 14th)
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="lpbM8W7Lnbs="; charset=UTF-8
+Subject: [Openvpn-devel] [XS] Change in openvpn[master]: Route: remove
+ uncorrect routes on exit.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,106 +18,158 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Frank Lichtenheld <frank@...2641...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-This is a multi-part message in MIME format.
-
---b1_bL3cgn5lm7LaHwCL7fzpmIhIydMO7q1TYgJTD2TjHr0
-Content-Type: text/plain; charset="utf-8"
+--lpbM8W7Lnbs=
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
------BEGIN PGP SIGNED MESSAGE-----
-Hash: SHA256
+Attention is currently required from: flichtenheld, plaisthos.
 
-Hi,
+Hello plaisthos, flichtenheld,
 
-On Wednesday, 14 February 2024 at 15:22, Frank Lichtenheld <frank@...2723...=
-.> wrote:
+I'd like you to do a code review.
+Please visit
 
-> Meeting summary for 14 February 2024:
+    http://gerrit.openvpn.net/c/openvpn/+/522?usp=3Demail
 
-<snip>
+to review the following change.
 
-> * New: Easy-rsa in Windows installers
-> easy-rsa has included pre-built Windows binaries for a long time. But with
-> Windows 11 they do not seem to work correctly anymore in some cases.
 
-Just to clarify:
-Easy-RSA works perfectly as-is on W10 & W11 but requires Windows Admin acce=
-ss.
-Without Windows Admin Access, Easy-RSA on W11 does not work with the now 10=
- year
-old MKSH:sh.exe
+Change subject: Route: remove uncorrect routes on exit.
+......................................................................
 
-This is annoying but it isn't a complete deal-breaker.
+Route: remove uncorrect routes on exit.
 
-Regards
-tct
---=20
+Implemented a safeguard to verify the returned value
+from add_route3() when the default gateway is not a local
+remote host.
 
------BEGIN PGP SIGNATURE-----
-Version: ProtonMail
+Prior to this implementation, RT_DID_LOCAL flag was
+erroneously set even in case of add_route3() failure.
+This problem typically occurs when there's no default
+route and the --redirect-gateway def1 option is specified,
+and in case of reconnection makes it impossible for the client
+to reobtain the route to the server.
+This fix ensures OpenVPN accurately deletes the appropriate
+route on exit by properly handling add_route3() return value.
 
-wsBzBAEBCAAnBYJlzPXJCZBPl5z2a5C4nRYhBAm8PURno41yecVVVU+XnPZr
-kLidAAC+Cwf+P7EBDJirKoBXV/SsOrzfNfFSR2hVOCqSN9jwFs+TIv/kD+UN
-eOT87L5EW3x/EpF0hRyNy0g83ePdR1ESN4C4mP1Jm9QJZzKgXX44uO4XH5C3
-4FXWj/06vQRoaTO5Lk8Y+caLFn9kmpq57JCkorPOI3RjDIwcJcgZ66FweAY2
-prSSCj33fzuGoJMWfdXfF4pEu55cV1Iawar2acYJOLlpn0NTFNtyqzVoC8lv
-k5FDHjzFuTooBvJ4g2hR8KDctaS/3tTjk4c3ZsVr+0F9n2SwsMmHz93YfONX
-iuvLv/vxGMrWViXv9gbYJMqqfagamWn7SZivlkFp/YxSBg+3vSPo1w=3D=3D
-=3D+izN
------END PGP SIGNATURE-----
+Fixes: Trac #1457
+Change-Id: I8a67b82eb4afdc8d82c5a879c18457b41e77cbe7
+Signed-off-by: Gianmarco De Gregori <gianmarco@...2726...>
+---
+M src/openvpn/route.c
+1 file changed, 4 insertions(+), 1 deletion(-)
 
---b1_bL3cgn5lm7LaHwCL7fzpmIhIydMO7q1TYgJTD2TjHr0
-Content-Type: application/pgp-keys; name="publickey - tincantech@...2282... - 0x09BC3D44.asc"
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment; filename="publickey - tincantech@...2282... - 0x09BC3D44.asc"
 
-LS0tLS1CRUdJTiBQR1AgUFVCTElDIEtFWSBCTE9DSy0tLS0tCgp4c0JOQkZ2d1NjY0JDQURPbUhF
-blFsTG1PakpSdEpMMmw1M01Md3dGVHk3WG5FcHMzYjFRMFV3V1lGQ3YKTDJvTnAwbnJkR2xLS0RK
-cTUwWTA5U1IrVVJZQlFtS21ZM0VtenB5VUlLTS9yZ28xUnl1YkhwTVJIYkRwCjdKcDhMeGtmZkZC
-VkpqL3Q1Vk1wRDZlTVI2YVVjaVFqZ1JMOE5aZTYrVDd4ZlhYWHdWNWhvUmVaM2pPKwp6SGk2U1I3
-eFR2R1hsYStNUXo2RUVwV25sYkx2ZzJvcnQ5S3NldVZqWXJxdlJNeGNkUDBvOWNaV0o1ZXAKSk5t
-Z2VCNk03K09XMDhVMVNzWHRLcnBMUmNJNnlLbVYzOGpoelByMlpnUDlybXJsRXJSLzFpcVFRSFhZ
-Cm84LzBEZlB5RjBtSDl5blFJaUxFL2wrRll1NHJzRzhWaUtseGhYY3plUHpBdExDamlCMGEwbVJW
-QUJFQgpBQUhOTnlKMGFXNWpZVzUwWldOb1FIQnliM1J2Ym0xaGFXd3VZMjl0SWlBOGRHbHVZMkZ1
-ZEdWamFFQncKY205MGIyNXRZV2xzTG1OdmJUN0N3SDhFRUFFSUFDa0ZBbHZ3U2NjR0N3a0hDQU1D
-Q1JCUGw1ejJhNUM0Cm5RUVZDQW9DQXhZQ0FRSVpBUUliQXdJZUFRQUtDUkJQbDV6MmE1QzRuUUJE
-Qi85WlVvOUJPWEpSNjFObQowMm9aLzhhUlhPOU5uVVNGdDZHTE9XY0ROdkFzNElKV01EVkVRZllh
-bmIrNDIxUU5kLzVkNkgxaVhGK2kKNExESzBNNmFnQytnc05GSm5qUEdJdHZQdGo3V3lqeW5aUng4
-RDQwUFBYaWdmSFl1dzJvUnUwbHIrUDFwCjFxZVVlNE5iY3FJdjhJSXZMejJ6Q2xZWk9OZ0FzUVZj
-TkFIaTdaNG9ydFEyaW8yQkFWai84MTlKUFlNdAp0SGdZODF3UzFWN3Y4R0RUWmc4b2FQaFhHZmFD
-NFRaRkd0WnIvYnliY3Fyc28zNWphUW1DNTR4TWJYcEYKQVVyYzN1R1ZPSCtPZEcvQlcyZ2NZcXB2
-VUZCdWtYeENVQllIUDJOZlhoTmZ6R3Q5bkMxdWxOS1llUDE5ClRHbE9vckJNWUlBRUhvR3h2cGJV
-WGZiYU5XQ1V6c0JOQkZ2d1NjY0JDQUM5S3lWWlJTNWFNYUc1UGkwbgpmeDhhTm9zM2JZcDI0Nk10
-ZmFvS0JmVFFBcmQrR1pXK1duRnlKRWlTeUxkejByVXV0eUNBZGY1bGdWSCsKV3ZMdkltaUdyU3J6
-VnBNVDJuQ1MwOUxxTDUwUWp6OEE3Z3A1SC9oUXp0WjhpTnlzR0Q5Tk80Nk9uSTc1CjkwZEhmQ3JY
-alFQU0Z0RkdzVHpnRHhRSWlNdXp6OURSN0Jla0tQbXVPRkloQmU5ZUVacWJ4YzhSV2VRdApoYTdp
-L0RySlRSTksxYU9BRFFGVnVWMS9BbTVUaEdQV0ZNL1lKVXlUWWhNVzB5ZVBoNDVPYld1UlFaa3MK
-bCthT200TDBLR0REWWxtL0ZReC9FTUN1YnZsenkvenhEZEI2bnFGaWgycVpyZnltbmlTT0thakcw
-am9UCnBab3ovRXorNGZBdGc2eTBQc3BOUjZpZEFCRUJBQUhDd0drRUdBRUlBQk1GQWx2d1NjY0pF
-RStYblBacgprTGlkQWhzTUFBb0pFRStYblBacmtMaWRSZTBIL2o1Q0lGSUF1Y3VhaUVNa0xrTktF
-QU81czd4NDdlTnkKR1BmWnNseVkrSGp6R1UwZDA3TWtrR21Wa1BUVnp3cVZ6Tlpibnk3WkF2MXps
-VzBVeTB5SHAxQVBweVl0CjhidVVwcFRCcTdkNDdvZ3hFUll6dC9MYzJMNWEvVktGTlJiaE4xL1hR
-bVBpejJFbGU0dHlpcGJUYXBjeQoremJ5ZnpBTUQxM2NJZFoxM2hUc05QMG9sZ0JoQXFVQVVVWXB4
-UmxrQUhlSitEdDNOYnpIUzRLUUs1MzgKTkovbDdiWFNLc0dxb1lxSmVaOFZOQnh3V1dVYnVHNGpq
-cmg0M01JUmdVWjVXc1BVWVY2SHgwNTZrTWpiCi9iWUJqSTBURU12SDgxNjB1cXpGWGVIdll5VWxx
-MFNpbkQvWjlpb0llOFFkc0hHQkRVSVJZWXViMXBPOApxckN6Ulp4MG9OQT0KPS9EZWEKLS0tLS1F
-TkQgUEdQIFBVQkxJQyBLRVkgQkxPQ0stLS0tLQo=
 
---b1_bL3cgn5lm7LaHwCL7fzpmIhIydMO7q1TYgJTD2TjHr0
-Content-Type: application/pgp-signature; name="publickey - tincantech@...2282... - 0x09BC3D44.asc.sig"
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment; filename="publickey - tincantech@...2282... - 0x09BC3D44.asc.sig"
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/22/522/1
 
-wsBzBAABCAAnBYJlzPXJCZBPl5z2a5C4nRYhBAm8PURno41yecVVVU+XnPZrkLidAAAFSggArafj
-EwwryPrtG1Yw5Cio8kZ3VpOcrq8B0pNo3k4Ca5hXiW3Hk+kuD9CCIU/CdhGBbG59fKKbNc4HvD4J
-PE0yeti5ISz8JNO03mgn5yxLZumxUWXKqExg2xjwN6EnmqW8fnQwJnc3/1rJsjd2Wts/sUDkRgWG
-gniThmYJ2lpIUZ2uyxOHPFnwzEsarajuyLTMUreWIgj8fCd+CyUIH0kD/sWNps5GOkjOsTZHFH6R
-RY3pGjkrlb9DkTxu85gUeAluUDjvlo61VWbr5i6IFOnZltYNmVFrESL84DR6mBb/neYMICAHQzMP
-4/OYw4Iu7RPhtHYcI9VUH7JM4vZBKVfpGw==
+diff --git a/src/openvpn/route.c b/src/openvpn/route.c
+index 6c027d9..6ab4392 100644
+--- a/src/openvpn/route.c
++++ b/src/openvpn/route.c
+@@ -1055,7 +1055,10 @@
+                     ret =3D add_route3(rl->spec.remote_host, IPV4_NETMASK_=
+HOST,
+                                      rl->rgi.gateway.addr, tt, flags | ROU=
+TE_REF_GW,
+                                      &rl->rgi, es, ctx);
+-                    rl->iflags |=3D RL_DID_LOCAL;
++                    if (ret)
++                    {
++                        rl->iflags |=3D RL_DID_LOCAL;
++                    }
+                 }
+                 else
+                 {
 
---b1_bL3cgn5lm7LaHwCL7fzpmIhIydMO7q1TYgJTD2TjHr0--
+--
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/522?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings
 
+Gerrit-Project: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: I8a67b82eb4afdc8d82c5a879c18457b41e77cbe7
+Gerrit-Change-Number: 522
+Gerrit-PatchSet: 1
+Gerrit-Owner: its_Giaan <gianmarco@...2726...>
+Gerrit-Reviewer: flichtenheld <frank@...2641...>
+Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Attention: flichtenheld <frank@...2641...>
+Gerrit-MessageType: newchange
+
+--lpbM8W7Lnbs=
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<p> Attention is currently required from: flichtenheld, plaisthos. </p>
+<p>its_Giaan would like plaisthos and flichtenheld to <strong>review</stron=
+g> this change.
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/522?usp=3Demail">Vi=
+ew Change</a></p><pre style=3D"font-family: monospace,monospace; white-spac=
+e: pre-wrap;">Route: remove uncorrect routes on exit.<br><br>Implemented a =
+safeguard to verify the returned value<br>from add_route3() when the defaul=
+t gateway is not a local<br>remote host.<br><br>Prior to this implementatio=
+n, RT_DID_LOCAL flag was<br>erroneously set even in case of add_route3() fa=
+ilure.<br>This problem typically occurs when there&#39;s no default<br>rout=
+e and the --redirect-gateway def1 option is specified,<br>and in case of re=
+connection makes it impossible for the client<br>to reobtain the route to t=
+he server.<br>This fix ensures OpenVPN accurately deletes the appropriate<b=
+r>route on exit by properly handling add_route3() return value.<br><br>Fixe=
+s: Trac #1457<br>Change-Id: I8a67b82eb4afdc8d82c5a879c18457b41e77cbe7<br>Si=
+gned-off-by: Gianmarco De Gregori &lt;gianmarco@...2726...&gt;<br>---<br>M =
+src/openvpn/route.c<br>1 file changed, 4 insertions(+), 1 deletion(-)<br><b=
+r></pre><pre style=3D"font-family: monospace,monospace; white-space: pre-wr=
+ap;">git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/22/522/1<=
+/pre><pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;=
+"><span>diff --git a/src/openvpn/route.c b/src/openvpn/route.c</span><br><s=
+pan>index 6c027d9..6ab4392 100644</span><br><span>--- a/src/openvpn/route.c=
+</span><br><span>+++ b/src/openvpn/route.c</span><br><span>@@ -1055,7 +1055=
+,10 @@</span><br><span>                     ret =3D add_route3(rl-&gt;spec.=
+remote_host, IPV4_NETMASK_HOST,</span><br><span>                           =
+           rl-&gt;rgi.gateway.addr, tt, flags | ROUTE_REF_GW,</span><br><sp=
+an>                                      &amp;rl-&gt;rgi, es, ctx);</span><=
+br><span style=3D"color: hsl(0, 100%, 40%);">-                    rl-&gt;if=
+lags |=3D RL_DID_LOCAL;</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+                    if (ret)</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+                    {</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+                        rl-&gt;iflags |=3D RL_DID_LOCAL;</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+                    }</=
+span><br><span>                 }</span><br><span>                 else</sp=
+an><br><span>                 {</span><br><span></span><br></pre><p>To view=
+, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/522?usp=3Demail">c=
+hange 522</a>. To unsubscribe, or for help writing mail filters, visit <a h=
+ref=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope =
+itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"acti=
+on" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=
+=3D"http://gerrit.openvpn.net/c/openvpn/+/522?usp=3Demail"/><meta itemprop=
+=3D"name" content=3D"View Change"/></div></div>
+
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I8a67b82eb4afdc8d82c5a879c18=
+457b41e77cbe7 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 522 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
+<div style=3D"display:none"> Gerrit-Owner: its_Giaan &lt;gianmarco@...2786...=
+..&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
+1...&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
+.1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
+41...&gt; </div>
+<div style=3D"display:none"> Gerrit-MessageType: newchange </div>
+
+
+--lpbM8W7Lnbs=--
 
