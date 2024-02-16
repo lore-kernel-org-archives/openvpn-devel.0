@@ -1,16 +1,15 @@
-From: "flichtenheld (Code Review)" <gerrit@...515...>
-Date: Fri, 16 Feb 2024 15:32:14 +0000
-In-Reply-To: <gerrit.1707986932000.I8a67b82eb4afdc8d82c5a879c18457b41e77cbe7@...2715...>
-References: <gerrit.1707986932000.I8a67b82eb4afdc8d82c5a879c18457b41e77cbe7@...2715...>
-Reply-To: frank@...2641..., arne-openvpn@...1227...,
- gianmarco@...2726..., openvpn-devel@lists.sourceforge.net
-Message-ID: <96d845ea40dde021de40d2af0234c19ebcacc258-EmailReviewComments-HTML@...2715...>
+From: "its_Giaan (Code Review)" <gerrit@...515...>
+Date: Fri, 16 Feb 2024 15:50:37 +0000
+References: <gerrit.1708098635000.Ie147f81e5990b8292be090fd05c23b91f8e308d4@...2715...>
+Reply-To: gianmarco@...2726..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net, frank@...2641...
+Message-ID: <9ec01a617a8d11bef80e6d23591bd1e0f8236324-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="t5W5Gh3iPlE="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="7pVyf0byb/8="; charset=UTF-8
 Subject: [Openvpn-devel] [XS] Change in openvpn[master]: Route: remove
- uncorrect routes on exit.
+ incorrect routes on exit
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,85 +18,143 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: its_Giaan <gianmarco@...2726...>
-Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---t5W5Gh3iPlE=
+--7pVyf0byb/8=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: its_Giaan, plaisthos.
+Attention is currently required from: flichtenheld, plaisthos.
 
-flichtenheld has posted comments on this change. ( http://gerrit.openvpn.ne=
-t/c/openvpn/+/522?usp=3Demail )
+Hello plaisthos, flichtenheld,
 
-Change subject: Route: remove uncorrect routes on exit.
+I'd like you to do a code review.
+Please visit
+
+    http://gerrit.openvpn.net/c/openvpn/+/528?usp=3Demail
+
+to review the following change.
+
+
+Change subject: Route: remove incorrect routes on exit
 ......................................................................
 
+Route: remove incorrect routes on exit
 
-Patch Set 1: Code-Review+2
+Implemented a safeguard to verify the returned value
+from add_route3() when the default gateway is not a local
+remote host.
 
-(1 comment)
+Prior to this implementation, RT_DID_LOCAL flag was
+erroneously set even in case of add_route3() failure.
+This problem typically occurs when there's no default
+route and the --redirect-gateway def1 option is specified,
+and in case of reconnection makes it impossible for the client
+to reobtain the route to the server.
+This fix ensures OpenVPN accurately deletes the appropriate
+route on exit by properly handling add_route3() return value.
 
-Commit Message:
+Fixes: Trac #1457
+Change-Id: Ie147f81e5990b8292be090fd05c23b91f8e308d4
+Signed-off-by: Gianmarco De Gregori <gianmarco@...2726...>
+---
+M src/openvpn/route.c
+1 file changed, 4 insertions(+), 1 deletion(-)
 
-http://gerrit.openvpn.net/c/openvpn/+/522/comment/1ee852a4_4c084f6c :
-PS1, Line 7: Route: remove uncorrect routes on exit.
-"incorrect"
-remove full stop at end of summary line
 
 
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/28/528/1
+
+diff --git a/src/openvpn/route.c b/src/openvpn/route.c
+index 6c027d9..6ab4392 100644
+--- a/src/openvpn/route.c
++++ b/src/openvpn/route.c
+@@ -1055,7 +1055,10 @@
+                     ret =3D add_route3(rl->spec.remote_host, IPV4_NETMASK_=
+HOST,
+                                      rl->rgi.gateway.addr, tt, flags | ROU=
+TE_REF_GW,
+                                      &rl->rgi, es, ctx);
+-                    rl->iflags |=3D RL_DID_LOCAL;
++                    if (ret)
++                    {
++                        rl->iflags |=3D RL_DID_LOCAL;
++                    }
+                 }
+                 else
+                 {
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/522?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/528?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings
 
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: I8a67b82eb4afdc8d82c5a879c18457b41e77cbe7
-Gerrit-Change-Number: 522
+Gerrit-Change-Id: Ie147f81e5990b8292be090fd05c23b91f8e308d4
+Gerrit-Change-Number: 528
 Gerrit-PatchSet: 1
 Gerrit-Owner: its_Giaan <gianmarco@...2726...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: its_Giaan <gianmarco@...2726...>
-Gerrit-Comment-Date: Fri, 16 Feb 2024 15:32:14 +0000
-Gerrit-HasComments: Yes
-Gerrit-Has-Labels: Yes
-Gerrit-MessageType: comment
+Gerrit-Attention: flichtenheld <frank@...2641...>
+Gerrit-MessageType: newchange
 
---t5W5Gh3iPlE=
+--7pVyf0byb/8=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p> Attention is currently required from: its_Giaan, plaisthos. </p>
-<p>Patch set 1:<span style=3D"border-radius: 3px; display: inline-block; ma=
-rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/522?usp=3Demail">Vi=
-ew Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0=
-;"><li style=3D"margin: 0; padding: 0;"><p>Commit Message:</p><ul style=3D"=
-list-style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;=
-"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/o=
-penvpn/+/522/comment/1ee852a4_4c084f6c">Patch Set #1, Line 7:</a> <code sty=
-le=3D"font-family:monospace,monospace">Route: remove uncorrect routes on ex=
-it.</code></p><p style=3D"white-space: pre-wrap; word-wrap: break-word;">&q=
-uot;incorrect&quot;<br>remove full stop at end of summary line</p></li></ul=
-></li></ul><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn=
-/+/522?usp=3Demail">change 522</a>. To unsubscribe, or for help writing mai=
-l filters, visit <a href=3D"http://gerrit.openvpn.net/settings">settings</a=
->.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div items=
-cope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link it=
-emprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/522?usp=3Demai=
-l"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
+<p> Attention is currently required from: flichtenheld, plaisthos. </p>
+<p>its_Giaan would like plaisthos and flichtenheld to <strong>review</stron=
+g> this change.
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/528?usp=3Demail">Vi=
+ew Change</a></p><pre style=3D"font-family: monospace,monospace; white-spac=
+e: pre-wrap;">Route: remove incorrect routes on exit<br><br>Implemented a s=
+afeguard to verify the returned value<br>from add_route3() when the default=
+ gateway is not a local<br>remote host.<br><br>Prior to this implementation=
+, RT_DID_LOCAL flag was<br>erroneously set even in case of add_route3() fai=
+lure.<br>This problem typically occurs when there&#39;s no default<br>route=
+ and the --redirect-gateway def1 option is specified,<br>and in case of rec=
+onnection makes it impossible for the client<br>to reobtain the route to th=
+e server.<br>This fix ensures OpenVPN accurately deletes the appropriate<br=
+>route on exit by properly handling add_route3() return value.<br><br>Fixes=
+: Trac #1457<br>Change-Id: Ie147f81e5990b8292be090fd05c23b91f8e308d4<br>Sig=
+ned-off-by: Gianmarco De Gregori &lt;gianmarco@...2726...&gt;<br>---<br>M s=
+rc/openvpn/route.c<br>1 file changed, 4 insertions(+), 1 deletion(-)<br><br=
+></pre><pre style=3D"font-family: monospace,monospace; white-space: pre-wra=
+p;">git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/28/528/1</=
+pre><pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"=
+><span>diff --git a/src/openvpn/route.c b/src/openvpn/route.c</span><br><sp=
+an>index 6c027d9..6ab4392 100644</span><br><span>--- a/src/openvpn/route.c<=
+/span><br><span>+++ b/src/openvpn/route.c</span><br><span>@@ -1055,7 +1055,=
+10 @@</span><br><span>                     ret =3D add_route3(rl-&gt;spec.r=
+emote_host, IPV4_NETMASK_HOST,</span><br><span>                            =
+          rl-&gt;rgi.gateway.addr, tt, flags | ROUTE_REF_GW,</span><br><spa=
+n>                                      &amp;rl-&gt;rgi, es, ctx);</span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-                    rl-&gt;ifl=
+ags |=3D RL_DID_LOCAL;</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+                    if (ret)</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+                    {</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+                        rl-&gt;iflags |=3D RL_DID_LOCAL;</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+                    }</s=
+pan><br><span>                 }</span><br><span>                 else</spa=
+n><br><span>                 {</span><br><span></span><br></pre><p>To view,=
+ visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/528?usp=3Demail">ch=
+ange 528</a>. To unsubscribe, or for help writing mail filters, visit <a hr=
+ef=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope i=
+temtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"actio=
+n" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D=
+"http://gerrit.openvpn.net/c/openvpn/+/528?usp=3Demail"/><meta itemprop=3D"=
+name" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I8a67b82eb4afdc8d82c5a879c18=
-457b41e77cbe7 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 522 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: Ie147f81e5990b8292be090fd05c=
+23b91f8e308d4 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 528 </div>
 <div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
 <div style=3D"display:none"> Gerrit-Owner: its_Giaan &lt;gianmarco@...2786...=
 ..&gt; </div>
@@ -109,14 +166,10 @@ l"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
 ts.sourceforge.net&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
 ..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: its_Giaan &lt;gianmarco@...1665...=
-726...&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Fri, 16 Feb 2024 15:32:14=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
+<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
+41...&gt; </div>
+<div style=3D"display:none"> Gerrit-MessageType: newchange </div>
 
 
---t5W5Gh3iPlE=--
+--7pVyf0byb/8=--
 
