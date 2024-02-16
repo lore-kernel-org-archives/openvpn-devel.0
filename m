@@ -1,11 +1,16 @@
-Date: Fri, 16 Feb 2024 15:20:25 +0100
-From: Frank Lichtenheld <frank@...2641...>
-Message-ID: <Zc9vKS0P2eUMswyM@...2685...>
-References: <Zczam85nBDgD74kE@...2685...>
- <kiuEvfPhyMr8TQIYBbooBK7BOnaHm4Bi18X2pO0ujjEIrGEPSONav0DnpYy97JLoHgDW5vfjaD4amWbxlodG75qHQqtzjjAfFzRci4gbCh4=@protonmail.com>
+From: "flichtenheld (Code Review)" <gerrit@...515...>
+Date: Fri, 16 Feb 2024 15:32:14 +0000
+In-Reply-To: <gerrit.1707986932000.I8a67b82eb4afdc8d82c5a879c18457b41e77cbe7@...2715...>
+References: <gerrit.1707986932000.I8a67b82eb4afdc8d82c5a879c18457b41e77cbe7@...2715...>
+Reply-To: frank@...2641..., arne-openvpn@...1227...,
+ gianmarco@...2726..., openvpn-devel@lists.sourceforge.net
+Message-ID: <96d845ea40dde021de40d2af0234c19ebcacc258-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-In-Reply-To: <kiuEvfPhyMr8TQIYBbooBK7BOnaHm4Bi18X2pO0ujjEIrGEPSONav0DnpYy97JLoHgDW5vfjaD4amWbxlodG75qHQqtzjjAfFzRci4gbCh4=@protonmail.com>
-Subject: Re: [Openvpn-devel] IRC community meeting summary (Feb 14th)
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="t5W5Gh3iPlE="; charset=UTF-8
+Subject: [Openvpn-devel] [XS] Change in openvpn[master]: Route: remove
+ uncorrect routes on exit.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,59 +19,104 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-To: tincantech <tincantech@...2282...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: its_Giaan <gianmarco@...2726...>
+Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-On Wed, Feb 14, 2024 at 05:18:21PM +0000, tincantech wrote:
-> On Wednesday, 14 February 2024 at 15:22, Frank Lichtenheld <frank@...2641...> wrote:
-> 
-> > Meeting summary for 14 February 2024:
-> 
-> <snip>
-> 
-> > * New: Easy-rsa in Windows installers
-> > easy-rsa has included pre-built Windows binaries for a long time. But with
-> > Windows 11 they do not seem to work correctly anymore in some cases.
-> 
-> Just to clarify:
-> Easy-RSA works perfectly as-is on W10 & W11 but requires Windows Admin access.
-> Without Windows Admin Access, Easy-RSA on W11 does not work with the now 10 year
-> old MKSH:sh.exe
+--t5W5Gh3iPlE=
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Either way, I think everyone agrees that the current situation of
-shipping a ten-year old executable that causes some problems on
-the latest version of Windows isn't ideal.
+Attention is currently required from: its_Giaan, plaisthos.
 
-> This is annoying but it isn't a complete deal-breaker.
+flichtenheld has posted comments on this change. ( http://gerrit.openvpn.ne=
+t/c/openvpn/+/522?usp=3Demail )
 
-Understood.
+Change subject: Route: remove uncorrect routes on exit.
+......................................................................
 
-The question about removing easy-rsa isn't so much about whether it is
-unusable in the current release. But we do not want to leave it in the
-current state.
 
-So, if we need to invest time and effort now anyway to update this to
-a modern standard (e.g. in terms of supply chain security), we want to
-use the opportunity to ask ourselves whether bundling easy-rsa with
-openvpn actually provides a value for the openvpn project and its
-users. It definitely has a cost. Most openvpn developers do not see a
-corresponding value in it (or they did not mention it so far). When
-using openvpn as a client, easy-rsa is not useful. If setting up a
-p2p connection, peer fingerprint can be used which requires openssl
-but not easy-rsa.
+Patch Set 1: Code-Review+2
 
-So are there people that actually use openvpn as a server on Windows
-and do not have their own separate PKI and so use the bundled
-easy-rsa? That is something we would like to learn more about.
+(1 comment)
 
-Note that none of this negates the usefulness of easy-rsa. This
-is specifically about the usefulness of easy-rsa bundled in the
-openvpn Windows installer.
+Commit Message:
 
-Regards,
--- 
-  Frank Lichtenheld
+http://gerrit.openvpn.net/c/openvpn/+/522/comment/1ee852a4_4c084f6c :
+PS1, Line 7: Route: remove uncorrect routes on exit.
+"incorrect"
+remove full stop at end of summary line
+
+
+
+--
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/522?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings
+
+Gerrit-Project: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: I8a67b82eb4afdc8d82c5a879c18457b41e77cbe7
+Gerrit-Change-Number: 522
+Gerrit-PatchSet: 1
+Gerrit-Owner: its_Giaan <gianmarco@...2726...>
+Gerrit-Reviewer: flichtenheld <frank@...2641...>
+Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Attention: its_Giaan <gianmarco@...2726...>
+Gerrit-Comment-Date: Fri, 16 Feb 2024 15:32:14 +0000
+Gerrit-HasComments: Yes
+Gerrit-Has-Labels: Yes
+Gerrit-MessageType: comment
+
+--t5W5Gh3iPlE=
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<p> Attention is currently required from: its_Giaan, plaisthos. </p>
+<p>Patch set 1:<span style=3D"border-radius: 3px; display: inline-block; ma=
+rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/522?usp=3Demail">Vi=
+ew Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0=
+;"><li style=3D"margin: 0; padding: 0;"><p>Commit Message:</p><ul style=3D"=
+list-style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;=
+"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/o=
+penvpn/+/522/comment/1ee852a4_4c084f6c">Patch Set #1, Line 7:</a> <code sty=
+le=3D"font-family:monospace,monospace">Route: remove uncorrect routes on ex=
+it.</code></p><p style=3D"white-space: pre-wrap; word-wrap: break-word;">&q=
+uot;incorrect&quot;<br>remove full stop at end of summary line</p></li></ul=
+></li></ul><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn=
+/+/522?usp=3Demail">change 522</a>. To unsubscribe, or for help writing mai=
+l filters, visit <a href=3D"http://gerrit.openvpn.net/settings">settings</a=
+>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div items=
+cope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link it=
+emprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/522?usp=3Demai=
+l"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
+
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I8a67b82eb4afdc8d82c5a879c18=
+457b41e77cbe7 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 522 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
+<div style=3D"display:none"> Gerrit-Owner: its_Giaan &lt;gianmarco@...2786...=
+..&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
+1...&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
+.1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: its_Giaan &lt;gianmarco@...1665...=
+726...&gt; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Fri, 16 Feb 2024 15:32:14=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
+
+
+--t5W5Gh3iPlE=--
 
