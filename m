@@ -1,16 +1,15 @@
-From: "flichtenheld (Code Review)" <gerrit@...515...>
-Date: Fri, 16 Feb 2024 16:35:10 +0000
-In-Reply-To: <gerrit.1708008760000.I3e4ebef484d2a04a383a65ede5617ee98bf218a7@...2715...>
-References: <gerrit.1708008760000.I3e4ebef484d2a04a383a65ede5617ee98bf218a7@...2715...>
-Reply-To: frank@...2641..., arne-openvpn@...1227...,
- gianmarco@...2726..., openvpn-devel@lists.sourceforge.net
-Message-ID: <169a4d4f2db2c99fa0efc170ef875ab048ffa719-EmailReviewComments-HTML@...2715...>
+Date: Sat, 17 Feb 2024 17:39:12 +0100
+From: Gert Doering <gert@...1296...>
+Message-ID: <ZdDhMBZMGX_zot34@...1296...>
+References: <Zczam85nBDgD74kE@...2685...>
+ <kiuEvfPhyMr8TQIYBbooBK7BOnaHm4Bi18X2pO0ujjEIrGEPSONav0DnpYy97JLoHgDW5vfjaD4amWbxlodG75qHQqtzjjAfFzRci4gbCh4=@protonmail.com>
+ <Zc9vKS0P2eUMswyM@...2685...>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ protocol="application/pgp-signature"; boundary="93tMeFdPrjdLGEJK"
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="Q74Gwmx1oqM="; charset=UTF-8
-Subject: [Openvpn-devel] [M] Change in openvpn[master]: Route: add support
- for user defined routing table
+In-Reply-To: <Zc9vKS0P2eUMswyM@...2685...>
+Subject: Re: [Openvpn-devel] IRC community meeting summary (Feb 14th)
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,186 +18,62 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: its_Giaan <gianmarco@...2726...>
-Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: Frank Lichtenheld <frank@...2641...>
+Cc: tincantech <tincantech@...2282...>, openvpn-devel@lists.sourceforge.net
 
---Q74Gwmx1oqM=
-Content-Type: text/plain; charset="UTF-8"
+--93tMeFdPrjdLGEJK
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-Attention is currently required from: its_Giaan, plaisthos.
+Hi,
 
-flichtenheld has posted comments on this change. ( http://gerrit.openvpn.ne=
-t/c/openvpn/+/524?usp=3Demail )
+On Fri, Feb 16, 2024 at 03:20:25PM +0100, Frank Lichtenheld wrote:
+> Note that none of this negates the usefulness of easy-rsa. This
+> is specifically about the usefulness of easy-rsa bundled in the
+> openvpn Windows installer.
 
-Change subject: Route: add support for user defined routing table
-......................................................................
+Yeah, this.  I find easy-rsa very useful - but my CAs are not running
+on a Windows system (the thought alone makes me shiver) but securely
+tucked away on a Unix VM, with easy-rsa, of course.
 
+So, for my environment (various customer deployments plus my own
+dabbling) I do not need easy-rsa on Windows, and wouldn't miss it
+if you (as in "the installer maintaining folks") decided to drop it.
 
-Patch Set 1: Code-Review-1
+I seem to remember that we did this split on the unix side some
+100 years ago already - so now distributions have "openvpn" and
+"easy-rsa" packages, and both can be updated and maintained according
+to their own needs...
 
-(7 comments)
+gert
 
-Patchset:
+--=20
+"If was one thing all people took for granted, was conviction that if you=20
+ feed honest figures into a computer, honest figures come out. Never doubte=
+d=20
+ it myself till I met a computer with a sense of humor."
+                             Robert A. Heinlein, The Moon is a Harsh Mistre=
+ss
 
-PS1:
-Functionality might be fine, but could use some polish
+Gert Doering - Munich, Germany                             gert@...1296...
 
+--93tMeFdPrjdLGEJK
+Content-Type: application/pgp-signature; name="signature.asc"
 
-File doc/man-sections/vpn-network-options.rst:
+-----BEGIN PGP SIGNATURE-----
 
-http://gerrit.openvpn.net/c/openvpn/+/524/comment/22a0a3ac_de6d8584 :
-PS1, Line 407: 	default taken from ``--route-table`` if set, otherwise :cod=
-e:`0`.
-Please change tab to spaces
+iQGcBAEBAgAGBQJl0OEwAAoJEB2Cnv7KVigSqoML/jpmqo/LOWOirHRmAgvJKEOX
+UZfokAjPzp2Uionat0jpVJI/SPNjvxXpUmWwhd0wemM3fYncSfwOn80tfXYrhQhq
+ddNeDs96eO0mhm997fgemFAeBKSUd+7xYFc2+EhTIr7kgm3lQ/602aPuEfHoYQJC
+atePYKG/wSmsqv8Uh0uTRjeaKndCVGQzxfXoo9lqfQDnMcEb4RLw9r6EaRY3ZEvu
+6j0jO0128uoE7niD2E27HONGy68JxmDo53vREutMulI88QkgMaZglQz35Y7FkQCG
+x1Zx33BMNawq4ZziJ2FhBnAckH7i4hPIXMmx388uEP5HYXQ7k4VgkwGT/Xs4BmMy
+pdBGp5iLVWrTfPY2kBITrNbBiJDuv6UsA6sMPPkKGDYmTnhdNjR6UoN50AyEHH+m
+GjtyJQAsT1gXUKWpdExG6e6WOL+h5HPEwND7jtL41YDkj91R7cHyt4akKK/PYndz
+KTW6p3yX/STosMbJXbDuOoynyWnqyoEc4DBywi9+5Q==
+=V9H4
+-----END PGP SIGNATURE-----
 
-
-http://gerrit.openvpn.net/c/openvpn/+/524/comment/f27813f8_b24586f4 :
-PS1, Line 408:
-Should document that table-id can't be pushed.
-
-
-http://gerrit.openvpn.net/c/openvpn/+/524/comment/a3b9a424_093b4876 :
-PS1, Line 464:
-might be a good opportunity to make the description of --route-ipv6 more co=
-nsistent with --route? Currently the descriptions are of a very different f=
-ormat and verbosity even though the options are very similar
-
-
-File src/openvpn/options.h:
-
-http://gerrit.openvpn.net/c/openvpn/+/524/comment/f5eb20b0_42a87049 :
-PS1, Line 745: #define OPT_P_ROUTE_TABLE     (1<<31)
-it is not clear to my why you need a separate permission entry here? Should=
- maybe add a comment about this.
-
-
-File src/openvpn/options.c:
-
-http://gerrit.openvpn.net/c/openvpn/+/524/comment/ca4f68fc_2a1a10c0 :
-PS1, Line 205:     "--route-table [table_id] : Specify a custom routing tab=
-le for use with --route(-ipv6).\n"
-table_id is not optional, so don't use brackets here
-
-
-http://gerrit.openvpn.net/c/openvpn/+/524/comment/a60bb82d_c3d5db58 :
-PS1, Line 6992:         msg(M_WARN, "NOTE: --route-table specified, but not=
- supported on this platform");
-This warning would be confusing with a Linux build with --enable-iproute2. =
-Maybe those should be two separate warnings?
-
-
-
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/524?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings
-
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: I3e4ebef484d2a04a383a65ede5617ee98bf218a7
-Gerrit-Change-Number: 524
-Gerrit-PatchSet: 1
-Gerrit-Owner: its_Giaan <gianmarco@...2726...>
-Gerrit-Reviewer: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: its_Giaan <gianmarco@...2726...>
-Gerrit-Comment-Date: Fri, 16 Feb 2024 16:35:10 +0000
-Gerrit-HasComments: Yes
-Gerrit-Has-Labels: Yes
-Gerrit-MessageType: comment
-
---Q74Gwmx1oqM=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<p> Attention is currently required from: its_Giaan, plaisthos. </p>
-<p>Patch set 1:<span style=3D"border-radius: 3px; display: inline-block; ma=
-rgin: 0 2px; padding: 4px;background-color: #ffd4d4;">Code-Review -1</span>=
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/524?usp=3Demail">Vi=
-ew Change</a></p><p>7 comments:</p><ul style=3D"list-style: none; padding: =
-0;"><li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-=
-style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p =
-style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvp=
-n/+/524?tab=3Dcomments">Patch Set #1:</a> </p><p style=3D"white-space: pre-=
-wrap; word-wrap: break-word;">Functionality might be fine, but could use so=
-me polish</p></li></ul></li><li style=3D"margin: 0; padding: 0;"><p>File do=
-c/man-sections/vpn-network-options.rst:</p><ul style=3D"list-style: none; p=
-adding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p style=3D"margi=
-n-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/524/commen=
-t/22a0a3ac_de6d8584">Patch Set #1, Line 407:</a> <code style=3D"font-family=
-:monospace,monospace">	default taken from ``--route-table`` if set, otherwi=
-se :code:`0`.</code></p><p style=3D"white-space: pre-wrap; word-wrap: break=
--word;">Please change tab to spaces</p></li><li style=3D"margin: 0; padding=
-: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.op=
-envpn.net/c/openvpn/+/524/comment/f27813f8_b24586f4">Patch Set #1, Line 408=
-:</a> <code style=3D"font-family:monospace,monospace"></code></p><p style=
-=3D"white-space: pre-wrap; word-wrap: break-word;">Should document that tab=
-le-id can&#39;t be pushed.</p></li><li style=3D"margin: 0; padding: 0 0 0 1=
-6px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net=
-/c/openvpn/+/524/comment/a3b9a424_093b4876">Patch Set #1, Line 464:</a> <co=
-de style=3D"font-family:monospace,monospace"></code></p><p style=3D"white-s=
-pace: pre-wrap; word-wrap: break-word;">might be a good opportunity to make=
- the description of --route-ipv6 more consistent with --route? Currently th=
-e descriptions are of a very different format and verbosity even though the=
- options are very similar</p></li></ul></li><li style=3D"margin: 0; padding=
-: 0;"><p>File src/openvpn/options.h:</p><ul style=3D"list-style: none; padd=
-ing: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p style=3D"margin-b=
-ottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/524/comment/f=
-5eb20b0_42a87049">Patch Set #1, Line 745:</a> <code style=3D"font-family:mo=
-nospace,monospace">#define OPT_P_ROUTE_TABLE     (1&lt;&lt;31)</code></p><p=
- style=3D"white-space: pre-wrap; word-wrap: break-word;">it is not clear to=
- my why you need a separate permission entry here? Should maybe add a comme=
-nt about this.</p></li></ul></li><li style=3D"margin: 0; padding: 0;"><p>Fi=
-le src/openvpn/options.c:</p><ul style=3D"list-style: none; padding: 0;"><l=
-i style=3D"margin: 0; padding: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;=
-"><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/524/comment/ca4f68fc_2a1=
-a10c0">Patch Set #1, Line 205:</a> <code style=3D"font-family:monospace,mon=
-ospace">    &quot;--route-table [table_id] : Specify a custom routing table=
- for use with --route(-ipv6).\n&quot;</code></p><p style=3D"white-space: pr=
-e-wrap; word-wrap: break-word;">table_id is not optional, so don&#39;t use =
-brackets here</p></li><li style=3D"margin: 0; padding: 0 0 0 16px;"><p styl=
-e=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/=
-524/comment/a60bb82d_c3d5db58">Patch Set #1, Line 6992:</a> <code style=3D"=
-font-family:monospace,monospace">        msg(M_WARN, &quot;NOTE: --route-ta=
-ble specified, but not supported on this platform&quot;);</code></p><p styl=
-e=3D"white-space: pre-wrap; word-wrap: break-word;">This warning would be c=
-onfusing with a Linux build with --enable-iproute2. Maybe those should be t=
-wo separate warnings?</p></li></ul></li></ul><p>To view, visit <a href=3D"h=
-ttp://gerrit.openvpn.net/c/openvpn/+/524?usp=3Demail">change 524</a>. To un=
-subscribe, or for help writing mail filters, visit <a href=3D"http://gerrit=
-.openvpn.net/settings">settings</a>.</p><div itemscope itemtype=3D"http://s=
-chema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http=
-://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.open=
-vpn.net/c/openvpn/+/524?usp=3Demail"/><meta itemprop=3D"name" content=3D"Vi=
-ew Change"/></div></div>
-
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I3e4ebef484d2a04a383a65ede56=
-17ee98bf218a7 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 524 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
-<div style=3D"display:none"> Gerrit-Owner: its_Giaan &lt;gianmarco@...2786...=
-..&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
-1...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: its_Giaan &lt;gianmarco@...1665...=
-726...&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Fri, 16 Feb 2024 16:35:10=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
-
-
---Q74Gwmx1oqM=--
+--93tMeFdPrjdLGEJK--
 
