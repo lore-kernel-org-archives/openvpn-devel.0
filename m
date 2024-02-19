@@ -1,13 +1,16 @@
-Message-ID: <6d8657f9-738f-44be-acbb-7e044d89e0f3@...2181...>
-Date: Mon, 19 Feb 2024 14:08:56 +0100
-MIME-Version: 1.0
-Content-Language: en-US
-From: Antonio Quartulli <a@...2181...>
+Date: Mon, 19 Feb 2024 14:12:55 +0100
+From: Gert Doering <gert@...1296...>
+Message-ID: <ZdNT18oVbBxUGDoU@...1296...>
 References: <gerrit.1708012740000.I4b5e8357d872c920efdb64632e9bce72cebee202@...2715...>
  <a91d834e2d9f284b0278cf9940f50dd0a539f057-HTML@...2715...>
  <Zc45NJAyJyLoTRee@...1296...>
  <8021c4ad-fca6-443c-9ce6-37c7e85bca81@...2181...>
-In-Reply-To: <8021c4ad-fca6-443c-9ce6-37c7e85bca81@...2181...>
+ <6d8657f9-738f-44be-acbb-7e044d89e0f3@...2181...>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ protocol="application/pgp-signature"; boundary="K+2dsY0V3DukTaOf"
+Content-Disposition: inline
+In-Reply-To: <6d8657f9-738f-44be-acbb-7e044d89e0f3@...2181...>
 Subject: Re: [Openvpn-devel] [S] Change in openvpn[master]: Minor fix to
  process_ip_header
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -18,72 +21,57 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"; format="flowed"
-Content-Transfer-Encoding: 8bit
-To: Gert Doering <gert@...1296...>
-Cc: gianmarco@...2726..., frank@...2641..., openvpn-devel@lists.sourceforge.net, arne-openvpn@...1227...
+To: Antonio Quartulli <a@...2181...>
+Cc: Gert Doering <gert@...1296...>, gianmarco@...2726..., frank@...2641..., openvpn-devel@lists.sourceforge.net, arne-openvpn@...1227...
+
+--K+2dsY0V3DukTaOf
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
 Hi,
 
-On 16/02/2024 15:00, Antonio Quartulli wrote:
-> Hi,
-> 
-> On 15/02/2024 17:17, Gert Doering wrote:
->> Hi,
->>
->> On Thu, Feb 15, 2024 at 03:59:02PM +0000, its_Giaan (Code Review) wrote:
->>>       if (buf->len > 0)
->>>       {
->>> -        /*
->>> -         * The --passtos and --mssfix options require
->>> -         * us to examine the IPv4 header.
->>> -         */
->>> -
->>> -        if (flags & (PIP_MSSFIX
->>> -#if PASSTOS_CAPABILITY
->>> -                     | PIPV4_PASSTOS
->>> -#endif
->>> -                     | PIPV4_CLIENT_NAT
->>> -                     ))
->>> +        if (flags & PIP_OPT_MASK)
->>
->> NAK, as this is not the same thing.  PIP_OPT_MASK will also match on
->> the IPv6 flags, which are not something we need to test for here (= if
->> only an IPv6 flag is active, why should we enter this branch?).
-> 
-> We need to enter for either v4 or v6 flags, no?
-> 
-> The check on whether the packet is v4 or v6 happens *inside* this if 
-> block. Am I wrong?
+On Mon, Feb 19, 2024 at 02:08:56PM +0100, Antonio Quartulli wrote:
+> This said, I do believe this patch fixes these issues in one go as the new
+> PIP_OPT_MASK will match all the flags mentioned above.
 
-I double checked the code once again and I think there is a bug in this 
-check.
+Yes, but then we do not need that if() anymore at all - if we go in
+there, no matter if we have anything to do (like, we have v6 bits set,
+and enter the v4 branch).
 
-Right now we check for some flags (say A and B) before entering the 
-if-block.
+Maybe that would be a more reasonable approach here... get rid of the
+umbrella if(), and check individual bits inside.  It seems to be a
+micro-optimization "skip this branch if we have no single feature active",
+while at least MSSFIX is active by default.
 
-Once inside we take action on flag A, B, but also C, D and E.
-Now, if C, D and E are set, but A and B are not, we will never enter the 
-if-block and execute the related code.
+gert
 
-Among this we have:
-* IPv6 flags (they are checked inside, but not on the outer guard)
-* PIPV4_EXTRACT_DHCP_ROUTER
-* PIPV6_IMCP_NOHOST_CLIENT
-* PIPV6_IMCP_NOHOST_SERVER
+--=20
+"If was one thing all people took for granted, was conviction that if you=20
+ feed honest figures into a computer, honest figures come out. Never doubte=
+d=20
+ it myself till I met a computer with a sense of humor."
+                             Robert A. Heinlein, The Moon is a Harsh Mistre=
+ss
 
-(we also got an interesting typ0 in the last two).
+Gert Doering - Munich, Germany                             gert@...1296...
 
+--K+2dsY0V3DukTaOf
+Content-Type: application/pgp-signature; name="signature.asc"
 
-This said, I do believe this patch fixes these issues in one go as the 
-new PIP_OPT_MASK will match all the flags mentioned above.
+-----BEGIN PGP SIGNATURE-----
 
-It'd be interesting to test any behaviour expected to be triggered by 
-PIPV4_EXTRACT_DHCP_ROUTER to confirm the theory.
+iQGcBAEBAgAGBQJl01PXAAoJEB2Cnv7KVigSFwIMAKMu71IOnTN33T25Opu8y7yV
+mBZbFQLmrehpqQ5NSpkaGTl+JkdLw0QP62d6DsFCofvnl6C36hs4JNaRgpTLg5Xo
+I6EUK6XbBaQmt94priqlcvkVl9pgqVWwlD/7G48yf+QhOX0RmQkcMlQRTsoTIPO/
+j5Ho0HtYn4/bSJ6zIyJmIZtdV1kxEBtC1f/2CK2SxfXNS12rp86EEpmnK75bY2eX
+IDaQXxJdkeiTmLInlA247sNBsxmoZm7W37seuUKSB/6n0KY5gb9UGwqxD8OSLHMs
+ruv04diKQwvl3jckZdCjQPbkE1VkN4KM3EP0HZfglgkjmirfvTBpfpcXzcmOQItq
+h1oNrXn3R0HAFoy7j3XnfS9nQmdukH/uqevcjCtNyABkYE70S1qw4qaVQhDVLfhd
+IHP/S8pPkTuYZGuf8rc4XBvkhEdfXchVpLdaspaKlSi3g7b+C/1qL9x+n8BK2FW+
+zA700ik2iHIZClRveV7xAOW3n0/jO1p0eu13Yi69Vg==
+=2DJT
+-----END PGP SIGNATURE-----
 
-Cheers,
-
-
--- 
-Antonio Quartulli
+--K+2dsY0V3DukTaOf--
 
