@@ -1,15 +1,16 @@
-Date: Sat, 17 Feb 2024 17:39:12 +0100
-From: Gert Doering <gert@...1296...>
-Message-ID: <ZdDhMBZMGX_zot34@...1296...>
-References: <Zczam85nBDgD74kE@...2685...>
- <kiuEvfPhyMr8TQIYBbooBK7BOnaHm4Bi18X2pO0ujjEIrGEPSONav0DnpYy97JLoHgDW5vfjaD4amWbxlodG75qHQqtzjjAfFzRci4gbCh4=@protonmail.com>
- <Zc9vKS0P2eUMswyM@...2685...>
+From: "its_Giaan (Code Review)" <gerrit@...515...>
+Date: Mon, 19 Feb 2024 12:39:43 +0000
+In-Reply-To: <gerrit.1708098635000.Ie147f81e5990b8292be090fd05c23b91f8e308d4@...2715...>
+References: <gerrit.1708098635000.Ie147f81e5990b8292be090fd05c23b91f8e308d4@...2715...>
+Reply-To: gianmarco@...2726..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net, frank@...2641...
+Message-ID: <a7d9c6c2c9d770a6d774a4a86ca2eb3e7f0b163d-HTML@...2715...>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="93tMeFdPrjdLGEJK"
+Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-In-Reply-To: <Zc9vKS0P2eUMswyM@...2685...>
-Subject: Re: [Openvpn-devel] IRC community meeting summary (Feb 14th)
+Content-Type: multipart/alternative; boundary="K6P2CAYSVsA="; charset=UTF-8
+Subject: [Openvpn-devel] [XS] Change in openvpn[master]: Route: remove
+ incorrect routes on exit
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,62 +19,71 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Frank Lichtenheld <frank@...2641...>
-Cc: tincantech <tincantech@...2282...>, openvpn-devel@lists.sourceforge.net
+Cc: flichtenheld <frank@...2641...>, plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---93tMeFdPrjdLGEJK
-Content-Type: text/plain; charset="us-ascii"
+--K6P2CAYSVsA=
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
 
-Hi,
+its_Giaan has abandoned this change. ( http://gerrit.openvpn.net/c/openvpn/=
++/528?usp=3Demail )
 
-On Fri, Feb 16, 2024 at 03:20:25PM +0100, Frank Lichtenheld wrote:
-> Note that none of this negates the usefulness of easy-rsa. This
-> is specifically about the usefulness of easy-rsa bundled in the
-> openvpn Windows installer.
+Change subject: Route: remove incorrect routes on exit
+......................................................................
 
-Yeah, this.  I find easy-rsa very useful - but my CAs are not running
-on a Windows system (the thought alone makes me shiver) but securely
-tucked away on a Unix VM, with easy-rsa, of course.
 
-So, for my environment (various customer deployments plus my own
-dabbling) I do not need easy-rsa on Windows, and wouldn't miss it
-if you (as in "the installer maintaining folks") decided to drop it.
+Abandoned
 
-I seem to remember that we did this split on the unix side some
-100 years ago already - so now distributions have "openvpn" and
-"easy-rsa" packages, and both can be updated and maintained according
-to their own needs...
+Duplicate with wrong change-id
+--
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/528?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings
 
-gert
+Gerrit-Project: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: Ie147f81e5990b8292be090fd05c23b91f8e308d4
+Gerrit-Change-Number: 528
+Gerrit-PatchSet: 1
+Gerrit-Owner: its_Giaan <gianmarco@...2726...>
+Gerrit-Reviewer: flichtenheld <frank@...2641...>
+Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-MessageType: abandon
 
---=20
-"If was one thing all people took for granted, was conviction that if you=20
- feed honest figures into a computer, honest figures come out. Never doubte=
-d=20
- it myself till I met a computer with a sense of humor."
-                             Robert A. Heinlein, The Moon is a Harsh Mistre=
-ss
+--K6P2CAYSVsA=
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Gert Doering - Munich, Germany                             gert@...1296...
+<p>its_Giaan <strong>abandoned</strong> this change.</p><p><a href=3D"http:=
+//gerrit.openvpn.net/c/openvpn/+/528?usp=3Demail">View Change</a></p><div s=
+tyle=3D"white-space:pre-wrap">Abandoned
 
---93tMeFdPrjdLGEJK
-Content-Type: application/pgp-signature; name="signature.asc"
+Duplicate with wrong change-id</div><p>To view, visit <a href=3D"http://ger=
+rit.openvpn.net/c/openvpn/+/528?usp=3Demail">change 528</a>. To unsubscribe=
+, or for help writing mail filters, visit <a href=3D"http://gerrit.openvpn.=
+net/settings">settings</a>.</p><div itemscope itemtype=3D"http://schema.org=
+/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://schema=
+.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c=
+/openvpn/+/528?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change=
+"/></div></div>
 
------BEGIN PGP SIGNATURE-----
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: Ie147f81e5990b8292be090fd05c=
+23b91f8e308d4 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 528 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
+<div style=3D"display:none"> Gerrit-Owner: its_Giaan &lt;gianmarco@...2786...=
+..&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
+1...&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
+.1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-MessageType: abandon </div>
 
-iQGcBAEBAgAGBQJl0OEwAAoJEB2Cnv7KVigSqoML/jpmqo/LOWOirHRmAgvJKEOX
-UZfokAjPzp2Uionat0jpVJI/SPNjvxXpUmWwhd0wemM3fYncSfwOn80tfXYrhQhq
-ddNeDs96eO0mhm997fgemFAeBKSUd+7xYFc2+EhTIr7kgm3lQ/602aPuEfHoYQJC
-atePYKG/wSmsqv8Uh0uTRjeaKndCVGQzxfXoo9lqfQDnMcEb4RLw9r6EaRY3ZEvu
-6j0jO0128uoE7niD2E27HONGy68JxmDo53vREutMulI88QkgMaZglQz35Y7FkQCG
-x1Zx33BMNawq4ZziJ2FhBnAckH7i4hPIXMmx388uEP5HYXQ7k4VgkwGT/Xs4BmMy
-pdBGp5iLVWrTfPY2kBITrNbBiJDuv6UsA6sMPPkKGDYmTnhdNjR6UoN50AyEHH+m
-GjtyJQAsT1gXUKWpdExG6e6WOL+h5HPEwND7jtL41YDkj91R7cHyt4akKK/PYndz
-KTW6p3yX/STosMbJXbDuOoynyWnqyoEc4DBywi9+5Q==
-=V9H4
------END PGP SIGNATURE-----
 
---93tMeFdPrjdLGEJK--
+--K6P2CAYSVsA=--
 
