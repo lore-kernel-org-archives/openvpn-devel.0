@@ -1,12 +1,16 @@
-Message-ID: <b3e15b78-40ae-400a-883c-c65560e41393@...2181...>
-Date: Mon, 19 Feb 2024 22:59:31 +0100
+From: "its_Giaan (Code Review)" <gerrit@...515...>
+Date: Tue, 20 Feb 2024 09:20:46 +0000
+In-Reply-To: <gerrit.1707986932000.I8a67b82eb4afdc8d82c5a879c18457b41e77cbe7@...2715...>
+References: <gerrit.1707986932000.I8a67b82eb4afdc8d82c5a879c18457b41e77cbe7@...2715...>
+Reply-To: gianmarco@...2726..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net, frank@...2641...
+Message-ID: <3d86870e03bc8885178128d2b347224d31b152c8-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-Content-Language: en-US
-References: <20240219192822.2477258-1-selva.nair@...277...>
-From: Antonio Quartulli <a@...2181...>
-In-Reply-To: <20240219192822.2477258-1-selva.nair@...277...>
-Subject: Re: [Openvpn-devel] [PATCH] Document that auth-user-pass may be
- inlined
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="G55DCMTpyfg="; charset=UTF-8
+Subject: [Openvpn-devel] [XS] Change in openvpn[master]: Route: remove
+ incorrect routes on exit
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,67 +19,105 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-To: openvpn-devel@lists.sourceforge.net
+Cc: flichtenheld <frank@...2641...>, plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-Hi,
+--G55DCMTpyfg=
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On 19/02/2024 20:28, selva.nair@...277... wrote:
-> From: Selva Nair <selva.nair@...277...>
-> 
-> Commits 7d48d31b, 39619b7f added support for inlining username
-> and, optionally, password.
-> Add a description of its usage in the man page.
-> 
-> Change-Id: I7a1765661f7676eeba8016024080fd1026220ced
-> Signed-off-by: Selva Nair <selva.nair@...277...>
+Attention is currently required from: flichtenheld, plaisthos.
 
-Acked-by: Antonio Quartulli <a@...2181...>
+its_Giaan has posted comments on this change. ( http://gerrit.openvpn.net/c=
+/openvpn/+/522?usp=3Demail )
 
-> ---
-> Does this have to go through gerrit?
-> 
->   doc/man-sections/client-options.rst | 11 +++++++++++
->   doc/man-sections/inline-files.rst   |  2 +-
->   2 files changed, 12 insertions(+), 1 deletion(-)
-> 
-> diff --git a/doc/man-sections/client-options.rst b/doc/man-sections/client-options.rst
-> index b92b1a46..b75fe5bd 100644
-> --- a/doc/man-sections/client-options.rst
-> +++ b/doc/man-sections/client-options.rst
-> @@ -73,6 +73,17 @@ configuration.
->     If ``up`` is omitted, username/password will be prompted from the
->     console.
->   
-> +  This option can also be inlined
-> +  ::
-> +
-> +    <auth-user-pass>
-> +    username
-> +    [password]
-> +    </auth-user-pass>
-> +
-> +  where password is optional, and will be prompted from the console if
-> +  missing.
-> +
->     The server configuration must specify an ``--auth-user-pass-verify``
->     script to verify the username/password provided by the client.
->   
-> diff --git a/doc/man-sections/inline-files.rst b/doc/man-sections/inline-files.rst
-> index f46301e8..ad02c855 100644
-> --- a/doc/man-sections/inline-files.rst
-> +++ b/doc/man-sections/inline-files.rst
-> @@ -5,7 +5,7 @@ OpenVPN allows including files in the main configuration for the ``--ca``,
->   ``--cert``, ``--dh``, ``--extra-certs``, ``--key``, ``--pkcs12``,
->   ``--crl-verify``, ``--http-proxy-user-pass``, ``--tls-auth``,
->   ``--auth-gen-token-secret``, ``--peer-fingerprint``, ``--tls-crypt``,
-> -``--tls-crypt-v2`` and ``--verify-hash`` options.
-> +``--tls-crypt-v2``, ``--verify-hash`` and ``auth-user-pass`` options.
->   
->   Each inline file started by the line ``<option>`` and ended by the line
->   ``</option>``
+Change subject: Route: remove incorrect routes on exit
+......................................................................
 
--- 
-Antonio Quartulli
+
+Patch Set 2:
+
+(1 comment)
+
+Commit Message:
+
+http://gerrit.openvpn.net/c/openvpn/+/522/comment/acf3689c_dd1d77a7 :
+PS1, Line 7: Route: remove uncorrect routes on exit.
+> "incorrect" [=E2=80=A6]
+Done
+
+
+
+--
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/522?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings
+
+Gerrit-Project: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: I8a67b82eb4afdc8d82c5a879c18457b41e77cbe7
+Gerrit-Change-Number: 522
+Gerrit-PatchSet: 2
+Gerrit-Owner: its_Giaan <gianmarco@...2726...>
+Gerrit-Reviewer: flichtenheld <frank@...2641...>
+Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Attention: flichtenheld <frank@...2641...>
+Gerrit-Comment-Date: Tue, 20 Feb 2024 09:20:46 +0000
+Gerrit-HasComments: Yes
+Gerrit-Has-Labels: No
+Comment-In-Reply-To: flichtenheld <frank@...2641...>
+Gerrit-MessageType: comment
+
+--G55DCMTpyfg=
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<p> Attention is currently required from: flichtenheld, plaisthos. </p>
+<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/522?usp=3Demail">View C=
+hange</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0;"><=
+li style=3D"margin: 0; padding: 0;"><p>Commit Message:</p><ul style=3D"list=
+-style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p=
+ style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openv=
+pn/+/522/comment/acf3689c_dd1d77a7">Patch Set #1, Line 7:</a> <code style=
+=3D"font-family:monospace,monospace">Route: remove uncorrect routes on exit=
+.</code></p><p><blockquote style=3D"border-left: 1px solid #aaa; margin: 10=
+px 0; padding: 0 10px;">&quot;incorrect&quot; [=E2=80=A6]</blockquote></p><=
+p style=3D"white-space: pre-wrap; word-wrap: break-word;">Done</p></li></ul=
+></li></ul><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn=
+/+/522?usp=3Demail">change 522</a>. To unsubscribe, or for help writing mai=
+l filters, visit <a href=3D"http://gerrit.openvpn.net/settings">settings</a=
+>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div items=
+cope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link it=
+emprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/522?usp=3Demai=
+l"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
+
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I8a67b82eb4afdc8d82c5a879c18=
+457b41e77cbe7 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 522 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
+<div style=3D"display:none"> Gerrit-Owner: its_Giaan &lt;gianmarco@...2786...=
+..&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
+1...&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
+.1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
+41...&gt; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Tue, 20 Feb 2024 09:20:46=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: No </div>
+<div style=3D"display:none"> Comment-In-Reply-To: flichtenheld &lt;frank@...1186...=
+.2641...&gt; </div>
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
+
+
+--G55DCMTpyfg=--
 
