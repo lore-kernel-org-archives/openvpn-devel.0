@@ -1,16 +1,14 @@
-From: "flichtenheld (Code Review)" <gerrit@...515...>
-Date: Tue, 20 Feb 2024 14:49:44 +0000
-In-Reply-To: <gerrit.1708012740000.I4b5e8357d872c920efdb64632e9bce72cebee202@...2715...>
-References: <gerrit.1708012740000.I4b5e8357d872c920efdb64632e9bce72cebee202@...2715...>
-Reply-To: frank@...2641..., arne-openvpn@...1227...,
- gianmarco@...2726..., openvpn-devel@lists.sourceforge.net, a@...2181...
-Message-ID: <698c9d84a81977d4574b1d9be20b318864990f29-EmailReviewComments-HTML@...2715...>
+Date: Tue, 20 Feb 2024 17:22:04 +0100
+From: Gert Doering <gert@...1296...>
+Message-ID: <ZdTRrAPWi-omptpa@...1296...>
+References: <20240219192822.2477258-1-selva.nair@...277...>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ protocol="application/pgp-signature"; boundary="0I+eLYbxP6EuVJb1"
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="y0oIQ9TRgNU="; charset=UTF-8
-Subject: [Openvpn-devel] [M] Change in openvpn[master]: Minor fix to
- process_ip_header
+In-Reply-To: <20240219192822.2477258-1-selva.nair@...277...>
+Subject: Re: [Openvpn-devel] [PATCH] Document that auth-user-pass may be
+ inlined
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,93 +17,60 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: its_Giaan <gianmarco@...2726...>
-Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: selva.nair@...277...
+Cc: openvpn-devel@lists.sourceforge.net
 
---y0oIQ9TRgNU=
-Content-Type: text/plain; charset="UTF-8"
+--0I+eLYbxP6EuVJb1
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-Attention is currently required from: its_Giaan, ordex, plaisthos.
+Hi,
 
-flichtenheld has posted comments on this change. ( http://gerrit.openvpn.ne=
-t/c/openvpn/+/525?usp=3Demail )
+On Mon, Feb 19, 2024 at 02:28:22PM -0500, selva.nair@...277... wrote:
+> Does this have to go through gerrit?
 
-Change subject: Minor fix to process_ip_header
-......................................................................
+As of today, there's two ways to inject patches / patch sets for
+"openvpn main" - the openvpn-devel@ list, "as always", and gerrit.
 
+Gerrit is nice for larger and more complex patchsets, because review
+can happen in pieces (=3D you can review the first half today, comment
+on the web, it will remember which parts you have seen already, and
+do the rest tomorrow), and also gerrit can do stuff like "so what
+changed from v4 to v5?" meta-diffs.
 
-Patch Set 2: Code-Review+2
+For smaller patches "single file, trivially correct", openvpn-devel@ is
+less work for me :-)
 
+So - what is "better" depends.
 
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/525?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings
+gert
+--=20
+"If was one thing all people took for granted, was conviction that if you=20
+ feed honest figures into a computer, honest figures come out. Never doubte=
+d=20
+ it myself till I met a computer with a sense of humor."
+                             Robert A. Heinlein, The Moon is a Harsh Mistre=
+ss
 
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: I4b5e8357d872c920efdb64632e9bce72cebee202
-Gerrit-Change-Number: 525
-Gerrit-PatchSet: 2
-Gerrit-Owner: its_Giaan <gianmarco@...2726...>
-Gerrit-Reviewer: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: ordex <a@...2181...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: its_Giaan <gianmarco@...2726...>
-Gerrit-Attention: ordex <a@...2181...>
-Gerrit-Comment-Date: Tue, 20 Feb 2024 14:49:44 +0000
-Gerrit-HasComments: No
-Gerrit-Has-Labels: Yes
-Gerrit-MessageType: comment
+Gert Doering - Munich, Germany                             gert@...1296...
 
---y0oIQ9TRgNU=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+--0I+eLYbxP6EuVJb1
+Content-Type: application/pgp-signature; name="signature.asc"
 
-<p> Attention is currently required from: its_Giaan, ordex, plaisthos. </p>
-<p>Patch set 2:<span style=3D"border-radius: 3px; display: inline-block; ma=
-rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/525?usp=3Demail">Vi=
-ew Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To vie=
-w, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/525?usp=3Demail">=
-change 525</a>. To unsubscribe, or for help writing mail filters, visit <a =
-href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope=
- itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"act=
-ion" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=
-=3D"http://gerrit.openvpn.net/c/openvpn/+/525?usp=3Demail"/><meta itemprop=
-=3D"name" content=3D"View Change"/></div></div>
+-----BEGIN PGP SIGNATURE-----
 
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I4b5e8357d872c920efdb64632e9=
-bce72cebee202 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 525 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
-<div style=3D"display:none"> Gerrit-Owner: its_Giaan &lt;gianmarco@...2786...=
-..&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
-1...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: ordex &lt;a@...2181...&gt; </=
-div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: its_Giaan &lt;gianmarco@...1665...=
-726...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: ordex &lt;a@...2181...&gt; <=
-/div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Tue, 20 Feb 2024 14:49:44=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: No </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
+iQGcBAEBAgAGBQJl1NGsAAoJEB2Cnv7KVigSGxEMAKlZR8trvqfn1VHxz8oFLxo2
+GzCWKl0a9pekvnnlFk8WyeVpVLc2Xc3CAm/3cakIkA+RnE6EM+h+YCJz5cbdj37j
+ReT81vnSK2U2y/NKwbJ0pSlhnWwIPql9jZRyCtxfcOaXMHslhHCWtWNIKmfqY13n
+0c5tL1Adn7vTGq0zPvFB6MQScHoxRzNzaZK3cq/bhdR+Ai79qQMIxhq7veogwIZe
++mz+oJsOuswEpEuZkIl/rDVwX9Lza6zkmNtXJ+et2tGMm+8gNCJHKz7JvXJ8zZLh
+X1tlfeHz5GJnzhLk1l1JBuTvZOMKEMabAhUusa0H3EiZXABW9D7mY4APy1zGiwZF
+0KYqgwMrF5lxUnWHDuOH8Nsd/oKR2tYCc3RcMpeNovujXk+fG1cTYW1doo8gqWga
+rH/j80BSSGI585Kgj2HTLsy9R6RzU6eX6yUOdppsZGV578KyU2OXUyk56COL1gkC
+Ax8TEXaK83mu7oTwvWIanAKkJF7WgqRYjKIWRcRU7A==
+=XFB6
+-----END PGP SIGNATURE-----
 
-
---y0oIQ9TRgNU=--
+--0I+eLYbxP6EuVJb1--
 
