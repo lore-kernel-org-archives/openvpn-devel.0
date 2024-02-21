@@ -1,15 +1,10 @@
-From: "flichtenheld (Code Review)" <gerrit@...515...>
-Date: Wed, 21 Feb 2024 11:13:29 +0000
-In-Reply-To: <gerrit.1696853601000.I9c1c255f412f3e8ea68ccb1b16ecdd7ad891b308@...2715...>
-References: <gerrit.1696853601000.I9c1c255f412f3e8ea68ccb1b16ecdd7ad891b308@...2715...>
-Reply-To: frank@...2641..., arne-openvpn@...1227...,
- flichtenheld79@...277..., openvpn-devel@lists.sourceforge.net
-Message-ID: <3e0e74ba6a9e4278607391acb00bae3701d14b3e-HTML@...2715...>
+From: Frank Lichtenheld <frank@...2641...>
+Date: Wed, 21 Feb 2024 12:17:22 +0100
+Message-Id: <20240221111722.927042-1-frank@...2641...>
+In-Reply-To: <gerrit.1708012740000.I4b5e8357d872c920efdb64632e9bce72cebee202@...2715...>
+References: <gerrit.1708012740000.I4b5e8357d872c920efdb64632e9bce72cebee202@...2715...>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="lEnm2UD4REc="; charset=UTF-8
-Subject: [Openvpn-devel] [XS] Change in openvpn[master]: Test change
+Subject: [Openvpn-devel] [PATCH v2] Minor fix to process_ip_header
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,71 +13,194 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: unauthorized <flichtenheld79@...277...>
-Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---lEnm2UD4REc=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+From: Gianmarco De Gregori <gianmarco@...2726...>
 
-flichtenheld has abandoned this change. ( http://gerrit.openvpn.net/c/openv=
-pn/+/401?usp=3Demail )
+Removed if-guard checking if any feature is
+enabled before performing per-feature check.
+It doesn't save us much but instead introduces
+uneeded complexity.
 
-Change subject: Test change
-......................................................................
+While at it, fixed a typo IMCP -> ICMP for defined
+PIPV6_ICMP_NOHOST_CLIENT and PIPV6_ICMP_NOHOST_SERVER
+macros.
 
+Fixes: Trac https://community.openvpn.net/openvpn/ticket/269
+Change-Id: I4b5e8357d872c920efdb64632e9bce72cebee202
+Signed-off-by: Gianmarco De Gregori <gianmarco@...2726...>
+Acked-by: Frank Lichtenheld <frank@...2641...>
+---
 
-Abandoned
+This change was reviewed on Gerrit and approved by at least one
+developer. I request to merge it to master.
 
-test
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/401?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/525
+This mail reflects revision 2 of this Change.
+Acked-by according to Gerrit (reflected above):
+Frank Lichtenheld <frank@...2641...>
 
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: I9c1c255f412f3e8ea68ccb1b16ecdd7ad891b308
-Gerrit-Change-Number: 401
-Gerrit-PatchSet: 1
-Gerrit-Owner: unauthorized <flichtenheld79@...277...>
-Gerrit-Reviewer: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-MessageType: abandon
-
---lEnm2UD4REc=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<p>flichtenheld <strong>abandoned</strong> this change.</p><p><a href=3D"ht=
-tp://gerrit.openvpn.net/c/openvpn/+/401?usp=3Demail">View Change</a></p><di=
-v style=3D"white-space:pre-wrap">Abandoned
-
-test</div><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/=
-+/401?usp=3Demail">change 401</a>. To unsubscribe, or for help writing mail=
- filters, visit <a href=3D"http://gerrit.openvpn.net/settings">settings</a>=
-.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemsc=
-ope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link ite=
-mprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/401?usp=3Demail=
-"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
-
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I9c1c255f412f3e8ea68ccb1b16e=
-cdd7ad891b308 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 401 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
-<div style=3D"display:none"> Gerrit-Owner: unauthorized &lt;flichtenheld79@=
-...277...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
-1...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: abandon </div>
-
-
---lEnm2UD4REc=--
+        
+diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c
+index 0443ca0..556c465 100644
+--- a/src/openvpn/forward.c
++++ b/src/openvpn/forward.c
+@@ -1460,7 +1460,7 @@
+          * us to examine the IP header (IPv4 or IPv6).
+          */
+         unsigned int flags = PIPV4_PASSTOS | PIP_MSSFIX | PIPV4_CLIENT_NAT
+-                             | PIPV6_IMCP_NOHOST_CLIENT;
++                             | PIPV6_ICMP_NOHOST_CLIENT;
+         process_ip_header(c, flags, &c->c2.buf);
+ 
+ #ifdef PACKET_TRUNCATION_CHECK
+@@ -1644,73 +1644,60 @@
+     }
+     if (!c->options.block_ipv6)
+     {
+-        flags &= ~(PIPV6_IMCP_NOHOST_CLIENT | PIPV6_IMCP_NOHOST_SERVER);
++        flags &= ~(PIPV6_ICMP_NOHOST_CLIENT | PIPV6_ICMP_NOHOST_SERVER);
+     }
+ 
+     if (buf->len > 0)
+     {
+-        /*
+-         * The --passtos and --mssfix options require
+-         * us to examine the IPv4 header.
+-         */
+-
+-        if (flags & (PIP_MSSFIX
+-#if PASSTOS_CAPABILITY
+-                     | PIPV4_PASSTOS
+-#endif
+-                     | PIPV4_CLIENT_NAT
+-                     ))
++        struct buffer ipbuf = *buf;
++        if (is_ipv4(TUNNEL_TYPE(c->c1.tuntap), &ipbuf))
+         {
+-            struct buffer ipbuf = *buf;
+-            if (is_ipv4(TUNNEL_TYPE(c->c1.tuntap), &ipbuf))
+-            {
+ #if PASSTOS_CAPABILITY
+-                /* extract TOS from IP header */
+-                if (flags & PIPV4_PASSTOS)
+-                {
+-                    link_socket_extract_tos(c->c2.link_socket, &ipbuf);
+-                }
++            /* extract TOS from IP header */
++            if (flags & PIPV4_PASSTOS)
++            {
++                link_socket_extract_tos(c->c2.link_socket, &ipbuf);
++            }
+ #endif
+ 
+-                /* possibly alter the TCP MSS */
+-                if (flags & PIP_MSSFIX)
+-                {
+-                    mss_fixup_ipv4(&ipbuf, c->c2.frame.mss_fix);
+-                }
+-
+-                /* possibly do NAT on packet */
+-                if ((flags & PIPV4_CLIENT_NAT) && c->options.client_nat)
+-                {
+-                    const int direction = (flags & PIP_OUTGOING) ? CN_INCOMING : CN_OUTGOING;
+-                    client_nat_transform(c->options.client_nat, &ipbuf, direction);
+-                }
+-                /* possibly extract a DHCP router message */
+-                if (flags & PIPV4_EXTRACT_DHCP_ROUTER)
+-                {
+-                    const in_addr_t dhcp_router = dhcp_extract_router_msg(&ipbuf);
+-                    if (dhcp_router)
+-                    {
+-                        route_list_add_vpn_gateway(c->c1.route_list, c->c2.es, dhcp_router);
+-                    }
+-                }
+-            }
+-            else if (is_ipv6(TUNNEL_TYPE(c->c1.tuntap), &ipbuf))
++            /* possibly alter the TCP MSS */
++            if (flags & PIP_MSSFIX)
+             {
+-                /* possibly alter the TCP MSS */
+-                if (flags & PIP_MSSFIX)
+-                {
+-                    mss_fixup_ipv6(&ipbuf, c->c2.frame.mss_fix);
+-                }
+-                if (!(flags & PIP_OUTGOING) && (flags
+-                                                &(PIPV6_IMCP_NOHOST_CLIENT | PIPV6_IMCP_NOHOST_SERVER)))
+-                {
+-                    ipv6_send_icmp_unreachable(c, buf,
+-                                               (bool)(flags & PIPV6_IMCP_NOHOST_CLIENT));
+-                    /* Drop the IPv6 packet */
+-                    buf->len = 0;
+-                }
+-
++                mss_fixup_ipv4(&ipbuf, c->c2.frame.mss_fix);
+             }
++
++            /* possibly do NAT on packet */
++            if ((flags & PIPV4_CLIENT_NAT) && c->options.client_nat)
++            {
++                const int direction = (flags & PIP_OUTGOING) ? CN_INCOMING : CN_OUTGOING;
++                client_nat_transform(c->options.client_nat, &ipbuf, direction);
++            }
++            /* possibly extract a DHCP router message */
++            if (flags & PIPV4_EXTRACT_DHCP_ROUTER)
++            {
++                const in_addr_t dhcp_router = dhcp_extract_router_msg(&ipbuf);
++                if (dhcp_router)
++                {
++                    route_list_add_vpn_gateway(c->c1.route_list, c->c2.es, dhcp_router);
++                }
++            }
++        }
++        else if (is_ipv6(TUNNEL_TYPE(c->c1.tuntap), &ipbuf))
++        {
++            /* possibly alter the TCP MSS */
++            if (flags & PIP_MSSFIX)
++            {
++                mss_fixup_ipv6(&ipbuf, c->c2.frame.mss_fix);
++            }
++            if (!(flags & PIP_OUTGOING) && (flags
++                                            &(PIPV6_ICMP_NOHOST_CLIENT | PIPV6_ICMP_NOHOST_SERVER)))
++            {
++                ipv6_send_icmp_unreachable(c, buf,
++                                           (bool)(flags & PIPV6_ICMP_NOHOST_CLIENT));
++                /* Drop the IPv6 packet */
++                buf->len = 0;
++            }
++
+         }
+     }
+ }
+diff --git a/src/openvpn/forward.h b/src/openvpn/forward.h
+index e19115e..bc00ba5 100644
+--- a/src/openvpn/forward.h
++++ b/src/openvpn/forward.h
+@@ -297,8 +297,9 @@
+ #define PIP_OUTGOING                    (1<<2)
+ #define PIPV4_EXTRACT_DHCP_ROUTER       (1<<3)
+ #define PIPV4_CLIENT_NAT                (1<<4)
+-#define PIPV6_IMCP_NOHOST_CLIENT        (1<<5)
+-#define PIPV6_IMCP_NOHOST_SERVER        (1<<6)
++#define PIPV6_ICMP_NOHOST_CLIENT        (1<<5)
++#define PIPV6_ICMP_NOHOST_SERVER        (1<<6)
++
+ 
+ void process_ip_header(struct context *c, unsigned int flags, struct buffer *buf);
+ 
+diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
+index 4344126..712456c 100644
+--- a/src/openvpn/multi.c
++++ b/src/openvpn/multi.c
+@@ -3645,7 +3645,7 @@
+ 
+     if (mbuf_extract_item(ms, &item)) /* cleartext IP packet */
+     {
+-        unsigned int pip_flags = PIPV4_PASSTOS | PIPV6_IMCP_NOHOST_SERVER;
++        unsigned int pip_flags = PIPV4_PASSTOS | PIPV6_ICMP_NOHOST_SERVER;
+ 
+         set_prefix(item.instance);
+         item.instance->context.c2.buf = item.buffer->buf;
 
