@@ -1,16 +1,16 @@
-From: "its_Giaan (Code Review)" <gerrit@...515...>
-Date: Tue, 27 Feb 2024 14:00:44 +0000
-In-Reply-To: <gerrit.1707991289000.Ia3e06c0832c4ca0ab868c845279fb71c01a1a78a@...2715...>
-References: <gerrit.1707991289000.Ia3e06c0832c4ca0ab868c845279fb71c01a1a78a@...2715...>
-Reply-To: gianmarco@...2726..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <2f0d5e128d5259e96c8989cda0482e595d2dea22-EmailReplacePatchSet-HTML@...2715...>
+From: "cron2 (Code Review)" <gerrit@...515...>
+Date: Wed, 28 Feb 2024 10:01:20 +0000
+In-Reply-To: <gerrit.1707835634000.I13ea6752c8d102eabcc579e391828c05d5322899@...2715...>
+References: <gerrit.1707835634000.I13ea6752c8d102eabcc579e391828c05d5322899@...2715...>
+Reply-To: gert@...1296..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net, frank@...2641..., a@...2181...
+Message-ID: <c8ecad6889039f9dd0662af0c04639e55c39c5b8-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="narfAZZbEjE="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: Http-proxy: fix bug
- preventing proxy credentials caching
+Content-Type: multipart/alternative; boundary="qau04ztutDM="; charset=UTF-8
+Subject: [Openvpn-devel] [M] Change in openvpn[master]: t_client.sh: Allow
+ to skip tests
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,365 +19,198 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: flichtenheld <frank@...2641...>
+Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---narfAZZbEjE=
+--qau04ztutDM=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: flichtenheld, plaisthos.
+Attention is currently required from: flichtenheld, ordex, plaisthos.
 
-Hello flichtenheld, plaisthos,
+cron2 has posted comments on this change. ( http://gerrit.openvpn.net/c/ope=
+nvpn/+/521?usp=3Demail )
 
-I'd like you to reexamine a change. Please visit
-
-    http://gerrit.openvpn.net/c/openvpn/+/523?usp=3Demail
-
-to look at the new patch set (#4).
-
-
-Change subject: Http-proxy: fix bug preventing proxy credentials caching
+Change subject: t_client.sh: Allow to skip tests
 ......................................................................
 
-Http-proxy: fix bug preventing proxy credentials caching
 
-Caching proxy credentials was not working due to the
-lack of handling already defined creds in get_user_pass(),
-which prevented the caching from working properly.
+Patch Set 2: Code-Review-1
 
-Fix this issue by getting the value of c->first_time,
-that indicates if we're at the first iteration
-of the main loop and use it as second argument of the
-get_user_pass_http(). Otherwise, on SIGUSR1 or SIGHUP
-upon instance context restart credentials would be erased
-every time.
+(5 comments)
 
-The nocache member has been added to the struct
-http_proxy_options and also a getter method to retrieve
-that option from ssl has been added, by doing this
-we're able to erase previous queried user credentials
-to ensure correct operation.
+Patchset:
 
-Fixes: Trac #1187
-Signed-off-by: Gianmarco De Gregori <gianmarco@...2726...>
-Change-Id: Ia3e06c0832c4ca0ab868c845279fb71c01a1a78a
----
-M src/openvpn/init.c
-M src/openvpn/options.c
-M src/openvpn/proxy.c
-M src/openvpn/proxy.h
-M src/openvpn/ssl.c
-M src/openvpn/ssl.h
-6 files changed, 38 insertions(+), 2 deletions(-)
+PS2:
+I think this is a useful patch but there seems to be a bit of friction to o=
+vercome :-)
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/23/523/4
+File src/openvpn/error.h:
 
-diff --git a/src/openvpn/init.c b/src/openvpn/init.c
-index 52b4308..dc1ee8d 100644
---- a/src/openvpn/init.c
-+++ b/src/openvpn/init.c
-@@ -697,6 +697,8 @@
+http://gerrit.openvpn.net/c/openvpn/+/521/comment/509f59c6_11cebc44 :
+PS2, Line 39: #endif
+I don't like this, for two reasons - we protect unistd.h via `HAVE_UNISTD_H=
+`, not via "not windows", and also this is really a separate project, movin=
+g out includes from `"syshead.h"` to the parent C file because some compile=
+rs complain.
 
-     if (c->options.ce.http_proxy_options)
-     {
-+        c->options.ce.http_proxy_options->first_time =3D c->first_time;
-+
-         /* Possible HTTP proxy user/pass input */
-         c->c1.http_proxy =3D http_proxy_new(c->options.ce.http_proxy_optio=
-ns);
-         if (c->c1.http_proxy)
-diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index 2c79a1e..0d22df9 100644
---- a/src/openvpn/options.c
-+++ b/src/openvpn/options.c
-@@ -3123,6 +3123,10 @@
-         if (ce->proto =3D=3D PROTO_TCP)
-         {
-             ce->proto =3D PROTO_TCP_CLIENT;
-+            if (ce->http_proxy_options)
-+            {
-+                ce->http_proxy_options->nocache =3D ssl_get_auth_nocache();
-+            }
-         }
-     }
 
-diff --git a/src/openvpn/proxy.c b/src/openvpn/proxy.c
-index eeb3989..f1e1b21 100644
---- a/src/openvpn/proxy.c
-+++ b/src/openvpn/proxy.c
-@@ -276,7 +276,7 @@
-         {
-             auth_file =3D p->options.auth_file_up;
-         }
--        if (p->queried_creds)
-+        if (p->queried_creds && !static_proxy_user_pass.nocache)
-         {
-             flags |=3D GET_USER_PASS_PREVIOUS_CREDS_FAILED;
-         }
-@@ -288,6 +288,16 @@
-                       auth_file,
-                       UP_TYPE_PROXY,
-                       flags);
-+        static_proxy_user_pass.nocache =3D p->options.nocache;
-+        p->queried_creds =3D true;
-+        p->up =3D static_proxy_user_pass;
-+    }
-+
-+    /*
-+     * Using cached credentials
-+     */
-+    else if (!static_proxy_user_pass.nocache)
-+    {
-         p->queried_creds =3D true;
-         p->up =3D static_proxy_user_pass;
-     }
-@@ -542,7 +552,7 @@
-      * we know whether we need any. */
-     if (p->auth_method =3D=3D HTTP_AUTH_BASIC || p->auth_method =3D=3D HTT=
-P_AUTH_NTLM2)
-     {
--        get_user_pass_http(p, true);
-+        get_user_pass_http(p, p->options.first_time);
-     }
+File tests/t_client.sh.in:
 
- #if !NTLM
-@@ -656,6 +666,10 @@
-         || p->auth_method =3D=3D HTTP_AUTH_NTLM2)
-     {
-         get_user_pass_http(p, false);
-+        if (p->up.nocache)
-+        {
-+            clear_user_pass_http();
-+        }
-     }
+http://gerrit.openvpn.net/c/openvpn/+/521/comment/4d712547_a890cc8a :
+PS2, Line 301: SKIP_
+> Like all the other test settings this is defined in the t_client.rc. [=E2=
+=80=A6]
+Having an example would certainly help people setting this up for their fir=
+st time.
 
-     /* are we being called again after getting the digest server nonce in =
-the previous transaction? */
-diff --git a/src/openvpn/proxy.h b/src/openvpn/proxy.h
-index 4e78772..474cfc9 100644
---- a/src/openvpn/proxy.h
-+++ b/src/openvpn/proxy.h
-@@ -57,6 +57,8 @@
-     const char *user_agent;
-     struct http_custom_header custom_headers[MAX_CUSTOM_HTTP_HEADER];
-     bool inline_creds; /* auth_file_up is inline credentials */
-+    bool first_time; /* indicates if we need to wipe user creds at the fir=
-st iteration of the main loop */
-+    bool nocache;
- };
 
- struct http_proxy_options_simple {
-diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
-index 33c8670..d174dad 100644
---- a/src/openvpn/ssl.c
-+++ b/src/openvpn/ssl.c
-@@ -335,6 +335,15 @@
- }
+http://gerrit.openvpn.net/c/openvpn/+/521/comment/71a3de91_936dd75e :
+PS2, Line 325:         eval $test_check_skip || {
+while this certainly works, the `|| {` style is quite different from the ve=
+ry traditional `if/then/fi` style of the rest of the script.  So I'm a bit =
+undecided what to think about it.
 
- /*
-+ * Get the password caching
-+ */
-+bool
-+ssl_get_auth_nocache()
-+{
-+    return passbuf.nocache;
-+}
-+
-+/*
-  * Set an authentication token
-  */
- void
-diff --git a/src/openvpn/ssl.h b/src/openvpn/ssl.h
-index 71b99db..dd6538c 100644
---- a/src/openvpn/ssl.h
-+++ b/src/openvpn/ssl.h
-@@ -397,6 +397,11 @@
- void ssl_set_auth_nocache(void);
+```
+    if eval $test_check_skip ; then :
+    else
+        output ...
+        ...
+    fi
+```
+is not as compact, but might be easier to grok?
 
- /*
-+ * Getter method for retrieving the auth-nocache option.
-+ */
-+bool ssl_get_auth_nocache();
-+
-+/*
-  * Purge any stored authentication information, both for key files and tun=
-nel
-  * authentication. If PCKS #11 is enabled, purge authentication for that t=
-oo.
-  * Note that auth_token is not cleared.
+
+File tests/unit_tests/openvpn/mock_msg.c:
+
+http://gerrit.openvpn.net/c/openvpn/+/521/comment/4daebdcf_1d3501b2 :
+PS2, Line 94: endif
+> assert_failed is defined in error. [=E2=80=A6]
+Not sure I understand why we have cmocka specific .c files with #ifdef NO_C=
+MOCKA?  Is this ever used outside the unit test context?
+
+
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/523?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/521?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings
 
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: Ia3e06c0832c4ca0ab868c845279fb71c01a1a78a
-Gerrit-Change-Number: 523
-Gerrit-PatchSet: 4
-Gerrit-Owner: its_Giaan <gianmarco@...2726...>
-Gerrit-Reviewer: flichtenheld <frank@...2641...>
+Gerrit-Change-Id: I13ea6752c8d102eabcc579e391828c05d5322899
+Gerrit-Change-Number: 521
+Gerrit-PatchSet: 2
+Gerrit-Owner: flichtenheld <frank@...2641...>
+Gerrit-Reviewer: cron2 <gert@...1296...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-CC: ordex <a@...2181...>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
 Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-MessageType: newpatchset
+Gerrit-Attention: ordex <a@...2181...>
+Gerrit-Comment-Date: Wed, 28 Feb 2024 10:01:20 +0000
+Gerrit-HasComments: Yes
+Gerrit-Has-Labels: Yes
+Comment-In-Reply-To: flichtenheld <frank@...2641...>
+Comment-In-Reply-To: ordex <a@...2181...>
+Gerrit-MessageType: comment
 
---narfAZZbEjE=
+--qau04ztutDM=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p> Attention is currently required from: flichtenheld, plaisthos. </p>
-<p>its_Giaan <strong>uploaded patch set #4</strong> to this change.</p><p><=
-a href=3D"http://gerrit.openvpn.net/c/openvpn/+/523?usp=3Demail">View Chang=
-e</a></p><pre style=3D"font-family: monospace,monospace; white-space: pre-w=
-rap;">Http-proxy: fix bug preventing proxy credentials caching<br><br>Cachi=
-ng proxy credentials was not working due to the<br>lack of handling already=
- defined creds in get_user_pass(),<br>which prevented the caching from work=
-ing properly.<br><br>Fix this issue by getting the value of c-&gt;first_tim=
-e,<br>that indicates if we&#39;re at the first iteration<br>of the main loo=
-p and use it as second argument of the<br>get_user_pass_http(). Otherwise, =
-on SIGUSR1 or SIGHUP<br>upon instance context restart credentials would be =
-erased<br>every time.<br><br>The nocache member has been added to the struc=
-t<br>http_proxy_options and also a getter method to retrieve<br>that option=
- from ssl has been added, by doing this<br>we&#39;re able to erase previous=
- queried user credentials<br>to ensure correct operation.<br><br>Fixes: Tra=
-c #1187<br>Signed-off-by: Gianmarco De Gregori &lt;gianmarco@...2726...&gt;=
-<br>Change-Id: Ia3e06c0832c4ca0ab868c845279fb71c01a1a78a<br>---<br>M src/op=
-envpn/init.c<br>M src/openvpn/options.c<br>M src/openvpn/proxy.c<br>M src/o=
-penvpn/proxy.h<br>M src/openvpn/ssl.c<br>M src/openvpn/ssl.h<br>6 files cha=
-nged, 38 insertions(+), 2 deletions(-)<br><br></pre><pre style=3D"font-fami=
-ly: monospace,monospace; white-space: pre-wrap;">git pull ssh://gerrit.open=
-vpn.net:29418/openvpn refs/changes/23/523/4</pre><pre style=3D"font-family:=
- monospace,monospace; white-space: pre-wrap;"><span>diff --git a/src/openvp=
-n/init.c b/src/openvpn/init.c</span><br><span>index 52b4308..dc1ee8d 100644=
-</span><br><span>--- a/src/openvpn/init.c</span><br><span>+++ b/src/openvpn=
-/init.c</span><br><span>@@ -697,6 +697,8 @@</span><br><span> </span><br><sp=
-an>     if (c-&gt;options.ce.http_proxy_options)</span><br><span>     {</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+        c-&gt;options.c=
-e.http_proxy_options-&gt;first_time =3D c-&gt;first_time;</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+</span><br><span>         /* Possible=
- HTTP proxy user/pass input */</span><br><span>         c-&gt;c1.http_proxy=
- =3D http_proxy_new(c-&gt;options.ce.http_proxy_options);</span><br><span> =
-        if (c-&gt;c1.http_proxy)</span><br><span>diff --git a/src/openvpn/o=
-ptions.c b/src/openvpn/options.c</span><br><span>index 2c79a1e..0d22df9 100=
-644</span><br><span>--- a/src/openvpn/options.c</span><br><span>+++ b/src/o=
-penvpn/options.c</span><br><span>@@ -3123,6 +3123,10 @@</span><br><span>   =
-      if (ce-&gt;proto =3D=3D PROTO_TCP)</span><br><span>         {</span><=
-br><span>             ce-&gt;proto =3D PROTO_TCP_CLIENT;</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+            if (ce-&gt;http_proxy_opti=
-ons)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            {</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+                ce-&g=
-t;http_proxy_options-&gt;nocache =3D ssl_get_auth_nocache();</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+            }</span><br><span>    =
-     }</span><br><span>     }</span><br><span> </span><br><span>diff --git =
-a/src/openvpn/proxy.c b/src/openvpn/proxy.c</span><br><span>index eeb3989..=
-f1e1b21 100644</span><br><span>--- a/src/openvpn/proxy.c</span><br><span>++=
-+ b/src/openvpn/proxy.c</span><br><span>@@ -276,7 +276,7 @@</span><br><span=
->         {</span><br><span>             auth_file =3D p-&gt;options.auth_f=
-ile_up;</span><br><span>         }</span><br><span style=3D"color: hsl(0, 1=
-00%, 40%);">-        if (p-&gt;queried_creds)</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+        if (p-&gt;queried_creds &amp;&amp; !stati=
-c_proxy_user_pass.nocache)</span><br><span>         {</span><br><span>     =
-        flags |=3D GET_USER_PASS_PREVIOUS_CREDS_FAILED;</span><br><span>   =
-      }</span><br><span>@@ -288,6 +288,16 @@</span><br><span>              =
-         auth_file,</span><br><span>                       UP_TYPE_PROXY,</=
-span><br><span>                       flags);</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+        static_proxy_user_pass.nocache =3D p-&gt;=
-options.nocache;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
-     p-&gt;queried_creds =3D true;</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+        p-&gt;up =3D static_proxy_user_pass;</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+    /*</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     *=
- Using cached credentials</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+     */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    el=
-se if (!static_proxy_user_pass.nocache)</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+    {</span><br><span>         p-&gt;queried_creds =3D =
-true;</span><br><span>         p-&gt;up =3D static_proxy_user_pass;</span><=
-br><span>     }</span><br><span>@@ -542,7 +552,7 @@</span><br><span>      *=
- we know whether we need any. */</span><br><span>     if (p-&gt;auth_method=
- =3D=3D HTTP_AUTH_BASIC || p-&gt;auth_method =3D=3D HTTP_AUTH_NTLM2)</span>=
-<br><span>     {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-     =
-   get_user_pass_http(p, true);</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+        get_user_pass_http(p, p-&gt;options.first_time);</span>=
-<br><span>     }</span><br><span> </span><br><span> #if !NTLM</span><br><sp=
-an>@@ -656,6 +666,10 @@</span><br><span>         || p-&gt;auth_method =3D=
-=3D HTTP_AUTH_NTLM2)</span><br><span>     {</span><br><span>         get_us=
-er_pass_http(p, false);</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+        if (p-&gt;up.nocache)</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+        {</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+            clear_user_pass_http();</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+        }</span><br><span>     }</span><br><span> </spa=
-n><br><span>     /* are we being called again after getting the digest serv=
-er nonce in the previous transaction? */</span><br><span>diff --git a/src/o=
-penvpn/proxy.h b/src/openvpn/proxy.h</span><br><span>index 4e78772..474cfc9=
- 100644</span><br><span>--- a/src/openvpn/proxy.h</span><br><span>+++ b/src=
-/openvpn/proxy.h</span><br><span>@@ -57,6 +57,8 @@</span><br><span>     con=
-st char *user_agent;</span><br><span>     struct http_custom_header custom_=
-headers[MAX_CUSTOM_HTTP_HEADER];</span><br><span>     bool inline_creds; /*=
- auth_file_up is inline credentials */</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+    bool first_time; /* indicates if we need to wipe use=
-r creds at the first iteration of the main loop */</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+    bool nocache;</span><br><span> };</span>=
-<br><span> </span><br><span> struct http_proxy_options_simple {</span><br><=
-span>diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c</span><br><span>ind=
-ex 33c8670..d174dad 100644</span><br><span>--- a/src/openvpn/ssl.c</span><b=
-r><span>+++ b/src/openvpn/ssl.c</span><br><span>@@ -335,6 +335,15 @@</span>=
-<br><span> }</span><br><span> </span><br><span> /*</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+ * Get the password caching</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+ */</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+bool</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+ssl_get_auth_nocache()</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    ret=
-urn passbuf.nocache;</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+/*</span><br><span>  * Set an authen=
-tication token</span><br><span>  */</span><br><span> void</span><br><span>d=
-iff --git a/src/openvpn/ssl.h b/src/openvpn/ssl.h</span><br><span>index 71b=
-99db..dd6538c 100644</span><br><span>--- a/src/openvpn/ssl.h</span><br><spa=
-n>+++ b/src/openvpn/ssl.h</span><br><span>@@ -397,6 +397,11 @@</span><br><s=
-pan> void ssl_set_auth_nocache(void);</span><br><span> </span><br><span> /*=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * Getter method fo=
-r retrieving the auth-nocache option.</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+ */</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+bool ssl_get_auth_nocache();</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+/*</span=
-><br><span>  * Purge any stored authentication information, both for key fi=
-les and tunnel</span><br><span>  * authentication. If PCKS #11 is enabled, =
-purge authentication for that too.</span><br><span>  * Note that auth_token=
- is not cleared.</span><br><span></span><br></pre><p>To view, visit <a href=
-=3D"http://gerrit.openvpn.net/c/openvpn/+/523?usp=3Demail">change 523</a>. =
-To unsubscribe, or for help writing mail filters, visit <a href=3D"http://g=
-errit.openvpn.net/settings">settings</a>.</p><div itemscope itemtype=3D"htt=
-p://schema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D=
-"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit=
-.openvpn.net/c/openvpn/+/523?usp=3Demail"/><meta itemprop=3D"name" content=
-=3D"View Change"/></div></div>
+<p> Attention is currently required from: flichtenheld, ordex, plaisthos. <=
+/p>
+<p>Patch set 2:<span style=3D"border-radius: 3px; display: inline-block; ma=
+rgin: 0 2px; padding: 4px;background-color: #ffd4d4;">Code-Review -1</span>=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/521?usp=3Demail">Vi=
+ew Change</a></p><p>5 comments:</p><ul style=3D"list-style: none; padding: =
+0;"><li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-=
+style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p =
+style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvp=
+n/+/521?tab=3Dcomments">Patch Set #2:</a> </p><p style=3D"white-space: pre-=
+wrap; word-wrap: break-word;">I think this is a useful patch but there seem=
+s to be a bit of friction to overcome :-)</p></li></ul></li><li style=3D"ma=
+rgin: 0; padding: 0;"><p>File src/openvpn/error.h:</p><ul style=3D"list-sty=
+le: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p sty=
+le=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/+=
+/521/comment/509f59c6_11cebc44">Patch Set #2, Line 39:</a> <code style=3D"f=
+ont-family:monospace,monospace">#endif</code></p><p style=3D"white-space: p=
+re-wrap; word-wrap: break-word;">I don&#39;t like this, for two reasons - w=
+e protect unistd.h via `HAVE_UNISTD_H`, not via &quot;not windows&quot;, an=
+d also this is really a separate project, moving out includes from `&quot;s=
+yshead.h&quot;` to the parent C file because some compilers complain.</p></=
+li></ul></li><li style=3D"margin: 0; padding: 0;"><p>File tests/t_client.sh=
+.in:</p><ul style=3D"list-style: none; padding: 0;"><li style=3D"margin: 0;=
+ padding: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://g=
+errit.openvpn.net/c/openvpn/+/521/comment/4d712547_a890cc8a">Patch Set #2, =
+Line 301:</a> <code style=3D"font-family:monospace,monospace">SKIP_</code><=
+/p><p><blockquote style=3D"border-left: 1px solid #aaa; margin: 10px 0; pad=
+ding: 0 10px;">Like all the other test settings this is defined in the t_cl=
+ient.rc. [=E2=80=A6]</blockquote></p><p style=3D"white-space: pre-wrap; wor=
+d-wrap: break-word;">Having an example would certainly help people setting =
+this up for their first time.</p></li><li style=3D"margin: 0; padding: 0 0 =
+0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.=
+net/c/openvpn/+/521/comment/71a3de91_936dd75e">Patch Set #2, Line 325:</a> =
+<code style=3D"font-family:monospace,monospace">        eval $test_check_sk=
+ip || {</code></p><p style=3D"white-space: pre-wrap; word-wrap: break-word;=
+">while this certainly works, the `|| {` style is quite different from the =
+very traditional `if/then/fi` style of the rest of the script.  So I&#39;m =
+a bit undecided what to think about it.</p><pre style=3D"font-family: monos=
+pace,monospace; white-space: pre-wrap;">```<br>    if eval $test_check_skip=
+ ; then : <br>    else<br>        output ...<br>        ...<br>    fi<br>``=
+`<br>is not as compact, but might be easier to grok?</pre></li></ul></li><l=
+i style=3D"margin: 0; padding: 0;"><p>File tests/unit_tests/openvpn/mock_ms=
+g.c:</p><ul style=3D"list-style: none; padding: 0;"><li style=3D"margin: 0;=
+ padding: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://g=
+errit.openvpn.net/c/openvpn/+/521/comment/4daebdcf_1d3501b2">Patch Set #2, =
+Line 94:</a> <code style=3D"font-family:monospace,monospace">endif</code></=
+p><p><blockquote style=3D"border-left: 1px solid #aaa; margin: 10px 0; padd=
+ing: 0 10px;">assert_failed is defined in error. [=E2=80=A6]</blockquote></=
+p><p style=3D"white-space: pre-wrap; word-wrap: break-word;">Not sure I und=
+erstand why we have cmocka specific .c files with #ifdef NO_CMOCKA?  Is thi=
+s ever used outside the unit test context?</p></li></ul></li></ul><p>To vie=
+w, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/521?usp=3Demail">=
+change 521</a>. To unsubscribe, or for help writing mail filters, visit <a =
+href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope=
+ itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"act=
+ion" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=
+=3D"http://gerrit.openvpn.net/c/openvpn/+/521?usp=3Demail"/><meta itemprop=
+=3D"name" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: Ia3e06c0832c4ca0ab868c845279=
-fb71c01a1a78a </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 523 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 4 </div>
-<div style=3D"display:none"> Gerrit-Owner: its_Giaan &lt;gianmarco@...2786...=
-..&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
-1...&gt; </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I13ea6752c8d102eabcc579e3918=
+28c05d5322899 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 521 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
+<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
+.&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
+ </div>
 <div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
 .1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: ordex &lt;a@...2181...&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
 ..1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
 41...&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
+<div style=3D"display:none"> Gerrit-Attention: ordex &lt;a@...2181...&gt; <=
+/div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Wed, 28 Feb 2024 10:01:20=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
+<div style=3D"display:none"> Comment-In-Reply-To: flichtenheld &lt;frank@...1186...=
+.2641...&gt; </div>
+<div style=3D"display:none"> Comment-In-Reply-To: ordex &lt;a@...2181...&gt=
+; </div>
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
 
 
---narfAZZbEjE=--
+--qau04ztutDM=--
 
