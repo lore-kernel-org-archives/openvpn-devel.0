@@ -1,16 +1,16 @@
 From: "flichtenheld (Code Review)" <gerrit@...515...>
 Date: Wed, 28 Feb 2024 14:37:38 +0000
-In-Reply-To: <gerrit.1702310034000.I67d461afbcc9c06b1fc5ab4477141d7b8bd9ba8e@...2715...>
-References: <gerrit.1702310034000.I67d461afbcc9c06b1fc5ab4477141d7b8bd9ba8e@...2715...>
+In-Reply-To: <gerrit.1707835634000.I13ea6752c8d102eabcc579e391828c05d5322899@...2715...>
+References: <gerrit.1707835634000.I13ea6752c8d102eabcc579e391828c05d5322899@...2715...>
 Reply-To: frank@...2641..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net
-Message-ID: <3680a5b71280e57986ad3d1f9c5e7c371ad246a4-EmailReplacePatchSet-HTML@...2715...>
+ openvpn-devel@lists.sourceforge.net, gert@...1296..., a@...2181...
+Message-ID: <ccd729a846f5bf58a647664f843f24dee93342d9-EmailReplacePatchSet-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="XhrKA2sTQtk="; charset=UTF-8
-Subject: [Openvpn-devel] [M] Change in openvpn[master]: tests: fork default
- automake test-driver
+Content-Type: multipart/alternative; boundary="A5+pKI2IaIE="; charset=UTF-8
+Subject: [Openvpn-devel] [M] Change in openvpn[master]: t_client.sh: Allow
+ to skip tests
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,499 +19,653 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: plaisthos <arne-openvpn@...1227...>
+To: plaisthos <arne-openvpn@...1227...>, cron2 <gert@...1296...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---XhrKA2sTQtk=
+--A5+pKI2IaIE=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Hello plaisthos,
+Attention is currently required from: cron2, ordex, plaisthos.
+
+Hello cron2, plaisthos,
 
 I'd like you to reexamine a change. Please visit
 
-    http://gerrit.openvpn.net/c/openvpn/+/478?usp=3Demail
+    http://gerrit.openvpn.net/c/openvpn/+/521?usp=3Demail
 
-to look at the new patch set (#9).
-
-The change is no longer submittable: checks~ChecksSubmitRule is unsatisfied=
- now.
+to look at the new patch set (#4).
 
 
-Change subject: tests: fork default automake test-driver
+Change subject: t_client.sh: Allow to skip tests
 ......................................................................
 
-tests: fork default automake test-driver
+t_client.sh: Allow to skip tests
 
-For some of the test we don't like the default log behavior
-and there seems no easy way to change that except to fork
-the driver. The license seems unproblematic since we're
-GPL anyway.
+Individual tests can define a script to run to test
+whether they should be skipped.
+
+Included in this commit is an example check which
+checks whether we can do NTLM checks. This fails
+e.g. on recent versions of Fedora with mbedTLS
+(tested with Fedora 39) or when NTLM support is not
+compiled in.
 
 v2:
- - Do not use forked-test-driver for UTs. Default behavior
-   is fine for those.
+ - ntlm_support:
+   - support OpenSSL 3
+   - allow to build without cmocka
+v3:
+ - add example to t_client.rc-sample
+ - t_client.sh code style
+ - use syshead.h in error.h
 
-Change-Id: I67d461afbcc9c06b1fc5ab4477141d7b8bd9ba8e
+Change-Id: I13ea6752c8d102eabcc579e391828c05d5322899
 Signed-off-by: Frank Lichtenheld <frank@...2641...>
 ---
-M Makefile.am
-A forked-test-driver
+M src/openvpn/error.h
 M tests/Makefile.am
-3 files changed, 156 insertions(+), 1 deletion(-)
+A tests/ntlm_support.c
+M tests/t_client.rc-sample
+M tests/t_client.sh.in
+M tests/unit_tests/openvpn/mock_msg.c
+6 files changed, 119 insertions(+), 15 deletions(-)
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/78/478/9
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/21/521/4
 
-diff --git a/Makefile.am b/Makefile.am
-index 792588a..d93bd1b 100644
---- a/Makefile.am
-+++ b/Makefile.am
-@@ -45,7 +45,8 @@
- 	ltrc.inc \
- 	CMakeLists.txt \
- 	CMakePresets.json \
--	config.h.cmake.in
-+	config.h.cmake.in \
-+	forked-test-driver
-=20
- .PHONY: config-version.h doxygen
+diff --git a/src/openvpn/error.h b/src/openvpn/error.h
+index 1225b13..be3484d 100644
+--- a/src/openvpn/error.h
++++ b/src/openvpn/error.h
+@@ -25,16 +25,10 @@
+ #define ERROR_H
 
-diff --git a/forked-test-driver b/forked-test-driver
-new file mode 100755
-index 0000000..be73b80
---- /dev/null
-+++ b/forked-test-driver
-@@ -0,0 +1,153 @@
-+#! /bin/sh
-+# test-driver - basic testsuite driver script.
-+
-+scriptversion=3D2018-03-07.03; # UTC
-+
-+# Copyright (C) 2011-2021 Free Software Foundation, Inc.
-+#
-+# This program is free software; you can redistribute it and/or modify
-+# it under the terms of the GNU General Public License as published by
-+# the Free Software Foundation; either version 2, or (at your option)
-+# any later version.
-+#
-+# This program is distributed in the hope that it will be useful,
-+# but WITHOUT ANY WARRANTY; without even the implied warranty of
-+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-+# GNU General Public License for more details.
-+#
-+# You should have received a copy of the GNU General Public License
-+# along with this program.  If not, see <https://www.gnu.org/licenses/>.
-+
-+# As a special exception to the GNU General Public License, if you
-+# distribute this file as part of a program that contains a
-+# configuration script generated by Autoconf, you may include it under
-+# the same distribution terms that you use for the rest of that program.
-+
-+# This file is maintained in Automake, please report
-+# bugs to <bug-automake@...1269...> or send patches to
-+# <automake-patches@...1269...>.
-+
-+# Make unconditional expansion of undefined variables an error.  This
-+# helps a lot in preventing typo-related bugs.
-+set -u
-+
-+usage_error ()
-+{
-+  echo "$0: $*" >&2
-+  print_usage >&2
-+  exit 2
-+}
-+
-+print_usage ()
-+{
-+  cat <<END
-+Usage:
-+  test-driver --test-name NAME --log-file PATH --trs-file PATH
-+              [--expect-failure {yes|no}] [--color-tests {yes|no}]
-+              [--enable-hard-errors {yes|no}] [--]
-+              TEST-SCRIPT [TEST-SCRIPT-ARGUMENTS]
-+
-+The '--test-name', '--log-file' and '--trs-file' options are mandatory.
-+See the GNU Automake documentation for information.
-+END
-+}
-+
-+test_name=3D # Used for reporting.
-+log_file=3D  # Where to save the output of the test script.
-+trs_file=3D  # Where to save the metadata of the test run.
-+expect_failure=3Dno
-+color_tests=3Dno
-+enable_hard_errors=3Dyes
-+while test $# -gt 0; do
-+  case $1 in
-+  --help) print_usage; exit $?;;
-+  --version) echo "test-driver $scriptversion"; exit $?;;
-+  --test-name) test_name=3D$2; shift;;
-+  --log-file) log_file=3D$2; shift;;
-+  --trs-file) trs_file=3D$2; shift;;
-+  --color-tests) color_tests=3D$2; shift;;
-+  --expect-failure) expect_failure=3D$2; shift;;
-+  --enable-hard-errors) enable_hard_errors=3D$2; shift;;
-+  --) shift; break;;
-+  -*) usage_error "invalid option: '$1'";;
-+   *) break;;
-+  esac
-+  shift
-+done
-+
-+missing_opts=3D
-+test x"$test_name" =3D x && missing_opts=3D"$missing_opts --test-name"
-+test x"$log_file"  =3D x && missing_opts=3D"$missing_opts --log-file"
-+test x"$trs_file"  =3D x && missing_opts=3D"$missing_opts --trs-file"
-+if test x"$missing_opts" !=3D x; then
-+  usage_error "the following mandatory options are missing:$missing_opts"
-+fi
-+
-+if test $# -eq 0; then
-+  usage_error "missing argument"
-+fi
-+
-+if test $color_tests =3D yes; then
-+  # Keep this in sync with 'lib/am/check.am:$(am__tty_colors)'.
-+  red=3D'=1B[0;31m' # Red.
-+  grn=3D'=1B[0;32m' # Green.
-+  lgn=3D'=1B[1;32m' # Light green.
-+  blu=3D'=1B[1;34m' # Blue.
-+  mgn=3D'=1B[0;35m' # Magenta.
-+  std=3D'=1B[m'     # No color.
-+else
-+  red=3D grn=3D lgn=3D blu=3D mgn=3D std=3D
-+fi
-+
-+do_exit=3D'rm -f $log_file $trs_file; (exit $st); exit $st'
-+trap "st=3D129; $do_exit" 1
-+trap "st=3D130; $do_exit" 2
-+trap "st=3D141; $do_exit" 13
-+trap "st=3D143; $do_exit" 15
-+
-+# Test script is run here. We create the file first, then append to it,
-+# to ameliorate tests themselves also writing to the log file. Our tests
-+# don't, but others can (automake bug#35762).
-+: >"$log_file"
-+"$@" >>"$log_file" 2>&1
-+estatus=3D$?
-+
-+if test $enable_hard_errors =3D no && test $estatus -eq 99; then
-+  tweaked_estatus=3D1
-+else
-+  tweaked_estatus=3D$estatus
-+fi
-+
-+case $tweaked_estatus:$expect_failure in
-+  0:yes) col=3D$red res=3DXPASS recheck=3Dyes gcopy=3Dyes;;
-+  0:*)   col=3D$grn res=3DPASS  recheck=3Dno  gcopy=3Dno;;
-+  77:*)  col=3D$blu res=3DSKIP  recheck=3Dno  gcopy=3Dyes;;
-+  99:*)  col=3D$mgn res=3DERROR recheck=3Dyes gcopy=3Dyes;;
-+  *:yes) col=3D$lgn res=3DXFAIL recheck=3Dno  gcopy=3Dyes;;
-+  *:*)   col=3D$red res=3DFAIL  recheck=3Dyes gcopy=3Dyes;;
-+esac
-+
-+# Report the test outcome and exit status in the logs, so that one can
-+# know whether the test passed or failed simply by looking at the '.log'
-+# file, without the need of also peaking into the corresponding '.trs'
-+# file (automake bug#11814).
-+echo "$res $test_name (exit status: $estatus)" >>"$log_file"
-+
-+# Report outcome to console.
-+echo "${col}${res}${std}: $test_name"
-+
-+# Register the test result, and other relevant metadata.
-+echo ":test-result: $res" > $trs_file
-+echo ":global-test-result: $res" >> $trs_file
-+echo ":recheck: $recheck" >> $trs_file
-+echo ":copy-in-global-log: $gcopy" >> $trs_file
-+
-+# Local Variables:
-+# mode: shell-script
-+# sh-indentation: 2
-+# eval: (add-hook 'before-save-hook 'time-stamp)
-+# time-stamp-start: "scriptversion=3D"
-+# time-stamp-format: "%:y-%02m-%02d.%02H"
-+# time-stamp-time-zone: "UTC0"
-+# time-stamp-end: "; # UTC"
-+# End:
+ #include "basic.h"
+-
+-#include <errno.h>
+-#include <stdbool.h>
++#include "syshead.h"
+
+ #include <assert.h>
+
+-#if _WIN32
+-#include <windows.h>
+-#endif
+-
+ /* #define ABORT_ON_ERROR */
+
+ #if defined(ENABLE_PKCS11) || defined(ENABLE_MANAGEMENT)
 diff --git a/tests/Makefile.am b/tests/Makefile.am
-index 6c71067..b3b2d74 100644
+index b3b2d74..13a1013 100644
 --- a/tests/Makefile.am
 +++ b/tests/Makefile.am
-@@ -15,6 +15,7 @@
- SUBDIRS =3D unit_tests
-
- AM_TESTSUITE_SUMMARY_HEADER =3D ' for $(PACKAGE_STRING) System Tests'
-+LOG_DRIVER =3D $(SHELL) $(top_srcdir)/forked-test-driver
+@@ -19,6 +19,8 @@
 
  if !WIN32
  test_scripts =3D t_client.sh t_lpback.sh t_cltsrv.sh
++
++check_PROGRAMS =3D ntlm_support
+ if HAVE_SITNL
+ test_scripts +=3D t_net.sh
+ endif
+@@ -36,3 +38,15 @@
 
---=20
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/478?usp=3Demail
+ dist_noinst_DATA =3D \
+ 	t_client.rc-sample
++
++ntlm_support_CFLAGS  =3D -I$(top_srcdir)/src/openvpn -I$(top_srcdir)/src/c=
+ompat -I$(top_srcdir)/tests/unit_tests/openvpn -DNO_CMOCKA @TEST_CFLAGS@
++ntlm_support_LDFLAGS =3D @TEST_LDFLAGS@ -L$(top_srcdir)/src/openvpn $(OPTI=
+ONAL_CRYPTO_LIBS)
++ntlm_support_SOURCES =3D ntlm_support.c \
++	unit_tests/openvpn/mock_msg.c unit_tests/openvpn/mock_msg.h \
++	$(top_srcdir)/src/openvpn/buffer.c \
++	$(top_srcdir)/src/openvpn/crypto.c \
++	$(top_srcdir)/src/openvpn/crypto_openssl.c \
++	$(top_srcdir)/src/openvpn/crypto_mbedtls.c \
++	$(top_srcdir)/src/openvpn/otime.c \
++	$(top_srcdir)/src/openvpn/packet_id.c \
++	$(top_srcdir)/src/openvpn/platform.c
+diff --git a/tests/ntlm_support.c b/tests/ntlm_support.c
+new file mode 100644
+index 0000000..2d7da86
+--- /dev/null
++++ b/tests/ntlm_support.c
+@@ -0,0 +1,52 @@
++/*
++ *  OpenVPN -- An application to securely tunnel IP networks
++ *             over a single UDP port, with support for SSL/TLS-based
++ *             session authentication and key exchange,
++ *             packet encryption, packet authentication, and
++ *             packet compression.
++ *
++ * Copyright (C) 2023 OpenVPN Inc <sales@...515...>
++ *
++ *  This program is free software; you can redistribute it and/or modify
++ *  it under the terms of the GNU General Public License version 2
++ *  as published by the Free Software Foundation.
++ *
++ *  This program is distributed in the hope that it will be useful,
++ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
++ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ *  GNU General Public License for more details.
++ *
++ *  You should have received a copy of the GNU General Public License along
++ *  with this program; if not, write to the Free Software Foundation, Inc.,
++ *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
++ */
++
++#ifdef HAVE_CONFIG_H
++#include "config.h"
++#endif
++
++#include "syshead.h"
++
++#include "crypto.h"
++#include "error.h"
++
++int
++main(void)
++{
++#if defined(ENABLE_CRYPTO_OPENSSL)
++    crypto_load_provider("legacy");
++    crypto_load_provider("default");
++#endif
++#ifdef NTLM
++    if (!md_valid("MD4"))
++    {
++        msg(M_FATAL, "MD4 not supported");
++    }
++    if (!md_valid("MD5"))
++    {
++        msg(M_FATAL, "MD5 not supported");
++    }
++#else  /* ifdef NTLM */
++    msg(M_FATAL, "NTLM support not compiled in");
++#endif
++}
+diff --git a/tests/t_client.rc-sample b/tests/t_client.rc-sample
+index 355e8bb..608d614 100644
+--- a/tests/t_client.rc-sample
++++ b/tests/t_client.rc-sample
+@@ -27,7 +27,7 @@
+ #
+ # tests to run (list suffixes for config stanzas below)
+ #
+-TEST_RUN_LIST=3D"1 2"
++TEST_RUN_LIST=3D"1 2 2n"
+
+ #
+ # use "sudo" (etc) to give openvpn the necessary privileges
+@@ -53,14 +53,24 @@
+ #
+ # if something is not defined here, the corresponding test is not run
+ #
+-# possible test options:
++# common test options:
+ #
+-# RUN_TITLE_x=3D"what is being tested on here" (purely informational)
+-# OPENVPN_CONF_x =3D "how to call ./openvpn" [mandatory]
++# RUN_TITLE_x        =3D "what is being tested on here" (purely informatio=
+nal)
++# OPENVPN_CONF_x     =3D "how to call ./openvpn" [mandatory]
+ # EXPECT_IFCONFIG4_x =3D "this IPv4 address needs to show up in ifconfig"
+ # EXPECT_IFCONFIG6_x =3D "this IPv6 address needs to show up in ifconfig"
+-# PING4_HOSTS_x =3D "these hosts musts ping when openvpn is up (IPv4 fping=
+)"
+-# PING6_HOSTS_x =3D "these hosts musts ping when openvpn is up (IPv6 fping=
+6)"
++# PING4_HOSTS_x      =3D "these hosts musts ping when openvpn is up (IPv4 =
+fping)"
++# PING6_HOSTS_x      =3D "these hosts musts ping when openvpn is up (IPv6 =
+fping6)"
++#
++# hook test options:
++#
++# SKIP_x            =3D "commands to execute before openvpn, skip test on =
+failure"
++# PREPARE_x         =3D "commands to execute before openvpn"
++# POSTINIT_CMD_x    =3D "commands to execute after openvpn but before ping"
++# CLEANUP_x         =3D "commands to execute after the test"
++#
++# Note: all hooks are "eval"ed, so run in the original shell of the t_clie=
+nt.sh
++# script, not a child process.
+ #
+ # Test 1: UDP / p2mp tun
+ #   specify IPv4+IPv6 addresses expected from server and ping targets
+@@ -76,10 +86,18 @@
+ OPENVPN_CONF_2=3D"$OPENVPN_BASE_P2MP --dev tun --proto tcp --remote $REMOT=
+E --port 51194"
+ PING4_HOSTS_2=3D"10.100.51.1 10.100.0.1"
+ PING6_HOSTS_2=3D"2001:db8::1 2001:db8:a051::1"
+-#
+ # run command after openvpn initialization is done - here: delay 5 seconds
+ POSTINIT_CMD_2=3D"sleep 5"
+
++# Test 2n: TCP / p2mp tun / via NTLM proxy
++RUN_TITLE_2n=3D"testing tun/tcp/ntlm-proxy"
++OPENVPN_CONF_2n=3D"$OPENVPN_BASE_P2MP --dev tun --proto tcp --remote $REMO=
+TE --port 51194
++ --http-proxy 192.168.1.2 8080 $KEYBASE/t_client_auth.txt ntlm --http-prox=
+y-option VERSION 1.1"
++PING4_HOSTS_2n=3D"10.100.51.1 10.100.0.1"
++PING6_HOSTS_2n=3D"2001:db8::1 2001:db8:a051::1"
++# skip test if NTLM support is not available
++SKIP_2n=3D"${top_builddir}/tests/ntlm_support"
++
+ # Test 3: UDP / p2p tun
+ # ...
+
+diff --git a/tests/t_client.sh.in b/tests/t_client.sh.in
+index 99e6f9c..459e8b5 100755
+--- a/tests/t_client.sh.in
++++ b/tests/t_client.sh.in
+@@ -291,12 +291,14 @@
+ # main test loop
+ # ----------------------------------------------------------
+ SUMMARY_OK=3D
++SUMMARY_SKIP=3D
+ SUMMARY_FAIL=3D
+
+ for SUF in $TEST_RUN_LIST
+ do
+     # get config variables
+     eval test_prep=3D\"\$PREPARE_$SUF\"
++    eval test_check_skip=3D\"\$SKIP_$SUF\"
+     eval test_postinit=3D\"\$POSTINIT_CMD_$SUF\"
+     eval test_cleanup=3D\"\$CLEANUP_$SUF\"
+     eval test_run_title=3D\"\$RUN_TITLE_$SUF\"
+@@ -318,6 +320,16 @@
+     output_start "### test run $SUF: '$test_run_title' ###"
+     fail_count=3D0
+
++    if [ -n "$test_check_skip" ]; then
++        output "check whether we need to skip: '$test_check_skip'"
++        if eval $test_check_skip; then :
++        else
++            output "skip check failed, SKIP test $SUF."
++	    SUMMARY_SKIP=3D"$SUMMARY_SKIP $SUF"
++	    echo -e "$outbuf" ; continue
++        fi
++    fi
++
+     if [ -n "$test_prep" ]; then
+         output "running preparation: '$test_prep'"
+         eval $test_prep
+@@ -455,8 +467,10 @@
+ done
+
+ if [ -z "$SUMMARY_OK" ] ; then SUMMARY_OK=3D" none"; fi
++if [ -z "$SUMMARY_SKIP" ] ; then SUMMARY_SKIP=3D" none"; fi
+ if [ -z "$SUMMARY_FAIL" ] ; then SUMMARY_FAIL=3D" none"; fi
+ echo "Test sets succeeded:$SUMMARY_OK."
++echo "Test sets skipped:$SUMMARY_SKIP."
+ echo "Test sets failed:$SUMMARY_FAIL."
+
+ # remove trap handler
+diff --git a/tests/unit_tests/openvpn/mock_msg.c b/tests/unit_tests/openvpn=
+/mock_msg.c
+index d74efaa..a291f8f 100644
+--- a/tests/unit_tests/openvpn/mock_msg.c
++++ b/tests/unit_tests/openvpn/mock_msg.c
+@@ -31,8 +31,9 @@
+ #include <stdlib.h>
+ #include <setjmp.h>
+ #include <stdint.h>
++#ifndef NO_CMOCKA
+ #include <cmocka.h>
+-
++#endif
+
+ #include "errlevel.h"
+ #include "error.h"
+@@ -74,6 +75,8 @@
+     va_end(arglist);
+ }
+
++/* Allow to use mock_msg.c outside of UT */
++#ifndef NO_CMOCKA
+ void
+ assert_failed(const char *filename, int line, const char *condition)
+ {
+@@ -81,6 +84,15 @@
+     /* Keep compiler happy.  Should not happen, mock_assert() does not ret=
+urn */
+     exit(1);
+ }
++#else  /* ifndef NO_CMOCKA */
++void
++assert_failed(const char *filename, int line, const char *condition)
++{
++    msg(M_FATAL, "Assertion failed at %s:%d (%s)", filename, line, conditi=
+on ? condition : "");
++    _exit(1);
++}
++#endif
++
+
+ /*
+  * Fail memory allocation.  Don't use msg() because it tries
+
+--
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/521?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings
 
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: I67d461afbcc9c06b1fc5ab4477141d7b8bd9ba8e
-Gerrit-Change-Number: 478
-Gerrit-PatchSet: 9
+Gerrit-Change-Id: I13ea6752c8d102eabcc579e391828c05d5322899
+Gerrit-Change-Number: 521
+Gerrit-PatchSet: 4
 Gerrit-Owner: flichtenheld <frank@...2641...>
+Gerrit-Reviewer: cron2 <gert@...1296...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-CC: ordex <a@...2181...>
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Attention: cron2 <gert@...1296...>
+Gerrit-Attention: ordex <a@...2181...>
 Gerrit-MessageType: newpatchset
 
---XhrKA2sTQtk=
+--A5+pKI2IaIE=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p>flichtenheld <strong>uploaded patch set #9</strong> to this change.</p><=
-p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/478?usp=3Demail">View Ch=
-ange</a></p><p>The change is no longer submittable: checks~ChecksSubmitRule=
- is unsatisfied now.</p><pre style=3D"font-family: monospace,monospace; whi=
-te-space: pre-wrap;">tests: fork default automake test-driver<br><br>For so=
-me of the test we don&#39;t like the default log behavior<br>and there seem=
-s no easy way to change that except to fork<br>the driver. The license seem=
-s unproblematic since we&#39;re<br>GPL anyway.<br><br>v2:<br> - Do not use =
-forked-test-driver for UTs. Default behavior<br>   is fine for those.<br><b=
-r>Change-Id: I67d461afbcc9c06b1fc5ab4477141d7b8bd9ba8e<br>Signed-off-by: Fr=
-ank Lichtenheld &lt;frank@...2641...&gt;<br>---<br>M Makefile.am<br>A forke=
-d-test-driver<br>M tests/Makefile.am<br>3 files changed, 156 insertions(+),=
- 1 deletion(-)<br><br></pre><pre style=3D"font-family: monospace,monospace;=
- white-space: pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/openvpn re=
-fs/changes/78/478/9</pre><pre style=3D"font-family: monospace,monospace; wh=
-ite-space: pre-wrap;"><span>diff --git a/Makefile.am b/Makefile.am</span><b=
-r><span>index 792588a..d93bd1b 100644</span><br><span>--- a/Makefile.am</sp=
-an><br><span>+++ b/Makefile.am</span><br><span>@@ -45,7 +45,8 @@</span><br>=
-<span> 	ltrc.inc \</span><br><span> 	CMakeLists.txt \</span><br><span> 	CMa=
-kePresets.json \</span><br><span style=3D"color: hsl(0, 100%, 40%);">-	conf=
-ig.h.cmake.in</span><br><span style=3D"color: hsl(120, 100%, 40%);">+	confi=
-g.h.cmake.in \</span><br><span style=3D"color: hsl(120, 100%, 40%);">+	fork=
-ed-test-driver</span><br><span> </span><br><span> .PHONY: config-version.h =
-doxygen</span><br><span> </span><br><span>diff --git a/forked-test-driver b=
-/forked-test-driver</span><br><span>new file mode 100755</span><br><span>in=
-dex 0000000..be73b80</span><br><span>--- /dev/null</span><br><span>+++ b/fo=
-rked-test-driver</span><br><span>@@ -0,0 +1,153 @@</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+#! /bin/sh</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+# test-driver - basic testsuite driver script.</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+scriptversion=3D2018-03-07.03; # UTC</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+# Copyright (C) 2011-2021 Free Software Foundat=
-ion, Inc.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+# This program is free softw=
-are; you can redistribute it and/or modify</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+# it under the terms of the GNU General Public Licen=
-se as published by</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#=
- the Free Software Foundation; either version 2, or (at your option)</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+# any later version.</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+#</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+# This program is distributed in the hope=
- that it will be useful,</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+# but WITHOUT ANY WARRANTY; without even the implied warranty of</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+# MERCHANTABILITY or FITN=
-ESS FOR A PARTICULAR PURPOSE.  See the</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+# GNU General Public License for more details.</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+#</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+# You should have received a copy of the GNU Ge=
-neral Public License</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+# along with this program.  If not, see &lt;https://www.gnu.org/licenses/&=
-gt;.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+# As a special exception to the GN=
-U General Public License, if you</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+# distribute this file as part of a program that contains a</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+# configuration script=
- generated by Autoconf, you may include it under</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+# the same distribution terms that you use for=
- the rest of that program.</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+# This file =
-is maintained in Automake, please report</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+# bugs to &lt;bug-automake@...1269...&gt; or send patc=
-hes to</span><br><span style=3D"color: hsl(120, 100%, 40%);">+# &lt;automak=
-e-patches@...1269...&gt;.</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+# Make uncond=
-itional expansion of undefined variables an error.  This</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+# helps a lot in preventing typo-relat=
-ed bugs.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+set -u</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+usage_error ()</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+  echo &quot;$0: $*&quot; &gt;&amp;2</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+  print_usage &gt;&amp;2</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+  exit 2</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+print_usage ()=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+  cat &lt;&lt;END</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+Usage:</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+  test-driver --test-name NAME --log-file PATH --trs=
--file PATH</span><br><span style=3D"color: hsl(120, 100%, 40%);">+         =
-     [--expect-failure {yes|no}] [--color-tests {yes|no}]</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+              [--enable-hard-errors {=
-yes|no}] [--]</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
-        TEST-SCRIPT [TEST-SCRIPT-ARGUMENTS]</span><br><span style=3D"color:=
+<p> Attention is currently required from: cron2, ordex, plaisthos. </p>
+<p>flichtenheld <strong>uploaded patch set #4</strong> to this change.</p><=
+p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/521?usp=3Demail">View Ch=
+ange</a></p><pre style=3D"font-family: monospace,monospace; white-space: pr=
+e-wrap;">t_client.sh: Allow to skip tests<br><br>Individual tests can defin=
+e a script to run to test<br>whether they should be skipped.<br><br>Include=
+d in this commit is an example check which<br>checks whether we can do NTLM=
+ checks. This fails<br>e.g. on recent versions of Fedora with mbedTLS<br>(t=
+ested with Fedora 39) or when NTLM support is not<br>compiled in.<br><br>v2=
+:<br> - ntlm_support:<br>   - support OpenSSL 3<br>   - allow to build with=
+out cmocka<br>v3:<br> - add example to t_client.rc-sample<br> - t_client.sh=
+ code style<br> - use syshead.h in error.h<br><br>Change-Id: I13ea6752c8d10=
+2eabcc579e391828c05d5322899<br>Signed-off-by: Frank Lichtenheld &lt;frank@...220...=
+..2641...&gt;<br>---<br>M src/openvpn/error.h<br>M tests/Makefile.am<br>A t=
+ests/ntlm_support.c<br>M tests/t_client.rc-sample<br>M tests/t_client.sh.in=
+<br>M tests/unit_tests/openvpn/mock_msg.c<br>6 files changed, 119 insertion=
+s(+), 15 deletions(-)<br><br></pre><pre style=3D"font-family: monospace,mon=
+ospace; white-space: pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/ope=
+nvpn refs/changes/21/521/4</pre><pre style=3D"font-family: monospace,monosp=
+ace; white-space: pre-wrap;"><span>diff --git a/src/openvpn/error.h b/src/o=
+penvpn/error.h</span><br><span>index 1225b13..be3484d 100644</span><br><spa=
+n>--- a/src/openvpn/error.h</span><br><span>+++ b/src/openvpn/error.h</span=
+><br><span>@@ -25,16 +25,10 @@</span><br><span> #define ERROR_H</span><br><=
+span> </span><br><span> #include &quot;basic.h&quot;</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-#include &lt;errno.h&gt;</span><br><span style=3D"color: hsl(0, =
+100%, 40%);">-#include &lt;stdbool.h&gt;</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+#include &quot;syshead.h&quot;</span><br><span> </span=
+><br><span> #include &lt;assert.h&gt;</span><br><span> </span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-#if _WIN32</span><br><span style=3D"color=
+: hsl(0, 100%, 40%);">-#include &lt;windows.h&gt;</span><br><span style=3D"=
+color: hsl(0, 100%, 40%);">-#endif</span><br><span style=3D"color: hsl(0, 1=
+00%, 40%);">-</span><br><span> /* #define ABORT_ON_ERROR */</span><br><span=
+> </span><br><span> #if defined(ENABLE_PKCS11) || defined(ENABLE_MANAGEMENT=
+)</span><br><span>diff --git a/tests/Makefile.am b/tests/Makefile.am</span>=
+<br><span>index b3b2d74..13a1013 100644</span><br><span>--- a/tests/Makefil=
+e.am</span><br><span>+++ b/tests/Makefile.am</span><br><span>@@ -19,6 +19,8=
+ @@</span><br><span> </span><br><span> if !WIN32</span><br><span> test_scri=
+pts =3D t_client.sh t_lpback.sh t_cltsrv.sh</span><br><span style=3D"color:=
  hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+The &#39;--test-name&#39;, &#39;--log-file&#39; and &#39;--trs-file&#3=
-9; options are mandatory.</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+See the GNU Automake documentation for information.</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+END</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+test_name=3D # =
-Used for reporting.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-log_file=3D  # Where to save the output of the test script.</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+trs_file=3D  # Where to save the me=
-tadata of the test run.</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+expect_failure=3Dno</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+color_tests=3Dno</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+enable_hard_errors=3Dyes</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+while test $# -gt 0; do</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+  case $1 in</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+  --help) print_usage; exit $?;;</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+  --version) echo &quot;test-driver $scriptversion&quot;; e=
-xit $?;;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  --test-na=
-me) test_name=3D$2; shift;;</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+  --log-file) log_file=3D$2; shift;;</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+  --trs-file) trs_file=3D$2; shift;;</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+  --color-tests) color_tests=3D$2=
-; shift;;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  --expect=
--failure) expect_failure=3D$2; shift;;</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+  --enable-hard-errors) enable_hard_errors=3D$2; shift;;=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  --) shift; break;=
-;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  -*) usage_error =
-&quot;invalid option: &#39;$1&#39;&quot;;;</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+   *) break;;</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+  esac</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+  shift</span><br><span style=3D"color: hsl(120, 100%, 40%);">+done</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+missing_opts=3D</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+test x&quot;$test_name&quot; =3D x &amp;&amp;=
- missing_opts=3D&quot;$missing_opts --test-name&quot;</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+test x&quot;$log_file&quot;  =3D x &amp;&=
-amp; missing_opts=3D&quot;$missing_opts --log-file&quot;</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+test x&quot;$trs_file&quot;  =3D x &am=
-p;&amp; missing_opts=3D&quot;$missing_opts --trs-file&quot;</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+if test x&quot;$missing_opts&quot; =
-!=3D x; then</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  usage=
-_error &quot;the following mandatory options are missing:$missing_opts&quot=
-;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+fi</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+if test $# -eq 0; then</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+  usage_error &quot;missing argument&quot;</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+fi</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+if test $color_tests =3D yes; then</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+  # Keep this in sync with &#39;lib/am/check.am:$=
-(am__tty_colors)&#39;.</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+  red=3D&#39;=1B[0;31m&#39; # Red.</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+  grn=3D&#39;=1B[0;32m&#39; # Green.</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+  lgn=3D&#39;=1B[1;32m&#39; # Light gree=
-n.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  blu=3D&#39;=1B[=
-1;34m&#39; # Blue.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
- mgn=3D&#39;=1B[0;35m&#39; # Magenta.</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+  std=3D&#39;=1B[m&#39;     # No color.</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+else</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+  red=3D grn=3D lgn=3D blu=3D mgn=3D std=3D</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+fi</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+do_exit=3D&#39;rm -f $log_file $trs_file; (exit $st); exit $st&#=
-39;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+trap &quot;st=3D=
-129; $do_exit&quot; 1</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+trap &quot;st=3D130; $do_exit&quot; 2</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+trap &quot;st=3D141; $do_exit&quot; 13</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+trap &quot;st=3D143; $do_exit&quot; =
-15</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+# Test script is run here. We create=
- the file first, then append to it,</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+# to ameliorate tests themselves also writing to the log fi=
-le. Our tests</span><br><span style=3D"color: hsl(120, 100%, 40%);">+# don&=
-#39;t, but others can (automake bug#35762).</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+: &gt;&quot;$log_file&quot;</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+&quot;$@&quot; &gt;&gt;&quot;$log_file&qu=
-ot; 2&gt;&amp;1</span><br><span style=3D"color: hsl(120, 100%, 40%);">+esta=
-tus=3D$?</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+if test $enable_hard_errors =
-=3D no &amp;&amp; test $estatus -eq 99; then</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+  tweaked_estatus=3D1</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+else</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+  tweaked_estatus=3D$estatus</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+fi</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+case $tweaked_e=
-status:$expect_failure in</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+  0:yes) col=3D$red res=3DXPASS recheck=3Dyes gcopy=3Dyes;;</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+  0:*)   col=3D$grn res=3DPAS=
-S  recheck=3Dno  gcopy=3Dno;;</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+  77:*)  col=3D$blu res=3DSKIP  recheck=3Dno  gcopy=3Dyes;;</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+  99:*)  col=3D$mgn res=
-=3DERROR recheck=3Dyes gcopy=3Dyes;;</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+  *:yes) col=3D$lgn res=3DXFAIL recheck=3Dno  gcopy=3Dyes;=
-;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  *:*)   col=3D$re=
-d res=3DFAIL  recheck=3Dyes gcopy=3Dyes;;</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+esac</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+# Report the=
- test outcome and exit status in the logs, so that one can</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+# know whether the test passed or fa=
-iled simply by looking at the &#39;.log&#39;</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+# file, without the need of also peaking into the =
-corresponding &#39;.trs&#39;</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+# file (automake bug#11814).</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+echo &quot;$res $test_name (exit status: $estatus)&quot; =
-&gt;&gt;&quot;$log_file&quot;</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+# Report =
-outcome to console.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-echo &quot;${col}${res}${std}: $test_name&quot;</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+# Register the test result, and other relevant metadata.</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+echo &quot;:test-result: $res=
-&quot; &gt; $trs_file</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+echo &quot;:global-test-result: $res&quot; &gt;&gt; $trs_file</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+echo &quot;:recheck: $recheck&q=
-uot; &gt;&gt; $trs_file</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+echo &quot;:copy-in-global-log: $gcopy&quot; &gt;&gt; $trs_file</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+# Local Variables:</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+# mode: shell-script</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+# sh-indentation: 2</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+# eval: (add-hook &#39;before-save-hook &#39;t=
-ime-stamp)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+# time-st=
-amp-start: &quot;scriptversion=3D&quot;</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+# time-stamp-format: &quot;%:y-%02m-%02d.%02H&quot;</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+# time-stamp-time-zone:=
- &quot;UTC0&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+# =
-time-stamp-end: &quot;; # UTC&quot;</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+# End:</span><br><span>diff --git a/tests/Makefile.am b/tes=
-ts/Makefile.am</span><br><span>index 6c71067..b3b2d74 100644</span><br><spa=
-n>--- a/tests/Makefile.am</span><br><span>+++ b/tests/Makefile.am</span><br=
-><span>@@ -15,6 +15,7 @@</span><br><span> SUBDIRS =3D unit_tests</span><br>=
-<span> </span><br><span> AM_TESTSUITE_SUMMARY_HEADER =3D &#39; for $(PACKAG=
-E_STRING) System Tests&#39;</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+LOG_DRIVER =3D $(SHELL) $(top_srcdir)/forked-test-driver</span><br>=
-<span> </span><br><span> if !WIN32</span><br><span> test_scripts =3D t_clie=
-nt.sh t_lpback.sh t_cltsrv.sh</span><br><span></span><br></pre><p>To view, =
-visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/478?usp=3Demail">cha=
-nge 478</a>. To unsubscribe, or for help writing mail filters, visit <a hre=
-f=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope it=
-emtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"action=
-" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"=
-http://gerrit.openvpn.net/c/openvpn/+/478?usp=3Demail"/><meta itemprop=3D"n=
-ame" content=3D"View Change"/></div></div>
+);">+check_PROGRAMS =3D ntlm_support</span><br><span> if HAVE_SITNL</span><=
+br><span> test_scripts +=3D t_net.sh</span><br><span> endif</span><br><span=
+>@@ -36,3 +38,15 @@</span><br><span> </span><br><span> dist_noinst_DATA =3D=
+ \</span><br><span> 	t_client.rc-sample</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++ntlm_support_CFLAGS  =3D -I$(top_srcdir)/src/openvpn -I$(top_srcdir)/src/c=
+ompat -I$(top_srcdir)/tests/unit_tests/openvpn -DNO_CMOCKA @TEST_CFLAGS@</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+ntlm_support_LDFLAGS =
+=3D @TEST_LDFLAGS@ -L$(top_srcdir)/src/openvpn $(OPTIONAL_CRYPTO_LIBS)</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+ntlm_support_SOURCES =3D=
+ ntlm_support.c \</span><br><span style=3D"color: hsl(120, 100%, 40%);">+	u=
+nit_tests/openvpn/mock_msg.c unit_tests/openvpn/mock_msg.h \</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+	$(top_srcdir)/src/openvpn/buffer.=
+c \</span><br><span style=3D"color: hsl(120, 100%, 40%);">+	$(top_srcdir)/s=
+rc/openvpn/crypto.c \</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+	$(top_srcdir)/src/openvpn/crypto_openssl.c \</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+	$(top_srcdir)/src/openvpn/crypto_mbedtls.c \</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+	$(top_srcdir)/src/op=
+envpn/otime.c \</span><br><span style=3D"color: hsl(120, 100%, 40%);">+	$(t=
+op_srcdir)/src/openvpn/packet_id.c \</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+	$(top_srcdir)/src/openvpn/platform.c</span><br><span>diff=
+ --git a/tests/ntlm_support.c b/tests/ntlm_support.c</span><br><span>new fi=
+le mode 100644</span><br><span>index 0000000..2d7da86</span><br><span>--- /=
+dev/null</span><br><span>+++ b/tests/ntlm_support.c</span><br><span>@@ -0,0=
+ +1,52 @@</span><br><span style=3D"color: hsl(120, 100%, 40%);">+/*</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+ *  OpenVPN -- An applicati=
+on to securely tunnel IP networks</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+ *             over a single UDP port, with support for SSL/T=
+LS-based</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *         =
+    session authentication and key exchange,</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+ *             packet encryption, packet authentic=
+ation, and</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *       =
+      packet compression.</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+ *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * Copyrigh=
+t (C) 2023 OpenVPN Inc &lt;sales@...515...&gt;</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+ *</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+ *  This program is free software; you can redistribute it and/or=
+ modify</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  it under=
+ the terms of the GNU General Public License version 2</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+ *  as published by the Free Software Fo=
+undation.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+ *  This program is distrib=
+uted in the hope that it will be useful,</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+ *  but WITHOUT ANY WARRANTY; without even the implied=
+ warranty of</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  MER=
+CHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+ *  GNU General Public License for m=
+ore details.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  You should have rece=
+ived a copy of the GNU General Public License along</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+ *  with this program; if not, write to t=
+he Free Software Foundation, Inc.,</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+ *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 U=
+SA.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ */</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+#ifdef HAVE_CONFIG_H</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+#include &quot;config.h&quot;</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+#endif</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+#include &quot;syshead.h&quot;</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#incl=
+ude &quot;crypto.h&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+#include &quot;error.h&quot;</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+int</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+main(void)</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+#if defined(ENABLE_CRYPTO_OPENSSL)</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+    crypto_load_provider(&quot;le=
+gacy&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    cry=
+pto_load_provider(&quot;default&quot;);</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+#endif</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+#ifdef NTLM</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+   if (!md_valid(&quot;MD4&quot;))</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++        msg(M_FATAL, &quot;MD4 not supported&quot;);</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+    if (!md_valid(&quot;MD5&quot;))</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+        msg(M_FATAL, &quot;MD5 not supported&quot;);<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+#else  /* ifdef NTLM */</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+    msg(M_FATAL, &quot;NTLM su=
+pport not compiled in&quot;);</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+#endif</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</=
+span><br><span>diff --git a/tests/t_client.rc-sample b/tests/t_client.rc-sa=
+mple</span><br><span>index 355e8bb..608d614 100644</span><br><span>--- a/te=
+sts/t_client.rc-sample</span><br><span>+++ b/tests/t_client.rc-sample</span=
+><br><span>@@ -27,7 +27,7 @@</span><br><span> #</span><br><span> # tests to=
+ run (list suffixes for config stanzas below)</span><br><span> #</span><br>=
+<span style=3D"color: hsl(0, 100%, 40%);">-TEST_RUN_LIST=3D&quot;1 2&quot;<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+TEST_RUN_LIST=3D&quo=
+t;1 2 2n&quot;</span><br><span> </span><br><span> #</span><br><span> # use =
+&quot;sudo&quot; (etc) to give openvpn the necessary privileges</span><br><=
+span>@@ -53,14 +53,24 @@</span><br><span> #</span><br><span> # if something=
+ is not defined here, the corresponding test is not run</span><br><span> #<=
+/span><br><span style=3D"color: hsl(0, 100%, 40%);">-# possible test option=
+s:</span><br><span style=3D"color: hsl(120, 100%, 40%);">+# common test opt=
+ions:</span><br><span> #</span><br><span style=3D"color: hsl(0, 100%, 40%);=
+">-# RUN_TITLE_x=3D&quot;what is being tested on here&quot; (purely informa=
+tional)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-# OPENVPN_CONF=
+_x =3D &quot;how to call ./openvpn&quot; [mandatory]</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+# RUN_TITLE_x        =3D &quot;what is be=
+ing tested on here&quot; (purely informational)</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+# OPENVPN_CONF_x     =3D &quot;how to call ./op=
+envpn&quot; [mandatory]</span><br><span> # EXPECT_IFCONFIG4_x =3D &quot;thi=
+s IPv4 address needs to show up in ifconfig&quot;</span><br><span> # EXPECT=
+_IFCONFIG6_x =3D &quot;this IPv6 address needs to show up in ifconfig&quot;=
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">-# PING4_HOSTS_x =3D &=
+quot;these hosts musts ping when openvpn is up (IPv4 fping)&quot;</span><br=
+><span style=3D"color: hsl(0, 100%, 40%);">-# PING6_HOSTS_x =3D &quot;these=
+ hosts musts ping when openvpn is up (IPv6 fping6)&quot;</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+# PING4_HOSTS_x      =3D &quot;these h=
+osts musts ping when openvpn is up (IPv4 fping)&quot;</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+# PING6_HOSTS_x      =3D &quot;these host=
+s musts ping when openvpn is up (IPv6 fping6)&quot;</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+#</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+# hook test options:</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+#</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#=
+ SKIP_x            =3D &quot;commands to execute before openvpn, skip test =
+on failure&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+# P=
+REPARE_x         =3D &quot;commands to execute before openvpn&quot;</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+# POSTINIT_CMD_x    =3D &qu=
+ot;commands to execute after openvpn but before ping&quot;</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+# CLEANUP_x         =3D &quot;comman=
+ds to execute after the test&quot;</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+#</span><br><span style=3D"color: hsl(120, 100%, 40%);">+# N=
+ote: all hooks are &quot;eval&quot;ed, so run in the original shell of the =
+t_client.sh</span><br><span style=3D"color: hsl(120, 100%, 40%);">+# script=
+, not a child process.</span><br><span> #</span><br><span> # Test 1: UDP / =
+p2mp tun</span><br><span> #   specify IPv4+IPv6 addresses expected from ser=
+ver and ping targets</span><br><span>@@ -76,10 +86,18 @@</span><br><span> O=
+PENVPN_CONF_2=3D&quot;$OPENVPN_BASE_P2MP --dev tun --proto tcp --remote $RE=
+MOTE --port 51194&quot;</span><br><span> PING4_HOSTS_2=3D&quot;10.100.51.1 =
+10.100.0.1&quot;</span><br><span> PING6_HOSTS_2=3D&quot;2001:db8::1 2001:db=
+8:a051::1&quot;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#</spa=
+n><br><span> # run command after openvpn initialization is done - here: del=
+ay 5 seconds</span><br><span> POSTINIT_CMD_2=3D&quot;sleep 5&quot;</span><b=
+r><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+# Test 2n:=
+ TCP / p2mp tun / via NTLM proxy</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+RUN_TITLE_2n=3D&quot;testing tun/tcp/ntlm-proxy&quot;</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+OPENVPN_CONF_2n=3D&quot;$OPE=
+NVPN_BASE_P2MP --dev tun --proto tcp --remote $REMOTE --port 51194</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+ --http-proxy 192.168.1.2 80=
+80 $KEYBASE/t_client_auth.txt ntlm --http-proxy-option VERSION 1.1&quot;</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+PING4_HOSTS_2n=3D&quot=
+;10.100.51.1 10.100.0.1&quot;</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+PING6_HOSTS_2n=3D&quot;2001:db8::1 2001:db8:a051::1&quot;</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+# skip test if NTLM support=
+ is not available</span><br><span style=3D"color: hsl(120, 100%, 40%);">+SK=
+IP_2n=3D&quot;${top_builddir}/tests/ntlm_support&quot;</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+</span><br><span> # Test 3: UDP / p2p tu=
+n</span><br><span> # ...</span><br><span> </span><br><span>diff --git a/tes=
+ts/t_client.sh.in b/tests/t_client.sh.in</span><br><span>index 99e6f9c..459=
+e8b5 100755</span><br><span>--- a/tests/t_client.sh.in</span><br><span>+++ =
+b/tests/t_client.sh.in</span><br><span>@@ -291,12 +291,14 @@</span><br><spa=
+n> # main test loop</span><br><span> # ------------------------------------=
+----------------------</span><br><span> SUMMARY_OK=3D</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+SUMMARY_SKIP=3D</span><br><span> SUMMARY_=
+FAIL=3D</span><br><span> </span><br><span> for SUF in $TEST_RUN_LIST</span>=
+<br><span> do</span><br><span>     # get config variables</span><br><span> =
+    eval test_prep=3D\&quot;\$PREPARE_$SUF\&quot;</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+    eval test_check_skip=3D\&quot;\$SKIP_$SUF=
+\&quot;</span><br><span>     eval test_postinit=3D\&quot;\$POSTINIT_CMD_$SU=
+F\&quot;</span><br><span>     eval test_cleanup=3D\&quot;\$CLEANUP_$SUF\&qu=
+ot;</span><br><span>     eval test_run_title=3D\&quot;\$RUN_TITLE_$SUF\&quo=
+t;</span><br><span>@@ -318,6 +320,16 @@</span><br><span>     output_start &=
+quot;### test run $SUF: &#39;$test_run_title&#39; ###&quot;</span><br><span=
+>     fail_count=3D0</span><br><span> </span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+    if [ -n &quot;$test_check_skip&quot; ]; then</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+        output &quot;check =
+whether we need to skip: &#39;$test_check_skip&#39;&quot;</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+        if eval $test_check_skip; the=
+n :</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        else</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+            output &quo=
+t;skip check failed, SKIP test $SUF.&quot;</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+	    SUMMARY_SKIP=3D&quot;$SUMMARY_SKIP $SUF&quot;</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+	    echo -e &quot;$o=
+utbuf&quot; ; continue</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+        fi</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    fi=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span>  =
+   if [ -n &quot;$test_prep&quot; ]; then</span><br><span>         output &=
+quot;running preparation: &#39;$test_prep&#39;&quot;</span><br><span>      =
+   eval $test_prep</span><br><span>@@ -455,8 +467,10 @@</span><br><span> do=
+ne</span><br><span> </span><br><span> if [ -z &quot;$SUMMARY_OK&quot; ] ; t=
+hen SUMMARY_OK=3D&quot; none&quot;; fi</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+if [ -z &quot;$SUMMARY_SKIP&quot; ] ; then SUMMARY_SKIP=
+=3D&quot; none&quot;; fi</span><br><span> if [ -z &quot;$SUMMARY_FAIL&quot;=
+ ] ; then SUMMARY_FAIL=3D&quot; none&quot;; fi</span><br><span> echo &quot;=
+Test sets succeeded:$SUMMARY_OK.&quot;</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+echo &quot;Test sets skipped:$SUMMARY_SKIP.&quot;</span>=
+<br><span> echo &quot;Test sets failed:$SUMMARY_FAIL.&quot;</span><br><span=
+> </span><br><span> # remove trap handler</span><br><span>diff --git a/test=
+s/unit_tests/openvpn/mock_msg.c b/tests/unit_tests/openvpn/mock_msg.c</span=
+><br><span>index d74efaa..a291f8f 100644</span><br><span>--- a/tests/unit_t=
+ests/openvpn/mock_msg.c</span><br><span>+++ b/tests/unit_tests/openvpn/mock=
+_msg.c</span><br><span>@@ -31,8 +31,9 @@</span><br><span> #include &lt;stdl=
+ib.h&gt;</span><br><span> #include &lt;setjmp.h&gt;</span><br><span> #inclu=
+de &lt;stdint.h&gt;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+#ifndef NO_CMOCKA</span><br><span> #include &lt;cmocka.h&gt;</span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+#endif</span><br><span> </span><br><span> #include &quo=
+t;errlevel.h&quot;</span><br><span> #include &quot;error.h&quot;</span><br>=
+<span>@@ -74,6 +75,8 @@</span><br><span>     va_end(arglist);</span><br><sp=
+an> }</span><br><span> </span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+/* Allow to use mock_msg.c outside of UT */</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+#ifndef NO_CMOCKA</span><br><span> void</span><=
+br><span> assert_failed(const char *filename, int line, const char *conditi=
+on)</span><br><span> {</span><br><span>@@ -81,6 +84,15 @@</span><br><span> =
+    /* Keep compiler happy.  Should not happen, mock_assert() does not retu=
+rn */</span><br><span>     exit(1);</span><br><span> }</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+#else  /* ifndef NO_CMOCKA */</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+void</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+assert_failed(const char *filename, int line,=
+ const char *condition)</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    msg(M_FATA=
+L, &quot;Assertion failed at %s:%d (%s)&quot;, filename, line, condition ? =
+condition : &quot;&quot;);</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+    _exit(1);</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#endif</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> </span><br><=
+span> /*</span><br><span>  * Fail memory allocation.  Don&#39;t use msg() b=
+ecause it tries</span><br><span></span><br></pre><p>To view, visit <a href=
+=3D"http://gerrit.openvpn.net/c/openvpn/+/521?usp=3Demail">change 521</a>. =
+To unsubscribe, or for help writing mail filters, visit <a href=3D"http://g=
+errit.openvpn.net/settings">settings</a>.</p><div itemscope itemtype=3D"htt=
+p://schema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D=
+"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit=
+.openvpn.net/c/openvpn/+/521?usp=3Demail"/><meta itemprop=3D"name" content=
+=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I67d461afbcc9c06b1fc5ab44771=
-41d7b8bd9ba8e </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 478 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 9 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I13ea6752c8d102eabcc579e3918=
+28c05d5322899 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 521 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 4 </div>
 <div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
 .&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
+ </div>
 <div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
 .1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: ordex &lt;a@...2181...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: cron2 &lt;gert@...1296...&gt=
+; </div>
+<div style=3D"display:none"> Gerrit-Attention: ordex &lt;a@...2181...&gt; <=
+/div>
 <div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
 
 
---XhrKA2sTQtk=--
+--A5+pKI2IaIE=--
 
