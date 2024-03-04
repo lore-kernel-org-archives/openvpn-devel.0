@@ -1,10 +1,16 @@
-From: Frank Lichtenheld <frank@...2641...>
-Date: Mon,  4 Mar 2024 17:15:56 +0100
-Message-Id: <20240304161556.2036270-1-frank@...2641...>
-In-Reply-To: <gerrit.1709557301000.I199541fea5a76c8edef7f67d2dbfc476987dc2f7@...2715...>
-References: <gerrit.1709557301000.I199541fea5a76c8edef7f67d2dbfc476987dc2f7@...2715...>
+From: "plaisthos (Code Review)" <gerrit@...515...>
+Date: Mon, 4 Mar 2024 16:31:36 +0000
+In-Reply-To: <gerrit.1708351044000.I57f1c2ed42bd9dfd43577238749a9b7f4c1419ff@...2715...>
+References: <gerrit.1708351044000.I57f1c2ed42bd9dfd43577238749a9b7f4c1419ff@...2715...>
+Reply-To: arne-openvpn@...1227..., gianmarco@...2726...,
+ openvpn-devel@lists.sourceforge.net, frank@...2641...
+Message-ID: <6472d57e9f512a33ae5be7646c290b201cd10c28-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v1] samples: Remove tls-*.conf
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="JBOkdgSX3Xo="; charset=UTF-8
+Subject: [Openvpn-devel] [M] Change in openvpn[master]: Persist-key: enable
+ persist-key option by default
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,227 +19,146 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
-Cc: Arne Schwabe <arne-openvpn@...1227...>, Antonio Quartulli <a@...2181...>
+To: its_Giaan <gianmarco@...2726...>
+Cc: flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-These are mostly redundant with client/server.conf
-Let's try to manage to maintain one set of sample
-configurations before we branch out further.
+--JBOkdgSX3Xo=
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Change-Id: I199541fea5a76c8edef7f67d2dbfc476987dc2f7
-Signed-off-by: Frank Lichtenheld <frank@...2641...>
-Acked-by: Arne Schwabe <arne-openvpn@...1227...>
-Acked-by: Antonio Quartulli <a@...2181...>
----
+Attention is currently required from: flichtenheld, its_Giaan.
 
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to master and release/2.6.
+plaisthos has posted comments on this change. ( http://gerrit.openvpn.net/c=
+/openvpn/+/529?usp=3Demail )
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/531
-This mail reflects revision 1 of this Change.
+Change subject: Persist-key: enable persist-key option by default
+......................................................................
 
-Acked-by according to Gerrit (reflected above):
-Arne Schwabe <arne-openvpn@...1227...>
-Antonio Quartulli <a@...2181...>
 
-        
-diff --git a/sample/sample-config-files/home.up b/sample/sample-config-files/home.up
-deleted file mode 100755
-index 9c347cc..0000000
---- a/sample/sample-config-files/home.up
-+++ /dev/null
-@@ -1,2 +0,0 @@
--#!/bin/sh
--route add -net 10.0.0.0 netmask 255.255.255.0 gw $5
-diff --git a/sample/sample-config-files/office.up b/sample/sample-config-files/office.up
-deleted file mode 100755
-index 74a71a3..0000000
---- a/sample/sample-config-files/office.up
-+++ /dev/null
-@@ -1,2 +0,0 @@
--#!/bin/sh
--route add -net 10.0.1.0 netmask 255.255.255.0 gw $5
-diff --git a/sample/sample-config-files/tls-home.conf b/sample/sample-config-files/tls-home.conf
-deleted file mode 100644
-index ff19d50..0000000
---- a/sample/sample-config-files/tls-home.conf
-+++ /dev/null
-@@ -1,83 +0,0 @@
--#
--# Sample OpenVPN configuration file for
--# home using SSL/TLS mode and RSA certificates/keys.
--#
--# '#' or ';' may be used to delimit comments.
--
--# Use a dynamic tun device.  For non-Linux OSes, you may want to use an
--# explicit unit number such as "tun1".
--# OpenVPN also supports virtual ethernet "tap" devices.
--dev tun
--
--# Our OpenVPN peer is the office gateway.
--remote 1.2.3.4
--
--# 10.1.0.2 is our local VPN endpoint (home).
--# 10.1.0.1 is our remote VPN endpoint (office).
--ifconfig 10.1.0.2 10.1.0.1
--
--# Our up script will establish routes
--# once the VPN is alive.
--up ./home.up
--
--# In SSL/TLS key exchange, Office will
--# assume server role and Home
--# will assume client role.
--tls-client
--
--# Certificate Authority file
--ca my-ca.crt
--
--# Our certificate/public key
--cert home.crt
--
--# Our private key
--key home.key
--
--# Our data channel cipher (must match peer config)
--cipher AES-256-GCM
--
--# OpenVPN 2.0 uses UDP port 1194 by default
--# (official port assignment by iana.org 11/04).
--# OpenVPN 1.x uses UDP port 5000 by default.
--# Each OpenVPN tunnel must use
--# a different port number.
--# lport or rport can be used
--# to denote different ports
--# for local and remote.
--; port 1194
--
--# Downgrade UID and GID to an
--# unpriviledged user after initialization
--# for extra security.
--; user openvpn
--; group openvpn
--
--# If you built OpenVPN with
--# LZO compression, uncomment
--# out the following line.
--; comp-lzo
--
--# Send a UDP ping to remote once
--# every 15 seconds to keep
--# stateful firewall connection
--# alive.  Uncomment this
--# out if you are using a stateful
--# firewall.
--; ping 15
--
--# Uncomment this section for a more reliable detection when a system
--# loses its connection.  For example, dial-ups or laptops that
--# travel to other locations.
--; ping 15
--; ping-restart 45
--; ping-timer-rem
--; persist-tun
--; persist-key
--
--# Verbosity level.
--# 0 -- quiet except for fatal errors.
--# 1 -- mostly quiet, but display non-fatal network errors.
--# 3 -- medium output, good for normal operation.
--# 9 -- verbose, good for troubleshooting
--verb 3
-diff --git a/sample/sample-config-files/tls-office.conf b/sample/sample-config-files/tls-office.conf
-deleted file mode 100644
-index 152e58a..0000000
---- a/sample/sample-config-files/tls-office.conf
-+++ /dev/null
-@@ -1,86 +0,0 @@
--#
--# Sample OpenVPN configuration file for
--# office using SSL/TLS mode and RSA certificates/keys.
--#
--# '#' or ';' may be used to delimit comments.
--
--# Use a dynamic tun device.
--# For Linux 2.2 or non-Linux OSes,
--# you may want to use an explicit
--# unit number such as "tun1".
--# OpenVPN also supports virtual
--# ethernet "tap" devices.
--dev tun
--
--# 10.1.0.1 is our local VPN endpoint (office).
--# 10.1.0.2 is our remote VPN endpoint (home).
--ifconfig 10.1.0.1 10.1.0.2
--
--# Our up script will establish routes
--# once the VPN is alive.
--up ./office.up
--
--# In SSL/TLS key exchange, Office will
--# assume server role and Home
--# will assume client role.
--tls-server
--
--# Diffie-Hellman Parameters (tls-server only)
--dh dh2048.pem
--
--# Certificate Authority file
--ca my-ca.crt
--
--# Our certificate/public key
--cert office.crt
--
--# Our private key
--key office.key
--
--# Our data channel cipher (must match peer config)
--cipher AES-256-GCM
--
--# OpenVPN 2.0 uses UDP port 1194 by default
--# (official port assignment by iana.org 11/04).
--# OpenVPN 1.x uses UDP port 5000 by default.
--# Each OpenVPN tunnel must use
--# a different port number.
--# lport or rport can be used
--# to denote different ports
--# for local and remote.
--; port 1194
--
--# Downgrade UID and GID to an
--# unpriviledged user after initialization
--# for extra security.
--; user openvpn
--; group openvpn
--
--# If you built OpenVPN with
--# LZO compression, uncomment
--# out the following line.
--; comp-lzo
--
--# Send a UDP ping to remote once
--# every 15 seconds to keep
--# stateful firewall connection
--# alive.  Uncomment this
--# out if you are using a stateful
--# firewall.
--; ping 15
--
--# Uncomment this section for a more reliable detection when a system
--# loses its connection.  For example, dial-ups or laptops that
--# travel to other locations.
--; ping 15
--; ping-restart 45
--; ping-timer-rem
--; persist-tun
--; persist-key
--
--# Verbosity level.
--# 0 -- quiet except for fatal errors.
--# 1 -- mostly quiet, but display non-fatal network errors.
--# 3 -- medium output, good for normal operation.
--# 9 -- verbose, good for troubleshooting
--verb 3
+Patch Set 2:
+
+(4 comments)
+
+Patchset:
+
+PS2:
+An entry in Changes.rst is missing.
+
+
+File doc/man-sections/unsupported-options.rst:
+
+http://gerrit.openvpn.net/c/openvpn/+/529/comment/eb5579c0_cf2fe0e5 :
+PS2, Line 47:   Removed in OpenVPN 2.7. Keys are now always persisted acros=
+s restarts.
+Maybe use "Ignored" since OpenVPN 2.7?
+
+
+File src/openvpn/init.c:
+
+http://gerrit.openvpn.net/c/openvpn/+/529/comment/cab1614e_ebf8f6bc :
+PS2, Line 3630:
+random whitespace change
+
+
+File src/openvpn/options.c:
+
+http://gerrit.openvpn.net/c/openvpn/+/529/comment/6f595c78_b2ccf3fe :
+PS2, Line 6965:             "please remove it from your configuration.");
+I don't think we should/warn or threaten to remove that option. That just m=
+akes configuration files incompatible in the future without a good reason t=
+o do so. For other options like max-routes, we also just ignore them.
+
+
+
+--
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/529?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings
+
+Gerrit-Project: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: I57f1c2ed42bd9dfd43577238749a9b7f4c1419ff
+Gerrit-Change-Number: 529
+Gerrit-PatchSet: 2
+Gerrit-Owner: its_Giaan <gianmarco@...2726...>
+Gerrit-Reviewer: flichtenheld <frank@...2641...>
+Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-Attention: its_Giaan <gianmarco@...2726...>
+Gerrit-Attention: flichtenheld <frank@...2641...>
+Gerrit-Comment-Date: Mon, 04 Mar 2024 16:31:36 +0000
+Gerrit-HasComments: Yes
+Gerrit-Has-Labels: No
+Gerrit-MessageType: comment
+
+--JBOkdgSX3Xo=
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<p> Attention is currently required from: flichtenheld, its_Giaan. </p>
+<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/529?usp=3Demail">View C=
+hange</a></p><p>4 comments:</p><ul style=3D"list-style: none; padding: 0;">=
+<li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-styl=
+e: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p styl=
+e=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/=
+529?tab=3Dcomments">Patch Set #2:</a> </p><p style=3D"white-space: pre-wrap=
+; word-wrap: break-word;">An entry in Changes.rst is missing.</p></li></ul>=
+</li><li style=3D"margin: 0; padding: 0;"><p>File doc/man-sections/unsuppor=
+ted-options.rst:</p><ul style=3D"list-style: none; padding: 0;"><li style=
+=3D"margin: 0; padding: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a hr=
+ef=3D"http://gerrit.openvpn.net/c/openvpn/+/529/comment/eb5579c0_cf2fe0e5">=
+Patch Set #2, Line 47:</a> <code style=3D"font-family:monospace,monospace">=
+  Removed in OpenVPN 2.7. Keys are now always persisted across restarts.</c=
+ode></p><p style=3D"white-space: pre-wrap; word-wrap: break-word;">Maybe us=
+e &quot;Ignored&quot; since OpenVPN 2.7?</p></li></ul></li><li style=3D"mar=
+gin: 0; padding: 0;"><p>File src/openvpn/init.c:</p><ul style=3D"list-style=
+: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p style=
+=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/5=
+29/comment/cab1614e_ebf8f6bc">Patch Set #2, Line 3630:</a> <code style=3D"f=
+ont-family:monospace,monospace"></code></p><p style=3D"white-space: pre-wra=
+p; word-wrap: break-word;">random whitespace change</p></li></ul></li><li s=
+tyle=3D"margin: 0; padding: 0;"><p>File src/openvpn/options.c:</p><ul style=
+=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 1=
+6px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net=
+/c/openvpn/+/529/comment/6f595c78_b2ccf3fe">Patch Set #2, Line 6965:</a> <c=
+ode style=3D"font-family:monospace,monospace">            &quot;please remo=
+ve it from your configuration.&quot;);</code></p><p style=3D"white-space: p=
+re-wrap; word-wrap: break-word;">I don&#39;t think we should/warn or threat=
+en to remove that option. That just makes configuration files incompatible =
+in the future without a good reason to do so. For other options like max-ro=
+utes, we also just ignore them.</p></li></ul></li></ul><p>To view, visit <a=
+ href=3D"http://gerrit.openvpn.net/c/openvpn/+/529?usp=3Demail">change 529<=
+/a>. To unsubscribe, or for help writing mail filters, visit <a href=3D"htt=
+p://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope itemtype=
+=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"action" item=
+type=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http:/=
+/gerrit.openvpn.net/c/openvpn/+/529?usp=3Demail"/><meta itemprop=3D"name" c=
+ontent=3D"View Change"/></div></div>
+
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I57f1c2ed42bd9dfd43577238749=
+a9b7f4c1419ff </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 529 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
+<div style=3D"display:none"> Gerrit-Owner: its_Giaan &lt;gianmarco@...2786...=
+..&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
+1...&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
+.1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: its_Giaan &lt;gianmarco@...1665...=
+726...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
+41...&gt; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Mon, 04 Mar 2024 16:31:36=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: No </div>
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
+
+
+--JBOkdgSX3Xo=--
 
