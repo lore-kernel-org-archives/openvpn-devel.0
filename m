@@ -1,14 +1,14 @@
-From: "plaisthos (Code Review)" <gerrit@...515...>
-Date: Mon, 4 Mar 2024 13:08:30 +0000
+From: "ordex (Code Review)" <gerrit@...515...>
+Date: Mon, 4 Mar 2024 13:13:23 +0000
 In-Reply-To: <gerrit.1709557301000.I199541fea5a76c8edef7f67d2dbfc476987dc2f7@...2715...>
 References: <gerrit.1709557301000.I199541fea5a76c8edef7f67d2dbfc476987dc2f7@...2715...>
-Reply-To: arne-openvpn@...1227..., openvpn-devel@lists.sourceforge.net,
- frank@...2641...
-Message-ID: <8d9c9fcace97d1a5f151cc43b6cbbf070559a196-EmailReviewComments-HTML@...2715...>
+Reply-To: a@...2181..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net, frank@...2641...
+Message-ID: <6896614796ced97c7e1c846e77bccd75b1833196-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="VpSV3jg73K0="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="94iTND25DiY="; charset=UTF-8
 Subject: [Openvpn-devel] [M] Change in openvpn[master]: samples: Remove
  tls-*.conf
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -20,16 +20,16 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 To: flichtenheld <frank@...2641...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---VpSV3jg73K0=
+--94iTND25DiY=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 Attention is currently required from: flichtenheld.
 
-plaisthos has posted comments on this change. ( http://gerrit.openvpn.net/c=
-/openvpn/+/531?usp=3Demail )
+ordex has posted comments on this change. ( http://gerrit.openvpn.net/c/ope=
+nvpn/+/531?usp=3Demail )
 
 Change subject: samples: Remove tls-*.conf
 ......................................................................
@@ -49,15 +49,16 @@ Gerrit-Change-Id: I199541fea5a76c8edef7f67d2dbfc476987dc2f7
 Gerrit-Change-Number: 531
 Gerrit-PatchSet: 1
 Gerrit-Owner: flichtenheld <frank@...2641...>
+Gerrit-Reviewer: ordex <a@...2181...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Comment-Date: Mon, 04 Mar 2024 13:08:30 +0000
+Gerrit-Comment-Date: Mon, 04 Mar 2024 13:13:23 +0000
 Gerrit-HasComments: No
 Gerrit-Has-Labels: Yes
 Gerrit-MessageType: comment
 
---VpSV3jg73K0=
+--94iTND25DiY=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
@@ -82,18 +83,20 @@ fc476987dc2f7 </div>
 <div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
 <div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
 .&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: ordex &lt;a@...2181...&gt; </=
+div>
 <div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
 .1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
 41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Mon, 04 Mar 2024 13:08:30=
+<div style=3D"display:none"> Gerrit-Comment-Date: Mon, 04 Mar 2024 13:13:23=
  +0000 </div>
 <div style=3D"display:none"> Gerrit-HasComments: No </div>
 <div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
 <div style=3D"display:none"> Gerrit-MessageType: comment </div>
 
 
---VpSV3jg73K0=--
+--94iTND25DiY=--
 
