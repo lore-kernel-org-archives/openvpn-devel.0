@@ -1,15 +1,15 @@
 From: "flichtenheld (Code Review)" <gerrit@...515...>
-Date: Mon, 4 Mar 2024 13:01:46 +0000
-References: <gerrit.1709557301000.I199541fea5a76c8edef7f67d2dbfc476987dc2f7@...2715...>
+Date: Mon, 4 Mar 2024 13:01:47 +0000
+References: <gerrit.1709557301000.If9cb7d66f079fe1c87fcb5b4e59bc887533d77fa@...2715...>
 Reply-To: frank@...2641..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net
-Message-ID: <2465160f2a0789112d5a63306fb087c2b875ffb7-HTML@...2715...>
+Message-ID: <f2d3d85807e5c786e198a1bb771285232c72c0b9-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="gbvUY/a/3IY="; charset=UTF-8
-Subject: [Openvpn-devel] [M] Change in openvpn[master]: samples: Remove
- tls-*.conf
+Content-Type: multipart/alternative; boundary="G7C5Sbn6Ghk="; charset=UTF-8
+Subject: [Openvpn-devel] [S] Change in openvpn[master]: gerrit-send-mail:
+ add missing Signed-off-by
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -21,7 +21,7 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: plaisthos <arne-openvpn@...1227...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---gbvUY/a/3IY=
+--G7C5Sbn6Ghk=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
@@ -32,244 +32,97 @@ Hello plaisthos,
 I'd like you to do a code review.
 Please visit
 
-    http://gerrit.openvpn.net/c/openvpn/+/531?usp=3Demail
+    http://gerrit.openvpn.net/c/openvpn/+/530?usp=3Demail
 
 to review the following change.
 
 
-Change subject: samples: Remove tls-*.conf
+Change subject: gerrit-send-mail: add missing Signed-off-by
 ......................................................................
 
-samples: Remove tls-*.conf
+gerrit-send-mail: add missing Signed-off-by
 
-These are mostly redundant with client/server.conf
-Let's try to manage to maintain one set of sample
-configurations before we branch out further.
+Our development documentation says we add this
+automatically when it is missing. So let's do that
+here as well.
 
-Change-Id: I199541fea5a76c8edef7f67d2dbfc476987dc2f7
+Change-Id: If9cb7d66f079fe1c87fcb5b4e59bc887533d77fa
 Signed-off-by: Frank Lichtenheld <frank@...2641...>
 ---
-D sample/sample-config-files/home.up
-D sample/sample-config-files/office.up
-D sample/sample-config-files/tls-home.conf
-D sample/sample-config-files/tls-office.conf
-4 files changed, 0 insertions(+), 173 deletions(-)
+M dev-tools/gerrit-send-mail.py
+1 file changed, 13 insertions(+), 0 deletions(-)
 
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/31/531/1
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/30/530/1
 
-diff --git a/sample/sample-config-files/home.up b/sample/sample-config-file=
-s/home.up
-deleted file mode 100755
-index 9c347cc..0000000
---- a/sample/sample-config-files/home.up
-+++ /dev/null
-@@ -1,2 +0,0 @@
--#!/bin/sh
--route add -net 10.0.0.0 netmask 255.255.255.0 gw $5
-diff --git a/sample/sample-config-files/office.up b/sample/sample-config-fi=
-les/office.up
-deleted file mode 100755
-index 74a71a3..0000000
---- a/sample/sample-config-files/office.up
-+++ /dev/null
-@@ -1,2 +0,0 @@
--#!/bin/sh
--route add -net 10.0.1.0 netmask 255.255.255.0 gw $5
-diff --git a/sample/sample-config-files/tls-home.conf b/sample/sample-confi=
-g-files/tls-home.conf
-deleted file mode 100644
-index ff19d50..0000000
---- a/sample/sample-config-files/tls-home.conf
-+++ /dev/null
-@@ -1,83 +0,0 @@
--#
--# Sample OpenVPN configuration file for
--# home using SSL/TLS mode and RSA certificates/keys.
--#
--# '#' or ';' may be used to delimit comments.
--
--# Use a dynamic tun device.  For non-Linux OSes, you may want to use an
--# explicit unit number such as "tun1".
--# OpenVPN also supports virtual ethernet "tap" devices.
--dev tun
--
--# Our OpenVPN peer is the office gateway.
--remote 1.2.3.4
--
--# 10.1.0.2 is our local VPN endpoint (home).
--# 10.1.0.1 is our remote VPN endpoint (office).
--ifconfig 10.1.0.2 10.1.0.1
--
--# Our up script will establish routes
--# once the VPN is alive.
--up ./home.up
--
--# In SSL/TLS key exchange, Office will
--# assume server role and Home
--# will assume client role.
--tls-client
--
--# Certificate Authority file
--ca my-ca.crt
--
--# Our certificate/public key
--cert home.crt
--
--# Our private key
--key home.key
--
--# Our data channel cipher (must match peer config)
--cipher AES-256-GCM
--
--# OpenVPN 2.0 uses UDP port 1194 by default
--# (official port assignment by iana.org 11/04).
--# OpenVPN 1.x uses UDP port 5000 by default.
--# Each OpenVPN tunnel must use
--# a different port number.
--# lport or rport can be used
--# to denote different ports
--# for local and remote.
--; port 1194
--
--# Downgrade UID and GID to an
--# unpriviledged user after initialization
--# for extra security.
--; user openvpn
--; group openvpn
--
--# If you built OpenVPN with
--# LZO compression, uncomment
--# out the following line.
--; comp-lzo
--
--# Send a UDP ping to remote once
--# every 15 seconds to keep
--# stateful firewall connection
--# alive.  Uncomment this
--# out if you are using a stateful
--# firewall.
--; ping 15
--
--# Uncomment this section for a more reliable detection when a system
--# loses its connection.  For example, dial-ups or laptops that
--# travel to other locations.
--; ping 15
--; ping-restart 45
--; ping-timer-rem
--; persist-tun
--; persist-key
--
--# Verbosity level.
--# 0 -- quiet except for fatal errors.
--# 1 -- mostly quiet, but display non-fatal network errors.
--# 3 -- medium output, good for normal operation.
--# 9 -- verbose, good for troubleshooting
--verb 3
-diff --git a/sample/sample-config-files/tls-office.conf b/sample/sample-con=
-fig-files/tls-office.conf
-deleted file mode 100644
-index 152e58a..0000000
---- a/sample/sample-config-files/tls-office.conf
-+++ /dev/null
-@@ -1,86 +0,0 @@
--#
--# Sample OpenVPN configuration file for
--# office using SSL/TLS mode and RSA certificates/keys.
--#
--# '#' or ';' may be used to delimit comments.
--
--# Use a dynamic tun device.
--# For Linux 2.2 or non-Linux OSes,
--# you may want to use an explicit
--# unit number such as "tun1".
--# OpenVPN also supports virtual
--# ethernet "tap" devices.
--dev tun
--
--# 10.1.0.1 is our local VPN endpoint (office).
--# 10.1.0.2 is our remote VPN endpoint (home).
--ifconfig 10.1.0.1 10.1.0.2
--
--# Our up script will establish routes
--# once the VPN is alive.
--up ./office.up
--
--# In SSL/TLS key exchange, Office will
--# assume server role and Home
--# will assume client role.
--tls-server
--
--# Diffie-Hellman Parameters (tls-server only)
--dh dh2048.pem
--
--# Certificate Authority file
--ca my-ca.crt
--
--# Our certificate/public key
--cert office.crt
--
--# Our private key
--key office.key
--
--# Our data channel cipher (must match peer config)
--cipher AES-256-GCM
--
--# OpenVPN 2.0 uses UDP port 1194 by default
--# (official port assignment by iana.org 11/04).
--# OpenVPN 1.x uses UDP port 5000 by default.
--# Each OpenVPN tunnel must use
--# a different port number.
--# lport or rport can be used
--# to denote different ports
--# for local and remote.
--; port 1194
--
--# Downgrade UID and GID to an
--# unpriviledged user after initialization
--# for extra security.
--; user openvpn
--; group openvpn
--
--# If you built OpenVPN with
--# LZO compression, uncomment
--# out the following line.
--; comp-lzo
--
--# Send a UDP ping to remote once
--# every 15 seconds to keep
--# stateful firewall connection
--# alive.  Uncomment this
--# out if you are using a stateful
--# firewall.
--; ping 15
--
--# Uncomment this section for a more reliable detection when a system
--# loses its connection.  For example, dial-ups or laptops that
--# travel to other locations.
--; ping 15
--; ping-restart 45
--; ping-timer-rem
--; persist-tun
--; persist-key
--
--# Verbosity level.
--# 0 -- quiet except for fatal errors.
--# 1 -- mostly quiet, but display non-fatal network errors.
--# 3 -- medium output, good for normal operation.
--# 9 -- verbose, good for troubleshooting
--verb 3
+diff --git a/dev-tools/gerrit-send-mail.py b/dev-tools/gerrit-send-mail.py
+index 67a2cf1..10305e2 100755
+--- a/dev-tools/gerrit-send-mail.py
++++ b/dev-tools/gerrit-send-mail.py
+@@ -50,6 +50,12 @@
+                 ack =3D f"{reviewer_name} <{reviewer_mail}>"
+                 print(f"Acked-by: {ack}")
+                 acked_by.append(ack)
++    # construct Signed-off-by in case it is missing
++    owner =3D json_data["owner"]
++    owner_name =3D owner.get("display_name", owner["name"])
++    owner_mail =3D owner.get("email", owner["name"])
++    sign_off =3D f"{owner_name} <{owner_mail}>"
++    print(f"Signed-off-by: {sign_off}")
+     change_id =3D json_data["change_id"]
+     # assumes that the created date in Gerrit is in UTC
+     utc_stamp =3D (
+@@ -67,6 +73,7 @@
+         "target": json_data["branch"],
+         "msg_id": msg_id,
+         "acked_by": acked_by,
++        "sign_off": sign_off,
+     }
+
+
+@@ -81,10 +88,14 @@
+
+ def apply_patch_mods(patch_text, details, args):
+     comment_start =3D patch_text.index("\n---\n") + len("\n---\n")
++    signed_off_text =3D ""
++    signed_off_comment =3D ""
+     try:
+         signed_off_start =3D patch_text.rindex("\nSigned-off-by: ")
+         signed_off_end =3D patch_text.index("\n", signed_off_start + 1) + 1
+     except ValueError:  # Signed-off missing
++        signed_off_text =3D f"Signed-off-by: {details['sign_off']}\n"
++        signed_off_comment =3D "\nSigned-off-by line for the author was ad=
+ded as per our policy.\n"
+         signed_off_end =3D patch_text.index("\n---\n") + 1
+     assert comment_start > signed_off_end
+     acked_by_text =3D ""
+@@ -94,6 +105,7 @@
+         acked_by_names +=3D f"{ack}\n"
+     patch_text_mod =3D (
+         patch_text[:signed_off_end]
++        + signed_off_text
+         + acked_by_text
+         + patch_text[signed_off_end:comment_start]
+         + f"""
+@@ -102,6 +114,7 @@
+
+ Gerrit URL: {args.url}/c/{details["project"]}/+/{args.changeid}
+ This mail reflects revision {details["revision"]} of this Change.
++{signed_off_comment}
+ Acked-by according to Gerrit (reflected above):
+ {acked_by_names}
+         """
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/531?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/530?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings
 
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: I199541fea5a76c8edef7f67d2dbfc476987dc2f7
-Gerrit-Change-Number: 531
+Gerrit-Change-Id: If9cb7d66f079fe1c87fcb5b4e59bc887533d77fa
+Gerrit-Change-Number: 530
 Gerrit-PatchSet: 1
 Gerrit-Owner: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
@@ -277,234 +130,87 @@ Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
 Gerrit-MessageType: newchange
 
---gbvUY/a/3IY=
+--G7C5Sbn6Ghk=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <p> Attention is currently required from: plaisthos. </p>
 <p>flichtenheld would like plaisthos to <strong>review</strong> this change.
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/531?usp=3Demail">Vi=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/530?usp=3Demail">Vi=
 ew Change</a></p><pre style=3D"font-family: monospace,monospace; white-spac=
-e: pre-wrap;">samples: Remove tls-*.conf<br><br>These are mostly redundant =
-with client/server.conf<br>Let&#39;s try to manage to maintain one set of s=
-ample<br>configurations before we branch out further.<br><br>Change-Id: I19=
-9541fea5a76c8edef7f67d2dbfc476987dc2f7<br>Signed-off-by: Frank Lichtenheld =
-&lt;frank@...2641...&gt;<br>---<br>D sample/sample-config-files/home.up<br>=
-D sample/sample-config-files/office.up<br>D sample/sample-config-files/tls-=
-home.conf<br>D sample/sample-config-files/tls-office.conf<br>4 files change=
-d, 0 insertions(+), 173 deletions(-)<br><br></pre><pre style=3D"font-family=
-: monospace,monospace; white-space: pre-wrap;">git pull ssh://gerrit.openvp=
-n.net:29418/openvpn refs/changes/31/531/1</pre><pre style=3D"font-family: m=
-onospace,monospace; white-space: pre-wrap;"><span>diff --git a/sample/sampl=
-e-config-files/home.up b/sample/sample-config-files/home.up</span><br><span=
->deleted file mode 100755</span><br><span>index 9c347cc..0000000</span><br>=
-<span>--- a/sample/sample-config-files/home.up</span><br><span>+++ /dev/nul=
-l</span><br><span>@@ -1,2 +0,0 @@</span><br><span style=3D"color: hsl(0, 10=
-0%, 40%);">-#!/bin/sh</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
-route add -net 10.0.0.0 netmask 255.255.255.0 gw $5</span><br><span>diff --=
-git a/sample/sample-config-files/office.up b/sample/sample-config-files/off=
-ice.up</span><br><span>deleted file mode 100755</span><br><span>index 74a71=
-a3..0000000</span><br><span>--- a/sample/sample-config-files/office.up</spa=
-n><br><span>+++ /dev/null</span><br><span>@@ -1,2 +0,0 @@</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-#!/bin/sh</span><br><span style=3D"colo=
-r: hsl(0, 100%, 40%);">-route add -net 10.0.1.0 netmask 255.255.255.0 gw $5=
-</span><br><span>diff --git a/sample/sample-config-files/tls-home.conf b/sa=
-mple/sample-config-files/tls-home.conf</span><br><span>deleted file mode 10=
-0644</span><br><span>index ff19d50..0000000</span><br><span>--- a/sample/sa=
-mple-config-files/tls-home.conf</span><br><span>+++ /dev/null</span><br><sp=
-an>@@ -1,83 +0,0 @@</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#<=
-/span><br><span style=3D"color: hsl(0, 100%, 40%);">-# Sample OpenVPN confi=
-guration file for</span><br><span style=3D"color: hsl(0, 100%, 40%);">-# ho=
-me using SSL/TLS mode and RSA certificates/keys.</span><br><span style=3D"c=
-olor: hsl(0, 100%, 40%);">-#</span><br><span style=3D"color: hsl(0, 100%, 4=
-0%);">-# &#39;#&#39; or &#39;;&#39; may be used to delimit comments.</span>=
-<br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"co=
-lor: hsl(0, 100%, 40%);">-# Use a dynamic tun device.  For non-Linux OSes, =
-you may want to use an</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
--# explicit unit number such as &quot;tun1&quot;.</span><br><span style=3D"=
-color: hsl(0, 100%, 40%);">-# OpenVPN also supports virtual ethernet &quot;=
-tap&quot; devices.</span><br><span style=3D"color: hsl(0, 100%, 40%);">-dev=
- tun</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span =
-style=3D"color: hsl(0, 100%, 40%);">-# Our OpenVPN peer is the office gatew=
-ay.</span><br><span style=3D"color: hsl(0, 100%, 40%);">-remote 1.2.3.4</sp=
-an><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D=
-"color: hsl(0, 100%, 40%);">-# 10.1.0.2 is our local VPN endpoint (home).</=
-span><br><span style=3D"color: hsl(0, 100%, 40%);">-# 10.1.0.1 is our remot=
-e VPN endpoint (office).</span><br><span style=3D"color: hsl(0, 100%, 40%);=
-">-ifconfig 10.1.0.2 10.1.0.1</span><br><span style=3D"color: hsl(0, 100%, =
-40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-# Our up scri=
-pt will establish routes</span><br><span style=3D"color: hsl(0, 100%, 40%);=
-">-# once the VPN is alive.</span><br><span style=3D"color: hsl(0, 100%, 40=
-%);">-up ./home.up</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</s=
-pan><br><span style=3D"color: hsl(0, 100%, 40%);">-# In SSL/TLS key exchang=
-e, Office will</span><br><span style=3D"color: hsl(0, 100%, 40%);">-# assum=
-e server role and Home</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
--# will assume client role.</span><br><span style=3D"color: hsl(0, 100%, 40=
-%);">-tls-client</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</spa=
-n><br><span style=3D"color: hsl(0, 100%, 40%);">-# Certificate Authority fi=
-le</span><br><span style=3D"color: hsl(0, 100%, 40%);">-ca my-ca.crt</span>=
-<br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"co=
-lor: hsl(0, 100%, 40%);">-# Our certificate/public key</span><br><span styl=
-e=3D"color: hsl(0, 100%, 40%);">-cert home.crt</span><br><span style=3D"col=
-or: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%)=
-;">-# Our private key</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
-key home.key</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><b=
-r><span style=3D"color: hsl(0, 100%, 40%);">-# Our data channel cipher (mus=
-t match peer config)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-c=
-ipher AES-256-GCM</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</sp=
-an><br><span style=3D"color: hsl(0, 100%, 40%);">-# OpenVPN 2.0 uses UDP po=
-rt 1194 by default</span><br><span style=3D"color: hsl(0, 100%, 40%);">-# (=
-official port assignment by iana.org 11/04).</span><br><span style=3D"color=
-: hsl(0, 100%, 40%);">-# OpenVPN 1.x uses UDP port 5000 by default.</span><=
-br><span style=3D"color: hsl(0, 100%, 40%);">-# Each OpenVPN tunnel must us=
-e</span><br><span style=3D"color: hsl(0, 100%, 40%);">-# a different port n=
-umber.</span><br><span style=3D"color: hsl(0, 100%, 40%);">-# lport or rpor=
-t can be used</span><br><span style=3D"color: hsl(0, 100%, 40%);">-# to den=
-ote different ports</span><br><span style=3D"color: hsl(0, 100%, 40%);">-# =
-for local and remote.</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
-; port 1194</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br=
-><span style=3D"color: hsl(0, 100%, 40%);">-# Downgrade UID and GID to an</=
-span><br><span style=3D"color: hsl(0, 100%, 40%);">-# unpriviledged user af=
-ter initialization</span><br><span style=3D"color: hsl(0, 100%, 40%);">-# f=
-or extra security.</span><br><span style=3D"color: hsl(0, 100%, 40%);">-; u=
-ser openvpn</span><br><span style=3D"color: hsl(0, 100%, 40%);">-; group op=
-envpn</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span=
- style=3D"color: hsl(0, 100%, 40%);">-# If you built OpenVPN with</span><br=
-><span style=3D"color: hsl(0, 100%, 40%);">-# LZO compression, uncomment</s=
-pan><br><span style=3D"color: hsl(0, 100%, 40%);">-# out the following line=
-.</span><br><span style=3D"color: hsl(0, 100%, 40%);">-; comp-lzo</span><br=
-><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color=
-: hsl(0, 100%, 40%);">-# Send a UDP ping to remote once</span><br><span sty=
-le=3D"color: hsl(0, 100%, 40%);">-# every 15 seconds to keep</span><br><spa=
-n style=3D"color: hsl(0, 100%, 40%);">-# stateful firewall connection</span=
-><br><span style=3D"color: hsl(0, 100%, 40%);">-# alive.  Uncomment this</s=
-pan><br><span style=3D"color: hsl(0, 100%, 40%);">-# out if you are using a=
- stateful</span><br><span style=3D"color: hsl(0, 100%, 40%);">-# firewall.<=
-/span><br><span style=3D"color: hsl(0, 100%, 40%);">-; ping 15</span><br><s=
-pan style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: h=
-sl(0, 100%, 40%);">-# Uncomment this section for a more reliable detection =
-when a system</span><br><span style=3D"color: hsl(0, 100%, 40%);">-# loses =
-its connection.  For example, dial-ups or laptops that</span><br><span styl=
-e=3D"color: hsl(0, 100%, 40%);">-# travel to other locations.</span><br><sp=
-an style=3D"color: hsl(0, 100%, 40%);">-; ping 15</span><br><span style=3D"=
-color: hsl(0, 100%, 40%);">-; ping-restart 45</span><br><span style=3D"colo=
-r: hsl(0, 100%, 40%);">-; ping-timer-rem</span><br><span style=3D"color: hs=
-l(0, 100%, 40%);">-; persist-tun</span><br><span style=3D"color: hsl(0, 100=
-%, 40%);">-; persist-key</span><br><span style=3D"color: hsl(0, 100%, 40%);=
-">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-# Verbosity level.=
-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-# 0 -- quiet except f=
-or fatal errors.</span><br><span style=3D"color: hsl(0, 100%, 40%);">-# 1 -=
-- mostly quiet, but display non-fatal network errors.</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-# 3 -- medium output, good for normal opera=
-tion.</span><br><span style=3D"color: hsl(0, 100%, 40%);">-# 9 -- verbose, =
-good for troubleshooting</span><br><span style=3D"color: hsl(0, 100%, 40%);=
-">-verb 3</span><br><span>diff --git a/sample/sample-config-files/tls-offic=
-e.conf b/sample/sample-config-files/tls-office.conf</span><br><span>deleted=
- file mode 100644</span><br><span>index 152e58a..0000000</span><br><span>--=
-- a/sample/sample-config-files/tls-office.conf</span><br><span>+++ /dev/nul=
-l</span><br><span>@@ -1,86 +0,0 @@</span><br><span style=3D"color: hsl(0, 1=
-00%, 40%);">-#</span><br><span style=3D"color: hsl(0, 100%, 40%);">-# Sampl=
-e OpenVPN configuration file for</span><br><span style=3D"color: hsl(0, 100=
-%, 40%);">-# office using SSL/TLS mode and RSA certificates/keys.</span><br=
-><span style=3D"color: hsl(0, 100%, 40%);">-#</span><br><span style=3D"colo=
-r: hsl(0, 100%, 40%);">-# &#39;#&#39; or &#39;;&#39; may be used to delimit=
- comments.</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br>=
-<span style=3D"color: hsl(0, 100%, 40%);">-# Use a dynamic tun device.</spa=
-n><br><span style=3D"color: hsl(0, 100%, 40%);">-# For Linux 2.2 or non-Lin=
-ux OSes,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-# you may wan=
-t to use an explicit</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#=
- unit number such as &quot;tun1&quot;.</span><br><span style=3D"color: hsl(=
-0, 100%, 40%);">-# OpenVPN also supports virtual</span><br><span style=3D"c=
-olor: hsl(0, 100%, 40%);">-# ethernet &quot;tap&quot; devices.</span><br><s=
-pan style=3D"color: hsl(0, 100%, 40%);">-dev tun</span><br><span style=3D"c=
-olor: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40=
-%);">-# 10.1.0.1 is our local VPN endpoint (office).</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-# 10.1.0.2 is our remote VPN endpoint (home=
-).</span><br><span style=3D"color: hsl(0, 100%, 40%);">-ifconfig 10.1.0.1 1=
-0.1.0.2</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><sp=
-an style=3D"color: hsl(0, 100%, 40%);">-# Our up script will establish rout=
-es</span><br><span style=3D"color: hsl(0, 100%, 40%);">-# once the VPN is a=
-live.</span><br><span style=3D"color: hsl(0, 100%, 40%);">-up ./office.up</=
-span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-# In SSL/TLS key exchange, Office will</spa=
-n><br><span style=3D"color: hsl(0, 100%, 40%);">-# assume server role and H=
-ome</span><br><span style=3D"color: hsl(0, 100%, 40%);">-# will assume clie=
-nt role.</span><br><span style=3D"color: hsl(0, 100%, 40%);">-tls-server</s=
-pan><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-# Diffie-Hellman Parameters (tls-server onl=
-y)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-dh dh2048.pem</span=
-><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"c=
-olor: hsl(0, 100%, 40%);">-# Certificate Authority file</span><br><span sty=
-le=3D"color: hsl(0, 100%, 40%);">-ca my-ca.crt</span><br><span style=3D"col=
-or: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%)=
-;">-# Our certificate/public key</span><br><span style=3D"color: hsl(0, 100=
-%, 40%);">-cert office.crt</span><br><span style=3D"color: hsl(0, 100%, 40%=
-);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-# Our private ke=
-y</span><br><span style=3D"color: hsl(0, 100%, 40%);">-key office.key</span=
-><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"c=
-olor: hsl(0, 100%, 40%);">-# Our data channel cipher (must match peer confi=
-g)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-cipher AES-256-GCM<=
-/span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-# OpenVPN 2.0 uses UDP port 1194 by default=
-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-# (official port assi=
-gnment by iana.org 11/04).</span><br><span style=3D"color: hsl(0, 100%, 40%=
-);">-# OpenVPN 1.x uses UDP port 5000 by default.</span><br><span style=3D"=
-color: hsl(0, 100%, 40%);">-# Each OpenVPN tunnel must use</span><br><span =
-style=3D"color: hsl(0, 100%, 40%);">-# a different port number.</span><br><=
-span style=3D"color: hsl(0, 100%, 40%);">-# lport or rport can be used</spa=
-n><br><span style=3D"color: hsl(0, 100%, 40%);">-# to denote different port=
-s</span><br><span style=3D"color: hsl(0, 100%, 40%);">-# for local and remo=
-te.</span><br><span style=3D"color: hsl(0, 100%, 40%);">-; port 1194</span>=
-<br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"co=
-lor: hsl(0, 100%, 40%);">-# Downgrade UID and GID to an</span><br><span sty=
-le=3D"color: hsl(0, 100%, 40%);">-# unpriviledged user after initialization=
-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-# for extra security.=
-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-; user openvpn</span>=
-<br><span style=3D"color: hsl(0, 100%, 40%);">-; group openvpn</span><br><s=
-pan style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: h=
-sl(0, 100%, 40%);">-# If you built OpenVPN with</span><br><span style=3D"co=
-lor: hsl(0, 100%, 40%);">-# LZO compression, uncomment</span><br><span styl=
-e=3D"color: hsl(0, 100%, 40%);">-# out the following line.</span><br><span =
-style=3D"color: hsl(0, 100%, 40%);">-; comp-lzo</span><br><span style=3D"co=
-lor: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%=
-);">-# Send a UDP ping to remote once</span><br><span style=3D"color: hsl(0=
-, 100%, 40%);">-# every 15 seconds to keep</span><br><span style=3D"color: =
-hsl(0, 100%, 40%);">-# stateful firewall connection</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-# alive.  Uncomment this</span><br><span st=
-yle=3D"color: hsl(0, 100%, 40%);">-# out if you are using a stateful</span>=
-<br><span style=3D"color: hsl(0, 100%, 40%);">-# firewall.</span><br><span =
-style=3D"color: hsl(0, 100%, 40%);">-; ping 15</span><br><span style=3D"col=
-or: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%)=
-;">-# Uncomment this section for a more reliable detection when a system</s=
-pan><br><span style=3D"color: hsl(0, 100%, 40%);">-# loses its connection. =
- For example, dial-ups or laptops that</span><br><span style=3D"color: hsl(=
-0, 100%, 40%);">-# travel to other locations.</span><br><span style=3D"colo=
-r: hsl(0, 100%, 40%);">-; ping 15</span><br><span style=3D"color: hsl(0, 10=
-0%, 40%);">-; ping-restart 45</span><br><span style=3D"color: hsl(0, 100%, =
-40%);">-; ping-timer-rem</span><br><span style=3D"color: hsl(0, 100%, 40%);=
-">-; persist-tun</span><br><span style=3D"color: hsl(0, 100%, 40%);">-; per=
-sist-key</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><s=
-pan style=3D"color: hsl(0, 100%, 40%);">-# Verbosity level.</span><br><span=
- style=3D"color: hsl(0, 100%, 40%);">-# 0 -- quiet except for fatal errors.=
-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-# 1 -- mostly quiet, =
-but display non-fatal network errors.</span><br><span style=3D"color: hsl(0=
-, 100%, 40%);">-# 3 -- medium output, good for normal operation.</span><br>=
-<span style=3D"color: hsl(0, 100%, 40%);">-# 9 -- verbose, good for trouble=
-shooting</span><br><span style=3D"color: hsl(0, 100%, 40%);">-verb 3</span>=
-<br><span></span><br></pre><p>To view, visit <a href=3D"http://gerrit.openv=
-pn.net/c/openvpn/+/531?usp=3Demail">change 531</a>. To unsubscribe, or for =
-help writing mail filters, visit <a href=3D"http://gerrit.openvpn.net/setti=
-ngs">settings</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMes=
-sage"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.org/View=
-Action"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/=
-+/531?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div>=
-</div>
+e: pre-wrap;">gerrit-send-mail: add missing Signed-off-by<br><br>Our develo=
+pment documentation says we add this<br>automatically when it is missing. S=
+o let&#39;s do that<br>here as well.<br><br>Change-Id: If9cb7d66f079fe1c87f=
+cb5b4e59bc887533d77fa<br>Signed-off-by: Frank Lichtenheld &lt;frank@...2746...=
+...&gt;<br>---<br>M dev-tools/gerrit-send-mail.py<br>1 file changed, 13 ins=
+ertions(+), 0 deletions(-)<br><br></pre><pre style=3D"font-family: monospac=
+e,monospace; white-space: pre-wrap;">git pull ssh://gerrit.openvpn.net:2941=
+8/openvpn refs/changes/30/530/1</pre><pre style=3D"font-family: monospace,m=
+onospace; white-space: pre-wrap;"><span>diff --git a/dev-tools/gerrit-send-=
+mail.py b/dev-tools/gerrit-send-mail.py</span><br><span>index 67a2cf1..1030=
+5e2 100755</span><br><span>--- a/dev-tools/gerrit-send-mail.py</span><br><s=
+pan>+++ b/dev-tools/gerrit-send-mail.py</span><br><span>@@ -50,6 +50,12 @@<=
+/span><br><span>                 ack =3D f&quot;{reviewer_name} &lt;{review=
+er_mail}&gt;&quot;</span><br><span>                 print(f&quot;Acked-by: =
+{ack}&quot;)</span><br><span>                 acked_by.append(ack)</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+    # construct Signed-off-b=
+y in case it is missing</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+    owner =3D json_data[&quot;owner&quot;]</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+    owner_name =3D owner.get(&quot;display_name&=
+quot;, owner[&quot;name&quot;])</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+    owner_mail =3D owner.get(&quot;email&quot;, owner[&quot;nam=
+e&quot;])</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    sign_o=
+ff =3D f&quot;{owner_name} &lt;{owner_mail}&gt;&quot;</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    print(f&quot;Signed-off-by: {sign_off=
+}&quot;)</span><br><span>     change_id =3D json_data[&quot;change_id&quot;=
+]</span><br><span>     # assumes that the created date in Gerrit is in UTC<=
+/span><br><span>     utc_stamp =3D (</span><br><span>@@ -67,6 +73,7 @@</spa=
+n><br><span>         &quot;target&quot;: json_data[&quot;branch&quot;],</sp=
+an><br><span>         &quot;msg_id&quot;: msg_id,</span><br><span>         =
+&quot;acked_by&quot;: acked_by,</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+        &quot;sign_off&quot;: sign_off,</span><br><span>     }<=
+/span><br><span> </span><br><span> </span><br><span>@@ -81,10 +88,14 @@</sp=
+an><br><span> </span><br><span> def apply_patch_mods(patch_text, details, a=
+rgs):</span><br><span>     comment_start =3D patch_text.index(&quot;\n---\n=
+&quot;) + len(&quot;\n---\n&quot;)</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+    signed_off_text =3D &quot;&quot;</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    signed_off_comment =3D &quot;&quot;</=
+span><br><span>     try:</span><br><span>         signed_off_start =3D patc=
+h_text.rindex(&quot;\nSigned-off-by: &quot;)</span><br><span>         signe=
+d_off_end =3D patch_text.index(&quot;\n&quot;, signed_off_start + 1) + 1</s=
+pan><br><span>     except ValueError:  # Signed-off missing</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+        signed_off_text =3D f&quot;=
+Signed-off-by: {details[&#39;sign_off&#39;]}\n&quot;</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+        signed_off_comment =3D &quot;\nSi=
+gned-off-by line for the author was added as per our policy.\n&quot;</span>=
+<br><span>         signed_off_end =3D patch_text.index(&quot;\n---\n&quot;)=
+ + 1</span><br><span>     assert comment_start &gt; signed_off_end</span><b=
+r><span>     acked_by_text =3D &quot;&quot;</span><br><span>@@ -94,6 +105,7=
+ @@</span><br><span>         acked_by_names +=3D f&quot;{ack}\n&quot;</span=
+><br><span>     patch_text_mod =3D (</span><br><span>         patch_text[:s=
+igned_off_end]</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
+   + signed_off_text</span><br><span>         + acked_by_text</span><br><sp=
+an>         + patch_text[signed_off_end:comment_start]</span><br><span>    =
+     + f&quot;&quot;&quot;</span><br><span>@@ -102,6 +114,7 @@</span><br><s=
+pan> </span><br><span> Gerrit URL: {args.url}/c/{details[&quot;project&quot=
+;]}/+/{args.changeid}</span><br><span> This mail reflects revision {details=
+[&quot;revision&quot;]} of this Change.</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+{signed_off_comment}</span><br><span> Acked-by accordin=
+g to Gerrit (reflected above):</span><br><span> {acked_by_names}</span><br>=
+<span>         &quot;&quot;&quot;</span><br><span></span><br></pre><p>To vi=
+ew, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/530?usp=3Demail"=
+>change 530</a>. To unsubscribe, or for help writing mail filters, visit <a=
+ href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemscop=
+e itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"ac=
+tion" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=
+=3D"http://gerrit.openvpn.net/c/openvpn/+/530?usp=3Demail"/><meta itemprop=
+=3D"name" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I199541fea5a76c8edef7f67d2db=
-fc476987dc2f7 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 531 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: If9cb7d66f079fe1c87fcb5b4e59=
+bc887533d77fa </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 530 </div>
 <div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
 <div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
 .&gt; </div>
@@ -517,5 +223,5 @@ ts.sourceforge.net&gt; </div>
 <div style=3D"display:none"> Gerrit-MessageType: newchange </div>
 
 
---gbvUY/a/3IY=--
+--G7C5Sbn6Ghk=--
 
