@@ -1,16 +1,10 @@
-From: "plaisthos (Code Review)" <gerrit@...515...>
-Date: Mon, 4 Mar 2024 23:22:57 +0000
+From: Gert Doering <gert@...1296...>
+Date: Tue,  5 Mar 2024 09:22:36 +0100
+Message-ID: <20240305082236.17566-1-gert@...1296...>
 In-Reply-To: <gerrit.1709567200000.I38e70cb74c10848ab2981efc4c4c8863c5c8785d@...2715...>
 References: <gerrit.1709567200000.I38e70cb74c10848ab2981efc4c4c8863c5c8785d@...2715...>
-Reply-To: arne-openvpn@...1227..., openvpn-devel@lists.sourceforge.net,
- frank@...2641...
-Message-ID: <1cfa3820b0a1dbe4a8c7bb4a85357713dbe8f69e-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="mPEe/zLtwJY="; charset=UTF-8
-Subject: [Openvpn-devel] [XS] Change in openvpn[master]: Fix typo
- --data-cipher-fallback
+Subject: [Openvpn-devel] [PATCH v1] Fix typo --data-cipher-fallback
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,81 +13,50 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: flichtenheld <frank@...2641...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---mPEe/zLtwJY=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+From: Frank Lichtenheld <frank@...2641...>
 
-Attention is currently required from: flichtenheld.
+Change-Id: I38e70cb74c10848ab2981efc4c4c8863c5c8785d
+Signed-off-by: Frank Lichtenheld <frank@...2641...>
+Acked-by: Arne Schwabe <arne-openvpn@...1227...>
+---
 
-plaisthos has posted comments on this change. ( http://gerrit.openvpn.net/c=
-/openvpn/+/534?usp=3Demail )
+This change was reviewed on Gerrit and approved by at least one
+developer. I request to merge it to master.
 
-Change subject: Fix typo --data-cipher-fallback
-......................................................................
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/534
+This mail reflects revision 1 of this Change.
+Acked-by according to Gerrit (reflected above):
+Arne Schwabe <arne-openvpn@...1227...>
 
-
-Patch Set 1: Code-Review+2
-
-
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/534?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings
-
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: I38e70cb74c10848ab2981efc4c4c8863c5c8785d
-Gerrit-Change-Number: 534
-Gerrit-PatchSet: 1
-Gerrit-Owner: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Comment-Date: Mon, 04 Mar 2024 23:22:57 +0000
-Gerrit-HasComments: No
-Gerrit-Has-Labels: Yes
-Gerrit-MessageType: comment
-
---mPEe/zLtwJY=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<p> Attention is currently required from: flichtenheld. </p>
-<p>Patch set 1:<span style=3D"border-radius: 3px; display: inline-block; ma=
-rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/534?usp=3Demail">Vi=
-ew Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To vie=
-w, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/534?usp=3Demail">=
-change 534</a>. To unsubscribe, or for help writing mail filters, visit <a =
-href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope=
- itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"act=
-ion" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=
-=3D"http://gerrit.openvpn.net/c/openvpn/+/534?usp=3Demail"/><meta itemprop=
-=3D"name" content=3D"View Change"/></div></div>
-
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I38e70cb74c10848ab2981efc4c4=
-c8863c5c8785d </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 534 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
-<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
-.&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
-41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Mon, 04 Mar 2024 23:22:57=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: No </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
-
-
---mPEe/zLtwJY=--
+        
+diff --git a/doc/man-sections/generic-options.rst b/doc/man-sections/generic-options.rst
+index 95e4ca2..30c990d 100644
+--- a/doc/man-sections/generic-options.rst
++++ b/doc/man-sections/generic-options.rst
+@@ -75,7 +75,7 @@
+     to the configuration if no other compression options are present.
+   - 2.4.x or lower: The cipher in ``--cipher`` is appended to
+     ``--data-ciphers``.
+-  - 2.3.x or lower: ``--data-cipher-fallback`` is automatically added with
++  - 2.3.x or lower: ``--data-ciphers-fallback`` is automatically added with
+     the same cipher as ``--cipher``.
+   - 2.3.6 or lower: ``--tls-version-min 1.0`` is added to the configuration
+     when ``--tls-version-min`` is not explicitly set.
+diff --git a/src/openvpn/dco.c b/src/openvpn/dco.c
+index cd3e0ad..14430d3 100644
+--- a/src/openvpn/dco.c
++++ b/src/openvpn/dco.c
+@@ -400,7 +400,7 @@
+     if (o->enable_ncp_fallback
+         && !tls_item_in_cipher_list(o->ciphername, dco_get_supported_ciphers()))
+     {
+-        msg(msglevel, "Note: --data-cipher-fallback with cipher '%s' "
++        msg(msglevel, "Note: --data-ciphers-fallback with cipher '%s' "
+             "disables data channel offload.", o->ciphername);
+         return false;
+     }
 
