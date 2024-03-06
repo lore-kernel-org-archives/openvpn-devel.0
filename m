@@ -1,16 +1,16 @@
 From: "its_Giaan (Code Review)" <gerrit@...515...>
-Date: Wed, 6 Mar 2024 14:04:20 +0000
-In-Reply-To: <gerrit.1708351044000.I57f1c2ed42bd9dfd43577238749a9b7f4c1419ff@...2715...>
-References: <gerrit.1708351044000.I57f1c2ed42bd9dfd43577238749a9b7f4c1419ff@...2715...>
+Date: Wed, 6 Mar 2024 14:23:36 +0000
+In-Reply-To: <gerrit.1708012740000.I4b5e8357d872c920efdb64632e9bce72cebee202@...2715...>
+References: <gerrit.1708012740000.I4b5e8357d872c920efdb64632e9bce72cebee202@...2715...>
 Reply-To: gianmarco@...2726..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <cb1ce1f8cde02d9456e865ea563095e13a65da3c-EmailReplacePatchSet-HTML@...2715...>
+ openvpn-devel@lists.sourceforge.net, frank@...2641..., a@...2181...
+Message-ID: <c7f8a0b22b60d2873709dcf2e2a3ca4ef92ed5e3-EmailReplacePatchSet-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="NzYsbZlhu2w="; charset=UTF-8
-Subject: [Openvpn-devel] [M] Change in openvpn[master]: Persist-key: enable
- persist-key option by default
+Content-Type: multipart/alternative; boundary="rfrDovFMthA="; charset=UTF-8
+Subject: [Openvpn-devel] [M] Change in openvpn[master]: Minor fix to
+ process_ip_header
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -22,708 +22,470 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---NzYsbZlhu2w=
+--rfrDovFMthA=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: flichtenheld, its_Giaan.
+Attention is currently required from: its_Giaan, ordex.
 
-Hello flichtenheld, plaisthos,
+Hello flichtenheld, ordex, plaisthos,
 
 I'd like you to reexamine a change. Please visit
 
-    http://gerrit.openvpn.net/c/openvpn/+/529?usp=3Demail
+    http://gerrit.openvpn.net/c/openvpn/+/525?usp=3Demail
 
-to look at the new patch set (#4).
+to look at the new patch set (#3).
 
 The change is no longer submittable: checks~ChecksSubmitRule is unsatisfied=
  now.
 
 
-Change subject: Persist-key: enable persist-key option by default
+Change subject: Minor fix to process_ip_header
 ......................................................................
 
-Persist-key: enable persist-key option by default
+Minor fix to process_ip_header
 
-Change the default behavior of the OpenVPN configuration
-by enabling the persist-key option by default.
+Removed if-guard checking if any feature is
+enabled before performing per-feature check.
+It doesn't save us much but instead introduces
+uneeded complexity.
 
-This means that all the keys will be kept in memory
-across restart.
+While at it, fixed a typo IMCP -> ICMP for defined
+PIPV6_ICMP_NOHOST_CLIENT and PIPV6_ICMP_NOHOST_SERVER
+macros.
 
-Fixes: Trac #1405
-Change-Id: I57f1c2ed42bd9dfd43577238749a9b7f4c1419ff
+Fixes: Trac https://community.openvpn.net/openvpn/ticket/269
+Change-Id: I4b5e8357d872c920efdb64632e9bce72cebee202
 Signed-off-by: Gianmarco De Gregori <gianmarco@...2726...>
 ---
-M Changes.rst
-M doc/man-sections/connection-profiles.rst
-M doc/man-sections/generic-options.rst
-M doc/man-sections/link-options.rst
-M doc/man-sections/server-options.rst
-M doc/man-sections/signals.rst
-M doc/man-sections/unsupported-options.rst
-M sample/sample-config-files/client.conf
-M sample/sample-config-files/server.conf
-M sample/sample-config-files/tls-home.conf
-M sample/sample-config-files/tls-office.conf
-M sample/sample-windows/sample.ovpn
-M src/openvpn/init.c
-M src/openvpn/openvpn.h
-M src/openvpn/options.c
-M src/openvpn/options.h
-16 files changed, 24 insertions(+), 49 deletions(-)
+M src/openvpn/forward.c
+M src/openvpn/forward.h
+M src/openvpn/multi.c
+3 files changed, 49 insertions(+), 61 deletions(-)
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/29/529/4
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/25/525/3
 
-diff --git a/Changes.rst b/Changes.rst
-index 58cb3db..4cded98 100644
---- a/Changes.rst
-+++ b/Changes.rst
-@@ -20,6 +20,8 @@
-     When configured to authenticate with NTLMv1 (``ntlm`` keyword in
-     ``--http-proxy``) OpenVPN will try NTLMv2 instead.
+diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c
+index 0443ca0..556c465 100644
+--- a/src/openvpn/forward.c
++++ b/src/openvpn/forward.c
+@@ -1460,7 +1460,7 @@
+          * us to examine the IP header (IPv4 or IPv6).
+          */
+         unsigned int flags =3D PIPV4_PASSTOS | PIP_MSSFIX | PIPV4_CLIENT_N=
+AT
+-                             | PIPV6_IMCP_NOHOST_CLIENT;
++                             | PIPV6_ICMP_NOHOST_CLIENT;
+         process_ip_header(c, flags, &c->c2.buf);
 
-+``persist-key`` option has been enabled by default.
-+    All the keys will be kept in memory across restart.
+ #ifdef PACKET_TRUNCATION_CHECK
+@@ -1644,73 +1644,60 @@
+     }
+     if (!c->options.block_ipv6)
+     {
+-        flags &=3D ~(PIPV6_IMCP_NOHOST_CLIENT | PIPV6_IMCP_NOHOST_SERVER);
++        flags &=3D ~(PIPV6_ICMP_NOHOST_CLIENT | PIPV6_ICMP_NOHOST_SERVER);
+     }
 
- Overview of changes in 2.6
- =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D
-diff --git a/doc/man-sections/connection-profiles.rst b/doc/man-sections/co=
-nnection-profiles.rst
-index c8816e1..520bbef 100644
---- a/doc/man-sections/connection-profiles.rst
-+++ b/doc/man-sections/connection-profiles.rst
-@@ -39,7 +39,6 @@
-    http-proxy 192.168.0.8 8080
-    </connection>
-
--   persist-key
-    persist-tun
-    pkcs12 client.p12
-    remote-cert-tls server
-diff --git a/doc/man-sections/generic-options.rst b/doc/man-sections/generi=
-c-options.rst
-index 95e4ca2..4e2029a 100644
---- a/doc/man-sections/generic-options.rst
-+++ b/doc/man-sections/generic-options.rst
-@@ -302,17 +302,6 @@
-   Change process priority after initialization (``n`` greater than 0 is
-   lower priority, ``n`` less than zero is higher priority).
-
----persist-key
--  Don't re-read key files across :code:`SIGUSR1` or ``--ping-restart``.
+     if (buf->len > 0)
+     {
+-        /*
+-         * The --passtos and --mssfix options require
+-         * us to examine the IPv4 header.
+-         */
 -
--  This option can be combined with ``--user`` to allow restarts
--  triggered by the :code:`SIGUSR1` signal. Normally if you drop root
--  privileges in OpenVPN, the daemon cannot be restarted since it will now
--  be unable to re-read protected key files.
--
--  This option solves the problem by persisting keys across :code:`SIGUSR1`
--  resets, so they don't need to be re-read.
--
- --providers providers
-   Load the list of (OpenSSL) providers. This is mainly useful for using an
-   external provider for key management like tpm2-openssl or to load the
-@@ -402,7 +391,7 @@
-
-   Like with chroot, complications can result when scripts or restarts are
-   executed after the setcon operation, which is why you should really
--  consider using the ``--persist-key`` and ``--persist-tun`` options.
-+  consider using the ``--persist-tun`` option.
-
- --status args
-   Write operational status to ``file`` every ``n`` seconds. ``n`` defaults
-diff --git a/doc/man-sections/link-options.rst b/doc/man-sections/link-opti=
-ons.rst
-index ca26bfe..ca192c3 100644
---- a/doc/man-sections/link-options.rst
-+++ b/doc/man-sections/link-options.rst
-@@ -283,7 +283,7 @@
-   See the signals section below for more information on :code:`SIGUSR1`.
-
-   Note that the behavior of ``SIGUSR1`` can be modified by the
--  ``--persist-tun``, ``--persist-key``, ``--persist-local-ip`` and
-+  ``--persist-tun``, ``--persist-local-ip`` and
-   ``--persist-remote-ip`` options.
-
-   Also note that ``--ping-exit`` and ``--ping-restart`` are mutually
-diff --git a/doc/man-sections/server-options.rst b/doc/man-sections/server-=
-options.rst
-index 98f5340..0632e31 100644
---- a/doc/man-sections/server-options.rst
-+++ b/doc/man-sections/server-options.rst
-@@ -452,7 +452,7 @@
-   ``--route``, ``--route-gateway``, ``--route-delay``,
-   ``--redirect-gateway``, ``--ip-win32``, ``--dhcp-option``, ``--dns``,
-   ``--inactive``, ``--ping``, ``--ping-exit``, ``--ping-restart``,
--  ``--setenv``, ``--auth-token``, ``--persist-key``, ``--persist-tun``,
-+  ``--setenv``, ``--auth-token``, ``--persist-tun``,
-   ``--echo``, ``--comp-lzo``, ``--socket-flags``, ``--sndbuf``,
-   ``--rcvbuf``, ``--session-timeout``
-
-diff --git a/doc/man-sections/signals.rst b/doc/man-sections/signals.rst
-index 63611b3..01e8e5b 100644
---- a/doc/man-sections/signals.rst
-+++ b/doc/man-sections/signals.rst
-@@ -10,9 +10,8 @@
-     Like :code:`SIGHUP``, except don't re-read configuration file, and
-     possibly don't close and reopen TUN/TAP device, re-read key files,
-     preserve local IP address/port, or preserve most recently authenticated
--    remote IP address/port based on ``--persist-tun``, ``--persist-key``,
--    ``--persist-local-ip`` and ``--persist-remote-ip`` options respectively
--    (see above).
-+    remote IP address/port based on ``--persist-tun``, ``--persist-local-i=
-p``
-+    and ``--persist-remote-ip`` options respectively (see above).
-
-     This signal may also be internally generated by a timeout condition,
-     governed by the ``--ping-restart`` option.
-diff --git a/doc/man-sections/unsupported-options.rst b/doc/man-sections/un=
-supported-options.rst
-index a0c1232..11467ca 100644
---- a/doc/man-sections/unsupported-options.rst
-+++ b/doc/man-sections/unsupported-options.rst
-@@ -42,3 +42,6 @@
-
- --prng
-   Removed in OpenVPN 2.6.  We now always use the PRNG of the SSL library.
-+
-+--persist-key
-+  Ignored since OpenVPN 2.7. Keys are now always persisted across restarts.
-\ No newline at end of file
-diff --git a/sample/sample-config-files/client.conf b/sample/sample-config-=
-files/client.conf
-index 15cb1b3..f51e017 100644
---- a/sample/sample-config-files/client.conf
-+++ b/sample/sample-config-files/client.conf
-@@ -62,7 +62,6 @@
- ;group openvpn
-
- # Try to preserve some state across restarts.
--persist-key
- persist-tun
-
- # If you are connecting through an
-diff --git a/sample/sample-config-files/server.conf b/sample/sample-config-=
-files/server.conf
-index d9345b6..009fe56 100644
---- a/sample/sample-config-files/server.conf
-+++ b/sample/sample-config-files/server.conf
-@@ -274,11 +274,10 @@
- ;user openvpn
- ;group openvpn
-
--# The persist options will try to avoid
-+# The persist option will try to avoid
- # accessing certain resources on restart
- # that may no longer be accessible because
- # of the privilege downgrade.
--persist-key
- persist-tun
-
- # Output a short status file showing
-diff --git a/sample/sample-config-files/tls-home.conf b/sample/sample-confi=
-g-files/tls-home.conf
-index ff19d50..0e5c6eb 100644
---- a/sample/sample-config-files/tls-home.conf
-+++ b/sample/sample-config-files/tls-home.conf
-@@ -73,7 +73,6 @@
- ; ping-restart 45
- ; ping-timer-rem
- ; persist-tun
--; persist-key
-
- # Verbosity level.
- # 0 -- quiet except for fatal errors.
-diff --git a/sample/sample-config-files/tls-office.conf b/sample/sample-con=
-fig-files/tls-office.conf
-index 152e58a..2f306f6 100644
---- a/sample/sample-config-files/tls-office.conf
-+++ b/sample/sample-config-files/tls-office.conf
-@@ -76,7 +76,6 @@
- ; ping-restart 45
- ; ping-timer-rem
- ; persist-tun
--; persist-key
-
- # Verbosity level.
- # 0 -- quiet except for fatal errors.
-diff --git a/sample/sample-windows/sample.ovpn b/sample/sample-windows/samp=
-le.ovpn
-index 51e3274..be24faa 100755
---- a/sample/sample-windows/sample.ovpn
-+++ b/sample/sample-windows/sample.ovpn
-@@ -89,7 +89,6 @@
- ; ping-restart 60
- ; ping-timer-rem
- ; persist-tun
--; persist-key
- ; resolv-retry 86400
-
- # keep-alive ping
-diff --git a/src/openvpn/init.c b/src/openvpn/init.c
-index 52b4308..52b3931 100644
---- a/src/openvpn/init.c
-+++ b/src/openvpn/init.c
-@@ -3559,14 +3559,6 @@
-         {
-             msg(M_WARN, "WARNING: you are using user/group/chroot/setcon w=
-ithout persist-tun -- this may cause restarts to fail");
-         }
--        if (!o->persist_key
--#ifdef ENABLE_PKCS11
--            && !o->pkcs11_id
+-        if (flags & (PIP_MSSFIX
+-#if PASSTOS_CAPABILITY
+-                     | PIPV4_PASSTOS
 -#endif
--            )
--        {
--            msg(M_WARN, "WARNING: you are using user/group/chroot/setcon w=
-ithout persist-key -- this may cause restarts to fail");
--        }
-     }
-
-     if (o->chroot_dir && !(o->username && o->groupname))
-@@ -3857,7 +3849,7 @@
- do_close_free_key_schedule(struct context *c, bool free_ssl_ctx)
- {
-     /*
--     * always free the tls_auth/crypt key. If persist_key is true, the key=
- will
-+     * always free the tls_auth/crypt key. The key will
-      * be reloaded from memory (pre-cached)
-      */
-     free_key_ctx(&c->c1.ks.tls_crypt_v2_server_key);
-@@ -3866,7 +3858,7 @@
-     buf_clear(&c->c1.ks.tls_crypt_v2_wkc);
-     free_buf(&c->c1.ks.tls_crypt_v2_wkc);
-
--    if (!(c->sig->signal_received =3D=3D SIGUSR1 && c->options.persist_key=
-))
-+    if (!(c->sig->signal_received =3D=3D SIGUSR1))
-     {
-         key_schedule_free(&c->c1.ks, free_ssl_ctx);
-     }
-diff --git a/src/openvpn/openvpn.h b/src/openvpn/openvpn.h
-index dabc5be..df93b0e 100644
---- a/src/openvpn/openvpn.h
-+++ b/src/openvpn/openvpn.h
-@@ -48,7 +48,7 @@
-
- /*
-  * Our global key schedules, packaged thusly
-- * to facilitate --persist-key.
-+ * to facilitate key persistence.
-  */
-
- struct key_schedule
-diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index 2c79a1e..94a88f9 100644
---- a/src/openvpn/options.c
-+++ b/src/openvpn/options.c
-@@ -273,7 +273,6 @@
-     "--persist-tun   : Keep tun/tap device open across SIGUSR1 or --ping-r=
-estart.\n"
-     "--persist-remote-ip : Keep remote IP address across SIGUSR1 or --ping=
--restart.\n"
-     "--persist-local-ip  : Keep local IP address across SIGUSR1 or --ping-=
-restart.\n"
--    "--persist-key   : Don't re-read key files across SIGUSR1 or --ping-re=
-start.\n"
+-                     | PIPV4_CLIENT_NAT
+-                     ))
++        struct buffer ipbuf =3D *buf;
++        if (is_ipv4(TUNNEL_TYPE(c->c1.tuntap), &ipbuf))
+         {
+-            struct buffer ipbuf =3D *buf;
+-            if (is_ipv4(TUNNEL_TYPE(c->c1.tuntap), &ipbuf))
+-            {
  #if PASSTOS_CAPABILITY
-     "--passtos       : TOS passthrough (applies to IPv4 only).\n"
+-                /* extract TOS from IP header */
+-                if (flags & PIPV4_PASSTOS)
+-                {
+-                    link_socket_extract_tos(c->c2.link_socket, &ipbuf);
+-                }
++            /* extract TOS from IP header */
++            if (flags & PIPV4_PASSTOS)
++            {
++                link_socket_extract_tos(c->c2.link_socket, &ipbuf);
++            }
  #endif
-@@ -1857,7 +1856,6 @@
-     SHOW_BOOL(persist_tun);
-     SHOW_BOOL(persist_local_ip);
-     SHOW_BOOL(persist_remote_ip);
--    SHOW_BOOL(persist_key);
 
- #if PASSTOS_CAPABILITY
-     SHOW_BOOL(passtos);
-@@ -3240,18 +3238,16 @@
-         ce->tls_crypt_v2_file_inline =3D o->tls_crypt_v2_file_inline;
+-                /* possibly alter the TCP MSS */
+-                if (flags & PIP_MSSFIX)
+-                {
+-                    mss_fixup_ipv4(&ipbuf, c->c2.frame.mss_fix);
+-                }
+-
+-                /* possibly do NAT on packet */
+-                if ((flags & PIPV4_CLIENT_NAT) && c->options.client_nat)
+-                {
+-                    const int direction =3D (flags & PIP_OUTGOING) ? CN_IN=
+COMING : CN_OUTGOING;
+-                    client_nat_transform(c->options.client_nat, &ipbuf, di=
+rection);
+-                }
+-                /* possibly extract a DHCP router message */
+-                if (flags & PIPV4_EXTRACT_DHCP_ROUTER)
+-                {
+-                    const in_addr_t dhcp_router =3D dhcp_extract_router_ms=
+g(&ipbuf);
+-                    if (dhcp_router)
+-                    {
+-                        route_list_add_vpn_gateway(c->c1.route_list, c->c2=
+.es, dhcp_router);
+-                    }
+-                }
+-            }
+-            else if (is_ipv6(TUNNEL_TYPE(c->c1.tuntap), &ipbuf))
++            /* possibly alter the TCP MSS */
++            if (flags & PIP_MSSFIX)
+             {
+-                /* possibly alter the TCP MSS */
+-                if (flags & PIP_MSSFIX)
+-                {
+-                    mss_fixup_ipv6(&ipbuf, c->c2.frame.mss_fix);
+-                }
+-                if (!(flags & PIP_OUTGOING) && (flags
+-                                                &(PIPV6_IMCP_NOHOST_CLIENT=
+ | PIPV6_IMCP_NOHOST_SERVER)))
+-                {
+-                    ipv6_send_icmp_unreachable(c, buf,
+-                                               (bool)(flags & PIPV6_IMCP_N=
+OHOST_CLIENT));
+-                    /* Drop the IPv6 packet */
+-                    buf->len =3D 0;
+-                }
+-
++                mss_fixup_ipv4(&ipbuf, c->c2.frame.mss_fix);
+             }
++
++            /* possibly do NAT on packet */
++            if ((flags & PIPV4_CLIENT_NAT) && c->options.client_nat)
++            {
++                const int direction =3D (flags & PIP_OUTGOING) ? CN_INCOMI=
+NG : CN_OUTGOING;
++                client_nat_transform(c->options.client_nat, &ipbuf, direct=
+ion);
++            }
++            /* possibly extract a DHCP router message */
++            if (flags & PIPV4_EXTRACT_DHCP_ROUTER)
++            {
++                const in_addr_t dhcp_router =3D dhcp_extract_router_msg(&i=
+pbuf);
++                if (dhcp_router)
++                {
++                    route_list_add_vpn_gateway(c->c1.route_list, c->c2.es,=
+ dhcp_router);
++                }
++            }
++        }
++        else if (is_ipv6(TUNNEL_TYPE(c->c1.tuntap), &ipbuf))
++        {
++            /* possibly alter the TCP MSS */
++            if (flags & PIP_MSSFIX)
++            {
++                mss_fixup_ipv6(&ipbuf, c->c2.frame.mss_fix);
++            }
++            if (!(flags & PIP_OUTGOING) && (flags
++                                            &(PIPV6_ICMP_NOHOST_CLIENT | P=
+IPV6_ICMP_NOHOST_SERVER)))
++            {
++                ipv6_send_icmp_unreachable(c, buf,
++                                           (bool)(flags & PIPV6_ICMP_NOHOS=
+T_CLIENT));
++                /* Drop the IPv6 packet */
++                buf->len =3D 0;
++            }
++
+         }
      }
-
--    /* Pre-cache tls-auth/crypt(-v2) key file if persist-key was specified=
- and
-+    /* Pre-cache tls-auth/crypt(-v2) key file if
-      * keys were not already embedded in the config file.
-      */
--    if (o->persist_key)
--    {
--        connection_entry_preload_key(&ce->tls_auth_file,
--                                     &ce->tls_auth_file_inline, &o->gc);
--        connection_entry_preload_key(&ce->tls_crypt_file,
--                                     &ce->tls_crypt_file_inline, &o->gc);
--        connection_entry_preload_key(&ce->tls_crypt_v2_file,
--                                     &ce->tls_crypt_v2_file_inline, &o->gc=
-);
--    }
-+    connection_entry_preload_key(&ce->tls_auth_file,
-+                                 &ce->tls_auth_file_inline, &o->gc);
-+    connection_entry_preload_key(&ce->tls_crypt_file,
-+                                 &ce->tls_crypt_file_inline, &o->gc);
-+    connection_entry_preload_key(&ce->tls_crypt_v2_file,
-+                                 &ce->tls_crypt_v2_file_inline, &o->gc);
+ }
+diff --git a/src/openvpn/forward.h b/src/openvpn/forward.h
+index e19115e..bc00ba5 100644
+--- a/src/openvpn/forward.h
++++ b/src/openvpn/forward.h
+@@ -297,8 +297,9 @@
+ #define PIP_OUTGOING                    (1<<2)
+ #define PIPV4_EXTRACT_DHCP_ROUTER       (1<<3)
+ #define PIPV4_CLIENT_NAT                (1<<4)
+-#define PIPV6_IMCP_NOHOST_CLIENT        (1<<5)
+-#define PIPV6_IMCP_NOHOST_SERVER        (1<<6)
++#define PIPV6_ICMP_NOHOST_CLIENT        (1<<5)
++#define PIPV6_ICMP_NOHOST_SERVER        (1<<6)
 +
 
-     if (!proto_is_udp(ce->proto) && ce->explicit_exit_notification)
-     {
-@@ -6963,7 +6959,8 @@
-     else if (streq(p[0], "persist-key") && !p[1])
-     {
-         VERIFY_PERMISSION(OPT_P_PERSIST);
--        options->persist_key =3D true;
-+        msg(M_WARN, "DEPRECATED: --persist-key option ignored. "
-+            "Keys are now always persisted across restarts. ");
-     }
-     else if (streq(p[0], "persist-local-ip") && !p[1])
-     {
-diff --git a/src/openvpn/options.h b/src/openvpn/options.h
-index 85de887..2b37d1f 100644
---- a/src/openvpn/options.h
-+++ b/src/openvpn/options.h
-@@ -344,7 +344,6 @@
-     bool persist_tun;           /* Don't close/reopen TUN/TAP dev on SIGUS=
-R1 or PING_RESTART */
-     bool persist_local_ip;      /* Don't re-resolve local address on SIGUS=
-R1 or PING_RESTART */
-     bool persist_remote_ip;     /* Don't re-resolve remote address on SIGU=
-SR1 or PING_RESTART */
--    bool persist_key;           /* Don't re-read key files on SIGUSR1 or P=
-ING_RESTART */
+ void process_ip_header(struct context *c, unsigned int flags, struct buffe=
+r *buf);
 
- #if PASSTOS_CAPABILITY
-     bool passtos;
+diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
+index 4344126..712456c 100644
+--- a/src/openvpn/multi.c
++++ b/src/openvpn/multi.c
+@@ -3645,7 +3645,7 @@
+
+     if (mbuf_extract_item(ms, &item)) /* cleartext IP packet */
+     {
+-        unsigned int pip_flags =3D PIPV4_PASSTOS | PIPV6_IMCP_NOHOST_SERVE=
+R;
++        unsigned int pip_flags =3D PIPV4_PASSTOS | PIPV6_ICMP_NOHOST_SERVE=
+R;
+
+         set_prefix(item.instance);
+         item.instance->context.c2.buf =3D item.buffer->buf;
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/529?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/525?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings
 
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: I57f1c2ed42bd9dfd43577238749a9b7f4c1419ff
-Gerrit-Change-Number: 529
-Gerrit-PatchSet: 4
+Gerrit-Change-Id: I4b5e8357d872c920efdb64632e9bce72cebee202
+Gerrit-Change-Number: 525
+Gerrit-PatchSet: 3
 Gerrit-Owner: its_Giaan <gianmarco@...2726...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
+Gerrit-Reviewer: ordex <a@...2181...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: its_Giaan <gianmarco@...2726...>
-Gerrit-Attention: flichtenheld <frank@...2641...>
+Gerrit-Attention: ordex <a@...2181...>
 Gerrit-MessageType: newpatchset
 
---NzYsbZlhu2w=
+--rfrDovFMthA=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p> Attention is currently required from: flichtenheld, its_Giaan. </p>
-<p>its_Giaan <strong>uploaded patch set #4</strong> to this change.</p><p><=
-a href=3D"http://gerrit.openvpn.net/c/openvpn/+/529?usp=3Demail">View Chang=
+<p> Attention is currently required from: its_Giaan, ordex. </p>
+<p>its_Giaan <strong>uploaded patch set #3</strong> to this change.</p><p><=
+a href=3D"http://gerrit.openvpn.net/c/openvpn/+/525?usp=3Demail">View Chang=
 e</a></p><p>The change is no longer submittable: checks~ChecksSubmitRule is=
  unsatisfied now.</p><pre style=3D"font-family: monospace,monospace; white-=
-space: pre-wrap;">Persist-key: enable persist-key option by default<br><br>=
-Change the default behavior of the OpenVPN configuration<br>by enabling the=
- persist-key option by default.<br><br>This means that all the keys will be=
- kept in memory<br>across restart.<br><br>Fixes: Trac #1405<br>Change-Id: I=
-57f1c2ed42bd9dfd43577238749a9b7f4c1419ff<br>Signed-off-by: Gianmarco De Gre=
-gori &lt;gianmarco@...2726...&gt;<br>---<br>M Changes.rst<br>M doc/man-sect=
-ions/connection-profiles.rst<br>M doc/man-sections/generic-options.rst<br>M=
- doc/man-sections/link-options.rst<br>M doc/man-sections/server-options.rst=
-<br>M doc/man-sections/signals.rst<br>M doc/man-sections/unsupported-option=
-s.rst<br>M sample/sample-config-files/client.conf<br>M sample/sample-config=
--files/server.conf<br>M sample/sample-config-files/tls-home.conf<br>M sampl=
-e/sample-config-files/tls-office.conf<br>M sample/sample-windows/sample.ovp=
-n<br>M src/openvpn/init.c<br>M src/openvpn/openvpn.h<br>M src/openvpn/optio=
-ns.c<br>M src/openvpn/options.h<br>16 files changed, 24 insertions(+), 49 d=
-eletions(-)<br><br></pre><pre style=3D"font-family: monospace,monospace; wh=
-ite-space: pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/openvpn refs/=
-changes/29/529/4</pre><pre style=3D"font-family: monospace,monospace; white=
--space: pre-wrap;"><span>diff --git a/Changes.rst b/Changes.rst</span><br><=
-span>index 58cb3db..4cded98 100644</span><br><span>--- a/Changes.rst</span>=
-<br><span>+++ b/Changes.rst</span><br><span>@@ -20,6 +20,8 @@</span><br><sp=
-an>     When configured to authenticate with NTLMv1 (``ntlm`` keyword in</s=
-pan><br><span>     ``--http-proxy``) OpenVPN will try NTLMv2 instead.</span=
-><br><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+``persi=
-st-key`` option has been enabled by default.</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+    All the keys will be kept in memory across res=
-tart.</span><br><span> </span><br><span> Overview of changes in 2.6</span><=
-br><span> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D</span><br><span>diff --git a/doc/man-sections/connection-pr=
-ofiles.rst b/doc/man-sections/connection-profiles.rst</span><br><span>index=
- c8816e1..520bbef 100644</span><br><span>--- a/doc/man-sections/connection-=
-profiles.rst</span><br><span>+++ b/doc/man-sections/connection-profiles.rst=
-</span><br><span>@@ -39,7 +39,6 @@</span><br><span>    http-proxy 192.168.0=
-.8 8080</span><br><span>    &lt;/connection&gt;</span><br><span> </span><br=
-><span style=3D"color: hsl(0, 100%, 40%);">-   persist-key</span><br><span>=
-    persist-tun</span><br><span>    pkcs12 client.p12</span><br><span>    r=
-emote-cert-tls server</span><br><span>diff --git a/doc/man-sections/generic=
--options.rst b/doc/man-sections/generic-options.rst</span><br><span>index 9=
-5e4ca2..4e2029a 100644</span><br><span>--- a/doc/man-sections/generic-optio=
-ns.rst</span><br><span>+++ b/doc/man-sections/generic-options.rst</span><br=
-><span>@@ -302,17 +302,6 @@</span><br><span>   Change process priority afte=
-r initialization (``n`` greater than 0 is</span><br><span>   lower priority=
-, ``n`` less than zero is higher priority).</span><br><span> </span><br><sp=
-an>---persist-key</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  Do=
-n&#39;t re-read key files across :code:`SIGUSR1` or ``--ping-restart``.</sp=
-an><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D=
-"color: hsl(0, 100%, 40%);">-  This option can be combined with ``--user`` =
-to allow restarts</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  tr=
-iggered by the :code:`SIGUSR1` signal. Normally if you drop root</span><br>=
-<span style=3D"color: hsl(0, 100%, 40%);">-  privileges in OpenVPN, the dae=
-mon cannot be restarted since it will now</span><br><span style=3D"color: h=
-sl(0, 100%, 40%);">-  be unable to re-read protected key files.</span><br><=
-span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: =
-hsl(0, 100%, 40%);">-  This option solves the problem by persisting keys ac=
-ross :code:`SIGUSR1`</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
- resets, so they don&#39;t need to be re-read.</span><br><span style=3D"col=
-or: hsl(0, 100%, 40%);">-</span><br><span> --providers providers</span><br>=
-<span>   Load the list of (OpenSSL) providers. This is mainly useful for us=
-ing an</span><br><span>   external provider for key management like tpm2-op=
-enssl or to load the</span><br><span>@@ -402,7 +391,7 @@</span><br><span> <=
-/span><br><span>   Like with chroot, complications can result when scripts =
-or restarts are</span><br><span>   executed after the setcon operation, whi=
-ch is why you should really</span><br><span style=3D"color: hsl(0, 100%, 40=
-%);">-  consider using the ``--persist-key`` and ``--persist-tun`` options.=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  consider using th=
-e ``--persist-tun`` option.</span><br><span> </span><br><span> --status arg=
-s</span><br><span>   Write operational status to ``file`` every ``n`` secon=
-ds. ``n`` defaults</span><br><span>diff --git a/doc/man-sections/link-optio=
-ns.rst b/doc/man-sections/link-options.rst</span><br><span>index ca26bfe..c=
-a192c3 100644</span><br><span>--- a/doc/man-sections/link-options.rst</span=
-><br><span>+++ b/doc/man-sections/link-options.rst</span><br><span>@@ -283,=
-7 +283,7 @@</span><br><span>   See the signals section below for more infor=
-mation on :code:`SIGUSR1`.</span><br><span> </span><br><span>   Note that t=
-he behavior of ``SIGUSR1`` can be modified by the</span><br><span style=3D"=
-color: hsl(0, 100%, 40%);">-  ``--persist-tun``, ``--persist-key``, ``--per=
-sist-local-ip`` and</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-  ``--persist-tun``, ``--persist-local-ip`` and</span><br><span>   ``--pers=
-ist-remote-ip`` options.</span><br><span> </span><br><span>   Also note tha=
-t ``--ping-exit`` and ``--ping-restart`` are mutually</span><br><span>diff =
---git a/doc/man-sections/server-options.rst b/doc/man-sections/server-optio=
-ns.rst</span><br><span>index 98f5340..0632e31 100644</span><br><span>--- a/=
-doc/man-sections/server-options.rst</span><br><span>+++ b/doc/man-sections/=
-server-options.rst</span><br><span>@@ -452,7 +452,7 @@</span><br><span>   `=
-`--route``, ``--route-gateway``, ``--route-delay``,</span><br><span>   ``--=
-redirect-gateway``, ``--ip-win32``, ``--dhcp-option``, ``--dns``,</span><br=
-><span>   ``--inactive``, ``--ping``, ``--ping-exit``, ``--ping-restart``,<=
-/span><br><span style=3D"color: hsl(0, 100%, 40%);">-  ``--setenv``, ``--au=
-th-token``, ``--persist-key``, ``--persist-tun``,</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+  ``--setenv``, ``--auth-token``, ``--persist=
--tun``,</span><br><span>   ``--echo``, ``--comp-lzo``, ``--socket-flags``, =
-``--sndbuf``,</span><br><span>   ``--rcvbuf``, ``--session-timeout``</span>=
-<br><span> </span><br><span>diff --git a/doc/man-sections/signals.rst b/doc=
-/man-sections/signals.rst</span><br><span>index 63611b3..01e8e5b 100644</sp=
-an><br><span>--- a/doc/man-sections/signals.rst</span><br><span>+++ b/doc/m=
-an-sections/signals.rst</span><br><span>@@ -10,9 +10,8 @@</span><br><span> =
-    Like :code:`SIGHUP``, except don&#39;t re-read configuration file, and<=
-/span><br><span>     possibly don&#39;t close and reopen TUN/TAP device, re=
--read key files,</span><br><span>     preserve local IP address/port, or pr=
-eserve most recently authenticated</span><br><span style=3D"color: hsl(0, 1=
-00%, 40%);">-    remote IP address/port based on ``--persist-tun``, ``--per=
-sist-key``,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    ``--pe=
-rsist-local-ip`` and ``--persist-remote-ip`` options respectively</span><br=
-><span style=3D"color: hsl(0, 100%, 40%);">-    (see above).</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+    remote IP address/port based o=
-n ``--persist-tun``, ``--persist-local-ip``</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+    and ``--persist-remote-ip`` options respectivel=
-y (see above).</span><br><span> </span><br><span>     This signal may also =
-be internally generated by a timeout condition,</span><br><span>     govern=
-ed by the ``--ping-restart`` option.</span><br><span>diff --git a/doc/man-s=
-ections/unsupported-options.rst b/doc/man-sections/unsupported-options.rst<=
-/span><br><span>index a0c1232..11467ca 100644</span><br><span>--- a/doc/man=
--sections/unsupported-options.rst</span><br><span>+++ b/doc/man-sections/un=
-supported-options.rst</span><br><span>@@ -42,3 +42,6 @@</span><br><span> </=
-span><br><span> --prng</span><br><span>   Removed in OpenVPN 2.6.  We now a=
-lways use the PRNG of the SSL library.</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
---persist-key</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  Igno=
-red since OpenVPN 2.7. Keys are now always persisted across restarts.</span=
-><br><span>\ No newline at end of file</span><br><span>diff --git a/sample/=
-sample-config-files/client.conf b/sample/sample-config-files/client.conf</s=
-pan><br><span>index 15cb1b3..f51e017 100644</span><br><span>--- a/sample/sa=
-mple-config-files/client.conf</span><br><span>+++ b/sample/sample-config-fi=
-les/client.conf</span><br><span>@@ -62,7 +62,6 @@</span><br><span> ;group o=
-penvpn</span><br><span> </span><br><span> # Try to preserve some state acro=
-ss restarts.</span><br><span style=3D"color: hsl(0, 100%, 40%);">-persist-k=
-ey</span><br><span> persist-tun</span><br><span> </span><br><span> # If you=
- are connecting through an</span><br><span>diff --git a/sample/sample-confi=
-g-files/server.conf b/sample/sample-config-files/server.conf</span><br><spa=
-n>index d9345b6..009fe56 100644</span><br><span>--- a/sample/sample-config-=
-files/server.conf</span><br><span>+++ b/sample/sample-config-files/server.c=
-onf</span><br><span>@@ -274,11 +274,10 @@</span><br><span> ;user openvpn</s=
-pan><br><span> ;group openvpn</span><br><span> </span><br><span style=3D"co=
-lor: hsl(0, 100%, 40%);">-# The persist options will try to avoid</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+# The persist option will try=
- to avoid</span><br><span> # accessing certain resources on restart</span><=
-br><span> # that may no longer be accessible because</span><br><span> # of =
-the privilege downgrade.</span><br><span style=3D"color: hsl(0, 100%, 40%);=
-">-persist-key</span><br><span> persist-tun</span><br><span> </span><br><sp=
-an> # Output a short status file showing</span><br><span>diff --git a/sampl=
-e/sample-config-files/tls-home.conf b/sample/sample-config-files/tls-home.c=
-onf</span><br><span>index ff19d50..0e5c6eb 100644</span><br><span>--- a/sam=
-ple/sample-config-files/tls-home.conf</span><br><span>+++ b/sample/sample-c=
-onfig-files/tls-home.conf</span><br><span>@@ -73,7 +73,6 @@</span><br><span=
-> ; ping-restart 45</span><br><span> ; ping-timer-rem</span><br><span> ; pe=
-rsist-tun</span><br><span style=3D"color: hsl(0, 100%, 40%);">-; persist-ke=
-y</span><br><span> </span><br><span> # Verbosity level.</span><br><span> # =
-0 -- quiet except for fatal errors.</span><br><span>diff --git a/sample/sam=
-ple-config-files/tls-office.conf b/sample/sample-config-files/tls-office.co=
-nf</span><br><span>index 152e58a..2f306f6 100644</span><br><span>--- a/samp=
-le/sample-config-files/tls-office.conf</span><br><span>+++ b/sample/sample-=
-config-files/tls-office.conf</span><br><span>@@ -76,7 +76,6 @@</span><br><s=
-pan> ; ping-restart 45</span><br><span> ; ping-timer-rem</span><br><span> ;=
- persist-tun</span><br><span style=3D"color: hsl(0, 100%, 40%);">-; persist=
--key</span><br><span> </span><br><span> # Verbosity level.</span><br><span>=
- # 0 -- quiet except for fatal errors.</span><br><span>diff --git a/sample/=
-sample-windows/sample.ovpn b/sample/sample-windows/sample.ovpn</span><br><s=
-pan>index 51e3274..be24faa 100755</span><br><span>--- a/sample/sample-windo=
-ws/sample.ovpn</span><br><span>+++ b/sample/sample-windows/sample.ovpn</spa=
-n><br><span>@@ -89,7 +89,6 @@</span><br><span> ; ping-restart 60</span><br>=
-<span> ; ping-timer-rem</span><br><span> ; persist-tun</span><br><span styl=
-e=3D"color: hsl(0, 100%, 40%);">-; persist-key</span><br><span> ; resolv-re=
-try 86400</span><br><span> </span><br><span> # keep-alive ping</span><br><s=
-pan>diff --git a/src/openvpn/init.c b/src/openvpn/init.c</span><br><span>in=
-dex 52b4308..52b3931 100644</span><br><span>--- a/src/openvpn/init.c</span>=
-<br><span>+++ b/src/openvpn/init.c</span><br><span>@@ -3559,14 +3559,6 @@</=
-span><br><span>         {</span><br><span>             msg(M_WARN, &quot;WA=
-RNING: you are using user/group/chroot/setcon without persist-tun -- this m=
-ay cause restarts to fail&quot;);</span><br><span>         }</span><br><spa=
-n style=3D"color: hsl(0, 100%, 40%);">-        if (!o-&gt;persist_key</span=
-><br><span style=3D"color: hsl(0, 100%, 40%);">-#ifdef ENABLE_PKCS11</span>=
-<br><span style=3D"color: hsl(0, 100%, 40%);">-            &amp;&amp; !o-&g=
-t;pkcs11_id</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#endif</sp=
-an><br><span style=3D"color: hsl(0, 100%, 40%);">-            )</span><br><=
-span style=3D"color: hsl(0, 100%, 40%);">-        {</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-            msg(M_WARN, &quot;WARNING: you =
-are using user/group/chroot/setcon without persist-key -- this may cause re=
-starts to fail&quot;);</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
--        }</span><br><span>     }</span><br><span> </span><br><span>     if=
- (o-&gt;chroot_dir &amp;&amp; !(o-&gt;username &amp;&amp; o-&gt;groupname))=
-</span><br><span>@@ -3857,7 +3849,7 @@</span><br><span> do_close_free_key_s=
-chedule(struct context *c, bool free_ssl_ctx)</span><br><span> {</span><br>=
-<span>     /*</span><br><span style=3D"color: hsl(0, 100%, 40%);">-     * a=
-lways free the tls_auth/crypt key. If persist_key is true, the key will</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+     * always free the =
-tls_auth/crypt key. The key will</span><br><span>      * be reloaded from m=
-emory (pre-cached)</span><br><span>      */</span><br><span>     free_key_c=
-tx(&amp;c-&gt;c1.ks.tls_crypt_v2_server_key);</span><br><span>@@ -3866,7 +3=
-858,7 @@</span><br><span>     buf_clear(&amp;c-&gt;c1.ks.tls_crypt_v2_wkc);=
-</span><br><span>     free_buf(&amp;c-&gt;c1.ks.tls_crypt_v2_wkc);</span><b=
-r><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-    if (!(c-=
-&gt;sig-&gt;signal_received =3D=3D SIGUSR1 &amp;&amp; c-&gt;options.persist=
-_key))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (!(c-&=
-gt;sig-&gt;signal_received =3D=3D SIGUSR1))</span><br><span>     {</span><b=
-r><span>         key_schedule_free(&amp;c-&gt;c1.ks, free_ssl_ctx);</span><=
-br><span>     }</span><br><span>diff --git a/src/openvpn/openvpn.h b/src/op=
-envpn/openvpn.h</span><br><span>index dabc5be..df93b0e 100644</span><br><sp=
-an>--- a/src/openvpn/openvpn.h</span><br><span>+++ b/src/openvpn/openvpn.h<=
-/span><br><span>@@ -48,7 +48,7 @@</span><br><span> </span><br><span> /*</sp=
-an><br><span>  * Our global key schedules, packaged thusly</span><br><span =
-style=3D"color: hsl(0, 100%, 40%);">- * to facilitate --persist-key.</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+ * to facilitate key persi=
-stence.</span><br><span>  */</span><br><span> </span><br><span> struct key_=
-schedule</span><br><span>diff --git a/src/openvpn/options.c b/src/openvpn/o=
-ptions.c</span><br><span>index 2c79a1e..94a88f9 100644</span><br><span>--- =
-a/src/openvpn/options.c</span><br><span>+++ b/src/openvpn/options.c</span><=
-br><span>@@ -273,7 +273,6 @@</span><br><span>     &quot;--persist-tun   : K=
-eep tun/tap device open across SIGUSR1 or --ping-restart.\n&quot;</span><br=
-><span>     &quot;--persist-remote-ip : Keep remote IP address across SIGUS=
-R1 or --ping-restart.\n&quot;</span><br><span>     &quot;--persist-local-ip=
-  : Keep local IP address across SIGUSR1 or --ping-restart.\n&quot;</span><=
-br><span style=3D"color: hsl(0, 100%, 40%);">-    &quot;--persist-key   : D=
-on&#39;t re-read key files across SIGUSR1 or --ping-restart.\n&quot;</span>=
-<br><span> #if PASSTOS_CAPABILITY</span><br><span>     &quot;--passtos     =
-  : TOS passthrough (applies to IPv4 only).\n&quot;</span><br><span> #endif=
-</span><br><span>@@ -1857,7 +1856,6 @@</span><br><span>     SHOW_BOOL(persi=
-st_tun);</span><br><span>     SHOW_BOOL(persist_local_ip);</span><br><span>=
-     SHOW_BOOL(persist_remote_ip);</span><br><span style=3D"color: hsl(0, 1=
-00%, 40%);">-    SHOW_BOOL(persist_key);</span><br><span> </span><br><span>=
- #if PASSTOS_CAPABILITY</span><br><span>     SHOW_BOOL(passtos);</span><br>=
-<span>@@ -3240,18 +3238,16 @@</span><br><span>         ce-&gt;tls_crypt_v2_=
-file_inline =3D o-&gt;tls_crypt_v2_file_inline;</span><br><span>     }</spa=
-n><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-    /* P=
-re-cache tls-auth/crypt(-v2) key file if persist-key was specified and</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+    /* Pre-cache tls-aut=
-h/crypt(-v2) key file if</span><br><span>      * keys were not already embe=
-dded in the config file.</span><br><span>      */</span><br><span style=3D"=
-color: hsl(0, 100%, 40%);">-    if (o-&gt;persist_key)</span><br><span styl=
-e=3D"color: hsl(0, 100%, 40%);">-    {</span><br><span style=3D"color: hsl(=
-0, 100%, 40%);">-        connection_entry_preload_key(&amp;ce-&gt;tls_auth_=
-file,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-                =
-                     &amp;ce-&gt;tls_auth_file_inline, &amp;o-&gt;gc);</spa=
-n><br><span style=3D"color: hsl(0, 100%, 40%);">-        connection_entry_p=
-reload_key(&amp;ce-&gt;tls_crypt_file,</span><br><span style=3D"color: hsl(=
-0, 100%, 40%);">-                                     &amp;ce-&gt;tls_crypt=
-_file_inline, &amp;o-&gt;gc);</span><br><span style=3D"color: hsl(0, 100%, =
-40%);">-        connection_entry_preload_key(&amp;ce-&gt;tls_crypt_v2_file,=
-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-                     =
-                &amp;ce-&gt;tls_crypt_v2_file_inline, &amp;o-&gt;gc);</span=
-><br><span style=3D"color: hsl(0, 100%, 40%);">-    }</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    connection_entry_preload_key(&amp;ce-=
-&gt;tls_auth_file,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-                                &amp;ce-&gt;tls_auth_file_inline, &amp;o-&g=
-t;gc);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    connectio=
-n_entry_preload_key(&amp;ce-&gt;tls_crypt_file,</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+                                 &amp;ce-&gt;tl=
-s_crypt_file_inline, &amp;o-&gt;gc);</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+    connection_entry_preload_key(&amp;ce-&gt;tls_crypt_v2_=
-file,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+              =
-                   &amp;ce-&gt;tls_crypt_v2_file_inline, &amp;o-&gt;gc);</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> </sp=
-an><br><span>     if (!proto_is_udp(ce-&gt;proto) &amp;&amp; ce-&gt;explici=
-t_exit_notification)</span><br><span>     {</span><br><span>@@ -6963,7 +695=
-9,8 @@</span><br><span>     else if (streq(p[0], &quot;persist-key&quot;) &=
-amp;&amp; !p[1])</span><br><span>     {</span><br><span>         VERIFY_PER=
-MISSION(OPT_P_PERSIST);</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
->-        options-&gt;persist_key =3D true;</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+        msg(M_WARN, &quot;DEPRECATED: --persist-key=
- option ignored. &quot;</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+            &quot;Keys are now always persisted across restarts. &quot;=
-);</span><br><span>     }</span><br><span>     else if (streq(p[0], &quot;p=
-ersist-local-ip&quot;) &amp;&amp; !p[1])</span><br><span>     {</span><br><=
-span>diff --git a/src/openvpn/options.h b/src/openvpn/options.h</span><br><=
-span>index 85de887..2b37d1f 100644</span><br><span>--- a/src/openvpn/option=
-s.h</span><br><span>+++ b/src/openvpn/options.h</span><br><span>@@ -344,7 +=
-344,6 @@</span><br><span>     bool persist_tun;           /* Don&#39;t clos=
-e/reopen TUN/TAP dev on SIGUSR1 or PING_RESTART */</span><br><span>     boo=
-l persist_local_ip;      /* Don&#39;t re-resolve local address on SIGUSR1 o=
-r PING_RESTART */</span><br><span>     bool persist_remote_ip;     /* Don&#=
-39;t re-resolve remote address on SIGUSR1 or PING_RESTART */</span><br><spa=
-n style=3D"color: hsl(0, 100%, 40%);">-    bool persist_key;           /* D=
-on&#39;t re-read key files on SIGUSR1 or PING_RESTART */</span><br><span> <=
-/span><br><span> #if PASSTOS_CAPABILITY</span><br><span>     bool passtos;<=
-/span><br><span></span><br></pre><p>To view, visit <a href=3D"http://gerrit=
-.openvpn.net/c/openvpn/+/529?usp=3Demail">change 529</a>. To unsubscribe, o=
-r for help writing mail filters, visit <a href=3D"http://gerrit.openvpn.net=
-/settings">settings</a>.</p><div itemscope itemtype=3D"http://schema.org/Em=
-ailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.or=
-g/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/op=
-envpn/+/529?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/>=
-</div></div>
+space: pre-wrap;">Minor fix to process_ip_header<br><br>Removed if-guard ch=
+ecking if any feature is<br>enabled before performing per-feature check.<br=
+>It doesn&#39;t save us much but instead introduces<br>uneeded complexity.<=
+br><br>While at it, fixed a typo IMCP -&gt; ICMP for defined<br>PIPV6_ICMP_=
+NOHOST_CLIENT and PIPV6_ICMP_NOHOST_SERVER<br>macros.<br><br>Fixes: Trac ht=
+tps://community.openvpn.net/openvpn/ticket/269<br>Change-Id: I4b5e8357d872c=
+920efdb64632e9bce72cebee202<br>Signed-off-by: Gianmarco De Gregori &lt;gian=
+marco@...2726...&gt;<br>---<br>M src/openvpn/forward.c<br>M src/openvpn/for=
+ward.h<br>M src/openvpn/multi.c<br>3 files changed, 49 insertions(+), 61 de=
+letions(-)<br><br></pre><pre style=3D"font-family: monospace,monospace; whi=
+te-space: pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/openvpn refs/c=
+hanges/25/525/3</pre><pre style=3D"font-family: monospace,monospace; white-=
+space: pre-wrap;"><span>diff --git a/src/openvpn/forward.c b/src/openvpn/fo=
+rward.c</span><br><span>index 0443ca0..556c465 100644</span><br><span>--- a=
+/src/openvpn/forward.c</span><br><span>+++ b/src/openvpn/forward.c</span><b=
+r><span>@@ -1460,7 +1460,7 @@</span><br><span>          * us to examine the=
+ IP header (IPv4 or IPv6).</span><br><span>          */</span><br><span>   =
+      unsigned int flags =3D PIPV4_PASSTOS | PIP_MSSFIX | PIPV4_CLIENT_NAT<=
+/span><br><span style=3D"color: hsl(0, 100%, 40%);">-                      =
+       | PIPV6_IMCP_NOHOST_CLIENT;</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+                             | PIPV6_ICMP_NOHOST_CLIENT;</sp=
+an><br><span>         process_ip_header(c, flags, &amp;c-&gt;c2.buf);</span=
+><br><span> </span><br><span> #ifdef PACKET_TRUNCATION_CHECK</span><br><spa=
+n>@@ -1644,73 +1644,60 @@</span><br><span>     }</span><br><span>     if (!=
+c-&gt;options.block_ipv6)</span><br><span>     {</span><br><span style=3D"c=
+olor: hsl(0, 100%, 40%);">-        flags &amp;=3D ~(PIPV6_IMCP_NOHOST_CLIEN=
+T | PIPV6_IMCP_NOHOST_SERVER);</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+        flags &amp;=3D ~(PIPV6_ICMP_NOHOST_CLIENT | PIPV6_ICMP_N=
+OHOST_SERVER);</span><br><span>     }</span><br><span> </span><br><span>   =
+  if (buf-&gt;len &gt; 0)</span><br><span>     {</span><br><span style=3D"c=
+olor: hsl(0, 100%, 40%);">-        /*</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-         * The --passtos and --mssfix options require</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-         * us to examine th=
+e IPv4 header.</span><br><span style=3D"color: hsl(0, 100%, 40%);">-       =
+  */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">-        if (flags &amp; (PIP_MSSFIX</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-#if PASSTOS_CAPABILITY</=
+span><br><span style=3D"color: hsl(0, 100%, 40%);">-                     | =
+PIPV4_PASSTOS</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#endif</=
+span><br><span style=3D"color: hsl(0, 100%, 40%);">-                     | =
+PIPV4_CLIENT_NAT</span><br><span style=3D"color: hsl(0, 100%, 40%);">-     =
+                ))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+       struct buffer ipbuf =3D *buf;</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+        if (is_ipv4(TUNNEL_TYPE(c-&gt;c1.tuntap), &amp;ipb=
+uf))</span><br><span>         {</span><br><span style=3D"color: hsl(0, 100%=
+, 40%);">-            struct buffer ipbuf =3D *buf;</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-            if (is_ipv4(TUNNEL_TYPE(c-&gt;c=
+1.tuntap), &amp;ipbuf))</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>-            {</span><br><span> #if PASSTOS_CAPABILITY</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-                /* extract TOS from IP he=
+ader */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-              =
+  if (flags &amp; PIPV4_PASSTOS)</span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-                {</span><br><span style=3D"color: hsl(0, 100%, 4=
+0%);">-                    link_socket_extract_tos(c-&gt;c2.link_socket, &a=
+mp;ipbuf);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-           =
+     }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            /=
+* extract TOS from IP header */</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+            if (flags &amp; PIPV4_PASSTOS)</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+            {</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+                link_socket_extract_tos(c-&gt;=
+c2.link_socket, &amp;ipbuf);</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+            }</span><br><span> #endif</span><br><span> </span><br>=
+<span style=3D"color: hsl(0, 100%, 40%);">-                /* possibly alte=
+r the TCP MSS */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-     =
+           if (flags &amp; PIP_MSSFIX)</span><br><span style=3D"color: hsl(=
+0, 100%, 40%);">-                {</span><br><span style=3D"color: hsl(0, 1=
+00%, 40%);">-                    mss_fixup_ipv4(&amp;ipbuf, c-&gt;c2.frame.=
+mss_fix);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            =
+    }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span=
+ style=3D"color: hsl(0, 100%, 40%);">-                /* possibly do NAT on=
+ packet */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-           =
+     if ((flags &amp; PIPV4_CLIENT_NAT) &amp;&amp; c-&gt;options.client_nat=
+)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-                {</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-                    cons=
+t int direction =3D (flags &amp; PIP_OUTGOING) ? CN_INCOMING : CN_OUTGOING;=
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">-                    c=
+lient_nat_transform(c-&gt;options.client_nat, &amp;ipbuf, direction);</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-                }</span><br=
+><span style=3D"color: hsl(0, 100%, 40%);">-                /* possibly ext=
+ract a DHCP router message */</span><br><span style=3D"color: hsl(0, 100%, =
+40%);">-                if (flags &amp; PIPV4_EXTRACT_DHCP_ROUTER)</span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-                {</span><br><s=
+pan style=3D"color: hsl(0, 100%, 40%);">-                    const in_addr_=
+t dhcp_router =3D dhcp_extract_router_msg(&amp;ipbuf);</span><br><span styl=
+e=3D"color: hsl(0, 100%, 40%);">-                    if (dhcp_router)</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-                    {</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-                        rou=
+te_list_add_vpn_gateway(c-&gt;c1.route_list, c-&gt;c2.es, dhcp_router);</sp=
+an><br><span style=3D"color: hsl(0, 100%, 40%);">-                    }</sp=
+an><br><span style=3D"color: hsl(0, 100%, 40%);">-                }</span><=
+br><span style=3D"color: hsl(0, 100%, 40%);">-            }</span><br><span=
+ style=3D"color: hsl(0, 100%, 40%);">-            else if (is_ipv6(TUNNEL_T=
+YPE(c-&gt;c1.tuntap), &amp;ipbuf))</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+            /* possibly alter the TCP MSS */</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+            if (flags &amp; PIP_MSS=
+FIX)</span><br><span>             {</span><br><span style=3D"color: hsl(0, =
+100%, 40%);">-                /* possibly alter the TCP MSS */</span><br><s=
+pan style=3D"color: hsl(0, 100%, 40%);">-                if (flags &amp; PI=
+P_MSSFIX)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            =
+    {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-                =
+    mss_fixup_ipv6(&amp;ipbuf, c-&gt;c2.frame.mss_fix);</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-                }</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-                if (!(flags &amp; PIP_OUTGO=
+ING) &amp;&amp; (flags</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
+-                                                &amp;(PIPV6_IMCP_NOHOST_CL=
+IENT | PIPV6_IMCP_NOHOST_SERVER)))</span><br><span style=3D"color: hsl(0, 1=
+00%, 40%);">-                {</span><br><span style=3D"color: hsl(0, 100%,=
+ 40%);">-                    ipv6_send_icmp_unreachable(c, buf,</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-                                 =
+              (bool)(flags &amp; PIPV6_IMCP_NOHOST_CLIENT));</span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">-                    /* Drop the IPv6=
+ packet */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-           =
+         buf-&gt;len =3D 0;</span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">-                }</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+                m=
+ss_fixup_ipv4(&amp;ipbuf, c-&gt;c2.frame.mss_fix);</span><br><span>        =
+     }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+            /* possibly do NAT o=
+n packet */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        =
+    if ((flags &amp; PIPV4_CLIENT_NAT) &amp;&amp; c-&gt;options.client_nat)=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            {</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+                const int=
+ direction =3D (flags &amp; PIP_OUTGOING) ? CN_INCOMING : CN_OUTGOING;</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+                client_n=
+at_transform(c-&gt;options.client_nat, &amp;ipbuf, direction);</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+            }</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+            /* possibly extract a DHCP=
+ router message */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+           if (flags &amp; PIPV4_EXTRACT_DHCP_ROUTER)</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+            {</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+                const in_addr_t dhcp_router =3D=
+ dhcp_extract_router_msg(&amp;ipbuf);</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+                if (dhcp_router)</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+                {</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+                    route_list_add_vpn_gateway=
+(c-&gt;c1.route_list, c-&gt;c2.es, dhcp_router);</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+                }</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+            }</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+        }</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+        else if (is_ipv6(TUNNEL_TYPE(c-&gt;c1.tuntap), &amp;ipbu=
+f))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        {</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+            /* possibly al=
+ter the TCP MSS */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+           if (flags &amp; PIP_MSSFIX)</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+            {</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+                mss_fixup_ipv6(&amp;ipbuf, c-&gt;c2.frame.mss_=
+fix);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            }<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+            if (!(fl=
+ags &amp; PIP_OUTGOING) &amp;&amp; (flags</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+                                            &amp;(PIP=
+V6_ICMP_NOHOST_CLIENT | PIPV6_ICMP_NOHOST_SERVER)))</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+            {</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+                ipv6_send_icmp_unreachable(c, b=
+uf,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+                =
+                           (bool)(flags &amp; PIPV6_ICMP_NOHOST_CLIENT));</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+                /* Dr=
+op the IPv6 packet */</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+                buf-&gt;len =3D 0;</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+            }</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+</span><br><span>         }</span><br><span>     }</span><br><sp=
+an> }</span><br><span>diff --git a/src/openvpn/forward.h b/src/openvpn/forw=
+ard.h</span><br><span>index e19115e..bc00ba5 100644</span><br><span>--- a/s=
+rc/openvpn/forward.h</span><br><span>+++ b/src/openvpn/forward.h</span><br>=
+<span>@@ -297,8 +297,9 @@</span><br><span> #define PIP_OUTGOING            =
+        (1&lt;&lt;2)</span><br><span> #define PIPV4_EXTRACT_DHCP_ROUTER    =
+   (1&lt;&lt;3)</span><br><span> #define PIPV4_CLIENT_NAT                (1=
+&lt;&lt;4)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#define PIP=
+V6_IMCP_NOHOST_CLIENT        (1&lt;&lt;5)</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-#define PIPV6_IMCP_NOHOST_SERVER        (1&lt;&lt;6)</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+#define PIPV6_ICMP_NOH=
+OST_CLIENT        (1&lt;&lt;5)</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+#define PIPV6_ICMP_NOHOST_SERVER        (1&lt;&lt;6)</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> </span><br><s=
+pan> void process_ip_header(struct context *c, unsigned int flags, struct b=
+uffer *buf);</span><br><span> </span><br><span>diff --git a/src/openvpn/mul=
+ti.c b/src/openvpn/multi.c</span><br><span>index 4344126..712456c 100644</s=
+pan><br><span>--- a/src/openvpn/multi.c</span><br><span>+++ b/src/openvpn/m=
+ulti.c</span><br><span>@@ -3645,7 +3645,7 @@</span><br><span> </span><br><s=
+pan>     if (mbuf_extract_item(ms, &amp;item)) /* cleartext IP packet */</s=
+pan><br><span>     {</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
+       unsigned int pip_flags =3D PIPV4_PASSTOS | PIPV6_IMCP_NOHOST_SERVER;=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        unsigned in=
+t pip_flags =3D PIPV4_PASSTOS | PIPV6_ICMP_NOHOST_SERVER;</span><br><span> =
+</span><br><span>         set_prefix(item.instance);</span><br><span>      =
+   item.instance-&gt;context.c2.buf =3D item.buffer-&gt;buf;</span><br><spa=
+n></span><br></pre><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c=
+/openvpn/+/525?usp=3Demail">change 525</a>. To unsubscribe, or for help wri=
+ting mail filters, visit <a href=3D"http://gerrit.openvpn.net/settings">set=
+tings</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><d=
+iv itemscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction">=
+<link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/525?us=
+p=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I57f1c2ed42bd9dfd43577238749=
-a9b7f4c1419ff </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 529 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 4 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I4b5e8357d872c920efdb64632e9=
+bce72cebee202 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 525 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 3 </div>
 <div style=3D"display:none"> Gerrit-Owner: its_Giaan &lt;gianmarco@...2786...=
 ..&gt; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
 1...&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: ordex &lt;a@...2181...&gt; </=
+div>
 <div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
 .1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: its_Giaan &lt;gianmarco@...1665...=
 726...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
-41...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: ordex &lt;a@...2181...&gt; <=
+/div>
 <div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
 
 
---NzYsbZlhu2w=--
+--rfrDovFMthA=--
 
