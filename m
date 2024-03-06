@@ -1,16 +1,11 @@
-From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Wed, 6 Mar 2024 09:57:55 +0000
-In-Reply-To: <gerrit.1707835634000.I13ea6752c8d102eabcc579e391828c05d5322899@...2715...>
-References: <gerrit.1707835634000.I13ea6752c8d102eabcc579e391828c05d5322899@...2715...>
-Reply-To: gert@...1296..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, frank@...2641..., a@...2181...
-Message-ID: <65ff90cb50f82475061e2848cbe9bc99b3b7bc8f-EmailReviewComments-HTML@...2715...>
+From: Gert Doering <gert@...1296...>
+Date: Wed,  6 Mar 2024 11:41:50 +0100
+Message-ID: <20240306104150.23951-1-gert@...1296...>
+In-Reply-To: <gerrit.1708351044000.I57f1c2ed42bd9dfd43577238749a9b7f4c1419ff@...2715...>
+References: <gerrit.1708351044000.I57f1c2ed42bd9dfd43577238749a9b7f4c1419ff@...2715...>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="RgeK1yCnL8w="; charset=UTF-8
-Subject: [Openvpn-devel] [M] Change in openvpn[master]: t_client.sh: Allow
- to skip tests
+Subject: [Openvpn-devel] [PATCH v3] Persist-key: enable persist-key option
+ by default
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,176 +14,325 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: flichtenheld <frank@...2641...>
-Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---RgeK1yCnL8w=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+From: itsGiaan <gianmarcod95@...2047...>
 
-Attention is currently required from: flichtenheld, ordex, plaisthos.
+Change the default behavior of the OpenVPN configuration
+by enabling the persist-key option by default.
 
-cron2 has posted comments on this change. ( http://gerrit.openvpn.net/c/ope=
-nvpn/+/521?usp=3Demail )
+This means that all the keys will be kept in memory
+across restart.
 
-Change subject: t_client.sh: Allow to skip tests
-......................................................................
+Fixes: Trac #1405
+Change-Id: I57f1c2ed42bd9dfd43577238749a9b7f4c1419ff
+Signed-off-by: Gianmarco De Gregori <gianmarco@...2726...>
+Acked-by: Arne Schwabe <arne-openvpn@...1227...>
+---
 
+This change was reviewed on Gerrit and approved by at least one
+developer. I request to merge it to master.
 
-Patch Set 4: Code-Review-1
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/529
+This mail reflects revision 3 of this Change.
+Acked-by according to Gerrit (reflected above):
+Arne Schwabe <arne-openvpn@...1227...>
 
-(4 comments)
-
-Patchset:
-
-PS4:
-Took me longer than expected after v4, but I do have some more wishes... (t=
-hanks for bearing with me)
-
-
-File tests/Makefile.am:
-
-http://gerrit.openvpn.net/c/openvpn/+/521/comment/aabb9cc6_e1155271 :
-PS4, Line 45: 	unit_tests/openvpn/mock_msg.c unit_tests/openvpn/mock_msg.h \
-OK, so now I do better understand the -DNO_CMOCKA code in unit_tests/openvp=
-n/mock_msg.c - but I'm none the happier.  Unit test code is unit test code,=
- and shouldn't be used by something else (=3D so when trying to understand =
-code in unit_tests/ I don't really want to consider "oh, wait, this is also=
- used by some other piece of code").
-
-But I can't really can come up with a nice alternative that will not boil d=
-own to "just add another copy of `msg()` mocking into ntlm_support.c" (beca=
-use `crypto_load_provider()` needs it).
-
-
-File tests/t_client.rc-sample:
-
-http://gerrit.openvpn.net/c/openvpn/+/521/comment/7c7d3b68_b8417006 :
-PS4, Line 67: # SKIP_x            =3D "commands to execute before openvpn, =
-skip test on failure"
-TBH, I do not like `SKIP_x` because it just tells me "well, yes, skip this =
-test".
-
-I'd suggest to rename it to something like `SKIP_CONDITIONAL_x` or `PRE_TES=
-T_x` or so which better transports the message "ah, this is a command to ru=
-n, and depending on the outcome, things will be skipped".
-
-
-http://gerrit.openvpn.net/c/openvpn/+/521/comment/34ed3c96_6462fbf2 :
-PS4, Line 70: # CLEANUP_x         =3D "commands to execute after the test"
-this is a very welcome addition to the last options that I forgot to proper=
-ly document.  Thanks ;-)
-
-
-
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/521?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings
-
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: I13ea6752c8d102eabcc579e391828c05d5322899
-Gerrit-Change-Number: 521
-Gerrit-PatchSet: 4
-Gerrit-Owner: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: cron2 <gert@...1296...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-CC: ordex <a@...2181...>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Attention: ordex <a@...2181...>
-Gerrit-Comment-Date: Wed, 06 Mar 2024 09:57:55 +0000
-Gerrit-HasComments: Yes
-Gerrit-Has-Labels: Yes
-Gerrit-MessageType: comment
-
---RgeK1yCnL8w=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<p> Attention is currently required from: flichtenheld, ordex, plaisthos. <=
-/p>
-<p>Patch set 4:<span style=3D"border-radius: 3px; display: inline-block; ma=
-rgin: 0 2px; padding: 4px;background-color: #ffd4d4;">Code-Review -1</span>=
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/521?usp=3Demail">Vi=
-ew Change</a></p><p>4 comments:</p><ul style=3D"list-style: none; padding: =
-0;"><li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-=
-style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p =
-style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvp=
-n/+/521?tab=3Dcomments">Patch Set #4:</a> </p><p style=3D"white-space: pre-=
-wrap; word-wrap: break-word;">Took me longer than expected after v4, but I =
-do have some more wishes... (thanks for bearing with me)</p></li></ul></li>=
-<li style=3D"margin: 0; padding: 0;"><p>File tests/Makefile.am:</p><ul styl=
-e=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 =
-16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.ne=
-t/c/openvpn/+/521/comment/aabb9cc6_e1155271">Patch Set #4, Line 45:</a> <co=
-de style=3D"font-family:monospace,monospace">	unit_tests/openvpn/mock_msg.c=
- unit_tests/openvpn/mock_msg.h \</code></p><p style=3D"white-space: pre-wra=
-p; word-wrap: break-word;">OK, so now I do better understand the -DNO_CMOCK=
-A code in unit_tests/openvpn/mock_msg.c - but I&#39;m none the happier.  Un=
-it test code is unit test code, and shouldn&#39;t be used by something else=
- (=3D so when trying to understand code in unit_tests/ I don&#39;t really w=
-ant to consider &quot;oh, wait, this is also used by some other piece of co=
-de&quot;).</p><p style=3D"white-space: pre-wrap; word-wrap: break-word;">Bu=
-t I can&#39;t really can come up with a nice alternative that will not boil=
- down to &quot;just add another copy of `msg()` mocking into ntlm_support.c=
-&quot; (because `crypto_load_provider()` needs it).</p></li></ul></li><li s=
-tyle=3D"margin: 0; padding: 0;"><p>File tests/t_client.rc-sample:</p><ul st=
-yle=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 =
-0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.=
-net/c/openvpn/+/521/comment/7c7d3b68_b8417006">Patch Set #4, Line 67:</a> <=
-code style=3D"font-family:monospace,monospace"># SKIP_x            =3D &quo=
-t;commands to execute before openvpn, skip test on failure&quot;</code></p>=
-<p style=3D"white-space: pre-wrap; word-wrap: break-word;">TBH, I do not li=
-ke `SKIP_x` because it just tells me &quot;well, yes, skip this test&quot;.=
-</p><p style=3D"white-space: pre-wrap; word-wrap: break-word;">I&#39;d sugg=
-est to rename it to something like `SKIP_CONDITIONAL_x` or `PRE_TEST_x` or =
-so which better transports the message &quot;ah, this is a command to run, =
-and depending on the outcome, things will be skipped&quot;.</p></li><li sty=
-le=3D"margin: 0; padding: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a =
-href=3D"http://gerrit.openvpn.net/c/openvpn/+/521/comment/34ed3c96_6462fbf2=
-">Patch Set #4, Line 70:</a> <code style=3D"font-family:monospace,monospace=
-"># CLEANUP_x         =3D &quot;commands to execute after the test&quot;</c=
-ode></p><p style=3D"white-space: pre-wrap; word-wrap: break-word;">this is =
-a very welcome addition to the last options that I forgot to properly docum=
-ent.  Thanks ;-)</p></li></ul></li></ul><p>To view, visit <a href=3D"http:/=
-/gerrit.openvpn.net/c/openvpn/+/521?usp=3Demail">change 521</a>. To unsubsc=
-ribe, or for help writing mail filters, visit <a href=3D"http://gerrit.open=
-vpn.net/settings">settings</a>.</p><div itemscope itemtype=3D"http://schema=
-.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://sc=
-hema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.n=
-et/c/openvpn/+/521?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Ch=
-ange"/></div></div>
-
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I13ea6752c8d102eabcc579e3918=
-28c05d5322899 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 521 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 4 </div>
-<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
-.&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
- </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: ordex &lt;a@...2181...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
-41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: ordex &lt;a@...2181...&gt; <=
-/div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Wed, 06 Mar 2024 09:57:55=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
-
-
---RgeK1yCnL8w=--
+        
+diff --git a/Changes.rst b/Changes.rst
+index 58cb3db..4cded98 100644
+--- a/Changes.rst
++++ b/Changes.rst
+@@ -20,6 +20,8 @@
+     When configured to authenticate with NTLMv1 (``ntlm`` keyword in
+     ``--http-proxy``) OpenVPN will try NTLMv2 instead.
+ 
++``persist-key`` option has been enabled by default.
++    All the keys will be kept in memory across restart.
+ 
+ Overview of changes in 2.6
+ ==========================
+diff --git a/doc/man-sections/connection-profiles.rst b/doc/man-sections/connection-profiles.rst
+index c8816e1..520bbef 100644
+--- a/doc/man-sections/connection-profiles.rst
++++ b/doc/man-sections/connection-profiles.rst
+@@ -39,7 +39,6 @@
+    http-proxy 192.168.0.8 8080
+    </connection>
+ 
+-   persist-key
+    persist-tun
+    pkcs12 client.p12
+    remote-cert-tls server
+diff --git a/doc/man-sections/generic-options.rst b/doc/man-sections/generic-options.rst
+index 95e4ca2..4e2029a 100644
+--- a/doc/man-sections/generic-options.rst
++++ b/doc/man-sections/generic-options.rst
+@@ -302,17 +302,6 @@
+   Change process priority after initialization (``n`` greater than 0 is
+   lower priority, ``n`` less than zero is higher priority).
+ 
+---persist-key
+-  Don't re-read key files across :code:`SIGUSR1` or ``--ping-restart``.
+-
+-  This option can be combined with ``--user`` to allow restarts
+-  triggered by the :code:`SIGUSR1` signal. Normally if you drop root
+-  privileges in OpenVPN, the daemon cannot be restarted since it will now
+-  be unable to re-read protected key files.
+-
+-  This option solves the problem by persisting keys across :code:`SIGUSR1`
+-  resets, so they don't need to be re-read.
+-
+ --providers providers
+   Load the list of (OpenSSL) providers. This is mainly useful for using an
+   external provider for key management like tpm2-openssl or to load the
+@@ -402,7 +391,7 @@
+ 
+   Like with chroot, complications can result when scripts or restarts are
+   executed after the setcon operation, which is why you should really
+-  consider using the ``--persist-key`` and ``--persist-tun`` options.
++  consider using the ``--persist-tun`` option.
+ 
+ --status args
+   Write operational status to ``file`` every ``n`` seconds. ``n`` defaults
+diff --git a/doc/man-sections/link-options.rst b/doc/man-sections/link-options.rst
+index ca26bfe..ca192c3 100644
+--- a/doc/man-sections/link-options.rst
++++ b/doc/man-sections/link-options.rst
+@@ -283,7 +283,7 @@
+   See the signals section below for more information on :code:`SIGUSR1`.
+ 
+   Note that the behavior of ``SIGUSR1`` can be modified by the
+-  ``--persist-tun``, ``--persist-key``, ``--persist-local-ip`` and
++  ``--persist-tun``, ``--persist-local-ip`` and
+   ``--persist-remote-ip`` options.
+ 
+   Also note that ``--ping-exit`` and ``--ping-restart`` are mutually
+diff --git a/doc/man-sections/server-options.rst b/doc/man-sections/server-options.rst
+index 98f5340..0632e31 100644
+--- a/doc/man-sections/server-options.rst
++++ b/doc/man-sections/server-options.rst
+@@ -452,7 +452,7 @@
+   ``--route``, ``--route-gateway``, ``--route-delay``,
+   ``--redirect-gateway``, ``--ip-win32``, ``--dhcp-option``, ``--dns``,
+   ``--inactive``, ``--ping``, ``--ping-exit``, ``--ping-restart``,
+-  ``--setenv``, ``--auth-token``, ``--persist-key``, ``--persist-tun``,
++  ``--setenv``, ``--auth-token``, ``--persist-tun``,
+   ``--echo``, ``--comp-lzo``, ``--socket-flags``, ``--sndbuf``,
+   ``--rcvbuf``, ``--session-timeout``
+ 
+diff --git a/doc/man-sections/signals.rst b/doc/man-sections/signals.rst
+index 63611b3..01e8e5b 100644
+--- a/doc/man-sections/signals.rst
++++ b/doc/man-sections/signals.rst
+@@ -10,9 +10,8 @@
+     Like :code:`SIGHUP``, except don't re-read configuration file, and
+     possibly don't close and reopen TUN/TAP device, re-read key files,
+     preserve local IP address/port, or preserve most recently authenticated
+-    remote IP address/port based on ``--persist-tun``, ``--persist-key``,
+-    ``--persist-local-ip`` and ``--persist-remote-ip`` options respectively
+-    (see above).
++    remote IP address/port based on ``--persist-tun``, ``--persist-local-ip``
++    and ``--persist-remote-ip`` options respectively (see above).
+ 
+     This signal may also be internally generated by a timeout condition,
+     governed by the ``--ping-restart`` option.
+diff --git a/doc/man-sections/unsupported-options.rst b/doc/man-sections/unsupported-options.rst
+index a0c1232..11467ca 100644
+--- a/doc/man-sections/unsupported-options.rst
++++ b/doc/man-sections/unsupported-options.rst
+@@ -42,3 +42,6 @@
+ 
+ --prng
+   Removed in OpenVPN 2.6.  We now always use the PRNG of the SSL library.
++
++--persist-key
++  Ignored since OpenVPN 2.7. Keys are now always persisted across restarts.
+\ No newline at end of file
+diff --git a/sample/sample-config-files/client.conf b/sample/sample-config-files/client.conf
+index 15cb1b3..f51e017 100644
+--- a/sample/sample-config-files/client.conf
++++ b/sample/sample-config-files/client.conf
+@@ -62,7 +62,6 @@
+ ;group openvpn
+ 
+ # Try to preserve some state across restarts.
+-persist-key
+ persist-tun
+ 
+ # If you are connecting through an
+diff --git a/sample/sample-config-files/server.conf b/sample/sample-config-files/server.conf
+index d9345b6..009fe56 100644
+--- a/sample/sample-config-files/server.conf
++++ b/sample/sample-config-files/server.conf
+@@ -274,11 +274,10 @@
+ ;user openvpn
+ ;group openvpn
+ 
+-# The persist options will try to avoid
++# The persist option will try to avoid
+ # accessing certain resources on restart
+ # that may no longer be accessible because
+ # of the privilege downgrade.
+-persist-key
+ persist-tun
+ 
+ # Output a short status file showing
+diff --git a/sample/sample-config-files/tls-home.conf b/sample/sample-config-files/tls-home.conf
+index ff19d50..0e5c6eb 100644
+--- a/sample/sample-config-files/tls-home.conf
++++ b/sample/sample-config-files/tls-home.conf
+@@ -73,7 +73,6 @@
+ ; ping-restart 45
+ ; ping-timer-rem
+ ; persist-tun
+-; persist-key
+ 
+ # Verbosity level.
+ # 0 -- quiet except for fatal errors.
+diff --git a/sample/sample-config-files/tls-office.conf b/sample/sample-config-files/tls-office.conf
+index 152e58a..2f306f6 100644
+--- a/sample/sample-config-files/tls-office.conf
++++ b/sample/sample-config-files/tls-office.conf
+@@ -76,7 +76,6 @@
+ ; ping-restart 45
+ ; ping-timer-rem
+ ; persist-tun
+-; persist-key
+ 
+ # Verbosity level.
+ # 0 -- quiet except for fatal errors.
+diff --git a/sample/sample-windows/sample.ovpn b/sample/sample-windows/sample.ovpn
+index 51e3274..be24faa 100755
+--- a/sample/sample-windows/sample.ovpn
++++ b/sample/sample-windows/sample.ovpn
+@@ -89,7 +89,6 @@
+ ; ping-restart 60
+ ; ping-timer-rem
+ ; persist-tun
+-; persist-key
+ ; resolv-retry 86400
+ 
+ # keep-alive ping
+diff --git a/src/openvpn/init.c b/src/openvpn/init.c
+index 52b4308..52b3931 100644
+--- a/src/openvpn/init.c
++++ b/src/openvpn/init.c
+@@ -3559,14 +3559,6 @@
+         {
+             msg(M_WARN, "WARNING: you are using user/group/chroot/setcon without persist-tun -- this may cause restarts to fail");
+         }
+-        if (!o->persist_key
+-#ifdef ENABLE_PKCS11
+-            && !o->pkcs11_id
+-#endif
+-            )
+-        {
+-            msg(M_WARN, "WARNING: you are using user/group/chroot/setcon without persist-key -- this may cause restarts to fail");
+-        }
+     }
+ 
+     if (o->chroot_dir && !(o->username && o->groupname))
+@@ -3857,7 +3849,7 @@
+ do_close_free_key_schedule(struct context *c, bool free_ssl_ctx)
+ {
+     /*
+-     * always free the tls_auth/crypt key. If persist_key is true, the key will
++     * always free the tls_auth/crypt key. The key will
+      * be reloaded from memory (pre-cached)
+      */
+     free_key_ctx(&c->c1.ks.tls_crypt_v2_server_key);
+@@ -3866,7 +3858,7 @@
+     buf_clear(&c->c1.ks.tls_crypt_v2_wkc);
+     free_buf(&c->c1.ks.tls_crypt_v2_wkc);
+ 
+-    if (!(c->sig->signal_received == SIGUSR1 && c->options.persist_key))
++    if (!(c->sig->signal_received == SIGUSR1))
+     {
+         key_schedule_free(&c->c1.ks, free_ssl_ctx);
+     }
+diff --git a/src/openvpn/openvpn.h b/src/openvpn/openvpn.h
+index dabc5be..df93b0e 100644
+--- a/src/openvpn/openvpn.h
++++ b/src/openvpn/openvpn.h
+@@ -48,7 +48,7 @@
+ 
+ /*
+  * Our global key schedules, packaged thusly
+- * to facilitate --persist-key.
++ * to facilitate key persistence.
+  */
+ 
+ struct key_schedule
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index 2c79a1e..94a88f9 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -273,7 +273,6 @@
+     "--persist-tun   : Keep tun/tap device open across SIGUSR1 or --ping-restart.\n"
+     "--persist-remote-ip : Keep remote IP address across SIGUSR1 or --ping-restart.\n"
+     "--persist-local-ip  : Keep local IP address across SIGUSR1 or --ping-restart.\n"
+-    "--persist-key   : Don't re-read key files across SIGUSR1 or --ping-restart.\n"
+ #if PASSTOS_CAPABILITY
+     "--passtos       : TOS passthrough (applies to IPv4 only).\n"
+ #endif
+@@ -1857,7 +1856,6 @@
+     SHOW_BOOL(persist_tun);
+     SHOW_BOOL(persist_local_ip);
+     SHOW_BOOL(persist_remote_ip);
+-    SHOW_BOOL(persist_key);
+ 
+ #if PASSTOS_CAPABILITY
+     SHOW_BOOL(passtos);
+@@ -3240,18 +3238,16 @@
+         ce->tls_crypt_v2_file_inline = o->tls_crypt_v2_file_inline;
+     }
+ 
+-    /* Pre-cache tls-auth/crypt(-v2) key file if persist-key was specified and
++    /* Pre-cache tls-auth/crypt(-v2) key file if
+      * keys were not already embedded in the config file.
+      */
+-    if (o->persist_key)
+-    {
+-        connection_entry_preload_key(&ce->tls_auth_file,
+-                                     &ce->tls_auth_file_inline, &o->gc);
+-        connection_entry_preload_key(&ce->tls_crypt_file,
+-                                     &ce->tls_crypt_file_inline, &o->gc);
+-        connection_entry_preload_key(&ce->tls_crypt_v2_file,
+-                                     &ce->tls_crypt_v2_file_inline, &o->gc);
+-    }
++    connection_entry_preload_key(&ce->tls_auth_file,
++                                 &ce->tls_auth_file_inline, &o->gc);
++    connection_entry_preload_key(&ce->tls_crypt_file,
++                                 &ce->tls_crypt_file_inline, &o->gc);
++    connection_entry_preload_key(&ce->tls_crypt_v2_file,
++                                 &ce->tls_crypt_v2_file_inline, &o->gc);
++
+ 
+     if (!proto_is_udp(ce->proto) && ce->explicit_exit_notification)
+     {
+@@ -6963,7 +6959,8 @@
+     else if (streq(p[0], "persist-key") && !p[1])
+     {
+         VERIFY_PERMISSION(OPT_P_PERSIST);
+-        options->persist_key = true;
++        msg(M_WARN, "DEPRECATED: --persist-key option ignored. "
++            "Keys are now always persisted across restarts. ");
+     }
+     else if (streq(p[0], "persist-local-ip") && !p[1])
+     {
+diff --git a/src/openvpn/options.h b/src/openvpn/options.h
+index 85de887..2b37d1f 100644
+--- a/src/openvpn/options.h
++++ b/src/openvpn/options.h
+@@ -344,7 +344,6 @@
+     bool persist_tun;           /* Don't close/reopen TUN/TAP dev on SIGUSR1 or PING_RESTART */
+     bool persist_local_ip;      /* Don't re-resolve local address on SIGUSR1 or PING_RESTART */
+     bool persist_remote_ip;     /* Don't re-resolve remote address on SIGUSR1 or PING_RESTART */
+-    bool persist_key;           /* Don't re-read key files on SIGUSR1 or PING_RESTART */
+ 
+ #if PASSTOS_CAPABILITY
+     bool passtos;
 
