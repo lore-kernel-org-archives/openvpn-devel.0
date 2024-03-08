@@ -1,14 +1,14 @@
 From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Fri, 8 Mar 2024 13:09:26 +0000
+Date: Fri, 8 Mar 2024 13:09:28 +0000
 In-Reply-To: <gerrit.1709557301000.If9cb7d66f079fe1c87fcb5b4e59bc887533d77fa@...2715...>
 References: <gerrit.1709557301000.If9cb7d66f079fe1c87fcb5b4e59bc887533d77fa@...2715...>
 Reply-To: gert@...1296..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <53a8b7f9f21318a50e0b8e940231491e0ecccf36-EmailReplacePatchSet-HTML@...2715...>
+Message-ID: <53a8b7f9f21318a50e0b8e940231491e0ecccf36-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="DH0nM1S5ixs="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="5lXw6UNIUrY="; charset=UTF-8
 Subject: [Openvpn-devel] [S] Change in openvpn[master]: gerrit-send-mail:
  add missing Signed-off-by
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -19,19 +19,15 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: flichtenheld <frank@...2641...>, plaisthos <arne-openvpn@...1227...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: flichtenheld <frank@...2641...>
+Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---DH0nM1S5ixs=
+--5lXw6UNIUrY=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-cron2 has uploaded a new patch set (#2) to the change originally created by=
- flichtenheld. ( http://gerrit.openvpn.net/c/openvpn/+/530?usp=3Demail )
-
-The following approvals got outdated and were removed:
-Code-Review+2 by cron2
-
+cron2 has submitted this change. ( http://gerrit.openvpn.net/c/openvpn/+/53=
+0?usp=3Demail )
 
 Change subject: gerrit-send-mail: add missing Signed-off-by
 ......................................................................
@@ -54,7 +50,7 @@ M dev-tools/gerrit-send-mail.py
 1 file changed, 13 insertions(+), 0 deletions(-)
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/30/530/2
+
 
 diff --git a/dev-tools/gerrit-send-mail.py b/dev-tools/gerrit-send-mail.py
 index 67a2cf1..10305e2 100755
@@ -128,33 +124,30 @@ Gerrit-Owner: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: cron2 <gert@...1296...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-MessageType: newpatchset
+Gerrit-MessageType: merged
 
---DH0nM1S5ixs=
+--5lXw6UNIUrY=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p>cron2 <strong>uploaded patch set #2</strong> to the change originally cr=
-eated by flichtenheld.</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn=
-/+/530?usp=3Demail">View Change</a></p><p>The following approvals got outda=
-ted and were removed:
-Code-Review+2 by cron2</p><pre style=3D"font-family: monospace,monospace; w=
-hite-space: pre-wrap;">gerrit-send-mail: add missing Signed-off-by<br><br>O=
-ur development documentation says we add this<br>automatically when it is m=
-issing. So let&#39;s do that<br>here as well.<br><br>Change-Id: If9cb7d66f0=
-79fe1c87fcb5b4e59bc887533d77fa<br>Signed-off-by: Frank Lichtenheld &lt;fran=
-k@...2641...&gt;<br>Acked-by: Gert Doering &lt;gert@...1296...&gt;<br>Messa=
-ge-Id: &lt;20240308120557.9065-1-gert@...1296...&gt;<br>URL: https://www.ma=
-il-archive.com/openvpn-devel@lists.sourceforge.net/msg28362.html<br>Signed-=
-off-by: Gert Doering &lt;gert@...1296...&gt;<br>---<br>M dev-tools/gerrit-s=
-end-mail.py<br>1 file changed, 13 insertions(+), 0 deletions(-)<br><br></pr=
-e><pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;">g=
-it pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/30/530/2</pre><=
-pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><spa=
-n>diff --git a/dev-tools/gerrit-send-mail.py b/dev-tools/gerrit-send-mail.p=
-y</span><br><span>index 67a2cf1..10305e2 100755</span><br><span>--- a/dev-t=
-ools/gerrit-send-mail.py</span><br><span>+++ b/dev-tools/gerrit-send-mail.p=
-y</span><br><span>@@ -50,6 +50,12 @@</span><br><span>                 ack =
+<p>cron2 <strong>submitted</strong> this change.</p><p><a href=3D"http://ge=
+rrit.openvpn.net/c/openvpn/+/530?usp=3Demail">View Change</a></p><div style=
+=3D"white-space:pre-wrap"></div><pre style=3D"font-family: monospace,monosp=
+ace; white-space: pre-wrap;">gerrit-send-mail: add missing Signed-off-by<br=
+><br>Our development documentation says we add this<br>automatically when i=
+t is missing. So let&#39;s do that<br>here as well.<br><br>Change-Id: If9cb=
+7d66f079fe1c87fcb5b4e59bc887533d77fa<br>Signed-off-by: Frank Lichtenheld &l=
+t;frank@...2641...&gt;<br>Acked-by: Gert Doering &lt;gert@...1296...&gt;<br=
+>Message-Id: &lt;20240308120557.9065-1-gert@...1296...&gt;<br>URL: https://=
+www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg28362.html<br>S=
+igned-off-by: Gert Doering &lt;gert@...1296...&gt;<br>---<br>M dev-tools/ge=
+rrit-send-mail.py<br>1 file changed, 13 insertions(+), 0 deletions(-)<br><b=
+r></pre>
+<pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><sp=
+an>diff --git a/dev-tools/gerrit-send-mail.py b/dev-tools/gerrit-send-mail.=
+py</span><br><span>index 67a2cf1..10305e2 100755</span><br><span>--- a/dev-=
+tools/gerrit-send-mail.py</span><br><span>+++ b/dev-tools/gerrit-send-mail.=
+py</span><br><span>@@ -50,6 +50,12 @@</span><br><span>                 ack =
 =3D f&quot;{reviewer_name} &lt;{reviewer_mail}&gt;&quot;</span><br><span>  =
                print(f&quot;Acked-by: {ack}&quot;)</span><br><span>        =
          acked_by.append(ack)</span><br><span style=3D"color: hsl(120, 100%=
@@ -225,8 +218,8 @@ bc887533d77fa </div>
 .1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
+<div style=3D"display:none"> Gerrit-MessageType: merged </div>
 
 
---DH0nM1S5ixs=--
+--5lXw6UNIUrY=--
 
