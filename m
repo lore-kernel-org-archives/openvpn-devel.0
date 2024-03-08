@@ -1,11 +1,15 @@
-From: Gert Doering <gert@...1296...>
-Date: Fri,  8 Mar 2024 13:05:57 +0100
-Message-ID: <20240308120557.9065-1-gert@...1296...>
-In-Reply-To: <gerrit.1709557301000.If9cb7d66f079fe1c87fcb5b4e59bc887533d77fa@...2715...>
-References: <gerrit.1709557301000.If9cb7d66f079fe1c87fcb5b4e59bc887533d77fa@...2715...>
+Date: Fri, 8 Mar 2024 13:10:27 +0100
+From: Frank Lichtenheld <frank@...2641...>
+Message-ID: <ZesAM4x4qkL01WzM@...2685...>
+References: <CAEeEfvzkhp_FQ8cnOZcASiVbDN8=+Gw_2sV5SNonL5x7OYb1jA@...278...>
+ <892bc3fa-b752-b959-1ea4-19b106c0915c@...1227...>
+ <CAEeEfvyw2AKiKV1DW2mPA8C332pK7nroA9=BtpqEND2TPGmFog@...278...>
+ <ffffcce0-1c0b-cd4e-95c5-b17d523cbf30@...2108...>
+ <ZehuqZx1dir/Q8p2@...2685...>
+ <CAEeEfvz7gZzhW0JDAE96H_C_2UGa_=Roa6nyWtn1AxQOME2Ysg@...278...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v1] gerrit-send-mail: add missing
- Signed-off-by
+In-Reply-To: <CAEeEfvz7gZzhW0JDAE96H_C_2UGa_=Roa6nyWtn1AxQOME2Ysg@...278...>
+Subject: Re: [Openvpn-devel] [PATCH OpenVPN3] Add 'pull' to ignored options
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,84 +18,25 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+Content-Disposition: inline
+To: Merten Fermont <merten.fermont@...277...>
+Cc: David Sommerseth <dazo+openvpn@...2108...>, openvpn-devel@lists.sourceforge.net
 
-From: Frank Lichtenheld <frank@...2641...>
+On Fri, Mar 08, 2024 at 10:47:27AM +0100, Merten Fermont wrote:
+> Hi Frank,
+> 
+> Arne has indeed applied a fix based on this patch.
+> 
+> However, it looks like the case from this issue is not completely solved:
+> https://github.com/OpenVPN/openvpn3/issues/277
+> If you have options "client" and "pull" but no "tls-client" in the config,
+> the "pull" option will not be touched.
 
-Our development documentation says we add this
-automatically when it is missing. So let's do that
-here as well.
+True, due to short-circuit logic. I will prepare a fix.
 
-Change-Id: If9cb7d66f079fe1c87fcb5b4e59bc887533d77fa
-Signed-off-by: Frank Lichtenheld <frank@...2641...>
-Acked-by: Gert Doering <gert@...1296...>
----
-
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to master.
-
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/530
-This mail reflects revision 1 of this Change.
-Acked-by according to Gerrit (reflected above):
-Gert Doering <gert@...1296...>
-
-        
-diff --git a/dev-tools/gerrit-send-mail.py b/dev-tools/gerrit-send-mail.py
-index 67a2cf1..10305e2 100755
---- a/dev-tools/gerrit-send-mail.py
-+++ b/dev-tools/gerrit-send-mail.py
-@@ -50,6 +50,12 @@
-                 ack = f"{reviewer_name} <{reviewer_mail}>"
-                 print(f"Acked-by: {ack}")
-                 acked_by.append(ack)
-+    # construct Signed-off-by in case it is missing
-+    owner = json_data["owner"]
-+    owner_name = owner.get("display_name", owner["name"])
-+    owner_mail = owner.get("email", owner["name"])
-+    sign_off = f"{owner_name} <{owner_mail}>"
-+    print(f"Signed-off-by: {sign_off}")
-     change_id = json_data["change_id"]
-     # assumes that the created date in Gerrit is in UTC
-     utc_stamp = (
-@@ -67,6 +73,7 @@
-         "target": json_data["branch"],
-         "msg_id": msg_id,
-         "acked_by": acked_by,
-+        "sign_off": sign_off,
-     }
- 
- 
-@@ -81,10 +88,14 @@
- 
- def apply_patch_mods(patch_text, details, args):
-     comment_start = patch_text.index("\n---\n") + len("\n---\n")
-+    signed_off_text = ""
-+    signed_off_comment = ""
-     try:
-         signed_off_start = patch_text.rindex("\nSigned-off-by: ")
-         signed_off_end = patch_text.index("\n", signed_off_start + 1) + 1
-     except ValueError:  # Signed-off missing
-+        signed_off_text = f"Signed-off-by: {details['sign_off']}\n"
-+        signed_off_comment = "\nSigned-off-by line for the author was added as per our policy.\n"
-         signed_off_end = patch_text.index("\n---\n") + 1
-     assert comment_start > signed_off_end
-     acked_by_text = ""
-@@ -94,6 +105,7 @@
-         acked_by_names += f"{ack}\n"
-     patch_text_mod = (
-         patch_text[:signed_off_end]
-+        + signed_off_text
-         + acked_by_text
-         + patch_text[signed_off_end:comment_start]
-         + f"""
-@@ -102,6 +114,7 @@
- 
- Gerrit URL: {args.url}/c/{details["project"]}/+/{args.changeid}
- This mail reflects revision {details["revision"]} of this Change.
-+{signed_off_comment}
- Acked-by according to Gerrit (reflected above):
- {acked_by_names}
-         """
+Regards,
+-- 
+  Frank Lichtenheld
 
