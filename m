@@ -1,15 +1,10 @@
-Date: Fri, 8 Mar 2024 13:10:27 +0100
-From: Frank Lichtenheld <frank@...2641...>
-Message-ID: <ZesAM4x4qkL01WzM@...2685...>
-References: <CAEeEfvzkhp_FQ8cnOZcASiVbDN8=+Gw_2sV5SNonL5x7OYb1jA@...278...>
- <892bc3fa-b752-b959-1ea4-19b106c0915c@...1227...>
- <CAEeEfvyw2AKiKV1DW2mPA8C332pK7nroA9=BtpqEND2TPGmFog@...278...>
- <ffffcce0-1c0b-cd4e-95c5-b17d523cbf30@...2108...>
- <ZehuqZx1dir/Q8p2@...2685...>
- <CAEeEfvz7gZzhW0JDAE96H_C_2UGa_=Roa6nyWtn1AxQOME2Ysg@...278...>
-MIME-Version: 1.0
-In-Reply-To: <CAEeEfvz7gZzhW0JDAE96H_C_2UGa_=Roa6nyWtn1AxQOME2Ysg@...278...>
-Subject: Re: [Openvpn-devel] [PATCH OpenVPN3] Add 'pull' to ignored options
+Date: Fri, 8 Mar 2024 14:09:02 +0100 (CET)
+Message-Id: <202403081309.428D92ox028862@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <20240308120557.9065-1-gert@...1296...>
+References: <20240308120557.9065-1-gert@...1296...>
+Subject: [Openvpn-devel] [PATCH applied] Re: gerrit-send-mail: add missing
+ Signed-off-by
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,25 +13,29 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-To: Merten Fermont <merten.fermont@...277...>
-Cc: David Sommerseth <dazo+openvpn@...2108...>, openvpn-devel@lists.sourceforge.net
+To: Frank Lichtenheld <frank@...2641...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-On Fri, Mar 08, 2024 at 10:47:27AM +0100, Merten Fermont wrote:
-> Hi Frank,
-> 
-> Arne has indeed applied a fix based on this patch.
-> 
-> However, it looks like the case from this issue is not completely solved:
-> https://github.com/OpenVPN/openvpn3/issues/277
-> If you have options "client" and "pull" but no "tls-client" in the config,
-> the "pull" option will not be touched.
+Your patch has been applied to the master branch.
 
-True, due to short-circuit logic. I will prepare a fix.
+commit bea088cf8ae3382aeed420da2a39f2a9f52df4cd
+Author: Frank Lichtenheld
+Date:   Fri Mar 8 13:05:57 2024 +0100
 
-Regards,
--- 
-  Frank Lichtenheld
+     gerrit-send-mail: add missing Signed-off-by
+
+     Signed-off-by: Frank Lichtenheld <frank@...2641...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <20240308120557.9065-1-gert@...1296...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg28362.html
+     Signed-off-by: Gert Doering <gert@...1296...>
+
+
+--
+kind regards,
+
+Gert Doering
+
 
