@@ -1,16 +1,10 @@
-From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Fri, 8 Mar 2024 10:27:55 +0000
+From: Gert Doering <gert@...1296...>
+Date: Fri,  8 Mar 2024 11:28:18 +0100
+Message-ID: <20240308102818.9249-1-gert@...1296...>
 In-Reply-To: <gerrit.1707835634000.I13ea6752c8d102eabcc579e391828c05d5322899@...2715...>
 References: <gerrit.1707835634000.I13ea6752c8d102eabcc579e391828c05d5322899@...2715...>
-Reply-To: gert@...1296..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, frank@...2641..., a@...2181...
-Message-ID: <122422d48aac1070c68738aca6a56f2b0ac52f25-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="JSCUAtL9rO4="; charset=UTF-8
-Subject: [Openvpn-devel] [M] Change in openvpn[master]: t_client.sh: Allow
- to skip tests
+Subject: [Openvpn-devel] [PATCH v5] t_client.sh: Allow to skip tests
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,109 +13,303 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: flichtenheld <frank@...2641...>
-Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---JSCUAtL9rO4=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+From: Frank Lichtenheld <frank@...2641...>
 
-Attention is currently required from: flichtenheld, ordex, plaisthos.
+Individual tests can define a script to run to test
+whether they should be skipped.
 
-cron2 has posted comments on this change. ( http://gerrit.openvpn.net/c/ope=
-nvpn/+/521?usp=3Demail )
+Included in this commit is an example check which
+checks whether we can do NTLM checks. This fails
+e.g. on recent versions of Fedora with mbedTLS
+(tested with Fedora 39) or when NTLM support is not
+compiled in.
 
-Change subject: t_client.sh: Allow to skip tests
-......................................................................
+v2:
+ - ntlm_support:
+   - support OpenSSL 3
+   - allow to build without cmocka
+v3:
+ - add example to t_client.rc-sample
+ - t_client.sh code style
+ - use syshead.h in error.h
+v5:
+ - rename SKIP_x to CHECK_SKIP_x
 
+Change-Id: I13ea6752c8d102eabcc579e391828c05d5322899
+Signed-off-by: Frank Lichtenheld <frank@...2641...>
+Acked-by: Gert Doering <gert@...1296...>
+---
 
-Patch Set 5: Code-Review+2
+This change was reviewed on Gerrit and approved by at least one
+developer. I request to merge it to master.
 
-(1 comment)
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/521
+This mail reflects revision 5 of this Change.
+Acked-by according to Gerrit (reflected above):
+Gert Doering <gert@...1296...>
 
-Patchset:
-
-PS5:
-thanks.  t_client looks good, ntlm test we agreed on taking as it is and ma=
-ybe someone will come up with good ideas how to improve later on.
-
-
-
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/521?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings
-
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: I13ea6752c8d102eabcc579e391828c05d5322899
-Gerrit-Change-Number: 521
-Gerrit-PatchSet: 5
-Gerrit-Owner: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: cron2 <gert@...1296...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-CC: ordex <a@...2181...>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Attention: ordex <a@...2181...>
-Gerrit-Comment-Date: Fri, 08 Mar 2024 10:27:55 +0000
-Gerrit-HasComments: Yes
-Gerrit-Has-Labels: Yes
-Gerrit-MessageType: comment
-
---JSCUAtL9rO4=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<p> Attention is currently required from: flichtenheld, ordex, plaisthos. <=
-/p>
-<p>Patch set 5:<span style=3D"border-radius: 3px; display: inline-block; ma=
-rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/521?usp=3Demail">Vi=
-ew Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0=
-;"><li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-s=
-tyle: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p s=
-tyle=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn=
-/+/521?tab=3Dcomments">Patch Set #5:</a> </p><p style=3D"white-space: pre-w=
-rap; word-wrap: break-word;">thanks.  t_client looks good, ntlm test we agr=
-eed on taking as it is and maybe someone will come up with good ideas how t=
-o improve later on.</p></li></ul></li></ul><p>To view, visit <a href=3D"htt=
-p://gerrit.openvpn.net/c/openvpn/+/521?usp=3Demail">change 521</a>. To unsu=
-bscribe, or for help writing mail filters, visit <a href=3D"http://gerrit.o=
-penvpn.net/settings">settings</a>.</p><div itemscope itemtype=3D"http://sch=
-ema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http:/=
-/schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvp=
-n.net/c/openvpn/+/521?usp=3Demail"/><meta itemprop=3D"name" content=3D"View=
- Change"/></div></div>
-
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I13ea6752c8d102eabcc579e3918=
-28c05d5322899 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 521 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 5 </div>
-<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
-.&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
- </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: ordex &lt;a@...2181...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
-41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: ordex &lt;a@...2181...&gt; <=
-/div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Fri, 08 Mar 2024 10:27:55=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
-
-
---JSCUAtL9rO4=--
+        
+diff --git a/src/openvpn/error.h b/src/openvpn/error.h
+index 1225b13..be3484d 100644
+--- a/src/openvpn/error.h
++++ b/src/openvpn/error.h
+@@ -25,16 +25,10 @@
+ #define ERROR_H
+ 
+ #include "basic.h"
+-
+-#include <errno.h>
+-#include <stdbool.h>
++#include "syshead.h"
+ 
+ #include <assert.h>
+ 
+-#if _WIN32
+-#include <windows.h>
+-#endif
+-
+ /* #define ABORT_ON_ERROR */
+ 
+ #if defined(ENABLE_PKCS11) || defined(ENABLE_MANAGEMENT)
+diff --git a/tests/Makefile.am b/tests/Makefile.am
+index b3b2d74..13a1013 100644
+--- a/tests/Makefile.am
++++ b/tests/Makefile.am
+@@ -19,6 +19,8 @@
+ 
+ if !WIN32
+ test_scripts = t_client.sh t_lpback.sh t_cltsrv.sh
++
++check_PROGRAMS = ntlm_support
+ if HAVE_SITNL
+ test_scripts += t_net.sh
+ endif
+@@ -36,3 +38,15 @@
+ 
+ dist_noinst_DATA = \
+ 	t_client.rc-sample
++
++ntlm_support_CFLAGS  = -I$(top_srcdir)/src/openvpn -I$(top_srcdir)/src/compat -I$(top_srcdir)/tests/unit_tests/openvpn -DNO_CMOCKA @TEST_CFLAGS@
++ntlm_support_LDFLAGS = @TEST_LDFLAGS@ -L$(top_srcdir)/src/openvpn $(OPTIONAL_CRYPTO_LIBS)
++ntlm_support_SOURCES = ntlm_support.c \
++	unit_tests/openvpn/mock_msg.c unit_tests/openvpn/mock_msg.h \
++	$(top_srcdir)/src/openvpn/buffer.c \
++	$(top_srcdir)/src/openvpn/crypto.c \
++	$(top_srcdir)/src/openvpn/crypto_openssl.c \
++	$(top_srcdir)/src/openvpn/crypto_mbedtls.c \
++	$(top_srcdir)/src/openvpn/otime.c \
++	$(top_srcdir)/src/openvpn/packet_id.c \
++	$(top_srcdir)/src/openvpn/platform.c
+diff --git a/tests/ntlm_support.c b/tests/ntlm_support.c
+new file mode 100644
+index 0000000..2d7da86
+--- /dev/null
++++ b/tests/ntlm_support.c
+@@ -0,0 +1,52 @@
++/*
++ *  OpenVPN -- An application to securely tunnel IP networks
++ *             over a single UDP port, with support for SSL/TLS-based
++ *             session authentication and key exchange,
++ *             packet encryption, packet authentication, and
++ *             packet compression.
++ *
++ * Copyright (C) 2023 OpenVPN Inc <sales@...515...>
++ *
++ *  This program is free software; you can redistribute it and/or modify
++ *  it under the terms of the GNU General Public License version 2
++ *  as published by the Free Software Foundation.
++ *
++ *  This program is distributed in the hope that it will be useful,
++ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
++ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ *  GNU General Public License for more details.
++ *
++ *  You should have received a copy of the GNU General Public License along
++ *  with this program; if not, write to the Free Software Foundation, Inc.,
++ *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
++ */
++
++#ifdef HAVE_CONFIG_H
++#include "config.h"
++#endif
++
++#include "syshead.h"
++
++#include "crypto.h"
++#include "error.h"
++
++int
++main(void)
++{
++#if defined(ENABLE_CRYPTO_OPENSSL)
++    crypto_load_provider("legacy");
++    crypto_load_provider("default");
++#endif
++#ifdef NTLM
++    if (!md_valid("MD4"))
++    {
++        msg(M_FATAL, "MD4 not supported");
++    }
++    if (!md_valid("MD5"))
++    {
++        msg(M_FATAL, "MD5 not supported");
++    }
++#else  /* ifdef NTLM */
++    msg(M_FATAL, "NTLM support not compiled in");
++#endif
++}
+diff --git a/tests/t_client.rc-sample b/tests/t_client.rc-sample
+index 355e8bb..d61ecc4 100644
+--- a/tests/t_client.rc-sample
++++ b/tests/t_client.rc-sample
+@@ -27,7 +27,7 @@
+ #
+ # tests to run (list suffixes for config stanzas below)
+ #
+-TEST_RUN_LIST="1 2"
++TEST_RUN_LIST="1 2 2n"
+ 
+ #
+ # use "sudo" (etc) to give openvpn the necessary privileges
+@@ -53,14 +53,24 @@
+ #
+ # if something is not defined here, the corresponding test is not run
+ #
+-# possible test options:
++# common test options:
+ #
+-# RUN_TITLE_x="what is being tested on here" (purely informational)
+-# OPENVPN_CONF_x = "how to call ./openvpn" [mandatory]
++# RUN_TITLE_x        = "what is being tested on here" (purely informational)
++# OPENVPN_CONF_x     = "how to call ./openvpn" [mandatory]
+ # EXPECT_IFCONFIG4_x = "this IPv4 address needs to show up in ifconfig"
+ # EXPECT_IFCONFIG6_x = "this IPv6 address needs to show up in ifconfig"
+-# PING4_HOSTS_x = "these hosts musts ping when openvpn is up (IPv4 fping)"
+-# PING6_HOSTS_x = "these hosts musts ping when openvpn is up (IPv6 fping6)"
++# PING4_HOSTS_x      = "these hosts musts ping when openvpn is up (IPv4 fping)"
++# PING6_HOSTS_x      = "these hosts musts ping when openvpn is up (IPv6 fping6)"
++#
++# hook test options:
++#
++# CHECK_SKIP_x      = "commands to execute before openvpn, skip test on failure"
++# PREPARE_x         = "commands to execute before openvpn"
++# POSTINIT_CMD_x    = "commands to execute after openvpn but before ping"
++# CLEANUP_x         = "commands to execute after the test"
++#
++# Note: all hooks are "eval"ed, so run in the original shell of the t_client.sh
++# script, not a child process.
+ #
+ # Test 1: UDP / p2mp tun
+ #   specify IPv4+IPv6 addresses expected from server and ping targets
+@@ -76,10 +86,18 @@
+ OPENVPN_CONF_2="$OPENVPN_BASE_P2MP --dev tun --proto tcp --remote $REMOTE --port 51194"
+ PING4_HOSTS_2="10.100.51.1 10.100.0.1"
+ PING6_HOSTS_2="2001:db8::1 2001:db8:a051::1"
+-#
+ # run command after openvpn initialization is done - here: delay 5 seconds
+ POSTINIT_CMD_2="sleep 5"
+ 
++# Test 2n: TCP / p2mp tun / via NTLM proxy
++RUN_TITLE_2n="testing tun/tcp/ntlm-proxy"
++OPENVPN_CONF_2n="$OPENVPN_BASE_P2MP --dev tun --proto tcp --remote $REMOTE --port 51194
++ --http-proxy 192.168.1.2 8080 $KEYBASE/t_client_auth.txt ntlm --http-proxy-option VERSION 1.1"
++PING4_HOSTS_2n="10.100.51.1 10.100.0.1"
++PING6_HOSTS_2n="2001:db8::1 2001:db8:a051::1"
++# skip test if NTLM support is not available
++CHECK_SKIP_2n="${top_builddir}/tests/ntlm_support"
++
+ # Test 3: UDP / p2p tun
+ # ...
+ 
+diff --git a/tests/t_client.sh.in b/tests/t_client.sh.in
+index 99e6f9c..f6654dd 100755
+--- a/tests/t_client.sh.in
++++ b/tests/t_client.sh.in
+@@ -291,12 +291,14 @@
+ # main test loop
+ # ----------------------------------------------------------
+ SUMMARY_OK=
++SUMMARY_SKIP=
+ SUMMARY_FAIL=
+ 
+ for SUF in $TEST_RUN_LIST
+ do
+     # get config variables
+     eval test_prep=\"\$PREPARE_$SUF\"
++    eval test_check_skip=\"\$CHECK_SKIP_$SUF\"
+     eval test_postinit=\"\$POSTINIT_CMD_$SUF\"
+     eval test_cleanup=\"\$CLEANUP_$SUF\"
+     eval test_run_title=\"\$RUN_TITLE_$SUF\"
+@@ -318,6 +320,16 @@
+     output_start "### test run $SUF: '$test_run_title' ###"
+     fail_count=0
+ 
++    if [ -n "$test_check_skip" ]; then
++        output "check whether we need to skip: '$test_check_skip'"
++        if eval $test_check_skip; then :
++        else
++            output "skip check failed, SKIP test $SUF."
++	    SUMMARY_SKIP="$SUMMARY_SKIP $SUF"
++	    echo -e "$outbuf" ; continue
++        fi
++    fi
++
+     if [ -n "$test_prep" ]; then
+         output "running preparation: '$test_prep'"
+         eval $test_prep
+@@ -455,8 +467,10 @@
+ done
+ 
+ if [ -z "$SUMMARY_OK" ] ; then SUMMARY_OK=" none"; fi
++if [ -z "$SUMMARY_SKIP" ] ; then SUMMARY_SKIP=" none"; fi
+ if [ -z "$SUMMARY_FAIL" ] ; then SUMMARY_FAIL=" none"; fi
+ echo "Test sets succeeded:$SUMMARY_OK."
++echo "Test sets skipped:$SUMMARY_SKIP."
+ echo "Test sets failed:$SUMMARY_FAIL."
+ 
+ # remove trap handler
+diff --git a/tests/unit_tests/openvpn/mock_msg.c b/tests/unit_tests/openvpn/mock_msg.c
+index d74efaa..a291f8f 100644
+--- a/tests/unit_tests/openvpn/mock_msg.c
++++ b/tests/unit_tests/openvpn/mock_msg.c
+@@ -31,8 +31,9 @@
+ #include <stdlib.h>
+ #include <setjmp.h>
+ #include <stdint.h>
++#ifndef NO_CMOCKA
+ #include <cmocka.h>
+-
++#endif
+ 
+ #include "errlevel.h"
+ #include "error.h"
+@@ -74,6 +75,8 @@
+     va_end(arglist);
+ }
+ 
++/* Allow to use mock_msg.c outside of UT */
++#ifndef NO_CMOCKA
+ void
+ assert_failed(const char *filename, int line, const char *condition)
+ {
+@@ -81,6 +84,15 @@
+     /* Keep compiler happy.  Should not happen, mock_assert() does not return */
+     exit(1);
+ }
++#else  /* ifndef NO_CMOCKA */
++void
++assert_failed(const char *filename, int line, const char *condition)
++{
++    msg(M_FATAL, "Assertion failed at %s:%d (%s)", filename, line, condition ? condition : "");
++    _exit(1);
++}
++#endif
++
+ 
+ /*
+  * Fail memory allocation.  Don't use msg() because it tries
 
