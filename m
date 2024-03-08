@@ -1,16 +1,11 @@
-From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Fri, 8 Mar 2024 12:05:36 +0000
+From: Gert Doering <gert@...1296...>
+Date: Fri,  8 Mar 2024 13:05:57 +0100
+Message-ID: <20240308120557.9065-1-gert@...1296...>
 In-Reply-To: <gerrit.1709557301000.If9cb7d66f079fe1c87fcb5b4e59bc887533d77fa@...2715...>
 References: <gerrit.1709557301000.If9cb7d66f079fe1c87fcb5b4e59bc887533d77fa@...2715...>
-Reply-To: gert@...1296..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <8bf04dbb34bbd3ac297bc279b98db9767e244e24-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="4xy9Toexg8U="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: gerrit-send-mail:
- add missing Signed-off-by
+Subject: [Openvpn-devel] [PATCH v1] gerrit-send-mail: add missing
+ Signed-off-by
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,103 +14,84 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: flichtenheld <frank@...2641...>
-Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---4xy9Toexg8U=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+From: Frank Lichtenheld <frank@...2641...>
 
-Attention is currently required from: flichtenheld, plaisthos.
+Our development documentation says we add this
+automatically when it is missing. So let's do that
+here as well.
 
-cron2 has posted comments on this change. ( http://gerrit.openvpn.net/c/ope=
-nvpn/+/530?usp=3Demail )
+Change-Id: If9cb7d66f079fe1c87fcb5b4e59bc887533d77fa
+Signed-off-by: Frank Lichtenheld <frank@...2641...>
+Acked-by: Gert Doering <gert@...1296...>
+---
 
-Change subject: gerrit-send-mail: add missing Signed-off-by
-......................................................................
+This change was reviewed on Gerrit and approved by at least one
+developer. I request to merge it to master.
 
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/530
+This mail reflects revision 1 of this Change.
+Acked-by according to Gerrit (reflected above):
+Gert Doering <gert@...1296...>
 
-Patch Set 1: Code-Review+2
-
-(1 comment)
-
-Patchset:
-
-PS1:
-looks reasonable.  Given that it's a language I refuse to understand I can'=
-t say for sure, but good enough still.
-
-
-
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/530?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings
-
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: If9cb7d66f079fe1c87fcb5b4e59bc887533d77fa
-Gerrit-Change-Number: 530
-Gerrit-PatchSet: 1
-Gerrit-Owner: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: cron2 <gert@...1296...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Comment-Date: Fri, 08 Mar 2024 12:05:36 +0000
-Gerrit-HasComments: Yes
-Gerrit-Has-Labels: Yes
-Gerrit-MessageType: comment
-
---4xy9Toexg8U=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<p> Attention is currently required from: flichtenheld, plaisthos. </p>
-<p>Patch set 1:<span style=3D"border-radius: 3px; display: inline-block; ma=
-rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/530?usp=3Demail">Vi=
-ew Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0=
-;"><li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-s=
-tyle: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p s=
-tyle=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn=
-/+/530?tab=3Dcomments">Patch Set #1:</a> </p><p style=3D"white-space: pre-w=
-rap; word-wrap: break-word;">looks reasonable.  Given that it&#39;s a langu=
-age I refuse to understand I can&#39;t say for sure, but good enough still.=
-</p></li></ul></li></ul><p>To view, visit <a href=3D"http://gerrit.openvpn.=
-net/c/openvpn/+/530?usp=3Demail">change 530</a>. To unsubscribe, or for hel=
-p writing mail filters, visit <a href=3D"http://gerrit.openvpn.net/settings=
-">settings</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessag=
-e"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAct=
-ion"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/5=
-30?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div></d=
-iv>
-
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: If9cb7d66f079fe1c87fcb5b4e59=
-bc887533d77fa </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 530 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
-<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
-.&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
- </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
-41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Fri, 08 Mar 2024 12:05:36=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
-
-
---4xy9Toexg8U=--
+        
+diff --git a/dev-tools/gerrit-send-mail.py b/dev-tools/gerrit-send-mail.py
+index 67a2cf1..10305e2 100755
+--- a/dev-tools/gerrit-send-mail.py
++++ b/dev-tools/gerrit-send-mail.py
+@@ -50,6 +50,12 @@
+                 ack = f"{reviewer_name} <{reviewer_mail}>"
+                 print(f"Acked-by: {ack}")
+                 acked_by.append(ack)
++    # construct Signed-off-by in case it is missing
++    owner = json_data["owner"]
++    owner_name = owner.get("display_name", owner["name"])
++    owner_mail = owner.get("email", owner["name"])
++    sign_off = f"{owner_name} <{owner_mail}>"
++    print(f"Signed-off-by: {sign_off}")
+     change_id = json_data["change_id"]
+     # assumes that the created date in Gerrit is in UTC
+     utc_stamp = (
+@@ -67,6 +73,7 @@
+         "target": json_data["branch"],
+         "msg_id": msg_id,
+         "acked_by": acked_by,
++        "sign_off": sign_off,
+     }
+ 
+ 
+@@ -81,10 +88,14 @@
+ 
+ def apply_patch_mods(patch_text, details, args):
+     comment_start = patch_text.index("\n---\n") + len("\n---\n")
++    signed_off_text = ""
++    signed_off_comment = ""
+     try:
+         signed_off_start = patch_text.rindex("\nSigned-off-by: ")
+         signed_off_end = patch_text.index("\n", signed_off_start + 1) + 1
+     except ValueError:  # Signed-off missing
++        signed_off_text = f"Signed-off-by: {details['sign_off']}\n"
++        signed_off_comment = "\nSigned-off-by line for the author was added as per our policy.\n"
+         signed_off_end = patch_text.index("\n---\n") + 1
+     assert comment_start > signed_off_end
+     acked_by_text = ""
+@@ -94,6 +105,7 @@
+         acked_by_names += f"{ack}\n"
+     patch_text_mod = (
+         patch_text[:signed_off_end]
++        + signed_off_text
+         + acked_by_text
+         + patch_text[signed_off_end:comment_start]
+         + f"""
+@@ -102,6 +114,7 @@
+ 
+ Gerrit URL: {args.url}/c/{details["project"]}/+/{args.changeid}
+ This mail reflects revision {details["revision"]} of this Change.
++{signed_off_comment}
+ Acked-by according to Gerrit (reflected above):
+ {acked_by_names}
+         """
 
