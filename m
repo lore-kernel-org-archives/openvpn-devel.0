@@ -1,10 +1,12 @@
-Date: Fri, 8 Mar 2024 17:01:20 +0100 (CET)
-Message-Id: <202403081601.428G1KuN034660@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <20240308140346.4058419-1-frank@...2641...>
-References: <20240308140346.4058419-1-frank@...2641...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Update documentation references
- in systemd unit files
+Date: Mon, 11 Mar 2024 12:44:20 +0100
+From: Frank Lichtenheld <frank@...2641...>
+Message-ID: <Ze7ulBhO5hBj+Z1o@...2685...>
+References: <20240308102818.9249-1-gert@...1296...>
+ <202403081151.428BpXTq026459@...2054...>
+MIME-Version: 1.0
+In-Reply-To: <202403081151.428BpXTq026459@...2054...>
+Subject: Re: [Openvpn-devel] [PATCH applied] Re: t_client.sh: Allow to skip
+ tests
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,30 +15,40 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 8bit
-To: Christoph Schug <com+github@...2792...>
+Content-Disposition: inline
+To: Gert Doering <gert@...1296...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-Your patch has been applied to the master and release/2.6 branch.
+On Fri, Mar 08, 2024 at 12:51:33PM +0100, Gert Doering wrote:
+[...]
+> Your patch has been applied to the master branch.
 
-commit f65c656ac034a99cca09557eeb9337e7c00a7e73 (master)
-commit c6a61b84fdec825b0b4855d8cd12afa9ebeec43e (release/2.6)
-Author: Christoph Schug
-Date:   Fri Mar 8 15:03:46 2024 +0100
+Could we please cherry-pick this to release/2.6 as well?
 
-     Update documentation references in systemd unit files
+Would make it much easier to use this capability in our buildbot
+infrastructure and the patch only affects tests anyway.
 
-     Signed-off-by: Christoph Schug <com+github@...2792...>
-     Acked-by: Frank Lichtenheld <frank@...2641...>
-     Message-Id: <20240308140346.4058419-1-frank@...2641...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg28369.html
-     Signed-off-by: Gert Doering <gert@...1296...>
+> commit 0c7cf0694ee6f878168330e9a084c255c51a9e8b
+> Author: Frank Lichtenheld
+> Date:   Fri Mar 8 11:28:18 2024 +0100
+> 
+>      t_client.sh: Allow to skip tests
+> 
+>      Signed-off-by: Frank Lichtenheld <frank@...2641...>
+>      Acked-by: Gert Doering <gert@...1296...>
+>      Message-Id: <20240308102818.9249-1-gert@...1296...>
+>      URL: https://www.mail-archive.com/search?l=mid&q=20240308102818.9249-1-gert@...1296...
+>      Signed-off-by: Gert Doering <gert@...1296...>
+> 
+> 
+> --
+> kind regards,
+> 
+> Gert Doering
+> 
 
-
---
-kind regards,
-
-Gert Doering
-
+-- 
+  Frank Lichtenheld
 
