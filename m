@@ -1,16 +1,16 @@
-From: "flichtenheld (Code Review)" <gerrit@...515...>
-Date: Mon, 11 Mar 2024 15:09:52 +0000
-In-Reply-To: <gerrit.1709564073000.Icfc179490d6821e22d14817941fb0bad667c713f@...2715...>
-References: <gerrit.1709564073000.Icfc179490d6821e22d14817941fb0bad667c713f@...2715...>
-Reply-To: frank@...2641..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net
-Message-ID: <146e8085c52507619c71291b6ed54d30eea0abc4-EmailReviewComments-HTML@...2715...>
+Date: Mon, 11 Mar 2024 17:32:56 +0100
+From: Gert Doering <gert@...1296...>
+Message-ID: <Ze8yOJzqQ3W5fbe1@...1296...>
+References: <20240308102818.9249-1-gert@...1296...>
+ <202403081151.428BpXTq026459@...2054...>
+ <Ze7ulBhO5hBj+Z1o@...2685...>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ protocol="application/pgp-signature"; boundary="Fj6xH3flwFm/CYi1"
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="OLiyMM+VzSY="; charset=UTF-8
-Subject: [Openvpn-devel] [XS] Change in openvpn[master]: Avoid SIGUR1 to
- SIGHUP when the configuration is read from stdin
+In-Reply-To: <Ze7ulBhO5hBj+Z1o@...2685...>
+Subject: Re: [Openvpn-devel] [PATCH applied] Re: t_client.sh: Allow to skip
+ tests
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,103 +19,79 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: plaisthos <arne-openvpn@...1227...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: Frank Lichtenheld <frank@...2641...>
+Cc: Gert Doering <gert@...1296...>, openvpn-devel@lists.sourceforge.net
 
---OLiyMM+VzSY=
-Content-Type: text/plain; charset="UTF-8"
+--Fj6xH3flwFm/CYi1
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-Attention is currently required from: plaisthos.
+Hi,
 
-flichtenheld has posted comments on this change. ( http://gerrit.openvpn.ne=
-t/c/openvpn/+/533?usp=3Demail )
+On Mon, Mar 11, 2024 at 12:44:20PM +0100, Frank Lichtenheld wrote:
+> On Fri, Mar 08, 2024 at 12:51:33PM +0100, Gert Doering wrote:
+> [...]
+> > Your patch has been applied to the master branch.
+>=20
+> Could we please cherry-pick this to release/2.6 as well?
+>=20
+> Would make it much easier to use this capability in our buildbot
+> infrastructure and the patch only affects tests anyway.
 
-Change subject: Avoid SIGUR1 to SIGHUP when the configuration is read from =
-stdin
-......................................................................
+I did toy with the idea, but was afraid it wouldn't work as so much
+of the new unit test infra is only in master - the t_client patch is
+trivial, but ntlm_support + mock_msg.
 
+Turns out this went smoothly, so here we go...
 
-Patch Set 1:
+gert@...2718... ~/openvpn-26.git $ tests/ntlm_support
+gert@...2718... ~/openvpn-26.git $ echo $?
+0
 
-(1 comment)
+(openssl build)
 
-Commit Message:
+> > commit 0c7cf0694ee6f878168330e9a084c255c51a9e8b
+> > Author: Frank Lichtenheld
+> > Date:   Fri Mar 8 11:28:18 2024 +0100
+> >=20
+> >      t_client.sh: Allow to skip tests
 
-http://gerrit.openvpn.net/c/openvpn/+/533/comment/8488b519_2420d9dd :
-PS1, Line 11: "close_context usr1 to hup" logic, the OpenVPN process will f=
-ail as tries
-Please add a short explanation of when this logic might be hit. It is compl=
-etely unclear to me from the code how you might hit this (especially since =
-both HUP and USR1 are blocked during init_instance). Something with managem=
-ent?
+commit bbc77d1719d2d5b33e58abac5eba8b8e409561ab (HEAD -> release/2.6, vweb1=
+/release/2.6)
+Author: Frank Lichtenheld <frank@...2641...>
+Date:   Fri Mar 8 11:28:18 2024 +0100
 
+    t_client.sh: Allow to skip tests
+    (cherry picked from commit 0c7cf0694ee6f878168330e9a084c255c51a9e8b)
 
+gert
+--=20
+"If was one thing all people took for granted, was conviction that if you=20
+ feed honest figures into a computer, honest figures come out. Never doubte=
+d=20
+ it myself till I met a computer with a sense of humor."
+                             Robert A. Heinlein, The Moon is a Harsh Mistre=
+ss
 
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/533?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings
+Gert Doering - Munich, Germany                             gert@...1296...
 
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: Icfc179490d6821e22d14817941fb0bad667c713f
-Gerrit-Change-Number: 533
-Gerrit-PatchSet: 1
-Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
-Gerrit-Reviewer: flichtenheld <frank@...2641...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Comment-Date: Mon, 11 Mar 2024 15:09:52 +0000
-Gerrit-HasComments: Yes
-Gerrit-Has-Labels: No
-Gerrit-MessageType: comment
+--Fj6xH3flwFm/CYi1
+Content-Type: application/pgp-signature; name="signature.asc"
 
---OLiyMM+VzSY=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+-----BEGIN PGP SIGNATURE-----
 
-<p> Attention is currently required from: plaisthos. </p>
-<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/533?usp=3Demail">View C=
-hange</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0;"><=
-li style=3D"margin: 0; padding: 0;"><p>Commit Message:</p><ul style=3D"list=
--style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p=
- style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openv=
-pn/+/533/comment/8488b519_2420d9dd">Patch Set #1, Line 11:</a> <code style=
-=3D"font-family:monospace,monospace">&quot;close_context usr1 to hup&quot; =
-logic, the OpenVPN process will fail as tries</code></p><p style=3D"white-s=
-pace: pre-wrap; word-wrap: break-word;">Please add a short explanation of w=
-hen this logic might be hit. It is completely unclear to me from the code h=
-ow you might hit this (especially since both HUP and USR1 are blocked durin=
-g init_instance). Something with management?</p></li></ul></li></ul><p>To v=
-iew, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/533?usp=3Demail=
-">change 533</a>. To unsubscribe, or for help writing mail filters, visit <=
-a href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemsco=
-pe itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"a=
-ction" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" hre=
-f=3D"http://gerrit.openvpn.net/c/openvpn/+/533?usp=3Demail"/><meta itemprop=
-=3D"name" content=3D"View Change"/></div></div>
+iQGcBAEBAgAGBQJl7zI4AAoJEB2Cnv7KVigSA7EL+gO/PhxOfjUd2LVvRZ0K5Mou
+1FRtngEhxDl0yzuCrOVNQXiGgcQEflmx1QqhpZruFfPw4DIcXsCcol4I/DkGFaOO
+ugipwkUXRmRAAqluQSBnMXBEYIstGLdWBKrEKuusO3yB42pW/8DkzQMdoaKFb8Ef
+aSCV3n7GzSaLxB8OUulH6bhz94ZUqG/0ElMJxydXyR+9LayYLm/lJ1H+6ZunE3aS
+yh9GH7+6KFBSsPujh/2orzCPIKMltyZ494foaBqRMAoZHI02HV3jUMnFV0+sk5rc
+Cv0Y3nIWC38rH4J+j134TbFnGvCRUw1y17f90H0zd8aZlr17RXAi41CvK/UwMLja
+KGBje/Of/F3psvD4l81uc4DD/1uiQcgbcaZZkt8BgiFJZGZjhDlizNdNV/EF9sbT
+ichFqi23lm+0AY43I3g/pDPMqtK4l0GDFOe10/4qs48u652Qc1FIizm8wtBFZiEB
+vUfntPuq202MWstpwB3MwJCrcsannKHVfyU5DYMTig==
+=0e0A
+-----END PGP SIGNATURE-----
 
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: Icfc179490d6821e22d14817941f=
-b0bad667c713f </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 533 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
-<div style=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@...1711...=
-27...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
-1...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Mon, 11 Mar 2024 15:09:52=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: No </div>
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
-
-
---OLiyMM+VzSY=--
+--Fj6xH3flwFm/CYi1--
 
