@@ -1,14 +1,14 @@
 From: "flichtenheld (Code Review)" <gerrit@...515...>
-Date: Mon, 11 Mar 2024 12:29:43 +0000
+Date: Mon, 11 Mar 2024 14:45:37 +0000
 In-Reply-To: <gerrit.1707991289000.Ia3e06c0832c4ca0ab868c845279fb71c01a1a78a@...2715...>
 References: <gerrit.1707991289000.Ia3e06c0832c4ca0ab868c845279fb71c01a1a78a@...2715...>
 Reply-To: frank@...2641..., arne-openvpn@...1227...,
  gianmarco@...2726..., openvpn-devel@lists.sourceforge.net
-Message-ID: <9a704c5c90476d340780542c30a03373d9e53ed6-EmailReviewComments-HTML@...2715...>
+Message-ID: <c603438e3793f0cd38b3bbfeff13c07f910c5941-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="zmNHAENABpA="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="ZFUL+KWvJzo="; charset=UTF-8
 Subject: [Openvpn-devel] [S] Change in openvpn[master]: Http-proxy: fix bug
  preventing proxy credentials caching
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -22,7 +22,7 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: its_Giaan <gianmarco@...2726...>
 Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---zmNHAENABpA=
+--ZFUL+KWvJzo=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
@@ -35,15 +35,42 @@ Change subject: Http-proxy: fix bug preventing proxy credentials caching
 ......................................................................
 
 
-Patch Set 5: Code-Review-2
+Patch Set 5:
 
-(1 comment)
+(4 comments)
 
-Patchset:
+Commit Message:
 
-PS5:
-Tried to test this change but my tests failed to produce the desired behavi=
-or. Should figure out the problem before merging.
+http://gerrit.openvpn.net/c/openvpn/+/523/comment/0095e7d0_7032f979 :
+PS5, Line 21: http_proxy_options and also a getter method to retrieve
+The man page for --auth-nocache still says it has no effect on --http-proxy=
+. This needs to be updated.
+
+
+File src/openvpn/options.c:
+
+http://gerrit.openvpn.net/c/openvpn/+/523/comment/10c5ad5e_1e39dee3 :
+PS5, Line 3126:             if (ce->http_proxy_options)
+This needs to be moved one level up. E.g. when using "--proto tcp4-client" =
+currently --auth-nocache is ignored, since proto is already PROTO_TCP_CLIEN=
+T.
+There should be no issue with always setting this independently of ce->prot=
+o.
+
+
+File src/openvpn/proxy.h:
+
+http://gerrit.openvpn.net/c/openvpn/+/523/comment/2c3993c2_e1173cce :
+PS5, Line 61:     bool nocache;
+Please update "show_http_proxy_options" in options.c to show value of nocac=
+he.
+
+
+File src/openvpn/proxy.c:
+
+http://gerrit.openvpn.net/c/openvpn/+/523/comment/663d790d_11843add :
+PS5, Line 669:         if (p->up.nocache)
+wouldn't it be better to move this clearing into get_user_pass_http?
 
 
 
@@ -63,34 +90,57 @@ Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
 Gerrit-Attention: its_Giaan <gianmarco@...2726...>
-Gerrit-Comment-Date: Mon, 11 Mar 2024 12:29:43 +0000
+Gerrit-Comment-Date: Mon, 11 Mar 2024 14:45:37 +0000
 Gerrit-HasComments: Yes
-Gerrit-Has-Labels: Yes
+Gerrit-Has-Labels: No
 Gerrit-MessageType: comment
 
---zmNHAENABpA=
+--ZFUL+KWvJzo=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <p> Attention is currently required from: its_Giaan, plaisthos. </p>
-<p>Patch set 5:<span style=3D"border-radius: 3px; display: inline-block; ma=
-rgin: 0 2px; padding: 4px;background-color: #ffd4d4;">Code-Review -2</span>=
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/523?usp=3Demail">Vi=
-ew Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0=
-;"><li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-s=
-tyle: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p s=
-tyle=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn=
-/+/523?tab=3Dcomments">Patch Set #5:</a> </p><p style=3D"white-space: pre-w=
-rap; word-wrap: break-word;">Tried to test this change but my tests failed =
-to produce the desired behavior. Should figure out the problem before mergi=
-ng.</p></li></ul></li></ul><p>To view, visit <a href=3D"http://gerrit.openv=
-pn.net/c/openvpn/+/523?usp=3Demail">change 523</a>. To unsubscribe, or for =
-help writing mail filters, visit <a href=3D"http://gerrit.openvpn.net/setti=
-ngs">settings</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMes=
-sage"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.org/View=
-Action"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/=
-+/523?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div>=
-</div>
+<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/523?usp=3Demail">View C=
+hange</a></p><p>4 comments:</p><ul style=3D"list-style: none; padding: 0;">=
+<li style=3D"margin: 0; padding: 0;"><p>Commit Message:</p><ul style=3D"lis=
+t-style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><=
+p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/open=
+vpn/+/523/comment/0095e7d0_7032f979">Patch Set #5, Line 21:</a> <code style=
+=3D"font-family:monospace,monospace">http_proxy_options and also a getter m=
+ethod to retrieve</code></p><p style=3D"white-space: pre-wrap; word-wrap: b=
+reak-word;">The man page for --auth-nocache still says it has no effect on =
+--http-proxy. This needs to be updated.</p></li></ul></li><li style=3D"marg=
+in: 0; padding: 0;"><p>File src/openvpn/options.c:</p><ul style=3D"list-sty=
+le: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p sty=
+le=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/+=
+/523/comment/10c5ad5e_1e39dee3">Patch Set #5, Line 3126:</a> <code style=3D=
+"font-family:monospace,monospace">            if (ce-&gt;http_proxy_options=
+)</code></p><p style=3D"white-space: pre-wrap; word-wrap: break-word;">This=
+ needs to be moved one level up. E.g. when using &quot;--proto tcp4-client&=
+quot; currently --auth-nocache is ignored, since proto is already PROTO_TCP=
+_CLIENT.<br>There should be no issue with always setting this independently=
+ of ce-&gt;proto.</p></li></ul></li><li style=3D"margin: 0; padding: 0;"><p=
+>File src/openvpn/proxy.h:</p><ul style=3D"list-style: none; padding: 0;"><=
+li style=3D"margin: 0; padding: 0 0 0 16px;"><p style=3D"margin-bottom: 4px=
+;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/523/comment/2c3993c2_e1=
+173cce">Patch Set #5, Line 61:</a> <code style=3D"font-family:monospace,mon=
+ospace">    bool nocache;</code></p><p style=3D"white-space: pre-wrap; word=
+-wrap: break-word;">Please update &quot;show_http_proxy_options&quot; in op=
+tions.c to show value of nocache.</p></li></ul></li><li style=3D"margin: 0;=
+ padding: 0;"><p>File src/openvpn/proxy.c:</p><ul style=3D"list-style: none=
+; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p style=3D"ma=
+rgin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/523/com=
+ment/663d790d_11843add">Patch Set #5, Line 669:</a> <code style=3D"font-fam=
+ily:monospace,monospace">        if (p-&gt;up.nocache)</code></p><p style=
+=3D"white-space: pre-wrap; word-wrap: break-word;">wouldn&#39;t it be bette=
+r to move this clearing into get_user_pass_http?</p></li></ul></li></ul><p>=
+To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/523?usp=3De=
+mail">change 523</a>. To unsubscribe, or for help writing mail filters, vis=
+it <a href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div ite=
+mscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=
+=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url=
+" href=3D"http://gerrit.openvpn.net/c/openvpn/+/523?usp=3Demail"/><meta ite=
+mprop=3D"name" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
@@ -110,12 +160,12 @@ ts.sourceforge.net&gt; </div>
 ..1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: its_Giaan &lt;gianmarco@...1665...=
 726...&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Mon, 11 Mar 2024 12:29:43=
+<div style=3D"display:none"> Gerrit-Comment-Date: Mon, 11 Mar 2024 14:45:37=
  +0000 </div>
 <div style=3D"display:none"> Gerrit-HasComments: Yes </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: No </div>
 <div style=3D"display:none"> Gerrit-MessageType: comment </div>
 
 
---zmNHAENABpA=--
+--ZFUL+KWvJzo=--
 
