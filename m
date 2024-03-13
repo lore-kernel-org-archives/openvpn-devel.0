@@ -1,11 +1,16 @@
-From: gianmarco@...2726...
-Date: Tue, 12 Mar 2024 18:16:21 +0100
-Message-Id: <20240312171621.22629-1-gianmarco@...2726...>
-In-Reply-To: <gerrit.1707991289000.Ia3e06c0832c4ca0ab868c845279fb71c01a1a78a@...2715...>
-References: <gerrit.1707991289000.Ia3e06c0832c4ca0ab868c845279fb71c01a1a78a@...2715...>
+From: "its_Giaan (Code Review)" <gerrit@...515...>
+Date: Wed, 13 Mar 2024 08:38:05 +0000
+In-Reply-To: <gerrit.1708008760000.I3e4ebef484d2a04a383a65ede5617ee98bf218a7@...2715...>
+References: <gerrit.1708008760000.I3e4ebef484d2a04a383a65ede5617ee98bf218a7@...2715...>
+Reply-To: gianmarco@...2726..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net, frank@...2641...
+Message-ID: <d7c72dff9c2091d9ac07dddd41e975bb2ed339be-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v8] Http-proxy: fix bug preventing proxy
- credentials caching
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="+oR3H6+SbNQ="; charset=UTF-8
+Subject: [Openvpn-devel] [M] Change in openvpn[master]: Route: add support
+ for user defined routing table
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,208 +19,196 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+Cc: flichtenheld <frank@...2641...>, plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-From: Gianmarco De Gregori <gianmarco@...2726...>
+--+oR3H6+SbNQ=
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Caching proxy credentials was not working due to the
-lack of handling already defined creds in get_user_pass(),
-which prevented the caching from working properly.
+Attention is currently required from: flichtenheld, plaisthos.
 
-Fix this issue by getting the value of c->first_time,
-that indicates if we're at the first iteration
-of the main loop and use it as second argument of the
-get_user_pass_http(). Otherwise, on SIGUSR1 or SIGHUP
-upon instance context restart credentials would be erased
-every time.
+its_Giaan has posted comments on this change. ( http://gerrit.openvpn.net/c=
+/openvpn/+/524?usp=3Demail )
 
-The nocache member has been added to the struct
-http_proxy_options and also a getter method to retrieve
-that option from ssl has been added, by doing this
-we're able to erase previous queried user credentials
-to ensure correct operation.
+Change subject: Route: add support for user defined routing table
+......................................................................
 
-Fixes: Trac #1187
-Signed-off-by: Gianmarco De Gregori <gianmarco@...2726...>
-Acked-by: Frank Lichtenheld <frank@...2641...>
-Change-Id: Ia3e06c0832c4ca0ab868c845279fb71c01a1a78a
----
 
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to master.
+Patch Set 3:
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/523
-This mail reflects revision 8 of this Change.
+(7 comments)
 
-Acked-by according to Gerrit (reflected above):
-Frank Lichtenheld <frank@...2641...>
+File doc/man-sections/vpn-network-options.rst:
 
-        
-diff --git a/doc/man-sections/generic-options.rst b/doc/man-sections/generic-options.rst
-index f8a0f48..1fb17f7 100644
---- a/doc/man-sections/generic-options.rst
-+++ b/doc/man-sections/generic-options.rst
-@@ -19,9 +19,6 @@
-   When using ``--auth-nocache`` in combination with a user/password file
-   and ``--chroot`` or ``--daemon``, make sure to use an absolute path.
- 
--  This directive does not affect the ``--http-proxy`` username/password.
--  It is always cached.
--
- --cd dir
-   Change directory to ``dir`` prior to reading any files such as
-   configuration files, key files, scripts, etc. ``dir`` should be an
-diff --git a/src/openvpn/init.c b/src/openvpn/init.c
-index 52b3931..fdee199 100644
---- a/src/openvpn/init.c
-+++ b/src/openvpn/init.c
-@@ -697,6 +697,8 @@
- 
-     if (c->options.ce.http_proxy_options)
-     {
-+        c->options.ce.http_proxy_options->first_time = c->first_time;
-+
-         /* Possible HTTP proxy user/pass input */
-         c->c1.http_proxy = http_proxy_new(c->options.ce.http_proxy_options);
-         if (c->c1.http_proxy)
-diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index 94a88f9..d276a1a 100644
---- a/src/openvpn/options.c
-+++ b/src/openvpn/options.c
-@@ -1650,6 +1650,7 @@
-     SHOW_STR(auth_file);
-     SHOW_STR(auth_file_up);
-     SHOW_BOOL(inline_creds);
-+    SHOW_BOOL(nocache);
-     SHOW_STR(http_version);
-     SHOW_STR(user_agent);
-     for  (i = 0; i < MAX_CUSTOM_HTTP_HEADER && o->custom_headers[i].name; i++)
-@@ -3151,6 +3152,11 @@
-         ce->flags |= CE_DISABLED;
-     }
- 
-+    if (ce->http_proxy_options)
-+    {
-+        ce->http_proxy_options->nocache = ssl_get_auth_nocache();
-+    }
-+
-     /* our socks code is not fully IPv6 enabled yet (TCP works, UDP not)
-      * so fall back to IPv4-only (trac #1221)
-      */
-diff --git a/src/openvpn/proxy.c b/src/openvpn/proxy.c
-index eeb3989..4570fbc 100644
---- a/src/openvpn/proxy.c
-+++ b/src/openvpn/proxy.c
-@@ -276,7 +276,7 @@
-         {
-             auth_file = p->options.auth_file_up;
-         }
--        if (p->queried_creds)
-+        if (p->queried_creds && !static_proxy_user_pass.nocache)
-         {
-             flags |= GET_USER_PASS_PREVIOUS_CREDS_FAILED;
-         }
-@@ -288,9 +288,14 @@
-                       auth_file,
-                       UP_TYPE_PROXY,
-                       flags);
--        p->queried_creds = true;
--        p->up = static_proxy_user_pass;
-+        static_proxy_user_pass.nocache = p->options.nocache;
-     }
-+
-+    /*
-+     * Using cached credentials
-+     */
-+    p->queried_creds = true;
-+    p->up = static_proxy_user_pass;
- }
- 
- #if 0
-@@ -542,7 +547,7 @@
-      * we know whether we need any. */
-     if (p->auth_method == HTTP_AUTH_BASIC || p->auth_method == HTTP_AUTH_NTLM2)
-     {
--        get_user_pass_http(p, true);
-+        get_user_pass_http(p, p->options.first_time);
-     }
- 
- #if !NTLM
-@@ -656,6 +661,11 @@
-         || p->auth_method == HTTP_AUTH_NTLM2)
-     {
-         get_user_pass_http(p, false);
-+
-+        if (p->up.nocache)
-+        {
-+            clear_user_pass_http();
-+        }
-     }
- 
-     /* are we being called again after getting the digest server nonce in the previous transaction? */
-@@ -1031,13 +1041,6 @@
-             }
-             goto error;
-         }
--
--        /* clear state */
--        if (p->options.auth_retry)
--        {
--            clear_user_pass_http();
--        }
--        store_proxy_authenticate(p, NULL);
-     }
- 
-     /* check return code, success = 200 */
-diff --git a/src/openvpn/proxy.h b/src/openvpn/proxy.h
-index 4e78772..474cfc9 100644
---- a/src/openvpn/proxy.h
-+++ b/src/openvpn/proxy.h
-@@ -57,6 +57,8 @@
-     const char *user_agent;
-     struct http_custom_header custom_headers[MAX_CUSTOM_HTTP_HEADER];
-     bool inline_creds; /* auth_file_up is inline credentials */
-+    bool first_time; /* indicates if we need to wipe user creds at the first iteration of the main loop */
-+    bool nocache;
- };
- 
- struct http_proxy_options_simple {
-diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
-index 33c8670..d174dad 100644
---- a/src/openvpn/ssl.c
-+++ b/src/openvpn/ssl.c
-@@ -335,6 +335,15 @@
- }
- 
- /*
-+ * Get the password caching
-+ */
-+bool
-+ssl_get_auth_nocache()
-+{
-+    return passbuf.nocache;
-+}
-+
-+/*
-  * Set an authentication token
-  */
- void
-diff --git a/src/openvpn/ssl.h b/src/openvpn/ssl.h
-index 71b99db..dd6538c 100644
---- a/src/openvpn/ssl.h
-+++ b/src/openvpn/ssl.h
-@@ -397,6 +397,11 @@
- void ssl_set_auth_nocache(void);
- 
- /*
-+ * Getter method for retrieving the auth-nocache option.
-+ */
-+bool ssl_get_auth_nocache();
-+
-+/*
-  * Purge any stored authentication information, both for key files and tunnel
-  * authentication. If PCKS #11 is enabled, purge authentication for that too.
-  * Note that auth_token is not cleared.
+http://gerrit.openvpn.net/c/openvpn/+/524/comment/28a9b0d7_797a7b8f :
+PS3, Line 374:   a user defined routing table can be used instead.
+> "an user"
+Since "user" begins with a consonant sound "y" (as in "you"), "a" is the ap=
+propriate article to use. You would say "a unicorn" instead of "an unicorn"=
+ imho.
+
+
+http://gerrit.openvpn.net/c/openvpn/+/524/comment/fc3149bd_56ee7cdc :
+PS3, Line 407:         Since this option must be an entirely local choice, =
+won't be pushable.
+> Time seems weird to me, would change to "it isn't pushable"
+Done
+
+
+http://gerrit.openvpn.net/c/openvpn/+/524/comment/293941ea_2c34e0eb :
+PS3, Line 408: 	      default taken from ``--route-table`` if set, otherwis=
+e :code:`0`.
+> please change tab to space
+Done
+
+
+http://gerrit.openvpn.net/c/openvpn/+/524/comment/d10bebfd_142729b1 :
+PS3, Line 461:      route-ipv6 ipv6addr/bits [gateway]
+> when listing all possible choices, you can leave off the "[" optional mar=
+kers
+Done
+
+
+http://gerrit.openvpn.net/c/openvpn/+/524/comment/a4df0975_2ea65b9f :
+PS3, Line 464:
+> trailing whitespace
+Done
+
+
+http://gerrit.openvpn.net/c/openvpn/+/524/comment/1d25817b_bf7cb0e6 :
+PS3, Line 475: 	      default taken from ``--route-table`` if set, otherwis=
+e :code:`0`.
+> same comments apply here as for --route (tab, won't->it isn't)
+Done
+
+
+File src/openvpn/route.h:
+
+http://gerrit.openvpn.net/c/openvpn/+/524/comment/4897ce61_2c46962d :
+PS3, Line 98:
+> spurious whitespace?
+Done
+
+
+
+--
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/524?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings
+
+Gerrit-Project: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: I3e4ebef484d2a04a383a65ede5617ee98bf218a7
+Gerrit-Change-Number: 524
+Gerrit-PatchSet: 3
+Gerrit-Owner: its_Giaan <gianmarco@...2726...>
+Gerrit-Reviewer: flichtenheld <frank@...2641...>
+Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Attention: flichtenheld <frank@...2641...>
+Gerrit-Comment-Date: Wed, 13 Mar 2024 08:38:05 +0000
+Gerrit-HasComments: Yes
+Gerrit-Has-Labels: No
+Comment-In-Reply-To: flichtenheld <frank@...2641...>
+Gerrit-MessageType: comment
+
+--+oR3H6+SbNQ=
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<p> Attention is currently required from: flichtenheld, plaisthos. </p>
+<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/524?usp=3Demail">View C=
+hange</a></p><p>7 comments:</p><ul style=3D"list-style: none; padding: 0;">=
+<li style=3D"margin: 0; padding: 0;"><p>File doc/man-sections/vpn-network-o=
+ptions.rst:</p><ul style=3D"list-style: none; padding: 0;"><li style=3D"mar=
+gin: 0; padding: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"h=
+ttp://gerrit.openvpn.net/c/openvpn/+/524/comment/28a9b0d7_797a7b8f">Patch S=
+et #3, Line 374:</a> <code style=3D"font-family:monospace,monospace">  a us=
+er defined routing table can be used instead.</code></p><p><blockquote styl=
+e=3D"border-left: 1px solid #aaa; margin: 10px 0; padding: 0 10px;">&quot;a=
+n user&quot;</blockquote></p><p style=3D"white-space: pre-wrap; word-wrap: =
+break-word;">Since &quot;user&quot; begins with a consonant sound &quot;y&q=
+uot; (as in &quot;you&quot;), &quot;a&quot; is the appropriate article to u=
+se. You would say &quot;a unicorn&quot; instead of &quot;an unicorn&quot; i=
+mho.</p></li><li style=3D"margin: 0; padding: 0 0 0 16px;"><p style=3D"marg=
+in-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/524/comme=
+nt/fc3149bd_56ee7cdc">Patch Set #3, Line 407:</a> <code style=3D"font-famil=
+y:monospace,monospace">        Since this option must be an entirely local =
+choice, won&#39;t be pushable.</code></p><p><blockquote style=3D"border-lef=
+t: 1px solid #aaa; margin: 10px 0; padding: 0 10px;">Time seems weird to me=
+, would change to &quot;it isn&#39;t pushable&quot;</blockquote></p><p styl=
+e=3D"white-space: pre-wrap; word-wrap: break-word;">Done</p></li><li style=
+=3D"margin: 0; padding: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a hr=
+ef=3D"http://gerrit.openvpn.net/c/openvpn/+/524/comment/293941ea_2c34e0eb">=
+Patch Set #3, Line 408:</a> <code style=3D"font-family:monospace,monospace"=
+>	      default taken from ``--route-table`` if set, otherwise :code:`0`.</=
+code></p><p><blockquote style=3D"border-left: 1px solid #aaa; margin: 10px =
+0; padding: 0 10px;">please change tab to space</blockquote></p><p style=3D=
+"white-space: pre-wrap; word-wrap: break-word;">Done</p></li><li style=3D"m=
+argin: 0; padding: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D=
+"http://gerrit.openvpn.net/c/openvpn/+/524/comment/d10bebfd_142729b1">Patch=
+ Set #3, Line 461:</a> <code style=3D"font-family:monospace,monospace">    =
+ route-ipv6 ipv6addr/bits [gateway]</code></p><p><blockquote style=3D"borde=
+r-left: 1px solid #aaa; margin: 10px 0; padding: 0 10px;">when listing all =
+possible choices, you can leave off the &quot;[&quot; optional markers</blo=
+ckquote></p><p style=3D"white-space: pre-wrap; word-wrap: break-word;">Done=
+</p></li><li style=3D"margin: 0; padding: 0 0 0 16px;"><p style=3D"margin-b=
+ottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/524/comment/a=
+4df0975_2ea65b9f">Patch Set #3, Line 464:</a> <code style=3D"font-family:mo=
+nospace,monospace">  </code></p><p><blockquote style=3D"border-left: 1px so=
+lid #aaa; margin: 10px 0; padding: 0 10px;">trailing whitespace</blockquote=
+></p><p style=3D"white-space: pre-wrap; word-wrap: break-word;">Done</p></l=
+i><li style=3D"margin: 0; padding: 0 0 0 16px;"><p style=3D"margin-bottom: =
+4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/524/comment/1d25817b=
+_bf7cb0e6">Patch Set #3, Line 475:</a> <code style=3D"font-family:monospace=
+,monospace">	      default taken from ``--route-table`` if set, otherwise :=
+code:`0`.</code></p><p><blockquote style=3D"border-left: 1px solid #aaa; ma=
+rgin: 10px 0; padding: 0 10px;">same comments apply here as for --route (ta=
+b, won&#39;t-&gt;it isn&#39;t)</blockquote></p><p style=3D"white-space: pre=
+-wrap; word-wrap: break-word;">Done</p></li></ul></li><li style=3D"margin: =
+0; padding: 0;"><p>File src/openvpn/route.h:</p><ul style=3D"list-style: no=
+ne; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p style=3D"=
+margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/524/c=
+omment/4897ce61_2c46962d">Patch Set #3, Line 98:</a> <code style=3D"font-fa=
+mily:monospace,monospace"></code></p><p><blockquote style=3D"border-left: 1=
+px solid #aaa; margin: 10px 0; padding: 0 10px;">spurious whitespace?</bloc=
+kquote></p><p style=3D"white-space: pre-wrap; word-wrap: break-word;">Done<=
+/p></li></ul></li></ul><p>To view, visit <a href=3D"http://gerrit.openvpn.n=
+et/c/openvpn/+/524?usp=3Demail">change 524</a>. To unsubscribe, or for help=
+ writing mail filters, visit <a href=3D"http://gerrit.openvpn.net/settings"=
+>settings</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage=
+"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewActi=
+on"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/52=
+4?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div></di=
+v>
+
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I3e4ebef484d2a04a383a65ede56=
+17ee98bf218a7 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 524 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 3 </div>
+<div style=3D"display:none"> Gerrit-Owner: its_Giaan &lt;gianmarco@...2786...=
+..&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
+1...&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
+.1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
+41...&gt; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Wed, 13 Mar 2024 08:38:05=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: No </div>
+<div style=3D"display:none"> Comment-In-Reply-To: flichtenheld &lt;frank@...1186...=
+.2641...&gt; </div>
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
+
+
+--+oR3H6+SbNQ=--
 
