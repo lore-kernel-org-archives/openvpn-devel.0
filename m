@@ -1,11 +1,17 @@
-Content-Type: multipart/alternative;
- boundary="------------639tMmgEHmDuBf3j9lZRX059"
-Message-ID: <e5d5b789-3ec2-4d14-b06a-fd6303f627dc@...2751...>
-Date: Thu, 14 Mar 2024 10:37:45 +0100
+From: "cron2 (Code Review)" <gerrit@...515...>
+Date: Thu, 14 Mar 2024 18:54:30 +0000
+In-Reply-To: <gerrit.1710356871000.I1879c893ed19b165fd086728fb97951eac251681@...2715...>
+References: <gerrit.1710356871000.I1879c893ed19b165fd086728fb97951eac251681@...2715...>
+Reply-To: gert@...1296..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net, frank@...2641...,
+ max@...2606...
+Message-ID: <b22a6024795e079fd0983d3d3cd6446ef31afe8b-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-From: Johan Draaisma <johan@...2751...>
-Content-Language: en-US
-Subject: [Openvpn-devel]  IRC community meeting summary
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="a6CmQBAm7cw="; charset=UTF-8
+Subject: [Openvpn-devel] [S] Change in openvpn[master]: Remove license
+ warning from README.mbedtls
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,144 +20,107 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: openvpn-devel@lists.sourceforge.net
+To: MaxF <max@...2606...>
+Cc: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-This is a multi-part message in MIME format.
---------------639tMmgEHmDuBf3j9lZRX059
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+--a6CmQBAm7cw=
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Meeting summary for 13 March 2024:
+Attention is currently required from: MaxF, flichtenheld, plaisthos.
 
-  * *New: topic from an openvpn inc contributor to community (illia)*
-    /Would like to discuss about --inactive option that disconnects a
-    VPN when it is not sending/receiving more than the set seconds timeout./
-    /One part of it is that openvpn2 only counts outgoing packets and
-    openvpn3 counts incoming and outgoing. Which is correct?/
-    /Another part is type of packets to count - this is all not so clear./
-    /For now we counting any packets and ICMP spam from router resets
-    inactive timeout very often for openvpn3 so it disconnects later than 2/
-    /Current proposal: count also incoming packets for openvpn2 and do
-    not reset inactive timeout on ICMP packets for both ovpn3 and 2/
-    /There was argument made that "this is how it has been in openvpn2
-    forever and we had no complaints" but oddly the documentation claims
-    incoming and outgoing is counted./
-    /after looking into this a bit some screwiness was found with
-    tracking the data in openvpn2 that could use fixing, and illia will
-    work on it./
-    /and there is some voodoo happening in openvpn2 that skips inactive
-    reset packets and similar magic is missing in ovpn3, so illia will
-    work on that too./
+cron2 has posted comments on this change. ( http://gerrit.openvpn.net/c/ope=
+nvpn/+/561?usp=3Demail )
 
-  * *New: breaking DCO changes, how to approach?*
-    /During the upstreaming process to the Linux kernel some alterations
-    had to be made./
-    /This made the updated implementation different enough from
-    ovpn-dco-v2 that OpenVPN 2.6 won't work with it anymore./
-    /The plan is to adjust OpenVPN 2.6 so it can support the ovpn-dco-v2
-    delivered as out-of-tree kernel module, and the in-tree new kernel
-    module./
-    /We can then update the out-of-tree kernel module to work in the new
-    way and have a graceful transition period./
-    /So when it goes upstream and is in the Linux kernel, or DCO is
-    installed out-of-tree, it will work the same./
-    /We can later decide on when to drop the support for ovpn-dco-v2 old
-    methods./
+Change subject: Remove license warning from README.mbedtls
+......................................................................
 
-  * *Updated: openvpn 2.6.10 release*
-    /There are some Windows related issues to be resolved in this release./
-    /Was planned for this week - pushed to begin next week./
 
-  * *Updated: website release process*
-    /Next week a website release is planned that will enable a new way
-    for updating Community Downloads page./
-    /The new way has a much faster release method separate from the rest
-    of the website's release schedule./
+Patch Set 1: Code-Review+2
 
-As always you're welcome to join at #openvpn-meeting on Libera IRC 
-network every Wednesday at 13:00 Central European Time.
+(1 comment)
 
-Kind regards,
-Johan Draaisma
+Patchset:
 
---------------639tMmgEHmDuBf3j9lZRX059
-Content-Type: text/html; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+PS1:
+makes sense, thanks.
 
-<!DOCTYPE html>
-<html>
-  <head>
-    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
-  </head>
-  <body>
-    <p> Meeting summary for 13 March 2024:</p>
-    <ul
-style="color: rgb(0, 0, 0); font-family: Verdana, Arial, &quot;Bitstream Vera Sans&quot;, Helvetica, sans-serif; font-size: 13px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;">
-      <li><strong>New: topic from an openvpn inc contributor to
-          community (illia)</strong><br>
-        <em>Would like to discuss about --inactive option that
-          disconnects a VPN when it is not sending/receiving more than
-          the set seconds timeout.</em><br>
-        <em>One part of it is that openvpn2 only counts outgoing packets
-          and openvpn3 counts incoming and outgoing. Which is correct?</em><br>
-        <em>Another part is type of packets to count - this is all not
-          so clear.</em><br>
-        <em>For now we counting any packets and ICMP spam from router
-          resets inactive timeout very often for openvpn3 so it
-          disconnects later than 2</em><br>
-        <em>Current proposal: count also incoming packets for openvpn2
-          and do not reset inactive timeout on ICMP packets for both
-          ovpn3 and 2</em><br>
-        <em>There was argument made that "this is how it has been in
-          openvpn2 forever and we had no complaints" but oddly the
-          documentation claims incoming and outgoing is counted.</em><br>
-        <em>after looking into this a bit some screwiness was found with
-          tracking the data in openvpn2 that could use fixing, and illia
-          will work on it.</em><br>
-        <em>and there is some voodoo happening in openvpn2 that skips
-          inactive reset packets and similar magic is missing in ovpn3,
-          so illia will work on that too.</em></li>
-    </ul>
-    <ul
-style="color: rgb(0, 0, 0); font-family: Verdana, Arial, &quot;Bitstream Vera Sans&quot;, Helvetica, sans-serif; font-size: 13px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;">
-      <li><strong>New: breaking DCO changes, how to approach?</strong><br>
-        <em>During the upstreaming process to the Linux kernel some
-          alterations had to be made.</em><br>
-        <em>This made the updated implementation different enough from
-          ovpn-dco-v2 that OpenVPN 2.6 won't work with it anymore.</em><br>
-        <em>The plan is to adjust OpenVPN 2.6 so it can support the
-          ovpn-dco-v2 delivered as out-of-tree kernel module, and the
-          in-tree new kernel module.</em><br>
-        <em>We can then update the out-of-tree kernel module to work in
-          the new way and have a graceful transition period.</em><br>
-        <em>So when it goes upstream and is in the Linux kernel, or DCO
-          is installed out-of-tree, it will work the same.</em><br>
-        <em>We can later decide on when to drop the support for
-          ovpn-dco-v2 old methods.</em></li>
-    </ul>
-    <ul
-style="color: rgb(0, 0, 0); font-family: Verdana, Arial, &quot;Bitstream Vera Sans&quot;, Helvetica, sans-serif; font-size: 13px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;">
-      <li><strong>Updated: openvpn 2.6.10 release</strong><br>
-        <em>There are some Windows related issues to be resolved in this
-          release.</em><br>
-        <em>Was planned for this week - pushed to begin next week.</em></li>
-    </ul>
-    <ul
-style="color: rgb(0, 0, 0); font-family: Verdana, Arial, &quot;Bitstream Vera Sans&quot;, Helvetica, sans-serif; font-size: 13px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;">
-      <li><strong>Updated: website release process</strong><br>
-        <em>Next week a website release is planned that will enable a
-          new way for updating Community Downloads page.</em><br>
-        <em>The new way has a much faster release method separate from
-          the rest of the website's release schedule.</em><br>
-      </li>
-    </ul>
-    <p>As always you're welcome to join at #openvpn-meeting on Libera
-      IRC network every Wednesday at 13:00 Central European Time.</p>
-    <p>Kind regards,<br>
-      Johan Draaisma<br>
-    </p>
-  </body>
-</html>
 
---------------639tMmgEHmDuBf3j9lZRX059--
+
+--
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/561?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings
+
+Gerrit-Project: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: I1879c893ed19b165fd086728fb97951eac251681
+Gerrit-Change-Number: 561
+Gerrit-PatchSet: 1
+Gerrit-Owner: MaxF <max@...2606...>
+Gerrit-Reviewer: cron2 <gert@...1296...>
+Gerrit-Reviewer: flichtenheld <frank@...2641...>
+Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Attention: flichtenheld <frank@...2641...>
+Gerrit-Attention: MaxF <max@...2606...>
+Gerrit-Comment-Date: Thu, 14 Mar 2024 18:54:30 +0000
+Gerrit-HasComments: Yes
+Gerrit-Has-Labels: Yes
+Gerrit-MessageType: comment
+
+--a6CmQBAm7cw=
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<p> Attention is currently required from: MaxF, flichtenheld, plaisthos. </=
+p>
+<p>Patch set 1:<span style=3D"border-radius: 3px; display: inline-block; ma=
+rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/561?usp=3Demail">Vi=
+ew Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0=
+;"><li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-s=
+tyle: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p s=
+tyle=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn=
+/+/561?tab=3Dcomments">Patch Set #1:</a> </p><p style=3D"white-space: pre-w=
+rap; word-wrap: break-word;">makes sense, thanks.</p></li></ul></li></ul><p=
+>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/561?usp=3D=
+email">change 561</a>. To unsubscribe, or for help writing mail filters, vi=
+sit <a href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div it=
+emscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=
+=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url=
+" href=3D"http://gerrit.openvpn.net/c/openvpn/+/561?usp=3Demail"/><meta ite=
+mprop=3D"name" content=3D"View Change"/></div></div>
+
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I1879c893ed19b165fd086728fb9=
+7951eac251681 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 561 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
+<div style=3D"display:none"> Gerrit-Owner: MaxF &lt;max@...2606...&gt; </di=
+v>
+<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
+ </div>
+<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
+1...&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
+.1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
+41...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: MaxF &lt;max@...2606...&gt; =
+</div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Thu, 14 Mar 2024 18:54:30=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
+
+
+--a6CmQBAm7cw=--
 
