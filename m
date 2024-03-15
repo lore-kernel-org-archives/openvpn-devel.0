@@ -1,16 +1,16 @@
 From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Fri, 15 Mar 2024 08:18:12 +0000
-In-Reply-To: <gerrit.1710356871000.I1879c893ed19b165fd086728fb97951eac251681@...2715...>
-References: <gerrit.1710356871000.I1879c893ed19b165fd086728fb97951eac251681@...2715...>
+Date: Fri, 15 Mar 2024 08:18:10 +0000
+In-Reply-To: <gerrit.1710357040000.I1879c893ed19b165fd086728fb97951eac251681@...2715...>
+References: <gerrit.1710357040000.I1879c893ed19b165fd086728fb97951eac251681@...2715...>
 Reply-To: gert@...1296..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net, frank@...2641...,
  max@...2606...
-Message-ID: <10e945738f93e5f4478edaa47448d66840a1c46d-HTML@...2715...>
+Message-ID: <8859d8a7aaf7b7868081905494c9ccbbe6e7d2d8-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="PcgRfzCjK4Y="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: Remove license
+Content-Type: multipart/alternative; boundary="JeAYt6XzWw8="; charset=UTF-8
+Subject: [Openvpn-devel] [S] Change in openvpn[release/2.6]: Remove license
  warning from README.mbedtls
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
@@ -23,12 +23,12 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: MaxF <max@...2606...>
 Cc: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---PcgRfzCjK4Y=
+--JeAYt6XzWw8=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 cron2 has submitted this change. ( http://gerrit.openvpn.net/c/openvpn/+/56=
-1?usp=3Demail )
+2?usp=3Demail )
 
 Change subject: Remove license warning from README.mbedtls
 ......................................................................
@@ -44,6 +44,7 @@ Message-Id: <20240314185527.26803-1-gert@...1296...>
 URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg28=
 400.html
 Signed-off-by: Gert Doering <gert@...1296...>
+(cherry picked from commit 91eb4606a4a3e8e2a4ed2ac4e2257e7ea44ccc44)
 ---
 M README.mbedtls
 1 file changed, 0 insertions(+), 16 deletions(-)
@@ -84,28 +85,27 @@ sing
 
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/561?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/562?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings
 
 Gerrit-Project: openvpn
-Gerrit-Branch: master
+Gerrit-Branch: release/2.6
 Gerrit-Change-Id: I1879c893ed19b165fd086728fb97951eac251681
-Gerrit-Change-Number: 561
+Gerrit-Change-Number: 562
 Gerrit-PatchSet: 2
 Gerrit-Owner: MaxF <max@...2606...>
-Gerrit-Reviewer: cron2 <gert@...1296...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-MessageType: merged
 
---PcgRfzCjK4Y=
+--JeAYt6XzWw8=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <p>cron2 <strong>submitted</strong> this change.</p><p><a href=3D"http://ge=
-rrit.openvpn.net/c/openvpn/+/561?usp=3Demail">View Change</a></p><div style=
+rrit.openvpn.net/c/openvpn/+/562?usp=3Demail">View Change</a></p><div style=
 =3D"white-space:pre-wrap"></div><pre style=3D"font-family: monospace,monosp=
 ace; white-space: pre-wrap;">Remove license warning from README.mbedtls<br>=
 <br>The licenses are compatible now, so we can remove the warning.<br><br>C=
@@ -114,8 +114,9 @@ illinger &lt;maximilian.fillinger@...2507...&gt;<br>Acked-by: Gert Doering =
 &lt;gert@...1296...&gt;<br>Message-Id: &lt;20240314185527.26803-1-gert@...1386...=
 296...&gt;<br>URL: https://www.mail-archive.com/openvpn-devel@...1535...=
 orge.net/msg28400.html<br>Signed-off-by: Gert Doering &lt;gert@...1296...&g=
-t;<br>---<br>M README.mbedtls<br>1 file changed, 0 insertions(+), 16 deleti=
-ons(-)<br><br></pre>
+t;<br>(cherry picked from commit 91eb4606a4a3e8e2a4ed2ac4e2257e7ea44ccc44)<=
+br>---<br>M README.mbedtls<br>1 file changed, 0 insertions(+), 16 deletions=
+(-)<br><br></pre>
 <pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><sp=
 an>diff --git a/README.mbedtls b/README.mbedtls</span><br><span>index 124ea=
 a2..c4f3924 100644</span><br><span>--- a/README.mbedtls</span><br><span>+++=
@@ -144,24 +145,22 @@ span><br><span style=3D"color: hsl(0, 100%, 40%);">-***********************=
 "color: hsl(0, 100%, 40%);">-</span><br><span> Due to limitations in the mb=
 ed TLS library, the following features are missing</span><br><span> in the =
 mbed TLS version of OpenVPN:</span><br><span> </span><br><span></span><br><=
-/pre><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/561=
-?usp=3Demail">change 561</a>. To unsubscribe, or for help writing mail filt=
+/pre><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/562=
+?usp=3Demail">change 562</a>. To unsubscribe, or for help writing mail filt=
 ers, visit <a href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p>=
 <div itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope i=
 temprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=
-=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/561?usp=3Demail"/><m=
+=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/562?usp=3Demail"/><m=
 eta itemprop=3D"name" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Branch: release/2.6 </div>
 <div style=3D"display:none"> Gerrit-Change-Id: I1879c893ed19b165fd086728fb9=
 7951eac251681 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 561 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 562 </div>
 <div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
 <div style=3D"display:none"> Gerrit-Owner: MaxF &lt;max@...2606...&gt; </di=
 v>
-<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
- </div>
 <div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
 1...&gt; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
@@ -171,5 +170,5 @@ ts.sourceforge.net&gt; </div>
 <div style=3D"display:none"> Gerrit-MessageType: merged </div>
 
 
---PcgRfzCjK4Y=--
+--JeAYt6XzWw8=--
 
