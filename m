@@ -1,10 +1,9 @@
+Date: Fri, 15 Mar 2024 09:17:44 +0100 (CET)
+Message-Id: <202403150817.42F8HidM035295@...2054...>
 From: Gert Doering <gert@...1296...>
-Date: Thu, 14 Mar 2024 19:55:27 +0100
-Message-ID: <20240314185527.26803-1-gert@...1296...>
-In-Reply-To: <gerrit.1710356871000.I1879c893ed19b165fd086728fb97951eac251681@...2715...>
-References: <gerrit.1710356871000.I1879c893ed19b165fd086728fb97951eac251681@...2715...>
-MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v1] Remove license warning from
+In-Reply-To: <20240314185527.26803-1-gert@...1296...>
+References: <20240314185527.26803-1-gert@...1296...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Remove license warning from
  README.mbedtls
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
@@ -16,52 +15,30 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Max Fillinger <maximilian.fillinger@...2507...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-From: Max Fillinger <maximilian.fillinger@...2507...>
+Well spotted :-)
 
-The licenses are compatible now, so we can remove the warning.
+Your patch has been applied to the master and release/2.6 branch.
 
-Change-Id: I1879c893ed19b165fd086728fb97951eac251681
-Signed-off-by: Max Fillinger <maximilian.fillinger@...2507...>
-Acked-by: Gert Doering <gert@...1296...>
----
+commit 91eb4606a4a3e8e2a4ed2ac4e2257e7ea44ccc44 (master)
+commit 366ca5b9b5ec104e0c7ae2f3cf563b9057ee879a (release/2.6)
+Author: Max Fillinger
+Date:   Thu Mar 14 19:55:27 2024 +0100
 
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to master.
+     Remove license warning from README.mbedtls
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/561
-This mail reflects revision 1 of this Change.
+     Signed-off-by: Max Fillinger <maximilian.fillinger@...2507...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <20240314185527.26803-1-gert@...1296...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg28400.html
+     Signed-off-by: Gert Doering <gert@...1296...>
 
-Acked-by according to Gerrit (reflected above):
-Gert Doering <gert@...1296...>
 
-        
-diff --git a/README.mbedtls b/README.mbedtls
-index 124eaa2..c4f3924 100644
---- a/README.mbedtls
-+++ b/README.mbedtls
-@@ -11,22 +11,6 @@
- 
- *************************************************************************
- 
--Warning:
--
--As of mbed TLS 2.17, it can be licensed *only* under the Apache v2.0 license.
--That license is incompatible with OpenVPN's GPLv2.
--
--We are currently in the process of resolving this problem, but for now, if you
--wish to distribute OpenVPN linked with mbed TLS, there are two options:
--
-- * Ensure that your case falls under the system library exception in GPLv2, or
--
-- * Use an earlier version of mbed TLS. Version 2.16.12 is the last release
--   that may be licensed under GPLv2. Unfortunately, this version is
--   unsupported and won't receive any more updates.
--
--*************************************************************************
--
- Due to limitations in the mbed TLS library, the following features are missing
- in the mbed TLS version of OpenVPN:
- 
+--
+kind regards,
+
+Gert Doering
+
 
