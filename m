@@ -1,10 +1,11 @@
-Date: Mon, 18 Mar 2024 18:57:46 +0100 (CET)
-Message-Id: <202403181757.42IHvkfu098022@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20240315170054.2368254-1-frank@...2641...>
-References: <20240315170054.2368254-1-frank@...2641...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Update Copyright statements to
- 2024
+Date: Mon, 18 Mar 2024 19:17:44 +0100
+Message-ID: <20240318181744.20625-1-gert@...1296...>
+In-Reply-To: <gerrit.1710510194000.I16d6a9fefa317d7d4a195e786618328445bdbca8@...2715...>
+References: <gerrit.1710510194000.I16d6a9fefa317d7d4a195e786618328445bdbca8@...2715...>
+MIME-Version: 1.0
+Subject: [Openvpn-devel] [PATCH v1] Disable DCO if proxy is set via
+ management
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,44 +16,73 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Frank Lichtenheld <frank@...2641...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
-Acked-by: Gert Doering <gert@...1296...>
+From: Lev Stipakov <lev@...515...>
 
-Like Christmas... happens every year :-)  - verified that this, indeed,
-only affects copyright lines ("git show -I '^ \*  Copyright') - I guess
-it was produced by update-copyright.sh anyway, but review is what I do...
+Commit
 
-The only actual code change is the msg() in options.c
+    45a1cb2a ("Disable DCO if proxy is set via management")
 
-For some unknown reason, the mail-archive.com list archive does not have
-the original e-mail, but the sourceforge one has - so I'm linking to
-that URL.
+attempted to disable DCO when proxy is set via management interface. However,
+at least on Windows this doesn't work, since:
 
-Your patch has been applied to the master and release/2.6 branch.
+ - setting tuntap_options->disable_dco to true is not enough to disable DCO
+ - at this point it is a bit too late, since we've already done DCO-specific
+adjustments
 
-Cherry-Picking to 2.6 upset git a bit (conflict in sig.c and lots of
-complaints about unit test files not existing in release/2.6) - but
-all quite obvious.
+Since proxy could be set via management only if --management-query-proxy is specified,
+the better way would be to add a check to dco_check_startup_option().
 
-commit b25c6d7e861d446b7a2e03cbcfb892d554c1ef73 (master)
-commit ff06f4ca4290fde46019d61d9c1039ad05b12701 (release/2.6)
-Author: Frank Lichtenheld
-Date:   Fri Mar 15 18:00:54 2024 +0100
+Github: fixes OpenVPN/openvpn#522
 
-     Update Copyright statements to 2024
+Change-Id: I16d6a9fefa317d7d4a195e786618328445bdbca8
+Signed-off-by: Lev Stipakov <lev@...515...>
+Acked-by: Frank Lichtenheld <frank@...2641...>
+---
 
-     Signed-off-by: Frank Lichtenheld <frank@...2641...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20240315170054.2368254-1-frank@...2641...>
-     URL: https://sourceforge.net/p/openvpn/mailman/message/58749316/
-     Signed-off-by: Gert Doering <gert@...1296...>
+This change was reviewed on Gerrit and approved by at least one
+developer. I request to merge it to master.
 
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/543
+This mail reflects revision 1 of this Change.
 
---
-kind regards,
+Acked-by according to Gerrit (reflected above):
+Frank Lichtenheld <frank@...2641...>
 
-Gert Doering
-
+        
+diff --git a/src/openvpn/dco.c b/src/openvpn/dco.c
+index 14430d3..540b5a8 100644
+--- a/src/openvpn/dco.c
++++ b/src/openvpn/dco.c
+@@ -387,6 +387,12 @@
+         return false;
+     }
+ 
++    if (o->management_flags & MF_QUERY_PROXY)
++    {
++        msg(msglevel, "Note: --management-query-proxy disables data channel offload.");
++        return false;
++    }
++
+     /* now that all options have been confirmed to be supported, check
+      * if DCO is truly available on the system
+      */
+diff --git a/src/openvpn/init.c b/src/openvpn/init.c
+index 52b3931..6a3040f 100644
+--- a/src/openvpn/init.c
++++ b/src/openvpn/init.c
+@@ -221,12 +221,6 @@
+     }
+     else if (p[2] && p[3])
+     {
+-        if (dco_enabled(&c->options))
+-        {
+-            msg(M_INFO, "Proxy set via management, disabling Data Channel Offload.");
+-            c->options.tuntap_options.disable_dco = true;
+-        }
+-
+         if (streq(p[1], "HTTP"))
+         {
+             struct http_proxy_options *ho;
 
