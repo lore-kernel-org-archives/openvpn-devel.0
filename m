@@ -1,16 +1,10 @@
-From: "flichtenheld (Code Review)" <gerrit@...515...>
-Date: Mon, 18 Mar 2024 16:30:01 +0000
-In-Reply-To: <gerrit.1700479678000.I0ad48915004ddee587e97c8ed190ba8ee989e48d@...2715...>
-References: <gerrit.1700479678000.I0ad48915004ddee587e97c8ed190ba8ee989e48d@...2715...>
-Reply-To: frank@...2641..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net
-Message-ID: <1b288677817dd4b2204e977f61ffc13373b7e9f2-EmailReviewComments-HTML@...2715...>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="3jyMQS7DsA0="; charset=UTF-8
-Subject: [Openvpn-devel] [M] Change in openvpn[master]: Allow the TLS
- session to send out TLS alerts
+Date: Mon, 18 Mar 2024 18:57:46 +0100 (CET)
+Message-Id: <202403181757.42IHvkfu098022@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <20240315170054.2368254-1-frank@...2641...>
+References: <20240315170054.2368254-1-frank@...2641...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Update Copyright statements to
+ 2024
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,110 +13,46 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: plaisthos <arne-openvpn@...1227...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: Frank Lichtenheld <frank@...2641...>
+Cc: openvpn-devel@lists.sourceforge.net
 
---3jyMQS7DsA0=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Acked-by: Gert Doering <gert@...1296...>
 
-Attention is currently required from: plaisthos.
+Like Christmas... happens every year :-)  - verified that this, indeed,
+only affects copyright lines ("git show -I '^ \*  Copyright') - I guess
+it was produced by update-copyright.sh anyway, but review is what I do...
 
-flichtenheld has posted comments on this change. ( http://gerrit.openvpn.ne=
-t/c/openvpn/+/449?usp=3Demail )
+The only actual code change is the msg() in options.c
 
-Change subject: Allow the TLS session to send out TLS alerts
-......................................................................
+For some unknown reason, the mail-archive.com list archive does not have
+the original e-mail, but the sourceforge one has - so I'm linking to
+that URL.
 
+Your patch has been applied to the master and release/2.6 branch.
 
-Patch Set 6: Code-Review+2
+Cherry-Picking to 2.6 upset git a bit (conflict in sig.c and lots of
+complaints about unit test files not existing in release/2.6) - but
+all quite obvious.
 
-(2 comments)
+commit b25c6d7e861d446b7a2e03cbcfb892d554c1ef73 (master)
+commit ff06f4ca4290fde46019d61d9c1039ad05b12701 (release/2.6)
+Author: Frank Lichtenheld
+Date:   Fri Mar 15 18:00:54 2024 +0100
 
-Patchset:
+     Update Copyright statements to 2024
 
-PS6:
-Looks good to me, but did not test it.
-
-
-File src/openvpn/ssl.c:
-
-http://gerrit.openvpn.net/c/openvpn/+/449/comment/46b395cc_6e433008 :
-PS6, Line 3236:                 msg(D_TLS_ERRORS, "TLS Error: generate_key_=
-expansion failed");
-While here, can we fix the error message, please?
-
+     Signed-off-by: Frank Lichtenheld <frank@...2641...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <20240315170054.2368254-1-frank@...2641...>
+     URL: https://sourceforge.net/p/openvpn/mailman/message/58749316/
+     Signed-off-by: Gert Doering <gert@...1296...>
 
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/449?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings
+kind regards,
 
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: I0ad48915004ddee587e97c8ed190ba8ee989e48d
-Gerrit-Change-Number: 449
-Gerrit-PatchSet: 6
-Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
-Gerrit-Reviewer: flichtenheld <frank@...2641...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Comment-Date: Mon, 18 Mar 2024 16:30:01 +0000
-Gerrit-HasComments: Yes
-Gerrit-Has-Labels: Yes
-Gerrit-MessageType: comment
+Gert Doering
 
---3jyMQS7DsA0=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<p> Attention is currently required from: plaisthos. </p>
-<p>Patch set 6:<span style=3D"border-radius: 3px; display: inline-block; ma=
-rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/449?usp=3Demail">Vi=
-ew Change</a></p><p>2 comments:</p><ul style=3D"list-style: none; padding: =
-0;"><li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-=
-style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p =
-style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvp=
-n/+/449?tab=3Dcomments">Patch Set #6:</a> </p><p style=3D"white-space: pre-=
-wrap; word-wrap: break-word;">Looks good to me, but did not test it.</p></l=
-i></ul></li><li style=3D"margin: 0; padding: 0;"><p>File src/openvpn/ssl.c:=
-</p><ul style=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; pad=
-ding: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerri=
-t.openvpn.net/c/openvpn/+/449/comment/46b395cc_6e433008">Patch Set #6, Line=
- 3236:</a> <code style=3D"font-family:monospace,monospace">                =
-msg(D_TLS_ERRORS, &quot;TLS Error: generate_key_expansion failed&quot;);</c=
-ode></p><p style=3D"white-space: pre-wrap; word-wrap: break-word;">While he=
-re, can we fix the error message, please?</p></li></ul></li></ul><p>To view=
-, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/449?usp=3Demail">c=
-hange 449</a>. To unsubscribe, or for help writing mail filters, visit <a h=
-ref=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope =
-itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"acti=
-on" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=
-=3D"http://gerrit.openvpn.net/c/openvpn/+/449?usp=3Demail"/><meta itemprop=
-=3D"name" content=3D"View Change"/></div></div>
-
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I0ad48915004ddee587e97c8ed19=
-0ba8ee989e48d </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 449 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 6 </div>
-<div style=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@...1711...=
-27...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
-1...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Mon, 18 Mar 2024 16:30:01=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
-
-
---3jyMQS7DsA0=--
 
