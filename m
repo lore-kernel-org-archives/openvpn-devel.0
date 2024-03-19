@@ -1,11 +1,9 @@
-From: Gert Doering <gert@...1296...>
-Date: Mon, 18 Mar 2024 19:17:44 +0100
-Message-ID: <20240318181744.20625-1-gert@...1296...>
-In-Reply-To: <gerrit.1710510194000.I16d6a9fefa317d7d4a195e786618328445bdbca8@...2715...>
-References: <gerrit.1710510194000.I16d6a9fefa317d7d4a195e786618328445bdbca8@...2715...>
+From: Lev Stipakov <lstipakov@...277...>
+Date: Tue, 19 Mar 2024 15:53:45 +0200
+Message-ID: <20240319135355.1279-2-lev@...515...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v1] Disable DCO if proxy is set via
- management
+Subject: [Openvpn-devel] [PATCH] win32: Enforce loading of plugins from a
+ trusted directory
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,72 +15,212 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
+Cc: Lev Stipakov <lev@...515...>, Vladimir Tokarev <vtokarev@...2393...>, Selva Nair <selva.nair@...277...>
 
-From: Lev Stipakov <lev@...515...>
+Currently, there's a risk associated with allowing plugins to be loaded
+from any location. This update ensures plugins are only loaded from a
+trusted directory, which is either:
 
-Commit
+    - HKLM\SOFTWARE\OpenVPN\plugin_dir (or if the key is missing,
+    then HKLM\SOFTWARE\OpenVPN, which is installation directory)
 
-    45a1cb2a ("Disable DCO if proxy is set via management")
+    - System directory
 
-attempted to disable DCO when proxy is set via management interface. However,
-at least on Windows this doesn't work, since:
+Loading from UNC paths is disallowed.
 
- - setting tuntap_options->disable_dco to true is not enough to disable DCO
- - at this point it is a bit too late, since we've already done DCO-specific
-adjustments
+Note: This change affects only Windows environments.
 
-Since proxy could be set via management only if --management-query-proxy is specified,
-the better way would be to add a check to dco_check_startup_option().
+CVE: 2024-27903
 
-Github: fixes OpenVPN/openvpn#522
-
-Change-Id: I16d6a9fefa317d7d4a195e786618328445bdbca8
+Change-Id: I154a4aaad9242c9253a64312a14c5fd2ea95f40d
+Reported-by: Vladimir Tokarev <vtokarev@...2393...>
 Signed-off-by: Lev Stipakov <lev@...515...>
-Acked-by: Frank Lichtenheld <frank@...2641...>
+Acked-by: Selva Nair <selva.nair@...277...>
 ---
+ src/openvpn/plugin.c | 18 +++++++++--
+ src/openvpn/win32.c  | 77 +++++++++++++++++++++++++++++++++++++-------
+ src/openvpn/win32.h  | 27 ++++++++++++++++
+ 3 files changed, 107 insertions(+), 15 deletions(-)
 
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to master.
-
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/543
-This mail reflects revision 1 of this Change.
-
-Acked-by according to Gerrit (reflected above):
-Frank Lichtenheld <frank@...2641...>
-
-        
-diff --git a/src/openvpn/dco.c b/src/openvpn/dco.c
-index 14430d3..540b5a8 100644
---- a/src/openvpn/dco.c
-+++ b/src/openvpn/dco.c
-@@ -387,6 +387,12 @@
-         return false;
+diff --git a/src/openvpn/plugin.c b/src/openvpn/plugin.c
+index b4d4a986..3d62eced 100644
+--- a/src/openvpn/plugin.c
++++ b/src/openvpn/plugin.c
+@@ -277,11 +277,23 @@ plugin_init_item(struct plugin *p, const struct plugin_option *o)
+ 
+ #else  /* ifndef _WIN32 */
+ 
+-    rel = !platform_absolute_pathname(p->so_pathname);
+-    p->module = LoadLibraryW(wide_string(p->so_pathname, &gc));
++    WCHAR *wpath = wide_string(p->so_pathname, &gc);
++    WCHAR normalized_plugin_path[MAX_PATH] = {0};
++    /* Normalize the plugin path, converting any relative paths to absolute paths. */
++    if (!GetFullPathNameW(wpath, MAX_PATH, normalized_plugin_path, NULL))
++    {
++        msg(M_ERR, "PLUGIN_INIT: could not load plugin DLL: %ls. Failed to normalize plugin path.", wpath);
++    }
++
++    if (!plugin_in_trusted_dir(normalized_plugin_path))
++    {
++        msg(M_FATAL, "PLUGIN_INIT: could not load plugin DLL: %ls. The DLL is not in a trusted directory.", normalized_plugin_path);
++    }
++
++    p->module = LoadLibraryW(normalized_plugin_path);
+     if (!p->module)
+     {
+-        msg(M_ERR, "PLUGIN_INIT: could not load plugin DLL: %s", p->so_pathname);
++        msg(M_ERR, "PLUGIN_INIT: could not load plugin DLL: %ls", normalized_plugin_path);
      }
  
-+    if (o->management_flags & MF_QUERY_PROXY)
+ #define PLUGIN_SYM(var, name, flags) dll_resolve_symbol(p->module, (void *)&p->var, name, p->so_pathname, flags)
+diff --git a/src/openvpn/win32.c b/src/openvpn/win32.c
+index 6b7ba5e4..7ed32811 100644
+--- a/src/openvpn/win32.c
++++ b/src/openvpn/win32.c
+@@ -1497,27 +1497,24 @@ openvpn_swprintf(wchar_t *const str, const size_t size, const wchar_t *const for
+     return (len >= 0 && len < size);
+ }
+ 
+-static BOOL
+-get_install_path(WCHAR *path, DWORD size)
++bool
++get_openvpn_reg_value(const WCHAR *key, WCHAR *value, DWORD size)
+ {
+     WCHAR reg_path[256];
+-    HKEY key;
+-    BOOL res = FALSE;
++    HKEY hkey;
+     openvpn_swprintf(reg_path, _countof(reg_path), L"SOFTWARE\\" PACKAGE_NAME);
+ 
+-    LONG status = RegOpenKeyExW(HKEY_LOCAL_MACHINE, reg_path, 0, KEY_READ, &key);
++    LONG status = RegOpenKeyExW(HKEY_LOCAL_MACHINE, reg_path, 0, KEY_READ, &hkey);
+     if (status != ERROR_SUCCESS)
+     {
+-        return res;
++        return false;
+     }
+ 
+-    /* The default value of REG_KEY is the install path */
+-    status = RegGetValueW(key, NULL, NULL, RRF_RT_REG_SZ, NULL, (LPBYTE)path, &size);
+-    res = status == ERROR_SUCCESS;
++    status = RegGetValueW(hkey, NULL, key, RRF_RT_REG_SZ, NULL, (LPBYTE)value, &size);
+ 
+-    RegCloseKey(key);
++    RegCloseKey(hkey);
+ 
+-    return res;
++    return status == ERROR_SUCCESS;
+ }
+ 
+ static void
+@@ -1526,7 +1523,7 @@ set_openssl_env_vars()
+     const WCHAR *ssl_fallback_dir = L"C:\\Windows\\System32";
+ 
+     WCHAR install_path[MAX_PATH] = { 0 };
+-    if (!get_install_path(install_path, _countof(install_path)))
++    if (!get_openvpn_reg_value(NULL, install_path, _countof(install_path)))
+     {
+         /* if we cannot find installation path from the registry,
+          * use Windows directory as a fallback
+@@ -1605,4 +1602,60 @@ win32_sleep(const int n)
+         }
+     }
+ }
++
++bool
++plugin_in_trusted_dir(const WCHAR *plugin_path)
++{
++    /* UNC paths are not allowed */
++    if (wcsncmp(plugin_path, L"\\\\", 2) == 0)
 +    {
-+        msg(msglevel, "Note: --management-query-proxy disables data channel offload.");
++        msg(M_WARN, "UNC paths for plugins are not allowed.");
 +        return false;
 +    }
 +
-     /* now that all options have been confirmed to be supported, check
-      * if DCO is truly available on the system
-      */
-diff --git a/src/openvpn/init.c b/src/openvpn/init.c
-index 52b3931..6a3040f 100644
---- a/src/openvpn/init.c
-+++ b/src/openvpn/init.c
-@@ -221,12 +221,6 @@
-     }
-     else if (p[2] && p[3])
-     {
--        if (dco_enabled(&c->options))
--        {
--            msg(M_INFO, "Proxy set via management, disabling Data Channel Offload.");
--            c->options.tuntap_options.disable_dco = true;
--        }
--
-         if (streq(p[1], "HTTP"))
-         {
-             struct http_proxy_options *ho;
++    WCHAR plugin_dir[MAX_PATH] = { 0 };
++
++    /* Attempt to retrieve the trusted plugin directory path from the registry,
++     * using installation path as a fallback */
++    if (!get_openvpn_reg_value(L"plugin_dir", plugin_dir, _countof(plugin_dir))
++        && !get_openvpn_reg_value(NULL, plugin_dir, _countof(plugin_dir)))
++    {
++        msg(M_WARN, "Installation path could not be determined.");
++    }
++
++    /* Get the system directory */
++    WCHAR system_dir[MAX_PATH] = { 0 };
++    if (GetSystemDirectoryW(system_dir, _countof(system_dir)) == 0)
++    {
++        msg(M_NONFATAL | M_ERRNO, "Failed to get system directory.");
++    }
++
++    if ((wcslen(plugin_dir) == 0) && (wcslen(system_dir) == 0))
++    {
++        return false;
++    }
++
++    WCHAR normalized_plugin_dir[MAX_PATH] = { 0 };
++
++    /* Normalize the plugin dir */
++    if (wcslen(plugin_dir) > 0)
++    {
++        if (!GetFullPathNameW(plugin_dir, MAX_PATH, normalized_plugin_dir, NULL))
++        {
++            msg(M_NONFATAL | M_ERRNO, "Failed to normalize plugin dir.");
++            return false;
++        }
++    }
++
++    /* Check if the plugin path resides within the plugin/install directory */
++    if ((wcslen(normalized_plugin_dir) > 0) && (wcsnicmp(normalized_plugin_dir,
++                                                         plugin_path, wcslen(normalized_plugin_dir)) == 0))
++    {
++        return true;
++    }
++
++    /* Fallback to the system directory */
++    return wcsnicmp(system_dir, plugin_path, wcslen(system_dir)) == 0;
++}
++
+ #endif /* ifdef _WIN32 */
+diff --git a/src/openvpn/win32.h b/src/openvpn/win32.h
+index aa8513b2..2f147c09 100644
+--- a/src/openvpn/win32.h
++++ b/src/openvpn/win32.h
+@@ -330,5 +330,32 @@ openvpn_swprintf(wchar_t *const str, const size_t size, const wchar_t *const for
+ /* Sleep that can be interrupted by signals and exit event */
+ void win32_sleep(const int n);
+ 
++/**
++ * @brief Fetches a registry value for OpenVPN registry key.
++ *
++ * @param key Registry value name to fetch.
++ * @param value Buffer to store the fetched string value.
++ * @param size Size of `value` buffer in bytes.
++ * @return `true` if successful, `false` otherwise.
++ */
++bool
++get_openvpn_reg_value(const WCHAR *key, WCHAR *value, DWORD size);
++
++/**
++ * @brief Checks if a plugin is located in a trusted directory.
++ *
++ * Verifies the plugin's path against a trusted directory, which is:
++ *
++ * - "plugin_dir" registry value or installation path, if the registry key is missing
++ * - system directory
++ *
++ * UNC paths are explicitly disallowed.
++ *
++ * @param plugin_path Normalized path to the plugin.
++ * @return \c true if the plugin is in a trusted directory and not a UNC path; \c false otherwise.
++ */
++bool
++plugin_in_trusted_dir(const WCHAR *plugin_path);
++
+ #endif /* ifndef OPENVPN_WIN32_H */
+ #endif /* ifdef _WIN32 */
+-- 
+2.42.0.windows.2
+
 
