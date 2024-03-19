@@ -1,10 +1,10 @@
-Date: Tue, 19 Mar 2024 19:08:40 +0100 (CET)
-Message-Id: <202403191808.42JI8efB044166@...2054...>
+Date: Tue, 19 Mar 2024 20:35:17 +0100 (CET)
+Message-Id: <202403191935.42JJZHk6051314@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20240319152803.1801-2-lev@...515...>
-References: <20240319152803.1801-2-lev@...515...>
-Subject: [Openvpn-devel] [PATCH applied] Re: interactive.c: Fix potential
- stack overflow issue
+In-Reply-To: <20240318181744.20625-1-gert@...1296...>
+References: <20240318181744.20625-1-gert@...1296...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Disable DCO if proxy is set via
+ management
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,50 +15,27 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Lev Stipakov <lstipakov@...277...>
+To: Lev Stipakov <lev@...515...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-As for the two previous windows/CVE patches, this patch was sent "with
-ACK included" to the openvpn-devel@ list because it was developed under
-embargo (CVE), and reviewed and ACKed in a closed group.  I have verified
-that this patch is identical to the "v2" version that Heiko and the original
-reporter saw and ACKed. 
+Straight and to the point :-)
 
-The patch looks larger than the actual code change, because to do the
-size check the union typedef needs to move outside the function where
-it was "local" before.  The actual check is very straightforward - "if
-there is more data in the pipe than can fit into a pipe_message_t,
-log an error and close this thread" (thus, abandon the process on the
-other end that pretends to be openvpn.exe but is misbehaving).
+Minimally tested with a linux t_client setup that uses DCO and proxy (but
+no --managment-query-proxy).
 
-In itself, this bug is annoying, but can not be directly exploited
-(because you cannot "just talk to this pipe", but you need to be
-openvpn.exe from the install directory).  Combined with other potential
-flaws that give an attacker the opportunity to swap the openvpn.exe
-binary or get a malicious plugin loaded, this could end up being a
-local privilege escalation to SYSTEM.  No exploit is known so far - this
-was found by code inspection for missing bounds checks.
+Your patch has been applied to the master and release/2.6 branch (bugfix).
 
-
-I have test compiled this on MinGW and GHA, but did not actually run it.
-
-Your patch has been applied to the master and release/2.6 branch
-(security relevant bugfix).  A direct cherrypick to 2.5 fails due to
-"sufficiently different code and data structures" so I've asked Lev
-to send a 2.5 version which I could review-and-ACK then.
-
-commit 989b22cb6e007fd1addcfaf7d12f4fec9fbc9639 (master)
-commit 9b2693feff9c49b9485cf94797c1c3502259dbe1 (release/2.6)
-
+commit fd6b8395f6cee8a61111c28f335ec25ed6db11f7 (master)
+commit 462fed53c7a5f21c07dafa4910765efe56d7402d (release/2.6)
 Author: Lev Stipakov
-Date:   Tue Mar 19 17:27:11 2024 +0200
+Date:   Mon Mar 18 19:17:44 2024 +0100
 
-     interactive.c: Fix potential stack overflow issue
+     Disable DCO if proxy is set via management
 
      Signed-off-by: Lev Stipakov <lev@...515...>
-     Acked-by: Heiko Hund <heiko@...515...>
-     Message-Id: <20240319152803.1801-2-lev@...515...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg28420.html
+     Acked-by: Frank Lichtenheld <frank@...2641...>
+     Message-Id: <20240318181744.20625-1-gert@...1296...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg28415.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
