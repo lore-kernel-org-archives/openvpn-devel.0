@@ -1,11 +1,16 @@
-From: Lev Stipakov <lstipakov@...277...>
-Date: Tue, 19 Mar 2024 17:27:11 +0200
-Message-ID: <20240319152803.1801-2-lev@...515...>
-In-Reply-To: <20240319140957.2033-3-lev@...515...>
-References: <20240319140957.2033-3-lev@...515...>
+From: "plaisthos (Code Review)" <gerrit@...515...>
+Date: Tue, 19 Mar 2024 15:38:16 +0000
+In-Reply-To: <gerrit.1710522333000.I1ad6a0b1323ce0872f4a3299c5a9f18a982e0126@...2715...>
+References: <gerrit.1710522333000.I1ad6a0b1323ce0872f4a3299c5a9f18a982e0126@...2715...>
+Reply-To: arne-openvpn@...1227..., openvpn-devel@lists.sourceforge.net,
+ frank@...2641...
+Message-ID: <8fd06da646857e0f0c1142adb3f714b7286f51a5-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v2] interactive.c: Fix potential stack
- overflow issue
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="jVgPkuaMrmk="; charset=UTF-8
+Subject: [Openvpn-devel] [S] Change in openvpn[master]: GHA: general update
+ March 2024
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,101 +19,81 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
-Cc: Lev Stipakov <lev@...515...>, Vladimir Tokarev <vtokarev@...2393...>, Heiko Hund <heiko@...515...>
+To: flichtenheld <frank@...2641...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-When reading message from the pipe, we first peek the pipe to get the size
-of the message waiting to be read and then read the message. A compromised
-OpenVPN process could send an excessively large message, which would result
-in a stack-allocated message buffer overflow.
+--jVgPkuaMrmk=
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-To address this, we terminate the misbehaving process if the peeked message
-size exceeds the maximum allowable size.
+Attention is currently required from: flichtenheld.
 
-CVE: 2024-27459
-Microsoft case number: 85932
+plaisthos has posted comments on this change. ( http://gerrit.openvpn.net/c=
+/openvpn/+/544?usp=3Demail )
 
-Reported-by: Vladimir Tokarev <vtokarev@...2393...>
-Change-Id: Ib5743cba0741ea11f9ee62c4978b2c6789b81ada
-Signed-off-by: Lev Stipakov <lev@...515...>
-Acked-by: Heiko Hund <heiko@...515...>
----
+Change subject: GHA: general update March 2024
+......................................................................
 
- v2: added CVE and MSFT case number
 
- src/openvpnserv/interactive.c | 35 +++++++++++++++++++++--------------
- 1 file changed, 21 insertions(+), 14 deletions(-)
+Patch Set 1: Code-Review+2
 
-diff --git a/src/openvpnserv/interactive.c b/src/openvpnserv/interactive.c
-index 32c8996c..24e3f341 100644
---- a/src/openvpnserv/interactive.c
-+++ b/src/openvpnserv/interactive.c
-@@ -106,6 +106,18 @@ typedef struct {
-     struct tun_ring *receive_ring;
- } ring_buffer_maps_t;
- 
-+typedef union {
-+    message_header_t header;
-+    address_message_t address;
-+    route_message_t route;
-+    flush_neighbors_message_t flush_neighbors;
-+    block_dns_message_t block_dns;
-+    dns_cfg_message_t dns;
-+    enable_dhcp_message_t dhcp;
-+    register_ring_buffers_message_t rrb;
-+    set_mtu_message_t mtu;
-+    wins_cfg_message_t wins;
-+} pipe_message_t;
- 
- static DWORD
- AddListItem(list_item_t **pfirst, LPVOID data)
-@@ -1610,19 +1622,7 @@ static VOID
- HandleMessage(HANDLE pipe, HANDLE ovpn_proc,
-               DWORD bytes, DWORD count, LPHANDLE events, undo_lists_t *lists)
- {
--    DWORD read;
--    union {
--        message_header_t header;
--        address_message_t address;
--        route_message_t route;
--        flush_neighbors_message_t flush_neighbors;
--        block_dns_message_t block_dns;
--        dns_cfg_message_t dns;
--        enable_dhcp_message_t dhcp;
--        register_ring_buffers_message_t rrb;
--        set_mtu_message_t mtu;
--        wins_cfg_message_t wins;
--    } msg;
-+    pipe_message_t msg;
-     ack_message_t ack = {
-         .header = {
-             .type = msg_acknowledgement,
-@@ -1632,7 +1632,7 @@ HandleMessage(HANDLE pipe, HANDLE ovpn_proc,
-         .error_number = ERROR_MESSAGE_DATA
-     };
- 
--    read = ReadPipeAsync(pipe, &msg, bytes, count, events);
-+    DWORD read = ReadPipeAsync(pipe, &msg, bytes, count, events);
-     if (read != bytes || read < sizeof(msg.header) || read != msg.header.size)
-     {
-         goto out;
-@@ -2059,6 +2059,13 @@ RunOpenvpn(LPVOID p)
-             break;
-         }
- 
-+        if (bytes > sizeof(pipe_message_t))
-+        {
-+            /* process at the other side of the pipe is misbehaving, shut it down */
-+            MsgToEventLog(MSG_FLAGS_ERROR, TEXT("OpenVPN process sent too large payload length to the pipe (%lu bytes), it will be terminated"), bytes);
-+            break;
-+        }
-+
-         HandleMessage(ovpn_pipe, proc_info.hProcess, bytes, 1, &exit_event, &undo_lists);
-     }
- 
--- 
-2.42.0.windows.2
 
+--
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/544?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings
+
+Gerrit-Project: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: I1ad6a0b1323ce0872f4a3299c5a9f18a982e0126
+Gerrit-Change-Number: 544
+Gerrit-PatchSet: 1
+Gerrit-Owner: flichtenheld <frank@...2641...>
+Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-Attention: flichtenheld <frank@...2641...>
+Gerrit-Comment-Date: Tue, 19 Mar 2024 15:38:16 +0000
+Gerrit-HasComments: No
+Gerrit-Has-Labels: Yes
+Gerrit-MessageType: comment
+
+--jVgPkuaMrmk=
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<p> Attention is currently required from: flichtenheld. </p>
+<p>Patch set 1:<span style=3D"border-radius: 3px; display: inline-block; ma=
+rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/544?usp=3Demail">Vi=
+ew Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To vie=
+w, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/544?usp=3Demail">=
+change 544</a>. To unsubscribe, or for help writing mail filters, visit <a =
+href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope=
+ itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"act=
+ion" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=
+=3D"http://gerrit.openvpn.net/c/openvpn/+/544?usp=3Demail"/><meta itemprop=
+=3D"name" content=3D"View Change"/></div></div>
+
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I1ad6a0b1323ce0872f4a3299c5a=
+9f18a982e0126 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 544 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
+<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
+.&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
+.1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
+41...&gt; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Tue, 19 Mar 2024 15:38:16=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: No </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
+
+
+--jVgPkuaMrmk=--
 
