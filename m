@@ -1,9 +1,15 @@
-From: Frank Lichtenheld <frank@...2641...>
-Date: Thu, 21 Mar 2024 17:16:23 +0100
-Message-Id: <20240321161623.2794161-1-frank@...2641...>
+Message-ID: <9dd314e4-4dd9-49fa-b325-de0e8f166747@...1227...>
+Date: Thu, 21 Mar 2024 12:38:45 -0400
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] script-options.rst: Update ifconfig_*
- variables
+References: <20230830130502.1029-1-sandro.trianni@...277...>
+ <20240315162011.1661139-1-frank@...2641...>
+ <ZfR54tXN8gxWr4A0@...2685...>
+ <ZfsXglouFPyXApqf@...1296...>
+Content-Language: en-GB
+From: Arne Schwabe <arne@...1227...>
+In-Reply-To: <ZfsXglouFPyXApqf@...1296...>
+Subject: Re: [Openvpn-devel] [PATCH v2] Implement server_poll_timeout for
+ socks
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,100 +18,51 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+To: Gert Doering <gert@...1296...>, Frank Lichtenheld <frank@...2641...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-- Remove obsolete ifconfig_broadcast. Since this was
-  removed in 2.5.0, do not add a removal note but just
-  completely remove it.
-- Add missing documentation of IPv6 variants for
-  ifconfig_pool_* variables.
+Am 20.03.24 um 13:06 schrieb Gert Doering:
+> Hi,
+> 
+> On Fri, Mar 15, 2024 at 05:40:02PM +0100, Frank Lichtenheld wrote:
+>> Code looks good and I tested build and default t_client tests.
+>> However, not sure how exactly to verify that it actually works.
+>> The SOCKS proxy I have doesn't exhibit any problems even with
+>> --connect-timeout 1.
+>>
+>> Any ideas for testing welcome.
+> 
+> As far as I understand this fix, it's replacing the 5s hard coded timeout
+> for "handshake with the SOCKS proxy" with --connect-timeout.
+> 
+> So to exhibit any change in behaviour, you need a slow SOCKs proxy...
+> 
+> I have a few ideas how to test this, like
+> 
+>   - --socks-proxy <non-answering-ip>:10080
+>     (should fail after 5 seconds without the patch, after --connect-timeout
+>     with the patch)
+> 
+>   - hack "something that can speak SOCKS" (like, ssh) to be really slow
+>     in answering - like, "add a sleep(15) in the socks handshake path",
+>     and point OpenVPN to that.  Without the patch, this should fail, with
+>     the patch, it should succeeds.
+> 
+>     (Note: 'ssh -D nnnn' will do SOCKS, but not UDP -> TCP server needed)
+> 
+> I have no time just now to go hacking on this, so just putting out the
+> ideas...
+> 
+> For our regular testbed, testing all these timeouts is complicated
+> (and even if you succeed, it's sllloowww if you want reproduceable
+> results, so not "milliseconds timers").
+> 
 
-Github: #527
-Change-Id: Ia8c8de6799f0291fc900628fbd06c8a414e741ca
-Signed-off-by: Frank Lichtenheld <frank@...2641...>
----
- doc/man-sections/script-options.rst | 38 ++++++++++++++++++++---------
- 1 file changed, 27 insertions(+), 11 deletions(-)
+Or use something like dummynet. At least on macOS it used to be easy to 
+simulate a long delay with that and pfctl.
 
-diff --git a/doc/man-sections/script-options.rst b/doc/man-sections/script-options.rst
-index e05100a2..0d1f9aec 100644
---- a/doc/man-sections/script-options.rst
-+++ b/doc/man-sections/script-options.rst
-@@ -682,13 +682,6 @@ instances.
-     recorded to this environmental variable sequence prior to ``--up``
-     script execution.
- 
--:code:`ifconfig_broadcast`
--    The broadcast address for the virtual ethernet segment which is derived
--    from the ``--ifconfig`` option when ``--dev tap`` is used. Set prior to
--    OpenVPN calling the :code:`ifconfig` or :code:`netsh` (windows version
--    of ifconfig) commands which normally occurs prior to ``--up`` script
--    execution.
--
- :code:`ifconfig_ipv6_local`
-     The local VPN endpoint IPv6 address specified in the
-     ``--ifconfig-ipv6`` option (first parameter). Set prior to OpenVPN
-@@ -731,30 +724,53 @@ instances.
-     occurs prior to ``--up`` script execution.
- 
- :code:`ifconfig_pool_local_ip`
--    The local virtual IP address for the TUN/TAP tunnel taken from an
-+    The local virtual IPv4 address for the TUN/TAP tunnel taken from an
-     ``--ifconfig-push`` directive if specified, or otherwise from the
-     ifconfig pool (controlled by the ``--ifconfig-pool`` config file
-     directive). Only set for ``--dev tun`` tunnels. This option is set on
-     the server prior to execution of the ``--client-connect`` and
-     ``--client-disconnect`` scripts.
- 
-+:code:`ifconfig_pool_local_ip6`
-+    The local virtual IPv6 address for the TUN/TAP tunnel taken from an
-+    ``--ifconfig-ipv6-push`` directive if specified, or otherwise from the
-+    ifconfig pool (controlled by the ``--ifconfig-ipv6-pool`` config file
-+    directive). Only set for ``--dev tun`` tunnels. This option is set on
-+    the server prior to execution of the ``--client-connect`` and
-+    ``--client-disconnect`` scripts.
-+
- :code:`ifconfig_pool_netmask`
--    The virtual IP netmask for the TUN/TAP tunnel taken from an
-+    The virtual IPv4 netmask for the TUN/TAP tunnel taken from an
-     ``--ifconfig-push`` directive if specified, or otherwise from the
-     ifconfig pool (controlled by the ``--ifconfig-pool`` config file
-     directive). Only set for ``--dev tap`` tunnels. This option is set on
-     the server prior to execution of the ``--client-connect`` and
-     ``--client-disconnect`` scripts.
- 
-+:code:`ifconfig_pool_ip6_netbits`
-+    The virtual IPv6 prefix length for the TUN/TAP tunnel taken from an
-+    ``--ifconfig-ipv6-push`` directive if specified, or otherwise from the
-+    ifconfig pool (controlled by the ``--ifconfig-ipv6-pool`` config file
-+    directive). Only set for ``--dev tap`` tunnels. This option is set on
-+    the server prior to execution of the ``--client-connect`` and
-+    ``--client-disconnect`` scripts.
-+
- :code:`ifconfig_pool_remote_ip`
--    The remote virtual IP address for the TUN/TAP tunnel taken from an
-+    The remote virtual IPv4 address for the TUN/TAP tunnel taken from an
-     ``--ifconfig-push`` directive if specified, or otherwise from the
-     ifconfig pool (controlled by the ``--ifconfig-pool`` config file
-     directive). This option is set on the server prior to execution of the
-     ``--client-connect`` and ``--client-disconnect`` scripts.
- 
-+:code:`ifconfig_pool_remote_ip6`
-+    The remote virtual IPv6 address for the TUN/TAP tunnel taken from an
-+    ``--ifconfig-ipv6-push`` directive if specified, or otherwise from the
-+    ifconfig pool (controlled by the ``--ifconfig-ipv6-pool`` config file
-+    directive). This option is set on the server prior to execution of the
-+    ``--client-connect`` and ``--client-disconnect`` scripts.
-+
- :code:`link_mtu`
--    No longer passed to scripts since OpenVPN 2.6.0.  Used to be the
-+    *REMOVED* No longer passed to scripts since OpenVPN 2.6.0.  Used to be the
-     maximum packet size (not including the IP header) of tunnel data in
-     UDP tunnel transport mode.
- 
--- 
-2.34.1
+Arne
 
 
