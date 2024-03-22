@@ -1,15 +1,15 @@
 From: "plaisthos (Code Review)" <gerrit@...515...>
-Date: Fri, 22 Mar 2024 15:59:07 +0000
-References: <gerrit.1711123146000.I3c6fd36eb9daee9244d6dc6d9f22de1c5cf9d039@...2715...>
+Date: Fri, 22 Mar 2024 16:00:02 +0000
+References: <gerrit.1711123201000.Ia73d53002f4ba2658af18c17cce1b68f79de5781@...2715...>
 Reply-To: arne-openvpn@...1227..., openvpn-devel@lists.sourceforge.net,
  frank@...2641...
-Message-ID: <7a38a8ac8fa226b0c675a188720c8e89ccff6462-HTML@...2715...>
+Message-ID: <cd19998d120e1199c299927f9bd6f40a1adafe96-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="CxZ/HZJgYzU="; charset=UTF-8
-Subject: [Openvpn-devel] [XS] Change in openvpn[master]: Use snprintf
- instead of sprintf for get_ssl_library_version
+Content-Type: multipart/alternative; boundary="kALOFB6eGY0="; charset=UTF-8
+Subject: [Openvpn-devel] [XS] Change in openvpn[master]: Add bracket in
+ fingerprint message and do not warn about missing veri...
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -21,7 +21,7 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: flichtenheld <frank@...2641...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---CxZ/HZJgYzU=
+--kALOFB6eGY0=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
@@ -32,56 +32,69 @@ Hello flichtenheld,
 I'd like you to do a code review.
 Please visit
 
-    http://gerrit.openvpn.net/c/openvpn/+/545?usp=3Demail
+    http://gerrit.openvpn.net/c/openvpn/+/546?usp=3Demail
 
 to review the following change.
 
 
-Change subject: Use snprintf instead of sprintf for get_ssl_library_version
+Change subject: Add bracket in fingerprint message and do not warn about mi=
+ssing verification
 ......................................................................
 
-Use snprintf instead of sprintf for get_ssl_library_version
+Add bracket in fingerprint message and do not warn about missing verificati=
+on
 
-This is avoid a warning/error (when using -Werror) under current macOS
-of sprintf:
-
-   __deprecated_msg("This function is provided for compatibility
-   reasons only.  Due to security concerns inherent in the design
-   of sprintf(3), it is highly recommended that you use snprintf(3)
-   instead.")
-
-Change-Id: I3c6fd36eb9daee9244d6dc6d9f22de1c5cf9d039
+Change-Id: Ia73d53002f4ba2658af18c17cce1b68f79de5781
 ---
-M src/openvpn/ssl_mbedtls.c
-1 file changed, 1 insertion(+), 1 deletion(-)
+M src/openvpn/init.c
+M src/openvpn/ssl_verify.c
+2 files changed, 4 insertions(+), 3 deletions(-)
 
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/45/545/1
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/46/546/1
 
-diff --git a/src/openvpn/ssl_mbedtls.c b/src/openvpn/ssl_mbedtls.c
-index b44ddd5..0730d25 100644
---- a/src/openvpn/ssl_mbedtls.c
-+++ b/src/openvpn/ssl_mbedtls.c
-@@ -1614,7 +1614,7 @@
- {
-     static char mbedtls_version[30];
-     unsigned int pv =3D mbedtls_version_get_number();
--    sprintf( mbedtls_version, "mbed TLS %d.%d.%d",
-+    snprintf(mbedtls_version, sizeof(mbedtls_version), "mbed TLS %d.%d.%d",
-              (pv>>24)&0xff, (pv>>16)&0xff, (pv>>8)&0xff );
-     return mbedtls_version;
- }
+diff --git a/src/openvpn/init.c b/src/openvpn/init.c
+index f2ce926..a398920 100644
+--- a/src/openvpn/init.c
++++ b/src/openvpn/init.c
+@@ -3594,7 +3594,8 @@
+         && !o->tls_verify
+         && o->verify_x509_type =3D=3D VERIFY_X509_NONE
+         && !(o->ns_cert_type & NS_CERT_CHECK_SERVER)
+-        && !o->remote_cert_eku)
++        && !o->remote_cert_eku
++        && !(o->verify_hash_depth =3D=3D0 && o->verify_hash))
+     {
+         msg(M_WARN, "WARNING: No server certificate verification method ha=
+s been enabled.  See http://openvpn.net/howto.html#mitm for more info.");
+     }
+diff --git a/src/openvpn/ssl_verify.c b/src/openvpn/ssl_verify.c
+index c7d7799..930769b 100644
+--- a/src/openvpn/ssl_verify.c
++++ b/src/openvpn/ssl_verify.c
+@@ -718,8 +718,8 @@
+             const char *hex_fp =3D format_hex_ex(BPTR(&cert_fp), BLEN(&cer=
+t_fp),
+                                                0, 1, ":", &gc);
+             msg(D_TLS_ERRORS, "TLS Error: --tls-verify/--peer-fingerprint"
+-                "certificate hash verification failed. (got "
+-                "fingerprint: %s", hex_fp);
++                "certificate hash verification failed. (got certificate "
++                "fingerprint: %s)", hex_fp);
+             goto cleanup;
+         }
+     }
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/545?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/546?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings
 
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: I3c6fd36eb9daee9244d6dc6d9f22de1c5cf9d039
-Gerrit-Change-Number: 545
+Gerrit-Change-Id: Ia73d53002f4ba2658af18c17cce1b68f79de5781
+Gerrit-Change-Number: 546
 Gerrit-PatchSet: 1
 Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
@@ -89,49 +102,63 @@ Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: flichtenheld <frank@...2641...>
 Gerrit-MessageType: newchange
 
---CxZ/HZJgYzU=
+--kALOFB6eGY0=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <p> Attention is currently required from: flichtenheld. </p>
 <p>plaisthos would like flichtenheld to <strong>review</strong> this change.
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/545?usp=3Demail">Vi=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/546?usp=3Demail">Vi=
 ew Change</a></p><pre style=3D"font-family: monospace,monospace; white-spac=
-e: pre-wrap;">Use snprintf instead of sprintf for get_ssl_library_version<b=
-r><br>This is avoid a warning/error (when using -Werror) under current macO=
-S<br>of sprintf:<br><br>   __deprecated_msg(&quot;This function is provided=
- for compatibility<br>   reasons only.  Due to security concerns inherent i=
-n the design<br>   of sprintf(3), it is highly recommended that you use snp=
-rintf(3)<br>   instead.&quot;)<br><br>Change-Id: I3c6fd36eb9daee9244d6dc6d9=
-f22de1c5cf9d039<br>---<br>M src/openvpn/ssl_mbedtls.c<br>1 file changed, 1 =
-insertion(+), 1 deletion(-)<br><br></pre><pre style=3D"font-family: monospa=
-ce,monospace; white-space: pre-wrap;">git pull ssh://gerrit.openvpn.net:294=
-18/openvpn refs/changes/45/545/1</pre><pre style=3D"font-family: monospace,=
-monospace; white-space: pre-wrap;"><span>diff --git a/src/openvpn/ssl_mbedt=
-ls.c b/src/openvpn/ssl_mbedtls.c</span><br><span>index b44ddd5..0730d25 100=
-644</span><br><span>--- a/src/openvpn/ssl_mbedtls.c</span><br><span>+++ b/s=
-rc/openvpn/ssl_mbedtls.c</span><br><span>@@ -1614,7 +1614,7 @@</span><br><s=
-pan> {</span><br><span>     static char mbedtls_version[30];</span><br><spa=
-n>     unsigned int pv =3D mbedtls_version_get_number();</span><br><span st=
-yle=3D"color: hsl(0, 100%, 40%);">-    sprintf( mbedtls_version, &quot;mbed=
- TLS %d.%d.%d&quot;,</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+    snprintf(mbedtls_version, sizeof(mbedtls_version), &quot;mbed TLS %d.%=
-d.%d&quot;,</span><br><span>              (pv&gt;&gt;24)&amp;0xff, (pv&gt;&=
-gt;16)&amp;0xff, (pv&gt;&gt;8)&amp;0xff );</span><br><span>     return mbed=
-tls_version;</span><br><span> }</span><br><span></span><br></pre><p>To view=
-, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/545?usp=3Demail">c=
-hange 545</a>. To unsubscribe, or for help writing mail filters, visit <a h=
-ref=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope =
-itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"acti=
-on" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=
-=3D"http://gerrit.openvpn.net/c/openvpn/+/545?usp=3Demail"/><meta itemprop=
-=3D"name" content=3D"View Change"/></div></div>
+e: pre-wrap;">Add bracket in fingerprint message and do not warn about miss=
+ing verification<br><br>Change-Id: Ia73d53002f4ba2658af18c17cce1b68f79de578=
+1<br>---<br>M src/openvpn/init.c<br>M src/openvpn/ssl_verify.c<br>2 files c=
+hanged, 4 insertions(+), 3 deletions(-)<br><br></pre><pre style=3D"font-fam=
+ily: monospace,monospace; white-space: pre-wrap;">git pull ssh://gerrit.ope=
+nvpn.net:29418/openvpn refs/changes/46/546/1</pre><pre style=3D"font-family=
+: monospace,monospace; white-space: pre-wrap;"><span>diff --git a/src/openv=
+pn/init.c b/src/openvpn/init.c</span><br><span>index f2ce926..a398920 10064=
+4</span><br><span>--- a/src/openvpn/init.c</span><br><span>+++ b/src/openvp=
+n/init.c</span><br><span>@@ -3594,7 +3594,8 @@</span><br><span>         &am=
+p;&amp; !o-&gt;tls_verify</span><br><span>         &amp;&amp; o-&gt;verify_=
+x509_type =3D=3D VERIFY_X509_NONE</span><br><span>         &amp;&amp; !(o-&=
+gt;ns_cert_type &amp; NS_CERT_CHECK_SERVER)</span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-        &amp;&amp; !o-&gt;remote_cert_eku)</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+        &amp;&amp; !o-&gt;remo=
+te_cert_eku</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        =
+&amp;&amp; !(o-&gt;verify_hash_depth =3D=3D0 &amp;&amp; o-&gt;verify_hash))=
+</span><br><span>     {</span><br><span>         msg(M_WARN, &quot;WARNING:=
+ No server certificate verification method has been enabled.  See http://op=
+envpn.net/howto.html#mitm for more info.&quot;);</span><br><span>     }</sp=
+an><br><span>diff --git a/src/openvpn/ssl_verify.c b/src/openvpn/ssl_verify=
+.c</span><br><span>index c7d7799..930769b 100644</span><br><span>--- a/src/=
+openvpn/ssl_verify.c</span><br><span>+++ b/src/openvpn/ssl_verify.c</span><=
+br><span>@@ -718,8 +718,8 @@</span><br><span>             const char *hex_f=
+p =3D format_hex_ex(BPTR(&amp;cert_fp), BLEN(&amp;cert_fp),</span><br><span=
+>                                                0, 1, &quot;:&quot;, &amp;=
+gc);</span><br><span>             msg(D_TLS_ERRORS, &quot;TLS Error: --tls-=
+verify/--peer-fingerprint&quot;</span><br><span style=3D"color: hsl(0, 100%=
+, 40%);">-                &quot;certificate hash verification failed. (got =
+&quot;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-               =
+ &quot;fingerprint: %s&quot;, hex_fp);</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+                &quot;certificate hash verification fail=
+ed. (got certificate &quot;</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+                &quot;fingerprint: %s)&quot;, hex_fp);</span><br><s=
+pan>             goto cleanup;</span><br><span>         }</span><br><span> =
+    }</span><br><span></span><br></pre><p>To view, visit <a href=3D"http://=
+gerrit.openvpn.net/c/openvpn/+/546?usp=3Demail">change 546</a>. To unsubscr=
+ibe, or for help writing mail filters, visit <a href=3D"http://gerrit.openv=
+pn.net/settings">settings</a>.</p><div itemscope itemtype=3D"http://schema.=
+org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://sch=
+ema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.ne=
+t/c/openvpn/+/546?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Cha=
+nge"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I3c6fd36eb9daee9244d6dc6d9f2=
-2de1c5cf9d039 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 545 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: Ia73d53002f4ba2658af18c17cce=
+1b68f79de5781 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 546 </div>
 <div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
 <div style=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@...1711...=
 27...&gt; </div>
@@ -144,5 +171,5 @@ ts.sourceforge.net&gt; </div>
 <div style=3D"display:none"> Gerrit-MessageType: newchange </div>
 
 
---CxZ/HZJgYzU=--
+--kALOFB6eGY0=--
 
