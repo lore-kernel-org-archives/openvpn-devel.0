@@ -1,16 +1,16 @@
 From: "flichtenheld (Code Review)" <gerrit@...515...>
-Date: Fri, 22 Mar 2024 17:40:56 +0000
-In-Reply-To: <gerrit.1711123146000.I3c6fd36eb9daee9244d6dc6d9f22de1c5cf9d039@...2715...>
-References: <gerrit.1711123146000.I3c6fd36eb9daee9244d6dc6d9f22de1c5cf9d039@...2715...>
+Date: Fri, 22 Mar 2024 17:46:15 +0000
+In-Reply-To: <gerrit.1711123201000.Ia73d53002f4ba2658af18c17cce1b68f79de5781@...2715...>
+References: <gerrit.1711123201000.Ia73d53002f4ba2658af18c17cce1b68f79de5781@...2715...>
 Reply-To: frank@...2641..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net
-Message-ID: <a5ed917e69d63b68928a5c0298031a75696ae4d1-EmailReviewComments-HTML@...2715...>
+Message-ID: <242edfd8881eccd5cf76a3bab65d8cf8ee1d03d0-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="3x0x8tEnq9E="; charset=UTF-8
-Subject: [Openvpn-devel] [XS] Change in openvpn[master]: Use snprintf
- instead of sprintf for get_ssl_library_version
+Content-Type: multipart/alternative; boundary="o2vaXAUVXhc="; charset=UTF-8
+Subject: [Openvpn-devel] [XS] Change in openvpn[master]: Add bracket in
+ fingerprint message and do not warn about missing veri...
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -22,16 +22,17 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: plaisthos <arne-openvpn@...1227...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---3x0x8tEnq9E=
+--o2vaXAUVXhc=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 Attention is currently required from: plaisthos.
 
 flichtenheld has posted comments on this change. ( http://gerrit.openvpn.ne=
-t/c/openvpn/+/545?usp=3Demail )
+t/c/openvpn/+/546?usp=3Demail )
 
-Change subject: Use snprintf instead of sprintf for get_ssl_library_version
+Change subject: Add bracket in fingerprint message and do not warn about mi=
+ssing verification
 ......................................................................
 
 
@@ -39,62 +40,62 @@ Patch Set 1:
 
 (1 comment)
 
-File src/openvpn/ssl_mbedtls.c:
+File src/openvpn/init.c:
 
-http://gerrit.openvpn.net/c/openvpn/+/545/comment/655ebb20_a5900f83 :
-PS1, Line 1617:     snprintf(mbedtls_version, sizeof(mbedtls_version), "mbe=
-d TLS %d.%d.%d",
-Do we want to use openvpn_snprintf here?
+http://gerrit.openvpn.net/c/openvpn/+/546/comment/7e08d333_df007281 :
+PS1, Line 3598:         && !(o->verify_hash_depth =3D=3D0 && o->verify_hash=
+))
+why only with verify_hash_depth =3D=3D 0? --verify-hash should not count?
 
 
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/545?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/546?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings
 
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: I3c6fd36eb9daee9244d6dc6d9f22de1c5cf9d039
-Gerrit-Change-Number: 545
+Gerrit-Change-Id: Ia73d53002f4ba2658af18c17cce1b68f79de5781
+Gerrit-Change-Number: 546
 Gerrit-PatchSet: 1
 Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Comment-Date: Fri, 22 Mar 2024 17:40:56 +0000
+Gerrit-Comment-Date: Fri, 22 Mar 2024 17:46:15 +0000
 Gerrit-HasComments: Yes
 Gerrit-Has-Labels: No
 Gerrit-MessageType: comment
 
---3x0x8tEnq9E=
+--o2vaXAUVXhc=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <p> Attention is currently required from: plaisthos. </p>
-<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/545?usp=3Demail">View C=
+<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/546?usp=3Demail">View C=
 hange</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0;"><=
-li style=3D"margin: 0; padding: 0;"><p>File src/openvpn/ssl_mbedtls.c:</p><=
-ul style=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; padding:=
- 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.ope=
-nvpn.net/c/openvpn/+/545/comment/655ebb20_a5900f83">Patch Set #1, Line 1617=
-:</a> <code style=3D"font-family:monospace,monospace">    snprintf(mbedtls_=
-version, sizeof(mbedtls_version), &quot;mbed TLS %d.%d.%d&quot;,</code></p>=
-<p style=3D"white-space: pre-wrap; word-wrap: break-word;">Do we want to us=
-e openvpn_snprintf here?</p></li></ul></li></ul><p>To view, visit <a href=
-=3D"http://gerrit.openvpn.net/c/openvpn/+/545?usp=3Demail">change 545</a>. =
-To unsubscribe, or for help writing mail filters, visit <a href=3D"http://g=
-errit.openvpn.net/settings">settings</a>.</p><div itemscope itemtype=3D"htt=
-p://schema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D=
-"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit=
-.openvpn.net/c/openvpn/+/545?usp=3Demail"/><meta itemprop=3D"name" content=
-=3D"View Change"/></div></div>
+li style=3D"margin: 0; padding: 0;"><p>File src/openvpn/init.c:</p><ul styl=
+e=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 =
+16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.ne=
+t/c/openvpn/+/546/comment/7e08d333_df007281">Patch Set #1, Line 3598:</a> <=
+code style=3D"font-family:monospace,monospace">        &amp;&amp; !(o-&gt;v=
+erify_hash_depth =3D=3D0 &amp;&amp; o-&gt;verify_hash))</code></p><p style=
+=3D"white-space: pre-wrap; word-wrap: break-word;">why only with verify_has=
+h_depth =3D=3D 0? --verify-hash should not count?</p></li></ul></li></ul><p=
+>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/546?usp=3D=
+email">change 546</a>. To unsubscribe, or for help writing mail filters, vi=
+sit <a href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div it=
+emscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=
+=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url=
+" href=3D"http://gerrit.openvpn.net/c/openvpn/+/546?usp=3Demail"/><meta ite=
+mprop=3D"name" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I3c6fd36eb9daee9244d6dc6d9f2=
-2de1c5cf9d039 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 545 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: Ia73d53002f4ba2658af18c17cce=
+1b68f79de5781 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 546 </div>
 <div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
 <div style=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@...1711...=
 27...&gt; </div>
@@ -104,12 +105,12 @@ p://schema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D=
 ts.sourceforge.net&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
 ..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Fri, 22 Mar 2024 17:40:56=
+<div style=3D"display:none"> Gerrit-Comment-Date: Fri, 22 Mar 2024 17:46:15=
  +0000 </div>
 <div style=3D"display:none"> Gerrit-HasComments: Yes </div>
 <div style=3D"display:none"> Gerrit-Has-Labels: No </div>
 <div style=3D"display:none"> Gerrit-MessageType: comment </div>
 
 
---3x0x8tEnq9E=--
+--o2vaXAUVXhc=--
 
