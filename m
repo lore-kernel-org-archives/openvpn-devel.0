@@ -1,11 +1,10 @@
+Date: Mon, 25 Mar 2024 13:54:51 +0100 (CET)
+Message-Id: <202403251254.42PCspNg016569@...2054...>
 From: Gert Doering <gert@...1296...>
-Date: Mon, 25 Mar 2024 13:50:52 +0100
-Message-ID: <20240325125052.14135-1-gert@...1296...>
-In-Reply-To: <gerrit.1711123146000.I3c6fd36eb9daee9244d6dc6d9f22de1c5cf9d039@...2715...>
-References: <gerrit.1711123146000.I3c6fd36eb9daee9244d6dc6d9f22de1c5cf9d039@...2715...>
-MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v1] Use snprintf instead of sprintf for
- get_ssl_library_version
+In-Reply-To: <20240325071320.11348-1-gert@...1296...>
+References: <20240325071320.11348-1-gert@...1296...>
+Subject: [Openvpn-devel] [PATCH applied] Re: samples: Update sample
+ configurations
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,46 +15,34 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Frank Lichtenheld <frank@...2641...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-From: Arne Schwabe <arne@...1227...>
+Thanks for the housekeeping...
 
-This is avoid a warning/error (when using -Werror) under current macOS
-of sprintf:
+As discussed on IRC, I've added text about tls-auth being commented
+out to the commit message.
 
-   __deprecated_msg("This function is provided for compatibility
-   reasons only.  Due to security concerns inherent in the design
-   of sprintf(3), it is highly recommended that you use snprintf(3)
-   instead.")
+Your patch has been applied to the master and release/2.6 branch
+(relevant documentation update).
 
-Change-Id: I3c6fd36eb9daee9244d6dc6d9f22de1c5cf9d039
-Signed-off-by: Arne Schwabe <arne-openvpn@...1227...>
-Acked-by: Frank Lichtenheld <frank@...2641...>
----
+commit b0fc10abd06fa2307e95c8a60fa94f7ccc08d2ac (master)
+commit 371cc5874faf67057c9f95796195306beeba0628 (release/2.6)
+Author: Frank Lichtenheld
+Date:   Mon Mar 25 08:13:20 2024 +0100
 
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to master.
+     samples: Update sample configurations
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/545
-This mail reflects revision 1 of this Change.
+     Signed-off-by: Frank Lichtenheld <frank@...2641...>
+     Acked-by: Arne Schwabe <arne-openvpn@...1227...>
+     Message-Id: <20240325071320.11348-1-gert@...1296...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg28451.html
+     Signed-off-by: Gert Doering <gert@...1296...>
 
-Signed-off-by line for the author was added as per our policy.
 
-Acked-by according to Gerrit (reflected above):
-Frank Lichtenheld <frank@...2641...>
+--
+kind regards,
 
-        
-diff --git a/src/openvpn/ssl_mbedtls.c b/src/openvpn/ssl_mbedtls.c
-index b44ddd5..0730d25 100644
---- a/src/openvpn/ssl_mbedtls.c
-+++ b/src/openvpn/ssl_mbedtls.c
-@@ -1614,7 +1614,7 @@
- {
-     static char mbedtls_version[30];
-     unsigned int pv = mbedtls_version_get_number();
--    sprintf( mbedtls_version, "mbed TLS %d.%d.%d",
-+    snprintf(mbedtls_version, sizeof(mbedtls_version), "mbed TLS %d.%d.%d",
-              (pv>>24)&0xff, (pv>>16)&0xff, (pv>>8)&0xff );
-     return mbedtls_version;
- }
+Gert Doering
+
 
