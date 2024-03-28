@@ -1,16 +1,14 @@
-From: "plaisthos (Code Review)" <gerrit@...515...>
-Date: Wed, 27 Mar 2024 18:44:04 +0000
-In-Reply-To: <gerrit.1711377047000.If0dcdde30879fd6185efb2ad31399c1629c04d22@...2715...>
-References: <gerrit.1711377047000.If0dcdde30879fd6185efb2ad31399c1629c04d22@...2715...>
-Reply-To: arne-openvpn@...1227..., openvpn-devel@lists.sourceforge.net,
- frank@...2641..., a@...2181...
-Message-ID: <252ded3fd407e6e79bb221974c96677fcd186b6b-EmailReviewComments-HTML@...2715...>
+From: scruel tao <scruelt@...160...>
+Date: Thu, 28 Mar 2024 08:39:57 +0000
+Message-ID: <OS3P286MB074086D455F13904A5099B8EA53B2@...2799...>
+References: <OS3P286MB0740994A23B0C1AA58EC55E5A53B2@...2799...>
+In-Reply-To: <OS3P286MB0740994A23B0C1AA58EC55E5A53B2@...2799...>
+Content-Language: zh-CN
+Content-Type: multipart/mixed;
+ boundary="_004_OS3P286MB074086D455F13904A5099B8EA53B2OS3P286MB0740JPNP_"
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="V4e091ChpiU="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: crypto_backend: fix
- type of enc parameter
+Subject: [Openvpn-devel] [PATCH OpenVPN3] feat: add `--pk-password-file`
+ option
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,115 +17,214 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: flichtenheld <frank@...2641...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
---V4e091ChpiU=
-Content-Type: text/plain; charset="UTF-8"
+--_004_OS3P286MB074086D455F13904A5099B8EA53B2OS3P286MB0740JPNP_
+Content-Type: multipart/alternative;
+	boundary="_000_OS3P286MB074086D455F13904A5099B8EA53B2OS3P286MB0740JPNP_"
+
+--_000_OS3P286MB074086D455F13904A5099B8EA53B2OS3P286MB0740JPNP_
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: flichtenheld, ordex.
+https://github.com/OpenVPN/openvpn3/pull/303
 
-plaisthos has posted comments on this change. ( http://gerrit.openvpn.net/c=
-/openvpn/+/548?usp=3Demail )
+feat: add `--pk-password-file` option
 
-Change subject: crypto_backend: fix type of enc parameter
-......................................................................
+Signed-off-by: Scruel Tao <scruelt@...160...>
 
 
-Patch Set 3:
-
-(1 comment)
-
-File src/openvpn/crypto_mbedtls.c:
-
-http://gerrit.openvpn.net/c/openvpn/+/548/comment/997ae8f4_a9d0ede6 :
-PS3, Line 569:                 const char *ciphername, crypto_operation_t e=
-nc)
-> Acknowledged
-There is a -1 state in OpenSSL that mean "don't change when reinitialising"=
- that we do not use.
-
-
-
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/548?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings
-
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: If0dcdde30879fd6185efb2ad31399c1629c04d22
-Gerrit-Change-Number: 548
-Gerrit-PatchSet: 3
-Gerrit-Owner: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-CC: ordex <a@...2181...>
-Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Attention: ordex <a@...2181...>
-Gerrit-Comment-Date: Wed, 27 Mar 2024 18:44:04 +0000
-Gerrit-HasComments: Yes
-Gerrit-Has-Labels: No
-Comment-In-Reply-To: plaisthos <arne-openvpn@...1227...>
-Comment-In-Reply-To: flichtenheld <frank@...2641...>
-Comment-In-Reply-To: ordex <a@...2181...>
-Gerrit-MessageType: comment
-
---V4e091ChpiU=
-Content-Type: text/html; charset="UTF-8"
+--_000_OS3P286MB074086D455F13904A5099B8EA53B2OS3P286MB0740JPNP_
+Content-Type: text/html; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 
-<p> Attention is currently required from: flichtenheld, ordex. </p>
-<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/548?usp=3Demail">View C=
-hange</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0;"><=
-li style=3D"margin: 0; padding: 0;"><p>File src/openvpn/crypto_mbedtls.c:</=
-p><ul style=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; paddi=
-ng: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.=
-openvpn.net/c/openvpn/+/548/comment/997ae8f4_a9d0ede6">Patch Set #3, Line 5=
-69:</a> <code style=3D"font-family:monospace,monospace">                con=
-st char *ciphername, crypto_operation_t enc)</code></p><p><blockquote style=
-=3D"border-left: 1px solid #aaa; margin: 10px 0; padding: 0 10px;">Acknowle=
-dged</blockquote></p><p style=3D"white-space: pre-wrap; word-wrap: break-wo=
-rd;">There is a -1 state in OpenSSL that mean &quot;don&#39;t change when r=
-einitialising&quot; that we do not use.</p></li></ul></li></ul><p>To view, =
-visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/548?usp=3Demail">cha=
-nge 548</a>. To unsubscribe, or for help writing mail filters, visit <a hre=
-f=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope it=
-emtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"action=
-" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"=
-http://gerrit.openvpn.net/c/openvpn/+/548?usp=3Demail"/><meta itemprop=3D"n=
-ame" content=3D"View Change"/></div></div>
+<html xmlns:o=3D"urn:schemas-microsoft-com:office:office" xmlns:w=3D"urn:sc=
+hemas-microsoft-com:office:word" xmlns:m=3D"http://schemas.microsoft.com/of=
+fice/2004/12/omml" xmlns=3D"http://www.w3.org/TR/REC-html40">
+<head>
+<meta http-equiv=3D"Content-Type" content=3D"text/html; charset=3Dus-ascii">
+<meta name=3D"Generator" content=3D"Microsoft Word 15 (filtered medium)">
+<style><!--
+/* Font Definitions */
+@font-face
+	{font-family:SimSun;
+	panose-1:2 1 6 0 3 1 1 1 1 1;}
+@font-face
+	{font-family:"Cambria Math";
+	panose-1:2 4 5 3 5 4 6 3 2 4;}
+@font-face
+	{font-family:DengXian;
+	panose-1:2 1 6 0 3 1 1 1 1 1;}
+@font-face
+	{font-family:DengXian;
+	panose-1:2 1 6 0 3 1 1 1 1 1;}
+@font-face
+	{font-family:SimSun;
+	panose-1:2 1 6 0 3 1 1 1 1 1;}
+/* Style Definitions */
+p.MsoNormal, li.MsoNormal, div.MsoNormal
+	{margin:0cm;
+	text-align:justify;
+	text-justify:inter-ideograph;
+	font-size:10.5pt;
+	font-family:DengXian;}
+a:link, span.MsoHyperlink
+	{mso-style-priority:99;
+	color:blue;
+	text-decoration:underline;}
+.MsoChpDefault
+	{mso-style-type:export-only;}
+/* Page Definitions */
+@page WordSection1
+	{size:612.0pt 792.0pt;
+	margin:72.0pt 90.0pt 72.0pt 90.0pt;}
+div.WordSection1
+	{page:WordSection1;}
+--></style>
+</head>
+<body lang=3D"ZH-CN" link=3D"blue" vlink=3D"#954F72" style=3D"word-wrap:bre=
+ak-word">
+<div class=3D"WordSection1">
+<p class=3D"MsoNormal"><span lang=3D"EN-US"><a href=3D"https://github.com/O=
+penVPN/openvpn3/pull/303"><span style=3D"color:#0563C1">https://github.com/=
+OpenVPN/openvpn3/pull/303</span></a><o:p></o:p></span></p>
+<p class=3D"MsoNormal"><span lang=3D"EN-US" style=3D"font-size:12.0pt"><o:p=
+>&nbsp;</o:p></span></p>
+<p class=3D"MsoNormal"><span lang=3D"EN-US">feat: add `--pk-password-file` =
+option<o:p></o:p></span></p>
+<p class=3D"MsoNormal"><span lang=3D"EN-US"><o:p>&nbsp;</o:p></span></p>
+<p class=3D"MsoNormal"><span lang=3D"EN-US">Signed-off-by: Scruel Tao &lt;s=
+cruelt@...160...&gt;<o:p></o:p></span></p>
+<p class=3D"MsoNormal"><span lang=3D"EN-US"><o:p>&nbsp;</o:p></span></p>
+</div>
+</body>
+</html>
 
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: If0dcdde30879fd6185efb2ad313=
-99c1629c04d22 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 548 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 3 </div>
-<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
-.&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: ordex &lt;a@...2181...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
-41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: ordex &lt;a@...2181...&gt; <=
-/div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Wed, 27 Mar 2024 18:44:04=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: No </div>
-<div style=3D"display:none"> Comment-In-Reply-To: plaisthos &lt;arne-openvp=
-n@...1227...&gt; </div>
-<div style=3D"display:none"> Comment-In-Reply-To: flichtenheld &lt;frank@...1186...=
-.2641...&gt; </div>
-<div style=3D"display:none"> Comment-In-Reply-To: ordex &lt;a@...2181...&gt=
-; </div>
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
+--_000_OS3P286MB074086D455F13904A5099B8EA53B2OS3P286MB0740JPNP_--
 
+--_004_OS3P286MB074086D455F13904A5099B8EA53B2OS3P286MB0740JPNP_
+Content-Type: application/octet-stream; name="scruel.patch"
+Content-Description: scruel.patch
+Content-Disposition: attachment; filename="scruel.patch"; size=6501;
+	creation-date="Thu, 28 Mar 2024 08:28:28 GMT";
+	modification-date="Thu, 28 Mar 2024 08:39:43 GMT"
+Content-Transfer-Encoding: base64
 
---V4e091ChpiU=--
+ZGlmZiAtLWdpdCBhL3Rlc3Qvb3ZwbmNsaS9jbGkuY3BwIGIvdGVzdC9vdnBuY2xpL2NsaS5jcHAN
+CmluZGV4IGRhYjJhYTY2Li5jYzBmYTg3NyAxMDA2NDQNCi0tLSBhL3Rlc3Qvb3ZwbmNsaS9jbGku
+Y3BwDQorKysgYi90ZXN0L292cG5jbGkvY2xpLmNwcA0KQEAgLTkyOSwyNyArOTI5LDI4IEBAIGlu
+dCBvcGVudnBuX2NsaWVudChpbnQgYXJnYywgY2hhciAqYXJndltdLCBjb25zdCBzdGQ6OnN0cmlu
+ZyAqcHJvZmlsZV9jb250ZW50KQ0KIHsNCiAgICAgc3RhdGljIGNvbnN0IHN0cnVjdCBvcHRpb24g
+bG9uZ29wdHNbXSA9IHsNCiAgICAgICAgIC8vIGNsYW5nLWZvcm1hdCBvZmYNCi0gICAgICAgIHsg
+InVzZXJuYW1lIiwgICAgICAgcmVxdWlyZWRfYXJndW1lbnQsICBudWxscHRyLCAgICAgICd1JyB9
+LA0KLSAgICAgICAgeyAicGFzc3dvcmQiLCAgICAgICByZXF1aXJlZF9hcmd1bWVudCwgIG51bGxw
+dHIsICAgICAgJ3AnIH0sDQotICAgICAgICB7ICJyZXNwb25zZSIsICAgICAgIHJlcXVpcmVkX2Fy
+Z3VtZW50LCAgbnVsbHB0ciwgICAgICAncicgfSwNCi0gICAgICAgIHsgImRjIiwgICAgICAgICAg
+ICAgcmVxdWlyZWRfYXJndW1lbnQsICBudWxscHRyLCAgICAgICdEJyB9LA0KLSAgICAgICAgeyAi
+cHJvdG8iLCAgICAgICAgICByZXF1aXJlZF9hcmd1bWVudCwgIG51bGxwdHIsICAgICAgJ1AnIH0s
+DQotICAgICAgICB7ICJpcHY2IiwgICAgICAgICAgIHJlcXVpcmVkX2FyZ3VtZW50LCAgbnVsbHB0
+ciwgICAgICAnNicgfSwNCi0gICAgICAgIHsgInNlcnZlciIsICAgICAgICAgcmVxdWlyZWRfYXJn
+dW1lbnQsICBudWxscHRyLCAgICAgICdzJyB9LA0KLSAgICAgICAgeyAicG9ydCIsICAgICAgICAg
+ICByZXF1aXJlZF9hcmd1bWVudCwgIG51bGxwdHIsICAgICAgJ1InIH0sDQotICAgICAgICB7ICJ0
+aW1lb3V0IiwgICAgICAgIHJlcXVpcmVkX2FyZ3VtZW50LCAgbnVsbHB0ciwgICAgICAndCcgfSwN
+Ci0gICAgICAgIHsgImNvbXByZXNzIiwgICAgICAgcmVxdWlyZWRfYXJndW1lbnQsICBudWxscHRy
+LCAgICAgICdjJyB9LA0KLSAgICAgICAgeyAicGstcGFzc3dvcmQiLCAgICByZXF1aXJlZF9hcmd1
+bWVudCwgIG51bGxwdHIsICAgICAgJ3onIH0sDQotICAgICAgICB7ICJ0dm0tb3ZlcnJpZGUiLCAg
+IHJlcXVpcmVkX2FyZ3VtZW50LCAgbnVsbHB0ciwgICAgICAnTScgfSwNCi0gICAgICAgIHsgInBy
+b3h5LWhvc3QiLCAgICAgcmVxdWlyZWRfYXJndW1lbnQsICBudWxscHRyLCAgICAgICdoJyB9LA0K
+LSAgICAgICAgeyAicHJveHktcG9ydCIsICAgICByZXF1aXJlZF9hcmd1bWVudCwgIG51bGxwdHIs
+ICAgICAgJ3EnIH0sDQotICAgICAgICB7ICJwcm94eS11c2VybmFtZSIsIHJlcXVpcmVkX2FyZ3Vt
+ZW50LCAgbnVsbHB0ciwgICAgICAnVScgfSwNCi0gICAgICAgIHsgInByb3h5LXBhc3N3b3JkIiwg
+cmVxdWlyZWRfYXJndW1lbnQsICBudWxscHRyLCAgICAgICdXJyB9LA0KLSAgICAgICAgeyAicGVl
+ci1pbmZvIiwgICAgICByZXF1aXJlZF9hcmd1bWVudCwgIG51bGxwdHIsICAgICAgJ0knIH0sDQot
+ICAgICAgICB7ICJhY2MtcHJvdG9zIiwgICAgIHJlcXVpcmVkX2FyZ3VtZW50LCAgbnVsbHB0ciwg
+ICAgICAnSycgfSwNCi0gICAgICAgIHsgImdyZW1saW4iLCAgICAgICAgcmVxdWlyZWRfYXJndW1l
+bnQsICBudWxscHRyLCAgICAgICdHJyB9LA0KLSAgICAgICAgeyAicHJveHktYmFzaWMiLCAgICBu
+b19hcmd1bWVudCwgICAgICAgIG51bGxwdHIsICAgICAgJ0InIH0sDQotICAgICAgICB7ICJhbHQt
+cHJveHkiLCAgICAgIG5vX2FyZ3VtZW50LCAgICAgICAgbnVsbHB0ciwgICAgICAnQScgfSwNCisg
+ICAgICAgIHsgInVzZXJuYW1lIiwgICAgICAgICByZXF1aXJlZF9hcmd1bWVudCwgIG51bGxwdHIs
+ICAgICAgJ3UnIH0sDQorICAgICAgICB7ICJwYXNzd29yZCIsICAgICAgICAgcmVxdWlyZWRfYXJn
+dW1lbnQsICBudWxscHRyLCAgICAgICdwJyB9LA0KKyAgICAgICAgeyAicmVzcG9uc2UiLCAgICAg
+ICAgIHJlcXVpcmVkX2FyZ3VtZW50LCAgbnVsbHB0ciwgICAgICAncicgfSwNCisgICAgICAgIHsg
+ImRjIiwgICAgICAgICAgICAgICByZXF1aXJlZF9hcmd1bWVudCwgIG51bGxwdHIsICAgICAgJ0Qn
+IH0sDQorICAgICAgICB7ICJwcm90byIsICAgICAgICAgICAgcmVxdWlyZWRfYXJndW1lbnQsICBu
+dWxscHRyLCAgICAgICdQJyB9LA0KKyAgICAgICAgeyAiaXB2NiIsICAgICAgICAgICAgIHJlcXVp
+cmVkX2FyZ3VtZW50LCAgbnVsbHB0ciwgICAgICAnNicgfSwNCisgICAgICAgIHsgInNlcnZlciIs
+ICAgICAgICAgICByZXF1aXJlZF9hcmd1bWVudCwgIG51bGxwdHIsICAgICAgJ3MnIH0sDQorICAg
+ICAgICB7ICJwb3J0IiwgICAgICAgICAgICAgcmVxdWlyZWRfYXJndW1lbnQsICBudWxscHRyLCAg
+ICAgICdSJyB9LA0KKyAgICAgICAgeyAidGltZW91dCIsICAgICAgICAgIHJlcXVpcmVkX2FyZ3Vt
+ZW50LCAgbnVsbHB0ciwgICAgICAndCcgfSwNCisgICAgICAgIHsgImNvbXByZXNzIiwgICAgICAg
+ICByZXF1aXJlZF9hcmd1bWVudCwgIG51bGxwdHIsICAgICAgJ2MnIH0sDQorICAgICAgICB7ICJw
+ay1wYXNzd29yZCIsICAgICAgcmVxdWlyZWRfYXJndW1lbnQsICBudWxscHRyLCAgICAgICd6JyB9
+LA0KKyAgICAgICAgeyAicGstcGFzc3dvcmQtZmlsZSIsIHJlcXVpcmVkX2FyZ3VtZW50LCAgbnVs
+bHB0ciwgICAgICAnaScgfSwNCisgICAgICAgIHsgInR2bS1vdmVycmlkZSIsICAgICByZXF1aXJl
+ZF9hcmd1bWVudCwgIG51bGxwdHIsICAgICAgJ00nIH0sDQorICAgICAgICB7ICJwcm94eS1ob3N0
+IiwgICAgICAgcmVxdWlyZWRfYXJndW1lbnQsICBudWxscHRyLCAgICAgICdoJyB9LA0KKyAgICAg
+ICAgeyAicHJveHktcG9ydCIsICAgICAgIHJlcXVpcmVkX2FyZ3VtZW50LCAgbnVsbHB0ciwgICAg
+ICAncScgfSwNCisgICAgICAgIHsgInByb3h5LXVzZXJuYW1lIiwgICByZXF1aXJlZF9hcmd1bWVu
+dCwgIG51bGxwdHIsICAgICAgJ1UnIH0sDQorICAgICAgICB7ICJwcm94eS1wYXNzd29yZCIsICAg
+cmVxdWlyZWRfYXJndW1lbnQsICBudWxscHRyLCAgICAgICdXJyB9LA0KKyAgICAgICAgeyAicGVl
+ci1pbmZvIiwgICAgICAgIHJlcXVpcmVkX2FyZ3VtZW50LCAgbnVsbHB0ciwgICAgICAnSScgfSwN
+CisgICAgICAgIHsgImFjYy1wcm90b3MiLCAgICAgICByZXF1aXJlZF9hcmd1bWVudCwgIG51bGxw
+dHIsICAgICAgJ0snIH0sDQorICAgICAgICB7ICJncmVtbGluIiwgICAgICAgICAgcmVxdWlyZWRf
+YXJndW1lbnQsICBudWxscHRyLCAgICAgICdHJyB9LA0KKyAgICAgICAgeyAicHJveHktYmFzaWMi
+LCAgICAgIG5vX2FyZ3VtZW50LCAgICAgICAgbnVsbHB0ciwgICAgICAnQicgfSwNCisgICAgICAg
+IHsgImFsdC1wcm94eSIsICAgICAgICBub19hcmd1bWVudCwgICAgICAgIG51bGxwdHIsICAgICAg
+J0EnIH0sDQogI2lmIGRlZmluZWQoRU5BQkxFX0tPVlBOKSB8fCBkZWZpbmVkKEVOQUJMRV9PVlBO
+RENPKSB8fCBkZWZpbmVkKEVOQUJMRV9PVlBORENPV0lOKQ0KICAgICAgICAgeyAibm8tZGNvIiwg
+ICAgICAgICBub19hcmd1bWVudCwgICAgICAgIG51bGxwdHIsICAgICAgJ2QnIH0sDQogI2VuZGlm
+DQpAQCAtMTAwMyw2ICsxMDA0LDcgQEAgaW50IG9wZW52cG5fY2xpZW50KGludCBhcmdjLCBjaGFy
+ICphcmd2W10sIGNvbnN0IHN0ZDo6c3RyaW5nICpwcm9maWxlX2NvbnRlbnQpDQogICAgICAgICAg
+ICAgaW50IHRpbWVvdXQgPSAwOw0KICAgICAgICAgICAgIHN0ZDo6c3RyaW5nIGNvbXByZXNzOw0K
+ICAgICAgICAgICAgIHN0ZDo6c3RyaW5nIHByaXZhdGVLZXlQYXNzd29yZDsNCisgICAgICAgICAg
+ICBzdGQ6OnN0cmluZyBwcml2YXRlS2V5UGFzc3dvcmRGaWxlOw0KICAgICAgICAgICAgIHN0ZDo6
+c3RyaW5nIHRsc1ZlcnNpb25NaW5PdmVycmlkZTsNCiAgICAgICAgICAgICBzdGQ6OnN0cmluZyB0
+bHNDZXJ0UHJvZmlsZU92ZXJyaWRlOw0KICAgICAgICAgICAgIHN0ZDo6c3RyaW5nIHByb3h5SG9z
+dDsNCkBAIC0xMDQ4LDcgKzEwNTAsNyBAQCBpbnQgb3BlbnZwbl9jbGllbnQoaW50IGFyZ2MsIGNo
+YXIgKmFyZ3ZbXSwgY29uc3Qgc3RkOjpzdHJpbmcgKnByb2ZpbGVfY29udGVudCkNCiAgICAgICAg
+ICAgICBpbnQgY2g7DQogICAgICAgICAgICAgb3B0aW5kID0gMTsNCiANCi0gICAgICAgICAgICB3
+aGlsZSAoKGNoID0gZ2V0b3B0X2xvbmcoYXJnYywgYXJndiwgIjY6QUJDRDpHOkk6SzpMTTpQOlFS
+OlM6VFU6VzpYOllaOmFjOmRlZ2g6ams6bG1wOnE6cjpzOnQ6dTp2d3h6OiIsIGxvbmdvcHRzLCBu
+dWxscHRyKSkgIT0gLTEpDQorICAgICAgICAgICAgd2hpbGUgKChjaCA9IGdldG9wdF9sb25nKGFy
+Z2MsIGFyZ3YsICI2OkFCQ0Q6RzpJOks6TE06UDpRUjpTOlRVOlc6WDpZWjphYzpkZWdoOmprOmxt
+cDpxOnI6czp0OnU6dnd4emk6IiwgbG9uZ29wdHMsIG51bGxwdHIpKSAhPSAtMSkNCiAgICAgICAg
+ICAgICB7DQogICAgICAgICAgICAgICAgIHN3aXRjaCAoY2gpDQogICAgICAgICAgICAgICAgIHsN
+CkBAIC0xMTE3LDYgKzExMTksOSBAQCBpbnQgb3BlbnZwbl9jbGllbnQoaW50IGFyZ2MsIGNoYXIg
+KmFyZ3ZbXSwgY29uc3Qgc3RkOjpzdHJpbmcgKnByb2ZpbGVfY29udGVudCkNCiAgICAgICAgICAg
+ICAgICAgY2FzZSAneic6DQogICAgICAgICAgICAgICAgICAgICBwcml2YXRlS2V5UGFzc3dvcmQg
+PSBvcHRhcmc7DQogICAgICAgICAgICAgICAgICAgICBicmVhazsNCisgICAgICAgICAgICAgICAg
+Y2FzZSAnaSc6DQorICAgICAgICAgICAgICAgICAgICBwcml2YXRlS2V5UGFzc3dvcmRGaWxlID0g
+b3B0YXJnOw0KKyAgICAgICAgICAgICAgICAgICAgYnJlYWs7DQogICAgICAgICAgICAgICAgIGNh
+c2UgJ00nOg0KICAgICAgICAgICAgICAgICAgICAgdGxzVmVyc2lvbk1pbk92ZXJyaWRlID0gb3B0
+YXJnOw0KICAgICAgICAgICAgICAgICAgICAgYnJlYWs7DQpAQCAtMTI1Nyw2ICsxMjYyLDkgQEAg
+aW50IG9wZW52cG5fY2xpZW50KGludCBhcmdjLCBjaGFyICphcmd2W10sIGNvbnN0IHN0ZDo6c3Ry
+aW5nICpwcm9maWxlX2NvbnRlbnQpDQogICAgICAgICAgICAgICAgICAgICBjb25maWcuY29ublRp
+bWVvdXQgPSB0aW1lb3V0Ow0KICAgICAgICAgICAgICAgICAgICAgY29uZmlnLmNvbXByZXNzaW9u
+TW9kZSA9IGNvbXByZXNzOw0KICAgICAgICAgICAgICAgICAgICAgY29uZmlnLmFsbG93VW51c2Vk
+QWRkckZhbWlsaWVzID0gYWxsb3dVbnVzZWRBZGRyRmFtaWxpZXM7DQorICAgICAgICAgICAgICAg
+ICAgICBpZiAocHJpdmF0ZUtleVBhc3N3b3JkLmVtcHR5KCkgJiYgIXByaXZhdGVLZXlQYXNzd29y
+ZEZpbGUuZW1wdHkoKSkgew0KKyAgICAgICAgICAgICAgICAgICAgICAgIHByaXZhdGVLZXlQYXNz
+d29yZCA9IHN0cmluZzo6dHJpbV9jcmxmX2NvcHkocmVhZF90ZXh0X3V0ZjgocHJpdmF0ZUtleVBh
+c3N3b3JkRmlsZSkpOw0KKyAgICAgICAgICAgICAgICAgICAgfQ0KICAgICAgICAgICAgICAgICAg
+ICAgY29uZmlnLnByaXZhdGVLZXlQYXNzd29yZCA9IHByaXZhdGVLZXlQYXNzd29yZDsNCiAgICAg
+ICAgICAgICAgICAgICAgIGNvbmZpZy50bHNWZXJzaW9uTWluT3ZlcnJpZGUgPSB0bHNWZXJzaW9u
+TWluT3ZlcnJpZGU7DQogICAgICAgICAgICAgICAgICAgICBjb25maWcudGxzQ2VydFByb2ZpbGVP
+dmVycmlkZSA9IHRsc0NlcnRQcm9maWxlT3ZlcnJpZGU7DQpAQCAtMTQ3MCw2ICsxNDc4LDcgQEAg
+aW50IG9wZW52cG5fY2xpZW50KGludCBhcmdjLCBjaGFyICphcmd2W10sIGNvbnN0IHN0ZDo6c3Ry
+aW5nICpwcm9maWxlX2NvbnRlbnQpDQogICAgICAgICBzdGQ6OmNvdXQgPDwgIi0tdGltZW91dCwg
+LXQgICAgICAgICA6IHRpbWVvdXQiIDw8IHN0ZDo6ZW5kbDsNCiAgICAgICAgIHN0ZDo6Y291dCA8
+PCAiLS1jb21wcmVzcywgLWMgICAgICAgIDogY29tcHJlc3Npb24gbW9kZSAoeWVzfG5vfGFzeW0p
+IiA8PCBzdGQ6OmVuZGw7DQogICAgICAgICBzdGQ6OmNvdXQgPDwgIi0tcGstcGFzc3dvcmQsIC16
+ICAgICA6IHByaXZhdGUga2V5IHBhc3N3b3JkIiA8PCBzdGQ6OmVuZGw7DQorICAgICAgICBzdGQ6
+OmNvdXQgPDwgIi0tcGstcGFzc3dvcmQtZmlsZSwgLWk6IHByaXZhdGUga2V5IHBhc3N3b3JkIGZp
+bGUsIGNvbnRhaW5zIHBsYWludGV4dCBwYXNzd29yZCBpbiBpdCIgPDwgc3RkOjplbmRsOw0KICAg
+ICAgICAgc3RkOjpjb3V0IDw8ICItLXR2bS1vdmVycmlkZSwgLU0gICAgOiB0bHMtdmVyc2lvbi1t
+aW4gb3ZlcnJpZGUgKGRpc2FibGVkLCBkZWZhdWx0LCB0bHNfMV94KSIgPDwgc3RkOjplbmRsOw0K
+ICAgICAgICAgc3RkOjpjb3V0IDw8ICItLWxlZ2FjeS1hbGdvcml0aG1zLCAtTDogRW5hYmxlIGxl
+Z2FjeSBhbGdvcml0aG0gKE9wZW5TU0wgbGVnYWN5IHByb3ZpZGVyKSIgPDwgc3RkOjplbmRsOw0K
+ICAgICAgICAgc3RkOjpjb3V0IDw8ICItLW5vbi1wcmVmZXJyZWQtYWxnb3JpdGhtcywgLVE6IEVu
+YWJsZXMgbm9uIHByZWZlcnJlZCBkYXRhIGNoYW5uZWwgYWxnb3JpdGhtcyIgPDwgc3RkOjplbmRs
+Ow0K
+
+--_004_OS3P286MB074086D455F13904A5099B8EA53B2OS3P286MB0740JPNP_--
 
