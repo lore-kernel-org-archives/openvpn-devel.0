@@ -1,16 +1,15 @@
-From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Sun, 31 Mar 2024 14:17:54 +0000
-In-Reply-To: <gerrit.1711377047000.If0dcdde30879fd6185efb2ad31399c1629c04d22@...2715...>
-References: <gerrit.1711377047000.If0dcdde30879fd6185efb2ad31399c1629c04d22@...2715...>
-Reply-To: gert@...1296..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, frank@...2641..., a@...2181...
-Message-ID: <93c122aa60b1ea3466a078589bb14b03f39151a4-HTML@...2715...>
+From: "plaisthos (Code Review)" <gerrit@...515...>
+Date: Tue, 2 Apr 2024 00:22:01 +0000
+References: <gerrit.1712017317000.I5b14bf90bb07935f0bb84373ec4e62352752c03f@...2715...>
+Reply-To: arne-openvpn@...1227..., openvpn-devel@lists.sourceforge.net,
+ frank@...2641...
+Message-ID: <ea26a4f148f5749da84ea67b49a4a56ef38f1045-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="IMsFSyLNDQk="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: crypto_backend: fix
- type of enc parameter
+Content-Type: multipart/alternative; boundary="QIrfg9bK/W0="; charset=UTF-8
+Subject: [Openvpn-devel] [XS] Change in openvpn[master]: Match ifdef for
+ get_sigtype function with if ifdef of caller
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,270 +19,129 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 To: flichtenheld <frank@...2641...>
-Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---IMsFSyLNDQk=
+--QIrfg9bK/W0=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-cron2 has submitted this change. ( http://gerrit.openvpn.net/c/openvpn/+/54=
-8?usp=3Demail )
+Attention is currently required from: flichtenheld.
 
-Change subject: crypto_backend: fix type of enc parameter
+Hello flichtenheld,
+
+I'd like you to do a code review.
+Please visit
+
+    http://gerrit.openvpn.net/c/openvpn/+/551?usp=3Demail
+
+to review the following change.
+
+
+Change subject: Match ifdef for get_sigtype function with if ifdef of caller
 ......................................................................
 
-crypto_backend: fix type of enc parameter
+Match ifdef for get_sigtype function with if ifdef of caller
 
-We had parts of a abstraction, but it wasn't consistent.
-GCC 13 now complains about the type mismatch with mbedtls now:
+These two ifdef needs to be the same otherwise the compiler will
+break with a undefined function.
 
-crypto_mbedtls.c:568:1: error:
-conflicting types for =E2=80=98cipher_ctx_init=E2=80=99 due to enum/integer=
- mismatch;
-have =E2=80=98void(mbedtls_cipher_context_t *, const uint8_t *, const char =
-*, const mbedtls_operation_t)=E2=80=99
-[...] [-Werror=3Denum-int-mismatch]
-crypto_backend.h:341:6: note:
-previous declaration of =E2=80=98cipher_ctx_init=E2=80=99 with type
-=E2=80=98void(cipher_ctx_t *, const uint8_t *, const char *, int)=E2=80=99 =
-[...]
-
-Previous compiler versions did not complain.
-
-v2:
- - clean solution instead of quick solution. Fix the actual API
-   definition
-
-Change-Id: If0dcdde30879fd6185efb2ad31399c1629c04d22
-Signed-off-by: Frank Lichtenheld <frank@...2641...>
-Acked-by: Arne Schwabe <arne-openvpn@...1227...>
-Message-Id: <20240327162621.1792414-1-frank@...2641...>
-URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg28=
-498.html
-Signed-off-by: Gert Doering <gert@...1296...>
+Change-Id: I5b14bf90bb07935f0bb84373ec4e62352752c03f
+Signed-off-by: Arne Schwabe <arne@...1227...>
 ---
-M src/openvpn/crypto_backend.h
-M src/openvpn/crypto_mbedtls.c
-M src/openvpn/crypto_mbedtls.h
-M src/openvpn/crypto_openssl.c
-M src/openvpn/crypto_openssl.h
-5 files changed, 9 insertions(+), 5 deletions(-)
+M src/openvpn/ssl_openssl.c
+1 file changed, 2 insertions(+), 1 deletion(-)
 
 
 
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/51/551/1
 
-diff --git a/src/openvpn/crypto_backend.h b/src/openvpn/crypto_backend.h
-index 8d37e64..c454c64 100644
---- a/src/openvpn/crypto_backend.h
-+++ b/src/openvpn/crypto_backend.h
-@@ -336,10 +336,10 @@
-  * @param key           Buffer containing the key to use
-  * @param ciphername    Ciphername of the cipher to use
-  * @param enc           Whether to encrypt or decrypt (either
-- *                      \c MBEDTLS_OP_ENCRYPT or \c MBEDTLS_OP_DECRYPT).
-+ *                      \c OPENVPN_OP_ENCRYPT or \c OPENVPN_OP_DECRYPT).
-  */
- void cipher_ctx_init(cipher_ctx_t *ctx, const uint8_t *key,
--                     const char *cipername, int enc);
-+                     const char *cipername, crypto_operation_t enc);
+diff --git a/src/openvpn/ssl_openssl.c b/src/openvpn/ssl_openssl.c
+index 6f29c3d..a158617 100644
+--- a/src/openvpn/ssl_openssl.c
++++ b/src/openvpn/ssl_openssl.c
+@@ -2166,7 +2166,8 @@
+     EVP_PKEY_free(pkey);
+ }
 
+-#if !defined(LIBRESSL_VERSION_NUMBER)  && OPENSSL_VERSION_NUMBER >=3D 0x10=
+10000fL
++#if (!defined(LIBRESSL_VERSION_NUMBER) && OPENSSL_VERSION_NUMBER >=3D 0x10=
+10000fL) \
++    || (defined(LIBRESSL_VERSION_NUMBER) && LIBRESSL_VERSION_NUMBER >=3D 0=
+x3090000fL)
  /**
-  * Returns the size of the IV used by the cipher, in bytes, or 0 if no IV =
-is
-diff --git a/src/openvpn/crypto_mbedtls.c b/src/openvpn/crypto_mbedtls.c
-index 1a39752..c230292 100644
---- a/src/openvpn/crypto_mbedtls.c
-+++ b/src/openvpn/crypto_mbedtls.c
-@@ -566,7 +566,7 @@
-
- void
- cipher_ctx_init(mbedtls_cipher_context_t *ctx, const uint8_t *key,
--                const char *ciphername, const mbedtls_operation_t operatio=
-n)
-+                const char *ciphername, crypto_operation_t enc)
- {
-     ASSERT(NULL !=3D ciphername && NULL !=3D ctx);
-     CLEAR(*ctx);
-@@ -580,7 +580,7 @@
-         msg(M_FATAL, "mbed TLS cipher context init #1");
-     }
-
--    if (!mbed_ok(mbedtls_cipher_setkey(ctx, key, (int)key_bitlen, operatio=
-n)))
-+    if (!mbed_ok(mbedtls_cipher_setkey(ctx, key, (int)key_bitlen, enc)))
-     {
-         msg(M_FATAL, "mbed TLS cipher set key");
-     }
-diff --git a/src/openvpn/crypto_mbedtls.h b/src/openvpn/crypto_mbedtls.h
-index 46f76e2..48d1e20 100644
---- a/src/openvpn/crypto_mbedtls.h
-+++ b/src/openvpn/crypto_mbedtls.h
-@@ -63,6 +63,8 @@
- /** Cipher is in GCM mode */
- #define OPENVPN_MODE_GCM        MBEDTLS_MODE_GCM
-
-+typedef mbedtls_operation_t crypto_operation_t;
-+
- /** Cipher should encrypt */
- #define OPENVPN_OP_ENCRYPT      MBEDTLS_ENCRYPT
-
-diff --git a/src/openvpn/crypto_openssl.c b/src/openvpn/crypto_openssl.c
-index 50683b6..bfc5e37 100644
---- a/src/openvpn/crypto_openssl.c
-+++ b/src/openvpn/crypto_openssl.c
-@@ -840,7 +840,7 @@
-
- void
- cipher_ctx_init(EVP_CIPHER_CTX *ctx, const uint8_t *key,
--                const char *ciphername, int enc)
-+                const char *ciphername, crypto_operation_t enc)
- {
-     ASSERT(NULL !=3D ciphername && NULL !=3D ctx);
-     evp_cipher_type *kt =3D cipher_get(ciphername);
-diff --git a/src/openvpn/crypto_openssl.h b/src/openvpn/crypto_openssl.h
-index c0e95b4..4cd988a 100644
---- a/src/openvpn/crypto_openssl.h
-+++ b/src/openvpn/crypto_openssl.h
-@@ -85,6 +85,8 @@
- /** Cipher is in GCM mode */
- #define OPENVPN_MODE_GCM        EVP_CIPH_GCM_MODE
-
-+typedef int crypto_operation_t;
-+
- /** Cipher should encrypt */
- #define OPENVPN_OP_ENCRYPT      1
-
+  * Translate an OpenSSL NID into a more human readable name
+  * @param nid
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/548?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/551?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings
 
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: If0dcdde30879fd6185efb2ad31399c1629c04d22
-Gerrit-Change-Number: 548
-Gerrit-PatchSet: 4
-Gerrit-Owner: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
+Gerrit-Change-Id: I5b14bf90bb07935f0bb84373ec4e62352752c03f
+Gerrit-Change-Number: 551
+Gerrit-PatchSet: 1
+Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
+Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-CC: ordex <a@...2181...>
-Gerrit-MessageType: merged
+Gerrit-Attention: flichtenheld <frank@...2641...>
+Gerrit-MessageType: newchange
 
---IMsFSyLNDQk=
+--QIrfg9bK/W0=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p>cron2 <strong>submitted</strong> this change.</p><p><a href=3D"http://ge=
-rrit.openvpn.net/c/openvpn/+/548?usp=3Demail">View Change</a></p><div style=
-=3D"white-space:pre-wrap"></div><pre style=3D"font-family: monospace,monosp=
-ace; white-space: pre-wrap;">crypto_backend: fix type of enc parameter<br><=
-br>We had parts of a abstraction, but it wasn&#39;t consistent.<br>GCC 13 n=
-ow complains about the type mismatch with mbedtls now:<br><br>crypto_mbedtl=
-s.c:568:1: error:<br>conflicting types for =E2=80=98cipher_ctx_init=E2=80=
-=99 due to enum/integer mismatch;<br>have =E2=80=98void(mbedtls_cipher_cont=
-ext_t *, const uint8_t *, const char *, const mbedtls_operation_t)=E2=80=99=
-<br>[...] [-Werror=3Denum-int-mismatch]<br>crypto_backend.h:341:6: note:<br=
->previous declaration of =E2=80=98cipher_ctx_init=E2=80=99 with type<br>=E2=
-=80=98void(cipher_ctx_t *, const uint8_t *, const char *, int)=E2=80=99 [..=
-.]<br><br>Previous compiler versions did not complain.<br><br>v2:<br> - cle=
-an solution instead of quick solution. Fix the actual API<br>   definition<=
-br><br>Change-Id: If0dcdde30879fd6185efb2ad31399c1629c04d22<br>Signed-off-b=
-y: Frank Lichtenheld &lt;frank@...2641...&gt;<br>Acked-by: Arne Schwabe &lt=
-;arne-openvpn@...1227...&gt;<br>Message-Id: &lt;20240327162621.1792414-1-fr=
-ank@...2641...&gt;<br>URL: https://www.mail-archive.com/openvpn-devel@...1697...=
-.sourceforge.net/msg28498.html<br>Signed-off-by: Gert Doering &lt;gert@...1386...=
-296...&gt;<br>---<br>M src/openvpn/crypto_backend.h<br>M src/openvpn/crypto=
-_mbedtls.c<br>M src/openvpn/crypto_mbedtls.h<br>M src/openvpn/crypto_openss=
-l.c<br>M src/openvpn/crypto_openssl.h<br>5 files changed, 9 insertions(+), =
-5 deletions(-)<br><br></pre>
-<pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><sp=
-an>diff --git a/src/openvpn/crypto_backend.h b/src/openvpn/crypto_backend.h=
-</span><br><span>index 8d37e64..c454c64 100644</span><br><span>--- a/src/op=
-envpn/crypto_backend.h</span><br><span>+++ b/src/openvpn/crypto_backend.h</=
-span><br><span>@@ -336,10 +336,10 @@</span><br><span>  * @param key        =
-   Buffer containing the key to use</span><br><span>  * @param ciphername  =
-  Ciphername of the cipher to use</span><br><span>  * @param enc           =
-Whether to encrypt or decrypt (either</span><br><span style=3D"color: hsl(0=
-, 100%, 40%);">- *                      \c MBEDTLS_OP_ENCRYPT or \c MBEDTLS=
-_OP_DECRYPT).</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *    =
-                  \c OPENVPN_OP_ENCRYPT or \c OPENVPN_OP_DECRYPT).</span><b=
-r><span>  */</span><br><span> void cipher_ctx_init(cipher_ctx_t *ctx, const=
- uint8_t *key,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-       =
-              const char *cipername, int enc);</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+                     const char *cipername, cryp=
-to_operation_t enc);</span><br><span> </span><br><span> /**</span><br><span=
->  * Returns the size of the IV used by the cipher, in bytes, or 0 if no IV=
- is</span><br><span>diff --git a/src/openvpn/crypto_mbedtls.c b/src/openvpn=
-/crypto_mbedtls.c</span><br><span>index 1a39752..c230292 100644</span><br><=
-span>--- a/src/openvpn/crypto_mbedtls.c</span><br><span>+++ b/src/openvpn/c=
-rypto_mbedtls.c</span><br><span>@@ -566,7 +566,7 @@</span><br><span> </span=
-><br><span> void</span><br><span> cipher_ctx_init(mbedtls_cipher_context_t =
-*ctx, const uint8_t *key,</span><br><span style=3D"color: hsl(0, 100%, 40%)=
-;">-                const char *ciphername, const mbedtls_operation_t opera=
-tion)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+              =
-  const char *ciphername, crypto_operation_t enc)</span><br><span> {</span>=
-<br><span>     ASSERT(NULL !=3D ciphername &amp;&amp; NULL !=3D ctx);</span=
-><br><span>     CLEAR(*ctx);</span><br><span>@@ -580,7 +580,7 @@</span><br>=
-<span>         msg(M_FATAL, &quot;mbed TLS cipher context init #1&quot;);</=
-span><br><span>     }</span><br><span> </span><br><span style=3D"color: hsl=
-(0, 100%, 40%);">-    if (!mbed_ok(mbedtls_cipher_setkey(ctx, key, (int)key=
-_bitlen, operation)))</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+    if (!mbed_ok(mbedtls_cipher_setkey(ctx, key, (int)key_bitlen, enc)))<=
-/span><br><span>     {</span><br><span>         msg(M_FATAL, &quot;mbed TLS=
- cipher set key&quot;);</span><br><span>     }</span><br><span>diff --git a=
-/src/openvpn/crypto_mbedtls.h b/src/openvpn/crypto_mbedtls.h</span><br><spa=
-n>index 46f76e2..48d1e20 100644</span><br><span>--- a/src/openvpn/crypto_mb=
-edtls.h</span><br><span>+++ b/src/openvpn/crypto_mbedtls.h</span><br><span>=
-@@ -63,6 +63,8 @@</span><br><span> /** Cipher is in GCM mode */</span><br><=
-span> #define OPENVPN_MODE_GCM        MBEDTLS_MODE_GCM</span><br><span> </s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+typedef mbedtls_operat=
-ion_t crypto_operation_t;</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+</span><br><span> /** Cipher should encrypt */</span><br><span> #defi=
-ne OPENVPN_OP_ENCRYPT      MBEDTLS_ENCRYPT</span><br><span> </span><br><spa=
-n>diff --git a/src/openvpn/crypto_openssl.c b/src/openvpn/crypto_openssl.c<=
-/span><br><span>index 50683b6..bfc5e37 100644</span><br><span>--- a/src/ope=
-nvpn/crypto_openssl.c</span><br><span>+++ b/src/openvpn/crypto_openssl.c</s=
-pan><br><span>@@ -840,7 +840,7 @@</span><br><span> </span><br><span> void</=
-span><br><span> cipher_ctx_init(EVP_CIPHER_CTX *ctx, const uint8_t *key,</s=
-pan><br><span style=3D"color: hsl(0, 100%, 40%);">-                const ch=
-ar *ciphername, int enc)</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+                const char *ciphername, crypto_operation_t enc)</span>=
-<br><span> {</span><br><span>     ASSERT(NULL !=3D ciphername &amp;&amp; NU=
-LL !=3D ctx);</span><br><span>     evp_cipher_type *kt =3D cipher_get(ciphe=
-rname);</span><br><span>diff --git a/src/openvpn/crypto_openssl.h b/src/ope=
-nvpn/crypto_openssl.h</span><br><span>index c0e95b4..4cd988a 100644</span><=
-br><span>--- a/src/openvpn/crypto_openssl.h</span><br><span>+++ b/src/openv=
-pn/crypto_openssl.h</span><br><span>@@ -85,6 +85,8 @@</span><br><span> /** =
-Cipher is in GCM mode */</span><br><span> #define OPENVPN_MODE_GCM        E=
-VP_CIPH_GCM_MODE</span><br><span> </span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+typedef int crypto_operation_t;</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+</span><br><span> /** Cipher should encrypt */</=
-span><br><span> #define OPENVPN_OP_ENCRYPT      1</span><br><span> </span><=
-br><span></span><br></pre><p>To view, visit <a href=3D"http://gerrit.openvp=
-n.net/c/openvpn/+/548?usp=3Demail">change 548</a>. To unsubscribe, or for h=
-elp writing mail filters, visit <a href=3D"http://gerrit.openvpn.net/settin=
-gs">settings</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMess=
-age"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewA=
-ction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+=
-/548?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div><=
-/div>
+<p> Attention is currently required from: flichtenheld. </p>
+<p>plaisthos would like flichtenheld to <strong>review</strong> this change.
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/551?usp=3Demail">Vi=
+ew Change</a></p><pre style=3D"font-family: monospace,monospace; white-spac=
+e: pre-wrap;">Match ifdef for get_sigtype function with if ifdef of caller<=
+br><br>These two ifdef needs to be the same otherwise the compiler will<br>=
+break with a undefined function.<br><br>Change-Id: I5b14bf90bb07935f0bb8437=
+3ec4e62352752c03f<br>Signed-off-by: Arne Schwabe &lt;arne@...1227...&gt;<br=
+>---<br>M src/openvpn/ssl_openssl.c<br>1 file changed, 2 insertions(+), 1 d=
+eletion(-)<br><br></pre><pre style=3D"font-family: monospace,monospace; whi=
+te-space: pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/openvpn refs/c=
+hanges/51/551/1</pre><pre style=3D"font-family: monospace,monospace; white-=
+space: pre-wrap;"><span>diff --git a/src/openvpn/ssl_openssl.c b/src/openvp=
+n/ssl_openssl.c</span><br><span>index 6f29c3d..a158617 100644</span><br><sp=
+an>--- a/src/openvpn/ssl_openssl.c</span><br><span>+++ b/src/openvpn/ssl_op=
+enssl.c</span><br><span>@@ -2166,7 +2166,8 @@</span><br><span>     EVP_PKEY=
+_free(pkey);</span><br><span> }</span><br><span> </span><br><span style=3D"=
+color: hsl(0, 100%, 40%);">-#if !defined(LIBRESSL_VERSION_NUMBER)  &amp;&am=
+p; OPENSSL_VERSION_NUMBER &gt;=3D 0x1010000fL</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+#if (!defined(LIBRESSL_VERSION_NUMBER) &amp;&amp;=
+ OPENSSL_VERSION_NUMBER &gt;=3D 0x1010000fL) \</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+    || (defined(LIBRESSL_VERSION_NUMBER) &amp;&a=
+mp; LIBRESSL_VERSION_NUMBER &gt;=3D 0x3090000fL)</span><br><span> /**</span=
+><br><span>  * Translate an OpenSSL NID into a more human readable name</sp=
+an><br><span>  * @param nid</span><br><span></span><br></pre><p>To view, vi=
+sit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/551?usp=3Demail">chang=
+e 551</a>. To unsubscribe, or for help writing mail filters, visit <a href=
+=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope ite=
+mtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"action"=
+ itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"h=
+ttp://gerrit.openvpn.net/c/openvpn/+/551?usp=3Demail"/><meta itemprop=3D"na=
+me" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: If0dcdde30879fd6185efb2ad313=
-99c1629c04d22 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 548 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 4 </div>
-<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
-.&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I5b14bf90bb07935f0bb84373ec4=
+e62352752c03f </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 551 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
+<div style=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@...1711...=
+27...&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
+1...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: ordex &lt;a@...2181...&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: merged </div>
+<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
+41...&gt; </div>
+<div style=3D"display:none"> Gerrit-MessageType: newchange </div>
 
 
---IMsFSyLNDQk=--
+--QIrfg9bK/W0=--
 
