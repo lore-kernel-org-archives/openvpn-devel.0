@@ -1,16 +1,11 @@
-From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Tue, 2 Apr 2024 12:21:44 +0000
+From: Gert Doering <gert@...1296...>
+Date: Tue,  2 Apr 2024 14:22:23 +0200
+Message-ID: <20240402122223.22183-1-gert@...1296...>
 In-Reply-To: <gerrit.1712017317000.I911e25949a8647b567fd4178683534d4404ab469@...2715...>
 References: <gerrit.1712017317000.I911e25949a8647b567fd4178683534d4404ab469@...2715...>
-Reply-To: gert@...1296..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <d03441332c301f7ba10fd9c7b8deed70973e97ba-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="zIsb5DrkKbc="; charset=UTF-8
-Subject: [Openvpn-devel] [XS] Change in openvpn[master]: Remove redundant
- call of EVP_CipherInit before EVP_CipherInit_Ex
+Subject: [Openvpn-devel] [PATCH v2] Remove redundant call of EVP_CipherInit
+ before EVP_CipherInit_Ex
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,103 +14,61 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: plaisthos <arne-openvpn@...1227...>
-Cc: flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---zIsb5DrkKbc=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+From: Arne Schwabe <arne@...1227...>
 
-Attention is currently required from: flichtenheld, plaisthos.
+EVP_CipherInit basically is the same EVP_CipherInit_ex except that it
+in some instances it resets/inits the ctx parameter first. We already
+call EVP_CIPHER_CTX_reset to reset/init the ctx before so this call does
+not do anything useful.
 
-cron2 has posted comments on this change. ( http://gerrit.openvpn.net/c/ope=
-nvpn/+/552?usp=3Demail )
+OpenSSL 1.0.2:
 
-Change subject: Remove redundant call of EVP_CipherInit before EVP_CipherIn=
-it_Ex
-......................................................................
+https://github.com/openssl/openssl/blob/OpenSSL_1_0_2-stable/crypto/evp/evp_enc.c#L94
 
+EVP_CipherInit calls first EVP_CIPHER_CTX_init and then EVP_CipherInit_ex
 
-Patch Set 2: Code-Review+2
+Our openssl_compat.h has
 
-(1 comment)
+for these older OpenSSL versions
 
-Patchset:
+OpenSSL 3.0:
 
-PS2:=20
-The openssl source is very enlightening and makes it very clear that this i=
-s correct.
+https://github.com/openssl/openssl/blob/openssl-3.2/crypto/evp/evp_enc.c#L450
 
+basically the same as 1.0.2. Just that method names have been changed.
 
+Change-Id: I911e25949a8647b567fd4178683534d4404ab469
+Signed-off-by: Arne Schwabe <arne@...1227...>
+Acked-by: Gert Doering <gert@...1296...>
+---
 
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/552?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings
+This change was reviewed on Gerrit and approved by at least one
+developer. I request to merge it to master.
 
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: I911e25949a8647b567fd4178683534d4404ab469
-Gerrit-Change-Number: 552
-Gerrit-PatchSet: 2
-Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
-Gerrit-Reviewer: cron2 <gert@...1296...>
-Gerrit-Reviewer: flichtenheld <frank@...2641...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Comment-Date: Tue, 02 Apr 2024 12:21:44 +0000
-Gerrit-HasComments: Yes
-Gerrit-Has-Labels: Yes
-Gerrit-MessageType: comment
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/552
+This mail reflects revision 2 of this Change.
 
---zIsb5DrkKbc=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Acked-by according to Gerrit (reflected above):
+Gert Doering <gert@...1296...>
 
-<p> Attention is currently required from: flichtenheld, plaisthos. </p>
-<p>Patch set 2:<span style=3D"border-radius: 3px; display: inline-block; ma=
-rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/552?usp=3Demail">Vi=
-ew Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0=
-;"><li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-s=
-tyle: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p s=
-tyle=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn=
-/+/552?tab=3Dcomments">Patch Set #2:</a> </p><p style=3D"white-space: pre-w=
-rap; word-wrap: break-word;">The openssl source is very enlightening and ma=
-kes it very clear that this is correct.</p></li></ul></li></ul><p>To view, =
-visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/552?usp=3Demail">cha=
-nge 552</a>. To unsubscribe, or for help writing mail filters, visit <a hre=
-f=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope it=
-emtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"action=
-" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"=
-http://gerrit.openvpn.net/c/openvpn/+/552?usp=3Demail"/><meta itemprop=3D"n=
-ame" content=3D"View Change"/></div></div>
-
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I911e25949a8647b567fd4178683=
-534d4404ab469 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 552 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
-<div style=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@...1711...=
-27...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
- </div>
-<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
-1...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
-41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Tue, 02 Apr 2024 12:21:44=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
-
-
---zIsb5DrkKbc=--
+        
+diff --git a/src/openvpn/crypto_openssl.c b/src/openvpn/crypto_openssl.c
+index bfc5e37..13dfa8c 100644
+--- a/src/openvpn/crypto_openssl.c
++++ b/src/openvpn/crypto_openssl.c
+@@ -846,10 +846,6 @@
+     evp_cipher_type *kt = cipher_get(ciphername);
+ 
+     EVP_CIPHER_CTX_reset(ctx);
+-    if (!EVP_CipherInit(ctx, kt, NULL, NULL, enc))
+-    {
+-        crypto_msg(M_FATAL, "EVP cipher init #1");
+-    }
+     if (!EVP_CipherInit_ex(ctx, NULL, NULL, key, NULL, enc))
+     {
+         crypto_msg(M_FATAL, "EVP cipher init #2");
 
