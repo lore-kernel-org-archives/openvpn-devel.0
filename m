@@ -1,11 +1,10 @@
+Date: Tue, 2 Apr 2024 16:56:35 +0200 (CEST)
+Message-Id: <202404021456.432EuZFs030160@...2054...>
 From: Gert Doering <gert@...1296...>
-Date: Tue,  2 Apr 2024 15:49:09 +0200
-Message-ID: <20240402134909.6340-1-gert@...1296...>
-In-Reply-To: <gerrit.1712017317000.I911e25949a8647b567fd4178683534d4404ab469@...2715...>
-References: <gerrit.1712017317000.I911e25949a8647b567fd4178683534d4404ab469@...2715...>
-MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v3] Remove/combine redundant call of
- EVP_CipherInit before EVP_CipherInit_Ex
+In-Reply-To: <20240402134909.6340-1-gert@...1296...>
+References: <20240402134909.6340-1-gert@...1296...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Remove/combine redundant call
+ of EVP_CipherInit before EVP_CipherInit_Ex
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,62 +15,38 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Arne Schwabe <arne@...1227...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-From: Arne Schwabe <arne@...1227...>
+Looking at the OpenSSL implementation for the EVP_CipherInit*() functions
+makes it really clear that this is, basically, dead code.  Of course the
+"kt" init needs to go to the second call now, because otherwise it will
+bomb with OpenSSL 3.x ("no default cipher").
 
-EVP_CipherInit basically is the same EVP_CipherInit_ex except that it
-in some instances it resets/inits the ctx parameter first. We already
-call EVP_CIPHER_CTX_reset to reset/init the ctx before. Also ensure that
-EVP_CipherInit_Ex gets the cipher to actually be able to initialise the
-context.
+Tested with various OpenSSL (and LibreSSL) versions across the buildbot
+and GHA test bed.
 
-OpenSSL 1.0.2:
+Your patch has been applied to the master branch.
 
-https://github.com/openssl/openssl/blob/OpenSSL_1_0_2-stable/crypto/evp/evp_enc.c#L94
+(Not applied to release/2.6 since it's not actually fixing something,
+just cleaning up old code - typical "master" material)
 
-EVP_CipherInit calls first EVP_CIPHER_CTX_init and then EVP_CipherInit_ex
+commit e81e3eb1a4322148b06f353eaa22b0a803fd74f4
+Author: Arne Schwabe
+Date:   Tue Apr 2 15:49:09 2024 +0200
 
-Our openssl_compat.h has
+     Remove/combine redundant call of EVP_CipherInit before EVP_CipherInit_Ex
 
-for these older OpenSSL versions
+     Signed-off-by: Arne Schwabe <arne@...1227...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <20240402134909.6340-1-gert@...1296...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg28523.html
+     Signed-off-by: Gert Doering <gert@...1296...>
 
-OpenSSL 3.0:
 
-https://github.com/openssl/openssl/blob/openssl-3.2/crypto/evp/evp_enc.c#L450
+--
+kind regards,
 
-basically the same as 1.0.2. Just that method names have been changed.
+Gert Doering
 
-Change-Id: I911e25949a8647b567fd4178683534d4404ab469
-Signed-off-by: Arne Schwabe <arne@...1227...>
-Acked-by: Gert Doering <gert@...1296...>
----
-
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to master.
-
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/552
-This mail reflects revision 3 of this Change.
-
-Acked-by according to Gerrit (reflected above):
-Gert Doering <gert@...1296...>
-
-        
-diff --git a/src/openvpn/crypto_openssl.c b/src/openvpn/crypto_openssl.c
-index bfc5e37..b2c4eb6 100644
---- a/src/openvpn/crypto_openssl.c
-+++ b/src/openvpn/crypto_openssl.c
-@@ -846,11 +846,7 @@
-     evp_cipher_type *kt = cipher_get(ciphername);
- 
-     EVP_CIPHER_CTX_reset(ctx);
--    if (!EVP_CipherInit(ctx, kt, NULL, NULL, enc))
--    {
--        crypto_msg(M_FATAL, "EVP cipher init #1");
--    }
--    if (!EVP_CipherInit_ex(ctx, NULL, NULL, key, NULL, enc))
-+    if (!EVP_CipherInit_ex(ctx, kt, NULL, key, NULL, enc))
-     {
-         crypto_msg(M_FATAL, "EVP cipher init #2");
-     }
 
