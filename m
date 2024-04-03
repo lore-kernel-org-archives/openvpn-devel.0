@@ -1,14 +1,14 @@
 From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Wed, 3 Apr 2024 07:41:24 +0000
+Date: Wed, 3 Apr 2024 07:41:26 +0000
 In-Reply-To: <gerrit.1702310034000.I67d461afbcc9c06b1fc5ab4477141d7b8bd9ba8e@...2715...>
 References: <gerrit.1702310034000.I67d461afbcc9c06b1fc5ab4477141d7b8bd9ba8e@...2715...>
 Reply-To: gert@...1296..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <479c237ce3cd9e33a78b9946b20030f667ad9d26-EmailReplacePatchSet-HTML@...2715...>
+Message-ID: <479c237ce3cd9e33a78b9946b20030f667ad9d26-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="B2bhiSQedrg="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="YpkkHXyoMp0="; charset=UTF-8
 Subject: [Openvpn-devel] [M] Change in openvpn[master]: tests: fork default
  automake test-driver
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -19,19 +19,15 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: flichtenheld <frank@...2641...>, plaisthos <arne-openvpn@...1227...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: flichtenheld <frank@...2641...>
+Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---B2bhiSQedrg=
+--YpkkHXyoMp0=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-cron2 has uploaded a new patch set (#11) to the change originally created b=
-y flichtenheld. ( http://gerrit.openvpn.net/c/openvpn/+/478?usp=3Demail )
-
-The following approvals got outdated and were removed:
-Code-Review+2 by plaisthos
-
+cron2 has submitted this change. ( http://gerrit.openvpn.net/c/openvpn/+/47=
+8?usp=3Demail )
 
 Change subject: tests: fork default automake test-driver
 ......................................................................
@@ -61,7 +57,7 @@ M tests/Makefile.am
 3 files changed, 156 insertions(+), 1 deletion(-)
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/78/478/11
+
 
 diff --git a/Makefile.am b/Makefile.am
 index 439346e..87230fe 100644
@@ -262,246 +258,242 @@ Gerrit-PatchSet: 11
 Gerrit-Owner: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-MessageType: newpatchset
+Gerrit-MessageType: merged
 
---B2bhiSQedrg=
+--YpkkHXyoMp0=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p>cron2 <strong>uploaded patch set #11</strong> to the change originally c=
-reated by flichtenheld.</p><p><a href=3D"http://gerrit.openvpn.net/c/openvp=
-n/+/478?usp=3Demail">View Change</a></p><p>The following approvals got outd=
-ated and were removed:
-Code-Review+2 by plaisthos</p><pre style=3D"font-family: monospace,monospac=
-e; white-space: pre-wrap;">tests: fork default automake test-driver<br><br>=
-For some of the test we don&#39;t like the default log behavior<br>and ther=
-e seems no easy way to change that except to fork<br>the driver. The licens=
-e seems unproblematic since we&#39;re<br>GPL anyway.<br><br>v2:<br> - Do no=
-t use forked-test-driver for UTs. Default behavior<br>   is fine for those.=
-<br><br>Change-Id: I67d461afbcc9c06b1fc5ab4477141d7b8bd9ba8e<br>Signed-off-=
-by: Frank Lichtenheld &lt;frank@...2641...&gt;<br>Acked-by: Arne Schwabe &l=
-t;arne-openvpn@...1227...&gt;<br>Message-Id: &lt;20240125110036.16070-1-fra=
-nk@...2641...&gt;<br>URL: https://www.mail-archive.com/openvpn-devel@...1199...=
-sourceforge.net/msg28132.html<br>Signed-off-by: Gert Doering &lt;gert@...1711...=
-96...&gt;<br>---<br>M Makefile.am<br>A forked-test-driver<br>M tests/Makefi=
-le.am<br>3 files changed, 156 insertions(+), 1 deletion(-)<br><br></pre><pr=
-e style=3D"font-family: monospace,monospace; white-space: pre-wrap;">git pu=
-ll ssh://gerrit.openvpn.net:29418/openvpn refs/changes/78/478/11</pre><pre =
-style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><span>di=
-ff --git a/Makefile.am b/Makefile.am</span><br><span>index 439346e..87230fe=
- 100644</span><br><span>--- a/Makefile.am</span><br><span>+++ b/Makefile.am=
-</span><br><span>@@ -45,7 +45,8 @@</span><br><span> 	ltrc.inc \</span><br><=
-span> 	CMakeLists.txt \</span><br><span> 	CMakePresets.json \</span><br><sp=
-an style=3D"color: hsl(0, 100%, 40%);">-	config.h.cmake.in</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+	config.h.cmake.in \</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+	forked-test-driver</span><br><span=
-> </span><br><span> .PHONY: config-version.h doxygen</span><br><span> </spa=
-n><br><span>diff --git a/forked-test-driver b/forked-test-driver</span><br>=
-<span>new file mode 100755</span><br><span>index 0000000..be73b80</span><br=
-><span>--- /dev/null</span><br><span>+++ b/forked-test-driver</span><br><sp=
-an>@@ -0,0 +1,153 @@</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+#! /bin/sh</span><br><span style=3D"color: hsl(120, 100%, 40%);">+# test-d=
-river - basic testsuite driver script.</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-scriptversion=3D2018-03-07.03; # UTC</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+# =
-Copyright (C) 2011-2021 Free Software Foundation, Inc.</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+#</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+# This program is free software; you can redistribute it a=
-nd/or modify</span><br><span style=3D"color: hsl(120, 100%, 40%);">+# it un=
-der the terms of the GNU General Public License as published by</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+# the Free Software Foundation;=
- either version 2, or (at your option)</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+# any later version.</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+#</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+# This program is distributed in the hope that it will be useful,</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+# but WITHOUT ANY WARRANTY;=
- without even the implied warranty of</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  S=
-ee the</span><br><span style=3D"color: hsl(120, 100%, 40%);">+# GNU General=
- Public License for more details.</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+#</span><br><span style=3D"color: hsl(120, 100%, 40%);">+# Yo=
-u should have received a copy of the GNU General Public License</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+# along with this program.  If =
-not, see &lt;https://www.gnu.org/licenses/&gt;.</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+# As a special exception to the GNU General Public License, if you=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+# distribute this f=
-ile as part of a program that contains a</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+# configuration script generated by Autoconf, you may =
-include it under</span><br><span style=3D"color: hsl(120, 100%, 40%);">+# t=
-he same distribution terms that you use for the rest of that program.</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+# This file is maintained in Automake, pleas=
-e report</span><br><span style=3D"color: hsl(120, 100%, 40%);">+# bugs to &=
-lt;bug-automake@...1269...&gt; or send patches to</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+# &lt;automake-patches@...1269...&gt;.</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+# Make unconditional expansion of undefined v=
-ariables an error.  This</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+# helps a lot in preventing typo-related bugs.</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+set -u</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+usage_error ()</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+  echo &quot;$0: $*&q=
-uot; &gt;&amp;2</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  pr=
-int_usage &gt;&amp;2</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+  exit 2</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+print_usage ()</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+  cat &lt;&lt;END</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+Usage:</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  test-dri=
-ver --test-name NAME --log-file PATH --trs-file PATH</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+              [--expect-failure {yes|no}]=
- [--color-tests {yes|no}]</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+              [--enable-hard-errors {yes|no}] [--]</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+              TEST-SCRIPT [TEST-SCRIPT=
--ARGUMENTS]</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+The &#39;--test-name&#39;, =
-&#39;--log-file&#39; and &#39;--trs-file&#39; options are mandatory.</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+See the GNU Automake docum=
-entation for information.</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+END</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+test_name=3D # Used for reporting.</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+log_file=3D  # Where to save the=
- output of the test script.</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+trs_file=3D  # Where to save the metadata of the test run.</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+expect_failure=3Dno</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+color_tests=3Dno</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+enable_hard_errors=3Dyes</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+while test $# -gt 0; do</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+  case $1 in</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+  --help) print_usage; exit $=
-?;;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  --version) ech=
-o &quot;test-driver $scriptversion&quot;; exit $?;;</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+  --test-name) test_name=3D$2; shift;;</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+  --log-file) log_file=
-=3D$2; shift;;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  --t=
-rs-file) trs_file=3D$2; shift;;</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+  --color-tests) color_tests=3D$2; shift;;</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+  --expect-failure) expect_failure=3D$2;=
- shift;;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  --enable-=
-hard-errors) enable_hard_errors=3D$2; shift;;</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+  --) shift; break;;</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+  -*) usage_error &quot;invalid option: &#39;$1&=
-#39;&quot;;;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   *) b=
-reak;;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  esac</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+  shift</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+done</span><br><span style=3D"color: h=
+<p>cron2 <strong>submitted</strong> this change.</p><p><a href=3D"http://ge=
+rrit.openvpn.net/c/openvpn/+/478?usp=3Demail">View Change</a></p><div style=
+=3D"white-space:pre-wrap"></div><pre style=3D"font-family: monospace,monosp=
+ace; white-space: pre-wrap;">tests: fork default automake test-driver<br><b=
+r>For some of the test we don&#39;t like the default log behavior<br>and th=
+ere seems no easy way to change that except to fork<br>the driver. The lice=
+nse seems unproblematic since we&#39;re<br>GPL anyway.<br><br>v2:<br> - Do =
+not use forked-test-driver for UTs. Default behavior<br>   is fine for thos=
+e.<br><br>Change-Id: I67d461afbcc9c06b1fc5ab4477141d7b8bd9ba8e<br>Signed-of=
+f-by: Frank Lichtenheld &lt;frank@...2641...&gt;<br>Acked-by: Arne Schwabe =
+&lt;arne-openvpn@...1227...&gt;<br>Message-Id: &lt;20240125110036.16070-1-f=
+rank@...2641...&gt;<br>URL: https://www.mail-archive.com/openvpn-devel@...1514...=
+s.sourceforge.net/msg28132.html<br>Signed-off-by: Gert Doering &lt;gert@...493...=
+1296...&gt;<br>---<br>M Makefile.am<br>A forked-test-driver<br>M tests/Make=
+file.am<br>3 files changed, 156 insertions(+), 1 deletion(-)<br><br></pre>
+<pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><sp=
+an>diff --git a/Makefile.am b/Makefile.am</span><br><span>index 439346e..87=
+230fe 100644</span><br><span>--- a/Makefile.am</span><br><span>+++ b/Makefi=
+le.am</span><br><span>@@ -45,7 +45,8 @@</span><br><span> 	ltrc.inc \</span>=
+<br><span> 	CMakeLists.txt \</span><br><span> 	CMakePresets.json \</span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-	config.h.cmake.in</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+	config.h.cmake.in \</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+	forked-test-driver</span><br>=
+<span> </span><br><span> .PHONY: config-version.h doxygen</span><br><span> =
+</span><br><span>diff --git a/forked-test-driver b/forked-test-driver</span=
+><br><span>new file mode 100755</span><br><span>index 0000000..be73b80</spa=
+n><br><span>--- /dev/null</span><br><span>+++ b/forked-test-driver</span><b=
+r><span>@@ -0,0 +1,153 @@</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+#! /bin/sh</span><br><span style=3D"color: hsl(120, 100%, 40%);">+# t=
+est-driver - basic testsuite driver script.</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+scriptversion=3D2018-03-07.03; # UTC</span><br><span style=3D"color: h=
 sl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+missing_opts=3D</span><br><span style=3D"color: hsl(120, 100%, 40%);">+t=
-est x&quot;$test_name&quot; =3D x &amp;&amp; missing_opts=3D&quot;$missing_=
-opts --test-name&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+test x&quot;$log_file&quot;  =3D x &amp;&amp; missing_opts=3D&quot;$miss=
-ing_opts --log-file&quot;</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+test x&quot;$trs_file&quot;  =3D x &amp;&amp; missing_opts=3D&quot;$m=
-issing_opts --trs-file&quot;</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+if test x&quot;$missing_opts&quot; !=3D x; then</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+  usage_error &quot;the following mand=
-atory options are missing:$missing_opts&quot;</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+fi</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+if test $#=
- -eq 0; then</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  usage=
-_error &quot;missing argument&quot;</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+fi</span><br><span style=3D"color: hsl(120, 100%, 40%);">+<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+if test $color_tests=
- =3D yes; then</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  # K=
-eep this in sync with &#39;lib/am/check.am:$(am__tty_colors)&#39;.</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+  red=3D&#39;=1B[0;31m&#39; =
-# Red.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  grn=3D&#39;=
-=1B[0;32m&#39; # Green.</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+  lgn=3D&#39;=1B[1;32m&#39; # Light green.</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+  blu=3D&#39;=1B[1;34m&#39; # Blue.</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+  mgn=3D&#39;=1B[0;35m&#39; # Ma=
-genta.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  std=3D&#39;=
-=1B[m&#39;     # No color.</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+else</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  red=3D=
- grn=3D lgn=3D blu=3D mgn=3D std=3D</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+fi</span><br><span style=3D"color: hsl(120, 100%, 40%);">+<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+do_exit=3D&#39;rm -f=
- $log_file $trs_file; (exit $st); exit $st&#39;</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+trap &quot;st=3D129; $do_exit&quot; 1</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+trap &quot;st=3D130; $do_exit=
-&quot; 2</span><br><span style=3D"color: hsl(120, 100%, 40%);">+trap &quot;=
-st=3D141; $do_exit&quot; 13</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+trap &quot;st=3D143; $do_exit&quot; 15</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+# Test script is run here. We create the file first, then append to=
- it,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+# to ameliorate=
- tests themselves also writing to the log file. Our tests</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+# don&#39;t, but others can (automake=
- bug#35762).</span><br><span style=3D"color: hsl(120, 100%, 40%);">+: &gt;&=
-quot;$log_file&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+&quot;$@&quot; &gt;&gt;&quot;$log_file&quot; 2&gt;&amp;1</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+estatus=3D$?</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+if test $enable_hard_errors =3D no &amp;&amp; test $estatus -eq=
- 99; then</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  tweaked_=
-estatus=3D1</span><br><span style=3D"color: hsl(120, 100%, 40%);">+else</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+  tweaked_estatus=3D$es=
-tatus</span><br><span style=3D"color: hsl(120, 100%, 40%);">+fi</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+case $tweaked_estatus:$expect_failure in</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+  0:yes) col=3D$red res=3DXPA=
-SS recheck=3Dyes gcopy=3Dyes;;</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+  0:*)   col=3D$grn res=3DPASS  recheck=3Dno  gcopy=3Dno;;</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+  77:*)  col=3D$blu res=
-=3DSKIP  recheck=3Dno  gcopy=3Dyes;;</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+  99:*)  col=3D$mgn res=3DERROR recheck=3Dyes gcopy=3Dyes;=
-;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  *:yes) col=3D$lg=
-n res=3DXFAIL recheck=3Dno  gcopy=3Dyes;;</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+  *:*)   col=3D$red res=3DFAIL  recheck=3Dyes gcopy=
-=3Dyes;;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+esac</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+# Report the test outcome and exit status in =
-the logs, so that one can</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+# know whether the test passed or failed simply by looking at the &#3=
-9;.log&#39;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+# file, =
-without the need of also peaking into the corresponding &#39;.trs&#39;</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+# file (automake bug#118=
-14).</span><br><span style=3D"color: hsl(120, 100%, 40%);">+echo &quot;$res=
- $test_name (exit status: $estatus)&quot; &gt;&gt;&quot;$log_file&quot;</sp=
+">+# Copyright (C) 2011-2021 Free Software Foundation, Inc.</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+#</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+# This program is free software; you can redistribute=
+ it and/or modify</span><br><span style=3D"color: hsl(120, 100%, 40%);">+# =
+it under the terms of the GNU General Public License as published by</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+# the Free Software Founda=
+tion; either version 2, or (at your option)</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+# any later version.</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+#</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+# This program is distributed in the hope that it will be useful,</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+# but WITHOUT ANY WARR=
+ANTY; without even the implied warranty of</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOS=
+E.  See the</span><br><span style=3D"color: hsl(120, 100%, 40%);">+# GNU Ge=
+neral Public License for more details.</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+#</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++# You should have received a copy of the GNU General Public License</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+# along with this program.=
+  If not, see &lt;https://www.gnu.org/licenses/&gt;.</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+# As a special exception to the GNU General Public License, =
+if you</span><br><span style=3D"color: hsl(120, 100%, 40%);">+# distribute =
+this file as part of a program that contains a</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+# configuration script generated by Autoconf, yo=
+u may include it under</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+# the same distribution terms that you use for the rest of that program.=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+# This file is maintained in Automake,=
+ please report</span><br><span style=3D"color: hsl(120, 100%, 40%);">+# bug=
+s to &lt;bug-automake@...1269...&gt; or send patches to</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+# &lt;automake-patches@...1269...&gt;.<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+# Make unconditional expansion of undef=
+ined variables an error.  This</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+# helps a lot in preventing typo-related bugs.</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+set -u</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+usage_error ()</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  echo &quot;$0: =
+$*&quot; &gt;&amp;2</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+  print_usage &gt;&amp;2</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+  exit 2</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+print_usage ()</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+  cat &lt;&lt;END</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+Usage:</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  te=
+st-driver --test-name NAME --log-file PATH --trs-file PATH</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+              [--expect-failure {yes=
+|no}] [--color-tests {yes|no}]</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+              [--enable-hard-errors {yes|no}] [--]</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+              TEST-SCRIPT [TEST-S=
+CRIPT-ARGUMENTS]</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+The &#39;--test-name&#=
+39;, &#39;--log-file&#39; and &#39;--trs-file&#39; options are mandatory.</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+See the GNU Automake =
+documentation for information.</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+END</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</sp=
 an><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+# Report outcome to console.</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+echo &quot;${col}${res}${std}: $=
-test_name&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+# Register the test res=
-ult, and other relevant metadata.</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+echo &quot;:test-result: $res&quot; &gt; $trs_file</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+echo &quot;:global-test-result=
-: $res&quot; &gt;&gt; $trs_file</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+echo &quot;:recheck: $recheck&quot; &gt;&gt; $trs_file</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+echo &quot;:copy-in-global-l=
-og: $gcopy&quot; &gt;&gt; $trs_file</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+# L=
-ocal Variables:</span><br><span style=3D"color: hsl(120, 100%, 40%);">+# mo=
-de: shell-script</span><br><span style=3D"color: hsl(120, 100%, 40%);">+# s=
-h-indentation: 2</span><br><span style=3D"color: hsl(120, 100%, 40%);">+# e=
-val: (add-hook &#39;before-save-hook &#39;time-stamp)</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+# time-stamp-start: &quot;scriptversion=
-=3D&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+# time-sta=
-mp-format: &quot;%:y-%02m-%02d.%02H&quot;</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+# time-stamp-time-zone: &quot;UTC0&quot;</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+# time-stamp-end: &quot;; # UTC&=
-quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+# End:</span><=
-br><span>diff --git a/tests/Makefile.am b/tests/Makefile.am</span><br><span=
->index 2885752..5e9ad0a 100644</span><br><span>--- a/tests/Makefile.am</spa=
-n><br><span>+++ b/tests/Makefile.am</span><br><span>@@ -15,6 +15,7 @@</span=
-><br><span> SUBDIRS =3D unit_tests</span><br><span> </span><br><span> AM_TE=
-STSUITE_SUMMARY_HEADER =3D &#39; for $(PACKAGE_STRING) System Tests&#39;</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+LOG_DRIVER =3D $(SHELL=
-) $(top_srcdir)/forked-test-driver</span><br><span> </span><br><span> if !W=
-IN32</span><br><span> test_scripts =3D t_client.sh t_lpback.sh t_cltsrv.sh<=
-/span><br><span></span><br></pre><p>To view, visit <a href=3D"http://gerrit=
-.openvpn.net/c/openvpn/+/478?usp=3Demail">change 478</a>. To unsubscribe, o=
-r for help writing mail filters, visit <a href=3D"http://gerrit.openvpn.net=
-/settings">settings</a>.</p><div itemscope itemtype=3D"http://schema.org/Em=
-ailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.or=
-g/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/op=
-envpn/+/478?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/>=
-</div></div>
+=3D"color: hsl(120, 100%, 40%);">+test_name=3D # Used for reporting.</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+log_file=3D  # Where to sa=
+ve the output of the test script.</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+trs_file=3D  # Where to save the metadata of the test run.</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+expect_failure=3Dno</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+color_tests=3Dno</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+enable_hard_errors=3Dyes<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+while test $# -gt 0;=
+ do</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  case $1 in</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+  --help) print_usage; =
+exit $?;;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  --versio=
+n) echo &quot;test-driver $scriptversion&quot;; exit $?;;</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+  --test-name) test_name=3D$2; shift;=
+;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  --log-file) log_=
+file=3D$2; shift;;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+ --trs-file) trs_file=3D$2; shift;;</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+  --color-tests) color_tests=3D$2; shift;;</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+  --expect-failure) expect_failure=
+=3D$2; shift;;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  --e=
+nable-hard-errors) enable_hard_errors=3D$2; shift;;</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+  --) shift; break;;</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+  -*) usage_error &quot;invalid option: =
+&#39;$1&#39;&quot;;;</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++   *) break;;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  esa=
+c</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  shift</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+done</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+missing_opts=3D</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+test x&quot;$test_name&quot; =3D x &amp;&amp; missing_opts=3D&quot;$=
+missing_opts --test-name&quot;</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+test x&quot;$log_file&quot;  =3D x &amp;&amp; missing_opts=3D&qu=
+ot;$missing_opts --log-file&quot;</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+test x&quot;$trs_file&quot;  =3D x &amp;&amp; missing_opts=3D=
+&quot;$missing_opts --trs-file&quot;</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+if test x&quot;$missing_opts&quot; !=3D x; then</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+  usage_error &quot;the follow=
+ing mandatory options are missing:$missing_opts&quot;</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+fi</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+if=
+ test $# -eq 0; then</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++  usage_error &quot;missing argument&quot;</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+fi</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+if test $col=
+or_tests =3D yes; then</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+  # Keep this in sync with &#39;lib/am/check.am:$(am__tty_colors)&#39;.<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+  red=3D&#39;=1B[0;3=
+1m&#39; # Red.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  grn=
+=3D&#39;=1B[0;32m&#39; # Green.</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+  lgn=3D&#39;=1B[1;32m&#39; # Light green.</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+  blu=3D&#39;=1B[1;34m&#39; # Blue.</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+  mgn=3D&#39;=1B[0;35m&#=
+39; # Magenta.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  std=
+=3D&#39;=1B[m&#39;     # No color.</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+else</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+  red=3D grn=3D lgn=3D blu=3D mgn=3D std=3D</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+fi</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+do_exit=3D&#=
+39;rm -f $log_file $trs_file; (exit $st); exit $st&#39;</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+trap &quot;st=3D129; $do_exit&quot; 1</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+trap &quot;st=3D130; =
+$do_exit&quot; 2</span><br><span style=3D"color: hsl(120, 100%, 40%);">+tra=
+p &quot;st=3D141; $do_exit&quot; 13</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+trap &quot;st=3D143; $do_exit&quot; 15</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+# Test script is run here. We create the file first, then a=
+ppend to it,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+# to am=
+eliorate tests themselves also writing to the log file. Our tests</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+# don&#39;t, but others can (=
+automake bug#35762).</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++: &gt;&quot;$log_file&quot;</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+&quot;$@&quot; &gt;&gt;&quot;$log_file&quot; 2&gt;&amp;1</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+estatus=3D$?</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+if test $enable_hard_errors =3D no &amp;&amp; test $est=
+atus -eq 99; then</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+tweaked_estatus=3D1</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+else</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  tweaked_estat=
+us=3D$estatus</span><br><span style=3D"color: hsl(120, 100%, 40%);">+fi</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+case $tweaked_estatus:$expect_failure in<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+  0:yes) col=3D$red =
+res=3DXPASS recheck=3Dyes gcopy=3Dyes;;</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+  0:*)   col=3D$grn res=3DPASS  recheck=3Dno  gcopy=3Dn=
+o;;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  77:*)  col=3D$=
+blu res=3DSKIP  recheck=3Dno  gcopy=3Dyes;;</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+  99:*)  col=3D$mgn res=3DERROR recheck=3Dyes gcopy=
+=3Dyes;;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  *:yes) co=
+l=3D$lgn res=3DXFAIL recheck=3Dno  gcopy=3Dyes;;</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+  *:*)   col=3D$red res=3DFAIL  recheck=3Dyes =
+gcopy=3Dyes;;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+esac</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+# Report the test outcome and exit statu=
+s in the logs, so that one can</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+# know whether the test passed or failed simply by looking at th=
+e &#39;.log&#39;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+# f=
+ile, without the need of also peaking into the corresponding &#39;.trs&#39;=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+# file (automake bu=
+g#11814).</span><br><span style=3D"color: hsl(120, 100%, 40%);">+echo &quot=
+;$res $test_name (exit status: $estatus)&quot; &gt;&gt;&quot;$log_file&quot=
+;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+# Report outcome to console.</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+echo &quot;${col}${res}${std=
+}: $test_name&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+# Register the test=
+ result, and other relevant metadata.</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+echo &quot;:test-result: $res&quot; &gt; $trs_file</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+echo &quot;:global-test-re=
+sult: $res&quot; &gt;&gt; $trs_file</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+echo &quot;:recheck: $recheck&quot; &gt;&gt; $trs_file</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+echo &quot;:copy-in-glob=
+al-log: $gcopy&quot; &gt;&gt; $trs_file</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++# Local Variables:</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+# mode: shell-script</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++# sh-indentation: 2</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++# eval: (add-hook &#39;before-save-hook &#39;time-stamp)</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+# time-stamp-start: &quot;scriptversi=
+on=3D&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+# time-s=
+tamp-format: &quot;%:y-%02m-%02d.%02H&quot;</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+# time-stamp-time-zone: &quot;UTC0&quot;</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+# time-stamp-end: &quot;; # UT=
+C&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+# End:</span=
+><br><span>diff --git a/tests/Makefile.am b/tests/Makefile.am</span><br><sp=
+an>index 2885752..5e9ad0a 100644</span><br><span>--- a/tests/Makefile.am</s=
+pan><br><span>+++ b/tests/Makefile.am</span><br><span>@@ -15,6 +15,7 @@</sp=
+an><br><span> SUBDIRS =3D unit_tests</span><br><span> </span><br><span> AM_=
+TESTSUITE_SUMMARY_HEADER =3D &#39; for $(PACKAGE_STRING) System Tests&#39;<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+LOG_DRIVER =3D $(SHE=
+LL) $(top_srcdir)/forked-test-driver</span><br><span> </span><br><span> if =
+!WIN32</span><br><span> test_scripts =3D t_client.sh t_lpback.sh t_cltsrv.s=
+h</span><br><span></span><br></pre><p>To view, visit <a href=3D"http://gerr=
+it.openvpn.net/c/openvpn/+/478?usp=3Demail">change 478</a>. To unsubscribe,=
+ or for help writing mail filters, visit <a href=3D"http://gerrit.openvpn.n=
+et/settings">settings</a>.</p><div itemscope itemtype=3D"http://schema.org/=
+EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.=
+org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/=
+openvpn/+/478?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"=
+/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
@@ -515,8 +507,8 @@ envpn/+/478?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/>=
 .1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
+<div style=3D"display:none"> Gerrit-MessageType: merged </div>
 
 
---B2bhiSQedrg=--
+--YpkkHXyoMp0=--
 
