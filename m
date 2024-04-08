@@ -1,16 +1,11 @@
-From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Mon, 8 Apr 2024 08:22:27 +0000
-In-Reply-To: <gerrit.1711328743000.I07096977e3b562bcb5d2c6f11673a4175b8e12ac@...2715...>
-References: <gerrit.1711328743000.I07096977e3b562bcb5d2c6f11673a4175b8e12ac@...2715...>
-Reply-To: gert@...1296..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, frank@...2641..., a@...2181...
-Message-ID: <030e46e8d57edd744de5187cf6b22e6e636b0e96-EmailReviewComments-HTML@...2715...>
+From: Frank Lichtenheld <frank@...2641...>
+Date: Mon,  8 Apr 2024 14:49:33 +0200
+Message-Id: <20240408124933.243991-1-frank@...2641...>
+In-Reply-To: <gerrit.1700479678000.I0ad48915004ddee587e97c8ed190ba8ee989e48d@...2715...>
+References: <gerrit.1700479678000.I0ad48915004ddee587e97c8ed190ba8ee989e48d@...2715...>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="Q+zpxFVjUhM="; charset=UTF-8
-Subject: [Openvpn-devel] [L] Change in openvpn[master]: Remove
- openvpn_snprintf and similar functions
+Subject: [Openvpn-devel] [PATCH v6] Allow the TLS session to send out TLS
+ alerts
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,162 +14,272 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: plaisthos <arne-openvpn@...1227...>
-Cc: flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---Q+zpxFVjUhM=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+From: Arne Schwabe <arne@...1227...>
 
-Attention is currently required from: flichtenheld, plaisthos.
+Previous OpenVPN versions shut down the TLS control channel immediately
+when encountering an error. This also meant that we would not send out
+TLS alerts to notify a client about potential problems like mismatching
+TLS versions or having no common cipher.
 
-cron2 has posted comments on this change. ( http://gerrit.openvpn.net/c/ope=
-nvpn/+/547?usp=3Demail )
+This commit adds a new key_state S_ERROR_PRE which still allows to
+send out the remaining TLS packets of the control session which are
+typically the alert message and then going to S_ERROR. We do not
+wait for retries. So this is more a one-shot notify but that is
+acceptable in this situation.
 
-Change subject: Remove openvpn_snprintf and similar functions
-......................................................................
+Sending out alerts is a slight compromise in security as alerts give
+out a bit of information that otherwise is not given
+out. But since all other consumers TLS implementations are already doing this
+and TLS implementations (nowadays) are very careful not to leak (sensitive)
+information by alerts and since the user experience is much better with
+alerts, this compromise is worth it.
 
+Change-Id: I0ad48915004ddee587e97c8ed190ba8ee989e48d
+Signed-off-by: Arne Schwabe <arne@...1227...>
+Acked-by: Frank Lichtenheld <frank@...2641...>
+---
 
-Patch Set 2: Code-Review-1
+This change was reviewed on Gerrit and approved by at least one
+developer. I request to merge it to master.
 
-(3 comments)
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/449
+This mail reflects revision 6 of this Change.
 
-Patchset:
+Acked-by according to Gerrit (reflected above):
+Frank Lichtenheld <frank@...2641...>
 
-PS2:
-Unfortunately, this fails -Werror msbuild builds now, see comment in intera=
-ctive.c
-
-
-File src/openvpn/proxy.c:
-
-http://gerrit.openvpn.net/c/openvpn/+/547/comment/b37effa6_d450b13a :
-PS2, Line 962:                 if (sret >=3D sizeof(buf))
-> if this can truly happen, does it mean that the buffer is undersized comp=
-ared to the size of all var [=E2=80=A6]
-this code is not part of the actual patchset, but a gerrit artefact due to =
-rebasing.  *This* patchset only replaces openvpn_snprintf() with snprintf().
-
-
-File src/openvpnserv/interactive.c:
-
-http://gerrit.openvpn.net/c/openvpn/+/547/comment/918c9772_0150ba41 :
-PS2, Line 2007:              sud.options, svc_pipe);
-This makes GHA msbuild build fails now, with
-
-```
- D:\a\openvpn\openvpn\src\openvpnserv\interactive.c(2006,37): warning C4477=
-: 'swprintf' : format string '%llu' requires an argument of type 'unsigned =
-__int64', but variadic argument 2 has type 'HANDLE' [D:\a\openvpn\openvpn\o=
-ut\build\win-amd64-release\src\openvpnserv\openvpnserv.vcxproj]
- ```
-
- so it seems the cast to something-int (`DWORD`?) is needed.
-
-
-
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/547?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings
-
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: I07096977e3b562bcb5d2c6f11673a4175b8e12ac
-Gerrit-Change-Number: 547
-Gerrit-PatchSet: 2
-Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
-Gerrit-Reviewer: cron2 <gert@...1296...>
-Gerrit-Reviewer: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: ordex <a@...2181...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Comment-Date: Mon, 08 Apr 2024 08:22:27 +0000
-Gerrit-HasComments: Yes
-Gerrit-Has-Labels: Yes
-Comment-In-Reply-To: ordex <a@...2181...>
-Gerrit-MessageType: comment
-
---Q+zpxFVjUhM=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<p> Attention is currently required from: flichtenheld, plaisthos. </p>
-<p>Patch set 2:<span style=3D"border-radius: 3px; display: inline-block; ma=
-rgin: 0 2px; padding: 4px;background-color: #ffd4d4;">Code-Review -1</span>=
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/547?usp=3Demail">Vi=
-ew Change</a></p><p>3 comments:</p><ul style=3D"list-style: none; padding: =
-0;"><li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-=
-style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p =
-style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvp=
-n/+/547?tab=3Dcomments">Patch Set #2:</a> </p><p style=3D"white-space: pre-=
-wrap; word-wrap: break-word;">Unfortunately, this fails -Werror msbuild bui=
-lds now, see comment in interactive.c</p></li></ul></li><li style=3D"margin=
-: 0; padding: 0;"><p>File src/openvpn/proxy.c:</p><ul style=3D"list-style: =
-none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p style=
-=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/5=
-47/comment/b37effa6_d450b13a">Patch Set #2, Line 962:</a> <code style=3D"fo=
-nt-family:monospace,monospace">                if (sret &gt;=3D sizeof(buf)=
-)</code></p><p><blockquote style=3D"border-left: 1px solid #aaa; margin: 10=
-px 0; padding: 0 10px;">if this can truly happen, does it mean that the buf=
-fer is undersized compared to the size of all var [=E2=80=A6]</blockquote><=
-/p><p style=3D"white-space: pre-wrap; word-wrap: break-word;">this code is =
-not part of the actual patchset, but a gerrit artefact due to rebasing.  *T=
-his* patchset only replaces openvpn_snprintf() with snprintf().</p></li></u=
-l></li><li style=3D"margin: 0; padding: 0;"><p>File src/openvpnserv/interac=
-tive.c:</p><ul style=3D"list-style: none; padding: 0;"><li style=3D"margin:=
- 0; padding: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http:=
-//gerrit.openvpn.net/c/openvpn/+/547/comment/918c9772_0150ba41">Patch Set #=
-2, Line 2007:</a> <code style=3D"font-family:monospace,monospace">         =
-    sud.options, svc_pipe);</code></p><p style=3D"white-space: pre-wrap; wo=
-rd-wrap: break-word;">This makes GHA msbuild build fails now, with</p><pre =
-style=3D"font-family: monospace,monospace; white-space: pre-wrap;">```<br> =
-D:\a\openvpn\openvpn\src\openvpnserv\interactive.c(2006,37): warning C4477:=
- &#39;swprintf&#39; : format string &#39;%llu&#39; requires an argument of =
-type &#39;unsigned __int64&#39;, but variadic argument 2 has type &#39;HAND=
-LE&#39; [D:\a\openvpn\openvpn\out\build\win-amd64-release\src\openvpnserv\o=
-penvpnserv.vcxproj]<br> ```<br> <br> so it seems the cast to something-int =
-(`DWORD`?) is needed.</pre></li></ul></li></ul><p>To view, visit <a href=3D=
-"http://gerrit.openvpn.net/c/openvpn/+/547?usp=3Demail">change 547</a>. To =
-unsubscribe, or for help writing mail filters, visit <a href=3D"http://gerr=
-it.openvpn.net/settings">settings</a>.</p><div itemscope itemtype=3D"http:/=
-/schema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"ht=
-tp://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.op=
-envpn.net/c/openvpn/+/547?usp=3Demail"/><meta itemprop=3D"name" content=3D"=
-View Change"/></div></div>
-
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I07096977e3b562bcb5d2c6f1167=
-3a4175b8e12ac </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 547 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
-<div style=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@...1711...=
-27...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
- </div>
-<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
-1...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: ordex &lt;a@...2181...&gt; </=
-div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
-41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Mon, 08 Apr 2024 08:22:27=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
-<div style=3D"display:none"> Comment-In-Reply-To: ordex &lt;a@...2181...&gt=
-; </div>
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
-
-
---Q+zpxFVjUhM=--
+        
+diff --git a/Changes.rst b/Changes.rst
+index 69c811d..52ff8db 100644
+--- a/Changes.rst
++++ b/Changes.rst
+@@ -1,5 +1,14 @@
+ Overview of changes in 2.7
+ ==========================
++New features
++------------
++TLS alerts
++    OpenVPN 2.7 will send out TLS alerts to peers informing them if the TLS
++    session shuts down or when the TLS implementation informs the peer about
++    an error in the TLS session (e.g. mismatching TLS versions). This improves
++    the user experience as the client shows an error instead of running into
++    a timeout when the server just stops responding completely.
++
+ Deprecated features
+ -------------------
+ ``secret`` support has been removed by default.
+diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
+index 33c8670..f287e4d 100644
+--- a/src/openvpn/ssl.c
++++ b/src/openvpn/ssl.c
+@@ -690,6 +690,9 @@
+         case S_ERROR:
+             return "S_ERROR";
+ 
++        case S_ERROR_PRE:
++            return "S_ERROR_PRE";
++
+         case S_GENERATED_KEYS:
+             return "S_GENERATED_KEYS";
+ 
+@@ -2683,6 +2686,25 @@
+ }
+ 
+ static bool
++check_outgoing_ciphertext(struct key_state *ks, struct tls_session *session,
++                          bool *continue_tls_process)
++{
++    /* Outgoing Ciphertext to reliable buffer */
++    if (ks->state >= S_START)
++    {
++        struct buffer *buf = reliable_get_buf_output_sequenced(ks->send_reliable);
++        if (buf)
++        {
++            if (!write_outgoing_tls_ciphertext(session, continue_tls_process))
++            {
++                return false;
++            }
++        }
++    }
++    return true;
++}
++
++static bool
+ tls_process_state(struct tls_multi *multi,
+                   struct tls_session *session,
+                   struct buffer *to_link,
+@@ -2706,7 +2728,7 @@
+     }
+ 
+     /* Are we timed out on receive? */
+-    if (now >= ks->must_negotiate && ks->state < S_ACTIVE)
++    if (now >= ks->must_negotiate && ks->state >= S_UNDEF && ks->state < S_ACTIVE)
+     {
+         msg(D_TLS_ERRORS,
+             "TLS Error: TLS key negotiation failed to occur within %d seconds (check your network connectivity)",
+@@ -2760,6 +2782,16 @@
+         return false;
+     }
+ 
++    if (ks->state == S_ERROR_PRE)
++    {
++        /* When we end up here, we had one last chance to send an outstanding
++         * packet that contained an alert. We do not ensure that this packet
++         * has been successfully delivered  (ie wait for the ACK etc)
++         * but rather stop processing now */
++        ks->state = S_ERROR;
++        return false;
++    }
++
+     /* Write incoming ciphertext to TLS object */
+     struct reliable_entry *entry = reliable_get_entry_sequenced(ks->rec_reliable);
+     if (entry)
+@@ -2840,29 +2872,31 @@
+             dmsg(D_TLS_DEBUG, "Outgoing Plaintext -> TLS");
+         }
+     }
+-
+-    /* Outgoing Ciphertext to reliable buffer */
+-    if (ks->state >= S_START)
++    if (!check_outgoing_ciphertext(ks, session, &continue_tls_process))
+     {
+-        buf = reliable_get_buf_output_sequenced(ks->send_reliable);
+-        if (buf)
+-        {
+-            if (!write_outgoing_tls_ciphertext(session, &continue_tls_process))
+-            {
+-                goto error;
+-            }
+-        }
++        goto error;
+     }
+ 
+     return continue_tls_process;
+ error:
+     tls_clear_error();
+-    ks->state = S_ERROR;
++
++    /* Shut down the TLS session but do a last read from the TLS
++     * object to be able to read potential TLS alerts */
++    key_state_ssl_shutdown(&ks->ks_ssl);
++    check_outgoing_ciphertext(ks, session, &continue_tls_process);
++
++    /* Put ourselves in the pre error state that will only send out the
++     * control channel packets but nothing else */
++    ks->state = S_ERROR_PRE;
++
+     msg(D_TLS_ERRORS, "TLS Error: TLS handshake failed");
+     INCR_ERROR;
+-    return false;
+-
++    return true;
+ }
++
++
++
+ /*
+  * This is the primary routine for processing TLS stuff inside the
+  * the main event loop.  When this routine exits
+@@ -2970,7 +3004,7 @@
+     }
+ 
+     /* When should we wake up again? */
+-    if (ks->state >= S_INITIAL)
++    if (ks->state >= S_INITIAL || ks->state == S_ERROR_PRE)
+     {
+         compute_earliest_wakeup(wakeup,
+                                 reliable_send_timeout(ks->send_reliable));
+@@ -3123,7 +3157,7 @@
+              session_id_print(&ks->session_id_remote, &gc),
+              print_link_socket_actual(&ks->remote_addr, &gc));
+ 
+-        if (ks->state >= S_INITIAL && link_socket_actual_defined(&ks->remote_addr))
++        if ((ks->state >= S_INITIAL || ks->state == S_ERROR_PRE) &&  link_socket_actual_defined(&ks->remote_addr))
+         {
+             struct link_socket_actual *tla = NULL;
+ 
+@@ -3201,7 +3235,8 @@
+             {
+                 msg(D_TLS_ERRORS, "TLS Error: generate_key_expansion failed");
+                 ks->authenticated = KS_AUTH_FALSE;
+-                ks->state = S_ERROR;
++                key_state_ssl_shutdown(&ks->ks_ssl);
++                ks->state = S_ERROR_PRE;
+             }
+ 
+             /* Update auth token on the client if needed on renegotiation
+diff --git a/src/openvpn/ssl_backend.h b/src/openvpn/ssl_backend.h
+index b9466ce..a4d4dd4 100644
+--- a/src/openvpn/ssl_backend.h
++++ b/src/openvpn/ssl_backend.h
+@@ -363,6 +363,13 @@
+                         const struct tls_root_ctx *ssl_ctx, bool is_server, struct tls_session *session);
+ 
+ /**
++ * Sets a TLS session to be shutdown state, so the TLS library will generate
++ * a shutdown alert.
++ */
++void
++key_state_ssl_shutdown(struct key_state_ssl *ks_ssl);
++
++/**
+  * Free the SSL channel part of the given key state.
+  *
+  * @param ks_ssl        The SSL channel's state info to free
+diff --git a/src/openvpn/ssl_common.h b/src/openvpn/ssl_common.h
+index 925660b..ff455b3 100644
+--- a/src/openvpn/ssl_common.h
++++ b/src/openvpn/ssl_common.h
+@@ -74,7 +74,10 @@
+  *
+  * @{
+  */
+-#define S_ERROR          -1     /**< Error state.  */
++#define S_ERROR         (-2)     /**< Error state.  */
++#define S_ERROR_PRE     (-1)     /**< Error state but try to send out alerts
++                                  *  before killing the keystore and moving
++                                  *  it to S_ERROR */
+ #define S_UNDEF           0     /**< Undefined state, used after a \c
+                                  *   key_state is cleaned up. */
+ #define S_INITIAL         1     /**< Initial \c key_state state after
+diff --git a/src/openvpn/ssl_mbedtls.c b/src/openvpn/ssl_mbedtls.c
+index cc88484..5e6726c 100644
+--- a/src/openvpn/ssl_mbedtls.c
++++ b/src/openvpn/ssl_mbedtls.c
+@@ -1276,6 +1276,14 @@
+                         ssl_bio_read, NULL);
+ }
+ 
++
++void
++key_state_ssl_shutdown(struct key_state_ssl *ks_ssl)
++{
++    mbedtls_ssl_send_alert_message(ks_ssl->ctx, MBEDTLS_SSL_ALERT_LEVEL_FATAL,
++                                   MBEDTLS_SSL_ALERT_MSG_CLOSE_NOTIFY);
++}
++
+ void
+ key_state_ssl_free(struct key_state_ssl *ks_ssl)
+ {
+diff --git a/src/openvpn/ssl_openssl.c b/src/openvpn/ssl_openssl.c
+index c30e6a9..552d751 100644
+--- a/src/openvpn/ssl_openssl.c
++++ b/src/openvpn/ssl_openssl.c
+@@ -1962,6 +1962,12 @@
+ }
+ 
+ void
++key_state_ssl_shutdown(struct key_state_ssl *ks_ssl)
++{
++    SSL_set_shutdown(ks_ssl->ssl, SSL_SENT_SHUTDOWN | SSL_RECEIVED_SHUTDOWN);
++}
++
++void
+ key_state_ssl_free(struct key_state_ssl *ks_ssl)
+ {
+     if (ks_ssl->ssl)
 
