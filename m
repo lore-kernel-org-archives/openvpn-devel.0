@@ -1,11 +1,15 @@
-From: Frank Lichtenheld <frank@...2641...>
-Date: Mon,  8 Apr 2024 14:49:33 +0200
-Message-Id: <20240408124933.243991-1-frank@...2641...>
-In-Reply-To: <gerrit.1700479678000.I0ad48915004ddee587e97c8ed190ba8ee989e48d@...2715...>
-References: <gerrit.1700479678000.I0ad48915004ddee587e97c8ed190ba8ee989e48d@...2715...>
+From: "flichtenheld (Code Review)" <gerrit@...515...>
+Date: Wed, 10 Apr 2024 10:29:03 +0000
+References: <gerrit.1712744941000.Ie61fa6a78875ecbaa9d3d8e7a50603d77c9ce09e@...2715...>
+Reply-To: frank@...2641..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net
+Message-ID: <87ab2e32786be872f9341611ac3445ab0796a358-HTML@...2715...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v6] Allow the TLS session to send out TLS
- alerts
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="yCX/jdYqd0E="; charset=UTF-8
+Subject: [Openvpn-devel] [XS] Change in openvpn[master]: Fix "binary or" vs
+ "boolean or" related to server_bridge_proxy_dhcp
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,272 +18,156 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: plaisthos <arne-openvpn@...1227...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-From: Arne Schwabe <arne@...1227...>
+--yCX/jdYqd0E=
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Previous OpenVPN versions shut down the TLS control channel immediately
-when encountering an error. This also meant that we would not send out
-TLS alerts to notify a client about potential problems like mismatching
-TLS versions or having no common cipher.
+Attention is currently required from: plaisthos.
 
-This commit adds a new key_state S_ERROR_PRE which still allows to
-send out the remaining TLS packets of the control session which are
-typically the alert message and then going to S_ERROR. We do not
-wait for retries. So this is more a one-shot notify but that is
-acceptable in this situation.
+Hello plaisthos,
 
-Sending out alerts is a slight compromise in security as alerts give
-out a bit of information that otherwise is not given
-out. But since all other consumers TLS implementations are already doing this
-and TLS implementations (nowadays) are very careful not to leak (sensitive)
-information by alerts and since the user experience is much better with
-alerts, this compromise is worth it.
+I'd like you to do a code review.
+Please visit
 
-Change-Id: I0ad48915004ddee587e97c8ed190ba8ee989e48d
-Signed-off-by: Arne Schwabe <arne@...1227...>
-Acked-by: Frank Lichtenheld <frank@...2641...>
+    http://gerrit.openvpn.net/c/openvpn/+/553?usp=3Demail
+
+to review the following change.
+
+
+Change subject: Fix "binary or" vs "boolean or" related to server_bridge_pr=
+oxy_dhcp
+......................................................................
+
+Fix "binary or" vs "boolean or" related to server_bridge_proxy_dhcp
+
+Both values are boolean so there is no reason to use "|"
+and it just confuses the reader whether there is something
+more going on here.
+
+Change-Id: Ie61fa6a78875ecbaa9d3d8e7a50603d77c9ce09e
+Signed-off-by: Frank Lichtenheld <frank@...2641...>
 ---
+M src/openvpn/helper.c
+M src/openvpn/init.c
+2 files changed, 2 insertions(+), 2 deletions(-)
 
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to master.
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/449
-This mail reflects revision 6 of this Change.
 
-Acked-by according to Gerrit (reflected above):
-Frank Lichtenheld <frank@...2641...>
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/53/553/1
 
-        
-diff --git a/Changes.rst b/Changes.rst
-index 69c811d..52ff8db 100644
---- a/Changes.rst
-+++ b/Changes.rst
-@@ -1,5 +1,14 @@
- Overview of changes in 2.7
- ==========================
-+New features
-+------------
-+TLS alerts
-+    OpenVPN 2.7 will send out TLS alerts to peers informing them if the TLS
-+    session shuts down or when the TLS implementation informs the peer about
-+    an error in the TLS session (e.g. mismatching TLS versions). This improves
-+    the user experience as the client shows an error instead of running into
-+    a timeout when the server just stops responding completely.
-+
- Deprecated features
- -------------------
- ``secret`` support has been removed by default.
-diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
-index 33c8670..f287e4d 100644
---- a/src/openvpn/ssl.c
-+++ b/src/openvpn/ssl.c
-@@ -690,6 +690,9 @@
-         case S_ERROR:
-             return "S_ERROR";
- 
-+        case S_ERROR_PRE:
-+            return "S_ERROR_PRE";
-+
-         case S_GENERATED_KEYS:
-             return "S_GENERATED_KEYS";
- 
-@@ -2683,6 +2686,25 @@
- }
- 
- static bool
-+check_outgoing_ciphertext(struct key_state *ks, struct tls_session *session,
-+                          bool *continue_tls_process)
-+{
-+    /* Outgoing Ciphertext to reliable buffer */
-+    if (ks->state >= S_START)
-+    {
-+        struct buffer *buf = reliable_get_buf_output_sequenced(ks->send_reliable);
-+        if (buf)
-+        {
-+            if (!write_outgoing_tls_ciphertext(session, continue_tls_process))
-+            {
-+                return false;
-+            }
-+        }
-+    }
-+    return true;
-+}
-+
-+static bool
- tls_process_state(struct tls_multi *multi,
-                   struct tls_session *session,
-                   struct buffer *to_link,
-@@ -2706,7 +2728,7 @@
-     }
- 
-     /* Are we timed out on receive? */
--    if (now >= ks->must_negotiate && ks->state < S_ACTIVE)
-+    if (now >= ks->must_negotiate && ks->state >= S_UNDEF && ks->state < S_ACTIVE)
+diff --git a/src/openvpn/helper.c b/src/openvpn/helper.c
+index 1bab84c..24dee97 100644
+--- a/src/openvpn/helper.c
++++ b/src/openvpn/helper.c
+@@ -427,7 +427,7 @@
+      * if !nogw:
+      *   push "route-gateway dhcp"
+      */
+-    else if (o->server_bridge_defined | o->server_bridge_proxy_dhcp)
++    else if (o->server_bridge_defined || o->server_bridge_proxy_dhcp)
      {
-         msg(D_TLS_ERRORS,
-             "TLS Error: TLS key negotiation failed to occur within %d seconds (check your network connectivity)",
-@@ -2760,6 +2782,16 @@
-         return false;
-     }
- 
-+    if (ks->state == S_ERROR_PRE)
-+    {
-+        /* When we end up here, we had one last chance to send an outstanding
-+         * packet that contained an alert. We do not ensure that this packet
-+         * has been successfully delivered  (ie wait for the ACK etc)
-+         * but rather stop processing now */
-+        ks->state = S_ERROR;
-+        return false;
-+    }
-+
-     /* Write incoming ciphertext to TLS object */
-     struct reliable_entry *entry = reliable_get_entry_sequenced(ks->rec_reliable);
-     if (entry)
-@@ -2840,29 +2872,31 @@
-             dmsg(D_TLS_DEBUG, "Outgoing Plaintext -> TLS");
-         }
-     }
--
--    /* Outgoing Ciphertext to reliable buffer */
--    if (ks->state >= S_START)
-+    if (!check_outgoing_ciphertext(ks, session, &continue_tls_process))
-     {
--        buf = reliable_get_buf_output_sequenced(ks->send_reliable);
--        if (buf)
--        {
--            if (!write_outgoing_tls_ciphertext(session, &continue_tls_process))
--            {
--                goto error;
--            }
--        }
-+        goto error;
-     }
- 
-     return continue_tls_process;
- error:
-     tls_clear_error();
--    ks->state = S_ERROR;
-+
-+    /* Shut down the TLS session but do a last read from the TLS
-+     * object to be able to read potential TLS alerts */
-+    key_state_ssl_shutdown(&ks->ks_ssl);
-+    check_outgoing_ciphertext(ks, session, &continue_tls_process);
-+
-+    /* Put ourselves in the pre error state that will only send out the
-+     * control channel packets but nothing else */
-+    ks->state = S_ERROR_PRE;
-+
-     msg(D_TLS_ERRORS, "TLS Error: TLS handshake failed");
-     INCR_ERROR;
--    return false;
--
-+    return true;
- }
-+
-+
-+
- /*
-  * This is the primary routine for processing TLS stuff inside the
-  * the main event loop.  When this routine exits
-@@ -2970,7 +3004,7 @@
-     }
- 
-     /* When should we wake up again? */
--    if (ks->state >= S_INITIAL)
-+    if (ks->state >= S_INITIAL || ks->state == S_ERROR_PRE)
-     {
-         compute_earliest_wakeup(wakeup,
-                                 reliable_send_timeout(ks->send_reliable));
-@@ -3123,7 +3157,7 @@
-              session_id_print(&ks->session_id_remote, &gc),
-              print_link_socket_actual(&ks->remote_addr, &gc));
- 
--        if (ks->state >= S_INITIAL && link_socket_actual_defined(&ks->remote_addr))
-+        if ((ks->state >= S_INITIAL || ks->state == S_ERROR_PRE) &&  link_socket_actual_defined(&ks->remote_addr))
+         if (o->client)
          {
-             struct link_socket_actual *tla = NULL;
- 
-@@ -3201,7 +3235,8 @@
-             {
-                 msg(D_TLS_ERRORS, "TLS Error: generate_key_expansion failed");
-                 ks->authenticated = KS_AUTH_FALSE;
--                ks->state = S_ERROR;
-+                key_state_ssl_shutdown(&ks->ks_ssl);
-+                ks->state = S_ERROR_PRE;
-             }
- 
-             /* Update auth token on the client if needed on renegotiation
-diff --git a/src/openvpn/ssl_backend.h b/src/openvpn/ssl_backend.h
-index b9466ce..a4d4dd4 100644
---- a/src/openvpn/ssl_backend.h
-+++ b/src/openvpn/ssl_backend.h
-@@ -363,6 +363,13 @@
-                         const struct tls_root_ctx *ssl_ctx, bool is_server, struct tls_session *session);
- 
- /**
-+ * Sets a TLS session to be shutdown state, so the TLS library will generate
-+ * a shutdown alert.
-+ */
-+void
-+key_state_ssl_shutdown(struct key_state_ssl *ks_ssl);
-+
-+/**
-  * Free the SSL channel part of the given key state.
-  *
-  * @param ks_ssl        The SSL channel's state info to free
-diff --git a/src/openvpn/ssl_common.h b/src/openvpn/ssl_common.h
-index 925660b..ff455b3 100644
---- a/src/openvpn/ssl_common.h
-+++ b/src/openvpn/ssl_common.h
-@@ -74,7 +74,10 @@
-  *
-  * @{
-  */
--#define S_ERROR          -1     /**< Error state.  */
-+#define S_ERROR         (-2)     /**< Error state.  */
-+#define S_ERROR_PRE     (-1)     /**< Error state but try to send out alerts
-+                                  *  before killing the keystore and moving
-+                                  *  it to S_ERROR */
- #define S_UNDEF           0     /**< Undefined state, used after a \c
-                                  *   key_state is cleaned up. */
- #define S_INITIAL         1     /**< Initial \c key_state state after
-diff --git a/src/openvpn/ssl_mbedtls.c b/src/openvpn/ssl_mbedtls.c
-index cc88484..5e6726c 100644
---- a/src/openvpn/ssl_mbedtls.c
-+++ b/src/openvpn/ssl_mbedtls.c
-@@ -1276,6 +1276,14 @@
-                         ssl_bio_read, NULL);
- }
- 
-+
-+void
-+key_state_ssl_shutdown(struct key_state_ssl *ks_ssl)
-+{
-+    mbedtls_ssl_send_alert_message(ks_ssl->ctx, MBEDTLS_SSL_ALERT_LEVEL_FATAL,
-+                                   MBEDTLS_SSL_ALERT_MSG_CLOSE_NOTIFY);
-+}
-+
- void
- key_state_ssl_free(struct key_state_ssl *ks_ssl)
- {
-diff --git a/src/openvpn/ssl_openssl.c b/src/openvpn/ssl_openssl.c
-index c30e6a9..552d751 100644
---- a/src/openvpn/ssl_openssl.c
-+++ b/src/openvpn/ssl_openssl.c
-@@ -1962,6 +1962,12 @@
- }
- 
- void
-+key_state_ssl_shutdown(struct key_state_ssl *ks_ssl)
-+{
-+    SSL_set_shutdown(ks_ssl->ssl, SSL_SENT_SHUTDOWN | SSL_RECEIVED_SHUTDOWN);
-+}
-+
-+void
- key_state_ssl_free(struct key_state_ssl *ks_ssl)
- {
-     if (ks_ssl->ssl)
+diff --git a/src/openvpn/init.c b/src/openvpn/init.c
+index 02205e7..e67f10e 100644
+--- a/src/openvpn/init.c
++++ b/src/openvpn/init.c
+@@ -3565,7 +3565,7 @@
+         msg(M_WARN, "WARNING: using --pull/--client and --ifconfig togethe=
+r is probably not what you want");
+     }
+
+-    if (o->server_bridge_defined | o->server_bridge_proxy_dhcp)
++    if (o->server_bridge_defined || o->server_bridge_proxy_dhcp)
+     {
+         msg(M_WARN, "NOTE: when bridging your LAN adapter with the TAP ada=
+pter, note that the new bridge adapter will often take on its own IP addres=
+s that is different from what the LAN adapter was previously set to");
+     }
+
+--
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/553?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings
+
+Gerrit-Project: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: Ie61fa6a78875ecbaa9d3d8e7a50603d77c9ce09e
+Gerrit-Change-Number: 553
+Gerrit-PatchSet: 1
+Gerrit-Owner: flichtenheld <frank@...2641...>
+Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-MessageType: newchange
+
+--yCX/jdYqd0E=
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<p> Attention is currently required from: plaisthos. </p>
+<p>flichtenheld would like plaisthos to <strong>review</strong> this change.
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/553?usp=3Demail">Vi=
+ew Change</a></p><pre style=3D"font-family: monospace,monospace; white-spac=
+e: pre-wrap;">Fix &quot;binary or&quot; vs &quot;boolean or&quot; related t=
+o server_bridge_proxy_dhcp<br><br>Both values are boolean so there is no re=
+ason to use &quot;|&quot;<br>and it just confuses the reader whether there =
+is something<br>more going on here.<br><br>Change-Id: Ie61fa6a78875ecbaa9d3=
+d8e7a50603d77c9ce09e<br>Signed-off-by: Frank Lichtenheld &lt;frank@...2724...=
+..&gt;<br>---<br>M src/openvpn/helper.c<br>M src/openvpn/init.c<br>2 files =
+changed, 2 insertions(+), 2 deletions(-)<br><br></pre><pre style=3D"font-fa=
+mily: monospace,monospace; white-space: pre-wrap;">git pull ssh://gerrit.op=
+envpn.net:29418/openvpn refs/changes/53/553/1</pre><pre style=3D"font-famil=
+y: monospace,monospace; white-space: pre-wrap;"><span>diff --git a/src/open=
+vpn/helper.c b/src/openvpn/helper.c</span><br><span>index 1bab84c..24dee97 =
+100644</span><br><span>--- a/src/openvpn/helper.c</span><br><span>+++ b/src=
+/openvpn/helper.c</span><br><span>@@ -427,7 +427,7 @@</span><br><span>     =
+ * if !nogw:</span><br><span>      *   push &quot;route-gateway dhcp&quot;<=
+/span><br><span>      */</span><br><span style=3D"color: hsl(0, 100%, 40%);=
+">-    else if (o-&gt;server_bridge_defined | o-&gt;server_bridge_proxy_dhc=
+p)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    else if (o-&g=
+t;server_bridge_defined || o-&gt;server_bridge_proxy_dhcp)</span><br><span>=
+     {</span><br><span>         if (o-&gt;client)</span><br><span>         =
+{</span><br><span>diff --git a/src/openvpn/init.c b/src/openvpn/init.c</spa=
+n><br><span>index 02205e7..e67f10e 100644</span><br><span>--- a/src/openvpn=
+/init.c</span><br><span>+++ b/src/openvpn/init.c</span><br><span>@@ -3565,7=
+ +3565,7 @@</span><br><span>         msg(M_WARN, &quot;WARNING: using --pul=
+l/--client and --ifconfig together is probably not what you want&quot;);</s=
+pan><br><span>     }</span><br><span> </span><br><span style=3D"color: hsl(=
+0, 100%, 40%);">-    if (o-&gt;server_bridge_defined | o-&gt;server_bridge_=
+proxy_dhcp)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (=
+o-&gt;server_bridge_defined || o-&gt;server_bridge_proxy_dhcp)</span><br><s=
+pan>     {</span><br><span>         msg(M_WARN, &quot;NOTE: when bridging y=
+our LAN adapter with the TAP adapter, note that the new bridge adapter will=
+ often take on its own IP address that is different from what the LAN adapt=
+er was previously set to&quot;);</span><br><span>     }</span><br><span></s=
+pan><br></pre><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/open=
+vpn/+/553?usp=3Demail">change 553</a>. To unsubscribe, or for help writing =
+mail filters, visit <a href=3D"http://gerrit.openvpn.net/settings">settings=
+</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div it=
+emscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link=
+ itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/553?usp=3De=
+mail"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
+
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: Ie61fa6a78875ecbaa9d3d8e7a50=
+603d77c9ce09e </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 553 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
+<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
+.&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
+.1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-MessageType: newchange </div>
+
+
+--yCX/jdYqd0E=--
 
