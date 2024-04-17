@@ -1,16 +1,11 @@
-From: "syzzer (Code Review)" <gerrit@...515...>
-Date: Fri, 12 Apr 2024 20:01:02 +0000
-In-Reply-To: <gerrit.1706186293000.I00821d75342daf3f813b829812d648fe298bea81@...2715...>
-References: <gerrit.1706186293000.I00821d75342daf3f813b829812d648fe298bea81@...2715...>
-Reply-To: steffan@...1856..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <b20330df24cace162b4238bc830ef619ab73314a-EmailReviewComments-HTML@...2715...>
+Content-Type: multipart/alternative;
+ boundary="------------mkQrmL9B9o51D0q6jTaecwFC"
+Message-ID: <49a518d2-142b-4f45-956d-3122a580ee3b@...2751...>
+Date: Wed, 17 Apr 2024 14:01:17 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="7PonoMt/cVc="; charset=UTF-8
-Subject: [Openvpn-devel] [M] Change in openvpn[master]: Implement support
- for AEAD tag at the end
+From: Johan Draaisma <johan@...2751...>
+Content-Language: en-US
+Subject: [Openvpn-devel]  IRC community meeting summary
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,180 +14,221 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: plaisthos <arne-openvpn@...1227...>
-Cc: flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: openvpn-devel@lists.sourceforge.net
 
---7PonoMt/cVc=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+This is a multi-part message in MIME format.
+--------------mkQrmL9B9o51D0q6jTaecwFC
+Content-Type: text/plain; charset="utf-8"; format="flowed"
+Content-Transfer-Encoding: 8bit
 
-Attention is currently required from: plaisthos.
+Meeting summary for 17 April 2024:
 
-syzzer has posted comments on this change. ( http://gerrit.openvpn.net/c/op=
-envpn/+/506?usp=3Demail )
+  * *New: updated 2.6.10 with new MSI installers*
+    /There is a new Windows DCO driver that should handle coming back
+    from hibernation better/faster, as it doesn't wait for keepalive
+    timeout after hibernation./
 
-Change subject: Implement support for AEAD tag at the end
-......................................................................
+  * *New: --topology directive*
+    /We changed the default for this to be 'subnet' as this is the most
+    commonly used setup and has been for ages (used to be net30)./
+    /This is however breaking things by default for peer to peer setups.
+    We could limit the change to just --server mode./
+    /djpig will propose a patch and it can be discussed further there./
 
+  * *Closed: live route update feature*
+    /In short, the ability to update routes, DNS, ifconfig options,
+    live, without having to do a full reconnect./
+    /After discussing last week seems like a path forward is clear./
 
-Patch Set 4: Code-Review-1
+  * *Updated: Security mailing list procedure can stand improvement*
+    /company will improve process on picking up tasks from security
+    mailing list in the next week or so./
+    /The idea being that community guys will continue doing their thing
+    as usual, and company guys monitor the list for company related
+    items and follow up on those./
+    /The idea of an NDA is also revived. But it was made clear
+    internally that we need like a one-page simple NDA for community
+    members, not the unnecessarily restrictive one originally suggested
+    by legal guys./
 
-(5 comments)
+  * *Updated: DCO and Linux upstreaming, API change*/
+    /Upstreaming DCO to Linux is proceeding, it is in review stage at
+    the moment./
+    /ordex will send a patchset v3 based on feedback received today./
+    /There will be an API change that makes it incompatible with the
+    current implementation./
+    /A graceful solution to that was already discussed and in motion.
+    giaan will be working on this./
+    /(in a nutshell, make OpenVPN understand old and new API, DKMS and
+    kernel versions both will then use new API, then we drop old API)//
 
-Patchset:
+  * *Updated: donation collection*
+    /From earlier exploration it is clear that setting up a legal entity
+    is not worth the expense at this point. We're just starting out with
+    donations./
+    /What we can do is start out with an existing company that can
+    collect the money and puts it to good community use. ordex
+    volunteers to take this on./
+    /There are some options to consider. There may be existing solutions
+    that we want to consider./
+    /PayPal? <https://community.openvpn.net/openvpn/wiki/PayPal>seems
+    overly expensive with all their fees./
+    /Stripe could be worth considering for credit card processing./
+    /GitHub? <https://community.openvpn.net/openvpn/wiki/GitHub>Sponsors
+    was mentioned as a possible solution, this is worth investigating./
+    /Open Collective was also mentioned, that needs some investigating
+    how that exactly would work for us./
 
-PS4:
-I have always supported to place the tag at the end. It's easier to manage =
-in hardware, is common practice and has no security impact.
+  * *Updated: forums topics*
+    /ecrist still working on forums. waiting on ecrist to move things
+    around./
+    /Plan is to soon switch URLs so new forum is on forums.openvpn.net
+    and old forums is on archive address./
+    /- email confirmation on registration was suggested./
+    /- mod guide, hard or soft delete (chuck board?), what to do with
+    GDPR, etc. (write it down and actually make it available to mods,
+    maybe a hidden topic)/
+    /- access for mods to logs so one can see what others did/
 
-The only real reservation I have is whether this should be combined with ot=
-her protocol changes to prevent an explosion of possible wire formats. For =
-example with a longer on-the-wire IV. Combining these would results in 2 po=
-ssible AEAD wire formats, instead of 4. (Or 8, if there are plans for a lon=
-ger peer-id, but not sure if that was just a typo in v1 or actually planned=
-).
+  * *Updated: mattock topics*
+    /Managed to make tests run reliably now, the occassional failures
+    seem resolved now./
+    /Documentation
+    here:​https://github.com/mattock/openvpn/blob/dev_null/doc/dev-null-test-suite.rst
+    <https://github.com/mattock/openvpn/blob/dev_null/doc/dev-null-test-suite.rst>/
+    /Will submit a patch soon./
 
-(And then there are a few nits, see comments.)
+As always you're welcome to join at #openvpn-meeting on Libera IRC 
+network every Wednesday at 13:00 Central European Time.
 
+Kind regards,
+Johan Draaisma
 
-File src/openvpn/crypto.c:
+--------------mkQrmL9B9o51D0q6jTaecwFC
+Content-Type: text/html; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 
-http://gerrit.openvpn.net/c/openvpn/+/506/comment/6e399d5e_d094230c :
-PS1, Line 426:     uint8_t *tag_ptr =3D NULL;
-Not sure if the current static analyzers are smart enough to detect that th=
-ese (non-const) variables are not used inside the error_exit label, but the=
-y used to complain about jumping over an initialization. (What CRYPTO_ERROR=
- above does.)
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  </head>
+  <body>
+    <p> Meeting summary for 17 April 2024:</p>
+    <ul
+style="color: rgb(0, 0, 0); font-family: Verdana, Arial, &quot;Bitstream Vera Sans&quot;, Helvetica, sans-serif; font-size: 13px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;">
+      <li><strong>New: updated 2.6.10 with new MSI installers</strong><br>
+        <em>There is a new Windows DCO driver that should handle coming
+          back from hibernation better/faster, as it doesn't wait for
+          keepalive timeout after hibernation.</em></li>
+    </ul>
+    <ul
+style="color: rgb(0, 0, 0); font-family: Verdana, Arial, &quot;Bitstream Vera Sans&quot;, Helvetica, sans-serif; font-size: 13px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;">
+      <li><strong>New: --topology directive</strong><br>
+        <em>We changed the default for this to be 'subnet' as this is
+          the most commonly used setup and has been for ages (used to be
+          net30).</em><br>
+        <em>This is however breaking things by default for peer to peer
+          setups. We could limit the change to just --server mode.</em><br>
+        <em>djpig will propose a patch and it can be discussed further
+          there.</em></li>
+    </ul>
+    <ul
+style="color: rgb(0, 0, 0); font-family: Verdana, Arial, &quot;Bitstream Vera Sans&quot;, Helvetica, sans-serif; font-size: 13px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;">
+      <li><strong>Closed: live route update feature</strong><br>
+        <em>In short, the ability to update routes, DNS, ifconfig
+          options, live, without having to do a full reconnect.</em><br>
+        <em>After discussing last week seems like a path forward is
+          clear.</em></li>
+    </ul>
+    <ul
+style="color: rgb(0, 0, 0); font-family: Verdana, Arial, &quot;Bitstream Vera Sans&quot;, Helvetica, sans-serif; font-size: 13px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;">
+      <li><strong>Updated: Security mailing list procedure can stand
+          improvement</strong><br>
+        <em>company will improve process on picking up tasks from
+          security mailing list in the next week or so.</em><br>
+        <em>The idea being that community guys will continue doing their
+          thing as usual, and company guys monitor the list for company
+          related items and follow up on those.</em><br>
+        <em>The idea of an NDA is also revived. But it was made clear
+          internally that we need like a one-page simple NDA for
+          community members, not the unnecessarily restrictive one
+          originally suggested by legal guys.</em></li>
+    </ul>
+    <ul
+style="color: rgb(0, 0, 0); font-family: Verdana, Arial, &quot;Bitstream Vera Sans&quot;, Helvetica, sans-serif; font-size: 13px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;">
+      <li><strong>Updated: DCO and Linux upstreaming, API change</strong><em><br>
+        </em>Upstreaming DCO to Linux is proceeding, it is in review
+        stage at the moment.<em><br>
+        </em>ordex will send a patchset v3 based on feedback received
+        today.<em><br>
+        </em>There will be an API change that makes it incompatible with
+        the current implementation.<em><br>
+        </em>A graceful solution to that was already discussed and in
+        motion. giaan will be working on this.<em><br>
+        </em>(in a nutshell, make OpenVPN understand old and new API,
+        DKMS and kernel versions both will then use new API, then we
+        drop old API)<em></em></li>
+    </ul>
+    <ul
+style="color: rgb(0, 0, 0); font-family: Verdana, Arial, &quot;Bitstream Vera Sans&quot;, Helvetica, sans-serif; font-size: 13px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;">
+      <li><strong>Updated: donation collection</strong><br>
+        <em>From earlier exploration it is clear that setting up a legal
+          entity is not worth the expense at this point. We're just
+          starting out with donations.</em><br>
+        <em>What we can do is start out with an existing company that
+          can collect the money and puts it to good community use. ordex
+          volunteers to take this on.</em><br>
+        <em>There are some options to consider. There may be existing
+          solutions that we want to consider.</em><br>
+        <em><a class="missing wiki"
+            href="https://community.openvpn.net/openvpn/wiki/PayPal"
+            rel="nofollow"
+style="text-decoration: none; color: rgb(153, 153, 136); border-bottom: 1px dotted rgb(187, 187, 187);">PayPal?</a><span> </span>seems
+          overly expensive with all their fees.</em><br>
+        <em>Stripe could be worth considering for credit card
+          processing.</em><br>
+        <em><a class="missing wiki"
+            href="https://community.openvpn.net/openvpn/wiki/GitHub"
+            rel="nofollow"
+style="text-decoration: none; color: rgb(153, 153, 136); border-bottom: 1px dotted rgb(187, 187, 187);">GitHub?</a><span> </span>Sponsors
+          was mentioned as a possible solution, this is worth
+          investigating.</em><br>
+        <em>Open Collective was also mentioned, that needs some
+          investigating how that exactly would work for us.</em></li>
+    </ul>
+    <ul
+style="color: rgb(0, 0, 0); font-family: Verdana, Arial, &quot;Bitstream Vera Sans&quot;, Helvetica, sans-serif; font-size: 13px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;">
+      <li><strong>Updated: forums topics</strong><br>
+        <em>ecrist still working on forums. waiting on ecrist to move
+          things around.</em><br>
+        <em>Plan is to soon switch URLs so new forum is on
+          forums.openvpn.net and old forums is on archive address.</em><br>
+        <em>- email confirmation on registration was suggested.</em><br>
+        <em>- mod guide, hard or soft delete (chuck board?), what to do
+          with GDPR, etc. (write it down and actually make it available
+          to mods, maybe a hidden topic)</em><br>
+        <em>- access for mods to logs so one can see what others did</em></li>
+    </ul>
+    <ul
+style="color: rgb(0, 0, 0); font-family: Verdana, Arial, &quot;Bitstream Vera Sans&quot;, Helvetica, sans-serif; font-size: 13px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;">
+      <li><strong>Updated: mattock topics</strong><br>
+        <em>Managed to make tests run reliably now, the occassional
+          failures seem resolved now.</em><br>
+        <em>Documentation here:<span> </span><a class="ext-link"
+href="https://github.com/mattock/openvpn/blob/dev_null/doc/dev-null-test-suite.rst"
+style="text-decoration: none; color: rgb(187, 0, 0); border-bottom: 1px dotted rgb(187, 187, 187);"><span
+              class="icon"
+style="background: url(&quot;../extlink.gif&quot;) left center no-repeat; padding-left: 15px;">​</span>https://github.com/mattock/openvpn/blob/dev_null/doc/dev-null-test-suite.rst</a></em><br>
+        <em>Will submit a patch soon.</em></li>
+    </ul>
+    <p>As always you're welcome to join at #openvpn-meeting on Libera
+      IRC network every Wednesday at 13:00 Central European Time.</p>
+    <p>Kind regards,<br>
+      Johan Draaisma<br>
+    </p>
+  </body>
+</html>
 
-
-http://gerrit.openvpn.net/c/openvpn/+/506/comment/281413d5_d34e727f :
-PS1, Line 463:     ASSERT(buf_inc_len(&work, outlen));
-Good to add a newline to visually separate the decryption from the authenti=
-cation, but the buf_inc_len belongs to the decryption bit, right? Not the a=
-uthentication bit.
-
-
-File src/openvpn/ssl.h:
-
-http://gerrit.openvpn.net/c/openvpn/+/506/comment/9b25b8a6_547ed983 :
-PS1, Line 111: #define IV_PROTO_DATA_V3        (1<<10)
-This means that this commit can only go in together with commits for a larg=
-er peer id and larger IV, right?
-
-
-File tests/unit_tests/openvpn/test_ssl.c:
-
-http://gerrit.openvpn.net/c/openvpn/+/506/comment/05d64456_0a9f2c26 :
-PS4, Line 272: run_data_channel_with_cipher_end(const char *cipher)
-s/end/tag_end/ ? (Or even tag_at_end)
-
-
-
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/506?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings
-
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: I00821d75342daf3f813b829812d648fe298bea81
-Gerrit-Change-Number: 506
-Gerrit-PatchSet: 4
-Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
-Gerrit-Reviewer: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: syzzer <steffan@...1856...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Comment-Date: Fri, 12 Apr 2024 20:01:02 +0000
-Gerrit-HasComments: Yes
-Gerrit-Has-Labels: Yes
-Gerrit-MessageType: comment
-
---7PonoMt/cVc=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<p> Attention is currently required from: plaisthos. </p>
-<p>Patch set 4:<span style=3D"border-radius: 3px; display: inline-block; ma=
-rgin: 0 2px; padding: 4px;background-color: #ffd4d4;">Code-Review -1</span>=
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/506?usp=3Demail">Vi=
-ew Change</a></p><p>5 comments:</p><ul style=3D"list-style: none; padding: =
-0;"><li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-=
-style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p =
-style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvp=
-n/+/506?tab=3Dcomments">Patch Set #4:</a> </p><p style=3D"white-space: pre-=
-wrap; word-wrap: break-word;">I have always supported to place the tag at t=
-he end. It&#39;s easier to manage in hardware, is common practice and has n=
-o security impact.</p><p style=3D"white-space: pre-wrap; word-wrap: break-w=
-ord;">The only real reservation I have is whether this should be combined w=
-ith other protocol changes to prevent an explosion of possible wire formats=
-. For example with a longer on-the-wire IV. Combining these would results i=
-n 2 possible AEAD wire formats, instead of 4. (Or 8, if there are plans for=
- a longer peer-id, but not sure if that was just a typo in v1 or actually p=
-lanned).</p><p style=3D"white-space: pre-wrap; word-wrap: break-word;">(And=
- then there are a few nits, see comments.)</p></li></ul></li><li style=3D"m=
-argin: 0; padding: 0;"><p>File src/openvpn/crypto.c:</p><ul style=3D"list-s=
-tyle: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p s=
-tyle=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn=
-/+/506/comment/6e399d5e_d094230c">Patch Set #1, Line 426:</a> <code style=
-=3D"font-family:monospace,monospace">    uint8_t *tag_ptr =3D NULL;</code><=
-/p><p style=3D"white-space: pre-wrap; word-wrap: break-word;">Not sure if t=
-he current static analyzers are smart enough to detect that these (non-cons=
-t) variables are not used inside the error_exit label, but they used to com=
-plain about jumping over an initialization. (What CRYPTO_ERROR above does.)=
-</p></li><li style=3D"margin: 0; padding: 0 0 0 16px;"><p style=3D"margin-b=
-ottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/506/comment/2=
-81413d5_d34e727f">Patch Set #1, Line 463:</a> <code style=3D"font-family:mo=
-nospace,monospace">    ASSERT(buf_inc_len(&amp;work, outlen));</code></p><p=
- style=3D"white-space: pre-wrap; word-wrap: break-word;">Good to add a newl=
-ine to visually separate the decryption from the authentication, but the bu=
-f_inc_len belongs to the decryption bit, right? Not the authentication bit.=
-</p></li></ul></li><li style=3D"margin: 0; padding: 0;"><p>File src/openvpn=
-/ssl.h:</p><ul style=3D"list-style: none; padding: 0;"><li style=3D"margin:=
- 0; padding: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http:=
-//gerrit.openvpn.net/c/openvpn/+/506/comment/9b25b8a6_547ed983">Patch Set #=
-1, Line 111:</a> <code style=3D"font-family:monospace,monospace">#define IV=
-_PROTO_DATA_V3        (1&lt;&lt;10)</code></p><p style=3D"white-space: pre-=
-wrap; word-wrap: break-word;">This means that this commit can only go in to=
-gether with commits for a larger peer id and larger IV, right?</p></li></ul=
-></li><li style=3D"margin: 0; padding: 0;"><p>File tests/unit_tests/openvpn=
-/test_ssl.c:</p><ul style=3D"list-style: none; padding: 0;"><li style=3D"ma=
-rgin: 0; padding: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"=
-http://gerrit.openvpn.net/c/openvpn/+/506/comment/05d64456_0a9f2c26">Patch =
-Set #4, Line 272:</a> <code style=3D"font-family:monospace,monospace">run_d=
-ata_channel_with_cipher_end(const char *cipher)</code></p><p style=3D"white=
--space: pre-wrap; word-wrap: break-word;">s/end/tag_end/ ? (Or even tag_at_=
-end)</p></li></ul></li></ul><p>To view, visit <a href=3D"http://gerrit.open=
-vpn.net/c/openvpn/+/506?usp=3Demail">change 506</a>. To unsubscribe, or for=
- help writing mail filters, visit <a href=3D"http://gerrit.openvpn.net/sett=
-ings">settings</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMe=
-ssage"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.org/Vie=
-wAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn=
-/+/506?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div=
-></div>
-
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I00821d75342daf3f813b829812d=
-648fe298bea81 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 506 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 4 </div>
-<div style=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@...1711...=
-27...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
-1...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: syzzer &lt;steffan@...1856...=
-&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Fri, 12 Apr 2024 20:01:02=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
-
-
---7PonoMt/cVc=--
+--------------mkQrmL9B9o51D0q6jTaecwFC--
 
