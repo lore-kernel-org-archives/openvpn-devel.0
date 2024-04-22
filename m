@@ -1,16 +1,15 @@
 From: "flichtenheld (Code Review)" <gerrit@...515...>
-Date: Mon, 22 Apr 2024 11:46:20 +0000
-In-Reply-To: <gerrit.1713783920000.I9457f005f4ba970502e6b667d9dc4299a588d661@...2715...>
-References: <gerrit.1713783920000.I9457f005f4ba970502e6b667d9dc4299a588d661@...2715...>
+Date: Mon, 22 Apr 2024 15:43:51 +0000
+References: <gerrit.1713800630000.I1c038dc4ec80d3499582d81eee61fee74f26e693@...2715...>
 Reply-To: frank@...2641..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, reynir@...2756...
-Message-ID: <ab4432fecbed78638083532e3ff9b10f9a0a39d4-EmailReviewComments-HTML@...2715...>
+ openvpn-devel@lists.sourceforge.net
+Message-ID: <7bb7024258ddc0adf342620e9bafebd19d0ea135-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="ceCjRPcfAiU="; charset=UTF-8
-Subject: [Openvpn-devel] [XS] Change in openvpn[master]: Only
- schedule_exit() once
+Content-Type: multipart/alternative; boundary="jb+bpwGxlpk="; charset=UTF-8
+Subject: [Openvpn-devel] [S] Change in openvpn[master]: configure: Try to
+ detect LZO with pkg-config first
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,131 +18,158 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: reynir <reynir@...2756...>
-Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: plaisthos <arne-openvpn@...1227...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---ceCjRPcfAiU=
+--jb+bpwGxlpk=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: plaisthos, reynir.
+Attention is currently required from: plaisthos.
 
-flichtenheld has posted comments on this change. ( http://gerrit.openvpn.ne=
-t/c/openvpn/+/555?usp=3Demail )
+Hello plaisthos,
 
-Change subject: Only schedule_exit() once
+I'd like you to do a code review.
+Please visit
+
+    http://gerrit.openvpn.net/c/openvpn/+/556?usp=3Demail
+
+to review the following change.
+
+
+Change subject: configure: Try to detect LZO with pkg-config first
 ......................................................................
 
+configure: Try to detect LZO with pkg-config first
 
-Patch Set 1:
+On most systems this should work just fine.
 
-(2 comments)
-
-File src/openvpn/forward.c:
-
-http://gerrit.openvpn.net/c/openvpn/+/555/comment/832e9f3f_055cb4bc :
-PS1, Line 525:         return;
-You might want to consider changing the function to return a boolean to ind=
-icate whether it did anything. `send_auth_failure` already does the same ch=
-eck and could just use this one instead. And the other callers might also b=
-enefit from not doing other actions if exit is already scheduled.
+Change-Id: I1c038dc4ec80d3499582d81eee61fee74f26e693
+Signed-off-by: Frank Lichtenheld <frank@...2641...>
+---
+M configure.ac
+1 file changed, 12 insertions(+), 1 deletion(-)
 
 
-http://gerrit.openvpn.net/c/openvpn/+/555/comment/73f172e8_be13b424 :
-PS1, Line 530:     event_timeout_init(&c->c2.scheduled_exit, n_seconds, now=
-);
-> I have only now thought of it: what if the new `n_seconds` is sooner than=
- the already scheduled exit [=E2=80=A6]
-It is always `c->options.scheduled_exit_interval` which is always 5 at the =
-moment.
 
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/56/556/1
 
+diff --git a/configure.ac b/configure.ac
+index ce8b2b0..159d47c 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -1143,8 +1143,18 @@
+
+ AC_ARG_VAR([LZO_CFLAGS], [C compiler flags for lzo])
+ AC_ARG_VAR([LZO_LIBS], [linker flags for lzo])
+-have_lzo=3D"yes"
++have_lzo=3D"no"
+ if test -z "${LZO_LIBS}"; then
++    if test -z "${LZO_CFLAGS}" -a -z "${LZO_LIBS}"; then
++	# if the user did not explicitly specify flags, try to autodetect
++	PKG_CHECK_MODULES([LZO],
++			  [lzo2],
++			  [AC_CHECK_LIB([lzo2], [lzo1x_1_15_compress], [have_lzo=3D"yes"], [LZO=
+_CFLAGS=3D"" LZO_LIBS=3D""])]
++			  []
++	)
++    fi
++    if test "${have_lzo}" =3D "no"; then
++	have_lzo=3D"yes"
+ 	AC_CHECK_LIB(
+ 		[lzo2],
+ 		[lzo1x_1_15_compress],
+@@ -1156,6 +1166,7 @@
+ 			[have_lzo=3D"no"]
+ 		)]
+ 	)
++    fi
+ fi
+ if test "${have_lzo}" =3D "yes"; then
+ 	saved_CFLAGS=3D"${CFLAGS}"
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/555?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/556?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings
 
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: I9457f005f4ba970502e6b667d9dc4299a588d661
-Gerrit-Change-Number: 555
+Gerrit-Change-Id: I1c038dc4ec80d3499582d81eee61fee74f26e693
+Gerrit-Change-Number: 556
 Gerrit-PatchSet: 1
-Gerrit-Owner: reynir <reynir@...2756...>
-Gerrit-Reviewer: flichtenheld <frank@...2641...>
+Gerrit-Owner: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-Reviewer: reynir <reynir@...2756...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: reynir <reynir@...2756...>
-Gerrit-Comment-Date: Mon, 22 Apr 2024 11:46:20 +0000
-Gerrit-HasComments: Yes
-Gerrit-Has-Labels: No
-Comment-In-Reply-To: reynir <reynir@...2756...>
-Gerrit-MessageType: comment
+Gerrit-MessageType: newchange
 
---ceCjRPcfAiU=
+--jb+bpwGxlpk=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p> Attention is currently required from: plaisthos, reynir. </p>
-<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/555?usp=3Demail">View C=
-hange</a></p><p>2 comments:</p><ul style=3D"list-style: none; padding: 0;">=
-<li style=3D"margin: 0; padding: 0;"><p>File src/openvpn/forward.c:</p><ul =
-style=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 =
-0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvp=
-n.net/c/openvpn/+/555/comment/832e9f3f_055cb4bc">Patch Set #1, Line 525:</a=
-> <code style=3D"font-family:monospace,monospace">        return;</code></p=
-><p style=3D"white-space: pre-wrap; word-wrap: break-word;">You might want =
-to consider changing the function to return a boolean to indicate whether i=
-t did anything. `send_auth_failure` already does the same check and could j=
-ust use this one instead. And the other callers might also benefit from not=
- doing other actions if exit is already scheduled.</p></li><li style=3D"mar=
-gin: 0; padding: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"h=
-ttp://gerrit.openvpn.net/c/openvpn/+/555/comment/73f172e8_be13b424">Patch S=
-et #1, Line 530:</a> <code style=3D"font-family:monospace,monospace">    ev=
-ent_timeout_init(&amp;c-&gt;c2.scheduled_exit, n_seconds, now);</code></p><=
-p><blockquote style=3D"border-left: 1px solid #aaa; margin: 10px 0; padding=
-: 0 10px;">I have only now thought of it: what if the new `n_seconds` is so=
-oner than the already scheduled exit [=E2=80=A6]</blockquote></p><p style=
-=3D"white-space: pre-wrap; word-wrap: break-word;">It is always `c-&gt;opti=
-ons.scheduled_exit_interval` which is always 5 at the moment.</p></li></ul>=
-</li></ul><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/=
-+/555?usp=3Demail">change 555</a>. To unsubscribe, or for help writing mail=
- filters, visit <a href=3D"http://gerrit.openvpn.net/settings">settings</a>=
-.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemsc=
-ope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link ite=
-mprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/555?usp=3Demail=
-"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
+<p> Attention is currently required from: plaisthos. </p>
+<p>flichtenheld would like plaisthos to <strong>review</strong> this change.
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/556?usp=3Demail">Vi=
+ew Change</a></p><pre style=3D"font-family: monospace,monospace; white-spac=
+e: pre-wrap;">configure: Try to detect LZO with pkg-config first<br><br>On =
+most systems this should work just fine.<br><br>Change-Id: I1c038dc4ec80d34=
+99582d81eee61fee74f26e693<br>Signed-off-by: Frank Lichtenheld &lt;frank@...493...=
+2641...&gt;<br>---<br>M configure.ac<br>1 file changed, 12 insertions(+), 1=
+ deletion(-)<br><br></pre><pre style=3D"font-family: monospace,monospace; w=
+hite-space: pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/openvpn refs=
+/changes/56/556/1</pre><pre style=3D"font-family: monospace,monospace; whit=
+e-space: pre-wrap;"><span>diff --git a/configure.ac b/configure.ac</span><b=
+r><span>index ce8b2b0..159d47c 100644</span><br><span>--- a/configure.ac</s=
+pan><br><span>+++ b/configure.ac</span><br><span>@@ -1143,8 +1143,18 @@</sp=
+an><br><span> </span><br><span> AC_ARG_VAR([LZO_CFLAGS], [C compiler flags =
+for lzo])</span><br><span> AC_ARG_VAR([LZO_LIBS], [linker flags for lzo])</=
+span><br><span style=3D"color: hsl(0, 100%, 40%);">-have_lzo=3D&quot;yes&qu=
+ot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+have_lzo=3D&quot=
+;no&quot;</span><br><span> if test -z &quot;${LZO_LIBS}&quot;; then</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+    if test -z &quot;${LZO_=
+CFLAGS}&quot; -a -z &quot;${LZO_LIBS}&quot;; then</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+	# if the user did not explicitly specify fla=
+gs, try to autodetect</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+	PKG_CHECK_MODULES([LZO],</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+			  [lzo2],</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++			  [AC_CHECK_LIB([lzo2], [lzo1x_1_15_compress], [have_lzo=3D&quot;yes&qu=
+ot;], [LZO_CFLAGS=3D&quot;&quot; LZO_LIBS=3D&quot;&quot;])]</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+			  []</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+	)</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+    fi</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+  if test &quot;${have_lzo}&quot; =3D &quot;no&quot;; then</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+	have_lzo=3D&quot;yes&quot;</span><b=
+r><span> 	AC_CHECK_LIB(</span><br><span> 		[lzo2],</span><br><span> 		[lzo1=
+x_1_15_compress],</span><br><span>@@ -1156,6 +1166,7 @@</span><br><span> 		=
+	[have_lzo=3D&quot;no&quot;]</span><br><span> 		)]</span><br><span> 	)</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+    fi</span><br><span> =
+fi</span><br><span> if test &quot;${have_lzo}&quot; =3D &quot;yes&quot;; th=
+en</span><br><span> 	saved_CFLAGS=3D&quot;${CFLAGS}&quot;</span><br><span><=
+/span><br></pre><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/op=
+envpn/+/556?usp=3Demail">change 556</a>. To unsubscribe, or for help writin=
+g mail filters, visit <a href=3D"http://gerrit.openvpn.net/settings">settin=
+gs</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div =
+itemscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><li=
+nk itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/556?usp=
+=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I9457f005f4ba970502e6b667d9d=
-c4299a588d661 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 555 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I1c038dc4ec80d3499582d81eee6=
+1fee74f26e693 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 556 </div>
 <div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
-<div style=3D"display:none"> Gerrit-Owner: reynir &lt;reynir@...2756...&gt;=
- </div>
-<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
-1...&gt; </div>
+<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
+.&gt; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
 .1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: reynir &lt;reynir@...2756...&=
-gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
 ..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: reynir &lt;reynir@...2756...=
-&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Mon, 22 Apr 2024 11:46:20=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: No </div>
-<div style=3D"display:none"> Comment-In-Reply-To: reynir &lt;reynir@...2800...=
-...&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
+<div style=3D"display:none"> Gerrit-MessageType: newchange </div>
 
 
---ceCjRPcfAiU=--
+--jb+bpwGxlpk=--
 
