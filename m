@@ -1,15 +1,15 @@
-From: "reynir (Code Review)" <gerrit@...515...>
-Date: Mon, 22 Apr 2024 19:08:25 +0000
-References: <gerrit.1713812902000.I1cf589ecad82eecf167fe5cf28cda0fe4d42d42f@...2715...>
-Reply-To: reynir@...2756..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <06e6119813c956c51c500ea004756c7fe47ebda4-HTML@...2715...>
+From: "flichtenheld (Code Review)" <gerrit@...515...>
+Date: Tue, 23 Apr 2024 16:02:33 +0000
+References: <gerrit.1713888151000.I34e96a225446693f401549d86d872c02427ef7d5@...2715...>
+Reply-To: frank@...2641..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net
+Message-ID: <8214f2a517b457547debbd1e352a68142eb56308-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="l54QpwQccEA="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: Address
- schedule_exit() review comments
+Content-Type: multipart/alternative; boundary="g08c0xMKpM8="; charset=UTF-8
+Subject: [Openvpn-devel] [M] Change in openvpn[master]: configure: delete
+ old copy of pkg.m4
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,315 +18,469 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>
+To: plaisthos <arne-openvpn@...1227...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---l54QpwQccEA=
+--g08c0xMKpM8=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: flichtenheld, plaisthos.
+Attention is currently required from: plaisthos.
 
-Hello plaisthos, flichtenheld,
+Hello plaisthos,
 
 I'd like you to do a code review.
 Please visit
 
-    http://gerrit.openvpn.net/c/openvpn/+/557?usp=3Demail
+    http://gerrit.openvpn.net/c/openvpn/+/558?usp=3Demail
 
 to review the following change.
 
 
-Change subject: Address schedule_exit() review comments
+Change subject: configure: delete old copy of pkg.m4
 ......................................................................
 
-Address schedule_exit() review comments
+configure: delete old copy of pkg.m4
 
-schedule_exit() now only takes the context as argument. The signal is
-hard coded to SIGTERM, and the interval is read directly from the
-context options.
+It has been 12 years, let's find out whether we really
+want to carry around this old code.
 
-Furthermore, schedule_exit() now returns a bool signifying whether an
-exit was scheduled; false if exit is already scheduled. The call sites
-are updated accordingly. A notable difference is that management is only
-notified *once* when an exit is scheduled - we no longer notify
-management on redundant exit.
-
-Change-Id: I1cf589ecad82eecf167fe5cf28cda0fe4d42d42f
+Change-Id: I34e96a225446693f401549d86d872c02427ef7d5
+Signed-off-by: Frank Lichtenheld <frank@...2641...>
 ---
-M src/openvpn/forward.c
-M src/openvpn/forward.h
-M src/openvpn/push.c
-3 files changed, 14 insertions(+), 14 deletions(-)
+D m4/pkg.m4
+1 file changed, 0 insertions(+), 159 deletions(-)
 
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/57/557/1
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/58/558/1
 
-diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c
-index 70f8e9d..937fae4 100644
---- a/src/openvpn/forward.c
-+++ b/src/openvpn/forward.c
-@@ -514,22 +514,23 @@
- }
-
- /*
-- * Schedule a signal n_seconds from now.
-+ * Schedule a SIGTERM signal c->options.scheduled_exit_interval seconds fr=
-om now.
-  */
--void
--schedule_exit(struct context *c, const int n_seconds, const int signal)
-+bool
-+schedule_exit(struct context *c)
- {
--    /* don't reschedule if already scheduled; we drop the new signal, but =
-it
--     * only ever seems to be SIGTERM anyway. */
-+    const int n_seconds =3D c->options.scheduled_exit_interval;
-+    /* don't reschedule if already scheduled. */
-     if (event_timeout_defined(&c->c2.scheduled_exit)) {
--        return;
-+        return false;
-     }
-     tls_set_single_session(c->c2.tls_multi);
-     update_time();
-     reset_coarse_timers(c);
-     event_timeout_init(&c->c2.scheduled_exit, n_seconds, now);
--    c->c2.scheduled_exit_signal =3D signal;
-+    c->c2.scheduled_exit_signal =3D SIGTERM;
-     msg(D_SCHED_EXIT, "Delayed exit in %d seconds", n_seconds);
-+    return true;
- }
-
- /*
-diff --git a/src/openvpn/forward.h b/src/openvpn/forward.h
-index 6fb5a18..422c591 100644
---- a/src/openvpn/forward.h
-+++ b/src/openvpn/forward.h
-@@ -303,7 +303,7 @@
-
- void process_ip_header(struct context *c, unsigned int flags, struct buffe=
-r *buf);
-
--void schedule_exit(struct context *c, const int n_seconds, const int signa=
-l);
-+bool schedule_exit(struct context *c);
-
- static inline struct link_socket_info *
- get_link_socket_info(struct context *c)
-diff --git a/src/openvpn/push.c b/src/openvpn/push.c
-index 1b406b9..db1fd2e 100644
---- a/src/openvpn/push.c
-+++ b/src/openvpn/push.c
-@@ -191,6 +191,7 @@
- receive_exit_message(struct context *c)
- {
-     dmsg(D_STREAM_ERRORS, "CC-EEN exit message received by peer");
-+    bool notify_management =3D true;
-     /* With control channel exit notification, we want to give the session
-      * enough time to handle retransmits and acknowledgment, so that event=
-ual
-      * retries from the client to resend the exit or ACKs will not trigger
-@@ -204,14 +205,14 @@
-      * */
-     if (c->options.mode =3D=3D MODE_SERVER)
-     {
--        schedule_exit(c, c->options.scheduled_exit_interval, SIGTERM);
-+        notify_management =3D schedule_exit(c);
-     }
-     else
-     {
-         register_signal(c->sig, SIGUSR1, "remote-exit");
-     }
- #ifdef ENABLE_MANAGEMENT
--    if (management)
-+    if (management && notify_management)
-     {
-         management_notify(management, "info", "remote-exit", "EXIT");
-     }
-@@ -391,7 +392,7 @@
- void
- send_auth_failed(struct context *c, const char *client_reason)
- {
--    if (event_timeout_defined(&c->c2.scheduled_exit))
-+    if (!schedule_exit(c))
-     {
-         msg(D_TLS_DEBUG, "exit already scheduled for context");
-         return;
-@@ -401,8 +402,6 @@
-     static const char auth_failed[] =3D "AUTH_FAILED";
-     size_t len;
-
--    schedule_exit(c, c->options.scheduled_exit_interval, SIGTERM);
+diff --git a/m4/pkg.m4 b/m4/pkg.m4
+deleted file mode 100644
+index cca47a7..0000000
+--- a/m4/pkg.m4
++++ /dev/null
+@@ -1,159 +0,0 @@
+-# pkg.m4 - Macros to locate and utilise pkg-config.            -*- Autocon=
+f -*-
+-# serial 1 (pkg-config-0.24)
+-#
+-# Copyright =C2=A9 2004 Scott James Remnant <scott@...1668...>.
+-#
+-# This program is free software; you can redistribute it and/or modify
+-# it under the terms of the GNU General Public License as published by
+-# the Free Software Foundation; either version 2 of the License, or
+-# (at your option) any later version.
+-#
+-# This program is distributed in the hope that it will be useful, but
+-# WITHOUT ANY WARRANTY; without even the implied warranty of
+-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+-# General Public License for more details.
+-#
+-# You should have received a copy of the GNU General Public License along
+-# with this program; if not, write to the Free Software Foundation, Inc.,
+-# 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+-#
+-# As a special exception to the GNU General Public License, if you
+-# distribute this file as part of a program that contains a
+-# configuration script generated by Autoconf, you may include it under
+-# the same distribution terms that you use for the rest of that program.
 -
-     len =3D (client_reason ? strlen(client_reason)+1 : 0) + sizeof(auth_fa=
-iled);
-     if (len > PUSH_BUNDLE_SIZE)
-     {
-@@ -492,7 +491,7 @@
- void
- send_restart(struct context *c, const char *kill_msg)
- {
--    schedule_exit(c, c->options.scheduled_exit_interval, SIGTERM);
-+    schedule_exit(c);
-     send_control_channel_string(c, kill_msg ? kill_msg : "RESTART", D_PUSH=
-);
- }
-
+-# PKG_PROG_PKG_CONFIG([MIN-VERSION])
+-# ----------------------------------
+-AC_DEFUN([PKG_PROG_PKG_CONFIG],
+-[m4_pattern_forbid([^_?PKG_[A-Z_]+$])
+-m4_pattern_allow([^PKG_CONFIG(_(PATH|LIBDIR|SYSROOT_DIR|ALLOW_SYSTEM_(CFLA=
+GS|LIBS)))?$])
+-m4_pattern_allow([^PKG_CONFIG_(DISABLE_UNINSTALLED|TOP_BUILD_DIR|DEBUG_SPE=
+W)$])
+-AC_ARG_VAR([PKG_CONFIG], [path to pkg-config utility])
+-AC_ARG_VAR([PKG_CONFIG_PATH], [directories to add to pkg-config's search p=
+ath])
+-AC_ARG_VAR([PKG_CONFIG_LIBDIR], [path overriding pkg-config's built-in sea=
+rch path])
+-
+-if test "x$ac_cv_env_PKG_CONFIG_set" !=3D "xset"; then
+-	AC_PATH_TOOL([PKG_CONFIG], [pkg-config])
+-fi
+-if test -n "$PKG_CONFIG"; then
+-	_pkg_min_version=3Dm4_default([$1], [0.9.0])
+-	AC_MSG_CHECKING([pkg-config is at least version $_pkg_min_version])
+-	if $PKG_CONFIG --atleast-pkgconfig-version $_pkg_min_version; then
+-		AC_MSG_RESULT([yes])
+-	else
+-		AC_MSG_RESULT([no])
+-		PKG_CONFIG=3D""
+-	fi
+-fi[]dnl
+-])# PKG_PROG_PKG_CONFIG
+-
+-# PKG_CHECK_EXISTS(MODULES, [ACTION-IF-FOUND], [ACTION-IF-NOT-FOUND])
+-#
+-# Check to see whether a particular set of modules exists.  Similar
+-# to PKG_CHECK_MODULES(), but does not set variables or print errors.
+-#
+-# Please remember that m4 expands AC_REQUIRE([PKG_PROG_PKG_CONFIG])
+-# only at the first occurrence in configure.ac, so if the first place
+-# it's called might be skipped (such as if it is within an "if", you
+-# have to call PKG_CHECK_EXISTS manually
+-# --------------------------------------------------------------
+-AC_DEFUN([PKG_CHECK_EXISTS],
+-[AC_REQUIRE([PKG_PROG_PKG_CONFIG])dnl
+-if test -n "$PKG_CONFIG" && \
+-    AC_RUN_LOG([$PKG_CONFIG --exists --print-errors "$1"]); then
+-  m4_default([$2], [:])
+-m4_ifvaln([$3], [else
+-  $3])dnl
+-fi])
+-
+-# _PKG_CONFIG([VARIABLE], [COMMAND], [MODULES])
+-# ---------------------------------------------
+-m4_define([_PKG_CONFIG],
+-[if test -n "$$1"; then
+-    pkg_cv_[]$1=3D"$$1"
+- elif test -n "$PKG_CONFIG"; then
+-    PKG_CHECK_EXISTS([$3],
+-                     [pkg_cv_[]$1=3D`$PKG_CONFIG --[]$2 "$3" 2>/dev/null`
+-		      test "x$?" !=3D "x0" && pkg_failed=3Dyes ],
+-		     [pkg_failed=3Dyes])
+- else
+-    pkg_failed=3Duntried
+-fi[]dnl
+-])# _PKG_CONFIG
+-
+-# _PKG_SHORT_ERRORS_SUPPORTED
+-# -----------------------------
+-AC_DEFUN([_PKG_SHORT_ERRORS_SUPPORTED],
+-[AC_REQUIRE([PKG_PROG_PKG_CONFIG])
+-if $PKG_CONFIG --atleast-pkgconfig-version 0.20; then
+-        _pkg_short_errors_supported=3Dyes
+-else
+-        _pkg_short_errors_supported=3Dno
+-fi[]dnl
+-])# _PKG_SHORT_ERRORS_SUPPORTED
+-
+-
+-# PKG_CHECK_MODULES(VARIABLE-PREFIX, MODULES, [ACTION-IF-FOUND],
+-# [ACTION-IF-NOT-FOUND])
+-#
+-#
+-# Note that if there is a possibility the first call to
+-# PKG_CHECK_MODULES might not happen, you should be sure to include an
+-# explicit call to PKG_PROG_PKG_CONFIG in your configure.ac
+-#
+-#
+-# --------------------------------------------------------------
+-AC_DEFUN([PKG_CHECK_MODULES],
+-[AC_REQUIRE([PKG_PROG_PKG_CONFIG])dnl
+-AC_ARG_VAR([$1][_CFLAGS], [C compiler flags for $1, overriding pkg-config]=
+)dnl
+-AC_ARG_VAR([$1][_LIBS], [linker flags for $1, overriding pkg-config])dnl
+-
+-pkg_failed=3Dno
+-AC_MSG_CHECKING([for $1])
+-
+-_PKG_CONFIG([$1][_CFLAGS], [cflags], [$2])
+-_PKG_CONFIG([$1][_LIBS], [libs], [$2])
+-
+-m4_define([_PKG_TEXT], [Alternatively, you may set the environment variabl=
+es $1[]_CFLAGS
+-and $1[]_LIBS to avoid the need to call pkg-config.
+-See the pkg-config man page for more details.])
+-
+-if test $pkg_failed =3D yes; then
+-   	AC_MSG_RESULT([no])
+-        _PKG_SHORT_ERRORS_SUPPORTED
+-        if test $_pkg_short_errors_supported =3D yes; then
+-	        $1[]_PKG_ERRORS=3D`$PKG_CONFIG --short-errors --print-errors --cf=
+lags --libs "$2" 2>&1`
+-        else
+-	        $1[]_PKG_ERRORS=3D`$PKG_CONFIG --print-errors --cflags --libs "$2=
+" 2>&1`
+-        fi
+-	# Put the nasty error message in config.log where it belongs
+-	echo "$$1[]_PKG_ERRORS" >&AS_MESSAGE_LOG_FD
+-
+-	m4_default([$4], [AC_MSG_ERROR(
+-[Package requirements ($2) were not met:
+-
+-$$1_PKG_ERRORS
+-
+-Consider adjusting the PKG_CONFIG_PATH environment variable if you
+-installed software in a non-standard prefix.
+-
+-_PKG_TEXT])[]dnl
+-        ])
+-elif test $pkg_failed =3D untried; then
+-     	AC_MSG_RESULT([no])
+-	m4_default([$4], [AC_MSG_FAILURE(
+-[The pkg-config script could not be found or is too old.  Make sure it
+-is in your PATH or set the PKG_CONFIG environment variable to the full
+-path to pkg-config.
+-
+-_PKG_TEXT
+-
+-To get pkg-config, see <http://pkg-config.freedesktop.org/>.])[]dnl
+-        ])
+-else
+-	$1[]_CFLAGS=3D$pkg_cv_[]$1[]_CFLAGS
+-	$1[]_LIBS=3D$pkg_cv_[]$1[]_LIBS
+-        AC_MSG_RESULT([yes])
+-	$3
+-fi[]dnl
+-])# PKG_CHECK_MODULES
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/557?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/558?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings
 
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: I1cf589ecad82eecf167fe5cf28cda0fe4d42d42f
-Gerrit-Change-Number: 557
+Gerrit-Change-Id: I34e96a225446693f401549d86d872c02427ef7d5
+Gerrit-Change-Number: 558
 Gerrit-PatchSet: 1
-Gerrit-Owner: reynir <reynir@...2756...>
-Gerrit-Reviewer: flichtenheld <frank@...2641...>
+Gerrit-Owner: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: flichtenheld <frank@...2641...>
 Gerrit-MessageType: newchange
 
---l54QpwQccEA=
+--g08c0xMKpM8=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p> Attention is currently required from: flichtenheld, plaisthos. </p>
-<p>reynir would like plaisthos and flichtenheld to <strong>review</strong> =
-this change.
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/557?usp=3Demail">Vi=
+<p> Attention is currently required from: plaisthos. </p>
+<p>flichtenheld would like plaisthos to <strong>review</strong> this change.
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/558?usp=3Demail">Vi=
 ew Change</a></p><pre style=3D"font-family: monospace,monospace; white-spac=
-e: pre-wrap;">Address schedule_exit() review comments<br><br>schedule_exit(=
-) now only takes the context as argument. The signal is<br>hard coded to SI=
-GTERM, and the interval is read directly from the<br>context options.<br><b=
-r>Furthermore, schedule_exit() now returns a bool signifying whether an<br>=
-exit was scheduled; false if exit is already scheduled. The call sites<br>a=
-re updated accordingly. A notable difference is that management is only<br>=
-notified *once* when an exit is scheduled - we no longer notify<br>manageme=
-nt on redundant exit.<br><br>Change-Id: I1cf589ecad82eecf167fe5cf28cda0fe4d=
-42d42f<br>---<br>M src/openvpn/forward.c<br>M src/openvpn/forward.h<br>M sr=
-c/openvpn/push.c<br>3 files changed, 14 insertions(+), 14 deletions(-)<br><=
-br></pre><pre style=3D"font-family: monospace,monospace; white-space: pre-w=
-rap;">git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/57/557/1=
-</pre><pre style=3D"font-family: monospace,monospace; white-space: pre-wrap=
-;"><span>diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c</span><=
-br><span>index 70f8e9d..937fae4 100644</span><br><span>--- a/src/openvpn/fo=
-rward.c</span><br><span>+++ b/src/openvpn/forward.c</span><br><span>@@ -514=
-,22 +514,23 @@</span><br><span> }</span><br><span> </span><br><span> /*</sp=
-an><br><span style=3D"color: hsl(0, 100%, 40%);">- * Schedule a signal n_se=
-conds from now.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * S=
-chedule a SIGTERM signal c-&gt;options.scheduled_exit_interval seconds from=
- now.</span><br><span>  */</span><br><span style=3D"color: hsl(0, 100%, 40%=
-);">-void</span><br><span style=3D"color: hsl(0, 100%, 40%);">-schedule_exi=
-t(struct context *c, const int n_seconds, const int signal)</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+bool</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+schedule_exit(struct context *c)</span><br><span> =
-{</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    /* don&#39;t res=
-chedule if already scheduled; we drop the new signal, but it</span><br><spa=
-n style=3D"color: hsl(0, 100%, 40%);">-     * only ever seems to be SIGTERM=
- anyway. */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    cons=
-t int n_seconds =3D c-&gt;options.scheduled_exit_interval;</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+    /* don&#39;t reschedule if alrea=
-dy scheduled. */</span><br><span>     if (event_timeout_defined(&amp;c-&gt;=
-c2.scheduled_exit)) {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
-        return;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-    return false;</span><br><span>     }</span><br><span>     tls_set_singl=
-e_session(c-&gt;c2.tls_multi);</span><br><span>     update_time();</span><b=
-r><span>     reset_coarse_timers(c);</span><br><span>     event_timeout_ini=
-t(&amp;c-&gt;c2.scheduled_exit, n_seconds, now);</span><br><span style=3D"c=
-olor: hsl(0, 100%, 40%);">-    c-&gt;c2.scheduled_exit_signal =3D signal;</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+    c-&gt;c2.schedule=
-d_exit_signal =3D SIGTERM;</span><br><span>     msg(D_SCHED_EXIT, &quot;Del=
-ayed exit in %d seconds&quot;, n_seconds);</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+    return true;</span><br><span> }</span><br><span>=
- </span><br><span> /*</span><br><span>diff --git a/src/openvpn/forward.h b/=
-src/openvpn/forward.h</span><br><span>index 6fb5a18..422c591 100644</span><=
-br><span>--- a/src/openvpn/forward.h</span><br><span>+++ b/src/openvpn/forw=
-ard.h</span><br><span>@@ -303,7 +303,7 @@</span><br><span> </span><br><span=
-> void process_ip_header(struct context *c, unsigned int flags, struct buff=
-er *buf);</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40=
-%);">-void schedule_exit(struct context *c, const int n_seconds, const int =
-signal);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+bool schedu=
-le_exit(struct context *c);</span><br><span> </span><br><span> static inlin=
-e struct link_socket_info *</span><br><span> get_link_socket_info(struct co=
-ntext *c)</span><br><span>diff --git a/src/openvpn/push.c b/src/openvpn/pus=
-h.c</span><br><span>index 1b406b9..db1fd2e 100644</span><br><span>--- a/src=
-/openvpn/push.c</span><br><span>+++ b/src/openvpn/push.c</span><br><span>@@=
- -191,6 +191,7 @@</span><br><span> receive_exit_message(struct context *c)<=
-/span><br><span> {</span><br><span>     dmsg(D_STREAM_ERRORS, &quot;CC-EEN =
-exit message received by peer&quot;);</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+    bool notify_management =3D true;</span><br><span>    =
- /* With control channel exit notification, we want to give the session</sp=
-an><br><span>      * enough time to handle retransmits and acknowledgment, =
-so that eventual</span><br><span>      * retries from the client to resend =
-the exit or ACKs will not trigger</span><br><span>@@ -204,14 +205,14 @@</sp=
-an><br><span>      * */</span><br><span>     if (c-&gt;options.mode =3D=3D =
-MODE_SERVER)</span><br><span>     {</span><br><span style=3D"color: hsl(0, =
-100%, 40%);">-        schedule_exit(c, c-&gt;options.scheduled_exit_interva=
-l, SIGTERM);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
- notify_management =3D schedule_exit(c);</span><br><span>     }</span><br><=
-span>     else</span><br><span>     {</span><br><span>         register_sig=
-nal(c-&gt;sig, SIGUSR1, &quot;remote-exit&quot;);</span><br><span>     }</s=
-pan><br><span> #ifdef ENABLE_MANAGEMENT</span><br><span style=3D"color: hsl=
-(0, 100%, 40%);">-    if (management)</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+    if (management &amp;&amp; notify_management)</span><b=
-r><span>     {</span><br><span>         management_notify(management, &quot=
-;info&quot;, &quot;remote-exit&quot;, &quot;EXIT&quot;);</span><br><span>  =
-   }</span><br><span>@@ -391,7 +392,7 @@</span><br><span> void</span><br><s=
-pan> send_auth_failed(struct context *c, const char *client_reason)</span><=
-br><span> {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    if (ev=
-ent_timeout_defined(&amp;c-&gt;c2.scheduled_exit))</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+    if (!schedule_exit(c))</span><br><span> =
-    {</span><br><span>         msg(D_TLS_DEBUG, &quot;exit already schedule=
-d for context&quot;);</span><br><span>         return;</span><br><span>@@ -=
-401,8 +402,6 @@</span><br><span>     static const char auth_failed[] =3D &q=
-uot;AUTH_FAILED&quot;;</span><br><span>     size_t len;</span><br><span> </=
-span><br><span style=3D"color: hsl(0, 100%, 40%);">-    schedule_exit(c, c-=
-&gt;options.scheduled_exit_interval, SIGTERM);</span><br><span style=3D"col=
-or: hsl(0, 100%, 40%);">-</span><br><span>     len =3D (client_reason ? str=
-len(client_reason)+1 : 0) + sizeof(auth_failed);</span><br><span>     if (l=
-en &gt; PUSH_BUNDLE_SIZE)</span><br><span>     {</span><br><span>@@ -492,7 =
-+491,7 @@</span><br><span> void</span><br><span> send_restart(struct contex=
-t *c, const char *kill_msg)</span><br><span> {</span><br><span style=3D"col=
-or: hsl(0, 100%, 40%);">-    schedule_exit(c, c-&gt;options.scheduled_exit_=
-interval, SIGTERM);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-    schedule_exit(c);</span><br><span>     send_control_channel_string(c, k=
-ill_msg ? kill_msg : &quot;RESTART&quot;, D_PUSH);</span><br><span> }</span=
-><br><span> </span><br><span></span><br></pre><p>To view, visit <a href=3D"=
-http://gerrit.openvpn.net/c/openvpn/+/557?usp=3Demail">change 557</a>. To u=
-nsubscribe, or for help writing mail filters, visit <a href=3D"http://gerri=
-t.openvpn.net/settings">settings</a>.</p><div itemscope itemtype=3D"http://=
-schema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"htt=
-p://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.ope=
-nvpn.net/c/openvpn/+/557?usp=3Demail"/><meta itemprop=3D"name" content=3D"V=
-iew Change"/></div></div>
+e: pre-wrap;">configure: delete old copy of pkg.m4<br><br>It has been 12 ye=
+ars, let&#39;s find out whether we really<br>want to carry around this old =
+code.<br><br>Change-Id: I34e96a225446693f401549d86d872c02427ef7d5<br>Signed=
+-off-by: Frank Lichtenheld &lt;frank@...2641...&gt;<br>---<br>D m4/pkg.m4<b=
+r>1 file changed, 0 insertions(+), 159 deletions(-)<br><br></pre><pre style=
+=3D"font-family: monospace,monospace; white-space: pre-wrap;">git pull ssh:=
+//gerrit.openvpn.net:29418/openvpn refs/changes/58/558/1</pre><pre style=3D=
+"font-family: monospace,monospace; white-space: pre-wrap;"><span>diff --git=
+ a/m4/pkg.m4 b/m4/pkg.m4</span><br><span>deleted file mode 100644</span><br=
+><span>index cca47a7..0000000</span><br><span>--- a/m4/pkg.m4</span><br><sp=
+an>+++ /dev/null</span><br><span>@@ -1,159 +0,0 @@</span><br><span style=3D=
+"color: hsl(0, 100%, 40%);">-# pkg.m4 - Macros to locate and utilise pkg-co=
+nfig.            -*- Autoconf -*-</span><br><span style=3D"color: hsl(0, 10=
+0%, 40%);">-# serial 1 (pkg-config-0.24)</span><br><span style=3D"color: hs=
+l(0, 100%, 40%);">-# </span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
+# Copyright =C2=A9 2004 Scott James Remnant &lt;scott@...1668...&gt;.</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-#</span><br><span style=3D"=
+color: hsl(0, 100%, 40%);">-# This program is free software; you can redist=
+ribute it and/or modify</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>-# it under the terms of the GNU General Public License as published by</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-# the Free Software Foun=
+dation; either version 2 of the License, or</span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-# (at your option) any later version.</span><br><span=
+ style=3D"color: hsl(0, 100%, 40%);">-#</span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-# This program is distributed in the hope that it will be=
+ useful, but</span><br><span style=3D"color: hsl(0, 100%, 40%);">-# WITHOUT=
+ ANY WARRANTY; without even the implied warranty of</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-# MERCHANTABILITY or FITNESS FOR A PARTICUL=
+AR PURPOSE.  See the GNU</span><br><span style=3D"color: hsl(0, 100%, 40%);=
+">-# General Public License for more details.</span><br><span style=3D"colo=
+r: hsl(0, 100%, 40%);">-#</span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">-# You should have received a copy of the GNU General Public License alo=
+ng</span><br><span style=3D"color: hsl(0, 100%, 40%);">-# with this program=
+; if not, write to the Free Software Foundation, Inc.,</span><br><span styl=
+e=3D"color: hsl(0, 100%, 40%);">-# 51 Franklin Street, Fifth Floor, Boston,=
+ MA 02110-1301 USA.</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#<=
+/span><br><span style=3D"color: hsl(0, 100%, 40%);">-# As a special excepti=
+on to the GNU General Public License, if you</span><br><span style=3D"color=
+: hsl(0, 100%, 40%);">-# distribute this file as part of a program that con=
+tains a</span><br><span style=3D"color: hsl(0, 100%, 40%);">-# configuratio=
+n script generated by Autoconf, you may include it under</span><br><span st=
+yle=3D"color: hsl(0, 100%, 40%);">-# the same distribution terms that you u=
+se for the rest of that program.</span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-# PKG_PROG=
+_PKG_CONFIG([MIN-VERSION])</span><br><span style=3D"color: hsl(0, 100%, 40%=
+);">-# ----------------------------------</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-AC_DEFUN([PKG_PROG_PKG_CONFIG],</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-[m4_pattern_forbid([^_?PKG_[A-Z_]+$])</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-m4_pattern_allow([^PKG_CONF=
+IG(_(PATH|LIBDIR|SYSROOT_DIR|ALLOW_SYSTEM_(CFLAGS|LIBS)))?$])</span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-m4_pattern_allow([^PKG_CONFIG_(DISA=
+BLE_UNINSTALLED|TOP_BUILD_DIR|DEBUG_SPEW)$])</span><br><span style=3D"color=
+: hsl(0, 100%, 40%);">-AC_ARG_VAR([PKG_CONFIG], [path to pkg-config utility=
+])</span><br><span style=3D"color: hsl(0, 100%, 40%);">-AC_ARG_VAR([PKG_CON=
+FIG_PATH], [directories to add to pkg-config&#39;s search path])</span><br>=
+<span style=3D"color: hsl(0, 100%, 40%);">-AC_ARG_VAR([PKG_CONFIG_LIBDIR], =
+[path overriding pkg-config&#39;s built-in search path])</span><br><span st=
+yle=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, =
+100%, 40%);">-if test &quot;x$ac_cv_env_PKG_CONFIG_set&quot; !=3D &quot;xse=
+t&quot;; then</span><br><span style=3D"color: hsl(0, 100%, 40%);">-	AC_PATH=
+_TOOL([PKG_CONFIG], [pkg-config])</span><br><span style=3D"color: hsl(0, 10=
+0%, 40%);">-fi</span><br><span style=3D"color: hsl(0, 100%, 40%);">-if test=
+ -n &quot;$PKG_CONFIG&quot;; then</span><br><span style=3D"color: hsl(0, 10=
+0%, 40%);">-	_pkg_min_version=3Dm4_default([$1], [0.9.0])</span><br><span s=
+tyle=3D"color: hsl(0, 100%, 40%);">-	AC_MSG_CHECKING([pkg-config is at leas=
+t version $_pkg_min_version])</span><br><span style=3D"color: hsl(0, 100%, =
+40%);">-	if $PKG_CONFIG --atleast-pkgconfig-version $_pkg_min_version; then=
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">-		AC_MSG_RESULT([yes]=
+)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-	else</span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">-		AC_MSG_RESULT([no])</span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">-		PKG_CONFIG=3D&quot;&quot;</span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-	fi</span><br><span style=3D"c=
+olor: hsl(0, 100%, 40%);">-fi[]dnl</span><br><span style=3D"color: hsl(0, 1=
+00%, 40%);">-])# PKG_PROG_PKG_CONFIG</span><br><span style=3D"color: hsl(0,=
+ 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-# PKG_=
+CHECK_EXISTS(MODULES, [ACTION-IF-FOUND], [ACTION-IF-NOT-FOUND])</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-#</span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-# Check to see whether a particular set of modules ex=
+ists.  Similar</span><br><span style=3D"color: hsl(0, 100%, 40%);">-# to PK=
+G_CHECK_MODULES(), but does not set variables or print errors.</span><br><s=
+pan style=3D"color: hsl(0, 100%, 40%);">-#</span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">-# Please remember that m4 expands AC_REQUIRE([PKG_PROG=
+_PKG_CONFIG])</span><br><span style=3D"color: hsl(0, 100%, 40%);">-# only a=
+t the first occurrence in configure.ac, so if the first place</span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-# it&#39;s called might be skipped =
+(such as if it is within an &quot;if&quot;, you</span><br><span style=3D"co=
+lor: hsl(0, 100%, 40%);">-# have to call PKG_CHECK_EXISTS manually</span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-# ----------------------------=
+----------------------------------</span><br><span style=3D"color: hsl(0, 1=
+00%, 40%);">-AC_DEFUN([PKG_CHECK_EXISTS],</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-[AC_REQUIRE([PKG_PROG_PKG_CONFIG])dnl</span><br><span s=
+tyle=3D"color: hsl(0, 100%, 40%);">-if test -n &quot;$PKG_CONFIG&quot; &amp=
+;&amp; \</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    AC_RUN_LO=
+G([$PKG_CONFIG --exists --print-errors &quot;$1&quot;]); then</span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-  m4_default([$2], [:])</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-m4_ifvaln([$3], [else</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-  $3])dnl</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-fi])</span><br><span style=3D"color: hsl(0,=
+ 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-# _PKG=
+_CONFIG([VARIABLE], [COMMAND], [MODULES])</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-# ---------------------------------------------</span><=
+br><span style=3D"color: hsl(0, 100%, 40%);">-m4_define([_PKG_CONFIG],</spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-[if test -n &quot;$$1&quot=
+;; then</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    pkg_cv_[]$=
+1=3D&quot;$$1&quot;</span><br><span style=3D"color: hsl(0, 100%, 40%);">- e=
+lif test -n &quot;$PKG_CONFIG&quot;; then</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-    PKG_CHECK_EXISTS([$3],</span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-                     [pkg_cv_[]$1=3D`$PKG_CONFIG -=
+-[]$2 &quot;$3&quot; 2&gt;/dev/null`</span><br><span style=3D"color: hsl(0,=
+ 100%, 40%);">-		      test &quot;x$?&quot; !=3D &quot;x0&quot; &amp;&amp; =
+pkg_failed=3Dyes ],</span><br><span style=3D"color: hsl(0, 100%, 40%);">-		=
+     [pkg_failed=3Dyes])</span><br><span style=3D"color: hsl(0, 100%, 40%);=
+">- else</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    pkg_faile=
+d=3Duntried</span><br><span style=3D"color: hsl(0, 100%, 40%);">-fi[]dnl</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-])# _PKG_CONFIG</span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"colo=
+r: hsl(0, 100%, 40%);">-# _PKG_SHORT_ERRORS_SUPPORTED</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-# -----------------------------</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-AC_DEFUN([_PKG_SHORT_ERRORS_SUPPO=
+RTED],</span><br><span style=3D"color: hsl(0, 100%, 40%);">-[AC_REQUIRE([PK=
+G_PROG_PKG_CONFIG])</span><br><span style=3D"color: hsl(0, 100%, 40%);">-if=
+ $PKG_CONFIG --atleast-pkgconfig-version 0.20; then</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-        _pkg_short_errors_supported=3Dyes</=
+span><br><span style=3D"color: hsl(0, 100%, 40%);">-else</span><br><span st=
+yle=3D"color: hsl(0, 100%, 40%);">-        _pkg_short_errors_supported=3Dno=
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">-fi[]dnl</span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-])# _PKG_SHORT_ERRORS_SUPPORTED</sp=
+an><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D=
+"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, =
+40%);">-# PKG_CHECK_MODULES(VARIABLE-PREFIX, MODULES, [ACTION-IF-FOUND],</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-# [ACTION-IF-NOT-FOUND])=
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-#</span><br><span style=3D"color: hsl(0, =
+100%, 40%);">-# Note that if there is a possibility the first call to</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-# PKG_CHECK_MODULES might n=
+ot happen, you should be sure to include an</span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-# explicit call to PKG_PROG_PKG_CONFIG in your config=
+ure.ac</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#</span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-#</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-# -----------------------------------------------------=
+---------</span><br><span style=3D"color: hsl(0, 100%, 40%);">-AC_DEFUN([PK=
+G_CHECK_MODULES],</span><br><span style=3D"color: hsl(0, 100%, 40%);">-[AC_=
+REQUIRE([PKG_PROG_PKG_CONFIG])dnl</span><br><span style=3D"color: hsl(0, 10=
+0%, 40%);">-AC_ARG_VAR([$1][_CFLAGS], [C compiler flags for $1, overriding =
+pkg-config])dnl</span><br><span style=3D"color: hsl(0, 100%, 40%);">-AC_ARG=
+_VAR([$1][_LIBS], [linker flags for $1, overriding pkg-config])dnl</span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"colo=
+r: hsl(0, 100%, 40%);">-pkg_failed=3Dno</span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-AC_MSG_CHECKING([for $1])</span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
+-_PKG_CONFIG([$1][_CFLAGS], [cflags], [$2])</span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-_PKG_CONFIG([$1][_LIBS], [libs], [$2])</span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-m4_define([_PKG_TEXT], [Alternatively, you may set the en=
+vironment variables $1[]_CFLAGS</span><br><span style=3D"color: hsl(0, 100%=
+, 40%);">-and $1[]_LIBS to avoid the need to call pkg-config.</span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-See the pkg-config man page for mor=
+e details.])</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-if test $pkg_failed =3D yes; t=
+hen</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   	AC_MSG_RESULT(=
+[no])</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        _PKG_SHO=
+RT_ERRORS_SUPPORTED</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
+      if test $_pkg_short_errors_supported =3D yes; then</span><br><span st=
+yle=3D"color: hsl(0, 100%, 40%);">-	        $1[]_PKG_ERRORS=3D`$PKG_CONFIG =
+--short-errors --print-errors --cflags --libs &quot;$2&quot; 2&gt;&amp;1`</=
+span><br><span style=3D"color: hsl(0, 100%, 40%);">-        else </span><br=
+><span style=3D"color: hsl(0, 100%, 40%);">-	        $1[]_PKG_ERRORS=3D`$PK=
+G_CONFIG --print-errors --cflags --libs &quot;$2&quot; 2&gt;&amp;1`</span><=
+br><span style=3D"color: hsl(0, 100%, 40%);">-        fi</span><br><span st=
+yle=3D"color: hsl(0, 100%, 40%);">-	# Put the nasty error message in config=
+.log where it belongs</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
+	echo &quot;$$1[]_PKG_ERRORS&quot; &gt;&amp;AS_MESSAGE_LOG_FD</span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hs=
+l(0, 100%, 40%);">-	m4_default([$4], [AC_MSG_ERROR(</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-[Package requirements ($2) were not met:</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-$$1_PKG_ERRORS</span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">-Consider adjusting the PKG_CONFIG_PATH environment variable if you</spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-installed software in a no=
+n-standard prefix.</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-_PKG_TEXT])[]dnl</span><=
+br><span style=3D"color: hsl(0, 100%, 40%);">-        ])</span><br><span st=
+yle=3D"color: hsl(0, 100%, 40%);">-elif test $pkg_failed =3D untried; then<=
+/span><br><span style=3D"color: hsl(0, 100%, 40%);">-     	AC_MSG_RESULT([n=
+o])</span><br><span style=3D"color: hsl(0, 100%, 40%);">-	m4_default([$4], =
+[AC_MSG_FAILURE(</span><br><span style=3D"color: hsl(0, 100%, 40%);">-[The =
+pkg-config script could not be found or is too old.  Make sure it</span><br=
+><span style=3D"color: hsl(0, 100%, 40%);">-is in your PATH or set the PKG_=
+CONFIG environment variable to the full</span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-path to pkg-config.</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-_PKG_=
+TEXT</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">-To get pkg-config, see &lt;http://pkg-=
+config.freedesktop.org/&gt;.])[]dnl</span><br><span style=3D"color: hsl(0, =
+100%, 40%);">-        ])</span><br><span style=3D"color: hsl(0, 100%, 40%);=
+">-else</span><br><span style=3D"color: hsl(0, 100%, 40%);">-	$1[]_CFLAGS=
+=3D$pkg_cv_[]$1[]_CFLAGS</span><br><span style=3D"color: hsl(0, 100%, 40%);=
+">-	$1[]_LIBS=3D$pkg_cv_[]$1[]_LIBS</span><br><span style=3D"color: hsl(0, =
+100%, 40%);">-        AC_MSG_RESULT([yes])</span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">-	$3</span><br><span style=3D"color: hsl(0, 100%, 40%);=
+">-fi[]dnl</span><br><span style=3D"color: hsl(0, 100%, 40%);">-])# PKG_CHE=
+CK_MODULES</span><br><span></span><br></pre><p>To view, visit <a href=3D"ht=
+tp://gerrit.openvpn.net/c/openvpn/+/558?usp=3Demail">change 558</a>. To uns=
+ubscribe, or for help writing mail filters, visit <a href=3D"http://gerrit.=
+openvpn.net/settings">settings</a>.</p><div itemscope itemtype=3D"http://sc=
+hema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http:=
+//schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openv=
+pn.net/c/openvpn/+/558?usp=3Demail"/><meta itemprop=3D"name" content=3D"Vie=
+w Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I1cf589ecad82eecf167fe5cf28c=
-da0fe4d42d42f </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 557 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I34e96a225446693f401549d86d8=
+72c02427ef7d5 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 558 </div>
 <div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
-<div style=3D"display:none"> Gerrit-Owner: reynir &lt;reynir@...2756...&gt;=
- </div>
-<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
-1...&gt; </div>
+<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
+.&gt; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
 .1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
 ..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
-41...&gt; </div>
 <div style=3D"display:none"> Gerrit-MessageType: newchange </div>
 
 
---l54QpwQccEA=--
+--g08c0xMKpM8=--
 
