@@ -1,16 +1,11 @@
-From: "reynir (Code Review)" <gerrit@...515...>
-Date: Wed, 24 Apr 2024 10:40:43 +0000
-In-Reply-To: <gerrit.1713812902000.I1cf589ecad82eecf167fe5cf28cda0fe4d42d42f@...2715...>
-References: <gerrit.1713812902000.I1cf589ecad82eecf167fe5cf28cda0fe4d42d42f@...2715...>
-Reply-To: reynir@...2756..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <518e4a3317c6152dfc2a9ccb155aa6a899327534-HTML@...2715...>
+Content-Type: multipart/alternative;
+ boundary="------------TD0noim470D0MRGWVVjfjSIA"
+Message-ID: <a627816d-7d9d-4582-8010-06cf5596c957@...2751...>
+Date: Wed, 24 Apr 2024 14:01:52 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="fTABTzo/5+Y="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: Address
- schedule_exit() review comments
+From: Johan Draaisma <johan@...2751...>
+Content-Language: en-US
+Subject: [Openvpn-devel]  IRC community meeting summary
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,71 +14,130 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Cc: flichtenheld <frank@...2641...>, plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: openvpn-devel@lists.sourceforge.net
 
---fTABTzo/5+Y=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+This is a multi-part message in MIME format.
+--------------TD0noim470D0MRGWVVjfjSIA
+Content-Type: text/plain; charset="utf-8"; format="flowed"
+Content-Transfer-Encoding: 8bit
 
-reynir has abandoned this change. ( http://gerrit.openvpn.net/c/openvpn/+/5=
-57?usp=3Demail )
+Meeting summary for 24 April 2024:
 
-Change subject: Address schedule_exit() review comments
-......................................................................
+  * *New, closed: OpenSSL 1.0.2 removal from OpenVPN 2.7*
+    /Currently plaisthos is still supporting OpenSSL 1.0.2 because of
+    Access Server still releasing on CentOS7/Red Hat7./
+    /Since we are dropping those platforms on Access Server, there
+    appears to be no reason to keep supporting it./
+    /There were no objections to removing openssl 1.0.2 support from
+    OpenVPN 2.7/
 
+  * *New: Discussion related to DNS IV flag*
+    /The implementation of the dns option deviates somewhat from the
+    original specification./
+    /d12fk wants to discuss a possible solution using another IV flag./
+    /A flag such as IV_PROTO_DNS_OPTION_V2 would be acceptable, as of
+    OpenVPN 2.6.11./
+    /IV_PROTO_DNS_OPTION could be renamed to IV_PROTO_DNS_OPTION_OLD and
+    marked as 'do not send'./
 
-Abandoned
+  * *Updated: forums topics*
+    /ecrist still working on forums. waiting on ecrist to move things
+    around./
+    /ecrist requests that cloudflare be removed again. that's not really
+    something that we want to do as we lose a lot of protection./
+    /rob0 and novaflash would like to assist in solving this problem.
+    they would need root access to the VM. perhaps djpig can arrange this?/
+    /Plan is to soon switch URLs so new forum is on forums.openvpn.net
+    and old forums is on archive address./
+    /- email confirmation on registration was suggested./
+    /- mod permissions, guide, hard or soft delete (chuck board?), what
+    to do with GDPR, etc. (write it down and actually make it available
+    to mods, maybe a hidden topic)/
+    /- access for mods to logs so one can see what others did/
 
-I don't know how to use gerrit. See instead 555
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/557?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings
+  * *Updated: mattock topics*
+    /PR created for the --dev null test suite. Fixed some issues based
+    on feedback in #openvpn-devel./
+    /Documentation
+    here:​https://github.com/mattock/openvpn/blob/dev_null/doc/dev-null-test-suite.rst
+    <https://github.com/mattock/openvpn/blob/dev_null/doc/dev-null-test-suite.rst>/
 
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: I1cf589ecad82eecf167fe5cf28cda0fe4d42d42f
-Gerrit-Change-Number: 557
-Gerrit-PatchSet: 1
-Gerrit-Owner: reynir <reynir@...2756...>
-Gerrit-Reviewer: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-MessageType: abandon
+As always you're welcome to join at #openvpn-meeting on Libera IRC 
+network every Wednesday at 13:00 Central European Time.
 
---fTABTzo/5+Y=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Kind regards,
+Johan Draaisma
 
-<p>reynir <strong>abandoned</strong> this change.</p><p><a href=3D"http://g=
-errit.openvpn.net/c/openvpn/+/557?usp=3Demail">View Change</a></p><div styl=
-e=3D"white-space:pre-wrap">Abandoned
+--------------TD0noim470D0MRGWVVjfjSIA
+Content-Type: text/html; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 
-I don&#39;t know how to use gerrit. See instead 555</div><p>To view, visit =
-<a href=3D"http://gerrit.openvpn.net/c/openvpn/+/557?usp=3Demail">change 55=
-7</a>. To unsubscribe, or for help writing mail filters, visit <a href=3D"h=
-ttp://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope itemtype=
-=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"action" item=
-type=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http:/=
-/gerrit.openvpn.net/c/openvpn/+/557?usp=3Demail"/><meta itemprop=3D"name" c=
-ontent=3D"View Change"/></div></div>
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  </head>
+  <body>
+    <p> Meeting summary for 24 April 2024:</p>
+    <ul
+style="color: rgb(0, 0, 0); font-family: Verdana, Arial, &quot;Bitstream Vera Sans&quot;, Helvetica, sans-serif; font-size: 13px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;">
+      <li><strong>New, closed: OpenSSL 1.0.2 removal from OpenVPN 2.7</strong><br>
+        <em>Currently plaisthos is still supporting OpenSSL 1.0.2
+          because of Access Server still releasing on CentOS7/Red Hat7.</em><br>
+        <em>Since we are dropping those platforms on Access Server,
+          there appears to be no reason to keep supporting it.</em><br>
+        <em>There were no objections to removing openssl 1.0.2 support
+          from OpenVPN 2.7</em></li>
+    </ul>
+    <ul
+style="color: rgb(0, 0, 0); font-family: Verdana, Arial, &quot;Bitstream Vera Sans&quot;, Helvetica, sans-serif; font-size: 13px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;">
+      <li><strong>New: Discussion related to DNS IV flag</strong><br>
+        <em>The implementation of the dns option deviates somewhat from
+          the original specification.</em><br>
+        <em>d12fk wants to discuss a possible solution using another IV
+          flag.</em><br>
+        <em>A flag such as IV_PROTO_DNS_OPTION_V2 would be acceptable,
+          as of OpenVPN 2.6.11.</em><br>
+        <em>IV_PROTO_DNS_OPTION could be renamed to
+          IV_PROTO_DNS_OPTION_OLD and marked as 'do not send'.</em></li>
+    </ul>
+    <ul
+style="color: rgb(0, 0, 0); font-family: Verdana, Arial, &quot;Bitstream Vera Sans&quot;, Helvetica, sans-serif; font-size: 13px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;">
+      <li><strong>Updated: forums topics</strong><br>
+        <em>ecrist still working on forums. waiting on ecrist to move
+          things around.</em><br>
+        <em>ecrist requests that cloudflare be removed again. that's not
+          really something that we want to do as we lose a lot of
+          protection.</em><br>
+        <em>rob0 and novaflash would like to assist in solving this
+          problem. they would need root access to the VM. perhaps djpig
+          can arrange this?</em><br>
+        <em>Plan is to soon switch URLs so new forum is on
+          forums.openvpn.net and old forums is on archive address.</em><br>
+        <em>- email confirmation on registration was suggested.</em><br>
+        <em>- mod permissions, guide, hard or soft delete (chuck
+          board?), what to do with GDPR, etc. (write it down and
+          actually make it available to mods, maybe a hidden topic)</em><br>
+        <em>- access for mods to logs so one can see what others did</em></li>
+    </ul>
+    <ul
+style="color: rgb(0, 0, 0); font-family: Verdana, Arial, &quot;Bitstream Vera Sans&quot;, Helvetica, sans-serif; font-size: 13px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;">
+      <li><strong>Updated: mattock topics</strong><br>
+        <em>PR created for the --dev null test suite. Fixed some issues
+          based on feedback in #openvpn-devel.</em><br>
+        <em>Documentation here:<span> </span><a class="ext-link"
+href="https://github.com/mattock/openvpn/blob/dev_null/doc/dev-null-test-suite.rst"
+style="text-decoration: none; color: rgb(187, 0, 0); border-bottom: 1px dotted rgb(187, 187, 187);"><span
+              class="icon"
+style="background: url(&quot;../extlink.gif&quot;) left center no-repeat; padding-left: 15px;">​</span>https://github.com/mattock/openvpn/blob/dev_null/doc/dev-null-test-suite.rst</a></em></li>
+    </ul>
+    <p>As always you're welcome to join at #openvpn-meeting on Libera
+      IRC network every Wednesday at 13:00 Central European Time.</p>
+    <p>Kind regards,<br>
+      Johan Draaisma<br>
+    </p>
+  </body>
+</html>
 
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I1cf589ecad82eecf167fe5cf28c=
-da0fe4d42d42f </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 557 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
-<div style=3D"display:none"> Gerrit-Owner: reynir &lt;reynir@...2756...&gt;=
- </div>
-<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
-1...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: abandon </div>
-
-
---fTABTzo/5+Y=--
+--------------TD0noim470D0MRGWVVjfjSIA--
 
