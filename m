@@ -1,16 +1,10 @@
-From: "flichtenheld (Code Review)" <gerrit@...515...>
-Date: Wed, 24 Apr 2024 12:13:13 +0000
+From: Frank Lichtenheld <frank@...2641...>
+Date: Thu, 25 Apr 2024 17:50:07 +0200
+Message-Id: <20240425155007.62606-1-frank@...2641...>
 In-Reply-To: <gerrit.1713783920000.I9457f005f4ba970502e6b667d9dc4299a588d661@...2715...>
 References: <gerrit.1713783920000.I9457f005f4ba970502e6b667d9dc4299a588d661@...2715...>
-Reply-To: frank@...2641..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, reynir@...2756...
-Message-ID: <3350fb9669a06cf312c46d1af82530fefe308b72-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="wM5Bg5lGcug="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: Only schedule_exit()
- once
+Subject: [Openvpn-devel] [PATCH v2] Only schedule_exit() once
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,147 +13,141 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: reynir <reynir@...2756...>
-Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
+Cc: =?UTF-8?q?Reynir=20Bj=C3=B6rnsson?= <reynir@...2756...>
 
---wM5Bg5lGcug=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+From: Reynir Björnsson <reynir@...2756...>
 
-Attention is currently required from: plaisthos, reynir.
+If an exit has already been scheduled we should not schedule it again.
+Otherwise, the exit signal is never emitted if the peer reschedules the
+exit before the timeout occurs.
 
-flichtenheld has posted comments on this change. ( http://gerrit.openvpn.ne=
-t/c/openvpn/+/555?usp=3Demail )
+schedule_exit() now only takes the context as argument. The signal is
+hard coded to SIGTERM, and the interval is read directly from the
+context options.
 
-Change subject: Only schedule_exit() once
-......................................................................
+Furthermore, schedule_exit() now returns a bool signifying whether an
+exit was scheduled; false if exit is already scheduled. The call sites
+are updated accordingly. A notable difference is that management is only
+notified *once* when an exit is scheduled - we no longer notify
+management on redundant exit.
 
+Change-Id: I9457f005f4ba970502e6b667d9dc4299a588d661
+Signed-off-by: Reynir Björnsson <reynir@...2756...>
+Acked-by: Frank Lichtenheld <frank@...2641...>
+---
 
-Patch Set 2: Code-Review+2
+This change was reviewed on Gerrit and approved by at least one
+developer. I request to merge it to master.
 
-(3 comments)
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/555
+This mail reflects revision 2 of this Change.
 
-File src/openvpn/forward.c:
+Acked-by according to Gerrit (reflected above):
+Frank Lichtenheld <frank@...2641...>
 
-http://gerrit.openvpn.net/c/openvpn/+/555/comment/090e8b75_da780d6c :
-PS1, Line 523:      * only ever seems to be SIGTERM anyway. */
-> I also considered dropping the `signal` argument as it is currently alway=
-s `SIGTERM` at all call sit [=E2=80=A6]
-Done
-
-
-http://gerrit.openvpn.net/c/openvpn/+/555/comment/01a64bab_9f4236b8 :
-PS1, Line 525:         return;
-> You might want to consider changing the function to return a boolean to i=
-ndicate whether it did anyt [=E2=80=A6]
-Done
-
-
-http://gerrit.openvpn.net/c/openvpn/+/555/comment/123d7f7a_5b2bfd6a :
-PS1, Line 530:     event_timeout_init(&c->c2.scheduled_exit, n_seconds, now=
-);
-> It is always `c->options.scheduled_exit_interval` which is always 5 at th=
-e moment.
-Done
-
-
-
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/555?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings
-
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: I9457f005f4ba970502e6b667d9dc4299a588d661
-Gerrit-Change-Number: 555
-Gerrit-PatchSet: 2
-Gerrit-Owner: reynir <reynir@...2756...>
-Gerrit-Reviewer: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-Reviewer: reynir <reynir@...2756...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: reynir <reynir@...2756...>
-Gerrit-Comment-Date: Wed, 24 Apr 2024 12:13:13 +0000
-Gerrit-HasComments: Yes
-Gerrit-Has-Labels: Yes
-Comment-In-Reply-To: flichtenheld <frank@...2641...>
-Comment-In-Reply-To: reynir <reynir@...2756...>
-Gerrit-MessageType: comment
-
---wM5Bg5lGcug=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<p> Attention is currently required from: plaisthos, reynir. </p>
-<p>Patch set 2:<span style=3D"border-radius: 3px; display: inline-block; ma=
-rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/555?usp=3Demail">Vi=
-ew Change</a></p><p>3 comments:</p><ul style=3D"list-style: none; padding: =
-0;"><li style=3D"margin: 0; padding: 0;"><p>File src/openvpn/forward.c:</p>=
-<ul style=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; padding=
-: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.op=
-envpn.net/c/openvpn/+/555/comment/090e8b75_da780d6c">Patch Set #1, Line 523=
-:</a> <code style=3D"font-family:monospace,monospace">     * only ever seem=
-s to be SIGTERM anyway. */</code></p><p><blockquote style=3D"border-left: 1=
-px solid #aaa; margin: 10px 0; padding: 0 10px;">I also considered dropping=
- the `signal` argument as it is currently always `SIGTERM` at all call sit =
-[=E2=80=A6]</blockquote></p><p style=3D"white-space: pre-wrap; word-wrap: b=
-reak-word;">Done</p></li><li style=3D"margin: 0; padding: 0 0 0 16px;"><p s=
-tyle=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn=
-/+/555/comment/01a64bab_9f4236b8">Patch Set #1, Line 525:</a> <code style=
-=3D"font-family:monospace,monospace">        return;</code></p><p><blockquo=
-te style=3D"border-left: 1px solid #aaa; margin: 10px 0; padding: 0 10px;">=
-You might want to consider changing the function to return a boolean to ind=
-icate whether it did anyt [=E2=80=A6]</blockquote></p><p style=3D"white-spa=
-ce: pre-wrap; word-wrap: break-word;">Done</p></li><li style=3D"margin: 0; =
-padding: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://ge=
-rrit.openvpn.net/c/openvpn/+/555/comment/123d7f7a_5b2bfd6a">Patch Set #1, L=
-ine 530:</a> <code style=3D"font-family:monospace,monospace">    event_time=
-out_init(&amp;c-&gt;c2.scheduled_exit, n_seconds, now);</code></p><p><block=
-quote style=3D"border-left: 1px solid #aaa; margin: 10px 0; padding: 0 10px=
-;">It is always `c-&gt;options.scheduled_exit_interval` which is always 5 a=
-t the moment.</blockquote></p><p style=3D"white-space: pre-wrap; word-wrap:=
- break-word;">Done</p></li></ul></li></ul><p>To view, visit <a href=3D"http=
-://gerrit.openvpn.net/c/openvpn/+/555?usp=3Demail">change 555</a>. To unsub=
-scribe, or for help writing mail filters, visit <a href=3D"http://gerrit.op=
-envpn.net/settings">settings</a>.</p><div itemscope itemtype=3D"http://sche=
-ma.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://=
-schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn=
-.net/c/openvpn/+/555?usp=3Demail"/><meta itemprop=3D"name" content=3D"View =
-Change"/></div></div>
-
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I9457f005f4ba970502e6b667d9d=
-c4299a588d661 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 555 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
-<div style=3D"display:none"> Gerrit-Owner: reynir &lt;reynir@...2756...&gt;=
- </div>
-<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
-1...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: reynir &lt;reynir@...2756...&=
-gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: reynir &lt;reynir@...2756...=
-&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Wed, 24 Apr 2024 12:13:13=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
-<div style=3D"display:none"> Comment-In-Reply-To: flichtenheld &lt;frank@...1186...=
-.2641...&gt; </div>
-<div style=3D"display:none"> Comment-In-Reply-To: reynir &lt;reynir@...2800...=
-...&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
-
-
---wM5Bg5lGcug=--
+        
+diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c
+index 8d10f25..937fae4 100644
+--- a/src/openvpn/forward.c
++++ b/src/openvpn/forward.c
+@@ -514,17 +514,23 @@
+ }
+ 
+ /*
+- * Schedule a signal n_seconds from now.
++ * Schedule a SIGTERM signal c->options.scheduled_exit_interval seconds from now.
+  */
+-void
+-schedule_exit(struct context *c, const int n_seconds, const int signal)
++bool
++schedule_exit(struct context *c)
+ {
++    const int n_seconds = c->options.scheduled_exit_interval;
++    /* don't reschedule if already scheduled. */
++    if (event_timeout_defined(&c->c2.scheduled_exit)) {
++        return false;
++    }
+     tls_set_single_session(c->c2.tls_multi);
+     update_time();
+     reset_coarse_timers(c);
+     event_timeout_init(&c->c2.scheduled_exit, n_seconds, now);
+-    c->c2.scheduled_exit_signal = signal;
++    c->c2.scheduled_exit_signal = SIGTERM;
+     msg(D_SCHED_EXIT, "Delayed exit in %d seconds", n_seconds);
++    return true;
+ }
+ 
+ /*
+diff --git a/src/openvpn/forward.h b/src/openvpn/forward.h
+index 6fb5a18..422c591 100644
+--- a/src/openvpn/forward.h
++++ b/src/openvpn/forward.h
+@@ -303,7 +303,7 @@
+ 
+ void process_ip_header(struct context *c, unsigned int flags, struct buffer *buf);
+ 
+-void schedule_exit(struct context *c, const int n_seconds, const int signal);
++bool schedule_exit(struct context *c);
+ 
+ static inline struct link_socket_info *
+ get_link_socket_info(struct context *c)
+diff --git a/src/openvpn/push.c b/src/openvpn/push.c
+index 1b406b9..db1fd2e 100644
+--- a/src/openvpn/push.c
++++ b/src/openvpn/push.c
+@@ -191,6 +191,7 @@
+ receive_exit_message(struct context *c)
+ {
+     dmsg(D_STREAM_ERRORS, "CC-EEN exit message received by peer");
++    bool notify_management = true;
+     /* With control channel exit notification, we want to give the session
+      * enough time to handle retransmits and acknowledgment, so that eventual
+      * retries from the client to resend the exit or ACKs will not trigger
+@@ -204,14 +205,14 @@
+      * */
+     if (c->options.mode == MODE_SERVER)
+     {
+-        schedule_exit(c, c->options.scheduled_exit_interval, SIGTERM);
++        notify_management = schedule_exit(c);
+     }
+     else
+     {
+         register_signal(c->sig, SIGUSR1, "remote-exit");
+     }
+ #ifdef ENABLE_MANAGEMENT
+-    if (management)
++    if (management && notify_management)
+     {
+         management_notify(management, "info", "remote-exit", "EXIT");
+     }
+@@ -391,7 +392,7 @@
+ void
+ send_auth_failed(struct context *c, const char *client_reason)
+ {
+-    if (event_timeout_defined(&c->c2.scheduled_exit))
++    if (!schedule_exit(c))
+     {
+         msg(D_TLS_DEBUG, "exit already scheduled for context");
+         return;
+@@ -401,8 +402,6 @@
+     static const char auth_failed[] = "AUTH_FAILED";
+     size_t len;
+ 
+-    schedule_exit(c, c->options.scheduled_exit_interval, SIGTERM);
+-
+     len = (client_reason ? strlen(client_reason)+1 : 0) + sizeof(auth_failed);
+     if (len > PUSH_BUNDLE_SIZE)
+     {
+@@ -492,7 +491,7 @@
+ void
+ send_restart(struct context *c, const char *kill_msg)
+ {
+-    schedule_exit(c, c->options.scheduled_exit_interval, SIGTERM);
++    schedule_exit(c);
+     send_control_channel_string(c, kill_msg ? kill_msg : "RESTART", D_PUSH);
+ }
+ 
 
