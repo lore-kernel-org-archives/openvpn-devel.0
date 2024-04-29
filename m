@@ -1,10 +1,16 @@
-From: Frank Lichtenheld <frank@...2641...>
-Date: Thu, 25 Apr 2024 17:50:07 +0200
-Message-Id: <20240425155007.62606-1-frank@...2641...>
-In-Reply-To: <gerrit.1713783920000.I9457f005f4ba970502e6b667d9dc4299a588d661@...2715...>
-References: <gerrit.1713783920000.I9457f005f4ba970502e6b667d9dc4299a588d661@...2715...>
+From: "plaisthos (Code Review)" <gerrit@...515...>
+Date: Mon, 29 Apr 2024 14:09:38 +0000
+In-Reply-To: <gerrit.1713372754000.Iefd209c0856ef395ab74055496130de00b86ead0@...2715...>
+References: <gerrit.1713372754000.Iefd209c0856ef395ab74055496130de00b86ead0@...2715...>
+Reply-To: arne-openvpn@...1227..., openvpn-devel@lists.sourceforge.net,
+ frank@...2641...
+Message-ID: <f857f8f2c0d90bf9172b010422367ea30f05e52b-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v2] Only schedule_exit() once
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="swZSPgFDcQc="; charset=UTF-8
+Subject: [Openvpn-devel] [M] Change in openvpn[master]: Use topology default
+ of "subnet" only for server mode
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,141 +19,81 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
-Cc: =?UTF-8?q?Reynir=20Bj=C3=B6rnsson?= <reynir@...2756...>
+To: flichtenheld <frank@...2641...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-From: Reynir Björnsson <reynir@...2756...>
+--swZSPgFDcQc=
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-If an exit has already been scheduled we should not schedule it again.
-Otherwise, the exit signal is never emitted if the peer reschedules the
-exit before the timeout occurs.
+Attention is currently required from: flichtenheld.
 
-schedule_exit() now only takes the context as argument. The signal is
-hard coded to SIGTERM, and the interval is read directly from the
-context options.
+plaisthos has posted comments on this change. ( http://gerrit.openvpn.net/c=
+/openvpn/+/554?usp=3Demail )
 
-Furthermore, schedule_exit() now returns a bool signifying whether an
-exit was scheduled; false if exit is already scheduled. The call sites
-are updated accordingly. A notable difference is that management is only
-notified *once* when an exit is scheduled - we no longer notify
-management on redundant exit.
+Change subject: Use topology default of "subnet" only for server mode
+......................................................................
 
-Change-Id: I9457f005f4ba970502e6b667d9dc4299a588d661
-Signed-off-by: Reynir Björnsson <reynir@...2756...>
-Acked-by: Frank Lichtenheld <frank@...2641...>
----
 
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to master.
+Patch Set 1: Code-Review+2
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/555
-This mail reflects revision 2 of this Change.
 
-Acked-by according to Gerrit (reflected above):
-Frank Lichtenheld <frank@...2641...>
+--
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/554?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings
 
-        
-diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c
-index 8d10f25..937fae4 100644
---- a/src/openvpn/forward.c
-+++ b/src/openvpn/forward.c
-@@ -514,17 +514,23 @@
- }
- 
- /*
-- * Schedule a signal n_seconds from now.
-+ * Schedule a SIGTERM signal c->options.scheduled_exit_interval seconds from now.
-  */
--void
--schedule_exit(struct context *c, const int n_seconds, const int signal)
-+bool
-+schedule_exit(struct context *c)
- {
-+    const int n_seconds = c->options.scheduled_exit_interval;
-+    /* don't reschedule if already scheduled. */
-+    if (event_timeout_defined(&c->c2.scheduled_exit)) {
-+        return false;
-+    }
-     tls_set_single_session(c->c2.tls_multi);
-     update_time();
-     reset_coarse_timers(c);
-     event_timeout_init(&c->c2.scheduled_exit, n_seconds, now);
--    c->c2.scheduled_exit_signal = signal;
-+    c->c2.scheduled_exit_signal = SIGTERM;
-     msg(D_SCHED_EXIT, "Delayed exit in %d seconds", n_seconds);
-+    return true;
- }
- 
- /*
-diff --git a/src/openvpn/forward.h b/src/openvpn/forward.h
-index 6fb5a18..422c591 100644
---- a/src/openvpn/forward.h
-+++ b/src/openvpn/forward.h
-@@ -303,7 +303,7 @@
- 
- void process_ip_header(struct context *c, unsigned int flags, struct buffer *buf);
- 
--void schedule_exit(struct context *c, const int n_seconds, const int signal);
-+bool schedule_exit(struct context *c);
- 
- static inline struct link_socket_info *
- get_link_socket_info(struct context *c)
-diff --git a/src/openvpn/push.c b/src/openvpn/push.c
-index 1b406b9..db1fd2e 100644
---- a/src/openvpn/push.c
-+++ b/src/openvpn/push.c
-@@ -191,6 +191,7 @@
- receive_exit_message(struct context *c)
- {
-     dmsg(D_STREAM_ERRORS, "CC-EEN exit message received by peer");
-+    bool notify_management = true;
-     /* With control channel exit notification, we want to give the session
-      * enough time to handle retransmits and acknowledgment, so that eventual
-      * retries from the client to resend the exit or ACKs will not trigger
-@@ -204,14 +205,14 @@
-      * */
-     if (c->options.mode == MODE_SERVER)
-     {
--        schedule_exit(c, c->options.scheduled_exit_interval, SIGTERM);
-+        notify_management = schedule_exit(c);
-     }
-     else
-     {
-         register_signal(c->sig, SIGUSR1, "remote-exit");
-     }
- #ifdef ENABLE_MANAGEMENT
--    if (management)
-+    if (management && notify_management)
-     {
-         management_notify(management, "info", "remote-exit", "EXIT");
-     }
-@@ -391,7 +392,7 @@
- void
- send_auth_failed(struct context *c, const char *client_reason)
- {
--    if (event_timeout_defined(&c->c2.scheduled_exit))
-+    if (!schedule_exit(c))
-     {
-         msg(D_TLS_DEBUG, "exit already scheduled for context");
-         return;
-@@ -401,8 +402,6 @@
-     static const char auth_failed[] = "AUTH_FAILED";
-     size_t len;
- 
--    schedule_exit(c, c->options.scheduled_exit_interval, SIGTERM);
--
-     len = (client_reason ? strlen(client_reason)+1 : 0) + sizeof(auth_failed);
-     if (len > PUSH_BUNDLE_SIZE)
-     {
-@@ -492,7 +491,7 @@
- void
- send_restart(struct context *c, const char *kill_msg)
- {
--    schedule_exit(c, c->options.scheduled_exit_interval, SIGTERM);
-+    schedule_exit(c);
-     send_control_channel_string(c, kill_msg ? kill_msg : "RESTART", D_PUSH);
- }
- 
+Gerrit-Project: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: Iefd209c0856ef395ab74055496130de00b86ead0
+Gerrit-Change-Number: 554
+Gerrit-PatchSet: 1
+Gerrit-Owner: flichtenheld <frank@...2641...>
+Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-Attention: flichtenheld <frank@...2641...>
+Gerrit-Comment-Date: Mon, 29 Apr 2024 14:09:38 +0000
+Gerrit-HasComments: No
+Gerrit-Has-Labels: Yes
+Gerrit-MessageType: comment
+
+--swZSPgFDcQc=
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<p> Attention is currently required from: flichtenheld. </p>
+<p>Patch set 1:<span style=3D"border-radius: 3px; display: inline-block; ma=
+rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/554?usp=3Demail">Vi=
+ew Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To vie=
+w, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/554?usp=3Demail">=
+change 554</a>. To unsubscribe, or for help writing mail filters, visit <a =
+href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope=
+ itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"act=
+ion" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=
+=3D"http://gerrit.openvpn.net/c/openvpn/+/554?usp=3Demail"/><meta itemprop=
+=3D"name" content=3D"View Change"/></div></div>
+
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: Iefd209c0856ef395ab740554961=
+30de00b86ead0 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 554 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
+<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
+.&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
+.1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
+41...&gt; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Mon, 29 Apr 2024 14:09:38=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: No </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
+
+
+--swZSPgFDcQc=--
 
