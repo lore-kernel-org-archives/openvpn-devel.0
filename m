@@ -1,16 +1,16 @@
 From: "plaisthos (Code Review)" <gerrit@...515...>
-Date: Mon, 29 Apr 2024 14:10:13 +0000
-In-Reply-To: <gerrit.1713888151000.I34e96a225446693f401549d86d872c02427ef7d5@...2715...>
-References: <gerrit.1713888151000.I34e96a225446693f401549d86d872c02427ef7d5@...2715...>
+Date: Mon, 29 Apr 2024 14:27:00 +0000
+In-Reply-To: <gerrit.1706186293000.I00821d75342daf3f813b829812d648fe298bea81@...2715...>
+References: <gerrit.1706186293000.I00821d75342daf3f813b829812d648fe298bea81@...2715...>
 Reply-To: arne-openvpn@...1227..., openvpn-devel@lists.sourceforge.net,
- frank@...2641...
-Message-ID: <c876802f9d7dc3fa6e43671835a70eabdea82119-EmailReviewComments-HTML@...2715...>
+ frank@...2641..., steffan@...1856...
+Message-ID: <430119cd96890559a5ddc046c2fb9604f2acd852-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="Xe70uTwFLuQ="; charset=UTF-8
-Subject: [Openvpn-devel] [M] Change in openvpn[master]: configure: update
- old copy of pkg.m4
+Content-Type: multipart/alternative; boundary="fmzw4AdByYQ="; charset=UTF-8
+Subject: [Openvpn-devel] [M] Change in openvpn[master]: Implement support
+ for AEAD tag at the end
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,81 +19,103 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: flichtenheld <frank@...2641...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Cc: syzzer <steffan@...1856...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---Xe70uTwFLuQ=
+--fmzw4AdByYQ=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: flichtenheld.
+Attention is currently required from: syzzer.
 
 plaisthos has posted comments on this change. ( http://gerrit.openvpn.net/c=
-/openvpn/+/558?usp=3Demail )
+/openvpn/+/506?usp=3Demail )
 
-Change subject: configure: update old copy of pkg.m4
+Change subject: Implement support for AEAD tag at the end
 ......................................................................
 
 
-Patch Set 2: Code-Review+2
+Patch Set 4:
+
+(1 comment)
+
+Patchset:
+
+PS4:
+> I have always supported to place the tag at the end. [=E2=80=A6]
+I can change the signalling to only support combining both but I don't thin=
+k this will change much in the terms of code complexity
+
 
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/558?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/506?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings
 
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: I34e96a225446693f401549d86d872c02427ef7d5
-Gerrit-Change-Number: 558
-Gerrit-PatchSet: 2
-Gerrit-Owner: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
+Gerrit-Change-Id: I00821d75342daf3f813b829812d648fe298bea81
+Gerrit-Change-Number: 506
+Gerrit-PatchSet: 4
+Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
+Gerrit-Reviewer: flichtenheld <frank@...2641...>
+Gerrit-Reviewer: syzzer <steffan@...1856...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Comment-Date: Mon, 29 Apr 2024 14:10:13 +0000
-Gerrit-HasComments: No
-Gerrit-Has-Labels: Yes
+Gerrit-Attention: syzzer <steffan@...1856...>
+Gerrit-Comment-Date: Mon, 29 Apr 2024 14:27:00 +0000
+Gerrit-HasComments: Yes
+Gerrit-Has-Labels: No
+Comment-In-Reply-To: syzzer <steffan@...1856...>
 Gerrit-MessageType: comment
 
---Xe70uTwFLuQ=
+--fmzw4AdByYQ=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p> Attention is currently required from: flichtenheld. </p>
-<p>Patch set 2:<span style=3D"border-radius: 3px; display: inline-block; ma=
-rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/558?usp=3Demail">Vi=
-ew Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To vie=
-w, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/558?usp=3Demail">=
-change 558</a>. To unsubscribe, or for help writing mail filters, visit <a =
-href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope=
- itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"act=
-ion" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=
-=3D"http://gerrit.openvpn.net/c/openvpn/+/558?usp=3Demail"/><meta itemprop=
-=3D"name" content=3D"View Change"/></div></div>
+<p> Attention is currently required from: syzzer. </p>
+<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/506?usp=3Demail">View C=
+hange</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0;"><=
+li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-style=
+: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p style=
+=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/5=
+06?tab=3Dcomments">Patch Set #4:</a> </p><p><blockquote style=3D"border-lef=
+t: 1px solid #aaa; margin: 10px 0; padding: 0 10px;">I have always supporte=
+d to place the tag at the end. [=E2=80=A6]</blockquote></p><p style=3D"whit=
+e-space: pre-wrap; word-wrap: break-word;">I can change the signalling to o=
+nly support combining both but I don&#39;t think this will change much in t=
+he terms of code complexity</p></li></ul></li></ul><p>To view, visit <a hre=
+f=3D"http://gerrit.openvpn.net/c/openvpn/+/506?usp=3Demail">change 506</a>.=
+ To unsubscribe, or for help writing mail filters, visit <a href=3D"http://=
+gerrit.openvpn.net/settings">settings</a>.</p><div itemscope itemtype=3D"ht=
+tp://schema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=
+=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://ger=
+rit.openvpn.net/c/openvpn/+/506?usp=3Demail"/><meta itemprop=3D"name" conte=
+nt=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I34e96a225446693f401549d86d8=
-72c02427ef7d5 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 558 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
-<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
-.&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I00821d75342daf3f813b829812d=
+648fe298bea81 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 506 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 4 </div>
+<div style=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@...1711...=
+27...&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
+1...&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: syzzer &lt;steffan@...1856...=
+&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
-41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Mon, 29 Apr 2024 14:10:13=
+<div style=3D"display:none"> Gerrit-Attention: syzzer &lt;steffan@...2115...=
+.&gt; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Mon, 29 Apr 2024 14:27:00=
  +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: No </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
+<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: No </div>
+<div style=3D"display:none"> Comment-In-Reply-To: syzzer &lt;steffan@...1852...=
+6...&gt; </div>
 <div style=3D"display:none"> Gerrit-MessageType: comment </div>
 
 
---Xe70uTwFLuQ=--
+--fmzw4AdByYQ=--
 
