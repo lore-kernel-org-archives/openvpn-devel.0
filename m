@@ -1,16 +1,16 @@
 From: "plaisthos (Code Review)" <gerrit@...515...>
-Date: Mon, 29 Apr 2024 14:09:38 +0000
-In-Reply-To: <gerrit.1713372754000.Iefd209c0856ef395ab74055496130de00b86ead0@...2715...>
-References: <gerrit.1713372754000.Iefd209c0856ef395ab74055496130de00b86ead0@...2715...>
+Date: Mon, 29 Apr 2024 14:10:13 +0000
+In-Reply-To: <gerrit.1713888151000.I34e96a225446693f401549d86d872c02427ef7d5@...2715...>
+References: <gerrit.1713888151000.I34e96a225446693f401549d86d872c02427ef7d5@...2715...>
 Reply-To: arne-openvpn@...1227..., openvpn-devel@lists.sourceforge.net,
  frank@...2641...
-Message-ID: <f857f8f2c0d90bf9172b010422367ea30f05e52b-EmailReviewComments-HTML@...2715...>
+Message-ID: <c876802f9d7dc3fa6e43671835a70eabdea82119-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="swZSPgFDcQc="; charset=UTF-8
-Subject: [Openvpn-devel] [M] Change in openvpn[master]: Use topology default
- of "subnet" only for server mode
+Content-Type: multipart/alternative; boundary="Xe70uTwFLuQ="; charset=UTF-8
+Subject: [Openvpn-devel] [M] Change in openvpn[master]: configure: update
+ old copy of pkg.m4
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -22,64 +22,64 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: flichtenheld <frank@...2641...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---swZSPgFDcQc=
+--Xe70uTwFLuQ=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 Attention is currently required from: flichtenheld.
 
 plaisthos has posted comments on this change. ( http://gerrit.openvpn.net/c=
-/openvpn/+/554?usp=3Demail )
+/openvpn/+/558?usp=3Demail )
 
-Change subject: Use topology default of "subnet" only for server mode
+Change subject: configure: update old copy of pkg.m4
 ......................................................................
 
 
-Patch Set 1: Code-Review+2
+Patch Set 2: Code-Review+2
 
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/554?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/558?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings
 
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: Iefd209c0856ef395ab74055496130de00b86ead0
-Gerrit-Change-Number: 554
-Gerrit-PatchSet: 1
+Gerrit-Change-Id: I34e96a225446693f401549d86d872c02427ef7d5
+Gerrit-Change-Number: 558
+Gerrit-PatchSet: 2
 Gerrit-Owner: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Comment-Date: Mon, 29 Apr 2024 14:09:38 +0000
+Gerrit-Comment-Date: Mon, 29 Apr 2024 14:10:13 +0000
 Gerrit-HasComments: No
 Gerrit-Has-Labels: Yes
 Gerrit-MessageType: comment
 
---swZSPgFDcQc=
+--Xe70uTwFLuQ=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <p> Attention is currently required from: flichtenheld. </p>
-<p>Patch set 1:<span style=3D"border-radius: 3px; display: inline-block; ma=
+<p>Patch set 2:<span style=3D"border-radius: 3px; display: inline-block; ma=
 rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/554?usp=3Demail">Vi=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/558?usp=3Demail">Vi=
 ew Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To vie=
-w, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/554?usp=3Demail">=
-change 554</a>. To unsubscribe, or for help writing mail filters, visit <a =
+w, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/558?usp=3Demail">=
+change 558</a>. To unsubscribe, or for help writing mail filters, visit <a =
 href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope=
  itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"act=
 ion" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=
-=3D"http://gerrit.openvpn.net/c/openvpn/+/554?usp=3Demail"/><meta itemprop=
+=3D"http://gerrit.openvpn.net/c/openvpn/+/558?usp=3Demail"/><meta itemprop=
 =3D"name" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: Iefd209c0856ef395ab740554961=
-30de00b86ead0 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 554 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I34e96a225446693f401549d86d8=
+72c02427ef7d5 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 558 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
 <div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
 .&gt; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
@@ -88,12 +88,12 @@ ion" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=
 ts.sourceforge.net&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
 41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Mon, 29 Apr 2024 14:09:38=
+<div style=3D"display:none"> Gerrit-Comment-Date: Mon, 29 Apr 2024 14:10:13=
  +0000 </div>
 <div style=3D"display:none"> Gerrit-HasComments: No </div>
 <div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
 <div style=3D"display:none"> Gerrit-MessageType: comment </div>
 
 
---swZSPgFDcQc=--
+--Xe70uTwFLuQ=--
 
