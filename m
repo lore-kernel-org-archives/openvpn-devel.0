@@ -1,14 +1,14 @@
-From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Tue, 30 Apr 2024 11:07:25 +0000
+From: "flichtenheld (Code Review)" <gerrit@...515...>
+Date: Tue, 30 Apr 2024 11:25:32 +0000
 In-Reply-To: <gerrit.1714407751000.I90875311a4e4c403e77e30b609c1878cbaaaad45@...2715...>
 References: <gerrit.1714407751000.I90875311a4e4c403e77e30b609c1878cbaaaad45@...2715...>
-Reply-To: gert@...1296..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <21e05e68e805313a6fef371d96f739dc505e2992-EmailReviewComments-HTML@...2715...>
+Reply-To: frank@...2641..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net, gert@...1296...
+Message-ID: <043ca9b387bf7616d022afd274edfd8595eeaf7c-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="sWtX3zdYyXA="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="LBsniQike+4="; charset=UTF-8
 Subject: [Openvpn-devel] [L] Change in openvpn[master]: Remove OpenSSL 1.0.2
  support
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -20,16 +20,16 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 To: plaisthos <arne-openvpn@...1227...>
-Cc: flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Cc: cron2 <gert@...1296...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---sWtX3zdYyXA=
+--LBsniQike+4=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: plaisthos.
+Attention is currently required from: cron2, plaisthos.
 
-cron2 has posted comments on this change. ( http://gerrit.openvpn.net/c/ope=
-nvpn/+/559?usp=3Demail )
+flichtenheld has posted comments on this change. ( http://gerrit.openvpn.ne=
+t/c/openvpn/+/559?usp=3Demail )
 
 Change subject: Remove OpenSSL 1.0.2 support
 ......................................................................
@@ -41,10 +41,13 @@ Patch Set 1:
 
 File configure.ac:
 
-http://gerrit.openvpn.net/c/openvpn/+/559/comment/3c1dbe9f_996b70a0 :
+http://gerrit.openvpn.net/c/openvpn/+/559/comment/2b8eb205_9e5b647f :
 PS1, Line 915: #error OpenSSL too old
-This check is not working - the centos and fbsd74 buildbots pass the config=
-ure stage just fine, and later fail compilation.
+> This check is not working - the centos and fbsd74 buildbots pass the conf=
+igure stage just fine, and  [=E2=80=A6]
+In the case of CentOS 7 this is because it uses the pkg-config check instea=
+d which was not updated. On FreeBSD 7.4 the checks works correctly if you l=
+ook at the build logs.
 
 
 
@@ -63,33 +66,38 @@ Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-CC: cron2 <gert@...1296...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Comment-Date: Tue, 30 Apr 2024 11:07:25 +0000
+Gerrit-Attention: cron2 <gert@...1296...>
+Gerrit-Comment-Date: Tue, 30 Apr 2024 11:25:32 +0000
 Gerrit-HasComments: Yes
 Gerrit-Has-Labels: No
+Comment-In-Reply-To: cron2 <gert@...1296...>
 Gerrit-MessageType: comment
 
---sWtX3zdYyXA=
+--LBsniQike+4=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p> Attention is currently required from: plaisthos. </p>
+<p> Attention is currently required from: cron2, plaisthos. </p>
 <p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/559?usp=3Demail">View C=
 hange</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0;"><=
 li style=3D"margin: 0; padding: 0;"><p>File configure.ac:</p><ul style=3D"l=
 ist-style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"=
 ><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/op=
-envpn/+/559/comment/3c1dbe9f_996b70a0">Patch Set #1, Line 915:</a> <code st=
+envpn/+/559/comment/2b8eb205_9e5b647f">Patch Set #1, Line 915:</a> <code st=
 yle=3D"font-family:monospace,monospace">#error OpenSSL too old</code></p><p=
- style=3D"white-space: pre-wrap; word-wrap: break-word;">This check is not =
-working - the centos and fbsd74 buildbots pass the configure stage just fin=
-e, and later fail compilation.</p></li></ul></li></ul><p>To view, visit <a =
-href=3D"http://gerrit.openvpn.net/c/openvpn/+/559?usp=3Demail">change 559</=
-a>. To unsubscribe, or for help writing mail filters, visit <a href=3D"http=
-://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope itemtype=3D=
-"http://schema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtyp=
-e=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://ge=
-rrit.openvpn.net/c/openvpn/+/559?usp=3Demail"/><meta itemprop=3D"name" cont=
-ent=3D"View Change"/></div></div>
+><blockquote style=3D"border-left: 1px solid #aaa; margin: 10px 0; padding:=
+ 0 10px;">This check is not working - the centos and fbsd74 buildbots pass =
+the configure stage just fine, and  [=E2=80=A6]</blockquote></p><p style=3D=
+"white-space: pre-wrap; word-wrap: break-word;">In the case of CentOS 7 thi=
+s is because it uses the pkg-config check instead which was not updated. On=
+ FreeBSD 7.4 the checks works correctly if you look at the build logs.</p><=
+/li></ul></li></ul><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c=
+/openvpn/+/559?usp=3Demail">change 559</a>. To unsubscribe, or for help wri=
+ting mail filters, visit <a href=3D"http://gerrit.openvpn.net/settings">set=
+tings</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><d=
+iv itemscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction">=
+<link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/559?us=
+p=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
@@ -106,12 +114,16 @@ ent=3D"View Change"/></div></div>
 ts.sourceforge.net&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
 ..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Tue, 30 Apr 2024 11:07:25=
+<div style=3D"display:none"> Gerrit-Attention: cron2 &lt;gert@...1296...&gt=
+; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Tue, 30 Apr 2024 11:25:32=
  +0000 </div>
 <div style=3D"display:none"> Gerrit-HasComments: Yes </div>
 <div style=3D"display:none"> Gerrit-Has-Labels: No </div>
+<div style=3D"display:none"> Comment-In-Reply-To: cron2 &lt;gert@...1296...=
+&gt; </div>
 <div style=3D"display:none"> Gerrit-MessageType: comment </div>
 
 
---sWtX3zdYyXA=--
+--LBsniQike+4=--
 
