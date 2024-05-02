@@ -1,15 +1,16 @@
 From: "plaisthos (Code Review)" <gerrit@...515...>
-Date: Thu, 2 May 2024 15:49:43 +0000
-References: <gerrit.1714664981000.Id95e0124d943912439c6ec6f562c0eb40d434163@...2715...>
+Date: Thu, 2 May 2024 17:42:47 +0000
+In-Reply-To: <gerrit.1711328743000.I07096977e3b562bcb5d2c6f11673a4175b8e12ac@...2715...>
+References: <gerrit.1711328743000.I07096977e3b562bcb5d2c6f11673a4175b8e12ac@...2715...>
 Reply-To: arne-openvpn@...1227..., openvpn-devel@lists.sourceforge.net,
- frank@...2641...
-Message-ID: <1648efbba68331f7662b0becca1c580427d99add-HTML@...2715...>
+ frank@...2641..., gert@...1296..., a@...2181...
+Message-ID: <6384cecf7bfff2a1f27f71c222ea624ceeceb508-EmailReplacePatchSet-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="x4kCOjMO9mc="; charset=UTF-8
-Subject: [Openvpn-devel] [XS] Change in openvpn[master]: Only run coverity
- scan in OpenVPN/OpenVPN repository
+Content-Type: multipart/alternative; boundary="b00XC1yMbBU="; charset=UTF-8
+Subject: [Openvpn-devel] [L] Change in openvpn[master]: Remove
+ openvpn_snprintf and similar functions
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,127 +19,3720 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: flichtenheld <frank@...2641...>
+To: cron2 <gert@...1296...>, flichtenheld <frank@...2641...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---x4kCOjMO9mc=
+--b00XC1yMbBU=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: flichtenheld.
+Attention is currently required from: cron2, flichtenheld, ordex, plaisthos.
 
-Hello flichtenheld,
+Hello cron2, flichtenheld, ordex,
 
-I'd like you to do a code review.
-Please visit
+I'd like you to reexamine a change. Please visit
 
-    http://gerrit.openvpn.net/c/openvpn/+/583?usp=3Demail
+    http://gerrit.openvpn.net/c/openvpn/+/547?usp=3Demail
 
-to review the following change.
+to look at the new patch set (#3).
+
+The following approvals got outdated and were removed:
+Code-Review+2 by ordex, Code-Review-1 by cron2
+
+The change is no longer submittable: Code-Review and checks~ChecksSubmitRul=
+e are unsatisfied now.
 
 
-Change subject: Only run coverity scan in OpenVPN/OpenVPN repository
+Change subject: Remove openvpn_snprintf and similar functions
 ......................................................................
 
-Only run coverity scan in OpenVPN/OpenVPN repository
+Remove openvpn_snprintf and similar functions
 
-This avoids the error message triggering every night that the run
-failed in forked repositories
+Old Microsoft versions did strange behaviour but according to the
+newly added unit test and
+https://stackoverflow.com/questions/7706936/is-snprintf-always-null-termina=
+ting
+this is now standard conforming and we can use the normal snprintf
+method.
 
-Change-Id: Id95e0124d943912439c6ec6f562c0eb40d434163
+Microsoft own documentation to swprintf also says you nowadays need to
+define _CRT_NON_CONFORMING_SWPRINTFS to get to non-standard behaviour.
+
+Change-Id: I07096977e3b562bcb5d2c6f11673a4175b8e12ac
 Signed-off-by: Arne Schwabe <arne@...1227...>
 ---
-M .github/workflows/coverity-scan.yml
-1 file changed, 3 insertions(+), 0 deletions(-)
+M src/openvpn/buffer.c
+M src/openvpn/buffer.h
+M src/openvpn/crypto.c
+M src/openvpn/crypto_mbedtls.c
+M src/openvpn/dns.c
+M src/openvpn/env_set.c
+M src/openvpn/error.c
+M src/openvpn/init.c
+M src/openvpn/manage.c
+M src/openvpn/options.c
+M src/openvpn/pkcs11.c
+M src/openvpn/platform.c
+M src/openvpn/plugin.c
+M src/openvpn/pool.c
+M src/openvpn/proxy.c
+M src/openvpn/ps.c
+M src/openvpn/route.c
+M src/openvpn/run_command.h
+M src/openvpn/socket.c
+M src/openvpn/socks.c
+M src/openvpn/ssl_mbedtls.c
+M src/openvpn/ssl_ncp.c
+M src/openvpn/ssl_openssl.c
+M src/openvpn/ssl_verify.c
+M src/openvpn/ssl_verify_mbedtls.c
+M src/openvpn/ssl_verify_openssl.c
+M src/openvpn/tls_crypt.c
+M src/openvpn/tun.c
+M src/openvpn/win32.c
+M src/openvpn/win32.h
+M src/openvpn/xkey_helper.c
+M src/openvpnserv/common.c
+M src/openvpnserv/interactive.c
+M src/openvpnserv/service.h
+M src/openvpnserv/validate.c
+M tests/unit_tests/openvpn/test_buffer.c
+M tests/unit_tests/openvpn/test_cryptoapi.c
+M tests/unit_tests/openvpn/test_pkcs11.c
+38 files changed, 291 insertions(+), 333 deletions(-)
 
 
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/47/547/3
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/83/583/1
+diff --git a/src/openvpn/buffer.c b/src/openvpn/buffer.c
+index 66fd63f..3a8069c 100644
+--- a/src/openvpn/buffer.c
++++ b/src/openvpn/buffer.c
+@@ -279,32 +279,6 @@
+     return ret;
+ }
 
-diff --git a/.github/workflows/coverity-scan.yml b/.github/workflows/coveri=
-ty-scan.yml
-index e289746..37b8102 100644
---- a/.github/workflows/coverity-scan.yml
-+++ b/.github/workflows/coverity-scan.yml
-@@ -6,6 +6,9 @@
+-
+-/*
+- * This is necessary due to certain buggy implementations of snprintf,
+- * that don't guarantee null termination for size > 0.
+- *
+- * Return false on overflow.
+- *
+- * This functionality is duplicated in src/openvpnserv/common.c
+- * Any modifications here should be done to the other place as well.
+- */
+-
+-bool
+-openvpn_snprintf(char *str, size_t size, const char *format, ...)
+-{
+-    va_list arglist;
+-    int len =3D -1;
+-    if (size > 0)
+-    {
+-        va_start(arglist, format);
+-        len =3D vsnprintf(str, size, format, arglist);
+-        va_end(arglist);
+-        str[size - 1] =3D 0;
+-    }
+-    return (len >=3D 0 && len < size);
+-}
+-
+ /*
+  * write a string to the end of a buffer that was
+  * truncated by buf_printf
+diff --git a/src/openvpn/buffer.h b/src/openvpn/buffer.h
+index 7c2f75a..27c3199 100644
+--- a/src/openvpn/buffer.h
++++ b/src/openvpn/buffer.h
+@@ -448,19 +448,6 @@
+  */
+ bool buf_puts(struct buffer *buf, const char *str);
 
- jobs:
-   latest:
-+    # Running coverity requires the secrets.COVERITY_SCAN_TOKEN token
-+    # which is only available on the main repository
-+    if: github.repository_owner =3D=3D 'OpenVPN'
-     runs-on: ubuntu-latest
-     steps:
-       - name: Check submission cache
+-/*
+- * Like snprintf but guarantees null termination for size > 0
+- */
+-bool openvpn_snprintf(char *str, size_t size, const char *format, ...)
+-#ifdef __GNUC__
+-#if __USE_MINGW_ANSI_STDIO
+-__attribute__ ((format(gnu_printf, 3, 4)))
+-#else
+-__attribute__ ((format(__printf__, 3, 4)))
+-#endif
+-#endif
+-;
+-
 
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/583?usp=3Demail
+ /*
+  * remove/add trailing characters
+diff --git a/src/openvpn/crypto.c b/src/openvpn/crypto.c
+index 5d05cc4..207f145 100644
+--- a/src/openvpn/crypto.c
++++ b/src/openvpn/crypto.c
+@@ -874,11 +874,11 @@
+
+     key_direction_state_init(&kds, key_direction);
+
+-    openvpn_snprintf(log_prefix, sizeof(log_prefix), "Outgoing %s", name);
++    snprintf(log_prefix, sizeof(log_prefix), "Outgoing %s", name);
+     init_key_ctx(&ctx->encrypt, &key2->keys[kds.out_key], kt,
+                  OPENVPN_OP_ENCRYPT, log_prefix);
+
+-    openvpn_snprintf(log_prefix, sizeof(log_prefix), "Incoming %s", name);
++    snprintf(log_prefix, sizeof(log_prefix), "Incoming %s", name);
+     init_key_ctx(&ctx->decrypt, &key2->keys[kds.in_key], kt,
+                  OPENVPN_OP_DECRYPT, log_prefix);
+
+diff --git a/src/openvpn/crypto_mbedtls.c b/src/openvpn/crypto_mbedtls.c
+index c230292..32511f0 100644
+--- a/src/openvpn/crypto_mbedtls.c
++++ b/src/openvpn/crypto_mbedtls.c
+@@ -128,7 +128,7 @@
+ {
+     char prefix[256];
+
+-    if (!openvpn_snprintf(prefix, sizeof(prefix), "%s:%d", func, line))
++    if (!snprintf(prefix, sizeof(prefix), "%s:%d", func, line))
+     {
+         return mbed_log_err(flags, errval, func);
+     }
+@@ -239,11 +239,11 @@
+     char header[1000+1] =3D { 0 };
+     char footer[1000+1] =3D { 0 };
+
+-    if (!openvpn_snprintf(header, sizeof(header), "-----BEGIN %s-----\n", =
+name))
++    if (!snprintf(header, sizeof(header), "-----BEGIN %s-----\n", name))
+     {
+         return false;
+     }
+-    if (!openvpn_snprintf(footer, sizeof(footer), "-----END %s-----\n", na=
+me))
++    if (!snprintf(footer, sizeof(footer), "-----END %s-----\n", name))
+     {
+         return false;
+     }
+@@ -278,11 +278,11 @@
+     char header[1000+1] =3D { 0 };
+     char footer[1000+1] =3D { 0 };
+
+-    if (!openvpn_snprintf(header, sizeof(header), "-----BEGIN %s-----", na=
+me))
++    if (!snprintf(header, sizeof(header), "-----BEGIN %s-----", name))
+     {
+         return false;
+     }
+-    if (!openvpn_snprintf(footer, sizeof(footer), "-----END %s-----", name=
+))
++    if (!snprintf(footer, sizeof(footer), "-----END %s-----", name))
+     {
+         return false;
+     }
+diff --git a/src/openvpn/dns.c b/src/openvpn/dns.c
+index 7de3991..0539ca5 100644
+--- a/src/openvpn/dns.c
++++ b/src/openvpn/dns.c
+@@ -349,11 +349,11 @@
+
+     if (j < 0)
+     {
+-        name_ok =3D openvpn_snprintf(name, sizeof(name), format, i);
++        name_ok =3D snprintf(name, sizeof(name), format, i);
+     }
+     else
+     {
+-        name_ok =3D openvpn_snprintf(name, sizeof(name), format, i, j);
++        name_ok =3D snprintf(name, sizeof(name), format, i, j);
+     }
+
+     if (!name_ok)
+diff --git a/src/openvpn/env_set.c b/src/openvpn/env_set.c
+index b13d01e..81ab59e 100644
+--- a/src/openvpn/env_set.c
++++ b/src/openvpn/env_set.c
+@@ -259,7 +259,7 @@
+ setenv_counter(struct env_set *es, const char *name, counter_type value)
+ {
+     char buf[64];
+-    openvpn_snprintf(buf, sizeof(buf), counter_format, value);
++    snprintf(buf, sizeof(buf), counter_format, value);
+     setenv_str(es, name, buf);
+ }
+
+@@ -267,7 +267,7 @@
+ setenv_int(struct env_set *es, const char *name, int value)
+ {
+     char buf[64];
+-    openvpn_snprintf(buf, sizeof(buf), "%d", value);
++    snprintf(buf, sizeof(buf), "%d", value);
+     setenv_str(es, name, buf);
+ }
+
+@@ -275,7 +275,7 @@
+ setenv_long_long(struct env_set *es, const char *name, long long value)
+ {
+     char buf[64];
+-    openvpn_snprintf(buf, sizeof(buf), "%" PRIi64, (int64_t)value);
++    snprintf(buf, sizeof(buf), "%" PRIi64, (int64_t)value);
+     setenv_str(es, name, buf);
+ }
+
+@@ -310,7 +310,7 @@
+     strcpy(tmpname, name);
+     while (NULL !=3D env_set_get(es, tmpname) && counter < 1000)
+     {
+-        ASSERT(openvpn_snprintf(tmpname, tmpname_len, "%s_%u", name, count=
+er));
++        ASSERT(snprintf(tmpname, tmpname_len, "%s_%u", name, counter));
+         counter++;
+     }
+     if (counter < 1000)
+diff --git a/src/openvpn/error.c b/src/openvpn/error.c
+index 245a2d5..ec65d5e 100644
+--- a/src/openvpn/error.c
++++ b/src/openvpn/error.c
+@@ -274,14 +274,14 @@
+
+     if ((flags & M_ERRNO) && e)
+     {
+-        openvpn_snprintf(m2, ERR_BUF_SIZE, "%s: %s (errno=3D%d)",
+-                         m1, openvpn_strerror(e, crt_error, &gc), e);
++        snprintf(m2, ERR_BUF_SIZE, "%s: %s (errno=3D%d)",
++                 m1, openvpn_strerror(e, crt_error, &gc), e);
+         SWAP;
+     }
+
+     if (flags & M_OPTERR)
+     {
+-        openvpn_snprintf(m2, ERR_BUF_SIZE, "Options error: %s", m1);
++        snprintf(m2, ERR_BUF_SIZE, "Options error: %s", m1);
+         SWAP;
+     }
+
+@@ -321,10 +321,10 @@
+         const struct virtual_output *vo =3D msg_get_virtual_output();
+         if (vo)
+         {
+-            openvpn_snprintf(m2, ERR_BUF_SIZE, "%s%s%s",
+-                             prefix,
+-                             prefix_sep,
+-                             m1);
++            snprintf(m2, ERR_BUF_SIZE, "%s%s%s",
++                     prefix,
++                     prefix_sep,
++                     m1);
+             virtual_output_print(vo, flags, m2);
+         }
+     }
+diff --git a/src/openvpn/init.c b/src/openvpn/init.c
+index e67f10e..ec0c309 100644
+--- a/src/openvpn/init.c
++++ b/src/openvpn/init.c
+@@ -359,7 +359,7 @@
+         char *out =3D malloc(len);
+         check_malloc_return(out);
+
+-        openvpn_snprintf(out, len, "%s,%s,%s,%s", ce->remote, ce->remote_p=
+ort, proto, status);
++        snprintf(out, len, "%s,%s,%s,%s", ce->remote, ce->remote_port, pro=
+to, status);
+         *remote =3D out;
+     }
+     else
+diff --git a/src/openvpn/manage.c b/src/openvpn/manage.c
+index 43c5507..89591ea 100644
+--- a/src/openvpn/manage.c
++++ b/src/openvpn/manage.c
+@@ -515,8 +515,8 @@
+     char out[32];
+
+     /* do in a roundabout way to work around possible mingw or mingw-glibc=
+ bug */
+-    openvpn_snprintf(in, sizeof(in), counter_format, man->persist.bytes_in=
+ + dco_read_bytes);
+-    openvpn_snprintf(out, sizeof(out), counter_format, man->persist.bytes_=
+out + dco_write_bytes);
++    snprintf(in, sizeof(in), counter_format, man->persist.bytes_in + dco_r=
+ead_bytes);
++    snprintf(out, sizeof(out), counter_format, man->persist.bytes_out + dc=
+o_write_bytes);
+     msg(M_CLIENT, ">BYTECOUNT:%s,%s", in, out);
+ }
+
+@@ -528,8 +528,8 @@
+     char in[32];
+     char out[32];
+     /* do in a roundabout way to work around possible mingw or mingw-glibc=
+ bug */
+-    openvpn_snprintf(in, sizeof(in), counter_format, *bytes_in_total);
+-    openvpn_snprintf(out, sizeof(out), counter_format, *bytes_out_total);
++    snprintf(in, sizeof(in), counter_format, *bytes_in_total);
++    snprintf(out, sizeof(out), counter_format, *bytes_out_total);
+     msg(M_CLIENT, ">BYTECOUNT_CLI:%lu,%s,%s", mdac->cid, in, out);
+     mdac->bytecount_last_update =3D now;
+ }
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index 07387cd..abcde89 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -1427,7 +1427,7 @@
+     for (int i =3D 1; i <=3D opt_max; ++i)
+     {
+         char name[32];
+-        openvpn_snprintf(name, sizeof(name), "foreign_option_%d", i);
++        snprintf(name, sizeof(name), "foreign_option_%d", i);
+
+         const char *env_str =3D env_set_get(es, name);
+         const char *value =3D strchr(env_str, '=3D') + 1;
+@@ -1482,7 +1482,7 @@
+     while (o->foreign_option_index < opt_max)
+     {
+         char name[32];
+-        openvpn_snprintf(name, sizeof(name), "foreign_option_%d", opt_max-=
+-);
++        snprintf(name, sizeof(name), "foreign_option_%d", opt_max--);
+         setenv_del(es, name);
+     }
+ }
+@@ -5674,8 +5674,8 @@
+ #ifndef ENABLE_SMALL
+     {
+         char script_name[100];
+-        openvpn_snprintf(script_name, sizeof(script_name),
+-                         "--%s script", type);
++        snprintf(script_name, sizeof(script_name),
++                 "--%s script", type);
+
+         if (check_cmd_access(*script, script_name, (in_chroot ? options->c=
+hroot_dir : NULL)))
+         {
+diff --git a/src/openvpn/pkcs11.c b/src/openvpn/pkcs11.c
+index 35a02c2..418f6bb 100644
+--- a/src/openvpn/pkcs11.c
++++ b/src/openvpn/pkcs11.c
+@@ -201,7 +201,7 @@
+     CLEAR(token_resp);
+     token_resp.defined =3D false;
+     token_resp.nocache =3D true;
+-    openvpn_snprintf(
++    snprintf(
+         token_resp.username,
+         sizeof(token_resp.username),
+         "Please insert %s token",
+@@ -245,7 +245,7 @@
+
+     ASSERT(token!=3DNULL);
+
+-    openvpn_snprintf(prompt, sizeof(prompt), "%s token", token->label);
++    snprintf(prompt, sizeof(prompt), "%s token", token->label);
+
+     token_pass.defined =3D false;
+     token_pass.nocache =3D true;
+@@ -719,7 +719,7 @@
+
+         id_resp.defined =3D false;
+         id_resp.nocache =3D true;
+-        openvpn_snprintf(
++        snprintf(
+             id_resp.username,
+             sizeof(id_resp.username),
+             "Please specify PKCS#11 id to use"
+diff --git a/src/openvpn/platform.c b/src/openvpn/platform.c
+index 9853dac..3d9d59e 100644
+--- a/src/openvpn/platform.c
++++ b/src/openvpn/platform.c
+@@ -564,9 +564,9 @@
+     {
+         ++attempts;
+
+-        if (!openvpn_snprintf(fname, sizeof(fname), fname_fmt, max_prefix_=
+len,
+-                              prefix, (unsigned long) get_random(),
+-                              (unsigned long) get_random()))
++        if (!snprintf(fname, sizeof(fname), fname_fmt, max_prefix_len,
++                      prefix, (unsigned long) get_random(),
++                      (unsigned long) get_random()))
+         {
+             msg(M_WARN, "ERROR: temporary filename too long");
+             return NULL;
+diff --git a/src/openvpn/plugin.c b/src/openvpn/plugin.c
+index 2ad459c..944ce94 100644
+--- a/src/openvpn/plugin.c
++++ b/src/openvpn/plugin.c
+@@ -260,7 +260,7 @@
+     {
+         char full[PATH_MAX];
+
+-        openvpn_snprintf(full, sizeof(full), "%s/%s", PLUGIN_LIBDIR, p->so=
+_pathname);
++        snprintf(full, sizeof(full), "%s/%s", PLUGIN_LIBDIR, p->so_pathnam=
+e);
+         p->handle =3D dlopen(full, RTLD_NOW);
+     }
+     else
+@@ -409,7 +409,7 @@
+
+         gc_init(&gc);
+         msg_fmt =3D gc_malloc(ERR_BUF_SIZE, false, &gc);
+-        openvpn_snprintf(msg_fmt, ERR_BUF_SIZE, "PLUGIN %s: %s", name, for=
+mat);
++        snprintf(msg_fmt, ERR_BUF_SIZE, "PLUGIN %s: %s", name, format);
+         x_msg_va(msg_flags, msg_fmt, arglist);
+=20
+         gc_free(&gc);
+diff --git a/src/openvpn/pool.c b/src/openvpn/pool.c
+index f706c1a..e3c3708 100644
+--- a/src/openvpn/pool.c
++++ b/src/openvpn/pool.c
+@@ -766,7 +766,7 @@
+         ifconfig_pool_handle h;
+         in_addr_t local, remote;
+         char buf[256];
+-        openvpn_snprintf(buf, sizeof(buf), "common-name-%d", i);
++        snprintf(buf, sizeof(buf), "common-name-%d", i);
+ #ifdef DUP_CN
+         cn =3D NULL;
+ #else
+diff --git a/src/openvpn/proxy.c b/src/openvpn/proxy.c
+index 5c1cdcb..ba3d87c 100644
+--- a/src/openvpn/proxy.c
++++ b/src/openvpn/proxy.c
+@@ -582,9 +582,9 @@
+     {
+         if (p->options.custom_headers[i].content)
+         {
+-            openvpn_snprintf(buf, sizeof(buf), "%s: %s",
+-                             p->options.custom_headers[i].name,
+-                             p->options.custom_headers[i].content);
++            snprintf(buf, sizeof(buf), "%s: %s",
++                     p->options.custom_headers[i].name,
++                     p->options.custom_headers[i].content);
+             if (!strcasecmp(p->options.custom_headers[i].name, "Host"))
+             {
+                 host_header_sent =3D true;
+@@ -592,8 +592,8 @@
+         }
+         else
+         {
+-            openvpn_snprintf(buf, sizeof(buf), "%s",
+-                             p->options.custom_headers[i].name);
++            snprintf(buf, sizeof(buf), "%s",
++                     p->options.custom_headers[i].name);
+             if (!strncasecmp(p->options.custom_headers[i].name, "Host:", 5=
+))
+             {
+                 host_header_sent =3D true;
+@@ -609,7 +609,7 @@
+
+     if (!host_header_sent)
+     {
+-        openvpn_snprintf(buf, sizeof(buf), "Host: %s", host);
++        snprintf(buf, sizeof(buf), "Host: %s", host);
+         msg(D_PROXY, "Send to HTTP proxy: '%s'", buf);
+         if (!send_line_crlf(sd, buf))
+         {
+@@ -620,8 +620,8 @@
+     /* send User-Agent string if provided */
+     if (p->options.user_agent)
+     {
+-        openvpn_snprintf(buf, sizeof(buf), "User-Agent: %s",
+-                         p->options.user_agent);
++        snprintf(buf, sizeof(buf), "User-Agent: %s",
++                 p->options.user_agent);
+         msg(D_PROXY, "Send to HTTP proxy: '%s'", buf);
+         if (!send_line_crlf(sd, buf))
+         {
+@@ -667,10 +667,10 @@
+     else
+     {
+         /* format HTTP CONNECT message */
+-        openvpn_snprintf(buf, sizeof(buf), "CONNECT %s:%s HTTP/%s",
+-                         host,
+-                         port,
+-                         p->options.http_version);
++        snprintf(buf, sizeof(buf), "CONNECT %s:%s HTTP/%s",
++                 host,
++                 port,
++                 p->options.http_version);
+
+         msg(D_PROXY, "Send to HTTP proxy: '%s'", buf);
+
+@@ -692,8 +692,8 @@
+                 break;
+
+             case HTTP_AUTH_BASIC:
+-                openvpn_snprintf(buf, sizeof(buf), "Proxy-Authorization: B=
+asic %s",
+-                                 username_password_as_base64(p, &gc));
++                snprintf(buf, sizeof(buf), "Proxy-Authorization: Basic %s",
++                         username_password_as_base64(p, &gc));
+                 msg(D_PROXY, "Attempting Basic Proxy-Authorization");
+                 dmsg(D_SHOW_KEYS, "Send to HTTP proxy: '%s'", buf);
+                 if (!send_line_crlf(sd, buf))
+@@ -705,14 +705,14 @@
+ #if NTLM
+             case HTTP_AUTH_NTLM2:
+                 /* keep-alive connection */
+-                openvpn_snprintf(buf, sizeof(buf), "Proxy-Connection: Keep=
+-Alive");
++                snprintf(buf, sizeof(buf), "Proxy-Connection: Keep-Alive");
+                 if (!send_line_crlf(sd, buf))
+                 {
+                     goto error;
+                 }
+
+-                openvpn_snprintf(buf, sizeof(buf), "Proxy-Authorization: N=
+TLM %s",
+-                                 ntlm_phase_1(p, &gc));
++                snprintf(buf, sizeof(buf), "Proxy-Authorization: NTLM %s",
++                         ntlm_phase_1(p, &gc));
+                 msg(D_PROXY, "Attempting NTLM Proxy-Authorization phase 1"=
+);
+                 dmsg(D_SHOW_KEYS, "Send to HTTP proxy: '%s'", buf);
+                 if (!send_line_crlf(sd, buf))
+@@ -773,7 +773,7 @@
+
+                 char get[80];
+                 CLEAR(buf2);
+-                openvpn_snprintf(get, sizeof(get), "%%*s NTLM %%%zus", siz=
+eof(buf2) - 1);
++                snprintf(get, sizeof(get), "%%*s NTLM %%%zus", sizeof(buf2=
+) - 1);
+                 nparms =3D sscanf(buf, get, buf2);
+
+                 /* check for "Proxy-Authenticate: NTLM TlRM..." */
+@@ -795,10 +795,10 @@
+             /* now send the phase 3 reply */
+
+             /* format HTTP CONNECT message */
+-            openvpn_snprintf(buf, sizeof(buf), "CONNECT %s:%s HTTP/%s",
+-                             host,
+-                             port,
+-                             p->options.http_version);
++            snprintf(buf, sizeof(buf), "CONNECT %s:%s HTTP/%s",
++                     host,
++                     port,
++                     p->options.http_version);
+
+             msg(D_PROXY, "Send to HTTP proxy: '%s'", buf);
+
+@@ -809,7 +809,7 @@
+             }
+
+             /* keep-alive connection */
+-            openvpn_snprintf(buf, sizeof(buf), "Proxy-Connection: Keep-Ali=
+ve");
++            snprintf(buf, sizeof(buf), "Proxy-Connection: Keep-Alive");
+             if (!send_line_crlf(sd, buf))
+             {
+                 goto error;
+@@ -829,7 +829,7 @@
+                     msg(D_PROXY, "NTLM Proxy-Authorization phase 3 failed:=
+ received corrupted data from proxy server");
+                     goto error;
+                 }
+-                openvpn_snprintf(buf, sizeof(buf), "Proxy-Authorization: N=
+TLM %s", np3);
++                snprintf(buf, sizeof(buf), "Proxy-Authorization: NTLM %s",=
+ np3);
+             }
+
+             msg(D_PROXY, "Send to HTTP proxy: '%s'", buf);
+@@ -899,15 +899,15 @@
+
+
+                 /* build the digest response */
+-                openvpn_snprintf(uri, sizeof(uri), "%s:%s",
+-                                 host,
+-                                 port);
++                snprintf(uri, sizeof(uri), "%s:%s",
++                         host,
++                         port);
+
+                 if (opaque)
+                 {
+                     const int len =3D strlen(opaque)+16;
+                     opaque_kv =3D gc_malloc(len, false, &gc);
+-                    openvpn_snprintf(opaque_kv, len, ", opaque=3D\"%s\"", =
+opaque);
++                    snprintf(opaque_kv, len, ", opaque=3D\"%s\"", opaque);
+                 }
+
+                 DigestCalcHA1(algor,
+@@ -928,10 +928,10 @@
+                                    response);
+
+                 /* format HTTP CONNECT message */
+-                openvpn_snprintf(buf, sizeof(buf), "%s %s HTTP/%s",
+-                                 http_method,
+-                                 uri,
+-                                 p->options.http_version);
++                snprintf(buf, sizeof(buf), "%s %s HTTP/%s",
++                         http_method,
++                         uri,
++                         p->options.http_version);
+
+                 msg(D_PROXY, "Send to HTTP proxy: '%s'", buf);
+
+@@ -948,21 +948,22 @@
+                 }
+
+                 /* send digest response */
+-                int sret =3D openvpn_snprintf(buf, sizeof(buf), "Proxy-Aut=
+horization: Digest username=3D\"%s\", realm=3D\"%s\", nonce=3D\"%s\", uri=
+=3D\"%s\", qop=3D%s, nc=3D%s, cnonce=3D\"%s\", response=3D\"%s\"%s",
+-                                            username,
+-                                            realm,
+-                                            nonce,
+-                                            uri,
+-                                            qop,
+-                                            nonce_count,
+-                                            cnonce,
+-                                            response,
+-                                            opaque_kv
+-                                            );
++                int sret =3D snprintf(buf, sizeof(buf), "Proxy-Authorizati=
+on: Digest username=3D\"%s\", realm=3D\"%s\", nonce=3D\"%s\", uri=3D\"%s\",=
+ qop=3D%s, nc=3D%s, cnonce=3D\"%s\", response=3D\"%s\"%s",
++                                    username,
++                                    realm,
++                                    nonce,
++                                    uri,
++                                    qop,
++                                    nonce_count,
++                                    cnonce,
++                                    response,
++                                    opaque_kv
++                                    );
+                 if (sret >=3D sizeof(buf))
+                 {
+                     goto error;
+                 }
++
+                 msg(D_PROXY, "Send to HTTP proxy: '%s'", buf);
+                 if (!send_line_crlf(sd, buf))
+                 {
+diff --git a/src/openvpn/ps.c b/src/openvpn/ps.c
+index 7d9f9b5..4ca3a12 100644
+--- a/src/openvpn/ps.c
++++ b/src/openvpn/ps.c
+@@ -354,7 +354,7 @@
+         fnlen =3D  strlen(journal_dir) + strlen(t) + 2;
+         jfn =3D (char *) malloc(fnlen);
+         check_malloc_return(jfn);
+-        openvpn_snprintf(jfn, fnlen, "%s/%s", journal_dir, t);
++        snprintf(jfn, fnlen, "%s/%s", journal_dir, t);
+         dmsg(D_PS_PROXY_DEBUG, "PORT SHARE PROXY: client origin %s -> %s",=
+ jfn, f);
+         fd =3D platform_open(jfn, O_CREAT | O_TRUNC | O_WRONLY, S_IRUSR | =
+S_IWUSR | S_IRGRP);
+         if (fd !=3D -1)
+diff --git a/src/openvpn/route.c b/src/openvpn/route.c
+index 909d6d2..68bbcfd 100644
+--- a/src/openvpn/route.c
++++ b/src/openvpn/route.c
+@@ -1621,11 +1621,11 @@
+
+     if (rgi)
+     {
+-        openvpn_snprintf(out, sizeof(out), "%s %s %s dev %s", network, net=
+mask, gateway, rgi->iface);
++        snprintf(out, sizeof(out), "%s %s %s dev %s", network, netmask, ga=
+teway, rgi->iface);
+     }
+     else
+     {
+-        openvpn_snprintf(out, sizeof(out), "%s %s %s", network, netmask, g=
+ateway);
++        snprintf(out, sizeof(out), "%s %s %s", network, netmask, gateway);
+     }
+     bool ret =3D management_android_control(management, "ROUTE", out);
+     status =3D ret ? RTA_SUCCESS : RTA_ERROR;
+@@ -2000,7 +2000,7 @@
+ #elif defined (TARGET_ANDROID)
+     char out[64];
+
+-    openvpn_snprintf(out, sizeof(out), "%s/%d %s", network, r6->netbits, d=
+evice);
++    snprintf(out, sizeof(out), "%s/%d %s", network, r6->netbits, device);
+
+     status =3D management_android_control(management, "ROUTE6", out);
+
+diff --git a/src/openvpn/run_command.h b/src/openvpn/run_command.h
+index 52ab115..ccad307 100644
+--- a/src/openvpn/run_command.h
++++ b/src/openvpn/run_command.h
+@@ -66,8 +66,8 @@
+ {
+     char msg[256];
+
+-    openvpn_snprintf(msg, sizeof(msg),
+-                     "WARNING: Failed running command (%s)", hook);
++    snprintf(msg, sizeof(msg),
++             "WARNING: Failed running command (%s)", hook);
+     return openvpn_execve_check(a, es, flags | S_SCRIPT, msg);
+ }
+
+diff --git a/src/openvpn/socket.c b/src/openvpn/socket.c
+index d2b82d5..24d1276 100644
+--- a/src/openvpn/socket.c
++++ b/src/openvpn/socket.c
+@@ -2983,11 +2983,11 @@
+         case AF_INET:
+             if (flags & SA_IP_PORT)
+             {
+-                openvpn_snprintf(name_buf, sizeof(name_buf), "%s_ip", name=
+_prefix);
++                snprintf(name_buf, sizeof(name_buf), "%s_ip", name_prefix);
+             }
+             else
+             {
+-                openvpn_snprintf(name_buf, sizeof(name_buf), "%s", name_pr=
+efix);
++                snprintf(name_buf, sizeof(name_buf), "%s", name_prefix);
+             }
+
+             inet_ntop(AF_INET, &addr->addr.in4.sin_addr, buf, sizeof(buf));
+@@ -2995,7 +2995,7 @@
+
+             if ((flags & SA_IP_PORT) && addr->addr.in4.sin_port)
+             {
+-                openvpn_snprintf(name_buf, sizeof(name_buf), "%s_port", na=
+me_prefix);
++                snprintf(name_buf, sizeof(name_buf), "%s_port", name_prefi=
+x);
+                 setenv_int(es, name_buf, ntohs(addr->addr.in4.sin_port));
+             }
+             break;
+@@ -3006,19 +3006,19 @@
+                 struct in_addr ia;
+                 memcpy(&ia.s_addr, &addr->addr.in6.sin6_addr.s6_addr[12],
+                        sizeof(ia.s_addr));
+-                openvpn_snprintf(name_buf, sizeof(name_buf), "%s_ip", name=
+_prefix);
++                snprintf(name_buf, sizeof(name_buf), "%s_ip", name_prefix);
+                 inet_ntop(AF_INET, &ia, buf, sizeof(buf));
+             }
+             else
+             {
+-                openvpn_snprintf(name_buf, sizeof(name_buf), "%s_ip6", nam=
+e_prefix);
++                snprintf(name_buf, sizeof(name_buf), "%s_ip6", name_prefix=
+);
+                 inet_ntop(AF_INET6, &addr->addr.in6.sin6_addr, buf, sizeof=
+(buf));
+             }
+             setenv_str(es, name_buf, buf);
+
+             if ((flags & SA_IP_PORT) && addr->addr.in6.sin6_port)
+             {
+-                openvpn_snprintf(name_buf, sizeof(name_buf), "%s_port", na=
+me_prefix);
++                snprintf(name_buf, sizeof(name_buf), "%s_port", name_prefi=
+x);
+                 setenv_int(es, name_buf, ntohs(addr->addr.in6.sin6_port));
+             }
+             break;
+diff --git a/src/openvpn/socks.c b/src/openvpn/socks.c
+index b046910..8b8c01a 100644
+--- a/src/openvpn/socks.c
++++ b/src/openvpn/socks.c
+@@ -109,9 +109,10 @@
+             "Authentication not possible.");
+         goto cleanup;
+     }
+-    int sret =3D openvpn_snprintf(to_send, sizeof(to_send), "\x01%c%s%c%s",
+-                                (int) strlen(creds.username), creds.userna=
+me,
+-                                (int) strlen(creds.password), creds.passwo=
+rd);
++
++    int sret =3D snprintf(to_send, sizeof(to_send), "\x01%c%s%c%s",
++                        (int) strlen(creds.username), creds.username,
++                        (int) strlen(creds.password), creds.password);
+     ASSERT(sret <=3D sizeof(to_send));
+
+     size =3D send(sd, to_send, strlen(to_send), MSG_NOSIGNAL);
+diff --git a/src/openvpn/ssl_mbedtls.c b/src/openvpn/ssl_mbedtls.c
+index 0730d25..b0303b6 100644
+--- a/src/openvpn/ssl_mbedtls.c
++++ b/src/openvpn/ssl_mbedtls.c
+@@ -1531,16 +1531,16 @@
+     char s2[256];
+
+     s1[0] =3D s2[0] =3D 0;
+-    openvpn_snprintf(s1, sizeof(s1), "%s %s, cipher %s",
+-                     prefix,
+-                     mbedtls_ssl_get_version(ks_ssl->ctx),
+-                     mbedtls_ssl_get_ciphersuite(ks_ssl->ctx));
++    snprintf(s1, sizeof(s1), "%s %s, cipher %s",
++             prefix,
++             mbedtls_ssl_get_version(ks_ssl->ctx),
++             mbedtls_ssl_get_ciphersuite(ks_ssl->ctx));
+
+     cert =3D mbedtls_ssl_get_peer_cert(ks_ssl->ctx);
+     if (cert !=3D NULL)
+     {
+-        openvpn_snprintf(s2, sizeof(s2), ", %u bit key",
+-                         (unsigned int) mbedtls_pk_get_bitlen(&cert->pk));
++        snprintf(s2, sizeof(s2), ", %u bit key",
++                 (unsigned int) mbedtls_pk_get_bitlen(&cert->pk));
+     }
+
+     msg(D_HANDSHAKE, "%s%s", s1, s2);
+diff --git a/src/openvpn/ssl_ncp.c b/src/openvpn/ssl_ncp.c
+index 73ec9f5..968858e 100644
+--- a/src/openvpn/ssl_ncp.c
++++ b/src/openvpn/ssl_ncp.c
+@@ -198,8 +198,8 @@
+     size_t newlen =3D strlen(o->ncp_ciphers) + 1 + strlen(ciphername) + 1;
+     char *ncp_ciphers =3D gc_malloc(newlen, false, &o->gc);
+
+-    ASSERT(openvpn_snprintf(ncp_ciphers, newlen, "%s:%s", o->ncp_ciphers,
+-                            ciphername));
++    ASSERT(snprintf(ncp_ciphers, newlen, "%s:%s", o->ncp_ciphers,
++                    ciphername));
+     o->ncp_ciphers =3D ncp_ciphers;
+ }
+
+diff --git a/src/openvpn/ssl_openssl.c b/src/openvpn/ssl_openssl.c
+index a158617..6efef4f 100644
+--- a/src/openvpn/ssl_openssl.c
++++ b/src/openvpn/ssl_openssl.c
+@@ -1774,7 +1774,7 @@
+     if (!biofp)
+     {
+         char fn[256];
+-        openvpn_snprintf(fn, sizeof(fn), "bio/%d-%d.log", pid, biofp_toggl=
+e);
++        snprintf(fn, sizeof(fn), "bio/%d-%d.log", pid, biofp_toggle);
+         biofp =3D fopen(fn, "w");
+         ASSERT(biofp);
+         biofp_last_open =3D time(NULL);
+@@ -2116,8 +2116,8 @@
+ #endif /* if OPENSSL_VERSION_NUMBER < 0x30000000L */
+     }
+
+-    openvpn_snprintf(buf, buflen, "%d bits %s%s",
+-                     EVP_PKEY_bits(pkey), type, curve);
++    snprintf(buf, buflen, "%d bits %s%s",
++             EVP_PKEY_bits(pkey), type, curve);
+ }
+
+ /**
+@@ -2137,12 +2137,12 @@
+     int signature_nid =3D X509_get_signature_nid(cert);
+     if (signature_nid !=3D 0)
+     {
+-        openvpn_snprintf(sig, sizeof(sig), ", signature: %s",
+-                         OBJ_nid2sn(signature_nid));
++        snprintf(sig, sizeof(sig), ", signature: %s",
++                 OBJ_nid2sn(signature_nid));
+     }
+
+-    openvpn_snprintf(buf, buflen, ", peer certificate: %s%s",
+-                     pkeybuf, sig);
++    snprintf(buf, buflen, ", peer certificate: %s%s",
++             pkeybuf, sig);
+
+     EVP_PKEY_free(pkey);
+ }
+@@ -2160,8 +2160,8 @@
+     char pkeybuf[128] =3D { 0 };
+     print_pkey_details(pkey, pkeybuf, sizeof(pkeybuf));
+
+-    openvpn_snprintf(buf, buflen, ", peer temporary key: %s",
+-                     pkeybuf);
++    snprintf(buf, buflen, ", peer temporary key: %s",
++             pkeybuf);
+
+     EVP_PKEY_free(pkey);
+ }
+@@ -2238,8 +2238,8 @@
+         return;
+     }
+
+-    openvpn_snprintf(buf, buflen, ", peer signing digest/type: %s %s",
+-                     peer_sig, peer_sig_type);
++    snprintf(buf, buflen, ", peer signing digest/type: %s %s",
++             peer_sig, peer_sig_type);
+ }
+
+
+@@ -2262,11 +2262,11 @@
+
+     s1[0] =3D s2[0] =3D s3[0] =3D s4[0] =3D 0;
+     ciph =3D SSL_get_current_cipher(ks_ssl->ssl);
+-    openvpn_snprintf(s1, sizeof(s1), "%s %s, cipher %s %s",
+-                     prefix,
+-                     SSL_get_version(ks_ssl->ssl),
+-                     SSL_CIPHER_get_version(ciph),
+-                     SSL_CIPHER_get_name(ciph));
++    snprintf(s1, sizeof(s1), "%s %s, cipher %s %s",
++             prefix,
++             SSL_get_version(ks_ssl->ssl),
++             SSL_CIPHER_get_version(ciph),
++             SSL_CIPHER_get_name(ciph));
+     X509 *cert =3D SSL_get_peer_certificate(ks_ssl->ssl);
+
+     if (cert)
+diff --git a/src/openvpn/ssl_verify.c b/src/openvpn/ssl_verify.c
+index 930769b..934ff8d 100644
+--- a/src/openvpn/ssl_verify.c
++++ b/src/openvpn/ssl_verify.c
+@@ -421,12 +421,12 @@
+     }
+
+     /* export subject name string as environmental variable */
+-    openvpn_snprintf(envname, sizeof(envname), "tls_id_%d", cert_depth);
++    snprintf(envname, sizeof(envname), "tls_id_%d", cert_depth);
+     setenv_str(es, envname, subject);
+
+ #if 0
+     /* export common name string as environmental variable */
+-    openvpn_snprintf(envname, sizeof(envname), "tls_common_name_%d", cert_=
+depth);
++    snprintf(envname, sizeof(envname), "tls_common_name_%d", cert_depth);
+     setenv_str(es, envname, common_name);
+ #endif
+
+@@ -435,24 +435,24 @@
+         struct buffer sha1 =3D x509_get_sha1_fingerprint(peer_cert, &gc);
+         struct buffer sha256 =3D x509_get_sha256_fingerprint(peer_cert, &g=
+c);
+
+-        openvpn_snprintf(envname, sizeof(envname), "tls_digest_%d", cert_d=
+epth);
++        snprintf(envname, sizeof(envname), "tls_digest_%d", cert_depth);
+         setenv_str(es, envname,
+                    format_hex_ex(BPTR(&sha1), BLEN(&sha1), 0, 1, ":", &gc)=
+);
+
+-        openvpn_snprintf(envname, sizeof(envname), "tls_digest_sha256_%d",
+-                         cert_depth);
++        snprintf(envname, sizeof(envname), "tls_digest_sha256_%d",
++                 cert_depth);
+         setenv_str(es, envname,
+                    format_hex_ex(BPTR(&sha256), BLEN(&sha256), 0, 1, ":", =
+&gc));
+     }
+
+     /* export serial number as environmental variable */
+     serial =3D backend_x509_get_serial(peer_cert, &gc);
+-    openvpn_snprintf(envname, sizeof(envname), "tls_serial_%d", cert_depth=
+);
++    snprintf(envname, sizeof(envname), "tls_serial_%d", cert_depth);
+     setenv_str(es, envname, serial);
+
+     /* export serial number in hex as environmental variable */
+     serial =3D backend_x509_get_serial_hex(peer_cert, &gc);
+-    openvpn_snprintf(envname, sizeof(envname), "tls_serial_hex_%d", cert_d=
+epth);
++    snprintf(envname, sizeof(envname), "tls_serial_hex_%d", cert_depth);
+     setenv_str(es, envname, serial);
+
+     gc_free(&gc);
+@@ -569,7 +569,7 @@
+         goto cleanup;
+     }
+
+-    if (!openvpn_snprintf(fn, sizeof(fn), "%s%c%s", crl_dir, PATH_SEPARATO=
+R, serial))
++    if (!snprintf(fn, sizeof(fn), "%s%c%s", crl_dir, PATH_SEPARATOR, seria=
+l))
+     {
+         msg(D_HANDSHAKE, "VERIFY CRL: filename overflow");
+         goto cleanup;
+@@ -938,9 +938,9 @@
+             if (!check_auth_pending_method(multi->peer_info, pending_metho=
+d))
+             {
+                 char buf[128];
+-                openvpn_snprintf(buf, sizeof(buf),
+-                                 "Authentication failed, required pending =
+auth "
+-                                 "method '%s' not supported", pending_meth=
+od);
++                snprintf(buf, sizeof(buf),
++                         "Authentication failed, required pending auth "
++                         "method '%s' not supported", pending_method);
+                 auth_set_client_reason(multi, buf);
+                 msg(M_INFO, "Client does not supported auth pending method=
+ "
+                     "'%s'", pending_method);
+diff --git a/src/openvpn/ssl_verify_mbedtls.c b/src/openvpn/ssl_verify_mbed=
+tls.c
+index a801cd3..ca14ceb 100644
+--- a/src/openvpn/ssl_verify_mbedtls.c
++++ b/src/openvpn/ssl_verify_mbedtls.c
+@@ -86,8 +86,8 @@
+         char *serial =3D backend_x509_get_serial(cert, &gc);
+
+         ret =3D mbedtls_x509_crt_verify_info(errstr, sizeof(errstr)-1, "",=
+ *flags);
+-        if (ret <=3D 0 && !openvpn_snprintf(errstr, sizeof(errstr),
+-                                          "Could not retrieve error string=
+, flags=3D%" PRIx32, *flags))
++        if (ret <=3D 0 && !snprintf(errstr, sizeof(errstr),
++                                  "Could not retrieve error string, flags=
+=3D%" PRIx32, *flags))
+         {
+             errstr[0] =3D '\0';
+         }
+@@ -307,7 +307,7 @@
+     name_expand_size =3D 64 + strlen(name);
+     name_expand =3D (char *) malloc(name_expand_size);
+     check_malloc_return(name_expand);
+-    openvpn_snprintf(name_expand, name_expand_size, "X509_%d_%s", depth, n=
+ame);
++    snprintf(name_expand, name_expand_size, "X509_%d_%s", depth, name);
+     setenv_str(es, name_expand, value);
+     free(name_expand);
+ }
+@@ -431,13 +431,13 @@
+
+         if (0 =3D=3D mbedtls_oid_get_attr_short_name(&name->oid, &shortnam=
+e) )
+         {
+-            openvpn_snprintf(name_expand, sizeof(name_expand), "X509_%d_%s=
+",
+-                             cert_depth, shortname);
++            snprintf(name_expand, sizeof(name_expand), "X509_%d_%s",
++                     cert_depth, shortname);
+         }
+         else
+         {
+-            openvpn_snprintf(name_expand, sizeof(name_expand), "X509_%d_\?=
+\?",
+-                             cert_depth);
++            snprintf(name_expand, sizeof(name_expand), "X509_%d_\?\?",
++                     cert_depth);
+         }
+
+         for (i =3D 0; i < name->val.len; i++)
+diff --git a/src/openvpn/ssl_verify_openssl.c b/src/openvpn/ssl_verify_open=
+ssl.c
+index ec3a7cf..7d41d4a 100644
+--- a/src/openvpn/ssl_verify_openssl.c
++++ b/src/openvpn/ssl_verify_openssl.c
+@@ -279,7 +279,7 @@
+             gc_free(&gc);
+             return FAILURE;
+         }
+-        openvpn_snprintf(common_name, cn_len, "0x%s", serial);
++        snprintf(common_name, cn_len, "0x%s", serial);
+         gc_free(&gc);
+     }
+     else
+@@ -454,7 +454,7 @@
+     name_expand_size =3D 64 + strlen(name);
+     name_expand =3D (char *) malloc(name_expand_size);
+     check_malloc_return(name_expand);
+-    openvpn_snprintf(name_expand, name_expand_size, "X509_%d_%s", depth, n=
+ame);
++    snprintf(name_expand, name_expand_size, "X509_%d_%s", depth, name);
+     setenv_str(es, name_expand, value);
+     free(name_expand);
+ }
+@@ -597,8 +597,8 @@
+         name_expand_size =3D 64 + strlen(objbuf);
+         name_expand =3D (char *) malloc(name_expand_size);
+         check_malloc_return(name_expand);
+-        openvpn_snprintf(name_expand, name_expand_size, "X509_%d_%s", cert=
+_depth,
+-                         objbuf);
++        snprintf(name_expand, name_expand_size, "X509_%d_%s", cert_depth,
++                 objbuf);
+         string_mod(name_expand, CC_PRINT, CC_CRLF, '_');
+         string_mod((char *)buf, CC_PRINT, CC_CRLF, '_');
+         setenv_str_incr(es, name_expand, (char *)buf);
+diff --git a/src/openvpn/tls_crypt.c b/src/openvpn/tls_crypt.c
+index 6ef1c7d..90fe6e9 100644
+--- a/src/openvpn/tls_crypt.c
++++ b/src/openvpn/tls_crypt.c
+@@ -574,8 +574,8 @@
+     }
+
+     char metadata_type_str[4] =3D { 0 }; /* Max value: 255 */
+-    openvpn_snprintf(metadata_type_str, sizeof(metadata_type_str),
+-                     "%i", (uint8_t) metadata_type);
++    snprintf(metadata_type_str, sizeof(metadata_type_str),
++             "%i", (uint8_t) metadata_type);
+     struct env_set *es =3D env_set_create(NULL);
+     setenv_str(es, "script_type", "tls-crypt-v2-verify");
+     setenv_str(es, "metadata_type", metadata_type_str);
+diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
+index f550e9c..d01515d 100644
+--- a/src/openvpn/tun.c
++++ b/src/openvpn/tun.c
+@@ -1114,8 +1114,8 @@
+ #elif defined(TARGET_ANDROID)
+     char out6[64];
+
+-    openvpn_snprintf(out6, sizeof(out6), "%s/%d %d",
+-                     ifconfig_ipv6_local, tt->netbits_ipv6, tun_mtu);
++    snprintf(out6, sizeof(out6), "%s/%d %d",
++             ifconfig_ipv6_local, tt->netbits_ipv6, tun_mtu);
+     management_android_control(management, "IFCONFIG6", out6);
+ #elif defined(TARGET_SOLARIS)
+     argv_printf(&argv, "%s %s inet6 unplumb", IFCONFIG_PATH, ifname);
+@@ -1362,8 +1362,8 @@
+             top =3D "undef";
+     }
+
+-    openvpn_snprintf(out, sizeof(out), "%s %s %d %s", ifconfig_local,
+-                     ifconfig_remote_netmask, tun_mtu, top);
++    snprintf(out, sizeof(out), "%s %s %d %s", ifconfig_local,
++             ifconfig_remote_netmask, tun_mtu, top);
+     management_android_control(management, "IFCONFIG", out);
+
+ #elif defined(TARGET_SOLARIS)
+@@ -1912,7 +1912,7 @@
+          */
+         if (dev_node)
+         {
+-            openvpn_snprintf(tunname, sizeof(tunname), "%s", dev_node);
++            snprintf(tunname, sizeof(tunname), "%s", dev_node);
+         }
+         else
+         {
+@@ -1926,10 +1926,10 @@
+             {
+                 for (int i =3D 0; i < 256; ++i)
+                 {
+-                    openvpn_snprintf(tunname, sizeof(tunname),
+-                                     "/dev/%s%d", dev, i);
+-                    openvpn_snprintf(dynamic_name, sizeof(dynamic_name),
+-                                     "%s%d", dev, i);
++                    snprintf(tunname, sizeof(tunname),
++                             "/dev/%s%d", dev, i);
++                    snprintf(dynamic_name, sizeof(dynamic_name),
++                             "%s%d", dev, i);
+                     if ((tt->fd =3D open(tunname, O_RDWR)) > 0)
+                     {
+                         dynamic_opened =3D true;
+@@ -1947,7 +1947,7 @@
+              */
+             else
+             {
+-                openvpn_snprintf(tunname, sizeof(tunname), "/dev/%s", dev);
++                snprintf(tunname, sizeof(tunname), "/dev/%s", dev);
+             }
+         }
+
+@@ -2002,8 +2002,8 @@
+     {
+         for (int i =3D 0; i < 256; ++i)
+         {
+-            openvpn_snprintf(dynamic_name, sizeof(dynamic_name),
+-                             "%s%d", dev, i);
++            snprintf(dynamic_name, sizeof(dynamic_name),
++                     "%s%d", dev, i);
+             int ret =3D open_tun_dco(tt, ctx, dynamic_name);
+             if (ret =3D=3D 0)
+             {
+@@ -2519,7 +2519,7 @@
+     tt->actual_name =3D (char *) malloc(32);
+     check_malloc_return(tt->actual_name);
+
+-    openvpn_snprintf(tt->actual_name, 32, "%s%d", dev_tuntap_type, ppa);
++    snprintf(tt->actual_name, 32, "%s%d", dev_tuntap_type, ppa);
+
+     if (tt->type =3D=3D DEV_TYPE_TAP)
+     {
+@@ -3509,7 +3509,7 @@
+         int i;
+         for (i =3D 0; i<99; i++)
+         {
+-            openvpn_snprintf(tunname, sizeof(tunname), "/dev/tap%d", i);
++            snprintf(tunname, sizeof(tunname), "/dev/tap%d", i);
+             if (access( tunname, F_OK ) < 0 && errno =3D=3D ENOENT)
+             {
+                 break;
+@@ -3520,7 +3520,7 @@
+             msg( M_FATAL, "cannot find unused tap device" );
+         }
+
+-        openvpn_snprintf( dynamic_name, sizeof(dynamic_name), "tap%d", i );
++        snprintf( dynamic_name, sizeof(dynamic_name), "tap%d", i );
+         dev =3D dynamic_name;
+     }
+     else                                        /* name given, sanity chec=
+k */
+@@ -3536,7 +3536,7 @@
+             msg( M_FATAL, "TAP device name must be '--dev tapNNNN'" );
+         }
+
+-        openvpn_snprintf(tunname, sizeof(tunname), "/dev/%s", dev);
++        snprintf(tunname, sizeof(tunname), "/dev/%s", dev);
+     }
+
+     /* pre-existing device?
+@@ -3956,8 +3956,8 @@
+                 ADAPTER_KEY);
+         }
+
+-        openvpn_snprintf(unit_string, sizeof(unit_string), "%s\\%s",
+-                         ADAPTER_KEY, enum_name);
++        snprintf(unit_string, sizeof(unit_string), "%s\\%s",
++                 ADAPTER_KEY, enum_name);
+
+         status =3D RegOpenKeyEx(
+             HKEY_LOCAL_MACHINE,
+@@ -4098,9 +4098,9 @@
+                 NETWORK_CONNECTIONS_KEY);
+         }
+
+-        openvpn_snprintf(connection_string, sizeof(connection_string),
+-                         "%s\\%s\\Connection",
+-                         NETWORK_CONNECTIONS_KEY, enum_name);
++        snprintf(connection_string, sizeof(connection_string),
++                 "%s\\%s\\Connection",
++                 NETWORK_CONNECTIONS_KEY, enum_name);
+
+         status =3D RegOpenKeyEx(
+             HKEY_LOCAL_MACHINE,
+@@ -4984,7 +4984,7 @@
+     DWORD index;
+     ULONG aindex;
+     wchar_t wbuf[256];
+-    openvpn_swprintf(wbuf, SIZE(wbuf), L"\\DEVICE\\TCPIP_%hs", guid);
++    swprintf(wbuf, SIZE(wbuf), L"\\DEVICE\\TCPIP_%hs", guid);
+     if (GetAdapterIndex(wbuf, &aindex) !=3D NO_ERROR)
+     {
+         index =3D TUN_ADAPTER_INDEX_INVALID;
+@@ -5164,10 +5164,10 @@
+         }
+
+         /* Open Windows TAP-Windows adapter */
+-        openvpn_snprintf(device_path, sizeof(device_path), "%s%s%s",
+-                         USERMODEDEVICEDIR,
+-                         device_guid,
+-                         TAP_WIN_SUFFIX);
++        snprintf(device_path, sizeof(device_path), "%s%s%s",
++                 USERMODEDEVICEDIR,
++                 device_guid,
++                 TAP_WIN_SUFFIX);
+
+         hand =3D CreateFile(
+             device_path,
+@@ -5208,10 +5208,10 @@
+             }
+
+             /* Open Windows TAP-Windows adapter */
+-            openvpn_snprintf(device_path, sizeof(device_path), "%s%s%s",
+-                             USERMODEDEVICEDIR,
+-                             device_guid,
+-                             TAP_WIN_SUFFIX);
++            snprintf(device_path, sizeof(device_path), "%s%s%s",
++                     USERMODEDEVICEDIR,
++                     device_guid,
++                     TAP_WIN_SUFFIX);
+
+             hand =3D CreateFile(
+                 device_path,
+@@ -6607,10 +6607,10 @@
+     else
+     {
+         /* Open TAP-Windows */
+-        openvpn_snprintf(tuntap_device_path, sizeof(tuntap_device_path), "=
+%s%s%s",
+-                         USERMODEDEVICEDIR,
+-                         device_guid,
+-                         TAP_WIN_SUFFIX);
++        snprintf(tuntap_device_path, sizeof(tuntap_device_path), "%s%s%s",
++                 USERMODEDEVICEDIR,
++                 device_guid,
++                 TAP_WIN_SUFFIX);
+         path =3D tuntap_device_path;
+     }
+
+diff --git a/src/openvpn/win32.c b/src/openvpn/win32.c
+index 27d82c5..98955ba 100644
+--- a/src/openvpn/win32.c
++++ b/src/openvpn/win32.c
+@@ -885,8 +885,8 @@
+     char force_path[256];
+     char *sysroot =3D get_win_sys_path();
+
+-    if (!openvpn_snprintf(force_path, sizeof(force_path), "PATH=3D%s\\Syst=
+em32;%s;%s\\System32\\Wbem",
+-                          sysroot, sysroot, sysroot))
++    if (!snprintf(force_path, sizeof(force_path), "PATH=3D%s\\System32;%s;=
+%s\\System32\\Wbem",
++                  sysroot, sysroot, sysroot))
+     {
+         msg(M_WARN, "env_block: default path truncated to %s", force_path);
+     }
+@@ -1483,26 +1483,11 @@
+ }
+
+ bool
+-openvpn_swprintf(wchar_t *const str, const size_t size, const wchar_t *con=
+st format, ...)
+-{
+-    va_list arglist;
+-    int len =3D -1;
+-    if (size > 0)
+-    {
+-        va_start(arglist, format);
+-        len =3D vswprintf(str, size, format, arglist);
+-        va_end(arglist);
+-        str[size - 1] =3D L'\0';
+-    }
+-    return (len >=3D 0 && len < size);
+-}
+-
+-bool
+ get_openvpn_reg_value(const WCHAR *key, WCHAR *value, DWORD size)
+ {
+     WCHAR reg_path[256];
+     HKEY hkey;
+-    openvpn_swprintf(reg_path, _countof(reg_path), L"SOFTWARE\\" PACKAGE_N=
+AME);
++    swprintf(reg_path, _countof(reg_path), L"SOFTWARE\\" PACKAGE_NAME);
+
+     LONG status =3D RegOpenKeyExW(HKEY_LOCAL_MACHINE, reg_path, 0, KEY_REA=
+D, &hkey);
+     if (status !=3D ERROR_SUCCESS)
+@@ -1528,7 +1513,7 @@
+         /* if we cannot find installation path from the registry,
+          * use Windows directory as a fallback
+          */
+-        openvpn_swprintf(install_path, _countof(install_path), L"%ls", ssl=
+_fallback_dir);
++        swprintf(install_path, _countof(install_path), L"%ls", ssl_fallbac=
+k_dir);
+     }
+
+     if ((install_path[wcslen(install_path) - 1]) =3D=3D L'\\')
+@@ -1553,7 +1538,7 @@
+         if (size =3D=3D 0)
+         {
+             WCHAR val[MAX_PATH] =3D {0};
+-            openvpn_swprintf(val, _countof(val), L"%ls\\ssl\\%ls", install=
+_path, ossl_env[i].value);
++            swprintf(val, _countof(val), L"%ls\\ssl\\%ls", install_path, o=
+ssl_env[i].value);
+             _wputenv_s(ossl_env[i].name, val);
+         }
+     }
+diff --git a/src/openvpn/win32.h b/src/openvpn/win32.h
+index 974fe02d..fd75992 100644
+--- a/src/openvpn/win32.h
++++ b/src/openvpn/win32.h
+@@ -319,14 +319,6 @@
+ int
+ openvpn_execve(const struct argv *a, const struct env_set *es, const unsig=
+ned int flags);
+
+-/*
+- * openvpn_swprintf() is currently only used by Windows code paths
+- * and when enabled for all platforms it will currently break older
+- * OpenBSD versions lacking vswprintf(3) support in their libc.
+- */
+-bool
+-openvpn_swprintf(wchar_t *const str, const size_t size, const wchar_t *con=
+st format, ...);
+-
+ /* Sleep that can be interrupted by signals and exit event */
+ void win32_sleep(const int n);
+
+diff --git a/src/openvpn/xkey_helper.c b/src/openvpn/xkey_helper.c
+index c803323..283c95d 100644
+--- a/src/openvpn/xkey_helper.c
++++ b/src/openvpn/xkey_helper.c
+@@ -205,7 +205,7 @@
+         }
+         else
+         {
+-            openvpn_snprintf(alg_str, sizeof(alg_str), "ECDSA,hashalg=3D%s=
+", alg.mdname);
++            snprintf(alg_str, sizeof(alg_str), "ECDSA,hashalg=3D%s", alg.m=
+dname);
+         }
+     }
+     else if (!strcmp(alg.keytype, "ED448") || !strcmp(alg.keytype, "ED2551=
+9"))
+@@ -229,8 +229,8 @@
+         /* For undigested message, add hashalg=3Ddigest parameter */
+         else
+         {
+-            openvpn_snprintf(alg_str, sizeof(alg_str), "%s,hashalg=3D%s",
+-                             "RSA_PKCS1_PADDING", alg.mdname);
++            snprintf(alg_str, sizeof(alg_str), "%s,hashalg=3D%s",
++                     "RSA_PKCS1_PADDING", alg.mdname);
+         }
+     }
+     else if (!strcmp(alg.padmode, "none") && (flags & MF_EXTERNAL_KEY_NOPA=
+DDING)
+@@ -240,8 +240,8 @@
+     }
+     else if (!strcmp(alg.padmode, "pss") && (flags & MF_EXTERNAL_KEY_PSSPA=
+D))
+     {
+-        openvpn_snprintf(alg_str, sizeof(alg_str), "%s,hashalg=3D%s,saltle=
+n=3D%s",
+-                         "RSA_PKCS1_PSS_PADDING", alg.mdname, alg.saltlen);
++        snprintf(alg_str, sizeof(alg_str), "%s,hashalg=3D%s,saltlen=3D%s",
++                 "RSA_PKCS1_PSS_PADDING", alg.mdname, alg.saltlen);
+     }
+     else
+     {
+diff --git a/src/openvpnserv/common.c b/src/openvpnserv/common.c
+index bd0a484..96bf800 100644
+--- a/src/openvpnserv/common.c
++++ b/src/openvpnserv/common.c
+@@ -27,36 +27,6 @@
+ LPCTSTR service_instance =3D TEXT("");
+ static wchar_t win_sys_path[MAX_PATH];
+
+-/*
+- * These are necessary due to certain buggy implementations of (v)snprintf,
+- * that don't guarantee null termination for size > 0.
+- */
+-BOOL
+-openvpn_vswprintf(LPTSTR str, size_t size, LPCTSTR format, va_list arglist)
+-{
+-    int len =3D -1;
+-    if (size > 0)
+-    {
+-        len =3D vswprintf_s(str, size, format, arglist);
+-        str[size - 1] =3D 0;
+-    }
+-    return (len >=3D 0 && (size_t)len < size);
+-}
+-
+-BOOL
+-openvpn_swprintf(LPTSTR str, size_t size, LPCTSTR format, ...)
+-{
+-    va_list arglist;
+-    BOOL res =3D FALSE;
+-    if (size > 0)
+-    {
+-        va_start(arglist, format);
+-        res =3D openvpn_vswprintf(str, size, format, arglist);
+-        va_end(arglist);
+-    }
+-    return res;
+-}
+-
+ static DWORD
+ GetRegString(HKEY key, LPCTSTR value, LPTSTR data, DWORD size, LPCTSTR def=
+ault_value)
+ {
+@@ -66,7 +36,7 @@
+     if (status =3D=3D ERROR_FILE_NOT_FOUND && default_value)
+     {
+         size_t len =3D size/sizeof(data[0]);
+-        if (openvpn_swprintf(data, len, default_value))
++        if (swprintf(data, len, default_value))
+         {
+             status =3D ERROR_SUCCESS;
+         }
+@@ -93,7 +63,7 @@
+     TCHAR install_path[MAX_PATH];
+     TCHAR default_value[MAX_PATH];
+
+-    openvpn_swprintf(reg_path, _countof(reg_path), TEXT("SOFTWARE\\" PACKA=
+GE_NAME "%ls"), service_instance);
++    swprintf(reg_path, _countof(reg_path), TEXT("SOFTWARE\\" PACKAGE_NAME =
+"%ls"), service_instance);
+
+     LONG status =3D RegOpenKeyEx(HKEY_LOCAL_MACHINE, reg_path, 0, KEY_READ=
+, &key);
+     if (status !=3D ERROR_SUCCESS)
+@@ -110,15 +80,15 @@
+         goto out;
+     }
+
+-    openvpn_swprintf(default_value, _countof(default_value), TEXT("%ls\\bi=
+n\\openvpn.exe"),
+-                     install_path);
++    swprintf(default_value, _countof(default_value), TEXT("%ls\\bin\\openv=
+pn.exe"),
++             install_path);
+     error =3D GetRegString(key, TEXT("exe_path"), s->exe_path, sizeof(s->e=
+xe_path), default_value);
+     if (error !=3D ERROR_SUCCESS)
+     {
+         goto out;
+     }
+
+-    openvpn_swprintf(default_value, _countof(default_value), TEXT("%ls\\co=
+nfig"), install_path);
++    swprintf(default_value, _countof(default_value), TEXT("%ls\\config"), =
+install_path);
+     error =3D GetRegString(key, TEXT("config_dir"), s->config_dir, sizeof(=
+s->config_dir),
+                          default_value);
+     if (error !=3D ERROR_SUCCESS)
+@@ -133,7 +103,7 @@
+         goto out;
+     }
+
+-    openvpn_swprintf(default_value, _countof(default_value), TEXT("%ls\\lo=
+g"), install_path);
++    swprintf(default_value, _countof(default_value), TEXT("%ls\\log"), ins=
+tall_path);
+     error =3D GetRegString(key, TEXT("log_dir"), s->log_dir, sizeof(s->log=
+_dir), default_value);
+     if (error !=3D ERROR_SUCCESS)
+     {
+@@ -229,7 +199,7 @@
+     else
+     {
+         tmp[wcslen(tmp) - 2] =3D TEXT('\0'); /* remove CR/LF characters */
+-        openvpn_swprintf(buf, _countof(buf), TEXT("%ls (0x%x)"), tmp, erro=
+r);
++        swprintf(buf, _countof(buf), TEXT("%ls (0x%x)"), tmp, error);
+     }
+
+     if (tmp)
+@@ -259,12 +229,12 @@
+     hEventSource =3D RegisterEventSource(NULL, APPNAME);
+     if (hEventSource !=3D NULL)
+     {
+-        openvpn_swprintf(msg[0], _countof(msg[0]),
+-                         TEXT("%ls%ls%ls: %ls"), APPNAME, service_instance,
+-                         (flags & MSG_FLAGS_ERROR) ? TEXT(" error") : TEXT=
+(""), err_msg);
++        swprintf(msg[0], _countof(msg[0]),
++                 TEXT("%ls%ls%ls: %ls"), APPNAME, service_instance,
++                 (flags & MSG_FLAGS_ERROR) ? TEXT(" error") : TEXT(""), er=
+r_msg);
+
+         va_start(arglist, format);
+-        openvpn_vswprintf(msg[1], _countof(msg[1]), format, arglist);
++        vswprintf(msg[1], _countof(msg[1]), format, arglist);
+         va_end(arglist);
+
+         const TCHAR *mesg[] =3D { msg[0], msg[1] };
+diff --git a/src/openvpnserv/interactive.c b/src/openvpnserv/interactive.c
+index d32223c..294db00 100644
+--- a/src/openvpnserv/interactive.c
++++ b/src/openvpnserv/interactive.c
+@@ -311,7 +311,7 @@
+      * Same format as error messages (3 line string) with error =3D 0 in
+      * 0x%08x format, PID on line 2 and a description "Process ID" on line=
+ 3
+      */
+-    openvpn_swprintf(buf, _countof(buf), L"0x%08x\n0x%08x\n%ls", 0, pid, m=
+sg);
++    swprintf(buf, _countof(buf), L"0x%08x\n0x%08x\n%ls", 0, pid, msg);
+
+     WritePipeAsync(pipe, buf, (DWORD)(wcslen(buf) * 2), count, events);
+ }
+@@ -385,9 +385,9 @@
+
+     if (!argv)
+     {
+-        openvpn_swprintf(errmsg, capacity,
+-                         L"Cannot validate options: CommandLineToArgvW fai=
+led with error =3D 0x%08x",
+-                         GetLastError());
++        swprintf(errmsg, capacity,
++                 L"Cannot validate options: CommandLineToArgvW failed with=
+ error =3D 0x%08x",
++                 GetLastError());
+         goto out;
+     }
+
+@@ -407,8 +407,8 @@
+
+         if (!CheckOption(workdir, 2, argv_tmp, &settings))
+         {
+-            openvpn_swprintf(errmsg, capacity, msg1, argv[0], workdir,
+-                             settings.ovpn_admin_group);
++            swprintf(errmsg, capacity, msg1, argv[0], workdir,
++                     settings.ovpn_admin_group);
+         }
+         goto out;
+     }
+@@ -424,13 +424,13 @@
+         {
+             if (wcscmp(L"--config", argv[i]) =3D=3D 0 && argc-i > 1)
+             {
+-                openvpn_swprintf(errmsg, capacity, msg1, argv[i+1], workdi=
+r,
+-                                 settings.ovpn_admin_group);
++                swprintf(errmsg, capacity, msg1, argv[i+1], workdir,
++                         settings.ovpn_admin_group);
+             }
+             else
+             {
+-                openvpn_swprintf(errmsg, capacity, msg2, argv[i],
+-                                 settings.ovpn_admin_group);
++                swprintf(errmsg, capacity, msg2, argv[i],
++                         settings.ovpn_admin_group);
+             }
+             goto out;
+         }
+@@ -985,7 +985,7 @@
+
+     HANDLE wait_handles[2] =3D {rdns_semaphore, exit_event};
+
+-    openvpn_swprintf(ipcfg, MAX_PATH, L"%ls\\%ls", get_win_sys_path(), L"i=
+pconfig.exe");
++    swprintf(ipcfg, MAX_PATH, L"%ls\\%ls", get_win_sys_path(), L"ipconfig.=
+exe");
+
+     if (WaitForMultipleObjects(2, wait_handles, FALSE, timeout) =3D=3D WAI=
+T_OBJECT_0)
+     {
+@@ -1064,7 +1064,7 @@
+     }
+
+     /* Path of netsh */
+-    openvpn_swprintf(argv0, _countof(argv0), L"%ls\\%ls", get_win_sys_path=
+(), L"netsh.exe");
++    swprintf(argv0, _countof(argv0), L"%ls\\%ls", get_win_sys_path(), L"ne=
+tsh.exe");
+
+     /* cmd template:
+      * netsh interface $proto $action dns $if_name $addr [validate=3Dno]
+@@ -1080,7 +1080,7 @@
+         goto out;
+     }
+
+-    openvpn_swprintf(cmdline, ncmdline, fmt, proto, action, if_name, addr);
++    swprintf(cmdline, ncmdline, fmt, proto, action, if_name, addr);
+
+     if (IsWindows7OrGreater())
+     {
+@@ -1124,7 +1124,7 @@
+     }
+
+     /* Path of netsh */
+-    openvpn_swprintf(argv0, _countof(argv0), L"%ls\\%ls", get_win_sys_path=
+(), L"netsh.exe");
++    swprintf(argv0, _countof(argv0), L"%ls\\%ls", get_win_sys_path(), L"ne=
+tsh.exe");
+
+     /* cmd template:
+      * netsh interface ip $action wins $if_name $static $addr
+@@ -1141,7 +1141,7 @@
+         goto out;
+     }
+
+-    openvpn_swprintf(cmdline, ncmdline, fmt, action, if_name, addr_static,=
+ addr);
++    swprintf(cmdline, ncmdline, fmt, action, if_name, addr_static, addr);
+
+     err =3D ExecCommand(argv0, cmdline, timeout);
+
+@@ -1167,7 +1167,7 @@
+     wchar_t *cmdline =3D NULL;
+     int timeout =3D 10000; /* in msec */
+
+-    openvpn_swprintf(argv0, _countof(argv0), L"%ls\\%ls", get_win_sys_path=
+(), L"wbem\\wmic.exe");
++    swprintf(argv0, _countof(argv0), L"%ls\\%ls", get_win_sys_path(), L"wb=
+em\\wmic.exe");
+
+     const wchar_t *fmt;
+     /* comma separated list must be enclosed in parenthesis */
+@@ -1188,8 +1188,8 @@
+         return ERROR_OUTOFMEMORY;
+     }
+
+-    openvpn_swprintf(cmdline, ncmdline, fmt, if_index, action,
+-                     data ? data : L"");
++    swprintf(cmdline, ncmdline, fmt, if_index, action,
++             data ? data : L"");
+     err =3D ExecCommand(argv0, cmdline, timeout);
+
+     free(cmdline);
+@@ -1453,7 +1453,7 @@
+     wchar_t argv0[MAX_PATH];
+
+     /* Path of netsh */
+-    openvpn_swprintf(argv0, _countof(argv0), L"%ls\\%ls", get_win_sys_path=
+(), L"netsh.exe");
++    swprintf(argv0, _countof(argv0), L"%ls\\%ls", get_win_sys_path(), L"ne=
+tsh.exe");
+
+     /* cmd template:
+      * netsh interface ipv4 set address name=3D$if_index source=3Ddhcp
+@@ -1471,7 +1471,7 @@
+         return err;
+     }
+
+-    openvpn_swprintf(cmdline, ncmdline, fmt, dhcp->iface.index);
++    swprintf(cmdline, ncmdline, fmt, dhcp->iface.index);
+
+     err =3D ExecCommand(argv0, cmdline, timeout);
+
+@@ -1970,8 +1970,8 @@
+         goto out;
+     }
+
+-    openvpn_swprintf(ovpn_pipe_name, _countof(ovpn_pipe_name),
+-                     TEXT("\\\\.\\pipe\\" PACKAGE "%ls\\service_%lu"), ser=
+vice_instance, GetCurrentThreadId());
++    swprintf(ovpn_pipe_name, _countof(ovpn_pipe_name),
++             TEXT("\\\\.\\pipe\\" PACKAGE "%ls\\service_%lu"), service_ins=
+tance, GetCurrentThreadId());
+     ovpn_pipe =3D CreateNamedPipe(ovpn_pipe_name,
+                                 PIPE_ACCESS_DUPLEX | FILE_FLAG_FIRST_PIPE_=
+INSTANCE | FILE_FLAG_OVERLAPPED,
+                                 PIPE_TYPE_MESSAGE | PIPE_READMODE_MESSAGE =
+| PIPE_WAIT, 1, 128, 128, 0, NULL);
+@@ -2003,8 +2003,11 @@
+         ReturnLastError(pipe, L"malloc");
+         goto out;
+     }
+-    openvpn_swprintf(cmdline, cmdline_size, L"openvpn %ls --msg-channel %"=
+ PRIuPTR,
+-                     sud.options, svc_pipe);
++    /* there seem to be no common printf specifier that works on all
++     * mingw/msvc platforms without trickery, so convert to void* and use
++     * PRIuPTR to print that as best compromise */
++    swprintf(cmdline, cmdline_size, L"openvpn %ls --msg-channel %" PRIuPTR,
++             sud.options, (uintptr_t)svc_pipe);
+
+     if (!CreateEnvironmentBlock(&user_env, imp_token, FALSE))
+     {
+@@ -2079,8 +2082,8 @@
+     else if (exit_code !=3D 0)
+     {
+         WCHAR buf[256];
+-        openvpn_swprintf(buf, _countof(buf),
+-                         L"OpenVPN exited with error: exit code =3D %lu", =
+exit_code);
++        swprintf(buf, _countof(buf),
++                 L"OpenVPN exited with error: exit code =3D %lu", exit_cod=
+e);
+         ReturnError(pipe, ERROR_OPENVPN_STARTUP, buf, 1, &exit_event);
+     }
+     Undo(&undo_lists);
+@@ -2174,7 +2177,7 @@
+         initialized =3D TRUE;
+     }
+
+-    openvpn_swprintf(pipe_name, _countof(pipe_name), TEXT("\\\\.\\pipe\\" =
+PACKAGE "%ls\\service"), service_instance);
++    swprintf(pipe_name, _countof(pipe_name), TEXT("\\\\.\\pipe\\" PACKAGE =
+"%ls\\service"), service_instance);
+     pipe =3D CreateNamedPipe(pipe_name, flags,
+                            PIPE_TYPE_MESSAGE | PIPE_READMODE_MESSAGE | PIP=
+E_REJECT_REMOTE_CLIENTS,
+                            PIPE_UNLIMITED_INSTANCES, 1024, 1024, 0, NULL);
+diff --git a/src/openvpnserv/service.h b/src/openvpnserv/service.h
+index 3acf08c..6d0827d 100644
+--- a/src/openvpnserv/service.h
++++ b/src/openvpnserv/service.h
+@@ -81,12 +81,6 @@
+
+ VOID WINAPI ServiceStartInteractive(DWORD argc, LPTSTR *argv);
+
+-BOOL openvpn_vsntprintf(LPTSTR str, size_t size, LPCTSTR format, va_list a=
+rglist);
+-
+-BOOL openvpn_sntprintf(LPTSTR str, size_t size, LPCTSTR format, ...);
+-
+-BOOL openvpn_swprintf(wchar_t *const str, const size_t size, const wchar_t=
+ *const format, ...);
+-
+ DWORD GetOpenvpnSettings(settings_t *s);
+
+ BOOL ReportStatusToSCMgr(SERVICE_STATUS_HANDLE service, SERVICE_STATUS *st=
+atus);
+diff --git a/src/openvpnserv/validate.c b/src/openvpnserv/validate.c
+index 5f7acd7..9563fa5 100644
+--- a/src/openvpnserv/validate.c
++++ b/src/openvpnserv/validate.c
+@@ -68,7 +68,7 @@
+     /* convert fname to full path */
+     if (PathIsRelativeW(fname) )
+     {
+-        openvpn_swprintf(tmp, _countof(tmp), L"%ls\\%ls", workdir, fname);
++        swprintf(tmp, _countof(tmp), L"%ls\\%ls", workdir, fname);
+         config_file =3D tmp;
+     }
+     else
+diff --git a/tests/unit_tests/openvpn/test_buffer.c b/tests/unit_tests/open=
+vpn/test_buffer.c
+index 52ffb54..9a61f2f 100644
+--- a/tests/unit_tests/openvpn/test_buffer.c
++++ b/tests/unit_tests/openvpn/test_buffer.c
+@@ -354,6 +354,56 @@
+     assert_string_equal(buf, "There is a .'nice.' \"1234\" [.] year old .t=
+ree!");
+ }
+
++static void
++test_snprintf(void **state)
++{
++    /* we used to have a custom openvpn_snprintf function because some
++     * OS (the comment did not specify which) did not always put the
++     * null byte there. So we unit test this to be sure.
++     *
++     * This probably refers to the MSVC behaviour, see also
++     * https://stackoverflow.com/questions/7706936/is-snprintf-always-null=
+-terminating
++     */
++
++    /* Instead of trying to trick the compiler here, disable the warnings
++     * for this unit test. We know that are doing this that are truncated
++     * and we want to test that */
++#if defined(__GNUC__)
++/* some clang version do not understand -Wformat-truncation, so ignore the
++ * warning to avoid warnings/errors (-Werror) about unknown pragma/option =
+*/
++#if defined(__clang__)
++#pragma clang diagnostic push
++#pragma clang diagnostic ignored "-Wunknown-warning-option"
++#endif
++#pragma GCC diagnostic push
++#pragma GCC diagnostic ignored "-Wformat-truncation"
++#endif
++
++    char buf[10] =3D { 'a' };
++    int ret =3D 0;
++
++    ret =3D snprintf(buf, sizeof(buf), "0123456789abcde");
++    assert_int_equal(ret, 15);
++    assert_int_equal(buf[9], '\0');
++
++    memset(buf, 'b', sizeof(buf));
++    ret =3D snprintf(buf, sizeof(buf), "- %d - %d -", 77, 88);
++    assert_int_equal(ret, 11);
++    assert_int_equal(buf[9], '\0');
++
++    memset(buf, 'c', sizeof(buf));
++    ret =3D snprintf(buf, sizeof(buf), "- %8.2f", 77.8899);
++    assert_int_equal(ret, 10);
++    assert_int_equal(buf[9], '\0');
++
++#if defined(__GNUC__)
++#if defined(__clang__)
++#pragma GCC diagnostic pop
++#endif
++#pragma GCC diagnostic pop
++#endif
++}
++
+ int
+ main(void)
+ {
+@@ -387,6 +437,7 @@
+         cmocka_unit_test(test_buffer_free_gc_two),
+         cmocka_unit_test(test_buffer_gc_realloc),
+         cmocka_unit_test(test_character_class),
++        cmocka_unit_test(test_snprintf)
+     };
+
+     return cmocka_run_group_tests_name("buffer", tests, NULL, NULL);
+diff --git a/tests/unit_tests/openvpn/test_cryptoapi.c b/tests/unit_tests/o=
+penvpn/test_cryptoapi.c
+index 87f6208..98102ef 100644
+--- a/tests/unit_tests/openvpn/test_cryptoapi.c
++++ b/tests/unit_tests/openvpn/test_cryptoapi.c
+@@ -271,7 +271,7 @@
+
+     for (struct test_cert *c =3D certs; c->cert; c++)
+     {
+-        openvpn_snprintf(select_string, sizeof(select_string), "THUMB:%s",=
+ c->hash);
++        snprintf(select_string, sizeof(select_string), "THUMB:%s", c->hash=
+);
+         ctx =3D find_certificate_in_store(select_string, user_store);
+         if (ctx)
+         {
+@@ -304,7 +304,7 @@
+
+     for (struct test_cert *c =3D certs; c->cert; c++)
+     {
+-        openvpn_snprintf(select_string, sizeof(select_string), "SUBJ:%s", =
+c->cname);
++        snprintf(select_string, sizeof(select_string), "SUBJ:%s", c->cname=
+);
+         ctx =3D find_certificate_in_store(select_string, user_store);
+         /* In this case we expect a successful return as there is at least=
+ one valid
+          * cert that matches the common name. But the returned cert may no=
+t exactly match
+@@ -337,7 +337,7 @@
+
+     for (struct test_cert *c =3D certs; c->cert; c++)
+     {
+-        openvpn_snprintf(select_string, sizeof(select_string), "ISSUER:%s"=
+, c->issuer);
++        snprintf(select_string, sizeof(select_string), "ISSUER:%s", c->iss=
+uer);
+         ctx =3D find_certificate_in_store(select_string, user_store);
+         /* In this case we expect a successful return as there is at least=
+ one valid
+          * cert that matches the issuer. But the returned cert may not exa=
+ctly match
+@@ -411,7 +411,7 @@
+         {
+             continue;
+         }
+-        openvpn_snprintf(select_string, sizeof(select_string), "THUMB:%s",=
+ c->hash);
++        snprintf(select_string, sizeof(select_string), "THUMB:%s", c->hash=
+);
+         if (Load_CryptoAPI_certificate(select_string, &x509, &privkey) !=
+=3D 1)
+         {
+             fail_msg("Load_CryptoAPI_certificate failed: <%s>", c->friendl=
+y_name);
+@@ -446,7 +446,7 @@
+         SSL_CTX *ssl_ctx =3D SSL_CTX_new_ex(tls_libctx, NULL, SSLv23_clien=
+t_method());
+         assert_non_null(ssl_ctx);
+
+-        openvpn_snprintf(select_string, sizeof(select_string), "THUMB:%s",=
+ c->hash);
++        snprintf(select_string, sizeof(select_string), "THUMB:%s", c->hash=
+);
+         if (!SSL_CTX_use_CryptoAPI_certificate(ssl_ctx, select_string))
+         {
+             fail_msg("SSL_CTX_use_CryptoAPI_certificate failed: <%s>", c->=
+friendly_name);
+diff --git a/tests/unit_tests/openvpn/test_pkcs11.c b/tests/unit_tests/open=
+vpn/test_pkcs11.c
+index a48e404..84ebb29 100644
+--- a/tests/unit_tests/openvpn/test_pkcs11.c
++++ b/tests/unit_tests/openvpn/test_pkcs11.c
+@@ -161,7 +161,7 @@
+     }
+     else if (flags & GET_USER_PASS_PASSWORD_ONLY)
+     {
+-        openvpn_snprintf(up->password, sizeof(up->password), "%s", PIN);
++        snprintf(up->password, sizeof(up->password), "%s", PIN);
+     }
+     else
+     {
+@@ -204,8 +204,8 @@
+     {
+         fail_msg("make tmpfile using template <%s> failed (error =3D %d)",=
+ softhsm2_conf_path, errno);
+     }
+-    openvpn_snprintf(config, sizeof(config), "directories.tokendir=3D%s/",
+-                     softhsm2_tokens_path);
++    snprintf(config, sizeof(config), "directories.tokendir=3D%s/",
++             softhsm2_tokens_path);
+     assert_int_equal(write(fd, config, strlen(config)), strlen(config));
+     close(fd);
+
+
+--=20
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/547?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings
 
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: Id95e0124d943912439c6ec6f562c0eb40d434163
-Gerrit-Change-Number: 583
-Gerrit-PatchSet: 1
+Gerrit-Change-Id: I07096977e3b562bcb5d2c6f11673a4175b8e12ac
+Gerrit-Change-Number: 547
+Gerrit-PatchSet: 3
 Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
+Gerrit-Reviewer: cron2 <gert@...1296...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
+Gerrit-Reviewer: ordex <a@...2181...>
+Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Attention: cron2 <gert@...1296...>
 Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-MessageType: newchange
+Gerrit-Attention: ordex <a@...2181...>
+Gerrit-MessageType: newpatchset
 
---x4kCOjMO9mc=
+--b00XC1yMbBU=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p> Attention is currently required from: flichtenheld. </p>
-<p>plaisthos would like flichtenheld to <strong>review</strong> this change.
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/583?usp=3Demail">Vi=
-ew Change</a></p><pre style=3D"font-family: monospace,monospace; white-spac=
-e: pre-wrap;">Only run coverity scan in OpenVPN/OpenVPN repository<br><br>T=
-his avoids the error message triggering every night that the run<br>failed =
-in forked repositories<br><br>Change-Id: Id95e0124d943912439c6ec6f562c0eb40=
-d434163<br>Signed-off-by: Arne Schwabe &lt;arne@...1227...&gt;<br>---<br>M =
-.github/workflows/coverity-scan.yml<br>1 file changed, 3 insertions(+), 0 d=
-eletions(-)<br><br></pre><pre style=3D"font-family: monospace,monospace; wh=
-ite-space: pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/openvpn refs/=
-changes/83/583/1</pre><pre style=3D"font-family: monospace,monospace; white=
--space: pre-wrap;"><span>diff --git a/.github/workflows/coverity-scan.yml b=
-/.github/workflows/coverity-scan.yml</span><br><span>index e289746..37b8102=
- 100644</span><br><span>--- a/.github/workflows/coverity-scan.yml</span><br=
-><span>+++ b/.github/workflows/coverity-scan.yml</span><br><span>@@ -6,6 +6=
-,9 @@</span><br><span> </span><br><span> jobs:</span><br><span>   latest:</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+    # Running coverit=
-y requires the secrets.COVERITY_SCAN_TOKEN token</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+    # which is only available on the main repo=
-sitory</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if: githu=
-b.repository_owner =3D=3D &#39;OpenVPN&#39;</span><br><span>     runs-on: u=
-buntu-latest</span><br><span>     steps:</span><br><span>       - name: Che=
-ck submission cache</span><br><span></span><br></pre><p>To view, visit <a h=
-ref=3D"http://gerrit.openvpn.net/c/openvpn/+/583?usp=3Demail">change 583</a=
->. To unsubscribe, or for help writing mail filters, visit <a href=3D"http:=
-//gerrit.openvpn.net/settings">settings</a>.</p><div itemscope itemtype=3D"=
-http://schema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=
-=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://ger=
-rit.openvpn.net/c/openvpn/+/583?usp=3Demail"/><meta itemprop=3D"name" conte=
-nt=3D"View Change"/></div></div>
+<p> Attention is currently required from: cron2, flichtenheld, ordex, plais=
+thos. </p>
+<p>plaisthos <strong>uploaded patch set #3</strong> to this change.</p><p><=
+a href=3D"http://gerrit.openvpn.net/c/openvpn/+/547?usp=3Demail">View Chang=
+e</a></p><p>The following approvals got outdated and were removed:
+Code-Review+2 by ordex, Code-Review-1 by cron2</p><p>The change is no longe=
+r submittable: Code-Review and checks~ChecksSubmitRule are unsatisfied now.=
+</p><pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"=
+>Remove openvpn_snprintf and similar functions<br><br>Old Microsoft version=
+s did strange behaviour but according to the<br>newly added unit test and<b=
+r>https://stackoverflow.com/questions/7706936/is-snprintf-always-null-termi=
+nating<br>this is now standard conforming and we can use the normal snprint=
+f<br>method.<br><br>Microsoft own documentation to swprintf also says you n=
+owadays need to<br>define _CRT_NON_CONFORMING_SWPRINTFS to get to non-stand=
+ard behaviour.<br><br>Change-Id: I07096977e3b562bcb5d2c6f11673a4175b8e12ac<=
+br>Signed-off-by: Arne Schwabe &lt;arne@...1227...&gt;<br>---<br>M src/open=
+vpn/buffer.c<br>M src/openvpn/buffer.h<br>M src/openvpn/crypto.c<br>M src/o=
+penvpn/crypto_mbedtls.c<br>M src/openvpn/dns.c<br>M src/openvpn/env_set.c<b=
+r>M src/openvpn/error.c<br>M src/openvpn/init.c<br>M src/openvpn/manage.c<b=
+r>M src/openvpn/options.c<br>M src/openvpn/pkcs11.c<br>M src/openvpn/platfo=
+rm.c<br>M src/openvpn/plugin.c<br>M src/openvpn/pool.c<br>M src/openvpn/pro=
+xy.c<br>M src/openvpn/ps.c<br>M src/openvpn/route.c<br>M src/openvpn/run_co=
+mmand.h<br>M src/openvpn/socket.c<br>M src/openvpn/socks.c<br>M src/openvpn=
+/ssl_mbedtls.c<br>M src/openvpn/ssl_ncp.c<br>M src/openvpn/ssl_openssl.c<br=
+>M src/openvpn/ssl_verify.c<br>M src/openvpn/ssl_verify_mbedtls.c<br>M src/=
+openvpn/ssl_verify_openssl.c<br>M src/openvpn/tls_crypt.c<br>M src/openvpn/=
+tun.c<br>M src/openvpn/win32.c<br>M src/openvpn/win32.h<br>M src/openvpn/xk=
+ey_helper.c<br>M src/openvpnserv/common.c<br>M src/openvpnserv/interactive.=
+c<br>M src/openvpnserv/service.h<br>M src/openvpnserv/validate.c<br>M tests=
+/unit_tests/openvpn/test_buffer.c<br>M tests/unit_tests/openvpn/test_crypto=
+api.c<br>M tests/unit_tests/openvpn/test_pkcs11.c<br>38 files changed, 291 =
+insertions(+), 333 deletions(-)<br><br></pre><pre style=3D"font-family: mon=
+ospace,monospace; white-space: pre-wrap;">git pull ssh://gerrit.openvpn.net=
+:29418/openvpn refs/changes/47/547/3</pre><pre style=3D"font-family: monosp=
+ace,monospace; white-space: pre-wrap;"><span>diff --git a/src/openvpn/buffe=
+r.c b/src/openvpn/buffer.c</span><br><span>index 66fd63f..3a8069c 100644</s=
+pan><br><span>--- a/src/openvpn/buffer.c</span><br><span>+++ b/src/openvpn/=
+buffer.c</span><br><span>@@ -279,32 +279,6 @@</span><br><span>     return r=
+et;</span><br><span> }</span><br><span> </span><br><span style=3D"color: hs=
+l(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-/*=
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">- * This is necessary =
+due to certain buggy implementations of snprintf,</span><br><span style=3D"=
+color: hsl(0, 100%, 40%);">- * that don&#39;t guarantee null termination fo=
+r size &gt; 0.</span><br><span style=3D"color: hsl(0, 100%, 40%);">- *</spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">- * Return false on overflo=
+w.</span><br><span style=3D"color: hsl(0, 100%, 40%);">- *</span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">- * This functionality is duplicated in=
+ src/openvpnserv/common.c</span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">- * Any modifications here should be done to the other place as well.</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">- */</span><br><span styl=
+e=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 10=
+0%, 40%);">-bool</span><br><span style=3D"color: hsl(0, 100%, 40%);">-openv=
+pn_snprintf(char *str, size_t size, const char *format, ...)</span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">-{</span><br><span style=3D"color: hs=
+l(0, 100%, 40%);">-    va_list arglist;</span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-    int len =3D -1;</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-    if (size &gt; 0)</span><br><span style=3D"color: hsl(0,=
+ 100%, 40%);">-    {</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
+       va_start(arglist, format);</span><br><span style=3D"color: hsl(0, 10=
+0%, 40%);">-        len =3D vsnprintf(str, size, format, arglist);</span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-        va_end(arglist);</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-        str[size - 1] =3D 0=
+;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    }</span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">-    return (len &gt;=3D 0 &amp;&amp;=
+ len &lt; size);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-}</sp=
+an><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span> /*</spa=
+n><br><span>  * write a string to the end of a buffer that was</span><br><s=
+pan>  * truncated by buf_printf</span><br><span>diff --git a/src/openvpn/bu=
+ffer.h b/src/openvpn/buffer.h</span><br><span>index 7c2f75a..27c3199 100644=
+</span><br><span>--- a/src/openvpn/buffer.h</span><br><span>+++ b/src/openv=
+pn/buffer.h</span><br><span>@@ -448,19 +448,6 @@</span><br><span>  */</span=
+><br><span> bool buf_puts(struct buffer *buf, const char *str);</span><br><=
+span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-/*</span><br><s=
+pan style=3D"color: hsl(0, 100%, 40%);">- * Like snprintf but guarantees nu=
+ll termination for size &gt; 0</span><br><span style=3D"color: hsl(0, 100%,=
+ 40%);">- */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-bool open=
+vpn_snprintf(char *str, size_t size, const char *format, ...)</span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-#ifdef __GNUC__</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-#if __USE_MINGW_ANSI_STDIO</span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">-__attribute__ ((format(gnu_printf, 3=
+, 4)))</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#else</span><br=
+><span style=3D"color: hsl(0, 100%, 40%);">-__attribute__ ((format(__printf=
+__, 3, 4)))</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#endif</sp=
+an><br><span style=3D"color: hsl(0, 100%, 40%);">-#endif</span><br><span st=
+yle=3D"color: hsl(0, 100%, 40%);">-;</span><br><span style=3D"color: hsl(0,=
+ 100%, 40%);">-</span><br><span> </span><br><span> /*</span><br><span>  * r=
+emove/add trailing characters</span><br><span>diff --git a/src/openvpn/cryp=
+to.c b/src/openvpn/crypto.c</span><br><span>index 5d05cc4..207f145 100644</=
+span><br><span>--- a/src/openvpn/crypto.c</span><br><span>+++ b/src/openvpn=
+/crypto.c</span><br><span>@@ -874,11 +874,11 @@</span><br><span> </span><br=
+><span>     key_direction_state_init(&amp;kds, key_direction);</span><br><s=
+pan> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-    openvpn_snpr=
+intf(log_prefix, sizeof(log_prefix), &quot;Outgoing %s&quot;, name);</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+    snprintf(log_prefix, s=
+izeof(log_prefix), &quot;Outgoing %s&quot;, name);</span><br><span>     ini=
+t_key_ctx(&amp;ctx-&gt;encrypt, &amp;key2-&gt;keys[kds.out_key], kt,</span>=
+<br><span>                  OPENVPN_OP_ENCRYPT, log_prefix);</span><br><spa=
+n> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-    openvpn_snprin=
+tf(log_prefix, sizeof(log_prefix), &quot;Incoming %s&quot;, name);</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+    snprintf(log_prefix, siz=
+eof(log_prefix), &quot;Incoming %s&quot;, name);</span><br><span>     init_=
+key_ctx(&amp;ctx-&gt;decrypt, &amp;key2-&gt;keys[kds.in_key], kt,</span><br=
+><span>                  OPENVPN_OP_DECRYPT, log_prefix);</span><br><span> =
+</span><br><span>diff --git a/src/openvpn/crypto_mbedtls.c b/src/openvpn/cr=
+ypto_mbedtls.c</span><br><span>index c230292..32511f0 100644</span><br><spa=
+n>--- a/src/openvpn/crypto_mbedtls.c</span><br><span>+++ b/src/openvpn/cryp=
+to_mbedtls.c</span><br><span>@@ -128,7 +128,7 @@</span><br><span> {</span><=
+br><span>     char prefix[256];</span><br><span> </span><br><span style=3D"=
+color: hsl(0, 100%, 40%);">-    if (!openvpn_snprintf(prefix, sizeof(prefix=
+), &quot;%s:%d&quot;, func, line))</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+    if (!snprintf(prefix, sizeof(prefix), &quot;%s:%d&quot;,=
+ func, line))</span><br><span>     {</span><br><span>         return mbed_l=
+og_err(flags, errval, func);</span><br><span>     }</span><br><span>@@ -239=
+,11 +239,11 @@</span><br><span>     char header[1000+1] =3D { 0 };</span><b=
+r><span>     char footer[1000+1] =3D { 0 };</span><br><span> </span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-    if (!openvpn_snprintf(header, s=
+izeof(header), &quot;-----BEGIN %s-----\n&quot;, name))</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+    if (!snprintf(header, sizeof(header=
+), &quot;-----BEGIN %s-----\n&quot;, name))</span><br><span>     {</span><b=
+r><span>         return false;</span><br><span>     }</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-    if (!openvpn_snprintf(footer, sizeof(fo=
+oter), &quot;-----END %s-----\n&quot;, name))</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+    if (!snprintf(footer, sizeof(footer), &quot;-=
+----END %s-----\n&quot;, name))</span><br><span>     {</span><br><span>    =
+     return false;</span><br><span>     }</span><br><span>@@ -278,11 +278,1=
+1 @@</span><br><span>     char header[1000+1] =3D { 0 };</span><br><span>  =
+   char footer[1000+1] =3D { 0 };</span><br><span> </span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-    if (!openvpn_snprintf(header, sizeof(he=
+ader), &quot;-----BEGIN %s-----&quot;, name))</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+    if (!snprintf(header, sizeof(header), &quot;-=
+----BEGIN %s-----&quot;, name))</span><br><span>     {</span><br><span>    =
+     return false;</span><br><span>     }</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-    if (!openvpn_snprintf(footer, sizeof(footer), &quot=
+;-----END %s-----&quot;, name))</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+    if (!snprintf(footer, sizeof(footer), &quot;-----END %s----=
+-&quot;, name))</span><br><span>     {</span><br><span>         return fals=
+e;</span><br><span>     }</span><br><span>diff --git a/src/openvpn/dns.c b/=
+src/openvpn/dns.c</span><br><span>index 7de3991..0539ca5 100644</span><br><=
+span>--- a/src/openvpn/dns.c</span><br><span>+++ b/src/openvpn/dns.c</span>=
+<br><span>@@ -349,11 +349,11 @@</span><br><span> </span><br><span>     if (=
+j &lt; 0)</span><br><span>     {</span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-        name_ok =3D openvpn_snprintf(name, sizeof(name), format,=
+ i);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        name_ok=
+ =3D snprintf(name, sizeof(name), format, i);</span><br><span>     }</span>=
+<br><span>     else</span><br><span>     {</span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">-        name_ok =3D openvpn_snprintf(name, sizeof(name=
+), format, i, j);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+      name_ok =3D snprintf(name, sizeof(name), format, i, j);</span><br><sp=
+an>     }</span><br><span> </span><br><span>     if (!name_ok)</span><br><s=
+pan>diff --git a/src/openvpn/env_set.c b/src/openvpn/env_set.c</span><br><s=
+pan>index b13d01e..81ab59e 100644</span><br><span>--- a/src/openvpn/env_set=
+.c</span><br><span>+++ b/src/openvpn/env_set.c</span><br><span>@@ -259,7 +2=
+59,7 @@</span><br><span> setenv_counter(struct env_set *es, const char *nam=
+e, counter_type value)</span><br><span> {</span><br><span>     char buf[64]=
+;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    openvpn_snprintf=
+(buf, sizeof(buf), counter_format, value);</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+    snprintf(buf, sizeof(buf), counter_format, value=
+);</span><br><span>     setenv_str(es, name, buf);</span><br><span> }</span=
+><br><span> </span><br><span>@@ -267,7 +267,7 @@</span><br><span> setenv_in=
+t(struct env_set *es, const char *name, int value)</span><br><span> {</span=
+><br><span>     char buf[64];</span><br><span style=3D"color: hsl(0, 100%, =
+40%);">-    openvpn_snprintf(buf, sizeof(buf), &quot;%d&quot;, value);</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+    snprintf(buf, sizeof=
+(buf), &quot;%d&quot;, value);</span><br><span>     setenv_str(es, name, bu=
+f);</span><br><span> }</span><br><span> </span><br><span>@@ -275,7 +275,7 @=
+@</span><br><span> setenv_long_long(struct env_set *es, const char *name, l=
+ong long value)</span><br><span> {</span><br><span>     char buf[64];</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-    openvpn_snprintf(buf, s=
+izeof(buf), &quot;%&quot; PRIi64, (int64_t)value);</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+    snprintf(buf, sizeof(buf), &quot;%&quot;=
+ PRIi64, (int64_t)value);</span><br><span>     setenv_str(es, name, buf);</=
+span><br><span> }</span><br><span> </span><br><span>@@ -310,7 +310,7 @@</sp=
+an><br><span>     strcpy(tmpname, name);</span><br><span>     while (NULL !=
+=3D env_set_get(es, tmpname) &amp;&amp; counter &lt; 1000)</span><br><span>=
+     {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        ASSERT(=
+openvpn_snprintf(tmpname, tmpname_len, &quot;%s_%u&quot;, name, counter));<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+        ASSERT(snpri=
+ntf(tmpname, tmpname_len, &quot;%s_%u&quot;, name, counter));</span><br><sp=
+an>         counter++;</span><br><span>     }</span><br><span>     if (coun=
+ter &lt; 1000)</span><br><span>diff --git a/src/openvpn/error.c b/src/openv=
+pn/error.c</span><br><span>index 245a2d5..ec65d5e 100644</span><br><span>--=
+- a/src/openvpn/error.c</span><br><span>+++ b/src/openvpn/error.c</span><br=
+><span>@@ -274,14 +274,14 @@</span><br><span> </span><br><span>     if ((fl=
+ags &amp; M_ERRNO) &amp;&amp; e)</span><br><span>     {</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-        openvpn_snprintf(m2, ERR_BUF_SIZE=
+, &quot;%s: %s (errno=3D%d)&quot;,</span><br><span style=3D"color: hsl(0, 1=
+00%, 40%);">-                         m1, openvpn_strerror(e, crt_error, &a=
+mp;gc), e);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        =
+snprintf(m2, ERR_BUF_SIZE, &quot;%s: %s (errno=3D%d)&quot;,</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+                 m1, openvpn_strerr=
+or(e, crt_error, &amp;gc), e);</span><br><span>         SWAP;</span><br><sp=
+an>     }</span><br><span> </span><br><span>     if (flags &amp; M_OPTERR)<=
+/span><br><span>     {</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
+-        openvpn_snprintf(m2, ERR_BUF_SIZE, &quot;Options error: %s&quot;, =
+m1);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        snprint=
+f(m2, ERR_BUF_SIZE, &quot;Options error: %s&quot;, m1);</span><br><span>   =
+      SWAP;</span><br><span>     }</span><br><span> </span><br><span>@@ -32=
+1,10 +321,10 @@</span><br><span>         const struct virtual_output *vo =
+=3D msg_get_virtual_output();</span><br><span>         if (vo)</span><br><s=
+pan>         {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-       =
+     openvpn_snprintf(m2, ERR_BUF_SIZE, &quot;%s%s%s&quot;,</span><br><span=
+ style=3D"color: hsl(0, 100%, 40%);">-                             prefix,<=
+/span><br><span style=3D"color: hsl(0, 100%, 40%);">-                      =
+       prefix_sep,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
+                          m1);</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+            snprintf(m2, ERR_BUF_SIZE, &quot;%s%s%s&quot;,</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+                     pref=
+ix,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+                =
+     prefix_sep,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+                  m1);</span><br><span>             virtual_output_print(vo=
+, flags, m2);</span><br><span>         }</span><br><span>     }</span><br><=
+span>diff --git a/src/openvpn/init.c b/src/openvpn/init.c</span><br><span>i=
+ndex e67f10e..ec0c309 100644</span><br><span>--- a/src/openvpn/init.c</span=
+><br><span>+++ b/src/openvpn/init.c</span><br><span>@@ -359,7 +359,7 @@</sp=
+an><br><span>         char *out =3D malloc(len);</span><br><span>         c=
+heck_malloc_return(out);</span><br><span> </span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">-        openvpn_snprintf(out, len, &quot;%s,%s,%s,%s&q=
+uot;, ce-&gt;remote, ce-&gt;remote_port, proto, status);</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+        snprintf(out, len, &quot;%s,%s=
+,%s,%s&quot;, ce-&gt;remote, ce-&gt;remote_port, proto, status);</span><br>=
+<span>         *remote =3D out;</span><br><span>     }</span><br><span>    =
+ else</span><br><span>diff --git a/src/openvpn/manage.c b/src/openvpn/manag=
+e.c</span><br><span>index 43c5507..89591ea 100644</span><br><span>--- a/src=
+/openvpn/manage.c</span><br><span>+++ b/src/openvpn/manage.c</span><br><spa=
+n>@@ -515,8 +515,8 @@</span><br><span>     char out[32];</span><br><span> <=
+/span><br><span>     /* do in a roundabout way to work around possible ming=
+w or mingw-glibc bug */</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>-    openvpn_snprintf(in, sizeof(in), counter_format, man-&gt;persist.byte=
+s_in + dco_read_bytes);</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>-    openvpn_snprintf(out, sizeof(out), counter_format, man-&gt;persist.by=
+tes_out + dco_write_bytes);</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+    snprintf(in, sizeof(in), counter_format, man-&gt;persist.bytes_=
+in + dco_read_bytes);</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+    snprintf(out, sizeof(out), counter_format, man-&gt;persist.bytes_out =
++ dco_write_bytes);</span><br><span>     msg(M_CLIENT, &quot;&gt;BYTECOUNT:=
+%s,%s&quot;, in, out);</span><br><span> }</span><br><span> </span><br><span=
+>@@ -528,8 +528,8 @@</span><br><span>     char in[32];</span><br><span>    =
+ char out[32];</span><br><span>     /* do in a roundabout way to work aroun=
+d possible mingw or mingw-glibc bug */</span><br><span style=3D"color: hsl(=
+0, 100%, 40%);">-    openvpn_snprintf(in, sizeof(in), counter_format, *byte=
+s_in_total);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    openv=
+pn_snprintf(out, sizeof(out), counter_format, *bytes_out_total);</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+    snprintf(in, sizeof(in), c=
+ounter_format, *bytes_in_total);</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+    snprintf(out, sizeof(out), counter_format, *bytes_out_tota=
+l);</span><br><span>     msg(M_CLIENT, &quot;&gt;BYTECOUNT_CLI:%lu,%s,%s&qu=
+ot;, mdac-&gt;cid, in, out);</span><br><span>     mdac-&gt;bytecount_last_u=
+pdate =3D now;</span><br><span> }</span><br><span>diff --git a/src/openvpn/=
+options.c b/src/openvpn/options.c</span><br><span>index 07387cd..abcde89 10=
+0644</span><br><span>--- a/src/openvpn/options.c</span><br><span>+++ b/src/=
+openvpn/options.c</span><br><span>@@ -1427,7 +1427,7 @@</span><br><span>   =
+  for (int i =3D 1; i &lt;=3D opt_max; ++i)</span><br><span>     {</span><b=
+r><span>         char name[32];</span><br><span style=3D"color: hsl(0, 100%=
+, 40%);">-        openvpn_snprintf(name, sizeof(name), &quot;foreign_option=
+_%d&quot;, i);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
+   snprintf(name, sizeof(name), &quot;foreign_option_%d&quot;, i);</span><b=
+r><span> </span><br><span>         const char *env_str =3D env_set_get(es, =
+name);</span><br><span>         const char *value =3D strchr(env_str, &#39;=
+=3D&#39;) + 1;</span><br><span>@@ -1482,7 +1482,7 @@</span><br><span>     w=
+hile (o-&gt;foreign_option_index &lt; opt_max)</span><br><span>     {</span=
+><br><span>         char name[32];</span><br><span style=3D"color: hsl(0, 1=
+00%, 40%);">-        openvpn_snprintf(name, sizeof(name), &quot;foreign_opt=
+ion_%d&quot;, opt_max--);</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+        snprintf(name, sizeof(name), &quot;foreign_option_%d&quot;, o=
+pt_max--);</span><br><span>         setenv_del(es, name);</span><br><span> =
+    }</span><br><span> }</span><br><span>@@ -5674,8 +5674,8 @@</span><br><s=
+pan> #ifndef ENABLE_SMALL</span><br><span>     {</span><br><span>         c=
+har script_name[100];</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
+        openvpn_snprintf(script_name, sizeof(script_name),</span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">-                         &quot;--%s sc=
+ript&quot;, type);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+       snprintf(script_name, sizeof(script_name),</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+                 &quot;--%s script&quot;, typ=
+e);</span><br><span> </span><br><span>         if (check_cmd_access(*script=
+, script_name, (in_chroot ? options-&gt;chroot_dir : NULL)))</span><br><spa=
+n>         {</span><br><span>diff --git a/src/openvpn/pkcs11.c b/src/openvp=
+n/pkcs11.c</span><br><span>index 35a02c2..418f6bb 100644</span><br><span>--=
+- a/src/openvpn/pkcs11.c</span><br><span>+++ b/src/openvpn/pkcs11.c</span><=
+br><span>@@ -201,7 +201,7 @@</span><br><span>     CLEAR(token_resp);</span>=
+<br><span>     token_resp.defined =3D false;</span><br><span>     token_res=
+p.nocache =3D true;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
+  openvpn_snprintf(</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+    snprintf(</span><br><span>         token_resp.username,</span><br><span=
+>         sizeof(token_resp.username),</span><br><span>         &quot;Pleas=
+e insert %s token&quot;,</span><br><span>@@ -245,7 +245,7 @@</span><br><spa=
+n> </span><br><span>     ASSERT(token!=3DNULL);</span><br><span> </span><br=
+><span style=3D"color: hsl(0, 100%, 40%);">-    openvpn_snprintf(prompt, si=
+zeof(prompt), &quot;%s token&quot;, token-&gt;label);</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    snprintf(prompt, sizeof(prompt), &quo=
+t;%s token&quot;, token-&gt;label);</span><br><span> </span><br><span>     =
+token_pass.defined =3D false;</span><br><span>     token_pass.nocache =3D t=
+rue;</span><br><span>@@ -719,7 +719,7 @@</span><br><span> </span><br><span>=
+         id_resp.defined =3D false;</span><br><span>         id_resp.nocach=
+e =3D true;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        op=
+envpn_snprintf(</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+    snprintf(</span><br><span>             id_resp.username,</span><br><spa=
+n>             sizeof(id_resp.username),</span><br><span>             &quot=
+;Please specify PKCS#11 id to use&quot;</span><br><span>diff --git a/src/op=
+envpn/platform.c b/src/openvpn/platform.c</span><br><span>index 9853dac..3d=
+9d59e 100644</span><br><span>--- a/src/openvpn/platform.c</span><br><span>+=
+++ b/src/openvpn/platform.c</span><br><span>@@ -564,9 +564,9 @@</span><br><=
+span>     {</span><br><span>         ++attempts;</span><br><span> </span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-        if (!openvpn_snprintf(=
+fname, sizeof(fname), fname_fmt, max_prefix_len,</span><br><span style=3D"c=
+olor: hsl(0, 100%, 40%);">-                              prefix, (unsigned =
+long) get_random(),</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
+                            (unsigned long) get_random()))</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+        if (!snprintf(fname, sizeof(=
+fname), fname_fmt, max_prefix_len,</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+                      prefix, (unsigned long) get_random(),<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+                    =
+  (unsigned long) get_random()))</span><br><span>         {</span><br><span=
+>             msg(M_WARN, &quot;ERROR: temporary filename too long&quot;);<=
+/span><br><span>             return NULL;</span><br><span>diff --git a/src/=
+openvpn/plugin.c b/src/openvpn/plugin.c</span><br><span>index 2ad459c..944c=
+e94 100644</span><br><span>--- a/src/openvpn/plugin.c</span><br><span>+++ b=
+/src/openvpn/plugin.c</span><br><span>@@ -260,7 +260,7 @@</span><br><span> =
+    {</span><br><span>         char full[PATH_MAX];</span><br><span> </span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-        openvpn_snprintf(fu=
+ll, sizeof(full), &quot;%s/%s&quot;, PLUGIN_LIBDIR, p-&gt;so_pathname);</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+        snprintf(full, =
+sizeof(full), &quot;%s/%s&quot;, PLUGIN_LIBDIR, p-&gt;so_pathname);</span><=
+br><span>         p-&gt;handle =3D dlopen(full, RTLD_NOW);</span><br><span>=
+     }</span><br><span>     else</span><br><span>@@ -409,7 +409,7 @@</span>=
+<br><span> </span><br><span>         gc_init(&amp;gc);</span><br><span>    =
+     msg_fmt =3D gc_malloc(ERR_BUF_SIZE, false, &amp;gc);</span><br><span s=
+tyle=3D"color: hsl(0, 100%, 40%);">-        openvpn_snprintf(msg_fmt, ERR_B=
+UF_SIZE, &quot;PLUGIN %s: %s&quot;, name, format);</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+        snprintf(msg_fmt, ERR_BUF_SIZE, &quo=
+t;PLUGIN %s: %s&quot;, name, format);</span><br><span>         x_msg_va(msg=
+_flags, msg_fmt, arglist);</span><br><span> </span><br><span>         gc_fr=
+ee(&amp;gc);</span><br><span>diff --git a/src/openvpn/pool.c b/src/openvpn/=
+pool.c</span><br><span>index f706c1a..e3c3708 100644</span><br><span>--- a/=
+src/openvpn/pool.c</span><br><span>+++ b/src/openvpn/pool.c</span><br><span=
+>@@ -766,7 +766,7 @@</span><br><span>         ifconfig_pool_handle h;</span=
+><br><span>         in_addr_t local, remote;</span><br><span>         char =
+buf[256];</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        open=
+vpn_snprintf(buf, sizeof(buf), &quot;common-name-%d&quot;, i);</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+        snprintf(buf, sizeof(buf=
+), &quot;common-name-%d&quot;, i);</span><br><span> #ifdef DUP_CN</span><br=
+><span>         cn =3D NULL;</span><br><span> #else</span><br><span>diff --=
+git a/src/openvpn/proxy.c b/src/openvpn/proxy.c</span><br><span>index 5c1cd=
+cb..ba3d87c 100644</span><br><span>--- a/src/openvpn/proxy.c</span><br><spa=
+n>+++ b/src/openvpn/proxy.c</span><br><span>@@ -582,9 +582,9 @@</span><br><=
+span>     {</span><br><span>         if (p-&gt;options.custom_headers[i].co=
+ntent)</span><br><span>         {</span><br><span style=3D"color: hsl(0, 10=
+0%, 40%);">-            openvpn_snprintf(buf, sizeof(buf), &quot;%s: %s&quo=
+t;,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-                  =
+           p-&gt;options.custom_headers[i].name,</span><br><span style=3D"c=
+olor: hsl(0, 100%, 40%);">-                             p-&gt;options.custo=
+m_headers[i].content);</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+            snprintf(buf, sizeof(buf), &quot;%s: %s&quot;,</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+                     p-&gt;option=
+s.custom_headers[i].name,</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+                     p-&gt;options.custom_headers[i].content);</span>=
+<br><span>             if (!strcasecmp(p-&gt;options.custom_headers[i].name=
+, &quot;Host&quot;))</span><br><span>             {</span><br><span>       =
+          host_header_sent =3D true;</span><br><span>@@ -592,8 +592,8 @@</s=
+pan><br><span>         }</span><br><span>         else</span><br><span>    =
+     {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            ope=
+nvpn_snprintf(buf, sizeof(buf), &quot;%s&quot;,</span><br><span style=3D"co=
+lor: hsl(0, 100%, 40%);">-                             p-&gt;options.custom=
+_headers[i].name);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+           snprintf(buf, sizeof(buf), &quot;%s&quot;,</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+                     p-&gt;options.custom=
+_headers[i].name);</span><br><span>             if (!strncasecmp(p-&gt;opti=
+ons.custom_headers[i].name, &quot;Host:&quot;, 5))</span><br><span>        =
+     {</span><br><span>                 host_header_sent =3D true;</span><b=
+r><span>@@ -609,7 +609,7 @@</span><br><span> </span><br><span>     if (!hos=
+t_header_sent)</span><br><span>     {</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-        openvpn_snprintf(buf, sizeof(buf), &quot;Host: %s&q=
+uot;, host);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
+ snprintf(buf, sizeof(buf), &quot;Host: %s&quot;, host);</span><br><span>  =
+       msg(D_PROXY, &quot;Send to HTTP proxy: &#39;%s&#39;&quot;, buf);</sp=
+an><br><span>         if (!send_line_crlf(sd, buf))</span><br><span>       =
+  {</span><br><span>@@ -620,8 +620,8 @@</span><br><span>     /* send User-A=
+gent string if provided */</span><br><span>     if (p-&gt;options.user_agen=
+t)</span><br><span>     {</span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">-        openvpn_snprintf(buf, sizeof(buf), &quot;User-Agent: %s&quot;,<=
+/span><br><span style=3D"color: hsl(0, 100%, 40%);">-                      =
+   p-&gt;options.user_agent);</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+        snprintf(buf, sizeof(buf), &quot;User-Agent: %s&quot;,</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+                 p-&gt=
+;options.user_agent);</span><br><span>         msg(D_PROXY, &quot;Send to H=
+TTP proxy: &#39;%s&#39;&quot;, buf);</span><br><span>         if (!send_lin=
+e_crlf(sd, buf))</span><br><span>         {</span><br><span>@@ -667,10 +667=
+,10 @@</span><br><span>     else</span><br><span>     {</span><br><span>   =
+      /* format HTTP CONNECT message */</span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-        openvpn_snprintf(buf, sizeof(buf), &quot;CONNECT =
+%s:%s HTTP/%s&quot;,</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
+                        host,</span><br><span style=3D"color: hsl(0, 100%, =
+40%);">-                         port,</span><br><span style=3D"color: hsl(=
+0, 100%, 40%);">-                         p-&gt;options.http_version);</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+        snprintf(buf, si=
+zeof(buf), &quot;CONNECT %s:%s HTTP/%s&quot;,</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+                 host,</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+                 port,</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+                 p-&gt;options.http_versi=
+on);</span><br><span> </span><br><span>         msg(D_PROXY, &quot;Send to =
+HTTP proxy: &#39;%s&#39;&quot;, buf);</span><br><span> </span><br><span>@@ =
+-692,8 +692,8 @@</span><br><span>                 break;</span><br><span> <=
+/span><br><span>             case HTTP_AUTH_BASIC:</span><br><span style=3D=
+"color: hsl(0, 100%, 40%);">-                openvpn_snprintf(buf, sizeof(b=
+uf), &quot;Proxy-Authorization: Basic %s&quot;,</span><br><span style=3D"co=
+lor: hsl(0, 100%, 40%);">-                                 username_passwor=
+d_as_base64(p, &amp;gc));</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+                snprintf(buf, sizeof(buf), &quot;Proxy-Authorization:=
+ Basic %s&quot;,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+                      username_password_as_base64(p, &amp;gc));</span><br><=
+span>                 msg(D_PROXY, &quot;Attempting Basic Proxy-Authorizati=
+on&quot;);</span><br><span>                 dmsg(D_SHOW_KEYS, &quot;Send to=
+ HTTP proxy: &#39;%s&#39;&quot;, buf);</span><br><span>                 if =
+(!send_line_crlf(sd, buf))</span><br><span>@@ -705,14 +705,14 @@</span><br>=
+<span> #if NTLM</span><br><span>             case HTTP_AUTH_NTLM2:</span><b=
+r><span>                 /* keep-alive connection */</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-                openvpn_snprintf(buf, sizeo=
+f(buf), &quot;Proxy-Connection: Keep-Alive&quot;);</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+                snprintf(buf, sizeof(buf), &=
+quot;Proxy-Connection: Keep-Alive&quot;);</span><br><span>                 =
+if (!send_line_crlf(sd, buf))</span><br><span>                 {</span><br>=
+<span>                     goto error;</span><br><span>                 }</=
+span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-     =
+           openvpn_snprintf(buf, sizeof(buf), &quot;Proxy-Authorization: NT=
+LM %s&quot;,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-         =
+                        ntlm_phase_1(p, &amp;gc));</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+                snprintf(buf, sizeof(buf), &=
+quot;Proxy-Authorization: NTLM %s&quot;,</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+                         ntlm_phase_1(p, &amp;gc));</s=
+pan><br><span>                 msg(D_PROXY, &quot;Attempting NTLM Proxy-Aut=
+horization phase 1&quot;);</span><br><span>                 dmsg(D_SHOW_KEY=
+S, &quot;Send to HTTP proxy: &#39;%s&#39;&quot;, buf);</span><br><span>    =
+             if (!send_line_crlf(sd, buf))</span><br><span>@@ -773,7 +773,7=
+ @@</span><br><span> </span><br><span>                 char get[80];</span>=
+<br><span>                 CLEAR(buf2);</span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-                openvpn_snprintf(get, sizeof(get), &quot;=
+%%*s NTLM %%%zus&quot;, sizeof(buf2) - 1);</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+                snprintf(get, sizeof(get), &quot;%%*=
+s NTLM %%%zus&quot;, sizeof(buf2) - 1);</span><br><span>                 np=
+arms =3D sscanf(buf, get, buf2);</span><br><span> </span><br><span>        =
+         /* check for &quot;Proxy-Authenticate: NTLM TlRM...&quot; */</span=
+><br><span>@@ -795,10 +795,10 @@</span><br><span>             /* now send t=
+he phase 3 reply */</span><br><span> </span><br><span>             /* forma=
+t HTTP CONNECT message */</span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">-            openvpn_snprintf(buf, sizeof(buf), &quot;CONNECT %s:%s HTTP=
+/%s&quot;,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-           =
+                  host,</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>-                             port,</span><br><span style=3D"color: hsl(0,=
+ 100%, 40%);">-                             p-&gt;options.http_version);</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+            snprintf(b=
+uf, sizeof(buf), &quot;CONNECT %s:%s HTTP/%s&quot;,</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+                     host,</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+                     port,</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+                     p-&gt;=
+options.http_version);</span><br><span> </span><br><span>             msg(D=
+_PROXY, &quot;Send to HTTP proxy: &#39;%s&#39;&quot;, buf);</span><br><span=
+> </span><br><span>@@ -809,7 +809,7 @@</span><br><span>             }</span=
+><br><span> </span><br><span>             /* keep-alive connection */</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-            openvpn_snprint=
+f(buf, sizeof(buf), &quot;Proxy-Connection: Keep-Alive&quot;);</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+            snprintf(buf, sizeof=
+(buf), &quot;Proxy-Connection: Keep-Alive&quot;);</span><br><span>         =
+    if (!send_line_crlf(sd, buf))</span><br><span>             {</span><br>=
+<span>                 goto error;</span><br><span>@@ -829,7 +829,7 @@</spa=
+n><br><span>                     msg(D_PROXY, &quot;NTLM Proxy-Authorizatio=
+n phase 3 failed: received corrupted data from proxy server&quot;);</span><=
+br><span>                     goto error;</span><br><span>                 =
+}</span><br><span style=3D"color: hsl(0, 100%, 40%);">-                open=
+vpn_snprintf(buf, sizeof(buf), &quot;Proxy-Authorization: NTLM %s&quot;, np=
+3);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+                =
+snprintf(buf, sizeof(buf), &quot;Proxy-Authorization: NTLM %s&quot;, np3);<=
+/span><br><span>             }</span><br><span> </span><br><span>          =
+   msg(D_PROXY, &quot;Send to HTTP proxy: &#39;%s&#39;&quot;, buf);</span><=
+br><span>@@ -899,15 +899,15 @@</span><br><span> </span><br><span> </span><b=
+r><span>                 /* build the digest response */</span><br><span st=
+yle=3D"color: hsl(0, 100%, 40%);">-                openvpn_snprintf(uri, si=
+zeof(uri), &quot;%s:%s&quot;,</span><br><span style=3D"color: hsl(0, 100%, =
+40%);">-                                 host,</span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-                                 port);</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+                snprintf(uri, =
+sizeof(uri), &quot;%s:%s&quot;,</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+                         host,</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+                         port);</span><br><span> </s=
+pan><br><span>                 if (opaque)</span><br><span>                =
+ {</span><br><span>                     const int len =3D strlen(opaque)+16=
+;</span><br><span>                     opaque_kv =3D gc_malloc(len, false, =
+&amp;gc);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            =
+        openvpn_snprintf(opaque_kv, len, &quot;, opaque=3D\&quot;%s\&quot;&=
+quot;, opaque);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+                snprintf(opaque_kv, len, &quot;, opaque=3D\&quot;%s\&quot;&=
+quot;, opaque);</span><br><span>                 }</span><br><span> </span>=
+<br><span>                 DigestCalcHA1(algor,</span><br><span>@@ -928,10 =
++928,10 @@</span><br><span>                                    response);</=
+span><br><span> </span><br><span>                 /* format HTTP CONNECT me=
+ssage */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-             =
+   openvpn_snprintf(buf, sizeof(buf), &quot;%s %s HTTP/%s&quot;,</span><br>=
+<span style=3D"color: hsl(0, 100%, 40%);">-                                =
+ http_method,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        =
+                         uri,</span><br><span style=3D"color: hsl(0, 100%, =
+40%);">-                                 p-&gt;options.http_version);</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+                snprintf(=
+buf, sizeof(buf), &quot;%s %s HTTP/%s&quot;,</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+                         http_method,</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+                         uri,</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+                      =
+   p-&gt;options.http_version);</span><br><span> </span><br><span>         =
+        msg(D_PROXY, &quot;Send to HTTP proxy: &#39;%s&#39;&quot;, buf);</s=
+pan><br><span> </span><br><span>@@ -948,21 +948,22 @@</span><br><span>     =
+            }</span><br><span> </span><br><span>                 /* send di=
+gest response */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-     =
+           int sret =3D openvpn_snprintf(buf, sizeof(buf), &quot;Proxy-Auth=
+orization: Digest username=3D\&quot;%s\&quot;, realm=3D\&quot;%s\&quot;, no=
+nce=3D\&quot;%s\&quot;, uri=3D\&quot;%s\&quot;, qop=3D%s, nc=3D%s, cnonce=
+=3D\&quot;%s\&quot;, response=3D\&quot;%s\&quot;%s&quot;,</span><br><span s=
+tyle=3D"color: hsl(0, 100%, 40%);">-                                       =
+     username,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-       =
+                                     realm,</span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-                                            nonce,</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-                        =
+                    uri,</span><br><span style=3D"color: hsl(0, 100%, 40%);=
+">-                                            qop,</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-                                           =
+ nonce_count,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        =
+                                    cnonce,</span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-                                            response,=
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">-                     =
+                       opaque_kv</span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-                                            );</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+                int sret =3D snprintf=
+(buf, sizeof(buf), &quot;Proxy-Authorization: Digest username=3D\&quot;%s\&=
+quot;, realm=3D\&quot;%s\&quot;, nonce=3D\&quot;%s\&quot;, uri=3D\&quot;%s\=
+&quot;, qop=3D%s, nc=3D%s, cnonce=3D\&quot;%s\&quot;, response=3D\&quot;%s\=
+&quot;%s&quot;,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+                                username,</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+                                    realm,</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+                              =
+      nonce,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
+                             uri,</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+                                    qop,</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+                                    nonc=
+e_count,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+           =
+                         cnonce,</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+                                    response,</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+                                    =
+opaque_kv</span><br><span style=3D"color: hsl(120, 100%, 40%);">+          =
+                          );</span><br><span>                 if (sret &gt;=
+=3D sizeof(buf))</span><br><span>                 {</span><br><span>       =
+              goto error;</span><br><span>                 }</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+</span><br><span>                 =
+msg(D_PROXY, &quot;Send to HTTP proxy: &#39;%s&#39;&quot;, buf);</span><br>=
+<span>                 if (!send_line_crlf(sd, buf))</span><br><span>      =
+           {</span><br><span>diff --git a/src/openvpn/ps.c b/src/openvpn/ps=
+.c</span><br><span>index 7d9f9b5..4ca3a12 100644</span><br><span>--- a/src/=
+openvpn/ps.c</span><br><span>+++ b/src/openvpn/ps.c</span><br><span>@@ -354=
+,7 +354,7 @@</span><br><span>         fnlen =3D  strlen(journal_dir) + strl=
+en(t) + 2;</span><br><span>         jfn =3D (char *) malloc(fnlen);</span><=
+br><span>         check_malloc_return(jfn);</span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-        openvpn_snprintf(jfn, fnlen, &quot;%s/%s&quot=
+;, journal_dir, t);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+        snprintf(jfn, fnlen, &quot;%s/%s&quot;, journal_dir, t);</span><br>=
+<span>         dmsg(D_PS_PROXY_DEBUG, &quot;PORT SHARE PROXY: client origin=
+ %s -&gt; %s&quot;, jfn, f);</span><br><span>         fd =3D platform_open(=
+jfn, O_CREAT | O_TRUNC | O_WRONLY, S_IRUSR | S_IWUSR | S_IRGRP);</span><br>=
+<span>         if (fd !=3D -1)</span><br><span>diff --git a/src/openvpn/rou=
+te.c b/src/openvpn/route.c</span><br><span>index 909d6d2..68bbcfd 100644</s=
+pan><br><span>--- a/src/openvpn/route.c</span><br><span>+++ b/src/openvpn/r=
+oute.c</span><br><span>@@ -1621,11 +1621,11 @@</span><br><span> </span><br>=
+<span>     if (rgi)</span><br><span>     {</span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">-        openvpn_snprintf(out, sizeof(out), &quot;%s %s=
+ %s dev %s&quot;, network, netmask, gateway, rgi-&gt;iface);</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+        snprintf(out, sizeof(out),=
+ &quot;%s %s %s dev %s&quot;, network, netmask, gateway, rgi-&gt;iface);</s=
+pan><br><span>     }</span><br><span>     else</span><br><span>     {</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-        openvpn_snprintf(ou=
+t, sizeof(out), &quot;%s %s %s&quot;, network, netmask, gateway);</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+        snprintf(out, sizeof(=
+out), &quot;%s %s %s&quot;, network, netmask, gateway);</span><br><span>   =
+  }</span><br><span>     bool ret =3D management_android_control(management=
+, &quot;ROUTE&quot;, out);</span><br><span>     status =3D ret ? RTA_SUCCES=
+S : RTA_ERROR;</span><br><span>@@ -2000,7 +2000,7 @@</span><br><span> #elif=
+ defined (TARGET_ANDROID)</span><br><span>     char out[64];</span><br><spa=
+n> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-    openvpn_snprin=
+tf(out, sizeof(out), &quot;%s/%d %s&quot;, network, r6-&gt;netbits, device)=
+;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    snprintf(out, =
+sizeof(out), &quot;%s/%d %s&quot;, network, r6-&gt;netbits, device);</span>=
+<br><span> </span><br><span>     status =3D management_android_control(mana=
+gement, &quot;ROUTE6&quot;, out);</span><br><span> </span><br><span>diff --=
+git a/src/openvpn/run_command.h b/src/openvpn/run_command.h</span><br><span=
+>index 52ab115..ccad307 100644</span><br><span>--- a/src/openvpn/run_comman=
+d.h</span><br><span>+++ b/src/openvpn/run_command.h</span><br><span>@@ -66,=
+8 +66,8 @@</span><br><span> {</span><br><span>     char msg[256];</span><br=
+><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-    openvpn_s=
+nprintf(msg, sizeof(msg),</span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">-                     &quot;WARNING: Failed running command (%s)&quot;, =
+hook);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    snprintf(=
+msg, sizeof(msg),</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+           &quot;WARNING: Failed running command (%s)&quot;, hook);</span><=
+br><span>     return openvpn_execve_check(a, es, flags | S_SCRIPT, msg);</s=
+pan><br><span> }</span><br><span> </span><br><span>diff --git a/src/openvpn=
+/socket.c b/src/openvpn/socket.c</span><br><span>index d2b82d5..24d1276 100=
+644</span><br><span>--- a/src/openvpn/socket.c</span><br><span>+++ b/src/op=
+envpn/socket.c</span><br><span>@@ -2983,11 +2983,11 @@</span><br><span>    =
+     case AF_INET:</span><br><span>             if (flags &amp; SA_IP_PORT)=
+</span><br><span>             {</span><br><span style=3D"color: hsl(0, 100%=
+, 40%);">-                openvpn_snprintf(name_buf, sizeof(name_buf), &quo=
+t;%s_ip&quot;, name_prefix);</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+                snprintf(name_buf, sizeof(name_buf), &quot;%s_ip&q=
+uot;, name_prefix);</span><br><span>             }</span><br><span>        =
+     else</span><br><span>             {</span><br><span style=3D"color: hs=
+l(0, 100%, 40%);">-                openvpn_snprintf(name_buf, sizeof(name_b=
+uf), &quot;%s&quot;, name_prefix);</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+                snprintf(name_buf, sizeof(name_buf), &quot;%=
+s&quot;, name_prefix);</span><br><span>             }</span><br><span> </sp=
+an><br><span>             inet_ntop(AF_INET, &amp;addr-&gt;addr.in4.sin_add=
+r, buf, sizeof(buf));</span><br><span>@@ -2995,7 +2995,7 @@</span><br><span=
+> </span><br><span>             if ((flags &amp; SA_IP_PORT) &amp;&amp; add=
+r-&gt;addr.in4.sin_port)</span><br><span>             {</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-                openvpn_snprintf(name_buf=
+, sizeof(name_buf), &quot;%s_port&quot;, name_prefix);</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+                snprintf(name_buf, sizeo=
+f(name_buf), &quot;%s_port&quot;, name_prefix);</span><br><span>           =
+      setenv_int(es, name_buf, ntohs(addr-&gt;addr.in4.sin_port));</span><b=
+r><span>             }</span><br><span>             break;</span><br><span>=
+@@ -3006,19 +3006,19 @@</span><br><span>                 struct in_addr ia;=
+</span><br><span>                 memcpy(&amp;ia.s_addr, &amp;addr-&gt;addr=
+.in6.sin6_addr.s6_addr[12],</span><br><span>                        sizeof(=
+ia.s_addr));</span><br><span style=3D"color: hsl(0, 100%, 40%);">-         =
+       openvpn_snprintf(name_buf, sizeof(name_buf), &quot;%s_ip&quot;, name=
+_prefix);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+          =
+      snprintf(name_buf, sizeof(name_buf), &quot;%s_ip&quot;, name_prefix);=
+</span><br><span>                 inet_ntop(AF_INET, &amp;ia, buf, sizeof(b=
+uf));</span><br><span>             }</span><br><span>             else</spa=
+n><br><span>             {</span><br><span style=3D"color: hsl(0, 100%, 40%=
+);">-                openvpn_snprintf(name_buf, sizeof(name_buf), &quot;%s_=
+ip6&quot;, name_prefix);</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+                snprintf(name_buf, sizeof(name_buf), &quot;%s_ip6&quot=
+;, name_prefix);</span><br><span>                 inet_ntop(AF_INET6, &amp;=
+addr-&gt;addr.in6.sin6_addr, buf, sizeof(buf));</span><br><span>           =
+  }</span><br><span>             setenv_str(es, name_buf, buf);</span><br><=
+span> </span><br><span>             if ((flags &amp; SA_IP_PORT) &amp;&amp;=
+ addr-&gt;addr.in6.sin6_port)</span><br><span>             {</span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">-                openvpn_snprintf(nam=
+e_buf, sizeof(name_buf), &quot;%s_port&quot;, name_prefix);</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+                snprintf(name_buf, =
+sizeof(name_buf), &quot;%s_port&quot;, name_prefix);</span><br><span>      =
+           setenv_int(es, name_buf, ntohs(addr-&gt;addr.in6.sin6_port));</s=
+pan><br><span>             }</span><br><span>             break;</span><br>=
+<span>diff --git a/src/openvpn/socks.c b/src/openvpn/socks.c</span><br><spa=
+n>index b046910..8b8c01a 100644</span><br><span>--- a/src/openvpn/socks.c</=
+span><br><span>+++ b/src/openvpn/socks.c</span><br><span>@@ -109,9 +109,10 =
+@@</span><br><span>             &quot;Authentication not possible.&quot;);<=
+/span><br><span>         goto cleanup;</span><br><span>     }</span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-    int sret =3D openvpn_snprintf(t=
+o_send, sizeof(to_send), &quot;\x01%c%s%c%s&quot;,</span><br><span style=3D=
+"color: hsl(0, 100%, 40%);">-                                (int) strlen(c=
+reds.username), creds.username,</span><br><span style=3D"color: hsl(0, 100%=
+, 40%);">-                                (int) strlen(creds.password), cre=
+ds.password);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+    int sret =3D snprintf=
+(to_send, sizeof(to_send), &quot;\x01%c%s%c%s&quot;,</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+                        (int) strlen(cred=
+s.username), creds.username,</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+                        (int) strlen(creds.password), creds.passwo=
+rd);</span><br><span>     ASSERT(sret &lt;=3D sizeof(to_send));</span><br><=
+span> </span><br><span>     size =3D send(sd, to_send, strlen(to_send), MSG=
+_NOSIGNAL);</span><br><span>diff --git a/src/openvpn/ssl_mbedtls.c b/src/op=
+envpn/ssl_mbedtls.c</span><br><span>index 0730d25..b0303b6 100644</span><br=
+><span>--- a/src/openvpn/ssl_mbedtls.c</span><br><span>+++ b/src/openvpn/ss=
+l_mbedtls.c</span><br><span>@@ -1531,16 +1531,16 @@</span><br><span>     ch=
+ar s2[256];</span><br><span> </span><br><span>     s1[0] =3D s2[0] =3D 0;</=
+span><br><span style=3D"color: hsl(0, 100%, 40%);">-    openvpn_snprintf(s1=
+, sizeof(s1), &quot;%s %s, cipher %s&quot;,</span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-                     prefix,</span><br><span style=3D=
+"color: hsl(0, 100%, 40%);">-                     mbedtls_ssl_get_version(k=
+s_ssl-&gt;ctx),</span><br><span style=3D"color: hsl(0, 100%, 40%);">-      =
+               mbedtls_ssl_get_ciphersuite(ks_ssl-&gt;ctx));</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+    snprintf(s1, sizeof(s1), &quot=
+;%s %s, cipher %s&quot;,</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+             prefix,</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+             mbedtls_ssl_get_version(ks_ssl-&gt;ctx),</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+             mbedtls_ssl_get_cipher=
+suite(ks_ssl-&gt;ctx));</span><br><span> </span><br><span>     cert =3D mbe=
+dtls_ssl_get_peer_cert(ks_ssl-&gt;ctx);</span><br><span>     if (cert !=3D =
+NULL)</span><br><span>     {</span><br><span style=3D"color: hsl(0, 100%, 4=
+0%);">-        openvpn_snprintf(s2, sizeof(s2), &quot;, %u bit key&quot;,</=
+span><br><span style=3D"color: hsl(0, 100%, 40%);">-                       =
+  (unsigned int) mbedtls_pk_get_bitlen(&amp;cert-&gt;pk));</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+        snprintf(s2, sizeof(s2), &qu=
+ot;, %u bit key&quot;,</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+                 (unsigned int) mbedtls_pk_get_bitlen(&amp;cert-&gt;pk))=
+;</span><br><span>     }</span><br><span> </span><br><span>     msg(D_HANDS=
+HAKE, &quot;%s%s&quot;, s1, s2);</span><br><span>diff --git a/src/openvpn/s=
+sl_ncp.c b/src/openvpn/ssl_ncp.c</span><br><span>index 73ec9f5..968858e 100=
+644</span><br><span>--- a/src/openvpn/ssl_ncp.c</span><br><span>+++ b/src/o=
+penvpn/ssl_ncp.c</span><br><span>@@ -198,8 +198,8 @@</span><br><span>     s=
+ize_t newlen =3D strlen(o-&gt;ncp_ciphers) + 1 + strlen(ciphername) + 1;</s=
+pan><br><span>     char *ncp_ciphers =3D gc_malloc(newlen, false, &amp;o-&g=
+t;gc);</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);=
+">-    ASSERT(openvpn_snprintf(ncp_ciphers, newlen, &quot;%s:%s&quot;, o-&g=
+t;ncp_ciphers,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-       =
+                     ciphername));</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+    ASSERT(snprintf(ncp_ciphers, newlen, &quot;%s:%s&quot;, =
+o-&gt;ncp_ciphers,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+                   ciphername));</span><br><span>     o-&gt;ncp_ciphers =3D=
+ ncp_ciphers;</span><br><span> }</span><br><span> </span><br><span>diff --g=
+it a/src/openvpn/ssl_openssl.c b/src/openvpn/ssl_openssl.c</span><br><span>=
+index a158617..6efef4f 100644</span><br><span>--- a/src/openvpn/ssl_openssl=
+.c</span><br><span>+++ b/src/openvpn/ssl_openssl.c</span><br><span>@@ -1774=
+,7 +1774,7 @@</span><br><span>     if (!biofp)</span><br><span>     {</span=
+><br><span>         char fn[256];</span><br><span style=3D"color: hsl(0, 10=
+0%, 40%);">-        openvpn_snprintf(fn, sizeof(fn), &quot;bio/%d-%d.log&qu=
+ot;, pid, biofp_toggle);</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+        snprintf(fn, sizeof(fn), &quot;bio/%d-%d.log&quot;, pid, biofp=
+_toggle);</span><br><span>         biofp =3D fopen(fn, &quot;w&quot;);</spa=
+n><br><span>         ASSERT(biofp);</span><br><span>         biofp_last_ope=
+n =3D time(NULL);</span><br><span>@@ -2116,8 +2116,8 @@</span><br><span> #e=
+ndif /* if OPENSSL_VERSION_NUMBER &lt; 0x30000000L */</span><br><span>     =
+}</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
+  openvpn_snprintf(buf, buflen, &quot;%d bits %s%s&quot;,</span><br><span s=
+tyle=3D"color: hsl(0, 100%, 40%);">-                     EVP_PKEY_bits(pkey=
+), type, curve);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+ snprintf(buf, buflen, &quot;%d bits %s%s&quot;,</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+             EVP_PKEY_bits(pkey), type, curve)=
+;</span><br><span> }</span><br><span> </span><br><span> /**</span><br><span=
+>@@ -2137,12 +2137,12 @@</span><br><span>     int signature_nid =3D X509_ge=
+t_signature_nid(cert);</span><br><span>     if (signature_nid !=3D 0)</span=
+><br><span>     {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
+    openvpn_snprintf(sig, sizeof(sig), &quot;, signature: %s&quot;,</span><=
+br><span style=3D"color: hsl(0, 100%, 40%);">-                         OBJ_=
+nid2sn(signature_nid));</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+        snprintf(sig, sizeof(sig), &quot;, signature: %s&quot;,</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+                 OBJ_nid2sn=
+(signature_nid));</span><br><span>     }</span><br><span> </span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">-    openvpn_snprintf(buf, buflen, &quo=
+t;, peer certificate: %s%s&quot;,</span><br><span style=3D"color: hsl(0, 10=
+0%, 40%);">-                     pkeybuf, sig);</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+    snprintf(buf, buflen, &quot;, peer certific=
+ate: %s%s&quot;,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+          pkeybuf, sig);</span><br><span> </span><br><span>     EVP_PKEY_fr=
+ee(pkey);</span><br><span> }</span><br><span>@@ -2160,8 +2160,8 @@</span><b=
+r><span>     char pkeybuf[128] =3D { 0 };</span><br><span>     print_pkey_d=
+etails(pkey, pkeybuf, sizeof(pkeybuf));</span><br><span> </span><br><span s=
+tyle=3D"color: hsl(0, 100%, 40%);">-    openvpn_snprintf(buf, buflen, &quot=
+;, peer temporary key: %s&quot;,</span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-                     pkeybuf);</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+    snprintf(buf, buflen, &quot;, peer temporary key:=
+ %s&quot;,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+         =
+    pkeybuf);</span><br><span> </span><br><span>     EVP_PKEY_free(pkey);</=
+span><br><span> }</span><br><span>@@ -2238,8 +2238,8 @@</span><br><span>   =
+      return;</span><br><span>     }</span><br><span> </span><br><span styl=
+e=3D"color: hsl(0, 100%, 40%);">-    openvpn_snprintf(buf, buflen, &quot;, =
+peer signing digest/type: %s %s&quot;,</span><br><span style=3D"color: hsl(=
+0, 100%, 40%);">-                     peer_sig, peer_sig_type);</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+    snprintf(buf, buflen, &quot=
+;, peer signing digest/type: %s %s&quot;,</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+             peer_sig, peer_sig_type);</span><br><spa=
+n> }</span><br><span> </span><br><span> </span><br><span>@@ -2262,11 +2262,=
+11 @@</span><br><span> </span><br><span>     s1[0] =3D s2[0] =3D s3[0] =3D =
+s4[0] =3D 0;</span><br><span>     ciph =3D SSL_get_current_cipher(ks_ssl-&g=
+t;ssl);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    openvpn_sn=
+printf(s1, sizeof(s1), &quot;%s %s, cipher %s %s&quot;,</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-                     prefix,</span><br><s=
+pan style=3D"color: hsl(0, 100%, 40%);">-                     SSL_get_versi=
+on(ks_ssl-&gt;ssl),</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
+                   SSL_CIPHER_get_version(ciph),</span><br><span style=3D"c=
+olor: hsl(0, 100%, 40%);">-                     SSL_CIPHER_get_name(ciph));=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    snprintf(s1, si=
+zeof(s1), &quot;%s %s, cipher %s %s&quot;,</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+             prefix,</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+             SSL_get_version(ks_ssl-&gt;ssl),</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+             SSL_CIPHER_g=
+et_version(ciph),</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+           SSL_CIPHER_get_name(ciph));</span><br><span>     X509 *cert =3D =
+SSL_get_peer_certificate(ks_ssl-&gt;ssl);</span><br><span> </span><br><span=
+>     if (cert)</span><br><span>diff --git a/src/openvpn/ssl_verify.c b/src=
+/openvpn/ssl_verify.c</span><br><span>index 930769b..934ff8d 100644</span><=
+br><span>--- a/src/openvpn/ssl_verify.c</span><br><span>+++ b/src/openvpn/s=
+sl_verify.c</span><br><span>@@ -421,12 +421,12 @@</span><br><span>     }</s=
+pan><br><span> </span><br><span>     /* export subject name string as envir=
+onmental variable */</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
+   openvpn_snprintf(envname, sizeof(envname), &quot;tls_id_%d&quot;, cert_d=
+epth);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    snprintf(=
+envname, sizeof(envname), &quot;tls_id_%d&quot;, cert_depth);</span><br><sp=
+an>     setenv_str(es, envname, subject);</span><br><span> </span><br><span=
+> #if 0</span><br><span>     /* export common name string as environmental =
+variable */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    openvp=
+n_snprintf(envname, sizeof(envname), &quot;tls_common_name_%d&quot;, cert_d=
+epth);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    snprintf(=
+envname, sizeof(envname), &quot;tls_common_name_%d&quot;, cert_depth);</spa=
+n><br><span>     setenv_str(es, envname, common_name);</span><br><span> #en=
+dif</span><br><span> </span><br><span>@@ -435,24 +435,24 @@</span><br><span=
+>         struct buffer sha1 =3D x509_get_sha1_fingerprint(peer_cert, &amp;=
+gc);</span><br><span>         struct buffer sha256 =3D x509_get_sha256_fing=
+erprint(peer_cert, &amp;gc);</span><br><span> </span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-        openvpn_snprintf(envname, sizeof(envname),=
+ &quot;tls_digest_%d&quot;, cert_depth);</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+        snprintf(envname, sizeof(envname), &quot;tls_d=
+igest_%d&quot;, cert_depth);</span><br><span>         setenv_str(es, envnam=
+e,</span><br><span>                    format_hex_ex(BPTR(&amp;sha1), BLEN(=
+&amp;sha1), 0, 1, &quot;:&quot;, &amp;gc));</span><br><span> </span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-        openvpn_snprintf(envname, s=
+izeof(envname), &quot;tls_digest_sha256_%d&quot;,</span><br><span style=3D"=
+color: hsl(0, 100%, 40%);">-                         cert_depth);</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+        snprintf(envname, siz=
+eof(envname), &quot;tls_digest_sha256_%d&quot;,</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+                 cert_depth);</span><br><span> =
+        setenv_str(es, envname,</span><br><span>                    format_=
+hex_ex(BPTR(&amp;sha256), BLEN(&amp;sha256), 0, 1, &quot;:&quot;, &amp;gc))=
+;</span><br><span>     }</span><br><span> </span><br><span>     /* export s=
+erial number as environmental variable */</span><br><span>     serial =3D b=
+ackend_x509_get_serial(peer_cert, &amp;gc);</span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-    openvpn_snprintf(envname, sizeof(envname), &quot;=
+tls_serial_%d&quot;, cert_depth);</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+    snprintf(envname, sizeof(envname), &quot;tls_serial_%d&qu=
+ot;, cert_depth);</span><br><span>     setenv_str(es, envname, serial);</sp=
+an><br><span> </span><br><span>     /* export serial number in hex as envir=
+onmental variable */</span><br><span>     serial =3D backend_x509_get_seria=
+l_hex(peer_cert, &amp;gc);</span><br><span style=3D"color: hsl(0, 100%, 40%=
+);">-    openvpn_snprintf(envname, sizeof(envname), &quot;tls_serial_hex_%d=
+&quot;, cert_depth);</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++    snprintf(envname, sizeof(envname), &quot;tls_serial_hex_%d&quot;, cert=
+_depth);</span><br><span>     setenv_str(es, envname, serial);</span><br><s=
+pan> </span><br><span>     gc_free(&amp;gc);</span><br><span>@@ -569,7 +569=
+,7 @@</span><br><span>         goto cleanup;</span><br><span>     }</span><=
+br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-    if (!op=
+envpn_snprintf(fn, sizeof(fn), &quot;%s%c%s&quot;, crl_dir, PATH_SEPARATOR,=
+ serial))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (!s=
+nprintf(fn, sizeof(fn), &quot;%s%c%s&quot;, crl_dir, PATH_SEPARATOR, serial=
+))</span><br><span>     {</span><br><span>         msg(D_HANDSHAKE, &quot;V=
+ERIFY CRL: filename overflow&quot;);</span><br><span>         goto cleanup;=
+</span><br><span>@@ -938,9 +938,9 @@</span><br><span>             if (!chec=
+k_auth_pending_method(multi-&gt;peer_info, pending_method))</span><br><span=
+>             {</span><br><span>                 char buf[128];</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-                openvpn_snprintf(=
+buf, sizeof(buf),</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
+                             &quot;Authentication failed, required pending =
+auth &quot;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-          =
+                       &quot;method &#39;%s&#39; not supported&quot;, pendi=
+ng_method);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        =
+        snprintf(buf, sizeof(buf),</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+                         &quot;Authentication failed, requir=
+ed pending auth &quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+                         &quot;method &#39;%s&#39; not supported&quot;, =
+pending_method);</span><br><span>                 auth_set_client_reason(mu=
+lti, buf);</span><br><span>                 msg(M_INFO, &quot;Client does n=
+ot supported auth pending method &quot;</span><br><span>                   =
+  &quot;&#39;%s&#39;&quot;, pending_method);</span><br><span>diff --git a/s=
+rc/openvpn/ssl_verify_mbedtls.c b/src/openvpn/ssl_verify_mbedtls.c</span><b=
+r><span>index a801cd3..ca14ceb 100644</span><br><span>--- a/src/openvpn/ssl=
+_verify_mbedtls.c</span><br><span>+++ b/src/openvpn/ssl_verify_mbedtls.c</s=
+pan><br><span>@@ -86,8 +86,8 @@</span><br><span>         char *serial =3D b=
+ackend_x509_get_serial(cert, &amp;gc);</span><br><span> </span><br><span>  =
+       ret =3D mbedtls_x509_crt_verify_info(errstr, sizeof(errstr)-1, &quot=
+;&quot;, *flags);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
+    if (ret &lt;=3D 0 &amp;&amp; !openvpn_snprintf(errstr, sizeof(errstr),<=
+/span><br><span style=3D"color: hsl(0, 100%, 40%);">-                      =
+                    &quot;Could not retrieve error string, flags=3D%&quot; =
+PRIx32, *flags))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+     if (ret &lt;=3D 0 &amp;&amp; !snprintf(errstr, sizeof(errstr),</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+                           =
+       &quot;Could not retrieve error string, flags=3D%&quot; PRIx32, *flag=
+s))</span><br><span>         {</span><br><span>             errstr[0] =3D &=
+#39;\0&#39;;</span><br><span>         }</span><br><span>@@ -307,7 +307,7 @@=
+</span><br><span>     name_expand_size =3D 64 + strlen(name);</span><br><sp=
+an>     name_expand =3D (char *) malloc(name_expand_size);</span><br><span>=
+     check_malloc_return(name_expand);</span><br><span style=3D"color: hsl(=
+0, 100%, 40%);">-    openvpn_snprintf(name_expand, name_expand_size, &quot;=
+X509_%d_%s&quot;, depth, name);</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+    snprintf(name_expand, name_expand_size, &quot;X509_%d_%s&qu=
+ot;, depth, name);</span><br><span>     setenv_str(es, name_expand, value);=
+</span><br><span>     free(name_expand);</span><br><span> }</span><br><span=
+>@@ -431,13 +431,13 @@</span><br><span> </span><br><span>         if (0 =3D=
+=3D mbedtls_oid_get_attr_short_name(&amp;name-&gt;oid, &amp;shortname) )</s=
+pan><br><span>         {</span><br><span style=3D"color: hsl(0, 100%, 40%);=
+">-            openvpn_snprintf(name_expand, sizeof(name_expand), &quot;X50=
+9_%d_%s&quot;,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-       =
+                      cert_depth, shortname);</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+            snprintf(name_expand, sizeof(name_exp=
+and), &quot;X509_%d_%s&quot;,</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+                     cert_depth, shortname);</span><br><span>    =
+     }</span><br><span>         else</span><br><span>         {</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-            openvpn_snprintf(name=
+_expand, sizeof(name_expand), &quot;X509_%d_\?\?&quot;,</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-                             cert_depth);=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            snprint=
+f(name_expand, sizeof(name_expand), &quot;X509_%d_\?\?&quot;,</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+                     cert_depth);=
+</span><br><span>         }</span><br><span> </span><br><span>         for =
+(i =3D 0; i &lt; name-&gt;val.len; i++)</span><br><span>diff --git a/src/op=
+envpn/ssl_verify_openssl.c b/src/openvpn/ssl_verify_openssl.c</span><br><sp=
+an>index ec3a7cf..7d41d4a 100644</span><br><span>--- a/src/openvpn/ssl_veri=
+fy_openssl.c</span><br><span>+++ b/src/openvpn/ssl_verify_openssl.c</span><=
+br><span>@@ -279,7 +279,7 @@</span><br><span>             gc_free(&amp;gc);=
+</span><br><span>             return FAILURE;</span><br><span>         }</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-        openvpn_snprintf=
+(common_name, cn_len, &quot;0x%s&quot;, serial);</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+        snprintf(common_name, cn_len, &quot;0x=
+%s&quot;, serial);</span><br><span>         gc_free(&amp;gc);</span><br><sp=
+an>     }</span><br><span>     else</span><br><span>@@ -454,7 +454,7 @@</sp=
+an><br><span>     name_expand_size =3D 64 + strlen(name);</span><br><span> =
+    name_expand =3D (char *) malloc(name_expand_size);</span><br><span>    =
+ check_malloc_return(name_expand);</span><br><span style=3D"color: hsl(0, 1=
+00%, 40%);">-    openvpn_snprintf(name_expand, name_expand_size, &quot;X509=
+_%d_%s&quot;, depth, name);</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+    snprintf(name_expand, name_expand_size, &quot;X509_%d_%s&quot;,=
+ depth, name);</span><br><span>     setenv_str(es, name_expand, value);</sp=
+an><br><span>     free(name_expand);</span><br><span> }</span><br><span>@@ =
+-597,8 +597,8 @@</span><br><span>         name_expand_size =3D 64 + strlen(=
+objbuf);</span><br><span>         name_expand =3D (char *) malloc(name_expa=
+nd_size);</span><br><span>         check_malloc_return(name_expand);</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-        openvpn_snprintf(nam=
+e_expand, name_expand_size, &quot;X509_%d_%s&quot;, cert_depth,</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-                         objbuf);=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        snprintf(na=
+me_expand, name_expand_size, &quot;X509_%d_%s&quot;, cert_depth,</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+                 objbuf);</spa=
+n><br><span>         string_mod(name_expand, CC_PRINT, CC_CRLF, &#39;_&#39;=
+);</span><br><span>         string_mod((char *)buf, CC_PRINT, CC_CRLF, &#39=
+;_&#39;);</span><br><span>         setenv_str_incr(es, name_expand, (char *=
+)buf);</span><br><span>diff --git a/src/openvpn/tls_crypt.c b/src/openvpn/t=
+ls_crypt.c</span><br><span>index 6ef1c7d..90fe6e9 100644</span><br><span>--=
+- a/src/openvpn/tls_crypt.c</span><br><span>+++ b/src/openvpn/tls_crypt.c</=
+span><br><span>@@ -574,8 +574,8 @@</span><br><span>     }</span><br><span> =
+</span><br><span>     char metadata_type_str[4] =3D { 0 }; /* Max value: 25=
+5 */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    openvpn_snpri=
+ntf(metadata_type_str, sizeof(metadata_type_str),</span><br><span style=3D"=
+color: hsl(0, 100%, 40%);">-                     &quot;%i&quot;, (uint8_t) =
+metadata_type);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+snprintf(metadata_type_str, sizeof(metadata_type_str),</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+             &quot;%i&quot;, (uint8_t) m=
+etadata_type);</span><br><span>     struct env_set *es =3D env_set_create(N=
+ULL);</span><br><span>     setenv_str(es, &quot;script_type&quot;, &quot;tl=
+s-crypt-v2-verify&quot;);</span><br><span>     setenv_str(es, &quot;metadat=
+a_type&quot;, metadata_type_str);</span><br><span>diff --git a/src/openvpn/=
+tun.c b/src/openvpn/tun.c</span><br><span>index f550e9c..d01515d 100644</sp=
+an><br><span>--- a/src/openvpn/tun.c</span><br><span>+++ b/src/openvpn/tun.=
+c</span><br><span>@@ -1114,8 +1114,8 @@</span><br><span> #elif defined(TARG=
+ET_ANDROID)</span><br><span>     char out6[64];</span><br><span> </span><br=
+><span style=3D"color: hsl(0, 100%, 40%);">-    openvpn_snprintf(out6, size=
+of(out6), &quot;%s/%d %d&quot;,</span><br><span style=3D"color: hsl(0, 100%=
+, 40%);">-                     ifconfig_ipv6_local, tt-&gt;netbits_ipv6, tu=
+n_mtu);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    snprintf=
+(out6, sizeof(out6), &quot;%s/%d %d&quot;,</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+             ifconfig_ipv6_local, tt-&gt;netbits_ipv=
+6, tun_mtu);</span><br><span>     management_android_control(management, &q=
+uot;IFCONFIG6&quot;, out6);</span><br><span> #elif defined(TARGET_SOLARIS)<=
+/span><br><span>     argv_printf(&amp;argv, &quot;%s %s inet6 unplumb&quot;=
+, IFCONFIG_PATH, ifname);</span><br><span>@@ -1362,8 +1362,8 @@</span><br><=
+span>             top =3D &quot;undef&quot;;</span><br><span>     }</span><=
+br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-    openvpn=
+_snprintf(out, sizeof(out), &quot;%s %s %d %s&quot;, ifconfig_local,</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-                     ifconfi=
+g_remote_netmask, tun_mtu, top);</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+    snprintf(out, sizeof(out), &quot;%s %s %d %s&quot;, ifconf=
+ig_local,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+          =
+   ifconfig_remote_netmask, tun_mtu, top);</span><br><span>     management_=
+android_control(management, &quot;IFCONFIG&quot;, out);</span><br><span> </=
+span><br><span> #elif defined(TARGET_SOLARIS)</span><br><span>@@ -1912,7 +1=
+912,7 @@</span><br><span>          */</span><br><span>         if (dev_node=
+)</span><br><span>         {</span><br><span style=3D"color: hsl(0, 100%, 4=
+0%);">-            openvpn_snprintf(tunname, sizeof(tunname), &quot;%s&quot=
+;, dev_node);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
+      snprintf(tunname, sizeof(tunname), &quot;%s&quot;, dev_node);</span><=
+br><span>         }</span><br><span>         else</span><br><span>         =
+{</span><br><span>@@ -1926,10 +1926,10 @@</span><br><span>             {</s=
+pan><br><span>                 for (int i =3D 0; i &lt; 256; ++i)</span><br=
+><span>                 {</span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">-                    openvpn_snprintf(tunname, sizeof(tunname),</span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-                              =
+       &quot;/dev/%s%d&quot;, dev, i);</span><br><span style=3D"color: hsl(=
+0, 100%, 40%);">-                    openvpn_snprintf(dynamic_name, sizeof(=
+dynamic_name),</span><br><span style=3D"color: hsl(0, 100%, 40%);">-       =
+                              &quot;%s%d&quot;, dev, i);</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+                    snprintf(tunname, =
+sizeof(tunname),</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+                          &quot;/dev/%s%d&quot;, dev, i);</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+                    snprintf(dynamic_=
+name, sizeof(dynamic_name),</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+                             &quot;%s%d&quot;, dev, i);</span><br><=
+span>                     if ((tt-&gt;fd =3D open(tunname, O_RDWR)) &gt; 0)=
+</span><br><span>                     {</span><br><span>                   =
+      dynamic_opened =3D true;</span><br><span>@@ -1947,7 +1947,7 @@</span>=
+<br><span>              */</span><br><span>             else</span><br><spa=
+n>             {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-     =
+           openvpn_snprintf(tunname, sizeof(tunname), &quot;/dev/%s&quot;, =
+dev);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+              =
+  snprintf(tunname, sizeof(tunname), &quot;/dev/%s&quot;, dev);</span><br><=
+span>             }</span><br><span>         }</span><br><span> </span><br>=
+<span>@@ -2002,8 +2002,8 @@</span><br><span>     {</span><br><span>        =
+ for (int i =3D 0; i &lt; 256; ++i)</span><br><span>         {</span><br><s=
+pan style=3D"color: hsl(0, 100%, 40%);">-            openvpn_snprintf(dynam=
+ic_name, sizeof(dynamic_name),</span><br><span style=3D"color: hsl(0, 100%,=
+ 40%);">-                             &quot;%s%d&quot;, dev, i);</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+            snprintf(dynamic_n=
+ame, sizeof(dynamic_name),</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+                     &quot;%s%d&quot;, dev, i);</span><br><span>    =
+         int ret =3D open_tun_dco(tt, ctx, dynamic_name);</span><br><span> =
+            if (ret =3D=3D 0)</span><br><span>             {</span><br><spa=
+n>@@ -2519,7 +2519,7 @@</span><br><span>     tt-&gt;actual_name =3D (char *=
+) malloc(32);</span><br><span>     check_malloc_return(tt-&gt;actual_name);=
+</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
+ openvpn_snprintf(tt-&gt;actual_name, 32, &quot;%s%d&quot;, dev_tuntap_type=
+, ppa);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    snprintf=
+(tt-&gt;actual_name, 32, &quot;%s%d&quot;, dev_tuntap_type, ppa);</span><br=
+><span> </span><br><span>     if (tt-&gt;type =3D=3D DEV_TYPE_TAP)</span><b=
+r><span>     {</span><br><span>@@ -3509,7 +3509,7 @@</span><br><span>      =
+   int i;</span><br><span>         for (i =3D 0; i&lt;99; i++)</span><br><s=
+pan>         {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-       =
+     openvpn_snprintf(tunname, sizeof(tunname), &quot;/dev/tap%d&quot;, i);=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            snprint=
+f(tunname, sizeof(tunname), &quot;/dev/tap%d&quot;, i);</span><br><span>   =
+          if (access( tunname, F_OK ) &lt; 0 &amp;&amp; errno =3D=3D ENOENT=
+)</span><br><span>             {</span><br><span>                 break;</s=
+pan><br><span>@@ -3520,7 +3520,7 @@</span><br><span>             msg( M_FAT=
+AL, &quot;cannot find unused tap device&quot; );</span><br><span>         }=
+</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
+     openvpn_snprintf( dynamic_name, sizeof(dynamic_name), &quot;tap%d&quot=
+;, i );</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        snpr=
+intf( dynamic_name, sizeof(dynamic_name), &quot;tap%d&quot;, i );</span><br=
+><span>         dev =3D dynamic_name;</span><br><span>     }</span><br><spa=
+n>     else                                        /* name given, sanity ch=
+eck */</span><br><span>@@ -3536,7 +3536,7 @@</span><br><span>             m=
+sg( M_FATAL, &quot;TAP device name must be &#39;--dev tapNNNN&#39;&quot; );=
+</span><br><span>         }</span><br><span> </span><br><span style=3D"colo=
+r: hsl(0, 100%, 40%);">-        openvpn_snprintf(tunname, sizeof(tunname), =
+&quot;/dev/%s&quot;, dev);</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+        snprintf(tunname, sizeof(tunname), &quot;/dev/%s&quot;, dev)=
+;</span><br><span>     }</span><br><span> </span><br><span>     /* pre-exis=
+ting device?</span><br><span>@@ -3956,8 +3956,8 @@</span><br><span>        =
+         ADAPTER_KEY);</span><br><span>         }</span><br><span> </span><=
+br><span style=3D"color: hsl(0, 100%, 40%);">-        openvpn_snprintf(unit=
+_string, sizeof(unit_string), &quot;%s\\%s&quot;,</span><br><span style=3D"=
+color: hsl(0, 100%, 40%);">-                         ADAPTER_KEY, enum_name=
+);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        snprintf(=
+unit_string, sizeof(unit_string), &quot;%s\\%s&quot;,</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+                 ADAPTER_KEY, enum_name);=
+</span><br><span> </span><br><span>         status =3D RegOpenKeyEx(</span>=
+<br><span>             HKEY_LOCAL_MACHINE,</span><br><span>@@ -4098,9 +4098=
+,9 @@</span><br><span>                 NETWORK_CONNECTIONS_KEY);</span><br>=
+<span>         }</span><br><span> </span><br><span style=3D"color: hsl(0, 1=
+00%, 40%);">-        openvpn_snprintf(connection_string, sizeof(connection_=
+string),</span><br><span style=3D"color: hsl(0, 100%, 40%);">-             =
+            &quot;%s\\%s\\Connection&quot;,</span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-                         NETWORK_CONNECTIONS_KEY, enu=
+m_name);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        snp=
+rintf(connection_string, sizeof(connection_string),</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+                 &quot;%s\\%s\\Connection=
+&quot;,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            =
+     NETWORK_CONNECTIONS_KEY, enum_name);</span><br><span> </span><br><span=
+>         status =3D RegOpenKeyEx(</span><br><span>             HKEY_LOCAL_=
+MACHINE,</span><br><span>@@ -4984,7 +4984,7 @@</span><br><span>     DWORD i=
+ndex;</span><br><span>     ULONG aindex;</span><br><span>     wchar_t wbuf[=
+256];</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    openvpn_swpr=
+intf(wbuf, SIZE(wbuf), L&quot;\\DEVICE\\TCPIP_%hs&quot;, guid);</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+    swprintf(wbuf, SIZE(wbuf), =
+L&quot;\\DEVICE\\TCPIP_%hs&quot;, guid);</span><br><span>     if (GetAdapte=
+rIndex(wbuf, &amp;aindex) !=3D NO_ERROR)</span><br><span>     {</span><br><=
+span>         index =3D TUN_ADAPTER_INDEX_INVALID;</span><br><span>@@ -5164=
+,10 +5164,10 @@</span><br><span>         }</span><br><span> </span><br><spa=
+n>         /* Open Windows TAP-Windows adapter */</span><br><span style=3D"=
+color: hsl(0, 100%, 40%);">-        openvpn_snprintf(device_path, sizeof(de=
+vice_path), &quot;%s%s%s&quot;,</span><br><span style=3D"color: hsl(0, 100%=
+, 40%);">-                         USERMODEDEVICEDIR,</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-                         device_guid,</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-                         TA=
+P_WIN_SUFFIX);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
+   snprintf(device_path, sizeof(device_path), &quot;%s%s%s&quot;,</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+                 USERMODEDEVI=
+CEDIR,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+             =
+    device_guid,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+              TAP_WIN_SUFFIX);</span><br><span> </span><br><span>         h=
+and =3D CreateFile(</span><br><span>             device_path,</span><br><sp=
+an>@@ -5208,10 +5208,10 @@</span><br><span>             }</span><br><span> =
+</span><br><span>             /* Open Windows TAP-Windows adapter */</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-            openvpn_snprintf=
+(device_path, sizeof(device_path), &quot;%s%s%s&quot;,</span><br><span styl=
+e=3D"color: hsl(0, 100%, 40%);">-                             USERMODEDEVIC=
+EDIR,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-                =
+             device_guid,</span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">-                             TAP_WIN_SUFFIX);</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+            snprintf(device_path, sizeof(devi=
+ce_path), &quot;%s%s%s&quot;,</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+                     USERMODEDEVICEDIR,</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+                     device_guid,</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+                     TAP_WIN_SU=
+FFIX);</span><br><span> </span><br><span>             hand =3D CreateFile(<=
+/span><br><span>                 device_path,</span><br><span>@@ -6607,10 +=
+6607,10 @@</span><br><span>     else</span><br><span>     {</span><br><span=
+>         /* Open TAP-Windows */</span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-        openvpn_snprintf(tuntap_device_path, sizeof(tuntap_devic=
+e_path), &quot;%s%s%s&quot;,</span><br><span style=3D"color: hsl(0, 100%, 4=
+0%);">-                         USERMODEDEVICEDIR,</span><br><span style=3D=
+"color: hsl(0, 100%, 40%);">-                         device_guid,</span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-                         TAP_W=
+IN_SUFFIX);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        =
+snprintf(tuntap_device_path, sizeof(tuntap_device_path), &quot;%s%s%s&quot;=
+,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+                 U=
+SERMODEDEVICEDIR,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+               device_guid,</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+                 TAP_WIN_SUFFIX);</span><br><span>         path =3D=
+ tuntap_device_path;</span><br><span>     }</span><br><span> </span><br><sp=
+an>diff --git a/src/openvpn/win32.c b/src/openvpn/win32.c</span><br><span>i=
+ndex 27d82c5..98955ba 100644</span><br><span>--- a/src/openvpn/win32.c</spa=
+n><br><span>+++ b/src/openvpn/win32.c</span><br><span>@@ -885,8 +885,8 @@</=
+span><br><span>     char force_path[256];</span><br><span>     char *sysroo=
+t =3D get_win_sys_path();</span><br><span> </span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-    if (!openvpn_snprintf(force_path, sizeof(force_pa=
+th), &quot;PATH=3D%s\\System32;%s;%s\\System32\\Wbem&quot;,</span><br><span=
+ style=3D"color: hsl(0, 100%, 40%);">-                          sysroot, sy=
+sroot, sysroot))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+ if (!snprintf(force_path, sizeof(force_path), &quot;PATH=3D%s\\System32;%s=
+;%s\\System32\\Wbem&quot;,</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+                  sysroot, sysroot, sysroot))</span><br><span>     {=
+</span><br><span>         msg(M_WARN, &quot;env_block: default path truncat=
+ed to %s&quot;, force_path);</span><br><span>     }</span><br><span>@@ -148=
+3,26 +1483,11 @@</span><br><span> }</span><br><span> </span><br><span> bool=
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">-openvpn_swprintf(wcha=
+r_t *const str, const size_t size, const wchar_t *const format, ...)</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-{</span><br><span style=3D"c=
+olor: hsl(0, 100%, 40%);">-    va_list arglist;</span><br><span style=3D"co=
+lor: hsl(0, 100%, 40%);">-    int len =3D -1;</span><br><span style=3D"colo=
+r: hsl(0, 100%, 40%);">-    if (size &gt; 0)</span><br><span style=3D"color=
+: hsl(0, 100%, 40%);">-    {</span><br><span style=3D"color: hsl(0, 100%, 4=
+0%);">-        va_start(arglist, format);</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-        len =3D vswprintf(str, size, format, arglist);<=
+/span><br><span style=3D"color: hsl(0, 100%, 40%);">-        va_end(arglist=
+);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        str[size - =
+1] =3D L&#39;\0&#39;;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
+    }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    return (len =
+&gt;=3D 0 &amp;&amp; len &lt; size);</span><br><span style=3D"color: hsl(0,=
+ 100%, 40%);">-}</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-bool</span><br><span> get_=
+openvpn_reg_value(const WCHAR *key, WCHAR *value, DWORD size)</span><br><sp=
+an> {</span><br><span>     WCHAR reg_path[256];</span><br><span>     HKEY h=
+key;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    openvpn_swpri=
+ntf(reg_path, _countof(reg_path), L&quot;SOFTWARE\\&quot; PACKAGE_NAME);</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+    swprintf(reg_path,=
+ _countof(reg_path), L&quot;SOFTWARE\\&quot; PACKAGE_NAME);</span><br><span=
+> </span><br><span>     LONG status =3D RegOpenKeyExW(HKEY_LOCAL_MACHINE, r=
+eg_path, 0, KEY_READ, &amp;hkey);</span><br><span>     if (status !=3D ERRO=
+R_SUCCESS)</span><br><span>@@ -1528,7 +1513,7 @@</span><br><span>         /=
+* if we cannot find installation path from the registry,</span><br><span>  =
+        * use Windows directory as a fallback</span><br><span>          */<=
+/span><br><span style=3D"color: hsl(0, 100%, 40%);">-        openvpn_swprin=
+tf(install_path, _countof(install_path), L&quot;%ls&quot;, ssl_fallback_dir=
+);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        swprintf(=
+install_path, _countof(install_path), L&quot;%ls&quot;, ssl_fallback_dir);<=
+/span><br><span>     }</span><br><span> </span><br><span>     if ((install_=
+path[wcslen(install_path) - 1]) =3D=3D L&#39;\\&#39;)</span><br><span>@@ -1=
+553,7 +1538,7 @@</span><br><span>         if (size =3D=3D 0)</span><br><spa=
+n>         {</span><br><span>             WCHAR val[MAX_PATH] =3D {0};</spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-            openvpn_swprin=
+tf(val, _countof(val), L&quot;%ls\\ssl\\%ls&quot;, install_path, ossl_env[i=
+].value);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+          =
+  swprintf(val, _countof(val), L&quot;%ls\\ssl\\%ls&quot;, install_path, os=
+sl_env[i].value);</span><br><span>             _wputenv_s(ossl_env[i].name,=
+ val);</span><br><span>         }</span><br><span>     }</span><br><span>di=
+ff --git a/src/openvpn/win32.h b/src/openvpn/win32.h</span><br><span>index =
+974fe02d..fd75992 100644</span><br><span>--- a/src/openvpn/win32.h</span><b=
+r><span>+++ b/src/openvpn/win32.h</span><br><span>@@ -319,14 +319,6 @@</spa=
+n><br><span> int</span><br><span> openvpn_execve(const struct argv *a, cons=
+t struct env_set *es, const unsigned int flags);</span><br><span> </span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-/*</span><br><span style=3D"co=
+lor: hsl(0, 100%, 40%);">- * openvpn_swprintf() is currently only used by W=
+indows code paths</span><br><span style=3D"color: hsl(0, 100%, 40%);">- * a=
+nd when enabled for all platforms it will currently break older</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">- * OpenBSD versions lacking vswpr=
+intf(3) support in their libc.</span><br><span style=3D"color: hsl(0, 100%,=
+ 40%);">- */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-bool</spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-openvpn_swprintf(wchar_t *=
+const str, const size_t size, const wchar_t *const format, ...);</span><br>=
+<span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span> /* Sleep that =
+can be interrupted by signals and exit event */</span><br><span> void win32=
+_sleep(const int n);</span><br><span> </span><br><span>diff --git a/src/ope=
+nvpn/xkey_helper.c b/src/openvpn/xkey_helper.c</span><br><span>index c80332=
+3..283c95d 100644</span><br><span>--- a/src/openvpn/xkey_helper.c</span><br=
+><span>+++ b/src/openvpn/xkey_helper.c</span><br><span>@@ -205,7 +205,7 @@<=
+/span><br><span>         }</span><br><span>         else</span><br><span>  =
+       {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            o=
+penvpn_snprintf(alg_str, sizeof(alg_str), &quot;ECDSA,hashalg=3D%s&quot;, a=
+lg.mdname);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        =
+    snprintf(alg_str, sizeof(alg_str), &quot;ECDSA,hashalg=3D%s&quot;, alg.=
+mdname);</span><br><span>         }</span><br><span>     }</span><br><span>=
+     else if (!strcmp(alg.keytype, &quot;ED448&quot;) || !strcmp(alg.keytyp=
+e, &quot;ED25519&quot;))</span><br><span>@@ -229,8 +229,8 @@</span><br><spa=
+n>         /* For undigested message, add hashalg=3Ddigest parameter */</sp=
+an><br><span>         else</span><br><span>         {</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-            openvpn_snprintf(alg_str, sizeo=
+f(alg_str), &quot;%s,hashalg=3D%s&quot;,</span><br><span style=3D"color: hs=
+l(0, 100%, 40%);">-                             &quot;RSA_PKCS1_PADDING&quo=
+t;, alg.mdname);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+         snprintf(alg_str, sizeof(alg_str), &quot;%s,hashalg=3D%s&quot;,</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+                     &=
+quot;RSA_PKCS1_PADDING&quot;, alg.mdname);</span><br><span>         }</span=
+><br><span>     }</span><br><span>     else if (!strcmp(alg.padmode, &quot;=
+none&quot;) &amp;&amp; (flags &amp; MF_EXTERNAL_KEY_NOPADDING)</span><br><s=
+pan>@@ -240,8 +240,8 @@</span><br><span>     }</span><br><span>     else if=
+ (!strcmp(alg.padmode, &quot;pss&quot;) &amp;&amp; (flags &amp; MF_EXTERNAL=
+_KEY_PSSPAD))</span><br><span>     {</span><br><span style=3D"color: hsl(0,=
+ 100%, 40%);">-        openvpn_snprintf(alg_str, sizeof(alg_str), &quot;%s,=
+hashalg=3D%s,saltlen=3D%s&quot;,</span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-                         &quot;RSA_PKCS1_PSS_PADDING&quot;, alg.=
+mdname, alg.saltlen);</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+        snprintf(alg_str, sizeof(alg_str), &quot;%s,hashalg=3D%s,saltlen=
+=3D%s&quot;,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
+          &quot;RSA_PKCS1_PSS_PADDING&quot;, alg.mdname, alg.saltlen);</spa=
+n><br><span>     }</span><br><span>     else</span><br><span>     {</span><=
+br><span>diff --git a/src/openvpnserv/common.c b/src/openvpnserv/common.c</=
+span><br><span>index bd0a484..96bf800 100644</span><br><span>--- a/src/open=
+vpnserv/common.c</span><br><span>+++ b/src/openvpnserv/common.c</span><br><=
+span>@@ -27,36 +27,6 @@</span><br><span> LPCTSTR service_instance =3D TEXT(=
+&quot;&quot;);</span><br><span> static wchar_t win_sys_path[MAX_PATH];</spa=
+n><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-/*</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">- * These are necessary due =
+to certain buggy implementations of (v)snprintf,</span><br><span style=3D"c=
+olor: hsl(0, 100%, 40%);">- * that don&#39;t guarantee null termination for=
+ size &gt; 0.</span><br><span style=3D"color: hsl(0, 100%, 40%);">- */</spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-BOOL</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-openvpn_vswprintf(LPTSTR str, size_t size, =
+LPCTSTR format, va_list arglist)</span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-{</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    int l=
+en =3D -1;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    if (siz=
+e &gt; 0)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    {</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-        len =3D vswprintf_s(=
+str, size, format, arglist);</span><br><span style=3D"color: hsl(0, 100%, 4=
+0%);">-        str[size - 1] =3D 0;</span><br><span style=3D"color: hsl(0, =
+100%, 40%);">-    }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
+  return (len &gt;=3D 0 &amp;&amp; (size_t)len &lt; size);</span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">-}</span><br><span style=3D"color: hsl(=
+0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-BOOL=
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">-openvpn_swprintf(LPTS=
+TR str, size_t size, LPCTSTR format, ...)</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-{</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
+    va_list arglist;</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
+   BOOL res =3D FALSE;</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
+-    if (size &gt; 0)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
+    {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        va_start=
+(arglist, format);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
+     res =3D openvpn_vswprintf(str, size, format, arglist);</span><br><span=
+ style=3D"color: hsl(0, 100%, 40%);">-        va_end(arglist);</span><br><s=
+pan style=3D"color: hsl(0, 100%, 40%);">-    }</span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-    return res;</span><br><span style=3D"color: hs=
+l(0, 100%, 40%);">-}</span><br><span style=3D"color: hsl(0, 100%, 40%);">-<=
+/span><br><span> static DWORD</span><br><span> GetRegString(HKEY key, LPCTS=
+TR value, LPTSTR data, DWORD size, LPCTSTR default_value)</span><br><span> =
+{</span><br><span>@@ -66,7 +36,7 @@</span><br><span>     if (status =3D=3D =
+ERROR_FILE_NOT_FOUND &amp;&amp; default_value)</span><br><span>     {</span=
+><br><span>         size_t len =3D size/sizeof(data[0]);</span><br><span st=
+yle=3D"color: hsl(0, 100%, 40%);">-        if (openvpn_swprintf(data, len, =
+default_value))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+    if (swprintf(data, len, default_value))</span><br><span>         {</spa=
+n><br><span>             status =3D ERROR_SUCCESS;</span><br><span>        =
+ }</span><br><span>@@ -93,7 +63,7 @@</span><br><span>     TCHAR install_pat=
+h[MAX_PATH];</span><br><span>     TCHAR default_value[MAX_PATH];</span><br>=
+<span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-    openvpn_sw=
+printf(reg_path, _countof(reg_path), TEXT(&quot;SOFTWARE\\&quot; PACKAGE_NA=
+ME &quot;%ls&quot;), service_instance);</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+    swprintf(reg_path, _countof(reg_path), TEXT(&quot;S=
+OFTWARE\\&quot; PACKAGE_NAME &quot;%ls&quot;), service_instance);</span><br=
+><span> </span><br><span>     LONG status =3D RegOpenKeyEx(HKEY_LOCAL_MACHI=
+NE, reg_path, 0, KEY_READ, &amp;key);</span><br><span>     if (status !=3D =
+ERROR_SUCCESS)</span><br><span>@@ -110,15 +80,15 @@</span><br><span>       =
+  goto out;</span><br><span>     }</span><br><span> </span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-    openvpn_swprintf(default_value, _counto=
+f(default_value), TEXT(&quot;%ls\\bin\\openvpn.exe&quot;),</span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">-                     install_path);</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+    swprintf(default_v=
+alue, _countof(default_value), TEXT(&quot;%ls\\bin\\openvpn.exe&quot;),</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+             install_pa=
+th);</span><br><span>     error =3D GetRegString(key, TEXT(&quot;exe_path&q=
+uot;), s-&gt;exe_path, sizeof(s-&gt;exe_path), default_value);</span><br><s=
+pan>     if (error !=3D ERROR_SUCCESS)</span><br><span>     {</span><br><sp=
+an>         goto out;</span><br><span>     }</span><br><span> </span><br><s=
+pan style=3D"color: hsl(0, 100%, 40%);">-    openvpn_swprintf(default_value=
+, _countof(default_value), TEXT(&quot;%ls\\config&quot;), install_path);</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+    swprintf(default_v=
+alue, _countof(default_value), TEXT(&quot;%ls\\config&quot;), install_path)=
+;</span><br><span>     error =3D GetRegString(key, TEXT(&quot;config_dir&qu=
+ot;), s-&gt;config_dir, sizeof(s-&gt;config_dir),</span><br><span>         =
+                 default_value);</span><br><span>     if (error !=3D ERROR_=
+SUCCESS)</span><br><span>@@ -133,7 +103,7 @@</span><br><span>         goto =
+out;</span><br><span>     }</span><br><span> </span><br><span style=3D"colo=
+r: hsl(0, 100%, 40%);">-    openvpn_swprintf(default_value, _countof(defaul=
+t_value), TEXT(&quot;%ls\\log&quot;), install_path);</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    swprintf(default_value, _countof(defa=
+ult_value), TEXT(&quot;%ls\\log&quot;), install_path);</span><br><span>    =
+ error =3D GetRegString(key, TEXT(&quot;log_dir&quot;), s-&gt;log_dir, size=
+of(s-&gt;log_dir), default_value);</span><br><span>     if (error !=3D ERRO=
+R_SUCCESS)</span><br><span>     {</span><br><span>@@ -229,7 +199,7 @@</span=
+><br><span>     else</span><br><span>     {</span><br><span>         tmp[wc=
+slen(tmp) - 2] =3D TEXT(&#39;\0&#39;); /* remove CR/LF characters */</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-        openvpn_swprintf(buf=
+, _countof(buf), TEXT(&quot;%ls (0x%x)&quot;), tmp, error);</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+        swprintf(buf, _countof(buf)=
+, TEXT(&quot;%ls (0x%x)&quot;), tmp, error);</span><br><span>     }</span><=
+br><span> </span><br><span>     if (tmp)</span><br><span>@@ -259,12 +229,12=
+ @@</span><br><span>     hEventSource =3D RegisterEventSource(NULL, APPNAME=
+);</span><br><span>     if (hEventSource !=3D NULL)</span><br><span>     {<=
+/span><br><span style=3D"color: hsl(0, 100%, 40%);">-        openvpn_swprin=
+tf(msg[0], _countof(msg[0]),</span><br><span style=3D"color: hsl(0, 100%, 4=
+0%);">-                         TEXT(&quot;%ls%ls%ls: %ls&quot;), APPNAME, =
+service_instance,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
+                     (flags &amp; MSG_FLAGS_ERROR) ? TEXT(&quot; error&quot=
+;) : TEXT(&quot;&quot;), err_msg);</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+        swprintf(msg[0], _countof(msg[0]),</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+                 TEXT(&quot;%ls%ls%ls=
+: %ls&quot;), APPNAME, service_instance,</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+                 (flags &amp; MSG_FLAGS_ERROR) ? TEXT(=
+&quot; error&quot;) : TEXT(&quot;&quot;), err_msg);</span><br><span> </span=
+><br><span>         va_start(arglist, format);</span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-        openvpn_vswprintf(msg[1], _countof(msg[1])=
+, format, arglist);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+        vswprintf(msg[1], _countof(msg[1]), format, arglist);</span><br><sp=
+an>         va_end(arglist);</span><br><span> </span><br><span>         con=
+st TCHAR *mesg[] =3D { msg[0], msg[1] };</span><br><span>diff --git a/src/o=
+penvpnserv/interactive.c b/src/openvpnserv/interactive.c</span><br><span>in=
+dex d32223c..294db00 100644</span><br><span>--- a/src/openvpnserv/interacti=
+ve.c</span><br><span>+++ b/src/openvpnserv/interactive.c</span><br><span>@@=
+ -311,7 +311,7 @@</span><br><span>      * Same format as error messages (3 =
+line string) with error =3D 0 in</span><br><span>      * 0x%08x format, PID=
+ on line 2 and a description &quot;Process ID&quot; on line 3</span><br><sp=
+an>      */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    openvp=
+n_swprintf(buf, _countof(buf), L&quot;0x%08x\n0x%08x\n%ls&quot;, 0, pid, ms=
+g);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    swprintf(buf=
+, _countof(buf), L&quot;0x%08x\n0x%08x\n%ls&quot;, 0, pid, msg);</span><br>=
+<span> </span><br><span>     WritePipeAsync(pipe, buf, (DWORD)(wcslen(buf) =
+* 2), count, events);</span><br><span> }</span><br><span>@@ -385,9 +385,9 @=
+@</span><br><span> </span><br><span>     if (!argv)</span><br><span>     {<=
+/span><br><span style=3D"color: hsl(0, 100%, 40%);">-        openvpn_swprin=
+tf(errmsg, capacity,</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
+                        L&quot;Cannot validate options: CommandLineToArgvW =
+failed with error =3D 0x%08x&quot;,</span><br><span style=3D"color: hsl(0, =
+100%, 40%);">-                         GetLastError());</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+        swprintf(errmsg, capacity,</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+                 L&quot;=
+Cannot validate options: CommandLineToArgvW failed with error =3D 0x%08x&qu=
+ot;,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+               =
+  GetLastError());</span><br><span>         goto out;</span><br><span>     =
+}</span><br><span> </span><br><span>@@ -407,8 +407,8 @@</span><br><span> </=
+span><br><span>         if (!CheckOption(workdir, 2, argv_tmp, &amp;setting=
+s))</span><br><span>         {</span><br><span style=3D"color: hsl(0, 100%,=
+ 40%);">-            openvpn_swprintf(errmsg, capacity, msg1, argv[0], work=
+dir,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-                 =
+            settings.ovpn_admin_group);</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+            swprintf(errmsg, capacity, msg1, argv[0], w=
+orkdir,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            =
+         settings.ovpn_admin_group);</span><br><span>         }</span><br><=
+span>         goto out;</span><br><span>     }</span><br><span>@@ -424,13 +=
+424,13 @@</span><br><span>         {</span><br><span>             if (wcscm=
+p(L&quot;--config&quot;, argv[i]) =3D=3D 0 &amp;&amp; argc-i &gt; 1)</span>=
+<br><span>             {</span><br><span style=3D"color: hsl(0, 100%, 40%);=
+">-                openvpn_swprintf(errmsg, capacity, msg1, argv[i+1], work=
+dir,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-                 =
+                settings.ovpn_admin_group);</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+                swprintf(errmsg, capacity, msg1, ar=
+gv[i+1], workdir,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+                       settings.ovpn_admin_group);</span><br><span>        =
+     }</span><br><span>             else</span><br><span>             {</sp=
+an><br><span style=3D"color: hsl(0, 100%, 40%);">-                openvpn_s=
+wprintf(errmsg, capacity, msg2, argv[i],</span><br><span style=3D"color: hs=
+l(0, 100%, 40%);">-                                 settings.ovpn_admin_gro=
+up);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+               =
+ swprintf(errmsg, capacity, msg2, argv[i],</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+                         settings.ovpn_admin_group);=
+</span><br><span>             }</span><br><span>             goto out;</spa=
+n><br><span>         }</span><br><span>@@ -985,7 +985,7 @@</span><br><span>=
+ </span><br><span>     HANDLE wait_handles[2] =3D {rdns_semaphore, exit_eve=
+nt};</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">=
+-    openvpn_swprintf(ipcfg, MAX_PATH, L&quot;%ls\\%ls&quot;, get_win_sys_p=
+ath(), L&quot;ipconfig.exe&quot;);</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+    swprintf(ipcfg, MAX_PATH, L&quot;%ls\\%ls&quot;, get_win=
+_sys_path(), L&quot;ipconfig.exe&quot;);</span><br><span> </span><br><span>=
+     if (WaitForMultipleObjects(2, wait_handles, FALSE, timeout) =3D=3D WAI=
+T_OBJECT_0)</span><br><span>     {</span><br><span>@@ -1064,7 +1064,7 @@</s=
+pan><br><span>     }</span><br><span> </span><br><span>     /* Path of nets=
+h */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    openvpn_swpri=
+ntf(argv0, _countof(argv0), L&quot;%ls\\%ls&quot;, get_win_sys_path(), L&qu=
+ot;netsh.exe&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++    swprintf(argv0, _countof(argv0), L&quot;%ls\\%ls&quot;, get_win_sys_pa=
+th(), L&quot;netsh.exe&quot;);</span><br><span> </span><br><span>     /* cm=
+d template:</span><br><span>      * netsh interface $proto $action dns $if_=
+name $addr [validate=3Dno]</span><br><span>@@ -1080,7 +1080,7 @@</span><br>=
+<span>         goto out;</span><br><span>     }</span><br><span> </span><br=
+><span style=3D"color: hsl(0, 100%, 40%);">-    openvpn_swprintf(cmdline, n=
+cmdline, fmt, proto, action, if_name, addr);</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+    swprintf(cmdline, ncmdline, fmt, proto, action=
+, if_name, addr);</span><br><span> </span><br><span>     if (IsWindows7OrGr=
+eater())</span><br><span>     {</span><br><span>@@ -1124,7 +1124,7 @@</span=
+><br><span>     }</span><br><span> </span><br><span>     /* Path of netsh *=
+/</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    openvpn_swprintf=
+(argv0, _countof(argv0), L&quot;%ls\\%ls&quot;, get_win_sys_path(), L&quot;=
+netsh.exe&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+  swprintf(argv0, _countof(argv0), L&quot;%ls\\%ls&quot;, get_win_sys_path(=
+), L&quot;netsh.exe&quot;);</span><br><span> </span><br><span>     /* cmd t=
+emplate:</span><br><span>      * netsh interface ip $action wins $if_name $=
+static $addr</span><br><span>@@ -1141,7 +1141,7 @@</span><br><span>        =
+ goto out;</span><br><span>     }</span><br><span> </span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-    openvpn_swprintf(cmdline, ncmdline, fmt=
+, action, if_name, addr_static, addr);</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+    swprintf(cmdline, ncmdline, fmt, action, if_name, ad=
+dr_static, addr);</span><br><span> </span><br><span>     err =3D ExecComman=
+d(argv0, cmdline, timeout);</span><br><span> </span><br><span>@@ -1167,7 +1=
+167,7 @@</span><br><span>     wchar_t *cmdline =3D NULL;</span><br><span>  =
+   int timeout =3D 10000; /* in msec */</span><br><span> </span><br><span s=
+tyle=3D"color: hsl(0, 100%, 40%);">-    openvpn_swprintf(argv0, _countof(ar=
+gv0), L&quot;%ls\\%ls&quot;, get_win_sys_path(), L&quot;wbem\\wmic.exe&quot=
+;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    swprintf(arg=
+v0, _countof(argv0), L&quot;%ls\\%ls&quot;, get_win_sys_path(), L&quot;wbem=
+\\wmic.exe&quot;);</span><br><span> </span><br><span>     const wchar_t *fm=
+t;</span><br><span>     /* comma separated list must be enclosed in parenth=
+esis */</span><br><span>@@ -1188,8 +1188,8 @@</span><br><span>         retu=
+rn ERROR_OUTOFMEMORY;</span><br><span>     }</span><br><span> </span><br><s=
+pan style=3D"color: hsl(0, 100%, 40%);">-    openvpn_swprintf(cmdline, ncmd=
+line, fmt, if_index, action,</span><br><span style=3D"color: hsl(0, 100%, 4=
+0%);">-                     data ? data : L&quot;&quot;);</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+    swprintf(cmdline, ncmdline, fmt, =
+if_index, action,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+           data ? data : L&quot;&quot;);</span><br><span>     err =3D ExecC=
+ommand(argv0, cmdline, timeout);</span><br><span> </span><br><span>     fre=
+e(cmdline);</span><br><span>@@ -1453,7 +1453,7 @@</span><br><span>     wcha=
+r_t argv0[MAX_PATH];</span><br><span> </span><br><span>     /* Path of nets=
+h */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    openvpn_swpri=
+ntf(argv0, _countof(argv0), L&quot;%ls\\%ls&quot;, get_win_sys_path(), L&qu=
+ot;netsh.exe&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++    swprintf(argv0, _countof(argv0), L&quot;%ls\\%ls&quot;, get_win_sys_pa=
+th(), L&quot;netsh.exe&quot;);</span><br><span> </span><br><span>     /* cm=
+d template:</span><br><span>      * netsh interface ipv4 set address name=
+=3D$if_index source=3Ddhcp</span><br><span>@@ -1471,7 +1471,7 @@</span><br>=
+<span>         return err;</span><br><span>     }</span><br><span> </span><=
+br><span style=3D"color: hsl(0, 100%, 40%);">-    openvpn_swprintf(cmdline,=
+ ncmdline, fmt, dhcp-&gt;iface.index);</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+    swprintf(cmdline, ncmdline, fmt, dhcp-&gt;iface.inde=
+x);</span><br><span> </span><br><span>     err =3D ExecCommand(argv0, cmdli=
+ne, timeout);</span><br><span> </span><br><span>@@ -1970,8 +1970,8 @@</span=
+><br><span>         goto out;</span><br><span>     }</span><br><span> </spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-    openvpn_swprintf(ovpn_=
+pipe_name, _countof(ovpn_pipe_name),</span><br><span style=3D"color: hsl(0,=
+ 100%, 40%);">-                     TEXT(&quot;\\\\.\\pipe\\&quot; PACKAGE =
+&quot;%ls\\service_%lu&quot;), service_instance, GetCurrentThreadId());</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+    swprintf(ovpn_pipe_=
+name, _countof(ovpn_pipe_name),</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+             TEXT(&quot;\\\\.\\pipe\\&quot; PACKAGE &quot;%ls\\=
+service_%lu&quot;), service_instance, GetCurrentThreadId());</span><br><spa=
+n>     ovpn_pipe =3D CreateNamedPipe(ovpn_pipe_name,</span><br><span>      =
+                           PIPE_ACCESS_DUPLEX | FILE_FLAG_FIRST_PIPE_INSTAN=
+CE | FILE_FLAG_OVERLAPPED,</span><br><span>                                =
+ PIPE_TYPE_MESSAGE | PIPE_READMODE_MESSAGE | PIPE_WAIT, 1, 128, 128, 0, NUL=
+L);</span><br><span>@@ -2003,8 +2003,11 @@</span><br><span>         ReturnL=
+astError(pipe, L&quot;malloc&quot;);</span><br><span>         goto out;</sp=
+an><br><span>     }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
+  openvpn_swprintf(cmdline, cmdline_size, L&quot;openvpn %ls --msg-channel =
+%&quot; PRIuPTR,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-     =
+                sud.options, svc_pipe);</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+    /* there seem to be no common printf specifier that=
+ works on all</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     *=
+ mingw/msvc platforms without trickery, so convert to void* and use</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+     * PRIuPTR to print tha=
+t as best compromise */</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+    swprintf(cmdline, cmdline_size, L&quot;openvpn %ls --msg-channel %&=
+quot; PRIuPTR,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
+        sud.options, (uintptr_t)svc_pipe);</span><br><span> </span><br><spa=
+n>     if (!CreateEnvironmentBlock(&amp;user_env, imp_token, FALSE))</span>=
+<br><span>     {</span><br><span>@@ -2079,8 +2082,8 @@</span><br><span>    =
+ else if (exit_code !=3D 0)</span><br><span>     {</span><br><span>        =
+ WCHAR buf[256];</span><br><span style=3D"color: hsl(0, 100%, 40%);">-     =
+   openvpn_swprintf(buf, _countof(buf),</span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-                         L&quot;OpenVPN exited with error=
+: exit code =3D %lu&quot;, exit_code);</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+        swprintf(buf, _countof(buf),</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+                 L&quot;OpenVPN exited =
+with error: exit code =3D %lu&quot;, exit_code);</span><br><span>         R=
+eturnError(pipe, ERROR_OPENVPN_STARTUP, buf, 1, &amp;exit_event);</span><br=
+><span>     }</span><br><span>     Undo(&amp;undo_lists);</span><br><span>@=
+@ -2174,7 +2177,7 @@</span><br><span>         initialized =3D TRUE;</span><=
+br><span>     }</span><br><span> </span><br><span style=3D"color: hsl(0, 10=
+0%, 40%);">-    openvpn_swprintf(pipe_name, _countof(pipe_name), TEXT(&quot=
+;\\\\.\\pipe\\&quot; PACKAGE &quot;%ls\\service&quot;), service_instance);<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+    swprintf(pipe_na=
+me, _countof(pipe_name), TEXT(&quot;\\\\.\\pipe\\&quot; PACKAGE &quot;%ls\\=
+service&quot;), service_instance);</span><br><span>     pipe =3D CreateName=
+dPipe(pipe_name, flags,</span><br><span>                            PIPE_TY=
+PE_MESSAGE | PIPE_READMODE_MESSAGE | PIPE_REJECT_REMOTE_CLIENTS,</span><br>=
+<span>                            PIPE_UNLIMITED_INSTANCES, 1024, 1024, 0, =
+NULL);</span><br><span>diff --git a/src/openvpnserv/service.h b/src/openvpn=
+serv/service.h</span><br><span>index 3acf08c..6d0827d 100644</span><br><spa=
+n>--- a/src/openvpnserv/service.h</span><br><span>+++ b/src/openvpnserv/ser=
+vice.h</span><br><span>@@ -81,12 +81,6 @@</span><br><span> </span><br><span=
+> VOID WINAPI ServiceStartInteractive(DWORD argc, LPTSTR *argv);</span><br>=
+<span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-BOOL openvpn_v=
+sntprintf(LPTSTR str, size_t size, LPCTSTR format, va_list arglist);</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"co=
+lor: hsl(0, 100%, 40%);">-BOOL openvpn_sntprintf(LPTSTR str, size_t size, L=
+PCTSTR format, ...);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-<=
+/span><br><span style=3D"color: hsl(0, 100%, 40%);">-BOOL openvpn_swprintf(=
+wchar_t *const str, const size_t size, const wchar_t *const format, ...);</=
+span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span> DWORD=
+ GetOpenvpnSettings(settings_t *s);</span><br><span> </span><br><span> BOOL=
+ ReportStatusToSCMgr(SERVICE_STATUS_HANDLE service, SERVICE_STATUS *status)=
+;</span><br><span>diff --git a/src/openvpnserv/validate.c b/src/openvpnserv=
+/validate.c</span><br><span>index 5f7acd7..9563fa5 100644</span><br><span>-=
+-- a/src/openvpnserv/validate.c</span><br><span>+++ b/src/openvpnserv/valid=
+ate.c</span><br><span>@@ -68,7 +68,7 @@</span><br><span>     /* convert fna=
+me to full path */</span><br><span>     if (PathIsRelativeW(fname) )</span>=
+<br><span>     {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-     =
+   openvpn_swprintf(tmp, _countof(tmp), L&quot;%ls\\%ls&quot;, workdir, fna=
+me);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        swprint=
+f(tmp, _countof(tmp), L&quot;%ls\\%ls&quot;, workdir, fname);</span><br><sp=
+an>         config_file =3D tmp;</span><br><span>     }</span><br><span>   =
+  else</span><br><span>diff --git a/tests/unit_tests/openvpn/test_buffer.c =
+b/tests/unit_tests/openvpn/test_buffer.c</span><br><span>index 52ffb54..9a6=
+1f2f 100644</span><br><span>--- a/tests/unit_tests/openvpn/test_buffer.c</s=
+pan><br><span>+++ b/tests/unit_tests/openvpn/test_buffer.c</span><br><span>=
+@@ -354,6 +354,56 @@</span><br><span>     assert_string_equal(buf, &quot;Th=
+ere is a .&#39;nice.&#39; \&quot;1234\&quot; [.] year old .tree!&quot;);</s=
+pan><br><span> }</span><br><span> </span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+static void</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+test_snprintf(void **state)</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+ /* we used to have a custom openvpn_snprintf function because some</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+     * OS (the comment did =
+not specify which) did not always put the</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+     * null byte there. So we unit test this to be su=
+re.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     *</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+     * This probably refers t=
+o the MSVC behaviour, see also</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+     * https://stackoverflow.com/questions/7706936/is-snprintf-a=
+lways-null-terminating</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+     */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+    /* Instead of trying to =
+trick the compiler here, disable the warnings</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+     * for this unit test. We know that are doing=
+ this that are truncated</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+     * and we want to test that */</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+#if defined(__GNUC__)</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+/* some clang version do not understand -Wformat-trun=
+cation, so ignore the</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+ * warning to avoid warnings/errors (-Werror) about unknown pragma/option=
+ */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#if defined(__cl=
+ang__)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#pragma clang=
+ diagnostic push</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#pr=
+agma clang diagnostic ignored &quot;-Wunknown-warning-option&quot;</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+#endif</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+#pragma GCC diagnostic push</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+#pragma GCC diagnostic ignored &q=
+uot;-Wformat-truncation&quot;</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+#endif</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+    char buf[10] =3D {=
+ &#39;a&#39; };</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+int ret =3D 0;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+    ret =3D snprintf(buf=
+, sizeof(buf), &quot;0123456789abcde&quot;);</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+    assert_int_equal(ret, 15);</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+    assert_int_equal(buf[9], &#39;\0&#3=
+9;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+    memset(buf, &#39;b&#39;, sizeo=
+f(buf));</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    ret =3D=
+ snprintf(buf, sizeof(buf), &quot;- %d - %d -&quot;, 77, 88);</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+    assert_int_equal(ret, 11);</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_int_equal(b=
+uf[9], &#39;\0&#39;);</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    memset(buf, &=
+#39;c&#39;, sizeof(buf));</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+    ret =3D snprintf(buf, sizeof(buf), &quot;- %8.2f&quot;, 77.8899);=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_int_equa=
+l(ret, 10);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    asse=
+rt_int_equal(buf[9], &#39;\0&#39;);</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#if=
+ defined(__GNUC__)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#=
+if defined(__clang__)</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+#pragma GCC diagnostic pop</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+#endif</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#pra=
+gma GCC diagnostic pop</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+#endif</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> int</span>=
+<br><span> main(void)</span><br><span> {</span><br><span>@@ -387,6 +437,7 @=
+@</span><br><span>         cmocka_unit_test(test_buffer_free_gc_two),</span=
+><br><span>         cmocka_unit_test(test_buffer_gc_realloc),</span><br><sp=
+an>         cmocka_unit_test(test_character_class),</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+        cmocka_unit_test(test_snprintf)</=
+span><br><span>     };</span><br><span> </span><br><span>     return cmocka=
+_run_group_tests_name(&quot;buffer&quot;, tests, NULL, NULL);</span><br><sp=
+an>diff --git a/tests/unit_tests/openvpn/test_cryptoapi.c b/tests/unit_test=
+s/openvpn/test_cryptoapi.c</span><br><span>index 87f6208..98102ef 100644</s=
+pan><br><span>--- a/tests/unit_tests/openvpn/test_cryptoapi.c</span><br><sp=
+an>+++ b/tests/unit_tests/openvpn/test_cryptoapi.c</span><br><span>@@ -271,=
+7 +271,7 @@</span><br><span> </span><br><span>     for (struct test_cert *c=
+ =3D certs; c-&gt;cert; c++)</span><br><span>     {</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-        openvpn_snprintf(select_string, siz=
+eof(select_string), &quot;THUMB:%s&quot;, c-&gt;hash);</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+        snprintf(select_string, sizeof(s=
+elect_string), &quot;THUMB:%s&quot;, c-&gt;hash);</span><br><span>         =
+ctx =3D find_certificate_in_store(select_string, user_store);</span><br><sp=
+an>         if (ctx)</span><br><span>         {</span><br><span>@@ -304,7 +=
+304,7 @@</span><br><span> </span><br><span>     for (struct test_cert *c =
+=3D certs; c-&gt;cert; c++)</span><br><span>     {</span><br><span style=3D=
+"color: hsl(0, 100%, 40%);">-        openvpn_snprintf(select_string, sizeof=
+(select_string), &quot;SUBJ:%s&quot;, c-&gt;cname);</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+        snprintf(select_string, sizeof(se=
+lect_string), &quot;SUBJ:%s&quot;, c-&gt;cname);</span><br><span>         c=
+tx =3D find_certificate_in_store(select_string, user_store);</span><br><spa=
+n>         /* In this case we expect a successful return as there is at lea=
+st one valid</span><br><span>          * cert that matches the common name.=
+ But the returned cert may not exactly match</span><br><span>@@ -337,7 +337=
+,7 @@</span><br><span> </span><br><span>     for (struct test_cert *c =3D c=
+erts; c-&gt;cert; c++)</span><br><span>     {</span><br><span style=3D"colo=
+r: hsl(0, 100%, 40%);">-        openvpn_snprintf(select_string, sizeof(sele=
+ct_string), &quot;ISSUER:%s&quot;, c-&gt;issuer);</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+        snprintf(select_string, sizeof(select=
+_string), &quot;ISSUER:%s&quot;, c-&gt;issuer);</span><br><span>         ct=
+x =3D find_certificate_in_store(select_string, user_store);</span><br><span=
+>         /* In this case we expect a successful return as there is at leas=
+t one valid</span><br><span>          * cert that matches the issuer. But t=
+he returned cert may not exactly match</span><br><span>@@ -411,7 +411,7 @@<=
+/span><br><span>         {</span><br><span>             continue;</span><br=
+><span>         }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
+    openvpn_snprintf(select_string, sizeof(select_string), &quot;THUMB:%s&q=
+uot;, c-&gt;hash);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+       snprintf(select_string, sizeof(select_string), &quot;THUMB:%s&quot;,=
+ c-&gt;hash);</span><br><span>         if (Load_CryptoAPI_certificate(selec=
+t_string, &amp;x509, &amp;privkey) !=3D 1)</span><br><span>         {</span=
+><br><span>             fail_msg(&quot;Load_CryptoAPI_certificate failed: &=
+lt;%s&gt;&quot;, c-&gt;friendly_name);</span><br><span>@@ -446,7 +446,7 @@<=
+/span><br><span>         SSL_CTX *ssl_ctx =3D SSL_CTX_new_ex(tls_libctx, NU=
+LL, SSLv23_client_method());</span><br><span>         assert_non_null(ssl_c=
+tx);</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">=
+-        openvpn_snprintf(select_string, sizeof(select_string), &quot;THUMB=
+:%s&quot;, c-&gt;hash);</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+        snprintf(select_string, sizeof(select_string), &quot;THUMB:%s&q=
+uot;, c-&gt;hash);</span><br><span>         if (!SSL_CTX_use_CryptoAPI_cert=
+ificate(ssl_ctx, select_string))</span><br><span>         {</span><br><span=
+>             fail_msg(&quot;SSL_CTX_use_CryptoAPI_certificate failed: &lt;=
+%s&gt;&quot;, c-&gt;friendly_name);</span><br><span>diff --git a/tests/unit=
+_tests/openvpn/test_pkcs11.c b/tests/unit_tests/openvpn/test_pkcs11.c</span=
+><br><span>index a48e404..84ebb29 100644</span><br><span>--- a/tests/unit_t=
+ests/openvpn/test_pkcs11.c</span><br><span>+++ b/tests/unit_tests/openvpn/t=
+est_pkcs11.c</span><br><span>@@ -161,7 +161,7 @@</span><br><span>     }</sp=
+an><br><span>     else if (flags &amp; GET_USER_PASS_PASSWORD_ONLY)</span><=
+br><span>     {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-      =
+  openvpn_snprintf(up-&gt;password, sizeof(up-&gt;password), &quot;%s&quot;=
+, PIN);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        snpr=
+intf(up-&gt;password, sizeof(up-&gt;password), &quot;%s&quot;, PIN);</span>=
+<br><span>     }</span><br><span>     else</span><br><span>     {</span><br=
+><span>@@ -204,8 +204,8 @@</span><br><span>     {</span><br><span>         =
+fail_msg(&quot;make tmpfile using template &lt;%s&gt; failed (error =3D %d)=
+&quot;, softhsm2_conf_path, errno);</span><br><span>     }</span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">-    openvpn_snprintf(config, sizeof(co=
+nfig), &quot;directories.tokendir=3D%s/&quot;,</span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-                     softhsm2_tokens_path);</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+    snprintf(config, sizeo=
+f(config), &quot;directories.tokendir=3D%s/&quot;,</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+             softhsm2_tokens_path);</span><b=
+r><span>     assert_int_equal(write(fd, config, strlen(config)), strlen(con=
+fig));</span><br><span>     close(fd);</span><br><span> </span><br><span></=
+span><br></pre><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/ope=
+nvpn/+/547?usp=3Demail">change 547</a>. To unsubscribe, or for help writing=
+ mail filters, visit <a href=3D"http://gerrit.openvpn.net/settings">setting=
+s</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div i=
+temscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><lin=
+k itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/547?usp=3D=
+email"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: Id95e0124d943912439c6ec6f562=
-c0eb40d434163 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 583 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I07096977e3b562bcb5d2c6f1167=
+3a4175b8e12ac </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 547 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 3 </div>
 <div style=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@...1711...=
 27...&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
+ </div>
 <div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
 1...&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: ordex &lt;a@...2181...&gt; </=
+div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
+.1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: cron2 &lt;gert@...1296...&gt=
+; </div>
 <div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
 41...&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: newchange </div>
+<div style=3D"display:none"> Gerrit-Attention: ordex &lt;a@...2181...&gt; <=
+/div>
+<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
 
 
---x4kCOjMO9mc=--
+--b00XC1yMbBU=--
 
