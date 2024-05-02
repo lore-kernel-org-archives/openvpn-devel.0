@@ -1,11 +1,16 @@
-From: Gert Doering <gert@...1296...>
-Date: Thu,  2 May 2024 11:53:22 +0200
-Message-ID: <20240502095322.9433-1-gert@...1296...>
-In-Reply-To: <gerrit.1712744941000.Ie61fa6a78875ecbaa9d3d8e7a50603d77c9ce09e@...2715...>
-References: <gerrit.1712744941000.Ie61fa6a78875ecbaa9d3d8e7a50603d77c9ce09e@...2715...>
+From: "flichtenheld (Code Review)" <gerrit@...515...>
+Date: Thu, 2 May 2024 10:19:33 +0000
+In-Reply-To: <gerrit.1714552206000.Ia70f230b2e9a78939d1875395205c8f48c4944b7@...2715...>
+References: <gerrit.1714552206000.Ia70f230b2e9a78939d1875395205c8f48c4944b7@...2715...>
+Reply-To: frank@...2641..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net
+Message-ID: <1a6bbb6b1bd409dd57a7330373373a4a5a9d5225-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v1] Fix "binary or" vs "boolean or" related
- to server_bridge_proxy_dhcp
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="VQKCekndtIk="; charset=UTF-8
+Subject: [Openvpn-devel] [S] Change in openvpn[master]: Replace macos11 with
+ macos14 in github runners
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,55 +19,81 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: plaisthos <arne-openvpn@...1227...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-From: Frank Lichtenheld <frank@...2641...>
+--VQKCekndtIk=
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Both values are boolean so there is no reason to use "|"
-and it just confuses the reader whether there is something
-more going on here.
+Attention is currently required from: plaisthos.
 
-Change-Id: Ie61fa6a78875ecbaa9d3d8e7a50603d77c9ce09e
-Signed-off-by: Frank Lichtenheld <frank@...2641...>
-Acked-by: Gert Doering <gert@...1296...>
----
+flichtenheld has posted comments on this change. ( http://gerrit.openvpn.ne=
+t/c/openvpn/+/582?usp=3Demail )
 
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to master.
+Change subject: Replace macos11 with macos14 in github runners
+......................................................................
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/553
-This mail reflects revision 1 of this Change.
 
-Acked-by according to Gerrit (reflected above):
-Gert Doering <gert@...1296...>
+Patch Set 1: Code-Review+2
 
-        
-diff --git a/src/openvpn/helper.c b/src/openvpn/helper.c
-index 1bab84c..24dee97 100644
---- a/src/openvpn/helper.c
-+++ b/src/openvpn/helper.c
-@@ -427,7 +427,7 @@
-      * if !nogw:
-      *   push "route-gateway dhcp"
-      */
--    else if (o->server_bridge_defined | o->server_bridge_proxy_dhcp)
-+    else if (o->server_bridge_defined || o->server_bridge_proxy_dhcp)
-     {
-         if (o->client)
-         {
-diff --git a/src/openvpn/init.c b/src/openvpn/init.c
-index 02205e7..e67f10e 100644
---- a/src/openvpn/init.c
-+++ b/src/openvpn/init.c
-@@ -3565,7 +3565,7 @@
-         msg(M_WARN, "WARNING: using --pull/--client and --ifconfig together is probably not what you want");
-     }
- 
--    if (o->server_bridge_defined | o->server_bridge_proxy_dhcp)
-+    if (o->server_bridge_defined || o->server_bridge_proxy_dhcp)
-     {
-         msg(M_WARN, "NOTE: when bridging your LAN adapter with the TAP adapter, note that the new bridge adapter will often take on its own IP address that is different from what the LAN adapter was previously set to");
-     }
+
+--
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/582?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings
+
+Gerrit-Project: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: Ia70f230b2e9a78939d1875395205c8f48c4944b7
+Gerrit-Change-Number: 582
+Gerrit-PatchSet: 1
+Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
+Gerrit-Reviewer: flichtenheld <frank@...2641...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Comment-Date: Thu, 02 May 2024 10:19:33 +0000
+Gerrit-HasComments: No
+Gerrit-Has-Labels: Yes
+Gerrit-MessageType: comment
+
+--VQKCekndtIk=
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<p> Attention is currently required from: plaisthos. </p>
+<p>Patch set 1:<span style=3D"border-radius: 3px; display: inline-block; ma=
+rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/582?usp=3Demail">Vi=
+ew Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To vie=
+w, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/582?usp=3Demail">=
+change 582</a>. To unsubscribe, or for help writing mail filters, visit <a =
+href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope=
+ itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"act=
+ion" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=
+=3D"http://gerrit.openvpn.net/c/openvpn/+/582?usp=3Demail"/><meta itemprop=
+=3D"name" content=3D"View Change"/></div></div>
+
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: Ia70f230b2e9a78939d187539520=
+5c8f48c4944b7 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 582 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
+<div style=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@...1711...=
+27...&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
+1...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Thu, 02 May 2024 10:19:33=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: No </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
+
+
+--VQKCekndtIk=--
 
