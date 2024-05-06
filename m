@@ -1,14 +1,14 @@
 From: "flichtenheld (Code Review)" <gerrit@...515...>
-Date: Mon, 6 May 2024 10:00:53 +0000
+Date: Mon, 6 May 2024 10:18:07 +0000
 In-Reply-To: <gerrit.1711328743000.I07096977e3b562bcb5d2c6f11673a4175b8e12ac@...2715...>
 References: <gerrit.1711328743000.I07096977e3b562bcb5d2c6f11673a4175b8e12ac@...2715...>
 Reply-To: frank@...2641..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net, gert@...1296..., a@...2181...
-Message-ID: <1fef64a6886b8c1e3a0791b291219763c8a67228-EmailReviewComments-HTML@...2715...>
+Message-ID: <e9c96b6e4ac19635939965589c646353fa53b750-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="cJFbrZphjNI="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="XzAI5EYX1uc="; charset=UTF-8
 Subject: [Openvpn-devel] [L] Change in openvpn[master]: Remove
  openvpn_snprintf and similar functions
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -22,7 +22,7 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: plaisthos <arne-openvpn@...1227...>
 Cc: cron2 <gert@...1296...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---cJFbrZphjNI=
+--XzAI5EYX1uc=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
@@ -35,18 +35,7 @@ Change subject: Remove openvpn_snprintf and similar functions
 ......................................................................
 
 
-Patch Set 5:
-
-(1 comment)
-
-File src/openvpn/proxy.c:
-
-http://gerrit.openvpn.net/c/openvpn/+/547/comment/1cc5661d_bc0d1f81 :
-PS4, Line 966:
-> What do you mean with spurious? It changes openvpn_snprintf to snprintf
-Sorry, seems I was too brief. I meant the empty line you inserted here. Eit=
-her way, not important.
-
+Patch Set 5: Code-Review+2
 
 
 --
@@ -68,37 +57,27 @@ Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
 Gerrit-Attention: cron2 <gert@...1296...>
 Gerrit-Attention: ordex <a@...2181...>
-Gerrit-Comment-Date: Mon, 06 May 2024 10:00:53 +0000
-Gerrit-HasComments: Yes
-Gerrit-Has-Labels: No
-Comment-In-Reply-To: plaisthos <arne-openvpn@...1227...>
-Comment-In-Reply-To: flichtenheld <frank@...2641...>
+Gerrit-Comment-Date: Mon, 06 May 2024 10:18:07 +0000
+Gerrit-HasComments: No
+Gerrit-Has-Labels: Yes
 Gerrit-MessageType: comment
 
---cJFbrZphjNI=
+--XzAI5EYX1uc=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <p> Attention is currently required from: cron2, ordex, plaisthos. </p>
-<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/547?usp=3Demail">View C=
-hange</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0;"><=
-li style=3D"margin: 0; padding: 0;"><p>File src/openvpn/proxy.c:</p><ul sty=
-le=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0=
- 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.n=
-et/c/openvpn/+/547/comment/1cc5661d_bc0d1f81">Patch Set #4, Line 966:</a> <=
-code style=3D"font-family:monospace,monospace"></code></p><p><blockquote st=
-yle=3D"border-left: 1px solid #aaa; margin: 10px 0; padding: 0 10px;">What =
-do you mean with spurious? It changes openvpn_snprintf to snprintf</blockqu=
-ote></p><p style=3D"white-space: pre-wrap; word-wrap: break-word;">Sorry, s=
-eems I was too brief. I meant the empty line you inserted here. Either way,=
- not important.</p></li></ul></li></ul><p>To view, visit <a href=3D"http://=
-gerrit.openvpn.net/c/openvpn/+/547?usp=3Demail">change 547</a>. To unsubscr=
-ibe, or for help writing mail filters, visit <a href=3D"http://gerrit.openv=
-pn.net/settings">settings</a>.</p><div itemscope itemtype=3D"http://schema.=
-org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://sch=
-ema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.ne=
-t/c/openvpn/+/547?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Cha=
-nge"/></div></div>
+<p>Patch set 5:<span style=3D"border-radius: 3px; display: inline-block; ma=
+rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/547?usp=3Demail">Vi=
+ew Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To vie=
+w, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/547?usp=3Demail">=
+change 547</a>. To unsubscribe, or for help writing mail filters, visit <a =
+href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope=
+ itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"act=
+ion" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=
+=3D"http://gerrit.openvpn.net/c/openvpn/+/547?usp=3Demail"/><meta itemprop=
+=3D"name" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
@@ -124,16 +103,12 @@ ts.sourceforge.net&gt; </div>
 ; </div>
 <div style=3D"display:none"> Gerrit-Attention: ordex &lt;a@...2181...&gt; <=
 /div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Mon, 06 May 2024 10:00:53=
+<div style=3D"display:none"> Gerrit-Comment-Date: Mon, 06 May 2024 10:18:07=
  +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: No </div>
-<div style=3D"display:none"> Comment-In-Reply-To: plaisthos &lt;arne-openvp=
-n@...1227...&gt; </div>
-<div style=3D"display:none"> Comment-In-Reply-To: flichtenheld &lt;frank@...1186...=
-.2641...&gt; </div>
+<div style=3D"display:none"> Gerrit-HasComments: No </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
 <div style=3D"display:none"> Gerrit-MessageType: comment </div>
 
 
---cJFbrZphjNI=--
+--XzAI5EYX1uc=--
 
