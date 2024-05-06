@@ -1,10 +1,9 @@
+Date: Mon, 6 May 2024 18:01:50 +0200 (CEST)
+Message-Id: <202405061601.446G1oDu073911@...2054...>
 From: Gert Doering <gert@...1296...>
-Date: Mon,  6 May 2024 17:58:31 +0200
-Message-ID: <20240506155831.3524-1-gert@...1296...>
-In-Reply-To: <gerrit.1714664981000.Id95e0124d943912439c6ec6f562c0eb40d434163@...2715...>
-References: <gerrit.1714664981000.Id95e0124d943912439c6ec6f562c0eb40d434163@...2715...>
-MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v1] Only run coverity scan in
+In-Reply-To: <20240506155831.3524-1-gert@...1296...>
+References: <20240506155831.3524-1-gert@...1296...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Only run coverity scan in
  OpenVPN/OpenVPN repository
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
@@ -16,40 +15,28 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Arne Schwabe <arne@...1227...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-From: Arne Schwabe <arne@...1227...>
+Your patch has been applied to the master and release/2.6 branch.
 
-This avoids the error message triggering every night that the run
-failed in forked repositories
+commit 815df21d389bf70dbe98cb89f2c60b6e6e816faa (master)
+commit 56fc48e87decfa16a15ab0293853c473bf56703f (release/2.6)
+Author: Arne Schwabe
+Date:   Mon May 6 17:58:31 2024 +0200
 
-Change-Id: Id95e0124d943912439c6ec6f562c0eb40d434163
-Signed-off-by: Arne Schwabe <arne@...1227...>
-Acked-by: Frank Lichtenheld <frank@...2641...>
----
+     Only run coverity scan in OpenVPN/OpenVPN repository
 
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to master.
+     Signed-off-by: Arne Schwabe <arne@...1227...>
+     Acked-by: Frank Lichtenheld <frank@...2641...>
+     Message-Id: <20240506155831.3524-1-gert@...1296...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg28627.html
+     Signed-off-by: Gert Doering <gert@...1296...>
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/583
-This mail reflects revision 1 of this Change.
 
-Acked-by according to Gerrit (reflected above):
-Frank Lichtenheld <frank@...2641...>
+--
+kind regards,
 
-        
-diff --git a/.github/workflows/coverity-scan.yml b/.github/workflows/coverity-scan.yml
-index e289746..37b8102 100644
---- a/.github/workflows/coverity-scan.yml
-+++ b/.github/workflows/coverity-scan.yml
-@@ -6,6 +6,9 @@
- 
- jobs:
-   latest:
-+    # Running coverity requires the secrets.COVERITY_SCAN_TOKEN token
-+    # which is only available on the main repository
-+    if: github.repository_owner == 'OpenVPN'
-     runs-on: ubuntu-latest
-     steps:
-       - name: Check submission cache
+Gert Doering
+
 
