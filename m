@@ -1,10 +1,16 @@
-Date: Mon, 6 May 2024 18:01:50 +0200 (CEST)
-Message-Id: <202405061601.446G1oDu073911@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <20240506155831.3524-1-gert@...1296...>
-References: <20240506155831.3524-1-gert@...1296...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Only run coverity scan in
- OpenVPN/OpenVPN repository
+From: "cron2 (Code Review)" <gerrit@...515...>
+Date: Mon, 6 May 2024 16:02:15 +0000
+In-Reply-To: <gerrit.1714664981000.Id95e0124d943912439c6ec6f562c0eb40d434163@...2715...>
+References: <gerrit.1714664981000.Id95e0124d943912439c6ec6f562c0eb40d434163@...2715...>
+Reply-To: gert@...1296..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net, frank@...2641...
+Message-ID: <4517b85de04604130b7a418688241a3f4a21fd2b-EmailReplacePatchSet-HTML@...2715...>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="/IsQR/ILxZU="; charset=UTF-8
+Subject: [Openvpn-devel] [XS] Change in openvpn[master]: Only run coverity
+ scan in OpenVPN/OpenVPN repository
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,30 +19,128 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: Arne Schwabe <arne@...1227...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-Your patch has been applied to the master and release/2.6 branch.
+--/IsQR/ILxZU=
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-commit 815df21d389bf70dbe98cb89f2c60b6e6e816faa (master)
-commit 56fc48e87decfa16a15ab0293853c473bf56703f (release/2.6)
-Author: Arne Schwabe
-Date:   Mon May 6 17:58:31 2024 +0200
+cron2 has uploaded a new patch set (#2) to the change originally created by=
+ plaisthos. ( http://gerrit.openvpn.net/c/openvpn/+/583?usp=3Demail )
 
-     Only run coverity scan in OpenVPN/OpenVPN repository
+The following approvals got outdated and were removed:
+Code-Review+2 by flichtenheld
 
-     Signed-off-by: Arne Schwabe <arne@...1227...>
-     Acked-by: Frank Lichtenheld <frank@...2641...>
-     Message-Id: <20240506155831.3524-1-gert@...1296...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg28627.html
-     Signed-off-by: Gert Doering <gert@...1296...>
 
+Change subject: Only run coverity scan in OpenVPN/OpenVPN repository
+......................................................................
+
+Only run coverity scan in OpenVPN/OpenVPN repository
+
+This avoids the error message triggering every night that the run
+failed in forked repositories
+
+Change-Id: Id95e0124d943912439c6ec6f562c0eb40d434163
+Signed-off-by: Arne Schwabe <arne@...1227...>
+Acked-by: Frank Lichtenheld <frank@...2641...>
+Message-Id: <20240506155831.3524-1-gert@...1296...>
+URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg28=
+627.html
+Signed-off-by: Gert Doering <gert@...1296...>
+---
+M .github/workflows/coverity-scan.yml
+1 file changed, 3 insertions(+), 0 deletions(-)
+
+
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/83/583/2
+
+diff --git a/.github/workflows/coverity-scan.yml b/.github/workflows/coveri=
+ty-scan.yml
+index e289746..37b8102 100644
+--- a/.github/workflows/coverity-scan.yml
++++ b/.github/workflows/coverity-scan.yml
+@@ -6,6 +6,9 @@
+
+ jobs:
+   latest:
++    # Running coverity requires the secrets.COVERITY_SCAN_TOKEN token
++    # which is only available on the main repository
++    if: github.repository_owner =3D=3D 'OpenVPN'
+     runs-on: ubuntu-latest
+     steps:
+       - name: Check submission cache
 
 --
-kind regards,
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/583?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings
 
-Gert Doering
+Gerrit-Project: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: Id95e0124d943912439c6ec6f562c0eb40d434163
+Gerrit-Change-Number: 583
+Gerrit-PatchSet: 2
+Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
+Gerrit-Reviewer: flichtenheld <frank@...2641...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-MessageType: newpatchset
 
+--/IsQR/ILxZU=
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<p>cron2 <strong>uploaded patch set #2</strong> to the change originally cr=
+eated by plaisthos.</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/=
+583?usp=3Demail">View Change</a></p><p>The following approvals got outdated=
+ and were removed:
+Code-Review+2 by flichtenheld</p><pre style=3D"font-family: monospace,monos=
+pace; white-space: pre-wrap;">Only run coverity scan in OpenVPN/OpenVPN rep=
+ository<br><br>This avoids the error message triggering every night that th=
+e run<br>failed in forked repositories<br><br>Change-Id: Id95e0124d94391243=
+9c6ec6f562c0eb40d434163<br>Signed-off-by: Arne Schwabe &lt;arne@...1227...&=
+gt;<br>Acked-by: Frank Lichtenheld &lt;frank@...2641...&gt;<br>Message-Id: =
+&lt;20240506155831.3524-1-gert@...1296...&gt;<br>URL: https://www.mail-arch=
+ive.com/openvpn-devel@lists.sourceforge.net/msg28627.html<br>Signed-off-by:=
+ Gert Doering &lt;gert@...1296...&gt;<br>---<br>M .github/workflows/coverit=
+y-scan.yml<br>1 file changed, 3 insertions(+), 0 deletions(-)<br><br></pre>=
+<pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;">git=
+ pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/83/583/2</pre><pr=
+e style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><span>=
+diff --git a/.github/workflows/coverity-scan.yml b/.github/workflows/coveri=
+ty-scan.yml</span><br><span>index e289746..37b8102 100644</span><br><span>-=
+-- a/.github/workflows/coverity-scan.yml</span><br><span>+++ b/.github/work=
+flows/coverity-scan.yml</span><br><span>@@ -6,6 +6,9 @@</span><br><span> </=
+span><br><span> jobs:</span><br><span>   latest:</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+    # Running coverity requires the secrets.CO=
+VERITY_SCAN_TOKEN token</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+    # which is only available on the main repository</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+    if: github.repository_owner =3D=3D=
+ &#39;OpenVPN&#39;</span><br><span>     runs-on: ubuntu-latest</span><br><s=
+pan>     steps:</span><br><span>       - name: Check submission cache</span=
+><br><span></span><br></pre><p>To view, visit <a href=3D"http://gerrit.open=
+vpn.net/c/openvpn/+/583?usp=3Demail">change 583</a>. To unsubscribe, or for=
+ help writing mail filters, visit <a href=3D"http://gerrit.openvpn.net/sett=
+ings">settings</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMe=
+ssage"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.org/Vie=
+wAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn=
+/+/583?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div=
+></div>
+
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: Id95e0124d943912439c6ec6f562=
+c0eb40d434163 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 583 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
+<div style=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@...1711...=
+27...&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
+1...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
+
+
+--/IsQR/ILxZU=--
 
