@@ -1,16 +1,10 @@
-From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Mon, 6 May 2024 16:02:17 +0000
-In-Reply-To: <gerrit.1714664981000.Id95e0124d943912439c6ec6f562c0eb40d434163@...2715...>
-References: <gerrit.1714664981000.Id95e0124d943912439c6ec6f562c0eb40d434163@...2715...>
-Reply-To: gert@...1296..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <4517b85de04604130b7a418688241a3f4a21fd2b-HTML@...2715...>
+From: Gert Doering <gert@...1296...>
+Date: Mon,  6 May 2024 18:04:07 +0200
+Message-ID: <20240506160413.7189-1-gert@...1296...>
+In-Reply-To: <gerrit.1713888151000.I34e96a225446693f401549d86d872c02427ef7d5@...2715...>
+References: <gerrit.1713888151000.I34e96a225446693f401549d86d872c02427ef7d5@...2715...>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="DIIraRfaThQ="; charset=UTF-8
-Subject: [Openvpn-devel] [XS] Change in openvpn[master]: Only run coverity
- scan in OpenVPN/OpenVPN repository
+Subject: [Openvpn-devel] [PATCH v2] configure: update old copy of pkg.m4
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,120 +13,331 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: plaisthos <arne-openvpn@...1227...>
-Cc: flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---DIIraRfaThQ=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+From: Frank Lichtenheld <frank@...2641...>
 
-cron2 has submitted this change. ( http://gerrit.openvpn.net/c/openvpn/+/58=
-3?usp=3Demail )
+If we copy this code, let's at least make sure we update
+it every decade ;)
 
-Change subject: Only run coverity scan in OpenVPN/OpenVPN repository
-......................................................................
+I also considered removing it. However, then autoconf
+can't be run on systems without pkg-config installed
+anymore. While that is very unusual, didn't see a good
+reason to break that.
 
-Only run coverity scan in OpenVPN/OpenVPN repository
-
-This avoids the error message triggering every night that the run
-failed in forked repositories
-
-Change-Id: Id95e0124d943912439c6ec6f562c0eb40d434163
-Signed-off-by: Arne Schwabe <arne@...1227...>
-Acked-by: Frank Lichtenheld <frank@...2641...>
-Message-Id: <20240506155831.3524-1-gert@...1296...>
-URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg28=
-627.html
-Signed-off-by: Gert Doering <gert@...1296...>
+Change-Id: I34e96a225446693f401549d86d872c02427ef7d5
+Signed-off-by: Frank Lichtenheld <frank@...2641...>
+Acked-by: Arne Schwabe <arne-openvpn@...1227...>
 ---
-M .github/workflows/coverity-scan.yml
-1 file changed, 3 insertions(+), 0 deletions(-)
 
+This change was reviewed on Gerrit and approved by at least one
+developer. I request to merge it to master.
 
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/558
+This mail reflects revision 2 of this Change.
 
+Acked-by according to Gerrit (reflected above):
+Arne Schwabe <arne-openvpn@...1227...>
 
-diff --git a/.github/workflows/coverity-scan.yml b/.github/workflows/coveri=
-ty-scan.yml
-index e289746..37b8102 100644
---- a/.github/workflows/coverity-scan.yml
-+++ b/.github/workflows/coverity-scan.yml
-@@ -6,6 +6,9 @@
-
- jobs:
-   latest:
-+    # Running coverity requires the secrets.COVERITY_SCAN_TOKEN token
-+    # which is only available on the main repository
-+    if: github.repository_owner =3D=3D 'OpenVPN'
-     runs-on: ubuntu-latest
-     steps:
-       - name: Check submission cache
-
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/583?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings
-
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: Id95e0124d943912439c6ec6f562c0eb40d434163
-Gerrit-Change-Number: 583
-Gerrit-PatchSet: 2
-Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
-Gerrit-Reviewer: flichtenheld <frank@...2641...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-MessageType: merged
-
---DIIraRfaThQ=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<p>cron2 <strong>submitted</strong> this change.</p><p><a href=3D"http://ge=
-rrit.openvpn.net/c/openvpn/+/583?usp=3Demail">View Change</a></p><div style=
-=3D"white-space:pre-wrap"></div><pre style=3D"font-family: monospace,monosp=
-ace; white-space: pre-wrap;">Only run coverity scan in OpenVPN/OpenVPN repo=
-sitory<br><br>This avoids the error message triggering every night that the=
- run<br>failed in forked repositories<br><br>Change-Id: Id95e0124d943912439=
-c6ec6f562c0eb40d434163<br>Signed-off-by: Arne Schwabe &lt;arne@...1227...&g=
-t;<br>Acked-by: Frank Lichtenheld &lt;frank@...2641...&gt;<br>Message-Id: &=
-lt;20240506155831.3524-1-gert@...1296...&gt;<br>URL: https://www.mail-archi=
-ve.com/openvpn-devel@lists.sourceforge.net/msg28627.html<br>Signed-off-by: =
-Gert Doering &lt;gert@...1296...&gt;<br>---<br>M .github/workflows/coverity=
--scan.yml<br>1 file changed, 3 insertions(+), 0 deletions(-)<br><br></pre>
-<pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><sp=
-an>diff --git a/.github/workflows/coverity-scan.yml b/.github/workflows/cov=
-erity-scan.yml</span><br><span>index e289746..37b8102 100644</span><br><spa=
-n>--- a/.github/workflows/coverity-scan.yml</span><br><span>+++ b/.github/w=
-orkflows/coverity-scan.yml</span><br><span>@@ -6,6 +6,9 @@</span><br><span>=
- </span><br><span> jobs:</span><br><span>   latest:</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    # Running coverity requires the secre=
-ts.COVERITY_SCAN_TOKEN token</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+    # which is only available on the main repository</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+    if: github.repository_owner =
-=3D=3D &#39;OpenVPN&#39;</span><br><span>     runs-on: ubuntu-latest</span>=
-<br><span>     steps:</span><br><span>       - name: Check submission cache=
-</span><br><span></span><br></pre><p>To view, visit <a href=3D"http://gerri=
-t.openvpn.net/c/openvpn/+/583?usp=3Demail">change 583</a>. To unsubscribe, =
-or for help writing mail filters, visit <a href=3D"http://gerrit.openvpn.ne=
-t/settings">settings</a>.</p><div itemscope itemtype=3D"http://schema.org/E=
-mailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.o=
-rg/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/o=
-penvpn/+/583?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/=
-></div></div>
-
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: Id95e0124d943912439c6ec6f562=
-c0eb40d434163 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 583 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
-<div style=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@...1711...=
-27...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
-1...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: merged </div>
-
-
---DIIraRfaThQ=--
+        
+diff --git a/m4/pkg.m4 b/m4/pkg.m4
+index cca47a7..13a8890 100644
+--- a/m4/pkg.m4
++++ b/m4/pkg.m4
+@@ -1,29 +1,60 @@
+-# pkg.m4 - Macros to locate and utilise pkg-config.            -*- Autoconf -*-
+-# serial 1 (pkg-config-0.24)
+-# 
+-# Copyright © 2004 Scott James Remnant <scott@...1668...>.
+-#
+-# This program is free software; you can redistribute it and/or modify
+-# it under the terms of the GNU General Public License as published by
+-# the Free Software Foundation; either version 2 of the License, or
+-# (at your option) any later version.
+-#
+-# This program is distributed in the hope that it will be useful, but
+-# WITHOUT ANY WARRANTY; without even the implied warranty of
+-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+-# General Public License for more details.
+-#
+-# You should have received a copy of the GNU General Public License along
+-# with this program; if not, write to the Free Software Foundation, Inc.,
+-# 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+-#
+-# As a special exception to the GNU General Public License, if you
+-# distribute this file as part of a program that contains a
+-# configuration script generated by Autoconf, you may include it under
+-# the same distribution terms that you use for the rest of that program.
++# pkg.m4 - Macros to locate and utilise pkg-config.   -*- Autoconf -*-
++# serial 12 (pkg-config-0.29.2)
+ 
+-# PKG_PROG_PKG_CONFIG([MIN-VERSION])
+-# ----------------------------------
++dnl Copyright © 2004 Scott James Remnant <scott@...1668...>.
++dnl Copyright © 2012-2015 Dan Nicholson <dbn.lists@...277...>
++dnl
++dnl This program is free software; you can redistribute it and/or modify
++dnl it under the terms of the GNU General Public License as published by
++dnl the Free Software Foundation; either version 2 of the License, or
++dnl (at your option) any later version.
++dnl
++dnl This program is distributed in the hope that it will be useful, but
++dnl WITHOUT ANY WARRANTY; without even the implied warranty of
++dnl MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
++dnl General Public License for more details.
++dnl
++dnl You should have received a copy of the GNU General Public License
++dnl along with this program; if not, write to the Free Software
++dnl Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
++dnl 02111-1307, USA.
++dnl
++dnl As a special exception to the GNU General Public License, if you
++dnl distribute this file as part of a program that contains a
++dnl configuration script generated by Autoconf, you may include it under
++dnl the same distribution terms that you use for the rest of that
++dnl program.
++
++dnl PKG_PREREQ(MIN-VERSION)
++dnl -----------------------
++dnl Since: 0.29
++dnl
++dnl Verify that the version of the pkg-config macros are at least
++dnl MIN-VERSION. Unlike PKG_PROG_PKG_CONFIG, which checks the user's
++dnl installed version of pkg-config, this checks the developer's version
++dnl of pkg.m4 when generating configure.
++dnl
++dnl To ensure that this macro is defined, also add:
++dnl m4_ifndef([PKG_PREREQ],
++dnl     [m4_fatal([must install pkg-config 0.29 or later before running autoconf/autogen])])
++dnl
++dnl See the "Since" comment for each macro you use to see what version
++dnl of the macros you require.
++m4_defun([PKG_PREREQ],
++[m4_define([PKG_MACROS_VERSION], [0.29.2])
++m4_if(m4_version_compare(PKG_MACROS_VERSION, [$1]), -1,
++    [m4_fatal([pkg.m4 version $1 or higher is required but ]PKG_MACROS_VERSION[ found])])
++])dnl PKG_PREREQ
++
++dnl PKG_PROG_PKG_CONFIG([MIN-VERSION])
++dnl ----------------------------------
++dnl Since: 0.16
++dnl
++dnl Search for the pkg-config tool and set the PKG_CONFIG variable to
++dnl first found in the path. Checks that the version of pkg-config found
++dnl is at least MIN-VERSION. If MIN-VERSION is not specified, 0.9.0 is
++dnl used since that's the first version where most current features of
++dnl pkg-config existed.
+ AC_DEFUN([PKG_PROG_PKG_CONFIG],
+ [m4_pattern_forbid([^_?PKG_[A-Z_]+$])
+ m4_pattern_allow([^PKG_CONFIG(_(PATH|LIBDIR|SYSROOT_DIR|ALLOW_SYSTEM_(CFLAGS|LIBS)))?$])
+@@ -45,18 +76,19 @@
+ 		PKG_CONFIG=""
+ 	fi
+ fi[]dnl
+-])# PKG_PROG_PKG_CONFIG
++])dnl PKG_PROG_PKG_CONFIG
+ 
+-# PKG_CHECK_EXISTS(MODULES, [ACTION-IF-FOUND], [ACTION-IF-NOT-FOUND])
+-#
+-# Check to see whether a particular set of modules exists.  Similar
+-# to PKG_CHECK_MODULES(), but does not set variables or print errors.
+-#
+-# Please remember that m4 expands AC_REQUIRE([PKG_PROG_PKG_CONFIG])
+-# only at the first occurrence in configure.ac, so if the first place
+-# it's called might be skipped (such as if it is within an "if", you
+-# have to call PKG_CHECK_EXISTS manually
+-# --------------------------------------------------------------
++dnl PKG_CHECK_EXISTS(MODULES, [ACTION-IF-FOUND], [ACTION-IF-NOT-FOUND])
++dnl -------------------------------------------------------------------
++dnl Since: 0.18
++dnl
++dnl Check to see whether a particular set of modules exists. Similar to
++dnl PKG_CHECK_MODULES(), but does not set variables or print errors.
++dnl
++dnl Please remember that m4 expands AC_REQUIRE([PKG_PROG_PKG_CONFIG])
++dnl only at the first occurence in configure.ac, so if the first place
++dnl it's called might be skipped (such as if it is within an "if", you
++dnl have to call PKG_CHECK_EXISTS manually
+ AC_DEFUN([PKG_CHECK_EXISTS],
+ [AC_REQUIRE([PKG_PROG_PKG_CONFIG])dnl
+ if test -n "$PKG_CONFIG" && \
+@@ -66,8 +98,10 @@
+   $3])dnl
+ fi])
+ 
+-# _PKG_CONFIG([VARIABLE], [COMMAND], [MODULES])
+-# ---------------------------------------------
++dnl _PKG_CONFIG([VARIABLE], [COMMAND], [MODULES])
++dnl ---------------------------------------------
++dnl Internal wrapper calling pkg-config via PKG_CONFIG and setting
++dnl pkg_failed based on the result.
+ m4_define([_PKG_CONFIG],
+ [if test -n "$$1"; then
+     pkg_cv_[]$1="$$1"
+@@ -79,10 +113,11 @@
+  else
+     pkg_failed=untried
+ fi[]dnl
+-])# _PKG_CONFIG
++])dnl _PKG_CONFIG
+ 
+-# _PKG_SHORT_ERRORS_SUPPORTED
+-# -----------------------------
++dnl _PKG_SHORT_ERRORS_SUPPORTED
++dnl ---------------------------
++dnl Internal check to see if pkg-config supports short errors.
+ AC_DEFUN([_PKG_SHORT_ERRORS_SUPPORTED],
+ [AC_REQUIRE([PKG_PROG_PKG_CONFIG])
+ if $PKG_CONFIG --atleast-pkgconfig-version 0.20; then
+@@ -90,26 +125,24 @@
+ else
+         _pkg_short_errors_supported=no
+ fi[]dnl
+-])# _PKG_SHORT_ERRORS_SUPPORTED
++])dnl _PKG_SHORT_ERRORS_SUPPORTED
+ 
+ 
+-# PKG_CHECK_MODULES(VARIABLE-PREFIX, MODULES, [ACTION-IF-FOUND],
+-# [ACTION-IF-NOT-FOUND])
+-#
+-#
+-# Note that if there is a possibility the first call to
+-# PKG_CHECK_MODULES might not happen, you should be sure to include an
+-# explicit call to PKG_PROG_PKG_CONFIG in your configure.ac
+-#
+-#
+-# --------------------------------------------------------------
++dnl PKG_CHECK_MODULES(VARIABLE-PREFIX, MODULES, [ACTION-IF-FOUND],
++dnl   [ACTION-IF-NOT-FOUND])
++dnl --------------------------------------------------------------
++dnl Since: 0.4.0
++dnl
++dnl Note that if there is a possibility the first call to
++dnl PKG_CHECK_MODULES might not happen, you should be sure to include an
++dnl explicit call to PKG_PROG_PKG_CONFIG in your configure.ac
+ AC_DEFUN([PKG_CHECK_MODULES],
+ [AC_REQUIRE([PKG_PROG_PKG_CONFIG])dnl
+ AC_ARG_VAR([$1][_CFLAGS], [C compiler flags for $1, overriding pkg-config])dnl
+ AC_ARG_VAR([$1][_LIBS], [linker flags for $1, overriding pkg-config])dnl
+ 
+ pkg_failed=no
+-AC_MSG_CHECKING([for $1])
++AC_MSG_CHECKING([for $2])
+ 
+ _PKG_CONFIG([$1][_CFLAGS], [cflags], [$2])
+ _PKG_CONFIG([$1][_LIBS], [libs], [$2])
+@@ -119,11 +152,11 @@
+ See the pkg-config man page for more details.])
+ 
+ if test $pkg_failed = yes; then
+-   	AC_MSG_RESULT([no])
++        AC_MSG_RESULT([no])
+         _PKG_SHORT_ERRORS_SUPPORTED
+         if test $_pkg_short_errors_supported = yes; then
+ 	        $1[]_PKG_ERRORS=`$PKG_CONFIG --short-errors --print-errors --cflags --libs "$2" 2>&1`
+-        else 
++        else
+ 	        $1[]_PKG_ERRORS=`$PKG_CONFIG --print-errors --cflags --libs "$2" 2>&1`
+         fi
+ 	# Put the nasty error message in config.log where it belongs
+@@ -140,7 +173,7 @@
+ _PKG_TEXT])[]dnl
+         ])
+ elif test $pkg_failed = untried; then
+-     	AC_MSG_RESULT([no])
++        AC_MSG_RESULT([no])
+ 	m4_default([$4], [AC_MSG_FAILURE(
+ [The pkg-config script could not be found or is too old.  Make sure it
+ is in your PATH or set the PKG_CONFIG environment variable to the full
+@@ -156,4 +189,87 @@
+         AC_MSG_RESULT([yes])
+ 	$3
+ fi[]dnl
+-])# PKG_CHECK_MODULES
++])dnl PKG_CHECK_MODULES
++
++
++dnl PKG_CHECK_MODULES_STATIC(VARIABLE-PREFIX, MODULES, [ACTION-IF-FOUND],
++dnl   [ACTION-IF-NOT-FOUND])
++dnl ---------------------------------------------------------------------
++dnl Since: 0.29
++dnl
++dnl Checks for existence of MODULES and gathers its build flags with
++dnl static libraries enabled. Sets VARIABLE-PREFIX_CFLAGS from --cflags
++dnl and VARIABLE-PREFIX_LIBS from --libs.
++dnl
++dnl Note that if there is a possibility the first call to
++dnl PKG_CHECK_MODULES_STATIC might not happen, you should be sure to
++dnl include an explicit call to PKG_PROG_PKG_CONFIG in your
++dnl configure.ac.
++AC_DEFUN([PKG_CHECK_MODULES_STATIC],
++[AC_REQUIRE([PKG_PROG_PKG_CONFIG])dnl
++_save_PKG_CONFIG=$PKG_CONFIG
++PKG_CONFIG="$PKG_CONFIG --static"
++PKG_CHECK_MODULES($@)
++PKG_CONFIG=$_save_PKG_CONFIG[]dnl
++])dnl PKG_CHECK_MODULES_STATIC
++
++
++dnl PKG_INSTALLDIR([DIRECTORY])
++dnl -------------------------
++dnl Since: 0.27
++dnl
++dnl Substitutes the variable pkgconfigdir as the location where a module
++dnl should install pkg-config .pc files. By default the directory is
++dnl $libdir/pkgconfig, but the default can be changed by passing
++dnl DIRECTORY. The user can override through the --with-pkgconfigdir
++dnl parameter.
++AC_DEFUN([PKG_INSTALLDIR],
++[m4_pushdef([pkg_default], [m4_default([$1], ['${libdir}/pkgconfig'])])
++m4_pushdef([pkg_description],
++    [pkg-config installation directory @<:@]pkg_default[@:>@])
++AC_ARG_WITH([pkgconfigdir],
++    [AS_HELP_STRING([--with-pkgconfigdir], pkg_description)],,
++    [with_pkgconfigdir=]pkg_default)
++AC_SUBST([pkgconfigdir], [$with_pkgconfigdir])
++m4_popdef([pkg_default])
++m4_popdef([pkg_description])
++])dnl PKG_INSTALLDIR
++
++
++dnl PKG_NOARCH_INSTALLDIR([DIRECTORY])
++dnl --------------------------------
++dnl Since: 0.27
++dnl
++dnl Substitutes the variable noarch_pkgconfigdir as the location where a
++dnl module should install arch-independent pkg-config .pc files. By
++dnl default the directory is $datadir/pkgconfig, but the default can be
++dnl changed by passing DIRECTORY. The user can override through the
++dnl --with-noarch-pkgconfigdir parameter.
++AC_DEFUN([PKG_NOARCH_INSTALLDIR],
++[m4_pushdef([pkg_default], [m4_default([$1], ['${datadir}/pkgconfig'])])
++m4_pushdef([pkg_description],
++    [pkg-config arch-independent installation directory @<:@]pkg_default[@:>@])
++AC_ARG_WITH([noarch-pkgconfigdir],
++    [AS_HELP_STRING([--with-noarch-pkgconfigdir], pkg_description)],,
++    [with_noarch_pkgconfigdir=]pkg_default)
++AC_SUBST([noarch_pkgconfigdir], [$with_noarch_pkgconfigdir])
++m4_popdef([pkg_default])
++m4_popdef([pkg_description])
++])dnl PKG_NOARCH_INSTALLDIR
++
++
++dnl PKG_CHECK_VAR(VARIABLE, MODULE, CONFIG-VARIABLE,
++dnl [ACTION-IF-FOUND], [ACTION-IF-NOT-FOUND])
++dnl -------------------------------------------
++dnl Since: 0.28
++dnl
++dnl Retrieves the value of the pkg-config variable for the given module.
++AC_DEFUN([PKG_CHECK_VAR],
++[AC_REQUIRE([PKG_PROG_PKG_CONFIG])dnl
++AC_ARG_VAR([$1], [value of $3 for $2, overriding pkg-config])dnl
++
++_PKG_CONFIG([$1], [variable="][$3]["], [$2])
++AS_VAR_COPY([$1], [pkg_cv_][$1])
++
++AS_VAR_IF([$1], [""], [$5], [$4])dnl
++])dnl PKG_CHECK_VAR
 
