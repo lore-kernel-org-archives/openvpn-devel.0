@@ -1,16 +1,11 @@
-From: "flichtenheld (Code Review)" <gerrit@...515...>
-Date: Wed, 8 May 2024 10:56:42 +0000
-In-Reply-To: <gerrit.1714407751000.I5bfa3630ad4dff2807705658bc877c4a429a39ce@...2715...>
-References: <gerrit.1714407751000.I5bfa3630ad4dff2807705658bc877c4a429a39ce@...2715...>
-Reply-To: frank@...2641..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net
-Message-ID: <0e46317abca6f109ec73240bfdf4b34e5199bf82-EmailReviewComments-HTML@...2715...>
+Content-Type: multipart/alternative;
+ boundary="------------PVsMR0NkR0C0NNj0HoQK400v"
+Message-ID: <bb557c20-7bca-4b58-a6e9-67c31a419ec9@...2751...>
+Date: Wed, 8 May 2024 14:00:23 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="OX99JqtnirE="; charset=UTF-8
-Subject: [Openvpn-devel] [M] Change in openvpn[master]: Remove custom TLS
- 1.0 PRF implementation only used by LibreSSL/wolfSSL
+From: Johan Draaisma <johan@...2751...>
+Content-Language: en-US
+Subject: [Openvpn-devel]  IRC community meeting summary
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,96 +14,209 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: plaisthos <arne-openvpn@...1227...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: openvpn-devel@lists.sourceforge.net
 
---OX99JqtnirE=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+This is a multi-part message in MIME format.
+--------------PVsMR0NkR0C0NNj0HoQK400v
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-Attention is currently required from: plaisthos.
+Meeting summary for 8 May 2024:
 
-flichtenheld has posted comments on this change. ( http://gerrit.openvpn.ne=
-t/c/openvpn/+/560?usp=3Demail )
+  * *Closed: Discussion related to DNS IV flag*
+    /This was done with a IV_PROTO_DNS_OPTION_V2 proto flag./
 
-Change subject: Remove custom TLS 1.0 PRF implementation only used by Libre=
-SSL/wolfSSL
-......................................................................
+  * *New, closed:TunnelVision
+    <https://community.openvpn.net/openvpn/wiki/TunnelVision>vulnerability.*/
+    /This looks to be basically the same as theTunnelCrack
+    <https://community.openvpn.net/openvpn/wiki/TunnelCrack>vulnerability./
+    /Mitigations forTunnelCrack
+    <https://community.openvpn.net/openvpn/wiki/TunnelCrack>are underway
+    but take time to deliver as the implementation is different on each
+    platform./
+    /What we'll do is add a wiki article forTunnelVision
+    <https://community.openvpn.net/openvpn/wiki/TunnelVision>that
+    redirects toTunnelCrack
+    <https://community.openvpn.net/openvpn/wiki/TunnelCrack>statement
+    already present on our wiki./
+    /We'll add a section there specific to theTunnelVision
+    <https://community.openvpn.net/openvpn/wiki/TunnelVision>aspect of
+    this.//
 
+  * *Updated: Tunnelcrack progressTunnelCrack community wiki article
+    <https://community.openvpn.net/openvpn/wiki/TunnelCrack>*
+    /Status update onTunnelCrack
+    <https://community.openvpn.net/openvpn/wiki/TunnelCrack>mitigations:/
+    /Windows, openvpn2: ready to merge. openvpn3: in code review./
+    /Linux, openvpn2: in progress. openvpn3: in progress./
+    /macOS: to be determined./
+    /iOS: to be determined./
+    /Android: not vulnerable./
 
-Patch Set 4: -Code-Review
+  * *New:BlackHat?
+    <https://community.openvpn.net/openvpn/wiki/BlackHat>announcement
+    regarding 'OVPNX'.*/BlackHat?
+    <https://community.openvpn.net/openvpn/wiki/BlackHat>announced a
+    presentation about OVPNX vulnerabilities that lead to privilege
+    escalation./
+    /This is by the same guy, Vladimir Tokarev, that reported these
+    issues to us that we then solved./
+    /The problem is they are announcing it as zero-day vulnerabilities,
+    which is simply not true./
+    /These were responsibly disclosed and in cooperation were fixed and
+    published with the OpenVPN 2.6.10 and 2.5.10 releases./
+    /We did reach out to clarify things but haven't had a response yet./
+    /A security advisory and a blog post will be posted in the next day
+    or so on the main website, and it will be added to the company
+    newsletter as well./
+    /These will set the record straight that it's not zero-day, and
+    furthermore point out that this is not that critical of an issue as
+    you need privileges anyways to exploit it./
+    /Also this only affects OpenVPN2 GUI on Windows./
 
-(1 comment)
+  * *Updated: forums topics*
+    /rob0 and novaflash volunteered to take a look at the web server
+    config to make it work correctly./
+    /However due to other ongoing things, didn't have time yet, but will
+    be able to spend time on it soonish./
+    /Plan is to soon switch URLs so new forum is on forums.openvpn.net
+    and old forums is on archive address./
+    /- email confirmation on registration was suggested./
+    /- mod permissions, guide, hard or soft delete (chuck board?), what
+    to do with GDPR, etc. (write it down and actually make it available
+    to mods, maybe a hidden topic)/
+    /- access for mods to logs so one can see what others did/
 
-Patchset:
+  * *Updated: mattock topics*
+    /PR created to add t_server_null tests to buildbot./
+    /There's a parallelism issue to fix between t_server_null.sh and
+    t_client.sh - will work on that./
 
-PS4:
-Remaining build failures are due to parent commit
+As always you're welcome to join at #openvpn-meeting on Libera IRC 
+network every Wednesday at 13:00 Central European Time.
 
+Kind regards,
+Johan Draaisma
 
+--------------PVsMR0NkR0C0NNj0HoQK400v
+Content-Type: text/html; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/560?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  </head>
+  <body>
+    <p> Meeting summary for 8 May 2024:</p>
+    <ul
+style="color: rgb(0, 0, 0); font-family: Verdana, Arial, &quot;Bitstream Vera Sans&quot;, Helvetica, sans-serif; font-size: 13px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;">
+      <li><strong>Closed: Discussion related to DNS IV flag</strong><br>
+        <em>This was done with a IV_PROTO_DNS_OPTION_V2 proto flag.</em></li>
+    </ul>
+    <ul
+style="color: rgb(0, 0, 0); font-family: Verdana, Arial, &quot;Bitstream Vera Sans&quot;, Helvetica, sans-serif; font-size: 13px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;">
+      <li><strong>New, closed:<span> </span><a class="wiki"
+href="https://community.openvpn.net/openvpn/wiki/TunnelVision"
+style="text-decoration: none; color: rgb(187, 0, 0); border-bottom: 1px dotted rgb(187, 187, 187);">TunnelVision</a><span> </span>vulnerability.</strong><em><br>
+        </em>This looks to be basically the same as the<span> </span><a
+          class="wiki"
+          href="https://community.openvpn.net/openvpn/wiki/TunnelCrack"
+style="text-decoration: none; color: rgb(187, 0, 0); border-bottom: 1px dotted rgb(187, 187, 187);">TunnelCrack</a><span> </span>vulnerability.<em><br>
+        </em>Mitigations for<span> </span><a class="wiki"
+          href="https://community.openvpn.net/openvpn/wiki/TunnelCrack"
+style="text-decoration: none; color: rgb(187, 0, 0); border-bottom: 1px dotted rgb(187, 187, 187);">TunnelCrack</a><span> </span>are
+        underway but take time to deliver as the implementation is
+        different on each platform.<em><br>
+        </em>What we'll do is add a wiki article for<span> </span><a
+          class="wiki"
+          href="https://community.openvpn.net/openvpn/wiki/TunnelVision"
+style="text-decoration: none; color: rgb(187, 0, 0); border-bottom: 1px dotted rgb(187, 187, 187);">TunnelVision</a><span> </span>that
+        redirects to<span> </span><a class="wiki"
+          href="https://community.openvpn.net/openvpn/wiki/TunnelCrack"
+style="text-decoration: none; color: rgb(187, 0, 0); border-bottom: 1px dotted rgb(187, 187, 187);">TunnelCrack</a><span> </span>statement
+        already present on our wiki.<em><br>
+        </em>We'll add a section there specific to the<span> </span><a
+          class="wiki"
+          href="https://community.openvpn.net/openvpn/wiki/TunnelVision"
+style="text-decoration: none; color: rgb(187, 0, 0); border-bottom: 1px dotted rgb(187, 187, 187);">TunnelVision</a><span> </span>aspect
+        of this.<em></em></li>
+    </ul>
+    <ul
+style="color: rgb(0, 0, 0); font-family: Verdana, Arial, &quot;Bitstream Vera Sans&quot;, Helvetica, sans-serif; font-size: 13px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;">
+      <li><strong>Updated: Tunnelcrack progress<span> </span><a
+            class="wiki"
+href="https://community.openvpn.net/openvpn/wiki/TunnelCrack"
+style="text-decoration: none; color: rgb(187, 0, 0); border-bottom: 1px dotted rgb(187, 187, 187);">TunnelCrack
+            community wiki article</a></strong><br>
+        <em>Status update on<span> </span><a class="wiki"
+href="https://community.openvpn.net/openvpn/wiki/TunnelCrack"
+style="text-decoration: none; color: rgb(187, 0, 0); border-bottom: 1px dotted rgb(187, 187, 187);">TunnelCrack</a><span> </span>mitigations:</em><br>
+        <em>Windows, openvpn2: ready to merge. openvpn3: in code review.</em><br>
+        <em>Linux, openvpn2: in progress. openvpn3: in progress.</em><br>
+        <em>macOS: to be determined.</em><br>
+        <em>iOS: to be determined.</em><br>
+        <em>Android: not vulnerable.</em></li>
+    </ul>
+    <ul
+style="color: rgb(0, 0, 0); font-family: Verdana, Arial, &quot;Bitstream Vera Sans&quot;, Helvetica, sans-serif; font-size: 13px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;">
+      <li><strong>New:<span> </span><a class="missing wiki"
+            href="https://community.openvpn.net/openvpn/wiki/BlackHat"
+            rel="nofollow"
+style="text-decoration: none; color: rgb(153, 153, 136); border-bottom: 1px dotted rgb(187, 187, 187);">BlackHat?</a><span> </span>announcement
+          regarding 'OVPNX'.</strong><span> </span><em><a
+            class="missing wiki"
+            href="https://community.openvpn.net/openvpn/wiki/BlackHat"
+            rel="nofollow"
+style="text-decoration: none; color: rgb(153, 153, 136); border-bottom: 1px dotted rgb(187, 187, 187);">BlackHat?</a><span> </span>announced
+          a presentation about OVPNX vulnerabilities that lead to
+          privilege escalation.</em><br>
+        <em>This is by the same guy, Vladimir Tokarev, that reported
+          these issues to us that we then solved.</em><br>
+        <em>The problem is they are announcing it as zero-day
+          vulnerabilities, which is simply not true.</em><br>
+        <em>These were responsibly disclosed and in cooperation were
+          fixed and published with the OpenVPN 2.6.10 and 2.5.10
+          releases.</em><br>
+        <em>We did reach out to clarify things but haven't had a
+          response yet.</em><br>
+        <em>A security advisory and a blog post will be posted in the
+          next day or so on the main website, and it will be added to
+          the company newsletter as well.</em><br>
+        <em>These will set the record straight that it's not zero-day,
+          and furthermore point out that this is not that critical of an
+          issue as you need privileges anyways to exploit it.</em><br>
+        <em>Also this only affects OpenVPN2 GUI on Windows.</em></li>
+    </ul>
+    <ul
+style="color: rgb(0, 0, 0); font-family: Verdana, Arial, &quot;Bitstream Vera Sans&quot;, Helvetica, sans-serif; font-size: 13px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;">
+      <li><strong>Updated: forums topics</strong><br>
+        <em>rob0 and novaflash volunteered to take a look at the web
+          server config to make it work correctly.</em><br>
+        <em>However due to other ongoing things, didn't have time yet,
+          but will be able to spend time on it soonish.</em><br>
+        <em>Plan is to soon switch URLs so new forum is on
+          forums.openvpn.net and old forums is on archive address.</em><br>
+        <em>- email confirmation on registration was suggested.</em><br>
+        <em>- mod permissions, guide, hard or soft delete (chuck
+          board?), what to do with GDPR, etc. (write it down and
+          actually make it available to mods, maybe a hidden topic)</em><br>
+        <em>- access for mods to logs so one can see what others did</em></li>
+    </ul>
+    <ul
+style="color: rgb(0, 0, 0); font-family: Verdana, Arial, &quot;Bitstream Vera Sans&quot;, Helvetica, sans-serif; font-size: 13px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;">
+      <li><strong>Updated: mattock topics</strong><br>
+        <em>PR created to add t_server_null tests to buildbot.</em><br>
+        <em>There's a parallelism issue to fix between t_server_null.sh
+          and t_client.sh - will work on that.</em></li>
+    </ul>
+    <p>As always you're welcome to join at #openvpn-meeting on Libera
+      IRC network every Wednesday at 13:00 Central European Time.</p>
+    <p>Kind regards,<br>
+      Johan Draaisma<br>
+    </p>
+  </body>
+</html>
 
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: I5bfa3630ad4dff2807705658bc877c4a429a39ce
-Gerrit-Change-Number: 560
-Gerrit-PatchSet: 4
-Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
-Gerrit-Reviewer: flichtenheld <frank@...2641...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Comment-Date: Wed, 08 May 2024 10:56:42 +0000
-Gerrit-HasComments: Yes
-Gerrit-Has-Labels: Yes
-Gerrit-MessageType: comment
-
---OX99JqtnirE=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<p> Attention is currently required from: plaisthos. </p>
-<p>Patch set 4:<span style=3D"border-radius: 3px; display: inline-block; ma=
-rgin: 0 2px; padding: 4px;background-color: #ddd;">-Code-Review</span></p><=
-p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/560?usp=3Demail">View Ch=
-ange</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0;"><l=
-i style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-style:=
- none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p style=
-=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/5=
-60?tab=3Dcomments">Patch Set #4:</a> </p><p style=3D"white-space: pre-wrap;=
- word-wrap: break-word;">Remaining build failures are due to parent commit<=
-/p></li></ul></li></ul><p>To view, visit <a href=3D"http://gerrit.openvpn.n=
-et/c/openvpn/+/560?usp=3Demail">change 560</a>. To unsubscribe, or for help=
- writing mail filters, visit <a href=3D"http://gerrit.openvpn.net/settings"=
->settings</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage=
-"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewActi=
-on"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/56=
-0?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div></di=
-v>
-
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I5bfa3630ad4dff2807705658bc8=
-77c4a429a39ce </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 560 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 4 </div>
-<div style=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@...1711...=
-27...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
-1...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Wed, 08 May 2024 10:56:42=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
-
-
---OX99JqtnirE=--
+--------------PVsMR0NkR0C0NNj0HoQK400v--
 
