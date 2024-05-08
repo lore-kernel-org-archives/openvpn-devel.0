@@ -1,16 +1,16 @@
-From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Mon, 6 May 2024 16:35:11 +0000
-In-Reply-To: <gerrit.1713888151000.I34e96a225446693f401549d86d872c02427ef7d5@...2715...>
-References: <gerrit.1713888151000.I34e96a225446693f401549d86d872c02427ef7d5@...2715...>
-Reply-To: gert@...1296..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <a8a96099f766b13e87792ef16a7547020f816c90-EmailReplacePatchSet-HTML@...2715...>
+From: "flichtenheld (Code Review)" <gerrit@...515...>
+Date: Wed, 8 May 2024 10:44:06 +0000
+In-Reply-To: <gerrit.1714407751000.I90875311a4e4c403e77e30b609c1878cbaaaad45@...2715...>
+References: <gerrit.1714407751000.I90875311a4e4c403e77e30b609c1878cbaaaad45@...2715...>
+Reply-To: frank@...2641..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net, gert@...1296...
+Message-ID: <84f6edd085ba16c429a1ca91ee665d8900d8f7ce-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="UIb1jIn/jLQ="; charset=UTF-8
-Subject: [Openvpn-devel] [M] Change in openvpn[master]: configure: update
- old copy of pkg.m4
+Content-Type: multipart/alternative; boundary="2APc83+yOjk="; charset=UTF-8
+Subject: [Openvpn-devel] [L] Change in openvpn[master]: Remove OpenSSL 1.0.2
+ support
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,752 +19,102 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: flichtenheld <frank@...2641...>, plaisthos <arne-openvpn@...1227...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: plaisthos <arne-openvpn@...1227...>
+Cc: cron2 <gert@...1296...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---UIb1jIn/jLQ=
+--2APc83+yOjk=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-cron2 has uploaded a new patch set (#3) to the change originally created by=
- flichtenheld. ( http://gerrit.openvpn.net/c/openvpn/+/558?usp=3Demail )
+Attention is currently required from: cron2, plaisthos.
 
-The following approvals got outdated and were removed:
-Code-Review+2 by plaisthos
+flichtenheld has posted comments on this change. ( http://gerrit.openvpn.ne=
+t/c/openvpn/+/559?usp=3Demail )
 
-
-Change subject: configure: update old copy of pkg.m4
+Change subject: Remove OpenSSL 1.0.2 support
 ......................................................................
 
-configure: update old copy of pkg.m4
 
-If we copy this code, let's at least make sure we update
-it every decade ;)
+Patch Set 6: Code-Review-1
 
-I also considered removing it. However, then autoconf
-can't be run on systems without pkg-config installed
-anymore. While that is very unusual, didn't see a good
-reason to break that.
+(1 comment)
 
-Change-Id: I34e96a225446693f401549d86d872c02427ef7d5
-Signed-off-by: Frank Lichtenheld <frank@...2641...>
-Acked-by: Arne Schwabe <arne-openvpn@...1227...>
-Message-Id: <20240506160413.7189-1-gert@...1296...>
-URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg28=
-631.html
-Signed-off-by: Gert Doering <gert@...1296...>
----
-M m4/pkg.m4
-1 file changed, 173 insertions(+), 57 deletions(-)
+Patchset:
+
+PS6:
+Note that the build failures on CentOS 7 and FreeBSD 7.4 are expected. But =
+the build failures on OpenBSD and Solaris still need to be investigated.
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/58/558/3
-
-diff --git a/m4/pkg.m4 b/m4/pkg.m4
-index cca47a7..13a8890 100644
---- a/m4/pkg.m4
-+++ b/m4/pkg.m4
-@@ -1,29 +1,60 @@
--# pkg.m4 - Macros to locate and utilise pkg-config.            -*- Autocon=
-f -*-
--# serial 1 (pkg-config-0.24)
--#
--# Copyright =C2=A9 2004 Scott James Remnant <scott@...1668...>.
--#
--# This program is free software; you can redistribute it and/or modify
--# it under the terms of the GNU General Public License as published by
--# the Free Software Foundation; either version 2 of the License, or
--# (at your option) any later version.
--#
--# This program is distributed in the hope that it will be useful, but
--# WITHOUT ANY WARRANTY; without even the implied warranty of
--# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
--# General Public License for more details.
--#
--# You should have received a copy of the GNU General Public License along
--# with this program; if not, write to the Free Software Foundation, Inc.,
--# 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
--#
--# As a special exception to the GNU General Public License, if you
--# distribute this file as part of a program that contains a
--# configuration script generated by Autoconf, you may include it under
--# the same distribution terms that you use for the rest of that program.
-+# pkg.m4 - Macros to locate and utilise pkg-config.   -*- Autoconf -*-
-+# serial 12 (pkg-config-0.29.2)
-
--# PKG_PROG_PKG_CONFIG([MIN-VERSION])
--# ----------------------------------
-+dnl Copyright =C2=A9 2004 Scott James Remnant <scott@...1668...>.
-+dnl Copyright =C2=A9 2012-2015 Dan Nicholson <dbn.lists@...277...>
-+dnl
-+dnl This program is free software; you can redistribute it and/or modify
-+dnl it under the terms of the GNU General Public License as published by
-+dnl the Free Software Foundation; either version 2 of the License, or
-+dnl (at your option) any later version.
-+dnl
-+dnl This program is distributed in the hope that it will be useful, but
-+dnl WITHOUT ANY WARRANTY; without even the implied warranty of
-+dnl MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
-+dnl General Public License for more details.
-+dnl
-+dnl You should have received a copy of the GNU General Public License
-+dnl along with this program; if not, write to the Free Software
-+dnl Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
-+dnl 02111-1307, USA.
-+dnl
-+dnl As a special exception to the GNU General Public License, if you
-+dnl distribute this file as part of a program that contains a
-+dnl configuration script generated by Autoconf, you may include it under
-+dnl the same distribution terms that you use for the rest of that
-+dnl program.
-+
-+dnl PKG_PREREQ(MIN-VERSION)
-+dnl -----------------------
-+dnl Since: 0.29
-+dnl
-+dnl Verify that the version of the pkg-config macros are at least
-+dnl MIN-VERSION. Unlike PKG_PROG_PKG_CONFIG, which checks the user's
-+dnl installed version of pkg-config, this checks the developer's version
-+dnl of pkg.m4 when generating configure.
-+dnl
-+dnl To ensure that this macro is defined, also add:
-+dnl m4_ifndef([PKG_PREREQ],
-+dnl     [m4_fatal([must install pkg-config 0.29 or later before running au=
-toconf/autogen])])
-+dnl
-+dnl See the "Since" comment for each macro you use to see what version
-+dnl of the macros you require.
-+m4_defun([PKG_PREREQ],
-+[m4_define([PKG_MACROS_VERSION], [0.29.2])
-+m4_if(m4_version_compare(PKG_MACROS_VERSION, [$1]), -1,
-+    [m4_fatal([pkg.m4 version $1 or higher is required but ]PKG_MACROS_VER=
-SION[ found])])
-+])dnl PKG_PREREQ
-+
-+dnl PKG_PROG_PKG_CONFIG([MIN-VERSION])
-+dnl ----------------------------------
-+dnl Since: 0.16
-+dnl
-+dnl Search for the pkg-config tool and set the PKG_CONFIG variable to
-+dnl first found in the path. Checks that the version of pkg-config found
-+dnl is at least MIN-VERSION. If MIN-VERSION is not specified, 0.9.0 is
-+dnl used since that's the first version where most current features of
-+dnl pkg-config existed.
- AC_DEFUN([PKG_PROG_PKG_CONFIG],
- [m4_pattern_forbid([^_?PKG_[A-Z_]+$])
- m4_pattern_allow([^PKG_CONFIG(_(PATH|LIBDIR|SYSROOT_DIR|ALLOW_SYSTEM_(CFLA=
-GS|LIBS)))?$])
-@@ -45,18 +76,19 @@
- 		PKG_CONFIG=3D""
- 	fi
- fi[]dnl
--])# PKG_PROG_PKG_CONFIG
-+])dnl PKG_PROG_PKG_CONFIG
-
--# PKG_CHECK_EXISTS(MODULES, [ACTION-IF-FOUND], [ACTION-IF-NOT-FOUND])
--#
--# Check to see whether a particular set of modules exists.  Similar
--# to PKG_CHECK_MODULES(), but does not set variables or print errors.
--#
--# Please remember that m4 expands AC_REQUIRE([PKG_PROG_PKG_CONFIG])
--# only at the first occurrence in configure.ac, so if the first place
--# it's called might be skipped (such as if it is within an "if", you
--# have to call PKG_CHECK_EXISTS manually
--# --------------------------------------------------------------
-+dnl PKG_CHECK_EXISTS(MODULES, [ACTION-IF-FOUND], [ACTION-IF-NOT-FOUND])
-+dnl -------------------------------------------------------------------
-+dnl Since: 0.18
-+dnl
-+dnl Check to see whether a particular set of modules exists. Similar to
-+dnl PKG_CHECK_MODULES(), but does not set variables or print errors.
-+dnl
-+dnl Please remember that m4 expands AC_REQUIRE([PKG_PROG_PKG_CONFIG])
-+dnl only at the first occurence in configure.ac, so if the first place
-+dnl it's called might be skipped (such as if it is within an "if", you
-+dnl have to call PKG_CHECK_EXISTS manually
- AC_DEFUN([PKG_CHECK_EXISTS],
- [AC_REQUIRE([PKG_PROG_PKG_CONFIG])dnl
- if test -n "$PKG_CONFIG" && \
-@@ -66,8 +98,10 @@
-   $3])dnl
- fi])
-
--# _PKG_CONFIG([VARIABLE], [COMMAND], [MODULES])
--# ---------------------------------------------
-+dnl _PKG_CONFIG([VARIABLE], [COMMAND], [MODULES])
-+dnl ---------------------------------------------
-+dnl Internal wrapper calling pkg-config via PKG_CONFIG and setting
-+dnl pkg_failed based on the result.
- m4_define([_PKG_CONFIG],
- [if test -n "$$1"; then
-     pkg_cv_[]$1=3D"$$1"
-@@ -79,10 +113,11 @@
-  else
-     pkg_failed=3Duntried
- fi[]dnl
--])# _PKG_CONFIG
-+])dnl _PKG_CONFIG
-
--# _PKG_SHORT_ERRORS_SUPPORTED
--# -----------------------------
-+dnl _PKG_SHORT_ERRORS_SUPPORTED
-+dnl ---------------------------
-+dnl Internal check to see if pkg-config supports short errors.
- AC_DEFUN([_PKG_SHORT_ERRORS_SUPPORTED],
- [AC_REQUIRE([PKG_PROG_PKG_CONFIG])
- if $PKG_CONFIG --atleast-pkgconfig-version 0.20; then
-@@ -90,26 +125,24 @@
- else
-         _pkg_short_errors_supported=3Dno
- fi[]dnl
--])# _PKG_SHORT_ERRORS_SUPPORTED
-+])dnl _PKG_SHORT_ERRORS_SUPPORTED
-
-
--# PKG_CHECK_MODULES(VARIABLE-PREFIX, MODULES, [ACTION-IF-FOUND],
--# [ACTION-IF-NOT-FOUND])
--#
--#
--# Note that if there is a possibility the first call to
--# PKG_CHECK_MODULES might not happen, you should be sure to include an
--# explicit call to PKG_PROG_PKG_CONFIG in your configure.ac
--#
--#
--# --------------------------------------------------------------
-+dnl PKG_CHECK_MODULES(VARIABLE-PREFIX, MODULES, [ACTION-IF-FOUND],
-+dnl   [ACTION-IF-NOT-FOUND])
-+dnl --------------------------------------------------------------
-+dnl Since: 0.4.0
-+dnl
-+dnl Note that if there is a possibility the first call to
-+dnl PKG_CHECK_MODULES might not happen, you should be sure to include an
-+dnl explicit call to PKG_PROG_PKG_CONFIG in your configure.ac
- AC_DEFUN([PKG_CHECK_MODULES],
- [AC_REQUIRE([PKG_PROG_PKG_CONFIG])dnl
- AC_ARG_VAR([$1][_CFLAGS], [C compiler flags for $1, overriding pkg-config]=
-)dnl
- AC_ARG_VAR([$1][_LIBS], [linker flags for $1, overriding pkg-config])dnl
-
- pkg_failed=3Dno
--AC_MSG_CHECKING([for $1])
-+AC_MSG_CHECKING([for $2])
-
- _PKG_CONFIG([$1][_CFLAGS], [cflags], [$2])
- _PKG_CONFIG([$1][_LIBS], [libs], [$2])
-@@ -119,11 +152,11 @@
- See the pkg-config man page for more details.])
-
- if test $pkg_failed =3D yes; then
--   	AC_MSG_RESULT([no])
-+        AC_MSG_RESULT([no])
-         _PKG_SHORT_ERRORS_SUPPORTED
-         if test $_pkg_short_errors_supported =3D yes; then
- 	        $1[]_PKG_ERRORS=3D`$PKG_CONFIG --short-errors --print-errors --cf=
-lags --libs "$2" 2>&1`
--        else
-+        else
- 	        $1[]_PKG_ERRORS=3D`$PKG_CONFIG --print-errors --cflags --libs "$2=
-" 2>&1`
-         fi
- 	# Put the nasty error message in config.log where it belongs
-@@ -140,7 +173,7 @@
- _PKG_TEXT])[]dnl
-         ])
- elif test $pkg_failed =3D untried; then
--     	AC_MSG_RESULT([no])
-+        AC_MSG_RESULT([no])
- 	m4_default([$4], [AC_MSG_FAILURE(
- [The pkg-config script could not be found or is too old.  Make sure it
- is in your PATH or set the PKG_CONFIG environment variable to the full
-@@ -156,4 +189,87 @@
-         AC_MSG_RESULT([yes])
- 	$3
- fi[]dnl
--])# PKG_CHECK_MODULES
-+])dnl PKG_CHECK_MODULES
-+
-+
-+dnl PKG_CHECK_MODULES_STATIC(VARIABLE-PREFIX, MODULES, [ACTION-IF-FOUND],
-+dnl   [ACTION-IF-NOT-FOUND])
-+dnl ---------------------------------------------------------------------
-+dnl Since: 0.29
-+dnl
-+dnl Checks for existence of MODULES and gathers its build flags with
-+dnl static libraries enabled. Sets VARIABLE-PREFIX_CFLAGS from --cflags
-+dnl and VARIABLE-PREFIX_LIBS from --libs.
-+dnl
-+dnl Note that if there is a possibility the first call to
-+dnl PKG_CHECK_MODULES_STATIC might not happen, you should be sure to
-+dnl include an explicit call to PKG_PROG_PKG_CONFIG in your
-+dnl configure.ac.
-+AC_DEFUN([PKG_CHECK_MODULES_STATIC],
-+[AC_REQUIRE([PKG_PROG_PKG_CONFIG])dnl
-+_save_PKG_CONFIG=3D$PKG_CONFIG
-+PKG_CONFIG=3D"$PKG_CONFIG --static"
-+PKG_CHECK_MODULES($@)
-+PKG_CONFIG=3D$_save_PKG_CONFIG[]dnl
-+])dnl PKG_CHECK_MODULES_STATIC
-+
-+
-+dnl PKG_INSTALLDIR([DIRECTORY])
-+dnl -------------------------
-+dnl Since: 0.27
-+dnl
-+dnl Substitutes the variable pkgconfigdir as the location where a module
-+dnl should install pkg-config .pc files. By default the directory is
-+dnl $libdir/pkgconfig, but the default can be changed by passing
-+dnl DIRECTORY. The user can override through the --with-pkgconfigdir
-+dnl parameter.
-+AC_DEFUN([PKG_INSTALLDIR],
-+[m4_pushdef([pkg_default], [m4_default([$1], ['${libdir}/pkgconfig'])])
-+m4_pushdef([pkg_description],
-+    [pkg-config installation directory @<:@]pkg_default[@:>@])
-+AC_ARG_WITH([pkgconfigdir],
-+    [AS_HELP_STRING([--with-pkgconfigdir], pkg_description)],,
-+    [with_pkgconfigdir=3D]pkg_default)
-+AC_SUBST([pkgconfigdir], [$with_pkgconfigdir])
-+m4_popdef([pkg_default])
-+m4_popdef([pkg_description])
-+])dnl PKG_INSTALLDIR
-+
-+
-+dnl PKG_NOARCH_INSTALLDIR([DIRECTORY])
-+dnl --------------------------------
-+dnl Since: 0.27
-+dnl
-+dnl Substitutes the variable noarch_pkgconfigdir as the location where a
-+dnl module should install arch-independent pkg-config .pc files. By
-+dnl default the directory is $datadir/pkgconfig, but the default can be
-+dnl changed by passing DIRECTORY. The user can override through the
-+dnl --with-noarch-pkgconfigdir parameter.
-+AC_DEFUN([PKG_NOARCH_INSTALLDIR],
-+[m4_pushdef([pkg_default], [m4_default([$1], ['${datadir}/pkgconfig'])])
-+m4_pushdef([pkg_description],
-+    [pkg-config arch-independent installation directory @<:@]pkg_default[@=
-:>@])
-+AC_ARG_WITH([noarch-pkgconfigdir],
-+    [AS_HELP_STRING([--with-noarch-pkgconfigdir], pkg_description)],,
-+    [with_noarch_pkgconfigdir=3D]pkg_default)
-+AC_SUBST([noarch_pkgconfigdir], [$with_noarch_pkgconfigdir])
-+m4_popdef([pkg_default])
-+m4_popdef([pkg_description])
-+])dnl PKG_NOARCH_INSTALLDIR
-+
-+
-+dnl PKG_CHECK_VAR(VARIABLE, MODULE, CONFIG-VARIABLE,
-+dnl [ACTION-IF-FOUND], [ACTION-IF-NOT-FOUND])
-+dnl -------------------------------------------
-+dnl Since: 0.28
-+dnl
-+dnl Retrieves the value of the pkg-config variable for the given module.
-+AC_DEFUN([PKG_CHECK_VAR],
-+[AC_REQUIRE([PKG_PROG_PKG_CONFIG])dnl
-+AC_ARG_VAR([$1], [value of $3 for $2, overriding pkg-config])dnl
-+
-+_PKG_CONFIG([$1], [variable=3D"][$3]["], [$2])
-+AS_VAR_COPY([$1], [pkg_cv_][$1])
-+
-+AS_VAR_IF([$1], [""], [$5], [$4])dnl
-+])dnl PKG_CHECK_VAR
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/558?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/559?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings
 
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: I34e96a225446693f401549d86d872c02427ef7d5
-Gerrit-Change-Number: 558
-Gerrit-PatchSet: 3
-Gerrit-Owner: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
+Gerrit-Change-Id: I90875311a4e4c403e77e30b609c1878cbaaaad45
+Gerrit-Change-Number: 559
+Gerrit-PatchSet: 6
+Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
+Gerrit-Reviewer: flichtenheld <frank@...2641...>
+Gerrit-CC: cron2 <gert@...1296...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-MessageType: newpatchset
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Attention: cron2 <gert@...1296...>
+Gerrit-Comment-Date: Wed, 08 May 2024 10:44:06 +0000
+Gerrit-HasComments: Yes
+Gerrit-Has-Labels: Yes
+Gerrit-MessageType: comment
 
---UIb1jIn/jLQ=
+--2APc83+yOjk=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p>cron2 <strong>uploaded patch set #3</strong> to the change originally cr=
-eated by flichtenheld.</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn=
-/+/558?usp=3Demail">View Change</a></p><p>The following approvals got outda=
-ted and were removed:
-Code-Review+2 by plaisthos</p><pre style=3D"font-family: monospace,monospac=
-e; white-space: pre-wrap;">configure: update old copy of pkg.m4<br><br>If w=
-e copy this code, let&#39;s at least make sure we update<br>it every decade=
- ;)<br><br>I also considered removing it. However, then autoconf<br>can&#39=
-;t be run on systems without pkg-config installed<br>anymore. While that is=
- very unusual, didn&#39;t see a good<br>reason to break that.<br><br>Change=
--Id: I34e96a225446693f401549d86d872c02427ef7d5<br>Signed-off-by: Frank Lich=
-tenheld &lt;frank@...2641...&gt;<br>Acked-by: Arne Schwabe &lt;arne-openvpn=
-@...1227...&gt;<br>Message-Id: &lt;20240506160413.7189-1-gert@...1296...&gt=
-;<br>URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/=
-msg28631.html<br>Signed-off-by: Gert Doering &lt;gert@...1296...&gt;<br>---=
-<br>M m4/pkg.m4<br>1 file changed, 173 insertions(+), 57 deletions(-)<br><b=
-r></pre><pre style=3D"font-family: monospace,monospace; white-space: pre-wr=
-ap;">git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/58/558/3<=
-/pre><pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;=
-"><span>diff --git a/m4/pkg.m4 b/m4/pkg.m4</span><br><span>index cca47a7..1=
-3a8890 100644</span><br><span>--- a/m4/pkg.m4</span><br><span>+++ b/m4/pkg.=
-m4</span><br><span>@@ -1,29 +1,60 @@</span><br><span style=3D"color: hsl(0,=
- 100%, 40%);">-# pkg.m4 - Macros to locate and utilise pkg-config.         =
-   -*- Autoconf -*-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-# =
-serial 1 (pkg-config-0.24)</span><br><span style=3D"color: hsl(0, 100%, 40%=
-);">-# </span><br><span style=3D"color: hsl(0, 100%, 40%);">-# Copyright =
-=C2=A9 2004 Scott James Remnant &lt;scott@...1668...&gt;.</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-#</span><br><span style=3D"color: hsl(0=
-, 100%, 40%);">-# This program is free software; you can redistribute it an=
-d/or modify</span><br><span style=3D"color: hsl(0, 100%, 40%);">-# it under=
- the terms of the GNU General Public License as published by</span><br><spa=
-n style=3D"color: hsl(0, 100%, 40%);">-# the Free Software Foundation; eith=
-er version 2 of the License, or</span><br><span style=3D"color: hsl(0, 100%=
-, 40%);">-# (at your option) any later version.</span><br><span style=3D"co=
-lor: hsl(0, 100%, 40%);">-#</span><br><span style=3D"color: hsl(0, 100%, 40=
-%);">-# This program is distributed in the hope that it will be useful, but=
-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-# WITHOUT ANY WARRANT=
-Y; without even the implied warranty of</span><br><span style=3D"color: hsl=
-(0, 100%, 40%);">-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  S=
-ee the GNU</span><br><span style=3D"color: hsl(0, 100%, 40%);">-# General P=
-ublic License for more details.</span><br><span style=3D"color: hsl(0, 100%=
-, 40%);">-#</span><br><span style=3D"color: hsl(0, 100%, 40%);">-# You shou=
-ld have received a copy of the GNU General Public License along</span><br><=
-span style=3D"color: hsl(0, 100%, 40%);">-# with this program; if not, writ=
-e to the Free Software Foundation, Inc.,</span><br><span style=3D"color: hs=
-l(0, 100%, 40%);">-# 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301=
- USA.</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#</span><br><spa=
-n style=3D"color: hsl(0, 100%, 40%);">-# As a special exception to the GNU =
-General Public License, if you</span><br><span style=3D"color: hsl(0, 100%,=
- 40%);">-# distribute this file as part of a program that contains a</span>=
-<br><span style=3D"color: hsl(0, 100%, 40%);">-# configuration script gener=
-ated by Autoconf, you may include it under</span><br><span style=3D"color: =
-hsl(0, 100%, 40%);">-# the same distribution terms that you use for the res=
-t of that program.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#=
- pkg.m4 - Macros to locate and utilise pkg-config.   -*- Autoconf -*-</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+# serial 12 (pkg-config-0=
-.29.2)</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);=
-">-# PKG_PROG_PKG_CONFIG([MIN-VERSION])</span><br><span style=3D"color: hsl=
-(0, 100%, 40%);">-# ----------------------------------</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+dnl Copyright =C2=A9 2004 Scott James Re=
-mnant &lt;scott@...1668...&gt;.</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+dnl Copyright =C2=A9 2012-2015 Dan Nicholson &lt;dbn.lists@...1665...=
-77...&gt;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+dnl</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+dnl This program is free s=
-oftware; you can redistribute it and/or modify</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+dnl it under the terms of the GNU General Public=
- License as published by</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+dnl the Free Software Foundation; either version 2 of the License, or<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+dnl (at your option)=
- any later version.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-dnl</span><br><span style=3D"color: hsl(120, 100%, 40%);">+dnl This program=
- is distributed in the hope that it will be useful, but</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+dnl WITHOUT ANY WARRANTY; without even =
-the implied warranty of</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+dnl MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+dnl General Public Lic=
-ense for more details.</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+dnl</span><br><span style=3D"color: hsl(120, 100%, 40%);">+dnl You shoul=
-d have received a copy of the GNU General Public License</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+dnl along with this program; if not, w=
-rite to the Free Software</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+dnl Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+dnl 02111-1307, USA.</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+dnl</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+dnl As a special exception to the GNU Gen=
-eral Public License, if you</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+dnl distribute this file as part of a program that contains a</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+dnl configuration script =
-generated by Autoconf, you may include it under</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+dnl the same distribution terms that you use fo=
-r the rest of that</span><br><span style=3D"color: hsl(120, 100%, 40%);">+d=
-nl program.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+dnl PKG_PREREQ(MIN-VERSION)=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+dnl ---------------=
---------</span><br><span style=3D"color: hsl(120, 100%, 40%);">+dnl Since: =
-0.29</span><br><span style=3D"color: hsl(120, 100%, 40%);">+dnl</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+dnl Verify that the version of =
-the pkg-config macros are at least</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+dnl MIN-VERSION. Unlike PKG_PROG_PKG_CONFIG, which checks th=
-e user&#39;s</span><br><span style=3D"color: hsl(120, 100%, 40%);">+dnl ins=
-talled version of pkg-config, this checks the developer&#39;s version</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+dnl of pkg.m4 when genera=
-ting configure.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+dnl<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+dnl To ensure that t=
-his macro is defined, also add:</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+dnl m4_ifndef([PKG_PREREQ],</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+dnl     [m4_fatal([must install pkg-config 0.29 or late=
-r before running autoconf/autogen])])</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+dnl</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+dnl See the &quot;Since&quot; comment for each macro you use to see what =
-version</span><br><span style=3D"color: hsl(120, 100%, 40%);">+dnl of the m=
-acros you require.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+m=
-4_defun([PKG_PREREQ],</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+[m4_define([PKG_MACROS_VERSION], [0.29.2])</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+m4_if(m4_version_compare(PKG_MACROS_VERSION, [$1])=
-, -1,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    [m4_fatal(=
-[pkg.m4 version $1 or higher is required but ]PKG_MACROS_VERSION[ found])])=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+])dnl PKG_PREREQ</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+dnl PKG_PROG_PKG_CONFIG([MIN-VERSION])</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+dnl ------------------=
-----------------</span><br><span style=3D"color: hsl(120, 100%, 40%);">+dnl=
- Since: 0.16</span><br><span style=3D"color: hsl(120, 100%, 40%);">+dnl</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+dnl Search for the pkg-=
-config tool and set the PKG_CONFIG variable to</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+dnl first found in the path. Checks that the ver=
-sion of pkg-config found</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+dnl is at least MIN-VERSION. If MIN-VERSION is not specified, 0.9.0 is=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+dnl used since that=
-&#39;s the first version where most current features of</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+dnl pkg-config existed.</span><br><span=
-> AC_DEFUN([PKG_PROG_PKG_CONFIG],</span><br><span> [m4_pattern_forbid([^_?P=
-KG_[A-Z_]+$])</span><br><span> m4_pattern_allow([^PKG_CONFIG(_(PATH|LIBDIR|=
-SYSROOT_DIR|ALLOW_SYSTEM_(CFLAGS|LIBS)))?$])</span><br><span>@@ -45,18 +76,=
-19 @@</span><br><span> 		PKG_CONFIG=3D&quot;&quot;</span><br><span> 	fi</sp=
-an><br><span> fi[]dnl</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
-])# PKG_PROG_PKG_CONFIG</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+])dnl PKG_PROG_PKG_CONFIG</span><br><span> </span><br><span style=3D"co=
-lor: hsl(0, 100%, 40%);">-# PKG_CHECK_EXISTS(MODULES, [ACTION-IF-FOUND], [A=
-CTION-IF-NOT-FOUND])</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#=
-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-# Check to see whethe=
-r a particular set of modules exists.  Similar</span><br><span style=3D"col=
-or: hsl(0, 100%, 40%);">-# to PKG_CHECK_MODULES(), but does not set variabl=
-es or print errors.</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#<=
-/span><br><span style=3D"color: hsl(0, 100%, 40%);">-# Please remember that=
- m4 expands AC_REQUIRE([PKG_PROG_PKG_CONFIG])</span><br><span style=3D"colo=
-r: hsl(0, 100%, 40%);">-# only at the first occurrence in configure.ac, so =
-if the first place</span><br><span style=3D"color: hsl(0, 100%, 40%);">-# i=
-t&#39;s called might be skipped (such as if it is within an &quot;if&quot;,=
- you</span><br><span style=3D"color: hsl(0, 100%, 40%);">-# have to call PK=
-G_CHECK_EXISTS manually</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
->-# --------------------------------------------------------------</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+dnl PKG_CHECK_EXISTS(MODULES=
-, [ACTION-IF-FOUND], [ACTION-IF-NOT-FOUND])</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+dnl -----------------------------------------------=
---------------------</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+dnl Since: 0.18</span><br><span style=3D"color: hsl(120, 100%, 40%);">+dnl=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+dnl Check to see wh=
-ether a particular set of modules exists. Similar to</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+dnl PKG_CHECK_MODULES(), but does not set=
- variables or print errors.</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+dnl</span><br><span style=3D"color: hsl(120, 100%, 40%);">+dnl Plea=
-se remember that m4 expands AC_REQUIRE([PKG_PROG_PKG_CONFIG])</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+dnl only at the first occurence i=
-n configure.ac, so if the first place</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+dnl it&#39;s called might be skipped (such as if it is wi=
-thin an &quot;if&quot;, you</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+dnl have to call PKG_CHECK_EXISTS manually</span><br><span> AC_DEFU=
-N([PKG_CHECK_EXISTS],</span><br><span> [AC_REQUIRE([PKG_PROG_PKG_CONFIG])dn=
-l</span><br><span> if test -n &quot;$PKG_CONFIG&quot; &amp;&amp; \</span><b=
-r><span>@@ -66,8 +98,10 @@</span><br><span>   $3])dnl</span><br><span> fi])=
-</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-# _=
-PKG_CONFIG([VARIABLE], [COMMAND], [MODULES])</span><br><span style=3D"color=
-: hsl(0, 100%, 40%);">-# ---------------------------------------------</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+dnl _PKG_CONFIG([VARIABL=
-E], [COMMAND], [MODULES])</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+dnl ---------------------------------------------</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+dnl Internal wrapper calling pkg-config=
- via PKG_CONFIG and setting</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+dnl pkg_failed based on the result.</span><br><span> m4_define([_PK=
-G_CONFIG],</span><br><span> [if test -n &quot;$$1&quot;; then</span><br><sp=
-an>     pkg_cv_[]$1=3D&quot;$$1&quot;</span><br><span>@@ -79,10 +113,11 @@<=
-/span><br><span>  else</span><br><span>     pkg_failed=3Duntried</span><br>=
-<span> fi[]dnl</span><br><span style=3D"color: hsl(0, 100%, 40%);">-])# _PK=
-G_CONFIG</span><br><span style=3D"color: hsl(120, 100%, 40%);">+])dnl _PKG_=
-CONFIG</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);=
-">-# _PKG_SHORT_ERRORS_SUPPORTED</span><br><span style=3D"color: hsl(0, 100=
-%, 40%);">-# -----------------------------</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+dnl _PKG_SHORT_ERRORS_SUPPORTED</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+dnl ---------------------------</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+dnl Internal check to see if=
- pkg-config supports short errors.</span><br><span> AC_DEFUN([_PKG_SHORT_ER=
-RORS_SUPPORTED],</span><br><span> [AC_REQUIRE([PKG_PROG_PKG_CONFIG])</span>=
-<br><span> if $PKG_CONFIG --atleast-pkgconfig-version 0.20; then</span><br>=
-<span>@@ -90,26 +125,24 @@</span><br><span> else</span><br><span>         _=
-pkg_short_errors_supported=3Dno</span><br><span> fi[]dnl</span><br><span st=
-yle=3D"color: hsl(0, 100%, 40%);">-])# _PKG_SHORT_ERRORS_SUPPORTED</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+])dnl _PKG_SHORT_ERRORS_SUPP=
-ORTED</span><br><span> </span><br><span> </span><br><span style=3D"color: h=
-sl(0, 100%, 40%);">-# PKG_CHECK_MODULES(VARIABLE-PREFIX, MODULES, [ACTION-I=
-F-FOUND],</span><br><span style=3D"color: hsl(0, 100%, 40%);">-# [ACTION-IF=
--NOT-FOUND])</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#</span><=
-br><span style=3D"color: hsl(0, 100%, 40%);">-#</span><br><span style=3D"co=
-lor: hsl(0, 100%, 40%);">-# Note that if there is a possibility the first c=
-all to</span><br><span style=3D"color: hsl(0, 100%, 40%);">-# PKG_CHECK_MOD=
-ULES might not happen, you should be sure to include an</span><br><span sty=
-le=3D"color: hsl(0, 100%, 40%);">-# explicit call to PKG_PROG_PKG_CONFIG in=
- your configure.ac</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#</=
-span><br><span style=3D"color: hsl(0, 100%, 40%);">-#</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-# -----------------------------------------=
----------------------</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+dnl PKG_CHECK_MODULES(VARIABLE-PREFIX, MODULES, [ACTION-IF-FOUND],</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+dnl   [ACTION-IF-NOT-FOUND=
-])</span><br><span style=3D"color: hsl(120, 100%, 40%);">+dnl -------------=
--------------------------------------------------</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+dnl Since: 0.4.0</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+dnl</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+dnl Note that if there is a possibility the first call to</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+dnl PKG_CHECK_MODULES migh=
-t not happen, you should be sure to include an</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+dnl explicit call to PKG_PROG_PKG_CONFIG in your=
- configure.ac</span><br><span> AC_DEFUN([PKG_CHECK_MODULES],</span><br><spa=
-n> [AC_REQUIRE([PKG_PROG_PKG_CONFIG])dnl</span><br><span> AC_ARG_VAR([$1][_=
-CFLAGS], [C compiler flags for $1, overriding pkg-config])dnl</span><br><sp=
-an> AC_ARG_VAR([$1][_LIBS], [linker flags for $1, overriding pkg-config])dn=
-l</span><br><span> </span><br><span> pkg_failed=3Dno</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-AC_MSG_CHECKING([for $1])</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+AC_MSG_CHECKING([for $2])</span><br><=
-span> </span><br><span> _PKG_CONFIG([$1][_CFLAGS], [cflags], [$2])</span><b=
-r><span> _PKG_CONFIG([$1][_LIBS], [libs], [$2])</span><br><span>@@ -119,11 =
-+152,11 @@</span><br><span> See the pkg-config man page for more details.])=
-</span><br><span> </span><br><span> if test $pkg_failed =3D yes; then</span=
-><br><span style=3D"color: hsl(0, 100%, 40%);">-   	AC_MSG_RESULT([no])</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+        AC_MSG_RESULT([=
-no])</span><br><span>         _PKG_SHORT_ERRORS_SUPPORTED</span><br><span> =
-        if test $_pkg_short_errors_supported =3D yes; then</span><br><span>=
- 	        $1[]_PKG_ERRORS=3D`$PKG_CONFIG --short-errors --print-errors --cf=
-lags --libs &quot;$2&quot; 2&gt;&amp;1`</span><br><span style=3D"color: hsl=
-(0, 100%, 40%);">-        else </span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+        else</span><br><span> 	        $1[]_PKG_ERRORS=3D`$PKG_=
-CONFIG --print-errors --cflags --libs &quot;$2&quot; 2&gt;&amp;1`</span><br=
-><span>         fi</span><br><span> 	# Put the nasty error message in confi=
-g.log where it belongs</span><br><span>@@ -140,7 +173,7 @@</span><br><span>=
- _PKG_TEXT])[]dnl</span><br><span>         ])</span><br><span> elif test $p=
-kg_failed =3D untried; then</span><br><span style=3D"color: hsl(0, 100%, 40=
-%);">-     	AC_MSG_RESULT([no])</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+        AC_MSG_RESULT([no])</span><br><span> 	m4_default([$4], =
-[AC_MSG_FAILURE(</span><br><span> [The pkg-config script could not be found=
- or is too old.  Make sure it</span><br><span> is in your PATH or set the P=
-KG_CONFIG environment variable to the full</span><br><span>@@ -156,4 +189,8=
-7 @@</span><br><span>         AC_MSG_RESULT([yes])</span><br><span> 	$3</sp=
-an><br><span> fi[]dnl</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
-])# PKG_CHECK_MODULES</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+])dnl PKG_CHECK_MODULES</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+dnl PKG_CHECK_MODULES_STATIC(VAR=
-IABLE-PREFIX, MODULES, [ACTION-IF-FOUND],</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+dnl   [ACTION-IF-NOT-FOUND])</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+dnl ----------------------------------------=
------------------------------</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+dnl Since: 0.29</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+dnl</span><br><span style=3D"color: hsl(120, 100%, 40%);">+dnl Checks=
- for existence of MODULES and gathers its build flags with</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+dnl static libraries enabled. Sets V=
-ARIABLE-PREFIX_CFLAGS from --cflags</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+dnl and VARIABLE-PREFIX_LIBS from --libs.</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+dnl</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+dnl Note that if there is a possibility the first cal=
-l to</span><br><span style=3D"color: hsl(120, 100%, 40%);">+dnl PKG_CHECK_M=
-ODULES_STATIC might not happen, you should be sure to</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+dnl include an explicit call to PKG_PROG_=
-PKG_CONFIG in your</span><br><span style=3D"color: hsl(120, 100%, 40%);">+d=
-nl configure.ac.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+AC_=
-DEFUN([PKG_CHECK_MODULES_STATIC],</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+[AC_REQUIRE([PKG_PROG_PKG_CONFIG])dnl</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+_save_PKG_CONFIG=3D$PKG_CONFIG</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+PKG_CONFIG=3D&quot;$PKG_CONFIG=
- --static&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+PKG_=
-CHECK_MODULES($@)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+PK=
-G_CONFIG=3D$_save_PKG_CONFIG[]dnl</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+])dnl PKG_CHECK_MODULES_STATIC</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+dnl PKG_INSTA=
-LLDIR([DIRECTORY])</span><br><span style=3D"color: hsl(120, 100%, 40%);">+d=
-nl -------------------------</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+dnl Since: 0.27</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+dnl</span><br><span style=3D"color: hsl(120, 100%, 40%);">+dnl Substit=
-utes the variable pkgconfigdir as the location where a module</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+dnl should install pkg-config .pc=
- files. By default the directory is</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+dnl $libdir/pkgconfig, but the default can be changed by pa=
-ssing</span><br><span style=3D"color: hsl(120, 100%, 40%);">+dnl DIRECTORY.=
- The user can override through the --with-pkgconfigdir</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+dnl parameter.</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+AC_DEFUN([PKG_INSTALLDIR],</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+[m4_pushdef([pkg_default], [m4_default=
-([$1], [&#39;${libdir}/pkgconfig&#39;])])</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+m4_pushdef([pkg_description],</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    [pkg-config installation directory @&=
-lt;:@]pkg_default[@:&gt;@])</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+AC_ARG_WITH([pkgconfigdir],</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+    [AS_HELP_STRING([--with-pkgconfigdir], pkg_description)=
-],,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    [with_pkgcon=
-figdir=3D]pkg_default)</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+AC_SUBST([pkgconfigdir], [$with_pkgconfigdir])</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+m4_popdef([pkg_default])</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+m4_popdef([pkg_description])</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+])dnl PKG_INSTALLDIR</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+dnl PKG_NOARCH_INSTALLDIR([DIRECTORY])</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+dnl --------------------------------</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+dnl Since: 0.27</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+dnl</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+dnl Substitutes the variable noarch_pkgconfigdir as =
-the location where a</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+dnl module should install arch-independent pkg-config .pc files. By</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+dnl default the directory =
-is $datadir/pkgconfig, but the default can be</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+dnl changed by passing DIRECTORY. The user can ov=
-erride through the</span><br><span style=3D"color: hsl(120, 100%, 40%);">+d=
-nl --with-noarch-pkgconfigdir parameter.</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+AC_DEFUN([PKG_NOARCH_INSTALLDIR],</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+[m4_pushdef([pkg_default], [m4_default([=
-$1], [&#39;${datadir}/pkgconfig&#39;])])</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+m4_pushdef([pkg_description],</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+    [pkg-config arch-independent installatio=
-n directory @&lt;:@]pkg_default[@:&gt;@])</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+AC_ARG_WITH([noarch-pkgconfigdir],</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+    [AS_HELP_STRING([--with-noarch-pkg=
-configdir], pkg_description)],,</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+    [with_noarch_pkgconfigdir=3D]pkg_default)</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+AC_SUBST([noarch_pkgconfigdir], [$wit=
-h_noarch_pkgconfigdir])</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+m4_popdef([pkg_default])</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+m4_popdef([pkg_description])</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+])dnl PKG_NOARCH_INSTALLDIR</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+dnl PKG_CHEC=
-K_VAR(VARIABLE, MODULE, CONFIG-VARIABLE,</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+dnl [ACTION-IF-FOUND], [ACTION-IF-NOT-FOUND])</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+dnl ------------------------=
--------------------</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-dnl Since: 0.28</span><br><span style=3D"color: hsl(120, 100%, 40%);">+dnl<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+dnl Retrieves the va=
-lue of the pkg-config variable for the given module.</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+AC_DEFUN([PKG_CHECK_VAR],</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+[AC_REQUIRE([PKG_PROG_PKG_CONFIG])d=
-nl</span><br><span style=3D"color: hsl(120, 100%, 40%);">+AC_ARG_VAR([$1], =
-[value of $3 for $2, overriding pkg-config])dnl</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+_PKG_CONFIG([$1], [variable=3D&quot;][$3][&quot;], [$2])</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+AS_VAR_COPY([$1], [pkg_cv_][$=
-1])</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+AS_VAR_IF([$1], [&quot;&quot;], [$5=
-], [$4])dnl</span><br><span style=3D"color: hsl(120, 100%, 40%);">+])dnl PK=
-G_CHECK_VAR</span><br><span></span><br></pre><p>To view, visit <a href=3D"h=
-ttp://gerrit.openvpn.net/c/openvpn/+/558?usp=3Demail">change 558</a>. To un=
-subscribe, or for help writing mail filters, visit <a href=3D"http://gerrit=
-.openvpn.net/settings">settings</a>.</p><div itemscope itemtype=3D"http://s=
-chema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http=
-://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.open=
-vpn.net/c/openvpn/+/558?usp=3Demail"/><meta itemprop=3D"name" content=3D"Vi=
-ew Change"/></div></div>
+<p> Attention is currently required from: cron2, plaisthos. </p>
+<p>Patch set 6:<span style=3D"border-radius: 3px; display: inline-block; ma=
+rgin: 0 2px; padding: 4px;background-color: #ffd4d4;">Code-Review -1</span>=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/559?usp=3Demail">Vi=
+ew Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0=
+;"><li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-s=
+tyle: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p s=
+tyle=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn=
+/+/559?tab=3Dcomments">Patch Set #6:</a> </p><p style=3D"white-space: pre-w=
+rap; word-wrap: break-word;">Note that the build failures on CentOS 7 and F=
+reeBSD 7.4 are expected. But the build failures on OpenBSD and Solaris stil=
+l need to be investigated.</p></li></ul></li></ul><p>To view, visit <a href=
+=3D"http://gerrit.openvpn.net/c/openvpn/+/559?usp=3Demail">change 559</a>. =
+To unsubscribe, or for help writing mail filters, visit <a href=3D"http://g=
+errit.openvpn.net/settings">settings</a>.</p><div itemscope itemtype=3D"htt=
+p://schema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D=
+"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit=
+.openvpn.net/c/openvpn/+/559?usp=3Demail"/><meta itemprop=3D"name" content=
+=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I34e96a225446693f401549d86d8=
-72c02427ef7d5 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 558 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 3 </div>
-<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
-.&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I90875311a4e4c403e77e30b609c=
+1878cbaaaad45 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 559 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 6 </div>
+<div style=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@...1711...=
+27...&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
+1...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: cron2 &lt;gert@...1296...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: cron2 &lt;gert@...1296...&gt=
+; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Wed, 08 May 2024 10:44:06=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
 
 
---UIb1jIn/jLQ=--
+--2APc83+yOjk=--
 
