@@ -1,11 +1,9 @@
+Date: Thu, 9 May 2024 12:12:30 +0200 (CEST)
+Message-Id: <202405091012.449ACU47098170@...2054...>
 From: Gert Doering <gert@...1296...>
-Date: Thu,  9 May 2024 00:05:40 +0200
-Message-ID: <20240508220540.12554-1-gert@...1296...>
-In-Reply-To: <gerrit.1715191782000.Ia08a9697d0ff41721fb0acf17ccb4cfa23cb3934@...2715...>
-References: <gerrit.1715191782000.Ia08a9697d0ff41721fb0acf17ccb4cfa23cb3934@...2715...>
-MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v1] Workaround issue in LibreSSL crashing
- when enumerating digests/ciphers
+In-Reply-To: <20240508220512.12362-1-gert@...1296...>
+References: <20240508220512.12362-1-gert@...1296...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Support OpenBSD with cmake
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,83 +14,29 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Arne Schwabe <arne@...1227...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-From: Arne Schwabe <arne@...1227...>
+I know nothing about cmake, but Frank does, so not much for me to do :-)
 
-OpenBSD/LibreSSL reimplemented EVP_get_cipherbyname/EVP_get_digestbyname
-and broke calling EVP_get_cipherbynid/EVP_get_digestbyname with an
-invalid nid in the process so that it would segfault.
+Your patch has been applied to the master branch.
 
-Workaround but doing that NULL check in OpenVPN instead of leaving it
-to the library.
+commit d5ba4acc297a6041bb45f7aa1c9a99b37b7d5e44
+Author: Arne Schwabe
+Date:   Thu May 9 00:05:12 2024 +0200
 
-Change-Id: Ia08a9697d0ff41721fb0acf17ccb4cfa23cb3934
-Signed-off-by: Arne Schwabe <arne@...1227...>
-Acked-by: Gert Doering <gert@...1296...>
----
+     Support OpenBSD with cmake
 
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to master.
+     Signed-off-by: Arne Schwabe <arne@...1227...>
+     Acked-by: Frank Lichtenheld <frank@...2641...>
+     Message-Id: <20240508220512.12362-1-gert@...1296...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg28648.html
+     Signed-off-by: Gert Doering <gert@...1296...>
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/586
-This mail reflects revision 1 of this Change.
 
-Acked-by according to Gerrit (reflected above):
-Gert Doering <gert@...1296...>
+--
+kind regards,
 
-        
-diff --git a/src/openvpn/crypto_openssl.c b/src/openvpn/crypto_openssl.c
-index 61c6518..1649ab7 100644
---- a/src/openvpn/crypto_openssl.c
-+++ b/src/openvpn/crypto_openssl.c
-@@ -387,7 +387,19 @@
- #else
-     for (int nid = 0; nid < 10000; ++nid)
-     {
-+#if defined(LIBRESSL_VERSION_NUMBER)
-+        /* OpenBSD/LibreSSL reimplemented EVP_get_cipherbyname and broke
-+         * calling EVP_get_cipherbynid with an invalid nid in the process
-+         * so that it would segfault. */
-+        const EVP_CIPHER *cipher = NULL;
-+        const char *name = OBJ_nid2sn(nid);
-+        if (name)
-+        {
-+            cipher = EVP_get_cipherbyname(name);
-+        }
-+#else  /* if defined(LIBRESSL_VERSION_NUMBER) */
-         const EVP_CIPHER *cipher = EVP_get_cipherbynid(nid);
-+#endif
-         /* We cast the const away so we can keep the function prototype
-          * compatible with EVP_CIPHER_do_all_provided */
-         collect_ciphers((EVP_CIPHER *) cipher, &cipher_list);
-@@ -441,7 +453,19 @@
- #else
-     for (int nid = 0; nid < 10000; ++nid)
-     {
-+        /* OpenBSD/LibreSSL reimplemented EVP_get_digestbyname and broke
-+         * calling EVP_get_digestbynid with an invalid nid in the process
-+         * so that it would segfault. */
-+#ifdef LIBRESSL_VERSION_NUMBER
-+        const EVP_MD *digest = NULL;
-+        const char *name = OBJ_nid2sn(nid);
-+        if (name)
-+        {
-+            digest = EVP_get_digestbyname(name);
-+        }
-+#else  /* ifdef LIBRESSL_VERSION_NUMBER */
-         const EVP_MD *digest = EVP_get_digestbynid(nid);
-+#endif
-         if (digest)
-         {
-             /* We cast the const away so we can keep the function prototype
-@@ -449,7 +473,7 @@
-             print_digest((EVP_MD *)digest, NULL);
-         }
-     }
--#endif
-+#endif /* if OPENSSL_VERSION_NUMBER >= 0x30000000L */
-     printf("\n");
- }
- 
+Gert Doering
+
 
