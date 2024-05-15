@@ -1,14 +1,14 @@
 From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Wed, 15 May 2024 11:40:44 +0000
+Date: Wed, 15 May 2024 11:40:47 +0000
 In-Reply-To: <gerrit.1714407751000.I5bfa3630ad4dff2807705658bc877c4a429a39ce@...2715...>
 References: <gerrit.1714407751000.I5bfa3630ad4dff2807705658bc877c4a429a39ce@...2715...>
 Reply-To: gert@...1296..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <8187b55abc93f2365399385210fc5e02af2b197c-EmailReplacePatchSet-HTML@...2715...>
+Message-ID: <8187b55abc93f2365399385210fc5e02af2b197c-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="gET+2Vh01TE="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="vLM7oniCUz4="; charset=UTF-8
 Subject: [Openvpn-devel] [M] Change in openvpn[master]: Remove custom TLS
  1.0 PRF implementation only used by LibreSSL/wolfSSL
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -19,19 +19,15 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: plaisthos <arne-openvpn@...1227...>
+Cc: flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---gET+2Vh01TE=
+--vLM7oniCUz4=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-cron2 has uploaded a new patch set (#6) to the change originally created by=
- plaisthos. ( http://gerrit.openvpn.net/c/openvpn/+/560?usp=3Demail )
-
-The following approvals got outdated and were removed:
-Code-Review+2 by cron2
-
+cron2 has submitted this change. ( http://gerrit.openvpn.net/c/openvpn/+/56=
+0?usp=3Demail )
 
 Change subject: Remove custom TLS 1.0 PRF implementation only used by Libre=
 SSL/wolfSSL
@@ -59,7 +55,7 @@ M tests/unit_tests/openvpn/test_crypto.c
 2 files changed, 16 insertions(+), 180 deletions(-)
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/60/560/6
+
 
 diff --git a/src/openvpn/crypto_openssl.c b/src/openvpn/crypto_openssl.c
 index 0473fad..fbd38f3 100644
@@ -327,285 +323,281 @@ Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
 Gerrit-Reviewer: cron2 <gert@...1296...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-MessageType: newpatchset
+Gerrit-MessageType: merged
 
---gET+2Vh01TE=
+--vLM7oniCUz4=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p>cron2 <strong>uploaded patch set #6</strong> to the change originally cr=
-eated by plaisthos.</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/=
-560?usp=3Demail">View Change</a></p><p>The following approvals got outdated=
- and were removed:
-Code-Review+2 by cron2</p><pre style=3D"font-family: monospace,monospace; w=
-hite-space: pre-wrap;">Remove custom TLS 1.0 PRF implementation only used b=
-y LibreSSL/wolfSSL<br><br>After the removal of the OpenSSL 1.0.2 support, L=
-ibreSSL/wolfSSL are the<br>only libraries that still needs the custom imple=
-mentation.<br><br>Since our LibreSSL/wolfSSL support is always best effort,=
- we can afford to<br>limit LibreSSL support in this way. If they want to su=
-pport this, they<br>should expose the functionality as well.<br><br>Change-=
-Id: I5bfa3630ad4dff2807705658bc877c4a429a39ce<br>Signed-off-by: Arne Schwab=
-e &lt;arne@...1227...&gt;<br>Acked-by: Gert Doering &lt;gert@...1296...&gt;=
-<br>Message-Id: &lt;20240515100115.11056-1-gert@...1296...&gt;<br>URL: http=
-s://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg28672.html<=
-br>Signed-off-by: Gert Doering &lt;gert@...1296...&gt;<br>---<br>M src/open=
-vpn/crypto_openssl.c<br>M tests/unit_tests/openvpn/test_crypto.c<br>2 files=
- changed, 16 insertions(+), 180 deletions(-)<br><br></pre><pre style=3D"fon=
-t-family: monospace,monospace; white-space: pre-wrap;">git pull ssh://gerri=
-t.openvpn.net:29418/openvpn refs/changes/60/560/6</pre><pre style=3D"font-f=
-amily: monospace,monospace; white-space: pre-wrap;"><span>diff --git a/src/=
-openvpn/crypto_openssl.c b/src/openvpn/crypto_openssl.c</span><br><span>ind=
-ex 0473fad..fbd38f3 100644</span><br><span>--- a/src/openvpn/crypto_openssl=
-.c</span><br><span>+++ b/src/openvpn/crypto_openssl.c</span><br><span>@@ -1=
-397,7 +1397,7 @@</span><br><span> </span><br><span>     return ret;</span><=
-br><span> }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#elif !def=
-ined(LIBRESSL_VERSION_NUMBER)</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+#elif !defined(LIBRESSL_VERSION_NUMBER) &amp;&amp; !defined(ENABL=
-E_CRYPTO_WOLFSSL)</span><br><span> bool</span><br><span> ssl_tls1_PRF(const=
- uint8_t *seed, int seed_len, const uint8_t *secret,</span><br><span>      =
-        int secret_len, uint8_t *output, int output_len)</span><br><span>@@=
- -1444,183 +1444,14 @@</span><br><span>     return ret;</span><br><span> }<=
-/span><br><span> #else  /* if defined(LIBRESSL_VERSION_NUMBER) */</span><br=
-><span style=3D"color: hsl(0, 100%, 40%);">-/*</span><br><span style=3D"col=
-or: hsl(0, 100%, 40%);">- * Generate the hash required by for the \c tls1_P=
-RF function.</span><br><span style=3D"color: hsl(0, 100%, 40%);">- *</span>=
-<br><span style=3D"color: hsl(0, 100%, 40%);">- * We cannot use our normal =
-hmac_* function as they do not work</span><br><span style=3D"color: hsl(0, =
-100%, 40%);">- * in a FIPS environment (no MD5 allowed, which we need). Ins=
-tead</span><br><span style=3D"color: hsl(0, 100%, 40%);">- * we need to dir=
-ectly use the EVP_MD_* API with the special</span><br><span style=3D"color:=
- hsl(0, 100%, 40%);">- * EVP_MD_CTX_FLAG_NON_FIPS_ALLOW flag.</span><br><sp=
-an style=3D"color: hsl(0, 100%, 40%);">- *</span><br><span style=3D"color: =
-hsl(0, 100%, 40%);">- * The function below is adapted from OpenSSL 1.0.2t</=
-span><br><span style=3D"color: hsl(0, 100%, 40%);">- *</span><br><span styl=
-e=3D"color: hsl(0, 100%, 40%);">- * @param md_kt         Message digest to =
-use</span><br><span style=3D"color: hsl(0, 100%, 40%);">- * @param sec     =
-      Secret to base the hash on</span><br><span style=3D"color: hsl(0, 100=
-%, 40%);">- * @param sec_len       Length of the secret</span><br><span sty=
-le=3D"color: hsl(0, 100%, 40%);">- * @param seed          Seed to hash</spa=
-n><br><span style=3D"color: hsl(0, 100%, 40%);">- * @param seed_len      Le=
-ngth of the seed</span><br><span style=3D"color: hsl(0, 100%, 40%);">- * @p=
-aram out           Output buffer</span><br><span style=3D"color: hsl(0, 100=
-%, 40%);">- * @param olen          Length of the output buffer</span><br><s=
-pan style=3D"color: hsl(0, 100%, 40%);">- */</span><br><span style=3D"color=
-: hsl(0, 100%, 40%);">-static</span><br><span style=3D"color: hsl(0, 100%, =
-40%);">-bool</span><br><span style=3D"color: hsl(0, 100%, 40%);">-tls1_P_ha=
-sh(const EVP_MD *md, const unsigned char *sec,</span><br><span style=3D"col=
-or: hsl(0, 100%, 40%);">-            int sec_len, const void *seed, int see=
-d_len,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            uns=
-igned char *out, int olen)</span><br><span style=3D"color: hsl(0, 100%, 40%=
-);">-{</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    int chunk;<=
-/span><br><span style=3D"color: hsl(0, 100%, 40%);">-    size_t j;</span><b=
-r><span style=3D"color: hsl(0, 100%, 40%);">-    EVP_MD_CTX *ctx, *ctx_tmp,=
- *ctx_init;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    EVP_PK=
-EY *mac_key;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    unsig=
-ned char A1[EVP_MAX_MD_SIZE];</span><br><span style=3D"color: hsl(0, 100%, =
-40%);">-    size_t A1_len =3D EVP_MAX_MD_SIZE;</span><br><span style=3D"col=
-or: hsl(0, 100%, 40%);">-    int ret =3D false;</span><br><span style=3D"co=
-lor: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%=
-);">-    chunk =3D EVP_MD_size(md);</span><br><span style=3D"color: hsl(0, =
-100%, 40%);">-    OPENSSL_assert(chunk &gt;=3D 0);</span><br><span style=3D=
-"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, =
-40%);">-    ctx =3D md_ctx_new();</span><br><span style=3D"color: hsl(0, 10=
-0%, 40%);">-    ctx_tmp =3D md_ctx_new();</span><br><span style=3D"color: h=
-sl(0, 100%, 40%);">-    ctx_init =3D md_ctx_new();</span><br><span style=3D=
-"color: hsl(0, 100%, 40%);">-    EVP_MD_CTX_set_flags(ctx_init, EVP_MD_CTX_=
-FLAG_NON_FIPS_ALLOW);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
-    mac_key =3D EVP_PKEY_new_mac_key(EVP_PKEY_HMAC, NULL, sec, sec_len);</s=
-pan><br><span style=3D"color: hsl(0, 100%, 40%);">-    if (!mac_key)</span>=
-<br><span style=3D"color: hsl(0, 100%, 40%);">-    {</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-        goto err;</span><br><span style=3D"=
-color: hsl(0, 100%, 40%);">-    }</span><br><span style=3D"color: hsl(0, 10=
-0%, 40%);">-    if (!EVP_DigestSignInit(ctx_init, NULL, md, NULL, mac_key))=
+<p>cron2 <strong>submitted</strong> this change.</p><p><a href=3D"http://ge=
+rrit.openvpn.net/c/openvpn/+/560?usp=3Demail">View Change</a></p><div style=
+=3D"white-space:pre-wrap"></div><pre style=3D"font-family: monospace,monosp=
+ace; white-space: pre-wrap;">Remove custom TLS 1.0 PRF implementation only =
+used by LibreSSL/wolfSSL<br><br>After the removal of the OpenSSL 1.0.2 supp=
+ort, LibreSSL/wolfSSL are the<br>only libraries that still needs the custom=
+ implementation.<br><br>Since our LibreSSL/wolfSSL support is always best e=
+ffort, we can afford to<br>limit LibreSSL support in this way. If they want=
+ to support this, they<br>should expose the functionality as well.<br><br>C=
+hange-Id: I5bfa3630ad4dff2807705658bc877c4a429a39ce<br>Signed-off-by: Arne =
+Schwabe &lt;arne@...1227...&gt;<br>Acked-by: Gert Doering &lt;gert@...1725...=
+..&gt;<br>Message-Id: &lt;20240515100115.11056-1-gert@...1296...&gt;<br>URL=
+: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg28672=
+.html<br>Signed-off-by: Gert Doering &lt;gert@...1296...&gt;<br>---<br>M sr=
+c/openvpn/crypto_openssl.c<br>M tests/unit_tests/openvpn/test_crypto.c<br>2=
+ files changed, 16 insertions(+), 180 deletions(-)<br><br></pre>
+<pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><sp=
+an>diff --git a/src/openvpn/crypto_openssl.c b/src/openvpn/crypto_openssl.c=
+</span><br><span>index 0473fad..fbd38f3 100644</span><br><span>--- a/src/op=
+envpn/crypto_openssl.c</span><br><span>+++ b/src/openvpn/crypto_openssl.c</=
+span><br><span>@@ -1397,7 +1397,7 @@</span><br><span> </span><br><span>    =
+ return ret;</span><br><span> }</span><br><span style=3D"color: hsl(0, 100%=
+, 40%);">-#elif !defined(LIBRESSL_VERSION_NUMBER)</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+#elif !defined(LIBRESSL_VERSION_NUMBER) &amp;=
+&amp; !defined(ENABLE_CRYPTO_WOLFSSL)</span><br><span> bool</span><br><span=
+> ssl_tls1_PRF(const uint8_t *seed, int seed_len, const uint8_t *secret,</s=
+pan><br><span>              int secret_len, uint8_t *output, int output_len=
+)</span><br><span>@@ -1444,183 +1444,14 @@</span><br><span>     return ret;=
+</span><br><span> }</span><br><span> #else  /* if defined(LIBRESSL_VERSION_=
+NUMBER) */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-/*</span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">- * Generate the hash required =
+by for the \c tls1_PRF function.</span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">- *</span><br><span style=3D"color: hsl(0, 100%, 40%);">- * We ca=
+nnot use our normal hmac_* function as they do not work</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">- * in a FIPS environment (no MD5 allowed,=
+ which we need). Instead</span><br><span style=3D"color: hsl(0, 100%, 40%);=
+">- * we need to directly use the EVP_MD_* API with the special</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">- * EVP_MD_CTX_FLAG_NON_FIPS_ALLOW=
+ flag.</span><br><span style=3D"color: hsl(0, 100%, 40%);">- *</span><br><s=
+pan style=3D"color: hsl(0, 100%, 40%);">- * The function below is adapted f=
+rom OpenSSL 1.0.2t</span><br><span style=3D"color: hsl(0, 100%, 40%);">- *<=
+/span><br><span style=3D"color: hsl(0, 100%, 40%);">- * @param md_kt       =
+  Message digest to use</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>- * @param sec           Secret to base the hash on</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">- * @param sec_len       Length of the secre=
+t</span><br><span style=3D"color: hsl(0, 100%, 40%);">- * @param seed      =
+    Seed to hash</span><br><span style=3D"color: hsl(0, 100%, 40%);">- * @p=
+aram seed_len      Length of the seed</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">- * @param out           Output buffer</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">- * @param olen          Length of the outpu=
+t buffer</span><br><span style=3D"color: hsl(0, 100%, 40%);">- */</span><br=
+><span style=3D"color: hsl(0, 100%, 40%);">-static</span><br><span style=3D=
+"color: hsl(0, 100%, 40%);">-bool</span><br><span style=3D"color: hsl(0, 10=
+0%, 40%);">-tls1_P_hash(const EVP_MD *md, const unsigned char *sec,</span><=
+br><span style=3D"color: hsl(0, 100%, 40%);">-            int sec_len, cons=
+t void *seed, int seed_len,</span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">-            unsigned char *out, int olen)</span><br><span style=3D"co=
+lor: hsl(0, 100%, 40%);">-{</span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">-    int chunk;</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
+   size_t j;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    EVP_M=
+D_CTX *ctx, *ctx_tmp, *ctx_init;</span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-    EVP_PKEY *mac_key;</span><br><span style=3D"color: hsl(0, 10=
+0%, 40%);">-    unsigned char A1[EVP_MAX_MD_SIZE];</span><br><span style=3D=
+"color: hsl(0, 100%, 40%);">-    size_t A1_len =3D EVP_MAX_MD_SIZE;</span><=
+br><span style=3D"color: hsl(0, 100%, 40%);">-    int ret =3D false;</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"co=
+lor: hsl(0, 100%, 40%);">-    chunk =3D EVP_MD_size(md);</span><br><span st=
+yle=3D"color: hsl(0, 100%, 40%);">-    OPENSSL_assert(chunk &gt;=3D 0);</sp=
+an><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D=
+"color: hsl(0, 100%, 40%);">-    ctx =3D md_ctx_new();</span><br><span styl=
+e=3D"color: hsl(0, 100%, 40%);">-    ctx_tmp =3D md_ctx_new();</span><br><s=
+pan style=3D"color: hsl(0, 100%, 40%);">-    ctx_init =3D md_ctx_new();</sp=
+an><br><span style=3D"color: hsl(0, 100%, 40%);">-    EVP_MD_CTX_set_flags(=
+ctx_init, EVP_MD_CTX_FLAG_NON_FIPS_ALLOW);</span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">-    mac_key =3D EVP_PKEY_new_mac_key(EVP_PKEY_HMAC, NU=
+LL, sec, sec_len);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
+ if (!mac_key)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    {</=
+span><br><span style=3D"color: hsl(0, 100%, 40%);">-        goto err;</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-    }</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-    if (!EVP_DigestSignInit(ctx_init, NULL,=
+ md, NULL, mac_key))</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
+   {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        goto err;=
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    }</span><br><span=
+ style=3D"color: hsl(0, 100%, 40%);">-    if (!EVP_MD_CTX_copy_ex(ctx, ctx_=
+init))</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    {</span><br=
+><span style=3D"color: hsl(0, 100%, 40%);">-        goto err;</span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-    }</span><br><span style=3D"colo=
+r: hsl(0, 100%, 40%);">-    if (!EVP_DigestSignUpdate(ctx, seed, seed_len))=
 </span><br><span style=3D"color: hsl(0, 100%, 40%);">-    {</span><br><span=
  style=3D"color: hsl(0, 100%, 40%);">-        goto err;</span><br><span sty=
 le=3D"color: hsl(0, 100%, 40%);">-    }</span><br><span style=3D"color: hsl=
-(0, 100%, 40%);">-    if (!EVP_MD_CTX_copy_ex(ctx, ctx_init))</span><br><sp=
-an style=3D"color: hsl(0, 100%, 40%);">-    {</span><br><span style=3D"colo=
-r: hsl(0, 100%, 40%);">-        goto err;</span><br><span style=3D"color: h=
-sl(0, 100%, 40%);">-    }</span><br><span style=3D"color: hsl(0, 100%, 40%)=
-;">-    if (!EVP_DigestSignUpdate(ctx, seed, seed_len))</span><br><span sty=
-le=3D"color: hsl(0, 100%, 40%);">-    {</span><br><span style=3D"color: hsl=
-(0, 100%, 40%);">-        goto err;</span><br><span style=3D"color: hsl(0, =
-100%, 40%);">-    }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
-  if (!EVP_DigestSignFinal(ctx, A1, &amp;A1_len))</span><br><span style=3D"=
-color: hsl(0, 100%, 40%);">-    {</span><br><span style=3D"color: hsl(0, 10=
-0%, 40%);">-        goto err;</span><br><span style=3D"color: hsl(0, 100%, =
-40%);">-    }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><=
-br><span style=3D"color: hsl(0, 100%, 40%);">-    for (;; )</span><br><span=
- style=3D"color: hsl(0, 100%, 40%);">-    {</span><br><span style=3D"color:=
- hsl(0, 100%, 40%);">-        /* Reinit mac contexts */</span><br><span sty=
-le=3D"color: hsl(0, 100%, 40%);">-        if (!EVP_MD_CTX_copy_ex(ctx, ctx_=
-init))</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        {</span=
-><br><span style=3D"color: hsl(0, 100%, 40%);">-            goto err;</span=
-><br><span style=3D"color: hsl(0, 100%, 40%);">-        }</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-        if (!EVP_DigestSignUpdate(ctx, =
-A1, A1_len))</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        {=
-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            goto err;=
-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        }</span><br><=
-span style=3D"color: hsl(0, 100%, 40%);">-        if (olen &gt; chunk &amp;=
-&amp; !EVP_MD_CTX_copy_ex(ctx_tmp, ctx))</span><br><span style=3D"color: hs=
-l(0, 100%, 40%);">-        {</span><br><span style=3D"color: hsl(0, 100%, 4=
-0%);">-            goto err;</span><br><span style=3D"color: hsl(0, 100%, 4=
-0%);">-        }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-     =
-   if (!EVP_DigestSignUpdate(ctx, seed, seed_len))</span><br><span style=3D=
-"color: hsl(0, 100%, 40%);">-        {</span><br><span style=3D"color: hsl(=
-0, 100%, 40%);">-            goto err;</span><br><span style=3D"color: hsl(=
-0, 100%, 40%);">-        }</span><br><span style=3D"color: hsl(0, 100%, 40%=
-);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        if (olen=
- &gt; chunk)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        {=
-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            j =3D ole=
-n;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            if (!EV=
-P_DigestSignFinal(ctx, out, &amp;j))</span><br><span style=3D"color: hsl(0,=
+(0, 100%, 40%);">-    if (!EVP_DigestSignFinal(ctx, A1, &amp;A1_len))</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-    {</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-        goto err;</span><br><span style=3D"=
+color: hsl(0, 100%, 40%);">-    }</span><br><span style=3D"color: hsl(0, 10=
+0%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    for (=
+;; )</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    {</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-        /* Reinit mac contexts */=
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        if (!EVP_MD_C=
+TX_copy_ex(ctx, ctx_init))</span><br><span style=3D"color: hsl(0, 100%, 40%=
+);">-        {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-       =
+     goto err;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-       =
+ }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        if (!EVP_Di=
+gestSignUpdate(ctx, A1, A1_len))</span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-        {</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
+           goto err;</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
+       }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        if (o=
+len &gt; chunk &amp;&amp; !EVP_MD_CTX_copy_ex(ctx_tmp, ctx))</span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">-        {</span><br><span style=3D"c=
+olor: hsl(0, 100%, 40%);">-            goto err;</span><br><span style=3D"c=
+olor: hsl(0, 100%, 40%);">-        }</span><br><span style=3D"color: hsl(0,=
+ 100%, 40%);">-        if (!EVP_DigestSignUpdate(ctx, seed, seed_len))</spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-        {</span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">-            goto err;</span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">-        }</span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">-        if (olen &gt; chunk)</span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-        {</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
+           j =3D olen;</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
+-            if (!EVP_DigestSignFinal(ctx, out, &amp;j))</span><br><span st=
+yle=3D"color: hsl(0, 100%, 40%);">-            {</span><br><span style=3D"c=
+olor: hsl(0, 100%, 40%);">-                goto err;</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-            }</span><br><span style=3D"colo=
+r: hsl(0, 100%, 40%);">-            out +=3D j;</span><br><span style=3D"co=
+lor: hsl(0, 100%, 40%);">-            olen -=3D j;</span><br><span style=3D=
+"color: hsl(0, 100%, 40%);">-            /* calc the next A1 value */</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-            if (!EVP_Digest=
+SignFinal(ctx_tmp, A1, &amp;A1_len))</span><br><span style=3D"color: hsl(0,=
  100%, 40%);">-            {</span><br><span style=3D"color: hsl(0, 100%, 4=
 0%);">-                goto err;</span><br><span style=3D"color: hsl(0, 100=
 %, 40%);">-            }</span><br><span style=3D"color: hsl(0, 100%, 40%);=
-">-            out +=3D j;</span><br><span style=3D"color: hsl(0, 100%, 40%=
-);">-            olen -=3D j;</span><br><span style=3D"color: hsl(0, 100%, =
-40%);">-            /* calc the next A1 value */</span><br><span style=3D"c=
-olor: hsl(0, 100%, 40%);">-            if (!EVP_DigestSignFinal(ctx_tmp, A1=
-, &amp;A1_len))</span><br><span style=3D"color: hsl(0, 100%, 40%);">-      =
-      {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-              =
-  goto err;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-          =
-  }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        }</span><b=
-r><span style=3D"color: hsl(0, 100%, 40%);">-        else</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-        {</span><br><span style=3D"colo=
-r: hsl(0, 100%, 40%);">-            A1_len =3D EVP_MAX_MD_SIZE;</span><br><=
-span style=3D"color: hsl(0, 100%, 40%);">-            /* last one */</span>=
-<br><span style=3D"color: hsl(0, 100%, 40%);">-            if (!EVP_DigestS=
-ignFinal(ctx, A1, &amp;A1_len))</span><br><span style=3D"color: hsl(0, 100%=
-, 40%);">-            {</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
->-                goto err;</span><br><span style=3D"color: hsl(0, 100%, 40=
-%);">-            }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
-          memcpy(out, A1, olen);</span><br><span style=3D"color: hsl(0, 100=
-%, 40%);">-            break;</span><br><span style=3D"color: hsl(0, 100%, =
-40%);">-        }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
-}</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    ret =3D true;</s=
-pan><br><span style=3D"color: hsl(0, 100%, 40%);">-err:</span><br><span sty=
-le=3D"color: hsl(0, 100%, 40%);">-    EVP_PKEY_free(mac_key);</span><br><sp=
-an style=3D"color: hsl(0, 100%, 40%);">-    EVP_MD_CTX_free(ctx);</span><br=
-><span style=3D"color: hsl(0, 100%, 40%);">-    EVP_MD_CTX_free(ctx_tmp);</=
-span><br><span style=3D"color: hsl(0, 100%, 40%);">-    EVP_MD_CTX_free(ctx=
-_init);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    OPENSSL_cl=
-eanse(A1, sizeof(A1));</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
--    return ret;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-}</sp=
-an><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D=
-"color: hsl(0, 100%, 40%);">-/*</span><br><span style=3D"color: hsl(0, 100%=
-, 40%);">- * Use the TLS PRF function for generating data channel keys.</sp=
-an><br><span style=3D"color: hsl(0, 100%, 40%);">- * This code is based on =
-the OpenSSL library.</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
-*</span><br><span style=3D"color: hsl(0, 100%, 40%);">- * TLS generates key=
-s as such:</span><br><span style=3D"color: hsl(0, 100%, 40%);">- *</span><b=
-r><span style=3D"color: hsl(0, 100%, 40%);">- * master_secret[48] =3D PRF(p=
-re_master_secret[48], &quot;master secret&quot;,</span><br><span style=3D"c=
-olor: hsl(0, 100%, 40%);">- *                         ClientHello.random[32=
-] + ServerHello.random[32])</span><br><span style=3D"color: hsl(0, 100%, 40=
-%);">- *</span><br><span style=3D"color: hsl(0, 100%, 40%);">- * key_block[=
-] =3D PRF(SecurityParameters.master_secret[48],</span><br><span style=3D"co=
-lor: hsl(0, 100%, 40%);">- *                 &quot;key expansion&quot;,</sp=
-an><br><span style=3D"color: hsl(0, 100%, 40%);">- *                 Securi=
-tyParameters.server_random[32] +</span><br><span style=3D"color: hsl(0, 100=
-%, 40%);">- *                 SecurityParameters.client_random[32]);</span>=
-<br><span style=3D"color: hsl(0, 100%, 40%);">- *</span><br><span style=3D"=
-color: hsl(0, 100%, 40%);">- * Notes:</span><br><span style=3D"color: hsl(0=
-, 100%, 40%);">- *</span><br><span style=3D"color: hsl(0, 100%, 40%);">- * =
-(1) key_block contains a full set of 4 keys.</span><br><span style=3D"color=
-: hsl(0, 100%, 40%);">- * (2) The pre-master secret is generated by the cli=
-ent.</span><br><span style=3D"color: hsl(0, 100%, 40%);">- */</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+/* LibreSSL and wolfSSL do not ex=
-pose a TLS 1.0/1.1 PRF via the same APIs as</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+ * OpenSSL does. As result they will only be able t=
-o support</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * peers t=
-hat support TLS EKM like when running with OpenSSL 3.x FIPS */</span><br><s=
-pan> bool</span><br><span> ssl_tls1_PRF(const uint8_t *label, int label_len=
-, const uint8_t *sec,</span><br><span>              int slen, uint8_t *out1=
-, int olen)</span><br><span> {</span><br><span style=3D"color: hsl(0, 100%,=
- 40%);">-    bool ret =3D true;</span><br><span style=3D"color: hsl(0, 100%=
-, 40%);">-    struct gc_arena gc =3D gc_new();</span><br><span style=3D"col=
-or: hsl(0, 100%, 40%);">-    /* For some reason our md_get(&quot;MD5&quot;)=
- fails otherwise in the unit test */</span><br><span style=3D"color: hsl(0,=
- 100%, 40%);">-    const EVP_MD *md5 =3D EVP_md5();</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-    const EVP_MD *sha1 =3D EVP_sha1();</spa=
-n><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"=
-color: hsl(0, 100%, 40%);">-    uint8_t *out2 =3D (uint8_t *)gc_malloc(olen=
-, false, &amp;gc);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</s=
-pan><br><span style=3D"color: hsl(0, 100%, 40%);">-    int len =3D slen/2;<=
-/span><br><span style=3D"color: hsl(0, 100%, 40%);">-    const uint8_t *S1 =
-=3D sec;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    const uin=
-t8_t *S2 =3D &amp;(sec[len]);</span><br><span style=3D"color: hsl(0, 100%, =
-40%);">-    len +=3D (slen&amp;1); /* add for odd, make longer */</span><br=
-><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color=
-: hsl(0, 100%, 40%);">-    if (!tls1_P_hash(md5, S1, len, label, label_len,=
- out1, olen))</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    {</s=
-pan><br><span style=3D"color: hsl(0, 100%, 40%);">-        ret =3D false;</=
-span><br><span style=3D"color: hsl(0, 100%, 40%);">-        goto done;</spa=
-n><br><span style=3D"color: hsl(0, 100%, 40%);">-    }</span><br><span styl=
-e=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 10=
-0%, 40%);">-    if (!tls1_P_hash(sha1, S2, len, label, label_len, out2, ole=
-n))</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    {</span><br><s=
-pan style=3D"color: hsl(0, 100%, 40%);">-        ret =3D false;</span><br><=
-span style=3D"color: hsl(0, 100%, 40%);">-        goto done;</span><br><spa=
-n style=3D"color: hsl(0, 100%, 40%);">-    }</span><br><span style=3D"color=
-: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
->-    for (int i =3D 0; i &lt; olen; i++)</span><br><span style=3D"color: h=
-sl(0, 100%, 40%);">-    {</span><br><span style=3D"color: hsl(0, 100%, 40%)=
-;">-        out1[i] ^=3D out2[i];</span><br><span style=3D"color: hsl(0, 10=
-0%, 40%);">-    }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</sp=
-an><br><span style=3D"color: hsl(0, 100%, 40%);">-    secure_memzero(out2, =
-olen);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><spa=
-n style=3D"color: hsl(0, 100%, 40%);">-    dmsg(D_SHOW_KEY_SOURCE, &quot;tl=
-s1_PRF out[%d]: %s&quot;, olen, format_hex(out1, olen, 0, &amp;gc));</span>=
-<br><span style=3D"color: hsl(0, 100%, 40%);">-done:</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-    gc_free(&amp;gc);</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-    return ret;</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+    return false;</span><br><span> }</span><br>=
-<span> #endif /* if LIBRESSL_VERSION_NUMBER */</span><br><span> #endif /* E=
-NABLE_CRYPTO_OPENSSL */</span><br><span>diff --git a/tests/unit_tests/openv=
-pn/test_crypto.c b/tests/unit_tests/openvpn/test_crypto.c</span><br><span>i=
-ndex 01c16c9..9d3ea1a 100644</span><br><span>--- a/tests/unit_tests/openvpn=
-/test_crypto.c</span><br><span>+++ b/tests/unit_tests/openvpn/test_crypto.c=
-</span><br><span>@@ -137,11 +137,6 @@</span><br><span> }</span><br><span> <=
-/span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-stat=
-ic uint8_t good_prf[32] =3D {0xd9, 0x8c, 0x85, 0x18, 0xc8, 0x5e, 0x94, 0x69=
-,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-                    =
-           0x27, 0x91, 0x6a, 0xcf, 0xc2, 0xd5, 0x92, 0xfb,</span><br><span =
-style=3D"color: hsl(0, 100%, 40%);">-                               0xb1, 0=
-x56, 0x7e, 0x4b, 0x4b, 0x14, 0x59, 0xe6,</span><br><span style=3D"color: hs=
-l(0, 100%, 40%);">-                               0xa9, 0x04, 0xac, 0x2d, 0=
-xda, 0xb7, 0x2d, 0x67};</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
->-</span><br><span> static const char *ipsumlorem =3D &quot;Lorem ipsum dol=
-or sit amet, consectetur &quot;</span><br><span>                           =
-      &quot;adipisici elit, sed eiusmod tempor incidunt &quot;</span><br><s=
-pan>                                 &quot;ut labore et dolore magna aliqua=
-.&quot;;</span><br><span>@@ -160,9 +155,19 @@</span><br><span> </span><br><=
-span> </span><br><span>     uint8_t out[32];</span><br><span style=3D"color=
-: hsl(0, 100%, 40%);">-    ssl_tls1_PRF(seed, seed_len, secret, secret_len,=
- out, sizeof(out));</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-    bool ret =3D ssl_tls1_PRF(seed, seed_len, secret, secret_len, out, size=
-of(out));</span><br><span> </span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+#if defined(LIBRESSL_VERSION_NUMBER) || defined(ENABLE_CRYPTO_WOLFS=
-SL)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    /* No TLS1 P=
-RF support in these libraries */</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+    assert_false(ret);</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+#else</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+    assert_true(ret);</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+    uint8_t good_prf[32] =3D {0xd9, 0x8c, 0x85, 0x18, 0xc8, 0x5e, 0x94,=
- 0x69,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+             =
-               0x27, 0x91, 0x6a, 0xcf, 0xc2, 0xd5, 0x92, 0xfb,</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+                            0xb1=
-, 0x56, 0x7e, 0x4b, 0x4b, 0x14, 0x59, 0xe6,</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+                            0xa9, 0x04, 0xac, 0x2d,=
- 0xda, 0xb7, 0x2d, 0x67};</span><br><span>     assert_memory_equal(good_prf=
-, out, sizeof(out));</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+#endif</span><br><span> }</span><br><span> </span><br><span> static uint8_=
-t testkey[20] =3D {0x0b, 0x00};</span><br><span></span><br></pre><p>To view=
-, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/560?usp=3Demail">c=
-hange 560</a>. To unsubscribe, or for help writing mail filters, visit <a h=
-ref=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope =
-itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"acti=
-on" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=
-=3D"http://gerrit.openvpn.net/c/openvpn/+/560?usp=3Demail"/><meta itemprop=
-=3D"name" content=3D"View Change"/></div></div>
+">-        }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        e=
+lse</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        {</span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-            A1_len =3D EVP_MAX=
+_MD_SIZE;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            =
+/* last one */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-       =
+     if (!EVP_DigestSignFinal(ctx, A1, &amp;A1_len))</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-            {</span><br><span style=3D"colo=
+r: hsl(0, 100%, 40%);">-                goto err;</span><br><span style=3D"=
+color: hsl(0, 100%, 40%);">-            }</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-            memcpy(out, A1, olen);</span><br><span styl=
+e=3D"color: hsl(0, 100%, 40%);">-            break;</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-        }</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-    }</span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">-    ret =3D true;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
+err:</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    EVP_PKEY_free=
+(mac_key);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    EVP_MD_=
+CTX_free(ctx);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    EVP=
+_MD_CTX_free(ctx_tmp);</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
+-    EVP_MD_CTX_free(ctx_init);</span><br><span style=3D"color: hsl(0, 100%=
+, 40%);">-    OPENSSL_cleanse(A1, sizeof(A1));</span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-    return ret;</span><br><span style=3D"color: hs=
+l(0, 100%, 40%);">-}</span><br><span style=3D"color: hsl(0, 100%, 40%);">-<=
+/span><br><span style=3D"color: hsl(0, 100%, 40%);">-/*</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">- * Use the TLS PRF function for generatin=
+g data channel keys.</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
+* This code is based on the OpenSSL library.</span><br><span style=3D"color=
+: hsl(0, 100%, 40%);">- *</span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">- * TLS generates keys as such:</span><br><span style=3D"color: hsl(0, 1=
+00%, 40%);">- *</span><br><span style=3D"color: hsl(0, 100%, 40%);">- * mas=
+ter_secret[48] =3D PRF(pre_master_secret[48], &quot;master secret&quot;,</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">- *                      =
+   ClientHello.random[32] + ServerHello.random[32])</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">- *</span><br><span style=3D"color: hsl(0, 1=
+00%, 40%);">- * key_block[] =3D PRF(SecurityParameters.master_secret[48],</=
+span><br><span style=3D"color: hsl(0, 100%, 40%);">- *                 &quo=
+t;key expansion&quot;,</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
+- *                 SecurityParameters.server_random[32] +</span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">- *                 SecurityParameters.=
+client_random[32]);</span><br><span style=3D"color: hsl(0, 100%, 40%);">- *=
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">- * Notes:</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">- *</span><br><span style=3D"color=
+: hsl(0, 100%, 40%);">- * (1) key_block contains a full set of 4 keys.</spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">- * (2) The pre-master secr=
+et is generated by the client.</span><br><span style=3D"color: hsl(0, 100%,=
+ 40%);">- */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+/* Libr=
+eSSL and wolfSSL do not expose a TLS 1.0/1.1 PRF via the same APIs as</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+ * OpenSSL does. As resul=
+t they will only be able to support</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+ * peers that support TLS EKM like when running with OpenSS=
+L 3.x FIPS */</span><br><span> bool</span><br><span> ssl_tls1_PRF(const uin=
+t8_t *label, int label_len, const uint8_t *sec,</span><br><span>           =
+   int slen, uint8_t *out1, int olen)</span><br><span> {</span><br><span st=
+yle=3D"color: hsl(0, 100%, 40%);">-    bool ret =3D true;</span><br><span s=
+tyle=3D"color: hsl(0, 100%, 40%);">-    struct gc_arena gc =3D gc_new();</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-    /* For some reason o=
+ur md_get(&quot;MD5&quot;) fails otherwise in the unit test */</span><br><s=
+pan style=3D"color: hsl(0, 100%, 40%);">-    const EVP_MD *md5 =3D EVP_md5(=
+);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    const EVP_MD *s=
+ha1 =3D EVP_sha1();</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</=
+span><br><span style=3D"color: hsl(0, 100%, 40%);">-    uint8_t *out2 =3D (=
+uint8_t *)gc_malloc(olen, false, &amp;gc);</span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
+    int len =3D slen/2;</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>-    const uint8_t *S1 =3D sec;</span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-    const uint8_t *S2 =3D &amp;(sec[len]);</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-    len +=3D (slen&amp;1); /* add for odd, =
+make longer */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-    if (!tls1_P_hash(md5, S1=
+, len, label, label_len, out1, olen))</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-    {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
+        ret =3D false;</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
+-        goto done;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
+  }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span s=
+tyle=3D"color: hsl(0, 100%, 40%);">-    if (!tls1_P_hash(sha1, S2, len, lab=
+el, label_len, out2, olen))</span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">-    {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        re=
+t =3D false;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        g=
+oto done;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    }</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"co=
+lor: hsl(0, 100%, 40%);">-    for (int i =3D 0; i &lt; olen; i++)</span><br=
+><span style=3D"color: hsl(0, 100%, 40%);">-    {</span><br><span style=3D"=
+color: hsl(0, 100%, 40%);">-        out1[i] ^=3D out2[i];</span><br><span s=
+tyle=3D"color: hsl(0, 100%, 40%);">-    }</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
+   secure_memzero(out2, olen);</span><br><span style=3D"color: hsl(0, 100%,=
+ 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    dmsg(D_S=
+HOW_KEY_SOURCE, &quot;tls1_PRF out[%d]: %s&quot;, olen, format_hex(out1, ol=
+en, 0, &amp;gc));</span><br><span style=3D"color: hsl(0, 100%, 40%);">-done=
+:</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    gc_free(&amp;gc)=
+;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    return ret;</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+    return false;</span>=
+<br><span> }</span><br><span> #endif /* if LIBRESSL_VERSION_NUMBER */</span=
+><br><span> #endif /* ENABLE_CRYPTO_OPENSSL */</span><br><span>diff --git a=
+/tests/unit_tests/openvpn/test_crypto.c b/tests/unit_tests/openvpn/test_cry=
+pto.c</span><br><span>index 01c16c9..9d3ea1a 100644</span><br><span>--- a/t=
+ests/unit_tests/openvpn/test_crypto.c</span><br><span>+++ b/tests/unit_test=
+s/openvpn/test_crypto.c</span><br><span>@@ -137,11 +137,6 @@</span><br><spa=
+n> }</span><br><span> </span><br><span> </span><br><span style=3D"color: hs=
+l(0, 100%, 40%);">-static uint8_t good_prf[32] =3D {0xd9, 0x8c, 0x85, 0x18,=
+ 0xc8, 0x5e, 0x94, 0x69,</span><br><span style=3D"color: hsl(0, 100%, 40%);=
+">-                               0x27, 0x91, 0x6a, 0xcf, 0xc2, 0xd5, 0x92,=
+ 0xfb,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-               =
+                0xb1, 0x56, 0x7e, 0x4b, 0x4b, 0x14, 0x59, 0xe6,</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-                               0x=
+a9, 0x04, 0xac, 0x2d, 0xda, 0xb7, 0x2d, 0x67};</span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-</span><br><span> static const char *ipsumlorem =
+=3D &quot;Lorem ipsum dolor sit amet, consectetur &quot;</span><br><span>  =
+                               &quot;adipisici elit, sed eiusmod tempor inc=
+idunt &quot;</span><br><span>                                 &quot;ut labo=
+re et dolore magna aliqua.&quot;;</span><br><span>@@ -160,9 +155,19 @@</spa=
+n><br><span> </span><br><span> </span><br><span>     uint8_t out[32];</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-    ssl_tls1_PRF(seed, seed=
+_len, secret, secret_len, out, sizeof(out));</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+    bool ret =3D ssl_tls1_PRF(seed, seed_len, secr=
+et, secret_len, out, sizeof(out));</span><br><span> </span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+#if defined(LIBRESSL_VERSION_NUMBER) || d=
+efined(ENABLE_CRYPTO_WOLFSSL)</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+    /* No TLS1 PRF support in these libraries */</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+    assert_false(ret);</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+#else</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+    assert_true(ret);</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+    uint8_t good_prf[32] =3D {0xd9, 0x8c, 0x8=
+5, 0x18, 0xc8, 0x5e, 0x94, 0x69,</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+                            0x27, 0x91, 0x6a, 0xcf, 0xc2, 0xd5=
+, 0x92, 0xfb,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
+                      0xb1, 0x56, 0x7e, 0x4b, 0x4b, 0x14, 0x59, 0xe6,</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+                         =
+   0xa9, 0x04, 0xac, 0x2d, 0xda, 0xb7, 0x2d, 0x67};</span><br><span>     as=
+sert_memory_equal(good_prf, out, sizeof(out));</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+#endif</span><br><span> }</span><br><span> </spa=
+n><br><span> static uint8_t testkey[20] =3D {0x0b, 0x00};</span><br><span><=
+/span><br></pre><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/op=
+envpn/+/560?usp=3Demail">change 560</a>. To unsubscribe, or for help writin=
+g mail filters, visit <a href=3D"http://gerrit.openvpn.net/settings">settin=
+gs</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div =
+itemscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><li=
+nk itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/560?usp=
+=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
@@ -621,8 +613,8 @@ on" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=
 1...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
+<div style=3D"display:none"> Gerrit-MessageType: merged </div>
 
 
---gET+2Vh01TE=--
+--vLM7oniCUz4=--
 
