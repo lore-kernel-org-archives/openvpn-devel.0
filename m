@@ -1,14 +1,14 @@
 From: "plaisthos (Code Review)" <gerrit@...515...>
-Date: Thu, 16 May 2024 11:12:38 +0000
+Date: Thu, 16 May 2024 11:13:23 +0000
 In-Reply-To: <gerrit.1713783920000.I9457f005f4ba970502e6b667d9dc4299a588d661@...2715...>
 References: <gerrit.1713783920000.I9457f005f4ba970502e6b667d9dc4299a588d661@...2715...>
 Reply-To: arne-openvpn@...1227..., openvpn-devel@lists.sourceforge.net,
  frank@...2641..., reynir@...2756...
-Message-ID: <83f4ecf305fd13824fc7188d8c072d012b7f9b6c-EmailReviewComments-HTML@...2715...>
+Message-ID: <ce2e4d8d244aa62007c64911736eae56d8302383-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="9NhhiY1JRug="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="Xw1lZ+StA9s="; charset=UTF-8
 Subject: [Openvpn-devel] [S] Change in openvpn[master]: Only schedule_exit()
  once
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -22,7 +22,7 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: reynir <reynir@...2756...>
 Cc: flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---9NhhiY1JRug=
+--Xw1lZ+StA9s=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
@@ -35,22 +35,7 @@ Change subject: Only schedule_exit() once
 ......................................................................
 
 
-Patch Set 3:
-
-(1 comment)
-
-File src/openvpn/forward.c:
-
-http://gerrit.openvpn.net/c/openvpn/+/555/comment/e98ba825_8fe5fe4e :
-PS1, Line 529:     reset_coarse_timers(c);
-> I am not sure what the above three function calls do and if we should sti=
-ll call them.
-reset_coarse_timers ensures that newly scheduled timer actually is taken in=
-to account. `update_time` updates now for that. And  tls_set_single_session=
- in typical OpenVPN fashion ensure that no renegotion can happy by using a =
-completely different feature of setting the session into a mode where no re=
-negotiation can happen.
-
+Patch Set 3: Code-Review+2
 
 
 --
@@ -70,39 +55,27 @@ Gerrit-Reviewer: reynir <reynir@...2756...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: flichtenheld <frank@...2641...>
 Gerrit-Attention: reynir <reynir@...2756...>
-Gerrit-Comment-Date: Thu, 16 May 2024 11:12:38 +0000
-Gerrit-HasComments: Yes
-Gerrit-Has-Labels: No
-Comment-In-Reply-To: reynir <reynir@...2756...>
+Gerrit-Comment-Date: Thu, 16 May 2024 11:13:23 +0000
+Gerrit-HasComments: No
+Gerrit-Has-Labels: Yes
 Gerrit-MessageType: comment
 
---9NhhiY1JRug=
+--Xw1lZ+StA9s=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <p> Attention is currently required from: flichtenheld, reynir. </p>
-<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/555?usp=3Demail">View C=
-hange</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0;"><=
-li style=3D"margin: 0; padding: 0;"><p>File src/openvpn/forward.c:</p><ul s=
-tyle=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0=
- 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn=
-.net/c/openvpn/+/555/comment/e98ba825_8fe5fe4e">Patch Set #1, Line 529:</a>=
- <code style=3D"font-family:monospace,monospace">    reset_coarse_timers(c)=
-;</code></p><p><blockquote style=3D"border-left: 1px solid #aaa; margin: 10=
-px 0; padding: 0 10px;">I am not sure what the above three function calls d=
-o and if we should still call them.</blockquote></p><p style=3D"white-space=
-: pre-wrap; word-wrap: break-word;">reset_coarse_timers ensures that newly =
-scheduled timer actually is taken into account. `update_time` updates now f=
-or that. And  tls_set_single_session in typical OpenVPN fashion ensure that=
- no renegotion can happy by using a completely different feature of setting=
- the session into a mode where no renegotiation can happen.</p></li></ul></=
-li></ul><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/=
-555?usp=3Demail">change 555</a>. To unsubscribe, or for help writing mail f=
-ilters, visit <a href=3D"http://gerrit.openvpn.net/settings">settings</a>.<=
-/p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscop=
-e itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itemp=
-rop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/555?usp=3Demail"/=
-><meta itemprop=3D"name" content=3D"View Change"/></div></div>
+<p>Patch set 3:<span style=3D"border-radius: 3px; display: inline-block; ma=
+rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/555?usp=3Demail">Vi=
+ew Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To vie=
+w, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/555?usp=3Demail">=
+change 555</a>. To unsubscribe, or for help writing mail filters, visit <a =
+href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope=
+ itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"act=
+ion" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=
+=3D"http://gerrit.openvpn.net/c/openvpn/+/555?usp=3Demail"/><meta itemprop=
+=3D"name" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
@@ -124,14 +97,12 @@ ts.sourceforge.net&gt; </div>
 41...&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: reynir &lt;reynir@...2756...=
 &gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Thu, 16 May 2024 11:12:38=
+<div style=3D"display:none"> Gerrit-Comment-Date: Thu, 16 May 2024 11:13:23=
  +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: No </div>
-<div style=3D"display:none"> Comment-In-Reply-To: reynir &lt;reynir@...2800...=
-...&gt; </div>
+<div style=3D"display:none"> Gerrit-HasComments: No </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
 <div style=3D"display:none"> Gerrit-MessageType: comment </div>
 
 
---9NhhiY1JRug=--
+--Xw1lZ+StA9s=--
 
