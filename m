@@ -1,16 +1,16 @@
-From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Wed, 15 May 2024 11:40:47 +0000
-In-Reply-To: <gerrit.1714407751000.I5bfa3630ad4dff2807705658bc877c4a429a39ce@...2715...>
-References: <gerrit.1714407751000.I5bfa3630ad4dff2807705658bc877c4a429a39ce@...2715...>
-Reply-To: gert@...1296..., arne-openvpn@...1227...,
+From: "reynir (Code Review)" <gerrit@...515...>
+Date: Thu, 16 May 2024 08:36:51 +0000
+In-Reply-To: <gerrit.1713783920000.I9457f005f4ba970502e6b667d9dc4299a588d661@...2715...>
+References: <gerrit.1713783920000.I9457f005f4ba970502e6b667d9dc4299a588d661@...2715...>
+Reply-To: reynir@...2756..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <8187b55abc93f2365399385210fc5e02af2b197c-HTML@...2715...>
+Message-ID: <efd6920f5e276af25e7d4ac2c2994e6ab1107e61-EmailReplacePatchSet-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="vLM7oniCUz4="; charset=UTF-8
-Subject: [Openvpn-devel] [M] Change in openvpn[master]: Remove custom TLS
- 1.0 PRF implementation only used by LibreSSL/wolfSSL
+Content-Type: multipart/alternative; boundary="od/iRT8xvZQ="; charset=UTF-8
+Subject: [Openvpn-devel] [S] Change in openvpn[master]: Only schedule_exit()
+ once
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,602 +19,327 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: plaisthos <arne-openvpn@...1227...>
-Cc: flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---vLM7oniCUz4=
+--od/iRT8xvZQ=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-cron2 has submitted this change. ( http://gerrit.openvpn.net/c/openvpn/+/56=
-0?usp=3Demail )
+Attention is currently required from: flichtenheld, plaisthos, reynir.
 
-Change subject: Remove custom TLS 1.0 PRF implementation only used by Libre=
-SSL/wolfSSL
+Hello flichtenheld, plaisthos,
+
+I'd like you to reexamine a change. Please visit
+
+    http://gerrit.openvpn.net/c/openvpn/+/555?usp=3Demail
+
+to look at the new patch set (#3).
+
+The following approvals got outdated and were removed:
+Code-Review+2 by flichtenheld, Code-Review+2 by plaisthos
+
+The change is no longer submittable: Code-Review and checks~ChecksSubmitRul=
+e are unsatisfied now.
+
+
+Change subject: Only schedule_exit() once
 ......................................................................
 
-Remove custom TLS 1.0 PRF implementation only used by LibreSSL/wolfSSL
+Only schedule_exit() once
 
-After the removal of the OpenSSL 1.0.2 support, LibreSSL/wolfSSL are the
-only libraries that still needs the custom implementation.
+If an exit has already been scheduled we should not schedule it again.
+Otherwise, the exit signal is never emitted if the peer reschedules the
+exit before the timeout occurs.
 
-Since our LibreSSL/wolfSSL support is always best effort, we can afford to
-limit LibreSSL support in this way. If they want to support this, they
-should expose the functionality as well.
+schedule_exit() now only takes the context as argument. The signal is
+hard coded to SIGTERM, and the interval is read directly from the
+context options.
 
-Change-Id: I5bfa3630ad4dff2807705658bc877c4a429a39ce
-Signed-off-by: Arne Schwabe <arne@...1227...>
-Acked-by: Gert Doering <gert@...1296...>
-Message-Id: <20240515100115.11056-1-gert@...1296...>
-URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg28=
-672.html
-Signed-off-by: Gert Doering <gert@...1296...>
+Furthermore, schedule_exit() now returns a bool signifying whether an
+exit was scheduled; false if exit is already scheduled. The call sites
+are updated accordingly. A notable difference is that management is only
+notified *once* when an exit is scheduled - we no longer notify
+management on redundant exit.
+
+This patch was assigned a CVE number after already reviewed and ACKed,
+because it was discovered that a misbehaving client can use the (now
+fixed) server behaviour to avoid being disconnected by means of a
+managment interface "client-kill" command - the security issue here is
+"client can circumvent security policy set by management interface".
+
+This only affects previously authenticated clients, and only management
+client-kill, so normal renegotion / AUTH_FAIL ("your session ends") is not
+affected.
+
+CVE: 2024-28882
+
+Change-Id: I9457f005f4ba970502e6b667d9dc4299a588d661
+Signed-off-by: Reynir Bj=C3=B6rnsson <reynir@...2756...>
 ---
-M src/openvpn/crypto_openssl.c
-M tests/unit_tests/openvpn/test_crypto.c
-2 files changed, 16 insertions(+), 180 deletions(-)
+M src/openvpn/forward.c
+M src/openvpn/forward.h
+M src/openvpn/push.c
+3 files changed, 19 insertions(+), 10 deletions(-)
 
 
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/55/555/3
 
-
-diff --git a/src/openvpn/crypto_openssl.c b/src/openvpn/crypto_openssl.c
-index 0473fad..fbd38f3 100644
---- a/src/openvpn/crypto_openssl.c
-+++ b/src/openvpn/crypto_openssl.c
-@@ -1397,7 +1397,7 @@
-
-     return ret;
+diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c
+index 8d10f25..01165b2 100644
+--- a/src/openvpn/forward.c
++++ b/src/openvpn/forward.c
+@@ -514,17 +514,24 @@
  }
--#elif !defined(LIBRESSL_VERSION_NUMBER)
-+#elif !defined(LIBRESSL_VERSION_NUMBER) && !defined(ENABLE_CRYPTO_WOLFSSL)
- bool
- ssl_tls1_PRF(const uint8_t *seed, int seed_len, const uint8_t *secret,
-              int secret_len, uint8_t *output, int output_len)
-@@ -1444,183 +1444,14 @@
-     return ret;
- }
- #else  /* if defined(LIBRESSL_VERSION_NUMBER) */
--/*
-- * Generate the hash required by for the \c tls1_PRF function.
-- *
-- * We cannot use our normal hmac_* function as they do not work
-- * in a FIPS environment (no MD5 allowed, which we need). Instead
-- * we need to directly use the EVP_MD_* API with the special
-- * EVP_MD_CTX_FLAG_NON_FIPS_ALLOW flag.
-- *
-- * The function below is adapted from OpenSSL 1.0.2t
-- *
-- * @param md_kt         Message digest to use
-- * @param sec           Secret to base the hash on
-- * @param sec_len       Length of the secret
-- * @param seed          Seed to hash
-- * @param seed_len      Length of the seed
-- * @param out           Output buffer
-- * @param olen          Length of the output buffer
-- */
--static
--bool
--tls1_P_hash(const EVP_MD *md, const unsigned char *sec,
--            int sec_len, const void *seed, int seed_len,
--            unsigned char *out, int olen)
--{
--    int chunk;
--    size_t j;
--    EVP_MD_CTX *ctx, *ctx_tmp, *ctx_init;
--    EVP_PKEY *mac_key;
--    unsigned char A1[EVP_MAX_MD_SIZE];
--    size_t A1_len =3D EVP_MAX_MD_SIZE;
--    int ret =3D false;
--
--    chunk =3D EVP_MD_size(md);
--    OPENSSL_assert(chunk >=3D 0);
--
--    ctx =3D md_ctx_new();
--    ctx_tmp =3D md_ctx_new();
--    ctx_init =3D md_ctx_new();
--    EVP_MD_CTX_set_flags(ctx_init, EVP_MD_CTX_FLAG_NON_FIPS_ALLOW);
--    mac_key =3D EVP_PKEY_new_mac_key(EVP_PKEY_HMAC, NULL, sec, sec_len);
--    if (!mac_key)
--    {
--        goto err;
--    }
--    if (!EVP_DigestSignInit(ctx_init, NULL, md, NULL, mac_key))
--    {
--        goto err;
--    }
--    if (!EVP_MD_CTX_copy_ex(ctx, ctx_init))
--    {
--        goto err;
--    }
--    if (!EVP_DigestSignUpdate(ctx, seed, seed_len))
--    {
--        goto err;
--    }
--    if (!EVP_DigestSignFinal(ctx, A1, &A1_len))
--    {
--        goto err;
--    }
--
--    for (;; )
--    {
--        /* Reinit mac contexts */
--        if (!EVP_MD_CTX_copy_ex(ctx, ctx_init))
--        {
--            goto err;
--        }
--        if (!EVP_DigestSignUpdate(ctx, A1, A1_len))
--        {
--            goto err;
--        }
--        if (olen > chunk && !EVP_MD_CTX_copy_ex(ctx_tmp, ctx))
--        {
--            goto err;
--        }
--        if (!EVP_DigestSignUpdate(ctx, seed, seed_len))
--        {
--            goto err;
--        }
--
--        if (olen > chunk)
--        {
--            j =3D olen;
--            if (!EVP_DigestSignFinal(ctx, out, &j))
--            {
--                goto err;
--            }
--            out +=3D j;
--            olen -=3D j;
--            /* calc the next A1 value */
--            if (!EVP_DigestSignFinal(ctx_tmp, A1, &A1_len))
--            {
--                goto err;
--            }
--        }
--        else
--        {
--            A1_len =3D EVP_MAX_MD_SIZE;
--            /* last one */
--            if (!EVP_DigestSignFinal(ctx, A1, &A1_len))
--            {
--                goto err;
--            }
--            memcpy(out, A1, olen);
--            break;
--        }
--    }
--    ret =3D true;
--err:
--    EVP_PKEY_free(mac_key);
--    EVP_MD_CTX_free(ctx);
--    EVP_MD_CTX_free(ctx_tmp);
--    EVP_MD_CTX_free(ctx_init);
--    OPENSSL_cleanse(A1, sizeof(A1));
--    return ret;
--}
--
--/*
-- * Use the TLS PRF function for generating data channel keys.
-- * This code is based on the OpenSSL library.
-- *
-- * TLS generates keys as such:
-- *
-- * master_secret[48] =3D PRF(pre_master_secret[48], "master secret",
-- *                         ClientHello.random[32] + ServerHello.random[32])
-- *
-- * key_block[] =3D PRF(SecurityParameters.master_secret[48],
-- *                 "key expansion",
-- *                 SecurityParameters.server_random[32] +
-- *                 SecurityParameters.client_random[32]);
-- *
-- * Notes:
-- *
-- * (1) key_block contains a full set of 4 keys.
-- * (2) The pre-master secret is generated by the client.
-- */
-+/* LibreSSL and wolfSSL do not expose a TLS 1.0/1.1 PRF via the same APIs =
-as
-+ * OpenSSL does. As result they will only be able to support
-+ * peers that support TLS EKM like when running with OpenSSL 3.x FIPS */
- bool
- ssl_tls1_PRF(const uint8_t *label, int label_len, const uint8_t *sec,
-              int slen, uint8_t *out1, int olen)
+
+ /*
+- * Schedule a signal n_seconds from now.
++ * Schedule a SIGTERM signal c->options.scheduled_exit_interval seconds fr=
+om now.
+  */
+-void
+-schedule_exit(struct context *c, const int n_seconds, const int signal)
++bool
++schedule_exit(struct context *c)
  {
--    bool ret =3D true;
--    struct gc_arena gc =3D gc_new();
--    /* For some reason our md_get("MD5") fails otherwise in the unit test =
-*/
--    const EVP_MD *md5 =3D EVP_md5();
--    const EVP_MD *sha1 =3D EVP_sha1();
--
--    uint8_t *out2 =3D (uint8_t *)gc_malloc(olen, false, &gc);
--
--    int len =3D slen/2;
--    const uint8_t *S1 =3D sec;
--    const uint8_t *S2 =3D &(sec[len]);
--    len +=3D (slen&1); /* add for odd, make longer */
--
--    if (!tls1_P_hash(md5, S1, len, label, label_len, out1, olen))
--    {
--        ret =3D false;
--        goto done;
--    }
--
--    if (!tls1_P_hash(sha1, S2, len, label, label_len, out2, olen))
--    {
--        ret =3D false;
--        goto done;
--    }
--
--    for (int i =3D 0; i < olen; i++)
--    {
--        out1[i] ^=3D out2[i];
--    }
--
--    secure_memzero(out2, olen);
--
--    dmsg(D_SHOW_KEY_SOURCE, "tls1_PRF out[%d]: %s", olen, format_hex(out1,=
- olen, 0, &gc));
--done:
--    gc_free(&gc);
--    return ret;
-+    return false;
- }
- #endif /* if LIBRESSL_VERSION_NUMBER */
- #endif /* ENABLE_CRYPTO_OPENSSL */
-diff --git a/tests/unit_tests/openvpn/test_crypto.c b/tests/unit_tests/open=
-vpn/test_crypto.c
-index 01c16c9..9d3ea1a 100644
---- a/tests/unit_tests/openvpn/test_crypto.c
-+++ b/tests/unit_tests/openvpn/test_crypto.c
-@@ -137,11 +137,6 @@
++    const int n_seconds =3D c->options.scheduled_exit_interval;
++    /* don't reschedule if already scheduled. */
++    if (event_timeout_defined(&c->c2.scheduled_exit))
++    {
++        return false;
++    }
+     tls_set_single_session(c->c2.tls_multi);
+     update_time();
+     reset_coarse_timers(c);
+     event_timeout_init(&c->c2.scheduled_exit, n_seconds, now);
+-    c->c2.scheduled_exit_signal =3D signal;
++    c->c2.scheduled_exit_signal =3D SIGTERM;
+     msg(D_SCHED_EXIT, "Delayed exit in %d seconds", n_seconds);
++    return true;
  }
 
+ /*
+diff --git a/src/openvpn/forward.h b/src/openvpn/forward.h
+index 6fb5a18..422c591 100644
+--- a/src/openvpn/forward.h
++++ b/src/openvpn/forward.h
+@@ -303,7 +303,7 @@
 
--static uint8_t good_prf[32] =3D {0xd9, 0x8c, 0x85, 0x18, 0xc8, 0x5e, 0x94,=
- 0x69,
--                               0x27, 0x91, 0x6a, 0xcf, 0xc2, 0xd5, 0x92, 0=
-xfb,
--                               0xb1, 0x56, 0x7e, 0x4b, 0x4b, 0x14, 0x59, 0=
-xe6,
--                               0xa9, 0x04, 0xac, 0x2d, 0xda, 0xb7, 0x2d, 0=
-x67};
+ void process_ip_header(struct context *c, unsigned int flags, struct buffe=
+r *buf);
+
+-void schedule_exit(struct context *c, const int n_seconds, const int signa=
+l);
++bool schedule_exit(struct context *c);
+
+ static inline struct link_socket_info *
+ get_link_socket_info(struct context *c)
+diff --git a/src/openvpn/push.c b/src/openvpn/push.c
+index 1b406b9..17e7e80 100644
+--- a/src/openvpn/push.c
++++ b/src/openvpn/push.c
+@@ -204,7 +204,11 @@
+      * */
+     if (c->options.mode =3D=3D MODE_SERVER)
+     {
+-        schedule_exit(c, c->options.scheduled_exit_interval, SIGTERM);
++        if (!schedule_exit(c))
++	{
++		/* Return early when we don't need to notify management */
++		return;
++	}
+     }
+     else
+     {
+@@ -391,7 +395,7 @@
+ void
+ send_auth_failed(struct context *c, const char *client_reason)
+ {
+-    if (event_timeout_defined(&c->c2.scheduled_exit))
++    if (!schedule_exit(c))
+     {
+         msg(D_TLS_DEBUG, "exit already scheduled for context");
+         return;
+@@ -401,8 +405,6 @@
+     static const char auth_failed[] =3D "AUTH_FAILED";
+     size_t len;
+
+-    schedule_exit(c, c->options.scheduled_exit_interval, SIGTERM);
 -
- static const char *ipsumlorem =3D "Lorem ipsum dolor sit amet, consectetur=
- "
-                                 "adipisici elit, sed eiusmod tempor incidu=
-nt "
-                                 "ut labore et dolore magna aliqua.";
-@@ -160,9 +155,19 @@
-
-
-     uint8_t out[32];
--    ssl_tls1_PRF(seed, seed_len, secret, secret_len, out, sizeof(out));
-+    bool ret =3D ssl_tls1_PRF(seed, seed_len, secret, secret_len, out, siz=
-eof(out));
-
-+#if defined(LIBRESSL_VERSION_NUMBER) || defined(ENABLE_CRYPTO_WOLFSSL)
-+    /* No TLS1 PRF support in these libraries */
-+    assert_false(ret);
-+#else
-+    assert_true(ret);
-+    uint8_t good_prf[32] =3D {0xd9, 0x8c, 0x85, 0x18, 0xc8, 0x5e, 0x94, 0x=
-69,
-+                            0x27, 0x91, 0x6a, 0xcf, 0xc2, 0xd5, 0x92, 0xfb,
-+                            0xb1, 0x56, 0x7e, 0x4b, 0x4b, 0x14, 0x59, 0xe6,
-+                            0xa9, 0x04, 0xac, 0x2d, 0xda, 0xb7, 0x2d, 0x67=
-};
-     assert_memory_equal(good_prf, out, sizeof(out));
-+#endif
+     len =3D (client_reason ? strlen(client_reason)+1 : 0) + sizeof(auth_fa=
+iled);
+     if (len > PUSH_BUNDLE_SIZE)
+     {
+@@ -492,7 +494,7 @@
+ void
+ send_restart(struct context *c, const char *kill_msg)
+ {
+-    schedule_exit(c, c->options.scheduled_exit_interval, SIGTERM);
++    schedule_exit(c);
+     send_control_channel_string(c, kill_msg ? kill_msg : "RESTART", D_PUSH=
+);
  }
 
- static uint8_t testkey[20] =3D {0x0b, 0x00};
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/560?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/555?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings
 
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: I5bfa3630ad4dff2807705658bc877c4a429a39ce
-Gerrit-Change-Number: 560
-Gerrit-PatchSet: 6
-Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
-Gerrit-Reviewer: cron2 <gert@...1296...>
+Gerrit-Change-Id: I9457f005f4ba970502e6b667d9dc4299a588d661
+Gerrit-Change-Number: 555
+Gerrit-PatchSet: 3
+Gerrit-Owner: reynir <reynir@...2756...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
+Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
+Gerrit-Reviewer: reynir <reynir@...2756...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-MessageType: merged
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Attention: flichtenheld <frank@...2641...>
+Gerrit-Attention: reynir <reynir@...2756...>
+Gerrit-MessageType: newpatchset
 
---vLM7oniCUz4=
+--od/iRT8xvZQ=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p>cron2 <strong>submitted</strong> this change.</p><p><a href=3D"http://ge=
-rrit.openvpn.net/c/openvpn/+/560?usp=3Demail">View Change</a></p><div style=
-=3D"white-space:pre-wrap"></div><pre style=3D"font-family: monospace,monosp=
-ace; white-space: pre-wrap;">Remove custom TLS 1.0 PRF implementation only =
-used by LibreSSL/wolfSSL<br><br>After the removal of the OpenSSL 1.0.2 supp=
-ort, LibreSSL/wolfSSL are the<br>only libraries that still needs the custom=
- implementation.<br><br>Since our LibreSSL/wolfSSL support is always best e=
-ffort, we can afford to<br>limit LibreSSL support in this way. If they want=
- to support this, they<br>should expose the functionality as well.<br><br>C=
-hange-Id: I5bfa3630ad4dff2807705658bc877c4a429a39ce<br>Signed-off-by: Arne =
-Schwabe &lt;arne@...1227...&gt;<br>Acked-by: Gert Doering &lt;gert@...1725...=
-..&gt;<br>Message-Id: &lt;20240515100115.11056-1-gert@...1296...&gt;<br>URL=
-: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg28672=
-.html<br>Signed-off-by: Gert Doering &lt;gert@...1296...&gt;<br>---<br>M sr=
-c/openvpn/crypto_openssl.c<br>M tests/unit_tests/openvpn/test_crypto.c<br>2=
- files changed, 16 insertions(+), 180 deletions(-)<br><br></pre>
-<pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><sp=
-an>diff --git a/src/openvpn/crypto_openssl.c b/src/openvpn/crypto_openssl.c=
-</span><br><span>index 0473fad..fbd38f3 100644</span><br><span>--- a/src/op=
-envpn/crypto_openssl.c</span><br><span>+++ b/src/openvpn/crypto_openssl.c</=
-span><br><span>@@ -1397,7 +1397,7 @@</span><br><span> </span><br><span>    =
- return ret;</span><br><span> }</span><br><span style=3D"color: hsl(0, 100%=
-, 40%);">-#elif !defined(LIBRESSL_VERSION_NUMBER)</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+#elif !defined(LIBRESSL_VERSION_NUMBER) &amp;=
-&amp; !defined(ENABLE_CRYPTO_WOLFSSL)</span><br><span> bool</span><br><span=
-> ssl_tls1_PRF(const uint8_t *seed, int seed_len, const uint8_t *secret,</s=
-pan><br><span>              int secret_len, uint8_t *output, int output_len=
-)</span><br><span>@@ -1444,183 +1444,14 @@</span><br><span>     return ret;=
-</span><br><span> }</span><br><span> #else  /* if defined(LIBRESSL_VERSION_=
-NUMBER) */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-/*</span><b=
-r><span style=3D"color: hsl(0, 100%, 40%);">- * Generate the hash required =
-by for the \c tls1_PRF function.</span><br><span style=3D"color: hsl(0, 100=
-%, 40%);">- *</span><br><span style=3D"color: hsl(0, 100%, 40%);">- * We ca=
-nnot use our normal hmac_* function as they do not work</span><br><span sty=
-le=3D"color: hsl(0, 100%, 40%);">- * in a FIPS environment (no MD5 allowed,=
- which we need). Instead</span><br><span style=3D"color: hsl(0, 100%, 40%);=
-">- * we need to directly use the EVP_MD_* API with the special</span><br><=
-span style=3D"color: hsl(0, 100%, 40%);">- * EVP_MD_CTX_FLAG_NON_FIPS_ALLOW=
- flag.</span><br><span style=3D"color: hsl(0, 100%, 40%);">- *</span><br><s=
-pan style=3D"color: hsl(0, 100%, 40%);">- * The function below is adapted f=
-rom OpenSSL 1.0.2t</span><br><span style=3D"color: hsl(0, 100%, 40%);">- *<=
-/span><br><span style=3D"color: hsl(0, 100%, 40%);">- * @param md_kt       =
-  Message digest to use</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
->- * @param sec           Secret to base the hash on</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">- * @param sec_len       Length of the secre=
-t</span><br><span style=3D"color: hsl(0, 100%, 40%);">- * @param seed      =
-    Seed to hash</span><br><span style=3D"color: hsl(0, 100%, 40%);">- * @p=
-aram seed_len      Length of the seed</span><br><span style=3D"color: hsl(0=
-, 100%, 40%);">- * @param out           Output buffer</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">- * @param olen          Length of the outpu=
-t buffer</span><br><span style=3D"color: hsl(0, 100%, 40%);">- */</span><br=
-><span style=3D"color: hsl(0, 100%, 40%);">-static</span><br><span style=3D=
-"color: hsl(0, 100%, 40%);">-bool</span><br><span style=3D"color: hsl(0, 10=
-0%, 40%);">-tls1_P_hash(const EVP_MD *md, const unsigned char *sec,</span><=
-br><span style=3D"color: hsl(0, 100%, 40%);">-            int sec_len, cons=
-t void *seed, int seed_len,</span><br><span style=3D"color: hsl(0, 100%, 40=
-%);">-            unsigned char *out, int olen)</span><br><span style=3D"co=
-lor: hsl(0, 100%, 40%);">-{</span><br><span style=3D"color: hsl(0, 100%, 40=
-%);">-    int chunk;</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
-   size_t j;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    EVP_M=
-D_CTX *ctx, *ctx_tmp, *ctx_init;</span><br><span style=3D"color: hsl(0, 100=
-%, 40%);">-    EVP_PKEY *mac_key;</span><br><span style=3D"color: hsl(0, 10=
-0%, 40%);">-    unsigned char A1[EVP_MAX_MD_SIZE];</span><br><span style=3D=
-"color: hsl(0, 100%, 40%);">-    size_t A1_len =3D EVP_MAX_MD_SIZE;</span><=
-br><span style=3D"color: hsl(0, 100%, 40%);">-    int ret =3D false;</span>=
-<br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"co=
-lor: hsl(0, 100%, 40%);">-    chunk =3D EVP_MD_size(md);</span><br><span st=
-yle=3D"color: hsl(0, 100%, 40%);">-    OPENSSL_assert(chunk &gt;=3D 0);</sp=
-an><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D=
-"color: hsl(0, 100%, 40%);">-    ctx =3D md_ctx_new();</span><br><span styl=
-e=3D"color: hsl(0, 100%, 40%);">-    ctx_tmp =3D md_ctx_new();</span><br><s=
-pan style=3D"color: hsl(0, 100%, 40%);">-    ctx_init =3D md_ctx_new();</sp=
-an><br><span style=3D"color: hsl(0, 100%, 40%);">-    EVP_MD_CTX_set_flags(=
-ctx_init, EVP_MD_CTX_FLAG_NON_FIPS_ALLOW);</span><br><span style=3D"color: =
-hsl(0, 100%, 40%);">-    mac_key =3D EVP_PKEY_new_mac_key(EVP_PKEY_HMAC, NU=
-LL, sec, sec_len);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
- if (!mac_key)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    {</=
-span><br><span style=3D"color: hsl(0, 100%, 40%);">-        goto err;</span=
-><br><span style=3D"color: hsl(0, 100%, 40%);">-    }</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-    if (!EVP_DigestSignInit(ctx_init, NULL,=
- md, NULL, mac_key))</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
-   {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        goto err;=
-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    }</span><br><span=
- style=3D"color: hsl(0, 100%, 40%);">-    if (!EVP_MD_CTX_copy_ex(ctx, ctx_=
-init))</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    {</span><br=
-><span style=3D"color: hsl(0, 100%, 40%);">-        goto err;</span><br><sp=
-an style=3D"color: hsl(0, 100%, 40%);">-    }</span><br><span style=3D"colo=
-r: hsl(0, 100%, 40%);">-    if (!EVP_DigestSignUpdate(ctx, seed, seed_len))=
-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    {</span><br><span=
- style=3D"color: hsl(0, 100%, 40%);">-        goto err;</span><br><span sty=
-le=3D"color: hsl(0, 100%, 40%);">-    }</span><br><span style=3D"color: hsl=
-(0, 100%, 40%);">-    if (!EVP_DigestSignFinal(ctx, A1, &amp;A1_len))</span=
-><br><span style=3D"color: hsl(0, 100%, 40%);">-    {</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-        goto err;</span><br><span style=3D"=
-color: hsl(0, 100%, 40%);">-    }</span><br><span style=3D"color: hsl(0, 10=
-0%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    for (=
-;; )</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    {</span><br><=
-span style=3D"color: hsl(0, 100%, 40%);">-        /* Reinit mac contexts */=
-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        if (!EVP_MD_C=
-TX_copy_ex(ctx, ctx_init))</span><br><span style=3D"color: hsl(0, 100%, 40%=
-);">-        {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-       =
-     goto err;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-       =
- }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        if (!EVP_Di=
-gestSignUpdate(ctx, A1, A1_len))</span><br><span style=3D"color: hsl(0, 100=
-%, 40%);">-        {</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
-           goto err;</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
-       }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        if (o=
-len &gt; chunk &amp;&amp; !EVP_MD_CTX_copy_ex(ctx_tmp, ctx))</span><br><spa=
-n style=3D"color: hsl(0, 100%, 40%);">-        {</span><br><span style=3D"c=
-olor: hsl(0, 100%, 40%);">-            goto err;</span><br><span style=3D"c=
-olor: hsl(0, 100%, 40%);">-        }</span><br><span style=3D"color: hsl(0,=
- 100%, 40%);">-        if (!EVP_DigestSignUpdate(ctx, seed, seed_len))</spa=
-n><br><span style=3D"color: hsl(0, 100%, 40%);">-        {</span><br><span =
-style=3D"color: hsl(0, 100%, 40%);">-            goto err;</span><br><span =
-style=3D"color: hsl(0, 100%, 40%);">-        }</span><br><span style=3D"col=
-or: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%)=
-;">-        if (olen &gt; chunk)</span><br><span style=3D"color: hsl(0, 100=
-%, 40%);">-        {</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
-           j =3D olen;</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
--            if (!EVP_DigestSignFinal(ctx, out, &amp;j))</span><br><span st=
-yle=3D"color: hsl(0, 100%, 40%);">-            {</span><br><span style=3D"c=
-olor: hsl(0, 100%, 40%);">-                goto err;</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-            }</span><br><span style=3D"colo=
-r: hsl(0, 100%, 40%);">-            out +=3D j;</span><br><span style=3D"co=
-lor: hsl(0, 100%, 40%);">-            olen -=3D j;</span><br><span style=3D=
-"color: hsl(0, 100%, 40%);">-            /* calc the next A1 value */</span=
-><br><span style=3D"color: hsl(0, 100%, 40%);">-            if (!EVP_Digest=
-SignFinal(ctx_tmp, A1, &amp;A1_len))</span><br><span style=3D"color: hsl(0,=
- 100%, 40%);">-            {</span><br><span style=3D"color: hsl(0, 100%, 4=
-0%);">-                goto err;</span><br><span style=3D"color: hsl(0, 100=
-%, 40%);">-            }</span><br><span style=3D"color: hsl(0, 100%, 40%);=
-">-        }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        e=
-lse</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        {</span><b=
-r><span style=3D"color: hsl(0, 100%, 40%);">-            A1_len =3D EVP_MAX=
-_MD_SIZE;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            =
-/* last one */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-       =
-     if (!EVP_DigestSignFinal(ctx, A1, &amp;A1_len))</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-            {</span><br><span style=3D"colo=
-r: hsl(0, 100%, 40%);">-                goto err;</span><br><span style=3D"=
-color: hsl(0, 100%, 40%);">-            }</span><br><span style=3D"color: h=
-sl(0, 100%, 40%);">-            memcpy(out, A1, olen);</span><br><span styl=
-e=3D"color: hsl(0, 100%, 40%);">-            break;</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-        }</span><br><span style=3D"color: h=
-sl(0, 100%, 40%);">-    }</span><br><span style=3D"color: hsl(0, 100%, 40%)=
-;">-    ret =3D true;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
-err:</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    EVP_PKEY_free=
-(mac_key);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    EVP_MD_=
-CTX_free(ctx);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    EVP=
-_MD_CTX_free(ctx_tmp);</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
--    EVP_MD_CTX_free(ctx_init);</span><br><span style=3D"color: hsl(0, 100%=
-, 40%);">-    OPENSSL_cleanse(A1, sizeof(A1));</span><br><span style=3D"col=
-or: hsl(0, 100%, 40%);">-    return ret;</span><br><span style=3D"color: hs=
-l(0, 100%, 40%);">-}</span><br><span style=3D"color: hsl(0, 100%, 40%);">-<=
-/span><br><span style=3D"color: hsl(0, 100%, 40%);">-/*</span><br><span sty=
-le=3D"color: hsl(0, 100%, 40%);">- * Use the TLS PRF function for generatin=
-g data channel keys.</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
-* This code is based on the OpenSSL library.</span><br><span style=3D"color=
-: hsl(0, 100%, 40%);">- *</span><br><span style=3D"color: hsl(0, 100%, 40%)=
-;">- * TLS generates keys as such:</span><br><span style=3D"color: hsl(0, 1=
-00%, 40%);">- *</span><br><span style=3D"color: hsl(0, 100%, 40%);">- * mas=
-ter_secret[48] =3D PRF(pre_master_secret[48], &quot;master secret&quot;,</s=
-pan><br><span style=3D"color: hsl(0, 100%, 40%);">- *                      =
-   ClientHello.random[32] + ServerHello.random[32])</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">- *</span><br><span style=3D"color: hsl(0, 1=
-00%, 40%);">- * key_block[] =3D PRF(SecurityParameters.master_secret[48],</=
-span><br><span style=3D"color: hsl(0, 100%, 40%);">- *                 &quo=
-t;key expansion&quot;,</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
-- *                 SecurityParameters.server_random[32] +</span><br><span =
-style=3D"color: hsl(0, 100%, 40%);">- *                 SecurityParameters.=
-client_random[32]);</span><br><span style=3D"color: hsl(0, 100%, 40%);">- *=
-</span><br><span style=3D"color: hsl(0, 100%, 40%);">- * Notes:</span><br><=
-span style=3D"color: hsl(0, 100%, 40%);">- *</span><br><span style=3D"color=
-: hsl(0, 100%, 40%);">- * (1) key_block contains a full set of 4 keys.</spa=
-n><br><span style=3D"color: hsl(0, 100%, 40%);">- * (2) The pre-master secr=
-et is generated by the client.</span><br><span style=3D"color: hsl(0, 100%,=
- 40%);">- */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+/* Libr=
-eSSL and wolfSSL do not expose a TLS 1.0/1.1 PRF via the same APIs as</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+ * OpenSSL does. As resul=
-t they will only be able to support</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+ * peers that support TLS EKM like when running with OpenSS=
-L 3.x FIPS */</span><br><span> bool</span><br><span> ssl_tls1_PRF(const uin=
-t8_t *label, int label_len, const uint8_t *sec,</span><br><span>           =
-   int slen, uint8_t *out1, int olen)</span><br><span> {</span><br><span st=
-yle=3D"color: hsl(0, 100%, 40%);">-    bool ret =3D true;</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-    struct gc_arena gc =3D gc_new();</s=
-pan><br><span style=3D"color: hsl(0, 100%, 40%);">-    /* For some reason o=
-ur md_get(&quot;MD5&quot;) fails otherwise in the unit test */</span><br><s=
-pan style=3D"color: hsl(0, 100%, 40%);">-    const EVP_MD *md5 =3D EVP_md5(=
-);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    const EVP_MD *s=
-ha1 =3D EVP_sha1();</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</=
-span><br><span style=3D"color: hsl(0, 100%, 40%);">-    uint8_t *out2 =3D (=
-uint8_t *)gc_malloc(olen, false, &amp;gc);</span><br><span style=3D"color: =
-hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
-    int len =3D slen/2;</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
->-    const uint8_t *S1 =3D sec;</span><br><span style=3D"color: hsl(0, 100=
-%, 40%);">-    const uint8_t *S2 =3D &amp;(sec[len]);</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-    len +=3D (slen&amp;1); /* add for odd, =
-make longer */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span>=
-<br><span style=3D"color: hsl(0, 100%, 40%);">-    if (!tls1_P_hash(md5, S1=
-, len, label, label_len, out1, olen))</span><br><span style=3D"color: hsl(0=
-, 100%, 40%);">-    {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
-        ret =3D false;</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
--        goto done;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
-  }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-    if (!tls1_P_hash(sha1, S2, len, lab=
-el, label_len, out2, olen))</span><br><span style=3D"color: hsl(0, 100%, 40=
-%);">-    {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        re=
-t =3D false;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        g=
-oto done;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    }</span>=
-<br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"co=
-lor: hsl(0, 100%, 40%);">-    for (int i =3D 0; i &lt; olen; i++)</span><br=
-><span style=3D"color: hsl(0, 100%, 40%);">-    {</span><br><span style=3D"=
-color: hsl(0, 100%, 40%);">-        out1[i] ^=3D out2[i];</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-    }</span><br><span style=3D"color: h=
-sl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
-   secure_memzero(out2, olen);</span><br><span style=3D"color: hsl(0, 100%,=
- 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    dmsg(D_S=
-HOW_KEY_SOURCE, &quot;tls1_PRF out[%d]: %s&quot;, olen, format_hex(out1, ol=
-en, 0, &amp;gc));</span><br><span style=3D"color: hsl(0, 100%, 40%);">-done=
-:</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    gc_free(&amp;gc)=
-;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    return ret;</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+    return false;</span>=
-<br><span> }</span><br><span> #endif /* if LIBRESSL_VERSION_NUMBER */</span=
-><br><span> #endif /* ENABLE_CRYPTO_OPENSSL */</span><br><span>diff --git a=
-/tests/unit_tests/openvpn/test_crypto.c b/tests/unit_tests/openvpn/test_cry=
-pto.c</span><br><span>index 01c16c9..9d3ea1a 100644</span><br><span>--- a/t=
-ests/unit_tests/openvpn/test_crypto.c</span><br><span>+++ b/tests/unit_test=
-s/openvpn/test_crypto.c</span><br><span>@@ -137,11 +137,6 @@</span><br><spa=
-n> }</span><br><span> </span><br><span> </span><br><span style=3D"color: hs=
-l(0, 100%, 40%);">-static uint8_t good_prf[32] =3D {0xd9, 0x8c, 0x85, 0x18,=
- 0xc8, 0x5e, 0x94, 0x69,</span><br><span style=3D"color: hsl(0, 100%, 40%);=
-">-                               0x27, 0x91, 0x6a, 0xcf, 0xc2, 0xd5, 0x92,=
- 0xfb,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-               =
-                0xb1, 0x56, 0x7e, 0x4b, 0x4b, 0x14, 0x59, 0xe6,</span><br><=
-span style=3D"color: hsl(0, 100%, 40%);">-                               0x=
-a9, 0x04, 0xac, 0x2d, 0xda, 0xb7, 0x2d, 0x67};</span><br><span style=3D"col=
-or: hsl(0, 100%, 40%);">-</span><br><span> static const char *ipsumlorem =
-=3D &quot;Lorem ipsum dolor sit amet, consectetur &quot;</span><br><span>  =
-                               &quot;adipisici elit, sed eiusmod tempor inc=
-idunt &quot;</span><br><span>                                 &quot;ut labo=
-re et dolore magna aliqua.&quot;;</span><br><span>@@ -160,9 +155,19 @@</spa=
-n><br><span> </span><br><span> </span><br><span>     uint8_t out[32];</span=
-><br><span style=3D"color: hsl(0, 100%, 40%);">-    ssl_tls1_PRF(seed, seed=
-_len, secret, secret_len, out, sizeof(out));</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+    bool ret =3D ssl_tls1_PRF(seed, seed_len, secr=
-et, secret_len, out, sizeof(out));</span><br><span> </span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+#if defined(LIBRESSL_VERSION_NUMBER) || d=
-efined(ENABLE_CRYPTO_WOLFSSL)</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+    /* No TLS1 PRF support in these libraries */</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+    assert_false(ret);</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+#else</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+    assert_true(ret);</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+    uint8_t good_prf[32] =3D {0xd9, 0x8c, 0x8=
-5, 0x18, 0xc8, 0x5e, 0x94, 0x69,</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+                            0x27, 0x91, 0x6a, 0xcf, 0xc2, 0xd5=
-, 0x92, 0xfb,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
-                      0xb1, 0x56, 0x7e, 0x4b, 0x4b, 0x14, 0x59, 0xe6,</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+                         =
-   0xa9, 0x04, 0xac, 0x2d, 0xda, 0xb7, 0x2d, 0x67};</span><br><span>     as=
-sert_memory_equal(good_prf, out, sizeof(out));</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+#endif</span><br><span> }</span><br><span> </spa=
-n><br><span> static uint8_t testkey[20] =3D {0x0b, 0x00};</span><br><span><=
-/span><br></pre><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/op=
-envpn/+/560?usp=3Demail">change 560</a>. To unsubscribe, or for help writin=
-g mail filters, visit <a href=3D"http://gerrit.openvpn.net/settings">settin=
-gs</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div =
-itemscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><li=
-nk itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/560?usp=
-=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
+<p> Attention is currently required from: flichtenheld, plaisthos, reynir. =
+</p>
+<p>reynir <strong>uploaded patch set #3</strong> to this change.</p><p><a h=
+ref=3D"http://gerrit.openvpn.net/c/openvpn/+/555?usp=3Demail">View Change</=
+a></p><p>The following approvals got outdated and were removed:
+Code-Review+2 by flichtenheld, Code-Review+2 by plaisthos</p><p>The change =
+is no longer submittable: Code-Review and checks~ChecksSubmitRule are unsat=
+isfied now.</p><pre style=3D"font-family: monospace,monospace; white-space:=
+ pre-wrap;">Only schedule_exit() once<br><br>If an exit has already been sc=
+heduled we should not schedule it again.<br>Otherwise, the exit signal is n=
+ever emitted if the peer reschedules the<br>exit before the timeout occurs.=
+<br><br>schedule_exit() now only takes the context as argument. The signal =
+is<br>hard coded to SIGTERM, and the interval is read directly from the<br>=
+context options.<br><br>Furthermore, schedule_exit() now returns a bool sig=
+nifying whether an<br>exit was scheduled; false if exit is already schedule=
+d. The call sites<br>are updated accordingly. A notable difference is that =
+management is only<br>notified *once* when an exit is scheduled - we no lon=
+ger notify<br>management on redundant exit.<br><br>This patch was assigned =
+a CVE number after already reviewed and ACKed,<br>because it was discovered=
+ that a misbehaving client can use the (now<br>fixed) server behaviour to a=
+void being disconnected by means of a<br>managment interface &quot;client-k=
+ill&quot; command - the security issue here is<br>&quot;client can circumve=
+nt security policy set by management interface&quot;.<br><br>This only affe=
+cts previously authenticated clients, and only management<br>client-kill, s=
+o normal renegotion / AUTH_FAIL (&quot;your session ends&quot;) is not<br>a=
+ffected.<br><br>CVE: 2024-28882<br><br>Change-Id: I9457f005f4ba970502e6b667=
+d9dc4299a588d661<br>Signed-off-by: Reynir Bj=C3=B6rnsson &lt;reynir@...2800...=
+...&gt;<br>---<br>M src/openvpn/forward.c<br>M src/openvpn/forward.h<br>M s=
+rc/openvpn/push.c<br>3 files changed, 19 insertions(+), 10 deletions(-)<br>=
+<br></pre><pre style=3D"font-family: monospace,monospace; white-space: pre-=
+wrap;">git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/55/555/=
+3</pre><pre style=3D"font-family: monospace,monospace; white-space: pre-wra=
+p;"><span>diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c</span>=
+<br><span>index 8d10f25..01165b2 100644</span><br><span>--- a/src/openvpn/f=
+orward.c</span><br><span>+++ b/src/openvpn/forward.c</span><br><span>@@ -51=
+4,17 +514,24 @@</span><br><span> }</span><br><span> </span><br><span> /*</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">- * Schedule a signal n_s=
+econds from now.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * =
+Schedule a SIGTERM signal c-&gt;options.scheduled_exit_interval seconds fro=
+m now.</span><br><span>  */</span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">-void</span><br><span style=3D"color: hsl(0, 100%, 40%);">-schedule_ex=
+it(struct context *c, const int n_seconds, const int signal)</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+bool</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+schedule_exit(struct context *c)</span><br><span>=
+ {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    const int n_s=
+econds =3D c-&gt;options.scheduled_exit_interval;</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+    /* don&#39;t reschedule if already schedu=
+led. */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (even=
+t_timeout_defined(&amp;c-&gt;c2.scheduled_exit))</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+        return false;</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+    }</span><br><span>     tls_set_single_session(c-&gt;c2=
+.tls_multi);</span><br><span>     update_time();</span><br><span>     reset=
+_coarse_timers(c);</span><br><span>     event_timeout_init(&amp;c-&gt;c2.sc=
+heduled_exit, n_seconds, now);</span><br><span style=3D"color: hsl(0, 100%,=
+ 40%);">-    c-&gt;c2.scheduled_exit_signal =3D signal;</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+    c-&gt;c2.scheduled_exit_signal =3D =
+SIGTERM;</span><br><span>     msg(D_SCHED_EXIT, &quot;Delayed exit in %d se=
+conds&quot;, n_seconds);</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+    return true;</span><br><span> }</span><br><span> </span><br><span>=
+ /*</span><br><span>diff --git a/src/openvpn/forward.h b/src/openvpn/forwar=
+d.h</span><br><span>index 6fb5a18..422c591 100644</span><br><span>--- a/src=
+/openvpn/forward.h</span><br><span>+++ b/src/openvpn/forward.h</span><br><s=
+pan>@@ -303,7 +303,7 @@</span><br><span> </span><br><span> void process_ip_=
+header(struct context *c, unsigned int flags, struct buffer *buf);</span><b=
+r><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-void schedul=
+e_exit(struct context *c, const int n_seconds, const int signal);</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+bool schedule_exit(struct con=
+text *c);</span><br><span> </span><br><span> static inline struct link_sock=
+et_info *</span><br><span> get_link_socket_info(struct context *c)</span><b=
+r><span>diff --git a/src/openvpn/push.c b/src/openvpn/push.c</span><br><spa=
+n>index 1b406b9..17e7e80 100644</span><br><span>--- a/src/openvpn/push.c</s=
+pan><br><span>+++ b/src/openvpn/push.c</span><br><span>@@ -204,7 +204,11 @@=
+</span><br><span>      * */</span><br><span>     if (c-&gt;options.mode =3D=
+=3D MODE_SERVER)</span><br><span>     {</span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-        schedule_exit(c, c-&gt;options.scheduled_exit_int=
+erval, SIGTERM);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+     if (!schedule_exit(c))</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+	{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+		/* Retu=
+rn early when we don&#39;t need to notify management */</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+		return;</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+	}</span><br><span>     }</span><br><span>     el=
+se</span><br><span>     {</span><br><span>@@ -391,7 +395,7 @@</span><br><sp=
+an> void</span><br><span> send_auth_failed(struct context *c, const char *c=
+lient_reason)</span><br><span> {</span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-    if (event_timeout_defined(&amp;c-&gt;c2.scheduled_exit))</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (!schedule_exit(=
+c))</span><br><span>     {</span><br><span>         msg(D_TLS_DEBUG, &quot;=
+exit already scheduled for context&quot;);</span><br><span>         return;=
+</span><br><span>@@ -401,8 +405,6 @@</span><br><span>     static const char=
+ auth_failed[] =3D &quot;AUTH_FAILED&quot;;</span><br><span>     size_t len=
+;</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
+  schedule_exit(c, c-&gt;options.scheduled_exit_interval, SIGTERM);</span><=
+br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span>     len =3D=
+ (client_reason ? strlen(client_reason)+1 : 0) + sizeof(auth_failed);</span=
+><br><span>     if (len &gt; PUSH_BUNDLE_SIZE)</span><br><span>     {</span=
+><br><span>@@ -492,7 +494,7 @@</span><br><span> void</span><br><span> send_=
+restart(struct context *c, const char *kill_msg)</span><br><span> {</span><=
+br><span style=3D"color: hsl(0, 100%, 40%);">-    schedule_exit(c, c-&gt;op=
+tions.scheduled_exit_interval, SIGTERM);</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+    schedule_exit(c);</span><br><span>     send_contro=
+l_channel_string(c, kill_msg ? kill_msg : &quot;RESTART&quot;, D_PUSH);</sp=
+an><br><span> }</span><br><span> </span><br><span></span><br></pre><p>To vi=
+ew, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/555?usp=3Demail"=
+>change 555</a>. To unsubscribe, or for help writing mail filters, visit <a=
+ href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemscop=
+e itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"ac=
+tion" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=
+=3D"http://gerrit.openvpn.net/c/openvpn/+/555?usp=3Demail"/><meta itemprop=
+=3D"name" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I5bfa3630ad4dff2807705658bc8=
-77c4a429a39ce </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 560 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 6 </div>
-<div style=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@...1711...=
-27...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
+<div style=3D"display:none"> Gerrit-Change-Id: I9457f005f4ba970502e6b667d9d=
+c4299a588d661 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 555 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 3 </div>
+<div style=3D"display:none"> Gerrit-Owner: reynir &lt;reynir@...2756...&gt;=
  </div>
 <div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
 1...&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
+.1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: reynir &lt;reynir@...2756...&=
+gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: merged </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
+41...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: reynir &lt;reynir@...2756...=
+&gt; </div>
+<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
 
 
---vLM7oniCUz4=--
+--od/iRT8xvZQ=--
 
