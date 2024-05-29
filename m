@@ -1,10 +1,11 @@
-From: Franco Fichtner <franco@...2219...>
-Date: Tue, 28 May 2024 17:42:52 +0000
-Message-ID: <AE20A784-506C-488B-9302-2D3AE775B168@...2219...>
-Content-Language: en-US
+Content-Type: multipart/alternative;
+ boundary="------------peWpXyVIil4JqiTgjPb4AHk1"
+Message-ID: <2afea509-545b-452c-93cd-e14da896b2d3@...2751...>
+Date: Wed, 29 May 2024 14:35:35 +0200
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH 1/1] Allow to set ifmode for existing DCO
- interfaces in FreeBSD
+From: Johan Draaisma <johan@...2751...>
+Content-Language: en-US
+Subject: [Openvpn-devel]  IRC community meeting summary
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,81 +14,134 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-ID: <3C0514A7C472FA408A78F5DB015D68F1@...2802...>
-To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: openvpn-devel@lists.sourceforge.net
 
-While prexisting devices work well TUN/TAP the DCO interfaces require
-setting the ifmode which cannot be done by FreeBSD base tooling.  In
-peer-to-peer mode this is not a problem because that is the default mode.
-Subnet mode, however, will fail to be set and the resulting connection does
-not start:
+This is a multi-part message in MIME format.
+--------------peWpXyVIil4JqiTgjPb4AHk1
+Content-Type: text/plain; charset="utf-8"; format="flowed"
+Content-Transfer-Encoding: 8bit
 
-  Failed to create interface ovpns2 (SIOCSIFNAME): File exists (errno=3D17)
-  DCO device ovpns2 already exists, won't be destroyed at shutdown
-  /sbin/ifconfig ovpns2 10.1.8.1/24 mtu 1500 up
-  ifconfig: in_exec_nl(): Empty IFA_LOCAL/IFA_ADDRESS
-  ifconfig: ioctl (SIOCAIFADDR): Invalid argument
-  FreeBSD ifconfig failed: external program exited with error status: 1
-  Exiting due to fatal error
+Meeting summary for 29 May 2024:
 
-Slightly restructure the code to catch the specific error
-condition and execute dco_set_ifmode() in this case as well.
+  * *Closed: DCO-win update needed*
+    /There was a responsible disclosure report made regarding DCO
+    windows driver./
+    /This was fixed and released in the I003 Windows installer release
+    for 2.6.10./
 
-Signed-off-by: Franco Fichtner <franco@...2219...>
----
- src/openvpn/dco_freebsd.c | 28 +++++++++++++++++-----------
- 1 file changed, 17 insertions(+), 11 deletions(-)
+  * *Updated: community.openvpn.net trac wiki*
+    /There was some downtime here and after looking into it, the
+    conclusion is that the software is out-of-date and needs love./
+    /We were already planning to migrate to another wiki solution, so
+    this has provided an impetus to accelerate this./
+    /mattock will look into putting a PoC of wiki.js and outline after
+    debian/ubuntu snapshot task is done./
 
-diff --git a/src/openvpn/dco_freebsd.c b/src/openvpn/dco_freebsd.c
-index 577c65f8..7c8b29c9 100644
---- a/src/openvpn/dco_freebsd.c
-+++ b/src/openvpn/dco_freebsd.c
-@@ -219,6 +219,9 @@ create_interface(struct tuntap *tt, const char *dev)
-     {
-         ifr.ifr_data =3D (char *)dev;
-     }
-+
-+    snprintf(tt->dco.ifname, IFNAMSIZ, "%s", ifr.ifr_data);
-+
-     ret =3D ioctl(tt->dco.fd, SIOCSIFNAME, &ifr);
-     if (ret)
-     {
-@@ -229,16 +232,6 @@ create_interface(struct tuntap *tt, const char *dev)
-         return ret;
-     }
-  -    snprintf(tt->dco.ifname, IFNAMSIZ, "%s", ifr.ifr_data);
--
--    /* see "Interface Flags" in ifnet(9) */
--    int i =3D IFF_POINTOPOINT | IFF_MULTICAST;
--    if (tt->topology =3D=3D TOP_SUBNET)
--    {
--        i =3D IFF_BROADCAST | IFF_MULTICAST;
--    }
--    dco_set_ifmode(&tt->dco, i);
--
-     return 0;
- }
-  @@ -265,7 +258,20 @@ remove_interface(struct tuntap *tt)
- int
- open_tun_dco(struct tuntap *tt, openvpn_net_ctx_t *ctx, const char *dev)
- {
--    return create_interface(tt, dev);
-+    int ret =3D create_interface(tt, dev);
-+
-+    if (ret >=3D 0 || ret =3D=3D -EEXIST)
-+    {
-+        /* see "Interface Flags" in ifnet(9) */
-+        int i =3D IFF_POINTOPOINT | IFF_MULTICAST;
-+        if (tt->topology =3D=3D TOP_SUBNET)
-+        {
-+            i =3D IFF_BROADCAST | IFF_MULTICAST;
-+        }
-+        dco_set_ifmode(&tt->dco, i);
-+    }
-+
-+    return ret;
- }
-   void
+  * *Updated: release openvpn 2.6.11*
+    /Waiting to complete review/merge process of Windows tunnelcrack
+    mitigations./
+    /For the proposed Linux tunnelcrack mitigations, going for policy
+    routing and such, it may need to go to 2.7 and it's quite a big change./
+    /There's an item reported by reynir that we'll likely want to get
+    into this release as well./
+
+  * *Updated: OpenVPN community meetup 2024*
+    /There's a wiki page up now where we can
+    coordinate:​https://community.openvpn.net/openvpn/wiki/CommunityMeetup2024
+    <https://community.openvpn.net/openvpn/wiki/CommunityMeetup2024>/
+    /We're basically at the point where we can prepare a mailing and
+    send out invites to people./
+    /Where: Karlsruhe, Germany. Exact details of meeting room to be
+    determined./
+    /When: Set to 20-22 September 2024./
+    /Shirts: novaflash will talk to matt about this./
+
+  * *Updated: mattock topics*
+    /There is code waiting for review/merging but one of the reviewers
+    is on vacation./
+    /Will in the meantime tackle the community.openvpn.net / wiki topic./
+    /Wrapping up debian/ubuntu snapshot building. It already works but
+    wants to clean things up and make a PR./
+
+As always you're welcome to join at #openvpn-meeting on Libera IRC 
+network every Wednesday at 14:00 Central European Time.
+
+Kind regards,
+Johan Draaisma
+
+--------------peWpXyVIil4JqiTgjPb4AHk1
+Content-Type: text/html; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  </head>
+  <body>
+    <p> Meeting summary for 29 May 2024:</p>
+    <ul
+style="color: rgb(0, 0, 0); font-family: Verdana, Arial, &quot;Bitstream Vera Sans&quot;, Helvetica, sans-serif; font-size: 13px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;">
+      <li><strong>Closed: DCO-win update needed</strong><br>
+        <em>There was a responsible disclosure report made regarding DCO
+          windows driver.</em><br>
+        <em>This was fixed and released in the I003 Windows installer
+          release for 2.6.10.</em></li>
+    </ul>
+    <ul
+style="color: rgb(0, 0, 0); font-family: Verdana, Arial, &quot;Bitstream Vera Sans&quot;, Helvetica, sans-serif; font-size: 13px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;">
+      <li><strong>Updated: community.openvpn.net trac wiki</strong><br>
+        <em>There was some downtime here and after looking into it, the
+          conclusion is that the software is out-of-date and needs love.</em><br>
+        <em>We were already planning to migrate to another wiki
+          solution, so this has provided an impetus to accelerate this.</em><br>
+        <em>mattock will look into putting a PoC of wiki.js and outline
+          after debian/ubuntu snapshot task is done.</em></li>
+    </ul>
+    <ul
+style="color: rgb(0, 0, 0); font-family: Verdana, Arial, &quot;Bitstream Vera Sans&quot;, Helvetica, sans-serif; font-size: 13px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;">
+      <li><strong>Updated: release openvpn 2.6.11</strong><br>
+        <em>Waiting to complete review/merge process of Windows
+          tunnelcrack mitigations.</em><br>
+        <em>For the proposed Linux tunnelcrack mitigations, going for
+          policy routing and such, it may need to go to 2.7 and it's
+          quite a big change.</em><br>
+        <em>There's an item reported by reynir that we'll likely want to
+          get into this release as well.</em></li>
+    </ul>
+    <ul
+style="color: rgb(0, 0, 0); font-family: Verdana, Arial, &quot;Bitstream Vera Sans&quot;, Helvetica, sans-serif; font-size: 13px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;">
+      <li><strong>Updated: OpenVPN community meetup 2024</strong><br>
+        <em>There's a wiki page up now where we can coordinate:<span> </span><a
+            class="ext-link"
+href="https://community.openvpn.net/openvpn/wiki/CommunityMeetup2024"
+style="text-decoration: none; color: rgb(187, 0, 0); border-bottom: 1px dotted rgb(187, 187, 187);"><span
+              class="icon"
+style="background: url(&quot;../extlink.gif&quot;) left center no-repeat; padding-left: 15px;">​</span>https://community.openvpn.net/openvpn/wiki/CommunityMeetup2024</a></em><br>
+        <em>We're basically at the point where we can prepare a mailing
+          and send out invites to people.</em><br>
+        <em>Where: Karlsruhe, Germany. Exact details of meeting room to
+          be determined.</em><br>
+        <em>When: Set to 20-22 September 2024.</em><br>
+        <em>Shirts: novaflash will talk to matt about this.</em></li>
+    </ul>
+    <ul
+style="color: rgb(0, 0, 0); font-family: Verdana, Arial, &quot;Bitstream Vera Sans&quot;, Helvetica, sans-serif; font-size: 13px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;">
+      <li><strong>Updated: mattock topics</strong><br>
+        <em>There is code waiting for review/merging but one of the
+          reviewers is on vacation.</em><br>
+        <em>Will in the meantime tackle the community.openvpn.net / wiki
+          topic.</em><br>
+        <em>Wrapping up debian/ubuntu snapshot building. It already
+          works but wants to clean things up and make a PR.</em></li>
+    </ul>
+    <p>As always you're welcome to join at #openvpn-meeting on Libera
+      IRC network every Wednesday at 14:00 Central European Time.</p>
+    <p>Kind regards,<br>
+      Johan Draaisma<br>
+    </p>
+  </body>
+</html>
+
+--------------peWpXyVIil4JqiTgjPb4AHk1--
 
