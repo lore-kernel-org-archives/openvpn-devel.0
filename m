@@ -1,11 +1,16 @@
-Content-Type: multipart/alternative;
- boundary="------------09HNJj6dakWYfrOMrYkNS90o"
-Message-ID: <f32d4b12-6e26-46f5-8e4d-5f10af10597a@...2751...>
-Date: Wed, 5 Jun 2024 14:56:18 +0200
+From: "flichtenheld (Code Review)" <gerrit@...515...>
+Date: Wed, 5 Jun 2024 13:51:57 +0000
+In-Reply-To: <gerrit.1717583228000.I1b54da258c7d15551b6c3de7522a0d19afdb66de@...2715...>
+References: <gerrit.1717583228000.I1b54da258c7d15551b6c3de7522a0d19afdb66de@...2715...>
+Reply-To: frank@...2641..., arne-openvpn@...1227...,
+ samuli.seppanen@...277..., openvpn-devel@lists.sourceforge.net
+Message-ID: <38370fc85d84e9bfca9bb4b07600f03465c3ddf9-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-From: Johan Draaisma <johan@...2751...>
-Content-Language: en-US
-Subject: [Openvpn-devel]  IRC community meeting summary
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="D28+WL7qHko="; charset=UTF-8
+Subject: [Openvpn-devel] [L] Change in openvpn[master]: Add t_server_null
+ test suite
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,126 +19,129 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: openvpn-devel@lists.sourceforge.net
+To: mattock <samuli.seppanen@...277...>
+Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-This is a multi-part message in MIME format.
---------------09HNJj6dakWYfrOMrYkNS90o
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+--D28+WL7qHko=
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Meeting summary for 5 June 2024:
+Attention is currently required from: mattock, plaisthos.
 
-  * *New, closed: no community meeting on 12 June 2024*
-    /Due to an event that a large amount of people will attend, this
-    particular day will be inconvenient to do a meeting./
-    /Meetings will resume the week after on 19 June 2024./
+flichtenheld has posted comments on this change. ( http://gerrit.openvpn.ne=
+t/c/openvpn/+/643?usp=3Demail )
 
-  * *Updated: Buildbot and t_server null*
-    /Builds were failing because worker containers have not been rebuilt./
-    /This issue was resolved between mattock and djpig./
+Change subject: Add t_server_null test suite
+......................................................................
 
-  * *Updated: community.openvpn.net trac wiki*
-    /It turned out that outline is not really open source, it has BSL
-    1.1 license. Not suitable for us./
-    /Wiki.js still seems at the moment the direction we want to go. To
-    be sure leoossa will present some workflows to test./
-    /Based on the results of those tests we can then see where the
-    limitations of wiki.js are, and then we can see if those are
-    dealbreakers or not./
 
-  * *Updated: release openvpn 2.6.11*
-    /Waiting to complete review/merge process of Windows tunnelcrack
-    mitigations./
-    /Waiting to complete review/merge process of item reported by reynir./
-    /Once those items are in we'll prepare for a release, tentatively in
-    2 weeks from now./
+Patch Set 2:
 
-  * *Updated: DCO and Linux upstreaming, API change*/
-    //Upstreaming DCO to Linux is proceeding, it is in review stage at
-    the moment.
-    ordex will send a *patchset v4* based on feedback received over the
-    past days.
-    There will be an API change that makes it incompatible with the
-    current implementation.
-    A graceful solution to that was already discussed and in motion.
-    giaan will be working on this.
-    (in a nutshell, make OpenVPN understand old and new API, DKMS and
-    kernel versions both will then use new API, then we drop old API)/
+(1 comment)
 
-As always you're welcome to join at #openvpn-meeting on Libera IRC 
-network every Wednesday at 14:00 Central European Time.
+File tests/t_server_null_client.sh:
 
-Kind regards,
-Johan Draaisma
+http://gerrit.openvpn.net/c/openvpn/+/643/comment/52da0659_0e3d50cb :
+PS2, Line 74: # Wait until servers are up. This check is based on the prese=
+nce of processes
+This code does not seem to work reliably. I often see something like this i=
+n the build logs:
 
---------------09HNJj6dakWYfrOMrYkNS90o
-Content-Type: text/html; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+cat: t_server_null_server-1194_udp.pid: No such file or directory
+cat: t_server_null_server-1195_tcp.pid: No such file or directory
+error: list of process IDs must follow -p
+Usage:
+ ps [options]
+ Try 'ps --help <simple|list|output|threads|misc|all>'
+  or 'ps --help <s|l|o|t|m|a>'
+ for additional help text.
+For more details see ps(1).
+OpenVPN test servers up: 0/0
 
-<!DOCTYPE html>
-<html>
-  <head>
-    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
-  </head>
-  <body>
-    <p> Meeting summary for 5 June 2024:</p>
-    <ul
-style="color: rgb(0, 0, 0); font-family: Verdana, Arial, &quot;Bitstream Vera Sans&quot;, Helvetica, sans-serif; font-size: 13px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;">
-      <li><strong>New, closed: no community meeting on 12 June 2024</strong><br>
-        <em>Due to an event that a large amount of people will attend,
-          this particular day will be inconvenient to do a meeting.</em><br>
-        <em>Meetings will resume the week after on 19 June 2024.</em></li>
-    </ul>
-    <ul
-style="color: rgb(0, 0, 0); font-family: Verdana, Arial, &quot;Bitstream Vera Sans&quot;, Helvetica, sans-serif; font-size: 13px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;">
-      <li><strong>Updated: Buildbot and t_server null</strong><br>
-        <em>Builds were failing because worker containers have not been
-          rebuilt.</em><br>
-        <em>This issue was resolved between mattock and djpig.</em></li>
-    </ul>
-    <ul
-style="color: rgb(0, 0, 0); font-family: Verdana, Arial, &quot;Bitstream Vera Sans&quot;, Helvetica, sans-serif; font-size: 13px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;">
-      <li><strong>Updated: community.openvpn.net trac wiki</strong><br>
-        <em>It turned out that outline is not really open source, it has
-          BSL 1.1 license. Not suitable for us.</em><br>
-        <em>Wiki.js still seems at the moment the direction we want to
-          go. To be sure leoossa will present some workflows to test.</em><br>
-        <em>Based on the results of those tests we can then see where
-          the limitations of wiki.js are, and then we can see if those
-          are dealbreakers or not.</em></li>
-    </ul>
-    <ul
-style="color: rgb(0, 0, 0); font-family: Verdana, Arial, &quot;Bitstream Vera Sans&quot;, Helvetica, sans-serif; font-size: 13px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;">
-      <li><strong>Updated: release openvpn 2.6.11</strong><br>
-        <em>Waiting to complete review/merge process of Windows
-          tunnelcrack mitigations.</em><br>
-        <em>Waiting to complete review/merge process of item reported by
-          reynir.</em><br>
-        <em>Once those items are in we'll prepare for a release,
-          tentatively in 2 weeks from now.</em></li>
-    </ul>
-    <ul
-style="color: rgb(0, 0, 0); font-family: Verdana, Arial, &quot;Bitstream Vera Sans&quot;, Helvetica, sans-serif; font-size: 13px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;">
-      <li><strong>Updated: DCO and Linux upstreaming, API change</strong><em><br>
-        </em><i>Upstreaming DCO to Linux is proceeding, it is in review
-          stage at the moment.<br>
-          ordex will send a <b>patchset v4</b> based on feedback
-          received over the past days.<br>
-          There will be an API change that makes it incompatible with
-          the current implementation.<br>
-          A graceful solution to that was already discussed and in
-          motion. giaan will be working on this.<br>
-          (in a nutshell, make OpenVPN understand old and new API, DKMS
-          and kernel versions both will then use new API, then we drop
-          old API)</i></li>
-    </ul>
-    <p>As always you're welcome to join at #openvpn-meeting on Libera
-      IRC network every Wednesday at 14:00 Central European Time.</p>
-    <p>Kind regards,<br>
-      Johan Draaisma<br>
-    </p>
-  </body>
-</html>
+So that means that the servers hadn't created the pid files yet and so the =
+test suceeded? Probably server_count should be based on the amount of defin=
+ed servers and not server_pids?
 
---------------09HNJj6dakWYfrOMrYkNS90o--
+
+
+--
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/643?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings
+
+Gerrit-Project: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: I1b54da258c7d15551b6c3de7522a0d19afdb66de
+Gerrit-Change-Number: 643
+Gerrit-PatchSet: 2
+Gerrit-Owner: mattock <samuli.seppanen@...277...>
+Gerrit-Reviewer: flichtenheld <frank@...2641...>
+Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Attention: mattock <samuli.seppanen@...277...>
+Gerrit-Comment-Date: Wed, 05 Jun 2024 13:51:57 +0000
+Gerrit-HasComments: Yes
+Gerrit-Has-Labels: No
+Gerrit-MessageType: comment
+
+--D28+WL7qHko=
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<p> Attention is currently required from: mattock, plaisthos. </p>
+<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/643?usp=3Demail">View C=
+hange</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0;"><=
+li style=3D"margin: 0; padding: 0;"><p>File tests/t_server_null_client.sh:<=
+/p><ul style=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; padd=
+ing: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit=
+.openvpn.net/c/openvpn/+/643/comment/52da0659_0e3d50cb">Patch Set #2, Line =
+74:</a> <code style=3D"font-family:monospace,monospace"># Wait until server=
+s are up. This check is based on the presence of processes</code></p><p sty=
+le=3D"white-space: pre-wrap; word-wrap: break-word;">This code does not see=
+m to work reliably. I often see something like this in the build logs:</p><=
+pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;">cat:=
+ t_server_null_server-1194_udp.pid: No such file or directory<br>cat: t_ser=
+ver_null_server-1195_tcp.pid: No such file or directory<br>error: list of p=
+rocess IDs must follow -p<br>Usage:<br> ps [options]<br> Try &#39;ps --help=
+ &lt;simple|list|output|threads|misc|all&gt;&#39;<br>  or &#39;ps --help &l=
+t;s|l|o|t|m|a&gt;&#39;<br> for additional help text.<br>For more details se=
+e ps(1).<br>OpenVPN test servers up: 0/0</pre><p style=3D"white-space: pre-=
+wrap; word-wrap: break-word;">So that means that the servers hadn&#39;t cre=
+ated the pid files yet and so the test suceeded? Probably server_count shou=
+ld be based on the amount of defined servers and not server_pids?</p></li><=
+/ul></li></ul><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/open=
+vpn/+/643?usp=3Demail">change 643</a>. To unsubscribe, or for help writing =
+mail filters, visit <a href=3D"http://gerrit.openvpn.net/settings">settings=
+</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div it=
+emscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link=
+ itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/643?usp=3De=
+mail"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
+
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I1b54da258c7d15551b6c3de7522=
+a0d19afdb66de </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 643 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
+<div style=3D"display:none"> Gerrit-Owner: mattock &lt;samuli.seppanen@...1665...=
+77...&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
+1...&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
+.1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: mattock &lt;samuli.seppanen@=
+...277...&gt; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Wed, 05 Jun 2024 13:51:57=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: No </div>
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
+
+
+--D28+WL7qHko=--
 
