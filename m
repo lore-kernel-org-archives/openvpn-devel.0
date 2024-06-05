@@ -1,11 +1,10 @@
+Date: Wed, 5 Jun 2024 13:10:39 +0200 (CEST)
+Message-Id: <202406051110.455BAdLn000757@...2054...>
 From: Gert Doering <gert@...1296...>
-Date: Wed,  5 Jun 2024 13:10:12 +0200
-Message-ID: <20240605111012.3023-1-gert@...1296...>
-In-Reply-To: <gerrit.1717505869000.Ic33c210f06e173a450534aa0969c57f140086655@...2715...>
-References: <gerrit.1717505869000.Ic33c210f06e173a450534aa0969c57f140086655@...2715...>
-MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v1] test_user_pass: Fix building with
- --enable-systemd
+In-Reply-To: <20240604211708.32315-1-gert@...1296...>
+References: <20240604211708.32315-1-gert@...1296...>
+Subject: [Openvpn-devel] [PATCH applied] Re: LZO: do not use lzoutils.h
+ macros
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,38 +15,38 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Frank Lichtenheld <frank@...2641...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-From: Frank Lichtenheld <frank@...2641...>
+Lightly tested via local builds and GHA.  This is basically a no-op,
+as lzoutils.h contains
 
-Need to make sure that ENABLE_SYSTEMD is really disabled.
+  #define lzo_malloc(a)       (malloc(a))
+  #define lzo_free(a)         (free(a))
 
-Change-Id: Ic33c210f06e173a450534aa0969c57f140086655
-Signed-off-by: Frank Lichtenheld <frank@...2641...>
-Acked-by: Gert Doering <gert@...1296...>
----
+.. and nothing more complicated.  Having lzoutil.h out of the way paves
+the way for "make lzo2.pc pkg-config checks work" :-)
 
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to master.
+Your patch has been applied to the master and release/2.6 branch
+(I see this as "long-term compat" for building).
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/641
-This mail reflects revision 1 of this Change.
+commit d601237976323b5d8f6ac65c27ccc510563ad75f (master)
+commit 1ae753e4240434abda0a33aed07b289fa9c6ee79 (release/2.6)
+Author: Frank Lichtenheld
+Date:   Tue Jun 4 23:17:08 2024 +0200
 
-Acked-by according to Gerrit (reflected above):
-Gert Doering <gert@...1296...>
+     LZO: do not use lzoutils.h macros
 
-        
-diff --git a/tests/unit_tests/openvpn/test_user_pass.c b/tests/unit_tests/openvpn/test_user_pass.c
-index ac84654..b43e655 100644
---- a/tests/unit_tests/openvpn/test_user_pass.c
-+++ b/tests/unit_tests/openvpn/test_user_pass.c
-@@ -27,6 +27,8 @@
- #endif
- 
- #undef ENABLE_SYSTEMD
-+/* avoid redefining ENABLE_SYSTEMD in misc.c */
-+#undef HAVE_CONFIG_H
- 
- #include "syshead.h"
- #include "manage.h"
+     Signed-off-by: Frank Lichtenheld <frank@...2641...>
+     Acked-by: Arne Schwabe <arne-openvpn@...1227...>
+     Message-Id: <20240604211708.32315-1-gert@...1296...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg28705.html
+     Signed-off-by: Gert Doering <gert@...1296...>
+
+
+--
+kind regards,
+
+Gert Doering
+
 
