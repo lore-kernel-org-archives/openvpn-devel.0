@@ -1,10 +1,13 @@
-Date: Thu, 6 Jun 2024 14:43:31 +0000 (UTC)
-From: Hannes Domani <ssbssa@...360...>
-Message-ID: <1529325337.4434263.1717685011655@...2084...>
-In-Reply-To: <202406061133.456BXOgs047085@...2054...>
+Date: Thu, 6 Jun 2024 22:24:08 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <ZmIa6IRF-Z_AxFmB@...1296...>
 References: <20240606103441.26598-1-gert@...1296...>
  <202406061133.456BXOgs047085@...2054...>
 MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ protocol="application/pgp-signature"; boundary="HoJ6xnNax2O8l9AY"
+Content-Disposition: inline
+In-Reply-To: <202406061133.456BXOgs047085@...2054...>
 Subject: Re: [Openvpn-devel] [PATCH applied] Re: Implement Windows CA
  template match for Crypto-API selector
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -15,48 +18,64 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"
+To: Heiko Wundram <heiko.wundram@...2614...>
+Cc: openvpn-devel@lists.sourceforge.net
+
+--HoJ6xnNax2O8l9AY
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
-To: Gert Doering <gert@...1296...>, "selva.nair@...277..." <selva.nair@...277...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Content-Disposition: inline
 
- Am Donnerstag, 6. Juni 2024 um 13:34:27 MESZ hat Gert Doering <gert@...1826...=
-6...> Folgendes geschrieben:
+Hi,
 
-> Thanks, Selva, for the review.
->
-> I have not tested this beyond "does it make GH actions happy",
-> "does it build on the local mingw setup" (it does) and "does
-> the code look generally safe wrt memory etc" (it does).
->
+On Thu, Jun 06, 2024 at 01:33:24PM +0200, Gert Doering wrote:
 > As instructed I have removed the "and fallback requested" part
 > from the comment where "fallback" was removed from the code.
->
+>=20
 > Your patch has been applied to the master branch.
->
+>=20
 > commit 13ee7f902f18e27b981f8e440facd2e6515c6c83 (master)
-> Author: Heiko Wundram
-> Date:=C2=A0 Thu Jun 6 12:34:41 2024 +0200
->
->=C2=A0=C2=A0=C2=A0=C2=A0 Implement Windows CA template match for Crypto-AP=
-I selector
->
->=C2=A0=C2=A0=C2=A0=C2=A0 Signed-off-by: Heiko Wundram <heiko.wundram@...2375...=
-14...>
->=C2=A0=C2=A0=C2=A0=C2=A0 Signed-off-by: Hannes Domani <ssbssa@...360...>
->=C2=A0=C2=A0=C2=A0=C2=A0 Acked-by: Selva Nair <selva.nair@...277...>
->=C2=A0=C2=A0=C2=A0=C2=A0 Message-Id: <20240606103441.26598-1-gert@...1725...=
-..>
->=C2=A0=C2=A0=C2=A0=C2=A0 URL: https://www.mail-archive.com/openvpn-devel@...465...=
-ists.sourceforge.net/msg28726.html
->=C2=A0=C2=A0=C2=A0=C2=A0 Signed-off-by: Gert Doering <gert@...1296...>
 
-Thanks for pushing this to master.
+... and to release/2.6, as this functionality is seen as useful, and
+the change is very non-intrusive.  So it will be part of 2.6.11
+"release planned in about 2 weeks".
 
-I wonder if it would be possible to merge this back to 2.6 as well, it's
-relatively isolated code, and 2.7 is still far-off (I think).
+commit dfbe11ac1842df400327be22951d0ba373534254 (release/2.6)
+Author: Heiko Wundram <heiko.wundram@...2614...>
+Date:   Thu Jun 6 12:34:41 2024 +0200
+
+    Implement Windows CA template match for Crypto-API selector
 
 
-Regards
-Hannes
+Compile-tested via GHA.
+
+gert
+--=20
+"If was one thing all people took for granted, was conviction that if you=20
+ feed honest figures into a computer, honest figures come out. Never doubte=
+d=20
+ it myself till I met a computer with a sense of humor."
+                             Robert A. Heinlein, The Moon is a Harsh Mistre=
+ss
+
+Gert Doering - Munich, Germany                             gert@...1296...
+
+--HoJ6xnNax2O8l9AY
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQGcBAEBAgAGBQJmYhroAAoJEB2Cnv7KVigSeNwL/31Im80MSluyXagtI2kYzWE3
+DpW+JeudRg5MbarZW0VVWozpiK4c4j67qeMJstxAOee+J0rWhe+gn76FUGnEWbOI
+QYzS6+R+alDu1OBVpilCDDQfNz3hpck9cULX20MmmwcfTYMO4oFpPRCBa3qKNMWe
+Q2PMetiDaH7LwcCmnjyEvIIDAYpzfWBEZ8IKNxacxs1UJiya9vMoDN6Tw9OS/l4P
+w5FYNTpem1Hi/ah9meb6oLTEPACuoIOaTdCPewi0PFy8G/KfNwVCyy83eY4HtQrj
+WmUtalDRLcLQop+xLgBbc9zhy9BwdrOQlDaxm7l4PuS0tPFcwjcjEh9n7BJtst+j
+zmdRsSSrPwVU99k2lLcGp0sV3dk7HnL4TDd6Pqn5mLyatiLxjx9GrVnTb4s2pY+G
+vvYLeYAsY9Ncr8BRGPNzJukEiATp9e40h6m4qoNdtfg03SHseh8RnuspoNX7r3xe
+niOLle9Xu+PJTE/88pyoDiiXl/cvhaIcwY6ORVhycw==
+=x72t
+-----END PGP SIGNATURE-----
+
+--HoJ6xnNax2O8l9AY--
 
