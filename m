@@ -1,14 +1,12 @@
-Date: Thu, 6 Jun 2024 16:33:35 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <ZmHIvzQfYo7lD_v1@...1296...>
-References: <ZmGqRY9vRywrLUHD@...1296...>
- <fbbe96e9-ced3-472b-94f5-5acb95928da1@...1823...>
+Date: Thu, 6 Jun 2024 14:43:31 +0000 (UTC)
+From: Hannes Domani <ssbssa@...360...>
+Message-ID: <1529325337.4434263.1717685011655@...2084...>
+In-Reply-To: <202406061133.456BXOgs047085@...2054...>
+References: <20240606103441.26598-1-gert@...1296...>
+ <202406061133.456BXOgs047085@...2054...>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="OlWbdbJkfhHo2o+b"
-Content-Disposition: inline
-In-Reply-To: <fbbe96e9-ced3-472b-94f5-5acb95928da1@...1823...>
-Subject: Re: [Openvpn-devel] windows client tests needed
+Subject: Re: [Openvpn-devel] [PATCH applied] Re: Implement Windows CA
+ template match for Crypto-API selector
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,50 +15,48 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Dmitry Melekhov <dm@...1823...>
-Cc: openvpn-devel@lists.sourceforge.net
-
---OlWbdbJkfhHo2o+b
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+To: Gert Doering <gert@...1296...>, "selva.nair@...277..." <selva.nair@...277...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-Hi,
+ Am Donnerstag, 6. Juni 2024 um 13:34:27 MESZ hat Gert Doering <gert@...1826...=
+6...> Folgendes geschrieben:
 
-On Thu, Jun 06, 2024 at 05:23:31PM +0400, Dmitry Melekhov wrote:
-> redirect-gateway def1 block-local
->=20
-> also apply block-outside-dns ?
+> Thanks, Selva, for the review.
+>
+> I have not tested this beyond "does it make GH actions happy",
+> "does it build on the local mingw setup" (it does) and "does
+> the code look generally safe wrt memory etc" (it does).
+>
+> As instructed I have removed the "and fallback requested" part
+> from the comment where "fallback" was removed from the code.
+>
+> Your patch has been applied to the master branch.
+>
+> commit 13ee7f902f18e27b981f8e440facd2e6515c6c83 (master)
+> Author: Heiko Wundram
+> Date:=C2=A0 Thu Jun 6 12:34:41 2024 +0200
+>
+>=C2=A0=C2=A0=C2=A0=C2=A0 Implement Windows CA template match for Crypto-AP=
+I selector
+>
+>=C2=A0=C2=A0=C2=A0=C2=A0 Signed-off-by: Heiko Wundram <heiko.wundram@...2375...=
+14...>
+>=C2=A0=C2=A0=C2=A0=C2=A0 Signed-off-by: Hannes Domani <ssbssa@...360...>
+>=C2=A0=C2=A0=C2=A0=C2=A0 Acked-by: Selva Nair <selva.nair@...277...>
+>=C2=A0=C2=A0=C2=A0=C2=A0 Message-Id: <20240606103441.26598-1-gert@...1725...=
+..>
+>=C2=A0=C2=A0=C2=A0=C2=A0 URL: https://www.mail-archive.com/openvpn-devel@...465...=
+ists.sourceforge.net/msg28726.html
+>=C2=A0=C2=A0=C2=A0=C2=A0 Signed-off-by: Gert Doering <gert@...1296...>
 
-"everything" includes DNS, so, yes.
+Thanks for pushing this to master.
 
-gert=20
---=20
-"If was one thing all people took for granted, was conviction that if you=20
- feed honest figures into a computer, honest figures come out. Never doubte=
-d=20
- it myself till I met a computer with a sense of humor."
-                             Robert A. Heinlein, The Moon is a Harsh Mistre=
-ss
+I wonder if it would be possible to merge this back to 2.6 as well, it's
+relatively isolated code, and 2.7 is still far-off (I think).
 
-Gert Doering - Munich, Germany                             gert@...1296...
 
---OlWbdbJkfhHo2o+b
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQGcBAEBAgAGBQJmYci/AAoJEB2Cnv7KVigSM58L/AkUkDpYWnca865Ys5flt1fw
-6ZQ3pD1YZ70N7gBGVsLP7ZuWCeHUnRs0kYZzqW4+b2w9uKOFKfA+TA+FHz2xQMvX
-YXf+kl9aBhGG4TW+UfiuSqP+MEiulfsLHDFtr7oU3i7IN0UtIgiJ394rGPsjQYZX
-mHwZu3k9TJ1zqrbpbt8Dfi6Z85/AUWcaD8ZzzzxrzMCIHMwl8sVZa1VhYLKJrlbv
-ABA5r4KypiRZyzxbxZkIr9e1HE35P1/3GIJGB/FAsHxjtME4i4FiH4yQ3+sIZJ0P
-FsCP2hzujFou7+Zeybu/5pjAb2V7qIhnwz3UxJyI59+dD8XEdVVoo29lcKPf99mB
-oSWbTtH3pC5zWJ5Oh2tYQbVxt4Byv70m44WxPJvnB18HfuoED+nvUKiW4QEhlepL
-ha+CW/teNrSKutLzi45QdnFk+XcS2mVEQtKopzFTaZK/8F1aCkGjJeBKFi6jG983
-VcCV3gvDQl/G/yrrRX+4h1aOka0YBVu8H+NaeD0uAw==
-=vuhX
------END PGP SIGNATURE-----
-
---OlWbdbJkfhHo2o+b--
+Regards
+Hannes
 
