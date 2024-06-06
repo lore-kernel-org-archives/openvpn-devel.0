@@ -1,16 +1,13 @@
-From: "uddr (Code Review)" <gerrit@...515...>
-Date: Thu, 6 Jun 2024 12:34:02 +0000
-In-Reply-To: <gerrit.1717671086000.I9612e4dc3d93437f59ee7846781589b36f57d895@...2715...>
-References: <gerrit.1717671086000.I9612e4dc3d93437f59ee7846781589b36f57d895@...2715...>
-Reply-To: yura.uddr@...277..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...,
- yura.uddr@...277..., yura.darnobyt@...515...
-Message-ID: <8168d1dbac648a4d8fdf221968c1c4388f73d8b9-HTML@...2715...>
+Date: Thu, 6 Jun 2024 15:19:29 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <ZmG3YcvZhoPGkPe8@...1296...>
+References: <ZmGqRY9vRywrLUHD@...1296...>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ protocol="application/pgp-signature"; boundary="GBHAtRnPbOaL9mIa"
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="U5fIxt9yqhU="; charset=UTF-8
-Subject: [Openvpn-devel] [XS] Change in openvpn[master]: Test: please ignore
+In-Reply-To: <ZmGqRY9vRywrLUHD@...1296...>
+Subject: Re: [Openvpn-devel] windows client tests needed
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,71 +16,62 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: uddr <yura.uddr@...277...>, buildbot <yura.darnobyt@...515...>
-Cc: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: openvpn-devel@lists.sourceforge.net, openvpn-users@lists.sourceforge.net
 
---U5fIxt9yqhU=
-Content-Type: text/plain; charset="UTF-8"
+--GBHAtRnPbOaL9mIa
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-uddr has abandoned this change. ( http://gerrit.openvpn.net/c/openvpn/+/661=
-?usp=3Demail )
+Hi,
 
-Change subject: Test: please ignore
-......................................................................
+On Thu, Jun 06, 2024 at 02:23:33PM +0200, Gert Doering wrote:
+> Now - this code has been merged into "git master", and installers
+> are here:
+>=20
+>    https://github.com/OpenVPN/openvpn-build/actions/runs/9391365526?pr=3D=
+641
+>=20
+> (bottom of the page, "Artifacts", .zip files with a .msi inside).
 
+... or (freshly repared) .msi with timestamp directly here:
 
-Abandoned
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/661?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings
+https://build.openvpn.net/downloads/snapshots/github-actions/openvpn2/
 
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: I9612e4dc3d93437f59ee7846781589b36f57d895
-Gerrit-Change-Number: 661
-Gerrit-PatchSet: 1
-Gerrit-Owner: uddr <yura.uddr@...277...>
-Gerrit-Reviewer: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-CC: buildbot <yura.darnobyt@...515...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-MessageType: abandon
+(2024060T*-13ee7f90 or younger)
 
---U5fIxt9yqhU=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+The filenames on that page are "build time - commit ID", and the script
+did not work correctly for a month - so the 9d92221e commit "built today"
+is actually a 4 week old commit...
 
-<p>uddr <strong>abandoned</strong> this change.</p><p><a href=3D"http://ger=
-rit.openvpn.net/c/openvpn/+/661?usp=3Demail">View Change</a></p><div style=
-=3D"white-space:pre-wrap">Abandoned</div><p>To view, visit <a href=3D"http:=
-//gerrit.openvpn.net/c/openvpn/+/661?usp=3Demail">change 661</a>. To unsubs=
-cribe, or for help writing mail filters, visit <a href=3D"http://gerrit.ope=
-nvpn.net/settings">settings</a>.</p><div itemscope itemtype=3D"http://schem=
-a.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://s=
-chema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.=
-net/c/openvpn/+/661?usp=3Demail"/><meta itemprop=3D"name" content=3D"View C=
-hange"/></div></div>
+gert
 
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I9612e4dc3d93437f59ee7846781=
-589b36f57d895 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 661 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
-<div style=3D"display:none"> Gerrit-Owner: uddr &lt;yura.uddr@...277...&gt;=
- </div>
-<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
-1...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: buildbot &lt;yura.darnobyt@...1699...=
-.&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: abandon </div>
+--=20
+"If was one thing all people took for granted, was conviction that if you=20
+ feed honest figures into a computer, honest figures come out. Never doubte=
+d=20
+ it myself till I met a computer with a sense of humor."
+                             Robert A. Heinlein, The Moon is a Harsh Mistre=
+ss
 
+Gert Doering - Munich, Germany                             gert@...1296...
 
---U5fIxt9yqhU=--
+--GBHAtRnPbOaL9mIa
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQGcBAEBAgAGBQJmYbdhAAoJEB2Cnv7KVigSpzQMAKfPAfVhCjL7d+9UvbQcTfdx
+kL1ilz4Ch+Qxty/3VwxYJzGPm8Daw+k1IG647aiNpvk0WxaiFYDlxQgQRjaV1xS3
+v0zg7Ni/vdmjGHKvVWDPeT9cOUk/0pRpi7C2AV0j7CyjVRxqgqn28qcd03eq/Jwe
+if3NGckyTQguYfUC3ngZRkcpffgwuXq943NLDmyY9gGca23aaTQHJ0DLNP8k/tpS
+U7RsKif22psNzNlwtqL9qWtAN8rifyFKdyt6/tdOp+HaMBOJkxzOgN0s2ki4qT4K
+0tI/5RyEJrrCaj6fas7Gh/Flfhk9f9aHp4nvlKz/L6th7Vz92VPgpa4+UEzDfvVD
+oC9w0aU0ya2AuM+HEilGE+cZNeclWr7XcMMM5VesJ3rs/rSMB4ryTYxIHy5teJ4N
+Src8EwkWFvAqiKHxD435ZCm2G+HV5VevsuPHx8N3OXB4IpTQ9Hmt30YSG0WE88jA
+C6nqTAKP7xBDzRsnozObUNtEkDZii0jIpyQC7iQtcQ==
+=2G9F
+-----END PGP SIGNATURE-----
+
+--GBHAtRnPbOaL9mIa--
 
