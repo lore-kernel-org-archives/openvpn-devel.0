@@ -1,15 +1,15 @@
 From: "flichtenheld (Code Review)" <gerrit@...515...>
-Date: Thu, 13 Jun 2024 19:44:42 +0000
+Date: Thu, 13 Jun 2024 19:46:59 +0000
 In-Reply-To: <gerrit.1718271320000.If96c2ebd2af16b18ed34820e8c0531547e2076d9@...2715...>
 References: <gerrit.1718271320000.If96c2ebd2af16b18ed34820e8c0531547e2076d9@...2715...>
 Reply-To: frank@...2641..., arne-openvpn@...1227...,
  rein.vanbaaren@...1435..., openvpn-devel@lists.sourceforge.net,
  max@...2606...
-Message-ID: <cc365d1265fdd3bb18fe4b8c8a2c8e5f30285078-EmailReviewComments-HTML@...2715...>
+Message-ID: <a983c39ee1a1ae3877039099a7f2cd265551300e-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="lgjgrlolN+Y="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="OaQQBLycgjM="; charset=UTF-8
 Subject: [Openvpn-devel] [M] Change in openvpn[master]: Fix
  MBEDTLS_DEPRECATED_REMOVED build errors
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -23,7 +23,7 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: comododragon <rein.vanbaaren@...1435...>, MaxF <max@...2606...>
 Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---lgjgrlolN+Y=
+--OaQQBLycgjM=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
@@ -43,10 +43,10 @@ Patch Set 1:
 Patchset:
 
 PS1:
-> Splitting up these changes is difficult because the new mbedtls_ssl_proto=
-col_version enum doesn't co [=E2=80=A6]
-Sounds good to me. I do not think it is important in which order they need =
-to be applied, only that the first commit doesn't break anything.
+> Sounds good to me. [=E2=80=A6]
+And when I say "doesn't break anything" I mean that like "building". Obviou=
+sly it is fine to disable the TLS 1.0/1.1 support if that is what the commi=
+t intends to do =F0=9F=98=8E
 
 
 
@@ -67,14 +67,14 @@ Gerrit-CC: comododragon <rein.vanbaaren@...1435...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
 Gerrit-Attention: MaxF <max@...2606...>
-Gerrit-Comment-Date: Thu, 13 Jun 2024 19:44:42 +0000
+Gerrit-Comment-Date: Thu, 13 Jun 2024 19:46:59 +0000
 Gerrit-HasComments: Yes
 Gerrit-Has-Labels: No
 Comment-In-Reply-To: flichtenheld <frank@...2641...>
 Comment-In-Reply-To: MaxF <max@...2606...>
 Gerrit-MessageType: comment
 
---lgjgrlolN+Y=
+--OaQQBLycgjM=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
@@ -85,19 +85,18 @@ li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-style=
 : none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p style=
 =3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/6=
 81?tab=3Dcomments">Patch Set #1:</a> </p><p><blockquote style=3D"border-lef=
-t: 1px solid #aaa; margin: 10px 0; padding: 0 10px;">Splitting up these cha=
-nges is difficult because the new mbedtls_ssl_protocol_version enum doesn&#=
-39;t co [=E2=80=A6]</blockquote></p><p style=3D"white-space: pre-wrap; word=
--wrap: break-word;">Sounds good to me. I do not think it is important in wh=
-ich order they need to be applied, only that the first commit doesn&#39;t b=
-reak anything.</p></li></ul></li></ul><p>To view, visit <a href=3D"http://g=
-errit.openvpn.net/c/openvpn/+/681?usp=3Demail">change 681</a>. To unsubscri=
-be, or for help writing mail filters, visit <a href=3D"http://gerrit.openvp=
-n.net/settings">settings</a>.</p><div itemscope itemtype=3D"http://schema.o=
-rg/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://sche=
-ma.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net=
-/c/openvpn/+/681?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Chan=
-ge"/></div></div>
+t: 1px solid #aaa; margin: 10px 0; padding: 0 10px;">Sounds good to me. [=
+=E2=80=A6]</blockquote></p><p style=3D"white-space: pre-wrap; word-wrap: br=
+eak-word;">And when I say &quot;doesn&#39;t break anything&quot; I mean tha=
+t like &quot;building&quot;. Obviously it is fine to disable the TLS 1.0/1.=
+1 support if that is what the commit intends to do =F0=9F=98=8E</p></li></u=
+l></li></ul><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvp=
+n/+/681?usp=3Demail">change 681</a>. To unsubscribe, or for help writing ma=
+il filters, visit <a href=3D"http://gerrit.openvpn.net/settings">settings</=
+a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div item=
+scope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link i=
+temprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/681?usp=3Dema=
+il"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
@@ -119,7 +118,7 @@ ts.sourceforge.net&gt; </div>
 ..1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: MaxF &lt;max@...2606...&gt; =
 </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Thu, 13 Jun 2024 19:44:42=
+<div style=3D"display:none"> Gerrit-Comment-Date: Thu, 13 Jun 2024 19:46:59=
  +0000 </div>
 <div style=3D"display:none"> Gerrit-HasComments: Yes </div>
 <div style=3D"display:none"> Gerrit-Has-Labels: No </div>
@@ -130,5 +129,5 @@ t; </div>
 <div style=3D"display:none"> Gerrit-MessageType: comment </div>
 
 
---lgjgrlolN+Y=--
+--OaQQBLycgjM=--
 
