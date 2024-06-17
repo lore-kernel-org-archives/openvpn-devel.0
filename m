@@ -1,15 +1,13 @@
-From: "selvanair (Code Review)" <gerrit@...515...>
-Date: Sat, 15 Jun 2024 02:24:53 +0000
-References: <gerrit.1718418288000.I41f6c1f7acb58f30fc4db0e32505018f64fcad28@...2715...>
-Reply-To: selva.nair@...277..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <485c814b727094012dc7fd722f2548456c331221-HTML@...2715...>
+Date: Mon, 17 Jun 2024 15:40:04 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <ZnA8tBU2cKetUBmG@...1296...>
+References: <ZmGqRY9vRywrLUHD@...1296...>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ protocol="application/pgp-signature"; boundary="Y/u4Zr/3KE3tawsm"
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="NDGHIRQ6Zkk="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: Add test for
- static-challenge concatenation option
+In-Reply-To: <ZmGqRY9vRywrLUHD@...1296...>
+Subject: Re: [Openvpn-devel] windows client tests needed
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,173 +16,128 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: openvpn-devel@lists.sourceforge.net, openvpn-users@lists.sourceforge.net
 
---NDGHIRQ6Zkk=
-Content-Type: text/plain; charset="UTF-8"
+--Y/u4Zr/3KE3tawsm
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-Attention is currently required from: flichtenheld, plaisthos.
+Hi,
 
-Hello plaisthos, flichtenheld,
+if you think this is a useful security enhancement, and would like to have
+it in a "short term" 2.6.x release, we need test results...
 
-I'd like you to do a code review.
-Please visit
+please!
 
-    http://gerrit.openvpn.net/c/openvpn/+/666?usp=3Demail
-
-to review the following change.
-
-
-Change subject: Add test for static-challenge concatenation option
-......................................................................
-
-Add test for static-challenge concatenation option
-
-Change-Id: I41f6c1f7acb58f30fc4db0e32505018f64fcad28
----
-M tests/unit_tests/openvpn/test_user_pass.c
-1 file changed, 19 insertions(+), 1 deletion(-)
+gert
 
 
-
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/66/666/1
-
-diff --git a/tests/unit_tests/openvpn/test_user_pass.c b/tests/unit_tests/o=
-penvpn/test_user_pass.c
-index b43e655..35fe60d 100644
---- a/tests/unit_tests/openvpn/test_user_pass.c
-+++ b/tests/unit_tests/openvpn/test_user_pass.c
-@@ -311,7 +311,25 @@
-
-     reset_user_pass(&up);
-
--    flags |=3D GET_USER_PASS_INLINE_CREDS;
-+    flags |=3D GET_USER_PASS_STATIC_CHALLENGE_CONCAT;
-+
-+    expect_string(query_user_exec_builtin, query_user[i].prompt, "Enter UT=
- Username:");
-+    will_return(query_user_exec_builtin, "c1user");
-+    expect_string(query_user_exec_builtin, query_user[i].prompt, "Enter UT=
- Password:");
-+    will_return(query_user_exec_builtin, "c1password");
-+    will_return(query_user_exec_builtin, true);
-+    expect_string(query_user_exec_builtin, query_user[i].prompt, "CHALLENG=
-E: Please enter token PIN");
-+    will_return(query_user_exec_builtin, "0123456");
-+    will_return(query_user_exec_builtin, true);
-+    assert_true(get_user_pass_cr(&up, NULL, "UT", flags, challenge));
-+    assert_true(up.defined);
-+    assert_string_equal(up.username, "c1user");
-+    /* password and response concatenated */
-+    assert_string_equal(up.password, "c1password0123456");
-+
-+    reset_user_pass(&up);
-+
-+    flags =3D GET_USER_PASS_STATIC_CHALLENGE|GET_USER_PASS_INLINE_CREDS;
-
-     /*FIXME: query_user_exec() called even though nothing queued */
-     will_return(query_user_exec_builtin, true);
-
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/666?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings
-
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: I41f6c1f7acb58f30fc4db0e32505018f64fcad28
-Gerrit-Change-Number: 666
-Gerrit-PatchSet: 1
-Gerrit-Owner: selvanair <selva.nair@...277...>
-Gerrit-Reviewer: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-MessageType: newchange
-
---NDGHIRQ6Zkk=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<p> Attention is currently required from: flichtenheld, plaisthos. </p>
-<p>selvanair would like plaisthos and flichtenheld to <strong>review</stron=
-g> this change.
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/666?usp=3Demail">Vi=
-ew Change</a></p><pre style=3D"font-family: monospace,monospace; white-spac=
-e: pre-wrap;">Add test for static-challenge concatenation option<br><br>Cha=
-nge-Id: I41f6c1f7acb58f30fc4db0e32505018f64fcad28<br>---<br>M tests/unit_te=
-sts/openvpn/test_user_pass.c<br>1 file changed, 19 insertions(+), 1 deletio=
-n(-)<br><br></pre><pre style=3D"font-family: monospace,monospace; white-spa=
-ce: pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes=
-/66/666/1</pre><pre style=3D"font-family: monospace,monospace; white-space:=
- pre-wrap;"><span>diff --git a/tests/unit_tests/openvpn/test_user_pass.c b/=
-tests/unit_tests/openvpn/test_user_pass.c</span><br><span>index b43e655..35=
-fe60d 100644</span><br><span>--- a/tests/unit_tests/openvpn/test_user_pass.=
-c</span><br><span>+++ b/tests/unit_tests/openvpn/test_user_pass.c</span><br=
-><span>@@ -311,7 +311,25 @@</span><br><span> </span><br><span>     reset_us=
-er_pass(&amp;up);</span><br><span> </span><br><span style=3D"color: hsl(0, =
-100%, 40%);">-    flags |=3D GET_USER_PASS_INLINE_CREDS;</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+    flags |=3D GET_USER_PASS_STATIC_CH=
-ALLENGE_CONCAT;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+    expect_string(query=
-_user_exec_builtin, query_user[i].prompt, &quot;Enter UT Username:&quot;);<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+    will_return(quer=
-y_user_exec_builtin, &quot;c1user&quot;);</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+    expect_string(query_user_exec_builtin, query_user=
-[i].prompt, &quot;Enter UT Password:&quot;);</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+    will_return(query_user_exec_builtin, &quot;c1p=
-assword&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-will_return(query_user_exec_builtin, true);</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+    expect_string(query_user_exec_builtin, query_us=
-er[i].prompt, &quot;CHALLENGE: Please enter token PIN&quot;);</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+    will_return(query_user_exec_b=
-uiltin, &quot;0123456&quot;);</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+    will_return(query_user_exec_builtin, true);</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+    assert_true(get_user_pass_cr(&amp=
-;up, NULL, &quot;UT&quot;, flags, challenge));</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+    assert_true(up.defined);</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+    assert_string_equal(up.username, &q=
-uot;c1user&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-   /* password and response concatenated */</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+    assert_string_equal(up.password, &quot;c1passwo=
-rd0123456&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+    reset_user_pass(&=
-amp;up);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+    flags =3D GET_USER_PASS_ST=
-ATIC_CHALLENGE|GET_USER_PASS_INLINE_CREDS;</span><br><span> </span><br><spa=
-n>     /*FIXME: query_user_exec() called even though nothing queued */</spa=
-n><br><span>     will_return(query_user_exec_builtin, true);</span><br><spa=
-n></span><br></pre><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c=
-/openvpn/+/666?usp=3Demail">change 666</a>. To unsubscribe, or for help wri=
-ting mail filters, visit <a href=3D"http://gerrit.openvpn.net/settings">set=
-tings</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><d=
-iv itemscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction">=
-<link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/666?us=
-p=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
-
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I41f6c1f7acb58f30fc4db0e3250=
-5018f64fcad28 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 666 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
-<div style=3D"display:none"> Gerrit-Owner: selvanair &lt;selva.nair@...1354...=
-..&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
-1...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
-41...&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: newchange </div>
+On Thu, Jun 06, 2024 at 02:23:33PM +0200, Gert Doering wrote:
+> Hi,
+>=20
+> we have new code in master that helps with the "TunnelCrack" and
+> "TunnelVision" attacks, that is, packets intended to go into the
+> VPN being leaked away by means of a malicious DHCP server (=3D routing
+> points outside the tunnel, so packets never hit OpenVPN).
+>=20
+> We used to have
+>=20
+>   block-outside-dns
+>=20
+> to prevent Windows from doing DNS lookups "around the VPN" - the main
+> intent of this was "make sure split DNS works", but a side effect has
+> also been "avoid DNS leaks".
+>=20
+> Heiko has now extended this code to be able to "block everything not
+> going into the VPN".  To activate this, you need
+>=20
+>   redirect-gateway def1 block-local
+>=20
+> in your config ("block-local" is the keyword, but without "def1" you
+> end up with a split-tunnel and "nothing else is allowed", which is rarely
+> a really good combination).
+>=20
+> Repeat: if "redirect-gateway block-local" is active, NO packets leave
+> via LAN/WiFi/... interfaces, except those sourced by the openvpn.exe
+> process.  This is important for maximum privacy, especially if you
+> roam into a network with an untrusted DHCP server.
+>=20
+>=20
+> Now - this code has been merged into "git master", and installers
+> are here:
+>=20
+>    https://github.com/OpenVPN/openvpn-build/actions/runs/9391365526?pr=3D=
+641
+>=20
+> (bottom of the page, "Artifacts", .zip files with a .msi inside).
+>=20
+>=20
+> I want to have this in 2.6 as well, as it's sort of important for certain
+> classes of users (and also VPN providers, offering this as a service) - b=
+ut
+> I do not feel it has been tested enough yet.
+>=20
+> So: PLEASE test these windows installers, in all 3 variants
+>=20
+>  1.  <nothing special in the config>
+>  2.  block-outside-dns
+>      (DNS is blocked, everything else not routed into the VPN tunnel - li=
+ke
+>      "your local printer" etc - still works)
+>  3.  redirect-gateway def1 block-local
+>      (ONLY VPN works)
+>=20
+> and report back to us.
+>=20
+> gert
+>=20
+> --=20
+> "If was one thing all people took for granted, was conviction that if you=
+=20
+>  feed honest figures into a computer, honest figures come out. Never doub=
+ted=20
+>  it myself till I met a computer with a sense of humor."
+>                              Robert A. Heinlein, The Moon is a Harsh Mist=
+ress
+>=20
+> Gert Doering - Munich, Germany                             gert@...1296...
 
 
---NDGHIRQ6Zkk=--
+
+
+> _______________________________________________
+> Openvpn-devel mailing list
+> Openvpn-devel@lists.sourceforge.net
+> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
+
+
+--=20
+"If was one thing all people took for granted, was conviction that if you=20
+ feed honest figures into a computer, honest figures come out. Never doubte=
+d=20
+ it myself till I met a computer with a sense of humor."
+                             Robert A. Heinlein, The Moon is a Harsh Mistre=
+ss
+
+Gert Doering - Munich, Germany                             gert@...1296...
+
+--Y/u4Zr/3KE3tawsm
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQGcBAEBAgAGBQJmcDy0AAoJEB2Cnv7KVigSJ+8L/3XpXRm+x7tESzA1JcVNS1V0
+CoFtlzFrscE1vsxSUQJj+VtA3lQOTHEj+lSdL7OA+AWc8Apzg4Y4vO/dv8al6LOc
+N9biCbg4h9I0rzVj+XRbgrSR8emICdpgP6ckoEs3podHmmcqb9hA2rMPYbOiNsUg
+htnb70SuHCEK/yIGo7IeDfXpvysvcQv1zAByDN+NIvpfLNQNIlHCU677tFASgTq+
+0DyCd4uCLLzYlCBFkOEhxdD3UeFPnx772URJGWimjMBGeIkOm8Cp3Zy7Cn2GtQBC
+aNOp+OuJIWdzVC8elBZxu9Un81fZRGGmpoAXgxrhyCqoO2oqYzEqHzd1Bdj0Oh/6
+5EybFqIkRfI4HvIzUuw+0rCedVtqFoxvnZoKFf8dcSuf1Dkxz+jSjQjcukBX9PpB
+xZeGHAw1/p2uPzCpcz/2ndG+LOZEIkh9yF/VSWFdboZhWVklFIVtdGT8ENR/NKJn
+c3c5N3OX+5Uu9UinFjC/pSuQT+nFnljSHnSGELs2mg==
+=8j48
+-----END PGP SIGNATURE-----
+
+--Y/u4Zr/3KE3tawsm--
 
