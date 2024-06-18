@@ -1,16 +1,11 @@
-From: "plaisthos (Code Review)" <gerrit@...515...>
-Date: Tue, 18 Jun 2024 11:56:44 +0000
-In-Reply-To: <gerrit.1718418288000.I59a90446bfe73d8856516025a58a6f62cc98ab0d@...2715...>
-References: <gerrit.1718418288000.I59a90446bfe73d8856516025a58a6f62cc98ab0d@...2715...>
-Reply-To: arne-openvpn@...1227..., selva.nair@...277...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <36850b4a3e4d616d38d9fa9e9f105147350429b6-EmailReviewComments-HTML@...2715...>
+From: Gert Doering <gert@...1296...>
+Date: Tue, 18 Jun 2024 14:01:26 +0200
+Message-ID: <20240618120127.4564-1-gert@...1296...>
+In-Reply-To: <gerrit.1718271320000.If96c2ebd2af16b18ed34820e8c0531547e2076d9@...2715...>
+References: <gerrit.1718271320000.If96c2ebd2af16b18ed34820e8c0531547e2076d9@...2715...>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="W8+gVaVfMVU="; charset=UTF-8
-Subject: [Openvpn-devel] [M] Change in openvpn[master]: Static-challenge
- concatentation option
+Subject: [Openvpn-devel] [PATCH v4] Fix MBEDTLS_DEPRECATED_REMOVED build
+ errors
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,107 +14,257 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: selvanair <selva.nair@...277...>
-Cc: flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---W8+gVaVfMVU=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+From: rein.vanbaaren <rein.vanbaaren@...1435...>
 
-Attention is currently required from: flichtenheld, selvanair.
+This commit allows compiling OpenVPN with recent versions of mbed TLS
+if MBEDTLS_DEPRECATED_REMOVED is defined.
 
-plaisthos has posted comments on this change. ( http://gerrit.openvpn.net/c=
-/openvpn/+/665?usp=3Demail )
+Change-Id: If96c2ebd2af16b18ed34820e8c0531547e2076d9
+Signed-off-by: Max Fillinger <maximilian.fillinger@...2507...>
+Acked-by: Arne Schwabe <arne-openvpn@...1227...>
+---
 
-Change subject: Static-challenge concatentation option
-......................................................................
+This change was reviewed on Gerrit and approved by at least one
+developer. I request to merge it to master.
 
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/681
+This mail reflects revision 4 of this Change.
 
-Patch Set 1:
+Acked-by according to Gerrit (reflected above):
+Arne Schwabe <arne-openvpn@...1227...>
 
-(1 comment)
-
-File doc/man-sections/client-options.rst:
-
-http://gerrit.openvpn.net/c/openvpn/+/665/comment/87a2fe54_bda4864d :
-PS1, Line 552:   :code: `0` is the default.
-I am not a big fan of this option but I will not block it. But I rather wou=
-ld see "scrv1" (as default) and "concat" as option for the configuration op=
-tion rather than 0/1. The internal code can still use the flag but I feel 0=
-/1 as option is rather clumsy.
-
-
-
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/665?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings
-
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: I59a90446bfe73d8856516025a58a6f62cc98ab0d
-Gerrit-Change-Number: 665
-Gerrit-PatchSet: 1
-Gerrit-Owner: selvanair <selva.nair@...277...>
-Gerrit-Reviewer: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Attention: selvanair <selva.nair@...277...>
-Gerrit-Comment-Date: Tue, 18 Jun 2024 11:56:44 +0000
-Gerrit-HasComments: Yes
-Gerrit-Has-Labels: No
-Gerrit-MessageType: comment
-
---W8+gVaVfMVU=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<p> Attention is currently required from: flichtenheld, selvanair. </p>
-<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/665?usp=3Demail">View C=
-hange</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0;"><=
-li style=3D"margin: 0; padding: 0;"><p>File doc/man-sections/client-options=
-.rst:</p><ul style=3D"list-style: none; padding: 0;"><li style=3D"margin: 0=
-; padding: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://=
-gerrit.openvpn.net/c/openvpn/+/665/comment/87a2fe54_bda4864d">Patch Set #1,=
- Line 552:</a> <code style=3D"font-family:monospace,monospace">  :code: `0`=
- is the default.</code></p><p style=3D"white-space: pre-wrap; word-wrap: br=
-eak-word;">I am not a big fan of this option but I will not block it. But I=
- rather would see &quot;scrv1&quot; (as default) and &quot;concat&quot; as =
-option for the configuration option rather than 0/1. The internal code can =
-still use the flag but I feel 0/1 as option is rather clumsy.</p></li></ul>=
-</li></ul><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/=
-+/665?usp=3Demail">change 665</a>. To unsubscribe, or for help writing mail=
- filters, visit <a href=3D"http://gerrit.openvpn.net/settings">settings</a>=
-.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemsc=
-ope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link ite=
-mprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/665?usp=3Demail=
-"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
-
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I59a90446bfe73d8856516025a58=
-a6f62cc98ab0d </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 665 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
-<div style=3D"display:none"> Gerrit-Owner: selvanair &lt;selva.nair@...1354...=
-..&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
-1...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
-41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: selvanair &lt;selva.nair@...493...=
-277...&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Tue, 18 Jun 2024 11:56:44=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: No </div>
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
-
-
---W8+gVaVfMVU=--
+        
+diff --git a/src/openvpn/mbedtls_compat.h b/src/openvpn/mbedtls_compat.h
+index d742b54..8559c2e 100644
+--- a/src/openvpn/mbedtls_compat.h
++++ b/src/openvpn/mbedtls_compat.h
+@@ -40,6 +40,7 @@
+ #include <mbedtls/cipher.h>
+ #include <mbedtls/ctr_drbg.h>
+ #include <mbedtls/dhm.h>
++#include <mbedtls/ecp.h>
+ #include <mbedtls/md.h>
+ #include <mbedtls/pem.h>
+ #include <mbedtls/pk.h>
+@@ -51,6 +52,12 @@
+     #include <psa/crypto.h>
+ #endif
+ 
++#if MBEDTLS_VERSION_NUMBER >= 0x03000000
++typedef uint16_t mbedtls_compat_group_id;
++#else
++typedef mbedtls_ecp_group_id mbedtls_compat_group_id;
++#endif
++
+ static inline void
+ mbedtls_compat_psa_crypto_init(void)
+ {
+@@ -64,6 +71,16 @@
+ #endif /* HAVE_MBEDTLS_PSA_CRYPTO_H && defined(MBEDTLS_PSA_CRYPTO_C) */
+ }
+ 
++static inline mbedtls_compat_group_id
++mbedtls_compat_get_group_id(const mbedtls_ecp_curve_info *curve_info)
++{
++#if MBEDTLS_VERSION_NUMBER >= 0x03000000
++    return curve_info->tls_id;
++#else
++    return curve_info->grp_id;
++#endif
++}
++
+ /*
+  * In older versions of mbedtls, mbedtls_ctr_drbg_update() did not return an
+  * error code, and it was deprecated in favor of mbedtls_ctr_drbg_update_ret()
+@@ -124,6 +141,34 @@
+ }
+ 
+ #if MBEDTLS_VERSION_NUMBER < 0x03020100
++typedef enum {
++    MBEDTLS_SSL_VERSION_UNKNOWN, /*!< Context not in use or version not yet negotiated. */
++    MBEDTLS_SSL_VERSION_TLS1_2 = 0x0303, /*!< (D)TLS 1.2 */
++    MBEDTLS_SSL_VERSION_TLS1_3 = 0x0304, /*!< (D)TLS 1.3 */
++} mbedtls_ssl_protocol_version;
++
++static inline void
++mbedtls_ssl_conf_min_tls_version(mbedtls_ssl_config *conf, mbedtls_ssl_protocol_version tls_version)
++{
++    int major = (tls_version >> 8) & 0xff;
++    int minor = tls_version & 0xff;
++    mbedtls_ssl_conf_min_version(conf, major, minor);
++}
++
++static inline void
++mbedtls_ssl_conf_max_tls_version(mbedtls_ssl_config *conf, mbedtls_ssl_protocol_version tls_version)
++{
++    int major = (tls_version >> 8) & 0xff;
++    int minor = tls_version & 0xff;
++    mbedtls_ssl_conf_max_version(conf, major, minor);
++}
++
++static inline void
++mbedtls_ssl_conf_groups(mbedtls_ssl_config *conf, mbedtls_compat_group_id *groups)
++{
++    mbedtls_ssl_conf_curves(conf, groups);
++}
++
+ static inline size_t
+ mbedtls_cipher_info_get_block_size(const mbedtls_cipher_info_t *cipher)
+ {
+diff --git a/src/openvpn/ssl_mbedtls.c b/src/openvpn/ssl_mbedtls.c
+index ec9ec13..bb88da9 100644
+--- a/src/openvpn/ssl_mbedtls.c
++++ b/src/openvpn/ssl_mbedtls.c
+@@ -402,7 +402,7 @@
+ 
+     /* Get number of groups and allocate an array in ctx */
+     int groups_count = get_num_elements(groups, ':');
+-    ALLOC_ARRAY_CLEAR(ctx->groups, mbedtls_ecp_group_id, groups_count + 1)
++    ALLOC_ARRAY_CLEAR(ctx->groups, mbedtls_compat_group_id, groups_count + 1)
+ 
+     /* Parse allowed ciphers, getting IDs */
+     int i = 0;
+@@ -419,11 +419,15 @@
+         }
+         else
+         {
+-            ctx->groups[i] = ci->grp_id;
++            ctx->groups[i] = mbedtls_compat_get_group_id(ci);
+             i++;
+         }
+     }
+-    ctx->groups[i] = MBEDTLS_ECP_DP_NONE;
++
++    /* Recent mbedtls versions state that the list of groups must be terminated
++     * with 0. Older versions state that it must be terminated with MBEDTLS_ECP_DP_NONE
++     * which is also 0, so this works either way. */
++    ctx->groups[i] = 0;
+ 
+     gc_free(&gc);
+ }
+@@ -1046,33 +1050,30 @@
+ }
+ 
+ /**
+- * Convert an OpenVPN tls-version variable to mbed TLS format (i.e. a major and
+- * minor ssl version number).
++ * Convert an OpenVPN tls-version variable to mbed TLS format
+  *
+  * @param tls_ver       The tls-version variable to convert.
+- * @param major         Returns the TLS major version in mbed TLS format.
+- *                      Must be a valid pointer.
+- * @param minor         Returns the TLS minor version in mbed TLS format.
+- *                      Must be a valid pointer.
++ *
++ * @return Translated mbedTLS SSL version from OpenVPN TLS version.
+  */
+-static void
+-tls_version_to_major_minor(int tls_ver, int *major, int *minor)
++mbedtls_ssl_protocol_version
++tls_version_to_ssl_version(int tls_ver)
+ {
+-    ASSERT(major);
+-    ASSERT(minor);
+-
+     switch (tls_ver)
+     {
+ #if defined(MBEDTLS_SSL_PROTO_TLS1_2)
+         case TLS_VER_1_2:
+-            *major = MBEDTLS_SSL_MAJOR_VERSION_3;
+-            *minor = MBEDTLS_SSL_MINOR_VERSION_3;
+-            break;
++            return MBEDTLS_SSL_VERSION_TLS1_2;
++#endif
++
++#if defined(MBEDTLS_SSL_PROTO_TLS1_3)
++        case TLS_VER_1_3:
++            return MBEDTLS_SSL_VERSION_TLS1_3;
+ #endif
+ 
+         default:
+             msg(M_FATAL, "%s: invalid or unsupported TLS version %d", __func__, tls_ver);
+-            break;
++            return MBEDTLS_SSL_VERSION_UNKNOWN;
+     }
+ }
+ 
+@@ -1153,7 +1154,7 @@
+ 
+     if (ssl_ctx->groups)
+     {
+-        mbedtls_ssl_conf_curves(ks_ssl->ssl_config, ssl_ctx->groups);
++        mbedtls_ssl_conf_groups(ks_ssl->ssl_config, ssl_ctx->groups);
+     }
+ 
+     /* Disable TLS renegotiations if the mbedtls library supports that feature.
+@@ -1203,15 +1204,14 @@
+             &SSLF_TLS_VERSION_MIN_MASK;
+ 
+         /* default to TLS 1.2 */
+-        int major = MBEDTLS_SSL_MAJOR_VERSION_3;
+-        int minor = MBEDTLS_SSL_MINOR_VERSION_3;
++        mbedtls_ssl_protocol_version version = MBEDTLS_SSL_VERSION_TLS1_2;
+ 
+         if (configured_tls_version_min > TLS_VER_UNSPEC)
+         {
+-            tls_version_to_major_minor(configured_tls_version_min, &major, &minor);
++            version = tls_version_to_ssl_version(configured_tls_version_min);
+         }
+ 
+-        mbedtls_ssl_conf_min_version(ks_ssl->ssl_config, major, minor);
++        mbedtls_ssl_conf_min_tls_version(ks_ssl->ssl_config, version);
+     }
+ 
+     /* Initialize maximum TLS version */
+@@ -1220,20 +1220,19 @@
+             (session->opt->ssl_flags >> SSLF_TLS_VERSION_MAX_SHIFT)
+             &SSLF_TLS_VERSION_MAX_MASK;
+ 
+-        int major = 0;
+-        int minor = 0;
++        mbedtls_ssl_protocol_version version = MBEDTLS_SSL_VERSION_UNKNOWN;
+ 
+         if (configured_tls_version_max > TLS_VER_UNSPEC)
+         {
+-            tls_version_to_major_minor(configured_tls_version_max, &major, &minor);
++            version = tls_version_to_ssl_version(configured_tls_version_max);
+         }
+         else
+         {
+             /* Default to tls_version_max(). */
+-            tls_version_to_major_minor(tls_version_max(), &major, &minor);
++            version = tls_version_to_ssl_version(tls_version_max());
+         }
+ 
+-        mbedtls_ssl_conf_max_version(ks_ssl->ssl_config, major, minor);
++        mbedtls_ssl_conf_max_tls_version(ks_ssl->ssl_config, version);
+     }
+ 
+ #if HAVE_MBEDTLS_SSL_CONF_EXPORT_KEYS_EXT_CB
+diff --git a/src/openvpn/ssl_mbedtls.h b/src/openvpn/ssl_mbedtls.h
+index 1fd0ce8..34b4f02 100644
+--- a/src/openvpn/ssl_mbedtls.h
++++ b/src/openvpn/ssl_mbedtls.h
+@@ -39,6 +39,8 @@
+ #include <pkcs11-helper-1.0/pkcs11h-certificate.h>
+ #endif
+ 
++#include "mbedtls_compat.h"
++
+ typedef struct _buffer_entry buffer_entry;
+ 
+ struct _buffer_entry {
+@@ -118,7 +120,7 @@
+ #endif
+     struct external_context external_key; /**< External key context */
+     int *allowed_ciphers;       /**< List of allowed ciphers for this connection */
+-    mbedtls_ecp_group_id *groups;     /**< List of allowed groups for this connection */
++    mbedtls_compat_group_id *groups;     /**< List of allowed groups for this connection */
+     mbedtls_x509_crt_profile cert_profile; /**< Allowed certificate types */
+ };
+ 
 
