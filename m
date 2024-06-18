@@ -1,11 +1,11 @@
 From: Gert Doering <gert@...1296...>
-Date: Tue, 18 Jun 2024 14:01:56 +0200
-Message-ID: <20240618120156.4836-1-gert@...1296...>
-In-Reply-To: <gerrit.1718369712000.I913bb70c5e527e78e7cdb43110e23a8944f35a22@...2715...>
-References: <gerrit.1718369712000.I913bb70c5e527e78e7cdb43110e23a8944f35a22@...2715...>
+Date: Tue, 18 Jun 2024 14:02:19 +0200
+Message-ID: <20240618120219.5053-1-gert@...1296...>
+In-Reply-To: <gerrit.1718364874000.Ia3883a26ac26df6bbb5353fb074a2e0f814737be@...2715...>
+References: <gerrit.1718364874000.Ia3883a26ac26df6bbb5353fb074a2e0f814737be@...2715...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v1] Remove "experimental" denotation for
- --fast-io
+Subject: [Openvpn-devel] [PATCH v2] mbedtls: Remove support for old TLS
+ versions
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,52 +18,64 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-From: Frank Lichtenheld <frank@...2641...>
+From: Max Fillinger <maximilian.fillinger@...2507...>
 
-This option is very old (from SVN days) and has been
-used by Access Server for many years. I don't think it
-makes sense to claim that it is "experimental" at this
-point.
+Recent versions of mbedtls have dropped support for TLS 1.0 and 1.1.
+Rather than checking which versions are supported, drop support for
+everything before 1.2.
 
-Change-Id: I913bb70c5e527e78e7cdb43110e23a8944f35a22
-Signed-off-by: Frank Lichtenheld <frank@...2641...>
+Change-Id: Ia3883a26ac26df6bbb5353fb074a2e0f814737be
+Signed-off-by: Max Fillinger <maximilian.fillinger@...2507...>
 Acked-by: Arne Schwabe <arne-openvpn@...1227...>
 ---
 
 This change was reviewed on Gerrit and approved by at least one
 developer. I request to merge it to master.
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/664
-This mail reflects revision 1 of this Change.
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/682
+This mail reflects revision 2 of this Change.
 
 Acked-by according to Gerrit (reflected above):
 Arne Schwabe <arne-openvpn@...1227...>
 
         
-diff --git a/doc/man-sections/generic-options.rst b/doc/man-sections/generic-options.rst
-index f8a0f48..eb9cf28 100644
---- a/doc/man-sections/generic-options.rst
-+++ b/doc/man-sections/generic-options.rst
-@@ -215,7 +215,7 @@
-   are supported by OpenSSL.
+diff --git a/src/openvpn/ssl_mbedtls.c b/src/openvpn/ssl_mbedtls.c
+index a68588e..ec9ec13 100644
+--- a/src/openvpn/ssl_mbedtls.c
++++ b/src/openvpn/ssl_mbedtls.c
+@@ -1040,12 +1040,8 @@
+ {
+ #if defined(MBEDTLS_SSL_PROTO_TLS1_2)
+     return TLS_VER_1_2;
+-#elif defined(MBEDTLS_SSL_PROTO_TLS1_1)
+-    return TLS_VER_1_1;
+-#elif defined(MBEDTLS_SSL_PROTO_TLS1)
+-    return TLS_VER_1_0;
+ #else /* defined(MBEDTLS_SSL_PROTO_TLS1_2) */
+-    #error "mbedtls is compiled without support for TLS 1.0, 1.1 and 1.2."
++    #error "mbedtls is compiled without support for TLS 1.2."
+ #endif /* defined(MBEDTLS_SSL_PROTO_TLS1_2) */
+ }
  
- --fast-io
--  (Experimental) Optimize TUN/TAP/UDP I/O writes by avoiding a call to
-+  Optimize TUN/TAP/UDP I/O writes by avoiding a call to
-   poll/epoll/select prior to the write operation. The purpose of such a
-   call would normally be to block until the device or socket is ready to
-   accept the write. Such blocking is unnecessary on some platforms which
-diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index abcde89..f2c7536 100644
---- a/src/openvpn/options.c
-+++ b/src/openvpn/options.c
-@@ -268,7 +268,7 @@
- #if ENABLE_IP_PKTINFO
-     "--multihome     : Configure a multi-homed UDP server.\n"
- #endif
--    "--fast-io       : (experimental) Optimize TUN/TAP/UDP writes.\n"
-+    "--fast-io       : Optimize TUN/TAP/UDP writes.\n"
-     "--remap-usr1 s  : On SIGUSR1 signals, remap signal (s='SIGHUP' or 'SIGTERM').\n"
-     "--persist-tun   : Keep tun/tap device open across SIGUSR1 or --ping-restart.\n"
-     "--persist-remote-ip : Keep remote IP address across SIGUSR1 or --ping-restart.\n"
+@@ -1067,20 +1063,6 @@
+ 
+     switch (tls_ver)
+     {
+-#if defined(MBEDTLS_SSL_PROTO_TLS1)
+-        case TLS_VER_1_0:
+-            *major = MBEDTLS_SSL_MAJOR_VERSION_3;
+-            *minor = MBEDTLS_SSL_MINOR_VERSION_1;
+-            break;
+-#endif
+-
+-#if defined(MBEDTLS_SSL_PROTO_TLS1_1)
+-        case TLS_VER_1_1:
+-            *major = MBEDTLS_SSL_MAJOR_VERSION_3;
+-            *minor = MBEDTLS_SSL_MINOR_VERSION_2;
+-            break;
+-#endif
+-
+ #if defined(MBEDTLS_SSL_PROTO_TLS1_2)
+         case TLS_VER_1_2:
+             *major = MBEDTLS_SSL_MAJOR_VERSION_3;
 
