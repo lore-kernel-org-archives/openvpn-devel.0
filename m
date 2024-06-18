@@ -1,16 +1,16 @@
 From: "plaisthos (Code Review)" <gerrit@...515...>
-Date: Tue, 18 Jun 2024 11:52:24 +0000
-In-Reply-To: <gerrit.1718364874000.Ia3883a26ac26df6bbb5353fb074a2e0f814737be@...2715...>
-References: <gerrit.1718364874000.Ia3883a26ac26df6bbb5353fb074a2e0f814737be@...2715...>
+Date: Tue, 18 Jun 2024 11:52:38 +0000
+In-Reply-To: <gerrit.1718369712000.I913bb70c5e527e78e7cdb43110e23a8944f35a22@...2715...>
+References: <gerrit.1718369712000.I913bb70c5e527e78e7cdb43110e23a8944f35a22@...2715...>
 Reply-To: arne-openvpn@...1227..., openvpn-devel@lists.sourceforge.net,
- frank@...2641..., max@...2606...
-Message-ID: <b2a91fc33b6c03fa0a0a1bc5f4fd98c97228d327-EmailReviewComments-HTML@...2715...>
+ frank@...2641...
+Message-ID: <f34697cd516ee028527f739c4ca0dff686562faa-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="vwHbsrJBOXo="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: mbedtls: Remove
- support for old TLS versions
+Content-Type: multipart/alternative; boundary="1vrpVEY7HoM="; charset=UTF-8
+Subject: [Openvpn-devel] [XS] Change in openvpn[master]: Remove
+ "experimental" denotation for --fast-io
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,87 +19,81 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: MaxF <max@...2606...>
-Cc: flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: flichtenheld <frank@...2641...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---vwHbsrJBOXo=
+--1vrpVEY7HoM=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: MaxF, flichtenheld.
+Attention is currently required from: flichtenheld.
 
 plaisthos has posted comments on this change. ( http://gerrit.openvpn.net/c=
-/openvpn/+/682?usp=3Demail )
+/openvpn/+/664?usp=3Demail )
 
-Change subject: mbedtls: Remove support for old TLS versions
+Change subject: Remove "experimental" denotation for --fast-io
 ......................................................................
 
 
-Patch Set 2: Code-Review+2
+Patch Set 1: Code-Review+2
 
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/682?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/664?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings
 
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: Ia3883a26ac26df6bbb5353fb074a2e0f814737be
-Gerrit-Change-Number: 682
-Gerrit-PatchSet: 2
-Gerrit-Owner: MaxF <max@...2606...>
-Gerrit-Reviewer: flichtenheld <frank@...2641...>
+Gerrit-Change-Id: I913bb70c5e527e78e7cdb43110e23a8944f35a22
+Gerrit-Change-Number: 664
+Gerrit-PatchSet: 1
+Gerrit-Owner: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Attention: MaxF <max@...2606...>
-Gerrit-Comment-Date: Tue, 18 Jun 2024 11:52:24 +0000
+Gerrit-Comment-Date: Tue, 18 Jun 2024 11:52:38 +0000
 Gerrit-HasComments: No
 Gerrit-Has-Labels: Yes
 Gerrit-MessageType: comment
 
---vwHbsrJBOXo=
+--1vrpVEY7HoM=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p> Attention is currently required from: MaxF, flichtenheld. </p>
-<p>Patch set 2:<span style=3D"border-radius: 3px; display: inline-block; ma=
+<p> Attention is currently required from: flichtenheld. </p>
+<p>Patch set 1:<span style=3D"border-radius: 3px; display: inline-block; ma=
 rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/682?usp=3Demail">Vi=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/664?usp=3Demail">Vi=
 ew Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To vie=
-w, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/682?usp=3Demail">=
-change 682</a>. To unsubscribe, or for help writing mail filters, visit <a =
+w, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/664?usp=3Demail">=
+change 664</a>. To unsubscribe, or for help writing mail filters, visit <a =
 href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope=
  itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"act=
 ion" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=
-=3D"http://gerrit.openvpn.net/c/openvpn/+/682?usp=3Demail"/><meta itemprop=
+=3D"http://gerrit.openvpn.net/c/openvpn/+/664?usp=3Demail"/><meta itemprop=
 =3D"name" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: Ia3883a26ac26df6bbb5353fb074=
-a2e0f814737be </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 682 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
-<div style=3D"display:none"> Gerrit-Owner: MaxF &lt;max@...2606...&gt; </di=
-v>
-<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
-1...&gt; </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I913bb70c5e527e78e7cdb43110e=
+23a8944f35a22 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 664 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
+<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
+.&gt; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
 .1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
 41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: MaxF &lt;max@...2606...&gt; =
-</div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Tue, 18 Jun 2024 11:52:24=
+<div style=3D"display:none"> Gerrit-Comment-Date: Tue, 18 Jun 2024 11:52:38=
  +0000 </div>
 <div style=3D"display:none"> Gerrit-HasComments: No </div>
 <div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
 <div style=3D"display:none"> Gerrit-MessageType: comment </div>
 
 
---vwHbsrJBOXo=--
+--1vrpVEY7HoM=--
 
