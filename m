@@ -1,14 +1,14 @@
 From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Tue, 18 Jun 2024 20:51:28 +0000
+Date: Tue, 18 Jun 2024 20:51:30 +0000
 In-Reply-To: <gerrit.1717758396000.I1b54da258c7d15551b6c3de7522a0d19afdb66de@...2715...>
 References: <gerrit.1717758396000.I1b54da258c7d15551b6c3de7522a0d19afdb66de@...2715...>
 Reply-To: gert@...1296..., arne-openvpn@...1227..., samuli@...515...,
  openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <2c77585970b66251110a3755d72ce592ea1241ee-EmailReplacePatchSet-HTML@...2715...>
+Message-ID: <2c77585970b66251110a3755d72ce592ea1241ee-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="GUDlVrxkAuI="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="n6GWvUE403w="; charset=UTF-8
 Subject: [Openvpn-devel] [L] Change in openvpn[master]: Add t_server_null
  test suite
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -19,19 +19,15 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: mattock <samuli@...515...>, plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: mattock <samuli@...515...>
+Cc: flichtenheld <frank@...2641...>, plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---GUDlVrxkAuI=
+--n6GWvUE403w=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-cron2 has uploaded a new patch set (#3) to the change originally created by=
- mattock. ( http://gerrit.openvpn.net/c/openvpn/+/663?usp=3Demail )
-
-The following approvals got outdated and were removed:
-Code-Review+2 by flichtenheld
-
+cron2 has submitted this change. ( http://gerrit.openvpn.net/c/openvpn/+/66=
+3?usp=3Demail )
 
 Change subject: Add t_server_null test suite
 ......................................................................
@@ -59,7 +55,7 @@ A tests/t_server_null_stress.sh
 10 files changed, 568 insertions(+), 2 deletions(-)
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/63/663/3
+
 
 diff --git a/.gitignore b/.gitignore
 index 92d65bf..db8bb73 100644
@@ -799,115 +795,112 @@ Gerrit-Owner: mattock <samuli@...515...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-MessageType: newpatchset
+Gerrit-MessageType: merged
 
---GUDlVrxkAuI=
+--n6GWvUE403w=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p>cron2 <strong>uploaded patch set #3</strong> to the change originally cr=
-eated by mattock.</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/66=
-3?usp=3Demail">View Change</a></p><p>The following approvals got outdated a=
-nd were removed:
-Code-Review+2 by flichtenheld</p><pre style=3D"font-family: monospace,monos=
-pace; white-space: pre-wrap;">Add t_server_null test suite<br><br>Change-Id=
-: I1b54da258c7d15551b6c3de7522a0d19afdb66de<br>Signed-off-by: Samuli Sepp=
-=C3=A4nen &lt;samuli.seppanen@...277...&gt;<br>Acked-by: Frank Lichtenheld =
-&lt;frank@...2641...&gt;<br>Message-Id: &lt;20240613081422.139493-1-frank@...220...=
-..2641...&gt;<br>URL: https://www.mail-archive.com/openvpn-devel@...1439...=
-ceforge.net/msg28750.html<br>Signed-off-by: Gert Doering &lt;gert@...2132...=
-.&gt;<br>---<br>M .gitignore<br>A doc/t_server_null.rst<br>M tests/Makefile=
-.am<br>A tests/null_client_up.sh<br>A tests/t_server_null.rc-sample<br>A te=
-sts/t_server_null.sh<br>A tests/t_server_null_client.sh<br>A tests/t_server=
-_null_default.rc<br>A tests/t_server_null_server.sh<br>A tests/t_server_nul=
-l_stress.sh<br>10 files changed, 568 insertions(+), 2 deletions(-)<br><br><=
-/pre><pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;=
-">git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/63/663/3</pr=
-e><pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><=
-span>diff --git a/.gitignore b/.gitignore</span><br><span>index 92d65bf..db=
-8bb73 100644</span><br><span>--- a/.gitignore</span><br><span>+++ b/.gitign=
-ore</span><br><span>@@ -55,6 +55,7 @@</span><br><span> </span><br><span> te=
-sts/t_client.sh</span><br><span> tests/t_client-*-20??????-??????/</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+tests/t_server_null.rc</span=
-><br><span> t_client.rc</span><br><span> t_client_ips.rc</span><br><span> t=
-ests/unit_tests/**/*_testdriver</span><br><span>diff --git a/doc/t_server_n=
-ull.rst b/doc/t_server_null.rst</span><br><span>new file mode 100644</span>=
-<br><span>index 0000000..e3a098a</span><br><span>--- /dev/null</span><br><s=
-pan>+++ b/doc/t_server_null.rst</span><br><span>@@ -0,0 +1,147 @@</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+Notes for the --dev null test=
- suite</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=3D=3D=3D=3D=
+<p>cron2 <strong>submitted</strong> this change.</p><p><a href=3D"http://ge=
+rrit.openvpn.net/c/openvpn/+/663?usp=3Demail">View Change</a></p><div style=
+=3D"white-space:pre-wrap"></div><pre style=3D"font-family: monospace,monosp=
+ace; white-space: pre-wrap;">Add t_server_null test suite<br><br>Change-Id:=
+ I1b54da258c7d15551b6c3de7522a0d19afdb66de<br>Signed-off-by: Samuli Sepp=C3=
+=A4nen &lt;samuli.seppanen@...277...&gt;<br>Acked-by: Frank Lichtenheld &lt=
+;frank@...2641...&gt;<br>Message-Id: &lt;20240613081422.139493-1-frank@...1665...=
+641...&gt;<br>URL: https://www.mail-archive.com/openvpn-devel@...1535...=
+orge.net/msg28750.html<br>Signed-off-by: Gert Doering &lt;gert@...1296...&g=
+t;<br>---<br>M .gitignore<br>A doc/t_server_null.rst<br>M tests/Makefile.am=
+<br>A tests/null_client_up.sh<br>A tests/t_server_null.rc-sample<br>A tests=
+/t_server_null.sh<br>A tests/t_server_null_client.sh<br>A tests/t_server_nu=
+ll_default.rc<br>A tests/t_server_null_server.sh<br>A tests/t_server_null_s=
+tress.sh<br>10 files changed, 568 insertions(+), 2 deletions(-)<br><br></pr=
+e>
+<pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><sp=
+an>diff --git a/.gitignore b/.gitignore</span><br><span>index 92d65bf..db8b=
+b73 100644</span><br><span>--- a/.gitignore</span><br><span>+++ b/.gitignor=
+e</span><br><span>@@ -55,6 +55,7 @@</span><br><span> </span><br><span> test=
+s/t_client.sh</span><br><span> tests/t_client-*-20??????-??????/</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+tests/t_server_null.rc</span><=
+br><span> t_client.rc</span><br><span> t_client_ips.rc</span><br><span> tes=
+ts/unit_tests/**/*_testdriver</span><br><span>diff --git a/doc/t_server_nul=
+l.rst b/doc/t_server_null.rst</span><br><span>new file mode 100644</span><b=
+r><span>index 0000000..e3a098a</span><br><span>--- /dev/null</span><br><spa=
+n>+++ b/doc/t_server_null.rst</span><br><span>@@ -0,0 +1,147 @@</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+Notes for the --dev null test s=
+uite</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=3D=3D=3D=3D=3D=
 =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D</span><br><span style=3D"color: hsl(120, 100%, 40%);">+<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+Introduction</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+------------</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+The *--dev null test suite* is primary targeted at te=
-sting client connections</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+to the &quot;just compiled&quot; version of OpenVPN. The name is deriv=
-ed from &quot;null&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+device type in OpenVPN. In particular, when *--dev null --ifconfig-noe=
-xec* is</span><br><span style=3D"color: hsl(120, 100%, 40%);">+used in Open=
-VPN client configuration one does not need to run OpenVPN with root</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+privileges because interfac=
-e, routing, etc. configuration is not done at all.</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+This is still enough to ensure that the Open=
-VPN client can connect to a server</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+instance.</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+The main featu=
-res of the test suite:</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+* Parallelized f=
-or fairly high performance</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+* Mostly operating-system agnostic</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+* Tested on Fedora Linux 38/39/40 and FreeBSD 14</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+* POSIX-compliant</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+* Tested and known to work=
- with Bash, Dash, Ksh, Yash and FreeBSD&#39;s default /bin/sh</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+* Uses the sample certificates an=
-d keys</span><br><span style=3D"color: hsl(120, 100%, 40%);">+* Supports ru=
-nning multiple servers and clients</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+* Supports running servers directly as root and with sudo</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+* Supports using diffe=
-rent OpenVPN client versions</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  * The &q=
-uot;current&quot; (just compiled) version</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+  * Any other OpenVPN versions that is present on the=
- filesystem</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+* Support testing for succe=
-ss as well as failure</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+* Test cases (client configurations) and server setups (server configurat=
-ions) are stored in a configuration file, i.e. data and code have been sepa=
-rated</span><br><span style=3D"color: hsl(120, 100%, 40%);">+* Configuratio=
-n file format is nearly identical to t_client.rc configuration</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+* Supports a set of default test=
-s, overriding default test settings and adding local tests</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+Prerequisites</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+-------------</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+Running the=
- test suite requires the following:</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+* *=
-bash* for running the tests</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+* root-level privileges for launching the servers</span><br><span s=
+=3D=3D=3D=3D=3D</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+Introduction</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+------------</span><br><span s=
 tyle=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+  * run as root</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+  * a privilege escalation tool (sudo, doas, su) and the per=
-mission to become root</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+Technical implem=
-entation</span><br><span style=3D"color: hsl(120, 100%, 40%);">+-----------=
--------------</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+The test suite is complet=
-ely parallelized to allow running a large number of</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+server and client combinations quickly.</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+A normal test run looks like this:</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+#. Server instances start</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+#. Brief wait</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+#. Client instances start</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+#. Tests run</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+#. Client instances stop</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+#. Brief wait</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+#. Server instances stop</span><br><span style=
+120, 100%, 40%);">+The *--dev null test suite* is primary targeted at testi=
+ng client connections</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+to the &quot;just compiled&quot; version of OpenVPN. The name is derived =
+from &quot;null&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+device type in OpenVPN. In particular, when *--dev null --ifconfig-noexec=
+* is</span><br><span style=3D"color: hsl(120, 100%, 40%);">+used in OpenVPN=
+ client configuration one does not need to run OpenVPN with root</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+privileges because interface, =
+routing, etc. configuration is not done at all.</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+This is still enough to ensure that the OpenVPN=
+ client can connect to a server</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+instance.</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+The main features=
+ of the test suite:</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+* Parallelized for =
+fairly high performance</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+* Mostly operating-system agnostic</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+* Tested on Fedora Linux 38/39/40 and FreeBSD 14</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+* POSIX-compliant</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+* Tested and known to work wi=
+th Bash, Dash, Ksh, Yash and FreeBSD&#39;s default /bin/sh</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+* Uses the sample certificates and k=
+eys</span><br><span style=3D"color: hsl(120, 100%, 40%);">+* Supports runni=
+ng multiple servers and clients</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+* Supports running servers directly as root and with sudo</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+* Supports using differen=
+t OpenVPN client versions</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  * The &quot=
+;current&quot; (just compiled) version</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+  * Any other OpenVPN versions that is present on the fi=
+lesystem</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+* Support testing for success =
+as well as failure</span><br><span style=3D"color: hsl(120, 100%, 40%);">+*=
+ Test cases (client configurations) and server setups (server configuration=
+s) are stored in a configuration file, i.e. data and code have been separat=
+ed</span><br><span style=3D"color: hsl(120, 100%, 40%);">+* Configuration f=
+ile format is nearly identical to t_client.rc configuration</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+* Supports a set of default tests, =
+overriding default test settings and adding local tests</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+Prerequisites</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+-------------</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+Running the te=
+st suite requires the following:</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+* *bas=
+h* for running the tests</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+* root-level privileges for launching the servers</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+  * run as root</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+  * a privilege escalation tool (sudo, doas, su) and the permis=
+sion to become root</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+Technical implement=
+ation</span><br><span style=3D"color: hsl(120, 100%, 40%);">+--------------=
+----------</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+The test suite is completely=
+ parallelized to allow running a large number of</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+server and client combinations quickly.</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+A normal test run looks like this:</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+#. Server instances start</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+#. Brief wait</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+#. Client instances start</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+#. Tests run</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+#. Client instances stop</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+#. Brief wait</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+#. Server instances stop</span><br><span style=
 =3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120,=
  100%, 40%);">+The tests suite is launched via &quot;make check&quot;:</spa=
 n><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
@@ -1596,8 +1589,8 @@ a0d19afdb66de </div>
 .1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
+<div style=3D"display:none"> Gerrit-MessageType: merged </div>
 
 
---GUDlVrxkAuI=--
+--n6GWvUE403w=--
 
