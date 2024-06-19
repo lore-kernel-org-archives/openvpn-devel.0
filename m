@@ -1,13 +1,15 @@
+From: "MaxF (Code Review)" <gerrit@...515...>
+Date: Wed, 19 Jun 2024 15:06:54 +0000
+References: <gerrit.1718809612000.Ifc589854816842e46969a76e2845084b3aaa962f@...2715...>
+Reply-To: max@...2606..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net, frank@...2641...
+Message-ID: <cf94dffabc7185383871976251fb7021aadfa84d-HTML@...2715...>
 MIME-Version: 1.0
-References: <20240619134451.222-1-lev@...515...>
- <20240619144629.1718-2-lev@...515...>
-In-Reply-To: <20240619144629.1718-2-lev@...515...>
-From: Selva Nair <selva.nair@...277...>
-Date: Wed, 19 Jun 2024 10:59:16 -0400
-Message-ID: <CAKuzo_hDtFpFT0mUwrqsOZUL9sOMHgoxrV4a+7MLqSXNHMrPCQ@...278...>
-Content-Type: multipart/alternative; boundary="0000000000002cb263061b3f7212"
-Subject: Re: [Openvpn-devel] [PATCH v3] interactive.c: Improve access
- control for gui<->service pipe
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="iJRL4Moard8="; charset=UTF-8
+Subject: [Openvpn-devel] [S] Change in openvpn[master]: Check that
+ tls-version-min is supported on startup
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,381 +18,329 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Lev Stipakov <lstipakov@...277...>
-Cc: openvpn-devel@lists.sourceforge.net, Lev Stipakov <lev@...515...>
+To: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---0000000000002cb263061b3f7212
+--iJRL4Moard8=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Hi,
+Attention is currently required from: flichtenheld, plaisthos.
 
-On Wed, Jun 19, 2024 at 10:48=E2=80=AFAM Lev Stipakov <lstipakov@...277...>=
- wrote:
+Hello plaisthos, flichtenheld,
 
-> At the moment everyone but anonymous are permitted
-> to create a pipe with the same name as interactive service creates,
-> which makes it possible for malicious process with SeImpersonatePrivilege
-> impersonate as local user.
->
-> This hardens the security of the pipe, making it possible only for
-> processes running as SYSTEM (such as interactive service) create the
-> pipe with the same name.
->
-> While on it, replace EXPLICIT_ACCESS structures with SDDL string.
->
-> CVE: 2024-4877
->
-> Change-Id: I35e783b79a332d247606e05a39e41b4d35d39b5d
-> Reported by: Zeze with TeamT5 <zeze7w@...277...>
-> Signed-off-by: Lev Stipakov <lev@...515...>
-> ---
->  v3:
->   - rebase on top of master (replace openvpn_snprintf with snprintf)
->
+I'd like you to do a code review.
+Please visit
 
-It's swprintf :)
+    http://gerrit.openvpn.net/c/openvpn/+/683?usp=3Demail
+
+to review the following change.
 
 
->  v2:
->   - ensure that sd is freed even if pipe creation failed
->   - added Reported-By
->
->  src/openvpnserv/interactive.c | 81 +++++++++++++----------------------
->  1 file changed, 29 insertions(+), 52 deletions(-)
->
-> diff --git a/src/openvpnserv/interactive.c b/src/openvpnserv/interactive.c
-> index 294db00a..f06802de 100644
-> --- a/src/openvpnserv/interactive.c
-> +++ b/src/openvpnserv/interactive.c
-> @@ -2140,73 +2140,50 @@ ServiceCtrlInteractive(DWORD ctrl_code, DWORD
-> event, LPVOID data, LPVOID ctx)
->  static HANDLE
->  CreateClientPipeInstance(VOID)
->  {
-> -    TCHAR pipe_name[256]; /* The entire pipe name string can be up to 256
-> characters long according to MSDN. */
-> -    HANDLE pipe =3D NULL;
-> -    PACL old_dacl, new_dacl;
-> -    PSECURITY_DESCRIPTOR sd;
-> -    static EXPLICIT_ACCESS ea[2];
-> -    static BOOL initialized =3D FALSE;
-> -    DWORD flags =3D PIPE_ACCESS_DUPLEX | WRITE_DAC | FILE_FLAG_OVERLAPPE=
-D;
-> +    /*
-> +     * allow all access for local system
-> +     * deny FILE_CREATE_PIPE_INSTANCE for everyone
-> +     * allow read/write for authenticated users
-> +     * deny all access to anonymous
-> +     */
-> +    const TCHAR *sddlString =3D
-> TEXT("D:(A;OICI;GA;;;S-1-5-18)(D;OICI;0x4;;;S-1-1-0)(A;OICI;GRGW;;;S-1-5-=
-11)(D;;GA;;;S-1-5-7)");
->
-> -    if (!initialized)
-> +    PSECURITY_DESCRIPTOR sd =3D NULL;
-> +    if (!ConvertStringSecurityDescriptorToSecurityDescriptor(sddlString,
-> SDDL_REVISION_1, &sd, NULL))
->      {
-> -        PSID everyone, anonymous;
-> -
-> -        ConvertStringSidToSid(TEXT("S-1-1-0"), &everyone);
-> -        ConvertStringSidToSid(TEXT("S-1-5-7"), &anonymous);
-> +        MsgToEventLog(M_SYSERR,
-> TEXT("ConvertStringSecurityDescriptorToSecurityDescriptor failed."));
-> +        return INVALID_HANDLE_VALUE;
-> +    }
->
-> -        ea[0].grfAccessPermissions =3D FILE_GENERIC_WRITE;
-> -        ea[0].grfAccessMode =3D GRANT_ACCESS;
-> -        ea[0].grfInheritance =3D NO_INHERITANCE;
-> -        ea[0].Trustee.pMultipleTrustee =3D NULL;
-> -        ea[0].Trustee.MultipleTrusteeOperation =3D NO_MULTIPLE_TRUSTEE;
-> -        ea[0].Trustee.TrusteeForm =3D TRUSTEE_IS_SID;
-> -        ea[0].Trustee.TrusteeType =3D TRUSTEE_IS_UNKNOWN;
-> -        ea[0].Trustee.ptstrName =3D (LPTSTR) everyone;
-> +    /* Set up SECURITY_ATTRIBUTES */
-> +    SECURITY_ATTRIBUTES sa =3D {0};
-> +    sa.nLength =3D sizeof(SECURITY_ATTRIBUTES);
-> +    sa.lpSecurityDescriptor =3D sd;
-> +    sa.bInheritHandle =3D FALSE;
->
-> -        ea[1].grfAccessPermissions =3D 0;
-> -        ea[1].grfAccessMode =3D REVOKE_ACCESS;
-> -        ea[1].grfInheritance =3D NO_INHERITANCE;
-> -        ea[1].Trustee.pMultipleTrustee =3D NULL;
-> -        ea[1].Trustee.MultipleTrusteeOperation =3D NO_MULTIPLE_TRUSTEE;
-> -        ea[1].Trustee.TrusteeForm =3D TRUSTEE_IS_SID;
-> -        ea[1].Trustee.TrusteeType =3D TRUSTEE_IS_UNKNOWN;
-> -        ea[1].Trustee.ptstrName =3D (LPTSTR) anonymous;
-> +    DWORD flags =3D PIPE_ACCESS_DUPLEX | WRITE_DAC | FILE_FLAG_OVERLAPPE=
-D;
->
-> +    static BOOL first =3D TRUE;
-> +    if (first)
-> +    {
->          flags |=3D FILE_FLAG_FIRST_PIPE_INSTANCE;
-> -        initialized =3D TRUE;
-> +        first =3D FALSE;
->      }
->
-> +    TCHAR pipe_name[256]; /* The entire pipe name string can be up to 256
-> characters long according to MSDN. */
->      swprintf(pipe_name, _countof(pipe_name), TEXT("\\\\.\\pipe\\" PACKAGE
-> "%ls\\service"), service_instance);
-> -    pipe =3D CreateNamedPipe(pipe_name, flags,
-> -                           PIPE_TYPE_MESSAGE | PIPE_READMODE_MESSAGE |
-> PIPE_REJECT_REMOTE_CLIENTS,
-> -                           PIPE_UNLIMITED_INSTANCES, 1024, 1024, 0, NULL=
-);
-> +    HANDLE pipe =3D CreateNamedPipe(pipe_name, flags,
-> +                                  PIPE_TYPE_MESSAGE |
-> PIPE_READMODE_MESSAGE | PIPE_REJECT_REMOTE_CLIENTS,
-> +                                  PIPE_UNLIMITED_INSTANCES, 1024, 1024,
-> 0, &sa);
-> +
-> +    LocalFree(sd);
-> +
->      if (pipe =3D=3D INVALID_HANDLE_VALUE)
->      {
->          MsgToEventLog(M_SYSERR, TEXT("Could not create named pipe"));
->          return INVALID_HANDLE_VALUE;
->      }
->
-> -    if (GetSecurityInfo(pipe, SE_KERNEL_OBJECT, DACL_SECURITY_INFORMATIO=
-N,
-> -                        NULL, NULL, &old_dacl, NULL, &sd) !=3D
-> ERROR_SUCCESS)
-> -    {
-> -        MsgToEventLog(M_SYSERR, TEXT("Could not get pipe security info")=
-);
-> -        return CloseHandleEx(&pipe);
-> -    }
-> -
-> -    if (SetEntriesInAcl(2, ea, old_dacl, &new_dacl) !=3D ERROR_SUCCESS)
-> -    {
-> -        MsgToEventLog(M_SYSERR, TEXT("Could not set entries in new acl")=
-);
-> -        return CloseHandleEx(&pipe);
-> -    }
-> -
-> -    if (SetSecurityInfo(pipe, SE_KERNEL_OBJECT, DACL_SECURITY_INFORMATIO=
-N,
-> -                        NULL, NULL, new_dacl, NULL) !=3D ERROR_SUCCESS)
-> -    {
-> -        MsgToEventLog(M_SYSERR, TEXT("Could not set pipe security info")=
-);
-> -        return CloseHandleEx(&pipe);
-> -    }
-> -
->      return pipe;
->  }
->
-> --
-> 2.42.0.windows.2
->
+Change subject: Check that tls-version-min is supported on startup
+......................................................................
 
-The only change from the 2.6 version is openvpn_swprintf -> swprintf.
-I did not retest the build or executable, but looks good to me based on 2.6
-tests.
+Check that tls-version-min is supported on startup
 
-Acked-by: Selva Nair <selva.nair@...277...>
+After disabling TLS 1.0 and 1.1 in the mbedtls build, the client would
+error out during startup if tls-version-min was set to 1.0 or 1.1, but
+the server would start up and only error out when a client attempts to
+connect.
 
---0000000000002cb263061b3f7212
+This commit checks that tls-version-min is supported during startup so
+that both the client and server error out on startup.
+
+Change-Id: Ifc589854816842e46969a76e2845084b3aaa962f
+Signed-off-by: Max Fillinger <maximilian.fillinger@...2507...>
+---
+M src/openvpn/options.c
+M src/openvpn/ssl.c
+M src/openvpn/ssl_backend.h
+M src/openvpn/ssl_mbedtls.c
+M src/openvpn/ssl_openssl.c
+5 files changed, 31 insertions(+), 6 deletions(-)
+
+
+
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/83/683/1
+
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index f2c7536..f8287f2 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -8933,7 +8933,7 @@
+         ver =3D tls_version_parse(p[1], p[2]);
+         if (ver =3D=3D TLS_VER_BAD)
+         {
+-            msg(msglevel, "unknown tls-version-min parameter: %s", p[1]);
++            msg(msglevel, "unknown or unsupported tls-version-min paramete=
+r: %s", p[1]);
+             goto err;
+         }
+         options->ssl_flags &=3D
+@@ -8947,7 +8947,7 @@
+         ver =3D tls_version_parse(p[1], NULL);
+         if (ver =3D=3D TLS_VER_BAD)
+         {
+-            msg(msglevel, "unknown tls-version-max parameter: %s", p[1]);
++            msg(msglevel, "unknown or unsupported tls-version-max paramete=
+r: %s", p[1]);
+             goto err;
+         }
+         options->ssl_flags &=3D
+diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
+index 2054eb4..1d3fdcd 100644
+--- a/src/openvpn/ssl.c
++++ b/src/openvpn/ssl.c
+@@ -405,20 +405,21 @@
+ int
+ tls_version_parse(const char *vstr, const char *extra)
+ {
++    const int min_version =3D tls_version_min();
+     const int max_version =3D tls_version_max();
+-    if (!strcmp(vstr, "1.0") && TLS_VER_1_0 <=3D max_version)
++    if (!strcmp(vstr, "1.0") && min_version <=3D TLS_VER_1_0 && TLS_VER_1_=
+0 <=3D max_version)
+     {
+         return TLS_VER_1_0;
+     }
+-    else if (!strcmp(vstr, "1.1") && TLS_VER_1_1 <=3D max_version)
++    else if (!strcmp(vstr, "1.1") && min_version <=3D TLS_VER_1_1 && TLS_V=
+ER_1_1 <=3D max_version)
+     {
+         return TLS_VER_1_1;
+     }
+-    else if (!strcmp(vstr, "1.2") && TLS_VER_1_2 <=3D max_version)
++    else if (!strcmp(vstr, "1.2") && min_version <=3D TLS_VER_1_2 && TLS_V=
+ER_1_2 <=3D max_version)
+     {
+         return TLS_VER_1_2;
+     }
+-    else if (!strcmp(vstr, "1.3") && TLS_VER_1_3 <=3D max_version)
++    else if (!strcmp(vstr, "1.3") && min_version <=3D TLS_VER_1_3 && TLS_V=
+ER_1_3 <=3D max_version)
+     {
+         return TLS_VER_1_3;
+     }
+diff --git a/src/openvpn/ssl_backend.h b/src/openvpn/ssl_backend.h
+index 285705f..ef1347b 100644
+--- a/src/openvpn/ssl_backend.h
++++ b/src/openvpn/ssl_backend.h
+@@ -117,6 +117,14 @@
+ int tls_version_max(void);
+
+ /**
++ * Return the minimum TLS version (as a TLS_VER_x constant)
++ * supported by current SSL implementation
++ *
++ * @return              One of the TLS_VER_x constants (but not TLS_VER_BA=
+D).
++ */
++int tls_version_min(void);
++
++/**
+  * Initialise a library-specific TLS context for a server.
+  *
+  * @param ctx           TLS context to initialise
+diff --git a/src/openvpn/ssl_mbedtls.c b/src/openvpn/ssl_mbedtls.c
+index bb88da9..de7efed 100644
+--- a/src/openvpn/ssl_mbedtls.c
++++ b/src/openvpn/ssl_mbedtls.c
+@@ -1049,6 +1049,16 @@
+ #endif /* defined(MBEDTLS_SSL_PROTO_TLS1_2) */
+ }
+
++int
++tls_version_min(void)
++{
++#if defined(MBEDTLS_SSL_PROTO_TLS1_2)
++    return TLS_VER_1_2;
++#else
++    #error "mbedtls is compiled without support for TLS 1.2."
++#endif /* defined(MBEDTLS_SSL_PROTO_TLS1_2) */
++}
++
+ /**
+  * Convert an OpenVPN tls-version variable to mbed TLS format
+  *
+diff --git a/src/openvpn/ssl_openssl.c b/src/openvpn/ssl_openssl.c
+index e8a30a3..352f7fb 100644
+--- a/src/openvpn/ssl_openssl.c
++++ b/src/openvpn/ssl_openssl.c
+@@ -231,6 +231,12 @@
+ #endif
+ }
+
++int
++tls_version_min(void)
++{
++    return TLS_VER_1_0;
++}
++
+ /** Convert internal version number to openssl version number */
+ static int
+ openssl_tls_version(int ver)
+
+--
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/683?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings
+
+Gerrit-Project: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: Ifc589854816842e46969a76e2845084b3aaa962f
+Gerrit-Change-Number: 683
+Gerrit-PatchSet: 1
+Gerrit-Owner: MaxF <max@...2606...>
+Gerrit-Reviewer: flichtenheld <frank@...2641...>
+Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Attention: flichtenheld <frank@...2641...>
+Gerrit-MessageType: newchange
+
+--iJRL4Moard8=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<div dir=3D"ltr"><div>Hi,</div><br><div class=3D"gmail_quote"><div dir=3D"l=
-tr" class=3D"gmail_attr">On Wed, Jun 19, 2024 at 10:48=E2=80=AFAM Lev Stipa=
-kov &lt;<a href=3D"mailto:lstipakov@...277..." target=3D"_blank">lstipakov@=
-...277...</a>&gt; wrote:<br></div><blockquote class=3D"gmail_quote" style=
-=3D"margin:0px 0px 0px 0.8ex;border-left:1px solid rgb(204,204,204);padding=
--left:1ex">At the moment everyone but anonymous are permitted<br>
-to create a pipe with the same name as interactive service creates,<br>
-which makes it possible for malicious process with SeImpersonatePrivilege<b=
-r>
-impersonate as local user.<br>
-<br>
-This hardens the security of the pipe, making it possible only for<br>
-processes running as SYSTEM (such as interactive service) create the<br>
-pipe with the same name.<br>
-<br>
-While on it, replace EXPLICIT_ACCESS structures with SDDL string.<br>
-<br>
-CVE: 2024-4877<br>
-<br>
-Change-Id: I35e783b79a332d247606e05a39e41b4d35d39b5d<br>
-Reported by: Zeze with TeamT5 &lt;<a href=3D"mailto:zeze7w@...277..." targe=
-t=3D"_blank">zeze7w@...277...</a>&gt;<br>
-Signed-off-by: Lev Stipakov &lt;<a href=3D"mailto:lev@...515..." target=3D"=
-_blank">lev@...515...</a>&gt;<br>
----<br>
-=C2=A0v3:<br>
-=C2=A0 - rebase on top of master (replace openvpn_snprintf with snprintf)<b=
-r></blockquote><div><br></div><div>It&#39;s swprintf :)=C2=A0</div><div><br=
-></div><blockquote class=3D"gmail_quote" style=3D"margin:0px 0px 0px 0.8ex;=
-border-left:1px solid rgb(204,204,204);padding-left:1ex">
-<br>
-=C2=A0v2:<br>
-=C2=A0 - ensure that sd is freed even if pipe creation failed<br>
-=C2=A0 - added Reported-By<br>
-<br>
-=C2=A0src/openvpnserv/interactive.c | 81 +++++++++++++---------------------=
--<br>
-=C2=A01 file changed, 29 insertions(+), 52 deletions(-)<br>
-<br>
-diff --git a/src/openvpnserv/interactive.c b/src/openvpnserv/interactive.c<=
-br>
-index 294db00a..f06802de 100644<br>
---- a/src/openvpnserv/interactive.c<br>
-+++ b/src/openvpnserv/interactive.c<br>
-@@ -2140,73 +2140,50 @@ ServiceCtrlInteractive(DWORD ctrl_code, DWORD event=
-, LPVOID data, LPVOID ctx)<br>
-=C2=A0static HANDLE<br>
-=C2=A0CreateClientPipeInstance(VOID)<br>
-=C2=A0{<br>
--=C2=A0 =C2=A0 TCHAR pipe_name[256]; /* The entire pipe name string can be =
-up to 256 characters long according to MSDN. */<br>
--=C2=A0 =C2=A0 HANDLE pipe =3D NULL;<br>
--=C2=A0 =C2=A0 PACL old_dacl, new_dacl;<br>
--=C2=A0 =C2=A0 PSECURITY_DESCRIPTOR sd;<br>
--=C2=A0 =C2=A0 static EXPLICIT_ACCESS ea[2];<br>
--=C2=A0 =C2=A0 static BOOL initialized =3D FALSE;<br>
--=C2=A0 =C2=A0 DWORD flags =3D PIPE_ACCESS_DUPLEX | WRITE_DAC | FILE_FLAG_O=
-VERLAPPED;<br>
-+=C2=A0 =C2=A0 /*<br>
-+=C2=A0 =C2=A0 =C2=A0* allow all access for local system<br>
-+=C2=A0 =C2=A0 =C2=A0* deny FILE_CREATE_PIPE_INSTANCE for everyone<br>
-+=C2=A0 =C2=A0 =C2=A0* allow read/write for authenticated users<br>
-+=C2=A0 =C2=A0 =C2=A0* deny all access to anonymous<br>
-+=C2=A0 =C2=A0 =C2=A0*/<br>
-+=C2=A0 =C2=A0 const TCHAR *sddlString =3D TEXT(&quot;D:(A;OICI;GA;;;S-1-5-=
-18)(D;OICI;0x4;;;S-1-1-0)(A;OICI;GRGW;;;S-1-5-11)(D;;GA;;;S-1-5-7)&quot;);<=
-br>
-<br>
--=C2=A0 =C2=A0 if (!initialized)<br>
-+=C2=A0 =C2=A0 PSECURITY_DESCRIPTOR sd =3D NULL;<br>
-+=C2=A0 =C2=A0 if (!ConvertStringSecurityDescriptorToSecurityDescriptor(sdd=
-lString, SDDL_REVISION_1, &amp;sd, NULL))<br>
-=C2=A0 =C2=A0 =C2=A0{<br>
--=C2=A0 =C2=A0 =C2=A0 =C2=A0 PSID everyone, anonymous;<br>
--<br>
--=C2=A0 =C2=A0 =C2=A0 =C2=A0 ConvertStringSidToSid(TEXT(&quot;S-1-1-0&quot;=
-), &amp;everyone);<br>
--=C2=A0 =C2=A0 =C2=A0 =C2=A0 ConvertStringSidToSid(TEXT(&quot;S-1-5-7&quot;=
-), &amp;anonymous);<br>
-+=C2=A0 =C2=A0 =C2=A0 =C2=A0 MsgToEventLog(M_SYSERR, TEXT(&quot;ConvertStri=
-ngSecurityDescriptorToSecurityDescriptor failed.&quot;));<br>
-+=C2=A0 =C2=A0 =C2=A0 =C2=A0 return INVALID_HANDLE_VALUE;<br>
-+=C2=A0 =C2=A0 }<br>
-<br>
--=C2=A0 =C2=A0 =C2=A0 =C2=A0 ea[0].grfAccessPermissions =3D FILE_GENERIC_WR=
-ITE;<br>
--=C2=A0 =C2=A0 =C2=A0 =C2=A0 ea[0].grfAccessMode =3D GRANT_ACCESS;<br>
--=C2=A0 =C2=A0 =C2=A0 =C2=A0 ea[0].grfInheritance =3D NO_INHERITANCE;<br>
--=C2=A0 =C2=A0 =C2=A0 =C2=A0 ea[0].Trustee.pMultipleTrustee =3D NULL;<br>
--=C2=A0 =C2=A0 =C2=A0 =C2=A0 ea[0].Trustee.MultipleTrusteeOperation =3D NO_=
-MULTIPLE_TRUSTEE;<br>
--=C2=A0 =C2=A0 =C2=A0 =C2=A0 ea[0].Trustee.TrusteeForm =3D TRUSTEE_IS_SID;<=
-br>
--=C2=A0 =C2=A0 =C2=A0 =C2=A0 ea[0].Trustee.TrusteeType =3D TRUSTEE_IS_UNKNO=
-WN;<br>
--=C2=A0 =C2=A0 =C2=A0 =C2=A0 ea[0].Trustee.ptstrName =3D (LPTSTR) everyone;=
-<br>
-+=C2=A0 =C2=A0 /* Set up SECURITY_ATTRIBUTES */<br>
-+=C2=A0 =C2=A0 SECURITY_ATTRIBUTES sa =3D {0};<br>
-+=C2=A0 =C2=A0 sa.nLength =3D sizeof(SECURITY_ATTRIBUTES);<br>
-+=C2=A0 =C2=A0 sa.lpSecurityDescriptor =3D sd;<br>
-+=C2=A0 =C2=A0 sa.bInheritHandle =3D FALSE;<br>
-<br>
--=C2=A0 =C2=A0 =C2=A0 =C2=A0 ea[1].grfAccessPermissions =3D 0;<br>
--=C2=A0 =C2=A0 =C2=A0 =C2=A0 ea[1].grfAccessMode =3D REVOKE_ACCESS;<br>
--=C2=A0 =C2=A0 =C2=A0 =C2=A0 ea[1].grfInheritance =3D NO_INHERITANCE;<br>
--=C2=A0 =C2=A0 =C2=A0 =C2=A0 ea[1].Trustee.pMultipleTrustee =3D NULL;<br>
--=C2=A0 =C2=A0 =C2=A0 =C2=A0 ea[1].Trustee.MultipleTrusteeOperation =3D NO_=
-MULTIPLE_TRUSTEE;<br>
--=C2=A0 =C2=A0 =C2=A0 =C2=A0 ea[1].Trustee.TrusteeForm =3D TRUSTEE_IS_SID;<=
-br>
--=C2=A0 =C2=A0 =C2=A0 =C2=A0 ea[1].Trustee.TrusteeType =3D TRUSTEE_IS_UNKNO=
-WN;<br>
--=C2=A0 =C2=A0 =C2=A0 =C2=A0 ea[1].Trustee.ptstrName =3D (LPTSTR) anonymous=
-;<br>
-+=C2=A0 =C2=A0 DWORD flags =3D PIPE_ACCESS_DUPLEX | WRITE_DAC | FILE_FLAG_O=
-VERLAPPED;<br>
-<br>
-+=C2=A0 =C2=A0 static BOOL first =3D TRUE;<br>
-+=C2=A0 =C2=A0 if (first)<br>
-+=C2=A0 =C2=A0 {<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0flags |=3D FILE_FLAG_FIRST_PIPE_INSTANCE;=
-<br>
--=C2=A0 =C2=A0 =C2=A0 =C2=A0 initialized =3D TRUE;<br>
-+=C2=A0 =C2=A0 =C2=A0 =C2=A0 first =3D FALSE;<br>
-=C2=A0 =C2=A0 =C2=A0}<br>
-<br>
-+=C2=A0 =C2=A0 TCHAR pipe_name[256]; /* The entire pipe name string can be =
-up to 256 characters long according to MSDN. */<br>
-=C2=A0 =C2=A0 =C2=A0swprintf(pipe_name, _countof(pipe_name), TEXT(&quot;\\\=
-\.\\pipe\\&quot; PACKAGE &quot;%ls\\service&quot;), service_instance);<br>
--=C2=A0 =C2=A0 pipe =3D CreateNamedPipe(pipe_name, flags,<br>
--=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
-=A0 =C2=A0 =C2=A0 =C2=A0PIPE_TYPE_MESSAGE | PIPE_READMODE_MESSAGE | PIPE_RE=
-JECT_REMOTE_CLIENTS,<br>
--=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
-=A0 =C2=A0 =C2=A0 =C2=A0PIPE_UNLIMITED_INSTANCES, 1024, 1024, 0, NULL);<br>
-+=C2=A0 =C2=A0 HANDLE pipe =3D CreateNamedPipe(pipe_name, flags,<br>
-+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
-=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 PIPE_TYPE_MESSAGE | PIPE_READ=
-MODE_MESSAGE | PIPE_REJECT_REMOTE_CLIENTS,<br>
-+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
-=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 PIPE_UNLIMITED_INSTANCES, 102=
-4, 1024, 0, &amp;sa);<br>
-+<br>
-+=C2=A0 =C2=A0 LocalFree(sd);<br>
-+<br>
-=C2=A0 =C2=A0 =C2=A0if (pipe =3D=3D INVALID_HANDLE_VALUE)<br>
-=C2=A0 =C2=A0 =C2=A0{<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0MsgToEventLog(M_SYSERR, TEXT(&quot;Could =
-not create named pipe&quot;));<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0return INVALID_HANDLE_VALUE;<br>
-=C2=A0 =C2=A0 =C2=A0}<br>
-<br>
--=C2=A0 =C2=A0 if (GetSecurityInfo(pipe, SE_KERNEL_OBJECT, DACL_SECURITY_IN=
-FORMATION,<br>
--=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
-=A0 =C2=A0 NULL, NULL, &amp;old_dacl, NULL, &amp;sd) !=3D ERROR_SUCCESS)<br>
--=C2=A0 =C2=A0 {<br>
--=C2=A0 =C2=A0 =C2=A0 =C2=A0 MsgToEventLog(M_SYSERR, TEXT(&quot;Could not g=
-et pipe security info&quot;));<br>
--=C2=A0 =C2=A0 =C2=A0 =C2=A0 return CloseHandleEx(&amp;pipe);<br>
--=C2=A0 =C2=A0 }<br>
--<br>
--=C2=A0 =C2=A0 if (SetEntriesInAcl(2, ea, old_dacl, &amp;new_dacl) !=3D ERR=
-OR_SUCCESS)<br>
--=C2=A0 =C2=A0 {<br>
--=C2=A0 =C2=A0 =C2=A0 =C2=A0 MsgToEventLog(M_SYSERR, TEXT(&quot;Could not s=
-et entries in new acl&quot;));<br>
--=C2=A0 =C2=A0 =C2=A0 =C2=A0 return CloseHandleEx(&amp;pipe);<br>
--=C2=A0 =C2=A0 }<br>
--<br>
--=C2=A0 =C2=A0 if (SetSecurityInfo(pipe, SE_KERNEL_OBJECT, DACL_SECURITY_IN=
-FORMATION,<br>
--=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
-=A0 =C2=A0 NULL, NULL, new_dacl, NULL) !=3D ERROR_SUCCESS)<br>
--=C2=A0 =C2=A0 {<br>
--=C2=A0 =C2=A0 =C2=A0 =C2=A0 MsgToEventLog(M_SYSERR, TEXT(&quot;Could not s=
-et pipe security info&quot;));<br>
--=C2=A0 =C2=A0 =C2=A0 =C2=A0 return CloseHandleEx(&amp;pipe);<br>
--=C2=A0 =C2=A0 }<br>
--<br>
-=C2=A0 =C2=A0 =C2=A0return pipe;<br>
-=C2=A0}<br>
-<br>
--- <br>
-2.42.0.windows.2<br></blockquote><div><br></div><div>The only change from t=
-he 2.6 version is openvpn_swprintf -&gt; swprintf.</div><div>I did not rete=
-st the build or executable, but looks good to me based on 2.6 tests.</div><=
-div>=C2=A0</div><div>Acked-by: Selva Nair &lt;<a href=3D"mailto:selva.nair@=
-...277..." target=3D"_blank">selva.nair@...277...</a>&gt;</div></div></div>
+<p> Attention is currently required from: flichtenheld, plaisthos. </p>
+<p>MaxF would like plaisthos and flichtenheld to <strong>review</strong> th=
+is change.
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/683?usp=3Demail">Vi=
+ew Change</a></p><pre style=3D"font-family: monospace,monospace; white-spac=
+e: pre-wrap;">Check that tls-version-min is supported on startup<br><br>Aft=
+er disabling TLS 1.0 and 1.1 in the mbedtls build, the client would<br>erro=
+r out during startup if tls-version-min was set to 1.0 or 1.1, but<br>the s=
+erver would start up and only error out when a client attempts to<br>connec=
+t.<br><br>This commit checks that tls-version-min is supported during start=
+up so<br>that both the client and server error out on startup.<br><br>Chang=
+e-Id: Ifc589854816842e46969a76e2845084b3aaa962f<br>Signed-off-by: Max Filli=
+nger &lt;maximilian.fillinger@...2507...&gt;<br>---<br>M src/openvpn/option=
+s.c<br>M src/openvpn/ssl.c<br>M src/openvpn/ssl_backend.h<br>M src/openvpn/=
+ssl_mbedtls.c<br>M src/openvpn/ssl_openssl.c<br>5 files changed, 31 inserti=
+ons(+), 6 deletions(-)<br><br></pre><pre style=3D"font-family: monospace,mo=
+nospace; white-space: pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/op=
+envpn refs/changes/83/683/1</pre><pre style=3D"font-family: monospace,monos=
+pace; white-space: pre-wrap;"><span>diff --git a/src/openvpn/options.c b/sr=
+c/openvpn/options.c</span><br><span>index f2c7536..f8287f2 100644</span><br=
+><span>--- a/src/openvpn/options.c</span><br><span>+++ b/src/openvpn/option=
+s.c</span><br><span>@@ -8933,7 +8933,7 @@</span><br><span>         ver =3D =
+tls_version_parse(p[1], p[2]);</span><br><span>         if (ver =3D=3D TLS_=
+VER_BAD)</span><br><span>         {</span><br><span style=3D"color: hsl(0, =
+100%, 40%);">-            msg(msglevel, &quot;unknown tls-version-min param=
+eter: %s&quot;, p[1]);</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+            msg(msglevel, &quot;unknown or unsupported tls-version-min p=
+arameter: %s&quot;, p[1]);</span><br><span>             goto err;</span><br=
+><span>         }</span><br><span>         options-&gt;ssl_flags &amp;=3D</=
+span><br><span>@@ -8947,7 +8947,7 @@</span><br><span>         ver =3D tls_v=
+ersion_parse(p[1], NULL);</span><br><span>         if (ver =3D=3D TLS_VER_B=
+AD)</span><br><span>         {</span><br><span style=3D"color: hsl(0, 100%,=
+ 40%);">-            msg(msglevel, &quot;unknown tls-version-max parameter:=
+ %s&quot;, p[1]);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+          msg(msglevel, &quot;unknown or unsupported tls-version-max parame=
+ter: %s&quot;, p[1]);</span><br><span>             goto err;</span><br><spa=
+n>         }</span><br><span>         options-&gt;ssl_flags &amp;=3D</span>=
+<br><span>diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c</span><br><spa=
+n>index 2054eb4..1d3fdcd 100644</span><br><span>--- a/src/openvpn/ssl.c</sp=
+an><br><span>+++ b/src/openvpn/ssl.c</span><br><span>@@ -405,20 +405,21 @@<=
+/span><br><span> int</span><br><span> tls_version_parse(const char *vstr, c=
+onst char *extra)</span><br><span> {</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+    const int min_version =3D tls_version_min();</span><br=
+><span>     const int max_version =3D tls_version_max();</span><br><span st=
+yle=3D"color: hsl(0, 100%, 40%);">-    if (!strcmp(vstr, &quot;1.0&quot;) &=
+amp;&amp; TLS_VER_1_0 &lt;=3D max_version)</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+    if (!strcmp(vstr, &quot;1.0&quot;) &amp;&amp; mi=
+n_version &lt;=3D TLS_VER_1_0 &amp;&amp; TLS_VER_1_0 &lt;=3D max_version)</=
+span><br><span>     {</span><br><span>         return TLS_VER_1_0;</span><b=
+r><span>     }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    els=
+e if (!strcmp(vstr, &quot;1.1&quot;) &amp;&amp; TLS_VER_1_1 &lt;=3D max_ver=
+sion)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    else if (!=
+strcmp(vstr, &quot;1.1&quot;) &amp;&amp; min_version &lt;=3D TLS_VER_1_1 &a=
+mp;&amp; TLS_VER_1_1 &lt;=3D max_version)</span><br><span>     {</span><br>=
+<span>         return TLS_VER_1_1;</span><br><span>     }</span><br><span s=
+tyle=3D"color: hsl(0, 100%, 40%);">-    else if (!strcmp(vstr, &quot;1.2&qu=
+ot;) &amp;&amp; TLS_VER_1_2 &lt;=3D max_version)</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+    else if (!strcmp(vstr, &quot;1.2&quot;) &a=
+mp;&amp; min_version &lt;=3D TLS_VER_1_2 &amp;&amp; TLS_VER_1_2 &lt;=3D max=
+_version)</span><br><span>     {</span><br><span>         return TLS_VER_1_=
+2;</span><br><span>     }</span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">-    else if (!strcmp(vstr, &quot;1.3&quot;) &amp;&amp; TLS_VER_1_3 &lt;=
+=3D max_version)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+ else if (!strcmp(vstr, &quot;1.3&quot;) &amp;&amp; min_version &lt;=3D TLS=
+_VER_1_3 &amp;&amp; TLS_VER_1_3 &lt;=3D max_version)</span><br><span>     {=
+</span><br><span>         return TLS_VER_1_3;</span><br><span>     }</span>=
+<br><span>diff --git a/src/openvpn/ssl_backend.h b/src/openvpn/ssl_backend.=
+h</span><br><span>index 285705f..ef1347b 100644</span><br><span>--- a/src/o=
+penvpn/ssl_backend.h</span><br><span>+++ b/src/openvpn/ssl_backend.h</span>=
+<br><span>@@ -117,6 +117,14 @@</span><br><span> int tls_version_max(void);<=
+/span><br><span> </span><br><span> /**</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+ * Return the minimum TLS version (as a TLS_VER_x consta=
+nt)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * supported by =
+current SSL implementation</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+ *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @return=
+              One of the TLS_VER_x constants (but not TLS_VER_BAD).</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+ */</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+int tls_version_min(void);</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+/**</span><br><span>  * Initialise a library-specific=
+ TLS context for a server.</span><br><span>  *</span><br><span>  * @param c=
+tx           TLS context to initialise</span><br><span>diff --git a/src/ope=
+nvpn/ssl_mbedtls.c b/src/openvpn/ssl_mbedtls.c</span><br><span>index bb88da=
+9..de7efed 100644</span><br><span>--- a/src/openvpn/ssl_mbedtls.c</span><br=
+><span>+++ b/src/openvpn/ssl_mbedtls.c</span><br><span>@@ -1049,6 +1049,16 =
+@@</span><br><span> #endif /* defined(MBEDTLS_SSL_PROTO_TLS1_2) */</span><b=
+r><span> }</span><br><span> </span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+int</span><br><span style=3D"color: hsl(120, 100%, 40%);">+tls_ver=
+sion_min(void)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+#if defined(MBEDTLS_SSL=
+_PROTO_TLS1_2)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    r=
+eturn TLS_VER_1_2;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#=
+else</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    #error &quo=
+t;mbedtls is compiled without support for TLS 1.2.&quot;</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+#endif /* defined(MBEDTLS_SSL_PROTO_TL=
+S1_2) */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> /**</span><=
+br><span>  * Convert an OpenVPN tls-version variable to mbed TLS format</sp=
+an><br><span>  *</span><br><span>diff --git a/src/openvpn/ssl_openssl.c b/s=
+rc/openvpn/ssl_openssl.c</span><br><span>index e8a30a3..352f7fb 100644</spa=
+n><br><span>--- a/src/openvpn/ssl_openssl.c</span><br><span>+++ b/src/openv=
+pn/ssl_openssl.c</span><br><span>@@ -231,6 +231,12 @@</span><br><span> #end=
+if</span><br><span> }</span><br><span> </span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+int</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+tls_version_min(void)</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    return T=
+LS_VER_1_0;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> /** Conv=
+ert internal version number to openssl version number */</span><br><span> s=
+tatic int</span><br><span> openssl_tls_version(int ver)</span><br><span></s=
+pan><br></pre><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/open=
+vpn/+/683?usp=3Demail">change 683</a>. To unsubscribe, or for help writing =
+mail filters, visit <a href=3D"http://gerrit.openvpn.net/settings">settings=
+</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div it=
+emscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link=
+ itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/683?usp=3De=
+mail"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
 
---0000000000002cb263061b3f7212--
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: Ifc589854816842e46969a76e284=
+5084b3aaa962f </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 683 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
+<div style=3D"display:none"> Gerrit-Owner: MaxF &lt;max@...2606...&gt; </di=
+v>
+<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
+1...&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
+.1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
+41...&gt; </div>
+<div style=3D"display:none"> Gerrit-MessageType: newchange </div>
+
+
+--iJRL4Moard8=--
 
