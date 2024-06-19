@@ -1,10 +1,11 @@
-Date: Wed, 19 Jun 2024 16:40:18 +0200 (CEST)
-Message-Id: <202406191440.45JEeIuU076380@...2054...>
-From: Gert Doering <gert@...1296...>
+From: Lev Stipakov <lstipakov@...277...>
+Date: Wed, 19 Jun 2024 17:46:08 +0300
+Message-ID: <20240619144629.1718-2-lev@...515...>
 In-Reply-To: <20240619134451.222-1-lev@...515...>
 References: <20240619134451.222-1-lev@...515...>
-Subject: [Openvpn-devel] [PATCH applied] Re: interactive.c: Improve access
- control for gui<->service pipe
+MIME-Version: 1.0
+Subject: [Openvpn-devel] [PATCH v3] interactive.c: Improve access control
+ for gui<->service pipe
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,56 +16,144 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Lev Stipakov <lstipakov@...277...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
+Cc: Lev Stipakov <lev@...515...>
 
-This is another "developed in secrecy on the security@ mailing list"
-patch, because it has security implications.
+At the moment everyone but anonymous are permitted
+to create a pipe with the same name as interactive service creates,
+which makes it possible for malicious process with SeImpersonatePrivilege
+impersonate as local user.
 
-It affects windows builds, where it is possible to have two different
-processes provide a pipe with the same name (ewwww!), and a connecting
-client will might not end up at the interactive service but at "some
-random process".  This is not a major issue in itself, but the GUI sends
-a "user credentials token" (so openvpn.exe can be run as "normal user"
-later on) and this can be abused by a malicious process to get access
-to the user running openvpn-gui.exe - now, it's a somewhat theoretical
-attack (malicious software having sufficient privileges to do use
-a user token, but not having either "that user access" or "system privs"
-to start with) - but it's worth fixing.
+This hardens the security of the pipe, making it possible only for
+processes running as SYSTEM (such as interactive service) create the
+pipe with the same name.
 
-So, just stay calm, don't panic, and upgrade to 2.6.11 ;-)
+While on it, replace EXPLICIT_ACCESS structures with SDDL string.
 
-I have not tested this beyond "does it compile?" on a local
-ubuntu/mingw build and on GHA.  Lev, Selva and Heiko did all the
-grunt work on coming up with a solution and testing the patch.
+CVE: 2024-4877
 
-Your patch has been applied to the release/2.6 branch.  A rebase to
-master is in the works (this conflicted with the snprintf() cleanup
-patch, which is "only in master" and was merged right after *this*
-was developed and tested).
+Change-Id: I35e783b79a332d247606e05a39e41b4d35d39b5d
+Reported by: Zeze with TeamT5 <zeze7w@...277...>
+Signed-off-by: Lev Stipakov <lev@...515...>
+---
+ v3:
+  - rebase on top of master (replace openvpn_snprintf with snprintf)
 
-Backport to release/2.5 is not fully straightforward either - there have
-been a number of fixes to interactive.c, and not all of them have been
-backported.  OTOH, we do not intend to provide 2.5.x windows binaries 
-ever again (and said so at 2.5.10 release), so now is the time to
-upgrade your windows clients to 2.6.x
+ v2:
+  - ensure that sd is freed even if pipe creation failed
+  - added Reported-By
 
-commit 51301eb6c233c284270e3f4ed0c7f5781f2b5c62 (release/2.6)
-Author: Lev Stipakov
-Date:   Wed Jun 19 16:44:23 2024 +0300
+ src/openvpnserv/interactive.c | 81 +++++++++++++----------------------
+ 1 file changed, 29 insertions(+), 52 deletions(-)
 
-     interactive.c: Improve access control for gui<->service pipe
-
-     Signed-off-by: Lev Stipakov <lev@...515...>
-     Acked-by: Selva Nair <selva.nair@...277...>
-     Message-Id: <20240619134451.222-1-lev@...515...>
-     URL: https://www.mail-archive.com/search?l=mid&q=20240619134451.222-1-lev@...515...
-     Signed-off-by: Gert Doering <gert@...1296...>
-
-
---
-kind regards,
-
-Gert Doering
+diff --git a/src/openvpnserv/interactive.c b/src/openvpnserv/interactive.c
+index 294db00a..f06802de 100644
+--- a/src/openvpnserv/interactive.c
++++ b/src/openvpnserv/interactive.c
+@@ -2140,73 +2140,50 @@ ServiceCtrlInteractive(DWORD ctrl_code, DWORD event, LPVOID data, LPVOID ctx)
+ static HANDLE
+ CreateClientPipeInstance(VOID)
+ {
+-    TCHAR pipe_name[256]; /* The entire pipe name string can be up to 256 characters long according to MSDN. */
+-    HANDLE pipe = NULL;
+-    PACL old_dacl, new_dacl;
+-    PSECURITY_DESCRIPTOR sd;
+-    static EXPLICIT_ACCESS ea[2];
+-    static BOOL initialized = FALSE;
+-    DWORD flags = PIPE_ACCESS_DUPLEX | WRITE_DAC | FILE_FLAG_OVERLAPPED;
++    /*
++     * allow all access for local system
++     * deny FILE_CREATE_PIPE_INSTANCE for everyone
++     * allow read/write for authenticated users
++     * deny all access to anonymous
++     */
++    const TCHAR *sddlString = TEXT("D:(A;OICI;GA;;;S-1-5-18)(D;OICI;0x4;;;S-1-1-0)(A;OICI;GRGW;;;S-1-5-11)(D;;GA;;;S-1-5-7)");
+ 
+-    if (!initialized)
++    PSECURITY_DESCRIPTOR sd = NULL;
++    if (!ConvertStringSecurityDescriptorToSecurityDescriptor(sddlString, SDDL_REVISION_1, &sd, NULL))
+     {
+-        PSID everyone, anonymous;
+-
+-        ConvertStringSidToSid(TEXT("S-1-1-0"), &everyone);
+-        ConvertStringSidToSid(TEXT("S-1-5-7"), &anonymous);
++        MsgToEventLog(M_SYSERR, TEXT("ConvertStringSecurityDescriptorToSecurityDescriptor failed."));
++        return INVALID_HANDLE_VALUE;
++    }
+ 
+-        ea[0].grfAccessPermissions = FILE_GENERIC_WRITE;
+-        ea[0].grfAccessMode = GRANT_ACCESS;
+-        ea[0].grfInheritance = NO_INHERITANCE;
+-        ea[0].Trustee.pMultipleTrustee = NULL;
+-        ea[0].Trustee.MultipleTrusteeOperation = NO_MULTIPLE_TRUSTEE;
+-        ea[0].Trustee.TrusteeForm = TRUSTEE_IS_SID;
+-        ea[0].Trustee.TrusteeType = TRUSTEE_IS_UNKNOWN;
+-        ea[0].Trustee.ptstrName = (LPTSTR) everyone;
++    /* Set up SECURITY_ATTRIBUTES */
++    SECURITY_ATTRIBUTES sa = {0};
++    sa.nLength = sizeof(SECURITY_ATTRIBUTES);
++    sa.lpSecurityDescriptor = sd;
++    sa.bInheritHandle = FALSE;
+ 
+-        ea[1].grfAccessPermissions = 0;
+-        ea[1].grfAccessMode = REVOKE_ACCESS;
+-        ea[1].grfInheritance = NO_INHERITANCE;
+-        ea[1].Trustee.pMultipleTrustee = NULL;
+-        ea[1].Trustee.MultipleTrusteeOperation = NO_MULTIPLE_TRUSTEE;
+-        ea[1].Trustee.TrusteeForm = TRUSTEE_IS_SID;
+-        ea[1].Trustee.TrusteeType = TRUSTEE_IS_UNKNOWN;
+-        ea[1].Trustee.ptstrName = (LPTSTR) anonymous;
++    DWORD flags = PIPE_ACCESS_DUPLEX | WRITE_DAC | FILE_FLAG_OVERLAPPED;
+ 
++    static BOOL first = TRUE;
++    if (first)
++    {
+         flags |= FILE_FLAG_FIRST_PIPE_INSTANCE;
+-        initialized = TRUE;
++        first = FALSE;
+     }
+ 
++    TCHAR pipe_name[256]; /* The entire pipe name string can be up to 256 characters long according to MSDN. */
+     swprintf(pipe_name, _countof(pipe_name), TEXT("\\\\.\\pipe\\" PACKAGE "%ls\\service"), service_instance);
+-    pipe = CreateNamedPipe(pipe_name, flags,
+-                           PIPE_TYPE_MESSAGE | PIPE_READMODE_MESSAGE | PIPE_REJECT_REMOTE_CLIENTS,
+-                           PIPE_UNLIMITED_INSTANCES, 1024, 1024, 0, NULL);
++    HANDLE pipe = CreateNamedPipe(pipe_name, flags,
++                                  PIPE_TYPE_MESSAGE | PIPE_READMODE_MESSAGE | PIPE_REJECT_REMOTE_CLIENTS,
++                                  PIPE_UNLIMITED_INSTANCES, 1024, 1024, 0, &sa);
++
++    LocalFree(sd);
++
+     if (pipe == INVALID_HANDLE_VALUE)
+     {
+         MsgToEventLog(M_SYSERR, TEXT("Could not create named pipe"));
+         return INVALID_HANDLE_VALUE;
+     }
+ 
+-    if (GetSecurityInfo(pipe, SE_KERNEL_OBJECT, DACL_SECURITY_INFORMATION,
+-                        NULL, NULL, &old_dacl, NULL, &sd) != ERROR_SUCCESS)
+-    {
+-        MsgToEventLog(M_SYSERR, TEXT("Could not get pipe security info"));
+-        return CloseHandleEx(&pipe);
+-    }
+-
+-    if (SetEntriesInAcl(2, ea, old_dacl, &new_dacl) != ERROR_SUCCESS)
+-    {
+-        MsgToEventLog(M_SYSERR, TEXT("Could not set entries in new acl"));
+-        return CloseHandleEx(&pipe);
+-    }
+-
+-    if (SetSecurityInfo(pipe, SE_KERNEL_OBJECT, DACL_SECURITY_INFORMATION,
+-                        NULL, NULL, new_dacl, NULL) != ERROR_SUCCESS)
+-    {
+-        MsgToEventLog(M_SYSERR, TEXT("Could not set pipe security info"));
+-        return CloseHandleEx(&pipe);
+-    }
+-
+     return pipe;
+ }
+ 
+-- 
+2.42.0.windows.2
 
 
