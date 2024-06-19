@@ -1,17 +1,9 @@
-Date: Wed, 19 Jun 2024 15:45:31 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <ZnLg-79txAYA-jn-@...1296...>
-References: <20240618120219.5053-1-gert@...1296...>
- <202406181630.45IGU5vu098122@...2054...>
- <ZnKodXfUYfL5LUlJ@...1296...>
- <d2a5a966414745e2942f0cfa62db3fdc@...2507...>
+From: Lev Stipakov <lstipakov@...277...>
+Date: Wed, 19 Jun 2024 16:44:23 +0300
+Message-ID: <20240619134451.222-1-lev@...515...>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="tkzSmPuUtMCnAGUn"
-Content-Disposition: inline
-In-Reply-To: <d2a5a966414745e2942f0cfa62db3fdc@...2507...>
-Subject: Re: [Openvpn-devel] [PATCH applied] Re: mbedtls: Remove support for
- old TLS versions
+Subject: [Openvpn-devel] [PATCH] interactive.c: Improve access control for
+ gui<->service pipe
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,74 +12,143 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Maximilian Fillinger <maximilian.fillinger@...2507...>
-Cc: Gert Doering <gert@...1296...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
+Cc: Lev Stipakov <lev@...515...>
 
---tkzSmPuUtMCnAGUn
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+At the moment everyone but anonymous are permitted
+to create a pipe with the same name as interactive service creates,
+which makes it possible for malicious process with SeImpersonatePrivilege
+impersonate as local user.
 
-Hi,
+This hardens the security of the pipe, making it possible only for
+processes running as SYSTEM (such as interactive service) create the
+pipe with the same name.
 
-On Wed, Jun 19, 2024 at 01:38:46PM +0000, Maximilian Fillinger wrote:
-> I *think* I reproduced the problem you're encountering.
->=20
-> If I put
->=20
-> setenv opt tls-version-min 1.0
->=20
-> in the server config, then *every* connection attempt will trigger a fata=
-l error in the server. Doesn't matter what TLS versions the client supports.
->=20
-> If I put that option into the client config, the client will exit with an=
- error during startup.
->=20
-> It's not clear to me what the expected behavior is when tls-version-min i=
-s an unsupported version, but if it's an error, it should happen during sta=
-rt-up.
+While on it, replace EXPLICIT_ACCESS structures with SDDL string.
 
-I would argue for
+CVE: 2024-4877
 
- - we log "minimum supported version is 1.2" and go on
+Change-Id: I35e783b79a332d247606e05a39e41b4d35d39b5d
+Reported by: Zeze with TeamT5 <zeze7w@...277...>
+Signed-off-by: Lev Stipakov <lev@...515...>
+---
+ v2:
+  - ensure that sd is freed even if pipe creation failed
+  - added Reported-By
 
-or=20
+ src/openvpnserv/interactive.c | 81 +++++++++++++----------------------
+ 1 file changed, 29 insertions(+), 52 deletions(-)
 
- - we log "minimum supported version is 1.2" and exit
+diff --git a/src/openvpnserv/interactive.c b/src/openvpnserv/interactive.c
+index d32223ce..6da8ee5d 100644
+--- a/src/openvpnserv/interactive.c
++++ b/src/openvpnserv/interactive.c
+@@ -2137,73 +2137,50 @@ ServiceCtrlInteractive(DWORD ctrl_code, DWORD event, LPVOID data, LPVOID ctx)
+ static HANDLE
+ CreateClientPipeInstance(VOID)
+ {
+-    TCHAR pipe_name[256]; /* The entire pipe name string can be up to 256 characters long according to MSDN. */
+-    HANDLE pipe = NULL;
+-    PACL old_dacl, new_dacl;
+-    PSECURITY_DESCRIPTOR sd;
+-    static EXPLICIT_ACCESS ea[2];
+-    static BOOL initialized = FALSE;
+-    DWORD flags = PIPE_ACCESS_DUPLEX | WRITE_DAC | FILE_FLAG_OVERLAPPED;
++    /*
++     * allow all access for local system
++     * deny FILE_CREATE_PIPE_INSTANCE for everyone
++     * allow read/write for authenticated users
++     * deny all access to anonymous
++     */
++    const TCHAR *sddlString = TEXT("D:(A;OICI;GA;;;S-1-5-18)(D;OICI;0x4;;;S-1-1-0)(A;OICI;GRGW;;;S-1-5-11)(D;;GA;;;S-1-5-7)");
+ 
+-    if (!initialized)
++    PSECURITY_DESCRIPTOR sd = NULL;
++    if (!ConvertStringSecurityDescriptorToSecurityDescriptor(sddlString, SDDL_REVISION_1, &sd, NULL))
+     {
+-        PSID everyone, anonymous;
+-
+-        ConvertStringSidToSid(TEXT("S-1-1-0"), &everyone);
+-        ConvertStringSidToSid(TEXT("S-1-5-7"), &anonymous);
++        MsgToEventLog(M_SYSERR, TEXT("ConvertStringSecurityDescriptorToSecurityDescriptor failed."));
++        return INVALID_HANDLE_VALUE;
++    }
+ 
+-        ea[0].grfAccessPermissions = FILE_GENERIC_WRITE;
+-        ea[0].grfAccessMode = GRANT_ACCESS;
+-        ea[0].grfInheritance = NO_INHERITANCE;
+-        ea[0].Trustee.pMultipleTrustee = NULL;
+-        ea[0].Trustee.MultipleTrusteeOperation = NO_MULTIPLE_TRUSTEE;
+-        ea[0].Trustee.TrusteeForm = TRUSTEE_IS_SID;
+-        ea[0].Trustee.TrusteeType = TRUSTEE_IS_UNKNOWN;
+-        ea[0].Trustee.ptstrName = (LPTSTR) everyone;
++    /* Set up SECURITY_ATTRIBUTES */
++    SECURITY_ATTRIBUTES sa = {0};
++    sa.nLength = sizeof(SECURITY_ATTRIBUTES);
++    sa.lpSecurityDescriptor = sd;
++    sa.bInheritHandle = FALSE;
+ 
+-        ea[1].grfAccessPermissions = 0;
+-        ea[1].grfAccessMode = REVOKE_ACCESS;
+-        ea[1].grfInheritance = NO_INHERITANCE;
+-        ea[1].Trustee.pMultipleTrustee = NULL;
+-        ea[1].Trustee.MultipleTrusteeOperation = NO_MULTIPLE_TRUSTEE;
+-        ea[1].Trustee.TrusteeForm = TRUSTEE_IS_SID;
+-        ea[1].Trustee.TrusteeType = TRUSTEE_IS_UNKNOWN;
+-        ea[1].Trustee.ptstrName = (LPTSTR) anonymous;
++    DWORD flags = PIPE_ACCESS_DUPLEX | WRITE_DAC | FILE_FLAG_OVERLAPPED;
+ 
++    static BOOL first = TRUE;
++    if (first)
++    {
+         flags |= FILE_FLAG_FIRST_PIPE_INSTANCE;
+-        initialized = TRUE;
++        first = FALSE;
+     }
+ 
++    TCHAR pipe_name[256]; /* The entire pipe name string can be up to 256 characters long according to MSDN. */
+     openvpn_swprintf(pipe_name, _countof(pipe_name), TEXT("\\\\.\\pipe\\" PACKAGE "%ls\\service"), service_instance);
+-    pipe = CreateNamedPipe(pipe_name, flags,
+-                           PIPE_TYPE_MESSAGE | PIPE_READMODE_MESSAGE | PIPE_REJECT_REMOTE_CLIENTS,
+-                           PIPE_UNLIMITED_INSTANCES, 1024, 1024, 0, NULL);
++    HANDLE pipe = CreateNamedPipe(pipe_name, flags,
++                                  PIPE_TYPE_MESSAGE | PIPE_READMODE_MESSAGE | PIPE_REJECT_REMOTE_CLIENTS,
++                                  PIPE_UNLIMITED_INSTANCES, 1024, 1024, 0, &sa);
++
++    LocalFree(sd);
++
+     if (pipe == INVALID_HANDLE_VALUE)
+     {
+         MsgToEventLog(M_SYSERR, TEXT("Could not create named pipe"));
+         return INVALID_HANDLE_VALUE;
+     }
+ 
+-    if (GetSecurityInfo(pipe, SE_KERNEL_OBJECT, DACL_SECURITY_INFORMATION,
+-                        NULL, NULL, &old_dacl, NULL, &sd) != ERROR_SUCCESS)
+-    {
+-        MsgToEventLog(M_SYSERR, TEXT("Could not get pipe security info"));
+-        return CloseHandleEx(&pipe);
+-    }
+-
+-    if (SetEntriesInAcl(2, ea, old_dacl, &new_dacl) != ERROR_SUCCESS)
+-    {
+-        MsgToEventLog(M_SYSERR, TEXT("Could not set entries in new acl"));
+-        return CloseHandleEx(&pipe);
+-    }
+-
+-    if (SetSecurityInfo(pipe, SE_KERNEL_OBJECT, DACL_SECURITY_INFORMATION,
+-                        NULL, NULL, new_dacl, NULL) != ERROR_SUCCESS)
+-    {
+-        MsgToEventLog(M_SYSERR, TEXT("Could not set pipe security info"));
+-        return CloseHandleEx(&pipe);
+-    }
+-
+     return pipe;
+ }
+ 
+-- 
+2.42.0.windows.2
 
-both is acceptable.  It will break people's setups in different ways,
-though...  the first will pretend all is well, and older clients can no
-longer connect, while the second one will break everything, so making it
-more obvious.
-
-gert
-
---=20
-"If was one thing all people took for granted, was conviction that if you=20
- feed honest figures into a computer, honest figures come out. Never doubte=
-d=20
- it myself till I met a computer with a sense of humor."
-                             Robert A. Heinlein, The Moon is a Harsh Mistre=
-ss
-
-Gert Doering - Munich, Germany                             gert@...1296...
-
---tkzSmPuUtMCnAGUn
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQGcBAEBAgAGBQJmcuD7AAoJEB2Cnv7KVigS+SgMAJlMrkruJ0HFbdiBBJD2QAYu
-uYqEoLokroC9KnLz9v60D9gbT+aDQUAMSnpzD/I6p6DXV31aMpSHoTiqPXFxCRcK
-ax/TksY644kBTY1cPlusu8GONXnw6wcecnR9btomY8Kx9qMg0itB4zIorWPVXKb5
-zIAr8XN4WauVWtVi1SP7+aOfOtV9NfJBpvFt76TIJWBX22WtdvmnArZVtqwThkH7
-4FSBc+FNTsWAP0Uv/WIvSQg/0KuivhvcknSpZaj19N2haDaMJBI+02ib0agPU2lU
-IUDS5vIKqeqhR5epgZM/bFWFrBC/jp5bQ4RmrAu30Uy42KEy+chPaUUZr9nGxRGg
-DhvOH0OgPyMSmZrIGm/YxnLrdmUGQI3fjmqzGd3m0g29YtJxXGkq2aF5B9Q1ZVgh
-j3bjoCQd9i1bSjuY9Qq5f9ZDugyU0hSVdrfDl8fRObBIuq6+amKdWnT+oO9D22w6
-Opns+E8TEmweiLZal7onnTGKy7YLtrmiraLFQhdxJw==
-=AMpd
------END PGP SIGNATURE-----
-
---tkzSmPuUtMCnAGUn--
 
