@@ -1,14 +1,13 @@
-From: Maximilian Fillinger <maximilian.fillinger@...2507...>
-Date: Wed, 19 Jun 2024 13:38:46 +0000
-Message-ID: <d2a5a966414745e2942f0cfa62db3fdc@...2507...>
-References: <20240618120219.5053-1-gert@...1296...>
- <202406181630.45IGU5vu098122@...2054...>
- <ZnKodXfUYfL5LUlJ@...1296...>
-In-Reply-To: <ZnKodXfUYfL5LUlJ@...1296...>
-Content-Language: en-US
 MIME-Version: 1.0
-Subject: Re: [Openvpn-devel] [PATCH applied] Re: mbedtls: Remove support for
- old TLS versions
+References: <20240619134451.222-1-lev@...515...>
+ <CAKuzo_iaPkPRdcO1OP_v-uXjp5HFr7=BnaYA9BNQPKEaeGfaLg@...278...>
+In-Reply-To: <CAKuzo_iaPkPRdcO1OP_v-uXjp5HFr7=BnaYA9BNQPKEaeGfaLg@...278...>
+From: Selva Nair <selva.nair@...277...>
+Date: Wed, 19 Jun 2024 10:05:53 -0400
+Message-ID: <CAKuzo_g=zUf9c0bPo2+9Ad8u-cZNgrgrV2Fu5K4TqK6mu1vWnA@...278...>
+Content-Type: multipart/alternative; boundary="00000000000033af55061b3eb312"
+Subject: Re: [Openvpn-devel] [PATCH] interactive.c: Improve access control
+ for gui<->service pipe
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,114 +16,92 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
+To: Lev Stipakov <lstipakov@...277...>
+Cc: openvpn-devel@lists.sourceforge.net, Lev Stipakov <lev@...515...>
+
+--00000000000033af55061b3eb312
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-To: Gert Doering <gert@...1296...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-Hi,
+Forgot to add:
 
-I *think* I reproduced the problem you're encountering.
+This applies only to 2.6 -- for master we'll need a rebased version.
 
-If I put
+On Wed, Jun 19, 2024 at 9:51=E2=80=AFAM Selva Nair <selva.nair@...277...> w=
+rote:
 
-setenv opt tls-version-min 1.0
+>
+>
+> On Wed, Jun 19, 2024 at 9:47=E2=80=AFAM Lev Stipakov <lstipakov@...277...=
+> wrote:
+>
+>> At the moment everyone but anonymous are permitted
+>> to create a pipe with the same name as interactive service creates,
+>> which makes it possible for malicious process with SeImpersonatePrivilege
+>> impersonate as local user.
+>>
+>> This hardens the security of the pipe, making it possible only for
+>> processes running as SYSTEM (such as interactive service) create the
+>> pipe with the same name.
+>>
+>> While on it, replace EXPLICIT_ACCESS structures with SDDL string.
+>>
+>> CVE: 2024-4877
+>>
+>> Change-Id: I35e783b79a332d247606e05a39e41b4d35d39b5d
+>> Reported by: Zeze with TeamT5 <zeze7w@...277...>
+>> Signed-off-by: Lev Stipakov <lev@...515...>
+>> ---
+>>  v2:
+>>   - ensure that sd is freed even if pipe creation failed
+>>   - added Reported-By
+>>
+>
+>  Acked-by: Selva Nair <selva.nair@...277...>
+>
 
-in the server config, then *every* connection attempt will trigger a fatal =
-error in the server. Doesn't matter what TLS versions the client supports.
+--00000000000033af55061b3eb312
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-If I put that option into the client config, the client will exit with an e=
-rror during startup.
+<div dir=3D"ltr">Forgot to add:<div><br></div><div>This applies only to 2.6=
+ -- for master we&#39;ll need a rebased version.</div></div><br><div class=
+=3D"gmail_quote"><div dir=3D"ltr" class=3D"gmail_attr">On Wed, Jun 19, 2024=
+ at 9:51=E2=80=AFAM Selva Nair &lt;<a href=3D"mailto:selva.nair@...277...">=
+selva.nair@...277...</a>&gt; wrote:<br></div><blockquote class=3D"gmail_quo=
+te" style=3D"margin:0px 0px 0px 0.8ex;border-left:1px solid rgb(204,204,204=
+);padding-left:1ex"><div dir=3D"ltr"><div dir=3D"ltr"><br></div><br><div cl=
+ass=3D"gmail_quote"><div dir=3D"ltr" class=3D"gmail_attr">On Wed, Jun 19, 2=
+024 at 9:47=E2=80=AFAM Lev Stipakov &lt;<a href=3D"mailto:lstipakov@...1354...=
+.." target=3D"_blank">lstipakov@...277...</a>&gt; wrote:<br></div><blockquo=
+te class=3D"gmail_quote" style=3D"margin:0px 0px 0px 0.8ex;border-left:1px =
+solid rgb(204,204,204);padding-left:1ex">At the moment everyone but anonymo=
+us are permitted<br>
+to create a pipe with the same name as interactive service creates,<br>
+which makes it possible for malicious process with SeImpersonatePrivilege<b=
+r>
+impersonate as local user.<br>
+<br>
+This hardens the security of the pipe, making it possible only for<br>
+processes running as SYSTEM (such as interactive service) create the<br>
+pipe with the same name.<br>
+<br>
+While on it, replace EXPLICIT_ACCESS structures with SDDL string.<br>
+<br>
+CVE: 2024-4877<br>
+<br>
+Change-Id: I35e783b79a332d247606e05a39e41b4d35d39b5d<br>
+Reported by: Zeze with TeamT5 &lt;<a href=3D"mailto:zeze7w@...277..." targe=
+t=3D"_blank">zeze7w@...277...</a>&gt;<br>
+Signed-off-by: Lev Stipakov &lt;<a href=3D"mailto:lev@...515..." target=3D"=
+_blank">lev@...515...</a>&gt;<br>
+---<br>
+=C2=A0v2:<br>
+=C2=A0 - ensure that sd is freed even if pipe creation failed<br>
+=C2=A0 - added Reported-By<br></blockquote><div><br></div><div>=C2=A0Acked-=
+by: Selva Nair &lt;<a href=3D"mailto:selva.nair@...277..." target=3D"_blank=
+">selva.nair@...277...</a>&gt;</div></div></div>
+</blockquote></div>
 
-It's not clear to me what the expected behavior is when tls-version-min is =
-an unsupported version, but if it's an error, it should happen during start=
--up.
-
-> -----Original Message-----
-> From: Gert Doering <gert@...1296...>
-> Sent: woensdag 19 juni 2024 11:44
-> To: Maximilian Fillinger <maximilian.fillinger@...2507...>
-> Cc: openvpn-devel@lists.sourceforge.net
-> Subject: Re: [Openvpn-devel] [PATCH applied] Re: mbedtls: Remove support
-> for old TLS versions
->=20
-> Hi,
->=20
-> this breaks *all* client connects on my server testbed.  No matter if
-> 2.2 or 2.5 client, when building with mbedtls (2.28.7), the resulting
-> binary refuses ALL incoming connection with
->=20
-> Jun 19 10:21:44 gentoo tap-udp-p2mp[1723]: 2001:608:0:814::f000:16
-> tls_version_to_ssl_version: invalid or unsupported TLS version 1
-> Jun 19 10:21:44 gentoo tap-tcp-p2p[1770]: tls_version_to_ssl_version:
-> invalid or unsupported TLS version 1
-> Jun 19 10:21:59 gentoo tun-tcp-p2mp[1708]: tls_version_to_ssl_version:
-> invalid or unsupported TLS version 1
-> Jun 19 10:22:32 gentoo tun-udp-p2mp[1713]: 194.97.140.21:49229
-> tls_version_to_ssl_version: invalid or unsupported TLS version 2
-> Jun 19 10:23:05 gentoo tun-udp-p2mp-topology-subnet[1718]:
-> 194.97.140.21:45789 tls_version_to_ssl_version: invalid or unsupported
-> TLS version 1
-> Jun 19 10:24:11 gentoo tun-udp-p2mp-fragment[1746]: 194.97.140.21:14517
-> tls_version_to_ssl_version: invalid or unsupported TLS version 1
-> Jun 19 10:44:49 gentoo tun-udp-p2mp-112-mask[1741]: 194.97.140.21:42810
-> tls_version_to_ssl_version: invalid or unsupported TLS version 1
->=20
-> so my guess would be that on mbedTLS builds that *do* support 1.1/1.2,
-> incoming client connects with 1.1/1.2 cause "something to get upset"
-> in the TLS version printer.
->=20
-> Sorry for not testing this more thoroughly before merging.
->=20
-> gert
->=20
->=20
->=20
-> On Tue, Jun 18, 2024 at 06:30:05PM +0200, Gert Doering wrote:
-> > Mildly tested via GHA builds.
-> >
-> > Not sure we want this in release/2.6 - I tend to "not", because it
-> might
-> > break someone's (non-recommended) setup...
-> >
-> > Your patch has been applied to the master branch.
-> >
-> > commit 013c119af96bc57c41e04e4a8f64b5d80e2e9ba6
-> > Author: Max Fillinger
-> > Date:   Tue Jun 18 14:02:19 2024 +0200
-> >
-> >      mbedtls: Remove support for old TLS versions
-> >
-> >      Signed-off-by: Max Fillinger <maximilian.fillinger@...2507...>
-> >      Acked-by: Arne Schwabe <arne-openvpn@...1227...>
-> >      Message-Id: <20240618120219.5053-1-gert@...1296...>
-> >      URL: https://www.mail-archive.com/openvpn-
-> devel@lists.sourceforge.net/msg28773.html
-> >      Signed-off-by: Gert Doering <gert@...1296...>
-> >
-> >
-> > --
-> > kind regards,
-> >
-> > Gert Doering
-> >
-> >
-> >
-> > _______________________________________________
-> > Openvpn-devel mailing list
-> > Openvpn-devel@lists.sourceforge.net
-> > https://lists.sourceforge.net/lists/listinfo/openvpn-devel
-> >
->=20
-> --
-> "If was one thing all people took for granted, was conviction that if
-> you
->  feed honest figures into a computer, honest figures come out. Never
-> doubted
->  it myself till I met a computer with a sense of humor."
->                              Robert A. Heinlein, The Moon is a Harsh
-> Mistress
->=20
-> Gert Doering - Munich, Germany
-> gert@...1296...
+--00000000000033af55061b3eb312--
 
