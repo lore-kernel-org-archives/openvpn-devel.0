@@ -1,17 +1,15 @@
-From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Wed, 19 Jun 2024 09:13:14 +0000
-In-Reply-To: <gerrit.1708008760000.I3e4ebef484d2a04a383a65ede5617ee98bf218a7@...2715...>
-References: <gerrit.1708008760000.I3e4ebef484d2a04a383a65ede5617ee98bf218a7@...2715...>
-Reply-To: gert@...1296..., arne-openvpn@...1227...,
- gianmarco@...2726..., openvpn-devel@lists.sourceforge.net,
- frank@...2641...
-Message-ID: <a3a2795c2ec98a5fbfd817d5e5c3f12ec16ae904-EmailReviewComments-HTML@...2715...>
+Date: Wed, 19 Jun 2024 11:44:21 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <ZnKodXfUYfL5LUlJ@...1296...>
+References: <20240618120219.5053-1-gert@...1296...>
+ <202406181630.45IGU5vu098122@...2054...>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ protocol="application/pgp-signature"; boundary="4Sd5uMp4901um1oz"
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="AVvN+MoOISc="; charset=UTF-8
-Subject: [Openvpn-devel] [M] Change in openvpn[master]: Route: add support
- for user defined routing table
+In-Reply-To: <202406181630.45IGU5vu098122@...2054...>
+Subject: Re: [Openvpn-devel] [PATCH applied] Re: mbedtls: Remove support for
+ old TLS versions
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,169 +18,106 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: its_Giaan <gianmarco@...2726...>
-Cc: flichtenheld <frank@...2641...>, plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: Max Fillinger <maximilian.fillinger@...2507...>
+Cc: openvpn-devel@lists.sourceforge.net
 
---AVvN+MoOISc=
-Content-Type: text/plain; charset="UTF-8"
+--4Sd5uMp4901um1oz
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-Attention is currently required from: its_Giaan, plaisthos.
+Hi,
 
-cron2 has posted comments on this change. ( http://gerrit.openvpn.net/c/ope=
-nvpn/+/524?usp=3Demail )
+this breaks *all* client connects on my server testbed.  No matter if
+2.2 or 2.5 client, when building with mbedtls (2.28.7), the resulting
+binary refuses ALL incoming connection with
 
-Change subject: Route: add support for user defined routing table
-......................................................................
+Jun 19 10:21:44 gentoo tap-udp-p2mp[1723]: 2001:608:0:814::f000:16 tls_vers=
+ion_to_ssl_version: invalid or unsupported TLS version 1
+Jun 19 10:21:44 gentoo tap-tcp-p2p[1770]: tls_version_to_ssl_version: inval=
+id or unsupported TLS version 1
+Jun 19 10:21:59 gentoo tun-tcp-p2mp[1708]: tls_version_to_ssl_version: inva=
+lid or unsupported TLS version 1
+Jun 19 10:22:32 gentoo tun-udp-p2mp[1713]: 194.97.140.21:49229 tls_version_=
+to_ssl_version: invalid or unsupported TLS version 2
+Jun 19 10:23:05 gentoo tun-udp-p2mp-topology-subnet[1718]: 194.97.140.21:45=
+789 tls_version_to_ssl_version: invalid or unsupported TLS version 1
+Jun 19 10:24:11 gentoo tun-udp-p2mp-fragment[1746]: 194.97.140.21:14517 tls=
+_version_to_ssl_version: invalid or unsupported TLS version 1
+Jun 19 10:44:49 gentoo tun-udp-p2mp-112-mask[1741]: 194.97.140.21:42810 tls=
+_version_to_ssl_version: invalid or unsupported TLS version 1
 
+so my guess would be that on mbedTLS builds that *do* support 1.1/1.2,
+incoming client connects with 1.1/1.2 cause "something to get upset"=20
+in the TLS version printer.
 
-Patch Set 4: Code-Review-1
+Sorry for not testing this more thoroughly before merging.
 
-(1 comment)
-
-Patchset:
-
-PS4:
-Sorry for being late to the party - I have looked at it, and while the gene=
-ral code works, I find it a bit excessive in lines of code.  Namely, I woul=
-d opt for "do not support route-table as an extra argument to `route`", as =
-this + the checks really makes up half the code - for little value.  Since =
-it's not supposed to be pushable, routes-with-table need to be in the clien=
-t config, and in that case, I could just put
-
-```
-route-table 123
-route
-route
-route-table 456
-route
-route
-route-table 999
-# for everything that comes in pushed
-```
-
-into my config.  If I ever really need more than 1-2 route tables.
-
-Also, we shouldn't have `#ifdef ENABLE_SITNL` in the parser for `route` and=
- `route-ipv6`...
-
-Further, the hunk
-
-```
-+    int table_id =3D 0; /* unspec table */
-...
-+    if (options->route_default_table_id)
-+    {
-+        table_id =3D options->route_default_table_id;
-+    }
-```
-
-is sort of semi-useful - if route_default_table_id is 0, we do not assign i=
-t to table_id, which is also 0.  Why bother with an extra variable here tha=
-t will have the same value as the `options` variable, at all times?  I'd ju=
-st pass `options->route_default_table_id` downwards, and be done with it.
-
-The `do_init_route_ipv6_list()` code also does the `table_id =3D ...` dance=
-, but then passes NULL towards `add_route_ipv6_to_option_list()`, which doe=
-s not look intentional...
+gert
 
 
 
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/524?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings
+On Tue, Jun 18, 2024 at 06:30:05PM +0200, Gert Doering wrote:
+> Mildly tested via GHA builds.
+>=20
+> Not sure we want this in release/2.6 - I tend to "not", because it might
+> break someone's (non-recommended) setup...
+>=20
+> Your patch has been applied to the master branch.
+>=20
+> commit 013c119af96bc57c41e04e4a8f64b5d80e2e9ba6
+> Author: Max Fillinger
+> Date:   Tue Jun 18 14:02:19 2024 +0200
+>=20
+>      mbedtls: Remove support for old TLS versions
+>=20
+>      Signed-off-by: Max Fillinger <maximilian.fillinger@...2507...>
+>      Acked-by: Arne Schwabe <arne-openvpn@...1227...>
+>      Message-Id: <20240618120219.5053-1-gert@...1296...>
+>      URL: https://www.mail-archive.com/openvpn-devel@...475...=
+t/msg28773.html
+>      Signed-off-by: Gert Doering <gert@...1296...>
+>=20
+>=20
+> --
+> kind regards,
+>=20
+> Gert Doering
+>=20
+>=20
+>=20
+> _______________________________________________
+> Openvpn-devel mailing list
+> Openvpn-devel@lists.sourceforge.net
+> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
+>=20
 
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: I3e4ebef484d2a04a383a65ede5617ee98bf218a7
-Gerrit-Change-Number: 524
-Gerrit-PatchSet: 4
-Gerrit-Owner: its_Giaan <gianmarco@...2726...>
-Gerrit-Reviewer: cron2 <gert@...1296...>
-Gerrit-Reviewer: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: its_Giaan <gianmarco@...2726...>
-Gerrit-Comment-Date: Wed, 19 Jun 2024 09:13:14 +0000
-Gerrit-HasComments: Yes
-Gerrit-Has-Labels: Yes
-Gerrit-MessageType: comment
+--=20
+"If was one thing all people took for granted, was conviction that if you=20
+ feed honest figures into a computer, honest figures come out. Never doubte=
+d=20
+ it myself till I met a computer with a sense of humor."
+                             Robert A. Heinlein, The Moon is a Harsh Mistre=
+ss
 
---AVvN+MoOISc=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Gert Doering - Munich, Germany                             gert@...1296...
 
-<p> Attention is currently required from: its_Giaan, plaisthos. </p>
-<p>Patch set 4:<span style=3D"border-radius: 3px; display: inline-block; ma=
-rgin: 0 2px; padding: 4px;background-color: #ffd4d4;">Code-Review -1</span>=
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/524?usp=3Demail">Vi=
-ew Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0=
-;"><li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-s=
-tyle: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p s=
-tyle=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn=
-/+/524?tab=3Dcomments">Patch Set #4:</a> </p><p style=3D"white-space: pre-w=
-rap; word-wrap: break-word;">Sorry for being late to the party - I have loo=
-ked at it, and while the general code works, I find it a bit excessive in l=
-ines of code.  Namely, I would opt for &quot;do not support route-table as =
-an extra argument to `route`&quot;, as this + the checks really makes up ha=
-lf the code - for little value.  Since it&#39;s not supposed to be pushable=
-, routes-with-table need to be in the client config, and in that case, I co=
-uld just put</p><p style=3D"white-space: pre-wrap; word-wrap: break-word;">=
-```<br>route-table 123<br>route<br>route<br>route-table 456<br>route<br>rou=
-te<br>route-table 999<br># for everything that comes in pushed<br>```</p><p=
- style=3D"white-space: pre-wrap; word-wrap: break-word;">into my config.  I=
-f I ever really need more than 1-2 route tables.</p><p style=3D"white-space=
-: pre-wrap; word-wrap: break-word;">Also, we shouldn&#39;t have `#ifdef ENA=
-BLE_SITNL` in the parser for `route` and `route-ipv6`...</p><p style=3D"whi=
-te-space: pre-wrap; word-wrap: break-word;">Further, the hunk</p><p style=
-=3D"white-space: pre-wrap; word-wrap: break-word;">```<br>+    int table_id=
- =3D 0; /* unspec table */<br>...<br>+    if (options-&gt;route_default_tab=
-le_id)<br>+    {<br>+        table_id =3D options-&gt;route_default_table_i=
-d;<br>+    }<br>```</p><p style=3D"white-space: pre-wrap; word-wrap: break-=
-word;">is sort of semi-useful - if route_default_table_id is 0, we do not a=
-ssign it to table_id, which is also 0.  Why bother with an extra variable h=
-ere that will have the same value as the `options` variable, at all times? =
- I&#39;d just pass `options-&gt;route_default_table_id` downwards, and be d=
-one with it.</p><p style=3D"white-space: pre-wrap; word-wrap: break-word;">=
-The `do_init_route_ipv6_list()` code also does the `table_id =3D ...` dance=
-, but then passes NULL towards `add_route_ipv6_to_option_list()`, which doe=
-s not look intentional...</p></li></ul></li></ul><p>To view, visit <a href=
-=3D"http://gerrit.openvpn.net/c/openvpn/+/524?usp=3Demail">change 524</a>. =
-To unsubscribe, or for help writing mail filters, visit <a href=3D"http://g=
-errit.openvpn.net/settings">settings</a>.</p><div itemscope itemtype=3D"htt=
-p://schema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D=
-"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit=
-.openvpn.net/c/openvpn/+/524?usp=3Demail"/><meta itemprop=3D"name" content=
-=3D"View Change"/></div></div>
+--4Sd5uMp4901um1oz
+Content-Type: application/pgp-signature; name="signature.asc"
 
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I3e4ebef484d2a04a383a65ede56=
-17ee98bf218a7 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 524 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 4 </div>
-<div style=3D"display:none"> Gerrit-Owner: its_Giaan &lt;gianmarco@...2786...=
-..&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
- </div>
-<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
-1...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: its_Giaan &lt;gianmarco@...1665...=
-726...&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Wed, 19 Jun 2024 09:13:14=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
+-----BEGIN PGP SIGNATURE-----
 
+iQGcBAEBAgAGBQJmcqh1AAoJEB2Cnv7KVigSKm8MALICikAxXyd92LutoT6GQjki
+Bl/WDmfHmVQ2fvB1+YMeFPAIlmLPX8QdnWX2fYl9CbD+SytWOX0s5/45afpby8ye
+jr9HNDiUayUW7Nxaa+OFh6viRCuF2VQ7bt5dNYfbd7cjxb/ZNnRUUiaQca4FTG98
+s0mrvihqNkNg4ioeL0oxr6TTf9Cg6Y7WZdP7HhtxMqzlGQe9SgAYVC8IE85Jp1t/
+qK7SqIVtPQouR/hU9/89Imii2c6NgK6gUJybEK4x4OPwC0VCP3ZJDHTjRnFzoWGp
+mc1d1Dx7cqSuwhPWbTWrLFHhr3sfOZWOZgnMUSYcXBEgyqYVsQdfiqEr5olGeRIE
+6cbhF7Z0iMgEzbTKK/6vT6gJLxxwpRPjMLoc8qiia/2ME3+KcQ17wY6zZHLXuAkl
+wVWXx3AVcTZVcJTW9Kxqr9x4y1vCSHtEUbZ6ZSL3L5wXUsEWK+ztEkQ7y77pgu1P
+DfH9QSAa2WR96S+qmTnC6uire6Ru0lE9TBcH7PRzOA==
+=HKgW
+-----END PGP SIGNATURE-----
 
---AVvN+MoOISc=--
+--4Sd5uMp4901um1oz--
 
