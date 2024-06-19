@@ -1,9 +1,14 @@
+Date: Wed, 19 Jun 2024 12:44:52 +0200
 From: Gert Doering <gert@...1296...>
-Date: Wed, 19 Jun 2024 12:30:04 +0200
-Message-ID: <20240619103004.56460-1-gert@...1296...>
+Message-ID: <ZnK2pHWV0wuQ_GEc@...1296...>
+References: <20240619103004.56460-1-gert@...1296...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v3] Properly handle null bytes and invalid
- characters in control messages
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ protocol="application/pgp-signature"; boundary="l0Ay6Hickmn7kZAz"
+Content-Disposition: inline
+In-Reply-To: <20240619103004.56460-1-gert@...1296...>
+Subject: Re: [Openvpn-devel] [PATCH v3] Properly handle null bytes and
+ invalid characters in control messages
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,280 +17,71 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
-Cc: Arne Schwabe <arne@...1227...>, =?UTF-8?q?Reynir=20Bj=F6rnsson?= <reynir@...2756...>, Antonio Quartulli <a@...2181...>
+Cc: Antonio Quartulli <a@...2181...>, Reynir Bj?rnsson <reynir@...2756...>
 
-From: Arne Schwabe <arne@...1227...>
+--l0Ay6Hickmn7kZAz
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-This makes OpenVPN more picky in accepting control message in two aspects:
-- Characters are checked in the whole buffer and not until the first
-  NUL byte
-- if the message contains invalid characters, we no longer continue
-  evaluating a fixed up version of the message but rather stop
-  processing it completely.
+Hi,
 
-Previously it was possible to get invalid characters to end up in log
-files or on a terminal.
+On Wed, Jun 19, 2024 at 12:30:04PM +0200, Gert Doering wrote:
+> From: Arne Schwabe <arne@...1227...>
+>=20
+> This makes OpenVPN more picky in accepting control message in two aspects:
+> - Characters are checked in the whole buffer and not until the first
+>   NUL byte
+> - if the message contains invalid characters, we no longer continue
+>   evaluating a fixed up version of the message but rather stop
+>   processing it completely.
+[..]
+> CVE: 2024-5594
 
-This also prepares the logic a bit in the direction of having a proper
-framing of control messages separated by null bytes instead of relying
-on the TLS framing for that. All OpenVPN implementations write the 0
-bytes between control commands.
+So, for the record - this patch was discussed and reviewed "in private"
+on the security@...515... list, because it was seen as having security
+implications.
 
-This patch also include several improvement suggestion from Reynir
-(thanks!).
+2.6.11 release will happen today or tomorrow, so I'm posting this patch
+to the public list now for transparency, and will proceed with testing
+and merging.
 
-CVE: 2024-5594
+The security impact is fairly moderate - namely, a malicious peer can
+send (hand crafted) control channel messages that mess up logging(!) on
+the other side.  No breach of crypto, leak of information, or remote code
+execution.  But still an annoyance to be fixed and properly documented.
 
-Reported-By: Reynir Bj�rnsson <reynir@...2756...>
-Change-Id: I0d926f910637dabc89bf5fa919dc6beef1eb46d9
-Signed-off-by: Arne Schwabe <arne@...1227...>
-Acked-by: Antonio Quartulli <a@...2181...>
+Thanks, Reynir, for reading our sources with so much passion for details :-)
 
----
- src/openvpn/buffer.c                   |  17 ++++
- src/openvpn/buffer.h                   |  12 +++
- src/openvpn/forward.c                  | 123 ++++++++++++++++---------
- tests/unit_tests/openvpn/test_buffer.c |  24 +++++
- 4 files changed, 132 insertions(+), 44 deletions(-)
+gert
 
-diff --git a/src/openvpn/buffer.c b/src/openvpn/buffer.c
-index 3a8069c56..abe6a9c89 100644
---- a/src/openvpn/buffer.c
-+++ b/src/openvpn/buffer.c
-@@ -1087,6 +1087,23 @@ string_mod(char *str, const unsigned int inclusive, const unsigned int exclusive
-     return ret;
- }
- 
-+bool
-+string_check_buf(struct buffer *buf, const unsigned int inclusive, const unsigned int exclusive)
-+{
-+    ASSERT(buf);
-+
-+    for (int i = 0; i < BLEN(buf); i++)
-+    {
-+        char c = BSTR(buf)[i];
-+
-+        if (!char_inc_exc(c, inclusive, exclusive))
-+        {
-+            return false;
-+        }
-+    }
-+    return true;
-+}
-+
- const char *
- string_mod_const(const char *str,
-                  const unsigned int inclusive,
-diff --git a/src/openvpn/buffer.h b/src/openvpn/buffer.h
-index 27c319952..8a40010bc 100644
---- a/src/openvpn/buffer.h
-+++ b/src/openvpn/buffer.h
-@@ -943,6 +943,18 @@ bool string_class(const char *str, const unsigned int inclusive, const unsigned
-  */
- bool string_mod(char *str, const unsigned int inclusive, const unsigned int exclusive, const char replace);
- 
-+
-+/**
-+ * Check a buffer if it only consists of allowed characters.
-+ *
-+ * @param buf The buffer to be checked.
-+ * @param inclusive The character classes that are allowed.
-+ * @param exclusive Character classes that are not allowed even if they are also in inclusive.
-+ * @return True if the string consists only of allowed characters, false otherwise.
-+ */
-+bool
-+string_check_buf(struct buffer *buf, const unsigned int inclusive, const unsigned int exclusive);
-+
- /**
-  * Returns a copy of a string with certain classes of characters of it replaced with a specified
-  * character.
-diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c
-index 01165b2ed..ef35bc619 100644
---- a/src/openvpn/forward.c
-+++ b/src/openvpn/forward.c
-@@ -230,6 +230,51 @@ check_tls(struct context *c)
-     }
- }
- 
-+static void
-+parse_incoming_control_channel_command(struct context *c, struct buffer *buf)
-+{
-+    if (buf_string_match_head_str(buf, "AUTH_FAILED"))
-+    {
-+        receive_auth_failed(c, buf);
-+    }
-+    else if (buf_string_match_head_str(buf, "PUSH_"))
-+    {
-+        incoming_push_message(c, buf);
-+    }
-+    else if (buf_string_match_head_str(buf, "RESTART"))
-+    {
-+        server_pushed_signal(c, buf, true, 7);
-+    }
-+    else if (buf_string_match_head_str(buf, "HALT"))
-+    {
-+        server_pushed_signal(c, buf, false, 4);
-+    }
-+    else if (buf_string_match_head_str(buf, "INFO_PRE"))
-+    {
-+        server_pushed_info(c, buf, 8);
-+    }
-+    else if (buf_string_match_head_str(buf, "INFO"))
-+    {
-+        server_pushed_info(c, buf, 4);
-+    }
-+    else if (buf_string_match_head_str(buf, "CR_RESPONSE"))
-+    {
-+        receive_cr_response(c, buf);
-+    }
-+    else if (buf_string_match_head_str(buf, "AUTH_PENDING"))
-+    {
-+        receive_auth_pending(c, buf);
-+    }
-+    else if (buf_string_match_head_str(buf, "EXIT"))
-+    {
-+        receive_exit_message(c);
-+    }
-+    else
-+    {
-+        msg(D_PUSH_ERRORS, "WARNING: Received unknown control message: %s", BSTR(buf));
-+    }
-+}
-+
- /*
-  * Handle incoming configuration
-  * messages on the control channel.
-@@ -245,51 +290,41 @@ check_incoming_control_channel(struct context *c)
-     struct buffer buf = alloc_buf_gc(len, &gc);
-     if (tls_rec_payload(c->c2.tls_multi, &buf))
-     {
--        /* force null termination of message */
--        buf_null_terminate(&buf);
--
--        /* enforce character class restrictions */
--        string_mod(BSTR(&buf), CC_PRINT, CC_CRLF, 0);
- 
--        if (buf_string_match_head_str(&buf, "AUTH_FAILED"))
-+        while (BLEN(&buf) > 1)
-         {
--            receive_auth_failed(c, &buf);
--        }
--        else if (buf_string_match_head_str(&buf, "PUSH_"))
--        {
--            incoming_push_message(c, &buf);
--        }
--        else if (buf_string_match_head_str(&buf, "RESTART"))
--        {
--            server_pushed_signal(c, &buf, true, 7);
--        }
--        else if (buf_string_match_head_str(&buf, "HALT"))
--        {
--            server_pushed_signal(c, &buf, false, 4);
--        }
--        else if (buf_string_match_head_str(&buf, "INFO_PRE"))
--        {
--            server_pushed_info(c, &buf, 8);
--        }
--        else if (buf_string_match_head_str(&buf, "INFO"))
--        {
--            server_pushed_info(c, &buf, 4);
--        }
--        else if (buf_string_match_head_str(&buf, "CR_RESPONSE"))
--        {
--            receive_cr_response(c, &buf);
--        }
--        else if (buf_string_match_head_str(&buf, "AUTH_PENDING"))
--        {
--            receive_auth_pending(c, &buf);
--        }
--        else if (buf_string_match_head_str(&buf, "EXIT"))
--        {
--            receive_exit_message(c);
--        }
--        else
--        {
--            msg(D_PUSH_ERRORS, "WARNING: Received unknown control message: %s", BSTR(&buf));
-+            /* commands on the control channel are seperated by \0x00 bytes.
-+             * cmdlen does not include the 0 byte of the string */
-+            int cmdlen = (int)strnlen(BSTR(&buf), BLEN(&buf));
-+
-+            if (cmdlen < BLEN(&buf))
-+            {
-+                /* include the NUL byte and ensure NUL termination */
-+                int cmdlen = (int)strlen(BSTR(&buf)) + 1;
-+
-+                /* Construct a buffer that only holds the current command and
-+                 * its closing NUL byte */
-+                struct buffer cmdbuf = alloc_buf_gc(cmdlen, &gc);
-+                buf_write(&cmdbuf, BPTR(&buf), cmdlen);
-+
-+                /* check we have only printable characters or null byte in the
-+                 * command string and no newlines */
-+                if (!string_check_buf(&buf, CC_PRINT | CC_NULL, CC_CRLF))
-+                {
-+                    msg(D_PUSH_ERRORS, "WARNING: Received control with invalid characters: %s",
-+                        format_hex(BPTR(&buf), BLEN(&buf), 256, &gc));
-+                }
-+                else
-+                {
-+                    parse_incoming_control_channel_command(c, &cmdbuf);
-+                }
-+            }
-+            else
-+            {
-+                msg(D_PUSH_ERRORS, "WARNING: Ignoring control channel "
-+                    "message command without NUL termination");
-+            }
-+            buf_advance(&buf, cmdlen);
-         }
-     }
-     else
-diff --git a/tests/unit_tests/openvpn/test_buffer.c b/tests/unit_tests/openvpn/test_buffer.c
-index fbfb937d1..6b860b4cd 100644
---- a/tests/unit_tests/openvpn/test_buffer.c
-+++ b/tests/unit_tests/openvpn/test_buffer.c
-@@ -354,6 +354,29 @@ test_character_class(void **state)
-     assert_string_equal(buf, "There is a .'nice.' \"1234\" [.] year old .tree!");
- }
- 
-+
-+static void
-+test_character_string_mod_buf(void **state)
-+{
-+    struct gc_arena gc = gc_new();
-+
-+    struct buffer buf = alloc_buf_gc(1024, &gc);
-+
-+    const char test1[] =  "There is a nice 1234\x00 year old tree!";
-+    buf_write(&buf, test1, sizeof(test1));
-+
-+    /* allow the null bytes and string but not the ! */
-+    assert_false(string_check_buf(&buf, CC_ALNUM | CC_SPACE | CC_NULL, 0));
-+
-+    /* remove final ! and null byte to pass */
-+    buf_inc_len(&buf, -2);
-+    assert_true(string_check_buf(&buf, CC_ALNUM | CC_SPACE | CC_NULL, 0));
-+
-+    /* Check excluding digits works */
-+    assert_false(string_check_buf(&buf, CC_ALNUM | CC_SPACE | CC_NULL, CC_DIGIT));
-+    gc_free(&gc);
-+}
-+
- static void
- test_snprintf(void **state)
- {
-@@ -437,6 +460,7 @@ main(void)
-         cmocka_unit_test(test_buffer_free_gc_two),
-         cmocka_unit_test(test_buffer_gc_realloc),
-         cmocka_unit_test(test_character_class),
-+        cmocka_unit_test(test_character_string_mod_buf),
-         cmocka_unit_test(test_snprintf)
-     };
- 
--- 
-2.39.3 (Apple Git-146)
+--=20
+"If was one thing all people took for granted, was conviction that if you=20
+ feed honest figures into a computer, honest figures come out. Never doubte=
+d=20
+ it myself till I met a computer with a sense of humor."
+                             Robert A. Heinlein, The Moon is a Harsh Mistre=
+ss
 
+Gert Doering - Munich, Germany                             gert@...1296...
+
+--l0Ay6Hickmn7kZAz
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQGcBAEBAgAGBQJmcrakAAoJEB2Cnv7KVigShSsL/3/UiCLH6AxCDvX/PQYHetYS
+g/VvwVio6wqD1Vv9kI17+N7rhffQWK40eSVccIUHFUiAr2tmXg4gSTQP9IVXK9DM
+lFny1AelWrcGIN0OwpOgw1jzHNxo+FedItrjncVEUF+Qnl2RqSYMsHqry0sMiiZM
+Jwam2QD+sK5bBX1WMy5j2rTbczY4VIw9ld7FmDdKDIld/HFE1OnVXWbr4wHHsF3G
+2tvXDlTEuu+YnE7uXthm/8DEV63M/anArFjy+uurJc/6ks1czcnsIVGWMHYUsP2I
+5LsqwUZiSf0i0IUdPuqrvH6hwhTxtCN+GzDWYcEGabtthoZceNB/6aNXa3/YT4AY
+GYa6474ngw3RYAJTc8Yd0cCUDuhgP7tEl08LPiVH4HwPonPZGSTGSBYjxJVpcpK4
+KDGJuZHCZbYV5kAntNjKzhujX0qrXWp3CcuKQyf1hi28w8V0zSy2d2tiQuoy6sxs
+eo7yDnhtaL+vVRFPnuAVEbt5mLYn+3LwZHjZ5oKrEg==
+=+zY2
+-----END PGP SIGNATURE-----
+
+--l0Ay6Hickmn7kZAz--
 
