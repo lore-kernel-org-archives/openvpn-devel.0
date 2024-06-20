@@ -1,14 +1,14 @@
 From: "flichtenheld (Code Review)" <gerrit@...515...>
-Date: Thu, 20 Jun 2024 14:22:47 +0000
+Date: Thu, 20 Jun 2024 14:29:50 +0000
 In-Reply-To: <gerrit.1718794976000.I6e08920e4cf4762b9f14a7461a29fa77df15255c@...2715...>
 References: <gerrit.1718794976000.I6e08920e4cf4762b9f14a7461a29fa77df15255c@...2715...>
 Reply-To: frank@...2641..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net, gert@...1296...
-Message-ID: <cf291454f68558ad171ee35ebc8b533fe2523d21-EmailReplacePatchSet-HTML@...2715...>
+Message-ID: <37b381a5ba5e6016b960bf90f77ee7e7a0777c7a-EmailReplacePatchSet-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="gx3swKJ1cJY="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="Naq6Zc70YuI="; charset=UTF-8
 Subject: [Openvpn-devel] [S] Change in openvpn[master]: configure: Add
  -Wstrict-prototypes and -Wold-style-definition
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -22,7 +22,7 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: plaisthos <arne-openvpn@...1227...>, cron2 <gert@...1296...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---gx3swKJ1cJY=
+--Naq6Zc70YuI=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
@@ -34,13 +34,7 @@ I'd like you to reexamine a change. Please visit
 
     http://gerrit.openvpn.net/c/openvpn/+/667?usp=3Demail
 
-to look at the new patch set (#3).
-
-The following approvals got outdated and were removed:
-Code-Review+2 by cron2
-
-The change is no longer submittable: Code-Review and checks~ChecksSubmitRul=
-e are unsatisfied now.
+to look at the new patch set (#4).
 
 
 Change subject: configure: Add -Wstrict-prototypes and -Wold-style-definiti=
@@ -66,13 +60,14 @@ M src/openvpn/ssl.h
 M src/openvpn/xkey_helper.c
 M src/openvpn/xkey_provider.c
 M tests/unit_tests/openvpn/test_common.h
+M tests/unit_tests/openvpn/test_pkcs11.c
 M tests/unit_tests/openvpn/test_provider.c
 M tests/unit_tests/openvpn/test_ssl.c
 M tests/unit_tests/plugins/auth-pam/test_search_and_replace.c
-14 files changed, 24 insertions(+), 22 deletions(-)
+15 files changed, 25 insertions(+), 23 deletions(-)
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/67/667/3
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/67/667/4
 
 diff --git a/configure.ac b/configure.ac
 index 2e5ab6a..c01ad09 100644
@@ -99,7 +94,7 @@ index 50ebb35..035474f 100644
 +const char *dco_get_supported_ciphers(void);
 
  #else /* if defined(ENABLE_DCO) */
-
+=20
 @@ -375,7 +375,7 @@
  }
 
@@ -241,6 +236,21 @@ index f219e93..52503c6 100644
  {
      assert_int_equal(setvbuf(stdout, NULL, _IONBF, BUFSIZ), 0);
      assert_int_equal(setvbuf(stderr, NULL, _IONBF, BUFSIZ), 0);
+diff --git a/tests/unit_tests/openvpn/test_pkcs11.c b/tests/unit_tests/open=
+vpn/test_pkcs11.c
+index 84ebb29..6d283a2 100644
+--- a/tests/unit_tests/openvpn/test_pkcs11.c
++++ b/tests/unit_tests/openvpn/test_pkcs11.c
+@@ -134,7 +134,7 @@
+
+ /* Fill-in certs[] array */
+ void
+-init_cert_data()
++init_cert_data(void)
+ {
+     struct test_cert certs_local[] =3D {
+         {cert1,  key1,  cname1,  "OVPN TEST CA1",  "OVPN Test Cert 1",  {0=
+},  NULL},
 diff --git a/tests/unit_tests/openvpn/test_provider.c b/tests/unit_tests/op=
 envpn/test_provider.c
 index 934b2d3..cfe9ac3 100644
@@ -340,7 +350,7 @@ index ee7a151..d40467f 100644
      char *replaced =3D searchandreplace("abc", "X", "Y");
 
 
---=20
+--
 To view, visit http://gerrit.openvpn.net/c/openvpn/+/667?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings
@@ -349,7 +359,7 @@ Gerrit-Project: openvpn
 Gerrit-Branch: master
 Gerrit-Change-Id: I6e08920e4cf4762b9f14a7461a29fa77df15255c
 Gerrit-Change-Number: 667
-Gerrit-PatchSet: 3
+Gerrit-PatchSet: 4
 Gerrit-Owner: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: cron2 <gert@...1296...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
@@ -359,40 +369,38 @@ Gerrit-Attention: cron2 <gert@...1296...>
 Gerrit-Attention: flichtenheld <frank@...2641...>
 Gerrit-MessageType: newpatchset
 
---gx3swKJ1cJY=
+--Naq6Zc70YuI=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <p> Attention is currently required from: cron2, flichtenheld, plaisthos. <=
 /p>
-<p>flichtenheld <strong>uploaded patch set #3</strong> to this change.</p><=
+<p>flichtenheld <strong>uploaded patch set #4</strong> to this change.</p><=
 p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/667?usp=3Demail">View Ch=
-ange</a></p><p>The following approvals got outdated and were removed:
-Code-Review+2 by cron2</p><p>The change is no longer submittable: Code-Revi=
-ew and checks~ChecksSubmitRule are unsatisfied now.</p><pre style=3D"font-f=
-amily: monospace,monospace; white-space: pre-wrap;">configure: Add -Wstrict=
--prototypes and -Wold-style-definition<br><br>These are not covered by -Wal=
-l (nor -Wextra) but we want<br>to enforce them.<br><br>Change-Id: I6e08920e=
-4cf4762b9f14a7461a29fa77df15255c<br>Signed-off-by: Frank Lichtenheld &lt;fr=
-ank@...2641...&gt;<br>---<br>M configure.ac<br>M src/openvpn/dco.h<br>M src=
-/openvpn/dco_freebsd.c<br>M src/openvpn/dco_linux.c<br>M src/openvpn/pkcs11=
-.h<br>M src/openvpn/sig.c<br>M src/openvpn/ssl.c<br>M src/openvpn/ssl.h<br>=
-M src/openvpn/xkey_helper.c<br>M src/openvpn/xkey_provider.c<br>M tests/uni=
-t_tests/openvpn/test_common.h<br>M tests/unit_tests/openvpn/test_provider.c=
-<br>M tests/unit_tests/openvpn/test_ssl.c<br>M tests/unit_tests/plugins/aut=
-h-pam/test_search_and_replace.c<br>14 files changed, 24 insertions(+), 22 d=
-eletions(-)<br><br></pre><pre style=3D"font-family: monospace,monospace; wh=
-ite-space: pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/openvpn refs/=
-changes/67/667/3</pre><pre style=3D"font-family: monospace,monospace; white=
--space: pre-wrap;"><span>diff --git a/configure.ac b/configure.ac</span><br=
-><span>index 2e5ab6a..c01ad09 100644</span><br><span>--- a/configure.ac</sp=
-an><br><span>+++ b/configure.ac</span><br><span>@@ -1408,6 +1408,8 @@</span=
-><br><span> )</span><br><span> </span><br><span> ACL_CHECK_ADD_COMPILE_FLAG=
-S([-Wno-stringop-truncation])</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+ACL_CHECK_ADD_COMPILE_FLAGS([-Wstrict-prototypes])</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+ACL_CHECK_ADD_COMPILE_FLAGS([-Wold=
--style-definition])</span><br><span> ACL_CHECK_ADD_COMPILE_FLAGS([-Wall])</=
-span><br><span> </span><br><span> if test &quot;${enable_pedantic}&quot; =
+ange</a></p><pre style=3D"font-family: monospace,monospace; white-space: pr=
+e-wrap;">configure: Add -Wstrict-prototypes and -Wold-style-definition<br><=
+br>These are not covered by -Wall (nor -Wextra) but we want<br>to enforce t=
+hem.<br><br>Change-Id: I6e08920e4cf4762b9f14a7461a29fa77df15255c<br>Signed-=
+off-by: Frank Lichtenheld &lt;frank@...2641...&gt;<br>---<br>M configure.ac=
+<br>M src/openvpn/dco.h<br>M src/openvpn/dco_freebsd.c<br>M src/openvpn/dco=
+_linux.c<br>M src/openvpn/pkcs11.h<br>M src/openvpn/sig.c<br>M src/openvpn/=
+ssl.c<br>M src/openvpn/ssl.h<br>M src/openvpn/xkey_helper.c<br>M src/openvp=
+n/xkey_provider.c<br>M tests/unit_tests/openvpn/test_common.h<br>M tests/un=
+it_tests/openvpn/test_pkcs11.c<br>M tests/unit_tests/openvpn/test_provider.=
+c<br>M tests/unit_tests/openvpn/test_ssl.c<br>M tests/unit_tests/plugins/au=
+th-pam/test_search_and_replace.c<br>15 files changed, 25 insertions(+), 23 =
+deletions(-)<br><br></pre><pre style=3D"font-family: monospace,monospace; w=
+hite-space: pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/openvpn refs=
+/changes/67/667/4</pre><pre style=3D"font-family: monospace,monospace; whit=
+e-space: pre-wrap;"><span>diff --git a/configure.ac b/configure.ac</span><b=
+r><span>index 2e5ab6a..c01ad09 100644</span><br><span>--- a/configure.ac</s=
+pan><br><span>+++ b/configure.ac</span><br><span>@@ -1408,6 +1408,8 @@</spa=
+n><br><span> )</span><br><span> </span><br><span> ACL_CHECK_ADD_COMPILE_FLA=
+GS([-Wno-stringop-truncation])</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+ACL_CHECK_ADD_COMPILE_FLAGS([-Wstrict-prototypes])</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+ACL_CHECK_ADD_COMPILE_FLAGS([-Wol=
+d-style-definition])</span><br><span> ACL_CHECK_ADD_COMPILE_FLAGS([-Wall])<=
+/span><br><span> </span><br><span> if test &quot;${enable_pedantic}&quot; =
 =3D &quot;yes&quot;; then</span><br><span>diff --git a/src/openvpn/dco.h b/=
 src/openvpn/dco.h</span><br><span>index 50ebb35..035474f 100644</span><br><=
 span>--- a/src/openvpn/dco.h</span><br><span>+++ b/src/openvpn/dco.h</span>=
@@ -489,84 +497,93 @@ span style=3D"color: hsl(120, 100%, 40%);">+openvpn_unit_test_setup(void)</=
 span><br><span> {</span><br><span>     assert_int_equal(setvbuf(stdout, NUL=
 L, _IONBF, BUFSIZ), 0);</span><br><span>     assert_int_equal(setvbuf(stder=
 r, NULL, _IONBF, BUFSIZ), 0);</span><br><span>diff --git a/tests/unit_tests=
-/openvpn/test_provider.c b/tests/unit_tests/openvpn/test_provider.c</span><=
-br><span>index 934b2d3..cfe9ac3 100644</span><br><span>--- a/tests/unit_tes=
-ts/openvpn/test_provider.c</span><br><span>+++ b/tests/unit_tests/openvpn/t=
-est_provider.c</span><br><span>@@ -119,7 +119,7 @@</span><br><span> }</span=
-><br><span> </span><br><span> static void</span><br><span style=3D"color: h=
-sl(0, 100%, 40%);">-init_test()</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+init_test(void)</span><br><span> {</span><br><span>     openvpn=
-_unit_test_setup();</span><br><span>     prov[0] =3D OSSL_PROVIDER_load(NUL=
-L, &quot;default&quot;);</span><br><span>@@ -135,7 +135,7 @@</span><br><spa=
-n> }</span><br><span> </span><br><span> static void</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-uninit_test()</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+uninit_test(void)</span><br><span> {</span><br><s=
-pan>     for (size_t i =3D 0; i &lt; _countof(prov); i++)</span><br><span> =
-    {</span><br><span>diff --git a/tests/unit_tests/openvpn/test_ssl.c b/te=
-sts/unit_tests/openvpn/test_ssl.c</span><br><span>index a9a3137..5da5b1c 10=
-0644</span><br><span>--- a/tests/unit_tests/openvpn/test_ssl.c</span><br><s=
-pan>+++ b/tests/unit_tests/openvpn/test_ssl.c</span><br><span>@@ -81,7 +81,=
-7 @@</span><br><span>                             &quot;-----END CERTIFICAT=
-E-----\n&quot;;</span><br><span> </span><br><span> static const char *</spa=
-n><br><span style=3D"color: hsl(0, 100%, 40%);">-get_tmp_dir()</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+get_tmp_dir(void)</span><br><spa=
-n> {</span><br><span>     const char *ret;</span><br><span> #ifdef _WIN32</=
-span><br><span>diff --git a/tests/unit_tests/plugins/auth-pam/test_search_a=
-nd_replace.c b/tests/unit_tests/plugins/auth-pam/test_search_and_replace.c<=
-/span><br><span>index ee7a151..d40467f 100644</span><br><span>--- a/tests/u=
-nit_tests/plugins/auth-pam/test_search_and_replace.c</span><br><span>+++ b/=
-tests/unit_tests/plugins/auth-pam/test_search_and_replace.c</span><br><span=
->@@ -9,7 +9,7 @@</span><br><span> #include &quot;utils.h&quot;</span><br><s=
-pan> </span><br><span> static void</span><br><span style=3D"color: hsl(0, 1=
-00%, 40%);">-pass_any_null_param__returns_null()</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+pass_any_null_param__returns_null(void **state=
-)</span><br><span> {</span><br><span> </span><br><span>     char DUMMY[] =
-=3D &quot;DUMMY&quot;;</span><br><span>@@ -20,7 +20,7 @@</span><br><span> }=
-</span><br><span> </span><br><span> static void</span><br><span style=3D"co=
-lor: hsl(0, 100%, 40%);">-pass_any_empty_string__returns_null()</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+pass_any_empty_string__returns_=
-null(void **state)</span><br><span> {</span><br><span> </span><br><span>   =
-  char DUMMY[] =3D &quot;DUMMY&quot;;</span><br><span>@@ -32,7 +32,7 @@</sp=
-an><br><span> }</span><br><span> </span><br><span> static void</span><br><s=
-pan style=3D"color: hsl(0, 100%, 40%);">-replace_single_char__one_time__mat=
-ch_is_replaced()</span><br><span style=3D"color: hsl(120, 100%, 40%);">+rep=
-lace_single_char__one_time__match_is_replaced(void **state)</span><br><span=
-> {</span><br><span>     char *replaced =3D searchandreplace(&quot;X&quot;,=
- &quot;X&quot;, &quot;Y&quot;);</span><br><span> </span><br><span>@@ -43,7 =
-+43,7 @@</span><br><span> }</span><br><span> </span><br><span> static void<=
-/span><br><span style=3D"color: hsl(0, 100%, 40%);">-replace_single_char__m=
-ultiple_times__match_all_matches_are_replaced()</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+replace_single_char__multiple_times__match_all_=
-matches_are_replaced(void **state)</span><br><span> {</span><br><span>     =
-char *replaced =3D searchandreplace(&quot;XaX&quot;, &quot;X&quot;, &quot;Y=
-&quot;);</span><br><span> </span><br><span>@@ -54,7 +54,7 @@</span><br><spa=
-n> }</span><br><span> </span><br><span> static void</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-replace_longer_text__multiple_times__match_=
-all_matches_are_replaced()</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+replace_longer_text__multiple_times__match_all_matches_are_replaced(=
-void **state)</span><br><span> {</span><br><span>     char *replaced =3D se=
-archandreplace(&quot;XXaXX&quot;, &quot;XX&quot;, &quot;YY&quot;);</span><b=
-r><span> </span><br><span>@@ -65,7 +65,7 @@</span><br><span> }</span><br><s=
-pan> </span><br><span> static void</span><br><span style=3D"color: hsl(0, 1=
-00%, 40%);">-pattern_not_found__returns_original()</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+pattern_not_found__returns_original(void **s=
-tate)</span><br><span> {</span><br><span>     char *replaced =3D searchandr=
-eplace(&quot;abc&quot;, &quot;X&quot;, &quot;Y&quot;);</span><br><span> </s=
-pan><br><span></span><br></pre><p>To view, visit <a href=3D"http://gerrit.o=
-penvpn.net/c/openvpn/+/667?usp=3Demail">change 667</a>. To unsubscribe, or =
-for help writing mail filters, visit <a href=3D"http://gerrit.openvpn.net/s=
-ettings">settings</a>.</p><div itemscope itemtype=3D"http://schema.org/Emai=
-lMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.org/=
-ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/open=
-vpn/+/667?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></=
-div></div>
+/openvpn/test_pkcs11.c b/tests/unit_tests/openvpn/test_pkcs11.c</span><br><=
+span>index 84ebb29..6d283a2 100644</span><br><span>--- a/tests/unit_tests/o=
+penvpn/test_pkcs11.c</span><br><span>+++ b/tests/unit_tests/openvpn/test_pk=
+cs11.c</span><br><span>@@ -134,7 +134,7 @@</span><br><span> </span><br><spa=
+n> /* Fill-in certs[] array */</span><br><span> void</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-init_cert_data()</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+init_cert_data(void)</span><br><span> {</span>=
+<br><span>     struct test_cert certs_local[] =3D {</span><br><span>       =
+  {cert1,  key1,  cname1,  &quot;OVPN TEST CA1&quot;,  &quot;OVPN Test Cert=
+ 1&quot;,  {0},  NULL},</span><br><span>diff --git a/tests/unit_tests/openv=
+pn/test_provider.c b/tests/unit_tests/openvpn/test_provider.c</span><br><sp=
+an>index 934b2d3..cfe9ac3 100644</span><br><span>--- a/tests/unit_tests/ope=
+nvpn/test_provider.c</span><br><span>+++ b/tests/unit_tests/openvpn/test_pr=
+ovider.c</span><br><span>@@ -119,7 +119,7 @@</span><br><span> }</span><br><=
+span> </span><br><span> static void</span><br><span style=3D"color: hsl(0, =
+100%, 40%);">-init_test()</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+init_test(void)</span><br><span> {</span><br><span>     openvpn_unit_=
+test_setup();</span><br><span>     prov[0] =3D OSSL_PROVIDER_load(NULL, &qu=
+ot;default&quot;);</span><br><span>@@ -135,7 +135,7 @@</span><br><span> }</=
+span><br><span> </span><br><span> static void</span><br><span style=3D"colo=
+r: hsl(0, 100%, 40%);">-uninit_test()</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+uninit_test(void)</span><br><span> {</span><br><span>    =
+ for (size_t i =3D 0; i &lt; _countof(prov); i++)</span><br><span>     {</s=
+pan><br><span>diff --git a/tests/unit_tests/openvpn/test_ssl.c b/tests/unit=
+_tests/openvpn/test_ssl.c</span><br><span>index a9a3137..5da5b1c 100644</sp=
+an><br><span>--- a/tests/unit_tests/openvpn/test_ssl.c</span><br><span>+++ =
+b/tests/unit_tests/openvpn/test_ssl.c</span><br><span>@@ -81,7 +81,7 @@</sp=
+an><br><span>                             &quot;-----END CERTIFICATE-----\n=
+&quot;;</span><br><span> </span><br><span> static const char *</span><br><s=
+pan style=3D"color: hsl(0, 100%, 40%);">-get_tmp_dir()</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+get_tmp_dir(void)</span><br><span> {</sp=
+an><br><span>     const char *ret;</span><br><span> #ifdef _WIN32</span><br=
+><span>diff --git a/tests/unit_tests/plugins/auth-pam/test_search_and_repla=
+ce.c b/tests/unit_tests/plugins/auth-pam/test_search_and_replace.c</span><b=
+r><span>index ee7a151..d40467f 100644</span><br><span>--- a/tests/unit_test=
+s/plugins/auth-pam/test_search_and_replace.c</span><br><span>+++ b/tests/un=
+it_tests/plugins/auth-pam/test_search_and_replace.c</span><br><span>@@ -9,7=
+ +9,7 @@</span><br><span> #include &quot;utils.h&quot;</span><br><span> </s=
+pan><br><span> static void</span><br><span style=3D"color: hsl(0, 100%, 40%=
+);">-pass_any_null_param__returns_null()</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+pass_any_null_param__returns_null(void **state)</span>=
+<br><span> {</span><br><span> </span><br><span>     char DUMMY[] =3D &quot;=
+DUMMY&quot;;</span><br><span>@@ -20,7 +20,7 @@</span><br><span> }</span><br=
+><span> </span><br><span> static void</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-pass_any_empty_string__returns_null()</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+pass_any_empty_string__returns_null(void =
+**state)</span><br><span> {</span><br><span> </span><br><span>     char DUM=
+MY[] =3D &quot;DUMMY&quot;;</span><br><span>@@ -32,7 +32,7 @@</span><br><sp=
+an> }</span><br><span> </span><br><span> static void</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-replace_single_char__one_time__match_is_rep=
+laced()</span><br><span style=3D"color: hsl(120, 100%, 40%);">+replace_sing=
+le_char__one_time__match_is_replaced(void **state)</span><br><span> {</span=
+><br><span>     char *replaced =3D searchandreplace(&quot;X&quot;, &quot;X&=
+quot;, &quot;Y&quot;);</span><br><span> </span><br><span>@@ -43,7 +43,7 @@<=
+/span><br><span> }</span><br><span> </span><br><span> static void</span><br=
+><span style=3D"color: hsl(0, 100%, 40%);">-replace_single_char__multiple_t=
+imes__match_all_matches_are_replaced()</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+replace_single_char__multiple_times__match_all_matches_a=
+re_replaced(void **state)</span><br><span> {</span><br><span>     char *rep=
+laced =3D searchandreplace(&quot;XaX&quot;, &quot;X&quot;, &quot;Y&quot;);<=
+/span><br><span> </span><br><span>@@ -54,7 +54,7 @@</span><br><span> }</spa=
+n><br><span> </span><br><span> static void</span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">-replace_longer_text__multiple_times__match_all_matches=
+_are_replaced()</span><br><span style=3D"color: hsl(120, 100%, 40%);">+repl=
+ace_longer_text__multiple_times__match_all_matches_are_replaced(void **stat=
+e)</span><br><span> {</span><br><span>     char *replaced =3D searchandrepl=
+ace(&quot;XXaXX&quot;, &quot;XX&quot;, &quot;YY&quot;);</span><br><span> </=
+span><br><span>@@ -65,7 +65,7 @@</span><br><span> }</span><br><span> </span=
+><br><span> static void</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>-pattern_not_found__returns_original()</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+pattern_not_found__returns_original(void **state)</span=
+><br><span> {</span><br><span>     char *replaced =3D searchandreplace(&quo=
+t;abc&quot;, &quot;X&quot;, &quot;Y&quot;);</span><br><span> </span><br><sp=
+an></span><br></pre><p>To view, visit <a href=3D"http://gerrit.openvpn.net/=
+c/openvpn/+/667?usp=3Demail">change 667</a>. To unsubscribe, or for help wr=
+iting mail filters, visit <a href=3D"http://gerrit.openvpn.net/settings">se=
+ttings</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><=
+div itemscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"=
+><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/667?u=
+sp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
 <div style=3D"display:none"> Gerrit-Change-Id: I6e08920e4cf4762b9f14a7461a2=
 9fa77df15255c </div>
 <div style=3D"display:none"> Gerrit-Change-Number: 667 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 3 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 4 </div>
 <div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
 .&gt; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
@@ -584,5 +601,5 @@ ts.sourceforge.net&gt; </div>
 <div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
 
 
---gx3swKJ1cJY=--
+--Naq6Zc70YuI=--
 
