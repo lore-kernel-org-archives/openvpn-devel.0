@@ -1,10 +1,10 @@
-Date: Thu, 20 Jun 2024 12:20:14 +0200 (CEST)
-Message-Id: <202406201020.45KAKEJX014540@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20240619144629.1718-2-lev@...515...>
-References: <20240619144629.1718-2-lev@...515...>
-Subject: [Openvpn-devel] [PATCH applied] Re: interactive.c: Improve access
- control for gui<->service pipe
+Date: Thu, 20 Jun 2024 12:37:48 +0200
+Message-ID: <20240620103749.7923-1-gert@...1296...>
+In-Reply-To: <gerrit.1718814483000.I35f7cf84e035bc793d6f0f59e46edf1a2efe0391@...2715...>
+References: <gerrit.1718814483000.I35f7cf84e035bc793d6f0f59e46edf1a2efe0391@...2715...>
+MIME-Version: 1.0
+Subject: [Openvpn-devel] [PATCH v1] t_server_null.sh: Fix failure case
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,33 +15,57 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Lev Stipakov <lstipakov@...277...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
-Indeed, the patch differs only in a single line, related to the snprintf()
-cleanup (which is only in master).  Thanks, Lev, and Selva.
+From: Frank Lichtenheld <frank@...2641...>
 
-Stared at code differences (fine) and test compiled via GHA and local
-ubuntu/mingw - all good.
+The changes for POSIX shell compatibility and parallel
+make compatibility broke actually failing the test
+when a subtest fails.
 
-Your patch has been applied to the master branch.
+Change-Id: I35f7cf84e035bc793d6f0f59e46edf1a2efe0391
+Signed-off-by: Frank Lichtenheld <frank@...2641...>
+Acked-by: Samuli Seppänen <samuli@...515...>
+---
 
-commit babf312ee0486e50ff1f7db5b544afc72ff7c922
-Author: Lev Stipakov
-Date:   Wed Jun 19 17:46:08 2024 +0300
+This change was reviewed on Gerrit and approved by at least one
+developer. I request to merge it to master.
 
-     interactive.c: Improve access control for gui<->service pipe
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/668
+This mail reflects revision 1 of this Change.
 
-     Signed-off-by: Lev Stipakov <lev@...515...>
-     Acked-by: Selva Nair <selva.nair@...277...>
-     Message-Id: <20240619144629.1718-2-lev@...515...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg28808.html
-     Signed-off-by: Gert Doering <gert@...1296...>
+Acked-by according to Gerrit (reflected above):
+Samuli Seppänen <samuli@...515...>
 
-
---
-kind regards,
-
-Gert Doering
-
+        
+diff --git a/tests/t_server_null.sh b/tests/t_server_null.sh
+index cfca5ee..0e53ba4 100755
+--- a/tests/t_server_null.sh
++++ b/tests/t_server_null.sh
+@@ -64,9 +64,12 @@
+ fi
+ 
+ "${srcdir}/t_server_null_client.sh"
++retval=$?
+ 
+ # When running make jobs in parallel ("make -j<x> check") we need to ensure
+ # that this script does not exit before all --dev null servers are dead and
+ # their network interfaces are gone. Otherwise t_client.sh will fail because
+ # pre and post ifconfig output does not match.
+ wait
++
++exit $retval
+diff --git a/tests/t_server_null_client.sh b/tests/t_server_null_client.sh
+index 5d5542b..8890007 100755
+--- a/tests/t_server_null_client.sh
++++ b/tests/t_server_null_client.sh
+@@ -130,7 +130,7 @@
+     eval test_name=\"\$TEST_NAME_$SUF\"
+     eval should_pass=\"\$SHOULD_PASS_$SUF\"
+ 
+-    (get_client_test_result "${test_name}" "${should_pass}")
++    get_client_test_result "${test_name}" "${should_pass}"
+ done
+ 
+ exit $retval
 
