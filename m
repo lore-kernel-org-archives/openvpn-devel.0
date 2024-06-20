@@ -1,16 +1,11 @@
-From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Thu, 20 Jun 2024 13:34:21 +0000
-In-Reply-To: <gerrit.1718814483000.I35f7cf84e035bc793d6f0f59e46edf1a2efe0391@...2715...>
-References: <gerrit.1718814483000.I35f7cf84e035bc793d6f0f59e46edf1a2efe0391@...2715...>
-Reply-To: gert@...1296..., arne-openvpn@...1227..., samuli@...515...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <b6c4c38c5c501c97c023362bcdb020fc27176797-EmailReplacePatchSet-HTML@...2715...>
+From: Gert Doering <gert@...1296...>
+Date: Thu, 20 Jun 2024 15:37:03 +0200
+Message-ID: <20240620133703.13906-1-gert@...1296...>
+In-Reply-To: <gerrit.1718794976000.I6e08920e4cf4762b9f14a7461a29fa77df15255c@...2715...>
+References: <gerrit.1718794976000.I6e08920e4cf4762b9f14a7461a29fa77df15255c@...2715...>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="5N/zoUCNCzM="; charset=UTF-8
-Subject: [Openvpn-devel] [XS] Change in openvpn[master]: t_server_null.sh:
- Fix failure case
+Subject: [Openvpn-devel] [PATCH v2] configure: Add -Wstrict-prototypes and
+ -Wold-style-definition
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,161 +14,260 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: flichtenheld <frank@...2641...>, plaisthos <arne-openvpn@...1227...>, mattock <samuli@...515...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---5N/zoUCNCzM=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+From: Frank Lichtenheld <frank@...2641...>
 
-cron2 has uploaded a new patch set (#2) to the change originally created by=
- flichtenheld. ( http://gerrit.openvpn.net/c/openvpn/+/668?usp=3Demail )
+These are not covered by -Wall (nor -Wextra) but we want
+to enforce them.
 
-The following approvals got outdated and were removed:
-Code-Review+2 by mattock
-
-
-Change subject: t_server_null.sh: Fix failure case
-......................................................................
-
-t_server_null.sh: Fix failure case
-
-The changes for POSIX shell compatibility and parallel
-make compatibility broke actually failing the test
-when a subtest fails.
-
-Change-Id: I35f7cf84e035bc793d6f0f59e46edf1a2efe0391
+Change-Id: I6e08920e4cf4762b9f14a7461a29fa77df15255c
 Signed-off-by: Frank Lichtenheld <frank@...2641...>
-Acked-by: Samuli Sepp=C3=A4nen <samuli@...515...>
-Message-Id: <20240620103749.7923-1-gert@...1296...>
-URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg28=
-815.html
-Signed-off-by: Gert Doering <gert@...1296...>
+Acked-by: Gert Doering <gert@...1296...>
 ---
-M tests/t_server_null.sh
-M tests/t_server_null_client.sh
-2 files changed, 4 insertions(+), 1 deletion(-)
 
+This change was reviewed on Gerrit and approved by at least one
+developer. I request to merge it to master.
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/68/668/2
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/667
+This mail reflects revision 2 of this Change.
 
-diff --git a/tests/t_server_null.sh b/tests/t_server_null.sh
-index cfca5ee..0e53ba4 100755
---- a/tests/t_server_null.sh
-+++ b/tests/t_server_null.sh
-@@ -64,9 +64,12 @@
- fi
-=20
- "${srcdir}/t_server_null_client.sh"
-+retval=3D$?
+Acked-by according to Gerrit (reflected above):
+Gert Doering <gert@...1296...>
 
- # When running make jobs in parallel ("make -j<x> check") we need to ensure
- # that this script does not exit before all --dev null servers are dead and
- # their network interfaces are gone. Otherwise t_client.sh will fail becau=
-se
- # pre and post ifconfig output does not match.
- wait
-+
-+exit $retval
-diff --git a/tests/t_server_null_client.sh b/tests/t_server_null_client.sh
-index 5d5542b..8890007 100755
---- a/tests/t_server_null_client.sh
-+++ b/tests/t_server_null_client.sh
-@@ -130,7 +130,7 @@
-     eval test_name=3D\"\$TEST_NAME_$SUF\"
-     eval should_pass=3D\"\$SHOULD_PASS_$SUF\"
-
--    (get_client_test_result "${test_name}" "${should_pass}")
-+    get_client_test_result "${test_name}" "${should_pass}"
- done
-
- exit $retval
-
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/668?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings
-
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: I35f7cf84e035bc793d6f0f59e46edf1a2efe0391
-Gerrit-Change-Number: 668
-Gerrit-PatchSet: 2
-Gerrit-Owner: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: mattock <samuli@...515...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-MessageType: newpatchset
-
---5N/zoUCNCzM=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<p>cron2 <strong>uploaded patch set #2</strong> to the change originally cr=
-eated by flichtenheld.</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn=
-/+/668?usp=3Demail">View Change</a></p><p>The following approvals got outda=
-ted and were removed:
-Code-Review+2 by mattock</p><pre style=3D"font-family: monospace,monospace;=
- white-space: pre-wrap;">t_server_null.sh: Fix failure case<br><br>The chan=
-ges for POSIX shell compatibility and parallel<br>make compatibility broke =
-actually failing the test<br>when a subtest fails.<br><br>Change-Id: I35f7c=
-f84e035bc793d6f0f59e46edf1a2efe0391<br>Signed-off-by: Frank Lichtenheld &lt=
-;frank@...2641...&gt;<br>Acked-by: Samuli Sepp=C3=A4nen &lt;samuli@...1699...=
-.&gt;<br>Message-Id: &lt;20240620103749.7923-1-gert@...1296...&gt;<br>URL: =
-https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg28815.h=
-tml<br>Signed-off-by: Gert Doering &lt;gert@...1296...&gt;<br>---<br>M test=
-s/t_server_null.sh<br>M tests/t_server_null_client.sh<br>2 files changed, 4=
- insertions(+), 1 deletion(-)<br><br></pre><pre style=3D"font-family: monos=
-pace,monospace; white-space: pre-wrap;">git pull ssh://gerrit.openvpn.net:2=
-9418/openvpn refs/changes/68/668/2</pre><pre style=3D"font-family: monospac=
-e,monospace; white-space: pre-wrap;"><span>diff --git a/tests/t_server_null=
-.sh b/tests/t_server_null.sh</span><br><span>index cfca5ee..0e53ba4 100755<=
-/span><br><span>--- a/tests/t_server_null.sh</span><br><span>+++ b/tests/t_=
-server_null.sh</span><br><span>@@ -64,9 +64,12 @@</span><br><span> fi</span=
-><br><span> </span><br><span> &quot;${srcdir}/t_server_null_client.sh&quot;=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+retval=3D$?</span><=
-br><span> </span><br><span> # When running make jobs in parallel (&quot;mak=
-e -j&lt;x&gt; check&quot;) we need to ensure</span><br><span> # that this s=
-cript does not exit before all --dev null servers are dead and</span><br><s=
-pan> # their network interfaces are gone. Otherwise t_client.sh will fail b=
-ecause</span><br><span> # pre and post ifconfig output does not match.</spa=
-n><br><span> wait</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+exit $retval</span><b=
-r><span>diff --git a/tests/t_server_null_client.sh b/tests/t_server_null_cl=
-ient.sh</span><br><span>index 5d5542b..8890007 100755</span><br><span>--- a=
-/tests/t_server_null_client.sh</span><br><span>+++ b/tests/t_server_null_cl=
-ient.sh</span><br><span>@@ -130,7 +130,7 @@</span><br><span>     eval test_=
-name=3D\&quot;\$TEST_NAME_$SUF\&quot;</span><br><span>     eval should_pass=
-=3D\&quot;\$SHOULD_PASS_$SUF\&quot;</span><br><span> </span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-    (get_client_test_result &quot;${test_na=
-me}&quot; &quot;${should_pass}&quot;)</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+    get_client_test_result &quot;${test_name}&quot; &quot=
-;${should_pass}&quot;</span><br><span> done</span><br><span> </span><br><sp=
-an> exit $retval</span><br><span></span><br></pre><p>To view, visit <a href=
-=3D"http://gerrit.openvpn.net/c/openvpn/+/668?usp=3Demail">change 668</a>. =
-To unsubscribe, or for help writing mail filters, visit <a href=3D"http://g=
-errit.openvpn.net/settings">settings</a>.</p><div itemscope itemtype=3D"htt=
-p://schema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D=
-"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit=
-.openvpn.net/c/openvpn/+/668?usp=3Demail"/><meta itemprop=3D"name" content=
-=3D"View Change"/></div></div>
-
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I35f7cf84e035bc793d6f0f59e46=
-edf1a2efe0391 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 668 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
-<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
-.&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: mattock &lt;samuli@...515...&=
-gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
-
-
---5N/zoUCNCzM=--
+        
+diff --git a/configure.ac b/configure.ac
+index 2e5ab6a..c01ad09 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -1408,6 +1408,8 @@
+ )
+ 
+ ACL_CHECK_ADD_COMPILE_FLAGS([-Wno-stringop-truncation])
++ACL_CHECK_ADD_COMPILE_FLAGS([-Wstrict-prototypes])
++ACL_CHECK_ADD_COMPILE_FLAGS([-Wold-style-definition])
+ ACL_CHECK_ADD_COMPILE_FLAGS([-Wall])
+ 
+ if test "${enable_pedantic}" = "yes"; then
+diff --git a/src/openvpn/dco.h b/src/openvpn/dco.h
+index 50ebb35..035474f 100644
+--- a/src/openvpn/dco.h
++++ b/src/openvpn/dco.h
+@@ -247,7 +247,7 @@
+  *
+  * @return                   list of colon-separated ciphers
+  */
+-const char *dco_get_supported_ciphers();
++const char *dco_get_supported_ciphers(void);
+ 
+ #else /* if defined(ENABLE_DCO) */
+ 
+@@ -375,7 +375,7 @@
+ }
+ 
+ static inline const char *
+-dco_get_supported_ciphers()
++dco_get_supported_ciphers(void)
+ {
+     return "";
+ }
+diff --git a/src/openvpn/dco_freebsd.c b/src/openvpn/dco_freebsd.c
+index 7c8b29c..9a90f5c 100644
+--- a/src/openvpn/dco_freebsd.c
++++ b/src/openvpn/dco_freebsd.c
+@@ -773,7 +773,7 @@
+ }
+ 
+ const char *
+-dco_get_supported_ciphers()
++dco_get_supported_ciphers(void)
+ {
+     return "none:AES-256-GCM:AES-192-GCM:AES-128-GCM:CHACHA20-POLY1305";
+ }
+diff --git a/src/openvpn/dco_linux.c b/src/openvpn/dco_linux.c
+index b2584b9..277cd64 100644
+--- a/src/openvpn/dco_linux.c
++++ b/src/openvpn/dco_linux.c
+@@ -1053,7 +1053,7 @@
+ }
+ 
+ const char *
+-dco_get_supported_ciphers()
++dco_get_supported_ciphers(void)
+ {
+     return "AES-128-GCM:AES-256-GCM:AES-192-GCM:CHACHA20-POLY1305";
+ }
+diff --git a/src/openvpn/sig.c b/src/openvpn/sig.c
+index cfbd942..8323f0d 100644
+--- a/src/openvpn/sig.c
++++ b/src/openvpn/sig.c
+@@ -448,7 +448,7 @@
+ }
+ 
+ void
+-halt_low_priority_signals()
++halt_low_priority_signals(void)
+ {
+ #ifndef _WIN32
+     struct sigaction sa;
+diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
+index 2054eb4..17078c9 100644
+--- a/src/openvpn/ssl.c
++++ b/src/openvpn/ssl.c
+@@ -277,7 +277,7 @@
+ #endif
+ 
+ void
+-enable_auth_user_pass()
++enable_auth_user_pass(void)
+ {
+     auth_user_pass_enabled = true;
+ }
+diff --git a/src/openvpn/ssl.h b/src/openvpn/ssl.h
+index 98e59e8..0e2a43f 100644
+--- a/src/openvpn/ssl.h
++++ b/src/openvpn/ssl.h
+@@ -381,7 +381,7 @@
+ void pem_password_setup(const char *auth_file);
+ 
+ /* Enables the use of user/password authentication */
+-void enable_auth_user_pass();
++void enable_auth_user_pass(void);
+ 
+ /*
+  * Setup authentication username and password. If auth_file is given, use the
+diff --git a/src/openvpn/xkey_helper.c b/src/openvpn/xkey_helper.c
+index 283c95d..b68fb43 100644
+--- a/src/openvpn/xkey_helper.c
++++ b/src/openvpn/xkey_helper.c
+@@ -49,7 +49,7 @@
+ XKEY_EXTERNAL_SIGN_fn xkey_management_sign;
+ 
+ static void
+-print_openssl_errors()
++print_openssl_errors(void)
+ {
+     unsigned long e;
+     while ((e = ERR_get_error()))
+diff --git a/src/openvpn/xkey_provider.c b/src/openvpn/xkey_provider.c
+index f5fc956..964d2eb 100644
+--- a/src/openvpn/xkey_provider.c
++++ b/src/openvpn/xkey_provider.c
+@@ -155,7 +155,7 @@
+ keymgmt_import_helper(XKEY_KEYDATA *key, const OSSL_PARAM params[]);
+ 
+ static XKEY_KEYDATA *
+-keydata_new()
++keydata_new(void)
+ {
+     xkey_dmsg(D_XKEY, "entry");
+ 
+diff --git a/tests/unit_tests/openvpn/test_common.h b/tests/unit_tests/openvpn/test_common.h
+index f219e93..52503c6 100644
+--- a/tests/unit_tests/openvpn/test_common.h
++++ b/tests/unit_tests/openvpn/test_common.h
+@@ -33,7 +33,7 @@
+  * methods
+  */
+ static inline void
+-openvpn_unit_test_setup()
++openvpn_unit_test_setup(void)
+ {
+     assert_int_equal(setvbuf(stdout, NULL, _IONBF, BUFSIZ), 0);
+     assert_int_equal(setvbuf(stderr, NULL, _IONBF, BUFSIZ), 0);
+diff --git a/tests/unit_tests/openvpn/test_provider.c b/tests/unit_tests/openvpn/test_provider.c
+index 934b2d3..cfe9ac3 100644
+--- a/tests/unit_tests/openvpn/test_provider.c
++++ b/tests/unit_tests/openvpn/test_provider.c
+@@ -119,7 +119,7 @@
+ }
+ 
+ static void
+-init_test()
++init_test(void)
+ {
+     openvpn_unit_test_setup();
+     prov[0] = OSSL_PROVIDER_load(NULL, "default");
+@@ -135,7 +135,7 @@
+ }
+ 
+ static void
+-uninit_test()
++uninit_test(void)
+ {
+     for (size_t i = 0; i < _countof(prov); i++)
+     {
+diff --git a/tests/unit_tests/openvpn/test_ssl.c b/tests/unit_tests/openvpn/test_ssl.c
+index a9a3137..5da5b1c 100644
+--- a/tests/unit_tests/openvpn/test_ssl.c
++++ b/tests/unit_tests/openvpn/test_ssl.c
+@@ -81,7 +81,7 @@
+                             "-----END CERTIFICATE-----\n";
+ 
+ static const char *
+-get_tmp_dir()
++get_tmp_dir(void)
+ {
+     const char *ret;
+ #ifdef _WIN32
+diff --git a/tests/unit_tests/plugins/auth-pam/test_search_and_replace.c b/tests/unit_tests/plugins/auth-pam/test_search_and_replace.c
+index ee7a151..d40467f 100644
+--- a/tests/unit_tests/plugins/auth-pam/test_search_and_replace.c
++++ b/tests/unit_tests/plugins/auth-pam/test_search_and_replace.c
+@@ -9,7 +9,7 @@
+ #include "utils.h"
+ 
+ static void
+-pass_any_null_param__returns_null()
++pass_any_null_param__returns_null(void **state)
+ {
+ 
+     char DUMMY[] = "DUMMY";
+@@ -20,7 +20,7 @@
+ }
+ 
+ static void
+-pass_any_empty_string__returns_null()
++pass_any_empty_string__returns_null(void **state)
+ {
+ 
+     char DUMMY[] = "DUMMY";
+@@ -32,7 +32,7 @@
+ }
+ 
+ static void
+-replace_single_char__one_time__match_is_replaced()
++replace_single_char__one_time__match_is_replaced(void **state)
+ {
+     char *replaced = searchandreplace("X", "X", "Y");
+ 
+@@ -43,7 +43,7 @@
+ }
+ 
+ static void
+-replace_single_char__multiple_times__match_all_matches_are_replaced()
++replace_single_char__multiple_times__match_all_matches_are_replaced(void **state)
+ {
+     char *replaced = searchandreplace("XaX", "X", "Y");
+ 
+@@ -54,7 +54,7 @@
+ }
+ 
+ static void
+-replace_longer_text__multiple_times__match_all_matches_are_replaced()
++replace_longer_text__multiple_times__match_all_matches_are_replaced(void **state)
+ {
+     char *replaced = searchandreplace("XXaXX", "XX", "YY");
+ 
+@@ -65,7 +65,7 @@
+ }
+ 
+ static void
+-pattern_not_found__returns_original()
++pattern_not_found__returns_original(void **state)
+ {
+     char *replaced = searchandreplace("abc", "X", "Y");
+ 
 
