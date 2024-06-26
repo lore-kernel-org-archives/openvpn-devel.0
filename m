@@ -1,14 +1,14 @@
 From: "flichtenheld (Code Review)" <gerrit@...515...>
-Date: Wed, 26 Jun 2024 13:48:27 +0000
+Date: Wed, 26 Jun 2024 13:51:11 +0000
 In-Reply-To: <gerrit.1713800630000.I1c038dc4ec80d3499582d81eee61fee74f26e693@...2715...>
 References: <gerrit.1713800630000.I1c038dc4ec80d3499582d81eee61fee74f26e693@...2715...>
 Reply-To: frank@...2641..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net, gert@...1296...
-Message-ID: <ef7ad0fac11ac4114deef4c5f6edcb78c71c6415-EmailReplacePatchSet-HTML@...2715...>
+Message-ID: <d8dd4f065e284d7c322f554ee986fde4520ad822-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="2a+pBSbPHC8="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="xfx1BbYz4wk="; charset=UTF-8
 Subject: [Openvpn-devel] [S] Change in openvpn[master]: configure: Try to
  detect LZO with pkg-config
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -19,147 +19,41 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: plaisthos <arne-openvpn@...1227...>, cron2 <gert@...1296...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Cc: cron2 <gert@...1296...>, plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---2a+pBSbPHC8=
+--xfx1BbYz4wk=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: cron2, flichtenheld, plaisthos.
+Attention is currently required from: cron2, plaisthos.
 
-Hello cron2, plaisthos,
-
-I'd like you to reexamine a change. Please visit
-
-    http://gerrit.openvpn.net/c/openvpn/+/556?usp=3Demail
-
-to look at the new patch set (#8).
-
-The following approvals got outdated and were removed:
-Code-Review+2 by cron2
-
+flichtenheld has posted comments on this change. ( http://gerrit.openvpn.ne=
+t/c/openvpn/+/556?usp=3Demail )
 
 Change subject: configure: Try to detect LZO with pkg-config
 ......................................................................
 
-configure: Try to detect LZO with pkg-config
 
-On most systems this should work just fine.
+Patch Set 8:
 
-v2:
- - simplify code by removing -llzo special handling
-v3:
- - reintroduce support for autodetection without pkg-config,
-   no need to break backwards compatibility right now
-v7:
- - Handle case correctly where lzo/lzo1x.h can not be included
-   at all. On most distros this works even though the .pc
-   file suggests to use it without. We had some partly
-   solution for that but it wasn't really working.
-v8:
- - Handle systems that do not implicitly include limits.h
-   in configure test builds.
-   lzodefs.h usually relies on lzoconf.h to include it.
+(2 comments)
 
-Change-Id: I1c038dc4ec80d3499582d81eee61fee74f26e693
-Signed-off-by: Frank Lichtenheld <frank@...2641...>
----
-M config.h.cmake.in
-M configure.ac
-M src/openvpn/lzo.h
-3 files changed, 23 insertions(+), 12 deletions(-)
+Patchset:
+
+PS6:
+> I think the pc is broken... everything LZO itself includes uses <lzo/lzoc=
+onf.h>... [=E2=80=A6]
+Done
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/56/556/8
+Patchset:
 
-diff --git a/config.h.cmake.in b/config.h.cmake.in
-index effca2a..720d679 100644
---- a/config.h.cmake.in
-+++ b/config.h.cmake.in
-@@ -178,9 +178,6 @@
- /* Define to 1 if you have the <linux/types.h> header file. */
- #cmakedefine HAVE_LINUX_TYPES_H
+PS7:
+> Tested on FreeBSD 14, "configure with no option" -> succeeds & builds fin=
+e (LZO in /usr/local/... [=E2=80=A6]
+We found out this is because lzodefs.h relies on lzoconf.h to include limit=
+s.h. So we need to imitate that.
 
--/* Define to 1 if you have the <lzoconf.h> header file. */
--#define HAVE_LZO_CONF_H
--
- /* Define to 1 if you have the <lzo1x.h> header file. */
- #define HAVE_LZO1X_H 1
-
-diff --git a/configure.ac b/configure.ac
-index c01ad09..555c97e 100644
---- a/configure.ac
-+++ b/configure.ac
-@@ -1143,8 +1143,17 @@
-
- AC_ARG_VAR([LZO_CFLAGS], [C compiler flags for lzo])
- AC_ARG_VAR([LZO_LIBS], [linker flags for lzo])
--have_lzo=3D"yes"
--if test -z "${LZO_LIBS}"; then
-+if test -z "${LZO_CFLAGS}" -a -z "${LZO_LIBS}"; then
-+    # if the user did not explicitly specify flags, try to autodetect
-+    PKG_CHECK_MODULES([LZO],
-+		[lzo2],
-+		[have_lzo=3D"yes"],
-+		[]
-+    )
-+
-+    if test "${have_lzo}" !=3D "yes"; then
-+	# try to detect without pkg-config
-+	have_lzo=3D"yes"
- 	AC_CHECK_LIB(
- 		[lzo2],
- 		[lzo1x_1_15_compress],
-@@ -1156,6 +1165,10 @@
- 			[have_lzo=3D"no"]
- 		)]
- 	)
-+    fi
-+else
-+    # assume the user configured it correctly
-+    have_lzo=3D"yes"
- fi
- if test "${have_lzo}" =3D "yes"; then
- 	saved_CFLAGS=3D"${CFLAGS}"
-@@ -1166,8 +1179,11 @@
- 		[AC_CHECK_HEADERS(
- 			[lzo1x.h],
- 			,
--			[AC_MSG_ERROR([lzo1x.h is missing])]
--		)]
-+			[AC_MSG_ERROR([lzo1x.h is missing])],
-+                        [#include <limits.h>
-+                         #include <lzodefs.h>
-+                         #include <lzoconf.h>]
-+		)],
- 	)
- 	CFLAGS=3D"${saved_CFLAGS}"
- fi
-diff --git a/src/openvpn/lzo.h b/src/openvpn/lzo.h
-index 62d73a1..c271527 100644
---- a/src/openvpn/lzo.h
-+++ b/src/openvpn/lzo.h
-@@ -37,17 +37,15 @@
-  * @addtogroup compression
-  * @{
-  */
--#if defined(HAVE_LZO_CONF_H)
-+#if defined(HAVE_LZO_LZO1X_H)
-+#include <lzo/lzo1x.h>
-+#elif defined(HAVE_LZO1X_H)
- /* The lzo.h magic gets confused and still wants
-  * to include lzo/lzoconf.h even if our include paths
-  * are setup to include the paths without lzo/
-  */
- #include <lzodefs.h>
- #include <lzoconf.h>
--#endif
--#if defined(HAVE_LZO_LZO1X_H)
--#include <lzo/lzo1x.h>
--#elif defined(HAVE_LZO1X_H)
- #include <lzo1x.h>
- #endif
 
 
 --
@@ -178,111 +72,43 @@ Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
 Gerrit-Attention: cron2 <gert@...1296...>
-Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-MessageType: newpatchset
+Gerrit-Comment-Date: Wed, 26 Jun 2024 13:51:11 +0000
+Gerrit-HasComments: Yes
+Gerrit-Has-Labels: No
+Comment-In-Reply-To: cron2 <gert@...1296...>
+Gerrit-MessageType: comment
 
---2a+pBSbPHC8=
+--xfx1BbYz4wk=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p> Attention is currently required from: cron2, flichtenheld, plaisthos. <=
-/p>
-<p>flichtenheld <strong>uploaded patch set #8</strong> to this change.</p><=
-p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/556?usp=3Demail">View Ch=
-ange</a></p><p>The following approvals got outdated and were removed:
-Code-Review+2 by cron2</p><pre style=3D"font-family: monospace,monospace; w=
-hite-space: pre-wrap;">configure: Try to detect LZO with pkg-config<br><br>=
-On most systems this should work just fine.<br><br>v2:<br> - simplify code =
-by removing -llzo special handling<br>v3:<br> - reintroduce support for aut=
-odetection without pkg-config,<br>   no need to break backwards compatibili=
-ty right now<br>v7:<br> - Handle case correctly where lzo/lzo1x.h can not b=
-e included<br>   at all. On most distros this works even though the .pc<br>=
-   file suggests to use it without. We had some partly<br>   solution for t=
-hat but it wasn&#39;t really working.<br>v8:<br> - Handle systems that do n=
-ot implicitly include limits.h<br>   in configure test builds.<br>   lzodef=
-s.h usually relies on lzoconf.h to include it.<br><br>Change-Id: I1c038dc4e=
-c80d3499582d81eee61fee74f26e693<br>Signed-off-by: Frank Lichtenheld &lt;fra=
-nk@...2641...&gt;<br>---<br>M config.h.cmake.in<br>M configure.ac<br>M src/=
-openvpn/lzo.h<br>3 files changed, 23 insertions(+), 12 deletions(-)<br><br>=
-</pre><pre style=3D"font-family: monospace,monospace; white-space: pre-wrap=
-;">git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/56/556/8</p=
-re><pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;">=
-<span>diff --git a/config.h.cmake.in b/config.h.cmake.in</span><br><span>in=
-dex effca2a..720d679 100644</span><br><span>--- a/config.h.cmake.in</span><=
-br><span>+++ b/config.h.cmake.in</span><br><span>@@ -178,9 +178,6 @@</span>=
-<br><span> /* Define to 1 if you have the &lt;linux/types.h&gt; header file=
-. */</span><br><span> #cmakedefine HAVE_LINUX_TYPES_H</span><br><span> </sp=
-an><br><span style=3D"color: hsl(0, 100%, 40%);">-/* Define to 1 if you hav=
-e the &lt;lzoconf.h&gt; header file. */</span><br><span style=3D"color: hsl=
-(0, 100%, 40%);">-#define HAVE_LZO_CONF_H</span><br><span style=3D"color: h=
-sl(0, 100%, 40%);">-</span><br><span> /* Define to 1 if you have the &lt;lz=
-o1x.h&gt; header file. */</span><br><span> #define HAVE_LZO1X_H 1</span><br=
-><span> </span><br><span>diff --git a/configure.ac b/configure.ac</span><br=
-><span>index c01ad09..555c97e 100644</span><br><span>--- a/configure.ac</sp=
-an><br><span>+++ b/configure.ac</span><br><span>@@ -1143,8 +1143,17 @@</spa=
-n><br><span> </span><br><span> AC_ARG_VAR([LZO_CFLAGS], [C compiler flags f=
-or lzo])</span><br><span> AC_ARG_VAR([LZO_LIBS], [linker flags for lzo])</s=
-pan><br><span style=3D"color: hsl(0, 100%, 40%);">-have_lzo=3D&quot;yes&quo=
-t;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-if test -z &quot;${=
-LZO_LIBS}&quot;; then</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+if test -z &quot;${LZO_CFLAGS}&quot; -a -z &quot;${LZO_LIBS}&quot;; then<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+    # if the user di=
-d not explicitly specify flags, try to autodetect</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+    PKG_CHECK_MODULES([LZO],</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+		[lzo2],</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+		[have_lzo=3D&quot;yes&quot;],</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+		[]</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+    )</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if =
-test &quot;${have_lzo}&quot; !=3D &quot;yes&quot;; then</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+	# try to detect without pkg-config</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+	have_lzo=3D&quot;yes&q=
-uot;</span><br><span> 	AC_CHECK_LIB(</span><br><span> 		[lzo2],</span><br><=
-span> 		[lzo1x_1_15_compress],</span><br><span>@@ -1156,6 +1165,10 @@</span=
-><br><span> 			[have_lzo=3D&quot;no&quot;]</span><br><span> 		)]</span><br>=
-<span> 	)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    fi</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+else</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+    # assume the user configured it co=
-rrectly</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    have_lzo=
-=3D&quot;yes&quot;</span><br><span> fi</span><br><span> if test &quot;${hav=
-e_lzo}&quot; =3D &quot;yes&quot;; then</span><br><span> 	saved_CFLAGS=3D&qu=
-ot;${CFLAGS}&quot;</span><br><span>@@ -1166,8 +1179,11 @@</span><br><span> =
-		[AC_CHECK_HEADERS(</span><br><span> 			[lzo1x.h],</span><br><span> 			,</=
-span><br><span style=3D"color: hsl(0, 100%, 40%);">-			[AC_MSG_ERROR([lzo1x=
-.h is missing])]</span><br><span style=3D"color: hsl(0, 100%, 40%);">-		)]<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+			[AC_MSG_ERROR([lz=
-o1x.h is missing])],</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+                        [#include &lt;limits.h&gt;</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+                         #include &lt;lzo=
-defs.h&gt;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+         =
-                #include &lt;lzoconf.h&gt;]</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+		)],</span><br><span> 	)</span><br><span> 	CFLAGS=
-=3D&quot;${saved_CFLAGS}&quot;</span><br><span> fi</span><br><span>diff --g=
-it a/src/openvpn/lzo.h b/src/openvpn/lzo.h</span><br><span>index 62d73a1..c=
-271527 100644</span><br><span>--- a/src/openvpn/lzo.h</span><br><span>+++ b=
-/src/openvpn/lzo.h</span><br><span>@@ -37,17 +37,15 @@</span><br><span>  * =
-@addtogroup compression</span><br><span>  * @{</span><br><span>  */</span><=
-br><span style=3D"color: hsl(0, 100%, 40%);">-#if defined(HAVE_LZO_CONF_H)<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+#if defined(HAVE_LZO=
-_LZO1X_H)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#include &=
-lt;lzo/lzo1x.h&gt;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#=
-elif defined(HAVE_LZO1X_H)</span><br><span> /* The lzo.h magic gets confuse=
-d and still wants</span><br><span>  * to include lzo/lzoconf.h even if our =
-include paths</span><br><span>  * are setup to include the paths without lz=
-o/</span><br><span>  */</span><br><span> #include &lt;lzodefs.h&gt;</span><=
-br><span> #include &lt;lzoconf.h&gt;</span><br><span style=3D"color: hsl(0,=
- 100%, 40%);">-#endif</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
-#if defined(HAVE_LZO_LZO1X_H)</span><br><span style=3D"color: hsl(0, 100%, =
-40%);">-#include &lt;lzo/lzo1x.h&gt;</span><br><span style=3D"color: hsl(0,=
- 100%, 40%);">-#elif defined(HAVE_LZO1X_H)</span><br><span> #include &lt;lz=
-o1x.h&gt;</span><br><span> #endif</span><br><span> </span><br><span></span>=
-<br></pre><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/=
-+/556?usp=3Demail">change 556</a>. To unsubscribe, or for help writing mail=
- filters, visit <a href=3D"http://gerrit.openvpn.net/settings">settings</a>=
-.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemsc=
-ope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link ite=
-mprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/556?usp=3Demail=
-"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
+<p> Attention is currently required from: cron2, plaisthos. </p>
+<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/556?usp=3Demail">View C=
+hange</a></p><p>2 comments:</p><ul style=3D"list-style: none; padding: 0;">=
+<li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-styl=
+e: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p styl=
+e=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/=
+556?tab=3Dcomments">Patch Set #6:</a> </p><p><blockquote style=3D"border-le=
+ft: 1px solid #aaa; margin: 10px 0; padding: 0 10px;">I think the pc is bro=
+ken... everything LZO itself includes uses &lt;lzo/lzoconf.h&gt;... [=E2=80=
+=A6]</blockquote></p><p style=3D"white-space: pre-wrap; word-wrap: break-wo=
+rd;">Done</p></li></ul></li><li style=3D"margin: 0; padding: 0;"><p>Patchse=
+t:</p><ul style=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; p=
+adding: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://ger=
+rit.openvpn.net/c/openvpn/+/556?tab=3Dcomments">Patch Set #7:</a> </p><p><b=
+lockquote style=3D"border-left: 1px solid #aaa; margin: 10px 0; padding: 0 =
+10px;">Tested on FreeBSD 14, &quot;configure with no option&quot; -&gt; suc=
+ceeds &amp; builds fine (LZO in /usr/local/... [=E2=80=A6]</blockquote></p>=
+<p style=3D"white-space: pre-wrap; word-wrap: break-word;">We found out thi=
+s is because lzodefs.h relies on lzoconf.h to include limits.h. So we need =
+to imitate that.</p></li></ul></li></ul><p>To view, visit <a href=3D"http:/=
+/gerrit.openvpn.net/c/openvpn/+/556?usp=3Demail">change 556</a>. To unsubsc=
+ribe, or for help writing mail filters, visit <a href=3D"http://gerrit.open=
+vpn.net/settings">settings</a>.</p><div itemscope itemtype=3D"http://schema=
+.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://sc=
+hema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.n=
+et/c/openvpn/+/556?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Ch=
+ange"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
@@ -302,10 +128,14 @@ ts.sourceforge.net&gt; </div>
 ..1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: cron2 &lt;gert@...1296...&gt=
 ; </div>
-<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
-41...&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Wed, 26 Jun 2024 13:51:11=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: No </div>
+<div style=3D"display:none"> Comment-In-Reply-To: cron2 &lt;gert@...1296...=
+&gt; </div>
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
 
 
---2a+pBSbPHC8=--
+--xfx1BbYz4wk=--
 
