@@ -1,11 +1,16 @@
-Content-Type: multipart/alternative;
- boundary="------------rZ05bnhD5k0RSnJcOV0vFmAl"
-Message-ID: <f85f8471-8a95-42e1-9339-69d4e68423f7@...2751...>
-Date: Wed, 26 Jun 2024 15:43:13 +0200
+From: "flichtenheld (Code Review)" <gerrit@...515...>
+Date: Wed, 26 Jun 2024 13:48:27 +0000
+In-Reply-To: <gerrit.1713800630000.I1c038dc4ec80d3499582d81eee61fee74f26e693@...2715...>
+References: <gerrit.1713800630000.I1c038dc4ec80d3499582d81eee61fee74f26e693@...2715...>
+Reply-To: frank@...2641..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net, gert@...1296...
+Message-ID: <ef7ad0fac11ac4114deef4c5f6edcb78c71c6415-EmailReplacePatchSet-HTML@...2715...>
 MIME-Version: 1.0
-From: Johan Draaisma <johan@...2751...>
-Content-Language: en-US
-Subject: [Openvpn-devel]  IRC community meeting summary
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="2a+pBSbPHC8="; charset=UTF-8
+Subject: [Openvpn-devel] [S] Change in openvpn[master]: configure: Try to
+ detect LZO with pkg-config
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,186 +19,293 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: openvpn-devel@lists.sourceforge.net
+To: plaisthos <arne-openvpn@...1227...>, cron2 <gert@...1296...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-This is a multi-part message in MIME format.
---------------rZ05bnhD5k0RSnJcOV0vFmAl
-Content-Type: text/plain; charset="utf-8"; format="flowed"
-Content-Transfer-Encoding: 8bit
+--2a+pBSbPHC8=
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Meeting summary for 26 June 2024:
+Attention is currently required from: cron2, flichtenheld, plaisthos.
 
-  * *New: release openvpn 2.6.12*
-    /The security issue addressed in 2.6.11 has the known issue that it
-    breaks certain setups with backend scripts that produce custom
-    auth_failed messages./
-    /This will be addressed in the upcoming 2.6.12 release./
-    /An improvement in the area of the LZO library is also in the works./
+Hello cron2, plaisthos,
 
-  * *Updated: release openvpn 2.6.11*
-    /This release was done last week on June 20th./
-    /We have a fix for a reported issue with localized versions of
-    Windows and a custom installation path of OpenVPN GUI. Looks like we
-    can update to I002 for the Windows installer./
-    /This will likely go out today./
-    /The tunnelcrack mitigations for Windows are held back because we
-    have had absolutely no response on the mailing lists for testing
-    these and confirming that it doesn't break things./
-    /If someone can contribute to testing this we can follow up with a
-    2.6.12 release in a few weeks that contains the tunnelcrack
-    mitigations for Windows. Otherwise it goes to 2.7./
+I'd like you to reexamine a change. Please visit
 
-  * *Updated: DCO and Linux upstreaming, API change*/
-    /Upstreaming DCO to Linux is proceeding, it is in review stage at
-    the moment./
-    /ordex has sent in*patchset version 4*./
-    /There will be an API change that makes it incompatible with the
-    current implementation./
-    /A graceful solution to that was already discussed and in motion.
-    giaan will be working on this./
-    /(in a nutshell, make OpenVPN understand old and new API, DKMS and
-    kernel versions both will then use new API, then we drop old API)//
+    http://gerrit.openvpn.net/c/openvpn/+/556?usp=3Demail
 
-  * *Updated: Tunnelcrack progressTunnelCrack community wiki article
-    <https://community.openvpn.net/openvpn/wiki/TunnelCrack>*
-    /Status update onTunnelCrack
-    <https://community.openvpn.net/openvpn/wiki/TunnelCrack>mitigations:/
-    /The tunnelcrack mitigation for Windows has gone in master, which
-    will go to 2.7 release. There is the possibility for it to go to
-    2.6.x if we can find testers for this./
-    /Windows, openvpn2: merged to master, not to 2.6.x. openvpn3: in
-    code review./
-    /Linux, openvpn2: in progress. openvpn3: in progress./
-    /macOS: to be determined./
-    /iOS: to be determined./
-    /Android: not vulnerable./
+to look at the new patch set (#8).
 
-  * *Updated: OpenVPN community meetup 2024*
-    /Wiki coordination
-    page:​https://community.openvpn.net/openvpn/wiki/CommunityMeetup2024
-    <https://community.openvpn.net/openvpn/wiki/CommunityMeetup2024>/
-    /Where: Karlsruhe, Germany. Meeting room found, need to find out how
-    many participants roughly./
-    /When: Set to 20-22 September 2024./
-    /Shirts: novaflash spoke to matt - he will get us some design in
-    august./
-    /We need to know how many participants will show. To that end it
-    makes sense if we put together an invite mail and send it out./
-    /novaflash put together a suggested
-    mail;​https://cryptpad.fr/pad/#/2/pad/edit/UEzTg-cbReVteh9zR9CQD-Tt/
-    <https://cryptpad.fr/pad/#/2/pad/edit/UEzTg-cbReVteh9zR9CQD-Tt/>/
-    /This will be sent out as an official invite to openvpn-devel and to
-    some special guests./
+The following approvals got outdated and were removed:
+Code-Review+2 by cron2
 
-As always you're welcome to join at #openvpn-meeting on Libera IRC 
-network every Wednesday at 14:00 Central European Time.
 
-Kind regards,
-Johan Draaisma
+Change subject: configure: Try to detect LZO with pkg-config
+......................................................................
 
---------------rZ05bnhD5k0RSnJcOV0vFmAl
-Content-Type: text/html; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+configure: Try to detect LZO with pkg-config
 
-<!DOCTYPE html>
-<html>
-  <head>
-    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
-  </head>
-  <body>
-    <p> Meeting summary for 26 June 2024:</p>
-    <ul
-style="color: rgb(0, 0, 0); font-family: Verdana, Arial, &quot;Bitstream Vera Sans&quot;, Helvetica, sans-serif; font-size: 13px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;">
-      <li><strong>New: release openvpn 2.6.12</strong><br>
-        <em>The security issue addressed in 2.6.11 has the known issue
-          that it breaks certain setups with backend scripts that
-          produce custom auth_failed messages.</em><br>
-        <em>This will be addressed in the upcoming 2.6.12 release.</em><br>
-        <em>An improvement in the area of the LZO library is also in the
-          works.</em></li>
-    </ul>
-    <ul
-style="color: rgb(0, 0, 0); font-family: Verdana, Arial, &quot;Bitstream Vera Sans&quot;, Helvetica, sans-serif; font-size: 13px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;">
-      <li><strong>Updated: release openvpn 2.6.11</strong><br>
-        <em>This release was done last week on June 20th.</em><br>
-        <em>We have a fix for a reported issue with localized versions
-          of Windows and a custom installation path of OpenVPN GUI.
-          Looks like we can update to I002 for the Windows installer.</em><br>
-        <em>This will likely go out today.</em><br>
-        <em>The tunnelcrack mitigations for Windows are held back
-          because we have had absolutely no response on the mailing
-          lists for testing these and confirming that it doesn't break
-          things.</em><br>
-        <em>If someone can contribute to testing this we can follow up
-          with a 2.6.12 release in a few weeks that contains the
-          tunnelcrack mitigations for Windows. Otherwise it goes to 2.7.</em></li>
-    </ul>
-    <ul
-style="color: rgb(0, 0, 0); font-family: Verdana, Arial, &quot;Bitstream Vera Sans&quot;, Helvetica, sans-serif; font-size: 13px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;">
-      <li><strong>Updated: DCO and Linux upstreaming, API change</strong><em><br>
-        </em>Upstreaming DCO to Linux is proceeding, it is in review
-        stage at the moment.<em><br>
-        </em>ordex has sent in<span> </span><strong>patchset version 4</strong>.<em><br>
-        </em>There will be an API change that makes it incompatible with
-        the current implementation.<em><br>
-        </em>A graceful solution to that was already discussed and in
-        motion. giaan will be working on this.<em><br>
-        </em>(in a nutshell, make OpenVPN understand old and new API,
-        DKMS and kernel versions both will then use new API, then we
-        drop old API)<em></em></li>
-    </ul>
-    <ul
-style="color: rgb(0, 0, 0); font-family: Verdana, Arial, &quot;Bitstream Vera Sans&quot;, Helvetica, sans-serif; font-size: 13px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;">
-      <li><strong>Updated: Tunnelcrack progress<span> </span><a
-            class="wiki"
-href="https://community.openvpn.net/openvpn/wiki/TunnelCrack"
-style="text-decoration: none; color: rgb(187, 0, 0); border-bottom: 1px dotted rgb(187, 187, 187);">TunnelCrack
-            community wiki article</a></strong><br>
-        <em>Status update on<span> </span><a class="wiki"
-href="https://community.openvpn.net/openvpn/wiki/TunnelCrack"
-style="text-decoration: none; color: rgb(187, 0, 0); border-bottom: 1px dotted rgb(187, 187, 187);">TunnelCrack</a><span> </span>mitigations:</em><br>
-        <em>The tunnelcrack mitigation for Windows has gone in master,
-          which will go to 2.7 release. There is the possibility for it
-          to go to 2.6.x if we can find testers for this.</em><br>
-        <em>Windows, openvpn2: merged to master, not to 2.6.x. openvpn3:
-          in code review.</em><br>
-        <em>Linux, openvpn2: in progress. openvpn3: in progress.</em><br>
-        <em>macOS: to be determined.</em><br>
-        <em>iOS: to be determined.</em><br>
-        <em>Android: not vulnerable.</em></li>
-    </ul>
-    <ul
-style="color: rgb(0, 0, 0); font-family: Verdana, Arial, &quot;Bitstream Vera Sans&quot;, Helvetica, sans-serif; font-size: 13px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;">
-      <li><strong>Updated: OpenVPN community meetup 2024</strong><br>
-        <em>Wiki coordination page:<span> </span><a class="ext-link"
-href="https://community.openvpn.net/openvpn/wiki/CommunityMeetup2024"
-style="text-decoration: none; color: rgb(187, 0, 0); border-bottom: 1px dotted rgb(187, 187, 187);"><span
-              class="icon"
-style="background: url(&quot;../extlink.gif&quot;) left center no-repeat; padding-left: 15px;">​</span>https://community.openvpn.net/openvpn/wiki/CommunityMeetup2024</a></em><br>
-        <em>Where: Karlsruhe, Germany. Meeting room found, need to find
-          out how many participants roughly.</em><br>
-        <em>When: Set to 20-22 September 2024.</em><br>
-        <em>Shirts: novaflash spoke to matt - he will get us some design
-          in august.</em><br>
-        <em>We need to know how many participants will show. To that end
-          it makes sense if we put together an invite mail and send it
-          out.</em><br>
-        <em>novaflash put together a suggested mail;<span> </span><a
-            class="ext-link"
-href="https://cryptpad.fr/pad/#/2/pad/edit/UEzTg-cbReVteh9zR9CQD-Tt/"
-style="text-decoration: none; color: rgb(187, 0, 0); border-bottom: 1px dotted rgb(187, 187, 187);"><span
-              class="icon"
-style="background: url(&quot;../extlink.gif&quot;) left center no-repeat; padding-left: 15px;">​</span>https://cryptpad.fr/pad/#/2/pad/edit/UEzTg-cbReVteh9zR9CQD-Tt/</a></em><br>
-        <em>This will be sent out as an official invite to openvpn-devel
-          and to some special guests.</em></li>
-    </ul>
-    <p>As always you're welcome to join at #openvpn-meeting on Libera
-      IRC network every Wednesday at 14:00 Central European Time.</p>
-    <p>Kind regards,<br>
-      Johan Draaisma<br>
-    </p>
-  </body>
-</html>
+On most systems this should work just fine.
 
---------------rZ05bnhD5k0RSnJcOV0vFmAl--
+v2:
+ - simplify code by removing -llzo special handling
+v3:
+ - reintroduce support for autodetection without pkg-config,
+   no need to break backwards compatibility right now
+v7:
+ - Handle case correctly where lzo/lzo1x.h can not be included
+   at all. On most distros this works even though the .pc
+   file suggests to use it without. We had some partly
+   solution for that but it wasn't really working.
+v8:
+ - Handle systems that do not implicitly include limits.h
+   in configure test builds.
+   lzodefs.h usually relies on lzoconf.h to include it.
+
+Change-Id: I1c038dc4ec80d3499582d81eee61fee74f26e693
+Signed-off-by: Frank Lichtenheld <frank@...2641...>
+---
+M config.h.cmake.in
+M configure.ac
+M src/openvpn/lzo.h
+3 files changed, 23 insertions(+), 12 deletions(-)
+
+
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/56/556/8
+
+diff --git a/config.h.cmake.in b/config.h.cmake.in
+index effca2a..720d679 100644
+--- a/config.h.cmake.in
++++ b/config.h.cmake.in
+@@ -178,9 +178,6 @@
+ /* Define to 1 if you have the <linux/types.h> header file. */
+ #cmakedefine HAVE_LINUX_TYPES_H
+
+-/* Define to 1 if you have the <lzoconf.h> header file. */
+-#define HAVE_LZO_CONF_H
+-
+ /* Define to 1 if you have the <lzo1x.h> header file. */
+ #define HAVE_LZO1X_H 1
+
+diff --git a/configure.ac b/configure.ac
+index c01ad09..555c97e 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -1143,8 +1143,17 @@
+
+ AC_ARG_VAR([LZO_CFLAGS], [C compiler flags for lzo])
+ AC_ARG_VAR([LZO_LIBS], [linker flags for lzo])
+-have_lzo=3D"yes"
+-if test -z "${LZO_LIBS}"; then
++if test -z "${LZO_CFLAGS}" -a -z "${LZO_LIBS}"; then
++    # if the user did not explicitly specify flags, try to autodetect
++    PKG_CHECK_MODULES([LZO],
++		[lzo2],
++		[have_lzo=3D"yes"],
++		[]
++    )
++
++    if test "${have_lzo}" !=3D "yes"; then
++	# try to detect without pkg-config
++	have_lzo=3D"yes"
+ 	AC_CHECK_LIB(
+ 		[lzo2],
+ 		[lzo1x_1_15_compress],
+@@ -1156,6 +1165,10 @@
+ 			[have_lzo=3D"no"]
+ 		)]
+ 	)
++    fi
++else
++    # assume the user configured it correctly
++    have_lzo=3D"yes"
+ fi
+ if test "${have_lzo}" =3D "yes"; then
+ 	saved_CFLAGS=3D"${CFLAGS}"
+@@ -1166,8 +1179,11 @@
+ 		[AC_CHECK_HEADERS(
+ 			[lzo1x.h],
+ 			,
+-			[AC_MSG_ERROR([lzo1x.h is missing])]
+-		)]
++			[AC_MSG_ERROR([lzo1x.h is missing])],
++                        [#include <limits.h>
++                         #include <lzodefs.h>
++                         #include <lzoconf.h>]
++		)],
+ 	)
+ 	CFLAGS=3D"${saved_CFLAGS}"
+ fi
+diff --git a/src/openvpn/lzo.h b/src/openvpn/lzo.h
+index 62d73a1..c271527 100644
+--- a/src/openvpn/lzo.h
++++ b/src/openvpn/lzo.h
+@@ -37,17 +37,15 @@
+  * @addtogroup compression
+  * @{
+  */
+-#if defined(HAVE_LZO_CONF_H)
++#if defined(HAVE_LZO_LZO1X_H)
++#include <lzo/lzo1x.h>
++#elif defined(HAVE_LZO1X_H)
+ /* The lzo.h magic gets confused and still wants
+  * to include lzo/lzoconf.h even if our include paths
+  * are setup to include the paths without lzo/
+  */
+ #include <lzodefs.h>
+ #include <lzoconf.h>
+-#endif
+-#if defined(HAVE_LZO_LZO1X_H)
+-#include <lzo/lzo1x.h>
+-#elif defined(HAVE_LZO1X_H)
+ #include <lzo1x.h>
+ #endif
+
+
+--
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/556?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings
+
+Gerrit-Project: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: I1c038dc4ec80d3499582d81eee61fee74f26e693
+Gerrit-Change-Number: 556
+Gerrit-PatchSet: 8
+Gerrit-Owner: flichtenheld <frank@...2641...>
+Gerrit-Reviewer: cron2 <gert@...1296...>
+Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Attention: cron2 <gert@...1296...>
+Gerrit-Attention: flichtenheld <frank@...2641...>
+Gerrit-MessageType: newpatchset
+
+--2a+pBSbPHC8=
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<p> Attention is currently required from: cron2, flichtenheld, plaisthos. <=
+/p>
+<p>flichtenheld <strong>uploaded patch set #8</strong> to this change.</p><=
+p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/556?usp=3Demail">View Ch=
+ange</a></p><p>The following approvals got outdated and were removed:
+Code-Review+2 by cron2</p><pre style=3D"font-family: monospace,monospace; w=
+hite-space: pre-wrap;">configure: Try to detect LZO with pkg-config<br><br>=
+On most systems this should work just fine.<br><br>v2:<br> - simplify code =
+by removing -llzo special handling<br>v3:<br> - reintroduce support for aut=
+odetection without pkg-config,<br>   no need to break backwards compatibili=
+ty right now<br>v7:<br> - Handle case correctly where lzo/lzo1x.h can not b=
+e included<br>   at all. On most distros this works even though the .pc<br>=
+   file suggests to use it without. We had some partly<br>   solution for t=
+hat but it wasn&#39;t really working.<br>v8:<br> - Handle systems that do n=
+ot implicitly include limits.h<br>   in configure test builds.<br>   lzodef=
+s.h usually relies on lzoconf.h to include it.<br><br>Change-Id: I1c038dc4e=
+c80d3499582d81eee61fee74f26e693<br>Signed-off-by: Frank Lichtenheld &lt;fra=
+nk@...2641...&gt;<br>---<br>M config.h.cmake.in<br>M configure.ac<br>M src/=
+openvpn/lzo.h<br>3 files changed, 23 insertions(+), 12 deletions(-)<br><br>=
+</pre><pre style=3D"font-family: monospace,monospace; white-space: pre-wrap=
+;">git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/56/556/8</p=
+re><pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;">=
+<span>diff --git a/config.h.cmake.in b/config.h.cmake.in</span><br><span>in=
+dex effca2a..720d679 100644</span><br><span>--- a/config.h.cmake.in</span><=
+br><span>+++ b/config.h.cmake.in</span><br><span>@@ -178,9 +178,6 @@</span>=
+<br><span> /* Define to 1 if you have the &lt;linux/types.h&gt; header file=
+. */</span><br><span> #cmakedefine HAVE_LINUX_TYPES_H</span><br><span> </sp=
+an><br><span style=3D"color: hsl(0, 100%, 40%);">-/* Define to 1 if you hav=
+e the &lt;lzoconf.h&gt; header file. */</span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-#define HAVE_LZO_CONF_H</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-</span><br><span> /* Define to 1 if you have the &lt;lz=
+o1x.h&gt; header file. */</span><br><span> #define HAVE_LZO1X_H 1</span><br=
+><span> </span><br><span>diff --git a/configure.ac b/configure.ac</span><br=
+><span>index c01ad09..555c97e 100644</span><br><span>--- a/configure.ac</sp=
+an><br><span>+++ b/configure.ac</span><br><span>@@ -1143,8 +1143,17 @@</spa=
+n><br><span> </span><br><span> AC_ARG_VAR([LZO_CFLAGS], [C compiler flags f=
+or lzo])</span><br><span> AC_ARG_VAR([LZO_LIBS], [linker flags for lzo])</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-have_lzo=3D&quot;yes&quo=
+t;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-if test -z &quot;${=
+LZO_LIBS}&quot;; then</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+if test -z &quot;${LZO_CFLAGS}&quot; -a -z &quot;${LZO_LIBS}&quot;; then<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+    # if the user di=
+d not explicitly specify flags, try to autodetect</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+    PKG_CHECK_MODULES([LZO],</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+		[lzo2],</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+		[have_lzo=3D&quot;yes&quot;],</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+		[]</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+    )</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if =
+test &quot;${have_lzo}&quot; !=3D &quot;yes&quot;; then</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+	# try to detect without pkg-config</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+	have_lzo=3D&quot;yes&q=
+uot;</span><br><span> 	AC_CHECK_LIB(</span><br><span> 		[lzo2],</span><br><=
+span> 		[lzo1x_1_15_compress],</span><br><span>@@ -1156,6 +1165,10 @@</span=
+><br><span> 			[have_lzo=3D&quot;no&quot;]</span><br><span> 		)]</span><br>=
+<span> 	)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    fi</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+else</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+    # assume the user configured it co=
+rrectly</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    have_lzo=
+=3D&quot;yes&quot;</span><br><span> fi</span><br><span> if test &quot;${hav=
+e_lzo}&quot; =3D &quot;yes&quot;; then</span><br><span> 	saved_CFLAGS=3D&qu=
+ot;${CFLAGS}&quot;</span><br><span>@@ -1166,8 +1179,11 @@</span><br><span> =
+		[AC_CHECK_HEADERS(</span><br><span> 			[lzo1x.h],</span><br><span> 			,</=
+span><br><span style=3D"color: hsl(0, 100%, 40%);">-			[AC_MSG_ERROR([lzo1x=
+.h is missing])]</span><br><span style=3D"color: hsl(0, 100%, 40%);">-		)]<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+			[AC_MSG_ERROR([lz=
+o1x.h is missing])],</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++                        [#include &lt;limits.h&gt;</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+                         #include &lt;lzo=
+defs.h&gt;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+         =
+                #include &lt;lzoconf.h&gt;]</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+		)],</span><br><span> 	)</span><br><span> 	CFLAGS=
+=3D&quot;${saved_CFLAGS}&quot;</span><br><span> fi</span><br><span>diff --g=
+it a/src/openvpn/lzo.h b/src/openvpn/lzo.h</span><br><span>index 62d73a1..c=
+271527 100644</span><br><span>--- a/src/openvpn/lzo.h</span><br><span>+++ b=
+/src/openvpn/lzo.h</span><br><span>@@ -37,17 +37,15 @@</span><br><span>  * =
+@addtogroup compression</span><br><span>  * @{</span><br><span>  */</span><=
+br><span style=3D"color: hsl(0, 100%, 40%);">-#if defined(HAVE_LZO_CONF_H)<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+#if defined(HAVE_LZO=
+_LZO1X_H)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#include &=
+lt;lzo/lzo1x.h&gt;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#=
+elif defined(HAVE_LZO1X_H)</span><br><span> /* The lzo.h magic gets confuse=
+d and still wants</span><br><span>  * to include lzo/lzoconf.h even if our =
+include paths</span><br><span>  * are setup to include the paths without lz=
+o/</span><br><span>  */</span><br><span> #include &lt;lzodefs.h&gt;</span><=
+br><span> #include &lt;lzoconf.h&gt;</span><br><span style=3D"color: hsl(0,=
+ 100%, 40%);">-#endif</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
+#if defined(HAVE_LZO_LZO1X_H)</span><br><span style=3D"color: hsl(0, 100%, =
+40%);">-#include &lt;lzo/lzo1x.h&gt;</span><br><span style=3D"color: hsl(0,=
+ 100%, 40%);">-#elif defined(HAVE_LZO1X_H)</span><br><span> #include &lt;lz=
+o1x.h&gt;</span><br><span> #endif</span><br><span> </span><br><span></span>=
+<br></pre><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/=
++/556?usp=3Demail">change 556</a>. To unsubscribe, or for help writing mail=
+ filters, visit <a href=3D"http://gerrit.openvpn.net/settings">settings</a>=
+.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemsc=
+ope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link ite=
+mprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/556?usp=3Demail=
+"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
+
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I1c038dc4ec80d3499582d81eee6=
+1fee74f26e693 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 556 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 8 </div>
+<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
+.&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
+ </div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
+.1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: cron2 &lt;gert@...1296...&gt=
+; </div>
+<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
+41...&gt; </div>
+<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
+
+
+--2a+pBSbPHC8=--
 
