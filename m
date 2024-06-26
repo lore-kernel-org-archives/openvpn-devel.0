@@ -1,16 +1,11 @@
-From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Wed, 26 Jun 2024 13:51:15 +0000
+From: Frank Lichtenheld <frank@...2641...>
+Date: Wed, 26 Jun 2024 18:19:21 +0200
+Message-Id: <20240626161921.179301-1-frank@...2641...>
 In-Reply-To: <gerrit.1713800630000.I1c038dc4ec80d3499582d81eee61fee74f26e693@...2715...>
 References: <gerrit.1713800630000.I1c038dc4ec80d3499582d81eee61fee74f26e693@...2715...>
-Reply-To: gert@...1296..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <66c8e537cac1c6ecf33c06dedc161cdcd59cd954-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="06a/7NQuGGs="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: configure: Try to
- detect LZO with pkg-config
+Subject: [Openvpn-devel] [PATCH v8] configure: Try to detect LZO with
+ pkg-config
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,100 +14,129 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: flichtenheld <frank@...2641...>
-Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
+Cc: Gert Doering <gert@...1296...>
 
---06a/7NQuGGs=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+On most systems this should work just fine.
 
-Attention is currently required from: plaisthos.
+v2:
+ - simplify code by removing -llzo special handling
+v3:
+ - reintroduce support for autodetection without pkg-config,
+   no need to break backwards compatibility right now
+v7:
+ - Handle case correctly where lzo/lzo1x.h can not be included
+   at all. On most distros this works even though the .pc
+   file suggests to use it without. We had some partly
+   solution for that but it wasn't really working.
+v8:
+ - Handle systems that do not implicitly include limits.h
+   in configure test builds.
+   lzodefs.h usually relies on lzoconf.h to include it.
 
-cron2 has posted comments on this change. ( http://gerrit.openvpn.net/c/ope=
-nvpn/+/556?usp=3Demail )
+Change-Id: I1c038dc4ec80d3499582d81eee61fee74f26e693
+Signed-off-by: Frank Lichtenheld <frank@...2641...>
+Acked-by: Gert Doering <gert@...1296...>
+---
 
-Change subject: configure: Try to detect LZO with pkg-config
-......................................................................
+This change was reviewed on Gerrit and approved by at least one
+developer. I request to merge it to master.
 
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/556
+This mail reflects revision 8 of this Change.
 
-Patch Set 8: Code-Review+2
+Acked-by according to Gerrit (reflected above):
+Gert Doering <gert@...1296...>
 
-(1 comment)
-
-Patchset:
-
-PS8:
-this should appease all systems :-) - the to-be-expected fails are server-n=
-ull, so (at least that's what I expect) not a fault of this patch
-
-
-
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/556?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings
-
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: I1c038dc4ec80d3499582d81eee61fee74f26e693
-Gerrit-Change-Number: 556
-Gerrit-PatchSet: 8
-Gerrit-Owner: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: cron2 <gert@...1296...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Comment-Date: Wed, 26 Jun 2024 13:51:15 +0000
-Gerrit-HasComments: Yes
-Gerrit-Has-Labels: Yes
-Gerrit-MessageType: comment
-
---06a/7NQuGGs=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<p> Attention is currently required from: plaisthos. </p>
-<p>Patch set 8:<span style=3D"border-radius: 3px; display: inline-block; ma=
-rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/556?usp=3Demail">Vi=
-ew Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0=
-;"><li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-s=
-tyle: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p s=
-tyle=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn=
-/+/556?tab=3Dcomments">Patch Set #8:</a> </p><p style=3D"white-space: pre-w=
-rap; word-wrap: break-word;">this should appease all systems :-) - the to-b=
-e-expected fails are server-null, so (at least that&#39;s what I expect) no=
-t a fault of this patch</p></li></ul></li></ul><p>To view, visit <a href=3D=
-"http://gerrit.openvpn.net/c/openvpn/+/556?usp=3Demail">change 556</a>. To =
-unsubscribe, or for help writing mail filters, visit <a href=3D"http://gerr=
-it.openvpn.net/settings">settings</a>.</p><div itemscope itemtype=3D"http:/=
-/schema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"ht=
-tp://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.op=
-envpn.net/c/openvpn/+/556?usp=3Demail"/><meta itemprop=3D"name" content=3D"=
-View Change"/></div></div>
-
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I1c038dc4ec80d3499582d81eee6=
-1fee74f26e693 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 556 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 8 </div>
-<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
-.&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
- </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Wed, 26 Jun 2024 13:51:15=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
-
-
---06a/7NQuGGs=--
+        
+diff --git a/config.h.cmake.in b/config.h.cmake.in
+index effca2a..720d679 100644
+--- a/config.h.cmake.in
++++ b/config.h.cmake.in
+@@ -178,9 +178,6 @@
+ /* Define to 1 if you have the <linux/types.h> header file. */
+ #cmakedefine HAVE_LINUX_TYPES_H
+ 
+-/* Define to 1 if you have the <lzoconf.h> header file. */
+-#define HAVE_LZO_CONF_H
+-
+ /* Define to 1 if you have the <lzo1x.h> header file. */
+ #define HAVE_LZO1X_H 1
+ 
+diff --git a/configure.ac b/configure.ac
+index c01ad09..555c97e 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -1143,8 +1143,17 @@
+ 
+ AC_ARG_VAR([LZO_CFLAGS], [C compiler flags for lzo])
+ AC_ARG_VAR([LZO_LIBS], [linker flags for lzo])
+-have_lzo="yes"
+-if test -z "${LZO_LIBS}"; then
++if test -z "${LZO_CFLAGS}" -a -z "${LZO_LIBS}"; then
++    # if the user did not explicitly specify flags, try to autodetect
++    PKG_CHECK_MODULES([LZO],
++		[lzo2],
++		[have_lzo="yes"],
++		[]
++    )
++
++    if test "${have_lzo}" != "yes"; then
++	# try to detect without pkg-config
++	have_lzo="yes"
+ 	AC_CHECK_LIB(
+ 		[lzo2],
+ 		[lzo1x_1_15_compress],
+@@ -1156,6 +1165,10 @@
+ 			[have_lzo="no"]
+ 		)]
+ 	)
++    fi
++else
++    # assume the user configured it correctly
++    have_lzo="yes"
+ fi
+ if test "${have_lzo}" = "yes"; then
+ 	saved_CFLAGS="${CFLAGS}"
+@@ -1166,8 +1179,11 @@
+ 		[AC_CHECK_HEADERS(
+ 			[lzo1x.h],
+ 			,
+-			[AC_MSG_ERROR([lzo1x.h is missing])]
+-		)]
++			[AC_MSG_ERROR([lzo1x.h is missing])],
++                        [#include <limits.h>
++                         #include <lzodefs.h>
++                         #include <lzoconf.h>]
++		)],
+ 	)
+ 	CFLAGS="${saved_CFLAGS}"
+ fi
+diff --git a/src/openvpn/lzo.h b/src/openvpn/lzo.h
+index 62d73a1..c271527 100644
+--- a/src/openvpn/lzo.h
++++ b/src/openvpn/lzo.h
+@@ -37,17 +37,15 @@
+  * @addtogroup compression
+  * @{
+  */
+-#if defined(HAVE_LZO_CONF_H)
++#if defined(HAVE_LZO_LZO1X_H)
++#include <lzo/lzo1x.h>
++#elif defined(HAVE_LZO1X_H)
+ /* The lzo.h magic gets confused and still wants
+  * to include lzo/lzoconf.h even if our include paths
+  * are setup to include the paths without lzo/
+  */
+ #include <lzodefs.h>
+ #include <lzoconf.h>
+-#endif
+-#if defined(HAVE_LZO_LZO1X_H)
+-#include <lzo/lzo1x.h>
+-#elif defined(HAVE_LZO1X_H)
+ #include <lzo1x.h>
+ #endif
+ 
 
