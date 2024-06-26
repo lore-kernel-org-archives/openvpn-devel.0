@@ -1,16 +1,11 @@
-From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Wed, 26 Jun 2024 12:29:20 +0000
-In-Reply-To: <gerrit.1713800630000.I1c038dc4ec80d3499582d81eee61fee74f26e693@...2715...>
-References: <gerrit.1713800630000.I1c038dc4ec80d3499582d81eee61fee74f26e693@...2715...>
-Reply-To: gert@...1296..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <5e47ba70cd91ae5e0b1003e35aa328d67ace228d-EmailReviewComments-HTML@...2715...>
+Content-Type: multipart/alternative;
+ boundary="------------rZ05bnhD5k0RSnJcOV0vFmAl"
+Message-ID: <f85f8471-8a95-42e1-9339-69d4e68423f7@...2751...>
+Date: Wed, 26 Jun 2024 15:43:13 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="gKenYOu5wb8="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: configure: Try to
- detect LZO with pkg-config
+From: Johan Draaisma <johan@...2751...>
+Content-Language: en-US
+Subject: [Openvpn-devel]  IRC community meeting summary
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,184 +14,186 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: flichtenheld <frank@...2641...>
-Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: openvpn-devel@lists.sourceforge.net
 
---gKenYOu5wb8=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+This is a multi-part message in MIME format.
+--------------rZ05bnhD5k0RSnJcOV0vFmAl
+Content-Type: text/plain; charset="utf-8"; format="flowed"
+Content-Transfer-Encoding: 8bit
 
-Attention is currently required from: flichtenheld, plaisthos.
+Meeting summary for 26 June 2024:
 
-cron2 has posted comments on this change. ( http://gerrit.openvpn.net/c/ope=
-nvpn/+/556?usp=3Demail )
+  * *New: release openvpn 2.6.12*
+    /The security issue addressed in 2.6.11 has the known issue that it
+    breaks certain setups with backend scripts that produce custom
+    auth_failed messages./
+    /This will be addressed in the upcoming 2.6.12 release./
+    /An improvement in the area of the LZO library is also in the works./
 
-Change subject: configure: Try to detect LZO with pkg-config
-......................................................................
+  * *Updated: release openvpn 2.6.11*
+    /This release was done last week on June 20th./
+    /We have a fix for a reported issue with localized versions of
+    Windows and a custom installation path of OpenVPN GUI. Looks like we
+    can update to I002 for the Windows installer./
+    /This will likely go out today./
+    /The tunnelcrack mitigations for Windows are held back because we
+    have had absolutely no response on the mailing lists for testing
+    these and confirming that it doesn't break things./
+    /If someone can contribute to testing this we can follow up with a
+    2.6.12 release in a few weeks that contains the tunnelcrack
+    mitigations for Windows. Otherwise it goes to 2.7./
 
+  * *Updated: DCO and Linux upstreaming, API change*/
+    /Upstreaming DCO to Linux is proceeding, it is in review stage at
+    the moment./
+    /ordex has sent in*patchset version 4*./
+    /There will be an API change that makes it incompatible with the
+    current implementation./
+    /A graceful solution to that was already discussed and in motion.
+    giaan will be working on this./
+    /(in a nutshell, make OpenVPN understand old and new API, DKMS and
+    kernel versions both will then use new API, then we drop old API)//
 
-Patch Set 7: Code-Review+2
+  * *Updated: Tunnelcrack progressTunnelCrack community wiki article
+    <https://community.openvpn.net/openvpn/wiki/TunnelCrack>*
+    /Status update onTunnelCrack
+    <https://community.openvpn.net/openvpn/wiki/TunnelCrack>mitigations:/
+    /The tunnelcrack mitigation for Windows has gone in master, which
+    will go to 2.7 release. There is the possibility for it to go to
+    2.6.x if we can find testers for this./
+    /Windows, openvpn2: merged to master, not to 2.6.x. openvpn3: in
+    code review./
+    /Linux, openvpn2: in progress. openvpn3: in progress./
+    /macOS: to be determined./
+    /iOS: to be determined./
+    /Android: not vulnerable./
 
-(2 comments)
+  * *Updated: OpenVPN community meetup 2024*
+    /Wiki coordination
+    page:​https://community.openvpn.net/openvpn/wiki/CommunityMeetup2024
+    <https://community.openvpn.net/openvpn/wiki/CommunityMeetup2024>/
+    /Where: Karlsruhe, Germany. Meeting room found, need to find out how
+    many participants roughly./
+    /When: Set to 20-22 September 2024./
+    /Shirts: novaflash spoke to matt - he will get us some design in
+    august./
+    /We need to know how many participants will show. To that end it
+    makes sense if we put together an invite mail and send it out./
+    /novaflash put together a suggested
+    mail;​https://cryptpad.fr/pad/#/2/pad/edit/UEzTg-cbReVteh9zR9CQD-Tt/
+    <https://cryptpad.fr/pad/#/2/pad/edit/UEzTg-cbReVteh9zR9CQD-Tt/>/
+    /This will be sent out as an official invite to openvpn-devel and to
+    some special guests./
 
-Patchset:
+As always you're welcome to join at #openvpn-meeting on Libera IRC 
+network every Wednesday at 14:00 Central European Time.
 
-PS6:
-> close... [=E2=80=A6]
-I think the pc is broken... everything LZO itself includes uses <lzo/lzocon=
-f.h>... but it's the same (`Cflags: -I${includedir}/lzo`) on gentoo... wher=
-e it just happens to work because `/usr/include` is in the include path any=
-way.  Gah.
+Kind regards,
+Johan Draaisma
 
+--------------rZ05bnhD5k0RSnJcOV0vFmAl
+Content-Type: text/html; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 
-Patchset:
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  </head>
+  <body>
+    <p> Meeting summary for 26 June 2024:</p>
+    <ul
+style="color: rgb(0, 0, 0); font-family: Verdana, Arial, &quot;Bitstream Vera Sans&quot;, Helvetica, sans-serif; font-size: 13px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;">
+      <li><strong>New: release openvpn 2.6.12</strong><br>
+        <em>The security issue addressed in 2.6.11 has the known issue
+          that it breaks certain setups with backend scripts that
+          produce custom auth_failed messages.</em><br>
+        <em>This will be addressed in the upcoming 2.6.12 release.</em><br>
+        <em>An improvement in the area of the LZO library is also in the
+          works.</em></li>
+    </ul>
+    <ul
+style="color: rgb(0, 0, 0); font-family: Verdana, Arial, &quot;Bitstream Vera Sans&quot;, Helvetica, sans-serif; font-size: 13px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;">
+      <li><strong>Updated: release openvpn 2.6.11</strong><br>
+        <em>This release was done last week on June 20th.</em><br>
+        <em>We have a fix for a reported issue with localized versions
+          of Windows and a custom installation path of OpenVPN GUI.
+          Looks like we can update to I002 for the Windows installer.</em><br>
+        <em>This will likely go out today.</em><br>
+        <em>The tunnelcrack mitigations for Windows are held back
+          because we have had absolutely no response on the mailing
+          lists for testing these and confirming that it doesn't break
+          things.</em><br>
+        <em>If someone can contribute to testing this we can follow up
+          with a 2.6.12 release in a few weeks that contains the
+          tunnelcrack mitigations for Windows. Otherwise it goes to 2.7.</em></li>
+    </ul>
+    <ul
+style="color: rgb(0, 0, 0); font-family: Verdana, Arial, &quot;Bitstream Vera Sans&quot;, Helvetica, sans-serif; font-size: 13px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;">
+      <li><strong>Updated: DCO and Linux upstreaming, API change</strong><em><br>
+        </em>Upstreaming DCO to Linux is proceeding, it is in review
+        stage at the moment.<em><br>
+        </em>ordex has sent in<span> </span><strong>patchset version 4</strong>.<em><br>
+        </em>There will be an API change that makes it incompatible with
+        the current implementation.<em><br>
+        </em>A graceful solution to that was already discussed and in
+        motion. giaan will be working on this.<em><br>
+        </em>(in a nutshell, make OpenVPN understand old and new API,
+        DKMS and kernel versions both will then use new API, then we
+        drop old API)<em></em></li>
+    </ul>
+    <ul
+style="color: rgb(0, 0, 0); font-family: Verdana, Arial, &quot;Bitstream Vera Sans&quot;, Helvetica, sans-serif; font-size: 13px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;">
+      <li><strong>Updated: Tunnelcrack progress<span> </span><a
+            class="wiki"
+href="https://community.openvpn.net/openvpn/wiki/TunnelCrack"
+style="text-decoration: none; color: rgb(187, 0, 0); border-bottom: 1px dotted rgb(187, 187, 187);">TunnelCrack
+            community wiki article</a></strong><br>
+        <em>Status update on<span> </span><a class="wiki"
+href="https://community.openvpn.net/openvpn/wiki/TunnelCrack"
+style="text-decoration: none; color: rgb(187, 0, 0); border-bottom: 1px dotted rgb(187, 187, 187);">TunnelCrack</a><span> </span>mitigations:</em><br>
+        <em>The tunnelcrack mitigation for Windows has gone in master,
+          which will go to 2.7 release. There is the possibility for it
+          to go to 2.6.x if we can find testers for this.</em><br>
+        <em>Windows, openvpn2: merged to master, not to 2.6.x. openvpn3:
+          in code review.</em><br>
+        <em>Linux, openvpn2: in progress. openvpn3: in progress.</em><br>
+        <em>macOS: to be determined.</em><br>
+        <em>iOS: to be determined.</em><br>
+        <em>Android: not vulnerable.</em></li>
+    </ul>
+    <ul
+style="color: rgb(0, 0, 0); font-family: Verdana, Arial, &quot;Bitstream Vera Sans&quot;, Helvetica, sans-serif; font-size: 13px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;">
+      <li><strong>Updated: OpenVPN community meetup 2024</strong><br>
+        <em>Wiki coordination page:<span> </span><a class="ext-link"
+href="https://community.openvpn.net/openvpn/wiki/CommunityMeetup2024"
+style="text-decoration: none; color: rgb(187, 0, 0); border-bottom: 1px dotted rgb(187, 187, 187);"><span
+              class="icon"
+style="background: url(&quot;../extlink.gif&quot;) left center no-repeat; padding-left: 15px;">​</span>https://community.openvpn.net/openvpn/wiki/CommunityMeetup2024</a></em><br>
+        <em>Where: Karlsruhe, Germany. Meeting room found, need to find
+          out how many participants roughly.</em><br>
+        <em>When: Set to 20-22 September 2024.</em><br>
+        <em>Shirts: novaflash spoke to matt - he will get us some design
+          in august.</em><br>
+        <em>We need to know how many participants will show. To that end
+          it makes sense if we put together an invite mail and send it
+          out.</em><br>
+        <em>novaflash put together a suggested mail;<span> </span><a
+            class="ext-link"
+href="https://cryptpad.fr/pad/#/2/pad/edit/UEzTg-cbReVteh9zR9CQD-Tt/"
+style="text-decoration: none; color: rgb(187, 0, 0); border-bottom: 1px dotted rgb(187, 187, 187);"><span
+              class="icon"
+style="background: url(&quot;../extlink.gif&quot;) left center no-repeat; padding-left: 15px;">​</span>https://cryptpad.fr/pad/#/2/pad/edit/UEzTg-cbReVteh9zR9CQD-Tt/</a></em><br>
+        <em>This will be sent out as an official invite to openvpn-devel
+          and to some special guests.</em></li>
+    </ul>
+    <p>As always you're welcome to join at #openvpn-meeting on Libera
+      IRC network every Wednesday at 14:00 Central European Time.</p>
+    <p>Kind regards,<br>
+      Johan Draaisma<br>
+    </p>
+  </body>
+</html>
 
-PS7:
-Tested on FreeBSD 14, "configure with no option" -> succeeds & builds fine =
-(LZO in /usr/local/..., make using `-I/usr/local/include/lzo -I/usr/local/i=
-nclude` because that's where cmocka and lz4 are living).  Disabling LZ4 mak=
-es compilation succeed with only `-I/usr/local/include/lzo`.  This is good =
-:-)
-
-All the buildbots still succeed, which means this hasn't broken explicitly =
-setting "whatever we used before".
-
-oi2024 has lzo in `/usr/include/`, so, boring case.
-
-obsd75 has lzo in `/usr/local/include/lzo`, patched configure works, compil=
-e works.  With `--disable-lz4` there is no mention of `-I/usr/local/include=
-` anymore, and it still succeeds ;-)
-
-nbsd81 has `/usr/pkg/include/lzo/` and the patched configure finds it fine,=
- and then barfs on
-
-```
-configure:18379: checking for lzo1x.h
-configure:18379: gcc -c -g -O2 -std=3Dc99 -I/usr/pkg/include/lzo  conftest.=
-c >&5
-In file included from conftest.c:136:0:
-/usr/pkg/include/lzo/lzodefs.h:1035:6: error: #error "unexpected configurat=
-ion -
- check your compiler defines"
- #    error "unexpected configuration - check your compiler defines"
-      ^
-```
-
-which is something weird about UINT_MAX testing against LZO_0xffffffffL.  N=
-ot sure how to fix that.  It does not break on the buildbot as that one has=
- a symlink from `/usr/include/lzo -> /usr/pkg/include/lzo` (to apease older=
- source trees) - with that, the configure change works fine.  Without, it b=
-ombs.  I would still tend to progress the patch, unless someone has a good =
-idea how to tackle this...
-
-
-
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/556?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings
-
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: I1c038dc4ec80d3499582d81eee61fee74f26e693
-Gerrit-Change-Number: 556
-Gerrit-PatchSet: 7
-Gerrit-Owner: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: cron2 <gert@...1296...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Comment-Date: Wed, 26 Jun 2024 12:29:20 +0000
-Gerrit-HasComments: Yes
-Gerrit-Has-Labels: Yes
-Comment-In-Reply-To: cron2 <gert@...1296...>
-Gerrit-MessageType: comment
-
---gKenYOu5wb8=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<p> Attention is currently required from: flichtenheld, plaisthos. </p>
-<p>Patch set 7:<span style=3D"border-radius: 3px; display: inline-block; ma=
-rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/556?usp=3Demail">Vi=
-ew Change</a></p><p>2 comments:</p><ul style=3D"list-style: none; padding: =
-0;"><li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-=
-style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p =
-style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvp=
-n/+/556?tab=3Dcomments">Patch Set #6:</a> </p><p><blockquote style=3D"borde=
-r-left: 1px solid #aaa; margin: 10px 0; padding: 0 10px;">close... [=E2=80=
-=A6]</blockquote></p><p style=3D"white-space: pre-wrap; word-wrap: break-wo=
-rd;">I think the pc is broken... everything LZO itself includes uses &lt;lz=
-o/lzoconf.h&gt;... but it&#39;s the same (`Cflags: -I${includedir}/lzo`) on=
- gentoo... where it just happens to work because `/usr/include` is in the i=
-nclude path anyway.  Gah.</p></li></ul></li><li style=3D"margin: 0; padding=
-: 0;"><p>Patchset:</p><ul style=3D"list-style: none; padding: 0;"><li style=
-=3D"margin: 0; padding: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a hr=
-ef=3D"http://gerrit.openvpn.net/c/openvpn/+/556?tab=3Dcomments">Patch Set #=
-7:</a> </p><p style=3D"white-space: pre-wrap; word-wrap: break-word;">Teste=
-d on FreeBSD 14, &quot;configure with no option&quot; -&gt; succeeds &amp; =
-builds fine (LZO in /usr/local/..., make using `-I/usr/local/include/lzo -I=
-/usr/local/include` because that&#39;s where cmocka and lz4 are living).  D=
-isabling LZ4 makes compilation succeed with only `-I/usr/local/include/lzo`=
-.  This is good :-)</p><p style=3D"white-space: pre-wrap; word-wrap: break-=
-word;">All the buildbots still succeed, which means this hasn&#39;t broken =
-explicitly setting &quot;whatever we used before&quot;.</p><p style=3D"whit=
-e-space: pre-wrap; word-wrap: break-word;">oi2024 has lzo in `/usr/include/=
-`, so, boring case.</p><p style=3D"white-space: pre-wrap; word-wrap: break-=
-word;">obsd75 has lzo in `/usr/local/include/lzo`, patched configure works,=
- compile works.  With `--disable-lz4` there is no mention of `-I/usr/local/=
-include` anymore, and it still succeeds ;-)</p><p style=3D"white-space: pre=
--wrap; word-wrap: break-word;">nbsd81 has `/usr/pkg/include/lzo/` and the p=
-atched configure finds it fine, and then barfs on</p><pre style=3D"font-fam=
-ily: monospace,monospace; white-space: pre-wrap;">```<br>configure:18379: c=
-hecking for lzo1x.h<br>configure:18379: gcc -c -g -O2 -std=3Dc99 -I/usr/pkg=
-/include/lzo  conftest.c &gt;&amp;5<br>In file included from conftest.c:136=
-:0:<br>/usr/pkg/include/lzo/lzodefs.h:1035:6: error: #error &quot;unexpecte=
-d configuration -<br> check your compiler defines&quot;<br> #    error &quo=
-t;unexpected configuration - check your compiler defines&quot;<br>      ^<b=
-r>```</pre><p style=3D"white-space: pre-wrap; word-wrap: break-word;">which=
- is something weird about UINT_MAX testing against LZO_0xffffffffL.  Not su=
-re how to fix that.  It does not break on the buildbot as that one has a sy=
-mlink from `/usr/include/lzo -&gt; /usr/pkg/include/lzo` (to apease older s=
-ource trees) - with that, the configure change works fine.  Without, it bom=
-bs.  I would still tend to progress the patch, unless someone has a good id=
-ea how to tackle this...</p></li></ul></li></ul><p>To view, visit <a href=
-=3D"http://gerrit.openvpn.net/c/openvpn/+/556?usp=3Demail">change 556</a>. =
-To unsubscribe, or for help writing mail filters, visit <a href=3D"http://g=
-errit.openvpn.net/settings">settings</a>.</p><div itemscope itemtype=3D"htt=
-p://schema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D=
-"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit=
-.openvpn.net/c/openvpn/+/556?usp=3Demail"/><meta itemprop=3D"name" content=
-=3D"View Change"/></div></div>
-
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I1c038dc4ec80d3499582d81eee6=
-1fee74f26e693 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 556 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 7 </div>
-<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
-.&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
- </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
-41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Wed, 26 Jun 2024 12:29:20=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
-<div style=3D"display:none"> Comment-In-Reply-To: cron2 &lt;gert@...1296...=
-&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
-
-
---gKenYOu5wb8=--
+--------------rZ05bnhD5k0RSnJcOV0vFmAl--
 
