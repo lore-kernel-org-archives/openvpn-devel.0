@@ -1,16 +1,11 @@
-From: "its_Giaan (Code Review)" <gerrit@...515...>
-Date: Thu, 27 Jun 2024 08:44:04 +0000
-In-Reply-To: <gerrit.1717673612000.I6662605b60d4859949970cfe256c55cbcbd4a672@...2715...>
-References: <gerrit.1717673612000.I6662605b60d4859949970cfe256c55cbcbd4a672@...2715...>
-Reply-To: gianmarco@...2726..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <bb4562982bca06530779c44c9365247229bc375b-EmailReviewComments-HTML@...2715...>
+Content-Type: multipart/alternative;
+ boundary="------------uOPj0Vru10ySwWdAwqvCn59Q"
+Message-ID: <6e349632-0318-4b09-ba30-7cb073cf5552@...2751...>
+Date: Thu, 27 Jun 2024 12:24:57 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="H3tl0ECgKjk="; charset=UTF-8
-Subject: [Openvpn-devel] [XL] Change in openvpn[master]: Lay the foundation
- to support both old and new versions of DCO
+Content-Language: en-US
+From: Johan Draaisma <johan@...2751...>
+Subject: [Openvpn-devel] Invitation: OpenVPN community meetup 2024
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,147 +14,173 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Cc: flichtenheld <frank@...2641...>, plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: openvpn-devel@lists.sourceforge.net
 
---H3tl0ECgKjk=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+This is a multi-part message in MIME format.
+--------------uOPj0Vru10ySwWdAwqvCn59Q
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-Attention is currently required from: flichtenheld, plaisthos.
+Hello OpenVPN enthusiasts!
 
-its_Giaan has posted comments on this change. ( http://gerrit.openvpn.net/c=
-/openvpn/+/662?usp=3Demail )
+Every year the OpenVPN community organizes a meeting to get together in 
+real life and discuss important topics for the future of the OpenVPN 
+software. We welcome all people that can contribute in one way or 
+another to the community.
 
-Change subject: Lay the foundation to support both old and new versions of =
-DCO
-......................................................................
+In the past we called these meetings 'hackathons' but we feel that this 
+excludes people that do other valuable work like helping on the forums, 
+answering questions, and contributing in other ways. So we've renamed it 
+to 'OpenVPN community meetup', to lower any barrier to joining us.
 
+If you intend to join, please let us know by responding to this mail, 
+either on the mailing list or privately. It's free to join - but of 
+course you have to arrange your own travel and hotel. We would like to 
+get an idea of how many people will be at the meetup so we can have the 
+appropriately sized meeting room arranged!
 
-Patch Set 1:
-
-(3 comments)
-
-File src/openvpn/dco_linux.h:
-
-http://gerrit.openvpn.net/c/openvpn/+/662/comment/86f99d7c_43678f20 :
-PS1, Line 129:  * @param nl_msg    the message to use
-> "The"
-Acknowledged
-
-
-http://gerrit.openvpn.net/c/openvpn/+/662/comment/88a96579_919aab40 :
-PS1, Line 174:  * extended in the future if we need to lookup more than one=
- mcast id.
-> "can be extended" ?
-Acknowledged
+Oh, and if you want a cool free OpenVPN t-shirt when you attend, be sure 
+to add your t-shirt size to the wiki page: 
+https://community.openvpn.net/openvpn/wiki/CommunityMeetup2024
 
 
-File src/openvpn/forward.c:
+    When?
 
-http://gerrit.openvpn.net/c/openvpn/+/662/comment/2f02c26a_4ad35d7f :
-PS1, Line 1233:     int cmd_del_peer =3D OVPN_CMD_DEL_PEER;
-> Why is this indirection required?
-Because with the next commit that will introduce support for dco_v3, the co=
-mmands will be completely different (the names will be shared between dco_v=
-3 linux and bsd while dco_v2 will use the *current* commands with the addit=
-ion of the acronym v2 (i.e. OVPN_V2_CMD_GET_PEER) and since the commands th=
-at will be used will change based on the platform and the version of dco lo=
-aded, that differentiation must be made via #if defined
+September 20, 21, and 22, this year.
 
 
+    Where?
 
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/662?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings
-
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: I6662605b60d4859949970cfe256c55cbcbd4a672
-Gerrit-Change-Number: 662
-Gerrit-PatchSet: 1
-Gerrit-Owner: its_Giaan <gianmarco@...2726...>
-Gerrit-Reviewer: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Comment-Date: Thu, 27 Jun 2024 08:44:04 +0000
-Gerrit-HasComments: Yes
-Gerrit-Has-Labels: No
-Comment-In-Reply-To: flichtenheld <frank@...2641...>
-Gerrit-MessageType: comment
-
---H3tl0ECgKjk=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<p> Attention is currently required from: flichtenheld, plaisthos. </p>
-<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/662?usp=3Demail">View C=
-hange</a></p><p>3 comments:</p><ul style=3D"list-style: none; padding: 0;">=
-<li style=3D"margin: 0; padding: 0;"><p>File src/openvpn/dco_linux.h:</p><u=
-l style=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; padding: =
-0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.open=
-vpn.net/c/openvpn/+/662/comment/86f99d7c_43678f20">Patch Set #1, Line 129:<=
-/a> <code style=3D"font-family:monospace,monospace"> * @param nl_msg    the=
- message to use</code></p><p><blockquote style=3D"border-left: 1px solid #a=
-aa; margin: 10px 0; padding: 0 10px;">&quot;The&quot;</blockquote></p><p st=
-yle=3D"white-space: pre-wrap; word-wrap: break-word;">Acknowledged</p></li>=
-<li style=3D"margin: 0; padding: 0 0 0 16px;"><p style=3D"margin-bottom: 4p=
-x;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/662/comment/88a96579_9=
-19aab40">Patch Set #1, Line 174:</a> <code style=3D"font-family:monospace,m=
-onospace"> * extended in the future if we need to lookup more than one mcas=
-t id.</code></p><p><blockquote style=3D"border-left: 1px solid #aaa; margin=
-: 10px 0; padding: 0 10px;">&quot;can be extended&quot; ?</blockquote></p><=
-p style=3D"white-space: pre-wrap; word-wrap: break-word;">Acknowledged</p><=
-/li></ul></li><li style=3D"margin: 0; padding: 0;"><p>File src/openvpn/forw=
-ard.c:</p><ul style=3D"list-style: none; padding: 0;"><li style=3D"margin: =
-0; padding: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http:/=
-/gerrit.openvpn.net/c/openvpn/+/662/comment/2f02c26a_4ad35d7f">Patch Set #1=
-, Line 1233:</a> <code style=3D"font-family:monospace,monospace">    int cm=
-d_del_peer =3D OVPN_CMD_DEL_PEER;</code></p><p><blockquote style=3D"border-=
-left: 1px solid #aaa; margin: 10px 0; padding: 0 10px;">Why is this indirec=
-tion required?</blockquote></p><p style=3D"white-space: pre-wrap; word-wrap=
-: break-word;">Because with the next commit that will introduce support for=
- dco_v3, the commands will be completely different (the names will be share=
-d between dco_v3 linux and bsd while dco_v2 will use the *current* commands=
- with the addition of the acronym v2 (i.e. OVPN_V2_CMD_GET_PEER) and since =
-the commands that will be used will change based on the platform and the ve=
-rsion of dco loaded, that differentiation must be made via #if defined</p><=
-/li></ul></li></ul><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c=
-/openvpn/+/662?usp=3Demail">change 662</a>. To unsubscribe, or for help wri=
-ting mail filters, visit <a href=3D"http://gerrit.openvpn.net/settings">set=
-tings</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><d=
-iv itemscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction">=
-<link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/662?us=
-p=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
-
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I6662605b60d4859949970cfe256=
-c55cbcbd4a672 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 662 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
-<div style=3D"display:none"> Gerrit-Owner: its_Giaan &lt;gianmarco@...2786...=
-..&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
-1...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
-41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Thu, 27 Jun 2024 08:44:04=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: No </div>
-<div style=3D"display:none"> Comment-In-Reply-To: flichtenheld &lt;frank@...1186...=
-.2641...&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
+Germany, Karlsruhe.
+The exact meetup location in Karlsruhe will be decided once we have a 
+clearer picture of how many people are coming.
 
 
---H3tl0ECgKjk=--
+    What?
+
+One of the main items is going to be the upcoming major release OpenVPN 
+2.7, and what new things will go into that release. We have a community 
+meeting wiki page 
+(https://community.openvpn.net/openvpn/wiki/CommunityMeetup2024) where 
+we will gather topics and you are welcome to suggest items to discuss or 
+present there. Topics like code improvements, features, enhancements, 
+future developments, possible collaborations, and so on. And more 
+informally, to hang out together and get to know each other a bit, 
+preferably with (non-alcoholic) beer!
+
+The format is one where we meet up in a meeting room arranged for this 
+purpose, and have the opportunity to discuss all sorts of topics, and 
+get to know each other's technical backgrounds. In the past various 
+features have been hashed out in detail at these meetings, giving people 
+a chance to talk face-to-face and work things out more easily and 
+quickly. And afterwards there is opportunity to eat and drink and get to 
+know each other a bit better.
+
+
+    Who?
+
+All that contribute in some way! We will have of course a lot of the 
+developers that contribute code, but also people that contribute in 
+other ways. We receive security reports from cybersecurity experts and 
+welcome their insights and presence as well. We would welcome anyone 
+that can contribute in some way to making OpenVPN better.
+
+Please let us know if you'll join!
+Thank you!
+
+Greetings from the OpenVPN community.
+
+--------------uOPj0Vru10ySwWdAwqvCn59Q
+Content-Type: text/html; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+
+<!DOCTYPE html>
+<html>
+  <head>
+
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  </head>
+  <body>
+    <div>Hello OpenVPN enthusiasts!</div>
+    <div><br>
+    </div>
+    <div>Every year the OpenVPN community organizes a meeting to get
+      together in real life and discuss important topics for the future
+      of the OpenVPN software. We welcome all people that can contribute
+      in one way or another to the community.</div>
+    <div><br>
+    </div>
+    <div>In the past we called these meetings 'hackathons' but we feel
+      that this excludes people that do other valuable work like helping
+      on the forums, answering questions, and contributing in other
+      ways. So we've renamed it to 'OpenVPN community meetup', to lower
+      any barrier to joining us.<br>
+    </div>
+    <div><br>
+    </div>
+    <div>If you intend to join, please let us know by responding to this
+      mail, either on the mailing list or privately. It's free to join -
+      but of course you have to arrange your own travel and hotel. We
+      would like to get an idea of how many people will be at the meetup
+      so we can have the appropriately sized meeting room arranged!</div>
+    <div><br>
+    </div>
+    <div>Oh, and if you want a cool free OpenVPN t-shirt when you
+      attend, be sure to add your t-shirt size to the wiki page:
+      <a class="moz-txt-link-freetext" href="https://community.openvpn.net/openvpn/wiki/CommunityMeetup2024">https://community.openvpn.net/openvpn/wiki/CommunityMeetup2024</a><br>
+    </div>
+    <div><br>
+    </div>
+    <h2>When?</h2>
+    <div>September 20, 21, and 22, this year.</div>
+    <div><br>
+    </div>
+    <h2>Where?</h2>
+    <div>Germany, Karlsruhe.</div>
+    <div>The exact meetup location in Karlsruhe will be decided once we
+      have a clearer picture of how many people are coming.</div>
+    <div><br>
+    </div>
+    <h2>What?</h2>
+    <div>One of the main items is going to be the upcoming major release
+      OpenVPN 2.7, and what new things will go into that release. We
+      have a community meeting wiki page
+      (<a class="moz-txt-link-freetext" href="https://community.openvpn.net/openvpn/wiki/CommunityMeetup2024">https://community.openvpn.net/openvpn/wiki/CommunityMeetup2024</a>)
+      where we will gather topics and you are welcome to suggest items
+      to discuss or present there. Topics like code improvements,
+      features, enhancements, future developments, possible
+      collaborations, and so on. And more informally, to hang out
+      together and get to know each other a bit, preferably with
+      (non-alcoholic) beer!<br>
+    </div>
+    <div><br>
+    </div>
+    <div>The format is one where we meet up in a meeting room arranged
+      for this purpose, and have the opportunity to discuss all sorts of
+      topics, and get to know each other's technical backgrounds. In the
+      past various features have been hashed out in detail at these
+      meetings, giving people a chance to talk face-to-face and work
+      things out more easily and quickly. And afterwards there is
+      opportunity to eat and drink and get to know each other a bit
+      better.</div>
+    <div><br>
+    </div>
+    <h2>Who?</h2>
+    <div>All that contribute in some way! We will have of course a lot
+      of the developers that contribute code, but also people that
+      contribute in other ways. We receive security reports from
+      cybersecurity experts and welcome their insights and presence as
+      well. We would welcome anyone that can contribute in some way to
+      making OpenVPN better.</div>
+    <div><br>
+    </div>
+    <div>Please let us know if you'll join!<br>
+      Thank you!<br>
+      <br>
+      Greetings from the OpenVPN community.</div>
+    <p></p>
+  </body>
+</html>
+
+--------------uOPj0Vru10ySwWdAwqvCn59Q--
 
