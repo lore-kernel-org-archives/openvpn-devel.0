@@ -1,11 +1,15 @@
-Content-Type: multipart/alternative;
- boundary="------------tKBGA0Un9GWgLlJI0OC56oer"
-Message-ID: <5a9b2e9f-cffc-40d3-bddc-89f4b086d134@...2751...>
-Date: Wed, 3 Jul 2024 16:38:39 +0200
+From: "MaxF (Code Review)" <gerrit@...515...>
+Date: Wed, 3 Jul 2024 15:37:02 +0000
+References: <gerrit.1720021020000.Ibc641388d8016533c94dfef3618376f6dfa91f4e@...2715...>
+Reply-To: max@...2606..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net, frank@...2641...
+Message-ID: <f5ebe4c3e2ac9bfe718df0e21a7986a03b7d3090-HTML@...2715...>
 MIME-Version: 1.0
-From: Johan Draaisma <johan@...2751...>
-Content-Language: en-US
-Subject: [Openvpn-devel]  IRC community meeting summary
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="K9qZoId7Pok="; charset=UTF-8
+Subject: [Openvpn-devel] [XS] Change in openvpn[master]: mbedtls: Warn if
+ --tls-version-min is too low
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,153 +18,149 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: openvpn-devel@lists.sourceforge.net
+To: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-This is a multi-part message in MIME format.
---------------tKBGA0Un9GWgLlJI0OC56oer
-Content-Type: text/plain; charset="utf-8"; format="flowed"
-Content-Transfer-Encoding: 8bit
+--K9qZoId7Pok=
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Meeting summary for 3 July 2024:
+Attention is currently required from: flichtenheld, plaisthos.
 
-  * *Updated, closed: release openvpn 2.6.11*
-    /The original release was done on June 20th. A Windows installer
-    update was done last week to solve an issue with localization and
-    custom installation path (I002)./
+Hello plaisthos, flichtenheld,
 
-  * *Updated: forums topics*
-    /novaflash finally has time to look into this topic. But has no
-    access. Who can get novaflash access?/
-    /looks like mattock, djpig or uddr35 - will poke uddr35 about this./
+I'd like you to do a code review.
+Please visit
 
-  * *Updated: buildbot PRs need attention*
-    /2 out of 3 PRs got merged, 3rd one is still up/
-    ​Add smoketest builds for openvpn3, openvpn3-linux and ovpn-dco
-    <https://github.com/OpenVPN/openvpn-buildbot/pull/51>
+    http://gerrit.openvpn.net/c/openvpn/+/684?usp=3Demail
 
-  * *Updated: DCO and Linux upstreaming, API change*/
-    /Upstreaming DCO to Linux is proceeding, it is in review stage at
-    the moment./
-    /ordex has sent in*patchset version 5*./
-    /There will be an API change that makes it incompatible with the
-    current implementation./
-    /A graceful solution to that was already discussed and in motion.
-    giaan will be working on this./
-    /(in a nutshell, make OpenVPN understand old and new API, DKMS and
-    kernel versions both will then use new API, then we drop old API)//
+to review the following change.
 
-  * *Updated: OpenVPN community meetup 2024*
-    /Invitation was sent, waiting to gather responses./
-    /Perhaps we can do a guesstimate on number of people expected./
-    /Wiki coordination
-    page:​https://community.openvpn.net/openvpn/wiki/CommunityMeetup2024
-    <https://community.openvpn.net/openvpn/wiki/CommunityMeetup2024>/
-    /Where: Karlsruhe, Germany. Meeting room found, need to find out how
-    many participants roughly./
-    /When: Set to 20-22 September 2024./
-    /Shirts: novaflash spoke to matt - he will get us some design in
-    august./
 
-  * *Updated: community.openvpn.net trac wiki*
-    /We keep running into stupid limitations and bad suckiness with wiki
-    solutions./
-    /So we're going back to requirements and lining up
-    candidates:​https://community.openvpn.net/openvpn/wiki/NewWiki
-    <https://community.openvpn.net/openvpn/wiki/NewWiki>/
+Change subject: mbedtls: Warn if --tls-version-min is too low
+......................................................................
 
-As always you're welcome to join at #openvpn-meeting on Libera IRC 
-network every Wednesday at 14:00 Central European Time.
+mbedtls: Warn if --tls-version-min is too low
 
-Kind regards,
-Johan Draaisma
+Recent versions of mbedtls only support TLS 1.2. When the minimum
+version is set to TLS 1.0 or 1.1, log a warning and use 1.2 as the
+actual minimum version.
 
---------------tKBGA0Un9GWgLlJI0OC56oer
-Content-Type: text/html; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+Change-Id: Ibc641388d8016533c94dfef3618376f6dfa91f4e
+Signed-off-by: Max Fillinger <maximilian.fillinger@...2507...>
+---
+M src/openvpn/options.c
+1 file changed, 9 insertions(+), 0 deletions(-)
 
-<!DOCTYPE html>
-<html>
-  <head>
-    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
-  </head>
-  <body>
-    <p> Meeting summary for 3 July 2024:</p>
-    <ul
-style="color: rgb(0, 0, 0); font-family: Verdana, Arial, &quot;Bitstream Vera Sans&quot;, Helvetica, sans-serif; font-size: 13px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;">
-      <li><strong>Updated, closed: release openvpn 2.6.11</strong><br>
-        <em>The original release was done on June 20th. A Windows
-          installer update was done last week to solve an issue with
-          localization and custom installation path (I002).</em></li>
-    </ul>
-    <ul
-style="color: rgb(0, 0, 0); font-family: Verdana, Arial, &quot;Bitstream Vera Sans&quot;, Helvetica, sans-serif; font-size: 13px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;">
-      <li><strong>Updated: forums topics</strong><br>
-        <em>novaflash finally has time to look into this topic. But has
-          no access. Who can get novaflash access?</em><br>
-        <em>looks like mattock, djpig or uddr35 - will poke uddr35 about
-          this.</em></li>
-    </ul>
-    <ul
-style="color: rgb(0, 0, 0); font-family: Verdana, Arial, &quot;Bitstream Vera Sans&quot;, Helvetica, sans-serif; font-size: 13px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;">
-      <li><strong>Updated: buildbot PRs need attention</strong><br>
-        <em>2 out of 3 PRs got merged, 3rd one is still up</em><br>
-        <a class="ext-link"
-          href="https://github.com/OpenVPN/openvpn-buildbot/pull/51"
-style="text-decoration: none; color: rgb(187, 0, 0); border-bottom: 1px dotted rgb(187, 187, 187);"><span
-            class="icon"
-style="background: url(&quot;../extlink.gif&quot;) left center no-repeat; padding-left: 15px;">​</span>Add
-          smoketest builds for openvpn3, openvpn3-linux and ovpn-dco</a></li>
-    </ul>
-    <ul
-style="color: rgb(0, 0, 0); font-family: Verdana, Arial, &quot;Bitstream Vera Sans&quot;, Helvetica, sans-serif; font-size: 13px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;">
-      <li><strong>Updated: DCO and Linux upstreaming, API change</strong><em><br>
-        </em>Upstreaming DCO to Linux is proceeding, it is in review
-        stage at the moment.<em><br>
-        </em>ordex has sent in<span> </span><strong>patchset version 5</strong>.<em><br>
-        </em>There will be an API change that makes it incompatible with
-        the current implementation.<em><br>
-        </em>A graceful solution to that was already discussed and in
-        motion. giaan will be working on this.<em><br>
-        </em>(in a nutshell, make OpenVPN understand old and new API,
-        DKMS and kernel versions both will then use new API, then we
-        drop old API)<em></em></li>
-    </ul>
-    <ul
-style="color: rgb(0, 0, 0); font-family: Verdana, Arial, &quot;Bitstream Vera Sans&quot;, Helvetica, sans-serif; font-size: 13px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;">
-      <li><strong>Updated: OpenVPN community meetup 2024</strong><br>
-        <em>Invitation was sent, waiting to gather responses.</em><br>
-        <em>Perhaps we can do a guesstimate on number of people
-          expected.</em><br>
-        <em>Wiki coordination page:<span> </span><a class="ext-link"
-href="https://community.openvpn.net/openvpn/wiki/CommunityMeetup2024"
-style="text-decoration: none; color: rgb(187, 0, 0); border-bottom: 1px dotted rgb(187, 187, 187);"><span
-              class="icon"
-style="background: url(&quot;../extlink.gif&quot;) left center no-repeat; padding-left: 15px;">​</span>https://community.openvpn.net/openvpn/wiki/CommunityMeetup2024</a></em><br>
-        <em>Where: Karlsruhe, Germany. Meeting room found, need to find
-          out how many participants roughly.</em><br>
-        <em>When: Set to 20-22 September 2024.</em><br>
-        <em>Shirts: novaflash spoke to matt - he will get us some design
-          in august.</em></li>
-    </ul>
-    <ul
-style="color: rgb(0, 0, 0); font-family: Verdana, Arial, &quot;Bitstream Vera Sans&quot;, Helvetica, sans-serif; font-size: 13px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;">
-      <li><strong>Updated: community.openvpn.net trac wiki</strong><br>
-        <em>We keep running into stupid limitations and bad suckiness
-          with wiki solutions.</em><br>
-        <em>So we're going back to requirements and lining up
-          candidates:<span> </span><a class="ext-link"
-            href="https://community.openvpn.net/openvpn/wiki/NewWiki"
-style="text-decoration: none; color: rgb(187, 0, 0); border-bottom: 1px dotted rgb(187, 187, 187);"><span
-              class="icon"
-style="background: url(&quot;../extlink.gif&quot;) left center no-repeat; padding-left: 15px;">​</span>https://community.openvpn.net/openvpn/wiki/NewWiki</a></em></li>
-    </ul>
-    <p>As always you're welcome to join at #openvpn-meeting on Libera
-      IRC network every Wednesday at 14:00 Central European Time.</p>
-    <p>Kind regards,<br>
-      Johan Draaisma<br>
-    </p>
-  </body>
-</html>
 
---------------tKBGA0Un9GWgLlJI0OC56oer--
+
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/84/684/1
+
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index dbe1425..64e67aa 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -8942,6 +8942,15 @@
+             msg(msglevel, "unknown tls-version-min parameter: %s", p[1]);
+             goto err;
+         }
++
++#ifdef ENABLE_CRYPTO_MBEDTLS
++        if (ver < TLS_VER_1_2)
++        {
++            msg(M_WARN, "--tls-version-min %s is not supported by mbedtls,=
+ using 1.2", p[1]);
++            ver =3D TLS_VER_1_2;
++        }
++#endif
++
+         options->ssl_flags &=3D
+             ~(SSLF_TLS_VERSION_MIN_MASK << SSLF_TLS_VERSION_MIN_SHIFT);
+         options->ssl_flags |=3D (ver << SSLF_TLS_VERSION_MIN_SHIFT);
+
+--
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/684?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings
+
+Gerrit-Project: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: Ibc641388d8016533c94dfef3618376f6dfa91f4e
+Gerrit-Change-Number: 684
+Gerrit-PatchSet: 1
+Gerrit-Owner: MaxF <max@...2606...>
+Gerrit-Reviewer: flichtenheld <frank@...2641...>
+Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Attention: flichtenheld <frank@...2641...>
+Gerrit-MessageType: newchange
+
+--K9qZoId7Pok=
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<p> Attention is currently required from: flichtenheld, plaisthos. </p>
+<p>MaxF would like plaisthos and flichtenheld to <strong>review</strong> th=
+is change.
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/684?usp=3Demail">Vi=
+ew Change</a></p><pre style=3D"font-family: monospace,monospace; white-spac=
+e: pre-wrap;">mbedtls: Warn if --tls-version-min is too low<br><br>Recent v=
+ersions of mbedtls only support TLS 1.2. When the minimum<br>version is set=
+ to TLS 1.0 or 1.1, log a warning and use 1.2 as the<br>actual minimum vers=
+ion.<br><br>Change-Id: Ibc641388d8016533c94dfef3618376f6dfa91f4e<br>Signed-=
+off-by: Max Fillinger &lt;maximilian.fillinger@...2507...&gt;<br>---<br>M s=
+rc/openvpn/options.c<br>1 file changed, 9 insertions(+), 0 deletions(-)<br>=
+<br></pre><pre style=3D"font-family: monospace,monospace; white-space: pre-=
+wrap;">git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/84/684/=
+1</pre><pre style=3D"font-family: monospace,monospace; white-space: pre-wra=
+p;"><span>diff --git a/src/openvpn/options.c b/src/openvpn/options.c</span>=
+<br><span>index dbe1425..64e67aa 100644</span><br><span>--- a/src/openvpn/o=
+ptions.c</span><br><span>+++ b/src/openvpn/options.c</span><br><span>@@ -89=
+42,6 +8942,15 @@</span><br><span>             msg(msglevel, &quot;unknown t=
+ls-version-min parameter: %s&quot;, p[1]);</span><br><span>             got=
+o err;</span><br><span>         }</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#ifde=
+f ENABLE_CRYPTO_MBEDTLS</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+        if (ver &lt; TLS_VER_1_2)</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+        {</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+            msg(M_WARN, &quot;--tls-version-min %s is not supported=
+ by mbedtls, using 1.2&quot;, p[1]);</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+            ver =3D TLS_VER_1_2;</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+        }</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+#endif</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+</span><br><span>         options-&gt;ssl_flags &amp;=3D</span><br><=
+span>             ~(SSLF_TLS_VERSION_MIN_MASK &lt;&lt; SSLF_TLS_VERSION_MIN=
+_SHIFT);</span><br><span>         options-&gt;ssl_flags |=3D (ver &lt;&lt; =
+SSLF_TLS_VERSION_MIN_SHIFT);</span><br><span></span><br></pre><p>To view, v=
+isit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/684?usp=3Demail">chan=
+ge 684</a>. To unsubscribe, or for help writing mail filters, visit <a href=
+=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope ite=
+mtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"action"=
+ itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"h=
+ttp://gerrit.openvpn.net/c/openvpn/+/684?usp=3Demail"/><meta itemprop=3D"na=
+me" content=3D"View Change"/></div></div>
+
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: Ibc641388d8016533c94dfef3618=
+376f6dfa91f4e </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 684 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
+<div style=3D"display:none"> Gerrit-Owner: MaxF &lt;max@...2606...&gt; </di=
+v>
+<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
+1...&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
+.1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
+41...&gt; </div>
+<div style=3D"display:none"> Gerrit-MessageType: newchange </div>
+
+
+--K9qZoId7Pok=--
 
