@@ -1,16 +1,11 @@
-From: "plaisthos (Code Review)" <gerrit@...515...>
-Date: Wed, 3 Jul 2024 17:13:03 +0000
+From: Gert Doering <gert@...1296...>
+Date: Wed,  3 Jul 2024 19:41:58 +0200
+Message-ID: <20240703174158.7137-1-gert@...1296...>
 In-Reply-To: <gerrit.1720021020000.Ibc641388d8016533c94dfef3618376f6dfa91f4e@...2715...>
 References: <gerrit.1720021020000.Ibc641388d8016533c94dfef3618376f6dfa91f4e@...2715...>
-Reply-To: arne-openvpn@...1227..., openvpn-devel@lists.sourceforge.net,
- frank@...2641..., max@...2606...
-Message-ID: <d9abf295af18787fcb8c3d2a82edf08c07e32420-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="Hv9qvOfeK9g="; charset=UTF-8
-Subject: [Openvpn-devel] [XS] Change in openvpn[master]: mbedtls: Warn if
- --tls-version-min is too low
+Subject: [Openvpn-devel] [PATCH v1] mbedtls: Warn if --tls-version-min is
+ too low
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,87 +14,49 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: MaxF <max@...2606...>
-Cc: flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---Hv9qvOfeK9g=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+From: Max Fillinger <maximilian.fillinger@...2507...>
 
-Attention is currently required from: MaxF, flichtenheld.
+Recent versions of mbedtls only support TLS 1.2. When the minimum
+version is set to TLS 1.0 or 1.1, log a warning and use 1.2 as the
+actual minimum version.
 
-plaisthos has posted comments on this change. ( http://gerrit.openvpn.net/c=
-/openvpn/+/684?usp=3Demail )
+Change-Id: Ibc641388d8016533c94dfef3618376f6dfa91f4e
+Signed-off-by: Max Fillinger <maximilian.fillinger@...2507...>
+Acked-by: Arne Schwabe <arne-openvpn@...1227...>
+---
 
-Change subject: mbedtls: Warn if --tls-version-min is too low
-......................................................................
+This change was reviewed on Gerrit and approved by at least one
+developer. I request to merge it to master.
 
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/684
+This mail reflects revision 1 of this Change.
 
-Patch Set 1: Code-Review+2
+Acked-by according to Gerrit (reflected above):
+Arne Schwabe <arne-openvpn@...1227...>
 
-
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/684?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings
-
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: Ibc641388d8016533c94dfef3618376f6dfa91f4e
-Gerrit-Change-Number: 684
-Gerrit-PatchSet: 1
-Gerrit-Owner: MaxF <max@...2606...>
-Gerrit-Reviewer: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Attention: MaxF <max@...2606...>
-Gerrit-Comment-Date: Wed, 03 Jul 2024 17:13:03 +0000
-Gerrit-HasComments: No
-Gerrit-Has-Labels: Yes
-Gerrit-MessageType: comment
-
---Hv9qvOfeK9g=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<p> Attention is currently required from: MaxF, flichtenheld. </p>
-<p>Patch set 1:<span style=3D"border-radius: 3px; display: inline-block; ma=
-rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/684?usp=3Demail">Vi=
-ew Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To vie=
-w, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/684?usp=3Demail">=
-change 684</a>. To unsubscribe, or for help writing mail filters, visit <a =
-href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope=
- itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"act=
-ion" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=
-=3D"http://gerrit.openvpn.net/c/openvpn/+/684?usp=3Demail"/><meta itemprop=
-=3D"name" content=3D"View Change"/></div></div>
-
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: Ibc641388d8016533c94dfef3618=
-376f6dfa91f4e </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 684 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
-<div style=3D"display:none"> Gerrit-Owner: MaxF &lt;max@...2606...&gt; </di=
-v>
-<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
-1...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
-41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: MaxF &lt;max@...2606...&gt; =
-</div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Wed, 03 Jul 2024 17:13:03=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: No </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
-
-
---Hv9qvOfeK9g=--
+        
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index dbe1425..64e67aa 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -8942,6 +8942,15 @@
+             msg(msglevel, "unknown tls-version-min parameter: %s", p[1]);
+             goto err;
+         }
++
++#ifdef ENABLE_CRYPTO_MBEDTLS
++        if (ver < TLS_VER_1_2)
++        {
++            msg(M_WARN, "--tls-version-min %s is not supported by mbedtls, using 1.2", p[1]);
++            ver = TLS_VER_1_2;
++        }
++#endif
++
+         options->ssl_flags &=
+             ~(SSLF_TLS_VERSION_MIN_MASK << SSLF_TLS_VERSION_MIN_SHIFT);
+         options->ssl_flags |= (ver << SSLF_TLS_VERSION_MIN_SHIFT);
 
