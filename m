@@ -1,11 +1,10 @@
+Date: Thu, 4 Jul 2024 08:11:10 +0200 (CEST)
+Message-Id: <202407040611.4646BA2M069441@...2054...>
 From: Gert Doering <gert@...1296...>
-Date: Wed,  3 Jul 2024 19:41:58 +0200
-Message-ID: <20240703174158.7137-1-gert@...1296...>
-In-Reply-To: <gerrit.1720021020000.Ibc641388d8016533c94dfef3618376f6dfa91f4e@...2715...>
-References: <gerrit.1720021020000.Ibc641388d8016533c94dfef3618376f6dfa91f4e@...2715...>
-MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v1] mbedtls: Warn if --tls-version-min is
- too low
+In-Reply-To: <20240703174158.7137-1-gert@...1296...>
+References: <20240703174158.7137-1-gert@...1296...>
+Subject: [Openvpn-devel] [PATCH applied] Re: mbedtls: Warn if
+ --tls-version-min is too low
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,47 +15,32 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Max Fillinger <maximilian.fillinger@...2507...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-From: Max Fillinger <maximilian.fillinger@...2507...>
+Thanks for that.  This fixes my server test rig, which sets --tls-version-min
+to accept connections from very old clients - it will now (still) fail old
+clients that can not do TLS 1.2 (namely, OpenVPN 2.2(!) - 2.3 and up are
+fine), but it will not fail "everything else" as the current code did.
 
-Recent versions of mbedtls only support TLS 1.2. When the minimum
-version is set to TLS 1.0 or 1.1, log a warning and use 1.2 as the
-actual minimum version.
+Your patch has been applied to the master branch.
 
-Change-Id: Ibc641388d8016533c94dfef3618376f6dfa91f4e
-Signed-off-by: Max Fillinger <maximilian.fillinger@...2507...>
-Acked-by: Arne Schwabe <arne-openvpn@...1227...>
----
+commit c535fa7afe45937bbc7dda435b2b05e57f7ecd53 (master)
+Author: Max Fillinger
+Date:   Wed Jul 3 19:41:58 2024 +0200
 
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to master.
+     mbedtls: Warn if --tls-version-min is too low
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/684
-This mail reflects revision 1 of this Change.
+     Signed-off-by: Max Fillinger <maximilian.fillinger@...2507...>
+     Acked-by: Arne Schwabe <arne-openvpn@...1227...>
+     Message-Id: <20240703174158.7137-1-gert@...1296...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg28865.html
+     Signed-off-by: Gert Doering <gert@...1296...>
 
-Acked-by according to Gerrit (reflected above):
-Arne Schwabe <arne-openvpn@...1227...>
 
-        
-diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index dbe1425..64e67aa 100644
---- a/src/openvpn/options.c
-+++ b/src/openvpn/options.c
-@@ -8942,6 +8942,15 @@
-             msg(msglevel, "unknown tls-version-min parameter: %s", p[1]);
-             goto err;
-         }
-+
-+#ifdef ENABLE_CRYPTO_MBEDTLS
-+        if (ver < TLS_VER_1_2)
-+        {
-+            msg(M_WARN, "--tls-version-min %s is not supported by mbedtls, using 1.2", p[1]);
-+            ver = TLS_VER_1_2;
-+        }
-+#endif
-+
-         options->ssl_flags &=
-             ~(SSLF_TLS_VERSION_MIN_MASK << SSLF_TLS_VERSION_MIN_SHIFT);
-         options->ssl_flags |= (ver << SSLF_TLS_VERSION_MIN_SHIFT);
+--
+kind regards,
+
+Gert Doering
+
 
