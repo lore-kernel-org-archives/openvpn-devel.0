@@ -1,11 +1,13 @@
-From: Ilia Shipitsin <chipitsine@...277...>
-Date: Mon,  8 Jul 2024 23:08:19 +0200
-Message-ID: <20240708210912.566-3-chipitsine@...277...>
-In-Reply-To: <20240708210912.566-1-chipitsine@...277...>
-References: <20240708210912.566-1-chipitsine@...277...>
+Message-ID: <5b9f85fd-dcd1-463a-bb0f-9cc3a9081116@...2181...>
+Date: Mon, 8 Jul 2024 23:14:58 +0200
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH 2/5]
- sample/sample-plugins/defer/multi-auth.c: handle strdup errors
+References: <20240708210912.566-1-chipitsine@...277...>
+ <20240708210912.566-2-chipitsine@...277...>
+Content-Language: en-US
+From: Antonio Quartulli <a@...2181...>
+In-Reply-To: <20240708210912.566-2-chipitsine@...277...>
+Subject: Re: [Openvpn-devel] [PATCH 1/5] src/openvpn/init.c: handle strdup
+ failures
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,45 +16,40 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+To: Ilia Shipitsin <chipitsine@...277...>, openvpn-devel@lists.sourceforge.net
 
-Signed-off-by: Ilia Shipitsin <chipitsine@...277...>
----
- sample/sample-plugins/defer/multi-auth.c | 15 +++++++++++++++
- 1 file changed, 15 insertions(+)
+Hi,
 
-diff --git a/sample/sample-plugins/defer/multi-auth.c b/sample/sample-plugins/defer/multi-auth.c
-index 2c482799..109fa40c 100644
---- a/sample/sample-plugins/defer/multi-auth.c
-+++ b/sample/sample-plugins/defer/multi-auth.c
-@@ -206,9 +206,24 @@ openvpn_plugin_open_v3(const int v3structver,
-     if ((args->argv[4]) && !args->argv[5])
-     {
-         context->authid = strdup(args->argv[1]);
-+        if (!context->authid)
-+        {
-+            plog(context, PLOG_ERR, "Out of memory");
-+            goto error;
-+        }
-         context->test_deferred_auth = atoi_null0(args->argv[2]);
-         context->test_valid_user = strdup(args->argv[3]);
-+        if (!context->test_valid_user)
-+        {
-+            plog(context, PLOG_ERR, "Out of memory");
-+            goto error;
-+        }
-         context->test_valid_pass = strdup(args->argv[4]);
-+        if (!context->test_valid_pass)
-+        {
-+            plog(context, PLOG_ERR, "Out of memory");
-+            goto error;
-+        }
-     }
-     else
-     {
+On 08/07/2024 23:08, Ilia Shipitsin wrote:
+> Signed-off-by: Ilia Shipitsin <chipitsine@...277...>
+> ---
+>   src/openvpn/init.c | 4 ++++
+>   1 file changed, 4 insertions(+)
+> 
+> diff --git a/src/openvpn/init.c b/src/openvpn/init.c
+> index a49e5639..59205ba6 100644
+> --- a/src/openvpn/init.c
+> +++ b/src/openvpn/init.c
+> @@ -4967,6 +4967,10 @@ write_pid_file(const char *filename, const char *chroot_dir)
+>           if (!chroot_dir)
+>           {
+>               saved_pid_file_name = strdup(filename);
+> +            if (!saved_pid_file_name)
+> +            {
+> +                msg( M_FATAL, "Failed allocate memory saved_pid_file_name");
+
+patchset looks great, but (!!) there should be no space after the 
+opening parenthesis..
+
+Cheers,
+
+> +            }
+>           }
+>       }
+>   }
+
 -- 
-2.43.0.windows.1
-
+Antonio Quartulli
 
