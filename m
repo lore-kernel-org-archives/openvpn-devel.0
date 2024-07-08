@@ -1,14 +1,14 @@
-From: "flichtenheld (Code Review)" <gerrit@...515...>
-Date: Mon, 8 Jul 2024 11:14:41 +0000
+From: "plaisthos (Code Review)" <gerrit@...515...>
+Date: Mon, 8 Jul 2024 16:16:19 +0000
 In-Reply-To: <gerrit.1720433364000.I47c992b6b73b1475cbff8a28f720cf50dc1fbe3e@...2715...>
 References: <gerrit.1720433364000.I47c992b6b73b1475cbff8a28f720cf50dc1fbe3e@...2715...>
-Reply-To: frank@...2641..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net
-Message-ID: <87cb49a39e9c4dfe7f6a0f1dd4c2986d0fe26d32-EmailReviewComments-HTML@...2715...>
+Reply-To: arne-openvpn@...1227..., openvpn-devel@lists.sourceforge.net,
+ frank@...2641...
+Message-ID: <f1242aa3057573b87e72992ca531eb976e7dfc5a-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="0PdKrN9kE5Y="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="G40oo1iJv48="; charset=UTF-8
 Subject: [Openvpn-devel] [S] Change in openvpn[master]: Allow trailing \r
  and \n in control channel message
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -19,32 +19,33 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: plaisthos <arne-openvpn@...1227...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Cc: flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---0PdKrN9kE5Y=
+--G40oo1iJv48=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: plaisthos.
+Attention is currently required from: flichtenheld.
 
-flichtenheld has posted comments on this change. ( http://gerrit.openvpn.ne=
-t/c/openvpn/+/672?usp=3Demail )
+plaisthos has posted comments on this change. ( http://gerrit.openvpn.net/c=
+/openvpn/+/672?usp=3Demail )
 
 Change subject: Allow trailing \r and \n in control channel message
 ......................................................................
 
 
-Patch Set 1: Code-Review-1
+Patch Set 1:
 
 (1 comment)
 
 File src/openvpn/forward.c:
 
-http://gerrit.openvpn.net/c/openvpn/+/672/comment/f61c55e2_9b297160 :
+http://gerrit.openvpn.net/c/openvpn/+/672/comment/ab73eb7e_71ef24b3 :
 PS1, Line 309:                 /* Remove \r and \n at the end of the buffer=
  to avoid
-Why can't you use buf_chomp?
+> Why can't you use buf_chomp?
+I can. I missed that there is a buf_chomp. I looked for buf_trim buf_rtrim =
+or similar.
 
 
 
@@ -61,36 +62,37 @@ Gerrit-PatchSet: 1
 Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Comment-Date: Mon, 08 Jul 2024 11:14:41 +0000
+Gerrit-Attention: flichtenheld <frank@...2641...>
+Gerrit-Comment-Date: Mon, 08 Jul 2024 16:16:19 +0000
 Gerrit-HasComments: Yes
-Gerrit-Has-Labels: Yes
+Gerrit-Has-Labels: No
+Comment-In-Reply-To: flichtenheld <frank@...2641...>
 Gerrit-MessageType: comment
 
---0PdKrN9kE5Y=
+--G40oo1iJv48=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p> Attention is currently required from: plaisthos. </p>
-<p>Patch set 1:<span style=3D"border-radius: 3px; display: inline-block; ma=
-rgin: 0 2px; padding: 4px;background-color: #ffd4d4;">Code-Review -1</span>=
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/672?usp=3Demail">Vi=
-ew Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0=
-;"><li style=3D"margin: 0; padding: 0;"><p>File src/openvpn/forward.c:</p><=
-ul style=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; padding:=
- 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.ope=
-nvpn.net/c/openvpn/+/672/comment/f61c55e2_9b297160">Patch Set #1, Line 309:=
-</a> <code style=3D"font-family:monospace,monospace">                /* Rem=
-ove \r and \n at the end of the buffer to avoid</code></p><p style=3D"white=
--space: pre-wrap; word-wrap: break-word;">Why can&#39;t you use buf_chomp?<=
-/p></li></ul></li></ul><p>To view, visit <a href=3D"http://gerrit.openvpn.n=
-et/c/openvpn/+/672?usp=3Demail">change 672</a>. To unsubscribe, or for help=
- writing mail filters, visit <a href=3D"http://gerrit.openvpn.net/settings"=
->settings</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage=
-"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewActi=
-on"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/67=
-2?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div></di=
-v>
+<p> Attention is currently required from: flichtenheld. </p>
+<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/672?usp=3Demail">View C=
+hange</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0;"><=
+li style=3D"margin: 0; padding: 0;"><p>File src/openvpn/forward.c:</p><ul s=
+tyle=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0=
+ 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn=
+.net/c/openvpn/+/672/comment/ab73eb7e_71ef24b3">Patch Set #1, Line 309:</a>=
+ <code style=3D"font-family:monospace,monospace">                /* Remove =
+\r and \n at the end of the buffer to avoid</code></p><p><blockquote style=
+=3D"border-left: 1px solid #aaa; margin: 10px 0; padding: 0 10px;">Why can&=
+#39;t you use buf_chomp?</blockquote></p><p style=3D"white-space: pre-wrap;=
+ word-wrap: break-word;">I can. I missed that there is a buf_chomp. I looke=
+d for buf_trim buf_rtrim or similar.</p></li></ul></li></ul><p>To view, vis=
+it <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/672?usp=3Demail">change=
+ 672</a>. To unsubscribe, or for help writing mail filters, visit <a href=
+=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope ite=
+mtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"action"=
+ itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"h=
+ttp://gerrit.openvpn.net/c/openvpn/+/672?usp=3Demail"/><meta itemprop=3D"na=
+me" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
@@ -104,14 +106,16 @@ v>
 1...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Mon, 08 Jul 2024 11:14:41=
+<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
+41...&gt; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Mon, 08 Jul 2024 16:16:19=
  +0000 </div>
 <div style=3D"display:none"> Gerrit-HasComments: Yes </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: No </div>
+<div style=3D"display:none"> Comment-In-Reply-To: flichtenheld &lt;frank@...1186...=
+.2641...&gt; </div>
 <div style=3D"display:none"> Gerrit-MessageType: comment </div>
 
 
---0PdKrN9kE5Y=--
+--G40oo1iJv48=--
 
