@@ -1,14 +1,14 @@
-From: "plaisthos (Code Review)" <gerrit@...515...>
-Date: Mon, 8 Jul 2024 16:18:06 +0000
+From: "flichtenheld (Code Review)" <gerrit@...515...>
+Date: Mon, 8 Jul 2024 16:32:44 +0000
 In-Reply-To: <gerrit.1720433364000.I47c992b6b73b1475cbff8a28f720cf50dc1fbe3e@...2715...>
 References: <gerrit.1720433364000.I47c992b6b73b1475cbff8a28f720cf50dc1fbe3e@...2715...>
-Reply-To: arne-openvpn@...1227..., openvpn-devel@lists.sourceforge.net,
- frank@...2641...
-Message-ID: <5264fd13b301501f749e875e1ac991de423cd26e-EmailReplacePatchSet-HTML@...2715...>
+Reply-To: frank@...2641..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net
+Message-ID: <2724e23a183254cfd96ab68845da9ff87536a66c-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="uJo9IpBeT20="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="yrG54OHiPk0="; charset=UTF-8
 Subject: [Openvpn-devel] [S] Change in openvpn[master]: Allow trailing \r
  and \n in control channel message
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -19,95 +19,43 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: flichtenheld <frank@...2641...>
+To: plaisthos <arne-openvpn@...1227...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---uJo9IpBeT20=
+--yrG54OHiPk0=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: flichtenheld.
+Attention is currently required from: plaisthos.
 
-Hello flichtenheld,=20
-
-I'd like you to reexamine a change. Please visit
-
-    http://gerrit.openvpn.net/c/openvpn/+/672?usp=3Demail
-
-to look at the new patch set (#2).
-
-The following approvals got outdated and were removed:
-Code-Review-1 by flichtenheld
-
+flichtenheld has posted comments on this change. ( http://gerrit.openvpn.ne=
+t/c/openvpn/+/672?usp=3Demail )
 
 Change subject: Allow trailing \r and \n in control channel message
 ......................................................................
 
-Allow trailing \r and \n in control channel message
 
-Writing a reason from a script will easily end up adding extra \r\n charact=
-ers
-at the end of the reason. Our current code pushes this to the peer. So be m=
-ore
-liberal in accepting these message.
+Patch Set 2: Code-Review-1
 
-Closes openvpn/openvpn#568
+(2 comments)
 
-Change-Id: I47c992b6b73b1475cbff8a28f720cf50dc1fbe3e
-Signed-off-by: Arne Schwabe <arne@...1227...>
----
-M src/openvpn/forward.c
-1 file changed, 9 insertions(+), 6 deletions(-)
+Patchset:
+
+PS2:
+I must say that I would feel better if we had a UT covering all this. Not s=
+ure how difficult that would be?
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/72/672/2
+File src/openvpn/forward.c:
 
-diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c
-index 71b7167..943ed11 100644
---- a/src/openvpn/forward.c
-+++ b/src/openvpn/forward.c
-@@ -290,7 +290,6 @@
-     struct buffer buf =3D alloc_buf_gc(len, &gc);
-     if (tls_rec_payload(c->c2.tls_multi, &buf))
-     {
--
-         while (BLEN(&buf) > 1)
-         {
-             /* commands on the control channel are seperated by 0x00 bytes.
-@@ -300,19 +299,23 @@
-             if (cmdlen < BLEN(&buf))
-             {
-                 /* include the NUL byte and ensure NUL termination */
--                int cmdlen =3D (int)strlen(BSTR(&buf)) + 1;
-+                int buflen =3D (int)strlen(BSTR(&buf)) + 1;
+http://gerrit.openvpn.net/c/openvpn/+/672/comment/9a73fe6c_d79f0ee2 :
+PS2, Line 318:                         format_hex(BPTR(&buf), BLEN(&cmdbuf)=
+, 256, &gc));
+While it is not actually wrong to use BPTR(&buf) here, I would recommend BP=
+TR(&cmdbuf). It should make no difference to the output and looks less like=
+ an error.
 
-                 /* Construct a buffer that only holds the current command =
-and
-                  * its closing NUL byte */
--                struct buffer cmdbuf =3D alloc_buf_gc(cmdlen, &gc);
--                buf_write(&cmdbuf, BPTR(&buf), cmdlen);
-+                struct buffer cmdbuf =3D alloc_buf_gc(buflen, &gc);
-+                buf_write(&cmdbuf, BPTR(&buf), buflen);
-+
-+                /* Remove \r and \n at the end of the buffer to avoid
-+                 * problems with scripts and other that add extra \r and \=
-n */
-+                buf_chomp(&cmdbuf);
 
-                 /* check we have only printable characters or null byte in=
- the
-                  * command string and no newlines */
--                if (!string_check_buf(&buf, CC_PRINT | CC_NULL, CC_CRLF))
-+                if (!string_check_buf(&cmdbuf, CC_PRINT | CC_NULL, CC_CRLF=
-))
-                 {
-                     msg(D_PUSH_ERRORS, "WARNING: Received control with inv=
-alid characters: %s",
--                        format_hex(BPTR(&buf), BLEN(&buf), 256, &gc));
-+                        format_hex(BPTR(&buf), BLEN(&cmdbuf), 256, &gc));
-                 }
-                 else
-                 {
 
 --
 To view, visit http://gerrit.openvpn.net/c/openvpn/+/672?usp=3Demail
@@ -122,78 +70,44 @@ Gerrit-PatchSet: 2
 Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-MessageType: newpatchset
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Comment-Date: Mon, 08 Jul 2024 16:32:44 +0000
+Gerrit-HasComments: Yes
+Gerrit-Has-Labels: Yes
+Gerrit-MessageType: comment
 
---uJo9IpBeT20=
+--yrG54OHiPk0=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p> Attention is currently required from: flichtenheld. </p>
-<p>plaisthos <strong>uploaded patch set #2</strong> to this change.</p><p><=
-a href=3D"http://gerrit.openvpn.net/c/openvpn/+/672?usp=3Demail">View Chang=
-e</a></p><p>The following approvals got outdated and were removed:
-Code-Review-1 by flichtenheld</p><pre style=3D"font-family: monospace,monos=
-pace; white-space: pre-wrap;">Allow trailing \r and \n in control channel m=
-essage<br><br>Writing a reason from a script will easily end up adding extr=
-a \r\n characters<br>at the end of the reason. Our current code pushes this=
- to the peer. So be more<br>liberal in accepting these message.<br><br>Clos=
-es openvpn/openvpn#568<br><br>Change-Id: I47c992b6b73b1475cbff8a28f720cf50d=
-c1fbe3e<br>Signed-off-by: Arne Schwabe &lt;arne@...1227...&gt;<br>---<br>M =
-src/openvpn/forward.c<br>1 file changed, 9 insertions(+), 6 deletions(-)<br=
-><br></pre><pre style=3D"font-family: monospace,monospace; white-space: pre=
--wrap;">git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/72/672=
-/2</pre><pre style=3D"font-family: monospace,monospace; white-space: pre-wr=
-ap;"><span>diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c</span=
-><br><span>index 71b7167..943ed11 100644</span><br><span>--- a/src/openvpn/=
-forward.c</span><br><span>+++ b/src/openvpn/forward.c</span><br><span>@@ -2=
-90,7 +290,6 @@</span><br><span>     struct buffer buf =3D alloc_buf_gc(len,=
- &amp;gc);</span><br><span>     if (tls_rec_payload(c-&gt;c2.tls_multi, &am=
-p;buf))</span><br><span>     {</span><br><span style=3D"color: hsl(0, 100%,=
- 40%);">-</span><br><span>         while (BLEN(&amp;buf) &gt; 1)</span><br>=
-<span>         {</span><br><span>             /* commands on the control ch=
-annel are seperated by 0x00 bytes.</span><br><span>@@ -300,19 +299,23 @@</s=
-pan><br><span>             if (cmdlen &lt; BLEN(&amp;buf))</span><br><span>=
-             {</span><br><span>                 /* include the NUL byte and=
- ensure NUL termination */</span><br><span style=3D"color: hsl(0, 100%, 40%=
-);">-                int cmdlen =3D (int)strlen(BSTR(&amp;buf)) + 1;</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+                int buflen=
- =3D (int)strlen(BSTR(&amp;buf)) + 1;</span><br><span> </span><br><span>   =
-              /* Construct a buffer that only holds the current command and=
-</span><br><span>                  * its closing NUL byte */</span><br><spa=
-n style=3D"color: hsl(0, 100%, 40%);">-                struct buffer cmdbuf=
- =3D alloc_buf_gc(cmdlen, &amp;gc);</span><br><span style=3D"color: hsl(0, =
-100%, 40%);">-                buf_write(&amp;cmdbuf, BPTR(&amp;buf), cmdlen=
-);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+                s=
-truct buffer cmdbuf =3D alloc_buf_gc(buflen, &amp;gc);</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+                buf_write(&amp;cmdbuf, B=
-PTR(&amp;buf), buflen);</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+               =
- /* Remove \r and \n at the end of the buffer to avoid</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+                 * problems with scripts=
- and other that add extra \r and \n */</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+                buf_chomp(&amp;cmdbuf);</span><br><span>=
- </span><br><span>                 /* check we have only printable characte=
-rs or null byte in the</span><br><span>                  * command string a=
-nd no newlines */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
-            if (!string_check_buf(&amp;buf, CC_PRINT | CC_NULL, CC_CRLF))</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+                if (!=
-string_check_buf(&amp;cmdbuf, CC_PRINT | CC_NULL, CC_CRLF))</span><br><span=
->                 {</span><br><span>                     msg(D_PUSH_ERRORS,=
- &quot;WARNING: Received control with invalid characters: %s&quot;,</span><=
-br><span style=3D"color: hsl(0, 100%, 40%);">-                        forma=
-t_hex(BPTR(&amp;buf), BLEN(&amp;buf), 256, &amp;gc));</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+                        format_hex(BPTR(&=
-amp;buf), BLEN(&amp;cmdbuf), 256, &amp;gc));</span><br><span>              =
-   }</span><br><span>                 else</span><br><span>                =
- {</span><br><span></span><br></pre><p>To view, visit <a href=3D"http://ger=
-rit.openvpn.net/c/openvpn/+/672?usp=3Demail">change 672</a>. To unsubscribe=
-, or for help writing mail filters, visit <a href=3D"http://gerrit.openvpn.=
-net/settings">settings</a>.</p><div itemscope itemtype=3D"http://schema.org=
-/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://schema=
-.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c=
-/openvpn/+/672?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change=
-"/></div></div>
+<p> Attention is currently required from: plaisthos. </p>
+<p>Patch set 2:<span style=3D"border-radius: 3px; display: inline-block; ma=
+rgin: 0 2px; padding: 4px;background-color: #ffd4d4;">Code-Review -1</span>=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/672?usp=3Demail">Vi=
+ew Change</a></p><p>2 comments:</p><ul style=3D"list-style: none; padding: =
+0;"><li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-=
+style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p =
+style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvp=
+n/+/672?tab=3Dcomments">Patch Set #2:</a> </p><p style=3D"white-space: pre-=
+wrap; word-wrap: break-word;">I must say that I would feel better if we had=
+ a UT covering all this. Not sure how difficult that would be?</p></li></ul=
+></li><li style=3D"margin: 0; padding: 0;"><p>File src/openvpn/forward.c:</=
+p><ul style=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; paddi=
+ng: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.=
+openvpn.net/c/openvpn/+/672/comment/9a73fe6c_d79f0ee2">Patch Set #2, Line 3=
+18:</a> <code style=3D"font-family:monospace,monospace">                   =
+     format_hex(BPTR(&amp;buf), BLEN(&amp;cmdbuf), 256, &amp;gc));</code></=
+p><p style=3D"white-space: pre-wrap; word-wrap: break-word;">While it is no=
+t actually wrong to use BPTR(&amp;buf) here, I would recommend BPTR(&amp;cm=
+dbuf). It should make no difference to the output and looks less like an er=
+ror.</p></li></ul></li></ul><p>To view, visit <a href=3D"http://gerrit.open=
+vpn.net/c/openvpn/+/672?usp=3Demail">change 672</a>. To unsubscribe, or for=
+ help writing mail filters, visit <a href=3D"http://gerrit.openvpn.net/sett=
+ings">settings</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMe=
+ssage"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.org/Vie=
+wAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn=
+/+/672?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div=
+></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
@@ -207,10 +121,14 @@ net/settings">settings</a>.</p><div itemscope itemtype=3D"http://schema.org=
 1...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
-41...&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Mon, 08 Jul 2024 16:32:44=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
 
 
---uJo9IpBeT20=--
+--yrG54OHiPk0=--
 
