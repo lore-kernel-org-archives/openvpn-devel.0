@@ -1,16 +1,11 @@
-From: "flichtenheld (Code Review)" <gerrit@...515...>
-Date: Wed, 10 Jul 2024 11:35:49 +0000
-In-Reply-To: <gerrit.1718418288000.I59a90446bfe73d8856516025a58a6f62cc98ab0d@...2715...>
-References: <gerrit.1718418288000.I59a90446bfe73d8856516025a58a6f62cc98ab0d@...2715...>
-Reply-To: frank@...2641..., arne-openvpn@...1227..., selva.nair@...277...,
- openvpn-devel@lists.sourceforge.net
-Message-ID: <df3a4650bd53a72e79af654b0ff608dcaa41fa0e-EmailReviewComments-HTML@...2715...>
+Content-Type: multipart/alternative;
+ boundary="------------T0Ipsmf8qehYvPglkuyP1Gbf"
+Message-ID: <f8c04924-ac5b-4b46-86cd-cefb524e41fd@...2751...>
+Date: Wed, 10 Jul 2024 14:49:35 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="lRg/SIAR0qw="; charset=UTF-8
-Subject: [Openvpn-devel] [M] Change in openvpn[master]: Static-challenge
- concatenation option
+From: Johan Draaisma <johan@...2751...>
+Content-Language: en-US
+Subject: [Openvpn-devel]  IRC community meeting summary
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,87 +14,125 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: selvanair <selva.nair@...277...>
-Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: openvpn-devel@lists.sourceforge.net
 
---lRg/SIAR0qw=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+This is a multi-part message in MIME format.
+--------------T0Ipsmf8qehYvPglkuyP1Gbf
+Content-Type: text/plain; charset="utf-8"; format="flowed"
+Content-Transfer-Encoding: 8bit
 
-Attention is currently required from: plaisthos, selvanair.
+Meeting summary for 10 July 2024:
 
-flichtenheld has posted comments on this change. ( http://gerrit.openvpn.ne=
-t/c/openvpn/+/665?usp=3Demail )
+  * *Updated: forums topics*
+    /novaflash got access just last week, will look into the forums
+    situation and set up a new PoC server./
 
-Change subject: Static-challenge concatenation option
-......................................................................
+  * *Updated: OpenVPN community meetup 2024*
+    /Determined that venue will be atSteamWork?
+    <https://community.openvpn.net/openvpn/wiki/SteamWork>, Karlsruhe.
+    Details will be added to the wiki./
+    /Wiki coordination
+    page:​https://community.openvpn.net/openvpn/wiki/CommunityMeetup2024
+    <https://community.openvpn.net/openvpn/wiki/CommunityMeetup2024>/
+    /Where: Karlsruhe, Germany. Meeting room found, need to find out how
+    many participants roughly./
+    /When: Set to 20-22 September 2024./
+    /Shirts: novaflash spoke to matt - he will get us some design in
+    august./
 
+  * *Updated: community.openvpn.net trac wiki*
+    /novaflash tried out a few things and
+    updated:​https://community.openvpn.net/openvpn/wiki/NewWiki
+    <https://community.openvpn.net/openvpn/wiki/NewWiki>/
+    /the search continues./
+    /the security level on community.openvpn.net was lowered by one
+    notch. immediately attacks happened again./
+    /turns out trac has a reflection attack vulnerability and this was
+    mitigated. let's see how it runs now./
+    /we know we need to replace this but need to find a solution that
+    fits our needs first./
 
-Patch Set 3: Code-Review+2
+  * *Updated: release openvpn 2.6.12*
+    /This should address the slightly-too-aggressive security fix in
+    2.6.11 that could affect people sending custom messages with
+    trailing newline characters./
+    /Tentatively we will release this version next week./
 
+As always you're welcome to join at #openvpn-meeting on Libera IRC 
+network every Wednesday at 14:00 Central European Time.
 
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/665?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings
+Kind regards,
+Johan Draaisma
 
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: I59a90446bfe73d8856516025a58a6f62cc98ab0d
-Gerrit-Change-Number: 665
-Gerrit-PatchSet: 3
-Gerrit-Owner: selvanair <selva.nair@...277...>
-Gerrit-Reviewer: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: selvanair <selva.nair@...277...>
-Gerrit-Comment-Date: Wed, 10 Jul 2024 11:35:49 +0000
-Gerrit-HasComments: No
-Gerrit-Has-Labels: Yes
-Gerrit-MessageType: comment
+--------------T0Ipsmf8qehYvPglkuyP1Gbf
+Content-Type: text/html; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 
---lRg/SIAR0qw=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  </head>
+  <body>
+    <p> Meeting summary for 10 July 2024:</p>
+    <ul
+style="color: rgb(0, 0, 0); font-family: Verdana, Arial, &quot;Bitstream Vera Sans&quot;, Helvetica, sans-serif; font-size: 13px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;">
+      <li><strong>Updated: forums topics</strong><br>
+        <em>novaflash got access just last week, will look into the
+          forums situation and set up a new PoC server.</em></li>
+    </ul>
+    <ul
+style="color: rgb(0, 0, 0); font-family: Verdana, Arial, &quot;Bitstream Vera Sans&quot;, Helvetica, sans-serif; font-size: 13px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;">
+      <li><strong>Updated: OpenVPN community meetup 2024</strong><br>
+        <em>Determined that venue will be at<span> </span><a
+            class="missing wiki"
+            href="https://community.openvpn.net/openvpn/wiki/SteamWork"
+            rel="nofollow"
+style="text-decoration: none; color: rgb(153, 153, 136); border-bottom: 1px dotted rgb(187, 187, 187);">SteamWork?</a>,
+          Karlsruhe. Details will be added to the wiki.</em><br>
+        <em>Wiki coordination page:<span> </span><a class="ext-link"
+href="https://community.openvpn.net/openvpn/wiki/CommunityMeetup2024"
+style="text-decoration: none; color: rgb(187, 0, 0); border-bottom: 1px dotted rgb(187, 187, 187);"><span
+              class="icon"
+style="background: url(&quot;../extlink.gif&quot;) left center no-repeat; padding-left: 15px;">​</span>https://community.openvpn.net/openvpn/wiki/CommunityMeetup2024</a></em><br>
+        <em>Where: Karlsruhe, Germany. Meeting room found, need to find
+          out how many participants roughly.</em><br>
+        <em>When: Set to 20-22 September 2024.</em><br>
+        <em>Shirts: novaflash spoke to matt - he will get us some design
+          in august.</em></li>
+    </ul>
+    <ul
+style="color: rgb(0, 0, 0); font-family: Verdana, Arial, &quot;Bitstream Vera Sans&quot;, Helvetica, sans-serif; font-size: 13px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;">
+      <li><strong>Updated: community.openvpn.net trac wiki</strong><br>
+        <em>novaflash tried out a few things and updated:<span> </span><a
+            class="ext-link"
+            href="https://community.openvpn.net/openvpn/wiki/NewWiki"
+style="text-decoration: none; color: rgb(187, 0, 0); border-bottom: 1px dotted rgb(187, 187, 187);"><span
+              class="icon"
+style="background: url(&quot;../extlink.gif&quot;) left center no-repeat; padding-left: 15px;">​</span>https://community.openvpn.net/openvpn/wiki/NewWiki</a></em><br>
+        <em>the search continues.</em><br>
+        <em>the security level on community.openvpn.net was lowered by
+          one notch. immediately attacks happened again.</em><br>
+        <em>turns out trac has a reflection attack vulnerability and
+          this was mitigated. let's see how it runs now.</em><br>
+        <em>we know we need to replace this but need to find a solution
+          that fits our needs first.</em></li>
+    </ul>
+    <ul
+style="color: rgb(0, 0, 0); font-family: Verdana, Arial, &quot;Bitstream Vera Sans&quot;, Helvetica, sans-serif; font-size: 13px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;">
+      <li><strong>Updated: release openvpn 2.6.12</strong><br>
+        <em>This should address the slightly-too-aggressive security fix
+          in 2.6.11 that could affect people sending custom messages
+          with trailing newline characters.</em><br>
+        <em>Tentatively we will release this version next week.</em></li>
+    </ul>
+    <p>As always you're welcome to join at #openvpn-meeting on Libera
+      IRC network every Wednesday at 14:00 Central European Time.</p>
+    <p>Kind regards,<br>
+      Johan Draaisma<br>
+    </p>
+  </body>
+</html>
 
-<p> Attention is currently required from: plaisthos, selvanair. </p>
-<p>Patch set 3:<span style=3D"border-radius: 3px; display: inline-block; ma=
-rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/665?usp=3Demail">Vi=
-ew Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To vie=
-w, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/665?usp=3Demail">=
-change 665</a>. To unsubscribe, or for help writing mail filters, visit <a =
-href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope=
- itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"act=
-ion" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=
-=3D"http://gerrit.openvpn.net/c/openvpn/+/665?usp=3Demail"/><meta itemprop=
-=3D"name" content=3D"View Change"/></div></div>
-
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I59a90446bfe73d8856516025a58=
-a6f62cc98ab0d </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 665 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 3 </div>
-<div style=3D"display:none"> Gerrit-Owner: selvanair &lt;selva.nair@...1354...=
-..&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
-1...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: selvanair &lt;selva.nair@...493...=
-277...&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Wed, 10 Jul 2024 11:35:49=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: No </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
-
-
---lRg/SIAR0qw=--
+--------------T0Ipsmf8qehYvPglkuyP1Gbf--
 
