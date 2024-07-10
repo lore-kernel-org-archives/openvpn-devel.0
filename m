@@ -1,10 +1,16 @@
-From: Frank Lichtenheld <frank@...2641...>
-Date: Wed, 10 Jul 2024 18:03:06 +0200
-Message-Id: <20240710160306.190351-1-frank@...2641...>
-In-Reply-To: <gerrit.1720531952000.I72934e747d1ad68a7e3675afbeb1b63df7941186@...2715...>
-References: <gerrit.1720531952000.I72934e747d1ad68a7e3675afbeb1b63df7941186@...2715...>
+From: "flichtenheld (Code Review)" <gerrit@...515...>
+Date: Wed, 10 Jul 2024 16:14:10 +0000
+In-Reply-To: <gerrit.1709564073000.Icfc179490d6821e22d14817941fb0bad667c713f@...2715...>
+References: <gerrit.1709564073000.Icfc179490d6821e22d14817941fb0bad667c713f@...2715...>
+Reply-To: frank@...2641..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net
+Message-ID: <e703053e8f3a8bec4b1205f1d84cc0b515502a3b-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v2] configure: Switch to C11 by default
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="hO3fEJijzZg="; charset=UTF-8
+Subject: [Openvpn-devel] [XS] Change in openvpn[master]: Avoid SIGUSR1 to
+ SIGHUP when the configuration is read from stdin
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,57 +19,82 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
-Cc: Arne Schwabe <arne-openvpn@...1227...>
+To: plaisthos <arne-openvpn@...1227...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-Mostly so we can use anonymous structs without jumping through
-hoops or relying on unofficial support.
+--hO3fEJijzZg=
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Change-Id: I72934e747d1ad68a7e3675afbeb1b63df7941186
-Signed-off-by: Frank Lichtenheld <frank@...2641...>
-Acked-by: Arne Schwabe <arne-openvpn@...1227...>
----
+Attention is currently required from: plaisthos.
 
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to master.
+flichtenheld has posted comments on this change. ( http://gerrit.openvpn.ne=
+t/c/openvpn/+/533?usp=3Demail )
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/673
-This mail reflects revision 2 of this Change.
+Change subject: Avoid SIGUSR1 to SIGHUP when the configuration is read from=
+ stdin
+......................................................................
 
-Acked-by according to Gerrit (reflected above):
-Arne Schwabe <arne-openvpn@...1227...>
 
-        
-diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 096837d..ad620fa 100644
---- a/CMakeLists.txt
-+++ b/CMakeLists.txt
-@@ -119,7 +119,7 @@
- set(OPENVPN_VERSION_PATCH ${PRODUCT_VERSION_PATCH})
- set(OPENVPN_VERSION_RESOURCE ${PRODUCT_VERSION_RESOURCE})
- 
--set(CMAKE_C_STANDARD 99)
-+set(CMAKE_C_STANDARD 11)
- 
- # Set the various defines for config.h.cmake.in
- if (${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
-diff --git a/configure.ac b/configure.ac
-index 1f03f90..dcc46e2 100644
---- a/configure.ac
-+++ b/configure.ac
-@@ -421,10 +421,10 @@
- AC_CHECK_PROGS([RST2HTML], [rst2html rst2html.py])
- AM_CONDITIONAL([HAVE_PYDOCUTILS], [test "${RST2MAN}" -a "${RST2HTML}"])
- 
--# Set -std=c99 unless user already specified a -std=
-+# Set -std=c11 unless user already specified a -std=
- case "${CFLAGS}" in
-   *-std=*) ;;
--  *)       CFLAGS="${CFLAGS} -std=c99" ;;
-+  *)       CFLAGS="${CFLAGS} -std=c11" ;;
- esac
- 
- #
+Patch Set 3: Code-Review+2
+
+
+--
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/533?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings
+
+Gerrit-Project: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: Icfc179490d6821e22d14817941fb0bad667c713f
+Gerrit-Change-Number: 533
+Gerrit-PatchSet: 3
+Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
+Gerrit-Reviewer: flichtenheld <frank@...2641...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Comment-Date: Wed, 10 Jul 2024 16:14:10 +0000
+Gerrit-HasComments: No
+Gerrit-Has-Labels: Yes
+Gerrit-MessageType: comment
+
+--hO3fEJijzZg=
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<p> Attention is currently required from: plaisthos. </p>
+<p>Patch set 3:<span style=3D"border-radius: 3px; display: inline-block; ma=
+rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/533?usp=3Demail">Vi=
+ew Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To vie=
+w, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/533?usp=3Demail">=
+change 533</a>. To unsubscribe, or for help writing mail filters, visit <a =
+href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope=
+ itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"act=
+ion" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=
+=3D"http://gerrit.openvpn.net/c/openvpn/+/533?usp=3Demail"/><meta itemprop=
+=3D"name" content=3D"View Change"/></div></div>
+
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: Icfc179490d6821e22d14817941f=
+b0bad667c713f </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 533 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 3 </div>
+<div style=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@...1711...=
+27...&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
+1...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Wed, 10 Jul 2024 16:14:10=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: No </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
+
+
+--hO3fEJijzZg=--
 
