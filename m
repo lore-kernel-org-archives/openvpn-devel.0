@@ -1,14 +1,16 @@
-Date: Wed, 10 Jul 2024 21:32:39 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <Zo7h18ecLwg2lDdB@...1296...>
-References: <gerrit.1720531952000.I72934e747d1ad68a7e3675afbeb1b63df7941186@...2715...>
- <20240710160306.190351-1-frank@...2641...>
+From: "selvanair (Code Review)" <gerrit@...515...>
+Date: Wed, 10 Jul 2024 20:08:47 +0000
+In-Reply-To: <gerrit.1718418288000.I59a90446bfe73d8856516025a58a6f62cc98ab0d@...2715...>
+References: <gerrit.1718418288000.I59a90446bfe73d8856516025a58a6f62cc98ab0d@...2715...>
+Reply-To: selva.nair@...277..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net, frank@...2641...
+Message-ID: <c5260ce625f0fe3542c0a4bd0da48fe40a3c72e2-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="PeUsfMOV0eu5cIml"
+Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-In-Reply-To: <20240710160306.190351-1-frank@...2641...>
-Subject: Re: [Openvpn-devel] [PATCH v2] configure: Switch to C11 by default
+Content-Type: multipart/alternative; boundary="I6OGLXEHkDg="; charset=UTF-8
+Subject: [Openvpn-devel] [M] Change in openvpn[master]: Static-challenge
+ concatenation option
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,61 +19,99 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Frank Lichtenheld <frank@...2641...>
-Cc: openvpn-devel@lists.sourceforge.net, Arne Schwabe <arne-openvpn@...1227...>
+Cc: flichtenheld <frank@...2641...>, plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---PeUsfMOV0eu5cIml
-Content-Type: text/plain; charset="us-ascii"
+--I6OGLXEHkDg=
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
 
-Hi,
+Attention is currently required from: plaisthos.
 
-On Wed, Jul 10, 2024 at 06:03:06PM +0200, Frank Lichtenheld wrote:
-> Mostly so we can use anonymous structs without jumping through
-> hoops or relying on unofficial support.
->=20
-> Change-Id: I72934e747d1ad68a7e3675afbeb1b63df7941186
-> Signed-off-by: Frank Lichtenheld <frank@...2641...>
-> Acked-by: Arne Schwabe <arne-openvpn@...1227...>
-> ---
->=20
-> This change was reviewed on Gerrit and approved by at least one
-> developer. I request to merge it to master.
+selvanair has posted comments on this change. ( http://gerrit.openvpn.net/c=
+/openvpn/+/665?usp=3Demail )
 
-This breaks all OpenBSD 6.8 builds.  Are you intentionally ignoring
-this ("this OS is out of support, we'll discontinue this buildbot"?  If
-yes, we might want to point out that this change has fallout on older
-"build environments" - not sure what is problematic here, C compiler or
-system headers, or libc...
+Change subject: Static-challenge concatenation option
+......................................................................
 
-gert
---=20
-"If was one thing all people took for granted, was conviction that if you=20
- feed honest figures into a computer, honest figures come out. Never doubte=
-d=20
- it myself till I met a computer with a sense of humor."
-                             Robert A. Heinlein, The Moon is a Harsh Mistre=
-ss
 
-Gert Doering - Munich, Germany                             gert@...1296...
+Patch Set 3:
 
---PeUsfMOV0eu5cIml
-Content-Type: application/pgp-signature; name="signature.asc"
+(1 comment)
 
------BEGIN PGP SIGNATURE-----
+Patchset:
 
-iQGcBAEBAgAGBQJmjuHXAAoJEB2Cnv7KVigS3M4L/AyjidYBu3hU1Vr95mlCcxzq
-u8/m7aW8fxjIdBDWKeh8fiNjVwaijcqbXc+wpn2t9W4FFlxBIoDyHjAz8rBifq2R
-m8YjY1Tn335zkbTWmtAbVQOsIxzNUg8GmYYE1V0bJopvWccTMfeszDvTDEYeoOAT
-Zl668AM6mbWVTJqyejh++LdMZU9ZVyXitdB9L8XqPeJ2FHh5D+UjtMMt3sBl9s1I
-JCaFNz3Qq23WJDhXvvahRjT8KannRVThIsHwa+OANmq2rT+SJXNZXQlRTDsVW6vn
-BBnkzl2cYOfC3z4e2eut7Klt23OnKcylAEFUcsGU8efHQM1tmxAbT8+/2DAwO2fC
-tHA62cwLBIwF00k1Zp2FXS+beUW6wV7F0RZ+mV57gK+dVurJR2s85uEYjuxLzPTC
-nzFHFQmLodZoVmZeqJMVhE1rrEh74IXu7Mpve7azChzCfK//7mzMxon++8b1gutH
-T/MEM8G+6X9pYCg8ppt5xoLWdGGpTQ6blN9H78hpqQ==
-=xKD3
------END PGP SIGNATURE-----
+PS3:
+A bit confused about the gerrit workflow. The status says it's my turn now,=
+ but it seems one needs some special privilege to click "SUBMIT". Am I supp=
+osed to do a "git-send-email" the patch to the list at this point?
 
---PeUsfMOV0eu5cIml--
+
+
+--
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/665?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings
+
+Gerrit-Project: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: I59a90446bfe73d8856516025a58a6f62cc98ab0d
+Gerrit-Change-Number: 665
+Gerrit-PatchSet: 3
+Gerrit-Owner: selvanair <selva.nair@...277...>
+Gerrit-Reviewer: flichtenheld <frank@...2641...>
+Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Comment-Date: Wed, 10 Jul 2024 20:08:47 +0000
+Gerrit-HasComments: Yes
+Gerrit-Has-Labels: No
+Gerrit-MessageType: comment
+
+--I6OGLXEHkDg=
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<p> Attention is currently required from: plaisthos. </p>
+<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/665?usp=3Demail">View C=
+hange</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0;"><=
+li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-style=
+: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p style=
+=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/6=
+65?tab=3Dcomments">Patch Set #3:</a> </p><p style=3D"white-space: pre-wrap;=
+ word-wrap: break-word;">A bit confused about the gerrit workflow. The stat=
+us says it&#39;s my turn now, but it seems one needs some special privilege=
+ to click &quot;SUBMIT&quot;. Am I supposed to do a &quot;git-send-email&qu=
+ot; the patch to the list at this point?</p></li></ul></li></ul><p>To view,=
+ visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/665?usp=3Demail">ch=
+ange 665</a>. To unsubscribe, or for help writing mail filters, visit <a hr=
+ef=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope i=
+temtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"actio=
+n" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D=
+"http://gerrit.openvpn.net/c/openvpn/+/665?usp=3Demail"/><meta itemprop=3D"=
+name" content=3D"View Change"/></div></div>
+
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I59a90446bfe73d8856516025a58=
+a6f62cc98ab0d </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 665 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 3 </div>
+<div style=3D"display:none"> Gerrit-Owner: selvanair &lt;selva.nair@...1354...=
+..&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
+1...&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
+.1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Wed, 10 Jul 2024 20:08:47=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: No </div>
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
+
+
+--I6OGLXEHkDg=--
 
