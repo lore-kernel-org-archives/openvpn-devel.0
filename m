@@ -1,16 +1,12 @@
-From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Wed, 10 Jul 2024 20:20:34 +0000
-In-Reply-To: <gerrit.1718418288000.I59a90446bfe73d8856516025a58a6f62cc98ab0d@...2715...>
-References: <gerrit.1718418288000.I59a90446bfe73d8856516025a58a6f62cc98ab0d@...2715...>
-Reply-To: gert@...1296..., arne-openvpn@...1227..., selva.nair@...277...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <319e11457fee0a85029db9934c61bb6f7ae7e19f-EmailReviewComments-HTML@...2715...>
+Date: Thu, 11 Jul 2024 11:39:07 +0200
+From: Frank Lichtenheld <frank@...2641...>
+Message-ID: <Zo+oO7oJvIpCpoRe@...2685...>
+References: <gerrit.1720531952000.I72934e747d1ad68a7e3675afbeb1b63df7941186@...2715...>
+ <20240710160306.190351-1-frank@...2641...>
+ <Zo7h18ecLwg2lDdB@...1296...>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="TzTwoHkn6g8="; charset=UTF-8
-Subject: [Openvpn-devel] [M] Change in openvpn[master]: Static-challenge
- concatenation option
+In-Reply-To: <Zo7h18ecLwg2lDdB@...1296...>
+Subject: Re: [Openvpn-devel] [PATCH v2] configure: Switch to C11 by default
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,112 +15,44 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: selvanair <selva.nair@...277...>
-Cc: flichtenheld <frank@...2641...>, plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+To: Gert Doering <gert@...1296...>
+Cc: openvpn-devel@lists.sourceforge.net, Arne Schwabe <arne-openvpn@...1227...>
 
---TzTwoHkn6g8=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+On Wed, Jul 10, 2024 at 09:32:39PM +0200, Gert Doering wrote:
+> Hi,
+> 
+> On Wed, Jul 10, 2024 at 06:03:06PM +0200, Frank Lichtenheld wrote:
+> > Mostly so we can use anonymous structs without jumping through
+> > hoops or relying on unofficial support.
+> > 
+> > Change-Id: I72934e747d1ad68a7e3675afbeb1b63df7941186
+> > Signed-off-by: Frank Lichtenheld <frank@...2641...>
+> > Acked-by: Arne Schwabe <arne-openvpn@...1227...>
+> > ---
+> > 
+> > This change was reviewed on Gerrit and approved by at least one
+> > developer. I request to merge it to master.
+> 
+> This breaks all OpenBSD 6.8 builds.  Are you intentionally ignoring
+> this ("this OS is out of support, we'll discontinue this buildbot"?  If
+> yes, we might want to point out that this change has fallout on older
+> "build environments" - not sure what is problematic here, C compiler or
+> system headers, or libc...
 
-Attention is currently required from: plaisthos, selvanair.
+Yes, ignoring that intentionally. I plan to disable OpenBSD 6.8 builds for master
+instead.
 
-cron2 has posted comments on this change. ( http://gerrit.openvpn.net/c/ope=
-nvpn/+/665?usp=3Demail )
+Basically the intent of this patch is to approve
+https://gerrit.openvpn.net/c/openvpn/+/588 (Remove check for anonymous unions
+from configure and cmake config) but improve it by officially switching to C11
+(which implies support for anonymous unions).
 
-Change subject: Static-challenge concatenation option
-......................................................................
+We can certainly extend the messaging.
 
-
-Patch Set 3:
-
-(1 comment)
-
-Patchset:
-
-PS3:
-You *can* send it to the mailing list, if you want (using the `dev-tools/ge=
-rrit-send-mail.py` script to get the threading halfway right, and add the a=
-cked-by: headers according to the +2 in gerrit).
-
-Usually Frank or I do this on behalf of the original submitter (because it'=
-s easy to do when the +2 comes by).  I'm travelling so things take a bit lo=
-nger.
-
-
-
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/665?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings
-
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: I59a90446bfe73d8856516025a58a6f62cc98ab0d
-Gerrit-Change-Number: 665
-Gerrit-PatchSet: 3
-Gerrit-Owner: selvanair <selva.nair@...277...>
-Gerrit-Reviewer: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-CC: cron2 <gert@...1296...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: selvanair <selva.nair@...277...>
-Gerrit-Comment-Date: Wed, 10 Jul 2024 20:20:34 +0000
-Gerrit-HasComments: Yes
-Gerrit-Has-Labels: No
-Gerrit-MessageType: comment
-
---TzTwoHkn6g8=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<p> Attention is currently required from: plaisthos, selvanair. </p>
-<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/665?usp=3Demail">View C=
-hange</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0;"><=
-li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-style=
-: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p style=
-=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/6=
-65?tab=3Dcomments">Patch Set #3:</a> </p><p style=3D"white-space: pre-wrap;=
- word-wrap: break-word;">You *can* send it to the mailing list, if you want=
- (using the `dev-tools/gerrit-send-mail.py` script to get the threading hal=
-fway right, and add the acked-by: headers according to the +2 in gerrit).</=
-p><p style=3D"white-space: pre-wrap; word-wrap: break-word;">Usually Frank =
-or I do this on behalf of the original submitter (because it&#39;s easy to =
-do when the +2 comes by).  I&#39;m travelling so things take a bit longer.<=
-/p></li></ul></li></ul><p>To view, visit <a href=3D"http://gerrit.openvpn.n=
-et/c/openvpn/+/665?usp=3Demail">change 665</a>. To unsubscribe, or for help=
- writing mail filters, visit <a href=3D"http://gerrit.openvpn.net/settings"=
->settings</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage=
-"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewActi=
-on"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/66=
-5?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div></di=
-v>
-
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I59a90446bfe73d8856516025a58=
-a6f62cc98ab0d </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 665 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 3 </div>
-<div style=3D"display:none"> Gerrit-Owner: selvanair &lt;selva.nair@...1354...=
-..&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
-1...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: cron2 &lt;gert@...1296...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: selvanair &lt;selva.nair@...493...=
-277...&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Wed, 10 Jul 2024 20:20:34=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: No </div>
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
-
-
---TzTwoHkn6g8=--
+Regards,
+-- 
+  Frank Lichtenheld
 
