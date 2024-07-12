@@ -1,11 +1,16 @@
-From: Frank Lichtenheld <frank@...2641...>
-Date: Thu, 11 Jul 2024 13:30:22 +0200
-Message-Id: <20240711113022.52076-1-frank@...2641...>
-In-Reply-To: <Zo6XDNcBacVz00PU@...2685...>
-References: <Zo6XDNcBacVz00PU@...2685...>
+From: "flichtenheld (Code Review)" <gerrit@...515...>
+Date: Fri, 12 Jul 2024 12:15:34 +0000
+In-Reply-To: <gerrit.1706186293000.I01e258e97351b5aa4b9e561f5b35ddc2318569e2@...2715...>
+References: <gerrit.1706186293000.I01e258e97351b5aa4b9e561f5b35ddc2318569e2@...2715...>
+Reply-To: frank@...2641..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net
+Message-ID: <30d68c179f8f5f8e7473ae378698b666f9f9effc-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH release/2.5] Allow trailing \r and \n in
- control channel message
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="SMrrnhyHRb4="; charset=UTF-8
+Subject: [Openvpn-devel] [L] Change in openvpn[master]: Implement support
+ for larger packet counter sizes
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,124 +19,81 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: plaisthos <arne-openvpn@...1227...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-From: Arne Schwabe <arne@...1227...>
+--SMrrnhyHRb4=
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Writing a reason from a script will easily end up adding extra \r\n characters
-at the end of the reason. Our current code pushes this to the peer. So be more
-liberal in accepting these message.
+Attention is currently required from: plaisthos.
 
-Closes openvpn/openvpn#568
+flichtenheld has posted comments on this change. ( http://gerrit.openvpn.ne=
+t/c/openvpn/+/507?usp=3Demail )
 
-This is the backport of the fix to release/2.5.
+Change subject: Implement support for larger packet counter sizes
+......................................................................
 
-Change-Id: I47c992b6b73b1475cbff8a28f720cf50dc1fbe3e
-Signed-off-by: Arne Schwabe <arne@...1227...>
-Signed-off-by: Frank Lichtenheld <frank@...2641...>
----
- src/openvpn/forward.c | 73 +++++++++++++++++++++++++------------------
- 1 file changed, 43 insertions(+), 30 deletions(-)
 
-diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c
-index 404b71c8..e8b981b3 100644
---- a/src/openvpn/forward.c
-+++ b/src/openvpn/forward.c
-@@ -221,6 +221,46 @@ parse_incoming_control_channel_command(struct context *c, struct buffer *buf)
-     }
- }
- 
-+static struct buffer
-+extract_command_buffer(struct buffer *buf, struct gc_arena *gc)
-+{
-+    /* commands on the control channel are seperated by 0x00 bytes.
-+     * cmdlen does not include the 0 byte of the string */
-+    int cmdlen = (int)strnlen(BSTR(buf), BLEN(buf));
-+
-+    if (cmdlen >= BLEN(buf))
-+    {
-+        buf_advance(buf, cmdlen);
-+        /* Return empty buffer */
-+        struct buffer empty = { 0 };
-+        return empty;
-+    }
-+
-+    /* include the NUL byte and ensure NUL termination */
-+    cmdlen +=  1;
-+
-+    /* Construct a buffer that only holds the current command and
-+     * its closing NUL byte */
-+    struct buffer cmdbuf = alloc_buf_gc(cmdlen, gc);
-+    buf_write(&cmdbuf, BPTR(buf), cmdlen);
-+
-+    /* Remove \r and \n at the end of the buffer to avoid
-+     * problems with scripts and other that add extra \r and \n */
-+    buf_chomp(&cmdbuf);
-+
-+    /* check we have only printable characters or null byte in the
-+     * command string and no newlines */
-+    if (!string_check_buf(&cmdbuf, CC_PRINT | CC_NULL, CC_CRLF))
-+    {
-+        msg(D_PUSH_ERRORS, "WARNING: Received control with invalid characters: %s",
-+            format_hex(BPTR(&cmdbuf), BLEN(&cmdbuf), 256, gc));
-+        cmdbuf.len = 0;
-+    }
-+
-+    buf_advance(buf, cmdlen);
-+    return cmdbuf;
-+}
-+
- /*
-  * Handle incoming configuration
-  * messages on the control channel.
-@@ -236,41 +276,14 @@ check_incoming_control_channel(struct context *c)
-     struct buffer buf = alloc_buf_gc(len, &gc);
-     if (tls_rec_payload(c->c2.tls_multi, &buf))
-     {
--
-         while (BLEN(&buf) > 1)
-         {
--            /* commands on the control channel are seperated by 0x00 bytes.
--             * cmdlen does not include the 0 byte of the string */
--            int cmdlen = (int)strnlen(BSTR(&buf), BLEN(&buf));
--
--            if (cmdlen < BLEN(&buf))
--            {
--                /* include the NUL byte and ensure NUL termination */
--                int cmdlen = (int)strlen(BSTR(&buf)) + 1;
--
--                /* Construct a buffer that only holds the current command and
--                 * its closing NUL byte */
--                struct buffer cmdbuf = alloc_buf_gc(cmdlen, &gc);
--                buf_write(&cmdbuf, BPTR(&buf), cmdlen);
-+            struct buffer cmdbuf = extract_command_buffer(&buf, &gc);
- 
--                /* check we have only printable characters or null byte in the
--                 * command string and no newlines */
--                if (!string_check_buf(&buf, CC_PRINT | CC_NULL, CC_CRLF))
--                {
--                    msg(D_PUSH_ERRORS, "WARNING: Received control with invalid characters: %s",
--                        format_hex(BPTR(&buf), BLEN(&buf), 256, &gc));
--                }
--                else
--                {
--                    parse_incoming_control_channel_command(c, &cmdbuf);
--                }
--            }
--            else
-+            if (cmdbuf.len > 0)
-             {
--                msg(D_PUSH_ERRORS, "WARNING: Ignoring control channel "
--                    "message command without NUL termination");
-+                parse_incoming_control_channel_command(c, &cmdbuf);
-             }
--            buf_advance(&buf, cmdlen);
-         }
-     }
-     else
--- 
-2.34.1
+Patch Set 6: -Code-Review
 
+
+--
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/507?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings
+
+Gerrit-Project: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: I01e258e97351b5aa4b9e561f5b35ddc2318569e2
+Gerrit-Change-Number: 507
+Gerrit-PatchSet: 6
+Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
+Gerrit-Reviewer: flichtenheld <frank@...2641...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Comment-Date: Fri, 12 Jul 2024 12:15:34 +0000
+Gerrit-HasComments: No
+Gerrit-Has-Labels: Yes
+Gerrit-MessageType: comment
+
+--SMrrnhyHRb4=
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<p> Attention is currently required from: plaisthos. </p>
+<p>Patch set 6:<span style=3D"border-radius: 3px; display: inline-block; ma=
+rgin: 0 2px; padding: 4px;background-color: #ddd;">-Code-Review</span></p><=
+p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/507?usp=3Demail">View Ch=
+ange</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To view, vi=
+sit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/507?usp=3Demail">chang=
+e 507</a>. To unsubscribe, or for help writing mail filters, visit <a href=
+=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope ite=
+mtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"action"=
+ itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"h=
+ttp://gerrit.openvpn.net/c/openvpn/+/507?usp=3Demail"/><meta itemprop=3D"na=
+me" content=3D"View Change"/></div></div>
+
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I01e258e97351b5aa4b9e561f5b3=
+5ddc2318569e2 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 507 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 6 </div>
+<div style=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@...1711...=
+27...&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
+1...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Fri, 12 Jul 2024 12:15:34=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: No </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
+
+
+--SMrrnhyHRb4=--
 
