@@ -1,14 +1,14 @@
 From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Wed, 17 Jul 2024 20:01:31 +0000
+Date: Wed, 17 Jul 2024 20:01:33 +0000
 In-Reply-To: <gerrit.1720433364000.I47c992b6b73b1475cbff8a28f720cf50dc1fbe3e@...2715...>
 References: <gerrit.1720433364000.I47c992b6b73b1475cbff8a28f720cf50dc1fbe3e@...2715...>
 Reply-To: gert@...1296..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <1a25a3db95753020fd3938aad373cd12f18a4a56-EmailReplacePatchSet-HTML@...2715...>
+Message-ID: <1a25a3db95753020fd3938aad373cd12f18a4a56-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="Q8DqAW7QhZk="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="MfA62nVNTck="; charset=UTF-8
 Subject: [Openvpn-devel] [M] Change in openvpn[master]: Allow trailing \r
  and \n in control channel message
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -19,19 +19,15 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: plaisthos <arne-openvpn@...1227...>
+Cc: flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---Q8DqAW7QhZk=
+--MfA62nVNTck=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-cron2 has uploaded a new patch set (#5) to the change originally created by=
- plaisthos. ( http://gerrit.openvpn.net/c/openvpn/+/672?usp=3Demail )
-
-The following approvals got outdated and were removed:
-Code-Review+2 by flichtenheld
-
+cron2 has submitted this change. ( http://gerrit.openvpn.net/c/openvpn/+/67=
+2?usp=3Demail )
 
 Change subject: Allow trailing \r and \n in control channel message
 ......................................................................
@@ -61,7 +57,7 @@ M tests/unit_tests/openvpn/test_pkt.c
 4 files changed, 92 insertions(+), 30 deletions(-)
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/72/672/5
+
 
 diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c
 index 71b7167..40b7cc4 100644
@@ -259,58 +255,55 @@ Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
 Gerrit-Reviewer: cron2 <gert@...1296...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-MessageType: newpatchset
+Gerrit-MessageType: merged
 
---Q8DqAW7QhZk=
+--MfA62nVNTck=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p>cron2 <strong>uploaded patch set #5</strong> to the change originally cr=
-eated by plaisthos.</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/=
-672?usp=3Demail">View Change</a></p><p>The following approvals got outdated=
- and were removed:
-Code-Review+2 by flichtenheld</p><pre style=3D"font-family: monospace,monos=
-pace; white-space: pre-wrap;">Allow trailing \r and \n in control channel m=
-essage<br><br>Writing a reason from a script will easily end up adding extr=
-a \r\n characters<br>at the end of the reason. Our current code pushes this=
- to the peer. So be more<br>liberal in accepting these message.<br><br>Gith=
-ub: closes OpenVPN/openvpn#568<br><br>Change-Id: I47c992b6b73b1475cbff8a28f=
-720cf50dc1fbe3e<br>Signed-off-by: Arne Schwabe &lt;arne@...1227...&gt;<br>A=
-cked-by: Frank Lichtenheld &lt;frank@...2641...&gt;<br>Message-Id: &lt;2024=
-0710140623.172829-1-frank@...2641...&gt;<br>URL: https://www.mail-archive.c=
-om/openvpn-devel@lists.sourceforge.net/msg28910.html<br>Signed-off-by: Gert=
- Doering &lt;gert@...1296...&gt;<br>---<br>M src/openvpn/forward.c<br>M src=
-/openvpn/ssl_pkt.c<br>M src/openvpn/ssl_pkt.h<br>M tests/unit_tests/openvpn=
-/test_pkt.c<br>4 files changed, 92 insertions(+), 30 deletions(-)<br><br></=
-pre><pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"=
->git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/72/672/5</pre=
-><pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><s=
-pan>diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c</span><br><s=
-pan>index 71b7167..40b7cc4 100644</span><br><span>--- a/src/openvpn/forward=
-.c</span><br><span>+++ b/src/openvpn/forward.c</span><br><span>@@ -290,41 +=
-290,14 @@</span><br><span>     struct buffer buf =3D alloc_buf_gc(len, &amp=
-;gc);</span><br><span>     if (tls_rec_payload(c-&gt;c2.tls_multi, &amp;buf=
-))</span><br><span>     {</span><br><span style=3D"color: hsl(0, 100%, 40%)=
-;">-</span><br><span>         while (BLEN(&amp;buf) &gt; 1)</span><br><span=
->         {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-          =
-  /* commands on the control channel are seperated by 0x00 bytes.</span><br=
-><span style=3D"color: hsl(0, 100%, 40%);">-             * cmdlen does not =
-include the 0 byte of the string */</span><br><span style=3D"color: hsl(0, =
-100%, 40%);">-            int cmdlen =3D (int)strnlen(BSTR(&amp;buf), BLEN(=
-&amp;buf));</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        =
-    struct buffer cmdbuf =3D extract_command_buffer(&amp;buf, &amp;gc);</sp=
-an><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-       =
-     if (cmdlen &lt; BLEN(&amp;buf))</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+            if (cmdbuf.len &gt; 0)</span><br><span>       =
-      {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-              =
-  /* include the NUL byte and ensure NUL termination */</span><br><span sty=
-le=3D"color: hsl(0, 100%, 40%);">-                int cmdlen =3D (int)strle=
-n(BSTR(&amp;buf)) + 1;</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
--</span><br><span style=3D"color: hsl(0, 100%, 40%);">-                /* C=
-onstruct a buffer that only holds the current command and</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-                 * its closing NUL byte=
- */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-                st=
-ruct buffer cmdbuf =3D alloc_buf_gc(cmdlen, &amp;gc);</span><br><span style=
+<p>cron2 <strong>submitted</strong> this change.</p><p><a href=3D"http://ge=
+rrit.openvpn.net/c/openvpn/+/672?usp=3Demail">View Change</a></p><div style=
+=3D"white-space:pre-wrap"></div><pre style=3D"font-family: monospace,monosp=
+ace; white-space: pre-wrap;">Allow trailing \r and \n in control channel me=
+ssage<br><br>Writing a reason from a script will easily end up adding extra=
+ \r\n characters<br>at the end of the reason. Our current code pushes this =
+to the peer. So be more<br>liberal in accepting these message.<br><br>Githu=
+b: closes OpenVPN/openvpn#568<br><br>Change-Id: I47c992b6b73b1475cbff8a28f7=
+20cf50dc1fbe3e<br>Signed-off-by: Arne Schwabe &lt;arne@...1227...&gt;<br>Ac=
+ked-by: Frank Lichtenheld &lt;frank@...2641...&gt;<br>Message-Id: &lt;20240=
+710140623.172829-1-frank@...2641...&gt;<br>URL: https://www.mail-archive.co=
+m/openvpn-devel@lists.sourceforge.net/msg28910.html<br>Signed-off-by: Gert =
+Doering &lt;gert@...1296...&gt;<br>---<br>M src/openvpn/forward.c<br>M src/=
+openvpn/ssl_pkt.c<br>M src/openvpn/ssl_pkt.h<br>M tests/unit_tests/openvpn/=
+test_pkt.c<br>4 files changed, 92 insertions(+), 30 deletions(-)<br><br></p=
+re>
+<pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><sp=
+an>diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c</span><br><sp=
+an>index 71b7167..40b7cc4 100644</span><br><span>--- a/src/openvpn/forward.=
+c</span><br><span>+++ b/src/openvpn/forward.c</span><br><span>@@ -290,41 +2=
+90,14 @@</span><br><span>     struct buffer buf =3D alloc_buf_gc(len, &amp;=
+gc);</span><br><span>     if (tls_rec_payload(c-&gt;c2.tls_multi, &amp;buf)=
+)</span><br><span>     {</span><br><span style=3D"color: hsl(0, 100%, 40%);=
+">-</span><br><span>         while (BLEN(&amp;buf) &gt; 1)</span><br><span>=
+         {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-           =
+ /* commands on the control channel are seperated by 0x00 bytes.</span><br>=
+<span style=3D"color: hsl(0, 100%, 40%);">-             * cmdlen does not i=
+nclude the 0 byte of the string */</span><br><span style=3D"color: hsl(0, 1=
+00%, 40%);">-            int cmdlen =3D (int)strnlen(BSTR(&amp;buf), BLEN(&=
+amp;buf));</span><br><span style=3D"color: hsl(120, 100%, 40%);">+         =
+   struct buffer cmdbuf =3D extract_command_buffer(&amp;buf, &amp;gc);</spa=
+n><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-        =
+    if (cmdlen &lt; BLEN(&amp;buf))</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+            if (cmdbuf.len &gt; 0)</span><br><span>        =
+     {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-               =
+ /* include the NUL byte and ensure NUL termination */</span><br><span styl=
+e=3D"color: hsl(0, 100%, 40%);">-                int cmdlen =3D (int)strlen=
+(BSTR(&amp;buf)) + 1;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">-                /* Co=
+nstruct a buffer that only holds the current command and</span><br><span st=
+yle=3D"color: hsl(0, 100%, 40%);">-                 * its closing NUL byte =
+*/</span><br><span style=3D"color: hsl(0, 100%, 40%);">-                str=
+uct buffer cmdbuf =3D alloc_buf_gc(cmdlen, &amp;gc);</span><br><span style=
 =3D"color: hsl(0, 100%, 40%);">-                buf_write(&amp;cmdbuf, BPTR=
 (&amp;buf), cmdlen);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-<=
 /span><br><span style=3D"color: hsl(0, 100%, 40%);">-                /* che=
@@ -494,8 +487,8 @@ eta itemprop=3D"name" content=3D"View Change"/></div></div>
 1...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
+<div style=3D"display:none"> Gerrit-MessageType: merged </div>
 
 
---Q8DqAW7QhZk=--
+--MfA62nVNTck=--
 
