@@ -1,11 +1,10 @@
-Content-Type: multipart/alternative;
- boundary="------------kNL7myhwfHLtfyOBt2pcs5UL"
-Message-ID: <85f729d0-3395-43c4-80ea-362129906d7c@...2751...>
-Date: Wed, 17 Jul 2024 14:25:21 +0200
-MIME-Version: 1.0
-From: Johan Draaisma <johan@...2751...>
-Content-Language: en-US
-Subject: [Openvpn-devel]  IRC community meeting summary
+Date: Wed, 17 Jul 2024 22:01:04 +0200 (CEST)
+Message-Id: <202407172001.46HK14PV089240@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <20240711113022.52076-1-frank@...2641...>
+References: <20240711113022.52076-1-frank@...2641...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Allow trailing \r and \n in
+ control channel message
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,83 +13,36 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: openvpn-devel@lists.sourceforge.net
-
-This is a multi-part message in MIME format.
---------------kNL7myhwfHLtfyOBt2pcs5UL
-Content-Type: text/plain; charset="utf-8"; format="flowed"
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
+To: Arne Schwabe <arne@...1227...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-Meeting summary for 17 July 2024:
+Acked-by: Gert Doering <gert@...1296...>
 
-  * *Updated: release openvpn 2.6.12*
-    /This should address the slightly-too-aggressive security fix in
-    2.6.11 that could affect people sending custom messages with
-    trailing newline characters./
-    /Should be a release tomorrow on 18 July./
+Thanks for the backport.  Verified that it's the same change (without the
+unit test, and having extract_command_buffer() in forward.c), and that
+it gets the job done :-)
 
-  * *Updated: OpenVPN community meetup 2024*
-    /Hotel recommendation added; Hotel Santo in Karlsruhe./
-    /Wiki coordination
-    page:​https://community.openvpn.net/openvpn/wiki/CommunityMeetup2024
-    <https://community.openvpn.net/openvpn/wiki/CommunityMeetup2024>/
-    /Where: Karlsruhe, Germany.SteamWork?
-    <https://community.openvpn.net/openvpn/wiki/SteamWork>, Karlsruhe./
-    /When: Set to 20-22 September 2024./
-    /Shirts: novaflash spoke to matt - he will get us some design in
-    august./
+Your patch has been applied to the release/2.5 branch.
 
-As always you're welcome to join at #openvpn-meeting on Libera IRC 
-network every Wednesday at 14:00 Central European Time.
+commit dddb87f126a6e87e61de830a9efe0bc257a71e2b (release/2.5)
+Author: Arne Schwabe
+Date:   Thu Jul 11 13:30:22 2024 +0200
 
-Kind regards,
-Johan Draaisma
+     Allow trailing \r and \n in control channel message
 
---------------kNL7myhwfHLtfyOBt2pcs5UL
-Content-Type: text/html; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+     Signed-off-by: Arne Schwabe <arne@...1227...>
+     Signed-off-by: Frank Lichtenheld <frank@...2641...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <20240711113022.52076-1-frank@...2641...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg28923.html
+     Signed-off-by: Gert Doering <gert@...1296...>
 
-<!DOCTYPE html>
-<html>
-  <head>
-    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
-  </head>
-  <body>
-    <p> Meeting summary for 17 July 2024:</p>
-    <ul
-style="color: rgb(0, 0, 0); font-family: Verdana, Arial, &quot;Bitstream Vera Sans&quot;, Helvetica, sans-serif; font-size: 13px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;">
-      <li><strong>Updated: release openvpn 2.6.12</strong><br>
-        <em>This should address the slightly-too-aggressive security fix
-          in 2.6.11 that could affect people sending custom messages
-          with trailing newline characters.</em><br>
-        <em>Should be a release tomorrow on 18 July.</em></li>
-    </ul>
-    <ul
-style="color: rgb(0, 0, 0); font-family: Verdana, Arial, &quot;Bitstream Vera Sans&quot;, Helvetica, sans-serif; font-size: 13px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;">
-      <li><strong>Updated: OpenVPN community meetup 2024</strong><br>
-        <em>Hotel recommendation added; Hotel Santo in Karlsruhe.</em><br>
-        <em>Wiki coordination page:<span> </span><a class="ext-link"
-href="https://community.openvpn.net/openvpn/wiki/CommunityMeetup2024"
-style="text-decoration: none; color: rgb(187, 0, 0); border-bottom: 1px dotted rgb(187, 187, 187);"><span
-              class="icon"
-style="background: url(&quot;../extlink.gif&quot;) left center no-repeat; padding-left: 15px;">​</span>https://community.openvpn.net/openvpn/wiki/CommunityMeetup2024</a></em><br>
-        <em>Where: Karlsruhe, Germany.<span> </span><a
-            class="missing wiki"
-            href="https://community.openvpn.net/openvpn/wiki/SteamWork"
-            rel="nofollow"
-style="text-decoration: none; color: rgb(153, 153, 136); border-bottom: 1px dotted rgb(187, 187, 187);">SteamWork?</a>,
-          Karlsruhe.</em><br>
-        <em>When: Set to 20-22 September 2024.</em><br>
-        <em>Shirts: novaflash spoke to matt - he will get us some design
-          in august.</em></li>
-    </ul>
-    <p>As always you're welcome to join at #openvpn-meeting on Libera
-      IRC network every Wednesday at 14:00 Central European Time.</p>
-    <p>Kind regards,<br>
-      Johan Draaisma<br>
-    </p>
-  </body>
-</html>
 
---------------kNL7myhwfHLtfyOBt2pcs5UL--
+--
+kind regards,
+
+Gert Doering
+
 
