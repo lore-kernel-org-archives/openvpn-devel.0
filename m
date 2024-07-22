@@ -1,10 +1,16 @@
-Date: Mon, 22 Jul 2024 19:45:41 +0200 (CEST)
-Message-Id: <202407221745.46MHjfsX023421@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <20240719131141.75324-1-frank@...2641...>
-References: <20240719131141.75324-1-frank@...2641...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Add Ubuntu 24.04 runner to
- Github Actions
+From: "cron2 (Code Review)" <gerrit@...515...>
+Date: Mon, 22 Jul 2024 17:46:07 +0000
+In-Reply-To: <gerrit.1721306838000.I44b9003143fdad90bfff7b2c86d0bb503f9157de@...2715...>
+References: <gerrit.1721306838000.I44b9003143fdad90bfff7b2c86d0bb503f9157de@...2715...>
+Reply-To: gert@...1296..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net, frank@...2641...
+Message-ID: <8b3983f6f0dde88c4868be4b7c4538f9ddaf228e-EmailReplacePatchSet-HTML@...2715...>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="YginUjrcs9k="; charset=UTF-8
+Subject: [Openvpn-devel] [S] Change in openvpn[master]: Add Ubuntu 24.04
+ runner to Github Actions
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,42 +19,161 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: Arne Schwabe <arne@...1227...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-Your patch has been applied to the master branch.
+--YginUjrcs9k=
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-I tried to apply it to release/2.6 as well, but the mbedtls builds 
-fail (on 24.04) with error messages like this:
+cron2 has uploaded a new patch set (#2) to the change originally created by=
+ plaisthos. ( http://gerrit.openvpn.net/c/openvpn/+/676?usp=3Demail )
 
-crypto_backend.h:352:6: note: previous declaration of `cipher_ctx_init' with type `void(cipher_ctx_t *, const uint8_t *, const char *, int)' {aka `void(mbedtls_cipher_context_t *, const unsigned char *, const char *, int)'}
+The following approvals got outdated and were removed:
+Code-Review+2 by flichtenheld
 
-so it seems we need some mbedtls compat backport first, or stop building
-2.6 + 24.04 + mbedtls.
 
-Details: https://github.com/cron2/openvpn/actions/runs/10041826490/job/27750800767
+Change subject: Add Ubuntu 24.04 runner to Github Actions
+......................................................................
 
-(looking more closely, 24.04 + ossl 3 fails as well, with
-"configure: error: PKCS11 enabled but libpkcs11-helper is missing")
+Add Ubuntu 24.04 runner to Github Actions
 
-commit 856065b2eb37286c389550593472bf180bc5be9d (master)
-Author: Arne Schwabe
-Date:   Fri Jul 19 15:11:41 2024 +0200
+Change-Id: I44b9003143fdad90bfff7b2c86d0bb503f9157de
+Signed-off-by: Arne Schwabe <arne@...1227...>
+Acked-by: Frank Lichtenheld <frank@...2641...>
+Message-Id: <20240719131141.75324-1-frank@...2641...>
+URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg28=
+942.html
+Signed-off-by: Gert Doering <gert@...1296...>
+---
+M .github/workflows/build.yaml
+1 file changed, 8 insertions(+), 2 deletions(-)
 
-     Add Ubuntu 24.04 runner to Github Actions
 
-     Signed-off-by: Arne Schwabe <arne@...1227...>
-     Acked-by: Frank Lichtenheld <frank@...2641...>
-     Message-Id: <20240719131141.75324-1-frank@...2641...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg28942.html
-     Signed-off-by: Gert Doering <gert@...1296...>
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/76/676/2
 
+diff --git a/.github/workflows/build.yaml b/.github/workflows/build.yaml
+index d7c3ecd..6e361d5 100644
+--- a/.github/workflows/build.yaml
++++ b/.github/workflows/build.yaml
+@@ -106,7 +106,7 @@
+     strategy:
+       fail-fast: false
+       matrix:
+-        os: [ubuntu-20.04, ubuntu-22.04]
++        os: [ubuntu-20.04, ubuntu-22.04, ubuntu-24.04]
+         sslpkg: [libmbedtls-dev]
+         ssllib: [mbedtls]
+         libname: [mbed TLS]
+@@ -122,6 +122,12 @@
+             ssllib: openssl
+             pkcs11pkg: "libpkcs11-helper1-dev softhsm2 gnutls-bin"
+             extraconf: --enable-pkcs11
++          - os: ubuntu-24.04
++            sslpkg: "libssl-dev"
++            libname: OpenSSL 3.0.13
++            ssllib: openssl
++            pkcs11pkg: "libpkcs11-helper1-dev softhsm2 gnutls-bin"
++            extraconf: --enable-pkcs11
+           - os: ubuntu-20.04
+             sslpkg: "libssl-dev"
+             libname: OpenSSL 1.1.1
+@@ -173,7 +179,7 @@
+     strategy:
+       fail-fast: false
+       matrix:
+-        os: [ubuntu-20.04]
++        os: [ubuntu-20.04, ubuntu-22.04, ubuntu-24.04]
+         ssllib: [mbedtls, openssl]
+
+     name: "clang-asan - ${{matrix.os}} - ${{matrix.ssllib}}"
 
 --
-kind regards,
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/676?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings
 
-Gert Doering
+Gerrit-Project: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: I44b9003143fdad90bfff7b2c86d0bb503f9157de
+Gerrit-Change-Number: 676
+Gerrit-PatchSet: 2
+Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
+Gerrit-Reviewer: flichtenheld <frank@...2641...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-MessageType: newpatchset
 
+--YginUjrcs9k=
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<p>cron2 <strong>uploaded patch set #2</strong> to the change originally cr=
+eated by plaisthos.</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/=
+676?usp=3Demail">View Change</a></p><p>The following approvals got outdated=
+ and were removed:
+Code-Review+2 by flichtenheld</p><pre style=3D"font-family: monospace,monos=
+pace; white-space: pre-wrap;">Add Ubuntu 24.04 runner to Github Actions<br>=
+<br>Change-Id: I44b9003143fdad90bfff7b2c86d0bb503f9157de<br>Signed-off-by: =
+Arne Schwabe &lt;arne@...1227...&gt;<br>Acked-by: Frank Lichtenheld &lt;fra=
+nk@...2641...&gt;<br>Message-Id: &lt;20240719131141.75324-1-frank@...2723...=
+.&gt;<br>URL: https://www.mail-archive.com/openvpn-devel@...290...=
+net/msg28942.html<br>Signed-off-by: Gert Doering &lt;gert@...1296...&gt;<br=
+>---<br>M .github/workflows/build.yaml<br>1 file changed, 8 insertions(+), =
+2 deletions(-)<br><br></pre><pre style=3D"font-family: monospace,monospace;=
+ white-space: pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/openvpn re=
+fs/changes/76/676/2</pre><pre style=3D"font-family: monospace,monospace; wh=
+ite-space: pre-wrap;"><span>diff --git a/.github/workflows/build.yaml b/.gi=
+thub/workflows/build.yaml</span><br><span>index d7c3ecd..6e361d5 100644</sp=
+an><br><span>--- a/.github/workflows/build.yaml</span><br><span>+++ b/.gith=
+ub/workflows/build.yaml</span><br><span>@@ -106,7 +106,7 @@</span><br><span=
+>     strategy:</span><br><span>       fail-fast: false</span><br><span>   =
+    matrix:</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        os=
+: [ubuntu-20.04, ubuntu-22.04]</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+        os: [ubuntu-20.04, ubuntu-22.04, ubuntu-24.04]</span><br=
+><span>         sslpkg: [libmbedtls-dev]</span><br><span>         ssllib: [=
+mbedtls]</span><br><span>         libname: [mbed TLS]</span><br><span>@@ -1=
+22,6 +122,12 @@</span><br><span>             ssllib: openssl</span><br><spa=
+n>             pkcs11pkg: &quot;libpkcs11-helper1-dev softhsm2 gnutls-bin&q=
+uot;</span><br><span>             extraconf: --enable-pkcs11</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+          - os: ubuntu-24.04</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+            sslpkg: &quot=
+;libssl-dev&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+          libname: OpenSSL 3.0.13</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+            ssllib: openssl</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+            pkcs11pkg: &quot;libpkcs11-helper1-dev so=
+fthsm2 gnutls-bin&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+            extraconf: --enable-pkcs11</span><br><span>           - os:=
+ ubuntu-20.04</span><br><span>             sslpkg: &quot;libssl-dev&quot;</=
+span><br><span>             libname: OpenSSL 1.1.1</span><br><span>@@ -173,=
+7 +179,7 @@</span><br><span>     strategy:</span><br><span>       fail-fast=
+: false</span><br><span>       matrix:</span><br><span style=3D"color: hsl(=
+0, 100%, 40%);">-        os: [ubuntu-20.04]</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+        os: [ubuntu-20.04, ubuntu-22.04, ubuntu-24.=
+04]</span><br><span>         ssllib: [mbedtls, openssl]</span><br><span> </=
+span><br><span>     name: &quot;clang-asan - ${{matrix.os}} - ${{matrix.ssl=
+lib}}&quot;</span><br><span></span><br></pre><p>To view, visit <a href=3D"h=
+ttp://gerrit.openvpn.net/c/openvpn/+/676?usp=3Demail">change 676</a>. To un=
+subscribe, or for help writing mail filters, visit <a href=3D"http://gerrit=
+.openvpn.net/settings">settings</a>.</p><div itemscope itemtype=3D"http://s=
+chema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http=
+://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.open=
+vpn.net/c/openvpn/+/676?usp=3Demail"/><meta itemprop=3D"name" content=3D"Vi=
+ew Change"/></div></div>
+
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I44b9003143fdad90bfff7b2c86d=
+0bb503f9157de </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 676 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
+<div style=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@...1711...=
+27...&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
+1...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
+
+
+--YginUjrcs9k=--
 
