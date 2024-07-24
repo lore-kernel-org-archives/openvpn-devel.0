@@ -1,15 +1,15 @@
-From: "stipa (Code Review)" <gerrit@...515...>
-Date: Wed, 24 Jul 2024 15:53:20 +0000
+From: "its_Giaan (Code Review)" <gerrit@...515...>
+Date: Wed, 24 Jul 2024 15:59:25 +0000
 In-Reply-To: <gerrit.1715339249000.Ic8538e734dba53cd43fead3961e4401c8037e079@...2715...>
 References: <gerrit.1715339249000.Ic8538e734dba53cd43fead3961e4401c8037e079@...2715...>
-Reply-To: lstipakov@...277..., arne-openvpn@...1227...,
- gianmarco@...2726..., openvpn-devel@lists.sourceforge.net,
- frank@...2641...
-Message-ID: <c142fc23ddeb1f49c60bbeb4230b73021773f6b0-EmailReviewComments-HTML@...2715...>
+Reply-To: gianmarco@...2726..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net, frank@...2641...,
+ lstipakov@...277...
+Message-ID: <db13a623fea311638c20150b4aac96386895d8ce-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="KOXOeomaAiU="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="n56taf6FYLw="; charset=UTF-8
 Subject: [Openvpn-devel] [M] Change in openvpn[master]: Ensures all params
  are ready before invoking dco_set_peer()
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -20,23 +20,32 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: its_Giaan <gianmarco@...2726...>
-Cc: flichtenheld <frank@...2641...>, plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Cc: stipa <lstipakov@...277...>, flichtenheld <frank@...2641...>, plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---KOXOeomaAiU=
+--n56taf6FYLw=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: flichtenheld, its_Giaan, plaisthos.
+Attention is currently required from: flichtenheld, plaisthos.
 
-stipa has posted comments on this change. ( http://gerrit.openvpn.net/c/ope=
-nvpn/+/587?usp=3Demail )
+its_Giaan has posted comments on this change. ( http://gerrit.openvpn.net/c=
+/openvpn/+/587?usp=3Demail )
 
 Change subject: Ensures all params are ready before invoking dco_set_peer()
 ......................................................................
 
 
-Patch Set 5: Code-Review+2
+Patch Set 5:
+
+(1 comment)
+
+File src/openvpn/init.c:
+
+http://gerrit.openvpn.net/c/openvpn/+/587/comment/df5a2824_f9a8a7ae :
+PS5, Line 2180:
+> I think this will break pure P2P mode. See [=E2=80=A6]
+Done
+
 
 
 --
@@ -55,30 +64,35 @@ Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-Reviewer: stipa <lstipakov@...277...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: its_Giaan <gianmarco@...2726...>
 Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Comment-Date: Wed, 24 Jul 2024 15:53:20 +0000
-Gerrit-HasComments: No
-Gerrit-Has-Labels: Yes
+Gerrit-Comment-Date: Wed, 24 Jul 2024 15:59:25 +0000
+Gerrit-HasComments: Yes
+Gerrit-Has-Labels: No
+Comment-In-Reply-To: stipa <lstipakov@...277...>
 Gerrit-MessageType: comment
 
---KOXOeomaAiU=
+--n56taf6FYLw=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p> Attention is currently required from: flichtenheld, its_Giaan, plaistho=
-s. </p>
-<p>Patch set 5:<span style=3D"border-radius: 3px; display: inline-block; ma=
-rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/587?usp=3Demail">Vi=
-ew Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To vie=
-w, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/587?usp=3Demail">=
-change 587</a>. To unsubscribe, or for help writing mail filters, visit <a =
-href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope=
- itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"act=
-ion" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=
-=3D"http://gerrit.openvpn.net/c/openvpn/+/587?usp=3Demail"/><meta itemprop=
-=3D"name" content=3D"View Change"/></div></div>
+<p> Attention is currently required from: flichtenheld, plaisthos. </p>
+<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/587?usp=3Demail">View C=
+hange</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0;"><=
+li style=3D"margin: 0; padding: 0;"><p>File src/openvpn/init.c:</p><ul styl=
+e=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 =
+16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.ne=
+t/c/openvpn/+/587/comment/df5a2824_f9a8a7ae">Patch Set #5, Line 2180:</a> <=
+code style=3D"font-family:monospace,monospace"></code></p><p><blockquote st=
+yle=3D"border-left: 1px solid #aaa; margin: 10px 0; padding: 0 10px;">I thi=
+nk this will break pure P2P mode. See [=E2=80=A6]</blockquote></p><p style=
+=3D"white-space: pre-wrap; word-wrap: break-word;">Done</p></li></ul></li><=
+/ul><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/587?=
+usp=3Demail">change 587</a>. To unsubscribe, or for help writing mail filte=
+rs, visit <a href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><=
+div itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope it=
+emprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=
+=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/587?usp=3Demail"/><m=
+eta itemprop=3D"name" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
@@ -98,16 +112,16 @@ ion" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=
 ts.sourceforge.net&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
 ..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: its_Giaan &lt;gianmarco@...1665...=
-726...&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
 41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Wed, 24 Jul 2024 15:53:20=
+<div style=3D"display:none"> Gerrit-Comment-Date: Wed, 24 Jul 2024 15:59:25=
  +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: No </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
+<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: No </div>
+<div style=3D"display:none"> Comment-In-Reply-To: stipa &lt;lstipakov@...1664...=
+7...&gt; </div>
 <div style=3D"display:none"> Gerrit-MessageType: comment </div>
 
 
---KOXOeomaAiU=--
+--n56taf6FYLw=--
 
