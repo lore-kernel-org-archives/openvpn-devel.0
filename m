@@ -1,17 +1,10 @@
-From: "its_Giaan (Code Review)" <gerrit@...515...>
-Date: Wed, 24 Jul 2024 15:59:25 +0000
-In-Reply-To: <gerrit.1715339249000.Ic8538e734dba53cd43fead3961e4401c8037e079@...2715...>
-References: <gerrit.1715339249000.Ic8538e734dba53cd43fead3961e4401c8037e079@...2715...>
-Reply-To: gianmarco@...2726..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...,
- lstipakov@...277...
-Message-ID: <db13a623fea311638c20150b4aac96386895d8ce-EmailReviewComments-HTML@...2715...>
+From: Gert Doering <gert@...1296...>
+Date: Thu, 25 Jul 2024 13:22:48 +0200
+Message-ID: <20240725112248.21075-1-gert@...1296...>
+In-Reply-To: <gerrit.1721830475000.I975057c20c1457ef88111f8d142ca3fd2039d5ff@...2715...>
+References: <gerrit.1721830475000.I975057c20c1457ef88111f8d142ca3fd2039d5ff@...2715...>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="n56taf6FYLw="; charset=UTF-8
-Subject: [Openvpn-devel] [M] Change in openvpn[master]: Ensures all params
- are ready before invoking dco_set_peer()
+Subject: [Openvpn-devel] [PATCH v1] add and send IV_PROTO_DNS_OPTION_V2 flag
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,108 +13,70 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Cc: stipa <lstipakov@...277...>, flichtenheld <frank@...2641...>, plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---n56taf6FYLw=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+From: Heiko Hund <heiko@...2662...>
 
-Attention is currently required from: flichtenheld, plaisthos.
+Incompatible changes to the --dns server address and --dns server
+exclude-domains options were introduced after the code for handling them
+was released. Add and send a new IV_PROTO flag, so servers which act on
+the flags set can differentiate between clients which have implemented
+--dns and those which just support the new option. This enables them to
+decide which variant of options to send to the client.
 
-its_Giaan has posted comments on this change. ( http://gerrit.openvpn.net/c=
-/openvpn/+/587?usp=3Demail )
+Change-Id: I975057c20c1457ef88111f8d142ca3fd2039d5ff
+Signed-off-by: Heiko Hund <heiko@...2662...>
+Acked-by: Arne Schwabe <arne-openvpn@...1227...>
+---
 
-Change subject: Ensures all params are ready before invoking dco_set_peer()
-......................................................................
+This change was reviewed on Gerrit and approved by at least one
+developer. I request to merge it to master.
 
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/680
+This mail reflects revision 1 of this Change.
 
-Patch Set 5:
+Acked-by according to Gerrit (reflected above):
+Arne Schwabe <arne-openvpn@...1227...>
 
-(1 comment)
-
-File src/openvpn/init.c:
-
-http://gerrit.openvpn.net/c/openvpn/+/587/comment/df5a2824_f9a8a7ae :
-PS5, Line 2180:
-> I think this will break pure P2P mode. See [=E2=80=A6]
-Done
-
-
-
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/587?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings
-
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: Ic8538e734dba53cd43fead3961e4401c8037e079
-Gerrit-Change-Number: 587
-Gerrit-PatchSet: 5
-Gerrit-Owner: its_Giaan <gianmarco@...2726...>
-Gerrit-Reviewer: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-Reviewer: stipa <lstipakov@...277...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Comment-Date: Wed, 24 Jul 2024 15:59:25 +0000
-Gerrit-HasComments: Yes
-Gerrit-Has-Labels: No
-Comment-In-Reply-To: stipa <lstipakov@...277...>
-Gerrit-MessageType: comment
-
---n56taf6FYLw=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<p> Attention is currently required from: flichtenheld, plaisthos. </p>
-<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/587?usp=3Demail">View C=
-hange</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0;"><=
-li style=3D"margin: 0; padding: 0;"><p>File src/openvpn/init.c:</p><ul styl=
-e=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 =
-16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.ne=
-t/c/openvpn/+/587/comment/df5a2824_f9a8a7ae">Patch Set #5, Line 2180:</a> <=
-code style=3D"font-family:monospace,monospace"></code></p><p><blockquote st=
-yle=3D"border-left: 1px solid #aaa; margin: 10px 0; padding: 0 10px;">I thi=
-nk this will break pure P2P mode. See [=E2=80=A6]</blockquote></p><p style=
-=3D"white-space: pre-wrap; word-wrap: break-word;">Done</p></li></ul></li><=
-/ul><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/587?=
-usp=3Demail">change 587</a>. To unsubscribe, or for help writing mail filte=
-rs, visit <a href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><=
-div itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope it=
-emprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=
-=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/587?usp=3Demail"/><m=
-eta itemprop=3D"name" content=3D"View Change"/></div></div>
-
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: Ic8538e734dba53cd43fead3961e=
-4401c8037e079 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 587 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 5 </div>
-<div style=3D"display:none"> Gerrit-Owner: its_Giaan &lt;gianmarco@...2786...=
-..&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
-1...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: stipa &lt;lstipakov@...277...=
-&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
-41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Wed, 24 Jul 2024 15:59:25=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: No </div>
-<div style=3D"display:none"> Comment-In-Reply-To: stipa &lt;lstipakov@...1664...=
-7...&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
-
-
---n56taf6FYLw=--
+        
+diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
+index e0e9591..14c38cf 100644
+--- a/src/openvpn/ssl.c
++++ b/src/openvpn/ssl.c
+@@ -1900,8 +1900,8 @@
+         /* support for P_DATA_V2 */
+         int iv_proto = IV_PROTO_DATA_V2;
+ 
+-        /* support for the --dns option */
+-        iv_proto |= IV_PROTO_DNS_OPTION;
++        /* support for the latest --dns option */
++        iv_proto |= IV_PROTO_DNS_OPTION_V2;
+ 
+         /* support for exit notify via control channel */
+         iv_proto |= IV_PROTO_CC_EXIT_NOTIFY;
+diff --git a/src/openvpn/ssl.h b/src/openvpn/ssl.h
+index 1a45048..6c2bfc3 100644
+--- a/src/openvpn/ssl.h
++++ b/src/openvpn/ssl.h
+@@ -94,7 +94,7 @@
+  * result. */
+ #define IV_PROTO_NCP_P2P         (1<<5)
+ 
+-/** Supports the --dns option introduced in version 2.6 */
++/** Supports the --dns option introduced in version 2.6. Not sent anymore. */
+ #define IV_PROTO_DNS_OPTION      (1<<6)
+ 
+ /** Support for explicit exit notify via control channel
+@@ -107,6 +107,9 @@
+ /** Support to dynamic tls-crypt (renegotiation with TLS-EKM derived tls-crypt key) */
+ #define IV_PROTO_DYN_TLS_CRYPT   (1<<9)
+ 
++/** Supports the --dns option after all the incompatible changes */
++#define IV_PROTO_DNS_OPTION_V2   (1<<11)
++
+ /* Default field in X509 to be username */
+ #define X509_USERNAME_FIELD_DEFAULT "CN"
+ 
 
