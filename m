@@ -1,15 +1,15 @@
 From: "ralf_lici (Code Review)" <gerrit@...515...>
-Date: Fri, 26 Jul 2024 08:20:55 +0000
-References: <gerrit.1721982049000.Ia593f72f6baa6e16d2fd9b21b383b709682f9499@...2715...>
+Date: Fri, 26 Jul 2024 08:20:53 +0000
+References: <gerrit.1721982049000.I9766c68feaba71279f26c3310eee4b5ca215e6ac@...2715...>
 Reply-To: ralf@...2726..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <4b41e7fbc7214bc2edc607fad91eb430d960a29f-HTML@...2715...>
+Message-ID: <192618d15a2b6ecb2eb10e078a5752ddb4723062-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="NSQ2oIYjFYM="; charset=UTF-8
-Subject: [Openvpn-devel] [L] Change in openvpn[master]: Add support for TLV
- parsing in the PROXY protocol
+Content-Type: multipart/alternative; boundary="mPTQdSu9amM="; charset=UTF-8
+Subject: [Openvpn-devel] [L] Change in openvpn[master]: Add support for
+ HAProxy's PROXY protocol
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -21,7 +21,7 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---NSQ2oIYjFYM=
+--mPTQdSu9amM=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
@@ -32,511 +32,1165 @@ Hello plaisthos, flichtenheld,
 I'd like you to do a code review.
 Please visit
 
-    http://gerrit.openvpn.net/c/openvpn/+/686?usp=3Demail
+    http://gerrit.openvpn.net/c/openvpn/+/685?usp=3Demail
 
 to review the following change.
 
 
-Change subject: Add support for TLV parsing in the PROXY protocol
+Change subject: Add support for HAProxy's PROXY protocol
 ......................................................................
 
-Add support for TLV parsing in the PROXY protocol
+Add support for HAProxy's PROXY protocol
 
-Version 2 of the PROXY protocol appends extra data in Type-Length-Value
-vector format at the end of the header. This commit parses and processes
-or stores the additional information extracted from TLVs.
+The PROXY protocol is a simple protocol that can be used to
+communicate connection information such as a client's address across
+multiple layers of NAT or TCP proxies. This commit adds support for
+the parsing of the v1 and v2 PROXY protocol header but does not yet
+parse the TLV data in the v2 header.
 
-Change-Id: Ia593f72f6baa6e16d2fd9b21b383b709682f9499
+Check if a PROXY protocol header was sent by the client at the
+beginning of the connection. If so, parse it, store the extracted
+informations and replace the proxy address with the real client
+address. Checking for the header is done only if the packet has an
+invalid length so that there's minimal overhead for the common case.
+
+Also add a small document file showing how to configure HAProxy to
+test the feature.
+
+Change-Id: I9766c68feaba71279f26c3310eee4b5ca215e6ac
 Signed-off-by: Ralf Lici <ralflici95@...277...>
 ---
-M src/openvpn/proxy_protocol.c
-M src/openvpn/proxy_protocol.h
-2 files changed, 372 insertions(+), 1 deletion(-)
+M CMakeLists.txt
+A doc/proxy-protocol.txt
+M src/openvpn/Makefile.am
+M src/openvpn/init.c
+M src/openvpn/multi.c
+M src/openvpn/openvpn.h
+A src/openvpn/proxy_protocol.c
+A src/openvpn/proxy_protocol.h
+M src/openvpn/socket.c
+9 files changed, 895 insertions(+), 7 deletions(-)
 
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/86/686/1
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/85/685/1
 
-diff --git a/src/openvpn/proxy_protocol.c b/src/openvpn/proxy_protocol.c
-index 10a68c2..7f72313 100644
---- a/src/openvpn/proxy_protocol.c
-+++ b/src/openvpn/proxy_protocol.c
-@@ -38,6 +38,74 @@
-     PROXY_PROTOCOL_PARSING_STATE_IGNORE =3D 1,
- } proxy_protocol_parsing_state_t;
-
-+static const uint32_t CRC32C_TABLE[256] =3D
-+{
-+    0x00000000L, 0xF26B8303L, 0xE13B70F7L, 0x1350F3F4L,
-+    0xC79A971FL, 0x35F1141CL, 0x26A1E7E8L, 0xD4CA64EBL,
-+    0x8AD958CFL, 0x78B2DBCCL, 0x6BE22838L, 0x9989AB3BL,
-+    0x4D43CFD0L, 0xBF284CD3L, 0xAC78BF27L, 0x5E133C24L,
-+    0x105EC76FL, 0xE235446CL, 0xF165B798L, 0x030E349BL,
-+    0xD7C45070L, 0x25AFD373L, 0x36FF2087L, 0xC494A384L,
-+    0x9A879FA0L, 0x68EC1CA3L, 0x7BBCEF57L, 0x89D76C54L,
-+    0x5D1D08BFL, 0xAF768BBCL, 0xBC267848L, 0x4E4DFB4BL,
-+    0x20BD8EDEL, 0xD2D60DDDL, 0xC186FE29L, 0x33ED7D2AL,
-+    0xE72719C1L, 0x154C9AC2L, 0x061C6936L, 0xF477EA35L,
-+    0xAA64D611L, 0x580F5512L, 0x4B5FA6E6L, 0xB93425E5L,
-+    0x6DFE410EL, 0x9F95C20DL, 0x8CC531F9L, 0x7EAEB2FAL,
-+    0x30E349B1L, 0xC288CAB2L, 0xD1D83946L, 0x23B3BA45L,
-+    0xF779DEAEL, 0x05125DADL, 0x1642AE59L, 0xE4292D5AL,
-+    0xBA3A117EL, 0x4851927DL, 0x5B016189L, 0xA96AE28AL,
-+    0x7DA08661L, 0x8FCB0562L, 0x9C9BF696L, 0x6EF07595L,
-+    0x417B1DBCL, 0xB3109EBFL, 0xA0406D4BL, 0x522BEE48L,
-+    0x86E18AA3L, 0x748A09A0L, 0x67DAFA54L, 0x95B17957L,
-+    0xCBA24573L, 0x39C9C670L, 0x2A993584L, 0xD8F2B687L,
-+    0x0C38D26CL, 0xFE53516FL, 0xED03A29BL, 0x1F682198L,
-+    0x5125DAD3L, 0xA34E59D0L, 0xB01EAA24L, 0x42752927L,
-+    0x96BF4DCCL, 0x64D4CECFL, 0x77843D3BL, 0x85EFBE38L,
-+    0xDBFC821CL, 0x2997011FL, 0x3AC7F2EBL, 0xC8AC71E8L,
-+    0x1C661503L, 0xEE0D9600L, 0xFD5D65F4L, 0x0F36E6F7L,
-+    0x61C69362L, 0x93AD1061L, 0x80FDE395L, 0x72966096L,
-+    0xA65C047DL, 0x5437877EL, 0x4767748AL, 0xB50CF789L,
-+    0xEB1FCBADL, 0x197448AEL, 0x0A24BB5AL, 0xF84F3859L,
-+    0x2C855CB2L, 0xDEEEDFB1L, 0xCDBE2C45L, 0x3FD5AF46L,
-+    0x7198540DL, 0x83F3D70EL, 0x90A324FAL, 0x62C8A7F9L,
-+    0xB602C312L, 0x44694011L, 0x5739B3E5L, 0xA55230E6L,
-+    0xFB410CC2L, 0x092A8FC1L, 0x1A7A7C35L, 0xE811FF36L,
-+    0x3CDB9BDDL, 0xCEB018DEL, 0xDDE0EB2AL, 0x2F8B6829L,
-+    0x82F63B78L, 0x709DB87BL, 0x63CD4B8FL, 0x91A6C88CL,
-+    0x456CAC67L, 0xB7072F64L, 0xA457DC90L, 0x563C5F93L,
-+    0x082F63B7L, 0xFA44E0B4L, 0xE9141340L, 0x1B7F9043L,
-+    0xCFB5F4A8L, 0x3DDE77ABL, 0x2E8E845FL, 0xDCE5075CL,
-+    0x92A8FC17L, 0x60C37F14L, 0x73938CE0L, 0x81F80FE3L,
-+    0x55326B08L, 0xA759E80BL, 0xB4091BFFL, 0x466298FCL,
-+    0x1871A4D8L, 0xEA1A27DBL, 0xF94AD42FL, 0x0B21572CL,
-+    0xDFEB33C7L, 0x2D80B0C4L, 0x3ED04330L, 0xCCBBC033L,
-+    0xA24BB5A6L, 0x502036A5L, 0x4370C551L, 0xB11B4652L,
-+    0x65D122B9L, 0x97BAA1BAL, 0x84EA524EL, 0x7681D14DL,
-+    0x2892ED69L, 0xDAF96E6AL, 0xC9A99D9EL, 0x3BC21E9DL,
-+    0xEF087A76L, 0x1D63F975L, 0x0E330A81L, 0xFC588982L,
-+    0xB21572C9L, 0x407EF1CAL, 0x532E023EL, 0xA145813DL,
-+    0x758FE5D6L, 0x87E466D5L, 0x94B49521L, 0x66DF1622L,
-+    0x38CC2A06L, 0xCAA7A905L, 0xD9F75AF1L, 0x2B9CD9F2L,
-+    0xFF56BD19L, 0x0D3D3E1AL, 0x1E6DCDEEL, 0xEC064EEDL,
-+    0xC38D26C4L, 0x31E6A5C7L, 0x22B65633L, 0xD0DDD530L,
-+    0x0417B1DBL, 0xF67C32D8L, 0xE52CC12CL, 0x1747422FL,
-+    0x49547E0BL, 0xBB3FFD08L, 0xA86F0EFCL, 0x5A048DFFL,
-+    0x8ECEE914L, 0x7CA56A17L, 0x6FF599E3L, 0x9D9E1AE0L,
-+    0xD3D3E1ABL, 0x21B862A8L, 0x32E8915CL, 0xC083125FL,
-+    0x144976B4L, 0xE622F5B7L, 0xF5720643L, 0x07198540L,
-+    0x590AB964L, 0xAB613A67L, 0xB831C993L, 0x4A5A4A90L,
-+    0x9E902E7BL, 0x6CFBAD78L, 0x7FAB5E8CL, 0x8DC0DD8FL,
-+    0xE330A81AL, 0x115B2B19L, 0x020BD8EDL, 0xF0605BEEL,
-+    0x24AA3F05L, 0xD6C1BC06L, 0xC5914FF2L, 0x37FACCF1L,
-+    0x69E9F0D5L, 0x9B8273D6L, 0x88D28022L, 0x7AB90321L,
-+    0xAE7367CAL, 0x5C18E4C9L, 0x4F48173DL, 0xBD23943EL,
-+    0xF36E6F75L, 0x0105EC76L, 0x12551F82L, 0xE03E9C81L,
-+    0x34F4F86AL, 0xC69F7B69L, 0xD5CF889DL, 0x27A40B9EL,
-+    0x79B737BAL, 0x8BDCB4B9L, 0x988C474DL, 0x6AE7C44EL,
-+    0xBE2DA0A5L, 0x4C4623A6L, 0x5F16D052L, 0xAD7D5351L
-+};
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index ad620fa..67cfd08 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -490,6 +490,8 @@
+     src/openvpn/proto.h
+     src/openvpn/proxy.c
+     src/openvpn/proxy.h
++    src/openvpn/proxy_protocol.c
++    src/openvpn/proxy_protocol.h
+     src/openvpn/ps.c
+     src/openvpn/ps.h
+     src/openvpn/push.c
+diff --git a/doc/proxy-protocol.txt b/doc/proxy-protocol.txt
+new file mode 100644
+index 0000000..bd9b606
+--- /dev/null
++++ b/doc/proxy-protocol.txt
+@@ -0,0 +1,157 @@
++HAProxy PROXY protocol support for OpenVPN
++=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
 +
- static const size_t PROXY_PROTOCOL_V2_ADDR_LEN_IPV4 =3D 12;
- static const size_t PROXY_PROTOCOL_V2_ADDR_LEN_IPV6 =3D 36;
- static const size_t PROXY_PROTOCOL_V2_ADDR_LEN_UNIX =3D 216;
-@@ -88,6 +156,17 @@
++The PROXY protocol is a simple protocol that can be used to retreive the
++original source address of a connection that has been proxied. Every conne=
+ction
++is prepended with a header reporting the client IP address and port. The
++protocol specification is available at:
++https://www.haproxy.org/download/2.4/doc/proxy-protocol.txt
++
++Currently there are two versions of the protocol, a text based version (v1=
+) and
++a binary version (v2).
++
++Version 1
++---------
++
++The text based version is a human readable protocol that is easy to debug.=
+ It
++consists of a single line of text with the following fields:
++
++PROXY_SIGNATURE_V1 + single space + INET_PROTOCOL + single space + CLIENT_=
+IP +
++single space + PROXY_IP + single space + CLIENT_PORT + single space +
++PROXY_PORT + "\r\n"
++
++The only supported INET_PROTOCOL in version 1 are "TCP4" and "TCP6".
++
++Version 2
++---------
++
++The binary version is a more efficient protocol that is more suitable for
++production use. It consists of a fixed length header followed by the origi=
+nal
++connection data.
++
++A PROXY Protocol binary header for a IPv4 incoming address has the format:
++ 0               1               2               3
++ 0 1 2 3 4 5 6 7 0 1 2 3 4 5 6 7 0 1 2 3 4 5 6 7 0 1 2 3 4 5 6 7
+++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
++|                                                               |
+++                                                               +
++|                  Proxy Protocol v2 Signature                  |
+++                                                               +
++|                                                               |
+++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
++|Version|Command|   AF  | Proto.|         Address Length        |
+++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
++|                      IPv4 Source Address                      |
+++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
++|                    IPv4 Destination Address                   |
+++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
++|          Source Port          |        Destination Port       |
+++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
++|                                                               |
+++                                                               +
+++                              TLVs                             +
+++                                                               +
++|                                                               |
+++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
++
++A PROXY Protocol binary header for a IPv6 incoming address has the format:
++ 0               1               2               3
++ 0 1 2 3 4 5 6 7 0 1 2 3 4 5 6 7 0 1 2 3 4 5 6 7 0 1 2 3 4 5 6 7
+++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
++|                                                               |
+++                                                               +
++|                  Proxy Protocol v2 Signature                  |
+++                                                               +
++|                                                               |
+++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
++|Version|Command|   AF  | Proto.|         Address Length        |
+++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
++|                                                               |
+++                                                               +
++|                                                               |
+++                      IPv6 Source Address                      +
++|                                                               |
+++                                                               +
++|                                                               |
+++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
++|                                                               |
+++                                                               +
++|                                                               |
+++                    IPv6 Destination Address                   +
++|                                                               |
+++                                                               +
++|                                                               |
+++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
++|          Source Port          |        Destination Port       |
+++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
++|                                                               |
+++                                                               +
+++                              TLVs                             +
+++                                                               +
++|                                                               |
+++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
++
++The fields are as follows:
++
++- Proxy Protocol v2 Signature: 12 bytes
++  The v2 signature of the protocol: "\x0D\x0A\x0D\x0A\x00\x0D\x0A\x51\x55\=
+x49\x54\x0A\x20".
++
++- Version: 4 bits
++  The version of the PROXY protocol (0x2).
++
++- Command: 4 bits
++  The command of the PROXY protocol can by one of the following:
++    - LOCAL: 0x0
++      The connection was initiated by the proxy.
++    - PROXY: 0x1
++      The connection was initiated by the client.
++
++- AF: 4 bits
++    The address family of the connection can be: AF_UNSPEC (0x0), AF_INET =
+(0x1),
++    AF_INET6 (0x2) or AF_UNIX (0x3).
++
++- Proto: 4 bits
++    The protocol of the connection can be: UNSPEC (0x0), STREAM (0x1) or
++    DGRAM (0x2).
++
++- Address Length: 16 bits
++    The length of the rest of the header in bytes.
++
++Finally there may be a series of TLVs (Type-Length-Value) that can be used=
+ to
++carry additional information.
++
++OpenVPN testing
++---------------
++
++Currently only TCP is supported. To test the PROXY protocol support in Ope=
+nVPN,
++you can use HAProxy as a proxy with a configuration like this:
++
++global
++    log stdout format raw local0
++    log 127.0.0.1 local0 debug
++    daemon
++
++defaults
++    log     global
++    mode    tcp
++    option  tcplog
++    timeout connect 5000ms
++    timeout client  50000ms
++    timeout server  50000ms
++
++frontend openvpn_front
++    bind 10.10.20.1:1195
++    default_backend openvpn_back
++
++backend openvpn_back
++    server openvpn_server 10.10.10.1:1194 send-proxy
++    # server openvpn_server 10.10.10.1:1194 send-proxy-v2 proxy-v2-options=
+ ssl,cert-cn,ssl-cipher,cert-sig,cert-key,authority,crc32c,unique-id
++
++
++You can use the commented line to test the binary format and the TLV data.
++
++Note that you should set the keepalive option so that the connection is not
++reset by HAProxy for inactivity.
++
++The OpenVPN TCP server should read and parse the header and use the inform=
+ation
++to display the original source address in the logs.
+diff --git a/src/openvpn/Makefile.am b/src/openvpn/Makefile.am
+index 56cce9d..fc037ca 100644
+--- a/src/openvpn/Makefile.am
++++ b/src/openvpn/Makefile.am
+@@ -111,6 +111,7 @@
+ 	pool.c pool.h \
+ 	proto.c proto.h \
+ 	proxy.c proxy.h \
++	proxy_protocol.c proxy_protocol.h \
+ 	ps.c ps.h \
+ 	push.c push.h \
+ 	pushlist.h \
+diff --git a/src/openvpn/init.c b/src/openvpn/init.c
+index a49e563..cbce217 100644
+--- a/src/openvpn/init.c
++++ b/src/openvpn/init.c
+@@ -54,6 +54,7 @@
+ #include "mss.h"
+ #include "mudp.h"
+ #include "dco.h"
++#include "proxy_protocol.h"
+
+ #include "memdbg.h"
+
+@@ -680,6 +681,11 @@
+         c->c1.socks_proxy =3D NULL;
+         c->c1.socks_proxy_owned =3D false;
      }
++    if (c->c1.proxy_protocol)
++    {
++        proxy_protocol_free(c->c1.proxy_protocol);
++        c->c1.proxy_protocol =3D NULL;
++    }
  }
 
-+uint32_t
-+proxy_protocol_crc32c(const uint8_t *data, int len)
+ static void
+@@ -4774,7 +4780,7 @@
+         /* free up environmental variable store */
+         do_env_set_destroy(c);
+
+-        /* close HTTP or SOCKS proxy */
++        /* close HTTP or SOCKS proxy or PROXY protocol object */
+         uninit_proxy(c);
+
+         /* garbage collect */
+diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
+index 03177bb..ac4652d 100644
+--- a/src/openvpn/multi.c
++++ b/src/openvpn/multi.c
+@@ -51,6 +51,7 @@
+ #include "ssl_util.h"
+ #include "dco.h"
+ #include "reflect_filter.h"
++#include "proxy_protocol.h"
+
+ /*#define MULTI_DEBUG_EVENT_LOOP*/
+
+@@ -779,6 +780,8 @@
+         goto err;
+     }
+
++    ALLOC_OBJ_CLEAR(mi->context.c1.proxy_protocol, struct proxy_protocol_i=
+nfo);
++
+     mi->context.c2.tls_multi->multi_state =3D CAS_NOT_CONNECTED;
+
+     if (hash_n_elements(m->hash) >=3D m->max_clients)
+@@ -3207,6 +3210,57 @@
+     gc_free(&gc);
+ }
+
++void
++multi_replace_proxy_addr(struct multi_context *m, struct multi_instance *m=
+i)
 +{
-+    uint32_t crc =3D 0xFFFFFFFF;
-+    while (len-- > 0)
++    struct mroute_addr real =3D {0};
++    struct hash *hash =3D m->hash;
++    struct gc_arena gc =3D gc_new();
++
++    if (!mroute_extract_openvpn_sockaddr(&real, &mi->context.c1.proxy_prot=
+ocol->src, true))
 +    {
-+        crc =3D (crc >> 8) ^ CRC32C_TABLE[(crc ^ (*data++)) & 0xFF];
++        goto done;
 +    }
-+    return (crc ^ 0xFFFFFFFF);
++
++    const uint32_t hv =3D hash_value(hash, &real);
++    struct hash_bucket *bucket =3D hash_bucket(hash, hv);
++
++    /* if the new address is already in the hash table, the new client tak=
+es precedence */
++    struct hash_element *he =3D hash_lookup_fast(hash, bucket, &real, hv);
++    if (he)
++    {
++        struct multi_instance *oldmi =3D (struct multi_instance *) he->val=
+ue;
++        msg(D_MULTI_LOW, "Client's real address (behind proxy) matches "
++            "existing client address -- new client takes precedence");
++        oldmi->did_real_hash =3D false;
++        multi_close_instance(m, oldmi, false);
++        he->key =3D &mi->real;
++        he->value =3D mi;
++    }
++
++    clear_prefix();
++    msg(D_MULTI_LOW, "Replacing proxy address: %s with client's real addre=
+ss: %s",
++        mroute_addr_print(&mi->real, &gc),
++        mroute_addr_print(&real, &gc));
++
++    /* remove proxy address from hash table before changing address */
++    ASSERT(hash_remove(m->hash, &mi->real));
++    ASSERT(hash_remove(m->iter, &mi->real));
++
++    mi->real =3D real;
++    generate_prefix(mi);
++
++    ASSERT(hash_add(m->hash, &mi->real, mi, false));
++    ASSERT(hash_add(m->iter, &mi->real, mi, false));
++
++#ifdef ENABLE_MANAGEMENT
++    ASSERT(hash_add(m->cid_hash, &mi->context.c2.mda_context.cid, mi, true=
+));
++#endif
++
++done:
++    gc_free(&gc);
 +}
 +
  /*
-  * Parse a port number from a string.
-  *
-@@ -316,6 +395,231 @@
- }
+  * Called when an instance should be closed due to the
+  * reception of a soft signal.
+@@ -3348,6 +3402,7 @@
+     struct mroute_addr src, dest;
+     unsigned int mroute_flags;
+     struct multi_instance *mi;
++    struct link_socket_info *lsi;
+     bool ret =3D true;
+     bool floated =3D false;
+
+@@ -3387,15 +3442,31 @@
+             }
+         }
+
++        lsi =3D get_link_socket_info(c);
++
++        /* check for PROXY protocol */
++        if (lsi->proto =3D=3D PROTO_TCP_SERVER && !c->c1.proxy_protocol->v=
+ersion && BLEN(&c->c2.buf) > 0)
++        {
++            if (!proxy_protocol_parse(c->c1.proxy_protocol, &c->c2.buf))
++            {
++                /* set version to invalid to avoid checking again */
++                c->c1.proxy_protocol->version =3D PROXY_PROTOCOL_VERSION_I=
+NVALID;
++            }
++            else
++            {
++                multi_replace_proxy_addr(m, m->pending);
++                /* avoid processing the packet as an openvpn one */
++                buf_reset_len(&c->c2.buf);
++            }
++        }
++
+         if (BLEN(&c->c2.buf) > 0)
+         {
+-            struct link_socket_info *lsi;
+             const uint8_t *orig_buf;
+
+             /* decrypt in instance context */
+=20
+             perf_push(PERF_PROC_IN_LINK);
+-            lsi =3D get_link_socket_info(c);
+             orig_buf =3D c->c2.buf.data;
+             if (process_incoming_link_part1(c, lsi, floated))
+             {
+diff --git a/src/openvpn/openvpn.h b/src/openvpn/openvpn.h
+index e98c93e..ded6103 100644
+--- a/src/openvpn/openvpn.h
++++ b/src/openvpn/openvpn.h
+@@ -45,6 +45,7 @@
+ #include "pool.h"
+ #include "plugin.h"
+ #include "manage.h"
++#include "proxy_protocol.h"
 
  /*
-+ * Parse a string based TLV and store the value in 'out'.
+  * Our global key schedules, packaged thusly
+@@ -191,6 +192,8 @@
+     struct socks_proxy_info *socks_proxy;
+     bool socks_proxy_owned;
+
++    struct proxy_protocol_info *proxy_protocol;
++
+     /* persist --ifconfig-pool db to file */
+     struct ifconfig_pool_persist *ifconfig_pool_persist;
+     bool ifconfig_pool_persist_owned;
+diff --git a/src/openvpn/proxy_protocol.c b/src/openvpn/proxy_protocol.c
+new file mode 100644
+index 0000000..10a68c2
+--- /dev/null
++++ b/src/openvpn/proxy_protocol.c
+@@ -0,0 +1,472 @@
++/*
++ *  OpenVPN -- An application to securely tunnel IP networks
++ *             over a single TCP/UDP port, with support for SSL/TLS-based
++ *             session authentication and key exchange,
++ *             packet encryption, packet authentication, and
++ *             packet compression.
 + *
-+ * @param ppi - The proxy protocol info structure used for memory allocati=
-on.
-+ * @param out - The output variable to store the parsed value.
-+ * @param type_str - A string representation of the TLV type (for logging).
-+ * @param len - The length of the TLV value.
-+ * @param value - The TLV value.
++ *  Copyright (C) 2002-2024 OpenVPN Inc <sales@...515...>
++ *
++ *  This program is free software; you can redistribute it and/or modify
++ *  it under the terms of the GNU General Public License version 2
++ *  as published by the Free Software Foundation.
++ *
++ *  This program is distributed in the hope that it will be useful,
++ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
++ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ *  GNU General Public License for more details.
++ *
++ *  You should have received a copy of the GNU General Public License along
++ *  with this program; if not, write to the Free Software Foundation, Inc.,
++ *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 + */
-+void
-+proxy_protocol_parse_string_tlv(struct proxy_protocol_info *ppi, char **ou=
-t, char *type_str, const uint16_t len, const uint8_t *value)
++
++#ifdef HAVE_CONFIG_H
++#include "config.h"
++#endif
++
++#include "error.h"
++#include "proxy_protocol.h"
++
++#define PROXY_PROTOCOL_V1_MAX_WORDS 6
++#define PROXY_PROTOCOL_V1_MAX_WORD_LEN 40
++
++typedef enum
 +{
-+    if (len =3D=3D 0)
++    PROXY_PROTOCOL_PARSING_STATE_INVALID =3D -1,
++    PROXY_PROTOCOL_PARSING_STATE_OK =3D 0,
++    PROXY_PROTOCOL_PARSING_STATE_IGNORE =3D 1,
++} proxy_protocol_parsing_state_t;
++
++static const size_t PROXY_PROTOCOL_V2_ADDR_LEN_IPV4 =3D 12;
++static const size_t PROXY_PROTOCOL_V2_ADDR_LEN_IPV6 =3D 36;
++static const size_t PROXY_PROTOCOL_V2_ADDR_LEN_UNIX =3D 216;
++
++static proxy_protocol_header_t header;
++static uint16_t header_len;
++static proxy_protocol_parsing_state_t parsing_state =3D PROXY_PROTOCOL_PAR=
+SING_STATE_OK;
++
++proxy_protocol_version_t
++proxy_protocol_version(const uint8_t *buf, const int buf_len)
++{
++    if (buf_len >=3D PROXY_PROTOCOL_V2_MIN_HDR_LEN
++        && memcmp(buf, PROXY_PROTOCOL_V2_SIG, PROXY_PROTOCOL_V2_SIG_LEN) =
+=3D=3D 0)
 +    {
-+        msg(M_NONFATAL, "PROXY protocol v2: %s TLV empty", type_str);
-+        return;
++        return PROXY_PROTOCOL_VERSION_2;
 +    }
-+
-+    *out =3D (char *)gc_malloc(8, false, &ppi->gc);
-+    memcpy(*out, value, len);
-+    (*out)[len] =3D '\0';
-+
-+    if (type_str)
++    else if (buf_len >=3D PROXY_PROTOCOL_V1_MIN_HDR_LEN
++             && memcmp(buf, PROXY_PROTOCOL_V1_SIG, PROXY_PROTOCOL_V1_SIG_L=
+EN) =3D=3D 0)
 +    {
-+        msg(M_DEBUG, "PROXY protocol v2: %s TLV: %s", type_str, *out);
++        return PROXY_PROTOCOL_VERSION_1;
++    }
++    return PROXY_PROTOCOL_VERSION_INVALID;
++}
++
++int
++proxy_protocol_header_len(const uint8_t *buf, const int buf_len,
++                          const proxy_protocol_version_t version)
++{
++    memcpy(&header, buf, buf_len);
++
++    switch (version)
++    {
++        case PROXY_PROTOCOL_VERSION_1:
++        {
++            char *end =3D memchr(header.v1.line, '\r', buf_len - 1);
++            if (!end || end[1] !=3D '\n')
++            {
++                return -1; /* partial or invalid header */
++            }
++            return (int)(end + 2 - header.v1.line);
++        }
++
++        case PROXY_PROTOCOL_VERSION_2:
++            return PROXY_PROTOCOL_V2_MIN_HDR_LEN + ntohps(header.v2.len);
++
++        default:
++            return -1;
 +    }
 +}
 +
 +/*
-+ * Parse the CRC32C TLV and check if it matches the calculated CRC32C.
-+ * If there's a mismatch the parsing state is set to invalid so that the h=
-eader
-+ * is dropped.
++ * Parse a port number from a string.
 + *
-+ * @param len - The length of the TLV value.
-+ * @param value - The TLV value.
++ * @param port_str - The string to parse.
 + *
-+ * @return - true if the CRC32C value matches the calculated CRC32C.
++ * @return - The port number or -1 if the string is invalid.
++ */
++uint16_t
++proxy_protocol_parse_port(const char *port_str)
++{
++    char *endptr;
++    errno =3D 0;
++
++    long port =3D strtol(port_str, &endptr, 10);
++    if (errno !=3D 0 || endptr =3D=3D port_str || *endptr !=3D '\0' || por=
+t <=3D 0 || port > 65535)
++    {
++        return -1;
++    }
++    return (uint16_t)port;
++}
++
++/*
++ * Set the source and destination addresses and ports in the proxy protocol
++ * info structure for later use.
++ *
++ * @param ppi - The proxy protocol info structure to store the addresses.
++ * @param ver - The version of the PROXY protocol.
++ * @param fam - The address family (supports: AF_INET or AF_INET6).
++ * @param st - The socket type.
++ * @param src_addr - The source address.
++ * @param dst_addr - The destination address.
++ * @param src_port - The source port.
++ * @param dst_port - The destination port.
++ */
++void
++proxy_protocol_set_addr(struct proxy_protocol_info *ppi,
++                        const proxy_protocol_version_t ver, const int fam,=
+ const int st,
++                        const void *src_addr, const void *dst_addr,
++                        const uint16_t src_port, const uint16_t dst_port)
++{
++
++    ppi->version =3D ver;
++    ppi->sock_type =3D st;
++    if (fam =3D=3D AF_INET)
++    {
++        ppi->src.addr.sa.sa_family =3D AF_INET;
++        ppi->dst.addr.sa.sa_family =3D AF_INET;
++        memcpy(&ppi->src.addr.in4.sin_addr, (uint32_t *)src_addr,
++               sizeof(struct in_addr));
++        memcpy(&ppi->dst.addr.in4.sin_addr, (uint32_t *)dst_addr,
++               sizeof(struct in_addr));
++        ppi->src.addr.in4.sin_port =3D src_port;
++        ppi->dst.addr.in4.sin_port =3D dst_port;
++        msg(M_DEBUG, "PROXY protocol: SRC: %s:%u",
++            inet_ntoa(ppi->src.addr.in4.sin_addr),
++            ntohs(ppi->src.addr.in4.sin_port));
++        msg(M_DEBUG, "PROXY protocol: DST: %s:%u",
++            inet_ntoa(ppi->dst.addr.in4.sin_addr),
++            ntohs(ppi->dst.addr.in4.sin_port));
++    }
++    else if (fam =3D=3D AF_INET6)
++    {
++        ppi->src.addr.sa.sa_family =3D AF_INET6;
++        ppi->dst.addr.sa.sa_family =3D AF_INET6;
++        memcpy(&ppi->src.addr.in6.sin6_addr, src_addr, sizeof(struct in6_a=
+ddr));
++        memcpy(&ppi->dst.addr.in6.sin6_addr, dst_addr, sizeof(struct in6_a=
+ddr));
++        ppi->src.addr.in6.sin6_port =3D src_port;
++        ppi->dst.addr.in6.sin6_port =3D dst_port;
++
++        char ip6_str[INET6_ADDRSTRLEN];
++        if (inet_ntop(AF_INET6, &ppi->src.addr.in6.sin6_addr, ip6_str,
++                      INET6_ADDRSTRLEN))
++        {
++            msg(M_DEBUG, "PROXY protocol: SRC: %s:%u", ip6_str,
++                ntohs(ppi->src.addr.in6.sin6_port));
++        }
++        else
++        {
++            msg(M_NONFATAL, "PROXY protocol: could not parse source addres=
+s");
++        }
++        if (inet_ntop(AF_INET6, &ppi->dst.addr.in6.sin6_addr, ip6_str,
++                      INET6_ADDRSTRLEN))
++        {
++            msg(M_DEBUG, "PROXY protocol: DST: %s:%u", ip6_str,
++                ntohs(ppi->dst.addr.in6.sin6_port));
++        }
++        else
++        {
++            msg(M_NONFATAL,
++                "PROXY protocol: could not parse destination address");
++        }
++    }
++    else
++    {
++        msg(M_NONFATAL, "PROXY protocol: unsupported address family");
++    }
++}
++
++/*
++ * Split the v1 header line into words (space-separated)
++ *
++ * @param words - The array to store the words.
++ * @param line - The header line to split.
++ * @param len - The length of the header line.
++ *
++ * @return - The number of words found or -1 if an error occurred.
++ */
++int
++proxy_protocol_v1_split_words(char words[][PROXY_PROTOCOL_V1_MAX_WORD_LEN],
++                              const char *line,
++                              int len)
++{
++    int word_num =3D 0;
++    const char *start =3D line;
++    for (int i =3D 0; i < len; ++i)
++    {
++        if (line[i] =3D=3D ' ')
++        {
++            if (word_num < PROXY_PROTOCOL_V1_MAX_WORDS)
++            {
++                int word_len =3D (int)(line + i - start);
++                if (word_len < PROXY_PROTOCOL_V1_MAX_WORD_LEN)
++                {
++                    memcpy(words[word_num], start, word_len);
++                    words[word_num][word_len] =3D '\0';
++                    ++word_num;
++                }
++                else
++                {
++                    msg(M_NONFATAL, "PROXY protocol v1: word too long");
++                    return -1;
++                }
++            }
++            start =3D line + i + 1;
++        }
++    }
++    return word_num;
++}
++
++/*
++ * Parse the PROXY protocol v1 header line.
++ *
++ * @param ppi - The proxy protocol info structure to store the parsed data.
++ * @param line - The header line to parse.
++ * @param len - The length of the header line.
++ *
++ * @return - true if the header was successfully parsed.
 + */
 +bool
-+proxy_protocol_parse_crc32c_tlv(const uint16_t len, const uint8_t *value)
++proxy_protocol_parse_v1(struct proxy_protocol_info *ppi,
++                        const char *line,
++                        int len)
 +{
-+    if (len !=3D 4)
++    const proxy_protocol_version_t version =3D PROXY_PROTOCOL_VERSION_1;
++    char words[PROXY_PROTOCOL_V1_MAX_WORDS][PROXY_PROTOCOL_V1_MAX_WORD_LEN=
+];
++
++    char *end =3D memchr(line, '\r', len - 1);
++    if (!end || end[1] !=3D '\n') /* partial or invalid header */
 +    {
-+        msg(M_NONFATAL, "PROXY protocol v2: CRC32C TLV invalid length");
-+        parsing_state =3D PROXY_PROTOCOL_PARSING_STATE_INVALID;
++        return false;
++    }
++    *end =3D ' '; /* replace CRLF with space for easier splitting */
++    int size =3D (int)(end - line + 1);
++
++    int word_num =3D proxy_protocol_v1_split_words(words, line, size);
++    if (word_num < 3)
++    {
++        msg(M_NONFATAL, "PROXY protocol v1: could not split header");
 +        return false;
 +    }
 +
-+    uint32_t expected_crc32c =3D ntohl(*(uint32_t *)value);
-+
-+    /* fill with 0s the crc32 field to calculate the actual crc32 */
-+    *(uint32_t *)value =3D 0;
-+    uint32_t calculated_crc32c =3D proxy_protocol_crc32c((const uint8_t *)=
-&header, header_len);
-+
-+    if (expected_crc32c !=3D calculated_crc32c)
++    if (strcmp(words[1], "UNKNOWN") =3D=3D 0)
 +    {
-+        msg(M_NONFATAL, "PROXY protocol v2: CRC32C mismatch, expected: 0x%=
-08x calculated: 0x%08x. Dropping header", expected_crc32c, calculated_crc32=
-c);
-+        parsing_state =3D PROXY_PROTOCOL_PARSING_STATE_INVALID;
++        msg(M_DEBUG, "PROXY protocol v1: UNKNOWN protocol, ignoring header=
+");
++        return true;
++    }
++    else if (strcmp(words[1], "TCP4") =3D=3D 0)
++    {
++        msg(M_DEBUG, "PROXY protocol v1: TCP4 protocol");
++        struct in_addr ip4_src_addr, ip4_dst_addr;
++        if (inet_pton(AF_INET, words[2], &ip4_src_addr) !=3D 1)
++        {
++            msg(M_NONFATAL,
++                "PROXY protocol v1: could not parse source address");
++            return false;
++        }
++        if (inet_pton(AF_INET, words[3], &ip4_dst_addr) !=3D 1)
++        {
++            msg(M_NONFATAL,
++                "PROXY protocol v1: could not parse destination address");
++            return false;
++        }
++        proxy_protocol_set_addr(ppi, version, AF_INET, SOCK_STREAM,
++                                &ip4_src_addr, &ip4_dst_addr,
++                                ntohs(proxy_protocol_parse_port(words[4])),
++                                ntohs(proxy_protocol_parse_port(words[5]))=
+);
++        return true;
++    }
++    else if (strcmp(words[1], "TCP6") =3D=3D 0)
++    {
++        msg(M_DEBUG, "PROXY protocol v1: TCP6 protocol");
++        struct in6_addr ip6_src_addr, ip6_dst_addr;
++        if (inet_pton(AF_INET6, words[2], &ip6_src_addr) !=3D 1)
++        {
++            msg(M_NONFATAL,
++                "PROXY protocol v1: could not parse source address");
++            return false;
++        }
++        if (inet_pton(AF_INET6, words[3], &ip6_dst_addr) !=3D 1)
++        {
++            msg(M_NONFATAL,
++                "PROXY protocol v1: could not parse destination address");
++            return false;
++        }
++        proxy_protocol_set_addr(ppi, version, AF_INET6, SOCK_STREAM,
++                                &ip6_src_addr, &ip6_dst_addr,
++                                ntohs(proxy_protocol_parse_port(words[4])),
++                                ntohs(proxy_protocol_parse_port(words[5]))=
+);
++        return true;
++    }
++    else
++    {
++        msg(M_NONFATAL, "PROXY protocol v1: unsupported protocol");
 +        return false;
 +    }
-+    msg(M_DEBUG, "PROXY protocol v2: CRC32C match");
-+    return true;
 +}
 +
 +/*
-+ * Parse the UNIQUE_ID TLV and store the value in ppi->unique_id
-+ * (and ppi->unique_id_len).
++ * Parse the PROXY protocol v2 header.
 + *
 + * @param ppi - The proxy protocol info structure to store the parsed data.
-+ * @param len - The length of the TLV value.
-+ * @param value - The TLV value.
-+ */
-+void
-+proxy_protocol_parse_uid_tlv(struct proxy_protocol_info *ppi, const uint16=
-_t len, const uint8_t *value)
-+{
-+    if (len =3D=3D 0)
-+    {
-+        msg(M_NONFATAL, "PROXY protocol v2: UNIQUE_ID TLV empty");
-+        return;
-+    }
-+    else if (len > PROXY_PROTOCOL_V2_TLV_UNIQUE_ID_MAX_LEN)
-+    {
-+        msg(M_NONFATAL, "PROXY protocol v2: UNIQUE_ID TLV too long");
-+        return;
-+    }
-+
-+    ppi->unique_id_len =3D len;
-+    memcpy(ppi->unique_id, value, len);
-+    msg(M_DEBUG, "PROXY protocol v2: UNIQUE_ID: %.*s", (int)ppi->unique_id=
-_len, ppi->unique_id);
-+}
-+
-+/*
-+ * Parse the SSL TLV and store the value in ppi->ssl_client and ppi->ssl_v=
-erify.
++ * @param header - The header to parse.
 + *
-+ * @param ppi - The proxy protocol info structure to store the parsed data.
-+ * @param len - The length of the TLV value.
-+ * @param value - The TLV value.
++ * @return - The number of bytes parsed or 0 if the header can be ignored.
 + */
-+void
-+proxy_protocol_parse_ssl_tlv(struct proxy_protocol_info *ppi, const uint16=
-_t len, const uint8_t *value)
++int
++proxy_protocol_parse_v2(struct proxy_protocol_info *ppi)
 +{
-+    const struct proxy_protocol_tlv_ssl *ssl =3D (const struct proxy_proto=
-col_tlv_ssl *)(value);
++    size_t addr_len =3D 0;
++    int pos =3D PROXY_PROTOCOL_V2_SIG_LEN + sizeof(header.v2.ver_cmd);
++    const proxy_protocol_version_t version =3D PROXY_PROTOCOL_VERSION_2;
 +
-+    if (!ssl->client)
++    switch (header.v2.ver_cmd & PROXY_PROTOCOL_V2_CMD_MASK)
 +    {
-+        msg(M_NONFATAL, "PROXY protocol v2: SSL TLV invalid");
-+        return;
-+    }
-+
-+    if (ssl->client & PROXY_PROTOCOL_V2_CLIENT_SSL)
-+    {
-+        msg(M_DEBUG, "PROXY protocol v2: client connected over SSL/TLS");
-+    }
-+    if (ssl->client & PROXY_PROTOCOL_V2_CLIENT_CERT_CONN)
-+    {
-+        msg(M_DEBUG, "PROXY protocol v2: client provided a certificate ove=
-r the current connection");
-+    }
-+    if (ssl->client & PROXY_PROTOCOL_V2_CLIENT_CERT_SESS)
-+    {
-+        msg(M_DEBUG, "PROXY protocol v2: client provided a certificate at =
-least once over the TLS session this connection belongs to");
-+    }
-+
-+    msg(M_DEBUG, "PROXY protocol v2: client certificate verification stat:=
- %s", ssl->verify ? "failure" : "success");
-+    ppi->ssl_client =3D ssl->client;
-+    ppi->ssl_verify =3D ssl->verify =3D=3D 0;
-+}
-+
-+/*
-+ * Parse a TLV and store the value in the proxy protocol info structure.
-+ *
-+ * @param ppi - The proxy protocol info structure to store the parsed data.
-+ * @param type - The TLV type.
-+ * @param len - The length of the TLV value.
-+ * @param value - The TLV value.
-+ */
-+void
-+proxy_protocol_parse_tlv(struct proxy_protocol_info *ppi, const uint8_t ty=
-pe, const uint16_t len, const uint8_t *value)
-+{
-+    switch (type)
-+    {
-+        case PROXY_PROTOCOL_TLV_TYPE_ALPN:
-+            proxy_protocol_parse_string_tlv(ppi, &ppi->alpn, "ALPN", len, =
-value);
++        case PROXY_PROTOCOL_V2_LOCAL_CMD:
++            /* the receiver must accept this connection as valid and must =
+use
++             * the real connection endpoints and discard the protocol block
++             * including the family which is ignored */
++            msg(M_DEBUG, "PROXY protocol v2: LOCAL command");
++            parsing_state =3D PROXY_PROTOCOL_PARSING_STATE_IGNORE;
 +            break;
 +
-+        case PROXY_PROTOCOL_TLV_TYPE_AUTHORITY:
-+            proxy_protocol_parse_string_tlv(ppi, &ppi->authority, "AUTHORI=
-TY", len, value);
-+            break;
-+
-+        case PROXY_PROTOCOL_TLV_TYPE_CRC32C:
-+            proxy_protocol_parse_crc32c_tlv(len, value);
-+            break;
-+
-+        case PROXY_PROTOCOL_TLV_TYPE_NOOP:
-+            break;
-+
-+        case PROXY_PROTOCOL_TLV_TYPE_UNIQUE_ID:
-+            proxy_protocol_parse_uid_tlv(ppi, len, value);
-+            break;
-+
-+        case PROXY_PROTOCOL_TLV_TYPE_SSL:
-+            proxy_protocol_parse_ssl_tlv(ppi, len, value);
-+            break;
-+
-+        case PROXY_PROTOCOL_TLV_SUBTYPE_SSL_VERSION:
-+            proxy_protocol_parse_string_tlv(ppi, &ppi->ssl_version, "SSL_V=
-ERSION", len, value);
-+            break;
-+
-+        case PROXY_PROTOCOL_TLV_SUBTYPE_SSL_CN:
-+            proxy_protocol_parse_string_tlv(ppi, &ppi->ssl_cn, "SSL_CN", l=
-en, value);
-+            break;
-+
-+        case PROXY_PROTOCOL_TLV_SUBTYPE_SSL_CIPHER:
-+            proxy_protocol_parse_string_tlv(ppi, &ppi->ssl_cipher, "SSL_CI=
-PHER", len, value);
-+            break;
-+
-+        case PROXY_PROTOCOL_TLV_SUBTYPE_SSL_SIG_ALG:
-+            proxy_protocol_parse_string_tlv(ppi, &ppi->ssl_sig_alg, "SSL_S=
-IG_ALG", len, value);
-+            break;
-+
-+        case PROXY_PROTOCOL_TLV_SUBTYPE_SSL_KEY_ALG:
-+            proxy_protocol_parse_string_tlv(ppi, &ppi->ssl_key_alg, "SSL_K=
-EY_ALG", len, value);
-+            break;
-+
-+        case PROXY_PROTOCOL_TLV_TYPE_NETNS:
-+            proxy_protocol_parse_string_tlv(ppi, &ppi->netns, "NETNS", len=
-, value);
++        case PROXY_PROTOCOL_V2_PROXY_CMD:
++            msg(M_DEBUG, "PROXY protocol v2: PROXY command");
 +            break;
 +
 +        default:
-+            msg(M_NONFATAL, "PROXY protocol v2: unknown TLV type 0x%02x", =
-type);
++            msg(M_DEBUG, "PROXY protocol v2: UNSPEC or unknown command");
++            parsing_state =3D PROXY_PROTOCOL_PARSING_STATE_INVALID;
++    }
++
++    if (parsing_state !=3D PROXY_PROTOCOL_PARSING_STATE_OK)
++    {
++        return pos;
++    }
++    pos +=3D sizeof(header.v2.fam);
++
++    switch (header.v2.fam)
++    {
++        case PROXY_PROTOCOL_V2_AF_INET | PROXY_PROTOCOL_V2_TP_STREAM:
++            msg(M_DEBUG, "PROXY protocol v2: TCP over IPv4.");
++            proxy_protocol_set_addr(ppi, version, AF_INET, SOCK_STREAM,
++                                    &header.v2.addr.ip4.src_addr,
++                                    &header.v2.addr.ip4.dst_addr,
++                                    header.v2.addr.ip4.src_port,
++                                    header.v2.addr.ip4.dst_port);
++            addr_len =3D PROXY_PROTOCOL_V2_ADDR_LEN_IPV4;
++            break;
++
++        case PROXY_PROTOCOL_V2_AF_INET | PROXY_PROTOCOL_V2_TP_DGRAM:
++            msg(M_DEBUG, "PROXY protocol v2: UDP over IPv4");
++            proxy_protocol_set_addr(ppi, version, AF_INET, SOCK_DGRAM,
++                                    &header.v2.addr.ip4.src_addr,
++                                    &header.v2.addr.ip4.dst_addr,
++                                    header.v2.addr.ip4.src_port,
++                                    header.v2.addr.ip4.dst_port);
++            addr_len =3D PROXY_PROTOCOL_V2_ADDR_LEN_IPV4;
++            break;
++
++        case PROXY_PROTOCOL_V2_AF_INET6 | PROXY_PROTOCOL_V2_TP_STREAM:
++            msg(M_DEBUG, "PROXY protocol v2: TCP over IPv6");
++            proxy_protocol_set_addr(ppi, version, AF_INET6, SOCK_STREAM,
++                                    header.v2.addr.ip6.src_addr,
++                                    header.v2.addr.ip6.dst_addr,
++                                    header.v2.addr.ip6.src_port,
++                                    header.v2.addr.ip6.dst_port);
++            addr_len =3D PROXY_PROTOCOL_V2_ADDR_LEN_IPV6;
++            break;
++
++        case PROXY_PROTOCOL_V2_AF_INET6 | PROXY_PROTOCOL_V2_TP_DGRAM:
++            msg(M_DEBUG, "PROXY protocol v2: UDP over IPv6");
++            proxy_protocol_set_addr(ppi, version, AF_INET6, SOCK_DGRAM,
++                                    header.v2.addr.ip6.src_addr,
++                                    header.v2.addr.ip6.dst_addr,
++                                    header.v2.addr.ip6.src_port,
++                                    header.v2.addr.ip6.dst_port);
++            addr_len =3D PROXY_PROTOCOL_V2_ADDR_LEN_IPV6;
++            break;
++
++        case PROXY_PROTOCOL_V2_AF_UNIX | PROXY_PROTOCOL_V2_TP_STREAM:
++            msg(M_DEBUG, "PROXY protocol v2: AF_UNIX stream");
++            proxy_protocol_set_addr(ppi, version, AF_UNIX, SOCK_STREAM,
++                                    header.v2.addr.unx.src_addr,
++                                    header.v2.addr.unx.dst_addr, 0, 0);
++            addr_len =3D PROXY_PROTOCOL_V2_ADDR_LEN_UNIX;
++            break;
++
++        case PROXY_PROTOCOL_V2_AF_UNIX | PROXY_PROTOCOL_V2_TP_DGRAM:
++            msg(M_DEBUG, "PROXY protocol v2: AF_UNIX datagram");
++            proxy_protocol_set_addr(ppi, version, AF_UNIX, SOCK_DGRAM,
++                                    header.v2.addr.unx.src_addr,
++                                    header.v2.addr.unx.dst_addr, 0, 0);
++            addr_len =3D PROXY_PROTOCOL_V2_ADDR_LEN_UNIX;
++            break;
++
++        default:
++            msg(M_DEBUG, "PROXY protocol v2: UNSPEC or unknown address fam=
+ily");
++            parsing_state =3D PROXY_PROTOCOL_PARSING_STATE_INVALID;
 +            break;
 +    }
++    return (int)(pos + sizeof(header.v2.len) + addr_len);
 +}
 +
-+/*
-+ * Parse the TLVs in the PROXY protocol v2 header.
-+ *
-+ * @param ppi - The proxy protocol info structure to store the parsed data.
-+ * @param buf - The buffer containing the TLVs.
-+ * @param buf_len - The length of the buffer.
-+ *
-+ * @return - The number of bytes parsed or -1 if an error occurred.
-+ */
-+int
-+proxy_protocol_parse_tlvs(struct proxy_protocol_info *ppi, const uint8_t *=
-buf,
-+                          const int buf_len)
++bool
++proxy_protocol_parse(struct proxy_protocol_info *ppi, const struct buffer =
+*buf)
 +{
-+    const uint8_t *end =3D buf + buf_len;
-+    const uint8_t *start =3D buf;
++    const proxy_protocol_version_t version =3D proxy_protocol_version(BPTR=
+(buf), BLEN(buf));
 +
-+    ppi->gc =3D gc_new();
-+    while (buf < end && parsing_state =3D=3D PROXY_PROTOCOL_PARSING_STATE_=
-OK)
++    header_len =3D BLEN(buf);
++    memcpy(&header, BPTR(buf), header_len);
++
++    switch (version)
 +    {
-+        const struct proxy_protocol_tlv *tlv =3D (const struct proxy_proto=
-col_tlv *)buf;
-+        uint16_t tlv_len =3D (tlv->length_hi << 8) | tlv->length_lo;
-+        if (buf + sizeof(*tlv) + tlv_len > end)
++        case PROXY_PROTOCOL_VERSION_2:
 +        {
-+            msg(M_NONFATAL, "PROXY protocol v2: TLV length exceeds buffer =
-size");
-+            return -1;
++            if ((header.v2.ver_cmd & PROXY_PROTOCOL_V2_VER_MASK) =3D=3D PR=
+OXY_PROTOCOL_V2_VER)
++            {
++                proxy_protocol_parse_v2(ppi);
++                if (parsing_state =3D=3D PROXY_PROTOCOL_PARSING_STATE_IGNO=
+RE)
++                {
++                    msg(M_DEBUG, "PROXY protocol v2: ignoring header");
++                    return true;
++                }
++                else if (parsing_state =3D=3D PROXY_PROTOCOL_PARSING_STATE=
+_INVALID)
++                {
++                    return false;
++                }
++                msg(M_DEBUG, "PROXY protocol v2: header parsed");
++                return true;
++            }
++            else
++            {
++                msg(M_NONFATAL, "PROXY protocol v2: expected version 2, go=
+t %d",
++                    header.v2.ver_cmd & PROXY_PROTOCOL_V2_VER_MASK);
++                return false;
++            }
 +        }
-+        proxy_protocol_parse_tlv(ppi, tlv->type, tlv_len, tlv->value);
-+        buf +=3D sizeof(*tlv) + tlv_len;
++
++        case PROXY_PROTOCOL_VERSION_1:
++            msg(M_DEBUG, "PROXY protocol header v1: %.*s", BLEN(buf) - 2, =
+header.v1.line);
++            return proxy_protocol_parse_v1(ppi, header.v1.line, BLEN(buf));
++
++        default:
++            return false;
 +    }
-+    return (int)(buf - start);
 +}
 +
-+/*
-  * Parse the PROXY protocol v2 header.
-  *
-  * @param ppi - The proxy protocol info structure to store the parsed data.
-@@ -435,7 +739,7 @@
-         {
-             if ((header.v2.ver_cmd & PROXY_PROTOCOL_V2_VER_MASK) =3D=3D PR=
-OXY_PROTOCOL_V2_VER)
-             {
--                proxy_protocol_parse_v2(ppi);
-+                int pos =3D proxy_protocol_parse_v2(ppi);
-                 if (parsing_state =3D=3D PROXY_PROTOCOL_PARSING_STATE_IGNO=
-RE)
-                 {
-                     msg(M_DEBUG, "PROXY protocol v2: ignoring header");
-@@ -445,6 +749,21 @@
-                 {
-                     return false;
-                 }
-+
-+                if (pos < header_len) /* there's extra TLV data to parse */
-+                {
-+                    pos +=3D proxy_protocol_parse_tlvs(ppi, (uint8_t *)(&h=
-eader) + pos,
-+                                                     header_len - pos);
-+                    if (parsing_state =3D=3D PROXY_PROTOCOL_PARSING_STATE_=
-INVALID)
-+                    {
-+                        return false;
-+                    }
-+                    if (pos < header_len)
-+                    {
-+                        msg(M_NONFATAL, "PROXY protocol v2: could not corr=
-eclty parse TLV data");
-+                    }
-+                }
-+
-                 msg(M_DEBUG, "PROXY protocol v2: header parsed");
-                 return true;
-             }
-diff --git a/src/openvpn/proxy_protocol.h b/src/openvpn/proxy_protocol.h
-index 8e9af03..a492f85 100644
---- a/src/openvpn/proxy_protocol.h
-+++ b/src/openvpn/proxy_protocol.h
-@@ -60,6 +60,25 @@
- #define PROXY_PROTOCOL_V2_TP_STREAM (0x1 << 0)
- #define PROXY_PROTOCOL_V2_TP_DGRAM  (0x2 << 0)
-
-+#define PROXY_PROTOCOL_TLV_TYPE_ALPN            0x01
-+#define PROXY_PROTOCOL_TLV_TYPE_AUTHORITY       0x02
-+#define PROXY_PROTOCOL_TLV_TYPE_CRC32C          0x03
-+#define PROXY_PROTOCOL_TLV_TYPE_NOOP            0x04
-+#define PROXY_PROTOCOL_TLV_TYPE_UNIQUE_ID       0x05
-+#define PROXY_PROTOCOL_TLV_TYPE_SSL             0x20
-+#define PROXY_PROTOCOL_TLV_SUBTYPE_SSL_VERSION  0x21
-+#define PROXY_PROTOCOL_TLV_SUBTYPE_SSL_CN       0x22
-+#define PROXY_PROTOCOL_TLV_SUBTYPE_SSL_CIPHER   0x23
-+#define PROXY_PROTOCOL_TLV_SUBTYPE_SSL_SIG_ALG  0x24
-+#define PROXY_PROTOCOL_TLV_SUBTYPE_SSL_KEY_ALG  0x25
-+#define PROXY_PROTOCOL_TLV_TYPE_NETNS           0x30
-+
-+#define PROXY_PROTOCOL_V2_CLIENT_SSL          0x01
-+#define PROXY_PROTOCOL_V2_CLIENT_CERT_CONN    0x02
-+#define PROXY_PROTOCOL_V2_CLIENT_CERT_SESS    0x04
-+
-+#define PROXY_PROTOCOL_V2_TLV_UNIQUE_ID_MAX_LEN 128
-+
- typedef enum
- {
-     PROXY_PROTOCOL_VERSION_INVALID =3D -1,
-@@ -69,6 +88,22 @@
-     PROXY_PROTOCOL_VERSION_2,
- } proxy_protocol_version_t;
-
-+struct proxy_protocol_tlv
++void
++proxy_protocol_free(struct proxy_protocol_info *ppi)
 +{
-+    uint8_t type;
-+    uint8_t length_hi;
-+    uint8_t length_lo;
-+    uint8_t value[0];
++    gc_free(&ppi->gc);
++}
+diff --git a/src/openvpn/proxy_protocol.h b/src/openvpn/proxy_protocol.h
+new file mode 100644
+index 0000000..8e9af03
+--- /dev/null
++++ b/src/openvpn/proxy_protocol.h
+@@ -0,0 +1,165 @@
++/*
++ *  OpenVPN -- An application to securely tunnel IP networks
++ *             over a single TCP/UDP port, with support for SSL/TLS-based
++ *             session authentication and key exchange,
++ *             packet encryption, packet authentication, and
++ *             packet compression.
++ *
++ *  Copyright (C) 2002-2024 OpenVPN Inc <sales@...515...>
++ *
++ *  This program is free software; you can redistribute it and/or modify
++ *  it under the terms of the GNU General Public License version 2
++ *  as published by the Free Software Foundation.
++ *
++ *  This program is distributed in the hope that it will be useful,
++ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
++ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ *  GNU General Public License for more details.
++ *
++ *  You should have received a copy of the GNU General Public License along
++ *  with this program; if not, write to the Free Software Foundation, Inc.,
++ *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
++ */
++
++#ifndef PROXY_PROTOCOL_H
++#define PROXY_PROTOCOL_H
++
++#include "buffer.h"
++#include "openvpn.h"
++#include "socket.h"
++
++#include <stdbool.h>
++#include <stdint.h>
++
++/* https://www.haproxy.org/download/1.8/doc/proxy-protocol.txt */
++
++#define PROXY_PROTOCOL_V1_SIG          "PROXY"
++#define PROXY_PROTOCOL_V1_SIG_LEN      5
++#define PROXY_PROTOCOL_V1_MIN_HDR_LEN  8
++#define PROXY_PROTOCOL_V1_LINE_MAX_LEN 108
++
++#define PROXY_PROTOCOL_V2_SIG         "\x0D\x0A\x0D\x0A\x00\x0D\x0A\x51\x5=
+5\x49\x54\x0A"
++#define PROXY_PROTOCOL_V2_SIG_LEN     12
++#define PROXY_PROTOCOL_V2_MIN_HDR_LEN 16
++
++#define PROXY_PROTOCOL_V2_VER_MASK 0xF0
++#define PROXY_PROTOCOL_V2_VER      (0x2 << 4)
++
++#define PROXY_PROTOCOL_V2_CMD_MASK  0x0F
++#define PROXY_PROTOCOL_V2_LOCAL_CMD (0x0 << 0)
++#define PROXY_PROTOCOL_V2_PROXY_CMD (0x1 << 0)
++
++#define PROXY_PROTOCOL_V2_AF_MASK   0xF0
++#define PROXY_PROTOCOL_V2_AF_UNSPEC (0x0 << 4)
++#define PROXY_PROTOCOL_V2_AF_INET   (0x1 << 4)
++#define PROXY_PROTOCOL_V2_AF_INET6  (0x2 << 4)
++#define PROXY_PROTOCOL_V2_AF_UNIX   (0x3 << 4)
++
++#define PROXY_PROTOCOL_V2_TP_MASK   0x0F
++#define PROXY_PROTOCOL_V2_TP_UNSPEC (0x0 << 0)
++#define PROXY_PROTOCOL_V2_TP_STREAM (0x1 << 0)
++#define PROXY_PROTOCOL_V2_TP_DGRAM  (0x2 << 0)
++
++typedef enum
++{
++    PROXY_PROTOCOL_VERSION_INVALID =3D -1,
++
++    PROXY_PROTOCOL_VERSION_UNKNOWN =3D 0,
++    PROXY_PROTOCOL_VERSION_1,
++    PROXY_PROTOCOL_VERSION_2,
++} proxy_protocol_version_t;
++
++/* HAProxy PROXY protocol header */
++typedef union
++{
++    struct
++    {
++        char line[PROXY_PROTOCOL_V1_LINE_MAX_LEN];
++    } v1;
++    struct
++    {
++        uint8_t sig[PROXY_PROTOCOL_V2_SIG_LEN];
++        uint8_t ver_cmd;
++        uint8_t fam;
++        uint16_t len;
++        union
++        {
++            struct
++            {
++                uint32_t src_addr;
++                uint32_t dst_addr;
++                uint16_t src_port;
++                uint16_t dst_port;
++            } ip4;
++            struct
++            {
++                uint8_t src_addr[16];
++                uint8_t dst_addr[16];
++                uint16_t src_port;
++                uint16_t dst_port;
++            } ip6;
++            struct
++            {
++                uint8_t src_addr[108];
++                uint8_t dst_addr[108];
++            } unx;
++        } addr;
++    } v2;
++} proxy_protocol_header_t;
++
++struct proxy_protocol_info
++{
++    struct gc_arena gc;
++
++    proxy_protocol_version_t version;
++    int sock_type;
++    struct openvpn_sockaddr src;
++    struct openvpn_sockaddr dst;
 +};
 +
-+#pragma pack(push, 1)
-+struct proxy_protocol_tlv_ssl
-+{
-+    uint8_t client;
-+    uint32_t verify;
-+} __attribute__((packed));
-+#pragma pack(pop)
++/*
++ * Check if the buffer contains a PROXY protocol header and return the ver=
+sion.
++ *
++ * @param buf - The buffer to check.
++ * @param buf_len - The length of the buffer.
++ *
++ * @return - The PROXY protocol version or PROXY_PROTOCOL_VERSION_INVALID =
+if
++ *          the buffer does not contain a valid PROXY protocol header.
++ */
++proxy_protocol_version_t
++proxy_protocol_version(const uint8_t *buf, int buf_len);
 +
- /* HAProxy PROXY protocol header */
- typedef union
- {
-@@ -115,6 +150,23 @@
-     int sock_type;
-     struct openvpn_sockaddr src;
-     struct openvpn_sockaddr dst;
++/*
++ * Get the length of the PROXY protocol header.
++ *
++ * @param buf - The buffer to check.
++ * @param buf_len - The length of the buffer.
++ * @param version - The PROXY protocol version.
++ *
++ * @return - The length of the header or -1 if the header is partial or in=
+valid.
++ */
++int
++proxy_protocol_header_len(const uint8_t *buf, int len,
++                          proxy_protocol_version_t version);
 +
-+    /* data extracted from TLVs */
-+    char *alpn;
-+    char *authority;
++/*
++ * Parse the PROXY protocol header.
++ *
++ * @param ppi - The proxy protocol info structure to store the parsed data.
++ * @param buf - The buffer containing the header.
++ * @param version - The version of the PROXY protocol.
++ *
++ * @return - true if the header was successfully parsed.
++ */
++bool
++proxy_protocol_parse(struct proxy_protocol_info *ppi, const struct buffer =
+*buf);
 +
-+    uint8_t unique_id[PROXY_PROTOCOL_V2_TLV_UNIQUE_ID_MAX_LEN + 1];
-+    uint16_t unique_id_len;
++/*
++ * Free the allocated memory.
++ *
++ * @param ppi - The proxy protocol info structure.
++ */
++void
++proxy_protocol_free(struct proxy_protocol_info *ppi);
 +
-+    uint8_t ssl_client;
-+    uint32_t ssl_verify;
-+    char *ssl_version;
-+    char *ssl_cn;
-+    char *ssl_cipher;
-+    char *ssl_sig_alg;
-+    char *ssl_key_alg;
++#endif /* PROXY_PROTOCOL_H */
+diff --git a/src/openvpn/socket.c b/src/openvpn/socket.c
+index 17c5e76..7fb382c 100644
+--- a/src/openvpn/socket.c
++++ b/src/openvpn/socket.c
+@@ -39,6 +39,7 @@
+ #include "manage.h"
+ #include "openvpn.h"
+ #include "forward.h"
++#include "proxy_protocol.h"
+
+ #include "memdbg.h"
+
+@@ -2680,10 +2681,20 @@
+
+         if (sb->len < 1 || sb->len > sb->maxlen)
+         {
+-            msg(M_WARN, "WARNING: Bad encapsulated packet length from peer=
+ (%d), which must be > 0 and <=3D %d -- please ensure that --tun-mtu or --l=
+ink-mtu is equal on both peers -- this condition could also indicate a poss=
+ible active attack on the TCP link -- [Attempting restart...]", sb->len, sb=
+->maxlen);
+-            stream_buf_reset(sb);
+-            sb->error =3D true;
+-            return false;
++            /* check if it's a PROXY protocol header */
 +
-+    char *netns;
- };
-=20
- /*
++            /* undo the reading of net_size */
++            ASSERT(buf_prepend(&sb->buf, sizeof(net_size)));
++            const proxy_protocol_version_t pp_version =3D proxy_protocol_v=
+ersion(BPTR(&sb->buf), BLEN(&sb->buf));
++            const int pp_len =3D proxy_protocol_header_len(BPTR(&sb->buf),=
+ BLEN(&sb->buf), pp_version);
++            if (pp_version <=3D 0 || pp_len < 0 || pp_len > sb->buf.len)
++            {
++                msg(M_WARN, "WARNING: Bad encapsulated packet length from =
+peer (%d), which must be > 0 and <=3D %d -- please ensure that --tun-mtu or=
+ --link-mtu is equal on both peers -- this condition could also indicate a =
+possible active attack on the TCP link -- [Attempting restart...]", sb->len=
+, sb->maxlen);
++                stream_buf_reset(sb);
++                sb->error =3D true;
++                return false;
++            }
++            sb->len =3D pp_len;
+         }
+     }
+
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/686?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/685?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings
 
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: Ia593f72f6baa6e16d2fd9b21b383b709682f9499
-Gerrit-Change-Number: 686
+Gerrit-Change-Id: I9766c68feaba71279f26c3310eee4b5ca215e6ac
+Gerrit-Change-Number: 685
 Gerrit-PatchSet: 1
 Gerrit-Owner: ralf_lici <ralf@...2726...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
@@ -546,538 +1200,1247 @@ Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
 Gerrit-Attention: flichtenheld <frank@...2641...>
 Gerrit-MessageType: newchange
 
---NSQ2oIYjFYM=
+--mPTQdSu9amM=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <p> Attention is currently required from: flichtenheld, plaisthos. </p>
 <p>ralf_lici would like plaisthos and flichtenheld to <strong>review</stron=
 g> this change.
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/686?usp=3Demail">Vi=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/685?usp=3Demail">Vi=
 ew Change</a></p><pre style=3D"font-family: monospace,monospace; white-spac=
-e: pre-wrap;">Add support for TLV parsing in the PROXY protocol<br><br>Vers=
-ion 2 of the PROXY protocol appends extra data in Type-Length-Value<br>vect=
-or format at the end of the header. This commit parses and processes<br>or =
-stores the additional information extracted from TLVs.<br><br>Change-Id: Ia=
-593f72f6baa6e16d2fd9b21b383b709682f9499<br>Signed-off-by: Ralf Lici &lt;ral=
-flici95@...277...&gt;<br>---<br>M src/openvpn/proxy_protocol.c<br>M src/ope=
-nvpn/proxy_protocol.h<br>2 files changed, 372 insertions(+), 1 deletion(-)<=
-br><br></pre><pre style=3D"font-family: monospace,monospace; white-space: p=
-re-wrap;">git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/86/6=
-86/1</pre><pre style=3D"font-family: monospace,monospace; white-space: pre-=
-wrap;"><span>diff --git a/src/openvpn/proxy_protocol.c b/src/openvpn/proxy_=
-protocol.c</span><br><span>index 10a68c2..7f72313 100644</span><br><span>--=
-- a/src/openvpn/proxy_protocol.c</span><br><span>+++ b/src/openvpn/proxy_pr=
-otocol.c</span><br><span>@@ -38,6 +38,74 @@</span><br><span>     PROXY_PROT=
-OCOL_PARSING_STATE_IGNORE =3D 1,</span><br><span> } proxy_protocol_parsing_=
-state_t;</span><br><span> </span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+static const uint32_t CRC32C_TABLE[256] =3D</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+    0x00000000L, 0xF26B8303L, 0xE13B70F7L, 0x1350F3F4L,</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+    0xC79A971FL, 0x35F1141=
-CL, 0x26A1E7E8L, 0xD4CA64EBL,</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+    0x8AD958CFL, 0x78B2DBCCL, 0x6BE22838L, 0x9989AB3BL,</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+    0x4D43CFD0L, 0xBF284CD3L,=
- 0xAC78BF27L, 0x5E133C24L,</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+    0x105EC76FL, 0xE235446CL, 0xF165B798L, 0x030E349BL,</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+    0xD7C45070L, 0x25AFD373L, 0x=
-36FF2087L, 0xC494A384L,</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+    0x9A879FA0L, 0x68EC1CA3L, 0x7BBCEF57L, 0x89D76C54L,</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+    0x5D1D08BFL, 0xAF768BBCL, 0xBC2=
-67848L, 0x4E4DFB4BL,</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+    0x20BD8EDEL, 0xD2D60DDDL, 0xC186FE29L, 0x33ED7D2AL,</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+    0xE72719C1L, 0x154C9AC2L, 0x061C69=
-36L, 0xF477EA35L,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-  0xAA64D611L, 0x580F5512L, 0x4B5FA6E6L, 0xB93425E5L,</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    0x6DFE410EL, 0x9F95C20DL, 0x8CC531F9L=
-, 0x7EAEB2FAL,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    0=
-x30E349B1L, 0xC288CAB2L, 0xD1D83946L, 0x23B3BA45L,</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+    0xF779DEAEL, 0x05125DADL, 0x1642AE59L, 0=
-xE4292D5AL,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    0xBA=
-3A117EL, 0x4851927DL, 0x5B016189L, 0xA96AE28AL,</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+    0x7DA08661L, 0x8FCB0562L, 0x9C9BF696L, 0x6E=
-F07595L,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    0x417B1=
-DBCL, 0xB3109EBFL, 0xA0406D4BL, 0x522BEE48L,</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+    0x86E18AA3L, 0x748A09A0L, 0x67DAFA54L, 0x95B17=
-957L,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    0xCBA24573=
-L, 0x39C9C670L, 0x2A993584L, 0xD8F2B687L,</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+    0x0C38D26CL, 0xFE53516FL, 0xED03A29BL, 0x1F682198=
-L,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    0x5125DAD3L, =
-0xA34E59D0L, 0xB01EAA24L, 0x42752927L,</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+    0x96BF4DCCL, 0x64D4CECFL, 0x77843D3BL, 0x85EFBE38L,<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+    0xDBFC821CL, 0x2=
-997011FL, 0x3AC7F2EBL, 0xC8AC71E8L,</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+    0x1C661503L, 0xEE0D9600L, 0xFD5D65F4L, 0x0F36E6F7L,</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+    0x61C69362L, 0x93AD=
-1061L, 0x80FDE395L, 0x72966096L,</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+    0xA65C047DL, 0x5437877EL, 0x4767748AL, 0xB50CF789L,</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+    0xEB1FCBADL, 0x197448A=
-EL, 0x0A24BB5AL, 0xF84F3859L,</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+    0x2C855CB2L, 0xDEEEDFB1L, 0xCDBE2C45L, 0x3FD5AF46L,</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+    0x7198540DL, 0x83F3D70EL,=
- 0x90A324FAL, 0x62C8A7F9L,</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+    0xB602C312L, 0x44694011L, 0x5739B3E5L, 0xA55230E6L,</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+    0xFB410CC2L, 0x092A8FC1L, 0x=
-1A7A7C35L, 0xE811FF36L,</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+    0x3CDB9BDDL, 0xCEB018DEL, 0xDDE0EB2AL, 0x2F8B6829L,</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+    0x82F63B78L, 0x709DB87BL, 0x63C=
-D4B8FL, 0x91A6C88CL,</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+    0x456CAC67L, 0xB7072F64L, 0xA457DC90L, 0x563C5F93L,</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+    0x082F63B7L, 0xFA44E0B4L, 0xE91413=
-40L, 0x1B7F9043L,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-  0xCFB5F4A8L, 0x3DDE77ABL, 0x2E8E845FL, 0xDCE5075CL,</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    0x92A8FC17L, 0x60C37F14L, 0x73938CE0L=
-, 0x81F80FE3L,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    0=
-x55326B08L, 0xA759E80BL, 0xB4091BFFL, 0x466298FCL,</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+    0x1871A4D8L, 0xEA1A27DBL, 0xF94AD42FL, 0=
-x0B21572CL,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    0xDF=
-EB33C7L, 0x2D80B0C4L, 0x3ED04330L, 0xCCBBC033L,</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+    0xA24BB5A6L, 0x502036A5L, 0x4370C551L, 0xB1=
-1B4652L,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    0x65D12=
-2B9L, 0x97BAA1BAL, 0x84EA524EL, 0x7681D14DL,</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+    0x2892ED69L, 0xDAF96E6AL, 0xC9A99D9EL, 0x3BC21=
-E9DL,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    0xEF087A76=
-L, 0x1D63F975L, 0x0E330A81L, 0xFC588982L,</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+    0xB21572C9L, 0x407EF1CAL, 0x532E023EL, 0xA145813D=
-L,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    0x758FE5D6L, =
-0x87E466D5L, 0x94B49521L, 0x66DF1622L,</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+    0x38CC2A06L, 0xCAA7A905L, 0xD9F75AF1L, 0x2B9CD9F2L,<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+    0xFF56BD19L, 0x0=
-D3D3E1AL, 0x1E6DCDEEL, 0xEC064EEDL,</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+    0xC38D26C4L, 0x31E6A5C7L, 0x22B65633L, 0xD0DDD530L,</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+    0x0417B1DBL, 0xF67C=
-32D8L, 0xE52CC12CL, 0x1747422FL,</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+    0x49547E0BL, 0xBB3FFD08L, 0xA86F0EFCL, 0x5A048DFFL,</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+    0x8ECEE914L, 0x7CA56A1=
-7L, 0x6FF599E3L, 0x9D9E1AE0L,</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+    0xD3D3E1ABL, 0x21B862A8L, 0x32E8915CL, 0xC083125FL,</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+    0x144976B4L, 0xE622F5B7L,=
- 0xF5720643L, 0x07198540L,</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+    0x590AB964L, 0xAB613A67L, 0xB831C993L, 0x4A5A4A90L,</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+    0x9E902E7BL, 0x6CFBAD78L, 0x=
-7FAB5E8CL, 0x8DC0DD8FL,</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+    0xE330A81AL, 0x115B2B19L, 0x020BD8EDL, 0xF0605BEEL,</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+    0x24AA3F05L, 0xD6C1BC06L, 0xC59=
-14FF2L, 0x37FACCF1L,</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+    0x69E9F0D5L, 0x9B8273D6L, 0x88D28022L, 0x7AB90321L,</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+    0xAE7367CAL, 0x5C18E4C9L, 0x4F4817=
-3DL, 0xBD23943EL,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-  0xF36E6F75L, 0x0105EC76L, 0x12551F82L, 0xE03E9C81L,</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    0x34F4F86AL, 0xC69F7B69L, 0xD5CF889DL=
-, 0x27A40B9EL,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    0=
-x79B737BAL, 0x8BDCB4B9L, 0x988C474DL, 0x6AE7C44EL,</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+    0xBE2DA0A5L, 0x4C4623A6L, 0x5F16D052L, 0=
-xAD7D5351L</span><br><span style=3D"color: hsl(120, 100%, 40%);">+};</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> static c=
-onst size_t PROXY_PROTOCOL_V2_ADDR_LEN_IPV4 =3D 12;</span><br><span> static=
- const size_t PROXY_PROTOCOL_V2_ADDR_LEN_IPV6 =3D 36;</span><br><span> stat=
-ic const size_t PROXY_PROTOCOL_V2_ADDR_LEN_UNIX =3D 216;</span><br><span>@@=
- -88,6 +156,17 @@</span><br><span>     }</span><br><span> }</span><br><span=
-> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+uint32_t</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+proxy_protocol_crc32c(const =
-uint8_t *data, int len)</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    uint32_t c=
-rc =3D 0xFFFFFFFF;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-   while (len-- &gt; 0)</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        cr=
-c =3D (crc &gt;&gt; 8) ^ CRC32C_TABLE[(crc ^ (*data++)) &amp; 0xFF];</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+    return (crc ^ 0xFFFFFFFF);</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+</span><br><span> /*</span><br><span>  * Parse =
-a port number from a string.</span><br><span>  *</span><br><span>@@ -316,6 =
-+395,231 @@</span><br><span> }</span><br><span> </span><br><span> /*</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+ * Parse a string based TL=
-V and store the value in &#39;out&#39;.</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+ *</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+ * @param ppi - The proxy protocol info structure used for memory alloca=
-tion.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @param out =
-- The output variable to store the parsed value.</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+ * @param type_str - A string representation o=
-f the TLV type (for logging).</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+ * @param len - The length of the TLV value.</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+ * @param value - The TLV value.</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+ */</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+void</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+proxy_protocol_parse_string_tlv(struct proxy_protocol_in=
-fo *ppi, char **out, char *type_str, const uint16_t len, const uint8_t *val=
-ue)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+    if (len =3D=3D 0)</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+        msg(M_NONFATAL, &quot;PROXY protocol v=
-2: %s TLV empty&quot;, type_str);</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+        return;</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+    *out =3D (char *)gc=
-_malloc(8, false, &amp;ppi-&gt;gc);</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+    memcpy(*out, value, len);</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+    (*out)[len] =3D &#39;\0&#39;;</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+    if (type_str)</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+        msg(M_DEBUG, &quot;PROXY protocol v2: %s TLV: %s&quot;, type_s=
-tr, *out);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=
+e: pre-wrap;">Add support for HAProxy&#39;s PROXY protocol<br><br>The PROXY=
+ protocol is a simple protocol that can be used to<br>communicate connectio=
+n information such as a client&#39;s address across<br>multiple layers of N=
+AT or TCP proxies. This commit adds support for<br>the parsing of the v1 an=
+d v2 PROXY protocol header but does not yet<br>parse the TLV data in the v2=
+ header.<br><br>Check if a PROXY protocol header was sent by the client at =
+the<br>beginning of the connection. If so, parse it, store the extracted<br=
+>informations and replace the proxy address with the real client<br>address=
+. Checking for the header is done only if the packet has an<br>invalid leng=
+th so that there&#39;s minimal overhead for the common case.<br><br>Also ad=
+d a small document file showing how to configure HAProxy to<br>test the fea=
+ture.<br><br>Change-Id: I9766c68feaba71279f26c3310eee4b5ca215e6ac<br>Signed=
+-off-by: Ralf Lici &lt;ralflici95@...277...&gt;<br>---<br>M CMakeLists.txt<=
+br>A doc/proxy-protocol.txt<br>M src/openvpn/Makefile.am<br>M src/openvpn/i=
+nit.c<br>M src/openvpn/multi.c<br>M src/openvpn/openvpn.h<br>A src/openvpn/=
+proxy_protocol.c<br>A src/openvpn/proxy_protocol.h<br>M src/openvpn/socket.=
+c<br>9 files changed, 895 insertions(+), 7 deletions(-)<br><br></pre><pre s=
+tyle=3D"font-family: monospace,monospace; white-space: pre-wrap;">git pull =
+ssh://gerrit.openvpn.net:29418/openvpn refs/changes/85/685/1</pre><pre styl=
+e=3D"font-family: monospace,monospace; white-space: pre-wrap;"><span>diff -=
+-git a/CMakeLists.txt b/CMakeLists.txt</span><br><span>index ad620fa..67cfd=
+08 100644</span><br><span>--- a/CMakeLists.txt</span><br><span>+++ b/CMakeL=
+ists.txt</span><br><span>@@ -490,6 +490,8 @@</span><br><span>     src/openv=
+pn/proto.h</span><br><span>     src/openvpn/proxy.c</span><br><span>     sr=
+c/openvpn/proxy.h</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+  src/openvpn/proxy_protocol.c</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+    src/openvpn/proxy_protocol.h</span><br><span>     src/openvp=
+n/ps.c</span><br><span>     src/openvpn/ps.h</span><br><span>     src/openv=
+pn/push.c</span><br><span>diff --git a/doc/proxy-protocol.txt b/doc/proxy-p=
+rotocol.txt</span><br><span>new file mode 100644</span><br><span>index 0000=
+000..bd9b606</span><br><span>--- /dev/null</span><br><span>+++ b/doc/proxy-=
+protocol.txt</span><br><span>@@ -0,0 +1,157 @@</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+HAProxy PROXY protocol support for OpenVPN</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+The PROXY p=
+rotocol is a simple protocol that can be used to retreive the</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+original source address of a conn=
+ection that has been proxied. Every connection</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+is prepended with a header reporting the client =
+IP address and port. The</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+protocol specification is available at:</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+https://www.haproxy.org/download/2.4/doc/proxy-pro=
+tocol.txt</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+Currently there are two versi=
+ons of the protocol, a text based version (v1) and</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+a binary version (v2).</span><br><span style=
 =3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+/*</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *=
- Parse the CRC32C TLV and check if it matches the calculated CRC32C.</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+ * If there&#39;s a mismat=
-ch the parsing state is set to invalid so that the header</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+ * is dropped.</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+ * @param len - The length of the TLV value.</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+ * @param value - The TLV value.<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+ * @return - true if the CRC32C value=
- matches the calculated CRC32C.</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+ */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+bool=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+proxy_protocol_pars=
-e_crc32c_tlv(const uint16_t len, const uint8_t *value)</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+    if (len !=3D 4)</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+        msg(M_NONFATAL, &quot;PROXY protocol v2: CRC32C TLV invalid leng=
-th&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        p=
-arsing_state =3D PROXY_PROTOCOL_PARSING_STATE_INVALID;</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+        return false;</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+    uint32_t expected_crc32c =3D ntohl(*(uint32_t *)value);</span><br><=
+ 100%, 40%);">+Version 1</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+---------</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+The text based version i=
+s a human readable protocol that is easy to debug. It</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+consists of a single line of text with th=
+e following fields:</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+PROXY_SIGNATURE_V1 =
++ single space + INET_PROTOCOL + single space + CLIENT_IP +</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+single space + PROXY_IP + single sp=
+ace + CLIENT_PORT + single space +</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+PROXY_PORT + &quot;\r\n&quot;</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+The only supported INET_PROTOCOL in version 1 are &quot;TCP4&quot; an=
+d &quot;TCP6&quot;.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+Version 2</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+---------</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+The binary version is a more efficient protocol that is mo=
+re suitable for</span><br><span style=3D"color: hsl(120, 100%, 40%);">+prod=
+uction use. It consists of a fixed length header followed by the original</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+connection data.</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+A PROXY Protocol binary header for a IPv4=
+ incoming address has the format:</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+ 0               1               2               3</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+ 0 1 2 3 4 5 6 7 0 1 2 3 4 5 6=
+ 7 0 1 2 3 4 5 6 7 0 1 2 3 4 5 6 7</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-=
++-+-+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+|             =
+                                                  |</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">++                                        =
+                       +</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+|                  Proxy Protocol v2 Signature                  |</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">++                       =
+                                        +</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+|                                                    =
+           |</span><br><span style=3D"color: hsl(120, 100%, 40%);">++-+-+-+=
+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+|Version|Command|   AF  | Proto.|   =
+      Address Length        |</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+|                  =
+    IPv4 Source Address                      |</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-=
++-+-+-+-+-+-+-+-+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+| =
+                   IPv4 Destination Address                   |</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+=
+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+|          Source Port          |        Destination Port   =
+    |</span><br><span style=3D"color: hsl(120, 100%, 40%);">++-+-+-+-+-+-+-=
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+|                                        =
+                       |</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">++                                                               +</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">++                       =
+       TLVs                             +</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">++                                                    =
+           +</span><br><span style=3D"color: hsl(120, 100%, 40%);">+|      =
+                                                         |</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-=
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+A PROXY P=
+rotocol binary header for a IPv6 incoming address has the format:</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+ 0               1           =
+    2               3</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+ 0 1 2 3 4 5 6 7 0 1 2 3 4 5 6 7 0 1 2 3 4 5 6 7 0 1 2 3 4 5 6 7</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">++-+-+-+-+-+-+-+-+-+-+-+-+-+-=
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+|                                                        =
+       |</span><br><span style=3D"color: hsl(120, 100%, 40%);">++          =
+                                                     +</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+|                  Proxy Protocol v2 Sig=
+nature                  |</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">++                                                               +</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+|                      =
+                                         |</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-=
++-+-+-+-+-+-+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+|Versi=
+on|Command|   AF  | Proto.|         Address Length        |</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+=
+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+|                                                               =
+|</span><br><span style=3D"color: hsl(120, 100%, 40%);">++                 =
+                                              +</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+|                                              =
+                 |</span><br><span style=3D"color: hsl(120, 100%, 40%);">++=
+                      IPv6 Source Address                      +</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+|                             =
+                                  |</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">++                                                          =
+     +</span><br><span style=3D"color: hsl(120, 100%, 40%);">+|            =
+                                                   |</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+=
+-+-+-+-+-+-+-+-+-+-+-+-+</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+|                                                               |</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">++                       =
+                                        +</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+|                                                    =
+           |</span><br><span style=3D"color: hsl(120, 100%, 40%);">++      =
+              IPv6 Destination Address                   +</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+|                                   =
+                            |</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">++                                                               +=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+|                  =
+                                             |</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-=
++-+-+-+-+-+-+-+-+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+| =
+         Source Port          |        Destination Port       |</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+=
+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+|                                                           =
+    |</span><br><span style=3D"color: hsl(120, 100%, 40%);">++             =
+                                                  +</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">++                              TLVs      =
+                       +</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">++                                                               +</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+|                       =
+                                        |</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+=
+-+-+-+-+-+-+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+The fields are as follows:=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+- Proxy Protocol v2 Signature: 12 byte=
+s</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  The v2 signature=
+ of the protocol: &quot;\x0D\x0A\x0D\x0A\x00\x0D\x0A\x51\x55\x49\x54\x0A\x2=
+0&quot;.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+- Version: 4 bits</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+  The version of the PROXY proto=
+col (0x2).</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+- Command: 4 bits</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+  The command of the PROXY pro=
+tocol can by one of the following:</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+    - LOCAL: 0x0</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+      The connection was initiated by the proxy.</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+    - PROXY: 0x1</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+      The connection was initiated by=
+ the client.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+- AF: 4 bits</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+    The address family of the con=
+nection can be: AF_UNSPEC (0x0), AF_INET (0x1),</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+    AF_INET6 (0x2) or AF_UNIX (0x3).</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+- Proto: 4 bits</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+    The protocol of the connection can be: UNSPEC (0x=
+0), STREAM (0x1) or</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+    DGRAM (0x2).</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+- Address Length: 16 b=
+its</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    The length o=
+f the rest of the header in bytes.</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+Fina=
+lly there may be a series of TLVs (Type-Length-Value) that can be used to</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+carry additional info=
+rmation.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+OpenVPN testing</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+---------------</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+Currently only TCP is supported. To test the PROXY protoc=
+ol support in OpenVPN,</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+you can use HAProxy as a proxy with a configuration like this:</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+global</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+    log stdout format raw local0</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+    log 127.0.0.1 local0 debug</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+    daemon</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+defaults</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+   log     global</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+  mode    tcp</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    op=
+tion  tcplog</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    tim=
+eout connect 5000ms</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+    timeout client  50000ms</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+    timeout server  50000ms</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+fro=
+ntend openvpn_front</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+    bind 10.10.20.1:1195</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+    default_backend openvpn_back</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+b=
+ackend openvpn_back</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+    server openvpn_server 10.10.10.1:1194 send-proxy</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    # server openvpn_server 10.10.10.1:11=
+94 send-proxy-v2 proxy-v2-options ssl,cert-cn,ssl-cipher,cert-sig,cert-key,=
+authority,crc32c,unique-id</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+You can use the commented line =
+to test the binary format and the TLV data.</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+Note that you should set the keepalive option so that the connection i=
+s not</span><br><span style=3D"color: hsl(120, 100%, 40%);">+reset by HAPro=
+xy for inactivity.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+The OpenVPN TCP serv=
+er should read and parse the header and use the information</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+to display the original source addr=
+ess in the logs.</span><br><span>diff --git a/src/openvpn/Makefile.am b/src=
+/openvpn/Makefile.am</span><br><span>index 56cce9d..fc037ca 100644</span><b=
+r><span>--- a/src/openvpn/Makefile.am</span><br><span>+++ b/src/openvpn/Mak=
+efile.am</span><br><span>@@ -111,6 +111,7 @@</span><br><span> 	pool.c pool.=
+h \</span><br><span> 	proto.c proto.h \</span><br><span> 	proxy.c proxy.h \=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+	proxy_protocol.c p=
+roxy_protocol.h \</span><br><span> 	ps.c ps.h \</span><br><span> 	push.c pu=
+sh.h \</span><br><span> 	pushlist.h \</span><br><span>diff --git a/src/open=
+vpn/init.c b/src/openvpn/init.c</span><br><span>index a49e563..cbce217 1006=
+44</span><br><span>--- a/src/openvpn/init.c</span><br><span>+++ b/src/openv=
+pn/init.c</span><br><span>@@ -54,6 +54,7 @@</span><br><span> #include &quot=
+;mss.h&quot;</span><br><span> #include &quot;mudp.h&quot;</span><br><span> =
+#include &quot;dco.h&quot;</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+#include &quot;proxy_protocol.h&quot;</span><br><span> </span><br><s=
+pan> #include &quot;memdbg.h&quot;</span><br><span> </span><br><span>@@ -68=
+0,6 +681,11 @@</span><br><span>         c-&gt;c1.socks_proxy =3D NULL;</spa=
+n><br><span>         c-&gt;c1.socks_proxy_owned =3D false;</span><br><span>=
+     }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (c-&gt=
+;c1.proxy_protocol)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        proxy_=
+protocol_free(c-&gt;c1.proxy_protocol);</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+        c-&gt;c1.proxy_protocol =3D NULL;</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span> }</span><b=
+r><span> </span><br><span> static void</span><br><span>@@ -4774,7 +4780,7 @=
+@</span><br><span>         /* free up environmental variable store */</span=
+><br><span>         do_env_set_destroy(c);</span><br><span> </span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">-        /* close HTTP or SOCKS proxy=
+ */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        /* close=
+ HTTP or SOCKS proxy or PROXY protocol object */</span><br><span>         u=
+ninit_proxy(c);</span><br><span> </span><br><span>         /* garbage colle=
+ct */</span><br><span>diff --git a/src/openvpn/multi.c b/src/openvpn/multi.=
+c</span><br><span>index 03177bb..ac4652d 100644</span><br><span>--- a/src/o=
+penvpn/multi.c</span><br><span>+++ b/src/openvpn/multi.c</span><br><span>@@=
+ -51,6 +51,7 @@</span><br><span> #include &quot;ssl_util.h&quot;</span><br>=
+<span> #include &quot;dco.h&quot;</span><br><span> #include &quot;reflect_f=
+ilter.h&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#inclu=
+de &quot;proxy_protocol.h&quot;</span><br><span> </span><br><span> /*#defin=
+e MULTI_DEBUG_EVENT_LOOP*/</span><br><span> </span><br><span>@@ -779,6 +780=
+,8 @@</span><br><span>         goto err;</span><br><span>     }</span><br><=
+span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+    ALLOC_OBJ=
+_CLEAR(mi-&gt;context.c1.proxy_protocol, struct proxy_protocol_info);</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span>     mi-=
+&gt;context.c2.tls_multi-&gt;multi_state =3D CAS_NOT_CONNECTED;</span><br><=
+span> </span><br><span>     if (hash_n_elements(m-&gt;hash) &gt;=3D m-&gt;m=
+ax_clients)</span><br><span>@@ -3207,6 +3210,57 @@</span><br><span>     gc_=
+free(&amp;gc);</span><br><span> }</span><br><span> </span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+void</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+multi_replace_proxy_addr(struct multi_context *m, struct=
+ multi_instance *mi)</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    struct mroute=
+_addr real =3D {0};</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+    struct hash *hash =3D m-&gt;hash;</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+    struct gc_arena gc =3D gc_new();</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+    if (!mroute_extract_openvpn_sockaddr(&amp;real, &amp;mi=
+-&gt;context.c1.proxy_protocol-&gt;src, true))</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+        goto done;</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+    const uint32_t hv=
+ =3D hash_value(hash, &amp;real);</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+    struct hash_bucket *bucket =3D hash_bucket(hash, hv);</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    /* if the new address is already in t=
+he hash table, the new client takes precedence */</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+    struct hash_element *he =3D hash_lookup_f=
+ast(hash, bucket, &amp;real, hv);</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+    if (he)</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        =
+struct multi_instance *oldmi =3D (struct multi_instance *) he-&gt;value;</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+        msg(D_MULTI_LO=
+W, &quot;Client&#39;s real address (behind proxy) matches &quot;</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+            &quot;existing cli=
+ent address -- new client takes precedence&quot;);</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+        oldmi-&gt;did_real_hash =3D false;</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+        multi_close_i=
+nstance(m, oldmi, false);</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+        he-&gt;key =3D &amp;mi-&gt;real;</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+        he-&gt;value =3D mi;</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+    clear_prefix();</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+    msg(D_MULTI_LOW, &quot;Replacing proxy address: %s with client&#39;s=
+ real address: %s&quot;,</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+        mroute_addr_print(&amp;mi-&gt;real, &amp;gc),</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+        mroute_addr_print(&amp;real,=
+ &amp;gc));</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+    /* remove proxy address=
+ from hash table before changing address */</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+    ASSERT(hash_remove(m-&gt;hash, &amp;mi-&gt;real=
+));</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    ASSERT(hash_=
+remove(m-&gt;iter, &amp;mi-&gt;real));</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+    mi-&gt;real =3D real;</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+    generate_prefix(mi);</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    ASSE=
+RT(hash_add(m-&gt;hash, &amp;mi-&gt;real, mi, false));</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+    ASSERT(hash_add(m-&gt;iter, &amp;mi-=
+&gt;real, mi, false));</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#ifdef ENABLE_MA=
+NAGEMENT</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    ASSERT(=
+hash_add(m-&gt;cid_hash, &amp;mi-&gt;context.c2.mda_context.cid, mi, true))=
+;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#endif</span><br><=
 span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+    /* fill with 0s the crc32 field to calculate t=
-he actual crc32 */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-   *(uint32_t *)value =3D 0;</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+    uint32_t calculated_crc32c =3D proxy_protocol_crc32c((const ui=
-nt8_t *)&amp;header, header_len);</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    i=
-f (expected_crc32c !=3D calculated_crc32c)</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+        msg(M_NONFATAL, &quot;PROXY protocol v2: CRC32C mismatch, =
-expected: 0x%08x calculated: 0x%08x. Dropping header&quot;, expected_crc32c=
-, calculated_crc32c);</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+        parsing_state =3D PROXY_PROTOCOL_PARSING_STATE_INVALID;</span><br=
+: hsl(120, 100%, 40%);">+done:</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+    gc_free(&amp;gc);</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</spa=
+n><br><span> /*</span><br><span>  * Called when an instance should be close=
+d due to the</span><br><span>  * reception of a soft signal.</span><br><spa=
+n>@@ -3348,6 +3402,7 @@</span><br><span>     struct mroute_addr src, dest;<=
+/span><br><span>     unsigned int mroute_flags;</span><br><span>     struct=
+ multi_instance *mi;</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++    struct link_socket_info *lsi;</span><br><span>     bool ret =3D true;<=
+/span><br><span>     bool floated =3D false;</span><br><span> </span><br><s=
+pan>@@ -3387,15 +3442,31 @@</span><br><span>             }</span><br><span>=
+         }</span><br><span> </span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+        lsi =3D get_link_socket_info(c);</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+        /* check for PROXY protocol */</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+        if (lsi-&gt;proto =3D=3D PROTO_TCP_SE=
+RVER &amp;&amp; !c-&gt;c1.proxy_protocol-&gt;version &amp;&amp; BLEN(&amp;c=
+-&gt;c2.buf) &gt; 0)</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++        {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+         =
+   if (!proxy_protocol_parse(c-&gt;c1.proxy_protocol, &amp;c-&gt;c2.buf))</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+            {</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+                /* set vers=
+ion to invalid to avoid checking again */</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+                c-&gt;c1.proxy_protocol-&gt;version =
+=3D PROXY_PROTOCOL_VERSION_INVALID;</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+            }</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+            else</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+            {</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++                multi_replace_proxy_addr(m, m-&gt;pending);</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+                /* avoid processin=
+g the packet as an openvpn one */</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+                buf_reset_len(&amp;c-&gt;c2.buf);</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+            }</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+        }</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+</span><br><span>         if (BLEN(&amp;c-&gt;c=
+2.buf) &gt; 0)</span><br><span>         {</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-            struct link_socket_info *lsi;</span><br><sp=
+an>             const uint8_t *orig_buf;</span><br><span> </span><br><span>=
+             /* decrypt in instance context */</span><br><span> </span><br>=
+<span>             perf_push(PERF_PROC_IN_LINK);</span><br><span style=3D"c=
+olor: hsl(0, 100%, 40%);">-            lsi =3D get_link_socket_info(c);</sp=
+an><br><span>             orig_buf =3D c-&gt;c2.buf.data;</span><br><span> =
+            if (process_incoming_link_part1(c, lsi, floated))</span><br><sp=
+an>             {</span><br><span>diff --git a/src/openvpn/openvpn.h b/src/=
+openvpn/openvpn.h</span><br><span>index e98c93e..ded6103 100644</span><br><=
+span>--- a/src/openvpn/openvpn.h</span><br><span>+++ b/src/openvpn/openvpn.=
+h</span><br><span>@@ -45,6 +45,7 @@</span><br><span> #include &quot;pool.h&=
+quot;</span><br><span> #include &quot;plugin.h&quot;</span><br><span> #incl=
+ude &quot;manage.h&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+#include &quot;proxy_protocol.h&quot;</span><br><span> </span><br><spa=
+n> /*</span><br><span>  * Our global key schedules, packaged thusly</span><=
+br><span>@@ -191,6 +192,8 @@</span><br><span>     struct socks_proxy_info *=
+socks_proxy;</span><br><span>     bool socks_proxy_owned;</span><br><span> =
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    struct proxy_pr=
+otocol_info *proxy_protocol;</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+</span><br><span>     /* persist --ifconfig-pool db to file */</sp=
+an><br><span>     struct ifconfig_pool_persist *ifconfig_pool_persist;</spa=
+n><br><span>     bool ifconfig_pool_persist_owned;</span><br><span>diff --g=
+it a/src/openvpn/proxy_protocol.c b/src/openvpn/proxy_protocol.c</span><br>=
+<span>new file mode 100644</span><br><span>index 0000000..10a68c2</span><br=
+><span>--- /dev/null</span><br><span>+++ b/src/openvpn/proxy_protocol.c</sp=
+an><br><span>@@ -0,0 +1,472 @@</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+/*</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  Op=
+enVPN -- An application to securely tunnel IP networks</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+ *             over a single TCP/UDP por=
+t, with support for SSL/TLS-based</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+ *             session authentication and key exchange,</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+ *             packet enc=
+ryption, packet authentication, and</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+ *             packet compression.</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+ *</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+ *  Copyright (C) 2002-2024 OpenVPN Inc &lt;sales@...515...&g=
+t;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+ *  This program is free software;=
+ you can redistribute it and/or modify</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+ *  it under the terms of the GNU General Public License=
+ version 2</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  as pu=
+blished by the Free Software Foundation.</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+ *</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+ *  This program is distributed in the hope that it will be useful,</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  but WITHOUT ANY WAR=
+RANTY; without even the implied warranty of</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PUR=
+POSE.  See the</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  G=
+NU General Public License for more details.</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+ *</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+ *  You should have received a copy of the GNU General Public Licens=
+e along</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  with thi=
+s program; if not, write to the Free Software Foundation, Inc.,</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+ *  51 Franklin Street, Fifth F=
+loor, Boston, MA 02110-1301 USA.</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+ */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+#ifdef HAVE_CONFIG_H</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+#include &quot;config=
+.h&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#endif</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+#include &quot;error.h&quot;</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+#include &quot;proxy_protocol.h&=
+quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+#define PROXY_PROTOCOL_V1_MAX_WOR=
+DS 6</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#define PROXY_P=
+ROTOCOL_V1_MAX_WORD_LEN 40</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+typedef enum=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+    PROXY_PROTOCOL_PARSING_STATE_INVA=
+LID =3D -1,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    PROX=
+Y_PROTOCOL_PARSING_STATE_OK =3D 0,</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+    PROXY_PROTOCOL_PARSING_STATE_IGNORE =3D 1,</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+} proxy_protocol_parsing_state_t;=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+static const size_t PROXY_PROTOCOL_V2_=
+ADDR_LEN_IPV4 =3D 12;</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+static const size_t PROXY_PROTOCOL_V2_ADDR_LEN_IPV6 =3D 36;</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+static const size_t PROXY_PROTOCO=
+L_V2_ADDR_LEN_UNIX =3D 216;</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+static prox=
+y_protocol_header_t header;</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+static uint16_t header_len;</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+static proxy_protocol_parsing_state_t parsing_state =3D PRO=
+XY_PROTOCOL_PARSING_STATE_OK;</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+proxy_pro=
+tocol_version_t</span><br><span style=3D"color: hsl(120, 100%, 40%);">+prox=
+y_protocol_version(const uint8_t *buf, const int buf_len)</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+    if (buf_len &gt;=3D PROXY_PROTOCOL_V2_MIN_HDR_LEN</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+        &amp;&amp; me=
+mcmp(buf, PROXY_PROTOCOL_V2_SIG, PROXY_PROTOCOL_V2_SIG_LEN) =3D=3D 0)</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+        return PROXY_PROTOCOL_VERSION_2=
+;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+    else if (buf_len &gt;=3D PRO=
+XY_PROTOCOL_V1_MIN_HDR_LEN</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+             &amp;&amp; memcmp(buf, PROXY_PROTOCOL_V1_SIG, PROXY_PRO=
+TOCOL_V1_SIG_LEN) =3D=3D 0)</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
+  return PROXY_PROTOCOL_VERSION_1;</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++    return PROXY_PROTOCOL_VERSION_INVALID;</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+int</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+proxy_protocol_header_len(con=
+st uint8_t *buf, const int buf_len,</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+                          const proxy_protocol_version_t ve=
+rsion)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+    memcpy(&amp;header, buf, bu=
+f_len);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+    switch (version)</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+        case PROXY_PROTOCOL_VERSION_1:</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+        {</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+            char *end =3D memchr(he=
+ader.v1.line, &#39;\r&#39;, buf_len - 1);</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+            if (!end || end[1] !=3D &#39;\n&#39;)</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+            {</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+                return -1; /*=
+ partial or invalid header */</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+            }</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+            return (int)(end + 2 - header.v1.line);</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+        }</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+        case PROXY_PROTOCOL_VERSION_2:</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+            return PROXY_PROTOCOL_V2_MIN_HDR_LEN =
++ ntohps(header.v2.len);</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        defaul=
+t:</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            retur=
+n -1;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+/*</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * Pars=
+e a port number from a string.</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+ *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @pa=
+ram port_str - The string to parse.</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+ *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+* @return - The port number or -1 if the string is invalid.</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+ */</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+uint16_t</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+proxy_protocol_parse_port(const char *port_str)</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+    char *endptr;</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+    errno =3D 0;</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+   long port =3D strtol(port_str, &amp;endptr, 10);</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    if (errno !=3D 0 || endptr =3D=3D por=
+t_str || *endptr !=3D &#39;\0&#39; || port &lt;=3D 0 || port &gt; 65535)</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+        return -1;</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+    return (uint16_t)port;</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+/*</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+ * Set the source and d=
+estination addresses and ports in the proxy protocol</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+ * info structure for later use.</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+ * @param ppi - The proxy protocol info struc=
+ture to store the addresses.</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+ * @param ver - The version of the PROXY protocol.</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+ * @param fam - The address family =
+(supports: AF_INET or AF_INET6).</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+ * @param st - The socket type.</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+ * @param src_addr - The source address.</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+ * @param dst_addr - The dest=
+ination address.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * =
+@param src_port - The source port.</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+ * @param dst_port - The destination port.</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+ */</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+void</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+proxy_protocol_set_addr(struct proxy_protocol_info *ppi,</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+                        const p=
+roxy_protocol_version_t ver, const int fam, const int st,</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+                        const void *s=
+rc_addr, const void *dst_addr,</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+                        const uint16_t src_port, const uint16_t =
+dst_port)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+    ppi-&gt;version =3D ver;</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+    ppi-&gt;sock_type =3D st;</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+    if (fam =3D=3D AF_INET)<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+        ppi-&gt;src.addr.sa.sa_fam=
+ily =3D AF_INET;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+     ppi-&gt;dst.addr.sa.sa_family =3D AF_INET;</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+        memcpy(&amp;ppi-&gt;src.addr.in4.sin_ad=
+dr, (uint32_t *)src_addr,</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+               sizeof(struct in_addr));</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+        memcpy(&amp;ppi-&gt;dst.addr.in4.sin_addr=
+, (uint32_t *)dst_addr,</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+               sizeof(struct in_addr));</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+        ppi-&gt;src.addr.in4.sin_port =3D src_port;=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        ppi-&gt;dst=
+.addr.in4.sin_port =3D dst_port;</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+        msg(M_DEBUG, &quot;PROXY protocol: SRC: %s:%u&quot;,</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+            inet_ntoa=
+(ppi-&gt;src.addr.in4.sin_addr),</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+            ntohs(ppi-&gt;src.addr.in4.sin_port));</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+        msg(M_DEBUG, &quot;PROX=
+Y protocol: DST: %s:%u&quot;,</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+            inet_ntoa(ppi-&gt;dst.addr.in4.sin_addr),</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+            ntohs(ppi-&gt;dst.a=
+ddr.in4.sin_port));</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    else if (f=
+am =3D=3D AF_INET6)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        ppi-&g=
+t;src.addr.sa.sa_family =3D AF_INET6;</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+        ppi-&gt;dst.addr.sa.sa_family =3D AF_INET6;</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+        memcpy(&amp;ppi-&=
+gt;src.addr.in6.sin6_addr, src_addr, sizeof(struct in6_addr));</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+        memcpy(&amp;ppi-&gt;dst.=
+addr.in6.sin6_addr, dst_addr, sizeof(struct in6_addr));</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+        ppi-&gt;src.addr.in6.sin6_port =
+=3D src_port;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
+  ppi-&gt;dst.addr.in6.sin6_port =3D dst_port;</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+        char ip6_str[INET6_ADDRSTRLEN];</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+        if (inet_ntop(AF_INET6, &amp;ppi-&gt;sr=
+c.addr.in6.sin6_addr, ip6_str,</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+                      INET6_ADDRSTRLEN))</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+        {</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+            msg(M_DEBUG, &quot;PROXY protocol: SRC:=
+ %s:%u&quot;, ip6_str,</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+                ntohs(ppi-&gt;src.addr.in6.sin6_port));</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+        }</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+        else</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+        {</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+            msg(M_NONFATAL, &quot;PROXY protocol: could not par=
+se source address&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+        }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+    if (inet_ntop(AF_INET6, &amp;ppi-&gt;dst.addr.in6.sin6_addr, ip6_str,</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+                     =
+ INET6_ADDRSTRLEN))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+        {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+          =
+  msg(M_DEBUG, &quot;PROXY protocol: DST: %s:%u&quot;, ip6_str,</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+                ntohs(ppi-&gt;d=
+st.addr.in6.sin6_port));</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+        }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
+   else</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        {</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+            msg(M_NONF=
+ATAL,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+              =
+  &quot;PROXY protocol: could not parse destination address&quot;);</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+        }</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+    else</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+       msg(M_NONFATAL, &quot;PROXY protocol: unsupported address family&quo=
+t;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+/*</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * Split=
+ the v1 header line into words (space-separated)</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+ *</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+ * @param words - The array to store the words.</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+ * @param line - The header line to=
+ split.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @param le=
+n - The length of the header line.</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+ *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *=
+ @return - The number of words found or -1 if an error occurred.</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+ */</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+int</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+proxy_protocol_v1_split_words(char words[][PROXY_PROTOCOL_V1_M=
+AX_WORD_LEN],</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
+                        const char *line,</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+                              int len)</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+    int word_num =3D 0;</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+    const char *start =3D line;</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+    for (int i =3D 0; i &lt; len; ++=
+i)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+        if (line[i] =3D=3D &#39=
+; &#39;)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        {</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+            if (word_=
+num &lt; PROXY_PROTOCOL_V1_MAX_WORDS)</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+            {</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+                int word_len =3D (int)(line + i - start);</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+                if (word_=
+len &lt; PROXY_PROTOCOL_V1_MAX_WORD_LEN)</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+                {</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+                    memcpy(words[word_num], start, word_=
+len);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+              =
+      words[word_num][word_len] =3D &#39;\0&#39;;</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+                    ++word_num;</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+                }</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+                else</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+                {</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+                    msg(M_NONFATAL, =
+&quot;PROXY protocol v1: word too long&quot;);</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+                    return -1;</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+                }</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+            }</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+            start =3D line + i + 1;</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+        }</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+    return word_num;</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+/*</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+ * Parse the PROXY protocol v1 =
+header line.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @param ppi - The prox=
+y protocol info structure to store the parsed data.</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+ * @param line - The header line to parse=
+.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @param len - Th=
+e length of the header line.</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+ *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @retu=
+rn - true if the header was successfully parsed.</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+ */</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+bool</span><br><span style=3D"color: hsl(120, 100%, 40%);">+pr=
+oxy_protocol_parse_v1(struct proxy_protocol_info *ppi,</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+                        const char *line=
+,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+                  =
+      int len)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+    const proxy_protoco=
+l_version_t version =3D PROXY_PROTOCOL_VERSION_1;</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+    char words[PROXY_PROTOCOL_V1_MAX_WORDS][P=
+ROXY_PROTOCOL_V1_MAX_WORD_LEN];</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    cha=
+r *end =3D memchr(line, &#39;\r&#39;, len - 1);</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+    if (!end || end[1] !=3D &#39;\n&#39;) /* pa=
+rtial or invalid header */</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
+ return false;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    *end =3D &#39; =
+&#39;; /* replace CRLF with space for easier splitting */</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+    int size =3D (int)(end - line + 1=
+);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+    int word_num =3D proxy_protocol_=
+v1_split_words(words, line, size);</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+    if (word_num &lt; 3)</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+        msg(M_NONFATAL, &quot;PROXY protocol v1: could not split head=
+er&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        r=
+eturn false;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+    if (strcmp(words[1], &quot;UNKNOWN&q=
+uot;) =3D=3D 0)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        msg(M_DEBU=
+G, &quot;PROXY protocol v1: UNKNOWN protocol, ignoring header&quot;);</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+        return true;</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+    else if (strcmp(words[1], &quot;TC=
+P4&quot;) =3D=3D 0)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        msg(M_=
+DEBUG, &quot;PROXY protocol v1: TCP4 protocol&quot;);</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+        struct in_addr ip4_src_addr, ip4_=
+dst_addr;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        if=
+ (inet_pton(AF_INET, words[2], &amp;ip4_src_addr) !=3D 1)</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+        {</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+            msg(M_NONFATAL,</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+                &quot;PROXY protocol v1=
+: could not parse source address&quot;);</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+            return false;</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+        }</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+        if (inet_pton(AF_INET, words[3], &amp;ip4_dst_addr=
+) !=3D 1)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        {<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+            msg(M_NO=
+NFATAL,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            =
+    &quot;PROXY protocol v1: could not parse destination address&quot;);</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+            return fal=
+se;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        }</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+        proxy_protocol_set=
+_addr(ppi, version, AF_INET, SOCK_STREAM,</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+                                &amp;ip4_src_addr, &a=
+mp;ip4_dst_addr,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+                             ntohs(proxy_protocol_parse_port(words[4])),</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+                      =
+          ntohs(proxy_protocol_parse_port(words[5])));</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+        return true;</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+    else if (strcmp(words[1], &quot;TCP6&quot;) =3D=
+=3D 0)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+        msg(M_DEBUG, &quot;=
+PROXY protocol v1: TCP6 protocol&quot;);</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+        struct in6_addr ip6_src_addr, ip6_dst_addr;</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+        if (inet_pton(=
+AF_INET6, words[2], &amp;ip6_src_addr) !=3D 1)</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+        {</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+            msg(M_NONFATAL,</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+                &quot;PROXY protocol v1: could not=
+ parse source address&quot;);</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+            return false;</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+        }</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+        if (inet_pton(AF_INET6, words[3], &amp;ip6_dst_addr) !=3D 1)<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+        {</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+            msg(M_NONFATAL,</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+                &quot;=
+PROXY protocol v1: could not parse destination address&quot;);</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+            return false;</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+        }</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+        proxy_protocol_set_addr(ppi,=
+ version, AF_INET6, SOCK_STREAM,</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+                                &amp;ip6_src_addr, &amp;ip6_ds=
+t_addr,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            =
+                    ntohs(proxy_protocol_parse_port(words[4])),</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+                               =
+ ntohs(proxy_protocol_parse_port(words[5])));</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+        return true;</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+    else</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        msg(=
+M_NONFATAL, &quot;PROXY protocol v1: unsupported protocol&quot;);</span><br=
 ><span style=3D"color: hsl(120, 100%, 40%);">+        return false;</span><=
 br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    msg(M_DEBUG, &quot;PROXY protocol v2:=
- CRC32C match&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+    return true;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+/*</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+ * Parse the UNIQUE_ID TLV and store the value in ppi-&=
-gt;unique_id</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * (and=
- ppi-&gt;unique_id_len).</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+ *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @param pp=
-i - The proxy protocol info structure to store the parsed data.</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+ * @param len - The length of t=
-he TLV value.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @pa=
-ram value - The TLV value.</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+ */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+void</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+proxy_protocol_parse_uid=
-_tlv(struct proxy_protocol_info *ppi, const uint16_t len, const uint8_t *va=
-lue)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+    if (len =3D=3D 0)</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+        msg(M_NONFATAL, &quot;PROXY protocol =
-v2: UNIQUE_ID TLV empty&quot;);</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+        return;</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    el=
-se if (len &gt; PROXY_PROTOCOL_V2_TLV_UNIQUE_ID_MAX_LEN)</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+        msg(M_NONFATAL, &quot;PROXY protocol v2: UNI=
-QUE_ID TLV too long&quot;);</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+        return;</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+    ppi-&gt;unique_id_len =3D=
- len;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    memcpy(ppi=
--&gt;unique_id, value, len);</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+    msg(M_DEBUG, &quot;PROXY protocol v2: UNIQUE_ID: %.*s&quot;, (=
-int)ppi-&gt;unique_id_len, ppi-&gt;unique_id);</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+/*</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+ * Parse the SSL TLV and st=
-ore the value in ppi-&gt;ssl_client and ppi-&gt;ssl_verify.</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+ * @param ppi - The proxy protocol info structure to=
- store the parsed data.</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+ * @param len - The length of the TLV value.</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+ * @param value - The TLV value.</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+ */</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+void</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+proxy_protocol_parse_ssl_tlv(struct proxy_protocol_info *ppi, co=
-nst uint16_t len, const uint8_t *value)</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+    const struct proxy_protocol_tlv_ssl *ssl =3D (const struct proxy_prot=
-ocol_tlv_ssl *)(value);</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (!ssl-&g=
-t;client)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+        msg(M_NONFATAL, =
-&quot;PROXY protocol v2: SSL TLV invalid&quot;);</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+        return;</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (=
-ssl-&gt;client &amp; PROXY_PROTOCOL_V2_CLIENT_SSL)</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+        msg(M_DEBUG, &quot;PROXY protocol v2: client conne=
-cted over SSL/TLS&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (=
-ssl-&gt;client &amp; PROXY_PROTOCOL_V2_CLIENT_CERT_CONN)</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+        msg(M_DEBUG, &quot;PROXY protocol v2: client=
- provided a certificate over the current connection&quot;);</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+    if (ssl-&gt;client &amp; PROXY_PROTOCOL_V2_CL=
-IENT_CERT_SESS)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        msg(M_DEBU=
-G, &quot;PROXY protocol v2: client provided a certificate at least once ove=
-r the TLS session this connection belongs to&quot;);</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+    msg(M_DEBUG, &quot;PROXY protocol v2: client certificate verification =
-stat: %s&quot;, ssl-&gt;verify ? &quot;failure&quot; : &quot;success&quot;)=
-;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    ppi-&gt;ssl_cl=
-ient =3D ssl-&gt;client;</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+    ppi-&gt;ssl_verify =3D ssl-&gt;verify =3D=3D 0;</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-/*</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * Parse a TLV an=
-d store the value in the proxy protocol info structure.</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+ * @param ppi - The proxy protocol info structure to sto=
-re the parsed data.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
- * @param type - The TLV type.</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+ * @param len - The length of the TLV value.</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+ * @param value - The TLV value.</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+ */</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+void</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+proxy_protocol_parse_tlv(struct proxy_protocol_info *ppi=
-, const uint8_t type, const uint16_t len, const uint8_t *value)</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+    switch (type)</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+        case PROXY_PROTOCOL_TLV_TYPE_ALPN:</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+            proxy_protocol_parse_string_t=
-lv(ppi, &amp;ppi-&gt;alpn, &quot;ALPN&quot;, len, value);</span><br><span s=
+=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+/*<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * Parse the PROXY p=
+rotocol v2 header.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+*</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @param ppi - Th=
+e proxy protocol info structure to store the parsed data.</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+ * @param header - The header to pars=
+e.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+ * @return - The number of bytes p=
+arsed or 0 if the header can be ignored.</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+ */</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+int</span><br><span style=3D"color: hsl(120, 100%, 40%);">+proxy_proto=
+col_parse_v2(struct proxy_protocol_info *ppi)</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+    size_t addr_len =3D 0;</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+    int pos =3D PROXY_PROTOCOL_V2_SIG_LEN + sizeof(header.v2=
+.ver_cmd);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    const=
+ proxy_protocol_version_t version =3D PROXY_PROTOCOL_VERSION_2;</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+    switch (header.v2.ver_cmd &amp; PROXY_PROTOCOL=
+_V2_CMD_MASK)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+        case PROXY_P=
+ROTOCOL_V2_LOCAL_CMD:</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+            /* the receiver must accept this connection as valid and must=
+ use</span><br><span style=3D"color: hsl(120, 100%, 40%);">+             * =
+the real connection endpoints and discard the protocol block</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+             * including the famil=
+y which is ignored */</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+            msg(M_DEBUG, &quot;PROXY protocol v2: LOCAL command&quot;);</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+            parsing_s=
+tate =3D PROXY_PROTOCOL_PARSING_STATE_IGNORE;</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+            break;</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+        case PROXY_PROTOCOL_V2_PROXY_CMD:</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+            msg(M_DEBUG, &quot;PROXY protocol v=
+2: PROXY command&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+            break;</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        default=
+:</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            msg(M_=
+DEBUG, &quot;PROXY protocol v2: UNSPEC or unknown command&quot;);</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+            parsing_state =3D=
+ PROXY_PROTOCOL_PARSING_STATE_INVALID;</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (parsin=
+g_state !=3D PROXY_PROTOCOL_PARSING_STATE_OK)</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+        return pos;</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+  pos +=3D sizeof(header.v2.fam);</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    s=
+witch (header.v2.fam)</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        case=
+ PROXY_PROTOCOL_V2_AF_INET | PROXY_PROTOCOL_V2_TP_STREAM:</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+            msg(M_DEBUG, &quot;PROXY =
+protocol v2: TCP over IPv4.&quot;);</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+            proxy_protocol_set_addr(ppi, version, AF_INET, =
+SOCK_STREAM,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
+                             &amp;header.v2.addr.ip4.src_addr,</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+                                =
+    &amp;header.v2.addr.ip4.dst_addr,</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+                                    header.v2.addr.ip4.sr=
+c_port,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            =
+                        header.v2.addr.ip4.dst_port);</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+            addr_len =3D PROXY_PROTOCOL_V=
+2_ADDR_LEN_IPV4;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+         break;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+        case PROXY_PROT=
+OCOL_V2_AF_INET | PROXY_PROTOCOL_V2_TP_DGRAM:</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+            msg(M_DEBUG, &quot;PROXY protocol v2:=
+ UDP over IPv4&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+            proxy_protocol_set_addr(ppi, version, AF_INET, SOCK_DGRAM,</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+                     =
+               &amp;header.v2.addr.ip4.src_addr,</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+                                    &amp;heade=
+r.v2.addr.ip4.dst_addr,</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+                                    header.v2.addr.ip4.src_port,</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+                          =
+          header.v2.addr.ip4.dst_port);</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+            addr_len =3D PROXY_PROTOCOL_V2_ADDR_LEN_IPV=
+4;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            break=
+;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+        case PROXY_PROTOCOL_V2_AF_INE=
+T6 | PROXY_PROTOCOL_V2_TP_STREAM:</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+            msg(M_DEBUG, &quot;PROXY protocol v2: TCP over IP=
+v6&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+         =
+   proxy_protocol_set_addr(ppi, version, AF_INET6, SOCK_STREAM,</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+                               =
+     header.v2.addr.ip6.src_addr,</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+                                    header.v2.addr.ip6.dst_ad=
+dr,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+                =
+                    header.v2.addr.ip6.src_port,</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+                                    header.v2.=
+addr.ip6.dst_port);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+            addr_len =3D PROXY_PROTOCOL_V2_ADDR_LEN_IPV6;</span><br><span s=
 tyle=3D"color: hsl(120, 100%, 40%);">+            break;</span><br><span st=
 yle=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+        case PROXY_PROTOCOL_TLV_TYPE_AUTHORITY:</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+            proxy_protocol_pa=
-rse_string_tlv(ppi, &amp;ppi-&gt;authority, &quot;AUTHORITY&quot;, len, val=
-ue);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            bre=
-ak;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+        case PROXY_PROTOCOL_TLV_TYP=
-E_CRC32C:</span><br><span style=3D"color: hsl(120, 100%, 40%);">+          =
-  proxy_protocol_parse_crc32c_tlv(len, value);</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+            break;</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+        case PROXY_PROTOCOL_TLV_TYPE_NOOP:</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+            break;</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+        case PROXY_PROTOCOL_TLV_TYPE_UNIQUE_ID:</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+            proxy_protocol_parse_uid_=
-tlv(ppi, len, value);</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+            break;</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        case PROXY=
-_PROTOCOL_TLV_TYPE_SSL:</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+            proxy_protocol_parse_ssl_tlv(ppi, len, value);</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+            break;</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+        case PROXY_PROTOCOL_TLV_SUBTYPE_SSL_VERSION:=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            proxy_p=
-rotocol_parse_string_tlv(ppi, &amp;ppi-&gt;ssl_version, &quot;SSL_VERSION&q=
-uot;, len, value);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-           break;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</=
+20, 100%, 40%);">+        case PROXY_PROTOCOL_V2_AF_INET6 | PROXY_PROTOCOL_=
+V2_TP_DGRAM:</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
+     msg(M_DEBUG, &quot;PROXY protocol v2: UDP over IPv6&quot;);</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+            proxy_protocol_set=
+_addr(ppi, version, AF_INET6, SOCK_DGRAM,</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+                                    header.v2.addr.ip=
+6.src_addr,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        =
+                            header.v2.addr.ip6.dst_addr,</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+                                    he=
+ader.v2.addr.ip6.src_port,</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+                                    header.v2.addr.ip6.dst_port);</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+            addr_len =
+=3D PROXY_PROTOCOL_V2_ADDR_LEN_IPV6;</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+            break;</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+     case PROXY_PROTOCOL_V2_AF_UNIX | PROXY_PROTOCOL_V2_TP_STREAM:</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+            msg(M_DEBUG, &qu=
+ot;PROXY protocol v2: AF_UNIX stream&quot;);</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+            proxy_protocol_set_addr(ppi, version, =
+AF_UNIX, SOCK_STREAM,</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+                                    header.v2.addr.unx.src_addr,</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+                            =
+        header.v2.addr.unx.dst_addr, 0, 0);</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+            addr_len =3D PROXY_PROTOCOL_V2_ADDR_LEN=
+_UNIX;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            b=
+reak;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+        case PROXY_PROTOCOL_V2_AF=
+_UNIX | PROXY_PROTOCOL_V2_TP_DGRAM:</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+            msg(M_DEBUG, &quot;PROXY protocol v2: AF_UNIX d=
+atagram&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+        proxy_protocol_set_addr(ppi, version, AF_UNIX, SOCK_DGRAM,</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+                            =
+        header.v2.addr.unx.src_addr,</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+                                    header.v2.addr.unx.dst=
+_addr, 0, 0);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
+      addr_len =3D PROXY_PROTOCOL_V2_ADDR_LEN_UNIX;</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+            break;</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+        default:</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+            msg(M_DEBUG, &quot;PROXY protocol v2: UNSPEC or unk=
+nown address family&quot;);</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+            parsing_state =3D PROXY_PROTOCOL_PARSING_STATE_INVALID;=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            break;<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+    return (int)(pos + sizeof(head=
+er.v2.len) + addr_len);</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+bool</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+proxy_protocol_parse(struct proxy_protocol_info =
+*ppi, const struct buffer *buf)</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    co=
+nst proxy_protocol_version_t version =3D proxy_protocol_version(BPTR(buf), =
+BLEN(buf));</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+    header_len =3D BLEN(buf=
+);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    memcpy(&amp;h=
+eader, BPTR(buf), header_len);</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    swit=
+ch (version)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</=
 span><br><span style=3D"color: hsl(120, 100%, 40%);">+        case PROXY_PR=
-OTOCOL_TLV_SUBTYPE_SSL_CN:</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+            proxy_protocol_parse_string_tlv(ppi, &amp;ppi-&gt;ssl_cn=
-, &quot;SSL_CN&quot;, len, value);</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+            break;</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
-   case PROXY_PROTOCOL_TLV_SUBTYPE_SSL_CIPHER:</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+            proxy_protocol_parse_string_tlv(ppi,=
- &amp;ppi-&gt;ssl_cipher, &quot;SSL_CIPHER&quot;, len, value);</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+            break;</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+        case PROXY_PROTOCOL_TLV_SUBTYPE_SSL_SIG_ALG:=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            proxy_p=
-rotocol_parse_string_tlv(ppi, &amp;ppi-&gt;ssl_sig_alg, &quot;SSL_SIG_ALG&q=
-uot;, len, value);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-           break;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+        case PROXY_PR=
-OTOCOL_TLV_SUBTYPE_SSL_KEY_ALG:</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+            proxy_protocol_parse_string_tlv(ppi, &amp;ppi-&gt;s=
-sl_key_alg, &quot;SSL_KEY_ALG&quot;, len, value);</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+            break;</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+        case PROXY_PROTOCOL_TLV_TYPE_NETNS:</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+            proxy_protocol_parse_string_t=
-lv(ppi, &amp;ppi-&gt;netns, &quot;NETNS&quot;, len, value);</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+            break;</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+        default:</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+            msg(M_NONFATAL, &quot;PROXY protocol v2: unkno=
-wn TLV type 0x%02x&quot;, type);</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+            break;</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+/*</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+ * Parse the TLVs in the PROXY protocol v2 header.</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+ * @param ppi - The proxy protocol info s=
-tructure to store the parsed data.</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+ * @param buf - The buffer containing the TLVs.</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+ * @param buf_len - The length o=
-f the buffer.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @return - The number=
- of bytes parsed or -1 if an error occurred.</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+ */</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+int</span><br><span style=3D"color: hsl(120, 100%, 40%);">+proxy_p=
-rotocol_parse_tlvs(struct proxy_protocol_info *ppi, const uint8_t *buf,</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+                       =
-   const int buf_len)</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    const uint8_=
-t *end =3D buf + buf_len;</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+    const uint8_t *start =3D buf;</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+    ppi-&gt;gc =3D gc_new();</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+    while (buf &lt; end &amp;&amp; parsing_state =3D=3D PROXY_PRO=
-TOCOL_PARSING_STATE_OK)</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        co=
-nst struct proxy_protocol_tlv *tlv =3D (const struct proxy_protocol_tlv *)b=
-uf;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        uint16_t=
- tlv_len =3D (tlv-&gt;length_hi &lt;&lt; 8) | tlv-&gt;length_lo;</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+        if (buf + sizeof(*tlv)=
- + tlv_len &gt; end)</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+        {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+         =
-   msg(M_NONFATAL, &quot;PROXY protocol v2: TLV length exceeds buffer size&=
-quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            =
-return -1;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        }=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        proxy_proto=
-col_parse_tlv(ppi, tlv-&gt;type, tlv_len, tlv-&gt;value);</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+        buf +=3D sizeof(*tlv) + tlv_l=
-en;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+    return (int)(buf - start);=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+/*</span><br><span>  * Parse the PROXY protocol v2 heade=
-r.</span><br><span>  *</span><br><span>  * @param ppi - The proxy protocol =
-info structure to store the parsed data.</span><br><span>@@ -435,7 +739,7 @=
-@</span><br><span>         {</span><br><span>             if ((header.v2.ve=
-r_cmd &amp; PROXY_PROTOCOL_V2_VER_MASK) =3D=3D PROXY_PROTOCOL_V2_VER)</span=
-><br><span>             {</span><br><span style=3D"color: hsl(0, 100%, 40%)=
-;">-                proxy_protocol_parse_v2(ppi);</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+                int pos =3D proxy_protocol_pa=
-rse_v2(ppi);</span><br><span>                 if (parsing_state =3D=3D PROX=
-Y_PROTOCOL_PARSING_STATE_IGNORE)</span><br><span>                 {</span><=
-br><span>                     msg(M_DEBUG, &quot;PROXY protocol v2: ignorin=
-g header&quot;);</span><br><span>@@ -445,6 +749,21 @@</span><br><span>     =
-            {</span><br><span>                     return false;</span><br>=
-<span>                 }</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+              =
-  if (pos &lt; header_len) /* there&#39;s extra TLV data to parse */</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+                {</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+                    pos +=3D=
- proxy_protocol_parse_tlvs(ppi, (uint8_t *)(&amp;header) + pos,</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+                               =
-                      header_len - pos);</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+                    if (parsing_state =3D=3D PROXY_PRO=
-TOCOL_PARSING_STATE_INVALID)</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+                    {</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+                        return false;</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+                    }</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+                    if (pos &lt; header_len)=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+                   =
- {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+                 =
-       msg(M_NONFATAL, &quot;PROXY protocol v2: could not correclty parse T=
-LV data&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-                }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-              }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</sp=
-an><br><span>                 msg(M_DEBUG, &quot;PROXY protocol v2: header =
-parsed&quot;);</span><br><span>                 return true;</span><br><spa=
-n>             }</span><br><span>diff --git a/src/openvpn/proxy_protocol.h =
-b/src/openvpn/proxy_protocol.h</span><br><span>index 8e9af03..a492f85 10064=
-4</span><br><span>--- a/src/openvpn/proxy_protocol.h</span><br><span>+++ b/=
-src/openvpn/proxy_protocol.h</span><br><span>@@ -60,6 +60,25 @@</span><br><=
-span> #define PROXY_PROTOCOL_V2_TP_STREAM (0x1 &lt;&lt; 0)</span><br><span>=
- #define PROXY_PROTOCOL_V2_TP_DGRAM  (0x2 &lt;&lt; 0)</span><br><span> </sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+#define PROXY_PROTOCOL_=
-TLV_TYPE_ALPN            0x01</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+#define PROXY_PROTOCOL_TLV_TYPE_AUTHORITY       0x02</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+#define PROXY_PROTOCOL_TLV_TYPE_=
-CRC32C          0x03</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+#define PROXY_PROTOCOL_TLV_TYPE_NOOP            0x04</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+#define PROXY_PROTOCOL_TLV_TYPE_UNIQUE_ID=
-       0x05</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#define =
-PROXY_PROTOCOL_TLV_TYPE_SSL             0x20</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+#define PROXY_PROTOCOL_TLV_SUBTYPE_SSL_VERSION  0x=
-21</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#define PROXY_PRO=
-TOCOL_TLV_SUBTYPE_SSL_CN       0x22</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+#define PROXY_PROTOCOL_TLV_SUBTYPE_SSL_CIPHER   0x23</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+#define PROXY_PROTOCOL_TLV=
-_SUBTYPE_SSL_SIG_ALG  0x24</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+#define PROXY_PROTOCOL_TLV_SUBTYPE_SSL_KEY_ALG  0x25</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+#define PROXY_PROTOCOL_TLV_TYPE_NET=
-NS           0x30</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</=
+OTOCOL_VERSION_2:</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+      {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            =
+if ((header.v2.ver_cmd &amp; PROXY_PROTOCOL_V2_VER_MASK) =3D=3D PROXY_PROTO=
+COL_V2_VER)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        =
+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+              =
+  proxy_protocol_parse_v2(ppi);</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+                if (parsing_state =3D=3D PROXY_PROTOCOL_PARSING=
+_STATE_IGNORE)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
+           {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
+             msg(M_DEBUG, &quot;PROXY protocol v2: ignoring header&quot;);<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+                    =
+return true;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
+         }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+         =
+       else if (parsing_state =3D=3D PROXY_PROTOCOL_PARSING_STATE_INVALID)<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+                {</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+                    re=
+turn false;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        =
+        }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+          =
+      msg(M_DEBUG, &quot;PROXY protocol v2: header parsed&quot;);</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+                return true;<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+            }</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+            else</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+            {</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+                msg(M_NONFATAL, &qu=
+ot;PROXY protocol v2: expected version 2, got %d&quot;,</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+                    header.v2.ver_cmd &=
+amp; PROXY_PROTOCOL_V2_VER_MASK);</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+                return false;</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+            }</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+        }</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        cas=
+e PROXY_PROTOCOL_VERSION_1:</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+            msg(M_DEBUG, &quot;PROXY protocol header v1: %.*s&quot;=
+, BLEN(buf) - 2, header.v1.line);</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+            return proxy_protocol_parse_v1(ppi, header.v1.lin=
+e, BLEN(buf));</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+        default:</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+            return false;</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+void</span><br><span style=3D"color: hsl(120, 100%, 40%);">+proxy_protoc=
+ol_free(struct proxy_protocol_info *ppi)</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+    gc_free(&amp;ppi-&gt;gc);</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+}</span><br><span>diff --git a/src/openvpn/proxy_protocol.h b/=
+src/openvpn/proxy_protocol.h</span><br><span>new file mode 100644</span><br=
+><span>index 0000000..8e9af03</span><br><span>--- /dev/null</span><br><span=
+>+++ b/src/openvpn/proxy_protocol.h</span><br><span>@@ -0,0 +1,165 @@</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+/*</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+ *  OpenVPN -- An application to securely=
+ tunnel IP networks</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+ *             over a single TCP/UDP port, with support for SSL/TLS-based</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *             sessio=
+n authentication and key exchange,</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+ *             packet encryption, packet authentication, and=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *             pack=
+et compression.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  Copyright (C) 200=
+2-2024 OpenVPN Inc &lt;sales@...515...&gt;</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+ *</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+ *  This program is free software; you can redistribute it and/or mod=
+ify</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  it under the=
+ terms of the GNU General Public License version 2</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+ *  as published by the Free Software Founda=
+tion.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+ *  This program is distributed=
+ in the hope that it will be useful,</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+ *  but WITHOUT ANY WARRANTY; without even the implied war=
+ranty of</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  MERCHAN=
+TABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+ *  GNU General Public License for more =
+details.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+ *  You should have received=
+ a copy of the GNU General Public License along</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+ *  with this program; if not, write to the Fre=
+e Software Foundation, Inc.,</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+ *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+ */</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+#ifndef PROXY_PROTOCOL_H</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+#define PROXY_PROTOCOL_H</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+#include &quot;buffer.h&quot;</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+#include &quot;openvpn.h&quot;</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+#include &quot;socket.h&quot;</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+#include &lt;stdbool.h&gt;</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+#include &lt;stdint.h&gt;</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+/* https://www.haproxy.org/download/1.8/doc/proxy-protocol.t=
+xt */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+#define PROXY_PROTOCOL_V1_SIG    =
+      &quot;PROXY&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+#define PROXY_PROTOCOL_V1_SIG_LEN      5</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+#define PROXY_PROTOCOL_V1_MIN_HDR_LEN  8</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+#define PROXY_PROTOCOL_V1_LIN=
+E_MAX_LEN 108</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+#define PROXY_PROTOCOL_V2=
+_SIG         &quot;\x0D\x0A\x0D\x0A\x00\x0D\x0A\x51\x55\x49\x54\x0A&quot;</=
 span><br><span style=3D"color: hsl(120, 100%, 40%);">+#define PROXY_PROTOCO=
-L_V2_CLIENT_SSL          0x01</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+#define PROXY_PROTOCOL_V2_CLIENT_CERT_CONN    0x02</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+#define PROXY_PROTOCOL_V2_CLIENT_C=
-ERT_SESS    0x04</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+#define PROXY_PROTOCOL=
-_V2_TLV_UNIQUE_ID_MAX_LEN 128</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+</span><br><span> typedef enum</span><br><span> {</span><br><span=
->     PROXY_PROTOCOL_VERSION_INVALID =3D -1,</span><br><span>@@ -69,6 +88,2=
-2 @@</span><br><span>     PROXY_PROTOCOL_VERSION_2,</span><br><span> } prox=
-y_protocol_version_t;</span><br><span> </span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+struct proxy_protocol_tlv</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+    uint8_t type;</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+    uint8_t length_hi;</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+    uint8_t length_lo;</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+    uint8_t value[0];</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+};</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+#pragma pack(push, 1)<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+struct proxy_protoco=
-l_tlv_ssl</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+    uint8_t client;</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+    uint32_t verify;</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+} __attribute__((packed));<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+#pragma pack(pop)</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> /* H=
-AProxy PROXY protocol header */</span><br><span> typedef union</span><br><s=
-pan> {</span><br><span>@@ -115,6 +150,23 @@</span><br><span>     int sock_t=
-ype;</span><br><span>     struct openvpn_sockaddr src;</span><br><span>    =
- struct openvpn_sockaddr dst;</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    /* da=
-ta extracted from TLVs */</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+    char *alpn;</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+    char *authority;</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    uint8_t uniq=
-ue_id[PROXY_PROTOCOL_V2_TLV_UNIQUE_ID_MAX_LEN + 1];</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    uint16_t unique_id_len;</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+    uint8_t ssl_client;</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+    uint32_t ssl_verify;</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    char *ssl_version;</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+    char *ssl_cn;</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+    char *ssl_cipher;</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+    char *ssl_sig_alg;</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+    char *ssl_key_alg;</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+    char *netns;</span><br><span> };</span><br><spa=
-n> </span><br><span> /*</span><br><span></span><br></pre><p>To view, visit =
-<a href=3D"http://gerrit.openvpn.net/c/openvpn/+/686?usp=3Demail">change 68=
-6</a>. To unsubscribe, or for help writing mail filters, visit <a href=3D"h=
-ttp://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope itemtype=
-=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"action" item=
-type=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http:/=
-/gerrit.openvpn.net/c/openvpn/+/686?usp=3Demail"/><meta itemprop=3D"name" c=
-ontent=3D"View Change"/></div></div>
+L_V2_SIG_LEN     12</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+#define PROXY_PROTOCOL_V2_MIN_HDR_LEN 16</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+#define PROXY_PROTOCOL_V2_VER_MASK 0xF0</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+#define PROXY_PROTOCOL_V2_VER      (0x2 &lt;&lt; 4)</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+#define PROXY_PROTOCOL_V2_CMD_MASK  0x0F=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#define PROXY_PROTO=
+COL_V2_LOCAL_CMD (0x0 &lt;&lt; 0)</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+#define PROXY_PROTOCOL_V2_PROXY_CMD (0x1 &lt;&lt; 0)</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+#define PROXY_PROTOCOL_V2_AF_MASK   0xF0</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+#define PROXY_PROTOCOL_V2_=
+AF_UNSPEC (0x0 &lt;&lt; 4)</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+#define PROXY_PROTOCOL_V2_AF_INET   (0x1 &lt;&lt; 4)</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+#define PROXY_PROTOCOL_V2_AF_INET6 =
+ (0x2 &lt;&lt; 4)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#d=
+efine PROXY_PROTOCOL_V2_AF_UNIX   (0x3 &lt;&lt; 4)</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+#define PROXY_PROTOCOL_V2_TP_MASK   0x0F</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+#define PROXY_PROTOCOL_V2_TP_UNSPEC (0x0 =
+&lt;&lt; 0)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#define =
+PROXY_PROTOCOL_V2_TP_STREAM (0x1 &lt;&lt; 0)</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+#define PROXY_PROTOCOL_V2_TP_DGRAM  (0x2 &lt;&lt; =
+0)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+typedef enum</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+    PROXY_PROTOCOL_VERSION_INVALID =3D -1,</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+    PROXY_PROTOCOL_VERSION_UNKNOWN =3D 0,</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+    PROXY_PROTOCOL_VERSION_1,</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+    PROXY_PROTOCOL_VERS=
+ION_2,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+} proxy_proto=
+col_version_t;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+/* HAProxy PROXY protoco=
+l header */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+typedef =
+union</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+    struct</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+        char line[PROXY_PROTOCOL_V1_LINE_MAX_LEN];</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+    } v1;</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+    struct</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+        uint8_t sig[PROXY_PROTOCOL_V2_SIG_LEN];</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+        uint8_t ver_cmd;</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+        uint8_t fam;</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+        uint16_t len;=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        union</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+        {</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+            struct</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+            {</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+                uint32_t src_addr;</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+                uint32_t d=
+st_addr;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+           =
+     uint16_t src_port;</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+                uint16_t dst_port;</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+            } ip4;</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+            struct</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+            {</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+                uint8_t src_addr[16];</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+                uint8_t dst_addr[16];</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+                uint16_t src=
+_port;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+             =
+   uint16_t dst_port;</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+            } ip6;</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++            struct</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+            {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
+          uint8_t src_addr[108];</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+                uint8_t dst_addr[108];</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+            } unx;</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+        } addr;</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+    } v2;</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+} proxy_protocol_header_t;</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+struct proxy_protocol_info</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+ struct gc_arena gc;</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    proxy_protocol=
+_version_t version;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+    int sock_type;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+   struct openvpn_sockaddr src;</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+    struct openvpn_sockaddr dst;</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+};</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+/*</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+ * Check if the buffer conta=
+ins a PROXY protocol header and return the version.</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+ * @param buf - The buffer to check.</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+ * @param buf_len - The length of the buf=
+fer.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+ * @return - The PROXY protocol =
+version or PROXY_PROTOCOL_VERSION_INVALID if</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+ *          the buffer does not contain a valid PR=
+OXY protocol header.</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++ */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+proxy_protocol_=
+version_t</span><br><span style=3D"color: hsl(120, 100%, 40%);">+proxy_prot=
+ocol_version(const uint8_t *buf, int buf_len);</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+/*</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * Get th=
+e length of the PROXY protocol header.</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+ *</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+ * @param buf - The buffer to check.</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+ * @param buf_len - The length of the buffer.</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+ * @param version - The PROXY =
+protocol version.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @return - The le=
+ngth of the header or -1 if the header is partial or invalid.</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+ */</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+int</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+proxy_protocol_header_len(const uint8_t *buf, int len,</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+                          prox=
+y_protocol_version_t version);</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+/*</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+ * Parse the PROXY protoc=
+ol header.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+ * @param ppi - The proxy =
+protocol info structure to store the parsed data.</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+ * @param buf - The buffer containing the hea=
+der.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @param versi=
+on - The version of the PROXY protocol.</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+ *</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+ * @return - true if the header was successfully parsed.</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+ */</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+bool</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+proxy_protocol_parse(struct proxy_protocol_info *ppi, const struct=
+ buffer *buf);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+/*</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+ * Free the allocated memory.</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+ * @param ppi - The proxy protocol info structur=
+e.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ */</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+void</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+proxy_protocol_free(struct proxy_protocol_info *=
+ppi);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+#endif /* PROXY_PROTOCOL_H */</sp=
+an><br><span>diff --git a/src/openvpn/socket.c b/src/openvpn/socket.c</span=
+><br><span>index 17c5e76..7fb382c 100644</span><br><span>--- a/src/openvpn/=
+socket.c</span><br><span>+++ b/src/openvpn/socket.c</span><br><span>@@ -39,=
+6 +39,7 @@</span><br><span> #include &quot;manage.h&quot;</span><br><span> =
+#include &quot;openvpn.h&quot;</span><br><span> #include &quot;forward.h&qu=
+ot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#include &quot;p=
+roxy_protocol.h&quot;</span><br><span> </span><br><span> #include &quot;mem=
+dbg.h&quot;</span><br><span> </span><br><span>@@ -2680,10 +2681,20 @@</span=
+><br><span> </span><br><span>         if (sb-&gt;len &lt; 1 || sb-&gt;len &=
+gt; sb-&gt;maxlen)</span><br><span>         {</span><br><span style=3D"colo=
+r: hsl(0, 100%, 40%);">-            msg(M_WARN, &quot;WARNING: Bad encapsul=
+ated packet length from peer (%d), which must be &gt; 0 and &lt;=3D %d -- p=
+lease ensure that --tun-mtu or --link-mtu is equal on both peers -- this co=
+ndition could also indicate a possible active attack on the TCP link -- [At=
+tempting restart...]&quot;, sb-&gt;len, sb-&gt;maxlen);</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-            stream_buf_reset(sb);</span><=
+br><span style=3D"color: hsl(0, 100%, 40%);">-            sb-&gt;error =3D =
+true;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            retu=
+rn false;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+          =
+  /* check if it&#39;s a PROXY protocol header */</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+            /* undo the reading of net_size */</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+            ASSERT(buf_prepend(&amp;s=
+b-&gt;buf, sizeof(net_size)));</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+            const proxy_protocol_version_t pp_version =3D proxy_=
+protocol_version(BPTR(&amp;sb-&gt;buf), BLEN(&amp;sb-&gt;buf));</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+            const int pp_len =
+=3D proxy_protocol_header_len(BPTR(&amp;sb-&gt;buf), BLEN(&amp;sb-&gt;buf),=
+ pp_version);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
+      if (pp_version &lt;=3D 0 || pp_len &lt; 0 || pp_len &gt; sb-&gt;buf.l=
+en)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            {</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+                msg(M_=
+WARN, &quot;WARNING: Bad encapsulated packet length from peer (%d), which m=
+ust be &gt; 0 and &lt;=3D %d -- please ensure that --tun-mtu or --link-mtu =
+is equal on both peers -- this condition could also indicate a possible act=
+ive attack on the TCP link -- [Attempting restart...]&quot;, sb-&gt;len, sb=
+-&gt;maxlen);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
+          stream_buf_reset(sb);</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+                sb-&gt;error =3D true;</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+                return false;</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+            }</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+            sb-&gt;len =3D pp_len;</span=
+><br><span>         }</span><br><span>     }</span><br><span> </span><br><s=
+pan></span><br></pre><p>To view, visit <a href=3D"http://gerrit.openvpn.net=
+/c/openvpn/+/685?usp=3Demail">change 685</a>. To unsubscribe, or for help w=
+riting mail filters, visit <a href=3D"http://gerrit.openvpn.net/settings">s=
+ettings</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage">=
+<div itemscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction=
+"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/685?=
+usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: Ia593f72f6baa6e16d2fd9b21b38=
-3b709682f9499 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 686 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I9766c68feaba71279f26c3310ee=
+e4b5ca215e6ac </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 685 </div>
 <div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
 <div style=3D"display:none"> Gerrit-Owner: ralf_lici &lt;ralf@...2726...&gt=
 ; </div>
@@ -1094,5 +2457,5 @@ ts.sourceforge.net&gt; </div>
 <div style=3D"display:none"> Gerrit-MessageType: newchange </div>
 
 
---NSQ2oIYjFYM=--
+--mPTQdSu9amM=--
 
