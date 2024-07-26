@@ -1,16 +1,16 @@
-From: "plaisthos (Code Review)" <gerrit@...515...>
-Date: Fri, 26 Jul 2024 11:45:33 +0000
-In-Reply-To: <gerrit.1721982049000.I9766c68feaba71279f26c3310eee4b5ca215e6ac@...2715...>
-References: <gerrit.1721982049000.I9766c68feaba71279f26c3310eee4b5ca215e6ac@...2715...>
-Reply-To: arne-openvpn@...1227..., openvpn-devel@lists.sourceforge.net,
- ralf@...2726..., frank@...2641...
-Message-ID: <287fc038a977d62a20fadc1ed08ee0acdca0d302-EmailReviewComments-HTML@...2715...>
+From: "cron2 (Code Review)" <gerrit@...515...>
+Date: Fri, 26 Jul 2024 11:57:32 +0000
+In-Reply-To: <gerrit.1718900482000.I379e1eb6dc57b9fe4bbdaefbd947a14326e7117a@...2715...>
+References: <gerrit.1718900482000.I379e1eb6dc57b9fe4bbdaefbd947a14326e7117a@...2715...>
+Reply-To: gert@...1296..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net, frank@...2641...
+Message-ID: <4af52f39c1bf80ef0de993928a1113cfffedb44a-EmailReplacePatchSet-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="mClWeMVQeaI="; charset=UTF-8
-Subject: [Openvpn-devel] [L] Change in openvpn[master]: Add support for
- HAProxy's PROXY protocol
+Content-Type: multipart/alternative; boundary="V68ICAWEzec="; charset=UTF-8
+Subject: [Openvpn-devel] [M] Change in openvpn[master]: console_systemd:
+ rename query_user_exec to query_user_systemd
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,208 +19,336 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: ralf_lici <ralf@...2726...>
-Cc: flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: flichtenheld <frank@...2641...>, plaisthos <arne-openvpn@...1227...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---mClWeMVQeaI=
+--V68ICAWEzec=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: ralf_lici.
+cron2 has uploaded a new patch set (#5) to the change originally created by=
+ flichtenheld. ( http://gerrit.openvpn.net/c/openvpn/+/670?usp=3Demail )
 
-plaisthos has posted comments on this change. ( http://gerrit.openvpn.net/c=
-/openvpn/+/685?usp=3Demail )
+The following approvals got outdated and were removed:
+Code-Review+2 by cron2
 
-Change subject: Add support for HAProxy's PROXY protocol
+
+Change subject: console_systemd: rename query_user_exec to query_user_syste=
+md
 ......................................................................
 
+console_systemd: rename query_user_exec to query_user_systemd
 
-Patch Set 1: Code-Review-1
+This allows us to override query_user_exec for unit
+tests more consistently without having to jump through
+weird hoops.
 
-(9 comments)
+Fixes running test_pkcs11 with --enable-systemd.
 
-Patchset:
+While here also fix documentation comments for
+query_user_exec*.
 
-PS1:
-I think this needs more overhaul
-
-
-File CMakeLists.txt:
-
-http://gerrit.openvpn.net/c/openvpn/+/685/comment/59d24823_1499669a :
-PS1, Line 494:     src/openvpn/proxy_protocol.h
-haproxy_protocol.c/haproxy_protol.h
-
-Currently it looks like they are related to the other proxy code which they=
- are not.
-
-
-File doc/proxy-protocol.txt:
-
-http://gerrit.openvpn.net/c/openvpn/+/685/comment/4932a48c_3085af39 :
-PS1, Line 8: https://www.haproxy.org/download/2.4/doc/proxy-protocol.txt
-Is this just a copy and paste of the document or is this addition to that d=
-ocument? It would be good to clarify the relationship between these docuemn=
-ts.
+Change-Id: I379e1eb6dc57b9fe4bbdaefbd947a14326e7117a
+Signed-off-by: Frank Lichtenheld <frank@...2641...>
+Acked-by: Gert Doering <gert@...1296...>
+Message-Id: <20240726104032.2112-1-gert@...1296...>
+URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg28=
+983.html
+Signed-off-by: Gert Doering <gert@...1296...>
+---
+M src/openvpn/console.h
+M src/openvpn/console_systemd.c
+M tests/unit_tests/openvpn/test_pkcs11.c
+M tests/unit_tests/openvpn/test_user_pass.c
+4 files changed, 37 insertions(+), 14 deletions(-)
 
 
-http://gerrit.openvpn.net/c/openvpn/+/685/comment/4a84e43a_90eb3cad :
-PS1, Line 11: a binary version (v2).
-Is this protocol TCP only? I assume so, so would be good to mention this.
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/70/670/5
+
+diff --git a/src/openvpn/console.h b/src/openvpn/console.h
+index 7358299..72ae8e0 100644
+--- a/src/openvpn/console.h
++++ b/src/openvpn/console.h
+@@ -65,11 +65,10 @@
 
 
-http://gerrit.openvpn.net/c/openvpn/+/685/comment/1508ed20_2e564dcb :
-PS1, Line 26: ---------
-Why are supporting two new protocls? Is there a need to introduce an alread=
-y deprecated protocol to OpenVPN?
+ /**
+- * Executes a configured setup, using the built-in method for querying the=
+ user.
++ * Loop through configured query_user slots, using the built-in method for
++ * querying the user.
+  * This method uses the console/TTY directly.
+  *
+- * @param setup    Pointer to the setup defining what to ask the user
+- *
+  * @return True if executing all the defined steps completed successfully
+  */
+ bool query_user_exec_builtin(void);
+@@ -77,21 +76,34 @@
 
+ #if defined(ENABLE_SYSTEMD)
+ /**
+- * Executes a configured setup, using the compiled method for querying the=
+ user
+- *
+- * @param setup    Pointer to the setup defining what to ask the user
++ * Loop through configured query_user slots, using the systemd method for
++ * querying the user.
++ * If systemd is not running it will fall back to use
++ * query_user_exec_builtin() instead.
+  *
+  * @return True if executing all the defined steps completed successfully
+  */
+-bool query_user_exec(void);
++bool query_user_exec_systemd(void);
 
-http://gerrit.openvpn.net/c/openvpn/+/685/comment/f26ed461_54c16e70 :
-PS1, Line 97:   The v2 signature of the protocol: "\x0D\x0A\x0D\x0A\x00\x0D=
-\x0A\x51\x55\x49\x54\x0A\x20".
-Really? The singnature is '\r\n\r\n\x00\r\nQUIT\n'?
+-#else  /* ENABLE_SYSTEMD not defined*/
++/**
++ * Loop through configured query_user slots, using the compiled method for
++ * querying the user.
++ *
++ * @return True if executing all the defined steps completed successfully
++ */
++static inline bool
++query_user_exec(void)
++{
++    return query_user_exec_systemd();
++}
++
++#else  /* ENABLE_SYSTEMD not defined */
+ /**
+  * Wrapper function enabling query_user_exec() if no alternative methods h=
+ave
+  * been enabled
+  *
+  */
+-static bool
++static inline bool
+ query_user_exec(void)
+ {
+     return query_user_exec_builtin();
+diff --git a/src/openvpn/console_systemd.c b/src/openvpn/console_systemd.c
+index c7cf1ad..cc91cd1 100644
+--- a/src/openvpn/console_systemd.c
++++ b/src/openvpn/console_systemd.c
+@@ -96,7 +96,7 @@
+  *
+  */
+ bool
+-query_user_exec(void)
++query_user_exec_systemd(void)
+ {
+     bool ret =3D true;  /* Presume everything goes okay */
+     int i;
+diff --git a/tests/unit_tests/openvpn/test_pkcs11.c b/tests/unit_tests/open=
+vpn/test_pkcs11.c
+index 6d283a2..5518fa1 100644
+--- a/tests/unit_tests/openvpn/test_pkcs11.c
++++ b/tests/unit_tests/openvpn/test_pkcs11.c
+@@ -75,6 +75,14 @@
+ {
+     assert_true(0);
+ }
++#if defined(ENABLE_SYSTEMD)
++bool
++query_user_exec_systemd(void)
++{
++    assert_true(0);
++    return false;
++}
++#endif
+ bool
+ query_user_exec_builtin(void)
+ {
+diff --git a/tests/unit_tests/openvpn/test_user_pass.c b/tests/unit_tests/o=
+penvpn/test_user_pass.c
+index b43e655..de60291 100644
+--- a/tests/unit_tests/openvpn/test_user_pass.c
++++ b/tests/unit_tests/openvpn/test_user_pass.c
+@@ -26,10 +26,6 @@
+ #include "config.h"
+ #endif
 
+-#undef ENABLE_SYSTEMD
+-/* avoid redefining ENABLE_SYSTEMD in misc.c */
+-#undef HAVE_CONFIG_H
+-
+ #include "syshead.h"
+ #include "manage.h"
 
-http://gerrit.openvpn.net/c/openvpn/+/685/comment/28038db2_443fb0fb :
-PS1, Line 108:
-What does this mean in the openvpn context?
+@@ -44,6 +40,13 @@
+ struct management *management; /* global */
 
-
-http://gerrit.openvpn.net/c/openvpn/+/685/comment/aff6de14_525b6ce9 :
-PS1, Line 115:     DGRAM (0x2).
-if this is dgram, is the protocol still over tcp or does it use UDP then?
-
-
-File src/openvpn/socket.c:
-
-http://gerrit.openvpn.net/c/openvpn/+/685/comment/9d712c5d_d6c36d0f :
-PS1, Line 2684:             /* check if it's a PROXY protocol header */
-I don't think this is the right place to add this. This will be basically c=
-alled on every link_socket_read_tcp and not just on the first packets. Also=
- it seems to be enabled always so this might have side effects on non-hapro=
-xy operation.
-
-
+ /* mocking */
++#if defined(ENABLE_SYSTEMD)
++bool
++query_user_exec_systemd(void)
++{
++    return query_user_exec_builtin();
++}
++#endif
+ bool
+ query_user_exec_builtin(void)
+ {
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/685?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/670?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings
 
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: I9766c68feaba71279f26c3310eee4b5ca215e6ac
-Gerrit-Change-Number: 685
-Gerrit-PatchSet: 1
-Gerrit-Owner: ralf_lici <ralf@...2726...>
-Gerrit-Reviewer: flichtenheld <frank@...2641...>
+Gerrit-Change-Id: I379e1eb6dc57b9fe4bbdaefbd947a14326e7117a
+Gerrit-Change-Number: 670
+Gerrit-PatchSet: 5
+Gerrit-Owner: flichtenheld <frank@...2641...>
+Gerrit-Reviewer: cron2 <gert@...1296...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: ralf_lici <ralf@...2726...>
-Gerrit-Comment-Date: Fri, 26 Jul 2024 11:45:33 +0000
-Gerrit-HasComments: Yes
-Gerrit-Has-Labels: Yes
-Gerrit-MessageType: comment
+Gerrit-MessageType: newpatchset
 
---mClWeMVQeaI=
+--V68ICAWEzec=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p> Attention is currently required from: ralf_lici. </p>
-<p>Patch set 1:<span style=3D"border-radius: 3px; display: inline-block; ma=
-rgin: 0 2px; padding: 4px;background-color: #ffd4d4;">Code-Review -1</span>=
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/685?usp=3Demail">Vi=
-ew Change</a></p><p>9 comments:</p><ul style=3D"list-style: none; padding: =
-0;"><li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-=
-style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p =
-style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvp=
-n/+/685?tab=3Dcomments">Patch Set #1:</a> </p><p style=3D"white-space: pre-=
-wrap; word-wrap: break-word;">I think this needs more overhaul</p></li></ul=
-></li><li style=3D"margin: 0; padding: 0;"><p>File CMakeLists.txt:</p><ul s=
-tyle=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0=
- 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn=
-.net/c/openvpn/+/685/comment/59d24823_1499669a">Patch Set #1, Line 494:</a>=
- <code style=3D"font-family:monospace,monospace">    src/openvpn/proxy_prot=
-ocol.h</code></p><p style=3D"white-space: pre-wrap; word-wrap: break-word;"=
->haproxy_protocol.c/haproxy_protol.h</p><p style=3D"white-space: pre-wrap; =
-word-wrap: break-word;">Currently it looks like they are related to the oth=
-er proxy code which they are not.</p></li></ul></li><li style=3D"margin: 0;=
- padding: 0;"><p>File doc/proxy-protocol.txt:</p><ul style=3D"list-style: n=
-one; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p style=3D=
-"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/685/=
-comment/4932a48c_3085af39">Patch Set #1, Line 8:</a> <code style=3D"font-fa=
-mily:monospace,monospace">https://www.haproxy.org/download/2.4/doc/proxy-pr=
-otocol.txt</code></p><p style=3D"white-space: pre-wrap; word-wrap: break-wo=
-rd;">Is this just a copy and paste of the document or is this addition to t=
-hat document? It would be good to clarify the relationship between these do=
-cuemnts.</p></li><li style=3D"margin: 0; padding: 0 0 0 16px;"><p style=3D"=
-margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/685/c=
-omment/4a84e43a_90eb3cad">Patch Set #1, Line 11:</a> <code style=3D"font-fa=
-mily:monospace,monospace">a binary version (v2).</code></p><p style=3D"whit=
-e-space: pre-wrap; word-wrap: break-word;">Is this protocol TCP only? I ass=
-ume so, so would be good to mention this.</p></li><li style=3D"margin: 0; p=
-adding: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://ger=
-rit.openvpn.net/c/openvpn/+/685/comment/1508ed20_2e564dcb">Patch Set #1, Li=
-ne 26:</a> <code style=3D"font-family:monospace,monospace">---------</code>=
-</p><p style=3D"white-space: pre-wrap; word-wrap: break-word;">Why are supp=
-orting two new protocls? Is there a need to introduce an already deprecated=
- protocol to OpenVPN?</p></li><li style=3D"margin: 0; padding: 0 0 0 16px;"=
-><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/op=
-envpn/+/685/comment/f26ed461_54c16e70">Patch Set #1, Line 97:</a> <code sty=
-le=3D"font-family:monospace,monospace">  The v2 signature of the protocol: =
-&quot;\x0D\x0A\x0D\x0A\x00\x0D\x0A\x51\x55\x49\x54\x0A\x20&quot;.</code></p=
-><p style=3D"white-space: pre-wrap; word-wrap: break-word;">Really? The sin=
-gnature is &#39;\r\n\r\n\x00\r\nQUIT\n&#39;?</p></li><li style=3D"margin: 0=
-; padding: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://=
-gerrit.openvpn.net/c/openvpn/+/685/comment/28038db2_443fb0fb">Patch Set #1,=
- Line 108:</a> <code style=3D"font-family:monospace,monospace"></code></p><=
-p style=3D"white-space: pre-wrap; word-wrap: break-word;">What does this me=
-an in the openvpn context?</p></li><li style=3D"margin: 0; padding: 0 0 0 1=
-6px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net=
-/c/openvpn/+/685/comment/aff6de14_525b6ce9">Patch Set #1, Line 115:</a> <co=
-de style=3D"font-family:monospace,monospace">    DGRAM (0x2).</code></p><p =
-style=3D"white-space: pre-wrap; word-wrap: break-word;">if this is dgram, i=
-s the protocol still over tcp or does it use UDP then?</p></li></ul></li><l=
-i style=3D"margin: 0; padding: 0;"><p>File src/openvpn/socket.c:</p><ul sty=
-le=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0=
- 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.n=
-et/c/openvpn/+/685/comment/9d712c5d_d6c36d0f">Patch Set #1, Line 2684:</a> =
-<code style=3D"font-family:monospace,monospace">            /* check if it&=
-#39;s a PROXY protocol header */</code></p><p style=3D"white-space: pre-wra=
-p; word-wrap: break-word;">I don&#39;t think this is the right place to add=
- this. This will be basically called on every link_socket_read_tcp and not =
-just on the first packets. Also it seems to be enabled always so this might=
- have side effects on non-haproxy operation.</p></li></ul></li></ul><p>To v=
-iew, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/685?usp=3Demail=
-">change 685</a>. To unsubscribe, or for help writing mail filters, visit <=
-a href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemsco=
-pe itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"a=
-ction" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" hre=
-f=3D"http://gerrit.openvpn.net/c/openvpn/+/685?usp=3Demail"/><meta itemprop=
-=3D"name" content=3D"View Change"/></div></div>
+<p>cron2 <strong>uploaded patch set #5</strong> to the change originally cr=
+eated by flichtenheld.</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn=
+/+/670?usp=3Demail">View Change</a></p><p>The following approvals got outda=
+ted and were removed:
+Code-Review+2 by cron2</p><pre style=3D"font-family: monospace,monospace; w=
+hite-space: pre-wrap;">console_systemd: rename query_user_exec to query_use=
+r_systemd<br><br>This allows us to override query_user_exec for unit<br>tes=
+ts more consistently without having to jump through<br>weird hoops.<br><br>=
+Fixes running test_pkcs11 with --enable-systemd.<br><br>While here also fix=
+ documentation comments for<br>query_user_exec*.<br><br>Change-Id: I379e1eb=
+6dc57b9fe4bbdaefbd947a14326e7117a<br>Signed-off-by: Frank Lichtenheld &lt;f=
+rank@...2641...&gt;<br>Acked-by: Gert Doering &lt;gert@...1296...&gt;<br>Me=
+ssage-Id: &lt;20240726104032.2112-1-gert@...1296...&gt;<br>URL: https://www=
+.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg28983.html<br>Sign=
+ed-off-by: Gert Doering &lt;gert@...1296...&gt;<br>---<br>M src/openvpn/con=
+sole.h<br>M src/openvpn/console_systemd.c<br>M tests/unit_tests/openvpn/tes=
+t_pkcs11.c<br>M tests/unit_tests/openvpn/test_user_pass.c<br>4 files change=
+d, 37 insertions(+), 14 deletions(-)<br><br></pre><pre style=3D"font-family=
+: monospace,monospace; white-space: pre-wrap;">git pull ssh://gerrit.openvp=
+n.net:29418/openvpn refs/changes/70/670/5</pre><pre style=3D"font-family: m=
+onospace,monospace; white-space: pre-wrap;"><span>diff --git a/src/openvpn/=
+console.h b/src/openvpn/console.h</span><br><span>index 7358299..72ae8e0 10=
+0644</span><br><span>--- a/src/openvpn/console.h</span><br><span>+++ b/src/=
+openvpn/console.h</span><br><span>@@ -65,11 +65,10 @@</span><br><span> </sp=
+an><br><span> </span><br><span> /**</span><br><span style=3D"color: hsl(0, =
+100%, 40%);">- * Executes a configured setup, using the built-in method for=
+ querying the user.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+ * Loop through configured query_user slots, using the built-in method for<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * querying the user=
+.</span><br><span>  * This method uses the console/TTY directly.</span><br>=
+<span>  *</span><br><span style=3D"color: hsl(0, 100%, 40%);">- * @param se=
+tup    Pointer to the setup defining what to ask the user</span><br><span s=
+tyle=3D"color: hsl(0, 100%, 40%);">- *</span><br><span>  * @return True if =
+executing all the defined steps completed successfully</span><br><span>  */=
+</span><br><span> bool query_user_exec_builtin(void);</span><br><span>@@ -7=
+7,21 +76,34 @@</span><br><span> </span><br><span> #if defined(ENABLE_SYSTEM=
+D)</span><br><span> /**</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>- * Executes a configured setup, using the compiled method for querying th=
+e user</span><br><span style=3D"color: hsl(0, 100%, 40%);">- *</span><br><s=
+pan style=3D"color: hsl(0, 100%, 40%);">- * @param setup    Pointer to the =
+setup defining what to ask the user</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+ * Loop through configured query_user slots, using the syst=
+emd method for</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * qu=
+erying the user.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * =
+If systemd is not running it will fall back to use</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+ * query_user_exec_builtin() instead.</span>=
+<br><span>  *</span><br><span>  * @return True if executing all the defined=
+ steps completed successfully</span><br><span>  */</span><br><span style=3D=
+"color: hsl(0, 100%, 40%);">-bool query_user_exec(void);</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+bool query_user_exec_systemd(void);</s=
+pan><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-#else =
+ /* ENABLE_SYSTEMD not defined*/</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+/**</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * =
+Loop through configured query_user slots, using the compiled method for</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+ * querying the user.</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+ * @return True if executing all the d=
+efined steps completed successfully</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+ */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+static inline bool</span><br><span style=3D"color: hsl(120, 100%, 40%);">+q=
+uery_user_exec(void)</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    return query_=
+user_exec_systemd();</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+#else  /* ENABLE_SYSTEMD not defined=
+ */</span><br><span> /**</span><br><span>  * Wrapper function enabling quer=
+y_user_exec() if no alternative methods have</span><br><span>  * been enabl=
+ed</span><br><span>  *</span><br><span>  */</span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-static bool</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+static inline bool</span><br><span> query_user_exec(void)</sp=
+an><br><span> {</span><br><span>     return query_user_exec_builtin();</spa=
+n><br><span>diff --git a/src/openvpn/console_systemd.c b/src/openvpn/consol=
+e_systemd.c</span><br><span>index c7cf1ad..cc91cd1 100644</span><br><span>-=
+-- a/src/openvpn/console_systemd.c</span><br><span>+++ b/src/openvpn/consol=
+e_systemd.c</span><br><span>@@ -96,7 +96,7 @@</span><br><span>  *</span><br=
+><span>  */</span><br><span> bool</span><br><span style=3D"color: hsl(0, 10=
+0%, 40%);">-query_user_exec(void)</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+query_user_exec_systemd(void)</span><br><span> {</span><br><s=
+pan>     bool ret =3D true;  /* Presume everything goes okay */</span><br><=
+span>     int i;</span><br><span>diff --git a/tests/unit_tests/openvpn/test=
+_pkcs11.c b/tests/unit_tests/openvpn/test_pkcs11.c</span><br><span>index 6d=
+283a2..5518fa1 100644</span><br><span>--- a/tests/unit_tests/openvpn/test_p=
+kcs11.c</span><br><span>+++ b/tests/unit_tests/openvpn/test_pkcs11.c</span>=
+<br><span>@@ -75,6 +75,14 @@</span><br><span> {</span><br><span>     assert=
+_true(0);</span><br><span> }</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+#if defined(ENABLE_SYSTEMD)</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+bool</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+query_user_exec_systemd(void)</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    as=
+sert_true(0);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    re=
+turn false;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+#endif</span><br><span> bo=
+ol</span><br><span> query_user_exec_builtin(void)</span><br><span> {</span>=
+<br><span>diff --git a/tests/unit_tests/openvpn/test_user_pass.c b/tests/un=
+it_tests/openvpn/test_user_pass.c</span><br><span>index b43e655..de60291 10=
+0644</span><br><span>--- a/tests/unit_tests/openvpn/test_user_pass.c</span>=
+<br><span>+++ b/tests/unit_tests/openvpn/test_user_pass.c</span><br><span>@=
+@ -26,10 +26,6 @@</span><br><span> #include &quot;config.h&quot;</span><br>=
+<span> #endif</span><br><span> </span><br><span style=3D"color: hsl(0, 100%=
+, 40%);">-#undef ENABLE_SYSTEMD</span><br><span style=3D"color: hsl(0, 100%=
+, 40%);">-/* avoid redefining ENABLE_SYSTEMD in misc.c */</span><br><span s=
+tyle=3D"color: hsl(0, 100%, 40%);">-#undef HAVE_CONFIG_H</span><br><span st=
+yle=3D"color: hsl(0, 100%, 40%);">-</span><br><span> #include &quot;syshead=
+.h&quot;</span><br><span> #include &quot;manage.h&quot;</span><br><span> </=
+span><br><span>@@ -44,6 +40,13 @@</span><br><span> struct management *manag=
+ement; /* global */</span><br><span> </span><br><span> /* mocking */</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+#if defined(ENABLE_SYSTEMD=
+)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+bool</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+query_user_exec_systemd(void)</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    return query_user_exec_builtin();</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+#endif</span><br><span> bool</span><br><s=
+pan> query_user_exec_builtin(void)</span><br><span> {</span><br><span></spa=
+n><br></pre><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvp=
+n/+/670?usp=3Demail">change 670</a>. To unsubscribe, or for help writing ma=
+il filters, visit <a href=3D"http://gerrit.openvpn.net/settings">settings</=
+a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div item=
+scope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link i=
+temprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/670?usp=3Dema=
+il"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I9766c68feaba71279f26c3310ee=
-e4b5ca215e6ac </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 685 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
-<div style=3D"display:none"> Gerrit-Owner: ralf_lici &lt;ralf@...2726...&gt=
-; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
-1...&gt; </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I379e1eb6dc57b9fe4bbdaefbd94=
+7a14326e7117a </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 670 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 5 </div>
+<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
+.&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
+ </div>
 <div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
 .1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: ralf_lici &lt;ralf@...2804...=
-.&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Fri, 26 Jul 2024 11:45:33=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
+<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
 
 
---mClWeMVQeaI=--
+--V68ICAWEzec=--
 
