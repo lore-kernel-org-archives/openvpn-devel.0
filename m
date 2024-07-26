@@ -1,16 +1,11 @@
-From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Fri, 26 Jul 2024 10:40:14 +0000
+From: Gert Doering <gert@...1296...>
+Date: Fri, 26 Jul 2024 12:40:32 +0200
+Message-ID: <20240726104032.2112-1-gert@...1296...>
 In-Reply-To: <gerrit.1718900482000.I379e1eb6dc57b9fe4bbdaefbd947a14326e7117a@...2715...>
 References: <gerrit.1718900482000.I379e1eb6dc57b9fe4bbdaefbd947a14326e7117a@...2715...>
-Reply-To: gert@...1296..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <eeaa354e486e90d67d2151f389bb24c6f8ce6aad-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="YaeNubduOh4="; charset=UTF-8
-Subject: [Openvpn-devel] [M] Change in openvpn[master]: console_systemd:
- rename query_user_exec to query_user_systemd
+Subject: [Openvpn-devel] [PATCH v4] console_systemd: rename query_user_exec
+ to query_user_systemd
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,99 +14,154 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: flichtenheld <frank@...2641...>
-Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---YaeNubduOh4=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+From: Frank Lichtenheld <frank@...2641...>
 
-Attention is currently required from: flichtenheld, plaisthos.
+This allows us to override query_user_exec for unit
+tests more consistently without having to jump through
+weird hoops.
 
-cron2 has posted comments on this change. ( http://gerrit.openvpn.net/c/ope=
-nvpn/+/670?usp=3Demail )
+Fixes running test_pkcs11 with --enable-systemd.
 
-Change subject: console_systemd: rename query_user_exec to query_user_syste=
-md
-......................................................................
+While here also fix documentation comments for
+query_user_exec*.
 
+Change-Id: I379e1eb6dc57b9fe4bbdaefbd947a14326e7117a
+Signed-off-by: Frank Lichtenheld <frank@...2641...>
+Acked-by: Gert Doering <gert@...1296...>
+---
 
-Patch Set 4:
+This change was reviewed on Gerrit and approved by at least one
+developer. I request to merge it to master.
 
-(1 comment)
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/670
+This mail reflects revision 4 of this Change.
 
-Patchset:
+Acked-by according to Gerrit (reflected above):
+Gert Doering <gert@...1296...>
 
-PS4:
-LGTM
-
-
-
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/670?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings
-
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: I379e1eb6dc57b9fe4bbdaefbd947a14326e7117a
-Gerrit-Change-Number: 670
-Gerrit-PatchSet: 4
-Gerrit-Owner: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: cron2 <gert@...1296...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Comment-Date: Fri, 26 Jul 2024 10:40:14 +0000
-Gerrit-HasComments: Yes
-Gerrit-Has-Labels: No
-Gerrit-MessageType: comment
-
---YaeNubduOh4=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<p> Attention is currently required from: flichtenheld, plaisthos. </p>
-<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/670?usp=3Demail">View C=
-hange</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0;"><=
-li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-style=
-: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p style=
-=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/6=
-70?tab=3Dcomments">Patch Set #4:</a> </p><p style=3D"white-space: pre-wrap;=
- word-wrap: break-word;">LGTM</p></li></ul></li></ul><p>To view, visit <a h=
-ref=3D"http://gerrit.openvpn.net/c/openvpn/+/670?usp=3Demail">change 670</a=
->. To unsubscribe, or for help writing mail filters, visit <a href=3D"http:=
-//gerrit.openvpn.net/settings">settings</a>.</p><div itemscope itemtype=3D"=
-http://schema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=
-=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://ger=
-rit.openvpn.net/c/openvpn/+/670?usp=3Demail"/><meta itemprop=3D"name" conte=
-nt=3D"View Change"/></div></div>
-
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I379e1eb6dc57b9fe4bbdaefbd94=
-7a14326e7117a </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 670 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 4 </div>
-<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
-.&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
- </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
-41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Fri, 26 Jul 2024 10:40:14=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: No </div>
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
-
-
---YaeNubduOh4=--
+        
+diff --git a/src/openvpn/console.h b/src/openvpn/console.h
+index 7358299..72ae8e0 100644
+--- a/src/openvpn/console.h
++++ b/src/openvpn/console.h
+@@ -65,11 +65,10 @@
+ 
+ 
+ /**
+- * Executes a configured setup, using the built-in method for querying the user.
++ * Loop through configured query_user slots, using the built-in method for
++ * querying the user.
+  * This method uses the console/TTY directly.
+  *
+- * @param setup    Pointer to the setup defining what to ask the user
+- *
+  * @return True if executing all the defined steps completed successfully
+  */
+ bool query_user_exec_builtin(void);
+@@ -77,21 +76,34 @@
+ 
+ #if defined(ENABLE_SYSTEMD)
+ /**
+- * Executes a configured setup, using the compiled method for querying the user
+- *
+- * @param setup    Pointer to the setup defining what to ask the user
++ * Loop through configured query_user slots, using the systemd method for
++ * querying the user.
++ * If systemd is not running it will fall back to use
++ * query_user_exec_builtin() instead.
+  *
+  * @return True if executing all the defined steps completed successfully
+  */
+-bool query_user_exec(void);
++bool query_user_exec_systemd(void);
+ 
+-#else  /* ENABLE_SYSTEMD not defined*/
++/**
++ * Loop through configured query_user slots, using the compiled method for
++ * querying the user.
++ *
++ * @return True if executing all the defined steps completed successfully
++ */
++static inline bool
++query_user_exec(void)
++{
++    return query_user_exec_systemd();
++}
++
++#else  /* ENABLE_SYSTEMD not defined */
+ /**
+  * Wrapper function enabling query_user_exec() if no alternative methods have
+  * been enabled
+  *
+  */
+-static bool
++static inline bool
+ query_user_exec(void)
+ {
+     return query_user_exec_builtin();
+diff --git a/src/openvpn/console_systemd.c b/src/openvpn/console_systemd.c
+index c7cf1ad..cc91cd1 100644
+--- a/src/openvpn/console_systemd.c
++++ b/src/openvpn/console_systemd.c
+@@ -96,7 +96,7 @@
+  *
+  */
+ bool
+-query_user_exec(void)
++query_user_exec_systemd(void)
+ {
+     bool ret = true;  /* Presume everything goes okay */
+     int i;
+diff --git a/tests/unit_tests/openvpn/test_pkcs11.c b/tests/unit_tests/openvpn/test_pkcs11.c
+index 6d283a2..5518fa1 100644
+--- a/tests/unit_tests/openvpn/test_pkcs11.c
++++ b/tests/unit_tests/openvpn/test_pkcs11.c
+@@ -75,6 +75,14 @@
+ {
+     assert_true(0);
+ }
++#if defined(ENABLE_SYSTEMD)
++bool
++query_user_exec_systemd(void)
++{
++    assert_true(0);
++    return false;
++}
++#endif
+ bool
+ query_user_exec_builtin(void)
+ {
+diff --git a/tests/unit_tests/openvpn/test_user_pass.c b/tests/unit_tests/openvpn/test_user_pass.c
+index b43e655..de60291 100644
+--- a/tests/unit_tests/openvpn/test_user_pass.c
++++ b/tests/unit_tests/openvpn/test_user_pass.c
+@@ -26,10 +26,6 @@
+ #include "config.h"
+ #endif
+ 
+-#undef ENABLE_SYSTEMD
+-/* avoid redefining ENABLE_SYSTEMD in misc.c */
+-#undef HAVE_CONFIG_H
+-
+ #include "syshead.h"
+ #include "manage.h"
+ 
+@@ -44,6 +40,13 @@
+ struct management *management; /* global */
+ 
+ /* mocking */
++#if defined(ENABLE_SYSTEMD)
++bool
++query_user_exec_systemd(void)
++{
++    return query_user_exec_builtin();
++}
++#endif
+ bool
+ query_user_exec_builtin(void)
+ {
 
