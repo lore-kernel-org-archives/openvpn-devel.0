@@ -1,11 +1,17 @@
-Message-ID: <dc55ebad-46c2-448c-89df-8e65d06e767e@...1823...>
-Date: Mon, 29 Jul 2024 11:23:28 +0400
+From: "cron2 (Code Review)" <gerrit@...515...>
+Date: Mon, 29 Jul 2024 11:33:54 +0000
+In-Reply-To: <gerrit.1717673612000.I6662605b60d4859949970cfe256c55cbcbd4a672@...2715...>
+References: <gerrit.1717673612000.I6662605b60d4859949970cfe256c55cbcbd4a672@...2715...>
+Reply-To: gert@...1296..., arne-openvpn@...1227...,
+ gianmarco@...2726..., openvpn-devel@lists.sourceforge.net,
+ frank@...2641...
+Message-ID: <a17e07ee313b4a7a3db16690b0735dca701f8f7b-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-Content-Language: en-US
-References: <6f899681-6de7-4fce-ae92-697d47d0f8d4@...1823...>
-From: Dmitry Melekhov <dm@...1823...>
-In-Reply-To: <6f899681-6de7-4fce-ae92-697d47d0f8d4@...1823...>
-Subject: Re: [Openvpn-devel] windows client tests needed
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="kGtMlUVmqbc="; charset=UTF-8
+Subject: [Openvpn-devel] [XL] Change in openvpn[master]: Lay the foundation
+ to support both old and new versions of DCO
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,85 +20,141 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"; format="flowed"
-Content-Transfer-Encoding: 8bit
-To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: its_Giaan <gianmarco@...2726...>
+Cc: flichtenheld <frank@...2641...>, plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+
+--kGtMlUVmqbc=
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+Attention is currently required from: flichtenheld, its_Giaan, plaisthos.
+
+cron2 has posted comments on this change. ( http://gerrit.openvpn.net/c/ope=
+nvpn/+/662?usp=3Demail )
+
+Change subject: Lay the foundation to support both old and new versions of =
+DCO
+......................................................................
 
 
-Hello!
+Patch Set 1:
+
+(1 comment)
+
+Patchset:
+
+PS1:
+Summing up the intermediate discussions on IRC
+
+13:32 <@cron2> ordex, gianm: wrt https://gerrit.openvpn.net/c/openvpn/+/662=
+ -
+               do I remember correctly that we went for "we will at some po=
+int
+               do a cut-over, and who wants to use dco_v2 needs to use 2.6,=
+ and
+               master will only support dco_v3 / ovpn"?
+13:32 <@ordex> Giaan: ^
+13:33 <@ordex> cron2: correct
+13:33 <@ordex> that's the final decision
+13:33 <@cron2> in that case, I think 662 can be abandoned and we'll see a n=
+ew
+               patch that does the renaming + code change, but no if() and =
+no
+               function pointers :-)
+13:33 <@ordex> so we don't need abstraction layers or function pointers any=
+more
+13:33 <@cron2> \o/
+13:33 <@ordex> correct
+13:33 <@ordex> Giaan will publish that patch later on, once v3 will be ready
+               for dev use
 
 
 
-Hope we are not too late .
-We jist tested block-local using this client in Windows 10 Pro 22H2
+--
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/662?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings
 
-and do not see any difference in behaviour comparing with 2.6.
+Gerrit-Project: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: I6662605b60d4859949970cfe256c55cbcbd4a672
+Gerrit-Change-Number: 662
+Gerrit-PatchSet: 1
+Gerrit-Owner: its_Giaan <gianmarco@...2726...>
+Gerrit-Reviewer: flichtenheld <frank@...2641...>
+Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
+Gerrit-CC: cron2 <gert@...1296...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Attention: its_Giaan <gianmarco@...2726...>
+Gerrit-Attention: flichtenheld <frank@...2641...>
+Gerrit-Comment-Date: Mon, 29 Jul 2024 11:33:54 +0000
+Gerrit-HasComments: Yes
+Gerrit-Has-Labels: No
+Gerrit-MessageType: comment
 
-Thank you!
+--kGtMlUVmqbc=
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<p> Attention is currently required from: flichtenheld, its_Giaan, plaistho=
+s. </p>
+<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/662?usp=3Demail">View C=
+hange</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0;"><=
+li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-style=
+: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p style=
+=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/6=
+62?tab=3Dcomments">Patch Set #1:</a> </p><p style=3D"white-space: pre-wrap;=
+ word-wrap: break-word;">Summing up the intermediate discussions on IRC</p>=
+<pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;">13:=
+32 &lt;@cron2&gt; ordex, gianm: wrt https://gerrit.openvpn.net/c/openvpn/+/=
+662 - <br>               do I remember correctly that we went for &quot;we =
+will at some point <br>               do a cut-over, and who wants to use d=
+co_v2 needs to use 2.6, and <br>               master will only support dco=
+_v3 / ovpn&quot;?<br>13:32 &lt;@ordex&gt; Giaan: ^<br>13:33 &lt;@ordex&gt; =
+cron2: correct<br>13:33 &lt;@ordex&gt; that&#39;s the final decision<br>13:=
+33 &lt;@cron2&gt; in that case, I think 662 can be abandoned and we&#39;ll =
+see a new <br>               patch that does the renaming + code change, bu=
+t no if() and no <br>               function pointers :-)<br>13:33 &lt;@ord=
+ex&gt; so we don&#39;t need abstraction layers or function pointers anymore=
+<br>13:33 &lt;@cron2&gt; \o/<br>13:33 &lt;@ordex&gt; correct<br>13:33 &lt;@=
+ordex&gt; Giaan will publish that patch later on, once v3 will be ready <br=
+>               for dev use</pre></li></ul></li></ul><p>To view, visit <a h=
+ref=3D"http://gerrit.openvpn.net/c/openvpn/+/662?usp=3Demail">change 662</a=
+>. To unsubscribe, or for help writing mail filters, visit <a href=3D"http:=
+//gerrit.openvpn.net/settings">settings</a>.</p><div itemscope itemtype=3D"=
+http://schema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=
+=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://ger=
+rit.openvpn.net/c/openvpn/+/662?usp=3Demail"/><meta itemprop=3D"name" conte=
+nt=3D"View Change"/></div></div>
+
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I6662605b60d4859949970cfe256=
+c55cbcbd4a672 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 662 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
+<div style=3D"display:none"> Gerrit-Owner: its_Giaan &lt;gianmarco@...2786...=
+..&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
+1...&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
+.1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: cron2 &lt;gert@...1296...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: its_Giaan &lt;gianmarco@...1665...=
+726...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
+41...&gt; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Mon, 29 Jul 2024 11:33:54=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: No </div>
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
 
 
-
-
->>>> 06.06.2024 16:23, Gert Doering пишет:
->>>>> Hi,
->>>>>
->>>>> we have new code in master that helps with the "TunnelCrack" and
->>>>> "TunnelVision" attacks, that is, packets intended to go into the
->>>>> VPN being leaked away by means of a malicious DHCP server (= routing
->>>>> points outside the tunnel, so packets never hit OpenVPN).
->>>>>
->>>>> We used to have
->>>>>
->>>>>    block-outside-dns
->>>>>
->>>>> to prevent Windows from doing DNS lookups "around the VPN" - the main
->>>>> intent of this was "make sure split DNS works", but a side effect has
->>>>> also been "avoid DNS leaks".
->>>>>
->>>>> Heiko has now extended this code to be able to "block everything not
->>>>> going into the VPN".  To activate this, you need
->>>>>
->>>>>    redirect-gateway def1 block-local
->>>>>
->>>>> in your config ("block-local" is the keyword, but without "def1" you
->>>>> end up with a split-tunnel and "nothing else is allowed", which is 
->>>>> rarely
->>>>> a really good combination).
->>>>>
->>>>> Repeat: if "redirect-gateway block-local" is active, NO packets leave
->>>>> via LAN/WiFi/... interfaces, except those sourced by the openvpn.exe
->>>>> process.  This is important for maximum privacy, especially if you
->>>>> roam into a network with an untrusted DHCP server.
->>>>>
->>>>>
->>>>> Now - this code has been merged into "git master", and installers
->>>>> are here:
->>>>>
->>>>> https://github.com/OpenVPN/openvpn-build/actions/runs/9391365526?pr=641 
->>>>>
->>>>>
->>>>> (bottom of the page, "Artifacts", .zip files with a .msi inside).
->>>>>
->>>>>
->>>>> I want to have this in 2.6 as well, as it's sort of important for 
->>>>> certain
->>>>> classes of users (and also VPN providers, offering this as a 
->>>>> service) - but
->>>>> I do not feel it has been tested enough yet.
->>>>>
->>>>> So: PLEASE test these windows installers, in all 3 variants
->>>>>
->>>>>   1.  <nothing special in the config>
->>>>>   2.  block-outside-dns
->>>>>       (DNS is blocked, everything else not routed into the VPN 
->>>>> tunnel - like
->>>>>       "your local printer" etc - still works)
->>>>>   3.  redirect-gateway def1 block-local
->>>>>       (ONLY VPN works)
->>>>>
->>>>> and report back to us.
->>>>>
->>>>> gert
->>>>>
->>>>>
+--kGtMlUVmqbc=--
 
