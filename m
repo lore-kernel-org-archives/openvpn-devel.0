@@ -1,16 +1,9 @@
-From: "ordex (Code Review)" <gerrit@...515...>
-Date: Tue, 30 Jul 2024 09:47:26 +0000
-In-Reply-To: <gerrit.1721311407000.I3dbd61fef20d683734b55b73e40afe56c3b733e1@...2715...>
-References: <gerrit.1721311407000.I3dbd61fef20d683734b55b73e40afe56c3b733e1@...2715...>
-Reply-To: a@...2181..., arne-openvpn@...1227..., marco@...2726...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <7d99ce0723e2f5759e220586d3b50bb73b080cc7-HTML@...2715...>
+From: Eric Toombs <storehouse@...2805...>
+Date: Tue, 30 Jul 2024 17:00:21 +0000
+Message-ID: <20240730170021.1101321-1-storehouse@...2805...>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="RQI/3nodgpE="; charset=UTF-8
-Subject: [Openvpn-devel] [L] Change in openvpn[master]: route: extended
- logic to omit gateway when unnecessary
+Subject: [Openvpn-devel] [PATCH] examples: Switched to ed25519,
+ nodes -> noenc
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,72 +12,73 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: mrbff <marco@...2726...>
-Cc: flichtenheld <frank@...2641...>, plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---RQI/3nodgpE=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+From: Eric Toombs <not@...2806...>
 
-ordex has abandoned this change. ( http://gerrit.openvpn.net/c/openvpn/+/67=
-8?usp=3Demail )
+I switched the curve to ed25519, a generally more trustworthy curve and the default in openssh.
+As a bonus, it *really* simplifies what is already a complicated command.
+The old command wouldn't even run in all shells because it used process substitution.
 
-Change subject: route: extended logic to omit gateway when unnecessary
-......................................................................
+'nodes' is deprecated in favour of 'noenc', so I switched that too.
+---
+ doc/man-sections/example-fingerprint.rst | 4 ++--
+ doc/man-sections/examples.rst            | 6 +++---
+ 2 files changed, 5 insertions(+), 5 deletions(-)
 
+diff --git a/doc/man-sections/example-fingerprint.rst b/doc/man-sections/example-fingerprint.rst
+index 7cdda190..e2360dd0 100644
+--- a/doc/man-sections/example-fingerprint.rst
++++ b/doc/man-sections/example-fingerprint.rst
+@@ -18,7 +18,7 @@ Server setup
+ 2. Generate a self-signed certificate for the server:
+    ::
+ 
+-    openssl req -x509 -newkey ec:<(openssl ecparam -name secp384r1) -keyout server.key -out server.crt -nodes -sha256 -days 3650 -subj '/CN=server'
++    openssl req -x509 -newkey ed25519 -keyout server.key -out server.crt -noenc -sha256 -days 3650 -subj '/CN=server'
+ 
+ 3. Generate SHA256 fingerprint of the server certificate
+ 
+@@ -85,7 +85,7 @@ Adding a client
+    different name for each client.
+    ::
+ 
+-      openssl req -x509 -newkey ec:<(openssl ecparam -name secp384r1) -nodes -sha256 -days 3650 -subj '/CN=alice'
++      openssl req -x509 -newkey ed25519 -noenc -sha256 -days 3650 -subj '/CN=alice'
+ 
+    This generate a certificate and a key for the client. The output of the command will look
+    something like this:
+diff --git a/doc/man-sections/examples.rst b/doc/man-sections/examples.rst
+index 94cc726a..ced81621 100644
+--- a/doc/man-sections/examples.rst
++++ b/doc/man-sections/examples.rst
+@@ -95,12 +95,12 @@ First build a self-signed certificate on bob and display its fingerprint.
+ 
+ ::
+ 
+-   openssl req -x509 -newkey ec:<(openssl ecparam -name secp384r1) -keyout bob.pem -out bob.pem -nodes -sha256 -days 3650 -subj '/CN=bob'
++   openssl req -x509 -newkey ed25519 -keyout bob.pem -out bob.pem -noenc -sha256 -days 3650 -subj '/CN=bob'
+    openssl x509 -noout -sha256 -fingerprint -in bob.pem
+ 
+ and the same on alice::
+ 
+-   openssl req -x509 -newkey ec:<(openssl ecparam -name secp384r1) -keyout alice.pem -out alice.pem -nodes -sha256 -days 3650 -subj '/CN=alice'
++   openssl req -x509 -newkey ed25519 -keyout alice.pem -out alice.pem -noenc -sha256 -days 3650 -subj '/CN=alice'
+    openssl x509 -noout -sha256 -fingerprint -in alice.pem
+ 
+ 
+@@ -132,7 +132,7 @@ On alice::
+ 
+    ping 10.4.0.1
+ 
+-Note: This example use a elliptic curve (`secp384`), which allows
++Note: This example use a elliptic curve (`ed25519`), which allows
+ ``--dh`` to be set to ``none``.
+ 
+ Example 3: A tunnel with full PKI and TLS-based security
+-- 
+2.45.2
 
-Abandoned
-
-superseded by #721 (new change-id)
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/678?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings
-
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: I3dbd61fef20d683734b55b73e40afe56c3b733e1
-Gerrit-Change-Number: 678
-Gerrit-PatchSet: 2
-Gerrit-Owner: mrbff <marco@...2726...>
-Gerrit-Reviewer: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-MessageType: abandon
-
---RQI/3nodgpE=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<p>ordex <strong>abandoned</strong> this change.</p><p><a href=3D"http://ge=
-rrit.openvpn.net/c/openvpn/+/678?usp=3Demail">View Change</a></p><div style=
-=3D"white-space:pre-wrap">Abandoned
-
-superseded by #721 (new change-id)</div><p>To view, visit <a href=3D"http:/=
-/gerrit.openvpn.net/c/openvpn/+/678?usp=3Demail">change 678</a>. To unsubsc=
-ribe, or for help writing mail filters, visit <a href=3D"http://gerrit.open=
-vpn.net/settings">settings</a>.</p><div itemscope itemtype=3D"http://schema=
-.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://sc=
-hema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.n=
-et/c/openvpn/+/678?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Ch=
-ange"/></div></div>
-
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I3dbd61fef20d683734b55b73e40=
-afe56c3b733e1 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 678 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
-<div style=3D"display:none"> Gerrit-Owner: mrbff &lt;marco@...2726...&gt; <=
-/div>
-<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
-1...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: abandon </div>
-
-
---RQI/3nodgpE=--
 
