@@ -1,16 +1,16 @@
-From: "flichtenheld (Code Review)" <gerrit@...515...>
-Date: Mon, 29 Jul 2024 16:03:14 +0000
-In-Reply-To: <gerrit.1721311407000.I3dbd61fef20d683734b55b73e40afe56c3b733e1@...2715...>
-References: <gerrit.1721311407000.I3dbd61fef20d683734b55b73e40afe56c3b733e1@...2715...>
-Reply-To: frank@...2641..., arne-openvpn@...1227..., marco@...2726...,
- openvpn-devel@lists.sourceforge.net
-Message-ID: <2ceea6c7c13d19408e9416b29c7346f0277e373f-EmailReviewComments-HTML@...2715...>
+From: "mrbff (Code Review)" <gerrit@...515...>
+Date: Tue, 30 Jul 2024 09:24:36 +0000
+In-Reply-To: <gerrit.1721311407000.Id1ec0c6e4c391604ec5dbb8b7122f2e47ad186d1@...2715...>
+References: <gerrit.1721311407000.Id1ec0c6e4c391604ec5dbb8b7122f2e47ad186d1@...2715...>
+Reply-To: marco@...2726..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net, frank@...2641...
+Message-ID: <478131f467fb53a20e90c41c611914503284097b-EmailReplacePatchSet-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="kZh0GLoRz1w="; charset=UTF-8
-Subject: [Openvpn-devel] [L] Change in openvpn[master]: route: extended
- logic to omit gateway when unnecessary
+Content-Type: multipart/alternative; boundary="5E16WskbGmI="; charset=UTF-8
+Subject: [Openvpn-devel] [S] Change in openvpn[master]: route: copied
+ 'gateway_needed' logic from add_route_ipv6 to add_route
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,89 +19,257 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: mrbff <marco@...2726...>
-Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---kZh0GLoRz1w=
+--5E16WskbGmI=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: mrbff, plaisthos.
+Attention is currently required from: flichtenheld, mrbff, plaisthos.
 
-flichtenheld has posted comments on this change. ( http://gerrit.openvpn.ne=
-t/c/openvpn/+/678?usp=3Demail )
+Hello flichtenheld, plaisthos,
 
-Change subject: route: extended logic to omit gateway when unnecessary
+I'd like you to reexamine a change. Please visit
+
+    http://gerrit.openvpn.net/c/openvpn/+/677?usp=3Demail
+
+to look at the new patch set (#3).
+
+The following approvals got outdated and were removed:
+Code-Review-1 by flichtenheld
+
+
+Change subject: route: copied 'gateway_needed' logic from add_route_ipv6 to=
+ add_route
 ......................................................................
 
+route: copied 'gateway_needed' logic from add_route_ipv6 to add_route
 
-Patch Set 2: Code-Review-1
+Under certain circumstances it may not be necessary to pass the
+gateway when adding a new route via net_route_v4_add() API function.
+add_route_ipv6() already accounts for some of these cases and
+therefore this patch copies the same logic to add_route().
 
-(1 comment)
-
-File src/openvpn/route.c:
-
-http://gerrit.openvpn.net/c/openvpn/+/678/comment/fb71c2ca_a14be6a5 :
-PS2, Line 2427: network
-Current build failure here
-route.c:2427:17: error: data argument not used by format string [-Werror,-W=
-format-extra-args]
-                network,
+Change-Id: Id1ec0c6e4c391604ec5dbb8b7122f2e47ad186d1
+Signed-off-by: Marco Baffo <marco@...2726...>
+---
+M src/openvpn/route.c
+1 file changed, 40 insertions(+), 3 deletions(-)
 
 
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/77/677/3
+
+diff --git a/src/openvpn/route.c b/src/openvpn/route.c
+index 91f2032..06a4919 100644
+--- a/src/openvpn/route.c
++++ b/src/openvpn/route.c
+@@ -1571,6 +1571,7 @@
+ {
+     int status =3D 0;
+     int is_local_route;
++    bool gateway_needed =3D false;
+
+     if (!(r->flags & RT_DEFINED))
+     {
+@@ -1580,8 +1581,8 @@
+     struct argv argv =3D argv_new();
+     struct gc_arena gc =3D gc_new();
+
+-#if !defined(TARGET_LINUX)
+     const char *network =3D print_in_addr_t(r->network, 0, &gc);
++#if !defined(TARGET_LINUX)
+ #if !defined(TARGET_AIX)
+     const char *netmask =3D print_in_addr_t(r->netmask, 0, &gc);
+ #endif
+@@ -1594,8 +1595,43 @@
+         goto done;
+     }
+
++    #ifndef _WIN32
++
++    if (rgi && (rgi->flags & RGI_IFACE_DEFINED) && rgi->iface[0] !=3D 0)  =
+/* vpn server special route */
++    {
++        if (rgi->flags & RGI_ADDR_DEFINED && r->gateway !=3D 0)
++        {
++            gateway_needed =3D true;
++        }
++    }
++
++    #endif
++
++    if (tt->type =3D=3D DEV_TYPE_TAP
++        && !( (r->flags & RT_METRIC_DEFINED) && r->metric =3D=3D 0 ) )
++    {
++        gateway_needed =3D true;
++    }
++
++    if (gateway_needed && r->gateway =3D=3D 0)
++    {
++        msg(M_WARN, "ROUTE WARNING: " PACKAGE_NAME " needs a gateway "
++            "parameter for a --route option and no default was set via "
++            "--route-gateway or --ifconfig option. Not installing "
++            "IPv4 route to %s/%d.", network, netmask_to_netbits2(r->netmas=
+k));
++        status =3D 0;
++        goto done;
++    }
++
+ #if defined(TARGET_LINUX)
+-    const char *iface =3D NULL;
++    const char *iface =3D tt->actual_name;
++    if (!gateway_needed && rgi && (rgi->flags & RGI_IFACE_DEFINED) && rgi-=
+>iface[0] !=3D 0)  /* vpn server special route */
++    {
++        iface =3D rgi->iface;
++    }
++#endif
++
++#if defined(TARGET_LINUX)
+     int metric =3D -1;
+
+     if (is_on_link(is_local_route, flags, rgi))
+@@ -1610,7 +1646,8 @@
+
+     status =3D RTA_SUCCESS;
+     int ret =3D net_route_v4_add(ctx, &r->network, netmask_to_netbits2(r->=
+netmask),
+-                               &r->gateway, iface, 0, metric);
++                               gateway_needed ? &r->gateway : NULL,
++                               iface, 0, metric);
+     if (ret =3D=3D -EEXIST)
+     {
+         msg(D_ROUTE, "NOTE: Linux route add command failed because route e=
+xists");
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/678?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/677?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings
 
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: I3dbd61fef20d683734b55b73e40afe56c3b733e1
-Gerrit-Change-Number: 678
-Gerrit-PatchSet: 2
+Gerrit-Change-Id: Id1ec0c6e4c391604ec5dbb8b7122f2e47ad186d1
+Gerrit-Change-Number: 677
+Gerrit-PatchSet: 3
 Gerrit-Owner: mrbff <marco@...2726...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Attention: flichtenheld <frank@...2641...>
 Gerrit-Attention: mrbff <marco@...2726...>
-Gerrit-Comment-Date: Mon, 29 Jul 2024 16:03:14 +0000
-Gerrit-HasComments: Yes
-Gerrit-Has-Labels: Yes
-Gerrit-MessageType: comment
+Gerrit-MessageType: newpatchset
 
---kZh0GLoRz1w=
+--5E16WskbGmI=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p> Attention is currently required from: mrbff, plaisthos. </p>
-<p>Patch set 2:<span style=3D"border-radius: 3px; display: inline-block; ma=
-rgin: 0 2px; padding: 4px;background-color: #ffd4d4;">Code-Review -1</span>=
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/678?usp=3Demail">Vi=
-ew Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0=
-;"><li style=3D"margin: 0; padding: 0;"><p>File src/openvpn/route.c:</p><ul=
- style=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; padding: 0=
- 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openv=
-pn.net/c/openvpn/+/678/comment/fb71c2ca_a14be6a5">Patch Set #2, Line 2427:<=
-/a> <code style=3D"font-family:monospace,monospace">network</code></p><pre =
-style=3D"font-family: monospace,monospace; white-space: pre-wrap;">Current =
-build failure here<br>route.c:2427:17: error: data argument not used by for=
-mat string [-Werror,-Wformat-extra-args]<br>                network,</pre><=
-/li></ul></li></ul><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c=
-/openvpn/+/678?usp=3Demail">change 678</a>. To unsubscribe, or for help wri=
-ting mail filters, visit <a href=3D"http://gerrit.openvpn.net/settings">set=
-tings</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><d=
-iv itemscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction">=
-<link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/678?us=
-p=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
+<p> Attention is currently required from: flichtenheld, mrbff, plaisthos. <=
+/p>
+<p>mrbff <strong>uploaded patch set #3</strong> to this change.</p><p><a hr=
+ef=3D"http://gerrit.openvpn.net/c/openvpn/+/677?usp=3Demail">View Change</a=
+></p><p>The following approvals got outdated and were removed:
+Code-Review-1 by flichtenheld</p><pre style=3D"font-family: monospace,monos=
+pace; white-space: pre-wrap;">route: copied &#39;gateway_needed&#39; logic =
+from add_route_ipv6 to add_route<br><br>Under certain circumstances it may =
+not be necessary to pass the<br>gateway when adding a new route via net_rou=
+te_v4_add() API function.<br>add_route_ipv6() already accounts for some of =
+these cases and<br>therefore this patch copies the same logic to add_route(=
+).<br><br>Change-Id: Id1ec0c6e4c391604ec5dbb8b7122f2e47ad186d1<br>Signed-of=
+f-by: Marco Baffo &lt;marco@...2726...&gt;<br>---<br>M src/openvpn/route.c<=
+br>1 file changed, 40 insertions(+), 3 deletions(-)<br><br></pre><pre style=
+=3D"font-family: monospace,monospace; white-space: pre-wrap;">git pull ssh:=
+//gerrit.openvpn.net:29418/openvpn refs/changes/77/677/3</pre><pre style=3D=
+"font-family: monospace,monospace; white-space: pre-wrap;"><span>diff --git=
+ a/src/openvpn/route.c b/src/openvpn/route.c</span><br><span>index 91f2032.=
+.06a4919 100644</span><br><span>--- a/src/openvpn/route.c</span><br><span>+=
+++ b/src/openvpn/route.c</span><br><span>@@ -1571,6 +1571,7 @@</span><br><s=
+pan> {</span><br><span>     int status =3D 0;</span><br><span>     int is_l=
+ocal_route;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    bool=
+ gateway_needed =3D false;</span><br><span> </span><br><span>     if (!(r-&=
+gt;flags &amp; RT_DEFINED))</span><br><span>     {</span><br><span>@@ -1580=
+,8 +1581,8 @@</span><br><span>     struct argv argv =3D argv_new();</span><=
+br><span>     struct gc_arena gc =3D gc_new();</span><br><span> </span><br>=
+<span style=3D"color: hsl(0, 100%, 40%);">-#if !defined(TARGET_LINUX)</span=
+><br><span>     const char *network =3D print_in_addr_t(r-&gt;network, 0, &=
+amp;gc);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#if !define=
+d(TARGET_LINUX)</span><br><span> #if !defined(TARGET_AIX)</span><br><span> =
+    const char *netmask =3D print_in_addr_t(r-&gt;netmask, 0, &amp;gc);</sp=
+an><br><span> #endif</span><br><span>@@ -1594,8 +1595,43 @@</span><br><span=
+>         goto done;</span><br><span>     }</span><br><span> </span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+    #ifndef _WIN32</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+    if (rgi &amp;&amp; (rgi-&gt;flags &amp; RGI_IFACE=
+_DEFINED) &amp;&amp; rgi-&gt;iface[0] !=3D 0)  /* vpn server special route =
+*/</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+        if (rgi-&gt;flags &amp;=
+ RGI_ADDR_DEFINED &amp;&amp; r-&gt;gateway !=3D 0)</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+        {</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+            gateway_needed =3D true;</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+        }</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    #=
+endif</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+    if (tt-&gt;type =3D=3D DEV_TY=
+PE_TAP</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        &amp;=
+&amp; !( (r-&gt;flags &amp; RT_METRIC_DEFINED) &amp;&amp; r-&gt;metric =3D=
+=3D 0 ) )</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+        gateway_needed =
+=3D true;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    if (gateway_needed &amp;&amp; r-&gt;g=
+ateway =3D=3D 0)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+ {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        msg(M_WAR=
+N, &quot;ROUTE WARNING: &quot; PACKAGE_NAME &quot; needs a gateway &quot;</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+            &quot;par=
+ameter for a --route option and no default was set via &quot;</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+            &quot;--route-gateway=
+ or --ifconfig option. Not installing &quot;</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+            &quot;IPv4 route to %s/%d.&quot;, netw=
+ork, netmask_to_netbits2(r-&gt;netmask));</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+        status =3D 0;</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+        goto done;</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+</span><br><span> #if defined(TARGET_LINUX)</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-    const char *iface =3D NULL;</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+    const char *iface =3D tt-&g=
+t;actual_name;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    i=
+f (!gateway_needed &amp;&amp; rgi &amp;&amp; (rgi-&gt;flags &amp; RGI_IFACE=
+_DEFINED) &amp;&amp; rgi-&gt;iface[0] !=3D 0)  /* vpn server special route =
+*/</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+        iface =3D rgi-&gt;iface=
+;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+#endif</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+#if defined(TARGET_LINUX)</span><br><span>     int metric =3D -1=
+;</span><br><span> </span><br><span>     if (is_on_link(is_local_route, fla=
+gs, rgi))</span><br><span>@@ -1610,7 +1646,8 @@</span><br><span> </span><br=
+><span>     status =3D RTA_SUCCESS;</span><br><span>     int ret =3D net_ro=
+ute_v4_add(ctx, &amp;r-&gt;network, netmask_to_netbits2(r-&gt;netmask),</sp=
+an><br><span style=3D"color: hsl(0, 100%, 40%);">-                         =
+      &amp;r-&gt;gateway, iface, 0, metric);</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+                               gateway_needed ? &a=
+mp;r-&gt;gateway : NULL,</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+                               iface, 0, metric);</span><br><span>    =
+ if (ret =3D=3D -EEXIST)</span><br><span>     {</span><br><span>         ms=
+g(D_ROUTE, &quot;NOTE: Linux route add command failed because route exists&=
+quot;);</span><br><span></span><br></pre><p>To view, visit <a href=3D"http:=
+//gerrit.openvpn.net/c/openvpn/+/677?usp=3Demail">change 677</a>. To unsubs=
+cribe, or for help writing mail filters, visit <a href=3D"http://gerrit.ope=
+nvpn.net/settings">settings</a>.</p><div itemscope itemtype=3D"http://schem=
+a.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://s=
+chema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.=
+net/c/openvpn/+/677?usp=3Demail"/><meta itemprop=3D"name" content=3D"View C=
+hange"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I3dbd61fef20d683734b55b73e40=
-afe56c3b733e1 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 678 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: Id1ec0c6e4c391604ec5dbb8b712=
+2f2e47ad186d1 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 677 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 3 </div>
 <div style=3D"display:none"> Gerrit-Owner: mrbff &lt;marco@...2726...&gt; <=
 /div>
 <div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
@@ -112,14 +280,12 @@ afe56c3b733e1 </div>
 ts.sourceforge.net&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
 ..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
+41...&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: mrbff &lt;marco@...2726...&g=
 t; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Mon, 29 Jul 2024 16:03:14=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
+<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
 
 
---kZh0GLoRz1w=--
+--5E16WskbGmI=--
 
