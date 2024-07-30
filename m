@@ -1,8 +1,10 @@
-From: Eric Toombs <storehouse@...2805...>
-Date: Tue, 30 Jul 2024 17:00:21 +0000
-Message-ID: <20240730170021.1101321-1-storehouse@...2805...>
+Message-ID: <92049e63-217f-4122-b84a-401d0f7c214a@...1227...>
+Date: Wed, 31 Jul 2024 00:59:48 +0200
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] examples: Switched to ed25519,
+References: <20240730170021.1101321-1-storehouse@...2805...>
+From: Arne Schwabe <arne@...1227...>
+In-Reply-To: <20240730170021.1101321-1-storehouse@...2805...>
+Subject: Re: [Openvpn-devel] [PATCH] examples: Switched to ed25519,
  nodes -> noenc
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
@@ -12,73 +14,35 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset="utf-8"; format="flowed"
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Eric Toombs <storehouse@...2805...>, openvpn-devel@lists.sourceforge.net
 
-From: Eric Toombs <not@...2806...>
 
-I switched the curve to ed25519, a generally more trustworthy curve and the default in openssh.
-As a bonus, it *really* simplifies what is already a complicated command.
-The old command wouldn't even run in all shells because it used process substitution.
+Am 30.07.2024 um 19:00 schrieb Eric Toombs via Openvpn-devel:
+> From: Eric Toombs <not@...2806...>
+We prefer real email addresses in our commits.
+>
+> I switched the curve to ed25519, a generally more trustworthy curve and the default in openssh.
+> As a bonus, it *really* simplifies what is already a complicated command.
+> The old command wouldn't even run in all shells because it used process substitution.
+>
+> 'nodes' is deprecated in favour of 'noenc', so I switched that too.
 
-'nodes' is deprecated in favour of 'noenc', so I switched that too.
----
- doc/man-sections/example-fingerprint.rst | 4 ++--
- doc/man-sections/examples.rst            | 6 +++---
- 2 files changed, 5 insertions(+), 5 deletions(-)
+While ed25519 might have its advantages, its usage in X509 certificates 
+is really really uncommon. I have seen more brainpoool usages in the 
+wild than ed25519. It is also not allowed on hosts that use FIPS 
+settings and also older OpenVPN clients/OpenSSL clients might not 
+support it. Also in contrast to secp384r1, I know absolutely no secure 
+certficate store that supports it (Android Keystore, YubiKey and so on 
+all support secp384r1 but there is no ed25519 support).  So I don't 
+think we are at the point where we want to recommend in an easy-to-setup 
+guide a group/curve that is a lot less supported to the basically 
+universially supported secp384r1.
 
-diff --git a/doc/man-sections/example-fingerprint.rst b/doc/man-sections/example-fingerprint.rst
-index 7cdda190..e2360dd0 100644
---- a/doc/man-sections/example-fingerprint.rst
-+++ b/doc/man-sections/example-fingerprint.rst
-@@ -18,7 +18,7 @@ Server setup
- 2. Generate a self-signed certificate for the server:
-    ::
- 
--    openssl req -x509 -newkey ec:<(openssl ecparam -name secp384r1) -keyout server.key -out server.crt -nodes -sha256 -days 3650 -subj '/CN=server'
-+    openssl req -x509 -newkey ed25519 -keyout server.key -out server.crt -noenc -sha256 -days 3650 -subj '/CN=server'
- 
- 3. Generate SHA256 fingerprint of the server certificate
- 
-@@ -85,7 +85,7 @@ Adding a client
-    different name for each client.
-    ::
- 
--      openssl req -x509 -newkey ec:<(openssl ecparam -name secp384r1) -nodes -sha256 -days 3650 -subj '/CN=alice'
-+      openssl req -x509 -newkey ed25519 -noenc -sha256 -days 3650 -subj '/CN=alice'
- 
-    This generate a certificate and a key for the client. The output of the command will look
-    something like this:
-diff --git a/doc/man-sections/examples.rst b/doc/man-sections/examples.rst
-index 94cc726a..ced81621 100644
---- a/doc/man-sections/examples.rst
-+++ b/doc/man-sections/examples.rst
-@@ -95,12 +95,12 @@ First build a self-signed certificate on bob and display its fingerprint.
- 
- ::
- 
--   openssl req -x509 -newkey ec:<(openssl ecparam -name secp384r1) -keyout bob.pem -out bob.pem -nodes -sha256 -days 3650 -subj '/CN=bob'
-+   openssl req -x509 -newkey ed25519 -keyout bob.pem -out bob.pem -noenc -sha256 -days 3650 -subj '/CN=bob'
-    openssl x509 -noout -sha256 -fingerprint -in bob.pem
- 
- and the same on alice::
- 
--   openssl req -x509 -newkey ec:<(openssl ecparam -name secp384r1) -keyout alice.pem -out alice.pem -nodes -sha256 -days 3650 -subj '/CN=alice'
-+   openssl req -x509 -newkey ed25519 -keyout alice.pem -out alice.pem -noenc -sha256 -days 3650 -subj '/CN=alice'
-    openssl x509 -noout -sha256 -fingerprint -in alice.pem
- 
- 
-@@ -132,7 +132,7 @@ On alice::
- 
-    ping 10.4.0.1
- 
--Note: This example use a elliptic curve (`secp384`), which allows
-+Note: This example use a elliptic curve (`ed25519`), which allows
- ``--dh`` to be set to ``none``.
- 
- Example 3: A tunnel with full PKI and TLS-based security
--- 
-2.45.2
+So for the purpose of this guide, I think secp384r1 is a much better 
+choice compared to ed25519.
+
+Arne
 
 
