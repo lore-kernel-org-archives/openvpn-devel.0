@@ -1,11 +1,16 @@
-Content-Type: multipart/alternative;
- boundary="------------Kc4iA372fu1giUA0BVoXLVMD"
-Message-ID: <67956026-d86b-4989-b3e0-a4dda89590ef@...2751...>
-Date: Wed, 31 Jul 2024 14:25:35 +0200
+From: "plaisthos (Code Review)" <gerrit@...515...>
+Date: Wed, 31 Jul 2024 13:09:25 +0000
+In-Reply-To: <gerrit.1706186293000.I00821d75342daf3f813b829812d648fe298bea81@...2715...>
+References: <gerrit.1706186293000.I00821d75342daf3f813b829812d648fe298bea81@...2715...>
+Reply-To: arne-openvpn@...1227..., openvpn-devel@lists.sourceforge.net,
+ frank@...2641..., steffan@...1856..., lstipakov@...277...
+Message-ID: <835bbdeb4f90054964355eddfbb7a1c0b24c93a7-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-From: Johan Draaisma <johan@...2751...>
-Content-Language: en-US
-Subject: [Openvpn-devel]  IRC community meeting summary
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="B2ocil/Bo8E="; charset=UTF-8
+Subject: [Openvpn-devel] [M] Change in openvpn[master]: Implement support
+ for AEAD tag at the end
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,102 +19,115 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: openvpn-devel@lists.sourceforge.net
+Cc: stipa <lstipakov@...277...>, syzzer <steffan@...1856...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-This is a multi-part message in MIME format.
---------------Kc4iA372fu1giUA0BVoXLVMD
-Content-Type: text/plain; charset="utf-8"; format="flowed"
-Content-Transfer-Encoding: 8bit
+--B2ocil/Bo8E=
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Meeting summary for 31 July 2024:
+Attention is currently required from: stipa, syzzer.
 
-  * *Updated: OpenVPN community meetup 2024*
-    /Hotel recommendation added; Hotel Santo in Karlsruhe./
-    /Wiki coordination
-    page:​https://community.openvpn.net/openvpn/wiki/CommunityMeetup2024
-    <https://community.openvpn.net/openvpn/wiki/CommunityMeetup2024>/
-    /Where: Karlsruhe, Germany.SteamWork?
-    <https://community.openvpn.net/openvpn/wiki/SteamWork>, Karlsruhe./
-    /When: Set to 20-22 September 2024./
-    /Shirts: matt gave us 2 t-shirt designs and we reviewed them in the
-    meeting./
-    /We love the cartoon version, so if we can only have one, we'll do
-    that. But if possible, getting the minimalistic one too would be cool./
+plaisthos has posted comments on this change. ( http://gerrit.openvpn.net/c=
+/openvpn/+/506?usp=3Demail )
 
-  * *Updated: live route updates*
-    /lev has a proposal to go through, to see if the approach is
-    acceptable to community members./
-    /cron2 hasn't had time to read through it yet./
-    /So far it seems we are good with optional/mandatory options
-    concept, and by default all options are mandatory./
-    /Optional are prefixed with a question mark (?). The idea here is
-    that if a client does not support updating that parameter live it
-    can ignore it./
-    /Whereas without such a prefix, it is mandatory, so if a client
-    cannot update it live, it will do a normal reconnect to ensure
-    changes are implemented./
+Change subject: Implement support for AEAD tag at the end
+......................................................................
 
-As always you're welcome to join at #openvpn-meeting on Libera IRC 
-network every Wednesday at 14:00 Central European Time.
 
-Kind regards,
-Johan Draaisma
+Patch Set 6:
 
---------------Kc4iA372fu1giUA0BVoXLVMD
-Content-Type: text/html; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+(1 comment)
 
-<!DOCTYPE html>
-<html>
-  <head>
-    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
-  </head>
-  <body>
-    <p> Meeting summary for 31 July 2024:</p>
-    <ul
-style="color: rgb(0, 0, 0); font-family: Verdana, Arial, &quot;Bitstream Vera Sans&quot;, Helvetica, sans-serif; font-size: 13px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;">
-      <li><strong>Updated: OpenVPN community meetup 2024</strong><br>
-        <em>Hotel recommendation added; Hotel Santo in Karlsruhe.</em><br>
-        <em>Wiki coordination page:<span> </span><a class="ext-link"
-href="https://community.openvpn.net/openvpn/wiki/CommunityMeetup2024"
-style="text-decoration: none; color: rgb(187, 0, 0); border-bottom: 1px dotted rgb(187, 187, 187);"><span
-              class="icon"
-style="background: url(&quot;../extlink.gif&quot;) left center no-repeat; padding-left: 15px;">​</span>https://community.openvpn.net/openvpn/wiki/CommunityMeetup2024</a></em><br>
-        <em>Where: Karlsruhe, Germany.<span> </span><a
-            class="missing wiki"
-            href="https://community.openvpn.net/openvpn/wiki/SteamWork"
-            rel="nofollow"
-style="text-decoration: none; color: rgb(153, 153, 136); border-bottom: 1px dotted rgb(187, 187, 187);">SteamWork?</a>,
-          Karlsruhe.</em><br>
-        <em>When: Set to 20-22 September 2024.</em><br>
-        <em>Shirts: matt gave us 2 t-shirt designs and we reviewed them
-          in the meeting.</em><br>
-        <em>We love the cartoon version, so if we can only have one,
-          we'll do that. But if possible, getting the minimalistic one
-          too would be cool.</em></li>
-    </ul>
-    <ul
-style="color: rgb(0, 0, 0); font-family: Verdana, Arial, &quot;Bitstream Vera Sans&quot;, Helvetica, sans-serif; font-size: 13px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;">
-      <li><strong>Updated: live route updates</strong><br>
-        <em>lev has a proposal to go through, to see if the approach is
-          acceptable to community members.</em><br>
-        <em>cron2 hasn't had time to read through it yet.</em><br>
-        <em>So far it seems we are good with optional/mandatory options
-          concept, and by default all options are mandatory.</em><br>
-        <em>Optional are prefixed with a question mark (?). The idea
-          here is that if a client does not support updating that
-          parameter live it can ignore it.</em><br>
-        <em>Whereas without such a prefix, it is mandatory, so if a
-          client cannot update it live, it will do a normal reconnect to
-          ensure changes are implemented.</em></li>
-    </ul>
-    <p>As always you're welcome to join at #openvpn-meeting on Libera
-      IRC network every Wednesday at 14:00 Central European Time.</p>
-    <p>Kind regards,<br>
-      Johan Draaisma<br>
-    </p>
-  </body>
-</html>
+File tests/unit_tests/openvpn/test_ssl.c:
 
---------------Kc4iA372fu1giUA0BVoXLVMD--
+http://gerrit.openvpn.net/c/openvpn/+/506/comment/4842594f_fb4b5116 :
+PS6, Line 268: /* This adds a few more methods than strictly necessary but =
+this allows
+> "that strictly necessary" or "that are not strictly necessary" ?
+I think "than strictly necessary" is fine as it is. If you simplify the sen=
+tence by removing the adverbial terms it becomes: This adds more methods th=
+an necessary.
+
+
+
+--
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/506?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings
+
+Gerrit-Project: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: I00821d75342daf3f813b829812d648fe298bea81
+Gerrit-Change-Number: 506
+Gerrit-PatchSet: 6
+Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
+Gerrit-Reviewer: flichtenheld <frank@...2641...>
+Gerrit-Reviewer: stipa <lstipakov@...277...>
+Gerrit-Reviewer: syzzer <steffan@...1856...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-Attention: syzzer <steffan@...1856...>
+Gerrit-Attention: stipa <lstipakov@...277...>
+Gerrit-Comment-Date: Wed, 31 Jul 2024 13:09:25 +0000
+Gerrit-HasComments: Yes
+Gerrit-Has-Labels: No
+Comment-In-Reply-To: stipa <lstipakov@...277...>
+Gerrit-MessageType: comment
+
+--B2ocil/Bo8E=
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<p> Attention is currently required from: stipa, syzzer. </p>
+<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/506?usp=3Demail">View C=
+hange</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0;"><=
+li style=3D"margin: 0; padding: 0;"><p>File tests/unit_tests/openvpn/test_s=
+sl.c:</p><ul style=3D"list-style: none; padding: 0;"><li style=3D"margin: 0=
+; padding: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://=
+gerrit.openvpn.net/c/openvpn/+/506/comment/4842594f_fb4b5116">Patch Set #6,=
+ Line 268:</a> <code style=3D"font-family:monospace,monospace">/* This adds=
+ a few more methods than strictly necessary but this allows</code></p><p><b=
+lockquote style=3D"border-left: 1px solid #aaa; margin: 10px 0; padding: 0 =
+10px;">&quot;that strictly necessary&quot; or &quot;that are not strictly n=
+ecessary&quot; ?</blockquote></p><p style=3D"white-space: pre-wrap; word-wr=
+ap: break-word;">I think &quot;than strictly necessary&quot; is fine as it =
+is. If you simplify the sentence by removing the adverbial terms it becomes=
+: This adds more methods than necessary.</p></li></ul></li></ul><p>To view,=
+ visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/506?usp=3Demail">ch=
+ange 506</a>. To unsubscribe, or for help writing mail filters, visit <a hr=
+ef=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope i=
+temtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"actio=
+n" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D=
+"http://gerrit.openvpn.net/c/openvpn/+/506?usp=3Demail"/><meta itemprop=3D"=
+name" content=3D"View Change"/></div></div>
+
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I00821d75342daf3f813b829812d=
+648fe298bea81 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 506 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 6 </div>
+<div style=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@...1711...=
+27...&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
+1...&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: stipa &lt;lstipakov@...277...=
+&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: syzzer &lt;steffan@...1856...=
+&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: syzzer &lt;steffan@...2115...=
+.&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: stipa &lt;lstipakov@...1663...=
+.&gt; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Wed, 31 Jul 2024 13:09:25=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: No </div>
+<div style=3D"display:none"> Comment-In-Reply-To: stipa &lt;lstipakov@...1664...=
+7...&gt; </div>
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
+
+
+--B2ocil/Bo8E=--
 
