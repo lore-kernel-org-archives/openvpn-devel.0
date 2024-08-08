@@ -1,16 +1,15 @@
-From: "plaisthos (Code Review)" <gerrit@...515...>
-Date: Thu, 1 Aug 2024 12:12:34 +0000
-In-Reply-To: <gerrit.1706186293000.I01e258e97351b5aa4b9e561f5b35ddc2318569e2@...2715...>
-References: <gerrit.1706186293000.I01e258e97351b5aa4b9e561f5b35ddc2318569e2@...2715...>
-Reply-To: arne-openvpn@...1227..., openvpn-devel@lists.sourceforge.net,
- frank@...2641..., lstipakov@...277...
-Message-ID: <e61fc92bea2b08e83cc357766cc31a27683e6fc8-EmailReviewComments-HTML@...2715...>
+From: "flichtenheld (Code Review)" <gerrit@...515...>
+Date: Thu, 8 Aug 2024 21:09:34 +0000
+References: <gerrit.1723151372000.I06253be7ed783e3bf30e7df1d6da8ca888016711@...2715...>
+Reply-To: frank@...2641..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net
+Message-ID: <881a0b93a6a79409f433b67f5d958e78ea7a4fc5-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="mEnn7iy/Kzg="; charset=UTF-8
-Subject: [Openvpn-devel] [L] Change in openvpn[master]: Implement support
- for larger packet counter sizes
+Content-Type: multipart/alternative; boundary="h3wLmo8toOk="; charset=UTF-8
+Subject: [Openvpn-devel] [M] Change in openvpn[master]: GHA: Configure
+ Renovate
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,136 +18,330 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Cc: stipa <lstipakov@...277...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: plaisthos <arne-openvpn@...1227...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---mEnn7iy/Kzg=
+--h3wLmo8toOk=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: stipa.
+Attention is currently required from: plaisthos.
 
-plaisthos has posted comments on this change. ( http://gerrit.openvpn.net/c=
-/openvpn/+/507?usp=3Demail )
+Hello plaisthos,
 
-Change subject: Implement support for larger packet counter sizes
+I'd like you to do a code review.
+Please visit
+
+    http://gerrit.openvpn.net/c/openvpn/+/722?usp=3Demail
+
+to review the following change.
+
+
+Change subject: GHA: Configure Renovate
 ......................................................................
 
+GHA: Configure Renovate
 
-Patch Set 6:
+Maintain GitHub actions and other version references
+in GHA.
 
-(3 comments)
+Switch some GHA references from branch versions to
+tag version so the pinning works correctly.
 
-File src/openvpn/crypto.c:
-
-http://gerrit.openvpn.net/c/openvpn/+/507/comment/339be4fb_e4a7dcd8 :
-PS6, Line 364: openvpn_decrypt_aead(struct buffer *buf, struct buffer work,
-> Is it so that for DATA_V1: [=E2=80=A6]
-yes. But that has been always the case.
-
-
-File src/openvpn/ssl_common.h:
-
-http://gerrit.openvpn.net/c/openvpn/+/507/comment/ed094001_4358b379 :
-PS6, Line 314:     bool disable_occ;
-> this looks like an unrelated change
-Yes. But I don't think it warranted an extra commit and I modify that part =
-anyway.
+Change-Id: I06253be7ed783e3bf30e7df1d6da8ca888016711
+Signed-off-by: Frank Lichtenheld <frank@...2641...>
+---
+M .github/workflows/build.yaml
+A renovate.json
+2 files changed, 48 insertions(+), 6 deletions(-)
 
 
-http://gerrit.openvpn.net/c/openvpn/+/507/comment/a566bc93_6c0e149b :
-PS6, Line 493:     int limit_next;             /* used for traffic shaping =
-on the control channel */
-> ditto
-same, just removing an unused variable
 
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/22/722/1
 
+diff --git a/.github/workflows/build.yaml b/.github/workflows/build.yaml
+index 6e361d5..6207c95 100644
+--- a/.github/workflows/build.yaml
++++ b/.github/workflows/build.yaml
+@@ -52,13 +52,13 @@
+         uses: actions/checkout@...2691...
+
+       - name: Restore from cache and install vcpkg
+-        uses: lukka/run-vcpkg@...2735...
++        uses: lukka/run-vcpkg@...2807...
+         with:
+           vcpkgGitCommitId: 8d3649ba34aab36914ddd897958599aa0a91b08e
+           vcpkgJsonGlob: '**/mingw/vcpkg.json'
+
+       - name: Run CMake with vcpkg.json manifest
+-        uses: lukka/run-cmake@...2637...
++        uses: lukka/run-cmake@...2808...
+         with:
+           configurePreset: mingw-${{ matrix.arch }}
+           buildPreset: mingw-${{ matrix.arch }}
+@@ -274,26 +274,26 @@
+       runs-on: windows-latest
+       steps:
+       - uses: actions/checkout@...2691...
+-      - uses: lukka/get-cmake@...2729...
++      - uses: lukka/get-cmake@...2809...
+
+       - name: Install rst2html
+         run: python -m pip install --upgrade pip docutils
+
+       - name: Restore artifacts, or setup vcpkg (do not install any packag=
+e)
+-        uses: lukka/run-vcpkg@...2735...
++        uses: lukka/run-vcpkg@...2807...
+         with:
+           vcpkgGitCommitId: 8d3649ba34aab36914ddd897958599aa0a91b08e
+           vcpkgJsonGlob: '**/windows/vcpkg.json'
+
+       - name: Run CMake with vcpkg.json manifest (NO TESTS)
+-        uses: lukka/run-cmake@...2637...
++        uses: lukka/run-cmake@...2808...
+         if: ${{ matrix.arch =3D=3D 'arm64' }}
+         with:
+           configurePreset: win-${{ matrix.arch }}-release
+           buildPreset: win-${{ matrix.arch }}-release
+
+       - name: Run CMake with vcpkg.json manifest
+-        uses: lukka/run-cmake@...2637...
++        uses: lukka/run-cmake@...2808...
+         if: ${{ matrix.arch !=3D 'arm64' }}
+         with:
+           configurePreset: win-${{ matrix.arch }}-release
+@@ -344,6 +344,7 @@
+         uses: actions/checkout@...2691...
+         with:
+           path: libressl
++          # versioning=3Dsemver-coerced
+           repository: libressl/portable
+           ref: v3.8.3
+       - name: "libressl: autogen.sh"
+@@ -403,6 +404,7 @@
+         uses: actions/checkout@...2691...
+         with:
+           path: mbedtls
++          # versioning=3Dsemver-coerced
+           repository: Mbed-TLS/mbedtls
+           ref: v3.5.2
+       - name: "mbedtls: make no_test"
+diff --git a/renovate.json b/renovate.json
+new file mode 100644
+index 0000000..1e69955
+--- /dev/null
++++ b/renovate.json
+@@ -0,0 +1,40 @@
++{
++    "$schema": "https://docs.renovatebot.com/renovate-schema.json",
++    "packageRules": [
++        {
++            "matchDepTypes": [
++                "action"
++            ],
++            "groupName": "github actions",
++            "pinDigests": true,
++            "extends": [
++                "schedule:monthly"
++            ]
++        },
++        {
++            "matchDepNames": [
++                "vcpkg"
++            ],
++            "extends": [
++                "schedule:monthly"
++            ]
++        }
++    ],
++    "customManagers": [
++        {
++            "customType": "regex",
++            "fileMatch": ["^\\.github/workflows/.+\\.ya?ml$"],
++            "matchStrings": ["vcpkgGitCommitId:\\s*(?<currentDigest>.*?)\\=
+n"],
++            "currentValueTemplate": "master",
++            "depNameTemplate": "vcpkg",
++            "packageNameTemplate": "https://github.com/microsoft/vcpkg",
++            "datasourceTemplate": "git-refs"
++        },
++        {
++            "customType": "regex",
++            "fileMatch": ["^\\.github/workflows/.+\\.ya?ml$"],
++            "matchStrings": ["versioning=3D(?<versioning>.*?)\\n\\s*reposi=
+tory:\\s*(?<depName>.*?)\\n\\s*ref:\\s*(?<currentValue>.*?)\\n"],
++            "datasourceTemplate": "github-tags"
++        }
++    ]
++}
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/507?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/722?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings
 
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: I01e258e97351b5aa4b9e561f5b35ddc2318569e2
-Gerrit-Change-Number: 507
-Gerrit-PatchSet: 6
-Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
-Gerrit-Reviewer: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: stipa <lstipakov@...277...>
+Gerrit-Change-Id: I06253be7ed783e3bf30e7df1d6da8ca888016711
+Gerrit-Change-Number: 722
+Gerrit-PatchSet: 1
+Gerrit-Owner: flichtenheld <frank@...2641...>
+Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: stipa <lstipakov@...277...>
-Gerrit-Comment-Date: Thu, 01 Aug 2024 12:12:34 +0000
-Gerrit-HasComments: Yes
-Gerrit-Has-Labels: No
-Comment-In-Reply-To: stipa <lstipakov@...277...>
-Gerrit-MessageType: comment
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-MessageType: newchange
 
---mEnn7iy/Kzg=
+--h3wLmo8toOk=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p> Attention is currently required from: stipa. </p>
-<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/507?usp=3Demail">View C=
-hange</a></p><p>3 comments:</p><ul style=3D"list-style: none; padding: 0;">=
-<li style=3D"margin: 0; padding: 0;"><p>File src/openvpn/crypto.c:</p><ul s=
-tyle=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0=
- 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn=
-.net/c/openvpn/+/507/comment/339be4fb_e4a7dcd8">Patch Set #6, Line 364:</a>=
- <code style=3D"font-family:monospace,monospace">openvpn_decrypt_aead(struc=
-t buffer *buf, struct buffer work,</code></p><p><blockquote style=3D"border=
--left: 1px solid #aaa; margin: 10px 0; padding: 0 10px;">Is it so that for =
-DATA_V1: [=E2=80=A6]</blockquote></p><p style=3D"white-space: pre-wrap; wor=
-d-wrap: break-word;">yes. But that has been always the case.</p></li></ul><=
-/li><li style=3D"margin: 0; padding: 0;"><p>File src/openvpn/ssl_common.h:<=
-/p><ul style=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; padd=
-ing: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit=
-.openvpn.net/c/openvpn/+/507/comment/ed094001_4358b379">Patch Set #6, Line =
-314:</a> <code style=3D"font-family:monospace,monospace">    bool disable_o=
-cc;</code></p><p><blockquote style=3D"border-left: 1px solid #aaa; margin: =
-10px 0; padding: 0 10px;">this looks like an unrelated change</blockquote><=
-/p><p style=3D"white-space: pre-wrap; word-wrap: break-word;">Yes. But I do=
-n&#39;t think it warranted an extra commit and I modify that part anyway.</=
-p></li><li style=3D"margin: 0; padding: 0 0 0 16px;"><p style=3D"margin-bot=
-tom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/507/comment/a56=
-6bc93_6c0e149b">Patch Set #6, Line 493:</a> <code style=3D"font-family:mono=
-space,monospace">    int limit_next;             /* used for traffic shapin=
-g on the control channel */</code></p><p><blockquote style=3D"border-left: =
-1px solid #aaa; margin: 10px 0; padding: 0 10px;">ditto</blockquote></p><p =
-style=3D"white-space: pre-wrap; word-wrap: break-word;">same, just removing=
- an unused variable</p></li></ul></li></ul><p>To view, visit <a href=3D"htt=
-p://gerrit.openvpn.net/c/openvpn/+/507?usp=3Demail">change 507</a>. To unsu=
-bscribe, or for help writing mail filters, visit <a href=3D"http://gerrit.o=
-penvpn.net/settings">settings</a>.</p><div itemscope itemtype=3D"http://sch=
-ema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http:/=
-/schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvp=
-n.net/c/openvpn/+/507?usp=3Demail"/><meta itemprop=3D"name" content=3D"View=
- Change"/></div></div>
+<p> Attention is currently required from: plaisthos. </p>
+<p>flichtenheld would like plaisthos to <strong>review</strong> this change.
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/722?usp=3Demail">Vi=
+ew Change</a></p><pre style=3D"font-family: monospace,monospace; white-spac=
+e: pre-wrap;">GHA: Configure Renovate<br><br>Maintain GitHub actions and ot=
+her version references<br>in GHA.<br><br>Switch some GHA references from br=
+anch versions to<br>tag version so the pinning works correctly.<br><br>Chan=
+ge-Id: I06253be7ed783e3bf30e7df1d6da8ca888016711<br>Signed-off-by: Frank Li=
+chtenheld &lt;frank@...2641...&gt;<br>---<br>M .github/workflows/build.yaml=
+<br>A renovate.json<br>2 files changed, 48 insertions(+), 6 deletions(-)<br=
+><br></pre><pre style=3D"font-family: monospace,monospace; white-space: pre=
+-wrap;">git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/22/722=
+/1</pre><pre style=3D"font-family: monospace,monospace; white-space: pre-wr=
+ap;"><span>diff --git a/.github/workflows/build.yaml b/.github/workflows/bu=
+ild.yaml</span><br><span>index 6e361d5..6207c95 100644</span><br><span>--- =
+a/.github/workflows/build.yaml</span><br><span>+++ b/.github/workflows/buil=
+d.yaml</span><br><span>@@ -52,13 +52,13 @@</span><br><span>         uses: a=
+ctions/checkout@...2691...</span><br><span> </span><br><span>       - name:=
+ Restore from cache and install vcpkg</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-        uses: lukka/run-vcpkg@...2735...</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+        uses: lukka/run-vcpkg@...2810...=
+..</span><br><span>         with:</span><br><span>           vcpkgGitCommit=
+Id: 8d3649ba34aab36914ddd897958599aa0a91b08e</span><br><span>           vcp=
+kgJsonGlob: &#39;**/mingw/vcpkg.json&#39;</span><br><span> </span><br><span=
+>       - name: Run CMake with vcpkg.json manifest</span><br><span style=3D=
+"color: hsl(0, 100%, 40%);">-        uses: lukka/run-cmake@...2637...</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+        uses: lukka/run-c=
+make@...2808...</span><br><span>         with:</span><br><span>           c=
+onfigurePreset: mingw-${{ matrix.arch }}</span><br><span>           buildPr=
+eset: mingw-${{ matrix.arch }}</span><br><span>@@ -274,26 +274,26 @@</span>=
+<br><span>       runs-on: windows-latest</span><br><span>       steps:</spa=
+n><br><span>       - uses: actions/checkout@...2691...</span><br><span styl=
+e=3D"color: hsl(0, 100%, 40%);">-      - uses: lukka/get-cmake@...2729...</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+      - uses: lukka/g=
+et-cmake@...2809...</span><br><span> </span><br><span>       - name: Instal=
+l rst2html</span><br><span>         run: python -m pip install --upgrade pi=
+p docutils</span><br><span> </span><br><span>       - name: Restore artifac=
+ts, or setup vcpkg (do not install any package)</span><br><span style=3D"co=
+lor: hsl(0, 100%, 40%);">-        uses: lukka/run-vcpkg@...2735...</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+        uses: lukka/run-vcpk=
+g@...2807...</span><br><span>         with:</span><br><span>           vcpk=
+gGitCommitId: 8d3649ba34aab36914ddd897958599aa0a91b08e</span><br><span>    =
+       vcpkgJsonGlob: &#39;**/windows/vcpkg.json&#39;</span><br><span> </sp=
+an><br><span>       - name: Run CMake with vcpkg.json manifest (NO TESTS)</=
+span><br><span style=3D"color: hsl(0, 100%, 40%);">-        uses: lukka/run=
+-cmake@...2637...</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+      uses: lukka/run-cmake@...2808...</span><br><span>         if: ${{ mat=
+rix.arch =3D=3D &#39;arm64&#39; }}</span><br><span>         with:</span><br=
+><span>           configurePreset: win-${{ matrix.arch }}-release</span><br=
+><span>           buildPreset: win-${{ matrix.arch }}-release</span><br><sp=
+an> </span><br><span>       - name: Run CMake with vcpkg.json manifest</spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-        uses: lukka/run-cm=
+ake@...2637...</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
+   uses: lukka/run-cmake@...2808...</span><br><span>         if: ${{ matrix=
+.arch !=3D &#39;arm64&#39; }}</span><br><span>         with:</span><br><spa=
+n>           configurePreset: win-${{ matrix.arch }}-release</span><br><spa=
+n>@@ -344,6 +344,7 @@</span><br><span>         uses: actions/checkout@...2375...=
+91...</span><br><span>         with:</span><br><span>           path: libre=
+ssl</span><br><span style=3D"color: hsl(120, 100%, 40%);">+          # vers=
+ioning=3Dsemver-coerced</span><br><span>           repository: libressl/por=
+table</span><br><span>           ref: v3.8.3</span><br><span>       - name:=
+ &quot;libressl: autogen.sh&quot;</span><br><span>@@ -403,6 +404,7 @@</span=
+><br><span>         uses: actions/checkout@...2691...</span><br><span>     =
+    with:</span><br><span>           path: mbedtls</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+          # versioning=3Dsemver-coerced</spa=
+n><br><span>           repository: Mbed-TLS/mbedtls</span><br><span>       =
+    ref: v3.5.2</span><br><span>       - name: &quot;mbedtls: make no_test&=
+quot;</span><br><span>diff --git a/renovate.json b/renovate.json</span><br>=
+<span>new file mode 100644</span><br><span>index 0000000..1e69955</span><br=
+><span>--- /dev/null</span><br><span>+++ b/renovate.json</span><br><span>@@=
+ -0,0 +1,40 @@</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+    &quot;$schema&quot;=
+: &quot;https://docs.renovatebot.com/renovate-schema.json&quot;,</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+    &quot;packageRules&quot;: =
+[</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        {</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+            &quot;matchDepTy=
+pes&quot;: [</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
+         &quot;action&quot;</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+            ],</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+            &quot;groupName&quot;: &quot;github actions&quot;,</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+            &quot;pinDigests&=
+quot;: true,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
+     &quot;extends&quot;: [</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+                &quot;schedule:monthly&quot;</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+            ]</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+        },</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+        {</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+            &quot;matchDepNames&quot;: [</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+                &quot;vcpkg&quot;</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+            ],</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+            &quot;extends&quot;: [</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+                &quot=
+;schedule:monthly&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+            ]</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+      }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    ],</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+    &quot;customManagers&=
+quot;: [</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        {</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+            &quot;cus=
+tomType&quot;: &quot;regex&quot;,</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+            &quot;fileMatch&quot;: [&quot;^\\.github/workflow=
+s/.+\\.ya?ml$&quot;],</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+            &quot;matchStrings&quot;: [&quot;vcpkgGitCommitId:\\s*(?&lt;c=
+urrentDigest&gt;.*?)\\n&quot;],</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+            &quot;currentValueTemplate&quot;: &quot;master&quot=
+;,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            &quot=
+;depNameTemplate&quot;: &quot;vcpkg&quot;,</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+            &quot;packageNameTemplate&quot;: &quot;h=
+ttps://github.com/microsoft/vcpkg&quot;,</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+            &quot;datasourceTemplate&quot;: &quot;git-=
+refs&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        }=
+,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        {</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+            &quot;customType=
+&quot;: &quot;regex&quot;,</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+            &quot;fileMatch&quot;: [&quot;^\\.github/workflows/.+\\.=
+ya?ml$&quot;],</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
+       &quot;matchStrings&quot;: [&quot;versioning=3D(?&lt;versioning&gt;.*=
+?)\\n\\s*repository:\\s*(?&lt;depName&gt;.*?)\\n\\s*ref:\\s*(?&lt;currentVa=
+lue&gt;.*?)\\n&quot;],</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+            &quot;datasourceTemplate&quot;: &quot;github-tags&quot;</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+        }</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+    ]</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+}</span><br><span></span><br></pre><p>To view, v=
+isit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/722?usp=3Demail">chan=
+ge 722</a>. To unsubscribe, or for help writing mail filters, visit <a href=
+=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope ite=
+mtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"action"=
+ itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"h=
+ttp://gerrit.openvpn.net/c/openvpn/+/722?usp=3Demail"/><meta itemprop=3D"na=
+me" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I01e258e97351b5aa4b9e561f5b3=
-5ddc2318569e2 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 507 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 6 </div>
-<div style=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@...1711...=
-27...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
-1...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: stipa &lt;lstipakov@...277...=
-&gt; </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I06253be7ed783e3bf30e7df1d6d=
+a8ca888016711 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 722 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
+<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
+.&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
+.1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: stipa &lt;lstipakov@...1663...=
-.&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Thu, 01 Aug 2024 12:12:34=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: No </div>
-<div style=3D"display:none"> Comment-In-Reply-To: stipa &lt;lstipakov@...1664...=
-7...&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-MessageType: newchange </div>
 
 
---mEnn7iy/Kzg=--
+--h3wLmo8toOk=--
 
