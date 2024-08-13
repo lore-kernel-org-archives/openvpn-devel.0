@@ -1,9 +1,10 @@
-From: selva.nair@...277...
-Date: Mon, 12 Aug 2024 19:21:58 -0400
-Message-Id: <20240812232158.3776869-1-selva.nair@...277...>
-MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] test_pkcs11.c: set file offset to 0 after
- ftruncate
+Date: Tue, 13 Aug 2024 08:33:45 +0200 (CEST)
+Message-Id: <202408130633.47D6Xjiv082386@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <20240812232158.3776869-1-selva.nair@...277...>
+References: <20240812232158.3776869-1-selva.nair@...277...>
+Subject: [Openvpn-devel] [PATCH applied] Re: test_pkcs11.c: set file offset
+ to 0 after ftruncate
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,39 +15,35 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Selva Nair <selva.nair@...277...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-From: Selva Nair <selva.nair@...277...>
+Acked-by: Gert Doering <gert@...1296...>
 
-Currently key and cert file fd's are reused after ftruncate()
-without setting the offset to zero. This causes subsequent
-data to be written at some finite offset with the hole in
-the file automatically filled by zeros. Fix it by calling
-lseek() to set the offset to zero.
+"explanation makes sense, man ftruncate clearly says 'fd is not modified'"
 
-The test works nevertheless because p11tool seem to generously
-ignore any junk before the "BEGIN" marker.
+smoke tested ("make check") on linux with --enable-pkcs11
 
-Change-Id: Ib0fe15a4ba18d89216b0288e6cd6be66ed377bd4
-Signed-off-by: Selva Nair <selva.nair@...277...>
----
- tests/unit_tests/openvpn/test_pkcs11.c | 2 ++
- 1 file changed, 2 insertions(+)
+Your patch has been applied to the master branch.
 
-diff --git a/tests/unit_tests/openvpn/test_pkcs11.c b/tests/unit_tests/openvpn/test_pkcs11.c
-index 5518fa15..3fe3e460 100644
---- a/tests/unit_tests/openvpn/test_pkcs11.c
-+++ b/tests/unit_tests/openvpn/test_pkcs11.c
-@@ -273,6 +273,8 @@ init(void **state)
- 
-         assert_int_equal(ftruncate(cert_fd, 0), 0);
-         assert_int_equal(ftruncate(key_fd, 0), 0);
-+        assert_int_equal(lseek(cert_fd, 0, SEEK_SET), 0);
-+        assert_int_equal(lseek(key_fd, 0, SEEK_SET), 0);
-         num_certs++;
-     }
- 
--- 
-2.34.1
+Not applied to 2.6 because the code in question does not exist there.
+
+commit dcf735009c8caabf5e4a9feeb0d32907aafe8f17 (master)
+Author: Selva Nair
+Date:   Mon Aug 12 19:21:58 2024 -0400
+
+     test_pkcs11.c: set file offset to 0 after ftruncate
+
+     Signed-off-by: Selva Nair <selva.nair@...277...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <20240812232158.3776869-1-selva.nair@...277...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg29010.html
+     Signed-off-by: Gert Doering <gert@...1296...>
+
+
+--
+kind regards,
+
+Gert Doering
 
 
