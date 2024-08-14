@@ -1,11 +1,16 @@
-Content-Type: multipart/alternative;
- boundary="------------W0YJHcbm10ag09hwBA5TCm02"
-Message-ID: <e9f4b0fd-c906-447e-8cbe-227aa6032121@...2751...>
-Date: Wed, 14 Aug 2024 14:27:30 +0200
+From: "flichtenheld (Code Review)" <gerrit@...515...>
+Date: Wed, 14 Aug 2024 13:16:57 +0000
+In-Reply-To: <gerrit.1706186293000.I01e258e97351b5aa4b9e561f5b35ddc2318569e2@...2715...>
+References: <gerrit.1706186293000.I01e258e97351b5aa4b9e561f5b35ddc2318569e2@...2715...>
+Reply-To: frank@...2641..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net, lstipakov@...277...
+Message-ID: <d6ac93b6624ccad50b31e3680a3ebf5f38351961-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-From: Johan Draaisma <johan@...2751...>
-Content-Language: en-US
-Subject: [Openvpn-devel]  IRC community meeting summary
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="9+uAYGK9NIo="; charset=UTF-8
+Subject: [Openvpn-devel] [L] Change in openvpn[master]: Implement support
+ for larger packet counter sizes
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,125 +19,127 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: openvpn-devel@lists.sourceforge.net
+To: plaisthos <arne-openvpn@...1227...>, stipa <lstipakov@...277...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-This is a multi-part message in MIME format.
---------------W0YJHcbm10ag09hwBA5TCm02
-Content-Type: text/plain; charset="utf-8"; format="flowed"
-Content-Transfer-Encoding: 8bit
+--9+uAYGK9NIo=
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Meeting summary for 14 August 2024:
+Attention is currently required from: plaisthos, stipa.
 
-  * *Updated: OpenVPN community meetup 2024*
-    /Hotel recommendation added; Hotel Santo in Karlsruhe./
-    /Wiki coordination
-    page:​https://community.openvpn.net/openvpn/wiki/CommunityMeetup2024
-    <https://community.openvpn.net/openvpn/wiki/CommunityMeetup2024>/
-    /Where: Karlsruhe, Germany.SteamWork?
-    <https://community.openvpn.net/openvpn/wiki/SteamWork>, Karlsruhe./
-    /When: Set to 20-22 September 2024./
-    /Shirts: matt gave us 2 t-shirt designs and we reviewed them in the
-    meeting./
-    /T-shirt are being ordered, there will be enough to provide the list
-    of people on the wiki page./
+flichtenheld has posted comments on this change. ( http://gerrit.openvpn.ne=
+t/c/openvpn/+/507?usp=3Demail )
 
-  * *Updated: community.openvpn.net trac wiki*
-    /novaflash and mattock tried out a few things and
-    updated:​https://community.openvpn.net/openvpn/wiki/NewWiki
-    <https://community.openvpn.net/openvpn/wiki/NewWiki>/
-    /we found otterwiki and this checks the must have boxes and a
-    nice-to-have "commit to git backend" function. So we'll PoC that./
-    /Collaborative editing seems to only be possible with paid products
-    currently./
+Change subject: Implement support for larger packet counter sizes
+......................................................................
 
-  * *Updated: Linux arm64 buildbot workers*
-    /There's a "docker host" now that is essentially a buildbot
-    environment that can run arm64 containers./
-    /In theory pointing our existing buildmaster to it should work. This
-    is untested but should work./
-    /When mattock has time he'll work further on this./
 
-People that are paying close attention might have noticed that last week 
-there was no meeting summary. This was because there were no noteworthy 
-updates last week.
+Patch Set 8: Code-Review+1
 
-As always you're welcome to join at #openvpn-meeting on Libera IRC 
-network every Wednesday at 14:00 Central European Time.
+(2 comments)
 
-Kind regards,
-Johan Draaisma
+File src/openvpn/ssl_common.h:
 
---------------W0YJHcbm10ag09hwBA5TCm02
-Content-Type: text/html; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+http://gerrit.openvpn.net/c/openvpn/+/507/comment/68ee673d_068c1805 :
+PS6, Line 314:     bool disable_occ;
+> Yes. But I don't think it warranted an extra commit and I modify that par=
+t anyway.
+Done
 
-<!DOCTYPE html>
-<html>
-  <head>
-    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
-  </head>
-  <body>
-    <p> Meeting summary for 14 August 2024:</p>
-    <ul
-style="color: rgb(0, 0, 0); font-family: Verdana, Arial, &quot;Bitstream Vera Sans&quot;, Helvetica, sans-serif; font-size: 13px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;">
-      <li><strong>Updated: OpenVPN community meetup 2024</strong><br>
-        <em>Hotel recommendation added; Hotel Santo in Karlsruhe.</em><br>
-        <em>Wiki coordination page:<span> </span><a class="ext-link"
-href="https://community.openvpn.net/openvpn/wiki/CommunityMeetup2024"
-style="text-decoration: none; color: rgb(187, 0, 0); border-bottom: 1px dotted rgb(187, 187, 187);"><span
-              class="icon"
-style="background: url(&quot;../extlink.gif&quot;) left center no-repeat; padding-left: 15px;">​</span>https://community.openvpn.net/openvpn/wiki/CommunityMeetup2024</a></em><br>
-        <em>Where: Karlsruhe, Germany.<span> </span><a
-            class="missing wiki"
-            href="https://community.openvpn.net/openvpn/wiki/SteamWork"
-            rel="nofollow"
-style="text-decoration: none; color: rgb(153, 153, 136); border-bottom: 1px dotted rgb(187, 187, 187);">SteamWork?</a>,
-          Karlsruhe.</em><br>
-        <em>When: Set to 20-22 September 2024.</em><br>
-        <em>Shirts: matt gave us 2 t-shirt designs and we reviewed them
-          in the meeting.</em><br>
-        <em>T-shirt are being ordered, there will be enough to provide
-          the list of people on the wiki page.</em><br>
-      </li>
-    </ul>
-    <p
-style="color: rgb(0, 0, 0); font-family: Verdana, Arial, &quot;Bitstream Vera Sans&quot;, Helvetica, sans-serif; font-size: 13px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;"></p>
-    <ul
-style="color: rgb(0, 0, 0); font-family: Verdana, Arial, &quot;Bitstream Vera Sans&quot;, Helvetica, sans-serif; font-size: 13px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;">
-      <li><strong>Updated: community.openvpn.net trac wiki</strong><br>
-        <em>novaflash and mattock tried out a few things and updated:<span> </span><a
-            class="ext-link"
-            href="https://community.openvpn.net/openvpn/wiki/NewWiki"
-style="text-decoration: none; color: rgb(187, 0, 0); border-bottom: 1px dotted rgb(187, 187, 187);"><span
-              class="icon"
-style="background: url(&quot;../extlink.gif&quot;) left center no-repeat; padding-left: 15px;">​</span>https://community.openvpn.net/openvpn/wiki/NewWiki</a></em><br>
-        <em>we found otterwiki and this checks the must have boxes and a
-          nice-to-have "commit to git backend" function. So we'll PoC
-          that.</em><br>
-        <em>Collaborative editing seems to only be possible with paid
-          products currently.</em><br>
-      </li>
-    </ul>
-    <ul
-style="color: rgb(0, 0, 0); font-family: Verdana, Arial, &quot;Bitstream Vera Sans&quot;, Helvetica, sans-serif; font-size: 13px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;">
-      <li><strong>Updated: Linux arm64 buildbot workers</strong><br>
-        <em>There's a "docker host" now that is essentially a buildbot
-          environment that can run arm64 containers.</em><br>
-        <em>In theory pointing our existing buildmaster to it should
-          work. This is untested but should work.</em><br>
-        <em>When mattock has time he'll work further on this.</em></li>
-    </ul>
-    <p>People that are paying close attention might have noticed that
-      last week there was no meeting summary. This was because there
-      were no noteworthy updates last week.<br>
-    </p>
-    <p>As always you're welcome to join at #openvpn-meeting on Libera
-      IRC network every Wednesday at 14:00 Central European Time.</p>
-    <p>Kind regards,<br>
-      Johan Draaisma<br>
-    </p>
-  </body>
-</html>
 
---------------W0YJHcbm10ag09hwBA5TCm02--
+http://gerrit.openvpn.net/c/openvpn/+/507/comment/0a1701ec_5a81108c :
+PS6, Line 493:     int limit_next;             /* used for traffic shaping =
+on the control channel */
+> same, just removing an unused variable
+Done
+
+
+
+--
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/507?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings
+
+Gerrit-Project: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: I01e258e97351b5aa4b9e561f5b35ddc2318569e2
+Gerrit-Change-Number: 507
+Gerrit-PatchSet: 8
+Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
+Gerrit-Reviewer: flichtenheld <frank@...2641...>
+Gerrit-Reviewer: stipa <lstipakov@...277...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Attention: stipa <lstipakov@...277...>
+Gerrit-Comment-Date: Wed, 14 Aug 2024 13:16:57 +0000
+Gerrit-HasComments: Yes
+Gerrit-Has-Labels: Yes
+Comment-In-Reply-To: plaisthos <arne-openvpn@...1227...>
+Comment-In-Reply-To: stipa <lstipakov@...277...>
+Gerrit-MessageType: comment
+
+--9+uAYGK9NIo=
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<p> Attention is currently required from: plaisthos, stipa. </p>
+<p>Patch set 8:<span style=3D"border-radius: 3px; display: inline-block; ma=
+rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +1</span>=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/507?usp=3Demail">Vi=
+ew Change</a></p><p>2 comments:</p><ul style=3D"list-style: none; padding: =
+0;"><li style=3D"margin: 0; padding: 0;"><p>File src/openvpn/ssl_common.h:<=
+/p><ul style=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; padd=
+ing: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit=
+.openvpn.net/c/openvpn/+/507/comment/68ee673d_068c1805">Patch Set #6, Line =
+314:</a> <code style=3D"font-family:monospace,monospace">    bool disable_o=
+cc;</code></p><p><blockquote style=3D"border-left: 1px solid #aaa; margin: =
+10px 0; padding: 0 10px;">Yes. But I don&#39;t think it warranted an extra =
+commit and I modify that part anyway.</blockquote></p><p style=3D"white-spa=
+ce: pre-wrap; word-wrap: break-word;">Done</p></li><li style=3D"margin: 0; =
+padding: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://ge=
+rrit.openvpn.net/c/openvpn/+/507/comment/0a1701ec_5a81108c">Patch Set #6, L=
+ine 493:</a> <code style=3D"font-family:monospace,monospace">    int limit_=
+next;             /* used for traffic shaping on the control channel */</co=
+de></p><p><blockquote style=3D"border-left: 1px solid #aaa; margin: 10px 0;=
+ padding: 0 10px;">same, just removing an unused variable</blockquote></p><=
+p style=3D"white-space: pre-wrap; word-wrap: break-word;">Done</p></li></ul=
+></li></ul><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn=
+/+/507?usp=3Demail">change 507</a>. To unsubscribe, or for help writing mai=
+l filters, visit <a href=3D"http://gerrit.openvpn.net/settings">settings</a=
+>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div items=
+cope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link it=
+emprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/507?usp=3Demai=
+l"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
+
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I01e258e97351b5aa4b9e561f5b3=
+5ddc2318569e2 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 507 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 8 </div>
+<div style=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@...1711...=
+27...&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
+1...&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: stipa &lt;lstipakov@...277...=
+&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: stipa &lt;lstipakov@...1663...=
+.&gt; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Wed, 14 Aug 2024 13:16:57=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
+<div style=3D"display:none"> Comment-In-Reply-To: plaisthos &lt;arne-openvp=
+n@...1227...&gt; </div>
+<div style=3D"display:none"> Comment-In-Reply-To: stipa &lt;lstipakov@...1664...=
+7...&gt; </div>
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
+
+
+--9+uAYGK9NIo=--
 
