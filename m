@@ -1,16 +1,11 @@
-From: "selvanair (Code Review)" <gerrit@...515...>
-Date: Thu, 29 Aug 2024 21:01:27 +0000
-In-Reply-To: <gerrit.1723673969000.I82b32d5ab472926e7889a5f4a90caba14231879a@...2715...>
-References: <gerrit.1723673969000.I82b32d5ab472926e7889a5f4a90caba14231879a@...2715...>
-Reply-To: selva.nair@...277..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <d2dac7984e1fb599b35a51cb935503fd5ab815db-EmailReviewComments-HTML@...2715...>
+From: selva.nair@...277...
+Date: Fri, 30 Aug 2024 10:18:24 -0400
+Message-Id: <20240830141824.108599-1-selva.nair@...277...>
+In-Reply-To: <gerrit.1718418288000.I41f6c1f7acb58f30fc4db0e32505018f64fcad28@...2715...>
+References: <gerrit.1718418288000.I41f6c1f7acb58f30fc4db0e32505018f64fcad28@...2715...>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="a2yWfE0CF5s="; charset=UTF-8
-Subject: [Openvpn-devel] [L] Change in openvpn[master]: Interpret --key and
- --cert option argument as URI
+Subject: [Openvpn-devel] [PATCH v1] Add test for static-challenge
+ concatenation option
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,105 +14,60 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Cc: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---a2yWfE0CF5s=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+From: Selva Nair <selva.nair@...277...>
 
-Attention is currently required from: flichtenheld, plaisthos.
+Change-Id: I41f6c1f7acb58f30fc4db0e32505018f64fcad28
+Signed-off-by: Selva Nair <selva.nair@...277...>
+Acked-by: Arne Schwabe <arne-openvpn@...1227...>
+Acked-by: Frank Lichtenheld <frank@...2641...>
+---
 
-selvanair has posted comments on this change. ( http://gerrit.openvpn.net/c=
-/openvpn/+/726?usp=3Demail )
+This change was reviewed on Gerrit and approved by at least one
+developer. I request to merge it to master.
 
-Change subject: Interpret --key and --cert option argument as URI
-......................................................................
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/I41f6c1f7acb58f30fc4db0e32505018f64fcad28
+This mail reflects revision 1 of this Change.
 
+Signed-off-by line for the author was added as per our policy.
 
-Patch Set 2:
+Acked-by according to Gerrit (reflected above):
+Arne Schwabe <arne-openvpn@...1227...>
+Frank Lichtenheld <frank@...2641...>
 
-(1 comment)
-
-Patchset:
-
-PS2:
-Testing google KMS library with pkcs11-helper shows that there also we need=
- to set `GRPC_ENABLE_FORK_SUPPORT=3D1` for fork to not lockup. So this is n=
-ot specific to the current patch or pkcs11-provider.
-
-
-
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/726?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings
-
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: I82b32d5ab472926e7889a5f4a90caba14231879a
-Gerrit-Change-Number: 726
-Gerrit-PatchSet: 2
-Gerrit-Owner: selvanair <selva.nair@...277...>
-Gerrit-Reviewer: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-Reviewer: selvanair <selva.nair@...277...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Comment-Date: Thu, 29 Aug 2024 21:01:27 +0000
-Gerrit-HasComments: Yes
-Gerrit-Has-Labels: No
-Gerrit-MessageType: comment
-
---a2yWfE0CF5s=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<p> Attention is currently required from: flichtenheld, plaisthos. </p>
-<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/726?usp=3Demail">View C=
-hange</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0;"><=
-li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-style=
-: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p style=
-=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/7=
-26?tab=3Dcomments">Patch Set #2:</a> </p><p style=3D"white-space: pre-wrap;=
- word-wrap: break-word;">Testing google KMS library with pkcs11-helper show=
-s that there also we need to set `GRPC_ENABLE_FORK_SUPPORT=3D1` for fork to=
- not lockup. So this is not specific to the current patch or pkcs11-provide=
-r.</p></li></ul></li></ul><p>To view, visit <a href=3D"http://gerrit.openvp=
-n.net/c/openvpn/+/726?usp=3Demail">change 726</a>. To unsubscribe, or for h=
-elp writing mail filters, visit <a href=3D"http://gerrit.openvpn.net/settin=
-gs">settings</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMess=
-age"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewA=
-ction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+=
-/726?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div><=
-/div>
-
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I82b32d5ab472926e7889a5f4a90=
-caba14231879a </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 726 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
-<div style=3D"display:none"> Gerrit-Owner: selvanair &lt;selva.nair@...1354...=
-..&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
-1...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: selvanair &lt;selva.nair@...1665...=
-77...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
-41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Thu, 29 Aug 2024 21:01:27=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: No </div>
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
-
-
---a2yWfE0CF5s=--
+        
+diff --git a/tests/unit_tests/openvpn/test_user_pass.c b/tests/unit_tests/openvpn/test_user_pass.c
+index b43e655..35fe60d 100644
+--- a/tests/unit_tests/openvpn/test_user_pass.c
++++ b/tests/unit_tests/openvpn/test_user_pass.c
+@@ -311,7 +311,25 @@
+ 
+     reset_user_pass(&up);
+ 
+-    flags |= GET_USER_PASS_INLINE_CREDS;
++    flags |= GET_USER_PASS_STATIC_CHALLENGE_CONCAT;
++
++    expect_string(query_user_exec_builtin, query_user[i].prompt, "Enter UT Username:");
++    will_return(query_user_exec_builtin, "c1user");
++    expect_string(query_user_exec_builtin, query_user[i].prompt, "Enter UT Password:");
++    will_return(query_user_exec_builtin, "c1password");
++    will_return(query_user_exec_builtin, true);
++    expect_string(query_user_exec_builtin, query_user[i].prompt, "CHALLENGE: Please enter token PIN");
++    will_return(query_user_exec_builtin, "0123456");
++    will_return(query_user_exec_builtin, true);
++    assert_true(get_user_pass_cr(&up, NULL, "UT", flags, challenge));
++    assert_true(up.defined);
++    assert_string_equal(up.username, "c1user");
++    /* password and response concatenated */
++    assert_string_equal(up.password, "c1password0123456");
++
++    reset_user_pass(&up);
++
++    flags = GET_USER_PASS_STATIC_CHALLENGE|GET_USER_PASS_INLINE_CREDS;
+ 
+     /*FIXME: query_user_exec() called even though nothing queued */
+     will_return(query_user_exec_builtin, true);
 
