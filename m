@@ -1,11 +1,17 @@
-Message-ID: <09e9f8a6-cf7a-67f5-e463-c87bf5179e73@...2108...>
-Date: Thu, 5 Sep 2024 17:25:36 +0200
+From: "selvanair (Code Review)" <gerrit@...515...>
+Date: Thu, 5 Sep 2024 16:45:56 +0000
+In-Reply-To: <gerrit.1723691967000.I42e17e09a02f01aedadc2b03f9527967f6e1e8ff@...2715...>
+References: <gerrit.1723691967000.I42e17e09a02f01aedadc2b03f9527967f6e1e8ff@...2715...>
+Reply-To: selva.nair@...277..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net, frank@...2641...,
+ gert@...1296...
+Message-ID: <cbbdc9e9387463992e369cdb21ded87051efc66d-EmailReplacePatchSet-HTML@...2715...>
 MIME-Version: 1.0
-From: David Sommerseth <dazo+openvpn@...2108...>
-References: <54Nu7vT0SZVJt4FEHSO4m1kqBqZks9pUHtm9RH7ZjiWR5ktqsZcuQb17jv46FDgVifTZKcj-YljhWdZJ9rA9cg==@protonmail.internalid>
-Content-Language: en-GB, en-US
-In-Reply-To: <54Nu7vT0SZVJt4FEHSO4m1kqBqZks9pUHtm9RH7ZjiWR5ktqsZcuQb17jv46FDgVifTZKcj-YljhWdZJ9rA9cg==@protonmail.internalid>
-Subject: [Openvpn-devel] OpenVPN 3 Linux v23 released
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="3bW9Q7NaXwo="; charset=UTF-8
+Subject: [Openvpn-devel] [M] Change in openvpn[master]: Protect cached
+ username, password and token on client
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,251 +20,789 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-To: openvpn-devel <openvpn-devel@lists.sourceforge.net>, openvpn-users <openvpn-users@lists.sourceforge.net>
+To: plaisthos <arne-openvpn@...1227...>, cron2 <gert@...1296...>, flichtenheld <frank@...2641...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-OpenVPN 3 Linux v23 (Stable release)
+--3bW9Q7NaXwo=
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-The v23 release is stable release which expands the distribution target
-since v22_dev was released.  The goal for this step was to stabilize the
-codebase which was migrated to GDBus++ and the new Meson building
-system.  The next release (v24) will also be a stable release, with focus
-on further stabilisation and less intrusive changes.
+Attention is currently required from: cron2, plaisthos, selvanair.
 
-The v23 release brings back the OpenVPN 3 AWS-VPC Add-on which was not
-ready for the v22_dev release.  This service has also been migrated to
-use GDBus++.  The behaviour of this add-on should otherwise be identical
-to the service shipped in v21 and older releases.
+Hello cron2, flichtenheld, plaisthos,
 
-In addition, a new add-on is included in this release.  The Cloud
-Connexa service is being extended with a new functionality, referred to
-as Device Posture Checks (DPC).  This feature will enable the VPN server
-to request certain checks to be performed on the client side and
-reported back to the server.  These checks are restricted to what the
-new OpenVPN 3 Device Posture Service (openvpn3-service-devposture)
-provides.
+I'd like you to reexamine a change. Please visit
 
-This new feature is NOT installed nor enabled by default.  To enable the
-client-side functionality, the openvpn3-addon-devposture package must
-be installed, the VPN client configuration must be pre-imported and
-an Enterprise ID must be assigned to the configuration profile.  That
-will allow the server to request Device Posture Checks to be performed.
+    http://gerrit.openvpn.net/c/openvpn/+/728?usp=3Demail
 
-The currently implemented DPC tests only provides platform information,
-like Linux distribution name and version, kernel versions, CPU
-architecture and the client's local time.  In future releases, more
-tests may be implemented.  More information on available tests and
-the declaration of test profiles can be found here:
-
- 
-<https://codeberg.org/OpenVPN/openvpn3-linux/src/branch/master/addons/devposture/profiles/profile-format.md>
+to look at the new patch set (#3).
 
 
-Known issues:
+Change subject: Protect cached username, password and token on client
+......................................................................
 
-     - openvpn3-service-client may not exit cleanly unless stopped
-       via 'openvpn3 session-manage --disconnect' first.  This may
-       delay the shutdown process if a VPN session is running when
-       the host is being shut down.  A fix is in progress and will
-       be prepared for v24.
+Protect cached username, password and token on client
 
-     - Shell completion may list duplicated options in some cases
+Keep the memory segment containing username and password in
+"struct user_pass" encrypted. Works only on Windows.
 
-     - openvpn3-admin journal --since has a time zone related issue
-       and may not list all log events within the closest hours.
+Username and auth-token cached by the server are not covered
+here.
 
+v2: Encrypt username and password separately as it looks more
+robust. We continue to depend on the username and password buffer
+sizes to be a multiple of CRYPTPROTECTMEMORY_BLOCK_SIZE =3D 16,
+which is the case now. An error is logged if this is not the case.
 
-Other changes:
+v3: move up ASSERT in auth_token.c
 
-* Improvement: Upgrade to OpenVPN 3 Core Library v3.10.1
-
-     This library update provides the functionality to provide the
-     Device Posture Check functionality in the OpenVPN wire
-     protocol.  A fix to resolve compilation errors when the
-     -Wnon-virtual-dtor compiler flag is enabled is included too.
-
-
-* Bugfix: Report client and version correctly in IV_GUI_VER
-
-     The v22_dev release unfortunately changed the format of the
-     IV_GUI_VER.  It would report: 'openvpn3-linux/v22:dev' when
-     it should have been 'OpenVPN3/Linux/v22_dev'.  This has
-     been fixed.
-
-
-* Bugfix: --tag option not working with config-import or config-manage
-
-     A regression bug was introduced in v22_dev which handled the
-     available tracking of Configuration Manager features incorrectly
-     and ended up disabling this feature in the openvpn3 config-import
-     and openvpn3 config-manage commands.  This has been fixed.
+Change-Id: I42e17e09a02f01aedadc2b03f9527967f6e1e8ff
+Signed-off-by: Selva Nair <selva.nair@...277...>
+---
+M src/openvpn/auth_token.c
+M src/openvpn/misc.c
+M src/openvpn/misc.h
+M src/openvpn/proxy.c
+M src/openvpn/ssl.c
+M src/openvpn/ssl_verify.c
+M src/openvpn/win32.c
+M src/openvpn/win32.h
+M tests/unit_tests/openvpn/test_user_pass.c
+9 files changed, 153 insertions(+), 8 deletions(-)
 
 
-* Bugfix: systemd-resolved support rejected IPv6 DNS resolver address
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/28/728/3
 
-     An oversight in the systemd-resolved implementation refused to accept
-     pushed DNS resolver addresses when it was an IPv6 address.  This has
-     been fixed and both IPv4 and IPv6 addresses are now fully supported.
+diff --git a/src/openvpn/auth_token.c b/src/openvpn/auth_token.c
+index 6787ea7..5de65cb 100644
+--- a/src/openvpn/auth_token.c
++++ b/src/openvpn/auth_token.c
+@@ -301,6 +301,7 @@
+      * Base64 is <=3D input and input is < USER_PASS_LEN, so using USER_PA=
+SS_LEN
+      * is safe here but a bit overkill
+      */
++    ASSERT(up && !up->protected);
+     uint8_t b64decoded[USER_PASS_LEN];
+     int decoded_len =3D openvpn_base64_decode(up->password + strlen(SESSIO=
+N_ID_PREFIX),
+                                             b64decoded, USER_PASS_LEN);
+diff --git a/src/openvpn/misc.c b/src/openvpn/misc.c
+index 598fbae..ef4ab69 100644
+--- a/src/openvpn/misc.c
++++ b/src/openvpn/misc.c
+@@ -223,6 +223,7 @@
+         bool password_from_stdin =3D false;
+         bool response_from_stdin =3D true;
 
++        unprotect_user_pass(up);
+         if (flags & GET_USER_PASS_PREVIOUS_CREDS_FAILED)
+         {
+             msg(M_WARN, "Note: previous '%s' credentials failed", prefix);
+@@ -479,14 +480,18 @@
+         secure_memzero(up, sizeof(*up));
+         up->nocache =3D nocache;
+     }
+-    /*
+-     * don't show warning if the pass has been replaced by a token: this i=
+s an
+-     * artificial "auth-nocache"
+-     */
+-    else if (!warn_shown)
++    else
+     {
+-        msg(M_WARN, "WARNING: this configuration may cache passwords in me=
+mory -- use the auth-nocache option to prevent this");
+-        warn_shown =3D true;
++        protect_user_pass(up);
++        /*
++         * don't show warning if the pass has been replaced by a token: th=
+is is an
++         * artificial "auth-nocache"
++         */
++        if (!warn_shown)
++        {
++            msg(M_WARN, "WARNING: this configuration may cache passwords i=
+n memory -- use the auth-nocache option to prevent this");
++            warn_shown =3D true;
++        }
+     }
+ }
 
-* Improvement: Python configuration parser support for 
---connect-retry{,-max}
+@@ -495,6 +500,7 @@
+ {
+     if (strlen(token))
+     {
++        unprotect_user_pass(tk);
+         strncpynt(tk->password, token, USER_PASS_LEN);
+         tk->token_defined =3D true;
 
-     The Python configuration parser in the openvpn3 module did
-     not provide a pass-through for --connect-retry and --connect-retry-max
-     options.  This would result in configuration profiles containing
-     these options would not function when using the Python based tools
-     while it would work using the 'openvpn3' command.
+@@ -505,6 +511,7 @@
+         {
+             tk->defined =3D true;
+         }
++        protect_user_pass(tk);
+     }
+ }
 
+@@ -513,6 +520,7 @@
+ {
+     if (strlen(username))
+     {
++        unprotect_user_pass(tk);
+         /* Clear the username before decoding to ensure no old material is=
+ left
+          * and also allow decoding to not use all space to ensure the last=
+ byte is
+          * always 0 */
+@@ -523,6 +531,7 @@
+         {
+             msg(D_PUSH, "Error decoding auth-token-username");
+         }
++        protect_user_pass(tk);
+     }
+ }
 
-Credits
--------
+@@ -779,3 +788,43 @@
 
-Thanks goes to those continuing testing and reporting issues.
-A special thanks to Grzegorz Gutowski who provided the fix to
-the Python module.  He is also the project lead behind the
-openvpn3-indicator project, which provides a tray-icon for
-OpenVPN 3 Linux.  If you use a graphical desktop, that's a
-project worth checking out!
+     return combined_path;
+ }
++
++void
++protect_user_pass(struct user_pass *up)
++{
++    if (up->protected)
++    {
++        return;
++    }
++#ifdef _WIN32
++    if (protect_buffer_win32(up->username, sizeof(up->username))
++        && protect_buffer_win32(up->password, sizeof(up->password)))
++    {
++        up->protected =3D true;
++    }
++    else
++    {
++        purge_user_pass(up, true);
++    }
++#endif
++}
++
++void
++unprotect_user_pass(struct user_pass *up)
++{
++    if (!up->protected)
++    {
++        return;
++    }
++#ifdef _WIN32
++    if (unprotect_buffer_win32(up->username, sizeof(up->username))
++        && unprotect_buffer_win32(up->password, sizeof(up->password)))
++    {
++        up->protected =3D false;
++    }
++    else
++    {
++        purge_user_pass(up, true);
++    }
++#endif
++}
+diff --git a/src/openvpn/misc.h b/src/openvpn/misc.h
+index 963f3e6..a967ec8 100644
+--- a/src/openvpn/misc.h
++++ b/src/openvpn/misc.h
+@@ -60,6 +60,7 @@
+      * use this second bool to track if the token (password) is defined */
+     bool token_defined;
+     bool nocache;
++    bool protected;
 
-Many thanks also goes to Razvan Cojocaru who has stepped in providing
-many great improvements and done all the work for the Device Posture
-support in OpenVPN 3 Linux.  And Lev Stipakov who migrated the
-OpenVPN 3 AWS-VPC add-on service to GDBus++
+ /* max length of username/password */
+ #ifdef ENABLE_PKCS11
+@@ -207,6 +208,19 @@
+ struct buffer
+ prepend_dir(const char *dir, const char *path, struct gc_arena *gc);
 
++/**
++ * Encrypt username and password buffers in user_pass
++ */
++void
++protect_user_pass(struct user_pass *up);
++
++/**
++ * Decrypt username and password buffers in user_pass
++ */
++void
++unprotect_user_pass(struct user_pass *up);
++
++
+ #define _STRINGIFY(S) #S
+ /* *INDENT-OFF* - uncrustify need to ignore this macro */
+ #define MAC_FMT _STRINGIFY(%02hhx:%02hhx:%02hhx:%02hhx:%02hhx:%02hhx)
+diff --git a/src/openvpn/proxy.c b/src/openvpn/proxy.c
+index 5de0da4..a379c7a 100644
+--- a/src/openvpn/proxy.c
++++ b/src/openvpn/proxy.c
+@@ -289,13 +289,14 @@
+                       UP_TYPE_PROXY,
+                       flags);
+         static_proxy_user_pass.nocache =3D p->options.nocache;
++        protect_user_pass(&static_proxy_user_pass);
+     }
 
-Supported Linux distributions
------------------------------
+     /*
+      * Using cached credentials
+      */
+     p->queried_creds =3D true;
+-    p->up =3D static_proxy_user_pass;
++    p->up =3D static_proxy_user_pass; /* this is a copy of protected memor=
+y */
+ }
 
-     - Debian: 12
-     - Fedora: 39, 40, Rawhide
-     - Red Hat Enterprise Linux 8, 9
-     - Ubuntu: 20.04, 22.04, 24.04
+ #if 0
+@@ -666,6 +667,7 @@
+         {
+             clear_user_pass_http();
+         }
++        unprotect_user_pass(&p->up);
+     }
 
-Installation and getting started instructions can be found here:
+     /* are we being called again after getting the digest server nonce in =
+the previous transaction? */
+diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
+index 14c38cf..c2c9c29 100644
+--- a/src/openvpn/ssl.c
++++ b/src/openvpn/ssl.c
+@@ -243,6 +243,7 @@
+ void
+ pem_password_setup(const char *auth_file)
+ {
++    unprotect_user_pass(&passbuf);
+     if (!strlen(passbuf.password))
+     {
+         get_user_pass(&passbuf, auth_file, UP_TYPE_PRIVATE_KEY, GET_USER_P=
+ASS_MANAGEMENT|GET_USER_PASS_PASSWORD_ONLY);
+@@ -256,6 +257,7 @@
+     {
+         /* prompt for password even if --askpass wasn't specified */
+         pem_password_setup(NULL);
++        ASSERT(!passbuf.protected);
+         strncpynt(buf, passbuf.password, size);
+         purge_user_pass(&passbuf, false);
 
-     <https://community.openvpn.net/openvpn/wiki/OpenVPN3Linux>
+@@ -295,6 +297,7 @@
 
-Debian 11, Red Hat Enterprise Linux 7 and Ubuntu 23.10 are EOL and
-is no longer supported.
+     if (!auth_user_pass.defined && !auth_token.defined)
+     {
++        unprotect_user_pass(&auth_user_pass);
+ #ifdef ENABLE_MANAGEMENT
+         if (auth_challenge) /* dynamic challenge/response */
+         {
+@@ -2094,6 +2097,7 @@
+         {
+             up =3D &auth_token;
+         }
++        unprotect_user_pass(up);
 
+         if (!write_string(buf, up->username, -1))
+         {
+@@ -2106,8 +2110,11 @@
+         /* save username for auth-token which may get pushed later */
+         if (session->opt->pull && up !=3D &auth_token)
+         {
++            unprotect_user_pass(&auth_token);
+             strncpynt(auth_token.username, up->username, USER_PASS_LEN);
++            protect_user_pass(&auth_token);
+         }
++        protect_user_pass(up);
+         /* respect auth-nocache */
+         purge_user_pass(&auth_user_pass, false);
+     }
+diff --git a/src/openvpn/ssl_verify.c b/src/openvpn/ssl_verify.c
+index 0b0e2c3..74b2775 100644
+--- a/src/openvpn/ssl_verify.c
++++ b/src/openvpn/ssl_verify.c
+@@ -1594,6 +1594,8 @@
+ {
+     struct key_state *ks =3D &session->key[KS_PRIMARY];      /* primary ke=
+y */
+
++    ASSERT(up && !up->protected);
++
+ #ifdef ENABLE_MANAGEMENT
+     int man_def_auth =3D KMDA_UNDEF;
+
+diff --git a/src/openvpn/win32.c b/src/openvpn/win32.c
+index 72496fa..86556a8 100644
+--- a/src/openvpn/win32.c
++++ b/src/openvpn/win32.c
+@@ -1658,4 +1658,40 @@
+     return wcsnicmp(system_dir, plugin_path, wcslen(system_dir)) =3D=3D 0;
+ }
+
++bool
++protect_buffer_win32(char *buf, size_t len)
++{
++    bool ret;
++    if (len % CRYPTPROTECTMEMORY_BLOCK_SIZE)
++    {
++        msg(M_NONFATAL, "Error: Unable to encrypt memory: buffer size not =
+a multiple of %d",
++            CRYPTPROTECTMEMORY_BLOCK_SIZE);
++        return false;
++    }
++    ret =3D CryptProtectMemory(buf, len, CRYPTPROTECTMEMORY_SAME_PROCESS);
++    if (!ret)
++    {
++        msg(M_NONFATAL | M_ERRNO, "Failed to encrypt memory.");
++    }
++    return ret;
++}
++
++bool
++unprotect_buffer_win32(char *buf, size_t len)
++{
++    bool ret;
++    if (len % CRYPTPROTECTMEMORY_BLOCK_SIZE)
++    {
++        msg(M_NONFATAL, "Error: Unable to decrypt memory: buffer size not =
+a multiple of %d",
++            CRYPTPROTECTMEMORY_BLOCK_SIZE);
++        return false;
++    }
++    ret =3D CryptUnprotectMemory(buf, len, CRYPTPROTECTMEMORY_SAME_PROCESS=
+);
++    if (!ret)
++    {
++        msg(M_FATAL | M_ERRNO, "Failed to decrypt memory.");
++    }
++    return ret;
++}
++
+ #endif /* ifdef _WIN32 */
+diff --git a/src/openvpn/win32.h b/src/openvpn/win32.h
+index ffad6d9..081beeb 100644
+--- a/src/openvpn/win32.h
++++ b/src/openvpn/win32.h
+@@ -351,5 +351,27 @@
+ bool
+ plugin_in_trusted_dir(const WCHAR *plugin_path);
+
++/**
++ * Encrypt a region of memory using CryptProtectMemory()
++ * with access restricted to the current process.
++ *
++ * - buf   pointer to the memory
++ * - len   number of bytes to encrypt -- must be a multiple of
++ *         CRYPTPROTECTMEMORY_BLOCK_SIZE =3D 16
++ */
++bool
++protect_buffer_win32(char *buf, size_t len);
++
++/**
++ * Decrypt a previously encrypted region of memory using CryptUnProtectMem=
+ory()
++ * with access restricted to the current process.
++ *
++ * - buf   pointer to the memory
++ * - len   number of bytes to encrypt -- must be a multiple of
++ *         CRYPTPROTECTMEMORY_BLOCK_SIZE =3D 16
++ */
++bool
++unprotect_buffer_win32(char *buf, size_t len);
++
+ #endif /* ifndef OPENVPN_WIN32_H */
+ #endif /* ifdef _WIN32 */
+diff --git a/tests/unit_tests/openvpn/test_user_pass.c b/tests/unit_tests/o=
+penvpn/test_user_pass.c
+index de60291..4dc4b83 100644
+--- a/tests/unit_tests/openvpn/test_user_pass.c
++++ b/tests/unit_tests/openvpn/test_user_pass.c
+@@ -83,6 +83,18 @@
+     return 0;
+ }
+
++bool
++protect_buffer_win32(char *buf, size_t len)
++{
++    return true;
++}
++
++bool
++unprotect_buffer_win32(char *buf, size_t len)
++{
++    return true;
++}
++
+ /* tooling */
+ static void
+ reset_user_pass(struct user_pass *up)
 
 --
-kind regards,
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/728?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings
 
-David Sommerseth
-OpenVPN Inc
+Gerrit-Project: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: I42e17e09a02f01aedadc2b03f9527967f6e1e8ff
+Gerrit-Change-Number: 728
+Gerrit-PatchSet: 3
+Gerrit-Owner: selvanair <selva.nair@...277...>
+Gerrit-Reviewer: cron2 <gert@...1296...>
+Gerrit-Reviewer: flichtenheld <frank@...2641...>
+Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Attention: cron2 <gert@...1296...>
+Gerrit-Attention: selvanair <selva.nair@...277...>
+Gerrit-MessageType: newpatchset
+
+--3bW9Q7NaXwo=
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<p> Attention is currently required from: cron2, plaisthos, selvanair. </p>
+<p>selvanair <strong>uploaded patch set #3</strong> to this change.</p><p><=
+a href=3D"http://gerrit.openvpn.net/c/openvpn/+/728?usp=3Demail">View Chang=
+e</a></p><pre style=3D"font-family: monospace,monospace; white-space: pre-w=
+rap;">Protect cached username, password and token on client<br><br>Keep the=
+ memory segment containing username and password in<br>&quot;struct user_pa=
+ss&quot; encrypted. Works only on Windows.<br><br>Username and auth-token c=
+ached by the server are not covered<br>here.<br><br>v2: Encrypt username an=
+d password separately as it looks more<br>robust. We continue to depend on =
+the username and password buffer<br>sizes to be a multiple of CRYPTPROTECTM=
+EMORY_BLOCK_SIZE =3D 16,<br>which is the case now. An error is logged if th=
+is is not the case.<br><br>v3: move up ASSERT in auth_token.c<br><br>Change=
+-Id: I42e17e09a02f01aedadc2b03f9527967f6e1e8ff<br>Signed-off-by: Selva Nair=
+ &lt;selva.nair@...277...&gt;<br>---<br>M src/openvpn/auth_token.c<br>M src=
+/openvpn/misc.c<br>M src/openvpn/misc.h<br>M src/openvpn/proxy.c<br>M src/o=
+penvpn/ssl.c<br>M src/openvpn/ssl_verify.c<br>M src/openvpn/win32.c<br>M sr=
+c/openvpn/win32.h<br>M tests/unit_tests/openvpn/test_user_pass.c<br>9 files=
+ changed, 153 insertions(+), 8 deletions(-)<br><br></pre><pre style=3D"font=
+-family: monospace,monospace; white-space: pre-wrap;">git pull ssh://gerrit=
+.openvpn.net:29418/openvpn refs/changes/28/728/3</pre><pre style=3D"font-fa=
+mily: monospace,monospace; white-space: pre-wrap;"><span>diff --git a/src/o=
+penvpn/auth_token.c b/src/openvpn/auth_token.c</span><br><span>index 6787ea=
+7..5de65cb 100644</span><br><span>--- a/src/openvpn/auth_token.c</span><br>=
+<span>+++ b/src/openvpn/auth_token.c</span><br><span>@@ -301,6 +301,7 @@</s=
+pan><br><span>      * Base64 is &lt;=3D input and input is &lt; USER_PASS_L=
+EN, so using USER_PASS_LEN</span><br><span>      * is safe here but a bit o=
+verkill</span><br><span>      */</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+    ASSERT(up &amp;&amp; !up-&gt;protected);</span><br><span> =
+    uint8_t b64decoded[USER_PASS_LEN];</span><br><span>     int decoded_len=
+ =3D openvpn_base64_decode(up-&gt;password + strlen(SESSION_ID_PREFIX),</sp=
+an><br><span>                                             b64decoded, USER_=
+PASS_LEN);</span><br><span>diff --git a/src/openvpn/misc.c b/src/openvpn/mi=
+sc.c</span><br><span>index 598fbae..ef4ab69 100644</span><br><span>--- a/sr=
+c/openvpn/misc.c</span><br><span>+++ b/src/openvpn/misc.c</span><br><span>@=
+@ -223,6 +223,7 @@</span><br><span>         bool password_from_stdin =3D fa=
+lse;</span><br><span>         bool response_from_stdin =3D true;</span><br>=
+<span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+        unpr=
+otect_user_pass(up);</span><br><span>         if (flags &amp; GET_USER_PASS=
+_PREVIOUS_CREDS_FAILED)</span><br><span>         {</span><br><span>        =
+     msg(M_WARN, &quot;Note: previous &#39;%s&#39; credentials failed&quot;=
+, prefix);</span><br><span>@@ -479,14 +480,18 @@</span><br><span>         s=
+ecure_memzero(up, sizeof(*up));</span><br><span>         up-&gt;nocache =3D=
+ nocache;</span><br><span>     }</span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-    /*</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
+ * don&#39;t show warning if the pass has been replaced by a token: this is=
+ an</span><br><span style=3D"color: hsl(0, 100%, 40%);">-     * artificial =
+&quot;auth-nocache&quot;</span><br><span style=3D"color: hsl(0, 100%, 40%);=
+">-     */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    else if=
+ (!warn_shown)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    e=
+lse</span><br><span>     {</span><br><span style=3D"color: hsl(0, 100%, 40%=
+);">-        msg(M_WARN, &quot;WARNING: this configuration may cache passwo=
+rds in memory -- use the auth-nocache option to prevent this&quot;);</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-        warn_shown =3D true;=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        protect_use=
+r_pass(up);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        =
+/*</span><br><span style=3D"color: hsl(120, 100%, 40%);">+         * don&#3=
+9;t show warning if the pass has been replaced by a token: this is an</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+         * artificial &qu=
+ot;auth-nocache&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+         */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
+  if (!warn_shown)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+       {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+           =
+ msg(M_WARN, &quot;WARNING: this configuration may cache passwords in memor=
+y -- use the auth-nocache option to prevent this&quot;);</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+            warn_shown =3D true;</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+        }</span><br><span=
+>     }</span><br><span> }</span><br><span> </span><br><span>@@ -495,6 +500=
+,7 @@</span><br><span> {</span><br><span>     if (strlen(token))</span><br>=
+<span>     {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
+ unprotect_user_pass(tk);</span><br><span>         strncpynt(tk-&gt;passwor=
+d, token, USER_PASS_LEN);</span><br><span>         tk-&gt;token_defined =3D=
+ true;</span><br><span> </span><br><span>@@ -505,6 +511,7 @@</span><br><spa=
+n>         {</span><br><span>             tk-&gt;defined =3D true;</span><b=
+r><span>         }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+       protect_user_pass(tk);</span><br><span>     }</span><br><span> }</sp=
+an><br><span> </span><br><span>@@ -513,6 +520,7 @@</span><br><span> {</span=
+><br><span>     if (strlen(username))</span><br><span>     {</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+        unprotect_user_pass(tk);</=
+span><br><span>         /* Clear the username before decoding to ensure no =
+old material is left</span><br><span>          * and also allow decoding to=
+ not use all space to ensure the last byte is</span><br><span>          * a=
+lways 0 */</span><br><span>@@ -523,6 +531,7 @@</span><br><span>         {</=
+span><br><span>             msg(D_PUSH, &quot;Error decoding auth-token-use=
+rname&quot;);</span><br><span>         }</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+        protect_user_pass(tk);</span><br><span>     }<=
+/span><br><span> }</span><br><span> </span><br><span>@@ -779,3 +788,43 @@</=
+span><br><span> </span><br><span>     return combined_path;</span><br><span=
+> }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+void</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+protect_user_pass(struct user_pass *up)</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+    if (up-&gt;protected)</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+        return;</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+#ifdef _WIN32</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+if (protect_buffer_win32(up-&gt;username, sizeof(up-&gt;username))</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+        &amp;&amp; protect_b=
+uffer_win32(up-&gt;password, sizeof(up-&gt;password)))</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+        up-&gt;protected =3D true;</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+    else</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+     purge_user_pass(up, true);</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#e=
+ndif</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+void</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+unprotect_user_pass(struct user_pass *up)</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+    if (!up-&gt;protected)</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+        return;</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#ifdef _WIN32=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (unprotect_b=
+uffer_win32(up-&gt;username, sizeof(up-&gt;username))</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+        &amp;&amp; unprotect_buffer_win32=
+(up-&gt;password, sizeof(up-&gt;password)))</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+        up-&gt;protected =3D false;</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+    else</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        purge=
+_user_pass(up, true);</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#endif</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span>diff --=
+git a/src/openvpn/misc.h b/src/openvpn/misc.h</span><br><span>index 963f3e6=
+..a967ec8 100644</span><br><span>--- a/src/openvpn/misc.h</span><br><span>+=
+++ b/src/openvpn/misc.h</span><br><span>@@ -60,6 +60,7 @@</span><br><span> =
+     * use this second bool to track if the token (password) is defined */<=
+/span><br><span>     bool token_defined;</span><br><span>     bool nocache;=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    bool protected;=
+</span><br><span> </span><br><span> /* max length of username/password */</=
+span><br><span> #ifdef ENABLE_PKCS11</span><br><span>@@ -207,6 +208,19 @@</=
+span><br><span> struct buffer</span><br><span> prepend_dir(const char *dir,=
+ const char *path, struct gc_arena *gc);</span><br><span> </span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+/**</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+ * Encrypt username and password buffers in user_pas=
+s</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ */</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+void</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+protect_user_pass(struct user_pass *up);</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+/**</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+ * Decrypt username and password buffers in user_pass</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+ */</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+void</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+unprotect_user_pass(struct user_pass *up);</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+</span><br><span> #define _STRINGIFY(S) #S</span><br><sp=
+an> /* *INDENT-OFF* - uncrustify need to ignore this macro */</span><br><sp=
+an> #define MAC_FMT _STRINGIFY(%02hhx:%02hhx:%02hhx:%02hhx:%02hhx:%02hhx)</=
+span><br><span>diff --git a/src/openvpn/proxy.c b/src/openvpn/proxy.c</span=
+><br><span>index 5de0da4..a379c7a 100644</span><br><span>--- a/src/openvpn/=
+proxy.c</span><br><span>+++ b/src/openvpn/proxy.c</span><br><span>@@ -289,1=
+3 +289,14 @@</span><br><span>                       UP_TYPE_PROXY,</span><b=
+r><span>                       flags);</span><br><span>         static_prox=
+y_user_pass.nocache =3D p-&gt;options.nocache;</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+        protect_user_pass(&amp;static_proxy_user=
+_pass);</span><br><span>     }</span><br><span> </span><br><span>     /*</s=
+pan><br><span>      * Using cached credentials</span><br><span>      */</sp=
+an><br><span>     p-&gt;queried_creds =3D true;</span><br><span style=3D"co=
+lor: hsl(0, 100%, 40%);">-    p-&gt;up =3D static_proxy_user_pass;</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+    p-&gt;up =3D static_prox=
+y_user_pass; /* this is a copy of protected memory */</span><br><span> }</s=
+pan><br><span> </span><br><span> #if 0</span><br><span>@@ -666,6 +667,7 @@<=
+/span><br><span>         {</span><br><span>             clear_user_pass_htt=
+p();</span><br><span>         }</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+        unprotect_user_pass(&amp;p-&gt;up);</span><br><span>   =
+  }</span><br><span> </span><br><span>     /* are we being called again aft=
+er getting the digest server nonce in the previous transaction? */</span><b=
+r><span>diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c</span><br><span>=
+index 14c38cf..c2c9c29 100644</span><br><span>--- a/src/openvpn/ssl.c</span=
+><br><span>+++ b/src/openvpn/ssl.c</span><br><span>@@ -243,6 +243,7 @@</spa=
+n><br><span> void</span><br><span> pem_password_setup(const char *auth_file=
+)</span><br><span> {</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++    unprotect_user_pass(&amp;passbuf);</span><br><span>     if (!strlen(pa=
+ssbuf.password))</span><br><span>     {</span><br><span>         get_user_p=
+ass(&amp;passbuf, auth_file, UP_TYPE_PRIVATE_KEY, GET_USER_PASS_MANAGEMENT|=
+GET_USER_PASS_PASSWORD_ONLY);</span><br><span>@@ -256,6 +257,7 @@</span><br=
+><span>     {</span><br><span>         /* prompt for password even if --ask=
+pass wasn&#39;t specified */</span><br><span>         pem_password_setup(NU=
+LL);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        ASSERT(=
+!passbuf.protected);</span><br><span>         strncpynt(buf, passbuf.passwo=
+rd, size);</span><br><span>         purge_user_pass(&amp;passbuf, false);</=
+span><br><span> </span><br><span>@@ -295,6 +297,7 @@</span><br><span> </spa=
+n><br><span>     if (!auth_user_pass.defined &amp;&amp; !auth_token.defined=
+)</span><br><span>     {</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+        unprotect_user_pass(&amp;auth_user_pass);</span><br><span> #if=
+def ENABLE_MANAGEMENT</span><br><span>         if (auth_challenge) /* dynam=
+ic challenge/response */</span><br><span>         {</span><br><span>@@ -209=
+4,6 +2097,7 @@</span><br><span>         {</span><br><span>             up =
+=3D &amp;auth_token;</span><br><span>         }</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+        unprotect_user_pass(up);</span><br><spa=
+n> </span><br><span>         if (!write_string(buf, up-&gt;username, -1))</=
+span><br><span>         {</span><br><span>@@ -2106,8 +2110,11 @@</span><br>=
+<span>         /* save username for auth-token which may get pushed later *=
+/</span><br><span>         if (session-&gt;opt-&gt;pull &amp;&amp; up !=3D =
+&amp;auth_token)</span><br><span>         {</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+            unprotect_user_pass(&amp;auth_token);</=
+span><br><span>             strncpynt(auth_token.username, up-&gt;username,=
+ USER_PASS_LEN);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+         protect_user_pass(&amp;auth_token);</span><br><span>         }</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+        protect_user_pa=
+ss(up);</span><br><span>         /* respect auth-nocache */</span><br><span=
+>         purge_user_pass(&amp;auth_user_pass, false);</span><br><span>    =
+ }</span><br><span>diff --git a/src/openvpn/ssl_verify.c b/src/openvpn/ssl_=
+verify.c</span><br><span>index 0b0e2c3..74b2775 100644</span><br><span>--- =
+a/src/openvpn/ssl_verify.c</span><br><span>+++ b/src/openvpn/ssl_verify.c</=
+span><br><span>@@ -1594,6 +1594,8 @@</span><br><span> {</span><br><span>   =
+  struct key_state *ks =3D &amp;session-&gt;key[KS_PRIMARY];      /* primar=
+y key */</span><br><span> </span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+    ASSERT(up &amp;&amp; !up-&gt;protected);</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+</span><br><span> #ifdef ENABLE_MANAGEMEN=
+T</span><br><span>     int man_def_auth =3D KMDA_UNDEF;</span><br><span> </=
+span><br><span>diff --git a/src/openvpn/win32.c b/src/openvpn/win32.c</span=
+><br><span>index 72496fa..86556a8 100644</span><br><span>--- a/src/openvpn/=
+win32.c</span><br><span>+++ b/src/openvpn/win32.c</span><br><span>@@ -1658,=
+4 +1658,40 @@</span><br><span>     return wcsnicmp(system_dir, plugin_path,=
+ wcslen(system_dir)) =3D=3D 0;</span><br><span> }</span><br><span> </span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+bool</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+protect_buffer_win32(char *buf, size_t le=
+n)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+    bool ret;</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    if (len % CRYPTPROTECTMEMORY_BLOCK_SI=
+ZE)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+        msg(M_NONFATAL, &quot;=
+Error: Unable to encrypt memory: buffer size not a multiple of %d&quot;,</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+            CRYPTPROTE=
+CTMEMORY_BLOCK_SIZE);</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+        return false;</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    ret =
+=3D CryptProtectMemory(buf, len, CRYPTPROTECTMEMORY_SAME_PROCESS);</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+    if (!ret)</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+        msg(M_NONFATAL | M_ERRNO, &quot;Failed t=
+o encrypt memory.&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    retu=
+rn ret;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+bool</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+unprotect_buffer_win32(char *buf, size_t len)</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+    bool ret;</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+    if (len % CRYPTPROTECTMEMORY_BLOCK_SIZE)</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+        msg(M_NONFATAL, &quot;Error: Unable to decr=
+ypt memory: buffer size not a multiple of %d&quot;,</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+            CRYPTPROTECTMEMORY_BLOCK_SIZE=
+);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        return fa=
+lse;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+    ret =3D CryptUnprotectMem=
+ory(buf, len, CRYPTPROTECTMEMORY_SAME_PROCESS);</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+    if (!ret)</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+        msg(M_FATAL | M_ERRNO, &quot;Failed to decrypt memory.&quot=
+;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+    return ret;</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+</span><br><span> #endif /* ifdef _WIN32 */</span><b=
+r><span>diff --git a/src/openvpn/win32.h b/src/openvpn/win32.h</span><br><s=
+pan>index ffad6d9..081beeb 100644</span><br><span>--- a/src/openvpn/win32.h=
+</span><br><span>+++ b/src/openvpn/win32.h</span><br><span>@@ -351,5 +351,2=
+7 @@</span><br><span> bool</span><br><span> plugin_in_trusted_dir(const WCH=
+AR *plugin_path);</span><br><span> </span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+/**</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+ * Encrypt a region of memory using CryptProtectMemory()</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+ * with access restricted to the curre=
+nt process.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+ * - buf   pointer to the=
+ memory</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * - len   n=
+umber of bytes to encrypt -- must be a multiple of</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+ *         CRYPTPROTECTMEMORY_BLOCK_SIZE =3D=
+ 16</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ */</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+bool</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+protect_buffer_win32(char *buf, size_t len);</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+/**</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+ * Decrypt a previously encrypted region of memory using =
+CryptUnProtectMemory()</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+ * with access restricted to the current process.</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+ * - buf   pointer to the memory</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+ * - len   number of bytes to encrypt -- must=
+ be a multiple of</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *=
+         CRYPTPROTECTMEMORY_BLOCK_SIZE =3D 16</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+ */</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+bool</span><br><span style=3D"color: hsl(120, 100%, 40%);">+unpro=
+tect_buffer_win32(char *buf, size_t len);</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+</span><br><span> #endif /* ifndef OPENVPN_WIN32_H */=
+</span><br><span> #endif /* ifdef _WIN32 */</span><br><span>diff --git a/te=
+sts/unit_tests/openvpn/test_user_pass.c b/tests/unit_tests/openvpn/test_use=
+r_pass.c</span><br><span>index de60291..4dc4b83 100644</span><br><span>--- =
+a/tests/unit_tests/openvpn/test_user_pass.c</span><br><span>+++ b/tests/uni=
+t_tests/openvpn/test_user_pass.c</span><br><span>@@ -83,6 +83,18 @@</span><=
+br><span>     return 0;</span><br><span> }</span><br><span> </span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+bool</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+protect_buffer_win32(char *buf, size_t len)</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    return true;</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+bool</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+unprotect_buffer_win3=
+2(char *buf, size_t len)</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    return tr=
+ue;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> /* tooling */</s=
+pan><br><span> static void</span><br><span> reset_user_pass(struct user_pas=
+s *up)</span><br><span></span><br></pre><p>To view, visit <a href=3D"http:/=
+/gerrit.openvpn.net/c/openvpn/+/728?usp=3Demail">change 728</a>. To unsubsc=
+ribe, or for help writing mail filters, visit <a href=3D"http://gerrit.open=
+vpn.net/settings">settings</a>.</p><div itemscope itemtype=3D"http://schema=
+.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://sc=
+hema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.n=
+et/c/openvpn/+/728?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Ch=
+ange"/></div></div>
+
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I42e17e09a02f01aedadc2b03f95=
+27967f6e1e8ff </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 728 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 3 </div>
+<div style=3D"display:none"> Gerrit-Owner: selvanair &lt;selva.nair@...1354...=
+..&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
+ </div>
+<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
+1...&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
+.1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: cron2 &lt;gert@...1296...&gt=
+; </div>
+<div style=3D"display:none"> Gerrit-Attention: selvanair &lt;selva.nair@...493...=
+277...&gt; </div>
+<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
 
 
----- Source tarballs ---------------------------------------------------
-* OpenVPN 3 Linux v23
-
- 
-<https://swupdate.openvpn.net/community/releases/openvpn3-linux-23.tar.xz>
- 
-<https://swupdate.openvpn.net/community/releases/openvpn3-linux-23.tar.xz.asc>
-
-* GDBus++ v2
-
-     <https://swupdate.openvpn.net/community/releases/gdbuspp-2.tar.xz>
-     <https://swupdate.openvpn.net/community/releases/gdbuspp-2.tar.xz.asc>
-
----- SHA256 Checksums --------------------------------------------------
-
-3c5a4e27e0618f395c1688b50b62b887543ff203d4c99af7f7bfe1d61d0e753b 
-openvpn3-linux-23.tar.xz
-cc801911df93072101e6218ac62c45e8f524cb42c0536e692d8da5fe8b1253d8 
-openvpn3-linux-23.tar.xz.asc
-0a3eab5c7f1f5ba803bec0902bb008b8c7a7040fdaf0e0e94b4ac77ffebf0bfd 
-gdbuspp-2.tar.xz
-361fe7f8ced70d49a2899ad4e790d6e9e1832f419ef3d7875226d44d997b7397 
-gdbuspp-2.tar.xz.asc
-
----- git references ----------------------------------------------------
-
-git repositories:
-
-    - OpenVPN 3 Linux
-      <https://codeberg.org/OpenVPN/openvpn3-linux> (PRIMARY)
-      <https://gitlab.com/openvpn/openvpn3-linux>   (code-only mirror)
-      <https://github.com/OpenVPN/openvpn3-linux>   (code-only mirror)
-
-      git tag: v23
-      git commit: d8239ede97fc91919f35a59a14a116769defcc49
-
-    - GDBus++
-      <https://codeberg.org/OpenVPN/gdbuspp/>       (PRIMARY)
-      <https://gitlab.com/openvpn/gdbuspp/>         (code-only mirror)
-      <https://github.com/openvpn/gdbuspp/>         (code-only mirror)
-
-      git tag: v2
-      git commit: 94f29d20accb755a08a9890efe5242d89d5b51bc
-
----- Changes from v22_dev to v23 ---------------------------------------
-
-David Sommerseth (24):
-         configmgr: Load configuration profiles before starting the 
-D-Bus service
-         netcfg: Make NetCfgNotifSubscriptions use uint32_t as filter 
-bit mask
-         codestyle: Fix minor code style deviations
-         build: Enable overriding OpenVPN 3 Core Library version string
-         scripts: Modify the output of the --gui-version
-         addons/devposture: Fix compilation error with older JsonCpp 
-libraries
-         addons/devposture: Make devposture-proxy test program more generic
-         addons/devposture: Document the Enterprise Profile file format
-         build: Install some additional documentation by default
-         docs: Clarify a GDBus++ and mbed TLS build dependencies better
-         build: Set PACKAGE_NAME to 'OpenVPN3/Linux'
-         Some minor #include clean-ups
-         configmgr: Cleaning up #include files
-         configmgr: Use CoreLog for logging events from the Core library.
-         client: Don't stop if devposture service is unavailable
-         devposture/test: Improve argument parsing in devposture-proxy
-         addon/devposture/proxy: Properly re-throw 
-DevPosture::Proxy::Handler exceptions
-         netcfg/resolved: Factor out resolved::Exception to a separate file
-         tests/resolved: Extend systemd-resolved proxy test client with 
-IPv6 support
-         netcfg/resolved: Add new D-Bus IP Address parser class
-         netcfg/resolved: Use GDBus++ glib2 helpers extracting data in 
-SearchDomains::GetGVariant
-         netcfg/resolved: Plug-in resolved::IPAddress into ResolverRecord
-         netcfg/resolved: Refactor out resolved::ResolverRecord
-         core: Update to OpenVPN 3 Core Library v3.10.1
-
-Grzegorz Gutowski (1):
-         python: Pass through --connect-retry and --connect-retry-max
-
-Lev Stipakov (5):
-         netcfg: use proper C++ base type for NetCfgChangeType
-         netcfg/proxy: Check non-response call for nullptr before freeing
-         configmgr: remove unused class members
-         addons/aws: Switch to GDBus++
-         addons/aws: adapt to core RandomAPI changes
-
-Razvan Cojocaru (10):
-         core: Update to OpenVPN 3 Core Library releaseprep/3.10
-         addons/devposture: Add openvpn3-linux-devposture
-         configmgr: Add the enterprise-profile override
-         ovpn3cli/config: Add openvpn3 config-manage --enterprise-profile
-         client: Plug in Device Posture support
-         configmgr: Use a regular expression to determine version number
-         configmgr: Accumulate proxy feature flags instead of overwriting
-         netcfg: Check stub-resolv.conf before giving up on systemd-resolved
-         common: give SingleCommand a virtual destructor
-         addons/devposture: Add core_ver and extra_ver to client_info
-
-------------------------------------------------------------------------
-
-
-
--- 
-kind regards,
-
-David Sommerseth
-OpenVPN Inc
-
+--3bW9Q7NaXwo=--
 
