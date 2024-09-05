@@ -1,16 +1,16 @@
 From: "selvanair (Code Review)" <gerrit@...515...>
 Date: Thu, 5 Sep 2024 17:53:15 +0000
-In-Reply-To: <gerrit.1724095724000.I7615116b5251319aa1f13d671bab7013f3a043ea@...2715...>
-References: <gerrit.1724095724000.I7615116b5251319aa1f13d671bab7013f3a043ea@...2715...>
+In-Reply-To: <gerrit.1724095724000.Ic6f089896191145f68ce9a11023587d05dcec4d8@...2715...>
+References: <gerrit.1724095724000.Ic6f089896191145f68ce9a11023587d05dcec4d8@...2715...>
 Reply-To: selva.nair@...277..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <1b78a7d655c0ca31e1fa098b82bebb4d0f472b6f-EmailReplacePatchSet-HTML@...2715...>
+Message-ID: <fe3e737fc72eaf37db96140d973ffcc084ab01f5-EmailReplacePatchSet-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="MHLPxVVVCow="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: Add a test for
- loading certificate and key using file: URI
+Content-Type: multipart/alternative; boundary="TsZNC7wUl40="; charset=UTF-8
+Subject: [Openvpn-devel] [M] Change in openvpn[master]: Add a test for
+ loading certificate and key to ssl context
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -22,246 +22,491 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---MHLPxVVVCow=
+--TsZNC7wUl40=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: flichtenheld, plaisthos, selvanair.
+Attention is currently required from: plaisthos, selvanair.
 
 Hello flichtenheld, plaisthos,
 
 I'd like you to reexamine a change. Please visit
 
-    http://gerrit.openvpn.net/c/openvpn/+/730?usp=3Demail
+    http://gerrit.openvpn.net/c/openvpn/+/729?usp=3Demail
 
 to look at the new patch set (#2).
 
-The following approvals got outdated and were removed:
-Code-Review-1 by flichtenheld
+The change is no longer submittable: checks~ChecksSubmitRule is unsatisfied=
+ now.
 
 
-Change subject: Add a test for loading certificate and key using file: URI
+Change subject: Add a test for loading certificate and key to ssl context
 ......................................................................
 
-Add a test for loading certificate and key using file: URI
+Add a test for loading certificate and key to ssl context
 
-We do not load any providers, so only file: URI internally supported by
-OpenSSL 3+ is tested. On non-OpenSSL 3 builds the test prints "SKIPPED".
+The test certificate used in test_ssl.c is updated to use 2048 bit
+RSA and the matching key is added.
 
-v2: avoid dead code; rebase to current master
+Tests include loading certificate and key as inlined pem as well as
+from files. Note that loading the key also checks that it matches
+the certificate, providing an indirect test that the latter was loaded
+correctly.
 
-Change-Id: I7615116b5251319aa1f13d671bab7013f3a043ea
+Change-Id: Ic6f089896191145f68ce9a11023587d05dcec4d8
 Signed-off-by: Selva Nair <selva.nair@...277...>
 ---
 M tests/unit_tests/openvpn/test_ssl.c
-1 file changed, 44 insertions(+), 0 deletions(-)
+1 file changed, 113 insertions(+), 13 deletions(-)
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/30/730/2
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/29/729/2
 
 diff --git a/tests/unit_tests/openvpn/test_ssl.c b/tests/unit_tests/openvpn=
 /test_ssl.c
-index a5c58a0..a1ca344 100644
+index da50e55..a5c58a0 100644
 --- a/tests/unit_tests/openvpn/test_ssl.c
 +++ b/tests/unit_tests/openvpn/test_ssl.c
-@@ -66,6 +66,10 @@
+@@ -79,18 +79,58 @@
+     return;
  }
- #endif
 
-+#if defined(ENABLE_CRYPTO_OPENSSL) && (OPENSSL_VERSION_NUMBER > 0x30000000=
-L)
-+#define HAVE_OPENSSL_STORE
-+#endif
+-const char *unittest_cert =3D "-----BEGIN CERTIFICATE-----\n"
+-                            "MIIBuTCCAUCgAwIBAgIUTLtjSBzx53qZRvZ6Ur7D9kgoO=
+HkwCgYIKoZIzj0EAwIw\n"
+-                            "EzERMA8GA1UEAwwIdW5pdHRlc3QwIBcNMjMxMTIxMDk1N=
+DQ3WhgPMjA3ODA4MjQw\n"
+-                            "OTU0NDdaMBMxETAPBgNVBAMMCHVuaXR0ZXN0MHYwEAYHK=
+oZIzj0CAQYFK4EEACID\n"
+-                            "YgAEHYB2hn2xx3f4lClXDtdi36P19pMZA+kI1Dkv/Vn10=
+vBZ/j9oa+P99T8duz/e\n"
+-                            "QlPeHpesNJO4fX8iEDj6+vMeWejOT7jAQ4MmG5EZjpcBK=
+xCfwFooEvzu8bVujUcu\n"
+-                            "wTQEo1MwUTAdBgNVHQ4EFgQUPcgBEVXjF5vYfDsInoE3d=
+F6UfQswHwYDVR0jBBgw\n"
+-                            "FoAUPcgBEVXjF5vYfDsInoE3dF6UfQswDwYDVR0TAQH/B=
+AUwAwEB/zAKBggqhkjO\n"
+-                            "PQQDAgNnADBkAjBLPAGrQAyinigqiu0RomoV8TVaknVLF=
+Sq6H6A8jgvzfsFCUK1O\n"
+-                            "dvNZhFPM6idKB+oCME2JLOBANCSV8o7aJzq7SYHKwPyb1=
+J4JFlwKe/0Jpv7oh9b1\n"
+-                            "IJbuaM9Z/VSKbrIXGg=3D=3D\n"
+-                            "-----END CERTIFICATE-----\n";
++static const char *const unittest_cert =3D
++    "-----BEGIN CERTIFICATE-----\n"
++    "MIIDYzCCAkugAwIBAgIRALrXTx4lqa8QgF7uGjISxmcwDQYJKoZIhvcNAQELBQAw\n"
++    "GDEWMBQGA1UEAwwNT1ZQTiBURVNUIENBMTAgFw0yMzAzMTMxNjA5MThaGA8yMTIz\n"
++    "MDIxNzE2MDkxOFowGTEXMBUGA1UEAwwOb3Zwbi10ZXN0LXJzYTEwggEiMA0GCSqG\n"
++    "SIb3DQEBAQUAA4IBDwAwggEKAoIBAQC7xFoR6fmoyfsJIQDKKgbYgFw0MzVuDAmp\n"
++    "Rx6KTEihgTchkQx9fHddWbKiOUbcEnQi3LNux7P4QVl/4dRR3skisBug6Vd5LXeB\n"
++    "GZqmpu5XZiF4DgLz1lX21G0aOogFWkie2qGEcso40159x9FBDl5A3sLP18ubeex0\n"
++    "pd/BzDFv6SLOTyVWO/GCNc8IX/i0uN4mLvoVU00SeqwTPnS+CRXrSq4JjGDJLsXl\n"
++    "0/PlxkjsgU0yOOA0Z2d8Fzk3wClwP6Hc49BOMWKstUIhLbG2DcIv8l29EuEj2w3j\n"
++    "u/7gkewol96XQ2twpPvpoVAaiVh/m7hQUcQORQCD6eJcDjOZVCArAgMBAAGjgaQw\n"
++    "gaEwCQYDVR0TBAIwADAdBgNVHQ4EFgQUqYnRaBHrZmKLtMZES5AuwqzJkGYwUwYD\n"
++    "VR0jBEwwSoAU3MLDNDOK13DqflQ8ra7FeGBXK06hHKQaMBgxFjAUBgNVBAMMDU9W\n"
++    "UE4gVEVTVCBDQTGCFD55ErHXpK2JXS3WkfBm0NB1r3vKMBMGA1UdJQQMMAoGCCsG\n"
++    "AQUFBwMCMAsGA1UdDwQEAwIHgDANBgkqhkiG9w0BAQsFAAOCAQEAZVcXrezA9Aby\n"
++    "sfUNHAsMxrex/EO0PrIPSrmSmc9sCiD8cCIeB6kL8c5iPPigoWW0uLA9zteDRFes\n"
++    "ez+Z8wBY6g8VQ0tFPURDooUg5011GZPDcuw7/PsI4+I2J9q6LHEp+6Oo4faSn/kl\n"
++    "yWYCLjM4FZdGXbOijDacQJiN6HcRv0UdodBrEVRf7YHJJmMCbCI7ZUGW2zef/+rO\n"
++    "e4Lkxh0MLYqCkNKH5ZfoGTC4Oeb0xKykswAanqgR60r+upaLU8PFuI2L9M3vc6KU\n"
++    "F6MgVGSxl6eylJgDYckvJiAbmcp2PD/LRQQOxQA0yqeAMg2cbdvclETuYD6zoFfu\n"
++    "Y8aO7dvDlw=3D=3D\n"
++    "-----END CERTIFICATE-----\n";
 +
- /* stubs for some unused functions instead of pulling in too many dependen=
-cies */
- bool
- get_user_pass_cr(struct user_pass *up, const char *auth_file, const char *=
-prefix,
-@@ -234,6 +238,45 @@
-     tls_ctx_free(&ctx);
++static const char *const unittest_key =3D
++    "-----BEGIN PRIVATE KEY-----\n"
++    "MIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQC7xFoR6fmoyfsJ\n"
++    "IQDKKgbYgFw0MzVuDAmpRx6KTEihgTchkQx9fHddWbKiOUbcEnQi3LNux7P4QVl/\n"
++    "4dRR3skisBug6Vd5LXeBGZqmpu5XZiF4DgLz1lX21G0aOogFWkie2qGEcso40159\n"
++    "x9FBDl5A3sLP18ubeex0pd/BzDFv6SLOTyVWO/GCNc8IX/i0uN4mLvoVU00SeqwT\n"
++    "PnS+CRXrSq4JjGDJLsXl0/PlxkjsgU0yOOA0Z2d8Fzk3wClwP6Hc49BOMWKstUIh\n"
++    "LbG2DcIv8l29EuEj2w3ju/7gkewol96XQ2twpPvpoVAaiVh/m7hQUcQORQCD6eJc\n"
++    "DjOZVCArAgMBAAECggEACqkuWAAJ3cyCBVWrXs8eDmLTWV9i9DmYvtS75ixIn2rf\n"
++    "v3cl12YevN0f6FgKLuqZT3Vqdqq+DCVhuIIQ9QkKMH8BQpSdE9NCCsFyZ23o8Gtr\n"
++    "EQ7ymfecb+RFwYx7NpqWrvZI32VJGArgPZH/zorLTTGYrAZbmBtHEqRsXOuEDw97\n"
++    "slwwcWaa9ztaYC8/N/7fgsnydaCFSaOByRlWuyvSmHvn6ZwLv8ANOshY6fstC0Jb\n"
++    "BW0GpSe9eZPjpl71VT2RtpghqLV5+iAoFDHoT+eZvBospcUGtfcZSU7RrBjKB8+a\n"
++    "U1d6hwKhduVs2peIQzl+FiOSdWriLcsZv79q4sBhsQKBgQDUDVTf5BGJ8apOs/17\n"
++    "YVk+Ad8Ey8sXvsfk49psmlCRa8Z4g0LVXfrP94qzhtl8U5kE9hs3nEF4j/kX1ZWG\n"
++    "k11tdsNTZN5x5bbAgEgPA6Ap6J/uto0HS8G0vSv0lyBymdKA3p/i5Dx+8Nc9cGns\n"
++    "LGI9MvviLX7pQFIkvbaCkdKwYwKBgQDirowjWZnm7BgVhF0G1m3DY9nQTYYU185W\n"
++    "UESaO5/nVzwUrA+FypJamD+AvmlSuY8rJeQAGAS6nQr9G8/617r+GwJnzRtxC6Vl\n"
++    "4OF5BJRsD70oX4CFOOlycMoJ8tzcYVH7NI8KVocjxb+QW82hqSvEwSsvnwwn3eOW\n"
++    "nr5u5vIHmQKBgCuc3lL6Dl1ntdZgEIdau0cUjXDoFUo589TwxBDIID/4gaZxoMJP\n"
++    "hPFXAVDxMDPw4azyjSB/47tPKTUsuYcnMfT8kynIujOEwnSPLcLgxQU5kgM/ynuw\n"
++    "qhNpQOwaVRMc7f2RTCMXPBYDpNE/GJn5eu8JWGLpZovEreBeoHX0VffvAoGAVrWn\n"
++    "+3mxykhzaf+oyg3KDNysG+cbq+tlDVVE+K5oG0kePVYX1fjIBQmJ+QhdJ3y9jCbB\n"
++    "UVveqzeZVXqHEw/kgoD4aZZmsdZfnVnpRa5/y9o1ZDUr50n+2nzUe/u/ijlb77iK\n"
++    "Is04gnGJNoI3ZWhdyrSNfXjcYH+bKClu9OM4n7kCgYAorc3PAX7M0bsQrrqYxUS8\n"
++    "56UU0YdhAgYitjM7Fm/0iIm0vDpSevxL9js4HnnsSMVR77spCBAGOCCZrTcI3Ejg\n"
++    "xKDYzh1xlfMRjJBuBu5Pd55ZAv9NXFGpsX5SO8fDZQJMwpcbQH36+UdqRRFDpjJ0\n"
++    "ZbX6nKcJ7jciJVKJds59Jg=3D=3D\n"
++    "-----END PRIVATE KEY-----\n";
+
+ static const char *
+ get_tmp_dir(void)
+@@ -105,6 +145,44 @@
+     return ret;
  }
 
-+/* test loading cert and key using file:/path URI */
-+static void
-+test_load_certificate_and_key_uri(void **state)
++static struct
++{
++    struct gc_arena gc;
++    const char *certfile;
++    const char *keyfile;
++} global_state;
++
++static int
++init(void **state)
 +{
 +    (void) state;
++    global_state.gc =3D gc_new();
++    global_state.certfile =3D platform_create_temp_file(get_tmp_dir(), "ce=
+rt", &global_state.gc);
++    global_state.keyfile =3D platform_create_temp_file(get_tmp_dir(), "key=
+", &global_state.gc);
 +
-+#if !defined(HAVE_OPENSSL_STORE)
-+    skip();
-+#else /* HAVE_OPENSSL_STORE */
++    int certfd =3D open(global_state.certfile, O_RDWR);
++    int keyfd =3D open(global_state.keyfile, O_RDWR);
++    if (certfd < 0 || keyfd < 0)
++    {
++        fail_msg("make tmpfile for certificate or key data failed (error =
+=3D %d)", errno);
++    }
++    assert_int_equal(write(certfd, unittest_cert, strlen(unittest_cert)), =
+strlen(unittest_cert));
++    assert_int_equal(write(keyfd, unittest_key, strlen(unittest_key)), str=
+len(unittest_key));
++    close(certfd);
++    close(keyfd);
++    return 0;
++}
 +
-+    struct tls_root_ctx ctx =3D { 0 };
-+    const char *certfile =3D global_state.certfile;
-+    const char *keyfile =3D global_state.keyfile;
-+    struct gc_arena *gc =3D &global_state.gc;
-+
-+    struct buffer certuri =3D alloc_buf_gc(6 + strlen(certfile) + 1, gc); =
-/* 6 bytes for "file:/" */
-+    struct buffer keyuri =3D alloc_buf_gc(6 + strlen(keyfile) + 1, gc);   =
-/* 6 bytes for "file:/" */
-+
-+    /* Windows temp file path starts with drive letter -- add a leading sl=
-ash for URI */
-+    const char *lead =3D "";
-+#ifdef _WIN32
-+    lead =3D "/";
-+#endif /* _WIN32 */
-+    assert_true(buf_printf(&certuri, "file:%s%s", lead, certfile));
-+    assert_true(buf_printf(&keyuri, "file:%s%s", lead, keyfile));
-+
-+    /* On Windows replace any '\' in path by '/' required for URI */
-+#ifdef _WIN32
-+    string_mod(BSTR(&certuri), CC_ANY, CC_BACKSLASH, '/');
-+    string_mod(BSTR(&keyuri), CC_ANY, CC_BACKSLASH, '/');
-+#endif /* _WIN32 */
-+
-+    tls_ctx_client_new(&ctx);
-+    tls_ctx_load_cert_file(&ctx, BSTR(&certuri), false);
-+    assert_int_equal(tls_ctx_load_priv_file(&ctx, BSTR(&keyuri), false), 0=
-);
-+    tls_ctx_free(&ctx);
-+#endif /* HAVE_OPENSSL_STORE */
++static int
++cleanup(void **state)
++{
++    (void) state;
++    unlink(global_state.certfile);
++    unlink(global_state.keyfile);
++    gc_free(&global_state.gc);
++    return 0;
 +}
 +
  static void
+ crypto_pem_encode_certificate(void **state)
+ {
+@@ -136,6 +214,27 @@
+ }
+
+ static void
++test_load_certificate_and_key(void **state)
++{
++    (void) state;
++    struct tls_root_ctx ctx =3D { 0 };
++
++    /* test loading of inlined cert and key.
++     * loading the key also checks that it matches the loaded certificate
++     */
++    tls_ctx_client_new(&ctx);
++    tls_ctx_load_cert_file(&ctx, unittest_cert, true);
++    assert_int_equal(tls_ctx_load_priv_file(&ctx, unittest_key, true), 0);
++    tls_ctx_free(&ctx);
++
++    /* test loading of cert and key from file */
++    tls_ctx_client_new(&ctx);
++    tls_ctx_load_cert_file(&ctx, global_state.certfile, false);
++    assert_int_equal(tls_ctx_load_priv_file(&ctx, global_state.keyfile, fa=
+lse), 0);
++    tls_ctx_free(&ctx);
++}
++
++static void
  init_implicit_iv(struct crypto_options *co)
  {
-@@ -469,6 +512,7 @@
+     cipher_ctx_t *cipher =3D co->key_ctx_bi.encrypt.cipher;
+@@ -369,6 +468,7 @@
+
      const struct CMUnitTest tests[] =3D {
          cmocka_unit_test(crypto_pem_encode_certificate),
-         cmocka_unit_test(test_load_certificate_and_key),
-+        cmocka_unit_test(test_load_certificate_and_key_uri),
++        cmocka_unit_test(test_load_certificate_and_key),
          cmocka_unit_test(test_data_channel_roundtrip_aes_128_gcm),
          cmocka_unit_test(test_data_channel_roundtrip_aes_192_gcm),
          cmocka_unit_test(test_data_channel_roundtrip_aes_256_gcm),
+@@ -383,7 +483,7 @@
+     tls_init_lib();
+ #endif
+
+-    int ret =3D cmocka_run_group_tests_name("ssl tests", tests, NULL, NULL=
+);
++    int ret =3D cmocka_run_group_tests_name("ssl tests", tests, init, clea=
+nup);
+
+ #if defined(ENABLE_CRYPTO_OPENSSL)
+     tls_free_lib();
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/730?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/729?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings
 
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: I7615116b5251319aa1f13d671bab7013f3a043ea
-Gerrit-Change-Number: 730
+Gerrit-Change-Id: Ic6f089896191145f68ce9a11023587d05dcec4d8
+Gerrit-Change-Number: 729
 Gerrit-PatchSet: 2
 Gerrit-Owner: selvanair <selva.nair@...277...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: flichtenheld <frank@...2641...>
 Gerrit-Attention: selvanair <selva.nair@...277...>
 Gerrit-MessageType: newpatchset
 
---MHLPxVVVCow=
+--TsZNC7wUl40=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p> Attention is currently required from: flichtenheld, plaisthos, selvanai=
-r. </p>
+<p> Attention is currently required from: plaisthos, selvanair. </p>
 <p>selvanair <strong>uploaded patch set #2</strong> to this change.</p><p><=
-a href=3D"http://gerrit.openvpn.net/c/openvpn/+/730?usp=3Demail">View Chang=
-e</a></p><p>The following approvals got outdated and were removed:
-Code-Review-1 by flichtenheld</p><pre style=3D"font-family: monospace,monos=
-pace; white-space: pre-wrap;">Add a test for loading certificate and key us=
-ing file: URI<br><br>We do not load any providers, so only file: URI intern=
-ally supported by<br>OpenSSL 3+ is tested. On non-OpenSSL 3 builds the test=
- prints &quot;SKIPPED&quot;.<br><br>v2: avoid dead code; rebase to current =
-master<br><br>Change-Id: I7615116b5251319aa1f13d671bab7013f3a043ea<br>Signe=
-d-off-by: Selva Nair &lt;selva.nair@...277...&gt;<br>---<br>M tests/unit_te=
-sts/openvpn/test_ssl.c<br>1 file changed, 44 insertions(+), 0 deletions(-)<=
-br><br></pre><pre style=3D"font-family: monospace,monospace; white-space: p=
-re-wrap;">git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/30/7=
-30/2</pre><pre style=3D"font-family: monospace,monospace; white-space: pre-=
-wrap;"><span>diff --git a/tests/unit_tests/openvpn/test_ssl.c b/tests/unit_=
-tests/openvpn/test_ssl.c</span><br><span>index a5c58a0..a1ca344 100644</spa=
-n><br><span>--- a/tests/unit_tests/openvpn/test_ssl.c</span><br><span>+++ b=
-/tests/unit_tests/openvpn/test_ssl.c</span><br><span>@@ -66,6 +66,10 @@</sp=
-an><br><span> }</span><br><span> #endif</span><br><span> </span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+#if defined(ENABLE_CRYPTO_OPENSSL) &a=
-mp;&amp; (OPENSSL_VERSION_NUMBER &gt; 0x30000000L)</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+#define HAVE_OPENSSL_STORE</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+#endif</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+</span><br><span> /* stubs for some unused functio=
-ns instead of pulling in too many dependencies */</span><br><span> bool</sp=
-an><br><span> get_user_pass_cr(struct user_pass *up, const char *auth_file,=
- const char *prefix,</span><br><span>@@ -234,6 +238,45 @@</span><br><span> =
-    tls_ctx_free(&amp;ctx);</span><br><span> }</span><br><span> </span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+/* test loading cert and key u=
-sing file:/path URI */</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+static void</span><br><span style=3D"color: hsl(120, 100%, 40%);">+test_=
-load_certificate_and_key_uri(void **state)</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+    (void) state;</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#if !defined(HAV=
-E_OPENSSL_STORE)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
- skip();</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#else /* HA=
-VE_OPENSSL_STORE */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    struct tls_root=
-_ctx ctx =3D { 0 };</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-    const char *certfile =3D global_state.certfile;</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    const char *keyfile =3D global_state.=
-keyfile;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    struct =
-gc_arena *gc =3D &amp;global_state.gc;</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-    struct buffer certuri =3D alloc_buf_gc(6 + strlen(certfile) + 1, gc); /=
-* 6 bytes for &quot;file:/&quot; */</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+    struct buffer keyuri =3D alloc_buf_gc(6 + strlen(keyfil=
-e) + 1, gc);   /* 6 bytes for &quot;file:/&quot; */</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+    /* Windows temp file path starts with drive letter -- ad=
-d a leading slash for URI */</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+    const char *lead =3D &quot;&quot;;</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+#ifdef _WIN32</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+    lead =3D &quot;/&quot;;</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+#endif /* _WIN32 */</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+    assert_true(buf_printf(&amp;certuri, &quo=
-t;file:%s%s&quot;, lead, certfile));</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+    assert_true(buf_printf(&amp;keyuri, &quot;file:%s%s&qu=
-ot;, lead, keyfile));</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    /* On Windows=
- replace any &#39;\&#39; in path by &#39;/&#39; required for URI */</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+#ifdef _WIN32</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+    string_mod(BSTR(&amp;certuri)=
-, CC_ANY, CC_BACKSLASH, &#39;/&#39;);</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+    string_mod(BSTR(&amp;keyuri), CC_ANY, CC_BACKSLASH, &=
-#39;/&#39;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#endif =
-/* _WIN32 */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+    tls_ctx_client_new(&am=
-p;ctx);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    tls_ctx_=
-load_cert_file(&amp;ctx, BSTR(&amp;certuri), false);</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    assert_int_equal(tls_ctx_load_priv_fi=
-le(&amp;ctx, BSTR(&amp;keyuri), false), 0);</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+    tls_ctx_free(&amp;ctx);</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+#endif /* HAVE_OPENSSL_STORE */</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+</span><br><span> static void</span><br><span> =
-init_implicit_iv(struct crypto_options *co)</span><br><span> {</span><br><s=
-pan>@@ -469,6 +512,7 @@</span><br><span>     const struct CMUnitTest tests[=
-] =3D {</span><br><span>         cmocka_unit_test(crypto_pem_encode_certifi=
-cate),</span><br><span>         cmocka_unit_test(test_load_certificate_and_=
-key),</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        cmocka=
-_unit_test(test_load_certificate_and_key_uri),</span><br><span>         cmo=
-cka_unit_test(test_data_channel_roundtrip_aes_128_gcm),</span><br><span>   =
-      cmocka_unit_test(test_data_channel_roundtrip_aes_192_gcm),</span><br>=
-<span>         cmocka_unit_test(test_data_channel_roundtrip_aes_256_gcm),</=
-span><br><span></span><br></pre><p>To view, visit <a href=3D"http://gerrit.=
-openvpn.net/c/openvpn/+/730?usp=3Demail">change 730</a>. To unsubscribe, or=
- for help writing mail filters, visit <a href=3D"http://gerrit.openvpn.net/=
-settings">settings</a>.</p><div itemscope itemtype=3D"http://schema.org/Ema=
-ilMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.org=
-/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/ope=
-nvpn/+/730?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/><=
-/div></div>
+a href=3D"http://gerrit.openvpn.net/c/openvpn/+/729?usp=3Demail">View Chang=
+e</a></p><p>The change is no longer submittable: checks~ChecksSubmitRule is=
+ unsatisfied now.</p><pre style=3D"font-family: monospace,monospace; white-=
+space: pre-wrap;">Add a test for loading certificate and key to ssl context=
+<br><br>The test certificate used in test_ssl.c is updated to use 2048 bit<=
+br>RSA and the matching key is added.<br><br>Tests include loading certific=
+ate and key as inlined pem as well as<br>from files. Note that loading the =
+key also checks that it matches<br>the certificate, providing an indirect t=
+est that the latter was loaded<br>correctly.<br><br>Change-Id: Ic6f08989619=
+1145f68ce9a11023587d05dcec4d8<br>Signed-off-by: Selva Nair &lt;selva.nair@...220...=
+..277...&gt;<br>---<br>M tests/unit_tests/openvpn/test_ssl.c<br>1 file chan=
+ged, 113 insertions(+), 13 deletions(-)<br><br></pre><pre style=3D"font-fam=
+ily: monospace,monospace; white-space: pre-wrap;">git pull ssh://gerrit.ope=
+nvpn.net:29418/openvpn refs/changes/29/729/2</pre><pre style=3D"font-family=
+: monospace,monospace; white-space: pre-wrap;"><span>diff --git a/tests/uni=
+t_tests/openvpn/test_ssl.c b/tests/unit_tests/openvpn/test_ssl.c</span><br>=
+<span>index da50e55..a5c58a0 100644</span><br><span>--- a/tests/unit_tests/=
+openvpn/test_ssl.c</span><br><span>+++ b/tests/unit_tests/openvpn/test_ssl.=
+c</span><br><span>@@ -79,18 +79,58 @@</span><br><span>     return;</span><b=
+r><span> }</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 4=
+0%);">-const char *unittest_cert =3D &quot;-----BEGIN CERTIFICATE-----\n&qu=
+ot;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-                  =
+          &quot;MIIBuTCCAUCgAwIBAgIUTLtjSBzx53qZRvZ6Ur7D9kgoOHkwCgYIKoZIzj0=
+EAwIw\n&quot;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        =
+                    &quot;EzERMA8GA1UEAwwIdW5pdHRlc3QwIBcNMjMxMTIxMDk1NDQ3W=
+hgPMjA3ODA4MjQw\n&quot;</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>-                            &quot;OTU0NDdaMBMxETAPBgNVBAMMCHVuaXR0ZXN0MHY=
+wEAYHKoZIzj0CAQYFK4EEACID\n&quot;</span><br><span style=3D"color: hsl(0, 10=
+0%, 40%);">-                            &quot;YgAEHYB2hn2xx3f4lClXDtdi36P19=
+pMZA+kI1Dkv/Vn10vBZ/j9oa+P99T8duz/e\n&quot;</span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-                            &quot;QlPeHpesNJO4fX8iEDj=
+6+vMeWejOT7jAQ4MmG5EZjpcBKxCfwFooEvzu8bVujUcu\n&quot;</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-                            &quot;wTQEo1MwU=
+TAdBgNVHQ4EFgQUPcgBEVXjF5vYfDsInoE3dF6UfQswHwYDVR0jBBgw\n&quot;</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-                            &quot=
+;FoAUPcgBEVXjF5vYfDsInoE3dF6UfQswDwYDVR0TAQH/BAUwAwEB/zAKBggqhkjO\n&quot;</=
+span><br><span style=3D"color: hsl(0, 100%, 40%);">-                       =
+     &quot;PQQDAgNnADBkAjBLPAGrQAyinigqiu0RomoV8TVaknVLFSq6H6A8jgvzfsFCUK1O=
+\n&quot;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-             =
+               &quot;dvNZhFPM6idKB+oCME2JLOBANCSV8o7aJzq7SYHKwPyb1J4JFlwKe/=
+0Jpv7oh9b1\n&quot;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
+                         &quot;IJbuaM9Z/VSKbrIXGg=3D=3D\n&quot;</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-                            &quot=
+;-----END CERTIFICATE-----\n&quot;;</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+static const char *const unittest_cert =3D</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+    &quot;-----BEGIN CERTIFICATE----=
+-\n&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    &quot;=
+MIIDYzCCAkugAwIBAgIRALrXTx4lqa8QgF7uGjISxmcwDQYJKoZIhvcNAQELBQAw\n&quot;</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+    &quot;GDEWMBQGA1UE=
+AwwNT1ZQTiBURVNUIENBMTAgFw0yMzAzMTMxNjA5MThaGA8yMTIz\n&quot;</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+    &quot;MDIxNzE2MDkxOFowGTEXMBUG=
+A1UEAwwOb3Zwbi10ZXN0LXJzYTEwggEiMA0GCSqG\n&quot;</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+    &quot;SIb3DQEBAQUAA4IBDwAwggEKAoIBAQC7xFoR=
+6fmoyfsJIQDKKgbYgFw0MzVuDAmp\n&quot;</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+    &quot;Rx6KTEihgTchkQx9fHddWbKiOUbcEnQi3LNux7P4QVl/4dRR=
+3skisBug6Vd5LXeB\n&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+    &quot;GZqmpu5XZiF4DgLz1lX21G0aOogFWkie2qGEcso40159x9FBDl5A3sLP18ub=
+eex0\n&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    &qu=
+ot;pd/BzDFv6SLOTyVWO/GCNc8IX/i0uN4mLvoVU00SeqwTPnS+CRXrSq4JjGDJLsXl\n&quot;=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    &quot;0/Plxkjsg=
+U0yOOA0Z2d8Fzk3wClwP6Hc49BOMWKstUIhLbG2DcIv8l29EuEj2w3j\n&quot;</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+    &quot;u/7gkewol96XQ2twpPvpo=
+VAaiVh/m7hQUcQORQCD6eJcDjOZVCArAgMBAAGjgaQw\n&quot;</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    &quot;gaEwCQYDVR0TBAIwADAdBgNVHQ4EFgQ=
+UqYnRaBHrZmKLtMZES5AuwqzJkGYwUwYD\n&quot;</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+    &quot;VR0jBEwwSoAU3MLDNDOK13DqflQ8ra7FeGBXK06hHKQ=
+aMBgxFjAUBgNVBAMMDU9W\n&quot;</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+    &quot;UE4gVEVTVCBDQTGCFD55ErHXpK2JXS3WkfBm0NB1r3vKMBMGA1UdJQQ=
+MMAoGCCsG\n&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+  &quot;AQUFBwMCMAsGA1UdDwQEAwIHgDANBgkqhkiG9w0BAQsFAAOCAQEAZVcXrezA9Aby\n&=
+quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    &quot;sfUN=
+HAsMxrex/EO0PrIPSrmSmc9sCiD8cCIeB6kL8c5iPPigoWW0uLA9zteDRFes\n&quot;</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+    &quot;ez+Z8wBY6g8VQ0tF=
+PURDooUg5011GZPDcuw7/PsI4+I2J9q6LHEp+6Oo4faSn/kl\n&quot;</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+    &quot;yWYCLjM4FZdGXbOijDacQJiN6HcR=
+v0UdodBrEVRf7YHJJmMCbCI7ZUGW2zef/+rO\n&quot;</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+    &quot;e4Lkxh0MLYqCkNKH5ZfoGTC4Oeb0xKykswAanqgR=
+60r+upaLU8PFuI2L9M3vc6KU\n&quot;</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+    &quot;F6MgVGSxl6eylJgDYckvJiAbmcp2PD/LRQQOxQA0yqeAMg2cbdvc=
+lETuYD6zoFfu\n&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++    &quot;Y8aO7dvDlw=3D=3D\n&quot;</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+    &quot;-----END CERTIFICATE-----\n&quot;;</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+static const char *const unittest_key =3D</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+    &quot;-----BEGIN PRIVATE KE=
+Y-----\n&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    &=
+quot;MIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQC7xFoR6fmoyfsJ\n&quo=
+t;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    &quot;IQDKKgb=
+YgFw0MzVuDAmpRx6KTEihgTchkQx9fHddWbKiOUbcEnQi3LNux7P4QVl/\n&quot;</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+    &quot;4dRR3skisBug6Vd5LXe=
+BGZqmpu5XZiF4DgLz1lX21G0aOogFWkie2qGEcso40159\n&quot;</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    &quot;x9FBDl5A3sLP18ubeex0pd/BzDFv6SL=
+OTyVWO/GCNc8IX/i0uN4mLvoVU00SeqwT\n&quot;</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+    &quot;PnS+CRXrSq4JjGDJLsXl0/PlxkjsgU0yOOA0Z2d8Fzk=
+3wClwP6Hc49BOMWKstUIh\n&quot;</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+    &quot;LbG2DcIv8l29EuEj2w3ju/7gkewol96XQ2twpPvpoVAaiVh/m7hQUcQ=
+ORQCD6eJc\n&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+  &quot;DjOZVCArAgMBAAECggEACqkuWAAJ3cyCBVWrXs8eDmLTWV9i9DmYvtS75ixIn2rf\n&=
+quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    &quot;v3cl=
+12YevN0f6FgKLuqZT3Vqdqq+DCVhuIIQ9QkKMH8BQpSdE9NCCsFyZ23o8Gtr\n&quot;</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+    &quot;EQ7ymfecb+RFwYx7=
+NpqWrvZI32VJGArgPZH/zorLTTGYrAZbmBtHEqRsXOuEDw97\n&quot;</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+    &quot;slwwcWaa9ztaYC8/N/7fgsnydaCF=
+SaOByRlWuyvSmHvn6ZwLv8ANOshY6fstC0Jb\n&quot;</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+    &quot;BW0GpSe9eZPjpl71VT2RtpghqLV5+iAoFDHoT+eZ=
+vBospcUGtfcZSU7RrBjKB8+a\n&quot;</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+    &quot;U1d6hwKhduVs2peIQzl+FiOSdWriLcsZv79q4sBhsQKBgQDUDVTf=
+5BGJ8apOs/17\n&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++    &quot;YVk+Ad8Ey8sXvsfk49psmlCRa8Z4g0LVXfrP94qzhtl8U5kE9hs3nEF4j/kX1ZWG=
+\n&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    &quot;k=
+11tdsNTZN5x5bbAgEgPA6Ap6J/uto0HS8G0vSv0lyBymdKA3p/i5Dx+8Nc9cGns\n&quot;</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+    &quot;LGI9MvviLX7pQ=
+FIkvbaCkdKwYwKBgQDirowjWZnm7BgVhF0G1m3DY9nQTYYU185W\n&quot;</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+    &quot;UESaO5/nVzwUrA+FypJamD+Av=
+mlSuY8rJeQAGAS6nQr9G8/617r+GwJnzRtxC6Vl\n&quot;</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+    &quot;4OF5BJRsD70oX4CFOOlycMoJ8tzcYVH7NI8KV=
+ocjxb+QW82hqSvEwSsvnwwn3eOW\n&quot;</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+    &quot;nr5u5vIHmQKBgCuc3lL6Dl1ntdZgEIdau0cUjXDoFUo589Twx=
+BDIID/4gaZxoMJP\n&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+    &quot;hPFXAVDxMDPw4azyjSB/47tPKTUsuYcnMfT8kynIujOEwnSPLcLgxQU5kgM/y=
+nuw\n&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    &quo=
+t;qhNpQOwaVRMc7f2RTCMXPBYDpNE/GJn5eu8JWGLpZovEreBeoHX0VffvAoGAVrWn\n&quot;<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+    &quot;+3mxykhzaf=
++oyg3KDNysG+cbq+tlDVVE+K5oG0kePVYX1fjIBQmJ+QhdJ3y9jCbB\n&quot;</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+    &quot;UVveqzeZVXqHEw/kgoD4aZ=
+ZmsdZfnVnpRa5/y9o1ZDUr50n+2nzUe/u/ijlb77iK\n&quot;</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+    &quot;Is04gnGJNoI3ZWhdyrSNfXjcYH+bKClu9O=
+M4n7kCgYAorc3PAX7M0bsQrrqYxUS8\n&quot;</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+    &quot;56UU0YdhAgYitjM7Fm/0iIm0vDpSevxL9js4HnnsSMVR77=
+spCBAGOCCZrTcI3Ejg\n&quot;</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+    &quot;xKDYzh1xlfMRjJBuBu5Pd55ZAv9NXFGpsX5SO8fDZQJMwpcbQH36+UdqRR=
+FDpjJ0\n&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    &=
+quot;ZbX6nKcJ7jciJVKJds59Jg=3D=3D\n&quot;</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+    &quot;-----END PRIVATE KEY-----\n&quot;;</span><b=
+r><span> </span><br><span> static const char *</span><br><span> get_tmp_dir=
+(void)</span><br><span>@@ -105,6 +145,44 @@</span><br><span>     return ret=
+;</span><br><span> }</span><br><span> </span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+static struct</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    s=
+truct gc_arena gc;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+   const char *certfile;</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+    const char *keyfile;</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+} global_state;</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+static int</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+init(void **state)</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    (void) state;</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    global_state.gc =3D gc_new();</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+    global_state.certfile =
+=3D platform_create_temp_file(get_tmp_dir(), &quot;cert&quot;, &amp;global_=
+state.gc);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    globa=
+l_state.keyfile =3D platform_create_temp_file(get_tmp_dir(), &quot;key&quot=
+;, &amp;global_state.gc);</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    int certf=
+d =3D open(global_state.certfile, O_RDWR);</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+    int keyfd =3D open(global_state.keyfile, O_RDWR)=
+;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (certfd &lt=
+; 0 || keyfd &lt; 0)</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        fail_=
+msg(&quot;make tmpfile for certificate or key data failed (error =3D %d)&qu=
+ot;, errno);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_int_equal(=
+write(certfd, unittest_cert, strlen(unittest_cert)), strlen(unittest_cert))=
+;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_int_equ=
+al(write(keyfd, unittest_key, strlen(unittest_key)), strlen(unittest_key));=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    close(certfd);<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+    close(keyfd);</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+    return 0;</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+static int</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++cleanup(void **state)</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    (void) stat=
+e;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    unlink(global=
+_state.certfile);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+  unlink(global_state.keyfile);</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+    gc_free(&amp;global_state.gc);</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+    return 0;</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+</span><br><span> static void</span><br><span> crypto_pem_encode_certifi=
+cate(void **state)</span><br><span> {</span><br><span>@@ -136,6 +214,27 @@<=
+/span><br><span> }</span><br><span> </span><br><span> static void</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+test_load_certificate_and_key=
+(void **state)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+    (void) state;</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+    struct tls_root_ctx c=
+tx =3D { 0 };</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+    /* test loading of in=
+lined cert and key.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+     * loading the key also checks that it matches the loaded certificate</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+     */</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+    tls_ctx_client_new(&amp;ctx);=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    tls_ctx_load_ce=
+rt_file(&amp;ctx, unittest_cert, true);</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+    assert_int_equal(tls_ctx_load_priv_file(&amp;ctx, u=
+nittest_key, true), 0);</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+    tls_ctx_free(&amp;ctx);</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    /* =
+test loading of cert and key from file */</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+    tls_ctx_client_new(&amp;ctx);</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+    tls_ctx_load_cert_file(&amp;ctx, gl=
+obal_state.certfile, false);</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+    assert_int_equal(tls_ctx_load_priv_file(&amp;ctx, global_state=
+.keyfile, false), 0);</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+    tls_ctx_free(&amp;ctx);</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+static void</span><br><span=
+> init_implicit_iv(struct crypto_options *co)</span><br><span> {</span><br>=
+<span>     cipher_ctx_t *cipher =3D co-&gt;key_ctx_bi.encrypt.cipher;</span=
+><br><span>@@ -369,6 +468,7 @@</span><br><span> </span><br><span>     const=
+ struct CMUnitTest tests[] =3D {</span><br><span>         cmocka_unit_test(=
+crypto_pem_encode_certificate),</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+        cmocka_unit_test(test_load_certificate_and_key),</span>=
+<br><span>         cmocka_unit_test(test_data_channel_roundtrip_aes_128_gcm=
+),</span><br><span>         cmocka_unit_test(test_data_channel_roundtrip_ae=
+s_192_gcm),</span><br><span>         cmocka_unit_test(test_data_channel_rou=
+ndtrip_aes_256_gcm),</span><br><span>@@ -383,7 +483,7 @@</span><br><span>  =
+   tls_init_lib();</span><br><span> #endif</span><br><span> </span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">-    int ret =3D cmocka_run_group_tes=
+ts_name(&quot;ssl tests&quot;, tests, NULL, NULL);</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+    int ret =3D cmocka_run_group_tests_name(=
+&quot;ssl tests&quot;, tests, init, cleanup);</span><br><span> </span><br><=
+span> #if defined(ENABLE_CRYPTO_OPENSSL)</span><br><span>     tls_free_lib(=
+);</span><br><span></span><br></pre><p>To view, visit <a href=3D"http://ger=
+rit.openvpn.net/c/openvpn/+/729?usp=3Demail">change 729</a>. To unsubscribe=
+, or for help writing mail filters, visit <a href=3D"http://gerrit.openvpn.=
+net/settings">settings</a>.</p><div itemscope itemtype=3D"http://schema.org=
+/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://schema=
+.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c=
+/openvpn/+/729?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change=
+"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I7615116b5251319aa1f13d671ba=
-b7013f3a043ea </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 730 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: Ic6f089896191145f68ce9a11023=
+587d05dcec4d8 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 729 </div>
 <div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
 <div style=3D"display:none"> Gerrit-Owner: selvanair &lt;selva.nair@...1354...=
 ..&gt; </div>
@@ -273,12 +518,10 @@ b7013f3a043ea </div>
 ts.sourceforge.net&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
 ..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
-41...&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: selvanair &lt;selva.nair@...493...=
 277...&gt; </div>
 <div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
 
 
---MHLPxVVVCow=--
+--TsZNC7wUl40=--
 
