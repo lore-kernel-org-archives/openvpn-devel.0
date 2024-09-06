@@ -1,16 +1,11 @@
-From: "flichtenheld (Code Review)" <gerrit@...515...>
-Date: Fri, 6 Sep 2024 16:00:13 +0000
-In-Reply-To: <gerrit.1725637486000.I2f55eabd0e950edc3fbcd08b257257cf9ed9c8d8@...2715...>
-References: <gerrit.1725637486000.I2f55eabd0e950edc3fbcd08b257257cf9ed9c8d8@...2715...>
-Reply-To: frank@...2641..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, ralf@...2726...
-Message-ID: <bf004b66e1348ed964a895b1e0cf6244ae342b01-EmailReviewComments-HTML@...2715...>
+From: Frank Lichtenheld <frank@...2641...>
+Date: Fri,  6 Sep 2024 18:05:10 +0200
+Message-Id: <20240906160510.76387-1-frank@...2641...>
+In-Reply-To: <gerrit.1719507190000.I5d0da76018e874cda5dbab9202a2b817ad5e4692@...2715...>
+References: <gerrit.1719507190000.I5d0da76018e874cda5dbab9202a2b817ad5e4692@...2715...>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="7Luv4sCNQOo="; charset=UTF-8
-Subject: [Openvpn-devel] [XS] Change in openvpn[master]: Minor fix on
- ifconfig parameter warning
+Subject: [Openvpn-devel] [PATCH v3] configure: Try to use pkg-config to
+ detect mbedTLS
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,102 +14,61 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: ralf_lici <ralf@...2726...>
-Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
+Cc: Yuriy Darnobyt <yura.uddr@...277...>
 
---7Luv4sCNQOo=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+mbedTLS does not seem to have pkg-config support on e.g.
+Debian/Ubuntu, so we definitely need to keep the
+fallback check as well.
 
-Attention is currently required from: plaisthos, ralf_lici.
+Change-Id: I5d0da76018e874cda5dbab9202a2b817ad5e4692
+Signed-off-by: Frank Lichtenheld <frank@...2641...>
+Acked-by: Yuriy Darnobyt <yura.uddr@...277...>
+---
 
-flichtenheld has posted comments on this change. ( http://gerrit.openvpn.ne=
-t/c/openvpn/+/736?usp=3Demail )
+This change was reviewed on Gerrit and approved by at least one
+developer. I request to merge it to master.
 
-Change subject: Minor fix on ifconfig parameter warning
-......................................................................
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/671
+This mail reflects revision 3 of this Change.
 
+Acked-by according to Gerrit (reflected above):
+Yuriy Darnobyt <yura.uddr@...277...>
 
-Patch Set 1: Code-Review-2
-
-(1 comment)
-
-Patchset:
-
-PS1:
-This is a subset of https://gerrit.openvpn.net/c/openvpn/+/380 which we rea=
-lly should merge...
-
-
-
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/736?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings
-
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: I2f55eabd0e950edc3fbcd08b257257cf9ed9c8d8
-Gerrit-Change-Number: 736
-Gerrit-PatchSet: 1
-Gerrit-Owner: ralf_lici <ralf@...2726...>
-Gerrit-Reviewer: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: ralf_lici <ralf@...2726...>
-Gerrit-Comment-Date: Fri, 06 Sep 2024 16:00:13 +0000
-Gerrit-HasComments: Yes
-Gerrit-Has-Labels: Yes
-Gerrit-MessageType: comment
-
---7Luv4sCNQOo=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<p> Attention is currently required from: plaisthos, ralf_lici. </p>
-<p>Patch set 1:<span style=3D"border-radius: 3px; display: inline-block; ma=
-rgin: 0 2px; padding: 4px;background-color: #ffd4d4;">Code-Review -2</span>=
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/736?usp=3Demail">Vi=
-ew Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0=
-;"><li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-s=
-tyle: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p s=
-tyle=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn=
-/+/736?tab=3Dcomments">Patch Set #1:</a> </p><p style=3D"white-space: pre-w=
-rap; word-wrap: break-word;">This is a subset of https://gerrit.openvpn.net=
-/c/openvpn/+/380 which we really should merge...</p></li></ul></li></ul><p>=
-To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/736?usp=3De=
-mail">change 736</a>. To unsubscribe, or for help writing mail filters, vis=
-it <a href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div ite=
-mscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=
-=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url=
-" href=3D"http://gerrit.openvpn.net/c/openvpn/+/736?usp=3Demail"/><meta ite=
-mprop=3D"name" content=3D"View Change"/></div></div>
-
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I2f55eabd0e950edc3fbcd08b257=
-257cf9ed9c8d8 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 736 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
-<div style=3D"display:none"> Gerrit-Owner: ralf_lici &lt;ralf@...2726...&gt=
-; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
-1...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: ralf_lici &lt;ralf@...2804...=
-.&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Fri, 06 Sep 2024 16:00:13=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
-
-
---7Luv4sCNQOo=--
+        
+diff --git a/configure.ac b/configure.ac
+index 9ce826c..2d74021 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -1000,14 +1000,21 @@
+ 
+ 	if test -z "${MBEDTLS_CFLAGS}" -a -z "${MBEDTLS_LIBS}"; then
+ 		# if the user did not explicitly specify flags, try to autodetect
+-		LIBS="${LIBS} -lmbedtls -lmbedx509 -lmbedcrypto"
+-		AC_CHECK_LIB(
+-			[mbedtls],
+-			[mbedtls_ssl_init],
+-			[MBEDTLS_LIBS="-lmbedtls -lmbedx509 -lmbedcrypto"],
+-			[AC_MSG_ERROR([Could not find mbed TLS.])],
+-			[${PKCS11_HELPER_LIBS}]
++		PKG_CHECK_MODULES([MBEDTLS],
++			[mbedtls >= 2.0.0 mbedx509 >= 2.0.0 mbedcrypto >= 2.0.0],
++			[have_mbedtls="yes"],
++			[LIBS="${LIBS} -lmbedtls -lmbedx509 -lmbedcrypto"]
+ 		)
++		# mbedtls might not have pkgconfig integration, so try manually
++                if test "${have_mbedtls}" != "yes"; then
++			AC_CHECK_LIB(
++				[mbedtls],
++				[mbedtls_ssl_init],
++				[MBEDTLS_LIBS="-lmbedtls -lmbedx509 -lmbedcrypto"],
++				[AC_MSG_ERROR([Could not find mbed TLS.])],
++				[${PKCS11_HELPER_LIBS}]
++			)
++		fi
+ 	fi
+ 
+ 	CFLAGS="${MBEDTLS_CFLAGS} ${PKCS11_HELPER_CFLAGS} ${CFLAGS}"
 
