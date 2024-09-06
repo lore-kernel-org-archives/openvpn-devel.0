@@ -1,11 +1,10 @@
-From: Frank Lichtenheld <frank@...2641...>
-Date: Fri,  6 Sep 2024 19:21:12 +0200
-Message-Id: <20240906172112.87148-1-frank@...2641...>
-In-Reply-To: <gerrit.1720619824000.I9b7a3df012e7606ddb04a944e3fa33247180e8dd@...2715...>
-References: <gerrit.1720619824000.I9b7a3df012e7606ddb04a944e3fa33247180e8dd@...2715...>
-MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v3] configure: Allow to detect git checkout
- if .git is not a directory
+Date: Fri, 6 Sep 2024 22:13:39 +0200 (CEST)
+Message-Id: <202409062013.486KDdSM076066@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <20240906172112.87148-1-frank@...2641...>
+References: <20240906172112.87148-1-frank@...2641...>
+Subject: [Openvpn-devel] [PATCH applied] Re: configure: Allow to detect git
+ checkout if .git is not a directory
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,67 +15,32 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
-Cc: Arne Schwabe <arne-openvpn@...1227...>, Yuriy Darnobyt <yura.uddr@...277...>
+To: Frank Lichtenheld <frank@...2641...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-E.g. if you use openvpn as a git submodule, it can be a
-file that points to the parent's git directory.
+Have done a bit of testing with "in-tree build, git", "out of tree build,
+git" and "in-tree build, tarball" and it seems to always do the right
+thing.  Haven't a need for git submodules, so I have not tested that.
 
-The changes to Makefile.am are not strictly required, they
-still work with that case, but I wanted to keep the usage
-consistent.
+Your patch has been applied to the master branch.
 
-Change-Id: I9b7a3df012e7606ddb04a944e3fa33247180e8dd
-Signed-off-by: Frank Lichtenheld <frank@...2641...>
-Acked-by: Arne Schwabe <arne-openvpn@...1227...>
-Acked-by: Yuriy Darnobyt <yura.uddr@...277...>
----
+commit dac076fe406adace826766f6cc3cfdadc5f06be4
+Author: Frank Lichtenheld
+Date:   Fri Sep 6 19:21:12 2024 +0200
 
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to master.
+     configure: Allow to detect git checkout if .git is not a directory
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/675
-This mail reflects revision 3 of this Change.
+     Signed-off-by: Frank Lichtenheld <frank@...2641...>
+     Acked-by: Arne Schwabe <arne-openvpn@...1227...>
+     Acked-by: Yuriy Darnobyt <yura.uddr@...277...>
+     Message-Id: <20240906172112.87148-1-frank@...2641...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg29092.html
+     Signed-off-by: Gert Doering <gert@...1296...>
 
-Acked-by according to Gerrit (reflected above):
-Arne Schwabe <arne-openvpn@...1227...>
-Yuriy Darnobyt <yura.uddr@...277...>
 
-        
-diff --git a/Makefile.am b/Makefile.am
-index 87230fe..84b7112 100644
---- a/Makefile.am
-+++ b/Makefile.am
-@@ -75,9 +75,9 @@
- 	README.wolfssl
- 
- config-version.h:
--	@CONFIGURE_GIT_CHFILES="`GIT_DIR=\"$(top_srcdir)/.git\" $(GIT) diff-files --name-status -r --ignore-submodules --quiet -- || echo \"+\"`"; \
--	CONFIGURE_GIT_UNCOMMITTED="`GIT_DIR=\"$(top_srcdir)/.git\" $(GIT) diff-index --cached  --quiet --ignore-submodules HEAD || echo \"*\"`"; \
--	CONFIGURE_GIT_REVISION="`GIT_DIR=\"$(top_srcdir)/.git\" $(GIT) rev-parse --symbolic-full-name HEAD | cut -d/ -f3-`/`GIT_DIR=\"$(top_srcdir)/.git\" $(GIT) rev-parse --short=16 HEAD`"; \
-+	@CONFIGURE_GIT_CHFILES="`$(GIT) -C \"$(top_srcdir)\" diff-files --name-status -r --ignore-submodules --quiet -- || echo \"+\"`"; \
-+	CONFIGURE_GIT_UNCOMMITTED="`$(GIT) -C \"$(top_srcdir)\" diff-index --cached  --quiet --ignore-submodules HEAD || echo \"*\"`"; \
-+	CONFIGURE_GIT_REVISION="`$(GIT) -C \"$(top_srcdir)\" rev-parse --symbolic-full-name HEAD | cut -d/ -f3-`/`$(GIT) -C \"$(top_srcdir)\" rev-parse --short=16 HEAD`"; \
- 	echo "#define CONFIGURE_GIT_REVISION \"$${CONFIGURE_GIT_REVISION}\"" > config-version.h.tmp; \
- 	echo "#define CONFIGURE_GIT_FLAGS \"$${CONFIGURE_GIT_CHFILES}$${CONFIGURE_GIT_UNCOMMITTED}\"" >> config-version.h.tmp
- 
-diff --git a/configure.ac b/configure.ac
-index 9ce826c..ea0da1f 100644
---- a/configure.ac
-+++ b/configure.ac
-@@ -1308,9 +1308,11 @@
- 
- AC_MSG_CHECKING([git checkout])
- GIT_CHECKOUT="no"
--if test -n "${GIT}" -a -d "${srcdir}/.git"; then
--	AC_DEFINE([HAVE_CONFIG_VERSION_H], [1], [extra version available in config-version.h])
--	GIT_CHECKOUT="yes"
-+if test -n "${GIT}"; then
-+	if ${GIT} -C "$srcdir" rev-parse --is-inside-work-tree >/dev/null 2>&1; then
-+		AC_DEFINE([HAVE_CONFIG_VERSION_H], [1], [extra version available in config-version.h])
-+		GIT_CHECKOUT="yes"
-+	fi
- fi
- AC_MSG_RESULT([${GIT_CHECKOUT}])
- 
+--
+kind regards,
+
+Gert Doering
+
 
