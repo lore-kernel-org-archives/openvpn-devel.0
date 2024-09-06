@@ -1,16 +1,11 @@
-From: "flichtenheld (Code Review)" <gerrit@...515...>
-Date: Fri, 6 Sep 2024 10:31:32 +0000
-In-Reply-To: <gerrit.1724095724000.I7615116b5251319aa1f13d671bab7013f3a043ea@...2715...>
-References: <gerrit.1724095724000.I7615116b5251319aa1f13d671bab7013f3a043ea@...2715...>
-Reply-To: frank@...2641..., arne-openvpn@...1227..., selva.nair@...277...,
- openvpn-devel@lists.sourceforge.net
-Message-ID: <ef99ef2c85d5e307c8c2908acf00a7b2482088c7-EmailReviewComments-HTML@...2715...>
+From: Frank Lichtenheld <frank@...2641...>
+Date: Fri,  6 Sep 2024 12:37:34 +0200
+Message-Id: <20240906103734.36633-1-frank@...2641...>
+In-Reply-To: <gerrit.1723673969000.I82b32d5ab472926e7889a5f4a90caba14231879a@...2715...>
+References: <gerrit.1723673969000.I82b32d5ab472926e7889a5f4a90caba14231879a@...2715...>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="e5eX8GLTOXg="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: Add a test for
- loading certificate and key using file: URI
+Subject: [Openvpn-devel] [PATCH v3] Interpret --key and --cert option
+ argument as URI
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,109 +14,512 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: selvanair <selva.nair@...277...>
-Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---e5eX8GLTOXg=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+From: Selva Nair <selva.nair@...277...>
 
-Attention is currently required from: plaisthos, selvanair.
+OpenSSL 3 has providers which can load keys and certificates
+from various key stores and HSMs using a provider-specific URI.
+While certificates are generally exportable, and some providers
+support a PEM file that acts as a proxy for non-exportable private
+keys, not all providers are expected to do so. A generic capability
+to read keys and certificates from URIs appears useful.
 
-flichtenheld has posted comments on this change. ( http://gerrit.openvpn.ne=
-t/c/openvpn/+/730?usp=3Demail )
+This patch does this by extending the scope of the argument for
+"--key" and "--cert" options to include URIs. Many of OpenSSL 3
+utilities also work the same way: e.g., the "-in" option for
+"openssl pkey" or "openssl x509" could be a filename or URI.
+Other applications have started emulating this behaviour:
+e.g., pkcs11: URI works as an alternative to a file name for
+certificates and keys in apache. Even for files, this has a nice
+side effect that non-PEM files get transparently parsed. E.g., a
+pkcs12 file could be used in place of a PEM file without needing
+any extra options.
 
-Change subject: Add a test for loading certificate and key using file: URI
-......................................................................
+This is backward compatible as OpenSSL falls back to treating URIs
+with no scheme or unrecognized scheme as file names.
 
+Parsing of inlined keys and certificates is unchanged (those
+should be in PEM format).
 
-Patch Set 2: Code-Review+2
+Specification of URIs that OpenSSL accepts depends on the
+providers that support them. Some are standard URIs such as
+"file:/path", but providers may support non-standard URIs
+with arbitrary scheme names. OpenSSL by itself recognizes
+only file URI.  However, the implementation is agnostic to the
+URI specification as parsing is done by the provider that supports
+the URI. A new URI gets automatically recognized when the provider
+that supports it is loaded.
 
-(1 comment)
+Below are some usage examples:
 
-File tests/unit_tests/openvpn/test_ssl.c:
+Relative or absolute path to a file or as a URI "file:/absolute/path":
 
-http://gerrit.openvpn.net/c/openvpn/+/730/comment/2d178b5f_aeccb16c :
-PS1, Line 249: #endif /* HAVE_OPENSSL_STORE */
-> I would prefer to use #else here so that there is no dead code.
-Done
+   --key mykey.pem      (same as what is currently supported)
+   --key file:/path/to/mykey.pem
+   --cert file:/path/to/mycert.pem
 
+Other file types supported by OpenSSL would also work:
 
+   --key client.p12
+   --cert client.p12
 
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/730?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings
+pkcs11-provider supports "pkcs11:" URI (RFC 7512):
 
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: I7615116b5251319aa1f13d671bab7013f3a043ea
-Gerrit-Change-Number: 730
-Gerrit-PatchSet: 2
-Gerrit-Owner: selvanair <selva.nair@...277...>
-Gerrit-Reviewer: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: selvanair <selva.nair@...277...>
-Gerrit-Comment-Date: Fri, 06 Sep 2024 10:31:32 +0000
-Gerrit-HasComments: Yes
-Gerrit-Has-Labels: Yes
-Comment-In-Reply-To: flichtenheld <frank@...2641...>
-Gerrit-MessageType: comment
+   --key pkcs11:token=Foo;id=%01
+   --cert pkcs11:token=Foo;id=%01
 
---e5eX8GLTOXg=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+tpm2-provider recognizes a custom URI "handle:<hex>":
 
-<p> Attention is currently required from: plaisthos, selvanair. </p>
-<p>Patch set 2:<span style=3D"border-radius: 3px; display: inline-block; ma=
-rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/730?usp=3Demail">Vi=
-ew Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0=
-;"><li style=3D"margin: 0; padding: 0;"><p>File tests/unit_tests/openvpn/te=
-st_ssl.c:</p><ul style=3D"list-style: none; padding: 0;"><li style=3D"margi=
-n: 0; padding: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"htt=
-p://gerrit.openvpn.net/c/openvpn/+/730/comment/2d178b5f_aeccb16c">Patch Set=
- #1, Line 249:</a> <code style=3D"font-family:monospace,monospace">#endif /=
-* HAVE_OPENSSL_STORE */</code></p><p><blockquote style=3D"border-left: 1px =
-solid #aaa; margin: 10px 0; padding: 0 10px;">I would prefer to use #else h=
-ere so that there is no dead code.</blockquote></p><p style=3D"white-space:=
- pre-wrap; word-wrap: break-word;">Done</p></li></ul></li></ul><p>To view, =
-visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/730?usp=3Demail">cha=
-nge 730</a>. To unsubscribe, or for help writing mail filters, visit <a hre=
-f=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope it=
-emtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"action=
-" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"=
-http://gerrit.openvpn.net/c/openvpn/+/730?usp=3Demail"/><meta itemprop=3D"n=
-ame" content=3D"View Change"/></div></div>
+   --key handle:0x81000000
 
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I7615116b5251319aa1f13d671ba=
-b7013f3a043ea </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 730 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
-<div style=3D"display:none"> Gerrit-Owner: selvanair &lt;selva.nair@...1354...=
-..&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
-1...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: selvanair &lt;selva.nair@...493...=
-277...&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Fri, 06 Sep 2024 10:31:32=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
-<div style=3D"display:none"> Comment-In-Reply-To: flichtenheld &lt;frank@...1186...=
-.2641...&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
+These examples assume that required providers, if any, are loaded
+and configured.
 
+v2: same as PR 591 but with the fixup commit that addresses review comments is squashed.
 
---e5eX8GLTOXg=--
+Change-Id: I82b32d5ab472926e7889a5f4a90caba14231879a
+Signed-off-by: Selva Nair <selva.nair@...277...>
+Acked-by: Frank Lichtenheld <frank@...2641...>
+---
+
+This change was reviewed on Gerrit and approved by at least one
+developer. I request to merge it to master.
+
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/726
+This mail reflects revision 3 of this Change.
+
+Acked-by according to Gerrit (reflected above):
+Frank Lichtenheld <frank@...2641...>
+
+        
+diff --git a/doc/man-sections/tls-options.rst b/doc/man-sections/tls-options.rst
+index de74c0d..cdb8571 100644
+--- a/doc/man-sections/tls-options.rst
++++ b/doc/man-sections/tls-options.rst
+@@ -85,10 +85,17 @@
+   OpenVPN will log the usual warning in the logs if the relevant CRL is
+   missing, but the connection will be allowed.
+ 
+---cert file
+-  Local peer's signed certificate in .pem format -- must be signed by a
+-  certificate authority whose certificate is in ``--ca file``. Each peer
+-  in an OpenVPN link running in TLS mode should have its own certificate
++--cert file|uri
++  Local peer's signed certificate in .pem format or as a URI -- must be
++  signed by a certificate authority whose certificate is in ``--ca file``
++  in the peer configuration. URI is supported only when built with
++  OpenSSL 3.0 or later and any required providers are loaded. Types
++  of URIs supported and their syntax depends on providers. OpenSSL has
++  internal support for "file:/absolute/path" URI in which case the scheme
++  "file:" is optional, and any file format recognized by OpenSSL (e.g., PEM,
++  PKCS12) is supported. PKCS#11 URI (RFC 7512) is supported by pkcs11-provider.
++
++  Each peer in an OpenVPN link running in TLS mode should have its own certificate
+   and private key file. In addition, each certificate should have been
+   signed by the key of a certificate authority whose public key resides in
+   the ``--ca`` certificate authority file. You can easily make your own
+@@ -203,10 +210,11 @@
+   The ``--hand-window`` parameter also controls the amount of time that
+   the OpenVPN client repeats the pull request until it times out.
+ 
+---key file
+-  Local peer's private key in .pem format. Use the private key which was
+-  generated when you built your peer's certificate (see ``--cert file``
+-  above).
++--key file|uri
++  Local peer's private key in .pem format or a URI. Use the private key
++  which was generated when you built your peer's certificate (see
++  ``--cert file`` above). URI is supported only when built with OpenSSL 3.0
++  or later and any required providers are loaded. (See `--cert` for more details).
+ 
+ --pkcs12 file
+   Specify a PKCS #12 file containing local private key, local certificate,
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index d2ef895..36105ce 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -567,10 +567,10 @@
+     "--dh file       : File containing Diffie Hellman parameters\n"
+     "                  in .pem format (for --tls-server only).\n"
+     "                  Use \"openssl dhparam -out dh1024.pem 1024\" to generate.\n"
+-    "--cert file     : Local certificate in .pem format -- must be signed\n"
+-    "                  by a Certificate Authority in --ca file.\n"
++    "--cert file     : Local certificate in .pem format or a URI -- must be signed\n"
++    "                  by a Certificate Authority in --ca file used by the peer.\n"
+     "--extra-certs file : one or more PEM certs that complete the cert chain.\n"
+-    "--key file      : Local private key in .pem format.\n"
++    "--key file      : Local private key in .pem format or a URI.\n"
+     "--tls-version-min <version> ['or-highest'] : sets the minimum TLS version we\n"
+     "    will accept from the peer.  If version is unrecognized and 'or-highest'\n"
+     "    is specified, require max TLS version supported by SSL implementation.\n"
+@@ -3851,6 +3851,7 @@
+ #define CHKACC_FILEXSTWR (1<<2)  /** If file exists, is it writable? */
+ #define CHKACC_ACPTSTDIN (1<<3)  /** If filename is stdin, it's allowed and "exists" */
+ #define CHKACC_PRIVATE (1<<4)    /** Warn if this (private) file is group/others accessible */
++#define CHKACC_ACCEPT_URI (1<<5) /** If filename is a URI, no check is done unless it starts with file: */
+ 
+ static bool
+ check_file_access(const int type, const char *file, const int mode, const char *opt)
+@@ -3871,6 +3872,21 @@
+         return false;
+     }
+ 
++    /* file name is a URI if its first segment  has ":" (i.e., before any "/")
++     * Then no checks done if CHKACC_ACCEPT_URI is set and the URI does not start with "file:"
++     */
++    if ((type & CHKACC_ACCEPT_URI) && strchr(file, ':'))
++    {
++        if (!strncmp(file, "file:", 5))
++        {
++            file += 5;
++        }
++        else if (!strchr(file, '/') || strchr(file, '/') > strchr(file, ':'))
++        {
++            return false;
++        }
++    }
++
+     /* Is the directory path leading to the given file accessible? */
+     if (type & CHKACC_DIRPATH)
+     {
+@@ -4069,7 +4085,7 @@
+     errs |= check_file_access_chroot(options->chroot_dir, CHKACC_FILE,
+                                      options->ca_path, R_OK, "--capath");
+ 
+-    errs |= check_file_access_inline(options->cert_file_inline, CHKACC_FILE,
++    errs |= check_file_access_inline(options->cert_file_inline, CHKACC_FILE|CHKACC_ACCEPT_URI,
+                                      options->cert_file, R_OK, "--cert");
+ 
+     errs |= check_file_access_inline(options->extra_certs_file, CHKACC_FILE,
+@@ -4079,7 +4095,7 @@
+     if (!(options->management_flags & MF_EXTERNAL_KEY))
+     {
+         errs |= check_file_access_inline(options->priv_key_file_inline,
+-                                         CHKACC_FILE|CHKACC_PRIVATE,
++                                         CHKACC_FILE|CHKACC_PRIVATE|CHKACC_ACCEPT_URI,
+                                          options->priv_key_file, R_OK, "--key");
+     }
+ 
+diff --git a/src/openvpn/ssl_openssl.c b/src/openvpn/ssl_openssl.c
+index e8a30a3..05555a3 100644
+--- a/src/openvpn/ssl_openssl.c
++++ b/src/openvpn/ssl_openssl.c
+@@ -65,6 +65,12 @@
+ #include <openssl/ec.h>
+ #endif
+ 
++#if OPENSSL_VERSION_NUMBER >= 0x30000000L
++#define HAVE_OPENSSL_STORE_API
++#include <openssl/ui.h>
++#include <openssl/store.h>
++#endif
++
+ #if defined(_MSC_VER) && !defined(_M_ARM64)
+ #include <openssl/applink.c>
+ #endif
+@@ -768,6 +774,111 @@
+ #endif /* OPENSSL_NO_EC */
+ }
+ 
++#if defined(HAVE_OPENSSL_STORE_API)
++/**
++ * A wrapper for pem_password_callback for use with OpenSSL UI_METHOD.
++ */
++static int
++ui_reader(UI *ui, UI_STRING *uis)
++{
++    SSL_CTX *ctx = UI_get0_user_data(ui);
++
++    if (UI_get_string_type(uis) == UIT_PROMPT)
++    {
++        const char *prompt = UI_get0_output_string(uis);
++
++        /* If pkcs#11 Use custom prompt similar to pkcs11-helper */
++        if (strstr(prompt, "PKCS#11"))
++        {
++            struct user_pass up;
++            get_user_pass(&up, NULL, "PKCS#11 token", GET_USER_PASS_MANAGEMENT|GET_USER_PASS_PASSWORD_ONLY);
++            UI_set_result(ui, uis, up.password);
++            purge_user_pass(&up, true);
++        }
++        else /* use our generic 'Private Key' passphrase callback */
++        {
++            char password[64];
++            pem_password_cb *cb = SSL_CTX_get_default_passwd_cb(ctx);
++            void *d = SSL_CTX_get_default_passwd_cb_userdata(ctx);
++
++            cb(password, sizeof(password), 0, d);
++            UI_set_result(ui, uis, password);
++            secure_memzero(password, sizeof(password));
++        }
++
++        return 1;
++    }
++    return 0;
++}
++#endif /* defined(HAVE_OPENSSL_STORE_API) */
++
++/**
++ * Load private key from OSSL_STORE URI or file
++ * uri : URI of object or filename
++ * ssl_ctx : SSL_CTX for UI prompt
++ *
++ * Return a pointer to the key or NULL if not found.
++ * Caller must free the key after use.
++ */
++static void *
++load_pkey_from_uri(const char *uri, SSL_CTX *ssl_ctx)
++{
++    EVP_PKEY *pkey = NULL;
++
++#if !defined(HAVE_OPENSSL_STORE_API)
++
++    /* Treat the uri as file name */
++    BIO *in = BIO_new_file(uri, "r");
++    if (!in)
++    {
++        return NULL;
++    }
++    pkey = PEM_read_bio_PrivateKey(in, NULL,
++                                   SSL_CTX_get_default_passwd_cb(ssl_ctx),
++                                   SSL_CTX_get_default_passwd_cb_userdata(ssl_ctx));
++    BIO_free(in);
++
++#else /* defined(HAVE_OPENSSL_STORE_API) */
++
++    OSSL_STORE_CTX *store_ctx = NULL;
++    OSSL_STORE_INFO *info = NULL;
++
++    UI_METHOD *ui_method = UI_create_method("openvpn");
++    if (!ui_method)
++    {
++        msg(M_WARN, "OpenSSL UI creation failed");
++        return NULL;
++    }
++    UI_method_set_reader(ui_method, ui_reader);
++
++    store_ctx = OSSL_STORE_open_ex(uri, tls_libctx, NULL, ui_method, ssl_ctx,
++                                   NULL, NULL, NULL);
++    if (!store_ctx)
++    {
++        goto end;
++    }
++    if (OSSL_STORE_expect(store_ctx, OSSL_STORE_INFO_PKEY) != 1)
++    {
++        goto end;
++    }
++    info = OSSL_STORE_load(store_ctx);
++    if (!info)
++    {
++        goto end;
++    }
++    pkey = OSSL_STORE_INFO_get1_PKEY(info);
++    OSSL_STORE_INFO_free(info);
++    msg(D_TLS_DEBUG_MED, "Found pkey in store using URI: %s", uri);
++
++end:
++    OSSL_STORE_close(store_ctx);
++    UI_destroy_method(ui_method);
++
++#endif /* defined(HAVE_OPENSSL_STORE_API) */
++
++    return pkey;
++}
++
+ int
+ tls_ctx_load_pkcs12(struct tls_root_ctx *ctx, const char *pkcs12_file,
+                     bool pkcs12_file_inline, bool load_ca_file)
+@@ -945,9 +1056,103 @@
+     }
+ }
+ 
+-void
+-tls_ctx_load_cert_file(struct tls_root_ctx *ctx, const char *cert_file,
+-                       bool cert_file_inline)
++static bool
++cert_uri_supported(void)
++{
++#if defined(HAVE_OPENSSL_STORE_API)
++    return 1;
++#else
++    return 0;
++#endif
++}
++
++static void
++tls_ctx_load_cert_uri(struct tls_root_ctx *tls_ctx, const char *uri)
++{
++#if defined(HAVE_OPENSSL_STORE_API)
++    X509 *x = NULL;
++    int ret = 0;
++    OSSL_STORE_CTX *store_ctx = NULL;
++    OSSL_STORE_INFO *info = NULL;
++
++    ASSERT(NULL != tls_ctx);
++
++    UI_METHOD *ui_method = UI_create_method("openvpn");
++    if (!ui_method)
++    {
++        msg(M_WARN, "OpenSSL UI method creation failed");
++        goto end;
++    }
++    UI_method_set_reader(ui_method, ui_reader);
++
++    store_ctx = OSSL_STORE_open_ex(uri, tls_libctx, NULL, ui_method, tls_ctx->ctx,
++                                   NULL, NULL, NULL);
++    if (!store_ctx)
++    {
++        goto end;
++    }
++    if (OSSL_STORE_expect(store_ctx, OSSL_STORE_INFO_CERT) != 1)
++    {
++        goto end;
++    }
++
++    info = OSSL_STORE_load(store_ctx);
++    if (!info)
++    {
++        goto end;
++    }
++
++    x = OSSL_STORE_INFO_get0_CERT(info);
++    if (x == NULL)
++    {
++        goto end;
++    }
++    msg(D_TLS_DEBUG_MED, "Found cert in store using URI: %s", uri);
++
++    ret = SSL_CTX_use_certificate(tls_ctx->ctx, x);
++    if (!ret)
++    {
++        goto end;
++    }
++    OSSL_STORE_INFO_free(info);
++
++    /* iterate through the store and add extra certificates if any to the chain */
++    info = OSSL_STORE_load(store_ctx);
++    while (info && !OSSL_STORE_eof(store_ctx))
++    {
++        x = OSSL_STORE_INFO_get1_CERT(info);
++        if (x && SSL_CTX_add_extra_chain_cert(tls_ctx->ctx, x) != 1)
++        {
++            X509_free(x);
++            crypto_msg(M_FATAL, "Error adding extra certificate");
++            break;
++        }
++        OSSL_STORE_INFO_free(info);
++        info = OSSL_STORE_load(store_ctx);
++    }
++
++end:
++    if (!ret)
++    {
++        crypto_print_openssl_errors(M_WARN);
++        crypto_msg(M_FATAL, "Cannot load certificate from URI <%s>", uri);
++    }
++    else
++    {
++        crypto_print_openssl_errors(M_DEBUG);
++    }
++
++    UI_destroy_method(ui_method);
++    OSSL_STORE_INFO_free(info);
++    OSSL_STORE_close(store_ctx);
++#else /* defined(HAVE_OPENSSL_STORE_API */
++    ASSERT(0);
++#endif /* defined(HAVE_OPENSSL_STORE_API */
++}
++
++static void
++tls_ctx_load_cert_pem_file(struct tls_root_ctx *ctx, const char *cert_file,
++                           bool cert_file_inline)
+ {
+     BIO *in = NULL;
+     X509 *x = NULL;
+@@ -961,7 +1166,7 @@
+     }
+     else
+     {
+-        in = BIO_new_file(cert_file, "r");
++        in = BIO_new_file((char *) cert_file, "r");
+     }
+ 
+     if (in == NULL)
+@@ -1007,6 +1212,20 @@
+     X509_free(x);
+ }
+ 
++void
++tls_ctx_load_cert_file(struct tls_root_ctx *ctx, const char *cert_file,
++                       bool cert_file_inline)
++{
++    if (cert_uri_supported() && !cert_file_inline)
++    {
++        tls_ctx_load_cert_uri(ctx, cert_file);
++    }
++    else
++    {
++        tls_ctx_load_cert_pem_file(ctx, cert_file, cert_file_inline);
++    }
++}
++
+ int
+ tls_ctx_load_priv_file(struct tls_root_ctx *ctx, const char *priv_key_file,
+                        bool priv_key_file_inline)
+@@ -1023,21 +1242,19 @@
+     if (priv_key_file_inline)
+     {
+         in = BIO_new_mem_buf((char *) priv_key_file, -1);
++        if (in == NULL)
++        {
++            goto end;
++        }
++        pkey = PEM_read_bio_PrivateKey(in, NULL,
++                                       SSL_CTX_get_default_passwd_cb(ctx->ctx),
++                                       SSL_CTX_get_default_passwd_cb_userdata(ctx->ctx));
+     }
+     else
+     {
+-        in = BIO_new_file(priv_key_file, "r");
++        pkey = load_pkey_from_uri(priv_key_file, ssl_ctx);
+     }
+ 
+-    if (!in)
+-    {
+-        goto end;
+-    }
+-
+-    pkey = PEM_read_bio_PrivateKey(in, NULL,
+-                                   SSL_CTX_get_default_passwd_cb(ctx->ctx),
+-                                   SSL_CTX_get_default_passwd_cb_userdata(ctx->ctx));
+-
+     if (!pkey || !SSL_CTX_use_PrivateKey(ssl_ctx, pkey))
+     {
+ #ifdef ENABLE_MANAGEMENT
+diff --git a/tests/unit_tests/openvpn/test_ssl.c b/tests/unit_tests/openvpn/test_ssl.c
+index a4b2101..da50e55 100644
+--- a/tests/unit_tests/openvpn/test_ssl.c
++++ b/tests/unit_tests/openvpn/test_ssl.c
+@@ -66,6 +66,18 @@
+ }
+ #endif
+ 
++/* stubs for some unused functions instead of pulling in too many dependencies */
++bool
++get_user_pass_cr(struct user_pass *up, const char *auth_file, const char *prefix,
++                 const unsigned int flags, const char *auth_challenge)
++{
++    return false;
++}
++void
++purge_user_pass(struct user_pass *up, bool force)
++{
++    return;
++}
+ 
+ const char *unittest_cert = "-----BEGIN CERTIFICATE-----\n"
+                             "MIIBuTCCAUCgAwIBAgIUTLtjSBzx53qZRvZ6Ur7D9kgoOHkwCgYIKoZIzj0EAwIw\n"
 
