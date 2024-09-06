@@ -1,15 +1,14 @@
-From: "uddr (Code Review)" <gerrit@...515...>
-Date: Fri, 6 Sep 2024 12:33:01 +0000
+From: "plaisthos (Code Review)" <gerrit@...515...>
+Date: Fri, 6 Sep 2024 12:45:34 +0000
 In-Reply-To: <gerrit.1720619824000.I9b7a3df012e7606ddb04a944e3fa33247180e8dd@...2715...>
 References: <gerrit.1720619824000.I9b7a3df012e7606ddb04a944e3fa33247180e8dd@...2715...>
-Reply-To: yura.uddr@...277..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...,
- yura.uddr@...277...
-Message-ID: <ba9bf937690d75488c82c05eca7472bfae27d09c-EmailReviewComments-HTML@...2715...>
+Reply-To: arne-openvpn@...1227..., openvpn-devel@lists.sourceforge.net,
+ frank@...2641..., yura.uddr@...277...
+Message-ID: <f75268ea799c1cd3c5ad639ed1dd0c7eeddfc810-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="A3h8CvheXMs="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="iK27navBfwE="; charset=UTF-8
 Subject: [Openvpn-devel] [S] Change in openvpn[master]: configure: Allow to
  detect git checkout if .git is not a directory
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -21,16 +20,16 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 To: flichtenheld <frank@...2641...>
-Cc: uddr <yura.uddr@...277...>, plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Cc: uddr <yura.uddr@...277...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---A3h8CvheXMs=
+--iK27navBfwE=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: flichtenheld, plaisthos.
+Attention is currently required from: flichtenheld.
 
-uddr has posted comments on this change. ( http://gerrit.openvpn.net/c/open=
-vpn/+/675?usp=3Demail )
+plaisthos has posted comments on this change. ( http://gerrit.openvpn.net/c=
+/openvpn/+/675?usp=3Demail )
 
 Change subject: configure: Allow to detect git checkout if .git is not a di=
 rectory
@@ -54,18 +53,17 @@ Gerrit-Owner: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-Reviewer: uddr <yura.uddr@...277...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
 Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Comment-Date: Fri, 06 Sep 2024 12:33:01 +0000
+Gerrit-Comment-Date: Fri, 06 Sep 2024 12:45:34 +0000
 Gerrit-HasComments: No
 Gerrit-Has-Labels: Yes
 Gerrit-MessageType: comment
 
---A3h8CvheXMs=
+--iK27navBfwE=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p> Attention is currently required from: flichtenheld, plaisthos. </p>
+<p> Attention is currently required from: flichtenheld. </p>
 <p>Patch set 2:<span style=3D"border-radius: 3px; display: inline-block; ma=
 rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
 </p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/675?usp=3Demail">Vi=
@@ -92,16 +90,14 @@ a33247180e8dd </div>
 gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
 41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Fri, 06 Sep 2024 12:33:01=
+<div style=3D"display:none"> Gerrit-Comment-Date: Fri, 06 Sep 2024 12:45:34=
  +0000 </div>
 <div style=3D"display:none"> Gerrit-HasComments: No </div>
 <div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
 <div style=3D"display:none"> Gerrit-MessageType: comment </div>
 
 
---A3h8CvheXMs=--
+--iK27navBfwE=--
 
