@@ -1,14 +1,14 @@
 From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Sun, 8 Sep 2024 20:41:42 +0000
+Date: Sun, 8 Sep 2024 20:41:40 +0000
 In-Reply-To: <gerrit.1723673969000.I82b32d5ab472926e7889a5f4a90caba14231879a@...2715...>
 References: <gerrit.1723673969000.I82b32d5ab472926e7889a5f4a90caba14231879a@...2715...>
 Reply-To: gert@...1296..., arne-openvpn@...1227..., selva.nair@...277...,
  openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <b07212ad15677091ea91cff5d748e96e086c222e-HTML@...2715...>
+Message-ID: <b07212ad15677091ea91cff5d748e96e086c222e-EmailReplacePatchSet-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="by7JLaGB+4U="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="UxummgzdQ/o="; charset=UTF-8
 Subject: [Openvpn-devel] [L] Change in openvpn[master]: Interpret --key and
  --cert option argument as URI
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -19,15 +19,19 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: selvanair <selva.nair@...277...>
-Cc: flichtenheld <frank@...2641...>, plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: selvanair <selva.nair@...277...>, plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---by7JLaGB+4U=
+--UxummgzdQ/o=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-cron2 has submitted this change. ( http://gerrit.openvpn.net/c/openvpn/+/72=
-6?usp=3Demail )
+cron2 has uploaded a new patch set (#4) to the change originally created by=
+ selvanair. ( http://gerrit.openvpn.net/c/openvpn/+/726?usp=3Demail )
+
+The following approvals got outdated and were removed:
+Code-Review+2 by flichtenheld
+
 
 Change subject: Interpret --key and --cert option argument as URI
 ......................................................................
@@ -110,7 +114,7 @@ M tests/unit_tests/openvpn/test_ssl.c
 4 files changed, 280 insertions(+), 27 deletions(-)
 
 
-
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/26/726/4
 
 diff --git a/doc/man-sections/tls-options.rst b/doc/man-sections/tls-option=
 s.rst
@@ -592,509 +596,513 @@ Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-Reviewer: selvanair <selva.nair@...277...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-MessageType: merged
+Gerrit-MessageType: newpatchset
 
---by7JLaGB+4U=
+--UxummgzdQ/o=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p>cron2 <strong>submitted</strong> this change.</p><p><a href=3D"http://ge=
-rrit.openvpn.net/c/openvpn/+/726?usp=3Demail">View Change</a></p><div style=
-=3D"white-space:pre-wrap"></div><pre style=3D"font-family: monospace,monosp=
-ace; white-space: pre-wrap;">Interpret --key and --cert option argument as =
-URI<br><br>OpenSSL 3 has providers which can load keys and certificates<br>=
-from various key stores and HSMs using a provider-specific URI.<br>While ce=
-rtificates are generally exportable, and some providers<br>support a PEM fi=
-le that acts as a proxy for non-exportable private<br>keys, not all provide=
-rs are expected to do so. A generic capability<br>to read keys and certific=
-ates from URIs appears useful.<br><br>This patch does this by extending the=
- scope of the argument for<br>&quot;--key&quot; and &quot;--cert&quot; opti=
-ons to include URIs. Many of OpenSSL 3<br>utilities also work the same way:=
- e.g., the &quot;-in&quot; option for<br>&quot;openssl pkey&quot; or &quot;=
-openssl x509&quot; could be a filename or URI.<br>Other applications have s=
-tarted emulating this behaviour:<br>e.g., pkcs11: URI works as an alternati=
-ve to a file name for<br>certificates and keys in apache. Even for files, t=
-his has a nice<br>side effect that non-PEM files get transparently parsed. =
-E.g., a<br>pkcs12 file could be used in place of a PEM file without needing=
-<br>any extra options.<br><br>This is backward compatible as OpenSSL falls =
-back to treating URIs<br>with no scheme or unrecognized scheme as file name=
-s.<br><br>Parsing of inlined keys and certificates is unchanged (those<br>s=
-hould be in PEM format).<br><br>Specification of URIs that OpenSSL accepts =
-depends on the<br>providers that support them. Some are standard URIs such =
-as<br>&quot;file:/path&quot;, but providers may support non-standard URIs<b=
-r>with arbitrary scheme names. OpenSSL by itself recognizes<br>only file UR=
-I.  However, the implementation is agnostic to the<br>URI specification as =
-parsing is done by the provider that supports<br>the URI. A new URI gets au=
-tomatically recognized when the provider<br>that supports it is loaded.<br>=
-<br>Below are some usage examples:<br><br>Relative or absolute path to a fi=
-le or as a URI &quot;file:/absolute/path&quot;:<br><br>   --key mykey.pem  =
-    (same as what is currently supported)<br>   --key file:/path/to/mykey.p=
-em<br>   --cert file:/path/to/mycert.pem<br><br>Other file types supported =
-by OpenSSL would also work:<br><br>   --key client.p12<br>   --cert client.=
-p12<br><br>pkcs11-provider supports &quot;pkcs11:&quot; URI (RFC 7512):<br>=
-<br>   --key pkcs11:token=3DFoo;id=3D%01<br>   --cert pkcs11:token=3DFoo;id=
-=3D%01<br><br>tpm2-provider recognizes a custom URI &quot;handle:&lt;hex&gt=
-;&quot;:<br><br>   --key handle:0x81000000<br><br>These examples assume tha=
-t required providers, if any, are loaded<br>and configured.<br><br>v2: same=
- as PR 591 but with the fixup commit that addresses review comments is squa=
-shed.<br><br>Change-Id: I82b32d5ab472926e7889a5f4a90caba14231879a<br>Signed=
--off-by: Selva Nair &lt;selva.nair@...277...&gt;<br>Acked-by: Frank Lichten=
-held &lt;frank@...2641...&gt;<br>Message-Id: &lt;20240906103734.36633-1-fra=
-nk@...2641...&gt;<br>URL: https://www.mail-archive.com/openvpn-devel@...1199...=
-sourceforge.net/msg29075.html<br>Signed-off-by: Gert Doering &lt;gert@...1711...=
-96...&gt;<br>---<br>M doc/man-sections/tls-options.rst<br>M src/openvpn/opt=
-ions.c<br>M src/openvpn/ssl_openssl.c<br>M tests/unit_tests/openvpn/test_ss=
-l.c<br>4 files changed, 280 insertions(+), 27 deletions(-)<br><br></pre>
-<pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><sp=
-an>diff --git a/doc/man-sections/tls-options.rst b/doc/man-sections/tls-opt=
-ions.rst</span><br><span>index de74c0d..cdb8571 100644</span><br><span>--- =
-a/doc/man-sections/tls-options.rst</span><br><span>+++ b/doc/man-sections/t=
-ls-options.rst</span><br><span>@@ -85,10 +85,17 @@</span><br><span>   OpenV=
-PN will log the usual warning in the logs if the relevant CRL is</span><br>=
-<span>   missing, but the connection will be allowed.</span><br><span> </sp=
-an><br><span>---cert file</span><br><span style=3D"color: hsl(0, 100%, 40%)=
-;">-  Local peer&#39;s signed certificate in .pem format -- must be signed =
-by a</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  certificate aut=
-hority whose certificate is in ``--ca file``. Each peer</span><br><span sty=
-le=3D"color: hsl(0, 100%, 40%);">-  in an OpenVPN link running in TLS mode =
-should have its own certificate</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+--cert file|uri</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+  Local peer&#39;s signed certificate in .pem format or as a URI --=
- must be</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  signed by=
- a certificate authority whose certificate is in ``--ca file``</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+  in the peer configuration. URI=
- is supported only when built with</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+  OpenSSL 3.0 or later and any required providers are loaded=
-. Types</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  of URIs su=
-pported and their syntax depends on providers. OpenSSL has</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+  internal support for &quot;file:/a=
-bsolute/path&quot; URI in which case the scheme</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+  &quot;file:&quot; is optional, and any file f=
-ormat recognized by OpenSSL (e.g., PEM,</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+  PKCS12) is supported. PKCS#11 URI (RFC 7512) is suppo=
-rted by pkcs11-provider.</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  Each peer in=
- an OpenVPN link running in TLS mode should have its own certificate</span>=
-<br><span>   and private key file. In addition, each certificate should hav=
-e been</span><br><span>   signed by the key of a certificate authority whos=
-e public key resides in</span><br><span>   the ``--ca`` certificate authori=
-ty file. You can easily make your own</span><br><span>@@ -203,10 +210,11 @@=
-</span><br><span>   The ``--hand-window`` parameter also controls the amoun=
-t of time that</span><br><span>   the OpenVPN client repeats the pull reque=
-st until it times out.</span><br><span> </span><br><span>---key file</span>=
-<br><span style=3D"color: hsl(0, 100%, 40%);">-  Local peer&#39;s private k=
-ey in .pem format. Use the private key which was</span><br><span style=3D"c=
-olor: hsl(0, 100%, 40%);">-  generated when you built your peer&#39;s certi=
-ficate (see ``--cert file``</span><br><span style=3D"color: hsl(0, 100%, 40=
-%);">-  above).</span><br><span style=3D"color: hsl(120, 100%, 40%);">+--ke=
-y file|uri</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  Local p=
-eer&#39;s private key in .pem format or a URI. Use the private key</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+  which was generated when y=
-ou built your peer&#39;s certificate (see</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+  ``--cert file`` above). URI is supported only when =
-built with OpenSSL 3.0</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+  or later and any required providers are loaded. (See `--cert` for more=
- details).</span><br><span> </span><br><span> --pkcs12 file</span><br><span=
->   Specify a PKCS #12 file containing local private key, local certificate=
-,</span><br><span>diff --git a/src/openvpn/options.c b/src/openvpn/options.=
-c</span><br><span>index d2ef895..36105ce 100644</span><br><span>--- a/src/o=
-penvpn/options.c</span><br><span>+++ b/src/openvpn/options.c</span><br><spa=
-n>@@ -567,10 +567,10 @@</span><br><span>     &quot;--dh file       : File c=
-ontaining Diffie Hellman parameters\n&quot;</span><br><span>     &quot;    =
-              in .pem format (for --tls-server only).\n&quot;</span><br><sp=
-an>     &quot;                  Use \&quot;openssl dhparam -out dh1024.pem =
-1024\&quot; to generate.\n&quot;</span><br><span style=3D"color: hsl(0, 100=
-%, 40%);">-    &quot;--cert file     : Local certificate in .pem format -- =
-must be signed\n&quot;</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
--    &quot;                  by a Certificate Authority in --ca file.\n&quo=
-t;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    &quot;--cert =
-file     : Local certificate in .pem format or a URI -- must be signed\n&qu=
-ot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    &quot;      =
-            by a Certificate Authority in --ca file used by the peer.\n&quo=
-t;</span><br><span>     &quot;--extra-certs file : one or more PEM certs th=
-at complete the cert chain.\n&quot;</span><br><span style=3D"color: hsl(0, =
-100%, 40%);">-    &quot;--key file      : Local private key in .pem format.=
-\n&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    &quot;-=
--key file      : Local private key in .pem format or a URI.\n&quot;</span><=
-br><span>     &quot;--tls-version-min &lt;version&gt; [&#39;or-highest&#39;=
-] : sets the minimum TLS version we\n&quot;</span><br><span>     &quot;    =
-will accept from the peer.  If version is unrecognized and &#39;or-highest&=
-#39;\n&quot;</span><br><span>     &quot;    is specified, require max TLS v=
-ersion supported by SSL implementation.\n&quot;</span><br><span>@@ -3851,6 =
-+3851,7 @@</span><br><span> #define CHKACC_FILEXSTWR (1&lt;&lt;2)  /** If f=
-ile exists, is it writable? */</span><br><span> #define CHKACC_ACPTSTDIN (1=
-&lt;&lt;3)  /** If filename is stdin, it&#39;s allowed and &quot;exists&quo=
-t; */</span><br><span> #define CHKACC_PRIVATE (1&lt;&lt;4)    /** Warn if t=
-his (private) file is group/others accessible */</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+#define CHKACC_ACCEPT_URI (1&lt;&lt;5) /** If =
-filename is a URI, no check is done unless it starts with file: */</span><b=
-r><span> </span><br><span> static bool</span><br><span> check_file_access(c=
-onst int type, const char *file, const int mode, const char *opt)</span><br=
-><span>@@ -3871,6 +3872,21 @@</span><br><span>         return false;</span>=
-<br><span>     }</span><br><span> </span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+    /* file name is a URI if its first segment  has &quot;:&=
-quot; (i.e., before any &quot;/&quot;)</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+     * Then no checks done if CHKACC_ACCEPT_URI is set a=
-nd the URI does not start with &quot;file:&quot;</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+     */</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+    if ((type &amp; CHKACC_ACCEPT_URI) &amp;&amp; strchr(f=
-ile, &#39;:&#39;))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-   {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        if (!st=
-rncmp(file, &quot;file:&quot;, 5))</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+        {</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+            file +=3D 5;</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+        }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-        else if (!strchr(file, &#39;/&#39;) || strchr(file, &#39;/&#39;) &g=
-t; strchr(file, &#39;:&#39;))</span><br><span style=3D"color: hsl(120, 100%=
+<p>cron2 <strong>uploaded patch set #4</strong> to the change originally cr=
+eated by selvanair.</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/=
+726?usp=3Demail">View Change</a></p><p>The following approvals got outdated=
+ and were removed:
+Code-Review+2 by flichtenheld</p><pre style=3D"font-family: monospace,monos=
+pace; white-space: pre-wrap;">Interpret --key and --cert option argument as=
+ URI<br><br>OpenSSL 3 has providers which can load keys and certificates<br=
+>from various key stores and HSMs using a provider-specific URI.<br>While c=
+ertificates are generally exportable, and some providers<br>support a PEM f=
+ile that acts as a proxy for non-exportable private<br>keys, not all provid=
+ers are expected to do so. A generic capability<br>to read keys and certifi=
+cates from URIs appears useful.<br><br>This patch does this by extending th=
+e scope of the argument for<br>&quot;--key&quot; and &quot;--cert&quot; opt=
+ions to include URIs. Many of OpenSSL 3<br>utilities also work the same way=
+: e.g., the &quot;-in&quot; option for<br>&quot;openssl pkey&quot; or &quot=
+;openssl x509&quot; could be a filename or URI.<br>Other applications have =
+started emulating this behaviour:<br>e.g., pkcs11: URI works as an alternat=
+ive to a file name for<br>certificates and keys in apache. Even for files, =
+this has a nice<br>side effect that non-PEM files get transparently parsed.=
+ E.g., a<br>pkcs12 file could be used in place of a PEM file without needin=
+g<br>any extra options.<br><br>This is backward compatible as OpenSSL falls=
+ back to treating URIs<br>with no scheme or unrecognized scheme as file nam=
+es.<br><br>Parsing of inlined keys and certificates is unchanged (those<br>=
+should be in PEM format).<br><br>Specification of URIs that OpenSSL accepts=
+ depends on the<br>providers that support them. Some are standard URIs such=
+ as<br>&quot;file:/path&quot;, but providers may support non-standard URIs<=
+br>with arbitrary scheme names. OpenSSL by itself recognizes<br>only file U=
+RI.  However, the implementation is agnostic to the<br>URI specification as=
+ parsing is done by the provider that supports<br>the URI. A new URI gets a=
+utomatically recognized when the provider<br>that supports it is loaded.<br=
+><br>Below are some usage examples:<br><br>Relative or absolute path to a f=
+ile or as a URI &quot;file:/absolute/path&quot;:<br><br>   --key mykey.pem =
+     (same as what is currently supported)<br>   --key file:/path/to/mykey.=
+pem<br>   --cert file:/path/to/mycert.pem<br><br>Other file types supported=
+ by OpenSSL would also work:<br><br>   --key client.p12<br>   --cert client=
+.p12<br><br>pkcs11-provider supports &quot;pkcs11:&quot; URI (RFC 7512):<br=
+><br>   --key pkcs11:token=3DFoo;id=3D%01<br>   --cert pkcs11:token=3DFoo;i=
+d=3D%01<br><br>tpm2-provider recognizes a custom URI &quot;handle:&lt;hex&g=
+t;&quot;:<br><br>   --key handle:0x81000000<br><br>These examples assume th=
+at required providers, if any, are loaded<br>and configured.<br><br>v2: sam=
+e as PR 591 but with the fixup commit that addresses review comments is squ=
+ashed.<br><br>Change-Id: I82b32d5ab472926e7889a5f4a90caba14231879a<br>Signe=
+d-off-by: Selva Nair &lt;selva.nair@...277...&gt;<br>Acked-by: Frank Lichte=
+nheld &lt;frank@...2641...&gt;<br>Message-Id: &lt;20240906103734.36633-1-fr=
+ank@...2641...&gt;<br>URL: https://www.mail-archive.com/openvpn-devel@...1697...=
+.sourceforge.net/msg29075.html<br>Signed-off-by: Gert Doering &lt;gert@...1386...=
+296...&gt;<br>---<br>M doc/man-sections/tls-options.rst<br>M src/openvpn/op=
+tions.c<br>M src/openvpn/ssl_openssl.c<br>M tests/unit_tests/openvpn/test_s=
+sl.c<br>4 files changed, 280 insertions(+), 27 deletions(-)<br><br></pre><p=
+re style=3D"font-family: monospace,monospace; white-space: pre-wrap;">git p=
+ull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/26/726/4</pre><pre =
+style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><span>di=
+ff --git a/doc/man-sections/tls-options.rst b/doc/man-sections/tls-options.=
+rst</span><br><span>index de74c0d..cdb8571 100644</span><br><span>--- a/doc=
+/man-sections/tls-options.rst</span><br><span>+++ b/doc/man-sections/tls-op=
+tions.rst</span><br><span>@@ -85,10 +85,17 @@</span><br><span>   OpenVPN wi=
+ll log the usual warning in the logs if the relevant CRL is</span><br><span=
+>   missing, but the connection will be allowed.</span><br><span> </span><b=
+r><span>---cert file</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
+ Local peer&#39;s signed certificate in .pem format -- must be signed by a<=
+/span><br><span style=3D"color: hsl(0, 100%, 40%);">-  certificate authorit=
+y whose certificate is in ``--ca file``. Each peer</span><br><span style=3D=
+"color: hsl(0, 100%, 40%);">-  in an OpenVPN link running in TLS mode shoul=
+d have its own certificate</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+--cert file|uri</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+  Local peer&#39;s signed certificate in .pem format or as a URI -- must=
+ be</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  signed by a ce=
+rtificate authority whose certificate is in ``--ca file``</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+  in the peer configuration. URI is s=
+upported only when built with</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+  OpenSSL 3.0 or later and any required providers are loaded. Typ=
+es</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  of URIs support=
+ed and their syntax depends on providers. OpenSSL has</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+  internal support for &quot;file:/absolu=
+te/path&quot; URI in which case the scheme</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+  &quot;file:&quot; is optional, and any file format=
+ recognized by OpenSSL (e.g., PEM,</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+  PKCS12) is supported. PKCS#11 URI (RFC 7512) is supported =
+by pkcs11-provider.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  Each peer in an O=
+penVPN link running in TLS mode should have its own certificate</span><br><=
+span>   and private key file. In addition, each certificate should have bee=
+n</span><br><span>   signed by the key of a certificate authority whose pub=
+lic key resides in</span><br><span>   the ``--ca`` certificate authority fi=
+le. You can easily make your own</span><br><span>@@ -203,10 +210,11 @@</spa=
+n><br><span>   The ``--hand-window`` parameter also controls the amount of =
+time that</span><br><span>   the OpenVPN client repeats the pull request un=
+til it times out.</span><br><span> </span><br><span>---key file</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-  Local peer&#39;s private key in=
+ .pem format. Use the private key which was</span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-  generated when you built your peer&#39;s certificat=
+e (see ``--cert file``</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
+-  above).</span><br><span style=3D"color: hsl(120, 100%, 40%);">+--key fil=
+e|uri</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  Local peer&#=
+39;s private key in .pem format or a URI. Use the private key</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+  which was generated when you bu=
+ilt your peer&#39;s certificate (see</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+  ``--cert file`` above). URI is supported only when built=
+ with OpenSSL 3.0</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+or later and any required providers are loaded. (See `--cert` for more deta=
+ils).</span><br><span> </span><br><span> --pkcs12 file</span><br><span>   S=
+pecify a PKCS #12 file containing local private key, local certificate,</sp=
+an><br><span>diff --git a/src/openvpn/options.c b/src/openvpn/options.c</sp=
+an><br><span>index d2ef895..36105ce 100644</span><br><span>--- a/src/openvp=
+n/options.c</span><br><span>+++ b/src/openvpn/options.c</span><br><span>@@ =
+-567,10 +567,10 @@</span><br><span>     &quot;--dh file       : File contai=
+ning Diffie Hellman parameters\n&quot;</span><br><span>     &quot;         =
+         in .pem format (for --tls-server only).\n&quot;</span><br><span>  =
+   &quot;                  Use \&quot;openssl dhparam -out dh1024.pem 1024\=
+&quot; to generate.\n&quot;</span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">-    &quot;--cert file     : Local certificate in .pem format -- must =
+be signed\n&quot;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
+&quot;                  by a Certificate Authority in --ca file.\n&quot;</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+    &quot;--cert file =
+    : Local certificate in .pem format or a URI -- must be signed\n&quot;</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+    &quot;           =
+       by a Certificate Authority in --ca file used by the peer.\n&quot;</s=
+pan><br><span>     &quot;--extra-certs file : one or more PEM certs that co=
+mplete the cert chain.\n&quot;</span><br><span style=3D"color: hsl(0, 100%,=
+ 40%);">-    &quot;--key file      : Local private key in .pem format.\n&qu=
+ot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    &quot;--key =
+file      : Local private key in .pem format or a URI.\n&quot;</span><br><s=
+pan>     &quot;--tls-version-min &lt;version&gt; [&#39;or-highest&#39;] : s=
+ets the minimum TLS version we\n&quot;</span><br><span>     &quot;    will =
+accept from the peer.  If version is unrecognized and &#39;or-highest&#39;\=
+n&quot;</span><br><span>     &quot;    is specified, require max TLS versio=
+n supported by SSL implementation.\n&quot;</span><br><span>@@ -3851,6 +3851=
+,7 @@</span><br><span> #define CHKACC_FILEXSTWR (1&lt;&lt;2)  /** If file e=
+xists, is it writable? */</span><br><span> #define CHKACC_ACPTSTDIN (1&lt;&=
+lt;3)  /** If filename is stdin, it&#39;s allowed and &quot;exists&quot; */=
+</span><br><span> #define CHKACC_PRIVATE (1&lt;&lt;4)    /** Warn if this (=
+private) file is group/others accessible */</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+#define CHKACC_ACCEPT_URI (1&lt;&lt;5) /** If filen=
+ame is a URI, no check is done unless it starts with file: */</span><br><sp=
+an> </span><br><span> static bool</span><br><span> check_file_access(const =
+int type, const char *file, const int mode, const char *opt)</span><br><spa=
+n>@@ -3871,6 +3872,21 @@</span><br><span>         return false;</span><br><=
+span>     }</span><br><span> </span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+    /* file name is a URI if its first segment  has &quot;:&quot;=
+ (i.e., before any &quot;/&quot;)</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+     * Then no checks done if CHKACC_ACCEPT_URI is set and th=
+e URI does not start with &quot;file:&quot;</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+     */</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+    if ((type &amp; CHKACC_ACCEPT_URI) &amp;&amp; strchr(file, =
+&#39;:&#39;))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+        if (!strncmp=
+(file, &quot;file:&quot;, 5))</span><br><span style=3D"color: hsl(120, 100%=
 , 40%);">+        {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-            return false;</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+        }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> =
-    /* Is the directory path leading to the given file accessible? */</span=
-><br><span>     if (type &amp; CHKACC_DIRPATH)</span><br><span>     {</span=
-><br><span>@@ -4069,7 +4085,7 @@</span><br><span>     errs |=3D check_file_=
-access_chroot(options-&gt;chroot_dir, CHKACC_FILE,</span><br><span>        =
-                              options-&gt;ca_path, R_OK, &quot;--capath&quo=
-t;);</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">=
--    errs |=3D check_file_access_inline(options-&gt;cert_file_inline, CHKAC=
-C_FILE,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    errs |=
-=3D check_file_access_inline(options-&gt;cert_file_inline, CHKACC_FILE|CHKA=
-CC_ACCEPT_URI,</span><br><span>                                      option=
-s-&gt;cert_file, R_OK, &quot;--cert&quot;);</span><br><span> </span><br><sp=
-an>     errs |=3D check_file_access_inline(options-&gt;extra_certs_file, CH=
-KACC_FILE,</span><br><span>@@ -4079,7 +4095,7 @@</span><br><span>     if (!=
-(options-&gt;management_flags &amp; MF_EXTERNAL_KEY))</span><br><span>     =
-{</span><br><span>         errs |=3D check_file_access_inline(options-&gt;p=
-riv_key_file_inline,</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
-                                        CHKACC_FILE|CHKACC_PRIVATE,</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+                           =
-              CHKACC_FILE|CHKACC_PRIVATE|CHKACC_ACCEPT_URI,</span><br><span=
->                                          options-&gt;priv_key_file, R_OK,=
- &quot;--key&quot;);</span><br><span>     }</span><br><span> </span><br><sp=
-an>diff --git a/src/openvpn/ssl_openssl.c b/src/openvpn/ssl_openssl.c</span=
-><br><span>index e8a30a3..05555a3 100644</span><br><span>--- a/src/openvpn/=
-ssl_openssl.c</span><br><span>+++ b/src/openvpn/ssl_openssl.c</span><br><sp=
-an>@@ -65,6 +65,12 @@</span><br><span> #include &lt;openssl/ec.h&gt;</span>=
-<br><span> #endif</span><br><span> </span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+#if OPENSSL_VERSION_NUMBER &gt;=3D 0x30000000L</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+#define HAVE_OPENSSL_STORE_API</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+#include &lt;openssl/=
-ui.h&gt;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#include &l=
-t;openssl/store.h&gt;</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+#endif</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br>=
-<span> #if defined(_MSC_VER) &amp;&amp; !defined(_M_ARM64)</span><br><span>=
- #include &lt;openssl/applink.c&gt;</span><br><span> #endif</span><br><span=
->@@ -768,6 +774,111 @@</span><br><span> #endif /* OPENSSL_NO_EC */</span><b=
-r><span> }</span><br><span> </span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+#if defined(HAVE_OPENSSL_STORE_API)</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+/**</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+ * A wrapper for pem_password_callback for use with OpenSSL UI_MET=
-HOD.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ */</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+static int</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+ui_reader(UI *ui, UI_STRING *uis)</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+    SSL_CTX *ctx =3D UI_get0_user_data(ui);<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+    if (UI_get_string_type(uis) =3D=3D =
-UIT_PROMPT)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+        const char *pr=
-ompt =3D UI_get0_output_string(uis);</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-      /* If pkcs#11 Use custom prompt similar to pkcs11-helper */</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+        if (strstr(prompt, &q=
-uot;PKCS#11&quot;))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-        {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+          =
-  struct user_pass up;</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+            get_user_pass(&amp;up, NULL, &quot;PKCS#11 token&quot;, GET_=
-USER_PASS_MANAGEMENT|GET_USER_PASS_PASSWORD_ONLY);</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+            UI_set_result(ui, uis, up.passwo=
-rd);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            pur=
-ge_user_pass(&amp;up, true);</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+        }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-       else /* use our generic &#39;Private Key&#39; passphrase callback */=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        {</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+            char password[64]=
-;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            pem_pa=
-ssword_cb *cb =3D SSL_CTX_get_default_passwd_cb(ctx);</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+            void *d =3D SSL_CTX_get_defau=
-lt_passwd_cb_userdata(ctx);</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+           =
- cb(password, sizeof(password), 0, d);</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+            UI_set_result(ui, uis, password);</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+            secure_memzero(pas=
-sword, sizeof(password));</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+        }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+        return 1;</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+    return 0;</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+#endif /* defined(HAVE_OPENSSL_STORE_API) */</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(1=
+            file +=3D 5;</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+        }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
+   else if (!strchr(file, &#39;/&#39;) || strchr(file, &#39;/&#39;) &gt; st=
+rchr(file, &#39;:&#39;))</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+        {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
+       return false;</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++        }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span>     /=
+* Is the directory path leading to the given file accessible? */</span><br>=
+<span>     if (type &amp; CHKACC_DIRPATH)</span><br><span>     {</span><br>=
+<span>@@ -4069,7 +4085,7 @@</span><br><span>     errs |=3D check_file_acces=
+s_chroot(options-&gt;chroot_dir, CHKACC_FILE,</span><br><span>             =
+                         options-&gt;ca_path, R_OK, &quot;--capath&quot;);<=
+/span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
+errs |=3D check_file_access_inline(options-&gt;cert_file_inline, CHKACC_FIL=
+E,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    errs |=3D che=
+ck_file_access_inline(options-&gt;cert_file_inline, CHKACC_FILE|CHKACC_ACCE=
+PT_URI,</span><br><span>                                      options-&gt;c=
+ert_file, R_OK, &quot;--cert&quot;);</span><br><span> </span><br><span>    =
+ errs |=3D check_file_access_inline(options-&gt;extra_certs_file, CHKACC_FI=
+LE,</span><br><span>@@ -4079,7 +4095,7 @@</span><br><span>     if (!(option=
+s-&gt;management_flags &amp; MF_EXTERNAL_KEY))</span><br><span>     {</span=
+><br><span>         errs |=3D check_file_access_inline(options-&gt;priv_key=
+_file_inline,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        =
+                                 CHKACC_FILE|CHKACC_PRIVATE,</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+                                  =
+       CHKACC_FILE|CHKACC_PRIVATE|CHKACC_ACCEPT_URI,</span><br><span>      =
+                                    options-&gt;priv_key_file, R_OK, &quot;=
+--key&quot;);</span><br><span>     }</span><br><span> </span><br><span>diff=
+ --git a/src/openvpn/ssl_openssl.c b/src/openvpn/ssl_openssl.c</span><br><s=
+pan>index e8a30a3..05555a3 100644</span><br><span>--- a/src/openvpn/ssl_ope=
+nssl.c</span><br><span>+++ b/src/openvpn/ssl_openssl.c</span><br><span>@@ -=
+65,6 +65,12 @@</span><br><span> #include &lt;openssl/ec.h&gt;</span><br><sp=
+an> #endif</span><br><span> </span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+#if OPENSSL_VERSION_NUMBER &gt;=3D 0x30000000L</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+#define HAVE_OPENSSL_STORE_API</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+#include &lt;openssl/ui.h&gt=
+;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#include &lt;opens=
+sl/store.h&gt;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#endi=
+f</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> =
+#if defined(_MSC_VER) &amp;&amp; !defined(_M_ARM64)</span><br><span> #inclu=
+de &lt;openssl/applink.c&gt;</span><br><span> #endif</span><br><span>@@ -76=
+8,6 +774,111 @@</span><br><span> #endif /* OPENSSL_NO_EC */</span><br><span=
+> }</span><br><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+#if defined(HAVE_OPENSSL_STORE_API)</span><br><span style=3D"color: hsl(1=
 20, 100%, 40%);">+/**</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+ * Load private key from OSSL_STORE URI or file</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+ * uri : URI of object or filename</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+ * ssl_ctx : SSL_CTX for UI pr=
-ompt</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+ * Return a pointer to the key o=
-r NULL if not found.</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+ * Caller must free the key after use.</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+ */</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+static void *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+lo=
-ad_pkey_from_uri(const char *uri, SSL_CTX *ssl_ctx)</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+    EVP_PKEY *pkey =3D NULL;</span><br><span style=3D"color=
+>+ * A wrapper for pem_password_callback for use with OpenSSL UI_METHOD.</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+ */</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+static int</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+ui_reader(UI *ui, UI_STRING *uis)</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+    SSL_CTX *ctx =3D UI_get0_user_data(ui);</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+    if (UI_get_string_type(uis) =3D=3D UIT_PRO=
+MPT)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+        const char *prompt =
+=3D UI_get0_output_string(uis);</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
+ /* If pkcs#11 Use custom prompt similar to pkcs11-helper */</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+        if (strstr(prompt, &quot;P=
+KCS#11&quot;))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
+   {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            str=
+uct user_pass up;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+          get_user_pass(&amp;up, NULL, &quot;PKCS#11 token&quot;, GET_USER_=
+PASS_MANAGEMENT|GET_USER_PASS_PASSWORD_ONLY);</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+            UI_set_result(ui, uis, up.password);<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+            purge_us=
+er_pass(&amp;up, true);</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+        }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
+  else /* use our generic &#39;Private Key&#39; passphrase callback */</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+        {</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+            char password[64];</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+            pem_passwor=
+d_cb *cb =3D SSL_CTX_get_default_passwd_cb(ctx);</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+            void *d =3D SSL_CTX_get_default_pa=
+sswd_cb_userdata(ctx);</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            cb(p=
+assword, sizeof(password), 0, d);</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+            UI_set_result(ui, uis, password);</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+            secure_memzero(password=
+, sizeof(password));</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++        }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+        return 1;</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+    return 0;</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+#endif /* defined(HAVE_OPENSSL_STORE_API) */</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+/**</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+* Load private key from OSSL_STORE URI or file</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+ * uri : URI of object or filename</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+ * ssl_ctx : SSL_CTX for UI promp=
+t</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+ * Return a pointer to the key or N=
+ULL if not found.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *=
+ Caller must free the key after use.</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+ */</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++static void *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+load_=
+pkey_from_uri(const char *uri, SSL_CTX *ssl_ctx)</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+    EVP_PKEY *pkey =3D NULL;</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++#if !defined(HAVE_OPENSSL_STORE_API)</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+   /* Treat the uri as file name */</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+    BIO *in =3D BIO_new_file(uri, &quot;r&quot;);</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+    if (!in)</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+        return NULL;</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+    pkey =3D PEM_read_bio_PrivateKey(in, NULL,</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+                                   S=
+SL_CTX_get_default_passwd_cb(ssl_ctx),</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+                                   SSL_CTX_get_default_p=
+asswd_cb_userdata(ssl_ctx));</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+    BIO_free(in);</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#else /* def=
+ined(HAVE_OPENSSL_STORE_API) */</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    OSS=
+L_STORE_CTX *store_ctx =3D NULL;</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+    OSSL_STORE_INFO *info =3D NULL;</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+    UI_METHOD *ui_method =3D UI_create_method(&quot;openvpn&quot;=
+);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (!ui_metho=
+d)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+        msg(M_WARN, &quot;OpenS=
+SL UI creation failed&quot;);</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+        return NULL;</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+ UI_method_set_reader(ui_method, ui_reader);</span><br><span style=3D"color=
 : hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+#if !defined(HAVE_OPENSSL_STORE_API)</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+    /* Treat the uri as file name */</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+    BIO *in =3D BIO_new_file(uri, &quot;r&quot;);</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (!in)</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+        return NULL;</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+    pkey =3D PEM_read_bio_PrivateKey(in, NULL,</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+                               =
-    SSL_CTX_get_default_passwd_cb(ssl_ctx),</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+                                   SSL_CTX_get_defa=
-ult_passwd_cb_userdata(ssl_ctx));</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+    BIO_free(in);</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#else /=
-* defined(HAVE_OPENSSL_STORE_API) */</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-  OSSL_STORE_CTX *store_ctx =3D NULL;</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+    OSSL_STORE_INFO *info =3D NULL;</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+    UI_METHOD *ui_method =3D UI_create_method(&quot;openvpn&=
-quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (!ui_=
-method)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+        msg(M_WARN, &quot;=
-OpenSSL UI creation failed&quot;);</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+        return NULL;</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+    UI_method_set_reader(ui_method, ui_reader);</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+    store_ctx =3D OSSL_STORE_open_ex(uri, tls_libctx, NULL, ui_m=
-ethod, ssl_ctx,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-                               NULL, NULL, NULL);</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+    if (!store_ctx)</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+        goto end;</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-    if (OSSL_STORE_expect(store_ctx, OSSL_STORE_INFO_PKEY) !=3D 1)</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+        goto end;</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+    info =3D OSSL_STORE_load(store_ctx);</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+    if (!info)</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+        goto end;</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+    pkey =3D OSSL_STORE_INFO_get1_PKEY(info);</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    OSSL_STORE_INFO_free(info);</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+    msg(D_TLS_DEBUG_MED, &quo=
-t;Found pkey in store using URI: %s&quot;, uri);</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+end:</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    O=
-SSL_STORE_close(store_ctx);</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+    UI_destroy_method(ui_method);</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+#endif /* defined(HAVE_OPENSSL_STORE_API) */</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+    return pkey;</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><=
-span> int</span><br><span> tls_ctx_load_pkcs12(struct tls_root_ctx *ctx, co=
-nst char *pkcs12_file,</span><br><span>                     bool pkcs12_fil=
-e_inline, bool load_ca_file)</span><br><span>@@ -945,9 +1056,103 @@</span><=
-br><span>     }</span><br><span> }</span><br><span> </span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-void</span><br><span style=3D"color: hsl(0,=
- 100%, 40%);">-tls_ctx_load_cert_file(struct tls_root_ctx *ctx, const char =
-*cert_file,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-          =
-             bool cert_file_inline)</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+static bool</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+cert_uri_supported(void)</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#if d=
-efined(HAVE_OPENSSL_STORE_API)</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+    return 1;</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+#else</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    retur=
-n 0;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#endif</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+static void</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+tls_ctx_load_cert_uri(struct tls_root_ctx *tls_ctx, const char *uri)</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+#if defined(HAVE_OPENSSL_STORE_API)</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+    X509 *x =3D NULL;</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+    int ret =3D 0;</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+    OSSL_STORE_CTX *stor=
-e_ctx =3D NULL;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-OSSL_STORE_INFO *info =3D NULL;</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    ASS=
-ERT(NULL !=3D tls_ctx);</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    UI_METHOD *=
-ui_method =3D UI_create_method(&quot;openvpn&quot;);</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    if (!ui_method)</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+        msg(M_WARN, &quot;OpenSSL UI method creation fa=
-iled&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
- goto end;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+    UI_method_set_reade=
-r(ui_method, ui_reader);</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    store_ctx =
-=3D OSSL_STORE_open_ex(uri, tls_libctx, NULL, ui_method, tls_ctx-&gt;ctx,</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+                     =
-              NULL, NULL, NULL);</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+    if (!store_ctx)</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-       goto end;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
- }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (OSSL_STOR=
-E_expect(store_ctx, OSSL_STORE_INFO_CERT) !=3D 1)</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+        goto end;</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    info =3D OSSL_S=
-TORE_load(store_ctx);</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+    if (!info)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
- {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        goto end;=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+    x =3D OSSL_STORE_INFO_get0_CERT(info);</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+    if (x =3D=3D NULL)</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+        goto end;</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+    msg(D_TLS_DEBUG_MED, &quot;Found cert in store usin=
-g URI: %s&quot;, uri);</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    ret =3D SSL_=
-CTX_use_certificate(tls_ctx-&gt;ctx, x);</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+    if (!ret)</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+        goto end;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-   }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    OSSL_STORE_=
-INFO_free(info);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+    /* iterate through=
- the store and add extra certificates if any to the chain */</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+    info =3D OSSL_STORE_load(store=
-_ctx);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    while (in=
-fo &amp;&amp; !OSSL_STORE_eof(store_ctx))</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+        x =3D OSSL_STORE_INFO_get1_CERT(info);</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+        if (x &amp;&amp; SSL_CTX_add_ext=
-ra_chain_cert(tls_ctx-&gt;ctx, x) !=3D 1)</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+        {</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+            X509_free(x);</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+            crypto_msg(M_FATAL, &quot;Error adding extra =
-certificate&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-            break;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-       }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        OSS=
-L_STORE_INFO_free(info);</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+        info =3D OSSL_STORE_load(store_ctx);</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+end=
-:</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (!ret)</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+        crypto_print_openssl_errors(M_=
-WARN);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        crypt=
-o_msg(M_FATAL, &quot;Cannot load certificate from URI &lt;%s&gt;&quot;, uri=
-);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+    else</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+        crypto_print_openssl_errors(M_DEBUG);</span><br=
+%);">+    store_ctx =3D OSSL_STORE_open_ex(uri, tls_libctx, NULL, ui_method=
+, ssl_ctx,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+         =
+                          NULL, NULL, NULL);</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+    if (!store_ctx)</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+        goto end;</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    i=
+f (OSSL_STORE_expect(store_ctx, OSSL_STORE_INFO_PKEY) !=3D 1)</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+        goto end;</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+    info =3D OSSL_STORE_load(store_ctx);</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    if (!info)</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+        goto end;</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+   pkey =3D OSSL_STORE_INFO_get1_PKEY(info);</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+    OSSL_STORE_INFO_free(info);</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+    msg(D_TLS_DEBUG_MED, &quot;Found p=
+key in store using URI: %s&quot;, uri);</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++end:</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    OSSL_STORE=
+_close(store_ctx);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+   UI_destroy_method(ui_method);</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#endif=
+ /* defined(HAVE_OPENSSL_STORE_API) */</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+    return pkey;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> int=
+</span><br><span> tls_ctx_load_pkcs12(struct tls_root_ctx *ctx, const char =
+*pkcs12_file,</span><br><span>                     bool pkcs12_file_inline,=
+ bool load_ca_file)</span><br><span>@@ -945,9 +1056,103 @@</span><br><span>=
+     }</span><br><span> }</span><br><span> </span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-void</span><br><span style=3D"color: hsl(0, 100%, 40%=
+);">-tls_ctx_load_cert_file(struct tls_root_ctx *ctx, const char *cert_file=
+,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-                    =
+   bool cert_file_inline)</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+static bool</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ce=
+rt_uri_supported(void)</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#if defined(HAV=
+E_OPENSSL_STORE_API)</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++    return 1;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#else=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    return 0;</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+#endif</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+static void</span><br><span style=3D"color: hsl(120, 100%, 40%);">+tls_ctx_=
+load_cert_uri(struct tls_root_ctx *tls_ctx, const char *uri)</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+#if defined(HAVE_OPENSSL_STORE_API)</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+    X509 *x =3D NULL;</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+    int ret =3D 0;</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+    OSSL_STORE_CTX *store_ctx =3D N=
+ULL;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    OSSL_STORE_=
+INFO *info =3D NULL;</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    ASSERT(NULL !=
+=3D tls_ctx);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+    UI_METHOD *ui_method =
+=3D UI_create_method(&quot;openvpn&quot;);</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+    if (!ui_method)</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+        msg(M_WARN, &quot;OpenSSL UI method creation failed&quot;)=
+;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        goto end;<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+    UI_method_set_reader(ui_method=
+, ui_reader);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+    store_ctx =3D OSSL_ST=
+ORE_open_ex(uri, tls_libctx, NULL, ui_method, tls_ctx-&gt;ctx,</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+                                =
+   NULL, NULL, NULL);</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+    if (!store_ctx)</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        goto=
+ end;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+    if (OSSL_STORE_expect(st=
+ore_ctx, OSSL_STORE_INFO_CERT) !=3D 1)</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+        goto end;</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+    info =3D OSSL_STORE_load(s=
+tore_ctx);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (!=
+info)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+        goto end;</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+    x =3D OSSL_STORE_INFO_get0_CERT(info);</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+    if (x =3D=3D NULL)</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+        goto end;</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+    msg(D_TLS_DEBUG_MED, &quot;Found cert in store using URI: %s&qu=
+ot;, uri);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+    ret =3D SSL_CTX_use_cert=
+ificate(tls_ctx-&gt;ctx, x);</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+    if (!ret)</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        got=
+o end;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+    OSSL_STORE_INFO_free(in=
+fo);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+    /* iterate through the store a=
+nd add extra certificates if any to the chain */</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+    info =3D OSSL_STORE_load(store_ctx);</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+    while (info &amp;&amp=
+; !OSSL_STORE_eof(store_ctx))</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+    x =3D OSSL_STORE_INFO_get1_CERT(info);</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+        if (x &amp;&amp; SSL_CTX_add_extra_chain_cer=
+t(tls_ctx-&gt;ctx, x) !=3D 1)</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+        {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+            X509_free(x);</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+            crypto_msg(M_FATAL, &quot;Error adding extra certificate&=
+quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            =
+break;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        }</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+        OSSL_STORE_INFO=
+_free(info);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
+ info =3D OSSL_STORE_load(store_ctx);</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+end:</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+    if (!ret)</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+        crypto_print_openssl_errors(M_WARN);</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+        crypto_msg(M_FATA=
+L, &quot;Cannot load certificate from URI &lt;%s&gt;&quot;, uri);</span><br=
 ><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+    UI_destroy_method(ui_method);</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+    OSSL_STORE_INFO_free(info);</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+    OSSL_STORE_close(store_ctx);</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+#else /* defined(HAVE=
-_OPENSSL_STORE_API */</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+    ASSERT(0);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#en=
-dif /* defined(HAVE_OPENSSL_STORE_API */</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+static void</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+tls_ctx_load_cert_pem_fi=
-le(struct tls_root_ctx *ctx, const char *cert_file,</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+                           bool cert_file=
-_inline)</span><br><span> {</span><br><span>     BIO *in =3D NULL;</span><b=
-r><span>     X509 *x =3D NULL;</span><br><span>@@ -961,7 +1166,7 @@</span><=
-br><span>     }</span><br><span>     else</span><br><span>     {</span><br>=
-<span style=3D"color: hsl(0, 100%, 40%);">-        in =3D BIO_new_file(cert=
-_file, &quot;r&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+        in =3D BIO_new_file((char *) cert_file, &quot;r&quot;);</span><b=
-r><span>     }</span><br><span> </span><br><span>     if (in =3D=3D NULL)</=
-span><br><span>@@ -1007,6 +1212,20 @@</span><br><span>     X509_free(x);</s=
-pan><br><span> }</span><br><span> </span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+void</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-tls_ctx_load_cert_file(struct tls_root_ctx *ctx, const char *cert_file,</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+                       =
-bool cert_file_inline)</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (cert_ur=
-i_supported() &amp;&amp; !cert_file_inline)</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+        tls_ctx_load_cert_uri(ctx, cert_file);</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+    else</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-      tls_ctx_load_cert_pem_file(ctx, cert_file, cert_file_inline);</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+</span><br><span> int</span><br><span> tls_ctx_load_priv_fi=
-le(struct tls_root_ctx *ctx, const char *priv_key_file,</span><br><span>   =
-                     bool priv_key_file_inline)</span><br><span>@@ -1023,21=
- +1242,19 @@</span><br><span>     if (priv_key_file_inline)</span><br><span=
->     {</span><br><span>         in =3D BIO_new_mem_buf((char *) priv_key_f=
-ile, -1);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        if=
- (in =3D=3D NULL)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-      {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            =
-goto end;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        }<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+        pkey =3D PEM=
-_read_bio_PrivateKey(in, NULL,</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+                                       SSL_CTX_get_default_passw=
-d_cb(ctx-&gt;ctx),</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-                                      SSL_CTX_get_default_passwd_cb_userdat=
-a(ctx-&gt;ctx));</span><br><span>     }</span><br><span>     else</span><br=
-><span>     {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        =
-in =3D BIO_new_file(priv_key_file, &quot;r&quot;);</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+        pkey =3D load_pkey_from_uri(priv_key=
-_file, ssl_ctx);</span><br><span>     }</span><br><span> </span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-    if (!in)</span><br><span style=3D"c=
-olor: hsl(0, 100%, 40%);">-    {</span><br><span style=3D"color: hsl(0, 100=
-%, 40%);">-        goto end;</span><br><span style=3D"color: hsl(0, 100%, 4=
-0%);">-    }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><b=
-r><span style=3D"color: hsl(0, 100%, 40%);">-    pkey =3D PEM_read_bio_Priv=
-ateKey(in, NULL,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-     =
-                              SSL_CTX_get_default_passwd_cb(ctx-&gt;ctx),</=
-span><br><span style=3D"color: hsl(0, 100%, 40%);">-                       =
-            SSL_CTX_get_default_passwd_cb_userdata(ctx-&gt;ctx));</span><br=
-><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span>     if (!pkey=
- || !SSL_CTX_use_PrivateKey(ssl_ctx, pkey))</span><br><span>     {</span><b=
-r><span> #ifdef ENABLE_MANAGEMENT</span><br><span>diff --git a/tests/unit_t=
-ests/openvpn/test_ssl.c b/tests/unit_tests/openvpn/test_ssl.c</span><br><sp=
-an>index a4b2101..da50e55 100644</span><br><span>--- a/tests/unit_tests/ope=
-nvpn/test_ssl.c</span><br><span>+++ b/tests/unit_tests/openvpn/test_ssl.c</=
-span><br><span>@@ -66,6 +66,18 @@</span><br><span> }</span><br><span> #endi=
-f</span><br><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-/* stubs for some unused functions instead of pulling in too many dependenc=
-ies */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+bool</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+get_user_pass_cr(struct user=
-_pass *up, const char *auth_file, const char *prefix,</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+                 const unsigned int flags=
-, const char *auth_challenge)</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    retu=
-rn false;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+void</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+purge_user_pass(struct user_pass *up, boo=
-l force)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+    return;</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+}</span><br><span> </span><br><span> =
-const char *unittest_cert =3D &quot;-----BEGIN CERTIFICATE-----\n&quot;</sp=
-an><br><span>                             &quot;MIIBuTCCAUCgAwIBAgIUTLtjSBz=
-x53qZRvZ6Ur7D9kgoOHkwCgYIKoZIzj0EAwIw\n&quot;</span><br><span></span><br></=
-pre><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/726?=
-usp=3Demail">change 726</a>. To unsubscribe, or for help writing mail filte=
-rs, visit <a href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><=
-div itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope it=
-emprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=
-=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/726?usp=3Demail"/><m=
-eta itemprop=3D"name" content=3D"View Change"/></div></div>
+=3D"color: hsl(120, 100%, 40%);">+    else</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+        crypto_print_openssl_errors(M_DEBUG);</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+    UI_destroy_method(ui_method);</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+    OSSL_STORE_INFO_free(info);</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+    OSSL_STORE_close(store_ctx);</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+#else /* defined(HAVE_OPENSSL_STOR=
+E_API */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    ASSERT(=
+0);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#endif /* define=
+d(HAVE_OPENSSL_STORE_API */</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+static void</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+tls_ctx_load_cert_pem_file(struct tls=
+_root_ctx *ctx, const char *cert_file,</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+                           bool cert_file_inline)</span>=
+<br><span> {</span><br><span>     BIO *in =3D NULL;</span><br><span>     X5=
+09 *x =3D NULL;</span><br><span>@@ -961,7 +1166,7 @@</span><br><span>     }=
+</span><br><span>     else</span><br><span>     {</span><br><span style=3D"=
+color: hsl(0, 100%, 40%);">-        in =3D BIO_new_file(cert_file, &quot;r&=
+quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        in =
+=3D BIO_new_file((char *) cert_file, &quot;r&quot;);</span><br><span>     }=
+</span><br><span> </span><br><span>     if (in =3D=3D NULL)</span><br><span=
+>@@ -1007,6 +1212,20 @@</span><br><span>     X509_free(x);</span><br><span>=
+ }</span><br><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++void</span><br><span style=3D"color: hsl(120, 100%, 40%);">+tls_ctx_load_c=
+ert_file(struct tls_root_ctx *ctx, const char *cert_file,</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+                       bool cert_file=
+_inline)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+    if (cert_uri_supported() =
+&amp;&amp; !cert_file_inline)</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+    tls_ctx_load_cert_uri(ctx, cert_file);</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+    else</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+  {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        tls_ctx_=
+load_cert_pem_file(ctx, cert_file, cert_file_inline);</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+</span><br><span> int</span><br><span> tls_ctx_load_priv_file(struct tls_=
+root_ctx *ctx, const char *priv_key_file,</span><br><span>                 =
+       bool priv_key_file_inline)</span><br><span>@@ -1023,21 +1242,19 @@</=
+span><br><span>     if (priv_key_file_inline)</span><br><span>     {</span>=
+<br><span>         in =3D BIO_new_mem_buf((char *) priv_key_file, -1);</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+        if (in =3D=3D NU=
+LL)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        {</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+            goto end;</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+        }</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+        pkey =3D PEM_read_bio_Priv=
+ateKey(in, NULL,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+                                    SSL_CTX_get_default_passwd_cb(ctx-&gt;c=
+tx),</span><br><span style=3D"color: hsl(120, 100%, 40%);">+               =
+                        SSL_CTX_get_default_passwd_cb_userdata(ctx-&gt;ctx)=
+);</span><br><span>     }</span><br><span>     else</span><br><span>     {<=
+/span><br><span style=3D"color: hsl(0, 100%, 40%);">-        in =3D BIO_new=
+_file(priv_key_file, &quot;r&quot;);</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+        pkey =3D load_pkey_from_uri(priv_key_file, ssl_ctx=
+);</span><br><span>     }</span><br><span> </span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-    if (!in)</span><br><span style=3D"color: hsl(0, 1=
+00%, 40%);">-    {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
+     goto end;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    }</=
+span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-    pkey =3D PEM_read_bio_PrivateKey(in, NU=
+LL,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-                  =
+                 SSL_CTX_get_default_passwd_cb(ctx-&gt;ctx),</span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">-                                   S=
+SL_CTX_get_default_passwd_cb_userdata(ctx-&gt;ctx));</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-</span><br><span>     if (!pkey || !SSL_CTX=
+_use_PrivateKey(ssl_ctx, pkey))</span><br><span>     {</span><br><span> #if=
+def ENABLE_MANAGEMENT</span><br><span>diff --git a/tests/unit_tests/openvpn=
+/test_ssl.c b/tests/unit_tests/openvpn/test_ssl.c</span><br><span>index a4b=
+2101..da50e55 100644</span><br><span>--- a/tests/unit_tests/openvpn/test_ss=
+l.c</span><br><span>+++ b/tests/unit_tests/openvpn/test_ssl.c</span><br><sp=
+an>@@ -66,6 +66,18 @@</span><br><span> }</span><br><span> #endif</span><br>=
+<span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+/* stubs for=
+ some unused functions instead of pulling in too many dependencies */</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+bool</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+get_user_pass_cr(struct user_pass *up, c=
+onst char *auth_file, const char *prefix,</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+                 const unsigned int flags, const char=
+ *auth_challenge)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+    return false;</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+void</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+purge_user_pass(struct user_pass *up, bool force)</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    return;</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+}</span><br><span> </span><br><span> const char *=
+unittest_cert =3D &quot;-----BEGIN CERTIFICATE-----\n&quot;</span><br><span=
+>                             &quot;MIIBuTCCAUCgAwIBAgIUTLtjSBzx53qZRvZ6Ur7=
+D9kgoOHkwCgYIKoZIzj0EAwIw\n&quot;</span><br><span></span><br></pre><p>To vi=
+ew, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/726?usp=3Demail"=
+>change 726</a>. To unsubscribe, or for help writing mail filters, visit <a=
+ href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemscop=
+e itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"ac=
+tion" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=
+=3D"http://gerrit.openvpn.net/c/openvpn/+/726?usp=3Demail"/><meta itemprop=
+=3D"name" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
@@ -1112,8 +1120,8 @@ caba14231879a </div>
 77...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: merged </div>
+<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
 
 
---by7JLaGB+4U=--
+--UxummgzdQ/o=--
 
