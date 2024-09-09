@@ -1,10 +1,10 @@
-Date: Mon, 9 Sep 2024 09:20:38 +0200 (CEST)
-Message-Id: <202409090720.4897KcQa049213@...2054...>
+Date: Mon, 9 Sep 2024 09:24:06 +0200 (CEST)
+Message-Id: <202409090724.4897O66m049396@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20240708210912.566-2-chipitsine@...277...>
-References: <20240708210912.566-2-chipitsine@...277...>
-Subject: [Openvpn-devel] [PATCH applied] Re: src/openvpn/init.c: handle
- strdup failures
+In-Reply-To: <20240708210912.566-3-chipitsine@...277...>
+References: <20240708210912.566-3-chipitsine@...277...>
+Subject: [Openvpn-devel] [PATCH applied] Re:
+ sample/sample-plugins/defer/multi-auth.c: handle strdup errors
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,27 +18,20 @@ Content-Transfer-Encoding: 8bit
 To: Ilia Shipitsin <chipitsine@...277...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-Acked-by: Gert Doering <gert@...1296...>
-
-Taken the "patchset looks great" from Antonio as ACK, fixed the 
-"msg( M_FATAL," space on the go (trivial whitespace fixes are
-acceptable).
-
-Not tested beyond minimal compile test and stare-at-code.
+Stared-at-code, and compile-tested.  Agree with Frank :-)
 
 Your patch has been applied to the master branch.
 
-commit b7c6920eab5d56067a69805f64239b8dd5a0ae27
+commit aef8a872aa51331f781265fdb6b3c340463637a8
 Author: Ilia Shipitsin
-Date:   Mon Jul 8 23:08:18 2024 +0200
+Date:   Mon Jul 8 23:08:19 2024 +0200
 
-     src/openvpn/init.c: handle strdup failures
+     sample/sample-plugins/defer/multi-auth.c: handle strdup errors
 
      Signed-off-by: Ilia Shipitsin <chipitsine@...277...>
-     Acked-by: Antonio Quartulli <a@...2181...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20240708210912.566-2-chipitsine@...277...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg28884.html
+     Acked-by: Frank Lichtenheld <frank@...2641...>
+     Message-Id: <20240708210912.566-3-chipitsine@...277...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg28886.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
