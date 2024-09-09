@@ -1,11 +1,9 @@
+From: selva.nair@...277...
+Date: Mon,  9 Sep 2024 16:48:29 -0400
+Message-Id: <20240909204829.10379-1-selva.nair@...277...>
 MIME-Version: 1.0
-References: <CAOrkh=VQFEkK9+8NXSLrKyhjoxd_bvj_3ubS=G1AntZJbJ6_8A@...278...>
-In-Reply-To: <CAOrkh=VQFEkK9+8NXSLrKyhjoxd_bvj_3ubS=G1AntZJbJ6_8A@...278...>
-From: Petr Portnov <mrjarviscraft@...277...>
-Date: Mon, 9 Sep 2024 22:43:00 +0300
-Message-ID: <CAOrkh=VofSeqgYkj1VZaJjX38YVNCOeFSeExOV+keZ_FF1DNLw@...278...>
-Content-Type: multipart/alternative; boundary="000000000000afbe300621b4f7cd"
-Subject: Re: [Openvpn-devel] [PATCH] build: reduce hardcode in `asio_path`
+Subject: [Openvpn-devel] [PATCH] Fix more of uninitialized struct user_pass
+ local vars
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,40 +12,64 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
---000000000000afbe300621b4f7cd
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+From: Selva Nair <selva.nair@...277...>
 
-Hi there! Any updates on this proposal?
+Not all of these touch uninitialzed members of the struct, but that
+could change in future.
 
-=D0=BF=D0=BD, 2 =D1=81=D0=B5=D0=BD=D1=82. 2024=E2=80=AF=D0=B3. =D0=B2 22:34=
-, Petr Portnov <mrjarviscraft@...277...>:
+Change-Id: I71bc847b48da54b70f60ccd7c4521ec699daf9cb
+Signed-off-by: Selva Nair <selva.nair@...277...>
+---
+There is an unused & uninitialized struct user_pass in tun.c for ANDROID.
+Could be removed?
 
-> Hi there! While working on packaging `openvpn3-linux` for NixOS I've
-> discovered a problem with `asio_path` child path being too strict (since
-> not all distros have `asio` as the parent of `include` directory). Thus I
-> am suggesting a simple patch which allows better control over this path
-> allowing easier integration with distros.
->
+ src/openvpn/auth_token.c | 1 +
+ src/openvpn/pkcs11.c     | 1 +
+ src/openvpn/socks.c      | 2 +-
+ 3 files changed, 3 insertions(+), 1 deletion(-)
 
---000000000000afbe300621b4f7cd
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+diff --git a/src/openvpn/auth_token.c b/src/openvpn/auth_token.c
+index 5de65cb6..c4b59b99 100644
+--- a/src/openvpn/auth_token.c
++++ b/src/openvpn/auth_token.c
+@@ -452,6 +452,7 @@ check_send_auth_token(struct context *c)
+     }
+ 
+     struct user_pass up;
++    CLEAR(up);
+     strncpynt(up.username, multi->locked_username, sizeof(up.username));
+ 
+     generate_auth_token(&up, multi);
+diff --git a/src/openvpn/pkcs11.c b/src/openvpn/pkcs11.c
+index 418f6bb0..37cc1678 100644
+--- a/src/openvpn/pkcs11.c
++++ b/src/openvpn/pkcs11.c
+@@ -238,6 +238,7 @@ _pkcs11_openvpn_pin_prompt(
+ {
+     struct user_pass token_pass;
+     char prompt[1024];
++    CLEAR(token_pass);
+ 
+     (void)global_data;
+     (void)user_data;
+diff --git a/src/openvpn/socks.c b/src/openvpn/socks.c
+index d95f3013..e280453d 100644
+--- a/src/openvpn/socks.c
++++ b/src/openvpn/socks.c
+@@ -96,7 +96,7 @@ socks_username_password_auth(struct socks_proxy_info *p,
+     ssize_t size;
+     bool ret = false;
+ 
+-    creds.defined = 0;
++    CLEAR(creds);
+     if (!get_user_pass(&creds, p->authfile, UP_TYPE_SOCKS, GET_USER_PASS_MANAGEMENT))
+     {
+         msg(M_NONFATAL, "SOCKS failed to get username/password.");
+-- 
+2.40.1
 
-<div dir=3D"ltr">Hi there! Any updates on this proposal?<br><br><div class=
-=3D"gmail_quote"><div dir=3D"ltr" class=3D"gmail_attr">=D0=BF=D0=BD, 2 =D1=
-=81=D0=B5=D0=BD=D1=82. 2024=E2=80=AF=D0=B3. =D0=B2 22:34, Petr Portnov &lt;=
-<a href=3D"mailto:mrjarviscraft@...277..." target=3D"_blank">mrjarviscraft@=
-...277...</a>&gt;:<br></div><blockquote class=3D"gmail_quote" style=3D"marg=
-in:0px 0px 0px 0.8ex;border-left:1px solid rgb(204,204,204);padding-left:1e=
-x"><div dir=3D"ltr">Hi there! While working on packaging `openvpn3-linux` f=
-or NixOS I&#39;ve discovered a problem with `asio_path` child path being to=
-o strict (since not all distros have `asio` as the parent of `include` dire=
-ctory). Thus I am suggesting a simple patch which allows better control ove=
-r this path allowing easier integration with distros.<br></div>
-</blockquote></div></div>
-
---000000000000afbe300621b4f7cd--
 
