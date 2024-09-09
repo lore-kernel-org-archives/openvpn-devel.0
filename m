@@ -1,10 +1,17 @@
-From: Gert Doering <gert@...1296...>
-Date: Mon,  9 Sep 2024 16:23:30 +0200
-Message-ID: <20240909142330.20424-1-gert@...1296...>
-In-Reply-To: <gerrit.1723550412000.I2e0c50d33f8a57c023120cf348f95d34acbfcde5@...2715...>
-References: <gerrit.1723550412000.I2e0c50d33f8a57c023120cf348f95d34acbfcde5@...2715...>
+From: "cron2 (Code Review)" <gerrit@...515...>
+Date: Mon, 9 Sep 2024 14:30:15 +0000
+In-Reply-To: <gerrit.1725608632000.I8e8ddd35bd3cc3334faf7f57118d1892512ae9f7@...2715...>
+References: <gerrit.1725608632000.I8e8ddd35bd3cc3334faf7f57118d1892512ae9f7@...2715...>
+Reply-To: gert@...1296..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net, frank@...2641...,
+ lstipakov@...277...
+Message-ID: <1d2629aa59ce17c1aa638ba60f97f813524ba84f-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v3] dco-win: support for data_v3 features
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="K//lRz/z/+U="; charset=UTF-8
+Subject: [Openvpn-devel] [M] Change in openvpn[master]: dco-win: factor out
+ getting dco version info own function
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,366 +20,161 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: stipa <lstipakov@...277...>
+Cc: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-From: Lev Stipakov <lev@...515...>
+--K//lRz/z/+U=
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Since version 1.4, dco-win drivere supports data_v3 features
-such as:
+Attention is currently required from: flichtenheld, plaisthos, stipa.
 
- - AEAD tag at the end
- - 64bit pktid
+cron2 has posted comments on this change. ( http://gerrit.openvpn.net/c/ope=
+nvpn/+/733?usp=3Demail )
 
-We have to:
+Change subject: dco-win: factor out getting dco version info own function
+......................................................................
 
- - check in runtime if driver supports data_v3 features (we might be
- running with the older driver)
 
- - if those features are negotiated, we pass them to the driver
- as bit flags via the (newly added) NEW_KEY_V2 ioctl
+Patch Set 1:
 
-Introduce NEW_KEY_V2 ioctl, which accepts a new OVPN_CRYPTO_DATA_V2
-structure, which includes a field for bit flags for the new
-crypto options.
+(5 comments)
 
-Make dco_supports_data_v3() implementation platform-dependend (as it
-should be) and indicate data_v3 support by dco-win if the driver version
-is at least 1.4. Extend the Windows-specific struct dco_context and
-store data_v3 support there so that when dco_new_key() is called, we
-know which API to use.
+Patchset:
 
-Change the dco internal API and pass crypto options flags to dco_new_key().
+PS1:
+Overall the factoring-out looks good, but there's one textual change that I=
+ find to be "less clear now", and a few remarks.
 
-Change-Id: I2e0c50d33f8a57c023120cf348f95d34acbfcde5
-Signed-off-by: Lev Stipakov <lev@...515...>
-Acked-by: Frank Lichtenheld <frank@...2641...>
----
 
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to master.
+File src/openvpn/dco_win.c:
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/725
-This mail reflects revision 3 of this Change.
+http://gerrit.openvpn.net/c/openvpn/+/733/comment/728ea9f7_3e755e74 :
+PS1, Line 102:     msg(D_DCO_DEBUG, "dco data_v3: %d", dco->supports_data_v=
+3);
+I think keeping the "supports" here (=3D not changing the text) would ease =
+understanding of the logs.
 
-Acked-by according to Gerrit (reflected above):
-Frank Lichtenheld <frank@...2641...>
 
-        
-diff --git a/src/openvpn/dco.c b/src/openvpn/dco.c
-index 7f0d53d..baaeb95 100644
---- a/src/openvpn/dco.c
-+++ b/src/openvpn/dco.c
-@@ -70,7 +70,7 @@
-     int ret = dco_new_key(multi->dco, multi->dco_peer_id, ks->key_id, slot,
-                           encrypt_key, encrypt_iv,
-                           decrypt_key, decrypt_iv,
--                          ciphername);
-+                          ciphername, ks->crypto_options.flags);
-     if ((ret == 0) && (multi->dco_keys_installed < 2))
-     {
-         multi->dco_keys_installed++;
-diff --git a/src/openvpn/dco.h b/src/openvpn/dco.h
-index 3ce2c31..ec4ec42 100644
---- a/src/openvpn/dco.h
-+++ b/src/openvpn/dco.h
-@@ -253,11 +253,7 @@
-  * Return whether the dco implementation supports the new protocol features of
-  * a 64 bit packet counter and AEAD tag at the end.
-  */
--static inline bool
--dco_supports_data_v3(struct context *c)
--{
--    return false;
--}
-+bool dco_supports_data_v3(struct context *c);
- 
- #else /* if defined(ENABLE_DCO) */
- 
-diff --git a/src/openvpn/dco_freebsd.c b/src/openvpn/dco_freebsd.c
-index 9a90f5c..4516cd5 100644
---- a/src/openvpn/dco_freebsd.c
-+++ b/src/openvpn/dco_freebsd.c
-@@ -415,14 +415,14 @@
-             dco_key_slot_t slot,
-             const uint8_t *encrypt_key, const uint8_t *encrypt_iv,
-             const uint8_t *decrypt_key, const uint8_t *decrypt_iv,
--            const char *ciphername)
-+            const char *ciphername, unsigned int co_flags)
- {
-     struct ifdrv drv;
-     nvlist_t *nvl;
-     int ret;
- 
--    msg(D_DCO_DEBUG, "%s: slot %d, key-id %d, peer-id %d, cipher %s",
--        __func__, slot, keyid, peerid, ciphername);
-+    msg(D_DCO_DEBUG, "%s: slot %d, key-id %d, peer-id %d, cipher %s, co_flags %u",
-+        __func__, slot, keyid, peerid, ciphername, co_flags);
- 
-     nvl = nvlist_create(0);
- 
-@@ -778,4 +778,11 @@
-     return "none:AES-256-GCM:AES-192-GCM:AES-128-GCM:CHACHA20-POLY1305";
- }
- 
-+bool
-+dco_supports_data_v3(struct context *c)
-+{
-+    /* not implemented */
-+    return false;
-+}
-+
- #endif /* defined(ENABLE_DCO) && defined(TARGET_FREEBSD) */
-diff --git a/src/openvpn/dco_internal.h b/src/openvpn/dco_internal.h
-index 624c110..35500a4 100644
---- a/src/openvpn/dco_internal.h
-+++ b/src/openvpn/dco_internal.h
-@@ -70,7 +70,7 @@
-                 dco_key_slot_t slot,
-                 const uint8_t *encrypt_key, const uint8_t *encrypt_iv,
-                 const uint8_t *decrypt_key, const uint8_t *decrypt_iv,
--                const char *ciphername);
-+                const char *ciphername, unsigned int co_flags);
- 
- int dco_del_key(dco_context_t *dco, unsigned int peerid, dco_key_slot_t slot);
- 
-diff --git a/src/openvpn/dco_linux.c b/src/openvpn/dco_linux.c
-index 277cd64..4197d30 100644
---- a/src/openvpn/dco_linux.c
-+++ b/src/openvpn/dco_linux.c
-@@ -557,10 +557,10 @@
-             dco_key_slot_t slot,
-             const uint8_t *encrypt_key, const uint8_t *encrypt_iv,
-             const uint8_t *decrypt_key, const uint8_t *decrypt_iv,
--            const char *ciphername)
-+            const char *ciphername, unsigned int co_flags)
- {
--    msg(D_DCO_DEBUG, "%s: slot %d, key-id %d, peer-id %d, cipher %s",
--        __func__, slot, keyid, peerid, ciphername);
-+    msg(D_DCO_DEBUG, "%s: slot %d, key-id %d, peer-id %d, cipher %s, co_flags %u",
-+        __func__, slot, keyid, peerid, ciphername, co_flags);
- 
-     const size_t key_len = cipher_kt_key_size(ciphername);
-     const int nonce_tail_len = 8;
-@@ -1058,4 +1058,11 @@
-     return "AES-128-GCM:AES-256-GCM:AES-192-GCM:CHACHA20-POLY1305";
- }
- 
-+bool
-+dco_supports_data_v3(struct context *c)
-+{
-+    /* not implemented */
-+    return false;
-+}
-+
- #endif /* defined(ENABLE_DCO) && defined(TARGET_LINUX) */
-diff --git a/src/openvpn/dco_win.c b/src/openvpn/dco_win.c
-index 3ec946f..189864b 100644
---- a/src/openvpn/dco_win.c
-+++ b/src/openvpn/dco_win.c
-@@ -55,6 +55,9 @@
- bool
- ovpn_dco_init(int mode, dco_context_t *dco)
- {
-+    dco->supports_data_v3 = dco_supports_data_v3(NULL);
-+    msg(D_DCO_DEBUG, "dco supports data_v3: %d", dco->supports_data_v3);
-+
-     return true;
- }
- 
-@@ -291,47 +294,85 @@
-     return 0;
- }
- 
--int
--dco_new_key(dco_context_t *dco, unsigned int peerid, int keyid,
--            dco_key_slot_t slot,
--            const uint8_t *encrypt_key, const uint8_t *encrypt_iv,
--            const uint8_t *decrypt_key, const uint8_t *decrypt_iv,
--            const char *ciphername)
-+static int
-+dco_new_key_v1(HANDLE handle, OVPN_CRYPTO_DATA *crypto_data)
- {
--    msg(D_DCO_DEBUG, "%s: slot %d, key-id %d, peer-id %d, cipher %s",
--        __func__, slot, keyid, peerid, ciphername);
--
--    const int nonce_len = 8;
--    size_t key_len = cipher_kt_key_size(ciphername);
--
--    OVPN_CRYPTO_DATA crypto_data;
--    ZeroMemory(&crypto_data, sizeof(crypto_data));
--
--    crypto_data.CipherAlg = dco_get_cipher(ciphername);
--    crypto_data.KeyId = keyid;
--    crypto_data.PeerId = peerid;
--    crypto_data.KeySlot = slot;
--
--    CopyMemory(crypto_data.Encrypt.Key, encrypt_key, key_len);
--    crypto_data.Encrypt.KeyLen = (char)key_len;
--    CopyMemory(crypto_data.Encrypt.NonceTail, encrypt_iv, nonce_len);
--
--    CopyMemory(crypto_data.Decrypt.Key, decrypt_key, key_len);
--    crypto_data.Decrypt.KeyLen = (char)key_len;
--    CopyMemory(crypto_data.Decrypt.NonceTail, decrypt_iv, nonce_len);
--
--    ASSERT(crypto_data.CipherAlg > 0);
--
-     DWORD bytes_returned = 0;
- 
--    if (!DeviceIoControl(dco->tt->hand, OVPN_IOCTL_NEW_KEY, &crypto_data,
--                         sizeof(crypto_data), NULL, 0, &bytes_returned, NULL))
-+    if (!DeviceIoControl(handle, OVPN_IOCTL_NEW_KEY, crypto_data, sizeof(*crypto_data), NULL, 0, &bytes_returned, NULL))
-     {
-         msg(M_ERR, "DeviceIoControl(OVPN_IOCTL_NEW_KEY) failed");
-         return -1;
-     }
-     return 0;
- }
-+
-+static int
-+dco_new_key_v2(HANDLE handle, OVPN_CRYPTO_DATA_V2 *crypto_data, unsigned int co_flags)
-+{
-+    if (co_flags & CO_AEAD_TAG_AT_THE_END)
-+    {
-+        crypto_data->CryptoOptions |= CRYPTO_OPTIONS_AEAD_TAG_END;
-+    }
-+
-+    if (co_flags & CO_64_BIT_PKT_ID)
-+    {
-+        crypto_data->CryptoOptions |= CRYPTO_OPTIONS_64BIT_PKTID;
-+    }
-+
-+    DWORD bytes_returned = 0;
-+    if (!DeviceIoControl(handle, OVPN_IOCTL_NEW_KEY_V2, crypto_data, sizeof(*crypto_data), NULL, 0, &bytes_returned, NULL))
-+    {
-+        msg(M_ERR, "DeviceIoControl(OVPN_IOCTL_NEW_KEY_V2) failed");
-+        return -1;
-+    }
-+
-+    return 0;
-+}
-+
-+int
-+dco_new_key(dco_context_t *dco, unsigned int peerid, int keyid,
-+            dco_key_slot_t slot,
-+            const uint8_t *encrypt_key, const uint8_t *encrypt_iv,
-+            const uint8_t *decrypt_key, const uint8_t *decrypt_iv,
-+            const char *ciphername, unsigned int co_flags)
-+{
-+    msg(D_DCO_DEBUG, "%s: slot %d, key-id %d, peer-id %d, cipher %s, co_flags %u",
-+        __func__, slot, keyid, peerid, ciphername, co_flags);
-+
-+    const int nonce_len = 8;
-+    size_t key_len = cipher_kt_key_size(ciphername);
-+
-+    OVPN_CRYPTO_DATA_V2 crypto_data_v2;
-+    ZeroMemory(&crypto_data_v2, sizeof(crypto_data_v2));
-+
-+    OVPN_CRYPTO_DATA *crypto_data = &crypto_data_v2.V1;
-+
-+    crypto_data->CipherAlg = dco_get_cipher(ciphername);
-+    crypto_data->KeyId = keyid;
-+    crypto_data->PeerId = peerid;
-+    crypto_data->KeySlot = slot;
-+
-+    CopyMemory(crypto_data->Encrypt.Key, encrypt_key, key_len);
-+    crypto_data->Encrypt.KeyLen = (char)key_len;
-+    CopyMemory(crypto_data->Encrypt.NonceTail, encrypt_iv, nonce_len);
-+
-+    CopyMemory(crypto_data->Decrypt.Key, decrypt_key, key_len);
-+    crypto_data->Decrypt.KeyLen = (char)key_len;
-+    CopyMemory(crypto_data->Decrypt.NonceTail, decrypt_iv, nonce_len);
-+
-+    ASSERT(crypto_data->CipherAlg > 0);
-+
-+    if (dco->supports_data_v3)
-+    {
-+        return dco_new_key_v2(dco->tt->hand, &crypto_data_v2, co_flags);
-+    }
-+    else
-+    {
-+        return dco_new_key_v1(dco->tt->hand, crypto_data);
-+    }
-+}
-+
- int
- dco_del_key(dco_context_t *dco, unsigned int peerid, dco_key_slot_t slot)
- {
-@@ -494,4 +535,39 @@
-     }
- }
- 
-+bool
-+dco_supports_data_v3(struct context *c)
-+{
-+    bool res = false;
-+
-+    HANDLE h = CreateFile("\\\\.\\ovpn-dco-ver", GENERIC_READ,
-+                          0, NULL, OPEN_EXISTING, 0, NULL);
-+
-+    if (h == INVALID_HANDLE_VALUE)
-+    {
-+        goto done;
-+    }
-+
-+    OVPN_VERSION version;
-+    ZeroMemory(&version, sizeof(OVPN_VERSION));
-+
-+    DWORD bytes_returned = 0;
-+    if (!DeviceIoControl(h, OVPN_IOCTL_GET_VERSION, NULL, 0,
-+                         &version, sizeof(version), &bytes_returned, NULL))
-+    {
-+        goto done;
-+    }
-+
-+    /* data_v3 is supported starting from 1.4 */
-+    res = (version.Major > 1) || (version.Minor >= 4);
-+
-+done:
-+    if (h != INVALID_HANDLE_VALUE)
-+    {
-+        CloseHandle(h);
-+    }
-+
-+    return res;
-+}
-+
- #endif /* defined(_WIN32) */
-diff --git a/src/openvpn/dco_win.h b/src/openvpn/dco_win.h
-index 4883629..f58488f 100644
---- a/src/openvpn/dco_win.h
-+++ b/src/openvpn/dco_win.h
-@@ -33,6 +33,7 @@
- 
- struct dco_context {
-     struct tuntap *tt;
-+    bool supports_data_v3;
- };
- 
- typedef struct dco_context dco_context_t;
-diff --git a/src/openvpn/ovpn_dco_win.h b/src/openvpn/ovpn_dco_win.h
-index ea2a733..9e437f0 100644
---- a/src/openvpn/ovpn_dco_win.h
-+++ b/src/openvpn/ovpn_dco_win.h
-@@ -94,6 +94,14 @@
- 	int PeerId;
- } OVPN_CRYPTO_DATA, * POVPN_CRYPTO_DATA;
- 
-+#define CRYPTO_OPTIONS_AEAD_TAG_END (1<<1)
-+#define CRYPTO_OPTIONS_64BIT_PKTID  (1<<2)
-+
-+typedef struct _OVPN_CRYPTO_DATA_V2 {
-+    OVPN_CRYPTO_DATA V1;
-+    UINT32 CryptoOptions;
-+} OVPN_CRYPTO_DATA_V2, * POVPN_CRYPTO_DATA_V2;
-+
- typedef struct _OVPN_SET_PEER {
- 	LONG KeepaliveInterval;
- 	LONG KeepaliveTimeout;
-@@ -114,3 +122,4 @@
- #define OVPN_IOCTL_START_VPN    CTL_CODE(FILE_DEVICE_UNKNOWN, 6, METHOD_BUFFERED, FILE_ANY_ACCESS)
- #define OVPN_IOCTL_DEL_PEER     CTL_CODE(FILE_DEVICE_UNKNOWN, 7, METHOD_BUFFERED, FILE_ANY_ACCESS)
- #define OVPN_IOCTL_GET_VERSION  CTL_CODE(FILE_DEVICE_UNKNOWN, 8, METHOD_BUFFERED, FILE_ANY_ACCESS)
-+#define OVPN_IOCTL_NEW_KEY_V2   CTL_CODE(FILE_DEVICE_UNKNOWN, 9, METHOD_BUFFERED, FILE_ANY_ACCESS)
+http://gerrit.openvpn.net/c/openvpn/+/733/comment/69aa1495_3d39dec2 :
+PS1, Line 474:     ZeroMemory(&version, sizeof(version));
+`CLEAR(version)` exists (if you change this line anyway).
+
+Or just zeroize on assign `OVPN_VERSION =3D {0}`?
+
+
+http://gerrit.openvpn.net/c/openvpn/+/733/comment/4fdb9c97_bc7702f6 :
+PS1, Line 481:     return BSTR(&out);
+technically this does something else if no DCO driver can be found - the ol=
+d code returns "N/A", the new code returns "0.0.0".  Is this intentional?
+
+
+http://gerrit.openvpn.net/c/openvpn/+/733/comment/bd3ba22f_ce91aaf0 :
+PS1, Line 562:     dco_get_version(&version);
+see above wrt `CLEAR()` or `=3D {0}`
+
+
+
+--
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/733?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings
+
+Gerrit-Project: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: I8e8ddd35bd3cc3334faf7f57118d1892512ae9f7
+Gerrit-Change-Number: 733
+Gerrit-PatchSet: 1
+Gerrit-Owner: stipa <lstipakov@...277...>
+Gerrit-Reviewer: flichtenheld <frank@...2641...>
+Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
+Gerrit-CC: cron2 <gert@...1296...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Attention: flichtenheld <frank@...2641...>
+Gerrit-Attention: stipa <lstipakov@...277...>
+Gerrit-Comment-Date: Mon, 09 Sep 2024 14:30:15 +0000
+Gerrit-HasComments: Yes
+Gerrit-Has-Labels: No
+Gerrit-MessageType: comment
+
+--K//lRz/z/+U=
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<p> Attention is currently required from: flichtenheld, plaisthos, stipa. <=
+/p>
+<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/733?usp=3Demail">View C=
+hange</a></p><p>5 comments:</p><ul style=3D"list-style: none; padding: 0;">=
+<li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-styl=
+e: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p styl=
+e=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/=
+733?tab=3Dcomments">Patch Set #1:</a> </p><p style=3D"white-space: pre-wrap=
+; word-wrap: break-word;">Overall the factoring-out looks good, but there&#=
+39;s one textual change that I find to be &quot;less clear now&quot;, and a=
+ few remarks.</p></li></ul></li><li style=3D"margin: 0; padding: 0;"><p>Fil=
+e src/openvpn/dco_win.c:</p><ul style=3D"list-style: none; padding: 0;"><li=
+ style=3D"margin: 0; padding: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"=
+><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/733/comment/728ea9f7_3e75=
+5e74">Patch Set #1, Line 102:</a> <code style=3D"font-family:monospace,mono=
+space">    msg(D_DCO_DEBUG, &quot;dco data_v3: %d&quot;, dco-&gt;supports_d=
+ata_v3);</code></p><p style=3D"white-space: pre-wrap; word-wrap: break-word=
+;">I think keeping the &quot;supports&quot; here (=3D not changing the text=
+) would ease understanding of the logs.</p></li><li style=3D"margin: 0; pad=
+ding: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerri=
+t.openvpn.net/c/openvpn/+/733/comment/69aa1495_3d39dec2">Patch Set #1, Line=
+ 474:</a> <code style=3D"font-family:monospace,monospace">    ZeroMemory(&a=
+mp;version, sizeof(version));</code></p><p style=3D"white-space: pre-wrap; =
+word-wrap: break-word;">`CLEAR(version)` exists (if you change this line an=
+yway).</p><p style=3D"white-space: pre-wrap; word-wrap: break-word;">Or jus=
+t zeroize on assign `OVPN_VERSION =3D {0}`?</p></li><li style=3D"margin: 0;=
+ padding: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://g=
+errit.openvpn.net/c/openvpn/+/733/comment/4fdb9c97_bc7702f6">Patch Set #1, =
+Line 481:</a> <code style=3D"font-family:monospace,monospace">    return BS=
+TR(&amp;out);</code></p><p style=3D"white-space: pre-wrap; word-wrap: break=
+-word;">technically this does something else if no DCO driver can be found =
+- the old code returns &quot;N/A&quot;, the new code returns &quot;0.0.0&qu=
+ot;.  Is this intentional?</p></li><li style=3D"margin: 0; padding: 0 0 0 1=
+6px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net=
+/c/openvpn/+/733/comment/bd3ba22f_ce91aaf0">Patch Set #1, Line 562:</a> <co=
+de style=3D"font-family:monospace,monospace">    dco_get_version(&amp;versi=
+on);</code></p><p style=3D"white-space: pre-wrap; word-wrap: break-word;">s=
+ee above wrt `CLEAR()` or `=3D {0}`</p></li></ul></li></ul><p>To view, visi=
+t <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/733?usp=3Demail">change =
+733</a>. To unsubscribe, or for help writing mail filters, visit <a href=3D=
+"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope itemty=
+pe=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"action" it=
+emtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http=
+://gerrit.openvpn.net/c/openvpn/+/733?usp=3Demail"/><meta itemprop=3D"name"=
+ content=3D"View Change"/></div></div>
+
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I8e8ddd35bd3cc3334faf7f57118=
+d1892512ae9f7 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 733 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
+<div style=3D"display:none"> Gerrit-Owner: stipa &lt;lstipakov@...277...&gt=
+; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
+1...&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
+.1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: cron2 &lt;gert@...1296...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
+41...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: stipa &lt;lstipakov@...1663...=
+.&gt; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Mon, 09 Sep 2024 14:30:15=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: No </div>
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
+
+
+--K//lRz/z/+U=--
 
