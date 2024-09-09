@@ -1,14 +1,15 @@
+From: "ralf_lici (Code Review)" <gerrit@...515...>
+Date: Mon, 9 Sep 2024 13:54:50 +0000
+References: <gerrit.1725890088000.I5adbe0a79f078221c4bb5f3d39391a81b4d8adce@...2715...>
+Reply-To: ralf@...2726..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net, frank@...2641...
+Message-ID: <e644c50fcd50e137d1f35ca7cf3ab9f2b1444f19-HTML@...2715...>
 MIME-Version: 1.0
-References: <20240708210912.566-1-chipitsine@...277...>
- <20240708210912.566-4-chipitsine@...277...>
- <Zt6j-5lWDxlhAglc@...1296...>
-In-Reply-To: <Zt6j-5lWDxlhAglc@...1296...>
-From: =?UTF-8?B?0JjQu9GM0Y8g0KjQuNC/0LjRhtC40L0=?= <chipitsine@...277...>
-Date: Mon, 9 Sep 2024 14:51:44 +0200
-Message-ID: <CAFHpkQFBmwTzETHCcgzspkX3XNQ_FKQ5LmJ+N=46-KrWHA6TCQ@...278...>
-Content-Type: multipart/alternative; boundary="000000000000d93f3f0621af381a"
-Subject: Re: [Openvpn-devel] [PATCH 3/5] src/openvpn/auth_token.c: handle
- strdup errors
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="5tA5bABuMU0="; charset=UTF-8
+Subject: [Openvpn-devel] [XS] Change in openvpn[master]: Fix
+ check_addr_clash argument order
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,104 +18,167 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Gert Doering <gert@...1296...>
+To: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---000000000000d93f3f0621af381a
+--5tA5bABuMU0=
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-I'll have a look, thanks!
+Attention is currently required from: flichtenheld, plaisthos.
 
-On Mon, Sep 9, 2024, 09:30 Gert Doering <gert@...1296...> wrote:
+Hello plaisthos, flichtenheld,
 
-> Hi,
->
-> On Mon, Jul 08, 2024 at 11:08:20PM +0200, Ilia Shipitsin wrote:
-> >      multi->auth_token = strdup((char *)BPTR(&session_token));
-> > +    if (!multi->auth_token)
-> > +    {
-> > +        msg( M_FATAL, "Failed allocate memory for multi->auth_token");
-> > +    }
->
-> I do wonder if this is the right approach here.  For "openvpn itself"
-> we have the check_malloc_return() macro, which will purposely not call
-> msg() - as msg() does internal malloc()s, and if we cannot allocate
-> 20 bytes for an auth_token, the chance that msg() will not succeed is
-> fairly high...
->
-> In plugins or unit tests, the infrastructure is different, but for 3/ and
-> 4/, please resend with
->
->       multi->auth_token = strdup((char *)BPTR(&session_token));
->  +    check_malloc_return(multi->auth_token);
->
-> (etc)
->
-> gert
-> --
-> "If was one thing all people took for granted, was conviction that if you
->  feed honest figures into a computer, honest figures come out. Never
-> doubted
->  it myself till I met a computer with a sense of humor."
->                              Robert A. Heinlein, The Moon is a Harsh
-> Mistress
->
-> Gert Doering - Munich, Germany
-> gert@...1296...
->
+I'd like you to do a code review.
+Please visit
 
---000000000000d93f3f0621af381a
+    http://gerrit.openvpn.net/c/openvpn/+/737?usp=3Demail
+
+to review the following change.
+
+
+Change subject: Fix check_addr_clash argument order
+......................................................................
+
+Fix check_addr_clash argument order
+
+In init_tun() make sure to pass the --local and --remote addresses in
+the host order so that they can be compared to the --ifconfig addresses.
+
+Change-Id: I5adbe0a79f078221c4bb5f3d39391a81b4d8adce
+Signed-off-by: Ralf Lici <ralf@...2726...>
+---
+M src/openvpn/tun.c
+1 file changed, 4 insertions(+), 2 deletions(-)
+
+
+
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/37/737/1
+
+diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
+index 739e008..1cd6ad2 100644
+--- a/src/openvpn/tun.c
++++ b/src/openvpn/tun.c
+@@ -877,9 +877,10 @@
+             {
+                 if (curele->ai_family =3D=3D AF_INET)
+                 {
++                    const in_addr_t local =3D ntohl(((struct sockaddr_in *=
+)curele->ai_addr)->sin_addr.s_addr);
+                     check_addr_clash("local",
+                                      tt->type,
+-                                     ((struct sockaddr_in *)curele->ai_add=
+r)->sin_addr.s_addr,
++                                     local,
+                                      tt->local,
+                                      tt->remote_netmask);
+                 }
+@@ -889,9 +890,10 @@
+             {
+                 if (curele->ai_family =3D=3D AF_INET)
+                 {
++                    const in_addr_t remote =3D ntohl(((struct sockaddr_in =
+*)curele->ai_addr)->sin_addr.s_addr);
+                     check_addr_clash("remote",
+                                      tt->type,
+-                                     ((struct sockaddr_in *)curele->ai_add=
+r)->sin_addr.s_addr,
++                                     remote,
+                                      tt->local,
+                                      tt->remote_netmask);
+                 }
+
+--
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/737?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings
+
+Gerrit-Project: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: I5adbe0a79f078221c4bb5f3d39391a81b4d8adce
+Gerrit-Change-Number: 737
+Gerrit-PatchSet: 1
+Gerrit-Owner: ralf_lici <ralf@...2726...>
+Gerrit-Reviewer: flichtenheld <frank@...2641...>
+Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Attention: flichtenheld <frank@...2641...>
+Gerrit-MessageType: newchange
+
+--5tA5bABuMU0=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<div dir=3D"auto">I&#39;ll have a look, thanks!</div><br><div class=3D"gmai=
-l_quote"><div dir=3D"ltr" class=3D"gmail_attr">On Mon, Sep 9, 2024, 09:30 G=
-ert Doering &lt;<a href=3D"mailto:gert@...1296...">gert@...1296...</a>&gt; =
-wrote:<br></div><blockquote class=3D"gmail_quote" style=3D"margin:0 0 0 .8e=
-x;border-left:1px #ccc solid;padding-left:1ex">Hi,<br>
-<br>
-On Mon, Jul 08, 2024 at 11:08:20PM +0200, Ilia Shipitsin wrote:<br>
-&gt;=C2=A0 =C2=A0 =C2=A0 multi-&gt;auth_token =3D strdup((char *)BPTR(&amp;=
-session_token));<br>
-&gt; +=C2=A0 =C2=A0 if (!multi-&gt;auth_token)<br>
-&gt; +=C2=A0 =C2=A0 {<br>
-&gt; +=C2=A0 =C2=A0 =C2=A0 =C2=A0 msg( M_FATAL, &quot;Failed allocate memor=
-y for multi-&gt;auth_token&quot;);<br>
-&gt; +=C2=A0 =C2=A0 }<br>
-<br>
-I do wonder if this is the right approach here.=C2=A0 For &quot;openvpn its=
-elf&quot;<br>
-we have the check_malloc_return() macro, which will purposely not call<br>
-msg() - as msg() does internal malloc()s, and if we cannot allocate<br>
-20 bytes for an auth_token, the chance that msg() will not succeed is<br>
-fairly high...<br>
-<br>
-In plugins or unit tests, the infrastructure is different, but for 3/ and<b=
-r>
-4/, please resend with<br>
-<br>
-=C2=A0 =C2=A0 =C2=A0 multi-&gt;auth_token =3D strdup((char *)BPTR(&amp;sess=
-ion_token));<br>
-=C2=A0+=C2=A0 =C2=A0 check_malloc_return(multi-&gt;auth_token);<br>
-<br>
-(etc)<br>
-<br>
-gert<br>
--- <br>
-&quot;If was one thing all people took for granted, was conviction that if =
-you <br>
-=C2=A0feed honest figures into a computer, honest figures come out. Never d=
-oubted <br>
-=C2=A0it myself till I met a computer with a sense of humor.&quot;<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
-=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0Robert A. Heinlein, The Moon is a Harsh Mist=
-ress<br>
-<br>
-Gert Doering - Munich, Germany=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
-=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0<a href=3D"mailt=
-o:gert@...1296..." target=3D"_blank" rel=3D"noreferrer">gert@...1296...</a>=
-<br>
-</blockquote></div>
+<p> Attention is currently required from: flichtenheld, plaisthos. </p>
+<p>ralf_lici would like plaisthos and flichtenheld to <strong>review</stron=
+g> this change.
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/737?usp=3Demail">Vi=
+ew Change</a></p><pre style=3D"font-family: monospace,monospace; white-spac=
+e: pre-wrap;">Fix check_addr_clash argument order<br><br>In init_tun() make=
+ sure to pass the --local and --remote addresses in<br>the host order so th=
+at they can be compared to the --ifconfig addresses.<br><br>Change-Id: I5ad=
+be0a79f078221c4bb5f3d39391a81b4d8adce<br>Signed-off-by: Ralf Lici &lt;ralf@=
+...2726...&gt;<br>---<br>M src/openvpn/tun.c<br>1 file changed, 4 insertion=
+s(+), 2 deletions(-)<br><br></pre><pre style=3D"font-family: monospace,mono=
+space; white-space: pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/open=
+vpn refs/changes/37/737/1</pre><pre style=3D"font-family: monospace,monospa=
+ce; white-space: pre-wrap;"><span>diff --git a/src/openvpn/tun.c b/src/open=
+vpn/tun.c</span><br><span>index 739e008..1cd6ad2 100644</span><br><span>---=
+ a/src/openvpn/tun.c</span><br><span>+++ b/src/openvpn/tun.c</span><br><spa=
+n>@@ -877,9 +877,10 @@</span><br><span>             {</span><br><span>     =
+            if (curele-&gt;ai_family =3D=3D AF_INET)</span><br><span>      =
+           {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
+             const in_addr_t local =3D ntohl(((struct sockaddr_in *)curele-=
+&gt;ai_addr)-&gt;sin_addr.s_addr);</span><br><span>                     che=
+ck_addr_clash(&quot;local&quot;,</span><br><span>                          =
+            tt-&gt;type,</span><br><span style=3D"color: hsl(0, 100%, 40%);=
+">-                                     ((struct sockaddr_in *)curele-&gt;a=
+i_addr)-&gt;sin_addr.s_addr,</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+                                     local,</span><br><span>      =
+                                tt-&gt;local,</span><br><span>             =
+                         tt-&gt;remote_netmask);</span><br><span>          =
+       }</span><br><span>@@ -889,9 +890,10 @@</span><br><span>             =
+{</span><br><span>                 if (curele-&gt;ai_family =3D=3D AF_INET)=
+</span><br><span>                 {</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+                    const in_addr_t remote =3D ntohl(((stru=
+ct sockaddr_in *)curele-&gt;ai_addr)-&gt;sin_addr.s_addr);</span><br><span>=
+                     check_addr_clash(&quot;remote&quot;,</span><br><span> =
+                                     tt-&gt;type,</span><br><span style=3D"=
+color: hsl(0, 100%, 40%);">-                                     ((struct s=
+ockaddr_in *)curele-&gt;ai_addr)-&gt;sin_addr.s_addr,</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+                                     remo=
+te,</span><br><span>                                      tt-&gt;local,</sp=
+an><br><span>                                      tt-&gt;remote_netmask);<=
+/span><br><span>                 }</span><br><span></span><br></pre><p>To v=
+iew, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/737?usp=3Demail=
+">change 737</a>. To unsubscribe, or for help writing mail filters, visit <=
+a href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemsco=
+pe itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"a=
+ction" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" hre=
+f=3D"http://gerrit.openvpn.net/c/openvpn/+/737?usp=3Demail"/><meta itemprop=
+=3D"name" content=3D"View Change"/></div></div>
 
---000000000000d93f3f0621af381a--
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I5adbe0a79f078221c4bb5f3d393=
+91a81b4d8adce </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 737 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
+<div style=3D"display:none"> Gerrit-Owner: ralf_lici &lt;ralf@...2726...&gt=
+; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
+1...&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
+.1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
+41...&gt; </div>
+<div style=3D"display:none"> Gerrit-MessageType: newchange </div>
+
+
+--5tA5bABuMU0=--
 
