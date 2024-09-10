@@ -1,10 +1,12 @@
-From: Gert Doering <gert@...1296...>
-Date: Tue, 10 Sep 2024 19:00:05 +0200
-Message-ID: <20240910170005.5586-1-gert@...1296...>
-In-Reply-To: <gerrit.1689088618000.Icc86334b26ba1fcc20f4cd03644018d1d16796e3@...2715...>
-References: <gerrit.1689088618000.Icc86334b26ba1fcc20f4cd03644018d1d16796e3@...2715...>
+Message-ID: <3bacc68d-2599-cd7a-53d9-cca7eda6dc0d@...2108...>
+Date: Tue, 10 Sep 2024 20:38:04 +0200
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v3] generate_auth_token: simplify code
+Content-Language: en-US
+References: <CAOrkh=VQFEkK9+8NXSLrKyhjoxd_bvj_3ubS=G1AntZJbJ6_8A@...278...>
+ <CAOrkh=VofSeqgYkj1VZaJjX38YVNCOeFSeExOV+keZ_FF1DNLw@...278...>
+From: David Sommerseth <dazo+openvpn@...2108...>
+In-Reply-To: <CAOrkh=VofSeqgYkj1VZaJjX38YVNCOeFSeExOV+keZ_FF1DNLw@...278...>
+Subject: Re: [Openvpn-devel] [PATCH] build: reduce hardcode in `asio_path`
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,67 +15,49 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset="utf-8"; format="flowed"
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Petr Portnov <mrjarviscraft@...277...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-From: Frank Lichtenheld <frank@...2641...>
+On 09/09/2024 21:43, Petr Portnov wrote:
+> Hi there! Any updates on this proposal?
+> 
+> пн, 2 сент. 2024 г. в 22:34, Petr Portnov <mrjarviscraft@...277... 
+> <mailto:mrjarviscraft@...277...>>:
+> 
+>     Hi there! While working on packaging `openvpn3-linux` for NixOS I've
+>     discovered a problem with `asio_path` child path being too strict
+>     (since not all distros have `asio` as the parent of `include`
+>     directory). Thus I am suggesting a simple patch which allows better
+>     control over this path allowing easier integration with distros.
+> 
 
-The previous code went through some hoops
-to avoid compiler warnings. But there is
-a much easier way by just telling it
-exactly what you want to do.
+This has been merged and pushed!
 
-Also fix typo in variable name while I'm
-here.
+commit 75abb7dc9366ba85fb1a144d88f02a1e8a62f538
+Author: Petr Portnov <mrjarviscraft@...277...>
+Date:   Mon Sep 2 22:25:33 2024 +0300
 
-Change-Id: Icc86334b26ba1fcc20f4cd03644018d1d16796e3
-Signed-off-by: Frank Lichtenheld <frank@...2641...>
-Acked-by: Arne Schwabe <arne-openvpn@...1227...>
----
+     build: reduce hardcoded 'asio_path'
 
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to master.
+     Currently, 'asio_path` variable value is concatenated with
+     '/asio/include' to specify the path to custom `asio`
+     installation.  The problem is that this is too strict as some
+     distros (namely NixOS) may have the 'include' directory with
+     a differently named parent.  Thus this change minimizes the
+     hardcoded part of the path to make it more flexible.
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/310
-This mail reflects revision 3 of this Change.
+     Signed-off-by: Petr Portnov <mrjarviscraft@...277...>
 
-Acked-by according to Gerrit (reflected above):
-Arne Schwabe <arne-openvpn@...1227...>
 
-        
-diff --git a/src/openvpn/auth_token.c b/src/openvpn/auth_token.c
-index c4b59b9..192c7c2 100644
---- a/src/openvpn/auth_token.c
-+++ b/src/openvpn/auth_token.c
-@@ -182,24 +182,18 @@
-         char *initial_token_copy = string_alloc(multi->auth_token_initial, &gc);
- 
-         char *old_sessid = initial_token_copy + strlen(SESSION_ID_PREFIX);
--        char *old_tsamp_initial = old_sessid + AUTH_TOKEN_SESSION_ID_LEN*8/6;
-+        char *old_tstamp_initial = old_sessid + AUTH_TOKEN_SESSION_ID_LEN*8/6;
- 
-         /*
-          * We null terminate the old token just after the session ID to let
-          * our base64 decode function only decode the session ID
-          */
--        old_tsamp_initial[12] = '\0';
--        ASSERT(openvpn_base64_decode(old_tsamp_initial, old_tstamp_decode, 9) == 9);
-+        old_tstamp_initial[12] = '\0';
-+        ASSERT(openvpn_base64_decode(old_tstamp_initial, old_tstamp_decode, 9) == 9);
- 
--        /*
--         * Avoid old gcc (4.8.x) complaining about strict aliasing
--         * by using a temporary variable instead of doing it in one
--         * line
--         */
--        uint64_t *tstamp_ptr = (uint64_t *) old_tstamp_decode;
--        initial_timestamp = *tstamp_ptr;
-+        memcpy(&initial_timestamp, &old_tstamp_decode, sizeof(initial_timestamp));
- 
--        old_tsamp_initial[0] = '\0';
-+        old_tstamp_initial[0] = '\0';
-         ASSERT(openvpn_base64_decode(old_sessid, sessid, AUTH_TOKEN_SESSION_ID_LEN) == AUTH_TOKEN_SESSION_ID_LEN);
-     }
-     else if (!rand_bytes(sessid, AUTH_TOKEN_SESSION_ID_LEN))
+Thanks a lot!
+
+-- 
+kind regards,
+
+David Sommerseth
+OpenVPN Inc
+
+
 
