@@ -1,16 +1,16 @@
-From: "plaisthos (Code Review)" <gerrit@...515...>
-Date: Tue, 10 Sep 2024 10:05:39 +0000
-In-Reply-To: <gerrit.1706186293000.I01e258e97351b5aa4b9e561f5b35ddc2318569e2@...2715...>
-References: <gerrit.1706186293000.I01e258e97351b5aa4b9e561f5b35ddc2318569e2@...2715...>
-Reply-To: arne-openvpn@...1227..., openvpn-devel@lists.sourceforge.net,
- frank@...2641..., lstipakov@...277...
-Message-ID: <315b8f43f024a49698f8cc8543bf918566ee5974-EmailReviewComments-HTML@...2715...>
+From: "mrbff (Code Review)" <gerrit@...515...>
+Date: Tue, 10 Sep 2024 10:21:30 +0000
+In-Reply-To: <gerrit.1724156602000.I235891212b15277349810913c9c1763da5c48587@...2715...>
+References: <gerrit.1724156602000.I235891212b15277349810913c9c1763da5c48587@...2715...>
+Reply-To: marco@...2726..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net, frank@...2641...
+Message-ID: <c1ac5d5cbd30dee9d4c76c6f90febde348c16967-EmailReplacePatchSet-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="yWF0DIa7Kkc="; charset=UTF-8
-Subject: [Openvpn-devel] [L] Change in openvpn[master]: Implement support
- for larger packet counter sizes
+Content-Type: multipart/alternative; boundary="cFKHz8oo4PQ="; charset=UTF-8
+Subject: [Openvpn-devel] [XS] Change in openvpn[master]: tun: removed
+ unnecessary route installations
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,140 +19,169 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Cc: flichtenheld <frank@...2641...>, stipa <lstipakov@...277...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---yWF0DIa7Kkc=
+--cFKHz8oo4PQ=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: flichtenheld, stipa.
+Attention is currently required from: flichtenheld, mrbff, plaisthos.
 
-plaisthos has posted comments on this change. ( http://gerrit.openvpn.net/c=
-/openvpn/+/507?usp=3Demail )
+Hello flichtenheld, plaisthos,
 
-Change subject: Implement support for larger packet counter sizes
+I'd like you to reexamine a change. Please visit
+
+    http://gerrit.openvpn.net/c/openvpn/+/731?usp=3Demail
+
+to look at the new patch set (#3).
+
+The following approvals got outdated and were removed:
+Code-Review+2 by flichtenheld
+
+The change is no longer submittable: Code-Review and checks~ChecksSubmitRul=
+e are unsatisfied now.
+
+
+Change subject: tun: removed unnecessary route installations
 ......................................................................
 
+tun: removed unnecessary route installations
 
-Patch Set 10:
+Removed superfluous calls to 'add_route_ipv6' for adding ipv6 routes after =
+tun opening in OpenBSD, NetBSD and Darwin.
 
-(3 comments)
-
-File src/openvpn/init.c:
-
-http://gerrit.openvpn.net/c/openvpn/+/507/comment/109f8bbf_34e87541 :
-PS6, Line 2696:         /* Ensure that for proto v3 is enabled fully or not=
- at all */
-> Ensure that both aead_tag_end and long_pkt_id are enabled for DATA_V3 ?
-Done
+Change-Id: I235891212b15277349810913c9c1763da5c48587
+Signed-off-by: Marco Baffo <marco@...2726...>
+---
+M src/openvpn/tun.c
+1 file changed, 1 insertion(+), 7 deletions(-)
 
 
-http://gerrit.openvpn.net/c/openvpn/+/507/comment/d9907f20_32a208a8 :
-PS6, Line 2702:             msg(D_PUSH_ERRORS, "OPTIONS ERROR: Aead tag at =
-the end and 64 bit"
-> missing space after "bit"
-Done
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/31/731/3
 
+diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
+index 739e008..82c5c00 100644
+--- a/src/openvpn/tun.c
++++ b/src/openvpn/tun.c
+@@ -1008,8 +1008,7 @@
+ #endif /* ifdef _WIN32 */
+ }
 
-File src/openvpn/ssl.c:
+-#if defined(_WIN32)    \
+-    || defined(TARGET_DARWIN) || defined(TARGET_NETBSD) || defined(TARGET_=
+OPENBSD)
++#if defined(_WIN32)
 
-http://gerrit.openvpn.net/c/openvpn/+/507/comment/8de88348_c0036eed :
-PS6, Line 1528:         impl_iv_len =3D cipher_ctx_iv_length(ctx->cipher) -=
- packet_id_size(longiv);
-> why not move declaration of impl_iv_len here?
-Done
+ /* some of the platforms will auto-add a "network route" pointing
+  * to the interface on "ifconfig tunX 2001:db8::1/64", others need
+@@ -1200,11 +1199,6 @@
+                          "FreeBSD BSD 'ifconfig inet6 -ifdisabled' failed"=
+);
+ #endif
 
-
+-#if defined(TARGET_OPENBSD) || defined(TARGET_NETBSD) \
+-    || defined(TARGET_DARWIN)
+-    /* and, hooray, we explicitly need to add a route... */
+-    add_route_connected_v6_net(tt, es);
+-#endif
+ #elif defined(TARGET_AIX)
+     argv_printf(&argv, "%s %s inet6 %s/%d mtu %d up", IFCONFIG_PATH, ifnam=
+e,
+                 ifconfig_ipv6_local, tt->netbits_ipv6, tun_mtu);
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/507?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/731?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings
 
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: I01e258e97351b5aa4b9e561f5b35ddc2318569e2
-Gerrit-Change-Number: 507
-Gerrit-PatchSet: 10
-Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
+Gerrit-Change-Id: I235891212b15277349810913c9c1763da5c48587
+Gerrit-Change-Number: 731
+Gerrit-PatchSet: 3
+Gerrit-Owner: mrbff <marco@...2726...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: stipa <lstipakov@...277...>
+Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
 Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Attention: stipa <lstipakov@...277...>
-Gerrit-Comment-Date: Tue, 10 Sep 2024 10:05:39 +0000
-Gerrit-HasComments: Yes
-Gerrit-Has-Labels: No
-Comment-In-Reply-To: stipa <lstipakov@...277...>
-Gerrit-MessageType: comment
+Gerrit-Attention: mrbff <marco@...2726...>
+Gerrit-MessageType: newpatchset
 
---yWF0DIa7Kkc=
+--cFKHz8oo4PQ=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p> Attention is currently required from: flichtenheld, stipa. </p>
-<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/507?usp=3Demail">View C=
-hange</a></p><p>3 comments:</p><ul style=3D"list-style: none; padding: 0;">=
-<li style=3D"margin: 0; padding: 0;"><p>File src/openvpn/init.c:</p><ul sty=
-le=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0=
- 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.n=
-et/c/openvpn/+/507/comment/109f8bbf_34e87541">Patch Set #6, Line 2696:</a> =
-<code style=3D"font-family:monospace,monospace">        /* Ensure that for =
-proto v3 is enabled fully or not at all */</code></p><p><blockquote style=
-=3D"border-left: 1px solid #aaa; margin: 10px 0; padding: 0 10px;">Ensure t=
-hat both aead_tag_end and long_pkt_id are enabled for DATA_V3 ?</blockquote=
-></p><p style=3D"white-space: pre-wrap; word-wrap: break-word;">Done</p></l=
-i><li style=3D"margin: 0; padding: 0 0 0 16px;"><p style=3D"margin-bottom: =
-4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/507/comment/d9907f20=
-_32a208a8">Patch Set #6, Line 2702:</a> <code style=3D"font-family:monospac=
-e,monospace">            msg(D_PUSH_ERRORS, &quot;OPTIONS ERROR: Aead tag a=
-t the end and 64 bit&quot;</code></p><p><blockquote style=3D"border-left: 1=
-px solid #aaa; margin: 10px 0; padding: 0 10px;">missing space after &quot;=
-bit&quot;</blockquote></p><p style=3D"white-space: pre-wrap; word-wrap: bre=
-ak-word;">Done</p></li></ul></li><li style=3D"margin: 0; padding: 0;"><p>Fi=
-le src/openvpn/ssl.c:</p><ul style=3D"list-style: none; padding: 0;"><li st=
-yle=3D"margin: 0; padding: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a=
- href=3D"http://gerrit.openvpn.net/c/openvpn/+/507/comment/8de88348_c0036ee=
-d">Patch Set #6, Line 1528:</a> <code style=3D"font-family:monospace,monosp=
-ace">        impl_iv_len =3D cipher_ctx_iv_length(ctx-&gt;cipher) - packet_=
-id_size(longiv);</code></p><p><blockquote style=3D"border-left: 1px solid #=
-aaa; margin: 10px 0; padding: 0 10px;">why not move declaration of impl_iv_=
-len here?</blockquote></p><p style=3D"white-space: pre-wrap; word-wrap: bre=
-ak-word;">Done</p></li></ul></li></ul><p>To view, visit <a href=3D"http://g=
-errit.openvpn.net/c/openvpn/+/507?usp=3Demail">change 507</a>. To unsubscri=
-be, or for help writing mail filters, visit <a href=3D"http://gerrit.openvp=
-n.net/settings">settings</a>.</p><div itemscope itemtype=3D"http://schema.o=
-rg/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://sche=
-ma.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net=
-/c/openvpn/+/507?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Chan=
-ge"/></div></div>
+<p> Attention is currently required from: flichtenheld, mrbff, plaisthos. <=
+/p>
+<p>mrbff <strong>uploaded patch set #3</strong> to this change.</p><p><a hr=
+ef=3D"http://gerrit.openvpn.net/c/openvpn/+/731?usp=3Demail">View Change</a=
+></p><p>The following approvals got outdated and were removed:
+Code-Review+2 by flichtenheld</p><p>The change is no longer submittable: Co=
+de-Review and checks~ChecksSubmitRule are unsatisfied now.</p><pre style=3D=
+"font-family: monospace,monospace; white-space: pre-wrap;">tun: removed unn=
+ecessary route installations<br><br>Removed superfluous calls to &#39;add_r=
+oute_ipv6&#39; for adding ipv6 routes after tun opening in OpenBSD, NetBSD =
+and Darwin.<br><br>Change-Id: I235891212b15277349810913c9c1763da5c48587<br>=
+Signed-off-by: Marco Baffo &lt;marco@...2726...&gt;<br>---<br>M src/openvpn=
+/tun.c<br>1 file changed, 1 insertion(+), 7 deletions(-)<br><br></pre><pre =
+style=3D"font-family: monospace,monospace; white-space: pre-wrap;">git pull=
+ ssh://gerrit.openvpn.net:29418/openvpn refs/changes/31/731/3</pre><pre sty=
+le=3D"font-family: monospace,monospace; white-space: pre-wrap;"><span>diff =
+--git a/src/openvpn/tun.c b/src/openvpn/tun.c</span><br><span>index 739e008=
+..82c5c00 100644</span><br><span>--- a/src/openvpn/tun.c</span><br><span>++=
++ b/src/openvpn/tun.c</span><br><span>@@ -1008,8 +1008,7 @@</span><br><span=
+> #endif /* ifdef _WIN32 */</span><br><span> }</span><br><span> </span><br>=
+<span style=3D"color: hsl(0, 100%, 40%);">-#if defined(_WIN32)    \</span><=
+br><span style=3D"color: hsl(0, 100%, 40%);">-    || defined(TARGET_DARWIN)=
+ || defined(TARGET_NETBSD) || defined(TARGET_OPENBSD)</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+#if defined(_WIN32)</span><br><span> </sp=
+an><br><span> /* some of the platforms will auto-add a &quot;network route&=
+quot; pointing</span><br><span>  * to the interface on &quot;ifconfig tunX =
+2001:db8::1/64&quot;, others need</span><br><span>@@ -1200,11 +1199,6 @@</s=
+pan><br><span>                          &quot;FreeBSD BSD &#39;ifconfig ine=
+t6 -ifdisabled&#39; failed&quot;);</span><br><span> #endif</span><br><span>=
+ </span><br><span style=3D"color: hsl(0, 100%, 40%);">-#if defined(TARGET_O=
+PENBSD) || defined(TARGET_NETBSD) \</span><br><span style=3D"color: hsl(0, =
+100%, 40%);">-    || defined(TARGET_DARWIN)</span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-    /* and, hooray, we explicitly need to add a route=
+... */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    add_route_c=
+onnected_v6_net(tt, es);</span><br><span style=3D"color: hsl(0, 100%, 40%);=
+">-#endif</span><br><span> #elif defined(TARGET_AIX)</span><br><span>     a=
+rgv_printf(&amp;argv, &quot;%s %s inet6 %s/%d mtu %d up&quot;, IFCONFIG_PAT=
+H, ifname,</span><br><span>                 ifconfig_ipv6_local, tt-&gt;net=
+bits_ipv6, tun_mtu);</span><br><span></span><br></pre><p>To view, visit <a =
+href=3D"http://gerrit.openvpn.net/c/openvpn/+/731?usp=3Demail">change 731</=
+a>. To unsubscribe, or for help writing mail filters, visit <a href=3D"http=
+://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope itemtype=3D=
+"http://schema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtyp=
+e=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://ge=
+rrit.openvpn.net/c/openvpn/+/731?usp=3Demail"/><meta itemprop=3D"name" cont=
+ent=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I01e258e97351b5aa4b9e561f5b3=
-5ddc2318569e2 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 507 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 10 </div>
-<div style=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@...1711...=
-27...&gt; </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I235891212b15277349810913c9c=
+1763da5c48587 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 731 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 3 </div>
+<div style=3D"display:none"> Gerrit-Owner: mrbff &lt;marco@...2726...&gt; <=
+/div>
 <div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
 1...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: stipa &lt;lstipakov@...277...=
-&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
+.1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
 41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: stipa &lt;lstipakov@...1663...=
-.&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Tue, 10 Sep 2024 10:05:39=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: No </div>
-<div style=3D"display:none"> Comment-In-Reply-To: stipa &lt;lstipakov@...1664...=
-7...&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
+<div style=3D"display:none"> Gerrit-Attention: mrbff &lt;marco@...2726...&g=
+t; </div>
+<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
 
 
---yWF0DIa7Kkc=--
+--cFKHz8oo4PQ=--
 
