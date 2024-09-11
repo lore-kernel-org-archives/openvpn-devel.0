@@ -1,16 +1,17 @@
-From: "mrbff (Code Review)" <gerrit@...515...>
-Date: Wed, 11 Sep 2024 13:07:55 +0000
-In-Reply-To: <gerrit.1724156731000.I2f018ffc3e067b7967289a87e06f730de0d7e8a8@...2715...>
-References: <gerrit.1724156731000.I2f018ffc3e067b7967289a87e06f730de0d7e8a8@...2715...>
-Reply-To: marco@...2726..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <841a28b9a046fdea72dca7cc88c425f95c05e1aa-HTML@...2715...>
+From: "cron2 (Code Review)" <gerrit@...515...>
+Date: Wed, 11 Sep 2024 13:19:53 +0000
+In-Reply-To: <gerrit.1725608632000.I8e8ddd35bd3cc3334faf7f57118d1892512ae9f7@...2715...>
+References: <gerrit.1725608632000.I8e8ddd35bd3cc3334faf7f57118d1892512ae9f7@...2715...>
+Reply-To: gert@...1296..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net, frank@...2641...,
+ lstipakov@...277...
+Message-ID: <830eb5781b6b44394351d255e8c7e180274b8896-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="fVUEDXp6/L8="; charset=UTF-8
-Subject: [Openvpn-devel] [XS] Change in openvpn[master]: GitHub: preventing
- errors on GitHub Mac runner images
+Content-Type: multipart/alternative; boundary="hi618j3Z7rg="; charset=UTF-8
+Subject: [Openvpn-devel] [M] Change in openvpn[master]: dco-win: factor out
+ getting dco version info own function
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,71 +20,109 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
+To: stipa <lstipakov@...277...>
 Cc: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---fVUEDXp6/L8=
+--hi618j3Z7rg=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-mrbff has abandoned this change. ( http://gerrit.openvpn.net/c/openvpn/+/73=
-2?usp=3Demail )
+Attention is currently required from: flichtenheld, plaisthos, stipa.
 
-Change subject: GitHub: preventing errors on GitHub Mac runner images
+cron2 has posted comments on this change. ( http://gerrit.openvpn.net/c/ope=
+nvpn/+/733?usp=3Demail )
+
+Change subject: dco-win: factor out getting dco version info own function
 ......................................................................
 
 
-Abandoned
+Patch Set 2: Code-Review+2
 
-Not needed anymore
+(1 comment)
+
+Patchset:
+
+PS2:=20
+looks good to me.  will process after the meetup when the prerequisite patc=
+hes are merged
+
+
+
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/732?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/733?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings
 
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: I2f018ffc3e067b7967289a87e06f730de0d7e8a8
-Gerrit-Change-Number: 732
+Gerrit-Change-Id: I8e8ddd35bd3cc3334faf7f57118d1892512ae9f7
+Gerrit-Change-Number: 733
 Gerrit-PatchSet: 2
-Gerrit-Owner: mrbff <marco@...2726...>
+Gerrit-Owner: stipa <lstipakov@...277...>
+Gerrit-Reviewer: cron2 <gert@...1296...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-MessageType: abandon
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Attention: flichtenheld <frank@...2641...>
+Gerrit-Attention: stipa <lstipakov@...277...>
+Gerrit-Comment-Date: Wed, 11 Sep 2024 13:19:53 +0000
+Gerrit-HasComments: Yes
+Gerrit-Has-Labels: Yes
+Gerrit-MessageType: comment
 
---fVUEDXp6/L8=
+--hi618j3Z7rg=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p>mrbff <strong>abandoned</strong> this change.</p><p><a href=3D"http://ge=
-rrit.openvpn.net/c/openvpn/+/732?usp=3Demail">View Change</a></p><div style=
-=3D"white-space:pre-wrap">Abandoned
-
-Not needed anymore</div><p>To view, visit <a href=3D"http://gerrit.openvpn.=
-net/c/openvpn/+/732?usp=3Demail">change 732</a>. To unsubscribe, or for hel=
-p writing mail filters, visit <a href=3D"http://gerrit.openvpn.net/settings=
-">settings</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessag=
-e"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAct=
-ion"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/7=
-32?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div></d=
-iv>
+<p> Attention is currently required from: flichtenheld, plaisthos, stipa. <=
+/p>
+<p>Patch set 2:<span style=3D"border-radius: 3px; display: inline-block; ma=
+rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/733?usp=3Demail">Vi=
+ew Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0=
+;"><li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-s=
+tyle: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p s=
+tyle=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn=
+/+/733?tab=3Dcomments">Patch Set #2:</a> </p><p style=3D"white-space: pre-w=
+rap; word-wrap: break-word;">looks good to me.  will process after the meet=
+up when the prerequisite patches are merged</p></li></ul></li></ul><p>To vi=
+ew, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/733?usp=3Demail"=
+>change 733</a>. To unsubscribe, or for help writing mail filters, visit <a=
+ href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemscop=
+e itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"ac=
+tion" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=
+=3D"http://gerrit.openvpn.net/c/openvpn/+/733?usp=3Demail"/><meta itemprop=
+=3D"name" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I2f018ffc3e067b7967289a87e06=
-f730de0d7e8a8 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 732 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I8e8ddd35bd3cc3334faf7f57118=
+d1892512ae9f7 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 733 </div>
 <div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
-<div style=3D"display:none"> Gerrit-Owner: mrbff &lt;marco@...2726...&gt; <=
-/div>
+<div style=3D"display:none"> Gerrit-Owner: stipa &lt;lstipakov@...277...&gt=
+; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
+ </div>
 <div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
 1...&gt; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
 .1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: abandon </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
+41...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: stipa &lt;lstipakov@...1663...=
+.&gt; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Wed, 11 Sep 2024 13:19:53=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
 
 
---fVUEDXp6/L8=--
+--hi618j3Z7rg=--
 
