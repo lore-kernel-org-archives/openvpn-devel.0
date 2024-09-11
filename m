@@ -1,16 +1,15 @@
-From: "ralf_lici (Code Review)" <gerrit@...515...>
-Date: Wed, 11 Sep 2024 13:57:19 +0000
-In-Reply-To: <gerrit.1725894771000.Iae04ad8715e40dfc76475c2c5b9a766c9604efc9@...2715...>
-References: <gerrit.1725894771000.Iae04ad8715e40dfc76475c2c5b9a766c9604efc9@...2715...>
-Reply-To: ralf@...2726..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <d6fc88876db353ca1d6649dcb818081cd8be029d-EmailReviewComments-HTML@...2715...>
+From: "flichtenheld (Code Review)" <gerrit@...515...>
+Date: Wed, 11 Sep 2024 14:33:42 +0000
+References: <gerrit.1726065220000.I86203b8f9a6d3cfc5e56d3ce9452af694fd11011@...2715...>
+Reply-To: frank@...2641..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net
+Message-ID: <73512253abd82a644d72f5c297ac252926f6e0d4-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="fN8SINEIXrQ="; charset=UTF-8
-Subject: [Openvpn-devel] [L] Change in openvpn[master]: Support CIDR on
- options and extend netbits usage
+Content-Type: multipart/alternative; boundary="mOivqnrsD6U="; charset=UTF-8
+Subject: [Openvpn-devel] [S] Change in openvpn[master]: GHA: Enable
+ t_server_null tests
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,113 +18,219 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Cc: flichtenheld <frank@...2641...>, plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: plaisthos <arne-openvpn@...1227...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---fN8SINEIXrQ=
+--mOivqnrsD6U=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: flichtenheld, plaisthos.
+Attention is currently required from: plaisthos.
 
-ralf_lici has posted comments on this change. ( http://gerrit.openvpn.net/c=
-/openvpn/+/739?usp=3Demail )
+Hello plaisthos,
 
-Change subject: Support CIDR on options and extend netbits usage
+I'd like you to do a code review.
+Please visit
+
+    http://gerrit.openvpn.net/c/openvpn/+/743?usp=3Demail
+
+to review the following change.
+
+
+Change subject: GHA: Enable t_server_null tests
 ......................................................................
 
+GHA: Enable t_server_null tests
 
-Patch Set 2:
-
-(1 comment)
-
-File src/openvpn/options.c:
-
-http://gerrit.openvpn.net/c/openvpn/+/739/comment/550aedbd_8f511ee3 :
-PS2, Line 1535:     msg(D_SHOW_PARMS, "  ifconfig_pool_start =3D %s/%d", pr=
-int_in_addr_t(o->ifconfig_pool_start, 0, &gc), o->ifconfig_pool_netbits);
-> I'm saying that we need to come up with a clearer display for the informa=
-tion. [=E2=80=A6]
-ok
+Change-Id: I86203b8f9a6d3cfc5e56d3ce9452af694fd11011
+Signed-off-by: Frank Lichtenheld <frank@...2641...>
+---
+M .github/workflows/build.yaml
+1 file changed, 16 insertions(+), 5 deletions(-)
 
 
+
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/43/743/1
+
+diff --git a/.github/workflows/build.yaml b/.github/workflows/build.yaml
+index 8f0a7b5..361d457 100644
+--- a/.github/workflows/build.yaml
++++ b/.github/workflows/build.yaml
+@@ -172,8 +172,11 @@
+         run: ./configure --with-crypto-library=3D${{matrix.ssllib}} ${{mat=
+rix.extraconf}} --enable-werror
+       - name: make all
+         run: make -j3
++      - name: configure checks
++        if: ${{ matrix.extraconf !=3D '--disable-management' }}
++        run: echo 'RUN_SUDO=3D"sudo -E"' >tests/t_server_null.rc
+       - name: make check
+-        run: make check VERBOSE=3D1
++        run: make -j3 check VERBOSE=3D1
+
+   ubuntu-clang-asan:
+     strategy:
+@@ -199,8 +202,10 @@
+         run: CFLAGS=3D"-fsanitize=3Daddress,undefined -fno-sanitize-recove=
+r=3Dall  -fno-omit-frame-pointer -O2" CC=3Dclang ./configure --with-crypto-=
+library=3D${{matrix.ssllib}} --enable-werror
+       - name: make all
+         run: make -j3
++      - name: configure checks
++        run: echo 'RUN_SUDO=3D"sudo -E"' >tests/t_server_null.rc
+       - name: make check
+-        run: make check VERBOSE=3D1
++        run: make -j3 check VERBOSE=3D1
+=20
+   macos:
+     strategy:
+@@ -258,8 +263,10 @@
+         run: ./configure --enable-werror ${{matrix.configureflags}} ${{mat=
+rix.configuressllib}}
+       - name: make all
+         run: make -j4
++      - name: configure checks
++        run: echo 'RUN_SUDO=3D"sudo -E"' >tests/t_server_null.rc
+       - name: make check
+-        run: make check VERBOSE=3D1
++        run: make -j4 check VERBOSE=3D1
+
+   msvc:
+       strategy:
+@@ -369,8 +376,10 @@
+         run: ./configure --with-crypto-library=3Dopenssl ${{matrix.configu=
+reflags}} --enable-werror
+       - name: make all
+         run: make -j3
++      - name: configure checks
++        run: echo 'RUN_SUDO=3D"sudo -E"' >tests/t_server_null.rc
+       - name: make check
+-        run: make check VERBOSE=3D1
++        run: make -j3 check VERBOSE=3D1
+
+   mbedtls3:
+     strategy:
+@@ -422,5 +431,7 @@
+         run: ./configure --with-crypto-library=3Dmbedtls
+       - name: make all
+         run: make -j3
++      - name: configure checks
++        run: echo 'RUN_SUDO=3D"sudo -E"' >tests/t_server_null.rc
+       - name: make check
+-        run: make check VERBOSE=3D1
++        run: make -j3 check VERBOSE=3D1
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/739?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/743?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings
 
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: Iae04ad8715e40dfc76475c2c5b9a766c9604efc9
-Gerrit-Change-Number: 739
-Gerrit-PatchSet: 2
-Gerrit-Owner: ralf_lici <ralf@...2726...>
-Gerrit-Reviewer: flichtenheld <frank@...2641...>
+Gerrit-Change-Id: I86203b8f9a6d3cfc5e56d3ce9452af694fd11011
+Gerrit-Change-Number: 743
+Gerrit-PatchSet: 1
+Gerrit-Owner: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Comment-Date: Wed, 11 Sep 2024 13:57:19 +0000
-Gerrit-HasComments: Yes
-Gerrit-Has-Labels: No
-Comment-In-Reply-To: flichtenheld <frank@...2641...>
-Comment-In-Reply-To: ralf_lici <ralf@...2726...>
-Gerrit-MessageType: comment
+Gerrit-MessageType: newchange
 
---fN8SINEIXrQ=
+--mOivqnrsD6U=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p> Attention is currently required from: flichtenheld, plaisthos. </p>
-<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/739?usp=3Demail">View C=
-hange</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0;"><=
-li style=3D"margin: 0; padding: 0;"><p>File src/openvpn/options.c:</p><ul s=
-tyle=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0=
- 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn=
-.net/c/openvpn/+/739/comment/550aedbd_8f511ee3">Patch Set #2, Line 1535:</a=
-> <code style=3D"font-family:monospace,monospace">    msg(D_SHOW_PARMS, &qu=
-ot;  ifconfig_pool_start =3D %s/%d&quot;, print_in_addr_t(o-&gt;ifconfig_po=
-ol_start, 0, &amp;gc), o-&gt;ifconfig_pool_netbits);</code></p><p><blockquo=
-te style=3D"border-left: 1px solid #aaa; margin: 10px 0; padding: 0 10px;">=
-I&#39;m saying that we need to come up with a clearer display for the infor=
-mation. [=E2=80=A6]</blockquote></p><p style=3D"white-space: pre-wrap; word=
--wrap: break-word;">ok</p></li></ul></li></ul><p>To view, visit <a href=3D"=
-http://gerrit.openvpn.net/c/openvpn/+/739?usp=3Demail">change 739</a>. To u=
-nsubscribe, or for help writing mail filters, visit <a href=3D"http://gerri=
-t.openvpn.net/settings">settings</a>.</p><div itemscope itemtype=3D"http://=
-schema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"htt=
-p://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.ope=
-nvpn.net/c/openvpn/+/739?usp=3Demail"/><meta itemprop=3D"name" content=3D"V=
-iew Change"/></div></div>
+<p> Attention is currently required from: plaisthos. </p>
+<p>flichtenheld would like plaisthos to <strong>review</strong> this change.
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/743?usp=3Demail">Vi=
+ew Change</a></p><pre style=3D"font-family: monospace,monospace; white-spac=
+e: pre-wrap;">GHA: Enable t_server_null tests<br><br>Change-Id: I86203b8f9a=
+6d3cfc5e56d3ce9452af694fd11011<br>Signed-off-by: Frank Lichtenheld &lt;fran=
+k@...2641...&gt;<br>---<br>M .github/workflows/build.yaml<br>1 file changed=
+, 16 insertions(+), 5 deletions(-)<br><br></pre><pre style=3D"font-family: =
+monospace,monospace; white-space: pre-wrap;">git pull ssh://gerrit.openvpn.=
+net:29418/openvpn refs/changes/43/743/1</pre><pre style=3D"font-family: mon=
+ospace,monospace; white-space: pre-wrap;"><span>diff --git a/.github/workfl=
+ows/build.yaml b/.github/workflows/build.yaml</span><br><span>index 8f0a7b5=
+..361d457 100644</span><br><span>--- a/.github/workflows/build.yaml</span><=
+br><span>+++ b/.github/workflows/build.yaml</span><br><span>@@ -172,8 +172,=
+11 @@</span><br><span>         run: ./configure --with-crypto-library=3D${{=
+matrix.ssllib}} ${{matrix.extraconf}} --enable-werror</span><br><span>     =
+  - name: make all</span><br><span>         run: make -j3</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+      - name: configure checks</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+        if: ${{ matrix.ext=
+raconf !=3D &#39;--disable-management&#39; }}</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+        run: echo &#39;RUN_SUDO=3D&quot;sudo -E&q=
+uot;&#39; &gt;tests/t_server_null.rc</span><br><span>       - name: make ch=
+eck</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        run: make =
+check VERBOSE=3D1</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+      run: make -j3 check VERBOSE=3D1</span><br><span> </span><br><span>   =
+ubuntu-clang-asan:</span><br><span>     strategy:</span><br><span>@@ -199,8=
+ +202,10 @@</span><br><span>         run: CFLAGS=3D&quot;-fsanitize=3Daddre=
+ss,undefined -fno-sanitize-recover=3Dall  -fno-omit-frame-pointer -O2&quot;=
+ CC=3Dclang ./configure --with-crypto-library=3D${{matrix.ssllib}} --enable=
+-werror</span><br><span>       - name: make all</span><br><span>         ru=
+n: make -j3</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      - =
+name: configure checks</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+        run: echo &#39;RUN_SUDO=3D&quot;sudo -E&quot;&#39; &gt;tests/t_s=
+erver_null.rc</span><br><span>       - name: make check</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-        run: make check VERBOSE=3D1</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+        run: make -j3 che=
+ck VERBOSE=3D1</span><br><span> </span><br><span>   macos:</span><br><span>=
+     strategy:</span><br><span>@@ -258,8 +263,10 @@</span><br><span>       =
+  run: ./configure --enable-werror ${{matrix.configureflags}} ${{matrix.con=
+figuressllib}}</span><br><span>       - name: make all</span><br><span>    =
+     run: make -j4</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+     - name: configure checks</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+        run: echo &#39;RUN_SUDO=3D&quot;sudo -E&quot;&#39; &gt;te=
+sts/t_server_null.rc</span><br><span>       - name: make check</span><br><s=
+pan style=3D"color: hsl(0, 100%, 40%);">-        run: make check VERBOSE=3D=
+1</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        run: make =
+-j4 check VERBOSE=3D1</span><br><span> </span><br><span>   msvc:</span><br>=
+<span>       strategy:</span><br><span>@@ -369,8 +376,10 @@</span><br><span=
+>         run: ./configure --with-crypto-library=3Dopenssl ${{matrix.config=
+ureflags}} --enable-werror</span><br><span>       - name: make all</span><b=
+r><span>         run: make -j3</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+      - name: configure checks</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+        run: echo &#39;RUN_SUDO=3D&quot;sudo -E&quot;=
+&#39; &gt;tests/t_server_null.rc</span><br><span>       - name: make check<=
+/span><br><span style=3D"color: hsl(0, 100%, 40%);">-        run: make chec=
+k VERBOSE=3D1</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
+  run: make -j3 check VERBOSE=3D1</span><br><span> </span><br><span>   mbed=
+tls3:</span><br><span>     strategy:</span><br><span>@@ -422,5 +431,7 @@</s=
+pan><br><span>         run: ./configure --with-crypto-library=3Dmbedtls</sp=
+an><br><span>       - name: make all</span><br><span>         run: make -j3=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      - name: confi=
+gure checks</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        =
+run: echo &#39;RUN_SUDO=3D&quot;sudo -E&quot;&#39; &gt;tests/t_server_null.=
+rc</span><br><span>       - name: make check</span><br><span style=3D"color=
+: hsl(0, 100%, 40%);">-        run: make check VERBOSE=3D1</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+        run: make -j3 check VERBOSE=
+=3D1</span><br><span></span><br></pre><p>To view, visit <a href=3D"http://g=
+errit.openvpn.net/c/openvpn/+/743?usp=3Demail">change 743</a>. To unsubscri=
+be, or for help writing mail filters, visit <a href=3D"http://gerrit.openvp=
+n.net/settings">settings</a>.</p><div itemscope itemtype=3D"http://schema.o=
+rg/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://sche=
+ma.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net=
+/c/openvpn/+/743?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Chan=
+ge"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: Iae04ad8715e40dfc76475c2c5b9=
-a766c9604efc9 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 739 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
-<div style=3D"display:none"> Gerrit-Owner: ralf_lici &lt;ralf@...2726...&gt=
-; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
-1...&gt; </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I86203b8f9a6d3cfc5e56d3ce945=
+2af694fd11011 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 743 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
+<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
+.&gt; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
 .1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
 ..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
-41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Wed, 11 Sep 2024 13:57:19=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: No </div>
-<div style=3D"display:none"> Comment-In-Reply-To: flichtenheld &lt;frank@...1186...=
-.2641...&gt; </div>
-<div style=3D"display:none"> Comment-In-Reply-To: ralf_lici &lt;ralf@...2788...=
-6...&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
+<div style=3D"display:none"> Gerrit-MessageType: newchange </div>
 
 
---fN8SINEIXrQ=--
+--mOivqnrsD6U=--
 
