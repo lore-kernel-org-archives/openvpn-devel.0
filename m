@@ -1,16 +1,11 @@
-From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Wed, 11 Sep 2024 12:26:21 +0000
-In-Reply-To: <gerrit.1726024745000.I2bfa9ffbd17d0599014d38b2a2fd319766cdb1e3@...2715...>
-References: <gerrit.1726024745000.I2bfa9ffbd17d0599014d38b2a2fd319766cdb1e3@...2715...>
-Reply-To: gert@...1296..., arne-openvpn@...1227..., selva.nair@...277...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <431245170daec358e009d3be500a9370e31a6ad5-HTML@...2715...>
+Content-Type: multipart/alternative;
+ boundary="------------ssDWrICxGCcUNyk6KHKX5pvE"
+Message-ID: <2d410289-a911-49b5-a0df-f966f405600e@...2751...>
+Date: Wed, 11 Sep 2024 14:54:56 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="pi8ExnnMJIE="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: Do not stop reading
- from file/uri when OPENSSL_STORE_load() returns e...
+From: Johan Draaisma <johan@...2751...>
+Content-Language: en-US
+Subject: [Openvpn-devel]  IRC community meeting summary
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,269 +14,146 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: selvanair <selva.nair@...277...>
-Cc: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: openvpn-devel@lists.sourceforge.net
 
---pi8ExnnMJIE=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+This is a multi-part message in MIME format.
+--------------ssDWrICxGCcUNyk6KHKX5pvE
+Content-Type: text/plain; charset="utf-8"; format="flowed"
+Content-Transfer-Encoding: 8bit
 
-cron2 has submitted this change. ( http://gerrit.openvpn.net/c/openvpn/+/74=
-2?usp=3Demail )
+Meeting summary for 11 September 2024:
 
-Change subject: Do not stop reading from file/uri when OPENSSL_STORE_load()=
- returns error
-......................................................................
+  * *Updated: OpenVPN community meetup 2024*
+    /Hotel recommendation added; Hotel Santo in Karlsruhe./
+    /Wiki coordination
+    page:​https://community.openvpn.net/openvpn/wiki/CommunityMeetup2024
+    <https://community.openvpn.net/openvpn/wiki/CommunityMeetup2024>/
+    /Where: Karlsruhe, Germany.SteamWork?
+    <https://community.openvpn.net/openvpn/wiki/SteamWork>, Karlsruhe./
+    /When: Set to 20-22 September 2024./
+    /Shirts: T-shirts are on their way, expected to arrive this week./
 
-Do not stop reading from file/uri when OPENSSL_STORE_load() returns error
+  * *Updated: community.openvpn.net trac wiki*
+    /mattock is working on getting otterwiki working in a reasonable
+    production configuration./
+    /Hit a bug in otterwiki, reported it, it got fixed, moving on.../
+    /Basically working on setting up postgresql, separating uwsgi. After
+    that, let's see if we can copy content./
 
-OPENSSL_STORE_load() can error and return NULL even when the file or URI
-still has readable objects left.
+  * *Updated: DCO and Linux upstreaming, API change*/
+    /Upstreaming DCO to Linux is proceeding, it is in review stage at
+    the moment./
+    /ordex has sent in*patchset version 6*. and v7 is on the way./
+    /There will be an API change that makes it incompatible with the
+    current implementation./
+    /
 
-Fix by iterating until OPENSSL_STORE_eof(). Also clear such errors to avoid
-misleading messages printed at the end by crypto_print_openssl_errors().
+  * *Closed: Linux arm64 buildbot workers*
+    /mattock almost finished the work on this - a small fix that djpig
+    requested is pending, but it's all working now./
 
-Change-Id: I2bfa9ffbd17d0599014d38b2a2fd319766cdb1e3
-Signed-off-by: Selva Nair <selva.nair@...277...>
-Acked-by: Arne Schwabe <arne-openvpn@...1227...>
-Message-Id: <20240911104941.19429-1-gert@...1296...>
-URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg29=
-187.html
-Signed-off-by: Gert Doering <gert@...1296...>
----
-M src/openvpn/ssl_openssl.c
-1 file changed, 42 insertions(+), 5 deletions(-)
+  * *Closed: fixing openvpn3-linux builds in Buildbot*
+    /Mattock has this almost working. Some platforms will have to be
+    skipped because openvpn3-linux / gdbuspp dependencies (Meson in
+    particular) are too old or missing./
+    /As an aside, OpenVPN3 Linux v22 dev for Ubuntu 24.04 LTS and Fedora
+    39 and 40 are in the release process./
+    /Next step is a 'regular' OpenVPN3 Linux v23 release again./
 
+People that are paying close attention might have noticed that in the 
+past few weeks there were no meeting summaries. This was because of a 
+bit of summer vacation hiatus, which should be over now.
 
+As always you're welcome to join at #openvpn-meeting on Libera IRC 
+network every Wednesday at 14:00 Central European Time.
 
+Kind regards,
+Johan Draaisma
 
-diff --git a/src/openvpn/ssl_openssl.c b/src/openvpn/ssl_openssl.c
-index 0d845f4..5fd6572 100644
---- a/src/openvpn/ssl_openssl.c
-+++ b/src/openvpn/ssl_openssl.c
-@@ -813,6 +813,15 @@
-     }
-     return 0;
- }
-+
-+static void
-+clear_ossl_store_error(OSSL_STORE_CTX *store_ctx)
-+{
-+    if (OSSL_STORE_error(store_ctx))
-+    {
-+        ERR_clear_error();
-+    }
-+}
- #endif /* defined(HAVE_OPENSSL_STORE_API) */
+--------------ssDWrICxGCcUNyk6KHKX5pvE
+Content-Type: text/html; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 
- /**
-@@ -864,7 +873,19 @@
-     {
-         goto end;
-     }
--    info =3D OSSL_STORE_load(store_ctx);
-+    while (1)
-+    {
-+        info =3D OSSL_STORE_load(store_ctx);
-+        if (info || OSSL_STORE_eof(store_ctx))
-+        {
-+            break;
-+        }
-+        /* OPENSSL_STORE_load can return error and still have usable objec=
-ts to follow.
-+         * ref: man OPENSSL_STORE_open
-+         * Clear error and recurse through the file if info =3D NULL and e=
-of not reached
-+         */
-+        clear_ossl_store_error(store_ctx);
-+    }
-     if (!info)
-     {
-         goto end;
-@@ -1099,7 +1120,19 @@
-         goto end;
-     }
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  </head>
+  <body>
+    <p> Meeting summary for 11 September 2024:</p>
+    <ul
+style="color: rgb(0, 0, 0); font-family: Verdana, Arial, &quot;Bitstream Vera Sans&quot;, Helvetica, sans-serif; font-size: 13px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;">
+      <li><strong>Updated: OpenVPN community meetup 2024</strong><br>
+        <em>Hotel recommendation added; Hotel Santo in Karlsruhe.</em><br>
+        <em>Wiki coordination page:<span> </span><a class="ext-link"
+href="https://community.openvpn.net/openvpn/wiki/CommunityMeetup2024"
+style="text-decoration: none; color: rgb(187, 0, 0); border-bottom: 1px dotted rgb(187, 187, 187);"><span
+              class="icon"
+style="background: url(&quot;../extlink.gif&quot;) left center no-repeat; padding-left: 15px;">​</span>https://community.openvpn.net/openvpn/wiki/CommunityMeetup2024</a></em><br>
+        <em>Where: Karlsruhe, Germany.<span> </span><a
+            class="missing wiki"
+            href="https://community.openvpn.net/openvpn/wiki/SteamWork"
+            rel="nofollow"
+style="text-decoration: none; color: rgb(153, 153, 136); border-bottom: 1px dotted rgb(187, 187, 187);">SteamWork?</a>,
+          Karlsruhe.</em><br>
+        <em>When: Set to 20-22 September 2024.</em><br>
+        <em>Shirts: T-shirts are on their way, expected to arrive this
+          week.</em><br>
+      </li>
+    </ul>
+    <p
+style="color: rgb(0, 0, 0); font-family: Verdana, Arial, &quot;Bitstream Vera Sans&quot;, Helvetica, sans-serif; font-size: 13px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;"></p>
+    <ul
+style="color: rgb(0, 0, 0); font-family: Verdana, Arial, &quot;Bitstream Vera Sans&quot;, Helvetica, sans-serif; font-size: 13px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;">
+      <li><strong>Updated: community.openvpn.net trac wiki</strong><br>
+        <em>mattock is working on getting otterwiki working in a
+          reasonable production configuration.</em><br>
+        <em>Hit a bug in otterwiki, reported it, it got fixed, moving
+          on...</em><br>
+        <em>Basically working on setting up postgresql, separating
+          uwsgi. After that, let's see if we can copy content.</em><br>
+      </li>
+    </ul>
+    <ul
+style="color: rgb(0, 0, 0); font-family: Verdana, Arial, &quot;Bitstream Vera Sans&quot;, Helvetica, sans-serif; font-size: 13px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;">
+      <li><strong>Updated: DCO and Linux upstreaming, API change</strong><em><br>
+        </em>Upstreaming DCO to Linux is proceeding, it is in review
+        stage at the moment.<em><br>
+        </em>ordex has sent in<span> </span><strong>patchset version 6</strong>.
+        and v7 is on the way.<em><br>
+        </em>There will be an API change that makes it incompatible with
+        the current implementation.<em><br>
+        </em></li>
+    </ul>
+    <ul
+style="color: rgb(0, 0, 0); font-family: Verdana, Arial, &quot;Bitstream Vera Sans&quot;, Helvetica, sans-serif; font-size: 13px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;">
+      <li><strong>Closed: Linux arm64 buildbot workers</strong><br>
+        <em>mattock almost finished the work on this - a small fix that
+          djpig requested is pending, but it's all working now.</em><br>
+      </li>
+    </ul>
+    <ul
+style="color: rgb(0, 0, 0); font-family: Verdana, Arial, &quot;Bitstream Vera Sans&quot;, Helvetica, sans-serif; font-size: 13px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;">
+      <li><strong>Closed: fixing openvpn3-linux builds in Buildbot</strong><br>
+        <em>Mattock has this almost working. Some platforms will have to
+          be skipped because openvpn3-linux / gdbuspp dependencies
+          (Meson in particular) are too old or missing.</em><br>
+        <em>As an aside, OpenVPN3 Linux v22 dev for Ubuntu 24.04 LTS and
+          Fedora 39 and 40 are in the release process.</em><br>
+        <em>Next step is a 'regular' OpenVPN3 Linux v23 release again.</em></li>
+    </ul>
+    <p>People that are paying close attention might have noticed that in
+      the past few weeks there were no meeting summaries. This was
+      because of a bit of summer vacation hiatus, which should be over
+      now.<br>
+    </p>
+    <p>As always you're welcome to join at #openvpn-meeting on Libera
+      IRC network every Wednesday at 14:00 Central European Time.</p>
+    <p>Kind regards,<br>
+      Johan Draaisma<br>
+    </p>
+  </body>
+</html>
 
--    info =3D OSSL_STORE_load(store_ctx);
-+    while (1)
-+    {
-+        info =3D OSSL_STORE_load(store_ctx);
-+        if (info || OSSL_STORE_eof(store_ctx))
-+        {
-+            break;
-+        }
-+        /* OPENSSL_STORE_load can return error and still have usable objec=
-ts to follow.
-+         * ref: man OPENSSL_STORE_open
-+         * Clear error and recurse through the file if info =3D NULL and e=
-of not reached.
-+         */
-+        clear_ossl_store_error(store_ctx);
-+    }
-     if (!info)
-     {
-         goto end;
-@@ -1120,9 +1153,14 @@
-     OSSL_STORE_INFO_free(info);
-
-     /* iterate through the store and add extra certificates if any to the =
-chain */
--    info =3D OSSL_STORE_load(store_ctx);
--    while (info && !OSSL_STORE_eof(store_ctx))
-+    while (!OSSL_STORE_eof(store_ctx))
-     {
-+        info =3D OSSL_STORE_load(store_ctx);
-+        if (!info)
-+        {
-+            clear_ossl_store_error(store_ctx);
-+            continue;
-+        }
-         x =3D OSSL_STORE_INFO_get1_CERT(info);
-         if (x && SSL_CTX_add_extra_chain_cert(tls_ctx->ctx, x) !=3D 1)
-         {
-@@ -1131,7 +1169,6 @@
-             break;
-         }
-         OSSL_STORE_INFO_free(info);
--        info =3D OSSL_STORE_load(store_ctx);
-     }
-
- end:
-
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/742?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings
-
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: I2bfa9ffbd17d0599014d38b2a2fd319766cdb1e3
-Gerrit-Change-Number: 742
-Gerrit-PatchSet: 2
-Gerrit-Owner: selvanair <selva.nair@...277...>
-Gerrit-Reviewer: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-MessageType: merged
-
---pi8ExnnMJIE=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<p>cron2 <strong>submitted</strong> this change.</p><p><a href=3D"http://ge=
-rrit.openvpn.net/c/openvpn/+/742?usp=3Demail">View Change</a></p><div style=
-=3D"white-space:pre-wrap"></div><pre style=3D"font-family: monospace,monosp=
-ace; white-space: pre-wrap;">Do not stop reading from file/uri when OPENSSL=
-_STORE_load() returns error<br><br>OPENSSL_STORE_load() can error and retur=
-n NULL even when the file or URI<br>still has readable objects left.<br><br=
->Fix by iterating until OPENSSL_STORE_eof(). Also clear such errors to avoi=
-d<br>misleading messages printed at the end by crypto_print_openssl_errors(=
-).<br><br>Change-Id: I2bfa9ffbd17d0599014d38b2a2fd319766cdb1e3<br>Signed-of=
-f-by: Selva Nair &lt;selva.nair@...277...&gt;<br>Acked-by: Arne Schwabe &lt=
-;arne-openvpn@...1227...&gt;<br>Message-Id: &lt;20240911104941.19429-1-gert=
-@...1296...&gt;<br>URL: https://www.mail-archive.com/openvpn-devel@...1466...=
-urceforge.net/msg29187.html<br>Signed-off-by: Gert Doering &lt;gert@...1726...=
-...&gt;<br>---<br>M src/openvpn/ssl_openssl.c<br>1 file changed, 42 inserti=
-ons(+), 5 deletions(-)<br><br></pre>
-<pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><sp=
-an>diff --git a/src/openvpn/ssl_openssl.c b/src/openvpn/ssl_openssl.c</span=
-><br><span>index 0d845f4..5fd6572 100644</span><br><span>--- a/src/openvpn/=
-ssl_openssl.c</span><br><span>+++ b/src/openvpn/ssl_openssl.c</span><br><sp=
-an>@@ -813,6 +813,15 @@</span><br><span>     }</span><br><span>     return =
-0;</span><br><span> }</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+static void</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+clear_ossl_store_error(OS=
-SL_STORE_CTX *store_ctx)</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (OSSL_=
-STORE_error(store_ctx))</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        ER=
-R_clear_error();</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
- }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span=
-> #endif /* defined(HAVE_OPENSSL_STORE_API) */</span><br><span> </span><br>=
-<span> /**</span><br><span>@@ -864,7 +873,19 @@</span><br><span>     {</spa=
-n><br><span>         goto end;</span><br><span>     }</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-    info =3D OSSL_STORE_load(store_ctx);</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+    while (1)</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+        info =3D OSSL_STORE_load(store_ct=
-x);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        if (info=
- || OSSL_STORE_eof(store_ctx))</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+        {</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+            break;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-        }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        /*=
- OPENSSL_STORE_load can return error and still have usable objects to follo=
-w.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+         * ref: m=
-an OPENSSL_STORE_open</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+         * Clear error and recurse through the file if info =3D NULL and =
-eof not reached</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-     */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        clea=
-r_ossl_store_error(store_ctx);</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+    }</span><br><span>     if (!info)</span><br><span>     {</sp=
-an><br><span>         goto end;</span><br><span>@@ -1099,7 +1120,19 @@</spa=
-n><br><span>         goto end;</span><br><span>     }</span><br><span> </sp=
-an><br><span style=3D"color: hsl(0, 100%, 40%);">-    info =3D OSSL_STORE_l=
-oad(store_ctx);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-while (1)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+        info =3D OSSL_ST=
-ORE_load(store_ctx);</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+        if (info || OSSL_STORE_eof(store_ctx))</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+        {</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+            break;</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+        }</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+        /* OPENSSL_STORE_load can return error and still have usable=
- objects to follow.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-         * ref: man OPENSSL_STORE_open</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+         * Clear error and recurse through the file if i=
-nfo =3D NULL and eof not reached.</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+         */</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+        clear_ossl_store_error(store_ctx);</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+    }</span><br><span>     if (!info)</span><b=
-r><span>     {</span><br><span>         goto end;</span><br><span>@@ -1120,=
-9 +1153,14 @@</span><br><span>     OSSL_STORE_INFO_free(info);</span><br><s=
-pan> </span><br><span>     /* iterate through the store and add extra certi=
-ficates if any to the chain */</span><br><span style=3D"color: hsl(0, 100%,=
- 40%);">-    info =3D OSSL_STORE_load(store_ctx);</span><br><span style=3D"=
-color: hsl(0, 100%, 40%);">-    while (info &amp;&amp; !OSSL_STORE_eof(stor=
-e_ctx))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    while (!=
-OSSL_STORE_eof(store_ctx))</span><br><span>     {</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+        info =3D OSSL_STORE_load(store_ctx);<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+        if (!info)</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+        {</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+            clear_ossl_store_er=
-ror(store_ctx);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-        continue;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-      }</span><br><span>         x =3D OSSL_STORE_INFO_get1_CERT(info);</sp=
-an><br><span>         if (x &amp;&amp; SSL_CTX_add_extra_chain_cert(tls_ctx=
--&gt;ctx, x) !=3D 1)</span><br><span>         {</span><br><span>@@ -1131,7 =
-+1169,6 @@</span><br><span>             break;</span><br><span>         }</=
-span><br><span>         OSSL_STORE_INFO_free(info);</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-        info =3D OSSL_STORE_load(store_ctx)=
-;</span><br><span>     }</span><br><span> </span><br><span> end:</span><br>=
-<span></span><br></pre><p>To view, visit <a href=3D"http://gerrit.openvpn.n=
-et/c/openvpn/+/742?usp=3Demail">change 742</a>. To unsubscribe, or for help=
- writing mail filters, visit <a href=3D"http://gerrit.openvpn.net/settings"=
->settings</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage=
-"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewActi=
-on"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/74=
-2?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div></di=
-v>
-
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I2bfa9ffbd17d0599014d38b2a2f=
-d319766cdb1e3 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 742 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
-<div style=3D"display:none"> Gerrit-Owner: selvanair &lt;selva.nair@...1354...=
-..&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
-1...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: merged </div>
-
-
---pi8ExnnMJIE=--
+--------------ssDWrICxGCcUNyk6KHKX5pvE--
 
