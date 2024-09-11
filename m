@@ -1,11 +1,10 @@
-From: Frank Lichtenheld <frank@...2641...>
-Date: Wed, 11 Sep 2024 16:57:03 +0200
-Message-Id: <20240911145703.349233-1-frank@...2641...>
-In-Reply-To: <gerrit.1725974500000.I86ceceb4e1c716b33c6c6ec8853eca0fb4b394f1@...2715...>
-References: <gerrit.1725974500000.I86ceceb4e1c716b33c6c6ec8853eca0fb4b394f1@...2715...>
-MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v1] GHA: Update dependency Mbed-TLS/mbedtls
- to v3.6.1
+Date: Wed, 11 Sep 2024 16:58:30 +0200 (CEST)
+Message-Id: <202409111458.48BEwUOf072690@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <20240911144231.32553-1-gert@...1296...>
+References: <20240911144231.32553-1-gert@...1296...>
+Subject: [Openvpn-devel] [PATCH applied] Re: GHA: Update dependency
+ Mbed-TLS/mbedtls to v3.6.1
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,40 +15,33 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
-Cc: Arne Schwabe <arne-openvpn@...1227...>
+To: Frank Lichtenheld <frank@...2641...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-Requires submodule checkout.
+GHA says "this builds fine", and so we apply it :-)
 
-Change-Id: I86ceceb4e1c716b33c6c6ec8853eca0fb4b394f1
-Signed-off-by: Frank Lichtenheld <frank@...2641...>
-Acked-by: Arne Schwabe <arne-openvpn@...1227...>
----
+(And the worries that 3.6.x would break with TLS 1.3 due to missing
+key-exporter are alleviated by our mbedtls builds disabling 1.3 anyway,
+due to missing key-exporter...)
 
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to master.
+Your patch has been applied to the master branch.
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/741
-This mail reflects revision 1 of this Change.
+commit f4d7cec855aea3c453b75fe68a1c151400793661
+Author: Frank Lichtenheld
+Date:   Wed Sep 11 16:42:31 2024 +0200
 
-Acked-by according to Gerrit (reflected above):
-Arne Schwabe <arne-openvpn@...1227...>
+     GHA: Update dependency Mbed-TLS/mbedtls to v3.6.1
 
-        
-diff --git a/.github/workflows/build.yaml b/.github/workflows/build.yaml
-index 6207c95..8f0a7b5 100644
---- a/.github/workflows/build.yaml
-+++ b/.github/workflows/build.yaml
-@@ -404,9 +404,10 @@
-         uses: actions/checkout@...2691...
-         with:
-           path: mbedtls
-+          submodules: true
-           # versioning=semver-coerced
-           repository: Mbed-TLS/mbedtls
--          ref: v3.5.2
-+          ref: v3.6.1
-       - name: "mbedtls: make no_test"
-         run: make -j3 no_test SHARED=1
-         working-directory: mbedtls
+     Signed-off-by: Frank Lichtenheld <frank@...2641...>
+     Acked-by: Arne Schwabe <arne-openvpn@...1227...>
+     Message-Id: <20240911144231.32553-1-gert@...1296...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg29208.html
+     Signed-off-by: Gert Doering <gert@...1296...>
+
+
+--
+kind regards,
+
+Gert Doering
+
 
