@@ -1,16 +1,11 @@
-From: "plaisthos (Code Review)" <gerrit@...515...>
-Date: Wed, 11 Sep 2024 10:37:53 +0000
+From: Gert Doering <gert@...1296...>
+Date: Wed, 11 Sep 2024 12:49:41 +0200
+Message-ID: <20240911104941.19429-1-gert@...1296...>
 In-Reply-To: <gerrit.1726024745000.I2bfa9ffbd17d0599014d38b2a2fd319766cdb1e3@...2715...>
 References: <gerrit.1726024745000.I2bfa9ffbd17d0599014d38b2a2fd319766cdb1e3@...2715...>
-Reply-To: arne-openvpn@...1227..., selva.nair@...277...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <2f1e34fe794c5f47a93f266124090ace0dcac44a-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="1CdjvzlG/x8="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: Do not stop reading
- from file/uri when OPENSSL_STORE_load() returns e...
+Subject: [Openvpn-devel] [PATCH v1] Do not stop reading from file/uri when
+ OPENSSL_STORE_load() returns error
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,101 +14,118 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: selvanair <selva.nair@...277...>
-Cc: flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---1CdjvzlG/x8=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+From: Selva Nair <selva.nair@...277...>
 
-Attention is currently required from: flichtenheld, selvanair.
+OPENSSL_STORE_load() can error and return NULL even when the file or URI
+still has readable objects left.
 
-plaisthos has posted comments on this change. ( http://gerrit.openvpn.net/c=
-/openvpn/+/742?usp=3Demail )
+Fix by iterating until OPENSSL_STORE_eof(). Also clear such errors to avoid
+misleading messages printed at the end by crypto_print_openssl_errors().
 
-Change subject: Do not stop reading from file/uri when OPENSSL_STORE_load()=
- returns error
-......................................................................
+Change-Id: I2bfa9ffbd17d0599014d38b2a2fd319766cdb1e3
+Signed-off-by: Selva Nair <selva.nair@...277...>
+Acked-by: Arne Schwabe <arne-openvpn@...1227...>
+---
 
+This change was reviewed on Gerrit and approved by at least one
+developer. I request to merge it to master.
 
-Patch Set 1:
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/742
+This mail reflects revision 1 of this Change.
 
-(1 comment)
+Acked-by according to Gerrit (reflected above):
+Arne Schwabe <arne-openvpn@...1227...>
 
-Patchset:
-
-PS1:
-Thanks I can confirm that this fixes the problem I saw with a pem file cont=
-aining both key + certificate.
-
-
-
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/742?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings
-
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: I2bfa9ffbd17d0599014d38b2a2fd319766cdb1e3
-Gerrit-Change-Number: 742
-Gerrit-PatchSet: 1
-Gerrit-Owner: selvanair <selva.nair@...277...>
-Gerrit-Reviewer: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Attention: selvanair <selva.nair@...277...>
-Gerrit-Comment-Date: Wed, 11 Sep 2024 10:37:53 +0000
-Gerrit-HasComments: Yes
-Gerrit-Has-Labels: No
-Gerrit-MessageType: comment
-
---1CdjvzlG/x8=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<p> Attention is currently required from: flichtenheld, selvanair. </p>
-<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/742?usp=3Demail">View C=
-hange</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0;"><=
-li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-style=
-: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p style=
-=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/7=
-42?tab=3Dcomments">Patch Set #1:</a> </p><p style=3D"white-space: pre-wrap;=
- word-wrap: break-word;">Thanks I can confirm that this fixes the problem I=
- saw with a pem file containing both key + certificate.</p></li></ul></li><=
-/ul><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/742?=
-usp=3Demail">change 742</a>. To unsubscribe, or for help writing mail filte=
-rs, visit <a href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><=
-div itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope it=
-emprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=
-=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/742?usp=3Demail"/><m=
-eta itemprop=3D"name" content=3D"View Change"/></div></div>
-
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I2bfa9ffbd17d0599014d38b2a2f=
-d319766cdb1e3 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 742 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
-<div style=3D"display:none"> Gerrit-Owner: selvanair &lt;selva.nair@...1354...=
-..&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
-1...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
-41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: selvanair &lt;selva.nair@...493...=
-277...&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Wed, 11 Sep 2024 10:37:53=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: No </div>
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
-
-
---1CdjvzlG/x8=--
+        
+diff --git a/src/openvpn/ssl_openssl.c b/src/openvpn/ssl_openssl.c
+index 0d845f4..5fd6572 100644
+--- a/src/openvpn/ssl_openssl.c
++++ b/src/openvpn/ssl_openssl.c
+@@ -813,6 +813,15 @@
+     }
+     return 0;
+ }
++
++static void
++clear_ossl_store_error(OSSL_STORE_CTX *store_ctx)
++{
++    if (OSSL_STORE_error(store_ctx))
++    {
++        ERR_clear_error();
++    }
++}
+ #endif /* defined(HAVE_OPENSSL_STORE_API) */
+ 
+ /**
+@@ -864,7 +873,19 @@
+     {
+         goto end;
+     }
+-    info = OSSL_STORE_load(store_ctx);
++    while (1)
++    {
++        info = OSSL_STORE_load(store_ctx);
++        if (info || OSSL_STORE_eof(store_ctx))
++        {
++            break;
++        }
++        /* OPENSSL_STORE_load can return error and still have usable objects to follow.
++         * ref: man OPENSSL_STORE_open
++         * Clear error and recurse through the file if info = NULL and eof not reached
++         */
++        clear_ossl_store_error(store_ctx);
++    }
+     if (!info)
+     {
+         goto end;
+@@ -1099,7 +1120,19 @@
+         goto end;
+     }
+ 
+-    info = OSSL_STORE_load(store_ctx);
++    while (1)
++    {
++        info = OSSL_STORE_load(store_ctx);
++        if (info || OSSL_STORE_eof(store_ctx))
++        {
++            break;
++        }
++        /* OPENSSL_STORE_load can return error and still have usable objects to follow.
++         * ref: man OPENSSL_STORE_open
++         * Clear error and recurse through the file if info = NULL and eof not reached.
++         */
++        clear_ossl_store_error(store_ctx);
++    }
+     if (!info)
+     {
+         goto end;
+@@ -1120,9 +1153,14 @@
+     OSSL_STORE_INFO_free(info);
+ 
+     /* iterate through the store and add extra certificates if any to the chain */
+-    info = OSSL_STORE_load(store_ctx);
+-    while (info && !OSSL_STORE_eof(store_ctx))
++    while (!OSSL_STORE_eof(store_ctx))
+     {
++        info = OSSL_STORE_load(store_ctx);
++        if (!info)
++        {
++            clear_ossl_store_error(store_ctx);
++            continue;
++        }
+         x = OSSL_STORE_INFO_get1_CERT(info);
+         if (x && SSL_CTX_add_extra_chain_cert(tls_ctx->ctx, x) != 1)
+         {
+@@ -1131,7 +1169,6 @@
+             break;
+         }
+         OSSL_STORE_INFO_free(info);
+-        info = OSSL_STORE_load(store_ctx);
+     }
+ 
+ end:
 
