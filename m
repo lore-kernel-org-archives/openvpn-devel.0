@@ -1,16 +1,16 @@
-Date: Wed, 11 Sep 2024 07:58:42 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <ZuExkhDgOb_xFzsf@...1296...>
-References: <gerrit.1706186293000.I01e258e97351b5aa4b9e561f5b35ddc2318569e2@...2715...>
- <20240910163411.23119-1-gert@...1296...>
- <0c73b044-7397-4f85-9457-1d1c9d5b2019@...1856...>
+From: "plaisthos (Code Review)" <gerrit@...515...>
+Date: Wed, 11 Sep 2024 10:37:22 +0000
+In-Reply-To: <gerrit.1726024745000.I2bfa9ffbd17d0599014d38b2a2fd319766cdb1e3@...2715...>
+References: <gerrit.1726024745000.I2bfa9ffbd17d0599014d38b2a2fd319766cdb1e3@...2715...>
+Reply-To: arne-openvpn@...1227..., selva.nair@...277...,
+ openvpn-devel@lists.sourceforge.net, frank@...2641...
+Message-ID: <f898780082aa352eb9ca0211fe1e39ea4e16ce34-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="shkOuo9azdpZr5PR"
+Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-In-Reply-To: <0c73b044-7397-4f85-9457-1d1c9d5b2019@...1856...>
-Subject: Re: [Openvpn-devel] [PATCH v11] Implement support for larger packet
- counter sizes
+Content-Type: multipart/alternative; boundary="eMCUzNBotqw="; charset=UTF-8
+Subject: [Openvpn-devel] [S] Change in openvpn[master]: Do not stop reading
+ from file/uri when OPENSSL_STORE_load() returns e...
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,62 +19,88 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Steffan Karger <steffan@...1856...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: selvanair <selva.nair@...277...>
+Cc: flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---shkOuo9azdpZr5PR
-Content-Type: text/plain; charset="us-ascii"
+--eMCUzNBotqw=
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
 
-Hi,
+Attention is currently required from: flichtenheld, selvanair.
 
-On Tue, Sep 10, 2024 at 09:51:45PM +0200, Steffan Karger wrote:
-> TL;DR: I don't think this should be merged yet.
-> [..]
-> So if we want to improve things for AES-GCM, we probably need other
-> optimizations. I have some ideas, but was hoping to do some research and a
-> write-up during the train ride to the hackathon, so we could discuss it
-> further in Karlsruhe.
+plaisthos has posted comments on this change. ( http://gerrit.openvpn.net/c=
+/openvpn/+/742?usp=3Demail )
 
-Thanks for having a look.  This ruins my planned work for today :-) - but
-since we are not in a great hurry *and* Karlsruhe is just next week, it
-will not harm to delay for a few weeks if the end result gets better.
+Change subject: Do not stop reading from file/uri when OPENSSL_STORE_load()=
+ returns error
+......................................................................
 
-Just for the record - I've done all the testing on v11 yesterday, and
-it behaves very well interoping with "older peers" (no DATA_V3) and
-also "falling back to DATA_V2 if DCO is active" (as there is no code
-yet to do V3 with DCO).  master-to-master negotiates DATA_V3 and still
-pings :-) - so, the code we have is good to be merged, if we decide to
-keep it that way.  If not, I know what I need to test and how.
 
-gert
---=20
-"If was one thing all people took for granted, was conviction that if you=20
- feed honest figures into a computer, honest figures come out. Never doubte=
-d=20
- it myself till I met a computer with a sense of humor."
-                             Robert A. Heinlein, The Moon is a Harsh Mistre=
-ss
+Patch Set 1: Code-Review+2
 
-Gert Doering - Munich, Germany                             gert@...1296...
 
---shkOuo9azdpZr5PR
-Content-Type: application/pgp-signature; name="signature.asc"
+--
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/742?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings
 
------BEGIN PGP SIGNATURE-----
+Gerrit-Project: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: I2bfa9ffbd17d0599014d38b2a2fd319766cdb1e3
+Gerrit-Change-Number: 742
+Gerrit-PatchSet: 1
+Gerrit-Owner: selvanair <selva.nair@...277...>
+Gerrit-Reviewer: flichtenheld <frank@...2641...>
+Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-Attention: flichtenheld <frank@...2641...>
+Gerrit-Attention: selvanair <selva.nair@...277...>
+Gerrit-Comment-Date: Wed, 11 Sep 2024 10:37:22 +0000
+Gerrit-HasComments: No
+Gerrit-Has-Labels: Yes
+Gerrit-MessageType: comment
 
-iQGcBAEBAgAGBQJm4TGSAAoJEB2Cnv7KVigS+jAMAK+FRTv7kAmoppk6efMnlBqA
-zjdvzrWT+SsZ8UmUhHFBhExbe6cKuuE0C8NXQm2QLQ/hnuHNCcnTokoopAO9YRXZ
-AHwirpgpZ0J6uMYEekyVfn5tyK2fMdnc/KFshW16cmHylfxXxaauk/k3wDpY0Prk
-eN3apvAlK2IcE+CSTCTI3ht1Xn9NPT4ep1oJUikrjbvhfexsE+am2Zosd8eJNt6n
-d2rNFiFThZOvECA8LfQrNWGjUXt5SjmsBu7msDrkj1r7oi1D6g4gG4d4DKDUfjXX
-GJ59xbFZHY1bKUMtbQgu9bVnsRNh+maLKoygEeV+jnIrzEykrO83ICEEC8/LOYkb
-iU8MnYLMjvB4DB+1tg9BVW3WKvQncsKymsfd4wu7lfOG9UzYUcX5mJWScl+IbFd/
-PvxWsxnltKyem7RAbIzn2tI6BS43ZQvSqtNqrhfy7ZykIUV+amrKMqHWfSinxJs3
-IbmaDWg41vbKSQ2ZF3iRfRfrIJLmIJUKMqrgrNG1BQ==
-=EqOu
------END PGP SIGNATURE-----
+--eMCUzNBotqw=
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
---shkOuo9azdpZr5PR--
+<p> Attention is currently required from: flichtenheld, selvanair. </p>
+<p>Patch set 1:<span style=3D"border-radius: 3px; display: inline-block; ma=
+rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/742?usp=3Demail">Vi=
+ew Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To vie=
+w, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/742?usp=3Demail">=
+change 742</a>. To unsubscribe, or for help writing mail filters, visit <a =
+href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope=
+ itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"act=
+ion" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=
+=3D"http://gerrit.openvpn.net/c/openvpn/+/742?usp=3Demail"/><meta itemprop=
+=3D"name" content=3D"View Change"/></div></div>
+
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I2bfa9ffbd17d0599014d38b2a2f=
+d319766cdb1e3 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 742 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
+<div style=3D"display:none"> Gerrit-Owner: selvanair &lt;selva.nair@...1354...=
+..&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
+1...&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
+.1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
+41...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: selvanair &lt;selva.nair@...493...=
+277...&gt; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Wed, 11 Sep 2024 10:37:22=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: No </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
+
+
+--eMCUzNBotqw=--
 
