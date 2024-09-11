@@ -1,6 +1,6 @@
-From: Gert Doering <gert@...1296...>
-Date: Wed, 11 Sep 2024 16:42:31 +0200
-Message-ID: <20240911144231.32553-1-gert@...1296...>
+From: Frank Lichtenheld <frank@...2641...>
+Date: Wed, 11 Sep 2024 16:57:03 +0200
+Message-Id: <20240911145703.349233-1-frank@...2641...>
 In-Reply-To: <gerrit.1725974500000.I86ceceb4e1c716b33c6c6ec8853eca0fb4b394f1@...2715...>
 References: <gerrit.1725974500000.I86ceceb4e1c716b33c6c6ec8853eca0fb4b394f1@...2715...>
 MIME-Version: 1.0
@@ -17,8 +17,7 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
-
-From: Frank Lichtenheld <frank@...2641...>
+Cc: Arne Schwabe <arne-openvpn@...1227...>
 
 Requires submodule checkout.
 
