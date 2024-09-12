@@ -1,16 +1,16 @@
 From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Thu, 12 Sep 2024 17:19:51 +0000
-In-Reply-To: <gerrit.1726132028000.Ife50e37cd49d55ec81a70319a524ffeaf0625a56@...2715...>
-References: <gerrit.1726132028000.Ife50e37cd49d55ec81a70319a524ffeaf0625a56@...2715...>
+Date: Thu, 12 Sep 2024 17:48:48 +0000
+In-Reply-To: <gerrit.1726065220000.I86203b8f9a6d3cfc5e56d3ce9452af694fd11011@...2715...>
+References: <gerrit.1726065220000.I86203b8f9a6d3cfc5e56d3ce9452af694fd11011@...2715...>
 Reply-To: gert@...1296..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, frank@...2641..., a@...2181...
-Message-ID: <0a62b83f861bb855160cdd75de83b4c8e4c8b089-HTML@...2715...>
+ openvpn-devel@lists.sourceforge.net, frank@...2641...
+Message-ID: <e8e63c82be3d4b590ce7dced55ba3b4d0a5cfe5d-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="8YEdsvq9l10="; charset=UTF-8
-Subject: [Openvpn-devel] [XS] Change in openvpn[master]: dco: mark peer as
- deleted from kernel after receiving CMD_DEL_PEER no...
+Content-Type: multipart/alternative; boundary="TitiDEzTHN0="; charset=UTF-8
+Subject: [Openvpn-devel] [S] Change in openvpn[master]: GHA: Enable
+ t_server_null tests
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,135 +19,100 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Cc: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: flichtenheld <frank@...2641...>
+Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---8YEdsvq9l10=
+--TitiDEzTHN0=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-cron2 has submitted this change. ( http://gerrit.openvpn.net/c/openvpn/+/74=
-4?usp=3Demail )
+Attention is currently required from: flichtenheld, plaisthos.
 
-Change subject: dco: mark peer as deleted from kernel after receiving CMD_D=
-EL_PEER notification
+cron2 has posted comments on this change. ( http://gerrit.openvpn.net/c/ope=
+nvpn/+/743?usp=3Demail )
+
+Change subject: GHA: Enable t_server_null tests
 ......................................................................
 
-dco: mark peer as deleted from kernel after receiving CMD_DEL_PEER notifica=
-tion
 
-some extra DCO calls may be made after receiving the DEL_PEER
-notification (i.e. due to timeout), but this will result in
-an error message due to the peer having disappeared already.
+Patch Set 1: Code-Review+2
 
-An extra call might be, for example, an explicit DEL_PEER
-in the attempt of cleaning the peer state.
+(1 comment)
 
-For this reason, inform userspace that there is no peer in
-kernel anymore and prevent errors which may result confusing.
+Patchset:
 
-Change-Id: Ife50e37cd49d55ec81a70319a524ffeaf0625a56
-Signed-off-by: Antonio Quartulli <antonio@...2726...>
-Acked-by: Arne Schwabe <arne-openvpn@...1227...>
-Message-Id: <20240912165339.21058-1-gert@...1296...>
-URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg29=
-226.html
-Signed-off-by: Gert Doering <gert@...1296...>
----
-M src/openvpn/forward.c
-1 file changed, 2 insertions(+), 0 deletions(-)
+PS1:
+GH says this works :-)
 
 
-
-
-diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c
-index 40b7cc4..374ba47 100644
---- a/src/openvpn/forward.c
-+++ b/src/openvpn/forward.c
-@@ -1256,6 +1256,8 @@
-     switch (dco->dco_message_type)
-     {
-         case OVPN_CMD_DEL_PEER:
-+            /* peer is gone, unset ID to prevent more kernel calls */
-+            c->c2.tls_multi->dco_peer_id =3D -1;
-             if (dco->dco_del_peer_reason =3D=3D OVPN_DEL_PEER_REASON_EXPIR=
-ED)
-             {
-                 msg(D_DCO_DEBUG, "%s: received peer expired notification o=
-f for peer-id "
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/744?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/743?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings
 
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: Ife50e37cd49d55ec81a70319a524ffeaf0625a56
-Gerrit-Change-Number: 744
-Gerrit-PatchSet: 2
-Gerrit-Owner: ordex <a@...2181...>
-Gerrit-Reviewer: flichtenheld <frank@...2641...>
+Gerrit-Change-Id: I86203b8f9a6d3cfc5e56d3ce9452af694fd11011
+Gerrit-Change-Number: 743
+Gerrit-PatchSet: 1
+Gerrit-Owner: flichtenheld <frank@...2641...>
+Gerrit-Reviewer: cron2 <gert@...1296...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-MessageType: merged
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Attention: flichtenheld <frank@...2641...>
+Gerrit-Comment-Date: Thu, 12 Sep 2024 17:48:48 +0000
+Gerrit-HasComments: Yes
+Gerrit-Has-Labels: Yes
+Gerrit-MessageType: comment
 
---8YEdsvq9l10=
+--TitiDEzTHN0=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p>cron2 <strong>submitted</strong> this change.</p><p><a href=3D"http://ge=
-rrit.openvpn.net/c/openvpn/+/744?usp=3Demail">View Change</a></p><div style=
-=3D"white-space:pre-wrap"></div><pre style=3D"font-family: monospace,monosp=
-ace; white-space: pre-wrap;">dco: mark peer as deleted from kernel after re=
-ceiving CMD_DEL_PEER notification<br><br>some extra DCO calls may be made a=
-fter receiving the DEL_PEER<br>notification (i.e. due to timeout), but this=
- will result in<br>an error message due to the peer having disappeared alre=
-ady.<br><br>An extra call might be, for example, an explicit DEL_PEER<br>in=
- the attempt of cleaning the peer state.<br><br>For this reason, inform use=
-rspace that there is no peer in<br>kernel anymore and prevent errors which =
-may result confusing.<br><br>Change-Id: Ife50e37cd49d55ec81a70319a524ffeaf0=
-625a56<br>Signed-off-by: Antonio Quartulli &lt;antonio@...2726...&gt;<br>Ac=
-ked-by: Arne Schwabe &lt;arne-openvpn@...1227...&gt;<br>Message-Id: &lt;202=
-40912165339.21058-1-gert@...1296...&gt;<br>URL: https://www.mail-archive.co=
-m/openvpn-devel@lists.sourceforge.net/msg29226.html<br>Signed-off-by: Gert =
-Doering &lt;gert@...1296...&gt;<br>---<br>M src/openvpn/forward.c<br>1 file=
- changed, 2 insertions(+), 0 deletions(-)<br><br></pre>
-<pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><sp=
-an>diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c</span><br><sp=
-an>index 40b7cc4..374ba47 100644</span><br><span>--- a/src/openvpn/forward.=
-c</span><br><span>+++ b/src/openvpn/forward.c</span><br><span>@@ -1256,6 +1=
-256,8 @@</span><br><span>     switch (dco-&gt;dco_message_type)</span><br><=
-span>     {</span><br><span>         case OVPN_CMD_DEL_PEER:</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+            /* peer is gone, unset=
- ID to prevent more kernel calls */</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+            c-&gt;c2.tls_multi-&gt;dco_peer_id =3D -1;</spa=
-n><br><span>             if (dco-&gt;dco_del_peer_reason =3D=3D OVPN_DEL_PE=
-ER_REASON_EXPIRED)</span><br><span>             {</span><br><span>         =
-        msg(D_DCO_DEBUG, &quot;%s: received peer expired notification of fo=
-r peer-id &quot;</span><br><span></span><br></pre><p>To view, visit <a href=
-=3D"http://gerrit.openvpn.net/c/openvpn/+/744?usp=3Demail">change 744</a>. =
-To unsubscribe, or for help writing mail filters, visit <a href=3D"http://g=
-errit.openvpn.net/settings">settings</a>.</p><div itemscope itemtype=3D"htt=
-p://schema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D=
-"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit=
-.openvpn.net/c/openvpn/+/744?usp=3Demail"/><meta itemprop=3D"name" content=
-=3D"View Change"/></div></div>
+<p> Attention is currently required from: flichtenheld, plaisthos. </p>
+<p>Patch set 1:<span style=3D"border-radius: 3px; display: inline-block; ma=
+rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/743?usp=3Demail">Vi=
+ew Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0=
+;"><li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-s=
+tyle: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p s=
+tyle=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn=
+/+/743?tab=3Dcomments">Patch Set #1:</a> </p><p style=3D"white-space: pre-w=
+rap; word-wrap: break-word;">GH says this works :-)</p></li></ul></li></ul>=
+<p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/743?usp=
+=3Demail">change 743</a>. To unsubscribe, or for help writing mail filters,=
+ visit <a href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div=
+ itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemp=
+rop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"=
+url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/743?usp=3Demail"/><meta =
+itemprop=3D"name" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: Ife50e37cd49d55ec81a70319a52=
-4ffeaf0625a56 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 744 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
-<div style=3D"display:none"> Gerrit-Owner: ordex &lt;a@...2181...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
-1...&gt; </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I86203b8f9a6d3cfc5e56d3ce945=
+2af694fd11011 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 743 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
+<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
+.&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
+ </div>
 <div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
 .1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: merged </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
+41...&gt; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Thu, 12 Sep 2024 17:48:48=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
 
 
---8YEdsvq9l10=--
+--TitiDEzTHN0=--
 
