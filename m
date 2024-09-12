@@ -1,16 +1,10 @@
-From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Thu, 12 Sep 2024 14:30:37 +0000
-In-Reply-To: <gerrit.1724156602000.I235891212b15277349810913c9c1763da5c48587@...2715...>
-References: <gerrit.1724156602000.I235891212b15277349810913c9c1763da5c48587@...2715...>
-Reply-To: gert@...1296..., arne-openvpn@...1227..., marco@...2726...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <ef621a2b33fee443f88406b517b1eab5b3cf8368-HTML@...2715...>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="YgOao01QWzQ="; charset=UTF-8
-Subject: [Openvpn-devel] [XS] Change in openvpn[master]: tun: removed
- unnecessary route installations
+Date: Thu, 12 Sep 2024 17:02:03 +0200 (CEST)
+Message-Id: <202409121502.48CF23vC025349@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <20240710160238.190189-1-frank@...2641...>
+References: <20240710160238.190189-1-frank@...2641...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Remove check for anonymous
+ unions from configure and cmake config
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,151 +13,32 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: mrbff <marco@...2726...>
-Cc: flichtenheld <frank@...2641...>, plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: Arne Schwabe <arne@...1227...>
+Cc: openvpn-devel@lists.sourceforge.net
 
---YgOao01QWzQ=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+I have no idea what that stuff does, but less #ifdef is good :-) - and
+supposedly no currently supported system needs this.
 
-cron2 has submitted this change. ( http://gerrit.openvpn.net/c/openvpn/+/73=
-1?usp=3Demail )
+Your patch has been applied to the master branch.
 
-Change subject: tun: removed unnecessary route installations
-......................................................................
+commit b8b2d17f473e80b1a0b66e49cc1f34ce88d9502d
+Author: Arne Schwabe
+Date:   Wed Jul 10 18:02:38 2024 +0200
 
-tun: removed unnecessary route installations
+     Remove check for anonymous unions from configure and cmake config
 
-Removed superfluous calls to 'add_route_ipv6' for adding ipv6 routes after =
-tun opening in OpenBSD, NetBSD and Darwin.
+     Signed-off-by: Arne Schwabe <arne@...1227...>
+     Acked-by: Frank Lichtenheld <frank@...2641...>
+     Message-Id: <20240710160238.190189-1-frank@...2641...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg28914.html
+     Signed-off-by: Gert Doering <gert@...1296...>
 
-Change-Id: I235891212b15277349810913c9c1763da5c48587
-Signed-off-by: Marco Baffo <marco@...2726...>
-Acked-by: Gert Doering <gert@...1296...>
-Message-Id: <20240912142421.703-1-gert@...1296...>
-URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg29=
-217.html
-Signed-off-by: Gert Doering <gert@...1296...>
----
-M src/openvpn/tun.c
-1 file changed, 1 insertion(+), 7 deletions(-)
-
-
-
-
-diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
-index 739e008..82c5c00 100644
---- a/src/openvpn/tun.c
-+++ b/src/openvpn/tun.c
-@@ -1008,8 +1008,7 @@
- #endif /* ifdef _WIN32 */
- }
-
--#if defined(_WIN32)    \
--    || defined(TARGET_DARWIN) || defined(TARGET_NETBSD) || defined(TARGET_=
-OPENBSD)
-+#if defined(_WIN32)
-
- /* some of the platforms will auto-add a "network route" pointing
-  * to the interface on "ifconfig tunX 2001:db8::1/64", others need
-@@ -1200,11 +1199,6 @@
-                          "FreeBSD BSD 'ifconfig inet6 -ifdisabled' failed"=
-);
- #endif
-
--#if defined(TARGET_OPENBSD) || defined(TARGET_NETBSD) \
--    || defined(TARGET_DARWIN)
--    /* and, hooray, we explicitly need to add a route... */
--    add_route_connected_v6_net(tt, es);
--#endif
- #elif defined(TARGET_AIX)
-     argv_printf(&argv, "%s %s inet6 %s/%d mtu %d up", IFCONFIG_PATH, ifnam=
-e,
-                 ifconfig_ipv6_local, tt->netbits_ipv6, tun_mtu);
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/731?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings
+kind regards,
 
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: I235891212b15277349810913c9c1763da5c48587
-Gerrit-Change-Number: 731
-Gerrit-PatchSet: 4
-Gerrit-Owner: mrbff <marco@...2726...>
-Gerrit-Reviewer: cron2 <gert@...1296...>
-Gerrit-Reviewer: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-MessageType: merged
+Gert Doering
 
---YgOao01QWzQ=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<p>cron2 <strong>submitted</strong> this change.</p><p><a href=3D"http://ge=
-rrit.openvpn.net/c/openvpn/+/731?usp=3Demail">View Change</a></p><div style=
-=3D"white-space:pre-wrap"></div><pre style=3D"font-family: monospace,monosp=
-ace; white-space: pre-wrap;">tun: removed unnecessary route installations<b=
-r><br>Removed superfluous calls to &#39;add_route_ipv6&#39; for adding ipv6=
- routes after tun opening in OpenBSD, NetBSD and Darwin.<br><br>Change-Id: =
-I235891212b15277349810913c9c1763da5c48587<br>Signed-off-by: Marco Baffo &lt=
-;marco@...2726...&gt;<br>Acked-by: Gert Doering &lt;gert@...1296...&gt;<br>=
-Message-Id: &lt;20240912142421.703-1-gert@...1296...&gt;<br>URL: https://ww=
-w.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg29217.html<br>Sig=
-ned-off-by: Gert Doering &lt;gert@...1296...&gt;<br>---<br>M src/openvpn/tu=
-n.c<br>1 file changed, 1 insertion(+), 7 deletions(-)<br><br></pre>
-<pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><sp=
-an>diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c</span><br><span>index=
- 739e008..82c5c00 100644</span><br><span>--- a/src/openvpn/tun.c</span><br>=
-<span>+++ b/src/openvpn/tun.c</span><br><span>@@ -1008,8 +1008,7 @@</span><=
-br><span> #endif /* ifdef _WIN32 */</span><br><span> }</span><br><span> </s=
-pan><br><span style=3D"color: hsl(0, 100%, 40%);">-#if defined(_WIN32)    \=
-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    || defined(TARGET=
-_DARWIN) || defined(TARGET_NETBSD) || defined(TARGET_OPENBSD)</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+#if defined(_WIN32)</span><br><sp=
-an> </span><br><span> /* some of the platforms will auto-add a &quot;networ=
-k route&quot; pointing</span><br><span>  * to the interface on &quot;ifconf=
-ig tunX 2001:db8::1/64&quot;, others need</span><br><span>@@ -1200,11 +1199=
-,6 @@</span><br><span>                          &quot;FreeBSD BSD &#39;ifco=
-nfig inet6 -ifdisabled&#39; failed&quot;);</span><br><span> #endif</span><b=
-r><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-#if defined(=
-TARGET_OPENBSD) || defined(TARGET_NETBSD) \</span><br><span style=3D"color:=
- hsl(0, 100%, 40%);">-    || defined(TARGET_DARWIN)</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-    /* and, hooray, we explicitly need to a=
-dd a route... */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    a=
-dd_route_connected_v6_net(tt, es);</span><br><span style=3D"color: hsl(0, 1=
-00%, 40%);">-#endif</span><br><span> #elif defined(TARGET_AIX)</span><br><s=
-pan>     argv_printf(&amp;argv, &quot;%s %s inet6 %s/%d mtu %d up&quot;, IF=
-CONFIG_PATH, ifname,</span><br><span>                 ifconfig_ipv6_local, =
-tt-&gt;netbits_ipv6, tun_mtu);</span><br><span></span><br></pre><p>To view,=
- visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/731?usp=3Demail">ch=
-ange 731</a>. To unsubscribe, or for help writing mail filters, visit <a hr=
-ef=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope i=
-temtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"actio=
-n" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D=
-"http://gerrit.openvpn.net/c/openvpn/+/731?usp=3Demail"/><meta itemprop=3D"=
-name" content=3D"View Change"/></div></div>
-
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I235891212b15277349810913c9c=
-1763da5c48587 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 731 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 4 </div>
-<div style=3D"display:none"> Gerrit-Owner: mrbff &lt;marco@...2726...&gt; <=
-/div>
-<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
- </div>
-<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
-1...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: merged </div>
-
-
---YgOao01QWzQ=--
 
