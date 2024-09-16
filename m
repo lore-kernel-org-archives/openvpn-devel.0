@@ -1,16 +1,16 @@
-From: "ralf_lici (Code Review)" <gerrit@...515...>
-Date: Mon, 16 Sep 2024 15:54:54 +0000
-In-Reply-To: <gerrit.1725894771000.Iae04ad8715e40dfc76475c2c5b9a766c9604efc9@...2715...>
-References: <gerrit.1725894771000.Iae04ad8715e40dfc76475c2c5b9a766c9604efc9@...2715...>
-Reply-To: ralf@...2726..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <19bb88ed2827707e1f0bb7c6e75d6e9e049dfede-EmailReviewComments-HTML@...2715...>
+From: "plaisthos (Code Review)" <gerrit@...515...>
+Date: Mon, 16 Sep 2024 22:42:33 +0000
+In-Reply-To: <gerrit.1726491830000.I65099ef00822d08fd3f5480c80892f3bf86c56e7@...2715...>
+References: <gerrit.1726491830000.I65099ef00822d08fd3f5480c80892f3bf86c56e7@...2715...>
+Reply-To: arne-openvpn@...1227..., openvpn-devel@lists.sourceforge.net,
+ frank@...2641...
+Message-ID: <bbe077278451d87a4fe22a98220002a79b868bbd-EmailReplacePatchSet-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="Vu3dmQffs1k="; charset=UTF-8
-Subject: [Openvpn-devel] [L] Change in openvpn[master]: Support CIDR on
- options and extend netbits usage
+Content-Type: multipart/alternative; boundary="DHFu1ggicgY="; charset=UTF-8
+Subject: [Openvpn-devel] [L] Change in openvpn[master]: Introduce
+ DRIVER_AFUNIX backend for use with lwipovpn
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,483 +19,1484 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Cc: flichtenheld <frank@...2641...>, plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: flichtenheld <frank@...2641...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---Vu3dmQffs1k=
+--DHFu1ggicgY=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 Attention is currently required from: flichtenheld, plaisthos.
 
-ralf_lici has posted comments on this change. ( http://gerrit.openvpn.net/c=
-/openvpn/+/739?usp=3Demail )
+Hello flichtenheld,
 
-Change subject: Support CIDR on options and extend netbits usage
+I'd like you to reexamine a change. Please visit
+
+    http://gerrit.openvpn.net/c/openvpn/+/747?usp=3Demail
+
+to look at the new patch set (#3).
+
+The following approvals got outdated and were removed:
+Code-Review-1 by flichtenheld
+
+
+Change subject: Introduce DRIVER_AFUNIX backend for use with lwipovpn
 ......................................................................
 
+Introduce DRIVER_AFUNIX backend for use with lwipovpn
 
-Patch Set 3:
+lwipovpn is a using lwip TCP/IP implementation with an AF_UNIX
+implementation to emulate a tun/tap device without messing with the
+TCP/IP stack of the host.
 
-(25 comments)
+For more information about lwipovpn see https://github.com/OpenVPN/lwipovpn
 
-Commit Message:
-
-http://gerrit.openvpn.net/c/openvpn/+/739/comment/ef955895_c40062c5 :
-PS3, Line 9: Add support for CIDR notation on all suitable options (client-=
-nat,
-> Maybe give some more motivation here. [=E2=80=A6]
-Acknowledged
-
-
-File doc/man-sections/server-options.rst:
-
-http://gerrit.openvpn.net/c/openvpn/+/739/comment/36991047_c59736fd :
-PS3, Line 344:   :code:`255.255.255.255`.
-> for completeness mentions /32 as well.
-Acknowledged
-
-
-File doc/man-sections/vpn-network-options.rst:
-
-http://gerrit.openvpn.net/c/openvpn/+/739/comment/61768e6b_7acc98ad :
-PS3, Line 220:      ifconfig local rn
-> Need to specify the two possibilities (IP address or netmask) separately.=
- [=E2=80=A6]
-I think it stands for remote_netmask. I left it like this because I found i=
-t mentioned in this form in the explanation that follows (line 237) but I a=
-gree it isn't clear. I'm duplicating it to show both versions of ifconfig (=
-remote and netmask) as you suggested. However this may not be completely co=
-herent to --ifconfig-push (which has "local remote-netmask" arguments). Sho=
-uld I change that one too accordingly?
+Change-Id: I65099ef00822d08fd3f5480c80892f3bf86c56e7
+Signed-off-by: Arne Schwabe <arne@...1227...>
+---
+M CMakeLists.txt
+M Changes.rst
+M doc/man-sections/vpn-network-options.rst
+M src/openvpn/Makefile.am
+M src/openvpn/forward.c
+M src/openvpn/init.c
+M src/openvpn/run_command.c
+M src/openvpn/run_command.h
+M src/openvpn/ssl.h
+M src/openvpn/tun.c
+M src/openvpn/tun.h
+A src/openvpn/tun_afunix.c
+A src/openvpn/tun_afunix.h
+13 files changed, 389 insertions(+), 17 deletions(-)
 
 
-http://gerrit.openvpn.net/c/openvpn/+/739/comment/308f35e0_f16ee639 :
-PS3, Line 266: 2 255
-> Add /bits example here?
-Acknowledged
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/47/747/3
 
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index ad620fa..6271574 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -536,6 +536,8 @@
+     src/openvpn/tls_crypt.c
+     src/openvpn/tun.c
+     src/openvpn/tun.h
++    src/openvpn/tun_afunix.c
++    src/openvpn/tun_afunix.h
+     src/openvpn/networking_sitnl.c
+     src/openvpn/networking_freebsd.c
+     src/openvpn/auth_token.c
+diff --git a/Changes.rst b/Changes.rst
+index 439352a..f01f8bc 100644
+--- a/Changes.rst
++++ b/Changes.rst
+@@ -9,6 +9,19 @@
+     the user experience as the client shows an error instead of running in=
+to
+     a timeout when the server just stops responding completely.
 
-http://gerrit.openvpn.net/c/openvpn/+/739/comment/1861ac78_b520ac5c :
-PS3, Line 389:       route network|ipv4addr [netmask] [gateway] [metric]
-> Does the network|ipv4addr here really add any value? Should we go just fo=
-r ipv4addr here like with - [=E2=80=A6]
-I didn't drop the "network" format because I thought it was referring to th=
-e DNS resolvable name or special keywords as opposed to the ipv4 address. B=
-ut I see that it can be a bit misleading therefore I will duplicate the lin=
-es (network and ipv4addr).
++Support for tun/tap via unix domain socket and lwipovpn support
++    To allow better testing and emulating a full client with a full
++    network stack OpenVPN now allows a program executed to provide
++    a tun/tap device instead of opening a device.
++
++    The co-developed lwipovpn program based on lwIP stack allows to
++    simulate full IP stack and an OpenVPN client using
++    ``dev-node:/path/to/lwipovpn`` can emulate a full client that
++    can be pinged, can server a website and more without requiring any
++    elevated permission. This can make testing OpenVPN much easier.
++
++    For more details see [lwipovpn on Gihtub](https://github.com/OpenVPN/l=
+wipovpn).
++
+ Deprecated features
+ -------------------
+ ``secret`` support has been removed by default.
+diff --git a/doc/man-sections/vpn-network-options.rst b/doc/man-sections/vp=
+n-network-options.rst
+index 84d4273..9ad79a0 100644
+--- a/doc/man-sections/vpn-network-options.rst
++++ b/doc/man-sections/vpn-network-options.rst
+@@ -117,6 +117,16 @@
+   figure out whether ``node`` is a TUN or TAP device based on the name,
+   you should also specify ``--dev-type tun`` or ``--dev-type tap``.
 
++  If ``node`` starts with the string ``unix:`` openvpn will treat the rest
++  of the argument as a program.
++  OpenVPN will create a temporary unix domain socket and start the program
++  will pass the tun configuration as environment variables.
++  The temporary unix will be be passed in the environment variable
++  :code:`TUN_UNIXAF_PATH`.
++
++  This ``unix:`` mode is designed mainly to use with the lwipovpn network
++  emulator (https://github.com/OpenVPN/lwipovpn).
++
+ --dev-type device-type
+   Which device type are we using? ``device-type`` should be :code:`tun`
+   (OSI Layer 3) or :code:`tap` (OSI Layer 2). Use this option only if
+diff --git a/src/openvpn/Makefile.am b/src/openvpn/Makefile.am
+index 56cce9d..26b9018 100644
+--- a/src/openvpn/Makefile.am
++++ b/src/openvpn/Makefile.am
+@@ -138,6 +138,7 @@
+ 	syshead.h \
+ 	tls_crypt.c tls_crypt.h \
+ 	tun.c tun.h \
++	tun_afunix.c tun_afunix.h \
+ 	vlan.c vlan.h \
+ 	xkey_provider.c xkey_common.h \
+ 	xkey_helper.c \
+diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c
+index 7b23131..9c78adf 100644
+--- a/src/openvpn/forward.c
++++ b/src/openvpn/forward.c
+@@ -41,6 +41,7 @@
+ #include "ssl_verify.h"
+ #include "dco.h"
+ #include "auth_token.h"
++#include "tun_afunix.h"
 
-File src/openvpn/options.c:
+ #include "memdbg.h"
 
-http://gerrit.openvpn.net/c/openvpn/+/739/comment/ce30cce3_6ee36c90 :
-PS3, Line 6103:         if (!p[2]) /* p[1] must be in CIDR format */
-> Should probably do a ip_or_dns_addr_safe(p[1]) here? Might need to enhanc=
-e that function to allow ne [=E2=80=A6]
-Acknowledged
+@@ -1319,7 +1320,14 @@
+ #else  /* ifdef _WIN32 */
+     ASSERT(buf_init(&c->c2.buf, c->c2.frame.buf.headroom));
+     ASSERT(buf_safe(&c->c2.buf, c->c2.frame.buf.payload_size));
+-    c->c2.buf.len =3D read_tun(c->c1.tuntap, BPTR(&c->c2.buf), c->c2.frame=
+.buf.payload_size);
++    if (c->c1.tuntap->backend_driver =3D=3D DRIVER_AFUNIX)
++    {
++        c->c2.buf.len =3D tun_afunix_read(c->c1.tuntap, BPTR(&c->c2.buf), =
+c->c2.frame.buf.payload_size);
++    }
++    else
++    {
++        c->c2.buf.len =3D read_tun(c->c1.tuntap, BPTR(&c->c2.buf), c->c2.f=
+rame.buf.payload_size);
++    }
+ #endif /* ifdef _WIN32 */
 
+ #ifdef PACKET_TRUNCATION_CHECK
+@@ -1926,7 +1934,14 @@
+ #ifdef _WIN32
+         size =3D write_tun_buffered(c->c1.tuntap, &c->c2.to_tun);
+ #else
+-        size =3D write_tun(c->c1.tuntap, BPTR(&c->c2.to_tun), BLEN(&c->c2.=
+to_tun));
++        if (c->c1.tuntap->backend_driver =3D=3D DRIVER_AFUNIX)
++        {
++            size =3D tun_afunix_write(c->c1.tuntap, BPTR(&c->c2.to_tun), B=
+LEN(&c->c2.to_tun));
++        }
++        else
++        {
++            size =3D write_tun(c->c1.tuntap, BPTR(&c->c2.to_tun), BLEN(&c-=
+>c2.to_tun));
++        }
+ #endif
 
-http://gerrit.openvpn.net/c/openvpn/+/739/comment/10b9fbdb_8c9a2ae0 :
-PS3, Line 7029: VERIFY_PERMISSION
-> VERIFY_PERMISSION should go first
-Acknowledged
+         if (size > 0)
+diff --git a/src/openvpn/init.c b/src/openvpn/init.c
+index 83cc670..b516608 100644
+--- a/src/openvpn/init.c
++++ b/src/openvpn/init.c
+@@ -54,6 +54,7 @@
+ #include "mss.h"
+ #include "mudp.h"
+ #include "dco.h"
++#include "tun_afunix.h"
 
+ #include "memdbg.h"
 
-http://gerrit.openvpn.net/c/openvpn/+/739/comment/b4a5b082_b11cfef8 :
-PS3, Line 7037:         if (cidr && !no_more_than_n_args(msglevel, p, 4, NM=
-_QUOTE_HINT))
-> Why NM_QUOTE_HINT?
-Acknowledged
+@@ -1758,10 +1759,18 @@
+                             &c->net_ctx,
+                             c->c1.tuntap);
 
++    if (is_tun_afunix(c->options.dev_node))
++    {
++        /* Using AF_UNIX trumps using DCO */
++        c->c1.tuntap->backend_driver =3D DRIVER_AFUNIX;
++    }
+ #ifdef _WIN32
+-    c->c1.tuntap->backend_driver =3D c->options.windows_driver;
++    else
++    {
++        c->c1.tuntap->backend_driver =3D c->options.windows_driver;
++    }
+ #else
+-    if (dco_enabled(&c->options))
++    else if (dco_enabled(&c->options))
+     {
+         c->c1.tuntap->backend_driver =3D DRIVER_DCO;
+     }
+@@ -1786,6 +1795,10 @@
+ static bool
+ can_preserve_tun(struct tuntap *tt)
+ {
++    if (tt && tt->backend_driver =3D=3D DRIVER_AFUNIX)
++    {
++        return false;
++    }
+ #ifdef TARGET_ANDROID
+     return false;
+ #else
+@@ -1841,6 +1854,22 @@
+ #endif
+ }
 
-http://gerrit.openvpn.net/c/openvpn/+/739/comment/4c4dea4c_37ac9b94 :
-PS3, Line 7042: OPT_P_ROUTE
-> VERIFY_PERMISSION should go first
-Acknowledged
++static void
++open_tun_backend(struct context *c)
++{
++    struct tuntap *tt =3D c->c1.tuntap;
++    if (tt->backend_driver =3D=3D DRIVER_AFUNIX)
++    {
++        open_tun_afunix(&c->options, c->c2.frame.tun_mtu, tt, c->c2.es);
++    }
++    else
++    {
++        open_tun(c->options.dev, c->options.dev_type, c->options.dev_node,
++                 tt, &c->net_ctx);
++    }
++}
++
++
+ static bool
+ do_open_tun(struct context *c, int *error_flags)
+ {
+@@ -1863,7 +1892,8 @@
+         }
+ #endif
 
+-        /* initialize (but do not open) tun/tap object */
++        /* initialize (but do not open) tun/tap object, this also sets
++         * the backend driver type */
+         do_init_tun(c);
 
-http://gerrit.openvpn.net/c/openvpn/+/739/comment/23a2b49a_8cb1624d :
-PS3, Line 7047:             const char *network =3D strtok(p[i++], "/"); /*=
- this modifies p[1] */
-> I find this very ugly. [=E2=80=A6]
-Yes, definitely.
+         /* inherit the dco context from the tuntap object */
+@@ -1898,7 +1928,7 @@
 
+         /* do ifconfig */
+         if (!c->options.ifconfig_noexec
+-            && ifconfig_order() =3D=3D IFCONFIG_BEFORE_TUN_OPEN)
++            && ifconfig_order(c->c1.tuntap) =3D=3D IFCONFIG_BEFORE_TUN_OPE=
+N)
+         {
+             /* guess actual tun/tap unit number that will be returned
+              * by open_tun */
+@@ -1911,7 +1941,7 @@
+         }
 
-http://gerrit.openvpn.net/c/openvpn/+/739/comment/1f3bc400_01968578 :
-PS3, Line 7071:             add_route_to_option_list(options->routes, p[1],=
- NULL, p[2], p[3]);
-> Should we consider already normalizing the route here already and not par=
-se the netmask vs netbits l [=E2=80=A6]
-The parameters are all stored in string format because "network" and "gatew=
-ay" can be ip addresses, resolvable names or even special keywords and the =
-parsing is done in init_route(). If we were to search for the netbits here =
-(in order to convert them into a netmask or vice versa) we would end up mov=
-ing some of the init_route() logic here.
-Anyway, once ip_or_dns_addr_safe() is improved to handle CIDR notated addre=
-sses, do you still think the overhead introduced here is too much?
+         /* possibly add routes */
+-        if (route_order() =3D=3D ROUTE_BEFORE_TUN)
++        if (route_order(c->c1.tuntap) =3D=3D ROUTE_BEFORE_TUN)
+         {
+             /* Ignore route_delay, would cause ROUTE_BEFORE_TUN to be igno=
+red */
+             bool status =3D do_route(&c->options, c->c1.route_list, c->c1.=
+route_ipv6_list,
+@@ -1928,8 +1958,7 @@
+         }
 
+         /* open the tun device */
+-        open_tun(c->options.dev, c->options.dev_type, c->options.dev_node,
+-                 c->c1.tuntap, &c->net_ctx);
++        open_tun_backend(c);
 
-http://gerrit.openvpn.net/c/openvpn/+/739/comment/03dc6477_3baf4f59 :
-PS3, Line 7409:             if (!no_more_than_n_args(msglevel, p, 3, NM_QUO=
-TE_HINT))
-> Why NM_QUOTE_HINT?
-Acknowledged
+         /* set the hardware address */
+         if (c->options.lladdr)
+@@ -1940,7 +1969,7 @@
 
+         /* do ifconfig */
+         if (!c->options.ifconfig_noexec
+-            && ifconfig_order() =3D=3D IFCONFIG_AFTER_TUN_OPEN)
++            && ifconfig_order(c->c1.tuntap) =3D=3D IFCONFIG_AFTER_TUN_OPEN)
+         {
+             do_ifconfig(c->c1.tuntap, c->c1.tuntap->actual_name,
+                         c->c2.frame.tun_mtu, c->c2.es, &c->net_ctx);
+@@ -1966,7 +1995,7 @@
+         add_wfp_block(c);
 
-http://gerrit.openvpn.net/c/openvpn/+/739/comment/c67b2950_32857d05 :
-PS3, Line 7424:                 msg(M_USAGE, "--server directive network/ne=
-tmask combination is invalid");
-> Why does this have a separate error message here but not in the sameish c=
-ode in --server-bridge belo [=E2=80=A6]
-Acknowledged
+         /* possibly add routes */
+-        if ((route_order() =3D=3D ROUTE_AFTER_TUN) && (!c->options.route_d=
+elay_defined))
++        if ((route_order(c->c1.tuntap) =3D=3D ROUTE_AFTER_TUN) && (!c->opt=
+ions.route_delay_defined))
+         {
+             int status =3D do_route(&c->options, c->c1.route_list, c->c1.r=
+oute_ipv6_list,
+                                   c->c1.tuntap, c->plugins, c->c2.es, &c->=
+net_ctx);
+@@ -2026,7 +2055,14 @@
+         {
+             undo_ifconfig(c->c1.tuntap, &c->net_ctx);
+         }
+-        close_tun(c->c1.tuntap, &c->net_ctx);
++        if (c->c1.tuntap->backend_driver =3D=3D DRIVER_AFUNIX)
++        {
++            tun_afunix_close(c->c1.tuntap);
++        }
++        else
++        {
++            close_tun(c->c1.tuntap, &c->net_ctx);
++        }
+         c->c1.tuntap =3D NULL;
+     }
+     c->c1.tuntap_owned =3D false;
+@@ -2466,7 +2502,7 @@
+             c->c1.pulled_options_digest_save =3D c->c2.pulled_options_dige=
+st;
 
+             /* if --route-delay was specified, start timer */
+-            if ((route_order() =3D=3D ROUTE_AFTER_TUN) && c->options.route=
+_delay_defined)
++            if ((route_order(c->c1.tuntap) =3D=3D ROUTE_AFTER_TUN) && c->o=
+ptions.route_delay_defined)
+             {
+                 event_timeout_init(&c->c2.route_wakeup, c->options.route_d=
+elay, now);
+                 event_timeout_init(&c->c2.route_wakeup_expire, c->options.=
+route_delay + c->options.route_delay_window, now);
+diff --git a/src/openvpn/run_command.c b/src/openvpn/run_command.c
+index 292e81f..d757823 100644
+--- a/src/openvpn/run_command.c
++++ b/src/openvpn/run_command.c
+@@ -155,6 +155,10 @@
+             {
+                 msg(M_ERR, "openvpn_execve: unable to fork");
+             }
++            else if (flags & S_NOWAITPID)
++            {
++                ret =3D pid;
++            }
+             else /* parent side */
+             {
+                 if (waitpid(pid, &ret, 0) !=3D pid)
+@@ -204,6 +208,11 @@
+             goto done;
+         }
+     }
++    else if (flags & S_NOWAITPID && (stat > 0))
++    {
++        ret =3D stat;
++        goto done;
++    }
+     else if (platform_system_ok(stat))
+     {
+         ret =3D true;
+diff --git a/src/openvpn/run_command.h b/src/openvpn/run_command.h
+index ccad307..1ad5560 100644
+--- a/src/openvpn/run_command.h
++++ b/src/openvpn/run_command.h
+@@ -47,6 +47,9 @@
+ /** Instead of returning 1/0 for success/fail,
+  * return exit code when between 0 and 255 and -1 otherwise */
+ #define S_EXITCODE  (1<<2)
++/** instead of waiting for child process exist status return the
++ * pid of the child process */
++#define S_NOWAITPID   (1<<3)
 
-http://gerrit.openvpn.net/c/openvpn/+/739/comment/68375742_e67a2168 :
-PS3, Line 7487:             if (!no_more_than_n_args(msglevel, p, 4, NM_QUO=
-TE_HINT))
-> Why NM_QUOTE_HINT? Which argument could contain spaces?
-None in fact, I just totally overlooked this flags honestly. Acknowledged
+ /* wrapper around the execve() call */
+ int openvpn_popen(const struct argv *a,  const struct env_set *es);
+diff --git a/src/openvpn/ssl.h b/src/openvpn/ssl.h
+index eea1323..0eacec8 100644
+--- a/src/openvpn/ssl.h
++++ b/src/openvpn/ssl.h
+@@ -219,7 +219,7 @@
+ void tls_multi_free(struct tls_multi *multi, bool clear);
 
+ /** @} name Functions for initialization and cleanup of tls_multi structur=
+es */
+-
++\
+ /** @} addtogroup control_processor */
 
-http://gerrit.openvpn.net/c/openvpn/+/739/comment/600e6ed7_2f6ddc3f :
-PS3, Line 7898:             if (!no_more_than_n_args(msglevel, p, 3, NM_QUO=
-TE_HINT))
-> Why NM_QUOTE_HINT?
-Acknowledged
+ #define TLSMP_INACTIVE 0
+diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
+index 0832375..3f5f450 100644
+--- a/src/openvpn/tun.c
++++ b/src/openvpn/tun.c
+@@ -75,6 +75,9 @@
+         case DRIVER_DCO:
+             return "ovpn-dco";
 
++        case DRIVER_AFUNIX:
++            return "unix";
++
+ #ifdef HAVE_NET_IF_UTUN_H
+         case DRIVER_UTUN:
+             return "utun";
+diff --git a/src/openvpn/tun.h b/src/openvpn/tun.h
+index e41b616..75a4218 100644
+--- a/src/openvpn/tun.h
++++ b/src/openvpn/tun.h
+@@ -50,6 +50,10 @@
+ #else
+     DRIVER_GENERIC_TUNTAP,
+ #endif
++    /** using an AF_UNIX socket to pass packet from/to an external program
++     *  this is always defined. We error out if a user tries to open this =
+type
++     *  on unsupported platforms*/
++    DRIVER_AFUNIX,
+     DRIVER_DCO,
+ #ifdef HAVE_NET_IF_UTUN_H
+     DRIVER_UTUN
+@@ -165,6 +169,15 @@
+ /*
+  * Define a TUN/TAP dev.
+  */
++#ifdef AF_UNIX
++typedef struct afunix_context
++{
++    pid_t childprocess;
++} afunix_context_t;
++
++#else /* ifdef AF_UNIX */
++typedef struct {} afunix_context_t;
++#endif
 
-File src/openvpn/route.c:
+ struct tuntap
+ {
+@@ -179,7 +192,12 @@
+      */
+     enum tun_driver_type backend_driver;
+=20
++    /** if the internal variables related to ifconfig of this struct have
++     * been set up. This does NOT mean ifconfig has been called */
+     bool did_ifconfig_setup;
++
++    /** if the internal variables related to ifconfig-ipv6 of this struct =
+have
++     * been set up. This does NOT mean ifconfig has been called */
+     bool did_ifconfig_ipv6_setup;
 
-http://gerrit.openvpn.net/c/openvpn/+/739/comment/ac8b37af_6f6e9a74 :
-PS3, Line 324:     const in_addr_t default_netbits =3D IPV4_NETBITS_HOST;
-> unsigned int?
-Acknowledged
+     bool persistent_if;         /* if existed before, keep on program end =
+*/
+@@ -231,6 +249,7 @@
+     unsigned int rwflags_debug;
 
+     dco_context_t dco;
++    afunix_context_t afunix;
+ };
 
-http://gerrit.openvpn.net/c/openvpn/+/739/comment/ee1f7533_80da73d9 :
-PS3, Line 331:     const char *cidr =3D strchr(network, '/');
-> Would convert to bool here to make it clear purpose
-Acknowledged
+ static inline bool
+@@ -354,8 +373,14 @@
+ #define IFCONFIG_DEFAULT         IFCONFIG_AFTER_TUN_OPEN
 
+ static inline int
+-ifconfig_order(void)
++ifconfig_order(struct tuntap *tt)
+ {
++#if defined AF_UNIX
++    if (tt->backend_driver =3D=3D DRIVER_AFUNIX)
++    {
++        return IFCONFIG_BEFORE_TUN_OPEN;
++    }
++#endif
+ #if defined(TARGET_LINUX)
+     return IFCONFIG_AFTER_TUN_OPEN;
+ #elif defined(TARGET_SOLARIS)
+@@ -380,8 +405,14 @@
+ #define ROUTE_ORDER_DEFAULT ROUTE_AFTER_TUN
 
-http://gerrit.openvpn.net/c/openvpn/+/739/comment/1b593f21_ba11a0bc :
-PS3, Line 347: convert
-> Want to do a drive-by fix? "a a" -> "to an"?
-Acknowledged
-
-
-http://gerrit.openvpn.net/c/openvpn/+/739/comment/fcdc0ae1_bb844192 :
-PS3, Line 1105: route
-> Maybe add a 0.0.0.0/1 and 128.0.0. [=E2=80=A6]
-Acknowledged
-
-
-http://gerrit.openvpn.net/c/openvpn/+/739/comment/3eb2716e_74185bc0 :
-PS3, Line 1166: route (
-> Same (0.0.0.0/1 and 128.0.0.0/1) here.
-Acknowledged
-
-
-http://gerrit.openvpn.net/c/openvpn/+/739/comment/2e313668_5df0fac8 :
-PS3, Line 1456:
-> Maybe we could move this into the if block? Not sure why we would create =
-it otherwise?
-Acknowledged
-
-
-File src/openvpn/tun.c:
-
-http://gerrit.openvpn.net/c/openvpn/+/739/comment/6a23e054_db476467 :
-PS3, Line 512:     const bool looks_like_netmask =3D addr && ((addr & 0xFF0=
-00000) =3D=3D 0xFF000000);
-> Isn't this redundant? If addr is 0 the second part never matches anyway
-Acknowledged
-
-
-http://gerrit.openvpn.net/c/openvpn/+/739/comment/fe64f694_ae441e6d :
-PS3, Line 524:=20=20=20
-> Shouldn't that be "&&" ?
-Yes, indeed
-
-
-http://gerrit.openvpn.net/c/openvpn/+/739/comment/a2797ec0_d79ee4f7 :
-PS3, Line 562:             const in_addr_t public_net =3D public &netmask;
-> Add space after & ?
-Acknowledged
-
-
-http://gerrit.openvpn.net/c/openvpn/+/739/comment/7d21b2d6_5f6efde8 :
-PS3, Line 591: &
-> Add space after &
-Acknowledged
-
-
+ static inline int
+-route_order(void)
++route_order(struct tuntap *tt)
+ {
++#if defined AF_UNIX
++    if (tt->backend_driver =3D=3D DRIVER_AFUNIX)
++    {
++        return ROUTE_BEFORE_TUN;
++    }
++#endif
+ #if defined(TARGET_ANDROID)
+     return ROUTE_BEFORE_TUN;
+ #else
+@@ -759,5 +790,4 @@
+ {
+     return tt && tt->type !=3D DEV_TYPE_UNDEF;
+ }
+-
+ #endif /* TUN_H */
+diff --git a/src/openvpn/tun_afunix.c b/src/openvpn/tun_afunix.c
+new file mode 100644
+index 0000000..27cdb01
+--- /dev/null
++++ b/src/openvpn/tun_afunix.c
+@@ -0,0 +1,178 @@
++/*
++ *  OpenVPN -- An application to securely tunnel IP networks
++ *             over a single TCP/UDP port, with support for SSL/TLS-based
++ *             session authentication and key exchange,
++ *             packet encryption, packet authentication, and
++ *             packet compression.
++ *
++ *  Copyright (C) 2002-2024 OpenVPN Inc <sales@...515...>
++ *
++ *  This program is free software; you can redistribute it and/or modify
++ *  it under the terms of the GNU General Public License version 2
++ *  as published by the Free Software Foundation.
++ *
++ *  This program is distributed in the hope that it will be useful,
++ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
++ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ *  GNU General Public License for more details.
++ *
++ *  You should have received a copy of the GNU General Public License along
++ *  with this program; if not, write to the Free Software Foundation, Inc.,
++ *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
++ */
++
++#ifdef HAVE_CONFIG_H
++#include "config.h"
++#endif
++
++#include "syshead.h"
++
++#include "tun.h"
++#include "fdmisc.h"
++#include "run_command.h"
++#include "manage.h"
++#include "win32.h"
++#include "wfp_block.h"
++#include "argv.h"
++#include "options.h"
++
++#if defined(AF_UNIX) && !defined(WIN32)
++/* Windows does implement some AF_UNIX functionality but key features
++ * like socketpair() and SOCK_DGRAM are missing */
++
++#include <string.h>
++#include <unistd.h>
++#include <sys/wait.h>
++#include <signal.h>
++#include <stdlib.h>
++
++static void
++tun_afunix_exec_child(const char *dev_node, struct tuntap *tt, struct env_=
+set *env)
++{
++    struct argv argv =3D argv_new();
++
++    /* since we know that dev-node starts with unix: we can just skip that
++     * to get the program name */
++    const char *program =3D dev_node + strlen("unix:");
++
++    argv_printf(&argv, "%s", program);
++
++    argv_msg(M_INFO, &argv);
++    tt->afunix.childprocess =3D openvpn_execve_check(&argv, env, S_NOWAITP=
+ID,
++                                                   "ERROR: failure executi=
+ng "
++                                                   "process for tun");
++    argv_free(&argv);
++}
++
++void
++open_tun_afunix(struct options *o,
++                int mtu,
++                struct tuntap *tt,
++                struct env_set *orig_env)
++{
++    struct gc_arena gc =3D gc_new();
++
++    int fds[2];
++    if (!(socketpair(AF_UNIX, SOCK_DGRAM, 0, fds) =3D=3D 0))
++    {
++        msg(M_ERR, "Cannot create socket pair for AF_UNIX socket to extern=
+al "
++            "program");
++        return;
++    }
++
++    /* Use the first file descriptor for our side and avoid passing it
++     * to the child */
++    tt->fd =3D fds[1];
++    set_cloexec(tt->fd);
++
++    /* Make a copy of the env, so we do not need to delete our custom
++     * environment variables later */
++    struct env_set *env =3D env_set_create(&gc);
++    env_set_inherit(env, orig_env);
++
++    setenv_int(env, "TUNTAP_SOCKET_FD", fds[0]);
++    setenv_str(env, "TUNTAP_DEV_TYPE", dev_type_string(o->dev, o->dev_type=
+));
++    setenv_int(env, "TUNTAP_MTU", mtu);
++    if (o->route_default_gateway)
++    {
++        setenv_str(env, "ifconfig_gateway", o->route_default_gateway);
++    }
++    if (o->lladdr)
++    {
++        setenv_str(env, "TUNTAP_LLADDR", o->lladdr);
++    }
++
++    tun_afunix_exec_child(o->dev_node, tt, env);
++
++    close(fds[0]);
++
++    /* tt->actual_name is passed to up and down scripts and used as the if=
+config dev name */
++    tt->actual_name =3D string_alloc("internal:af_unix", NULL);
++
++    gc_free(&gc);
++}
++
++void
++tun_afunix_close(struct tuntap *tt)
++{
++    ASSERT(tt);
++    if (tt->fd >=3D 0)
++    {
++        close(tt->fd);
++        tt->fd =3D 0;
++    }
++    kill(tt->afunix.childprocess, SIGINT);
++
++    free(tt->actual_name);
++    free(tt);
++}
++
++ssize_t
++tun_afunix_write(struct tuntap *tt, uint8_t *buf, int len)
++{
++    int ret;
++    pid_t pidret =3D waitpid(tt->afunix.childprocess, &ret, WNOHANG);
++    if (pidret =3D=3D tt->afunix.childprocess)
++    {
++        msg(M_INFO, "Child process PID %d for afunix dead? Return code: %d=
+",
++            tt->afunix.childprocess, ret);
++        return -ENXIO;
++    }
++    return write(tt->fd, buf, len);
++}
++
++ssize_t
++tun_afunix_read(struct tuntap *tt, uint8_t *buf, int len)
++{
++    return read(tt->fd, buf, len);
++}
++#else  /* ifdef AF_UNIX */
++void
++open_tun_afunix(const char *dev, const char *dev_type, int mtu,
++                struct tuntap *tt, struct env_set env)
++{
++    msg(M_ERR, "AF_UNIX socket support not available on this platform");
++}
++
++void
++tun_afunix_close(struct tuntap *tt)
++{
++    /* should never be called as open_tun_afunix always fails */
++    ASSERT(0);
++}
++
++ssize_t
++tun_afunix_write(struct tuntap *tt, uint8_t *buf, int len)
++{
++    /* should never be called as open_tun_afunix always fails */
++    ASSERT(0);
++}
++
++ssize_t
++tun_afunix_read(struct tuntap *tt, uint8_t *buf, int len)
++{
++    /* should never be called as open_tun_afunix always fails */
++    ASSERT(0);
++}
++
++#endif /* ifdef AF_UNIX */
+diff --git a/src/openvpn/tun_afunix.h b/src/openvpn/tun_afunix.h
+new file mode 100644
+index 0000000..58fc1a5
+--- /dev/null
++++ b/src/openvpn/tun_afunix.h
+@@ -0,0 +1,72 @@
++/*
++ *  OpenVPN -- An application to securely tunnel IP networks
++ *             over a single TCP/UDP port, with support for SSL/TLS-based
++ *             session authentication and key exchange,
++ *             packet encryption, packet authentication, and
++ *             packet compression.
++ *
++ *  Copyright (C) 2002-2024 OpenVPN Inc <sales@...515...>
++ *
++ *  This program is free software; you can redistribute it and/or modify
++ *  it under the terms of the GNU General Public License version 2
++ *  as published by the Free Software Foundation.
++ *
++ *  This program is distributed in the hope that it will be useful,
++ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
++ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ *  GNU General Public License for more details.
++ *
++ *  You should have received a copy of the GNU General Public License along
++ *  with this program; if not, write to the Free Software Foundation, Inc.,
++ *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
++ */
++
++#ifndef AFUNIX_TUN_H
++#define AFUNIX_TUN_H
++#include <sys/types.h>
++
++#include "tun.h"
++
++/**
++ * Opens an AF_UNIX based tun device. This also executes the command that
++ * the user provided to that will take care of implementing the actual tun
++ * device
++ */
++void
++open_tun_afunix(struct options *o,
++                int mtu,
++                struct tuntap *tt,
++                struct env_set *env);
++
++
++/**
++ * Closes the socket used for the AF_UNIX based device. Also sends a
++ * SIGINT to the child process that was spawned to handle the tun device
++ */
++void
++tun_afunix_close(struct tuntap *tt);
++
++/**
++ * Writes a packet to a AF_UNIX based tun device
++ */
++ssize_t
++tun_afunix_write(struct tuntap *tt, uint8_t *buf, int len);
++
++/**
++ * Reads a packet from a AF_UNIX based tun devices
++ */
++ssize_t
++tun_afunix_read(struct tuntap *tt, uint8_t *buf, int len);
++
++#endif /* AFUNIX_TUN_H */
++
++/**
++ * Checks whether a --dev-node parameter specifies a AF_UNIX device
++ * @param devnode   the string to check
++ * @return          true if the string starts with unix:
++ */
++static inline bool
++is_tun_afunix(const char *devnode)
++{
++    return devnode && strprefix(devnode, "unix:");
++}
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/739?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/747?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings
 
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: Iae04ad8715e40dfc76475c2c5b9a766c9604efc9
-Gerrit-Change-Number: 739
+Gerrit-Change-Id: I65099ef00822d08fd3f5480c80892f3bf86c56e7
+Gerrit-Change-Number: 747
 Gerrit-PatchSet: 3
-Gerrit-Owner: ralf_lici <ralf@...2726...>
+Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
 Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Comment-Date: Mon, 16 Sep 2024 15:54:54 +0000
-Gerrit-HasComments: Yes
-Gerrit-Has-Labels: No
-Comment-In-Reply-To: flichtenheld <frank@...2641...>
-Gerrit-MessageType: comment
+Gerrit-MessageType: newpatchset
 
---Vu3dmQffs1k=
+--DHFu1ggicgY=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <p> Attention is currently required from: flichtenheld, plaisthos. </p>
-<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/739?usp=3Demail">View C=
-hange</a></p><p>25 comments:</p><ul style=3D"list-style: none; padding: 0;"=
-><li style=3D"margin: 0; padding: 0;"><p>Commit Message:</p><ul style=3D"li=
-st-style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;">=
-<p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/ope=
-nvpn/+/739/comment/ef955895_c40062c5">Patch Set #3, Line 9:</a> <code style=
-=3D"font-family:monospace,monospace">Add support for CIDR notation on all s=
-uitable options (client-nat,</code></p><p><blockquote style=3D"border-left:=
- 1px solid #aaa; margin: 10px 0; padding: 0 10px;">Maybe give some more mot=
-ivation here. [=E2=80=A6]</blockquote></p><p style=3D"white-space: pre-wrap=
-; word-wrap: break-word;">Acknowledged</p></li></ul></li><li style=3D"margi=
-n: 0; padding: 0;"><p>File doc/man-sections/server-options.rst:</p><ul styl=
-e=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 =
-16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.ne=
-t/c/openvpn/+/739/comment/36991047_c59736fd">Patch Set #3, Line 344:</a> <c=
-ode style=3D"font-family:monospace,monospace">  :code:`255.255.255.255`.</c=
-ode></p><p><blockquote style=3D"border-left: 1px solid #aaa; margin: 10px 0=
-; padding: 0 10px;">for completeness mentions /32 as well.</blockquote></p>=
-<p style=3D"white-space: pre-wrap; word-wrap: break-word;">Acknowledged</p>=
-</li></ul></li><li style=3D"margin: 0; padding: 0;"><p>File doc/man-section=
-s/vpn-network-options.rst:</p><ul style=3D"list-style: none; padding: 0;"><=
-li style=3D"margin: 0; padding: 0 0 0 16px;"><p style=3D"margin-bottom: 4px=
-;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/739/comment/61768e6b_7a=
-cc98ad">Patch Set #3, Line 220:</a> <code style=3D"font-family:monospace,mo=
-nospace">     ifconfig local rn</code></p><p><blockquote style=3D"border-le=
-ft: 1px solid #aaa; margin: 10px 0; padding: 0 10px;">Need to specify the t=
-wo possibilities (IP address or netmask) separately. [=E2=80=A6]</blockquot=
-e></p><p style=3D"white-space: pre-wrap; word-wrap: break-word;">I think it=
- stands for remote_netmask. I left it like this because I found it mentione=
-d in this form in the explanation that follows (line 237) but I agree it is=
-n&#39;t clear. I&#39;m duplicating it to show both versions of ifconfig (re=
-mote and netmask) as you suggested. However this may not be completely cohe=
-rent to --ifconfig-push (which has &quot;local remote-netmask&quot; argumen=
-ts). Should I change that one too accordingly?</p></li><li style=3D"margin:=
- 0; padding: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http:=
-//gerrit.openvpn.net/c/openvpn/+/739/comment/308f35e0_f16ee639">Patch Set #=
-3, Line 266:</a> <code style=3D"font-family:monospace,monospace">2 255</cod=
-e></p><p><blockquote style=3D"border-left: 1px solid #aaa; margin: 10px 0; =
-padding: 0 10px;">Add /bits example here?</blockquote></p><p style=3D"white=
--space: pre-wrap; word-wrap: break-word;">Acknowledged</p></li><li style=3D=
-"margin: 0; padding: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=
-=3D"http://gerrit.openvpn.net/c/openvpn/+/739/comment/1861ac78_b520ac5c">Pa=
-tch Set #3, Line 389:</a> <code style=3D"font-family:monospace,monospace"> =
-     route network|ipv4addr [netmask] [gateway] [metric]</code></p><p><bloc=
-kquote style=3D"border-left: 1px solid #aaa; margin: 10px 0; padding: 0 10p=
-x;">Does the network|ipv4addr here really add any value? Should we go just =
-for ipv4addr here like with - [=E2=80=A6]</blockquote></p><p style=3D"white=
--space: pre-wrap; word-wrap: break-word;">I didn&#39;t drop the &quot;netwo=
-rk&quot; format because I thought it was referring to the DNS resolvable na=
-me or special keywords as opposed to the ipv4 address. But I see that it ca=
-n be a bit misleading therefore I will duplicate the lines (network and ipv=
-4addr).</p></li></ul></li><li style=3D"margin: 0; padding: 0;"><p>File src/=
-openvpn/options.c:</p><ul style=3D"list-style: none; padding: 0;"><li style=
-=3D"margin: 0; padding: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a hr=
-ef=3D"http://gerrit.openvpn.net/c/openvpn/+/739/comment/ce30cce3_6ee36c90">=
-Patch Set #3, Line 6103:</a> <code style=3D"font-family:monospace,monospace=
-">        if (!p[2]) /* p[1] must be in CIDR format */</code></p><p><blockq=
-uote style=3D"border-left: 1px solid #aaa; margin: 10px 0; padding: 0 10px;=
-">Should probably do a ip_or_dns_addr_safe(p[1]) here? Might need to enhanc=
-e that function to allow ne [=E2=80=A6]</blockquote></p><p style=3D"white-s=
-pace: pre-wrap; word-wrap: break-word;">Acknowledged</p></li><li style=3D"m=
-argin: 0; padding: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D=
-"http://gerrit.openvpn.net/c/openvpn/+/739/comment/10b9fbdb_8c9a2ae0">Patch=
- Set #3, Line 7029:</a> <code style=3D"font-family:monospace,monospace">VER=
-IFY_PERMISSION</code></p><p><blockquote style=3D"border-left: 1px solid #aa=
-a; margin: 10px 0; padding: 0 10px;">VERIFY_PERMISSION should go first</blo=
-ckquote></p><p style=3D"white-space: pre-wrap; word-wrap: break-word;">Ackn=
-owledged</p></li><li style=3D"margin: 0; padding: 0 0 0 16px;"><p style=3D"=
-margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/739/c=
-omment/b4a5b082_b11cfef8">Patch Set #3, Line 7037:</a> <code style=3D"font-=
-family:monospace,monospace">        if (cidr &amp;&amp; !no_more_than_n_arg=
-s(msglevel, p, 4, NM_QUOTE_HINT))</code></p><p><blockquote style=3D"border-=
-left: 1px solid #aaa; margin: 10px 0; padding: 0 10px;">Why NM_QUOTE_HINT?<=
-/blockquote></p><p style=3D"white-space: pre-wrap; word-wrap: break-word;">=
-Acknowledged</p></li><li style=3D"margin: 0; padding: 0 0 0 16px;"><p style=
-=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/7=
-39/comment/4c4dea4c_37ac9b94">Patch Set #3, Line 7042:</a> <code style=3D"f=
-ont-family:monospace,monospace">OPT_P_ROUTE</code></p><p><blockquote style=
-=3D"border-left: 1px solid #aaa; margin: 10px 0; padding: 0 10px;">VERIFY_P=
-ERMISSION should go first</blockquote></p><p style=3D"white-space: pre-wrap=
-; word-wrap: break-word;">Acknowledged</p></li><li style=3D"margin: 0; padd=
-ing: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit=
-.openvpn.net/c/openvpn/+/739/comment/23a2b49a_8cb1624d">Patch Set #3, Line =
-7047:</a> <code style=3D"font-family:monospace,monospace">            const=
- char *network =3D strtok(p[i++], &quot;/&quot;); /* this modifies p[1] */<=
-/code></p><p><blockquote style=3D"border-left: 1px solid #aaa; margin: 10px=
- 0; padding: 0 10px;">I find this very ugly. [=E2=80=A6]</blockquote></p><p=
- style=3D"white-space: pre-wrap; word-wrap: break-word;">Yes, definitely.</=
-p></li><li style=3D"margin: 0; padding: 0 0 0 16px;"><p style=3D"margin-bot=
-tom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/739/comment/1f3=
-bc400_01968578">Patch Set #3, Line 7071:</a> <code style=3D"font-family:mon=
-ospace,monospace">            add_route_to_option_list(options-&gt;routes, =
-p[1], NULL, p[2], p[3]);</code></p><p><blockquote style=3D"border-left: 1px=
- solid #aaa; margin: 10px 0; padding: 0 10px;">Should we consider already n=
-ormalizing the route here already and not parse the netmask vs netbits l [=
-=E2=80=A6]</blockquote></p><p style=3D"white-space: pre-wrap; word-wrap: br=
-eak-word;">The parameters are all stored in string format because &quot;net=
-work&quot; and &quot;gateway&quot; can be ip addresses, resolvable names or=
- even special keywords and the parsing is done in init_route(). If we were =
-to search for the netbits here (in order to convert them into a netmask or =
-vice versa) we would end up moving some of the init_route() logic here.<br>=
-Anyway, once ip_or_dns_addr_safe() is improved to handle CIDR notated addre=
-sses, do you still think the overhead introduced here is too much?</p></li>=
-<li style=3D"margin: 0; padding: 0 0 0 16px;"><p style=3D"margin-bottom: 4p=
-x;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/739/comment/03dc6477_3=
-baf4f59">Patch Set #3, Line 7409:</a> <code style=3D"font-family:monospace,=
-monospace">            if (!no_more_than_n_args(msglevel, p, 3, NM_QUOTE_HI=
-NT))</code></p><p><blockquote style=3D"border-left: 1px solid #aaa; margin:=
- 10px 0; padding: 0 10px;">Why NM_QUOTE_HINT?</blockquote></p><p style=3D"w=
-hite-space: pre-wrap; word-wrap: break-word;">Acknowledged</p></li><li styl=
-e=3D"margin: 0; padding: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a h=
-ref=3D"http://gerrit.openvpn.net/c/openvpn/+/739/comment/c67b2950_32857d05"=
->Patch Set #3, Line 7424:</a> <code style=3D"font-family:monospace,monospac=
-e">                msg(M_USAGE, &quot;--server directive network/netmask co=
-mbination is invalid&quot;);</code></p><p><blockquote style=3D"border-left:=
- 1px solid #aaa; margin: 10px 0; padding: 0 10px;">Why does this have a sep=
-arate error message here but not in the sameish code in --server-bridge bel=
-o [=E2=80=A6]</blockquote></p><p style=3D"white-space: pre-wrap; word-wrap:=
- break-word;">Acknowledged</p></li><li style=3D"margin: 0; padding: 0 0 0 1=
-6px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net=
-/c/openvpn/+/739/comment/68375742_e67a2168">Patch Set #3, Line 7487:</a> <c=
-ode style=3D"font-family:monospace,monospace">            if (!no_more_than=
-_n_args(msglevel, p, 4, NM_QUOTE_HINT))</code></p><p><blockquote style=3D"b=
-order-left: 1px solid #aaa; margin: 10px 0; padding: 0 10px;">Why NM_QUOTE_=
-HINT? Which argument could contain spaces?</blockquote></p><p style=3D"whit=
-e-space: pre-wrap; word-wrap: break-word;">None in fact, I just totally ove=
-rlooked this flags honestly. Acknowledged</p></li><li style=3D"margin: 0; p=
-adding: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://ger=
-rit.openvpn.net/c/openvpn/+/739/comment/600e6ed7_2f6ddc3f">Patch Set #3, Li=
-ne 7898:</a> <code style=3D"font-family:monospace,monospace">            if=
- (!no_more_than_n_args(msglevel, p, 3, NM_QUOTE_HINT))</code></p><p><blockq=
-uote style=3D"border-left: 1px solid #aaa; margin: 10px 0; padding: 0 10px;=
-">Why NM_QUOTE_HINT?</blockquote></p><p style=3D"white-space: pre-wrap; wor=
-d-wrap: break-word;">Acknowledged</p></li></ul></li><li style=3D"margin: 0;=
- padding: 0;"><p>File src/openvpn/route.c:</p><ul style=3D"list-style: none=
-; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p style=3D"ma=
-rgin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/739/com=
-ment/ac8b37af_6f6e9a74">Patch Set #3, Line 324:</a> <code style=3D"font-fam=
-ily:monospace,monospace">    const in_addr_t default_netbits =3D IPV4_NETBI=
-TS_HOST;</code></p><p><blockquote style=3D"border-left: 1px solid #aaa; mar=
-gin: 10px 0; padding: 0 10px;">unsigned int?</blockquote></p><p style=3D"wh=
-ite-space: pre-wrap; word-wrap: break-word;">Acknowledged</p></li><li style=
-=3D"margin: 0; padding: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a hr=
-ef=3D"http://gerrit.openvpn.net/c/openvpn/+/739/comment/ee1f7533_80da73d9">=
-Patch Set #3, Line 331:</a> <code style=3D"font-family:monospace,monospace"=
->    const char *cidr =3D strchr(network, &#39;/&#39;);</code></p><p><block=
-quote style=3D"border-left: 1px solid #aaa; margin: 10px 0; padding: 0 10px=
-;">Would convert to bool here to make it clear purpose</blockquote></p><p s=
-tyle=3D"white-space: pre-wrap; word-wrap: break-word;">Acknowledged</p></li=
-><li style=3D"margin: 0; padding: 0 0 0 16px;"><p style=3D"margin-bottom: 4=
-px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/739/comment/1b593f21_=
-ba11a0bc">Patch Set #3, Line 347:</a> <code style=3D"font-family:monospace,=
-monospace">convert</code></p><p><blockquote style=3D"border-left: 1px solid=
- #aaa; margin: 10px 0; padding: 0 10px;">Want to do a drive-by fix? &quot;a=
- a&quot; -&gt; &quot;to an&quot;?</blockquote></p><p style=3D"white-space: =
-pre-wrap; word-wrap: break-word;">Acknowledged</p></li><li style=3D"margin:=
- 0; padding: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http:=
-//gerrit.openvpn.net/c/openvpn/+/739/comment/fcdc0ae1_bb844192">Patch Set #=
-3, Line 1105:</a> <code style=3D"font-family:monospace,monospace">route</co=
-de></p><p><blockquote style=3D"border-left: 1px solid #aaa; margin: 10px 0;=
- padding: 0 10px;">Maybe add a 0.0.0.0/1 and 128.0.0. [=E2=80=A6]</blockquo=
-te></p><p style=3D"white-space: pre-wrap; word-wrap: break-word;">Acknowled=
-ged</p></li><li style=3D"margin: 0; padding: 0 0 0 16px;"><p style=3D"margi=
-n-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/739/commen=
-t/3eb2716e_74185bc0">Patch Set #3, Line 1166:</a> <code style=3D"font-famil=
-y:monospace,monospace">route (</code></p><p><blockquote style=3D"border-lef=
-t: 1px solid #aaa; margin: 10px 0; padding: 0 10px;">Same (0.0.0.0/1 and 12=
-8.0.0.0/1) here.</blockquote></p><p style=3D"white-space: pre-wrap; word-wr=
-ap: break-word;">Acknowledged</p></li><li style=3D"margin: 0; padding: 0 0 =
-0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.=
-net/c/openvpn/+/739/comment/2e313668_5df0fac8">Patch Set #3, Line 1456:</a>=
- <code style=3D"font-family:monospace,monospace">  </code></p><p><blockquot=
-e style=3D"border-left: 1px solid #aaa; margin: 10px 0; padding: 0 10px;">M=
-aybe we could move this into the if block? Not sure why we would create it =
-otherwise?</blockquote></p><p style=3D"white-space: pre-wrap; word-wrap: br=
-eak-word;">Acknowledged</p></li></ul></li><li style=3D"margin: 0; padding: =
-0;"><p>File src/openvpn/tun.c:</p><ul style=3D"list-style: none; padding: 0=
-;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p style=3D"margin-bottom:=
- 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/739/comment/6a23e05=
-4_db476467">Patch Set #3, Line 512:</a> <code style=3D"font-family:monospac=
-e,monospace">    const bool looks_like_netmask =3D addr &amp;&amp; ((addr &=
-amp; 0xFF000000) =3D=3D 0xFF000000);</code></p><p><blockquote style=3D"bord=
-er-left: 1px solid #aaa; margin: 10px 0; padding: 0 10px;">Isn&#39;t this r=
-edundant? If addr is 0 the second part never matches anyway</blockquote></p=
-><p style=3D"white-space: pre-wrap; word-wrap: break-word;">Acknowledged</p=
-></li><li style=3D"margin: 0; padding: 0 0 0 16px;"><p style=3D"margin-bott=
-om: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/739/comment/fe64=
-f694_ae441e6d">Patch Set #3, Line 524:</a> <code style=3D"font-family:monos=
-pace,monospace">  </code></p><p><blockquote style=3D"border-left: 1px solid=
- #aaa; margin: 10px 0; padding: 0 10px;">Shouldn&#39;t that be &quot;&amp;&=
-amp;&quot; ?</blockquote></p><p style=3D"white-space: pre-wrap; word-wrap: =
-break-word;">Yes, indeed</p></li><li style=3D"margin: 0; padding: 0 0 0 16p=
-x;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c=
-/openvpn/+/739/comment/a2797ec0_d79ee4f7">Patch Set #3, Line 562:</a> <code=
- style=3D"font-family:monospace,monospace">            const in_addr_t publ=
-ic_net =3D public &amp;netmask;</code></p><p><blockquote style=3D"border-le=
-ft: 1px solid #aaa; margin: 10px 0; padding: 0 10px;">Add space after &amp;=
- ?</blockquote></p><p style=3D"white-space: pre-wrap; word-wrap: break-word=
-;">Acknowledged</p></li><li style=3D"margin: 0; padding: 0 0 0 16px;"><p st=
-yle=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/=
-+/739/comment/7d21b2d6_5f6efde8">Patch Set #3, Line 591:</a> <code style=3D=
-"font-family:monospace,monospace">&amp;</code></p><p><blockquote style=3D"b=
-order-left: 1px solid #aaa; margin: 10px 0; padding: 0 10px;">Add space aft=
-er &amp;</blockquote></p><p style=3D"white-space: pre-wrap; word-wrap: brea=
-k-word;">Acknowledged</p></li></ul></li></ul><p>To view, visit <a href=3D"h=
-ttp://gerrit.openvpn.net/c/openvpn/+/739?usp=3Demail">change 739</a>. To un=
-subscribe, or for help writing mail filters, visit <a href=3D"http://gerrit=
-.openvpn.net/settings">settings</a>.</p><div itemscope itemtype=3D"http://s=
-chema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http=
-://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.open=
-vpn.net/c/openvpn/+/739?usp=3Demail"/><meta itemprop=3D"name" content=3D"Vi=
-ew Change"/></div></div>
+<p>plaisthos <strong>uploaded patch set #3</strong> to this change.</p><p><=
+a href=3D"http://gerrit.openvpn.net/c/openvpn/+/747?usp=3Demail">View Chang=
+e</a></p><p>The following approvals got outdated and were removed:
+Code-Review-1 by flichtenheld</p><pre style=3D"font-family: monospace,monos=
+pace; white-space: pre-wrap;">Introduce DRIVER_AFUNIX backend for use with =
+lwipovpn<br><br>lwipovpn is a using lwip TCP/IP implementation with an AF_U=
+NIX<br>implementation to emulate a tun/tap device without messing with the<=
+br>TCP/IP stack of the host.<br><br>For more information about lwipovpn see=
+ https://github.com/OpenVPN/lwipovpn<br><br>Change-Id: I65099ef00822d08fd3f=
+5480c80892f3bf86c56e7<br>Signed-off-by: Arne Schwabe &lt;arne@...1227...&gt=
+;<br>---<br>M CMakeLists.txt<br>M Changes.rst<br>M doc/man-sections/vpn-net=
+work-options.rst<br>M src/openvpn/Makefile.am<br>M src/openvpn/forward.c<br=
+>M src/openvpn/init.c<br>M src/openvpn/run_command.c<br>M src/openvpn/run_c=
+ommand.h<br>M src/openvpn/ssl.h<br>M src/openvpn/tun.c<br>M src/openvpn/tun=
+.h<br>A src/openvpn/tun_afunix.c<br>A src/openvpn/tun_afunix.h<br>13 files =
+changed, 389 insertions(+), 17 deletions(-)<br><br></pre><pre style=3D"font=
+-family: monospace,monospace; white-space: pre-wrap;">git pull ssh://gerrit=
+.openvpn.net:29418/openvpn refs/changes/47/747/3</pre><pre style=3D"font-fa=
+mily: monospace,monospace; white-space: pre-wrap;"><span>diff --git a/CMake=
+Lists.txt b/CMakeLists.txt</span><br><span>index ad620fa..6271574 100644</s=
+pan><br><span>--- a/CMakeLists.txt</span><br><span>+++ b/CMakeLists.txt</sp=
+an><br><span>@@ -536,6 +536,8 @@</span><br><span>     src/openvpn/tls_crypt=
+.c</span><br><span>     src/openvpn/tun.c</span><br><span>     src/openvpn/=
+tun.h</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    src/openvp=
+n/tun_afunix.c</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    s=
+rc/openvpn/tun_afunix.h</span><br><span>     src/openvpn/networking_sitnl.c=
+</span><br><span>     src/openvpn/networking_freebsd.c</span><br><span>    =
+ src/openvpn/auth_token.c</span><br><span>diff --git a/Changes.rst b/Change=
+s.rst</span><br><span>index 439352a..f01f8bc 100644</span><br><span>--- a/C=
+hanges.rst</span><br><span>+++ b/Changes.rst</span><br><span>@@ -9,6 +9,19 =
+@@</span><br><span>     the user experience as the client shows an error in=
+stead of running into</span><br><span>     a timeout when the server just s=
+tops responding completely.</span><br><span> </span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+Support for tun/tap via unix domain socket and lw=
+ipovpn support</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    T=
+o allow better testing and emulating a full client with a full</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+    network stack OpenVPN now al=
+lows a program executed to provide</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+    a tun/tap device instead of opening a device.</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+    The co-developed lwipovpn program based on lw=
+IP stack allows to</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+   simulate full IP stack and an OpenVPN client using</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    ``dev-node:/path/to/lwipovpn`` can em=
+ulate a full client that</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+    can be pinged, can server a website and more without requiring any=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    elevated permis=
+sion. This can make testing OpenVPN much easier.</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+    For more details see [lwipovpn on Gihtub](https://github.com/=
+OpenVPN/lwipovpn).</span><br><span style=3D"color: hsl(120, 100%, 40%);">+<=
+/span><br><span> Deprecated features</span><br><span> -------------------</=
+span><br><span> ``secret`` support has been removed by default.</span><br><=
+span>diff --git a/doc/man-sections/vpn-network-options.rst b/doc/man-sectio=
+ns/vpn-network-options.rst</span><br><span>index 84d4273..9ad79a0 100644</s=
+pan><br><span>--- a/doc/man-sections/vpn-network-options.rst</span><br><spa=
+n>+++ b/doc/man-sections/vpn-network-options.rst</span><br><span>@@ -117,6 =
++117,16 @@</span><br><span>   figure out whether ``node`` is a TUN or TAP d=
+evice based on the name,</span><br><span>   you should also specify ``--dev=
+-type tun`` or ``--dev-type tap``.</span><br><span> </span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+  If ``node`` starts with the string ``un=
+ix:`` openvpn will treat the rest</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+  of the argument as a program.</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+  OpenVPN will create a temporary unix domain soc=
+ket and start the program</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+  will pass the tun configuration as environment variables.</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+  The temporary unix will be =
+be passed in the environment variable</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+  :code:`TUN_UNIXAF_PATH`.</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+  This ``unix:`` mode is designed mainly to use with the lwipovpn net=
+work</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  emulator (htt=
+ps://github.com/OpenVPN/lwipovpn).</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+</span><br><span> --dev-type device-type</span><br><span>   =
+Which device type are we using? ``device-type`` should be :code:`tun`</span=
+><br><span>   (OSI Layer 3) or :code:`tap` (OSI Layer 2). Use this option o=
+nly if</span><br><span>diff --git a/src/openvpn/Makefile.am b/src/openvpn/M=
+akefile.am</span><br><span>index 56cce9d..26b9018 100644</span><br><span>--=
+- a/src/openvpn/Makefile.am</span><br><span>+++ b/src/openvpn/Makefile.am</=
+span><br><span>@@ -138,6 +138,7 @@</span><br><span> 	syshead.h \</span><br>=
+<span> 	tls_crypt.c tls_crypt.h \</span><br><span> 	tun.c tun.h \</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+	tun_afunix.c tun_afunix.h \<=
+/span><br><span> 	vlan.c vlan.h \</span><br><span> 	xkey_provider.c xkey_co=
+mmon.h \</span><br><span> 	xkey_helper.c \</span><br><span>diff --git a/src=
+/openvpn/forward.c b/src/openvpn/forward.c</span><br><span>index 7b23131..9=
+c78adf 100644</span><br><span>--- a/src/openvpn/forward.c</span><br><span>+=
+++ b/src/openvpn/forward.c</span><br><span>@@ -41,6 +41,7 @@</span><br><spa=
+n> #include &quot;ssl_verify.h&quot;</span><br><span> #include &quot;dco.h&=
+quot;</span><br><span> #include &quot;auth_token.h&quot;</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+#include &quot;tun_afunix.h&quot;</spa=
+n><br><span> </span><br><span> #include &quot;memdbg.h&quot;</span><br><spa=
+n> </span><br><span>@@ -1319,7 +1320,14 @@</span><br><span> #else  /* ifdef=
+ _WIN32 */</span><br><span>     ASSERT(buf_init(&amp;c-&gt;c2.buf, c-&gt;c2=
+.frame.buf.headroom));</span><br><span>     ASSERT(buf_safe(&amp;c-&gt;c2.b=
+uf, c-&gt;c2.frame.buf.payload_size));</span><br><span style=3D"color: hsl(=
+0, 100%, 40%);">-    c-&gt;c2.buf.len =3D read_tun(c-&gt;c1.tuntap, BPTR(&a=
+mp;c-&gt;c2.buf), c-&gt;c2.frame.buf.payload_size);</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    if (c-&gt;c1.tuntap-&gt;backend_drive=
+r =3D=3D DRIVER_AFUNIX)</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        c-=
+&gt;c2.buf.len =3D tun_afunix_read(c-&gt;c1.tuntap, BPTR(&amp;c-&gt;c2.buf)=
+, c-&gt;c2.frame.buf.payload_size);</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+    else</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+        c-&gt;c2.buf.le=
+n =3D read_tun(c-&gt;c1.tuntap, BPTR(&amp;c-&gt;c2.buf), c-&gt;c2.frame.buf=
+.payload_size);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+}</span><br><span> #endif /* ifdef _WIN32 */</span><br><span> </span><br><s=
+pan> #ifdef PACKET_TRUNCATION_CHECK</span><br><span>@@ -1926,7 +1934,14 @@<=
+/span><br><span> #ifdef _WIN32</span><br><span>         size =3D write_tun_=
+buffered(c-&gt;c1.tuntap, &amp;c-&gt;c2.to_tun);</span><br><span> #else</sp=
+an><br><span style=3D"color: hsl(0, 100%, 40%);">-        size =3D write_tu=
+n(c-&gt;c1.tuntap, BPTR(&amp;c-&gt;c2.to_tun), BLEN(&amp;c-&gt;c2.to_tun));=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        if (c-&gt;c=
+1.tuntap-&gt;backend_driver =3D=3D DRIVER_AFUNIX)</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+        {</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+            size =3D tun_afunix_write(c-&gt;c1.tuntap, =
+BPTR(&amp;c-&gt;c2.to_tun), BLEN(&amp;c-&gt;c2.to_tun));</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+        }</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+        else</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+        {</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+            size =3D write_tun(c-&gt;c1.tuntap, BPTR(&amp;c-&gt;c=
+2.to_tun), BLEN(&amp;c-&gt;c2.to_tun));</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+        }</span><br><span> #endif</span><br><span> </sp=
+an><br><span>         if (size &gt; 0)</span><br><span>diff --git a/src/ope=
+nvpn/init.c b/src/openvpn/init.c</span><br><span>index 83cc670..b516608 100=
+644</span><br><span>--- a/src/openvpn/init.c</span><br><span>+++ b/src/open=
+vpn/init.c</span><br><span>@@ -54,6 +54,7 @@</span><br><span> #include &quo=
+t;mss.h&quot;</span><br><span> #include &quot;mudp.h&quot;</span><br><span>=
+ #include &quot;dco.h&quot;</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+#include &quot;tun_afunix.h&quot;</span><br><span> </span><br><span=
+> #include &quot;memdbg.h&quot;</span><br><span> </span><br><span>@@ -1758,=
+10 +1759,18 @@</span><br><span>                             &amp;c-&gt;net_=
+ctx,</span><br><span>                             c-&gt;c1.tuntap);</span><=
+br><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (i=
+s_tun_afunix(c-&gt;options.dev_node))</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+        /* Using AF_UNIX trumps using DCO */</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+        c-&gt;c1.tuntap-&gt;backend_driver =3D=
+ DRIVER_AFUNIX;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+}</span><br><span> #ifdef _WIN32</span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-    c-&gt;c1.tuntap-&gt;backend_driver =3D c-&gt;options.windows=
+_driver;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    else</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+        c-&gt;c1.tuntap-&gt;backend_=
+driver =3D c-&gt;options.windows_driver;</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+    }</span><br><span> #else</span><br><span style=3D"=
+color: hsl(0, 100%, 40%);">-    if (dco_enabled(&amp;c-&gt;options))</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+    else if (dco_enabled(&=
+amp;c-&gt;options))</span><br><span>     {</span><br><span>         c-&gt;c=
+1.tuntap-&gt;backend_driver =3D DRIVER_DCO;</span><br><span>     }</span><b=
+r><span>@@ -1786,6 +1795,10 @@</span><br><span> static bool</span><br><span=
+> can_preserve_tun(struct tuntap *tt)</span><br><span> {</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+    if (tt &amp;&amp; tt-&gt;backend_d=
+river =3D=3D DRIVER_AFUNIX)</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
+  return false;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+}</span><br><span> #ifdef TARGET_ANDROID</span><br><span>     return false;=
+</span><br><span> #else</span><br><span>@@ -1841,6 +1854,22 @@</span><br><s=
+pan> #endif</span><br><span> }</span><br><span> </span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+static void</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+open_tun_backend(struct context *c)</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+    struct tuntap *tt =3D c-&gt;c1.tuntap;</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+    if (tt-&gt;backend_driver =3D=
+=3D DRIVER_AFUNIX)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+   {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        open_tu=
+n_afunix(&amp;c-&gt;options, c-&gt;c2.frame.tun_mtu, tt, c-&gt;c2.es);</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+    else</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+        open_tun(c-&gt;options.dev, c-&gt;options.dev_type, c-&=
+gt;options.dev_node,</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++                 tt, &amp;c-&gt;net_ctx);</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> static boo=
+l</span><br><span> do_open_tun(struct context *c, int *error_flags)</span><=
+br><span> {</span><br><span>@@ -1863,7 +1892,8 @@</span><br><span>         =
+}</span><br><span> #endif</span><br><span> </span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-        /* initialize (but do not open) tun/tap objec=
+t */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        /* init=
+ialize (but do not open) tun/tap object, this also sets</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+         * the backend driver type */</=
+span><br><span>         do_init_tun(c);</span><br><span> </span><br><span> =
+        /* inherit the dco context from the tuntap object */</span><br><spa=
+n>@@ -1898,7 +1928,7 @@</span><br><span> </span><br><span>         /* do if=
+config */</span><br><span>         if (!c-&gt;options.ifconfig_noexec</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-            &amp;&amp; ifco=
+nfig_order() =3D=3D IFCONFIG_BEFORE_TUN_OPEN)</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+            &amp;&amp; ifconfig_order(c-&gt;c1.tu=
+ntap) =3D=3D IFCONFIG_BEFORE_TUN_OPEN)</span><br><span>         {</span><br=
+><span>             /* guess actual tun/tap unit number that will be return=
+ed</span><br><span>              * by open_tun */</span><br><span>@@ -1911,=
+7 +1941,7 @@</span><br><span>         }</span><br><span> </span><br><span> =
+        /* possibly add routes */</span><br><span style=3D"color: hsl(0, 10=
+0%, 40%);">-        if (route_order() =3D=3D ROUTE_BEFORE_TUN)</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+        if (route_order(c-&gt;c1=
+.tuntap) =3D=3D ROUTE_BEFORE_TUN)</span><br><span>         {</span><br><spa=
+n>             /* Ignore route_delay, would cause ROUTE_BEFORE_TUN to be ig=
+nored */</span><br><span>             bool status =3D do_route(&amp;c-&gt;o=
+ptions, c-&gt;c1.route_list, c-&gt;c1.route_ipv6_list,</span><br><span>@@ -=
+1928,8 +1958,7 @@</span><br><span>         }</span><br><span> </span><br><s=
+pan>         /* open the tun device */</span><br><span style=3D"color: hsl(=
+0, 100%, 40%);">-        open_tun(c-&gt;options.dev, c-&gt;options.dev_type=
+, c-&gt;options.dev_node,</span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">-                 c-&gt;c1.tuntap, &amp;c-&gt;net_ctx);</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+        open_tun_backend(c);</span><=
+br><span> </span><br><span>         /* set the hardware address */</span><b=
+r><span>         if (c-&gt;options.lladdr)</span><br><span>@@ -1940,7 +1969=
+,7 @@</span><br><span> </span><br><span>         /* do ifconfig */</span><b=
+r><span>         if (!c-&gt;options.ifconfig_noexec</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-            &amp;&amp; ifconfig_order() =3D=
+=3D IFCONFIG_AFTER_TUN_OPEN)</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+            &amp;&amp; ifconfig_order(c-&gt;c1.tuntap) =3D=3D IFCO=
+NFIG_AFTER_TUN_OPEN)</span><br><span>         {</span><br><span>           =
+  do_ifconfig(c-&gt;c1.tuntap, c-&gt;c1.tuntap-&gt;actual_name,</span><br><=
+span>                         c-&gt;c2.frame.tun_mtu, c-&gt;c2.es, &amp;c-&=
+gt;net_ctx);</span><br><span>@@ -1966,7 +1995,7 @@</span><br><span>        =
+ add_wfp_block(c);</span><br><span> </span><br><span>         /* possibly a=
+dd routes */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        i=
+f ((route_order() =3D=3D ROUTE_AFTER_TUN) &amp;&amp; (!c-&gt;options.route_=
+delay_defined))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+    if ((route_order(c-&gt;c1.tuntap) =3D=3D ROUTE_AFTER_TUN) &amp;&amp; (!=
+c-&gt;options.route_delay_defined))</span><br><span>         {</span><br><s=
+pan>             int status =3D do_route(&amp;c-&gt;options, c-&gt;c1.route=
+_list, c-&gt;c1.route_ipv6_list,</span><br><span>                          =
+         c-&gt;c1.tuntap, c-&gt;plugins, c-&gt;c2.es, &amp;c-&gt;net_ctx);<=
+/span><br><span>@@ -2026,7 +2055,14 @@</span><br><span>         {</span><br=
+><span>             undo_ifconfig(c-&gt;c1.tuntap, &amp;c-&gt;net_ctx);</sp=
+an><br><span>         }</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>-        close_tun(c-&gt;c1.tuntap, &amp;c-&gt;net_ctx);</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+        if (c-&gt;c1.tuntap-&gt;backe=
+nd_driver =3D=3D DRIVER_AFUNIX)</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+        {</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+            tun_afunix_close(c-&gt;c1.tuntap);</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+        }</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+        else</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+        {</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+            close_tun(c-&gt;c1.tuntap, &amp;c-&gt;net_ctx);</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+        }</span><br><span>       =
+  c-&gt;c1.tuntap =3D NULL;</span><br><span>     }</span><br><span>     c-&=
+gt;c1.tuntap_owned =3D false;</span><br><span>@@ -2466,7 +2502,7 @@</span><=
+br><span>             c-&gt;c1.pulled_options_digest_save =3D c-&gt;c2.pull=
+ed_options_digest;</span><br><span> </span><br><span>             /* if --r=
+oute-delay was specified, start timer */</span><br><span style=3D"color: hs=
+l(0, 100%, 40%);">-            if ((route_order() =3D=3D ROUTE_AFTER_TUN) &=
+amp;&amp; c-&gt;options.route_delay_defined)</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+            if ((route_order(c-&gt;c1.tuntap) =3D=
+=3D ROUTE_AFTER_TUN) &amp;&amp; c-&gt;options.route_delay_defined)</span><b=
+r><span>             {</span><br><span>                 event_timeout_init(=
+&amp;c-&gt;c2.route_wakeup, c-&gt;options.route_delay, now);</span><br><spa=
+n>                 event_timeout_init(&amp;c-&gt;c2.route_wakeup_expire, c-=
+&gt;options.route_delay + c-&gt;options.route_delay_window, now);</span><br=
+><span>diff --git a/src/openvpn/run_command.c b/src/openvpn/run_command.c</=
+span><br><span>index 292e81f..d757823 100644</span><br><span>--- a/src/open=
+vpn/run_command.c</span><br><span>+++ b/src/openvpn/run_command.c</span><br=
+><span>@@ -155,6 +155,10 @@</span><br><span>             {</span><br><span>=
+                 msg(M_ERR, &quot;openvpn_execve: unable to fork&quot;);</s=
+pan><br><span>             }</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+            else if (flags &amp; S_NOWAITPID)</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+            {</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+                ret =3D pid;</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+            }</span><br><span>       =
+      else /* parent side */</span><br><span>             {</span><br><span=
+>                 if (waitpid(pid, &amp;ret, 0) !=3D pid)</span><br><span>@=
+@ -204,6 +208,11 @@</span><br><span>             goto done;</span><br><span=
+>         }</span><br><span>     }</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+    else if (flags &amp; S_NOWAITPID &amp;&amp; (stat &gt; 0=
+))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+        ret =3D stat;</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+        goto done;</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span>     els=
+e if (platform_system_ok(stat))</span><br><span>     {</span><br><span>    =
+     ret =3D true;</span><br><span>diff --git a/src/openvpn/run_command.h b=
+/src/openvpn/run_command.h</span><br><span>index ccad307..1ad5560 100644</s=
+pan><br><span>--- a/src/openvpn/run_command.h</span><br><span>+++ b/src/ope=
+nvpn/run_command.h</span><br><span>@@ -47,6 +47,9 @@</span><br><span> /** I=
+nstead of returning 1/0 for success/fail,</span><br><span>  * return exit c=
+ode when between 0 and 255 and -1 otherwise */</span><br><span> #define S_E=
+XITCODE  (1&lt;&lt;2)</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+/** instead of waiting for child process exist status return the</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+ * pid of the child process =
+*/</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#define S_NOWAITP=
+ID   (1&lt;&lt;3)</span><br><span> </span><br><span> /* wrapper around the =
+execve() call */</span><br><span> int openvpn_popen(const struct argv *a,  =
+const struct env_set *es);</span><br><span>diff --git a/src/openvpn/ssl.h b=
+/src/openvpn/ssl.h</span><br><span>index eea1323..0eacec8 100644</span><br>=
+<span>--- a/src/openvpn/ssl.h</span><br><span>+++ b/src/openvpn/ssl.h</span=
+><br><span>@@ -219,7 +219,7 @@</span><br><span> void tls_multi_free(struct =
+tls_multi *multi, bool clear);</span><br><span> </span><br><span> /** @} na=
+me Functions for initialization and cleanup of tls_multi structures */</spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+\</span><br><span> /** @} addtogroup control_=
+processor */</span><br><span> </span><br><span> #define TLSMP_INACTIVE 0</s=
+pan><br><span>diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c</span><br>=
+<span>index 0832375..3f5f450 100644</span><br><span>--- a/src/openvpn/tun.c=
+</span><br><span>+++ b/src/openvpn/tun.c</span><br><span>@@ -75,6 +75,9 @@<=
+/span><br><span>         case DRIVER_DCO:</span><br><span>             retu=
+rn &quot;ovpn-dco&quot;;</span><br><span> </span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+        case DRIVER_AFUNIX:</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+            return &quot;unix&quot;;</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> #ifdef HA=
+VE_NET_IF_UTUN_H</span><br><span>         case DRIVER_UTUN:</span><br><span=
+>             return &quot;utun&quot;;</span><br><span>diff --git a/src/ope=
+nvpn/tun.h b/src/openvpn/tun.h</span><br><span>index e41b616..75a4218 10064=
+4</span><br><span>--- a/src/openvpn/tun.h</span><br><span>+++ b/src/openvpn=
+/tun.h</span><br><span>@@ -50,6 +50,10 @@</span><br><span> #else</span><br>=
+<span>     DRIVER_GENERIC_TUNTAP,</span><br><span> #endif</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+    /** using an AF_UNIX socket to pa=
+ss packet from/to an external program</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+     *  this is always defined. We error out if a user tr=
+ies to open this type</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+     *  on unsupported platforms*/</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+    DRIVER_AFUNIX,</span><br><span>     DRIVER_DCO,</span>=
+<br><span> #ifdef HAVE_NET_IF_UTUN_H</span><br><span>     DRIVER_UTUN</span=
+><br><span>@@ -165,6 +169,15 @@</span><br><span> /*</span><br><span>  * Def=
+ine a TUN/TAP dev.</span><br><span>  */</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+#ifdef AF_UNIX</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+typedef struct afunix_context</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+    pid_t childprocess;</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+} afunix_context_t;</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#else /*=
+ ifdef AF_UNIX */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ty=
+pedef struct {} afunix_context_t;</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+#endif</span><br><span> </span><br><span> struct tuntap</span=
+><br><span> {</span><br><span>@@ -179,7 +192,12 @@</span><br><span>      */=
+</span><br><span>     enum tun_driver_type backend_driver;</span><br><span>=
+ </span><br><span style=3D"color: hsl(120, 100%, 40%);">+    /** if the int=
+ernal variables related to ifconfig of this struct have</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+     * been set up. This does NOT mean =
+ifconfig has been called */</span><br><span>     bool did_ifconfig_setup;</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+    /** if the internal variables relate=
+d to ifconfig-ipv6 of this struct have</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+     * been set up. This does NOT mean ifconfig has been=
+ called */</span><br><span>     bool did_ifconfig_ipv6_setup;</span><br><sp=
+an> </span><br><span>     bool persistent_if;         /* if existed before,=
+ keep on program end */</span><br><span>@@ -231,6 +249,7 @@</span><br><span=
+>     unsigned int rwflags_debug;</span><br><span> </span><br><span>     dc=
+o_context_t dco;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+ afunix_context_t afunix;</span><br><span> };</span><br><span> </span><br><=
+span> static inline bool</span><br><span>@@ -354,8 +373,14 @@</span><br><sp=
+an> #define IFCONFIG_DEFAULT         IFCONFIG_AFTER_TUN_OPEN</span><br><spa=
+n> </span><br><span> static inline int</span><br><span style=3D"color: hsl(=
+0, 100%, 40%);">-ifconfig_order(void)</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+ifconfig_order(struct tuntap *tt)</span><br><span> {</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+#if defined AF_UNIX</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (tt-&gt;backend_d=
+river =3D=3D DRIVER_AFUNIX)</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
+  return IFCONFIG_BEFORE_TUN_OPEN;</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++#endif</span><br><span> #if defined(TARGET_LINUX)</span><br><span>     ret=
+urn IFCONFIG_AFTER_TUN_OPEN;</span><br><span> #elif defined(TARGET_SOLARIS)=
+</span><br><span>@@ -380,8 +405,14 @@</span><br><span> #define ROUTE_ORDER_=
+DEFAULT ROUTE_AFTER_TUN</span><br><span> </span><br><span> static inline in=
+t</span><br><span style=3D"color: hsl(0, 100%, 40%);">-route_order(void)</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+route_order(struct tun=
+tap *tt)</span><br><span> {</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+#if defined AF_UNIX</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+    if (tt-&gt;backend_driver =3D=3D DRIVER_AFUNIX)</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+        return ROUTE_BEFORE_TUN;</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+#endif</span><br><span> #if defined(TARGET_ANDROID=
+)</span><br><span>     return ROUTE_BEFORE_TUN;</span><br><span> #else</spa=
+n><br><span>@@ -759,5 +790,4 @@</span><br><span> {</span><br><span>     ret=
+urn tt &amp;&amp; tt-&gt;type !=3D DEV_TYPE_UNDEF;</span><br><span> }</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span> #endif /*=
+ TUN_H */</span><br><span>diff --git a/src/openvpn/tun_afunix.c b/src/openv=
+pn/tun_afunix.c</span><br><span>new file mode 100644</span><br><span>index =
+0000000..27cdb01</span><br><span>--- /dev/null</span><br><span>+++ b/src/op=
+envpn/tun_afunix.c</span><br><span>@@ -0,0 +1,178 @@</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+/*</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+ *  OpenVPN -- An application to securely tunnel IP networ=
+ks</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *             ov=
+er a single TCP/UDP port, with support for SSL/TLS-based</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+ *             session authentication =
+and key exchange,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *=
+             packet encryption, packet authentication, and</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+ *             packet compression.</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+ *  Copyright (C) 2002-2024 OpenVPN In=
+c &lt;sales@...515...&gt;</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+ *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  This pr=
+ogram is free software; you can redistribute it and/or modify</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+ *  it under the terms of the GNU=
+ General Public License version 2</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+ *  as published by the Free Software Foundation.</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+ *  This program is distributed in the hope that=
+ it will be useful,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+ *  MERCHANTABILITY or FITNE=
+SS FOR A PARTICULAR PURPOSE.  See the</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+ *  GNU General Public License for more details.</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+ *  You should have received a copy of the GN=
+U General Public License along</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+ *  with this program; if not, write to the Free Software Founda=
+tion, Inc.,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  51 F=
+ranklin Street, Fifth Floor, Boston, MA 02110-1301 USA.</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+ */</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++#ifdef HAVE_CONFIG_H</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+#include &quot;config.h&quot;</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+#endif</span><br><span style=3D"color: hsl(120, 100%, 40%);">+<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+#include &quot;syshe=
+ad.h&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+#include &quot;tun.h&quot;</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+#include &quot;fdmisc=
+.h&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#include &q=
+uot;run_command.h&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+#include &quot;manage.h&quot;</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+#include &quot;win32.h&quot;</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+#include &quot;wfp_block.h&quot;</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+#include &quot;argv.h&quot;</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+#include &quot;options.h&quot;<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+#if defined(AF_UNIX) &amp;&amp; !define=
+d(WIN32)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+/* Windows =
+does implement some AF_UNIX functionality but key features</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+ * like socketpair() and SOCK_DGRAM =
+are missing */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+#include &lt;string.h&gt=
+;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#include &lt;unist=
+d.h&gt;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#include &lt=
+;sys/wait.h&gt;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#inc=
+lude &lt;signal.h&gt;</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+#include &lt;stdlib.h&gt;</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+static void=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+tun_afunix_exec_chi=
+ld(const char *dev_node, struct tuntap *tt, struct env_set *env)</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+    struct argv argv =3D argv_new();</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+    /* since we know that dev-node starts with uni=
+x: we can just skip that</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+     * to get the program name */</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+    const char *program =3D dev_node + strlen(&quot;unix=
+:&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+    argv_printf(&amp;argv, &q=
+uot;%s&quot;, program);</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    argv_msg(M_=
+INFO, &amp;argv);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+  tt-&gt;afunix.childprocess =3D openvpn_execve_check(&amp;argv, env, S_NOW=
+AITPID,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            =
+                                       &quot;ERROR: failure executing &quot=
+;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+                  =
+                                 &quot;process for tun&quot;);</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+    argv_free(&amp;argv);</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+void</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ope=
+n_tun_afunix(struct options *o,</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+                int mtu,</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+                struct tuntap *tt,</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+                struct env_set *orig_env)=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+    struct gc_arena gc =3D gc_new();<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+    int fds[2];</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    if (!(socketpair(AF_UNIX, SOCK_DGRAM,=
+ 0, fds) =3D=3D 0))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        msg(M_=
+ERR, &quot;Cannot create socket pair for AF_UNIX socket to external &quot;<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+            &quot;pr=
+ogram&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
+  return;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    /* Use the first file descriptor for =
+our side and avoid passing it</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+     * to the child */</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+    tt-&gt;fd =3D fds[1];</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+    set_cloexec(tt-&gt;fd);</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+    /* Make a copy of the env, so we do not need to delete our cust=
+om</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     * environmen=
+t variables later */</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++    struct env_set *env =3D env_set_create(&amp;gc);</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    env_set_inherit(env, orig_env);</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+    setenv_int(env, &quot;TUNTAP_SOCKET_FD&q=
+uot;, fds[0]);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    s=
+etenv_str(env, &quot;TUNTAP_DEV_TYPE&quot;, dev_type_string(o-&gt;dev, o-&g=
+t;dev_type));</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    se=
+tenv_int(env, &quot;TUNTAP_MTU&quot;, mtu);</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+    if (o-&gt;route_default_gateway)</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+        setenv_str(env, &quot;ifconfig_gateway&q=
+uot;, o-&gt;route_default_gateway);</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+    if (o-&gt;lladdr)</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        se=
+tenv_str(env, &quot;TUNTAP_LLADDR&quot;, o-&gt;lladdr);</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+    tun_afunix_exec_child(o-&gt;dev_node, tt, env);</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+    close(fds[0]);</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+/* tt-&gt;actual_name is passed to up and down scripts and used as the ifco=
+nfig dev name */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+ tt-&gt;actual_name =3D string_alloc(&quot;internal:af_unix&quot;, NULL);</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+    gc_free(&amp;gc);</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+void</span><br><span style=3D"color: hsl(120, 100%, 40%);">+tun_afunix_clos=
+e(struct tuntap *tt)</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    ASSERT(tt);</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (tt-&gt;fd &gt=
+;=3D 0)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+        close(tt-&gt;fd);<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+        tt-&gt;fd =
+=3D 0;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+    kill(tt-&gt;afunix.chil=
+dprocess, SIGINT);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+    free(tt-&gt;actu=
+al_name);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    free(t=
+t);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+ssize_t</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+tun_afunix_write(struct tuntap *tt, uint8_t *buf, int len)</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+    int ret;</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+    pid_t pidret =3D waitpid(tt-&gt;afunix.childpro=
+cess, &amp;ret, WNOHANG);</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+    if (pidret =3D=3D tt-&gt;afunix.childprocess)</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+        msg(M_INFO, &quot;Child process PID %d for af=
+unix dead? Return code: %d&quot;,</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+            tt-&gt;afunix.childprocess, ret);</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+        return -ENXIO;</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+    return write(tt-&gt;fd, buf, len);</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+ssize_t</span><br><span style=3D"color: hsl(120, 100%, 40%);">+t=
+un_afunix_read(struct tuntap *tt, uint8_t *buf, int len)</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+    return read(tt-&gt;fd, buf, len);</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+#else  /* ifdef AF_UNIX */</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+void</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+open_tun_afunix(const char *dev, const char *dev_type, int mtu,<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+                stru=
+ct tuntap *tt, struct env_set env)</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+ msg(M_ERR, &quot;AF_UNIX socket support not available on this platform&quo=
+t;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+void</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+tun_afunix_close(struct tuntap *tt)</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+    /* should never be called as open_tun_afunix always fails */</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+    ASSERT(0);</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+ssize_t</span><br><span style=3D"color: hsl(120, 100%, 40%);">+tun=
+_afunix_write(struct tuntap *tt, uint8_t *buf, int len)</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+    /* should never be called as open_tun_afunix always f=
+ails */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    ASSERT(0=
+);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+ssize_t</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+tun_afunix_read(struct tuntap *tt, uint8_t *buf, int len)</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+    /* should never be called as open_tun_afun=
+ix always fails */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+   ASSERT(0);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+#endif /* ifdef AF_UNIX */</span><br><spa=
+n>diff --git a/src/openvpn/tun_afunix.h b/src/openvpn/tun_afunix.h</span><b=
+r><span>new file mode 100644</span><br><span>index 0000000..58fc1a5</span><=
+br><span>--- /dev/null</span><br><span>+++ b/src/openvpn/tun_afunix.h</span=
+><br><span>@@ -0,0 +1,72 @@</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+/*</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  OpenV=
+PN -- An application to securely tunnel IP networks</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+ *             over a single TCP/UDP port=
+, with support for SSL/TLS-based</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+ *             session authentication and key exchange,</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+ *             packet encr=
+yption, packet authentication, and</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+ *             packet compression.</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+ *</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+ *  Copyright (C) 2002-2024 OpenVPN Inc &lt;sales@...515...&gt=
+;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+ *  This program is free software; =
+you can redistribute it and/or modify</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+ *  it under the terms of the GNU General Public License =
+version 2</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  as pub=
+lished by the Free Software Foundation.</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+ *</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+ *  This program is distributed in the hope that it will be useful,</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  but WITHOUT ANY WARR=
+ANTY; without even the implied warranty of</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURP=
+OSE.  See the</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  GN=
+U General Public License for more details.</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+ *</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+ *  You should have received a copy of the GNU General Public License=
+ along</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  with this=
+ program; if not, write to the Free Software Foundation, Inc.,</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+ *  51 Franklin Street, Fifth Fl=
+oor, Boston, MA 02110-1301 USA.</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+ */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+#ifndef AFUNIX_TUN_H</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+#define AFUNIX_TUN_H</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+#include &lt;sys/type=
+s.h&gt;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+#include &quot;tun.h&quot;</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+/**</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+ * Opens an AF_UNIX based tun device. This also executes =
+the command that</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * =
+the user provided to that will take care of implementing the actual tun</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+ * device</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+ */</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+void</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+open_tun_afunix(struct options *o,</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+                int mtu,</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+                struct tuntap *tt,</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+                struct env_se=
+t *env);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+/**</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+ * Closes the socket used for the AF_UNIX based device. Also send=
+s a</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * SIGINT to the=
+ child process that was spawned to handle the tun device</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+ */</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+void</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+tun_afunix_close(struct tuntap *tt);</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+/**</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * Writes a =
+packet to a AF_UNIX based tun device</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+ */</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++ssize_t</span><br><span style=3D"color: hsl(120, 100%, 40%);">+tun_afunix_=
+write(struct tuntap *tt, uint8_t *buf, int len);</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+/**</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * Rea=
+ds a packet from a AF_UNIX based tun devices</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+ */</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+ssize_t</span><br><span style=3D"color: hsl(120, 100%, 40%);">+tun=
+_afunix_read(struct tuntap *tt, uint8_t *buf, int len);</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+#endif /* AFUNIX_TUN_H */</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+/**</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * Checks wh=
+ether a --dev-node parameter specifies a AF_UNIX device</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+ * @param devnode   the string to check=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @return         =
+ true if the string starts with unix:</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+ */</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+static inline bool</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++is_tun_afunix(const char *devnode)</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+  return devnode &amp;&amp; strprefix(devnode, &quot;unix:&quot;);</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span></span><br=
+></pre><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/7=
+47?usp=3Demail">change 747</a>. To unsubscribe, or for help writing mail fi=
+lters, visit <a href=3D"http://gerrit.openvpn.net/settings">settings</a>.</=
+p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope=
+ itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itempr=
+op=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/747?usp=3Demail"/>=
+<meta itemprop=3D"name" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: Iae04ad8715e40dfc76475c2c5b9=
-a766c9604efc9 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 739 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I65099ef00822d08fd3f5480c808=
+92f3bf86c56e7 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 747 </div>
 <div style=3D"display:none"> Gerrit-PatchSet: 3 </div>
-<div style=3D"display:none"> Gerrit-Owner: ralf_lici &lt;ralf@...2726...&gt=
-; </div>
+<div style=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@...1711...=
+27...&gt; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
 1...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
 ..1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
 41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Mon, 16 Sep 2024 15:54:54=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: No </div>
-<div style=3D"display:none"> Comment-In-Reply-To: flichtenheld &lt;frank@...1186...=
-.2641...&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
+<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
 
 
---Vu3dmQffs1k=--
+--DHFu1ggicgY=--
 
