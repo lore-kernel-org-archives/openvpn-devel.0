@@ -1,16 +1,11 @@
-From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Mon, 16 Sep 2024 13:28:20 +0000
+From: Gert Doering <gert@...1296...>
+Date: Mon, 16 Sep 2024 15:28:53 +0200
+Message-ID: <20240916132853.29405-1-gert@...1296...>
 In-Reply-To: <gerrit.1726491830000.Ie2797a82ad769cb640440d1ba7dfeb416e7b932d@...2715...>
 References: <gerrit.1726491830000.Ie2797a82ad769cb640440d1ba7dfeb416e7b932d@...2715...>
-Reply-To: gert@...1296..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <c83f8a8e01c30d980b59910ad7762f37af0c493b-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="KU/r4xxEZJY="; charset=UTF-8
-Subject: [Openvpn-devel] [XS] Change in openvpn[master]: Move
- cipher/data-ciphers warning to D_LOW (verb 4)
+Subject: [Openvpn-devel] [PATCH v1] Move cipher/data-ciphers warning to
+ D_LOW (verb 4)
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,87 +14,52 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: plaisthos <arne-openvpn@...1227...>
-Cc: flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---KU/r4xxEZJY=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+From: Arne Schwabe <arne@...1227...>
 
-Attention is currently required from: flichtenheld, plaisthos.
+These warnings served a purpose in OpenVPN 2.6.x to warn people
+about the changed behaviour. But for 2.7 this is will be more
+log spam than a helpful message. So only show this warning on a
+high verbosity level.
 
-cron2 has posted comments on this change. ( http://gerrit.openvpn.net/c/ope=
-nvpn/+/746?usp=3Demail )
+Change-Id: Ie2797a82ad769cb640440d1ba7dfeb416e7b932d
+Signed-off-by: Arne Schwabe <arne@...1227...>
+Acked-by: Gert Doering <gert@...1296...>
+---
 
-Change subject: Move cipher/data-ciphers warning to D_LOW (verb 4)
-......................................................................
+This change was reviewed on Gerrit and approved by at least one
+developer. I request to merge it to master.
 
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/746
+This mail reflects revision 1 of this Change.
 
-Patch Set 1: Code-Review+2
+Acked-by according to Gerrit (reflected above):
+Gert Doering <gert@...1296...>
 
-
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/746?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings
-
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: Ie2797a82ad769cb640440d1ba7dfeb416e7b932d
-Gerrit-Change-Number: 746
-Gerrit-PatchSet: 1
-Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
-Gerrit-Reviewer: cron2 <gert@...1296...>
-Gerrit-Reviewer: flichtenheld <frank@...2641...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Comment-Date: Mon, 16 Sep 2024 13:28:20 +0000
-Gerrit-HasComments: No
-Gerrit-Has-Labels: Yes
-Gerrit-MessageType: comment
-
---KU/r4xxEZJY=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<p> Attention is currently required from: flichtenheld, plaisthos. </p>
-<p>Patch set 1:<span style=3D"border-radius: 3px; display: inline-block; ma=
-rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/746?usp=3Demail">Vi=
-ew Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To vie=
-w, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/746?usp=3Demail">=
-change 746</a>. To unsubscribe, or for help writing mail filters, visit <a =
-href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope=
- itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"act=
-ion" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=
-=3D"http://gerrit.openvpn.net/c/openvpn/+/746?usp=3Demail"/><meta itemprop=
-=3D"name" content=3D"View Change"/></div></div>
-
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: Ie2797a82ad769cb640440d1ba7d=
-feb416e7b932d </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 746 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
-<div style=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@...1711...=
-27...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
- </div>
-<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
-1...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
-41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Mon, 16 Sep 2024 13:28:20=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: No </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
-
-
---KU/r4xxEZJY=--
+        
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index 61f6285..6009e5f 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -3546,7 +3546,7 @@
+          * parts of OpenVPN assert that the ciphername is set */
+         o->ciphername = "BF-CBC";
+ 
+-        msg(M_INFO, "Note: --cipher is not set. OpenVPN versions before 2.5 "
++        msg(D_LOW, "Note: --cipher is not set. OpenVPN versions before 2.5 "
+             "defaulted to BF-CBC as fallback when cipher negotiation "
+             "failed in this case. If you need this fallback please add "
+             "'--data-ciphers-fallback BF-CBC' to your configuration "
+@@ -3555,7 +3555,7 @@
+     else if (!o->enable_ncp_fallback
+              && !tls_item_in_cipher_list(o->ciphername, o->ncp_ciphers))
+     {
+-        msg(M_WARN, "DEPRECATED OPTION: --cipher set to '%s' but missing in "
++        msg(D_LOW, "DEPRECATED OPTION: --cipher set to '%s' but missing in "
+             "--data-ciphers (%s). OpenVPN ignores --cipher for cipher "
+             "negotiations. ",
+             o->ciphername, o->ncp_ciphers);
 
