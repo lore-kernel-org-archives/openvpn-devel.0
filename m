@@ -1,14 +1,14 @@
 From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Mon, 16 Sep 2024 13:27:42 +0000
+Date: Mon, 16 Sep 2024 13:28:20 +0000
 In-Reply-To: <gerrit.1726491830000.Ie2797a82ad769cb640440d1ba7dfeb416e7b932d@...2715...>
 References: <gerrit.1726491830000.Ie2797a82ad769cb640440d1ba7dfeb416e7b932d@...2715...>
 Reply-To: gert@...1296..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <b406fa53d8f34d7867dc5194f4463e58b93448bf-EmailReviewComments-HTML@...2715...>
+Message-ID: <c83f8a8e01c30d980b59910ad7762f37af0c493b-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="ARYmwZCQFVI="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="KU/r4xxEZJY="; charset=UTF-8
 Subject: [Openvpn-devel] [XS] Change in openvpn[master]: Move
  cipher/data-ciphers warning to D_LOW (verb 4)
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -22,7 +22,7 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: plaisthos <arne-openvpn@...1227...>
 Cc: flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---ARYmwZCQFVI=
+--KU/r4xxEZJY=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
@@ -35,18 +35,7 @@ Change subject: Move cipher/data-ciphers warning to D_LOW (verb 4)
 ......................................................................
 
 
-Patch Set 1:
-
-(1 comment)
-
-Patchset:
-
-PS1:
-I agree to the first change (no `--cipher` in config).
-
-The second one is still warning-worthy - if someone uses `--cipher` and exp=
-ects it to actually do something, it is helpful to warn why nothing happens.
-
+Patch Set 1: Code-Review+2
 
 
 --
@@ -60,38 +49,32 @@ Gerrit-Change-Id: Ie2797a82ad769cb640440d1ba7dfeb416e7b932d
 Gerrit-Change-Number: 746
 Gerrit-PatchSet: 1
 Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
+Gerrit-Reviewer: cron2 <gert@...1296...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
-Gerrit-CC: cron2 <gert@...1296...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
 Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Comment-Date: Mon, 16 Sep 2024 13:27:42 +0000
-Gerrit-HasComments: Yes
-Gerrit-Has-Labels: No
+Gerrit-Comment-Date: Mon, 16 Sep 2024 13:28:20 +0000
+Gerrit-HasComments: No
+Gerrit-Has-Labels: Yes
 Gerrit-MessageType: comment
 
---ARYmwZCQFVI=
+--KU/r4xxEZJY=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <p> Attention is currently required from: flichtenheld, plaisthos. </p>
-<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/746?usp=3Demail">View C=
-hange</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0;"><=
-li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-style=
-: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p style=
-=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/7=
-46?tab=3Dcomments">Patch Set #1:</a> </p><p style=3D"white-space: pre-wrap;=
- word-wrap: break-word;">I agree to the first change (no `--cipher` in conf=
-ig).</p><p style=3D"white-space: pre-wrap; word-wrap: break-word;">The seco=
-nd one is still warning-worthy - if someone uses `--cipher` and expects it =
-to actually do something, it is helpful to warn why nothing happens.</p></l=
-i></ul></li></ul><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/o=
-penvpn/+/746?usp=3Demail">change 746</a>. To unsubscribe, or for help writi=
-ng mail filters, visit <a href=3D"http://gerrit.openvpn.net/settings">setti=
-ngs</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div=
- itemscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><l=
-ink itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/746?usp=
-=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
+<p>Patch set 1:<span style=3D"border-radius: 3px; display: inline-block; ma=
+rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/746?usp=3Demail">Vi=
+ew Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To vie=
+w, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/746?usp=3Demail">=
+change 746</a>. To unsubscribe, or for help writing mail filters, visit <a =
+href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope=
+ itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"act=
+ion" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=
+=3D"http://gerrit.openvpn.net/c/openvpn/+/746?usp=3Demail"/><meta itemprop=
+=3D"name" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
@@ -101,21 +84,22 @@ feb416e7b932d </div>
 <div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
 <div style=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@...1711...=
 27...&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
+ </div>
 <div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
 1...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: cron2 &lt;gert@...1296...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
 ..1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
 41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Mon, 16 Sep 2024 13:27:42=
+<div style=3D"display:none"> Gerrit-Comment-Date: Mon, 16 Sep 2024 13:28:20=
  +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: No </div>
+<div style=3D"display:none"> Gerrit-HasComments: No </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
 <div style=3D"display:none"> Gerrit-MessageType: comment </div>
 
 
---ARYmwZCQFVI=--
+--KU/r4xxEZJY=--
 
