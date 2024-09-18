@@ -1,11 +1,10 @@
+Date: Wed, 18 Sep 2024 23:00:35 +0200 (CEST)
+Message-Id: <202409182100.48IL0ZKe009277@...2054...>
 From: Gert Doering <gert@...1296...>
-Date: Wed, 18 Sep 2024 22:48:44 +0200
-Message-ID: <20240918204844.2820-1-gert@...1296...>
-In-Reply-To: <gerrit.1725970450000.I7852c06d331326c1dbab7b642254c0c00d4cebb8@...2715...>
-References: <gerrit.1725970450000.I7852c06d331326c1dbab7b642254c0c00d4cebb8@...2715...>
-MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v1] socket: Change return types of
- link_socket_write* to ssize_t
+In-Reply-To: <20240918204551.2530-1-gert@...1296...>
+References: <20240918204551.2530-1-gert@...1296...>
+Subject: [Openvpn-devel] [PATCH applied] Re: configure: Review use of
+ standard AC macros
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,124 +15,33 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Frank Lichtenheld <frank@...2641...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-From: Frank Lichtenheld <frank@...2641...>
+I admit that I have no deep understanding of autoconf, but I did check
+that "about everything" has more recent autoconf versions than 2.60
+("the gold standard" has been 2.69 for many years) and that all our
+buildbots and GHA are building fine with these changes.  Half of them
+are typo fixes or whitespace cleanups anyway :-)
 
-This is the actual return value of send/sendto/sendmsg.
-We will leave it to the single caller of link_socket_write()
-to decide how to map that to the int buffer world. For now
-just cast it explicitly.
+Your patch has been applied to the master branch.
 
-Change-Id: I7852c06d331326c1dbab7b642254c0c00d4cebb8
-Signed-off-by: Frank Lichtenheld <frank@...2641...>
-Acked-by: Gert Doering <gert@...1296...>
----
+commit b59620f24f5bc853e2aa92943f14abf74aa81511
+Author: Frank Lichtenheld
+Date:   Wed Sep 18 22:45:50 2024 +0200
 
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to master.
+     configure: Review use of standard AC macros
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/740
-This mail reflects revision 1 of this Change.
+     Signed-off-by: Frank Lichtenheld <frank@...2641...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <20240918204551.2530-1-gert@...1296...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg29321.html
+     Signed-off-by: Gert Doering <gert@...1296...>
 
-Acked-by according to Gerrit (reflected above):
-Gert Doering <gert@...1296...>
 
-        
-diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c
-index 40b7cc4..84c23b3 100644
---- a/src/openvpn/forward.c
-+++ b/src/openvpn/forward.c
-@@ -1790,7 +1790,7 @@
-                 socks_preprocess_outgoing_link(c, &to_addr, &size_delta);
- 
-                 /* Send packet */
--                size = link_socket_write(c->c2.link_socket, &c->c2.to_link, to_addr);
-+                size = (int)link_socket_write(c->c2.link_socket, &c->c2.to_link, to_addr);
- 
-                 /* Undo effect of prepend */
-                 link_socket_write_post_size_adjust(&size, size_delta, &c->c2.to_link);
-diff --git a/src/openvpn/socket.c b/src/openvpn/socket.c
-index 17c5e76..6c790a0 100644
---- a/src/openvpn/socket.c
-+++ b/src/openvpn/socket.c
-@@ -3399,7 +3399,7 @@
-  * Socket Write Routines
-  */
- 
--int
-+ssize_t
- link_socket_write_tcp(struct link_socket *sock,
-                       struct buffer *buf,
-                       struct link_socket_actual *to)
-@@ -3418,7 +3418,7 @@
- 
- #if ENABLE_IP_PKTINFO
- 
--size_t
-+ssize_t
- link_socket_write_udp_posix_sendmsg(struct link_socket *sock,
-                                     struct buffer *buf,
-                                     struct link_socket_actual *to)
-diff --git a/src/openvpn/socket.h b/src/openvpn/socket.h
-index 47083ad..bbdabfb 100644
---- a/src/openvpn/socket.h
-+++ b/src/openvpn/socket.h
-@@ -1099,9 +1099,9 @@
-  * Socket Write routines
-  */
- 
--int link_socket_write_tcp(struct link_socket *sock,
--                          struct buffer *buf,
--                          struct link_socket_actual *to);
-+ssize_t link_socket_write_tcp(struct link_socket *sock,
-+                              struct buffer *buf,
-+                              struct link_socket_actual *to);
- 
- #ifdef _WIN32
- 
-@@ -1135,12 +1135,12 @@
- 
- #else  /* ifdef _WIN32 */
- 
--size_t link_socket_write_udp_posix_sendmsg(struct link_socket *sock,
--                                           struct buffer *buf,
--                                           struct link_socket_actual *to);
-+ssize_t link_socket_write_udp_posix_sendmsg(struct link_socket *sock,
-+                                            struct buffer *buf,
-+                                            struct link_socket_actual *to);
- 
- 
--static inline size_t
-+static inline ssize_t
- link_socket_write_udp_posix(struct link_socket *sock,
-                             struct buffer *buf,
-                             struct link_socket_actual *to)
-@@ -1158,7 +1158,7 @@
-                   (socklen_t) af_addr_size(to->dest.addr.sa.sa_family));
- }
- 
--static inline size_t
-+static inline ssize_t
- link_socket_write_tcp_posix(struct link_socket *sock,
-                             struct buffer *buf,
-                             struct link_socket_actual *to)
-@@ -1168,7 +1168,7 @@
- 
- #endif /* ifdef _WIN32 */
- 
--static inline size_t
-+static inline ssize_t
- link_socket_write_udp(struct link_socket *sock,
-                       struct buffer *buf,
-                       struct link_socket_actual *to)
-@@ -1181,7 +1181,7 @@
- }
- 
- /* write a TCP or UDP packet to link */
--static inline int
-+static inline ssize_t
- link_socket_write(struct link_socket *sock,
-                   struct buffer *buf,
-                   struct link_socket_actual *to)
+--
+kind regards,
+
+Gert Doering
+
 
