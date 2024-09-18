@@ -1,16 +1,11 @@
-From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Wed, 18 Sep 2024 20:48:22 +0000
+From: Gert Doering <gert@...1296...>
+Date: Wed, 18 Sep 2024 22:48:44 +0200
+Message-ID: <20240918204844.2820-1-gert@...1296...>
 In-Reply-To: <gerrit.1725970450000.I7852c06d331326c1dbab7b642254c0c00d4cebb8@...2715...>
 References: <gerrit.1725970450000.I7852c06d331326c1dbab7b642254c0c00d4cebb8@...2715...>
-Reply-To: gert@...1296..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <38298ca6c1f3f12fedd12de9b5f3025b026cfb11-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="Q/PmJQGuTM8="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: socket: Change
- return types of link_socket_write* to ssize_t
+Subject: [Openvpn-devel] [PATCH v1] socket: Change return types of
+ link_socket_write* to ssize_t
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,87 +14,126 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: flichtenheld <frank@...2641...>
-Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---Q/PmJQGuTM8=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+From: Frank Lichtenheld <frank@...2641...>
 
-Attention is currently required from: flichtenheld, plaisthos.
+This is the actual return value of send/sendto/sendmsg.
+We will leave it to the single caller of link_socket_write()
+to decide how to map that to the int buffer world. For now
+just cast it explicitly.
 
-cron2 has posted comments on this change. ( http://gerrit.openvpn.net/c/ope=
-nvpn/+/740?usp=3Demail )
+Change-Id: I7852c06d331326c1dbab7b642254c0c00d4cebb8
+Signed-off-by: Frank Lichtenheld <frank@...2641...>
+Acked-by: Gert Doering <gert@...1296...>
+---
 
-Change subject: socket: Change return types of link_socket_write* to ssize_t
-......................................................................
+This change was reviewed on Gerrit and approved by at least one
+developer. I request to merge it to master.
 
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/740
+This mail reflects revision 1 of this Change.
 
-Patch Set 1: Code-Review+2
+Acked-by according to Gerrit (reflected above):
+Gert Doering <gert@...1296...>
 
-
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/740?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings
-
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: I7852c06d331326c1dbab7b642254c0c00d4cebb8
-Gerrit-Change-Number: 740
-Gerrit-PatchSet: 1
-Gerrit-Owner: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: cron2 <gert@...1296...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Comment-Date: Wed, 18 Sep 2024 20:48:22 +0000
-Gerrit-HasComments: No
-Gerrit-Has-Labels: Yes
-Gerrit-MessageType: comment
-
---Q/PmJQGuTM8=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<p> Attention is currently required from: flichtenheld, plaisthos. </p>
-<p>Patch set 1:<span style=3D"border-radius: 3px; display: inline-block; ma=
-rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/740?usp=3Demail">Vi=
-ew Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To vie=
-w, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/740?usp=3Demail">=
-change 740</a>. To unsubscribe, or for help writing mail filters, visit <a =
-href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope=
- itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"act=
-ion" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=
-=3D"http://gerrit.openvpn.net/c/openvpn/+/740?usp=3Demail"/><meta itemprop=
-=3D"name" content=3D"View Change"/></div></div>
-
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I7852c06d331326c1dbab7b64225=
-4c0c00d4cebb8 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 740 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
-<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
-.&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
- </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
-41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Wed, 18 Sep 2024 20:48:22=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: No </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
-
-
---Q/PmJQGuTM8=--
+        
+diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c
+index 40b7cc4..84c23b3 100644
+--- a/src/openvpn/forward.c
++++ b/src/openvpn/forward.c
+@@ -1790,7 +1790,7 @@
+                 socks_preprocess_outgoing_link(c, &to_addr, &size_delta);
+ 
+                 /* Send packet */
+-                size = link_socket_write(c->c2.link_socket, &c->c2.to_link, to_addr);
++                size = (int)link_socket_write(c->c2.link_socket, &c->c2.to_link, to_addr);
+ 
+                 /* Undo effect of prepend */
+                 link_socket_write_post_size_adjust(&size, size_delta, &c->c2.to_link);
+diff --git a/src/openvpn/socket.c b/src/openvpn/socket.c
+index 17c5e76..6c790a0 100644
+--- a/src/openvpn/socket.c
++++ b/src/openvpn/socket.c
+@@ -3399,7 +3399,7 @@
+  * Socket Write Routines
+  */
+ 
+-int
++ssize_t
+ link_socket_write_tcp(struct link_socket *sock,
+                       struct buffer *buf,
+                       struct link_socket_actual *to)
+@@ -3418,7 +3418,7 @@
+ 
+ #if ENABLE_IP_PKTINFO
+ 
+-size_t
++ssize_t
+ link_socket_write_udp_posix_sendmsg(struct link_socket *sock,
+                                     struct buffer *buf,
+                                     struct link_socket_actual *to)
+diff --git a/src/openvpn/socket.h b/src/openvpn/socket.h
+index 47083ad..bbdabfb 100644
+--- a/src/openvpn/socket.h
++++ b/src/openvpn/socket.h
+@@ -1099,9 +1099,9 @@
+  * Socket Write routines
+  */
+ 
+-int link_socket_write_tcp(struct link_socket *sock,
+-                          struct buffer *buf,
+-                          struct link_socket_actual *to);
++ssize_t link_socket_write_tcp(struct link_socket *sock,
++                              struct buffer *buf,
++                              struct link_socket_actual *to);
+ 
+ #ifdef _WIN32
+ 
+@@ -1135,12 +1135,12 @@
+ 
+ #else  /* ifdef _WIN32 */
+ 
+-size_t link_socket_write_udp_posix_sendmsg(struct link_socket *sock,
+-                                           struct buffer *buf,
+-                                           struct link_socket_actual *to);
++ssize_t link_socket_write_udp_posix_sendmsg(struct link_socket *sock,
++                                            struct buffer *buf,
++                                            struct link_socket_actual *to);
+ 
+ 
+-static inline size_t
++static inline ssize_t
+ link_socket_write_udp_posix(struct link_socket *sock,
+                             struct buffer *buf,
+                             struct link_socket_actual *to)
+@@ -1158,7 +1158,7 @@
+                   (socklen_t) af_addr_size(to->dest.addr.sa.sa_family));
+ }
+ 
+-static inline size_t
++static inline ssize_t
+ link_socket_write_tcp_posix(struct link_socket *sock,
+                             struct buffer *buf,
+                             struct link_socket_actual *to)
+@@ -1168,7 +1168,7 @@
+ 
+ #endif /* ifdef _WIN32 */
+ 
+-static inline size_t
++static inline ssize_t
+ link_socket_write_udp(struct link_socket *sock,
+                       struct buffer *buf,
+                       struct link_socket_actual *to)
+@@ -1181,7 +1181,7 @@
+ }
+ 
+ /* write a TCP or UDP packet to link */
+-static inline int
++static inline ssize_t
+ link_socket_write(struct link_socket *sock,
+                   struct buffer *buf,
+                   struct link_socket_actual *to)
 
