@@ -1,11 +1,16 @@
-From: Gert Doering <gert@...1296...>
-Date: Wed, 18 Sep 2024 22:45:50 +0200
-Message-ID: <20240918204551.2530-1-gert@...1296...>
-In-Reply-To: <gerrit.1720619824000.I7927a572611b7c1dc0b522fd6cdf05fd222a852d@...2715...>
-References: <gerrit.1720619824000.I7927a572611b7c1dc0b522fd6cdf05fd222a852d@...2715...>
+From: "cron2 (Code Review)" <gerrit@...515...>
+Date: Wed, 18 Sep 2024 20:48:22 +0000
+In-Reply-To: <gerrit.1725970450000.I7852c06d331326c1dbab7b642254c0c00d4cebb8@...2715...>
+References: <gerrit.1725970450000.I7852c06d331326c1dbab7b642254c0c00d4cebb8@...2715...>
+Reply-To: gert@...1296..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net, frank@...2641...
+Message-ID: <38298ca6c1f3f12fedd12de9b5f3025b026cfb11-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v3] configure: Review use of standard AC
- macros
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="Q/PmJQGuTM8="; charset=UTF-8
+Subject: [Openvpn-devel] [S] Change in openvpn[master]: socket: Change
+ return types of link_socket_write* to ssize_t
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,95 +19,87 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: flichtenheld <frank@...2641...>
+Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-From: Frank Lichtenheld <frank@...2641...>
+--Q/PmJQGuTM8=
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-- Increase required version to 2.60 since that is documented
-  minimum version for AC_USE_SYSTEM_EXTENSIONS
-- Remove obsolete macros AC_C_CONST and AC_C_VOLATILE. They
-  are noops on every compiler we support.
-- Add explicit call to AC_PROG_CC. We get this implictly as
-  dependency of other macros, but it is nicer to have it
-  explicitely as well.
-- A few typo and whitespace fixes.
+Attention is currently required from: flichtenheld, plaisthos.
 
-Change-Id: I7927a572611b7c1dc0b522fd6cdf05fd222a852d
-Signed-off-by: Frank Lichtenheld <frank@...2641...>
-Acked-by: Gert Doering <gert@...1296...>
----
+cron2 has posted comments on this change. ( http://gerrit.openvpn.net/c/ope=
+nvpn/+/740?usp=3Demail )
 
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to master.
+Change subject: socket: Change return types of link_socket_write* to ssize_t
+......................................................................
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/674
-This mail reflects revision 3 of this Change.
 
-Acked-by according to Gerrit (reflected above):
-Gert Doering <gert@...1296...>
+Patch Set 1: Code-Review+2
 
-        
-diff --git a/configure.ac b/configure.ac
-index 9ce826c..18538c5 100644
---- a/configure.ac
-+++ b/configure.ac
-@@ -23,7 +23,7 @@
- 
- dnl Process this file with autoconf to produce a configure script.
- 
--AC_PREREQ(2.59)
-+AC_PREREQ(2.60)
- 
- m4_include(version.m4)
- AC_INIT([PRODUCT_NAME], [PRODUCT_VERSION], [PRODUCT_BUGREPORT], [PRODUCT_TARNAME])
-@@ -387,6 +387,7 @@
- 	pkg_config_found="(${PKG_CONFIG})"
- fi
- 
-+AC_PROG_CC
- AC_PROG_CPP
- AC_PROG_INSTALL
- AC_PROG_LN_S
-@@ -443,9 +444,7 @@
- 	]
- )
- 
--AC_C_CONST
- AC_C_INLINE
--AC_C_VOLATILE
- AC_TYPE_OFF_T
- AC_TYPE_PID_T
- AC_TYPE_SIZE_T
-@@ -981,7 +980,7 @@
- 		[AC_MSG_ERROR([OpenSSL check for AES-256-GCM support failed])]
- 	)
- 
--	# All supported OpenSSL version (>= 1.1.0)
-+	# All supported OpenSSL versions (>= 1.1.0)
- 	# have this feature
- 	have_export_keying_material="yes"
- 
-@@ -1081,9 +1080,8 @@
- 
- elif test "${with_crypto_library}" = "wolfssl"; then
- 	AC_ARG_VAR([WOLFSSL_CFLAGS], [C compiler flags for wolfssl. The include directory should
--								  contain the regular wolfSSL header files but also the
--								  wolfSSL OpenSSL header files. Ex: -I/usr/local/include
--								  -I/usr/local/include/wolfssl])
-+ contain the regular wolfSSL header files but also the wolfSSL OpenSSL header files.
-+ Ex: -I/usr/local/include -I/usr/local/include/wolfssl])
- 	AC_ARG_VAR([WOLFSSL_LIBS], [linker flags for wolfssl])
- 
- 	saved_CFLAGS="${CFLAGS}"
-@@ -1274,7 +1272,7 @@
-                       [PKG_CHECK_MODULES([libsystemd], [libsystemd-daemon])]
-                       )
- 
--    PKG_CHECK_EXISTS( [libsystemd > 216],
-+    PKG_CHECK_EXISTS([libsystemd > 216],
-                      [AC_DEFINE([SYSTEMD_NEWER_THAN_216], [1],
-                            [systemd is newer than v216])]
-                     )
+
+--
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/740?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings
+
+Gerrit-Project: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: I7852c06d331326c1dbab7b642254c0c00d4cebb8
+Gerrit-Change-Number: 740
+Gerrit-PatchSet: 1
+Gerrit-Owner: flichtenheld <frank@...2641...>
+Gerrit-Reviewer: cron2 <gert@...1296...>
+Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Attention: flichtenheld <frank@...2641...>
+Gerrit-Comment-Date: Wed, 18 Sep 2024 20:48:22 +0000
+Gerrit-HasComments: No
+Gerrit-Has-Labels: Yes
+Gerrit-MessageType: comment
+
+--Q/PmJQGuTM8=
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<p> Attention is currently required from: flichtenheld, plaisthos. </p>
+<p>Patch set 1:<span style=3D"border-radius: 3px; display: inline-block; ma=
+rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/740?usp=3Demail">Vi=
+ew Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To vie=
+w, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/740?usp=3Demail">=
+change 740</a>. To unsubscribe, or for help writing mail filters, visit <a =
+href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope=
+ itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"act=
+ion" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=
+=3D"http://gerrit.openvpn.net/c/openvpn/+/740?usp=3Demail"/><meta itemprop=
+=3D"name" content=3D"View Change"/></div></div>
+
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I7852c06d331326c1dbab7b64225=
+4c0c00d4cebb8 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 740 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
+<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
+.&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
+ </div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
+.1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
+41...&gt; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Wed, 18 Sep 2024 20:48:22=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: No </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
+
+
+--Q/PmJQGuTM8=--
 
