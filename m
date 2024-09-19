@@ -1,14 +1,14 @@
 From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Thu, 19 Sep 2024 06:15:42 +0000
+Date: Thu, 19 Sep 2024 06:15:40 +0000
 In-Reply-To: <gerrit.1725970450000.I7852c06d331326c1dbab7b642254c0c00d4cebb8@...2715...>
 References: <gerrit.1725970450000.I7852c06d331326c1dbab7b642254c0c00d4cebb8@...2715...>
 Reply-To: gert@...1296..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <20a2c28a488f0fe3db894d7fc411e2cad2b72727-HTML@...2715...>
+Message-ID: <20a2c28a488f0fe3db894d7fc411e2cad2b72727-EmailReplacePatchSet-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="80AES1Dlcr4="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="8IQdn9Jeg7s="; charset=UTF-8
 Subject: [Openvpn-devel] [S] Change in openvpn[master]: socket: Change
  return types of link_socket_write* to ssize_t
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -19,15 +19,19 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: flichtenheld <frank@...2641...>
-Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: flichtenheld <frank@...2641...>, plaisthos <arne-openvpn@...1227...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---80AES1Dlcr4=
+--8IQdn9Jeg7s=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-cron2 has submitted this change. ( http://gerrit.openvpn.net/c/openvpn/+/74=
-0?usp=3Demail )
+cron2 has uploaded a new patch set (#2) to the change originally created by=
+ flichtenheld. ( http://gerrit.openvpn.net/c/openvpn/+/740?usp=3Demail )
+
+The following approvals got outdated and were removed:
+Code-Review+2 by cron2
+
 
 Change subject: socket: Change return types of link_socket_write* to ssize_t
 ......................................................................
@@ -53,7 +57,7 @@ M src/openvpn/socket.h
 3 files changed, 13 insertions(+), 13 deletions(-)
 
 
-
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/40/740/2
 
 diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c
 index 374ba47..8c02407 100644
@@ -169,27 +173,30 @@ Gerrit-Owner: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: cron2 <gert@...1296...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-MessageType: merged
+Gerrit-MessageType: newpatchset
 
---80AES1Dlcr4=
+--8IQdn9Jeg7s=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p>cron2 <strong>submitted</strong> this change.</p><p><a href=3D"http://ge=
-rrit.openvpn.net/c/openvpn/+/740?usp=3Demail">View Change</a></p><div style=
-=3D"white-space:pre-wrap"></div><pre style=3D"font-family: monospace,monosp=
-ace; white-space: pre-wrap;">socket: Change return types of link_socket_wri=
-te* to ssize_t<br><br>This is the actual return value of send/sendto/sendms=
-g.<br>We will leave it to the single caller of link_socket_write()<br>to de=
-cide how to map that to the int buffer world. For now<br>just cast it expli=
-citly.<br><br>Change-Id: I7852c06d331326c1dbab7b642254c0c00d4cebb8<br>Signe=
-d-off-by: Frank Lichtenheld &lt;frank@...2641...&gt;<br>Acked-by: Gert Doer=
-ing &lt;gert@...1296...&gt;<br>Message-Id: &lt;20240918204844.2820-1-gert@...220...=
-..1296...&gt;<br>URL: https://www.mail-archive.com/openvpn-devel@...1439...=
-ceforge.net/msg29323.html<br>Signed-off-by: Gert Doering &lt;gert@...2132...=
-.&gt;<br>---<br>M src/openvpn/forward.c<br>M src/openvpn/socket.c<br>M src/=
-openvpn/socket.h<br>3 files changed, 13 insertions(+), 13 deletions(-)<br><=
-br></pre>
+<p>cron2 <strong>uploaded patch set #2</strong> to the change originally cr=
+eated by flichtenheld.</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn=
+/+/740?usp=3Demail">View Change</a></p><p>The following approvals got outda=
+ted and were removed:
+Code-Review+2 by cron2</p><pre style=3D"font-family: monospace,monospace; w=
+hite-space: pre-wrap;">socket: Change return types of link_socket_write* to=
+ ssize_t<br><br>This is the actual return value of send/sendto/sendmsg.<br>=
+We will leave it to the single caller of link_socket_write()<br>to decide h=
+ow to map that to the int buffer world. For now<br>just cast it explicitly.=
+<br><br>Change-Id: I7852c06d331326c1dbab7b642254c0c00d4cebb8<br>Signed-off-=
+by: Frank Lichtenheld &lt;frank@...2641...&gt;<br>Acked-by: Gert Doering &l=
+t;gert@...1296...&gt;<br>Message-Id: &lt;20240918204844.2820-1-gert@...1726...=
+...&gt;<br>URL: https://www.mail-archive.com/openvpn-devel@...1483...=
+e.net/msg29323.html<br>Signed-off-by: Gert Doering &lt;gert@...1296...&gt;<=
+br>---<br>M src/openvpn/forward.c<br>M src/openvpn/socket.c<br>M src/openvp=
+n/socket.h<br>3 files changed, 13 insertions(+), 13 deletions(-)<br><br></p=
+re><pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;">=
+git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/40/740/2</pre>=
 <pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><sp=
 an>diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c</span><br><sp=
 an>index 374ba47..8c02407 100644</span><br><span>--- a/src/openvpn/forward.=
@@ -291,8 +298,8 @@ Action"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/=
 .1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: merged </div>
+<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
 
 
---80AES1Dlcr4=--
+--8IQdn9Jeg7s=--
 
