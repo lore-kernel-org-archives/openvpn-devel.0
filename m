@@ -1,11 +1,9 @@
-From: Gert Doering <gert@...1296...>
-Date: Tue, 24 Sep 2024 15:14:37 +0200
-Message-ID: <20240924131437.22294-1-gert@...1296...>
-In-Reply-To: <gerrit.1726491830000.I0a2957699757665d70514ba7cafe833443018ad6@...2715...>
-References: <gerrit.1726491830000.I0a2957699757665d70514ba7cafe833443018ad6@...2715...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v11] Automatically enable
- ifconfig-exec/route-exec behaviour for afunix tun/tap
+From: Petr Portnov <mrjarviscraft@...277...>
+Date: Tue, 24 Sep 2024 16:26:44 +0300
+Message-ID: <CAOrkh=Vw_5rLO=Ny4RKMUfjVAhoAD36SyeZj0EjZfwnqHaL2QQ@...278...>
+Content-Type: multipart/mixed; boundary="0000000000009add8f0622dd755f"
+Subject: [Openvpn-devel] [PATCH] Configurable installation directories
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,117 +12,122 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-From: Arne Schwabe <arne@...1227...>
+--0000000000009add8f0622dd755f
+Content-Type: multipart/alternative; boundary="0000000000009add8c0622dd755d"
 
-Change-Id: I0a2957699757665d70514ba7cafe833443018ad6
-Signed-off-by: Arne Schwabe <arne@...1227...>
-Acked-by: Gert Doering <gert@...1296...>
----
+--0000000000009add8c0622dd755d
+Content-Type: text/plain; charset="UTF-8"
 
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to master.
+Hi there!
+Continuing the packaging of the latest OpenVPN-linux for NixOS, I would
+like to propose the following addition to the build system.
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/750
-This mail reflects revision 11 of this Change.
+What it does is it allows you to customize the installation paths for DBus
+and systemd services and adds the option to disable the generation of
+`openvpn3_statedir / 'configs'` directory (which is not always desired,
+e.g. when the OS takes this responsibility).
 
-Acked-by according to Gerrit (reflected above):
-Gert Doering <gert@...1296...>
+~ Petr Portnov
 
-        
-diff --git a/src/openvpn/init.c b/src/openvpn/init.c
-index cd9203a..876edad 100644
---- a/src/openvpn/init.c
-+++ b/src/openvpn/init.c
-@@ -1679,6 +1679,18 @@
- #endif /* ifdef ENABLE_MANAGEMENT */
- }
- 
-+/**
-+ * Determine if external route commands should be executed based on
-+ * configured options and backend driver
-+ */
-+static bool
-+route_noexec_enabled(const struct options *o, const struct tuntap *tt)
-+{
-+    return o->route_noexec
-+           || (tt && tt->backend_driver == DRIVER_AFUNIX)
-+           || (tt && tt->backend_driver == DRIVER_NULL);
-+}
-+
- /*
-  * Possibly add routes and/or call route-up script
-  * based on options.
-@@ -1693,7 +1705,7 @@
-          openvpn_net_ctx_t *ctx)
- {
-     bool ret = true;
--    if (!options->route_noexec && ( route_list || route_ipv6_list ) )
-+    if (!route_noexec_enabled(options, tt) && ( route_list || route_ipv6_list ) )
-     {
-         ret = add_routes(route_list, route_ipv6_list, tt, ROUTE_OPTION_FLAGS(options),
-                          es, ctx);
-@@ -1858,6 +1870,19 @@
- #endif
- }
- 
-+/**
-+ * Determines if ifconfig execution should be disabled because of a
-+ * @param c
-+ * @return
-+ */
-+static bool
-+ifconfig_noexec_enabled(const struct context *c)
-+{
-+    return c->options.ifconfig_noexec
-+           || (c->c1.tuntap && c->c1.tuntap->backend_driver == DRIVER_AFUNIX)
-+           || (c->c1.tuntap && c->c1.tuntap->backend_driver == DRIVER_NULL);
-+}
-+
- static void
- open_tun_backend(struct context *c)
- {
-@@ -1937,7 +1962,7 @@
-         }
- 
-         /* do ifconfig */
--        if (!c->options.ifconfig_noexec
-+        if (!ifconfig_noexec_enabled(c)
-             && ifconfig_order(c->c1.tuntap) == IFCONFIG_BEFORE_TUN_OPEN)
-         {
-             /* guess actual tun/tap unit number that will be returned
-@@ -1978,7 +2003,7 @@
-         }
- 
-         /* do ifconfig */
--        if (!c->options.ifconfig_noexec
-+        if (!ifconfig_noexec_enabled(c)
-             && ifconfig_order(c->c1.tuntap) == IFCONFIG_AFTER_TUN_OPEN)
-         {
-             do_ifconfig(c->c1.tuntap, c->c1.tuntap->actual_name,
-@@ -2061,7 +2086,7 @@
- 
-     if (c->c1.tuntap)
-     {
--        if (!c->options.ifconfig_noexec)
-+        if (!ifconfig_noexec_enabled(c))
-         {
-             undo_ifconfig(c->c1.tuntap, &c->net_ctx);
-         }
-diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
-index 206ddc0..85fe01a 100644
---- a/src/openvpn/tun.c
-+++ b/src/openvpn/tun.c
-@@ -1744,7 +1744,7 @@
- void
- undo_ifconfig(struct tuntap *tt, openvpn_net_ctx_t *ctx)
- {
--    if (tt->backend_driver != DRIVER_NULL)
-+    if (tt->backend_driver != DRIVER_NULL && tt->backend_driver != DRIVER_AFUNIX)
-     {
-         if (tt->did_ifconfig_setup)
-         {
+--0000000000009add8c0622dd755d
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<div dir=3D"ltr"><div>Hi there!</div><div>Continuing the packaging of the l=
+atest OpenVPN-linux for NixOS, I would like to propose the following additi=
+on to the build system.</div><div><br></div><div>What it does is it allows =
+you to customize the installation paths for DBus and systemd services and a=
+dds the option to disable the generation of `openvpn3_statedir / &#39;confi=
+gs&#39;` directory (which is not always desired, e.g. when the OS takes thi=
+s responsibility).</div><div><br></div><div>~ Petr Portnov<br></div></div>
+
+--0000000000009add8c0622dd755d--
+
+--0000000000009add8f0622dd755f
+Content-Type: text/x-patch; charset="US-ASCII"; 
+	name="0001-build-allow-installation-directories-customization.patch"
+Content-Disposition: attachment; 
+	filename="0001-build-allow-installation-directories-customization.patch"
+Content-Transfer-Encoding: base64
+Content-ID: <f_m1ggvz6o0>
+X-Attachment-Id: f_m1ggvz6o0
+
+RnJvbSA4NDhjYzQ2ZDA1YzIwM2RlMzkzZDc1NDM0YTNmNTcxZDc4Njg3ZjUwIE1vbiBTZXAgMTcg
+MDA6MDA6MDAgMjAwMQpGcm9tOiBQZXRyIFBvcnRub3YgPG1yamFydmlzY3JhZnRAZ21haWwuY29t
+PgpEYXRlOiBTdW4sIDIyIFNlcCAyMDI0IDEzOjE2OjAyICswMzAwClN1YmplY3Q6IFtQQVRDSF0g
+YnVpbGQ6IGFsbG93IGluc3RhbGxhdGlvbiBkaXJlY3RvcmllcycgY3VzdG9taXphdGlvbgoKVGhp
+cyBhbGxvd3MgdG8gY29uZmlndXJlIHRoZSBpbnN0YWxsYXRpb24gZGlyZWN0b3JpZXMKZm9yIHN5
+c3RlbWQgYW5kIEQtQnVzIGZpbGVzLgoKU2lnbmVkLW9mZi1ieTogUGV0ciBQb3J0bm92IDxtcmph
+cnZpc2NyYWZ0QGdtYWlsLmNvbT4KLS0tCiBkaXN0cm8vc3lzdGVtZC9tZXNvbi5idWlsZCB8ICA5
+ICsrKysrKystLQogbWVzb24uYnVpbGQgICAgICAgICAgICAgICAgfCAxMiArKysrKysrKysrLS0K
+IG1lc29uX29wdGlvbnMudHh0ICAgICAgICAgIHwgMTIgKysrKysrKysrKysrCiBzcmMvY29uZmln
+bWdyL21lc29uLmJ1aWxkICB8IDEwICsrKysrKy0tLS0KIDQgZmlsZXMgY2hhbmdlZCwgMzUgaW5z
+ZXJ0aW9ucygrKSwgOCBkZWxldGlvbnMoLSkKCmRpZmYgLS1naXQgYS9kaXN0cm8vc3lzdGVtZC9t
+ZXNvbi5idWlsZCBiL2Rpc3Ryby9zeXN0ZW1kL21lc29uLmJ1aWxkCmluZGV4IDM2ZDU1NmMuLjlj
+NjM2YjYgMTAwNjQ0Ci0tLSBhL2Rpc3Ryby9zeXN0ZW1kL21lc29uLmJ1aWxkCisrKyBiL2Rpc3Ry
+by9zeXN0ZW1kL21lc29uLmJ1aWxkCkBAIC0xNSwxMiArMTUsMTcgQEAgc3lzdGVtZF9jZmcgPSBj
+b25maWd1cmF0aW9uX2RhdGEoewogCiBzeXN0ZW1kX3NlcnZpY2VfY2ZnID0gZGVwZW5kZW5jeSgn
+c3lzdGVtZCcpCiAKK3N5c3RlbWRfc3lzdGVtX3VuaXRfZGlyID0gZ2V0X29wdGlvbignc3lzdGVt
+ZF9zeXN0ZW1fdW5pdF9kaXInKQoraWYgc3lzdGVtZF9zeXN0ZW1fdW5pdF9kaXIgPT0gJycKKyAg
+c3lzdGVtZF9zeXN0ZW1fdW5pdF9kaXIgPSBzeXN0ZW1kX3NlcnZpY2VfY2ZnLmdldF92YXJpYWJs
+ZSgnc3lzdGVtZHN5c3RlbXVuaXRkaXInKQorZW5kaWYKKwogY29uZmlndXJlX2ZpbGUoCiAgICAg
+aW5wdXQ6ICdvcGVudnBuMy1hdXRvbG9hZC5zZXJ2aWNlLmluJywKICAgICBvdXRwdXQ6ICdvcGVu
+dnBuMy1hdXRvbG9hZC5zZXJ2aWNlJywKICAgICBjb25maWd1cmF0aW9uOiBzeXN0ZW1kX2NmZywK
+ICAgICBpbnN0YWxsOiB0cnVlLAotICAgIGluc3RhbGxfZGlyOiBzeXN0ZW1kX3NlcnZpY2VfY2Zn
+LmdldF92YXJpYWJsZSgnc3lzdGVtZHN5c3RlbXVuaXRkaXInKSwKKyAgICBpbnN0YWxsX2Rpcjog
+c3lzdGVtZF9zeXN0ZW1fdW5pdF9kaXIsCiApCiAKIGNvbmZpZ3VyZV9maWxlKApAQCAtMjgsNyAr
+MzMsNyBAQCBjb25maWd1cmVfZmlsZSgKICAgICBvdXRwdXQ6ICdvcGVudnBuMy1zZXNzaW9uQC5z
+ZXJ2aWNlJywKICAgICBjb25maWd1cmF0aW9uOiBzeXN0ZW1kX2NmZywKICAgICBpbnN0YWxsOiB0
+cnVlLAotICAgIGluc3RhbGxfZGlyOiBzeXN0ZW1kX3NlcnZpY2VfY2ZnLmdldF92YXJpYWJsZSgn
+c3lzdGVtZHN5c3RlbXVuaXRkaXInKSwKKyAgICBpbnN0YWxsX2Rpcjogc3lzdGVtZF9zeXN0ZW1f
+dW5pdF9kaXIsCiApCiAKIGN1c3RvbV90YXJnZXQoJ29wZW52cG4zLXN5c3RlbWQnLApkaWZmIC0t
+Z2l0IGEvbWVzb24uYnVpbGQgYi9tZXNvbi5idWlsZAppbmRleCA1ODZjNzJhLi5iYTQxNDQwIDEw
+MDY0NAotLS0gYS9tZXNvbi5idWlsZAorKysgYi9tZXNvbi5idWlsZApAQCAtMjAzLDggKzIwMywx
+NiBAQCBtZXNzYWdlKCdPcGVuVlBOIDMgTGludXggc2VydmljZSBiaW5hcnkgZGlyZWN0b3J5OiAn
+ICsgZ2V0X29wdGlvbigncHJlZml4JykgLyBsaQogCiAjCiAjICBELUJ1cyBjb25maWd1cmF0aW9u
+Ci1kYnVzX3BvbGljeV9kaXIgPSBkZXBfZGJ1cy5nZXRfdmFyaWFibGUoJ2RhdGFkaXInKSAvICdk
+YnVzLTEnIC8gJ3N5c3RlbS5kJwotZGJ1c19zZXJ2aWNlX2RpciA9IGRlcF9kYnVzLmdldF92YXJp
+YWJsZSgnc3lzdGVtX2J1c19zZXJ2aWNlc19kaXInKQorZGJ1c19wb2xpY3lfZGlyID0gZ2V0X29w
+dGlvbignZGJ1c19wb2xpY3lfZGlyJykKK2lmIGRidXNfcG9saWN5X2RpciA9PSAnJworICAgIGRi
+dXNfcG9saWN5X2RpciA9IGRlcF9kYnVzLmdldF92YXJpYWJsZSgnZGF0YWRpcicpIC8gJ2RidXMt
+MScgLyAnc3lzdGVtLmQnCitlbmRpZgorCitkYnVzX3NlcnZpY2VfZGlyID0gZ2V0X29wdGlvbign
+ZGJ1c19zeXN0ZW1fc2VydmljZV9kaXInKQoraWYgZGJ1c19zZXJ2aWNlX2RpciA9PSAnJworICAg
+IGRidXNfc2VydmljZV9kaXIgPSBkZXBfZGJ1cy5nZXRfdmFyaWFibGUoJ3N5c3RlbV9idXNfc2Vy
+dmljZXNfZGlyJykKK2VuZGlmCisKIGRidXNfY29uZmlnID0gewogICAgICdPUEVOVlBOX1VTRVJO
+QU1FJzogZ2V0X29wdGlvbignb3BlbnZwbl91c2VybmFtZScpLAogICAgICdMSUJFWEVDX1BBVEgn
+OiBnZXRfb3B0aW9uKCdwcmVmaXgnKSAvIGxpYmV4ZWNfZGlyLApkaWZmIC0tZ2l0IGEvbWVzb25f
+b3B0aW9ucy50eHQgYi9tZXNvbl9vcHRpb25zLnR4dAppbmRleCA0M2UzMDFlLi4wNDgwOWRmIDEw
+MDY0NAotLS0gYS9tZXNvbl9vcHRpb25zLnR4dAorKysgYi9tZXNvbl9vcHRpb25zLnR4dApAQCAt
+OTMsNiArOTMsMTggQEAgb3B0aW9uKCd1c2UtbGVnYWN5LXBvbGtpdC1wa2xhJywgdHlwZTogJ2Zl
+YXR1cmUnLCB2YWx1ZTogJ2Rpc2FibGVkJywKIG9wdGlvbigncG9sa2l0X3BrbGFfcnVsZXNkaXIn
+LCB0eXBlOiAnc3RyaW5nJywgdmFsdWU6ICcnLAogICAgICAgIGRlc2NyaXB0aW9uOiAnT3ZlcnJp
+ZGUgUG9saWN5S2l0IFBLTEEgcnVsZXMgZGlyZWN0b3J5JykKIAorIworIyBJbnN0YWxsYXRpb24K
+KyMKK29wdGlvbignZGJ1c19wb2xpY3lfZGlyJywgdHlwZTogJ3N0cmluZycsCisgICAgICAgZGVz
+Y3JpcHRpb246ICdELUJ1cyBwb2xpY3kgZGlyZWN0b3J5JykKK29wdGlvbignZGJ1c19zeXN0ZW1f
+c2VydmljZV9kaXInLCB0eXBlOiAnc3RyaW5nJywKKyAgICAgICBkZXNjcmlwdGlvbjogJ0QtQnVz
+IHN5c3RlbSBzZXJ2aWNlIGRpcmVjdG9yeScpCitvcHRpb24oJ3N5c3RlbWRfc3lzdGVtX3VuaXRf
+ZGlyJywgdHlwZTogJ3N0cmluZycsCisgICAgICAgZGVzY3JpcHRpb246ICdQYXRoIHRvIHN5c3Rl
+bWQgc3lzdGVtIHVuaXQgZGlyZWN0b3J5JykKK29wdGlvbignY3JlYXRlX3N0YXRlZGlyJywgdHlw
+ZTogJ2ZlYXR1cmUnLCB2YWx1ZTogJ2VuYWJsZWQnLAorICAgICAgIGRlc2NyaXB0aW9uOiAnQ3Jl
+YXRlIGRpcmVjdG9yeSBmb3IgT3BlblZQTiAzIHN0YXRlIGR1cmluZyBpbnN0YWxsIHBoYXNlJykK
+KwogIwogIyAgVGVzdGluZyB0b29scwogIwpkaWZmIC0tZ2l0IGEvc3JjL2NvbmZpZ21nci9tZXNv
+bi5idWlsZCBiL3NyYy9jb25maWdtZ3IvbWVzb24uYnVpbGQKaW5kZXggNWQwYTY0OS4uNmY3ODhi
+NyAxMDA2NDQKLS0tIGEvc3JjL2NvbmZpZ21nci9tZXNvbi5idWlsZAorKysgYi9zcmMvY29uZmln
+bWdyL21lc29uLmJ1aWxkCkBAIC01Miw3ICs1Miw5IEBAIGNvbmZpZ3VyZV9maWxlKAogICAgIGlu
+c3RhbGxfZGlyOiBkYnVzX3NlcnZpY2VfZGlyLAogKQogCi0jIENyZWF0ZSB0aGUgY29uZmlncyBk
+aXJlY3RvcnkgZm9yIHBlcnNpc3RlbnQgY29uZmlndXJhdGlvbiBwcm9maWxlcwotIyBOT1RFOiBD
+YW4gYmUgcmVwbGFjZWQgd2l0aCBpbnN0YWxsX2VtcHR5ZGlyKCkgd2hlbiBNZXNvbiAwLjYwIG9y
+IG5ld2VyCi0jICAgICAgIGlzIGF2YWlsYWJsZSBvbiBhbGwgc3VwcG9ydGVkIGRpc3Ryb3MKLW1l
+c29uLmFkZF9pbnN0YWxsX3NjcmlwdCgnc2gnLCctYycsICdta2RpciAtcCAkREVTVERJUkAwQCcu
+Zm9ybWF0KG9wZW52cG4zX3N0YXRlZGlyIC8gJ2NvbmZpZ3MnKSkKK2lmIGdldF9vcHRpb24oJ2Ny
+ZWF0ZV9zdGF0ZWRpcicpLmVuYWJsZWQoKQorICAgICMgQ3JlYXRlIHRoZSBjb25maWdzIGRpcmVj
+dG9yeSBmb3IgcGVyc2lzdGVudCBjb25maWd1cmF0aW9uIHByb2ZpbGVzCisgICAgIyBOT1RFOiBD
+YW4gYmUgcmVwbGFjZWQgd2l0aCBpbnN0YWxsX2VtcHR5ZGlyKCkgd2hlbiBNZXNvbiAwLjYwIG9y
+IG5ld2VyCisgICAgIyAgICAgICBpcyBhdmFpbGFibGUgb24gYWxsIHN1cHBvcnRlZCBkaXN0cm9z
+CisgICAgbWVzb24uYWRkX2luc3RhbGxfc2NyaXB0KCdzaCcsJy1jJywgJ21rZGlyIC1wICRERVNU
+RElSQDBAJy5mb3JtYXQob3BlbnZwbjNfc3RhdGVkaXIgLyAnY29uZmlncycpKQorZW5kaWYKLS0g
+CjIuNDUuMgoK
+--0000000000009add8f0622dd755f--
 
