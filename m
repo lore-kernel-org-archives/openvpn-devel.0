@@ -1,16 +1,11 @@
-From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Tue, 24 Sep 2024 13:12:57 +0000
-In-Reply-To: <gerrit.1726491830000.Ib8f12516dbe294e21d3fed77478fb7660d4600c1@...2715...>
-References: <gerrit.1726491830000.Ib8f12516dbe294e21d3fed77478fb7660d4600c1@...2715...>
-Reply-To: gert@...1296..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <8a650f0595d016a9d4a2b1631c9832219ea8f550-EmailReplacePatchSet-HTML@...2715...>
+From: Gert Doering <gert@...1296...>
+Date: Tue, 24 Sep 2024 15:14:37 +0200
+Message-ID: <20240924131437.22294-1-gert@...1296...>
+In-Reply-To: <gerrit.1726491830000.I0a2957699757665d70514ba7cafe833443018ad6@...2715...>
+References: <gerrit.1726491830000.I0a2957699757665d70514ba7cafe833443018ad6@...2715...>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="fPEaicx8oag="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: Use
- print_tun_backend_driver instead of custom code to print type
+Subject: [Openvpn-devel] [PATCH v11] Automatically enable
+ ifconfig-exec/route-exec behaviour for afunix tun/tap
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,215 +14,117 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---fPEaicx8oag=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+From: Arne Schwabe <arne@...1227...>
 
-cron2 has uploaded a new patch set (#12) to the change originally created b=
-y plaisthos. ( http://gerrit.openvpn.net/c/openvpn/+/749?usp=3Demail )
-
-The following approvals got outdated and were removed:
-Code-Review+2 by cron2
-
-
-Change subject: Use print_tun_backend_driver instead of custom code to prin=
-t type
-......................................................................
-
-Use print_tun_backend_driver instead of custom code to print type
-
-Also show the device type that we opened always instead of certain
-conditions only.
-
-Change-Id: Ib8f12516dbe294e21d3fed77478fb7660d4600c1
+Change-Id: I0a2957699757665d70514ba7cafe833443018ad6
 Signed-off-by: Arne Schwabe <arne@...1227...>
 Acked-by: Gert Doering <gert@...1296...>
-Message-Id: <20240924125513.10710-1-gert@...1296...>
-URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg29=
-386.html
-Signed-off-by: Gert Doering <gert@...1296...>
 ---
-M src/openvpn/init.c
-M src/openvpn/tun.c
-M src/openvpn/tun.h
-3 files changed, 8 insertions(+), 5 deletions(-)
 
+This change was reviewed on Gerrit and approved by at least one
+developer. I request to merge it to master.
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/49/749/12
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/750
+This mail reflects revision 11 of this Change.
 
+Acked-by according to Gerrit (reflected above):
+Gert Doering <gert@...1296...>
+
+        
 diff --git a/src/openvpn/init.c b/src/openvpn/init.c
-index fbf2c5b..cd9203a 100644
+index cd9203a..876edad 100644
 --- a/src/openvpn/init.c
 +++ b/src/openvpn/init.c
-@@ -1876,6 +1876,7 @@
-         open_tun(c->options.dev, c->options.dev_type, c->options.dev_node,
-                  tt, &c->net_ctx);
-     }
-+    msg(M_INFO, "%s device [%s] opened", print_tun_backend_driver(tt->back=
-end_driver), tt->actual_name);
+@@ -1679,6 +1679,18 @@
+ #endif /* ifdef ENABLE_MANAGEMENT */
  }
-
-=20
-@@ -2056,7 +2057,7 @@
- do_close_tun_simple(struct context *c)
- {
-     msg(D_CLOSE, "Closing %s interface",
--        dco_enabled(&c->options) ? "DCO" : "TUN/TAP");
-+        print_tun_backend_driver(c->c1.tuntap->backend_driver));
-
-     if (c->c1.tuntap)
-     {
-diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
-index 770e806..206ddc0 100644
---- a/src/openvpn/tun.c
-+++ b/src/openvpn/tun.c
-@@ -6678,7 +6678,6 @@
-      * GUID using the registry */
-     tt->actual_name =3D string_alloc((const char *)actual_buffer, NULL);
-
--    msg(M_INFO, "%s device [%s] opened", print_tun_backend_driver(tt->back=
-end_driver), tt->actual_name);
-     tt->adapter_index =3D get_adapter_index(*device_guid);
- }
-
-diff --git a/src/openvpn/tun.h b/src/openvpn/tun.h
-index b2c1b01..329cd10 100644
---- a/src/openvpn/tun.h
-+++ b/src/openvpn/tun.h
-@@ -361,6 +361,12 @@
-
- void warn_on_use_of_common_subnets(openvpn_net_ctx_t *ctx);
-
+ 
 +/**
-+ * Return a string representation of the tun backed driver type
++ * Determine if external route commands should be executed based on
++ * configured options and backend driver
 + */
-+const char *
-+print_tun_backend_driver(enum tun_driver_type driver);
++static bool
++route_noexec_enabled(const struct options *o, const struct tuntap *tt)
++{
++    return o->route_noexec
++           || (tt && tt->backend_driver == DRIVER_AFUNIX)
++           || (tt && tt->backend_driver == DRIVER_NULL);
++}
 +
  /*
-  * Should ifconfig be called before or after
-  * tun dev open?
-@@ -689,9 +695,6 @@
-     return tuntap_is_dco_win(tt) && (status < 0) && (openvpn_errno() =3D=
-=3D ERROR_NETNAME_DELETED);
+  * Possibly add routes and/or call route-up script
+  * based on options.
+@@ -1693,7 +1705,7 @@
+          openvpn_net_ctx_t *ctx)
+ {
+     bool ret = true;
+-    if (!options->route_noexec && ( route_list || route_ipv6_list ) )
++    if (!route_noexec_enabled(options, tt) && ( route_list || route_ipv6_list ) )
+     {
+         ret = add_routes(route_list, route_ipv6_list, tt, ROUTE_OPTION_FLAGS(options),
+                          es, ctx);
+@@ -1858,6 +1870,19 @@
+ #endif
  }
-
--const char *
--print_tun_backend_driver(enum tun_driver_type driver);
--
- #else  /* ifdef _WIN32 */
-
- static inline bool
-
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/749?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings
-
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: Ib8f12516dbe294e21d3fed77478fb7660d4600c1
-Gerrit-Change-Number: 749
-Gerrit-PatchSet: 12
-Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
-Gerrit-Reviewer: cron2 <gert@...1296...>
-Gerrit-Reviewer: flichtenheld <frank@...2641...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-MessageType: newpatchset
-
---fPEaicx8oag=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<p>cron2 <strong>uploaded patch set #12</strong> to the change originally c=
-reated by plaisthos.</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+=
-/749?usp=3Demail">View Change</a></p><p>The following approvals got outdate=
-d and were removed:
-Code-Review+2 by cron2</p><pre style=3D"font-family: monospace,monospace; w=
-hite-space: pre-wrap;">Use print_tun_backend_driver instead of custom code =
-to print type<br><br>Also show the device type that we opened always instea=
-d of certain<br>conditions only.<br><br>Change-Id: Ib8f12516dbe294e21d3fed7=
-7478fb7660d4600c1<br>Signed-off-by: Arne Schwabe &lt;arne@...1227...&gt;<br=
->Acked-by: Gert Doering &lt;gert@...1296...&gt;<br>Message-Id: &lt;20240924=
-125513.10710-1-gert@...1296...&gt;<br>URL: https://www.mail-archive.com/ope=
-nvpn-devel@lists.sourceforge.net/msg29386.html<br>Signed-off-by: Gert Doeri=
-ng &lt;gert@...1296...&gt;<br>---<br>M src/openvpn/init.c<br>M src/openvpn/=
-tun.c<br>M src/openvpn/tun.h<br>3 files changed, 8 insertions(+), 5 deletio=
-ns(-)<br><br></pre><pre style=3D"font-family: monospace,monospace; white-sp=
-ace: pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/openvpn refs/change=
-s/49/749/12</pre><pre style=3D"font-family: monospace,monospace; white-spac=
-e: pre-wrap;"><span>diff --git a/src/openvpn/init.c b/src/openvpn/init.c</s=
-pan><br><span>index fbf2c5b..cd9203a 100644</span><br><span>--- a/src/openv=
-pn/init.c</span><br><span>+++ b/src/openvpn/init.c</span><br><span>@@ -1876=
-,6 +1876,7 @@</span><br><span>         open_tun(c-&gt;options.dev, c-&gt;op=
-tions.dev_type, c-&gt;options.dev_node,</span><br><span>                  t=
-t, &amp;c-&gt;net_ctx);</span><br><span>     }</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+    msg(M_INFO, &quot;%s device [%s] opened&quot=
-;, print_tun_backend_driver(tt-&gt;backend_driver), tt-&gt;actual_name);</s=
-pan><br><span> }</span><br><span> </span><br><span> </span><br><span>@@ -20=
-56,7 +2057,7 @@</span><br><span> do_close_tun_simple(struct context *c)</sp=
-an><br><span> {</span><br><span>     msg(D_CLOSE, &quot;Closing %s interfac=
-e&quot;,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        dco_e=
-nabled(&amp;c-&gt;options) ? &quot;DCO&quot; : &quot;TUN/TAP&quot;);</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+        print_tun_backend_=
-driver(c-&gt;c1.tuntap-&gt;backend_driver));</span><br><span> </span><br><s=
-pan>     if (c-&gt;c1.tuntap)</span><br><span>     {</span><br><span>diff -=
--git a/src/openvpn/tun.c b/src/openvpn/tun.c</span><br><span>index 770e806.=
-.206ddc0 100644</span><br><span>--- a/src/openvpn/tun.c</span><br><span>+++=
- b/src/openvpn/tun.c</span><br><span>@@ -6678,7 +6678,6 @@</span><br><span>=
-      * GUID using the registry */</span><br><span>     tt-&gt;actual_name =
-=3D string_alloc((const char *)actual_buffer, NULL);</span><br><span> </spa=
-n><br><span style=3D"color: hsl(0, 100%, 40%);">-    msg(M_INFO, &quot;%s d=
-evice [%s] opened&quot;, print_tun_backend_driver(tt-&gt;backend_driver), t=
-t-&gt;actual_name);</span><br><span>     tt-&gt;adapter_index =3D get_adapt=
-er_index(*device_guid);</span><br><span> }</span><br><span> </span><br><spa=
-n>diff --git a/src/openvpn/tun.h b/src/openvpn/tun.h</span><br><span>index =
-b2c1b01..329cd10 100644</span><br><span>--- a/src/openvpn/tun.h</span><br><=
-span>+++ b/src/openvpn/tun.h</span><br><span>@@ -361,6 +361,12 @@</span><br=
-><span> </span><br><span> void warn_on_use_of_common_subnets(openvpn_net_ct=
-x_t *ctx);</span><br><span> </span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+/**</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * Retu=
-rn a string representation of the tun backed driver type</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+ */</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+const char *</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+print_tun_backend_driver(enum tun_driver_type driver);</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> /*</span=
-><br><span>  * Should ifconfig be called before or after</span><br><span>  =
-* tun dev open?</span><br><span>@@ -689,9 +695,6 @@</span><br><span>     re=
-turn tuntap_is_dco_win(tt) &amp;&amp; (status &lt; 0) &amp;&amp; (openvpn_e=
-rrno() =3D=3D ERROR_NETNAME_DELETED);</span><br><span> }</span><br><span> <=
-/span><br><span style=3D"color: hsl(0, 100%, 40%);">-const char *</span><br=
-><span style=3D"color: hsl(0, 100%, 40%);">-print_tun_backend_driver(enum t=
-un_driver_type driver);</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
->-</span><br><span> #else  /* ifdef _WIN32 */</span><br><span> </span><br><=
-span> static inline bool</span><br><span></span><br></pre><p>To view, visit=
- <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/749?usp=3Demail">change 7=
-49</a>. To unsubscribe, or for help writing mail filters, visit <a href=3D"=
-http://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope itemtyp=
-e=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"action" ite=
-mtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http:=
-//gerrit.openvpn.net/c/openvpn/+/749?usp=3Demail"/><meta itemprop=3D"name" =
-content=3D"View Change"/></div></div>
-
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: Ib8f12516dbe294e21d3fed77478=
-fb7660d4600c1 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 749 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 12 </div>
-<div style=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@...1711...=
-27...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
- </div>
-<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
-1...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
-
-
---fPEaicx8oag=--
+ 
++/**
++ * Determines if ifconfig execution should be disabled because of a
++ * @param c
++ * @return
++ */
++static bool
++ifconfig_noexec_enabled(const struct context *c)
++{
++    return c->options.ifconfig_noexec
++           || (c->c1.tuntap && c->c1.tuntap->backend_driver == DRIVER_AFUNIX)
++           || (c->c1.tuntap && c->c1.tuntap->backend_driver == DRIVER_NULL);
++}
++
+ static void
+ open_tun_backend(struct context *c)
+ {
+@@ -1937,7 +1962,7 @@
+         }
+ 
+         /* do ifconfig */
+-        if (!c->options.ifconfig_noexec
++        if (!ifconfig_noexec_enabled(c)
+             && ifconfig_order(c->c1.tuntap) == IFCONFIG_BEFORE_TUN_OPEN)
+         {
+             /* guess actual tun/tap unit number that will be returned
+@@ -1978,7 +2003,7 @@
+         }
+ 
+         /* do ifconfig */
+-        if (!c->options.ifconfig_noexec
++        if (!ifconfig_noexec_enabled(c)
+             && ifconfig_order(c->c1.tuntap) == IFCONFIG_AFTER_TUN_OPEN)
+         {
+             do_ifconfig(c->c1.tuntap, c->c1.tuntap->actual_name,
+@@ -2061,7 +2086,7 @@
+ 
+     if (c->c1.tuntap)
+     {
+-        if (!c->options.ifconfig_noexec)
++        if (!ifconfig_noexec_enabled(c))
+         {
+             undo_ifconfig(c->c1.tuntap, &c->net_ctx);
+         }
+diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
+index 206ddc0..85fe01a 100644
+--- a/src/openvpn/tun.c
++++ b/src/openvpn/tun.c
+@@ -1744,7 +1744,7 @@
+ void
+ undo_ifconfig(struct tuntap *tt, openvpn_net_ctx_t *ctx)
+ {
+-    if (tt->backend_driver != DRIVER_NULL)
++    if (tt->backend_driver != DRIVER_NULL && tt->backend_driver != DRIVER_AFUNIX)
+     {
+         if (tt->did_ifconfig_setup)
+         {
 
