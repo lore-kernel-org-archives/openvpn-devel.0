@@ -1,16 +1,16 @@
 From: "ordex (Code Review)" <gerrit@...515...>
-Date: Tue, 24 Sep 2024 20:43:29 +0000
-In-Reply-To: <gerrit.1700055887000.I4d1c96662c5a8c750d883e3b20adde09529e2764@...2715...>
-References: <gerrit.1700055887000.I4d1c96662c5a8c750d883e3b20adde09529e2764@...2715...>
+Date: Tue, 24 Sep 2024 20:57:00 +0000
+In-Reply-To: <gerrit.1700055887000.I6688362d8461c112bf425ddfe488d511a64cc37e@...2715...>
+References: <gerrit.1700055887000.I6688362d8461c112bf425ddfe488d511a64cc37e@...2715...>
 Reply-To: a@...2181..., arne-openvpn@...1227..., gianmarco@...2726...,
  openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <c16e7b2402f58d08d3b168dda7c5b5e2b5a36c91-EmailReviewComments-HTML@...2715...>
+Message-ID: <ca8b2877f9c80d29e2d6abc231663b852f8d7c6d-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="pRc0YqpwWmI="; charset=UTF-8
-Subject: [Openvpn-devel] [M] Change in openvpn[master]: allow user to
- specify 'local' multiple times in config files
+Content-Type: multipart/alternative; boundary="WDBoq+oDc3M="; charset=UTF-8
+Subject: [Openvpn-devel] [M] Change in openvpn[master]: mroute: properly
+ print protocol at the end of the string
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -22,65 +22,55 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: its_Giaan <gianmarco@...2726...>
 Cc: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---pRc0YqpwWmI=
+--WDBoq+oDc3M=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: flichtenheld, plaisthos.
+ordex has abandoned this change. ( http://gerrit.openvpn.net/c/openvpn/+/43=
+9?usp=3Demail )
 
-ordex has posted comments on this change. ( http://gerrit.openvpn.net/c/ope=
-nvpn/+/436?usp=3Demail )
-
-Change subject: allow user to specify 'local' multiple times in config files
+Change subject: mroute: properly print protocol at the end of the string
 ......................................................................
 
 
-Set Ready For Review
-
-
+Abandoned
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/436?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/439?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings
 
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: I4d1c96662c5a8c750d883e3b20adde09529e2764
-Gerrit-Change-Number: 436
-Gerrit-PatchSet: 2
+Gerrit-Change-Id: I6688362d8461c112bf425ddfe488d511a64cc37e
+Gerrit-Change-Number: 439
+Gerrit-PatchSet: 1
 Gerrit-Owner: ordex <a@...2181...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Comment-Date: Tue, 24 Sep 2024 20:43:29 +0000
-Gerrit-HasComments: No
-Gerrit-Has-Labels: No
-Gerrit-MessageType: comment
+Gerrit-MessageType: abandon
 
---pRc0YqpwWmI=
+--WDBoq+oDc3M=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p> Attention is currently required from: flichtenheld, plaisthos. </p>
-<p style=3D"white-space: pre-wrap; word-wrap: break-word;">Set Ready For Re=
-view</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/436?usp=3Demail=
-">View Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To=
- view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/436?usp=3Dema=
-il">change 436</a>. To unsubscribe, or for help writing mail filters, visit=
- <a href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div items=
-cope itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D=
-"action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" h=
-ref=3D"http://gerrit.openvpn.net/c/openvpn/+/436?usp=3Demail"/><meta itempr=
-op=3D"name" content=3D"View Change"/></div></div>
+<p>ordex <strong>abandoned</strong> this change.</p><p><a href=3D"http://ge=
+rrit.openvpn.net/c/openvpn/+/439?usp=3Demail">View Change</a></p><div style=
+=3D"white-space:pre-wrap">Abandoned</div><p>To view, visit <a href=3D"http:=
+//gerrit.openvpn.net/c/openvpn/+/439?usp=3Demail">change 439</a>. To unsubs=
+cribe, or for help writing mail filters, visit <a href=3D"http://gerrit.ope=
+nvpn.net/settings">settings</a>.</p><div itemscope itemtype=3D"http://schem=
+a.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://s=
+chema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.=
+net/c/openvpn/+/439?usp=3Demail"/><meta itemprop=3D"name" content=3D"View C=
+hange"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I4d1c96662c5a8c750d883e3b20a=
-dde09529e2764 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 436 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I6688362d8461c112bf425ddfe48=
+8d511a64cc37e </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 439 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
 <div style=3D"display:none"> Gerrit-Owner: ordex &lt;a@...2181...&gt; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
 1...&gt; </div>
@@ -88,16 +78,8 @@ dde09529e2764 </div>
 .1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
-41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Tue, 24 Sep 2024 20:43:29=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: No </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: No </div>
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
+<div style=3D"display:none"> Gerrit-MessageType: abandon </div>
 
 
---pRc0YqpwWmI=--
+--WDBoq+oDc3M=--
 
