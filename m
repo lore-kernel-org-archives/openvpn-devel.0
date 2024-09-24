@@ -1,14 +1,14 @@
 From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Tue, 24 Sep 2024 12:18:07 +0000
+Date: Tue, 24 Sep 2024 12:18:09 +0000
 In-Reply-To: <gerrit.1726491830000.I65099ef00822d08fd3f5480c80892f3bf86c56e7@...2715...>
 References: <gerrit.1726491830000.I65099ef00822d08fd3f5480c80892f3bf86c56e7@...2715...>
 Reply-To: gert@...1296..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <357b4ac7424550424e5772ed7c061d76be3f9b11-EmailReplacePatchSet-HTML@...2715...>
+Message-ID: <357b4ac7424550424e5772ed7c061d76be3f9b11-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="PimAop4Vbks="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="Y6RlQqNraEE="; charset=UTF-8
 Subject: [Openvpn-devel] [L] Change in openvpn[master]: Introduce
  DRIVER_AFUNIX backend for use with lwipovpn
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -19,19 +19,15 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: plaisthos <arne-openvpn@...1227...>
+Cc: flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---PimAop4Vbks=
+--Y6RlQqNraEE=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-cron2 has uploaded a new patch set (#12) to the change originally created b=
-y plaisthos. ( http://gerrit.openvpn.net/c/openvpn/+/747?usp=3Demail )
-
-The following approvals got outdated and were removed:
-Code-Review+2 by cron2
-
+cron2 has submitted this change. ( http://gerrit.openvpn.net/c/openvpn/+/74=
+7?usp=3Demail )
 
 Change subject: Introduce DRIVER_AFUNIX backend for use with lwipovpn
 ......................................................................
@@ -68,7 +64,7 @@ A src/openvpn/tun_afunix.h
 13 files changed, 393 insertions(+), 16 deletions(-)
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/47/747/12
+
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
 index ad620fa..6271574 100644
@@ -230,7 +226,7 @@ index 83cc670..1a14e19 100644
  #include "mudp.h"
  #include "dco.h"
 +#include "tun_afunix.h"
-
+=20
  #include "memdbg.h"
 
 @@ -1758,10 +1759,18 @@
@@ -812,61 +808,58 @@ Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
 Gerrit-Reviewer: cron2 <gert@...1296...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-MessageType: newpatchset
+Gerrit-MessageType: merged
 
---PimAop4Vbks=
+--Y6RlQqNraEE=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p>cron2 <strong>uploaded patch set #12</strong> to the change originally c=
-reated by plaisthos.</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+=
-/747?usp=3Demail">View Change</a></p><p>The following approvals got outdate=
-d and were removed:
-Code-Review+2 by cron2</p><pre style=3D"font-family: monospace,monospace; w=
-hite-space: pre-wrap;">Introduce DRIVER_AFUNIX backend for use with lwipovp=
-n<br><br>lwipovpn is a using lwip TCP/IP implementation with an AF_UNIX<br>=
-implementation to emulate a tun/tap device without messing with the<br>TCP/=
-IP stack of the host.<br><br>For more information about lwipovpn see https:=
-//github.com/OpenVPN/lwipovpn<br><br>Change-Id: I65099ef00822d08fd3f5480c80=
-892f3bf86c56e7<br>Signed-off-by: Arne Schwabe &lt;arne@...1227...&gt;<br>Ac=
-ked-by: Gert Doering &lt;gert@...1296...&gt;<br>Message-Id: &lt;20240924110=
-130.3910-1-gert@...1296...&gt;<br>URL: https://www.mail-archive.com/openvpn=
--devel@lists.sourceforge.net/msg29379.html<br>Signed-off-by: Gert Doering &=
-lt;gert@...1296...&gt;<br>---<br>M CMakeLists.txt<br>M Changes.rst<br>M doc=
-/man-sections/vpn-network-options.rst<br>M src/openvpn/Makefile.am<br>M src=
-/openvpn/dco.c<br>M src/openvpn/forward.c<br>M src/openvpn/init.c<br>M src/=
-openvpn/run_command.c<br>M src/openvpn/run_command.h<br>M src/openvpn/tun.c=
-<br>M src/openvpn/tun.h<br>A src/openvpn/tun_afunix.c<br>A src/openvpn/tun_=
-afunix.h<br>13 files changed, 393 insertions(+), 16 deletions(-)<br><br></p=
-re><pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;">=
-git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/47/747/12</pre=
-><pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><s=
-pan>diff --git a/CMakeLists.txt b/CMakeLists.txt</span><br><span>index ad62=
-0fa..6271574 100644</span><br><span>--- a/CMakeLists.txt</span><br><span>++=
-+ b/CMakeLists.txt</span><br><span>@@ -536,6 +536,8 @@</span><br><span>    =
- src/openvpn/tls_crypt.c</span><br><span>     src/openvpn/tun.c</span><br><=
-span>     src/openvpn/tun.h</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+    src/openvpn/tun_afunix.c</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+    src/openvpn/tun_afunix.h</span><br><span>     src/open=
-vpn/networking_sitnl.c</span><br><span>     src/openvpn/networking_freebsd.=
-c</span><br><span>     src/openvpn/auth_token.c</span><br><span>diff --git =
-a/Changes.rst b/Changes.rst</span><br><span>index 439352a..7d19577 100644</=
-span><br><span>--- a/Changes.rst</span><br><span>+++ b/Changes.rst</span><b=
-r><span>@@ -9,6 +9,19 @@</span><br><span>     the user experience as the cl=
-ient shows an error instead of running into</span><br><span>     a timeout =
-when the server just stops responding completely.</span><br><span> </span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+Support for tun/tap via uni=
-x domain socket and lwipovpn support</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+    To allow better testing and emulating a full client wi=
-th a full</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    networ=
-k stack OpenVPN now allows a program executed to provide</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+    a tun/tap device instead of openin=
-g a device.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+    The co-developed lwipov=
-pn program based on lwIP stack allows to</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+    simulate full IP stack and an OpenVPN client using=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    ``--dev-node un=
-ix:/path/to/lwipovpn`` can emulate a full client that</span><br><span style=
+<p>cron2 <strong>submitted</strong> this change.</p><p><a href=3D"http://ge=
+rrit.openvpn.net/c/openvpn/+/747?usp=3Demail">View Change</a></p><div style=
+=3D"white-space:pre-wrap"></div><pre style=3D"font-family: monospace,monosp=
+ace; white-space: pre-wrap;">Introduce DRIVER_AFUNIX backend for use with l=
+wipovpn<br><br>lwipovpn is a using lwip TCP/IP implementation with an AF_UN=
+IX<br>implementation to emulate a tun/tap device without messing with the<b=
+r>TCP/IP stack of the host.<br><br>For more information about lwipovpn see =
+https://github.com/OpenVPN/lwipovpn<br><br>Change-Id: I65099ef00822d08fd3f5=
+480c80892f3bf86c56e7<br>Signed-off-by: Arne Schwabe &lt;arne@...1227...&gt;=
+<br>Acked-by: Gert Doering &lt;gert@...1296...&gt;<br>Message-Id: &lt;20240=
+924110130.3910-1-gert@...1296...&gt;<br>URL: https://www.mail-archive.com/o=
+penvpn-devel@lists.sourceforge.net/msg29379.html<br>Signed-off-by: Gert Doe=
+ring &lt;gert@...1296...&gt;<br>---<br>M CMakeLists.txt<br>M Changes.rst<br=
+>M doc/man-sections/vpn-network-options.rst<br>M src/openvpn/Makefile.am<br=
+>M src/openvpn/dco.c<br>M src/openvpn/forward.c<br>M src/openvpn/init.c<br>=
+M src/openvpn/run_command.c<br>M src/openvpn/run_command.h<br>M src/openvpn=
+/tun.c<br>M src/openvpn/tun.h<br>A src/openvpn/tun_afunix.c<br>A src/openvp=
+n/tun_afunix.h<br>13 files changed, 393 insertions(+), 16 deletions(-)<br><=
+br></pre>
+<pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><sp=
+an>diff --git a/CMakeLists.txt b/CMakeLists.txt</span><br><span>index ad620=
+fa..6271574 100644</span><br><span>--- a/CMakeLists.txt</span><br><span>+++=
+ b/CMakeLists.txt</span><br><span>@@ -536,6 +536,8 @@</span><br><span>     =
+src/openvpn/tls_crypt.c</span><br><span>     src/openvpn/tun.c</span><br><s=
+pan>     src/openvpn/tun.h</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+    src/openvpn/tun_afunix.c</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+    src/openvpn/tun_afunix.h</span><br><span>     src/openv=
+pn/networking_sitnl.c</span><br><span>     src/openvpn/networking_freebsd.c=
+</span><br><span>     src/openvpn/auth_token.c</span><br><span>diff --git a=
+/Changes.rst b/Changes.rst</span><br><span>index 439352a..7d19577 100644</s=
+pan><br><span>--- a/Changes.rst</span><br><span>+++ b/Changes.rst</span><br=
+><span>@@ -9,6 +9,19 @@</span><br><span>     the user experience as the cli=
+ent shows an error instead of running into</span><br><span>     a timeout w=
+hen the server just stops responding completely.</span><br><span> </span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+Support for tun/tap via unix=
+ domain socket and lwipovpn support</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+    To allow better testing and emulating a full client wit=
+h a full</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    network=
+ stack OpenVPN now allows a program executed to provide</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+    a tun/tap device instead of opening=
+ a device.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+    The co-developed lwipovp=
+n program based on lwIP stack allows to</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+    simulate full IP stack and an OpenVPN client using<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+    ``--dev-node uni=
+x:/path/to/lwipovpn`` can emulate a full client that</span><br><span style=
 =3D"color: hsl(120, 100%, 40%);">+    can be pinged, can serve a website an=
 d more without requiring any</span><br><span style=3D"color: hsl(120, 100%,=
  40%);">+    elevated permission. This can make testing OpenVPN much easier=
@@ -1515,8 +1508,8 @@ View Change"/></div></div>
 1...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
+<div style=3D"display:none"> Gerrit-MessageType: merged </div>
 
 
---PimAop4Vbks=--
+--Y6RlQqNraEE=--
 
