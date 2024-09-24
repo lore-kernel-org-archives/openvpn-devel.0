@@ -1,9 +1,10 @@
-MIME-Version: 1.0
-From: Petr Portnov <mrjarviscraft@...277...>
-Date: Tue, 24 Sep 2024 16:26:44 +0300
-Message-ID: <CAOrkh=Vw_5rLO=Ny4RKMUfjVAhoAD36SyeZj0EjZfwnqHaL2QQ@...278...>
-Content-Type: multipart/mixed; boundary="0000000000009add8f0622dd755f"
-Subject: [Openvpn-devel] [PATCH] Configurable installation directories
+Date: Tue, 24 Sep 2024 15:27:05 +0200 (CEST)
+Message-Id: <202409241327.48ODR59j090332@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <20240924131437.22294-1-gert@...1296...>
+References: <20240924131437.22294-1-gert@...1296...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Automatically enable
+ ifconfig-exec/route-exec behaviour for afunix tun/tap
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,122 +13,34 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: Arne Schwabe <arne@...1227...>
+Cc: openvpn-devel@lists.sourceforge.net
 
---0000000000009add8f0622dd755f
-Content-Type: multipart/alternative; boundary="0000000000009add8c0622dd755d"
+This is basically just a convenience, to avoid having to explicitly add
+--ifconfig-noexec --route-noexec to the options whenever using --dev null
+or --dev-node af_unix: ("because there is no device to be configured"),
+and as such does not change anything for all other cases.
 
---0000000000009add8c0622dd755d
-Content-Type: text/plain; charset="UTF-8"
+Your patch has been applied to the master branch.
 
-Hi there!
-Continuing the packaging of the latest OpenVPN-linux for NixOS, I would
-like to propose the following addition to the build system.
+commit 5c4a0b71abecf1ccfff4c2ddadf0db9818b40f36
+Author: Arne Schwabe
+Date:   Tue Sep 24 15:14:37 2024 +0200
 
-What it does is it allows you to customize the installation paths for DBus
-and systemd services and adds the option to disable the generation of
-`openvpn3_statedir / 'configs'` directory (which is not always desired,
-e.g. when the OS takes this responsibility).
+     Automatically enable ifconfig-exec/route-exec behaviour for afunix tun/tap
 
-~ Petr Portnov
+     Signed-off-by: Arne Schwabe <arne@...1227...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <20240924131437.22294-1-gert@...1296...>
+     URL: https://www.mail-archive.com/search?l=mid&q=20240924131437.22294-1-gert@...1296...
+     Signed-off-by: Gert Doering <gert@...1296...>
 
---0000000000009add8c0622dd755d
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 
-<div dir=3D"ltr"><div>Hi there!</div><div>Continuing the packaging of the l=
-atest OpenVPN-linux for NixOS, I would like to propose the following additi=
-on to the build system.</div><div><br></div><div>What it does is it allows =
-you to customize the installation paths for DBus and systemd services and a=
-dds the option to disable the generation of `openvpn3_statedir / &#39;confi=
-gs&#39;` directory (which is not always desired, e.g. when the OS takes thi=
-s responsibility).</div><div><br></div><div>~ Petr Portnov<br></div></div>
+--
+kind regards,
 
---0000000000009add8c0622dd755d--
+Gert Doering
 
---0000000000009add8f0622dd755f
-Content-Type: text/x-patch; charset="US-ASCII"; 
-	name="0001-build-allow-installation-directories-customization.patch"
-Content-Disposition: attachment; 
-	filename="0001-build-allow-installation-directories-customization.patch"
-Content-Transfer-Encoding: base64
-Content-ID: <f_m1ggvz6o0>
-X-Attachment-Id: f_m1ggvz6o0
-
-RnJvbSA4NDhjYzQ2ZDA1YzIwM2RlMzkzZDc1NDM0YTNmNTcxZDc4Njg3ZjUwIE1vbiBTZXAgMTcg
-MDA6MDA6MDAgMjAwMQpGcm9tOiBQZXRyIFBvcnRub3YgPG1yamFydmlzY3JhZnRAZ21haWwuY29t
-PgpEYXRlOiBTdW4sIDIyIFNlcCAyMDI0IDEzOjE2OjAyICswMzAwClN1YmplY3Q6IFtQQVRDSF0g
-YnVpbGQ6IGFsbG93IGluc3RhbGxhdGlvbiBkaXJlY3RvcmllcycgY3VzdG9taXphdGlvbgoKVGhp
-cyBhbGxvd3MgdG8gY29uZmlndXJlIHRoZSBpbnN0YWxsYXRpb24gZGlyZWN0b3JpZXMKZm9yIHN5
-c3RlbWQgYW5kIEQtQnVzIGZpbGVzLgoKU2lnbmVkLW9mZi1ieTogUGV0ciBQb3J0bm92IDxtcmph
-cnZpc2NyYWZ0QGdtYWlsLmNvbT4KLS0tCiBkaXN0cm8vc3lzdGVtZC9tZXNvbi5idWlsZCB8ICA5
-ICsrKysrKystLQogbWVzb24uYnVpbGQgICAgICAgICAgICAgICAgfCAxMiArKysrKysrKysrLS0K
-IG1lc29uX29wdGlvbnMudHh0ICAgICAgICAgIHwgMTIgKysrKysrKysrKysrCiBzcmMvY29uZmln
-bWdyL21lc29uLmJ1aWxkICB8IDEwICsrKysrKy0tLS0KIDQgZmlsZXMgY2hhbmdlZCwgMzUgaW5z
-ZXJ0aW9ucygrKSwgOCBkZWxldGlvbnMoLSkKCmRpZmYgLS1naXQgYS9kaXN0cm8vc3lzdGVtZC9t
-ZXNvbi5idWlsZCBiL2Rpc3Ryby9zeXN0ZW1kL21lc29uLmJ1aWxkCmluZGV4IDM2ZDU1NmMuLjlj
-NjM2YjYgMTAwNjQ0Ci0tLSBhL2Rpc3Ryby9zeXN0ZW1kL21lc29uLmJ1aWxkCisrKyBiL2Rpc3Ry
-by9zeXN0ZW1kL21lc29uLmJ1aWxkCkBAIC0xNSwxMiArMTUsMTcgQEAgc3lzdGVtZF9jZmcgPSBj
-b25maWd1cmF0aW9uX2RhdGEoewogCiBzeXN0ZW1kX3NlcnZpY2VfY2ZnID0gZGVwZW5kZW5jeSgn
-c3lzdGVtZCcpCiAKK3N5c3RlbWRfc3lzdGVtX3VuaXRfZGlyID0gZ2V0X29wdGlvbignc3lzdGVt
-ZF9zeXN0ZW1fdW5pdF9kaXInKQoraWYgc3lzdGVtZF9zeXN0ZW1fdW5pdF9kaXIgPT0gJycKKyAg
-c3lzdGVtZF9zeXN0ZW1fdW5pdF9kaXIgPSBzeXN0ZW1kX3NlcnZpY2VfY2ZnLmdldF92YXJpYWJs
-ZSgnc3lzdGVtZHN5c3RlbXVuaXRkaXInKQorZW5kaWYKKwogY29uZmlndXJlX2ZpbGUoCiAgICAg
-aW5wdXQ6ICdvcGVudnBuMy1hdXRvbG9hZC5zZXJ2aWNlLmluJywKICAgICBvdXRwdXQ6ICdvcGVu
-dnBuMy1hdXRvbG9hZC5zZXJ2aWNlJywKICAgICBjb25maWd1cmF0aW9uOiBzeXN0ZW1kX2NmZywK
-ICAgICBpbnN0YWxsOiB0cnVlLAotICAgIGluc3RhbGxfZGlyOiBzeXN0ZW1kX3NlcnZpY2VfY2Zn
-LmdldF92YXJpYWJsZSgnc3lzdGVtZHN5c3RlbXVuaXRkaXInKSwKKyAgICBpbnN0YWxsX2Rpcjog
-c3lzdGVtZF9zeXN0ZW1fdW5pdF9kaXIsCiApCiAKIGNvbmZpZ3VyZV9maWxlKApAQCAtMjgsNyAr
-MzMsNyBAQCBjb25maWd1cmVfZmlsZSgKICAgICBvdXRwdXQ6ICdvcGVudnBuMy1zZXNzaW9uQC5z
-ZXJ2aWNlJywKICAgICBjb25maWd1cmF0aW9uOiBzeXN0ZW1kX2NmZywKICAgICBpbnN0YWxsOiB0
-cnVlLAotICAgIGluc3RhbGxfZGlyOiBzeXN0ZW1kX3NlcnZpY2VfY2ZnLmdldF92YXJpYWJsZSgn
-c3lzdGVtZHN5c3RlbXVuaXRkaXInKSwKKyAgICBpbnN0YWxsX2Rpcjogc3lzdGVtZF9zeXN0ZW1f
-dW5pdF9kaXIsCiApCiAKIGN1c3RvbV90YXJnZXQoJ29wZW52cG4zLXN5c3RlbWQnLApkaWZmIC0t
-Z2l0IGEvbWVzb24uYnVpbGQgYi9tZXNvbi5idWlsZAppbmRleCA1ODZjNzJhLi5iYTQxNDQwIDEw
-MDY0NAotLS0gYS9tZXNvbi5idWlsZAorKysgYi9tZXNvbi5idWlsZApAQCAtMjAzLDggKzIwMywx
-NiBAQCBtZXNzYWdlKCdPcGVuVlBOIDMgTGludXggc2VydmljZSBiaW5hcnkgZGlyZWN0b3J5OiAn
-ICsgZ2V0X29wdGlvbigncHJlZml4JykgLyBsaQogCiAjCiAjICBELUJ1cyBjb25maWd1cmF0aW9u
-Ci1kYnVzX3BvbGljeV9kaXIgPSBkZXBfZGJ1cy5nZXRfdmFyaWFibGUoJ2RhdGFkaXInKSAvICdk
-YnVzLTEnIC8gJ3N5c3RlbS5kJwotZGJ1c19zZXJ2aWNlX2RpciA9IGRlcF9kYnVzLmdldF92YXJp
-YWJsZSgnc3lzdGVtX2J1c19zZXJ2aWNlc19kaXInKQorZGJ1c19wb2xpY3lfZGlyID0gZ2V0X29w
-dGlvbignZGJ1c19wb2xpY3lfZGlyJykKK2lmIGRidXNfcG9saWN5X2RpciA9PSAnJworICAgIGRi
-dXNfcG9saWN5X2RpciA9IGRlcF9kYnVzLmdldF92YXJpYWJsZSgnZGF0YWRpcicpIC8gJ2RidXMt
-MScgLyAnc3lzdGVtLmQnCitlbmRpZgorCitkYnVzX3NlcnZpY2VfZGlyID0gZ2V0X29wdGlvbign
-ZGJ1c19zeXN0ZW1fc2VydmljZV9kaXInKQoraWYgZGJ1c19zZXJ2aWNlX2RpciA9PSAnJworICAg
-IGRidXNfc2VydmljZV9kaXIgPSBkZXBfZGJ1cy5nZXRfdmFyaWFibGUoJ3N5c3RlbV9idXNfc2Vy
-dmljZXNfZGlyJykKK2VuZGlmCisKIGRidXNfY29uZmlnID0gewogICAgICdPUEVOVlBOX1VTRVJO
-QU1FJzogZ2V0X29wdGlvbignb3BlbnZwbl91c2VybmFtZScpLAogICAgICdMSUJFWEVDX1BBVEgn
-OiBnZXRfb3B0aW9uKCdwcmVmaXgnKSAvIGxpYmV4ZWNfZGlyLApkaWZmIC0tZ2l0IGEvbWVzb25f
-b3B0aW9ucy50eHQgYi9tZXNvbl9vcHRpb25zLnR4dAppbmRleCA0M2UzMDFlLi4wNDgwOWRmIDEw
-MDY0NAotLS0gYS9tZXNvbl9vcHRpb25zLnR4dAorKysgYi9tZXNvbl9vcHRpb25zLnR4dApAQCAt
-OTMsNiArOTMsMTggQEAgb3B0aW9uKCd1c2UtbGVnYWN5LXBvbGtpdC1wa2xhJywgdHlwZTogJ2Zl
-YXR1cmUnLCB2YWx1ZTogJ2Rpc2FibGVkJywKIG9wdGlvbigncG9sa2l0X3BrbGFfcnVsZXNkaXIn
-LCB0eXBlOiAnc3RyaW5nJywgdmFsdWU6ICcnLAogICAgICAgIGRlc2NyaXB0aW9uOiAnT3ZlcnJp
-ZGUgUG9saWN5S2l0IFBLTEEgcnVsZXMgZGlyZWN0b3J5JykKIAorIworIyBJbnN0YWxsYXRpb24K
-KyMKK29wdGlvbignZGJ1c19wb2xpY3lfZGlyJywgdHlwZTogJ3N0cmluZycsCisgICAgICAgZGVz
-Y3JpcHRpb246ICdELUJ1cyBwb2xpY3kgZGlyZWN0b3J5JykKK29wdGlvbignZGJ1c19zeXN0ZW1f
-c2VydmljZV9kaXInLCB0eXBlOiAnc3RyaW5nJywKKyAgICAgICBkZXNjcmlwdGlvbjogJ0QtQnVz
-IHN5c3RlbSBzZXJ2aWNlIGRpcmVjdG9yeScpCitvcHRpb24oJ3N5c3RlbWRfc3lzdGVtX3VuaXRf
-ZGlyJywgdHlwZTogJ3N0cmluZycsCisgICAgICAgZGVzY3JpcHRpb246ICdQYXRoIHRvIHN5c3Rl
-bWQgc3lzdGVtIHVuaXQgZGlyZWN0b3J5JykKK29wdGlvbignY3JlYXRlX3N0YXRlZGlyJywgdHlw
-ZTogJ2ZlYXR1cmUnLCB2YWx1ZTogJ2VuYWJsZWQnLAorICAgICAgIGRlc2NyaXB0aW9uOiAnQ3Jl
-YXRlIGRpcmVjdG9yeSBmb3IgT3BlblZQTiAzIHN0YXRlIGR1cmluZyBpbnN0YWxsIHBoYXNlJykK
-KwogIwogIyAgVGVzdGluZyB0b29scwogIwpkaWZmIC0tZ2l0IGEvc3JjL2NvbmZpZ21nci9tZXNv
-bi5idWlsZCBiL3NyYy9jb25maWdtZ3IvbWVzb24uYnVpbGQKaW5kZXggNWQwYTY0OS4uNmY3ODhi
-NyAxMDA2NDQKLS0tIGEvc3JjL2NvbmZpZ21nci9tZXNvbi5idWlsZAorKysgYi9zcmMvY29uZmln
-bWdyL21lc29uLmJ1aWxkCkBAIC01Miw3ICs1Miw5IEBAIGNvbmZpZ3VyZV9maWxlKAogICAgIGlu
-c3RhbGxfZGlyOiBkYnVzX3NlcnZpY2VfZGlyLAogKQogCi0jIENyZWF0ZSB0aGUgY29uZmlncyBk
-aXJlY3RvcnkgZm9yIHBlcnNpc3RlbnQgY29uZmlndXJhdGlvbiBwcm9maWxlcwotIyBOT1RFOiBD
-YW4gYmUgcmVwbGFjZWQgd2l0aCBpbnN0YWxsX2VtcHR5ZGlyKCkgd2hlbiBNZXNvbiAwLjYwIG9y
-IG5ld2VyCi0jICAgICAgIGlzIGF2YWlsYWJsZSBvbiBhbGwgc3VwcG9ydGVkIGRpc3Ryb3MKLW1l
-c29uLmFkZF9pbnN0YWxsX3NjcmlwdCgnc2gnLCctYycsICdta2RpciAtcCAkREVTVERJUkAwQCcu
-Zm9ybWF0KG9wZW52cG4zX3N0YXRlZGlyIC8gJ2NvbmZpZ3MnKSkKK2lmIGdldF9vcHRpb24oJ2Ny
-ZWF0ZV9zdGF0ZWRpcicpLmVuYWJsZWQoKQorICAgICMgQ3JlYXRlIHRoZSBjb25maWdzIGRpcmVj
-dG9yeSBmb3IgcGVyc2lzdGVudCBjb25maWd1cmF0aW9uIHByb2ZpbGVzCisgICAgIyBOT1RFOiBD
-YW4gYmUgcmVwbGFjZWQgd2l0aCBpbnN0YWxsX2VtcHR5ZGlyKCkgd2hlbiBNZXNvbiAwLjYwIG9y
-IG5ld2VyCisgICAgIyAgICAgICBpcyBhdmFpbGFibGUgb24gYWxsIHN1cHBvcnRlZCBkaXN0cm9z
-CisgICAgbWVzb24uYWRkX2luc3RhbGxfc2NyaXB0KCdzaCcsJy1jJywgJ21rZGlyIC1wICRERVNU
-RElSQDBAJy5mb3JtYXQob3BlbnZwbjNfc3RhdGVkaXIgLyAnY29uZmlncycpKQorZW5kaWYKLS0g
-CjIuNDUuMgoK
---0000000000009add8f0622dd755f--
 
