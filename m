@@ -1,15 +1,16 @@
-From: "plaisthos (Code Review)" <gerrit@...515...>
-Date: Wed, 25 Sep 2024 14:06:58 +0000
-References: <gerrit.1727273213000.Id99a3ba13c0f1d0bc7e4699fb67ee9dff6221639@...2715...>
-Reply-To: arne-openvpn@...1227..., openvpn-devel@lists.sourceforge.net,
- frank@...2641...
-Message-ID: <1838210b47c0914e3119d4f491d6c9a6f8bb5c35-HTML@...2715...>
+From: "flichtenheld (Code Review)" <gerrit@...515...>
+Date: Wed, 25 Sep 2024 14:12:42 +0000
+In-Reply-To: <gerrit.1700055887000.I4d1c96662c5a8c750d883e3b20adde09529e2764@...2715...>
+References: <gerrit.1700055887000.I4d1c96662c5a8c750d883e3b20adde09529e2764@...2715...>
+Reply-To: frank@...2641..., arne-openvpn@...1227...,
+ gianmarco@...2726..., openvpn-devel@lists.sourceforge.net, a@...2181...
+Message-ID: <df9037b7838b0a98275660c2cf05cbbb331d7f7a-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="laqMa1AZ7Vs="; charset=UTF-8
-Subject: [Openvpn-devel] [XS] Change in openvpn[master]: Fix socketpair
- return status not being checked in port share code
+Content-Type: multipart/alternative; boundary="Jn2SE42s2nM="; charset=UTF-8
+Subject: [Openvpn-devel] [M] Change in openvpn[master]: allow user to
+ specify 'local' multiple times in config files
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,149 +19,143 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: flichtenheld <frank@...2641...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: its_Giaan <gianmarco@...2726...>
+Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---laqMa1AZ7Vs=
+--Jn2SE42s2nM=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: flichtenheld.
+Attention is currently required from: its_Giaan, ordex, plaisthos.
 
-Hello flichtenheld,
+flichtenheld has posted comments on this change. ( http://gerrit.openvpn.ne=
+t/c/openvpn/+/436?usp=3Demail )
 
-I'd like you to do a code review.
-Please visit
-
-    http://gerrit.openvpn.net/c/openvpn/+/770?usp=3Demail
-
-to review the following change.
-
-
-Change subject: Fix socketpair return status not being checked in port shar=
-e code
+Change subject: allow user to specify 'local' multiple times in config files
 ......................................................................
 
-Fix socketpair return status not being checked in port share code
 
-found by Coverity after tun_afunix introduced another call to
-socketpair, so it started to complain that we only check the
-return code in 4 of 5 cases.
+Patch Set 2: Code-Review-1
 
-Change-Id: Id99a3ba13c0f1d0bc7e4699fb67ee9dff6221639
----
-M src/openvpn/ps.c
-1 file changed, 7 insertions(+), 1 deletion(-)
+(4 comments)
 
+Patchset:
+
+PS2:
+Need to look into the macOS build failures.
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/70/770/1
+File src/openvpn/options.c:
 
-diff --git a/src/openvpn/ps.c b/src/openvpn/ps.c
-index 4ca3a12..129f65c 100644
---- a/src/openvpn/ps.c
-+++ b/src/openvpn/ps.c
-@@ -234,7 +234,12 @@
-         }
-         else
-         {
--            socketpair(PF_UNIX, SOCK_DGRAM, 0, sd_null);
-+            if (!socketpair(AF_UNIX, SOCK_DGRAM, 0, sd_null))
-+            {
-+                msg(M_WARN|M_ERRNO, "PORT SHARE: socketpair failed -- unab=
-le to communicate with background process "
-+                    "(%d, %d)", sd, sd_send);
-+                goto done;
-+            }
-             memcpy(CMSG_DATA(h), &sd_null[0], sizeof(sd_null[0]));
-         }
+http://gerrit.openvpn.net/c/openvpn/+/436/comment/d52e4152_214d8bc0 :
+PS2, Line 127:     "--local host|* [port] : Local host name or ip address a=
+nd port. '*' can be used\n"
+Some of this should move to the documentation instead.
 
-@@ -246,6 +251,7 @@
-                 );
-         }
 
-+done:
-         close_socket_if_defined(sd_null[0]);
-         close_socket_if_defined(sd_null[1]);
-         free(mesg.msg_control);
+http://gerrit.openvpn.net/c/openvpn/+/436/comment/84cfb07a_49de2180 :
+PS2, Line 997: befor
+"be for"?
 
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/770?usp=3Demail
+
+File src/openvpn/socket.c:
+
+http://gerrit.openvpn.net/c/openvpn/+/436/comment/cbf102c9_02a57533 :
+PS2, Line 345:     int i, j;
+For new code please move the declaration to the actual first use. No need t=
+o stay in pre-C99 style.
+
+
+
+--=20
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/436?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings
 
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: Id99a3ba13c0f1d0bc7e4699fb67ee9dff6221639
-Gerrit-Change-Number: 770
-Gerrit-PatchSet: 1
-Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
+Gerrit-Change-Id: I4d1c96662c5a8c750d883e3b20adde09529e2764
+Gerrit-Change-Number: 436
+Gerrit-PatchSet: 2
+Gerrit-Owner: ordex <a@...2181...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
+Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-MessageType: newchange
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Attention: its_Giaan <gianmarco@...2726...>
+Gerrit-Attention: ordex <a@...2181...>
+Gerrit-Comment-Date: Wed, 25 Sep 2024 14:12:42 +0000
+Gerrit-HasComments: Yes
+Gerrit-Has-Labels: Yes
+Gerrit-MessageType: comment
 
---laqMa1AZ7Vs=
+--Jn2SE42s2nM=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p> Attention is currently required from: flichtenheld. </p>
-<p>plaisthos would like flichtenheld to <strong>review</strong> this change.
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/770?usp=3Demail">Vi=
-ew Change</a></p><pre style=3D"font-family: monospace,monospace; white-spac=
-e: pre-wrap;">Fix socketpair return status not being checked in port share =
-code<br><br>found by Coverity after tun_afunix introduced another call to<b=
-r>socketpair, so it started to complain that we only check the<br>return co=
-de in 4 of 5 cases.<br><br>Change-Id: Id99a3ba13c0f1d0bc7e4699fb67ee9dff622=
-1639<br>---<br>M src/openvpn/ps.c<br>1 file changed, 7 insertions(+), 1 del=
-etion(-)<br><br></pre><pre style=3D"font-family: monospace,monospace; white=
--space: pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/openvpn refs/cha=
-nges/70/770/1</pre><pre style=3D"font-family: monospace,monospace; white-sp=
-ace: pre-wrap;"><span>diff --git a/src/openvpn/ps.c b/src/openvpn/ps.c</spa=
-n><br><span>index 4ca3a12..129f65c 100644</span><br><span>--- a/src/openvpn=
-/ps.c</span><br><span>+++ b/src/openvpn/ps.c</span><br><span>@@ -234,7 +234=
-,12 @@</span><br><span>         }</span><br><span>         else</span><br><=
-span>         {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-      =
-      socketpair(PF_UNIX, SOCK_DGRAM, 0, sd_null);</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+            if (!socketpair(AF_UNIX, SOCK_DG=
-RAM, 0, sd_null))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-          {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        =
-        msg(M_WARN|M_ERRNO, &quot;PORT SHARE: socketpair failed -- unable t=
-o communicate with background process &quot;</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+                    &quot;(%d, %d)&quot;, sd, sd_s=
-end);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+              =
-  goto done;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
-     }</span><br><span>             memcpy(CMSG_DATA(h), &amp;sd_null[0], s=
-izeof(sd_null[0]));</span><br><span>         }</span><br><span> </span><br>=
-<span>@@ -246,6 +251,7 @@</span><br><span>                 );</span><br><sp=
-an>         }</span><br><span> </span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+done:</span><br><span>         close_socket_if_defined(sd_null[=
-0]);</span><br><span>         close_socket_if_defined(sd_null[1]);</span><b=
-r><span>         free(mesg.msg_control);</span><br><span></span><br></pre><=
-p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/770?usp=
-=3Demail">change 770</a>. To unsubscribe, or for help writing mail filters,=
- visit <a href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div=
- itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemp=
-rop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"=
-url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/770?usp=3Demail"/><meta =
-itemprop=3D"name" content=3D"View Change"/></div></div>
+<p> Attention is currently required from: its_Giaan, ordex, plaisthos. </p>
+<p>Patch set 2:<span style=3D"border-radius: 3px; display: inline-block; ma=
+rgin: 0 2px; padding: 4px;background-color: #ffd4d4;">Code-Review -1</span>=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/436?usp=3Demail">Vi=
+ew Change</a></p><p>4 comments:</p><ul style=3D"list-style: none; padding: =
+0;"><li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-=
+style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p =
+style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvp=
+n/+/436?tab=3Dcomments">Patch Set #2:</a> </p><p style=3D"white-space: pre-=
+wrap; word-wrap: break-word;">Need to look into the macOS build failures.</=
+p></li></ul></li><li style=3D"margin: 0; padding: 0;"><p>File src/openvpn/o=
+ptions.c:</p><ul style=3D"list-style: none; padding: 0;"><li style=3D"margi=
+n: 0; padding: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"htt=
+p://gerrit.openvpn.net/c/openvpn/+/436/comment/d52e4152_214d8bc0">Patch Set=
+ #2, Line 127:</a> <code style=3D"font-family:monospace,monospace">    &quo=
+t;--local host|* [port] : Local host name or ip address and port. &#39;*&#3=
+9; can be used\n&quot;</code></p><p style=3D"white-space: pre-wrap; word-wr=
+ap: break-word;">Some of this should move to the documentation instead.</p>=
+</li><li style=3D"margin: 0; padding: 0 0 0 16px;"><p style=3D"margin-botto=
+m: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/436/comment/84cfb=
+07a_49de2180">Patch Set #2, Line 997:</a> <code style=3D"font-family:monosp=
+ace,monospace">befor</code></p><p style=3D"white-space: pre-wrap; word-wrap=
+: break-word;">&quot;be for&quot;?</p></li></ul></li><li style=3D"margin: 0=
+; padding: 0;"><p>File src/openvpn/socket.c:</p><ul style=3D"list-style: no=
+ne; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p style=3D"=
+margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/436/c=
+omment/cbf102c9_02a57533">Patch Set #2, Line 345:</a> <code style=3D"font-f=
+amily:monospace,monospace">    int i, j;</code></p><p style=3D"white-space:=
+ pre-wrap; word-wrap: break-word;">For new code please move the declaration=
+ to the actual first use. No need to stay in pre-C99 style.</p></li></ul></=
+li></ul><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/=
+436?usp=3Demail">change 436</a>. To unsubscribe, or for help writing mail f=
+ilters, visit <a href=3D"http://gerrit.openvpn.net/settings">settings</a>.<=
+/p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscop=
+e itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itemp=
+rop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/436?usp=3Demail"/=
+><meta itemprop=3D"name" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: Id99a3ba13c0f1d0bc7e4699fb67=
-ee9dff6221639 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 770 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
-<div style=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@...1711...=
-27...&gt; </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I4d1c96662c5a8c750d883e3b20a=
+dde09529e2764 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 436 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
+<div style=3D"display:none"> Gerrit-Owner: ordex &lt;a@...2181...&gt; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
 1...&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
+.1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
-41...&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: newchange </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: its_Giaan &lt;gianmarco@...1665...=
+726...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: ordex &lt;a@...2181...&gt; <=
+/div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Wed, 25 Sep 2024 14:12:42=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
 
 
---laqMa1AZ7Vs=--
+--Jn2SE42s2nM=--
 
