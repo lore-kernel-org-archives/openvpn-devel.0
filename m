@@ -1,15 +1,15 @@
 From: "ordex (Code Review)" <gerrit@...515...>
-Date: Wed, 25 Sep 2024 08:09:49 +0000
+Date: Wed, 25 Sep 2024 08:10:59 +0000
 In-Reply-To: <gerrit.1727248983000.I101bbc9f682375ec733bca10b52da82f0abfec27@...2715...>
 References: <gerrit.1727248983000.I101bbc9f682375ec733bca10b52da82f0abfec27@...2715...>
 Reply-To: a@...2181..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net, frank@...2641...,
  lstipakov@...277...
-Message-ID: <cd828e24fb3e4e286a6631a3f6ad57ae189e5f10-EmailReviewComments-HTML@...2715...>
+Message-ID: <fa6d1b764c7cd17e0732fcab8bb13287911e7f54-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="/+VaWNPkHFY="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="NtiaSGEHeu0="; charset=UTF-8
 Subject: [Openvpn-devel] [S] Change in openvpn[master]: dco: better naming
  for function parameters
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -23,7 +23,7 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: stipa <lstipakov@...277...>
 Cc: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---/+VaWNPkHFY=
+--NtiaSGEHeu0=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
@@ -36,7 +36,7 @@ Change subject: dco: better naming for function parameters
 ......................................................................
 
 
-Patch Set 3: Code-Review+2
+Patch Set 3: Code-Review-2
 
 
 --
@@ -57,19 +57,19 @@ Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
 Gerrit-Attention: flichtenheld <frank@...2641...>
 Gerrit-Attention: stipa <lstipakov@...277...>
-Gerrit-Comment-Date: Wed, 25 Sep 2024 08:09:49 +0000
+Gerrit-Comment-Date: Wed, 25 Sep 2024 08:10:59 +0000
 Gerrit-HasComments: No
 Gerrit-Has-Labels: Yes
 Gerrit-MessageType: comment
 
---/+VaWNPkHFY=
+--NtiaSGEHeu0=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <p> Attention is currently required from: flichtenheld, plaisthos, stipa. <=
 /p>
 <p>Patch set 3:<span style=3D"border-radius: 3px; display: inline-block; ma=
-rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
+rgin: 0 2px; padding: 4px;background-color: #ffd4d4;">Code-Review -2</span>=
 </p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/769?usp=3Demail">Vi=
 ew Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To vie=
 w, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/769?usp=3Demail">=
@@ -102,12 +102,12 @@ ts.sourceforge.net&gt; </div>
 41...&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: stipa &lt;lstipakov@...1663...=
 .&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Wed, 25 Sep 2024 08:09:49=
+<div style=3D"display:none"> Gerrit-Comment-Date: Wed, 25 Sep 2024 08:10:59=
  +0000 </div>
 <div style=3D"display:none"> Gerrit-HasComments: No </div>
 <div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
 <div style=3D"display:none"> Gerrit-MessageType: comment </div>
 
 
---/+VaWNPkHFY=--
+--NtiaSGEHeu0=--
 
