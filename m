@@ -1,11 +1,10 @@
 From: Frank Lichtenheld <frank@...2641...>
-Date: Fri, 27 Sep 2024 11:30:45 +0200
-Message-Id: <20240927093045.22753-1-frank@...2641...>
-In-Reply-To: <gerrit.1727248983000.I101bbc9f682375ec733bca10b52da82f0abfec27@...2715...>
-References: <gerrit.1727248983000.I101bbc9f682375ec733bca10b52da82f0abfec27@...2715...>
+Date: Fri, 27 Sep 2024 11:32:05 +0200
+Message-Id: <20240927093205.22981-1-frank@...2641...>
+In-Reply-To: <gerrit.1727349719000.I92dfbc3a0cc347a51892600bf02b501295ce612b@...2715...>
+References: <gerrit.1727349719000.I92dfbc3a0cc347a51892600bf02b501295ce612b@...2715...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v4] dco: better naming for function
- parameters
+Subject: [Openvpn-devel] [PATCH v1] GHA: Pin dependencies
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,119 +16,235 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
-Cc: Lev Stipakov <lev@...515...>, Antonio Quartulli <a@...2181...>
+Cc: Yuriy Darnobyt <yura.uddr@...277...>
 
-From: Lev Stipakov <lev@...515...>
+Done by renovate. Updates will also be handled by
+renovate.
 
-Current naming (remote_in4/6) is confusing, since
-those are in fact VPN IPv4/v6 addresses and not
-related to remote at all.
+This makes the builds slightly more deterministic and
+removes some potential supply-chain attack vectors.
 
-Change-Id: I101bbc9f682375ec733bca10b52da82f0abfec27
-Signed-off-by: Lev Stipakov <lev@...515...>
-Acked-by: Antonio Quartulli <a@...2181...>
+GitHub: #610
+
+Change-Id: I92dfbc3a0cc347a51892600bf02b501295ce612b
+Signed-off-by: Frank Lichtenheld <frank@...2641...>
+Acked-by: Yuriy Darnobyt <yura.uddr@...277...>
 ---
 
 This change was reviewed on Gerrit and approved by at least one
 developer. I request to merge it to master.
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/769
-This mail reflects revision 4 of this Change.
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/773
+This mail reflects revision 1 of this Change.
 
 Acked-by according to Gerrit (reflected above):
-Antonio Quartulli <a@...2181...>
+Yuriy Darnobyt <yura.uddr@...277...>
 
         
-diff --git a/src/openvpn/dco_freebsd.c b/src/openvpn/dco_freebsd.c
-index 9a90f5c..c92e42a 100644
---- a/src/openvpn/dco_freebsd.c
-+++ b/src/openvpn/dco_freebsd.c
-@@ -75,7 +75,7 @@
- int
- dco_new_peer(dco_context_t *dco, unsigned int peerid, int sd,
-              struct sockaddr *localaddr, struct sockaddr *remoteaddr,
--             struct in_addr *remote_in4, struct in6_addr *remote_in6)
-+             struct in_addr *vpn_ipv4, struct in6_addr *vpn_ipv6)
- {
-     struct ifdrv drv;
-     nvlist_t *nvl;
-@@ -95,15 +95,15 @@
-         nvlist_add_nvlist(nvl, "remote", sockaddr_to_nvlist(remoteaddr));
-     }
+diff --git a/.github/workflows/build.yaml b/.github/workflows/build.yaml
+index 361d457..1bc250d 100644
+--- a/.github/workflows/build.yaml
++++ b/.github/workflows/build.yaml
+@@ -13,7 +13,7 @@
+       - name: Install dependencies
+         run: sudo apt update && sudo apt install -y uncrustify
+       - name: Checkout OpenVPN
+-        uses: actions/checkout@...2691...
++        uses: actions/checkout@...2813... # v4
+         with:
+           path: openvpn
+       - name: Show uncrustify version
+@@ -27,7 +27,7 @@
+       - name: Show changes on standard output
+         run: git diff
+         working-directory: openvpn
+-      - uses: actions/upload-artifact@...2691...
++      - uses: actions/upload-artifact@...2814... # v4
+         with:
+           name: uncrustify-changes.patch
+           path: 'openvpn/uncrustify-changes.patch'
+@@ -49,22 +49,22 @@
+       - name: Install dependencies
+         run: sudo apt update && sudo apt install -y mingw-w64 unzip cmake ninja-build build-essential wget python3-docutils man2html-base
+       - name: Checkout OpenVPN
+-        uses: actions/checkout@...2691...
++        uses: actions/checkout@...2813... # v4
  
--    if (remote_in4)
-+    if (vpn_ipv4)
-     {
--        nvlist_add_binary(nvl, "vpn_ipv4", &remote_in4->s_addr,
--                          sizeof(remote_in4->s_addr));
-+        nvlist_add_binary(nvl, "vpn_ipv4", &vpn_ipv4->s_addr,
-+                          sizeof(vpn_ipv4->s_addr));
-     }
+       - name: Restore from cache and install vcpkg
+-        uses: lukka/run-vcpkg@...2807...
++        uses: lukka/run-vcpkg@...2815... # v11.5
+         with:
+           vcpkgGitCommitId: 8d3649ba34aab36914ddd897958599aa0a91b08e
+           vcpkgJsonGlob: '**/mingw/vcpkg.json'
  
--    if (remote_in6)
-+    if (vpn_ipv6)
-     {
--        nvlist_add_binary(nvl, "vpn_ipv6", remote_in6, sizeof(*remote_in6));
-+        nvlist_add_binary(nvl, "vpn_ipv6", vpn_ipv6, sizeof(*vpn_ipv6));
-     }
+       - name: Run CMake with vcpkg.json manifest
+-        uses: lukka/run-cmake@...2808...
++        uses: lukka/run-cmake@...2816... # v10.8
+         with:
+           configurePreset: mingw-${{ matrix.arch }}
+           buildPreset: mingw-${{ matrix.arch }}
+           buildPresetAdditionalArgs: "['--config Debug']"
  
-     nvlist_add_number(nvl, "fd", sd);
-diff --git a/src/openvpn/dco_internal.h b/src/openvpn/dco_internal.h
-index 624c110..4bbcc82 100644
---- a/src/openvpn/dco_internal.h
-+++ b/src/openvpn/dco_internal.h
-@@ -62,7 +62,7 @@
+-      - uses: actions/upload-artifact@...2691...
++      - uses: actions/upload-artifact@...2814... # v4
+         with:
+           name: openvpn-mingw-${{ matrix.arch }}
+           path: |
+@@ -72,7 +72,7 @@
+             ${{ github.workspace }}/out/build/mingw/${{ matrix.arch }}/Debug/*.dll
+             !${{ github.workspace }}/out/build/mingw/${{ matrix.arch }}/Debug/test_*.exe
  
- int dco_new_peer(dco_context_t *dco, unsigned int peerid, int sd,
-                  struct sockaddr *localaddr, struct sockaddr *remoteaddr,
--                 struct in_addr *remote_in4, struct in6_addr *remote_in6);
-+                 struct in_addr *vpn_ipv4, struct in6_addr *vpn_ipv6);
+-      - uses: actions/upload-artifact@...2691...
++      - uses: actions/upload-artifact@...2814... # v4
+         with:
+           name: openvpn-mingw-${{ matrix.arch }}-tests
+           path: |
+@@ -91,9 +91,9 @@
+     name: "mingw unittest ${{ matrix.test }} - ${{ matrix.arch }} - OSSL"
+     steps:
+       - name: Checkout OpenVPN
+-        uses: actions/checkout@...2691...
++        uses: actions/checkout@...2813... # v4
+       - name: Retrieve mingw unittest
+-        uses: actions/download-artifact@...2691...
++        uses: actions/download-artifact@...2817... # v4
+         with:
+           name: openvpn-mingw-${{ matrix.arch }}-tests
+           path: unittests
+@@ -165,7 +165,7 @@
+       - name: Install dependencies
+         run: sudo apt update && sudo apt install -y liblzo2-dev libpam0g-dev liblz4-dev libcap-ng-dev libnl-genl-3-dev linux-libc-dev man2html libcmocka-dev python3-docutils libtool automake autoconf ${SSLPKG} ${PKCS11PKG}
+       - name: Checkout OpenVPN
+-        uses: actions/checkout@...2691...
++        uses: actions/checkout@...2813... # v4
+       - name: autoconf
+         run: autoreconf -fvi
+       - name: configure
+@@ -195,7 +195,7 @@
+       - name: Install dependencies
+         run: sudo apt update && sudo apt install -y liblzo2-dev libpam0g-dev liblz4-dev libcap-ng-dev libnl-genl-3-dev linux-libc-dev man2html clang libcmocka-dev python3-docutils libtool automake autoconf libmbedtls-dev
+       - name: Checkout OpenVPN
+-        uses: actions/checkout@...2691...
++        uses: actions/checkout@...2813... # v4
+       - name: autoconf
+         run: autoreconf -fvi
+       - name: configure
+@@ -256,7 +256,7 @@
+       - name: Install dependencies
+         run: brew install openssl@...2560... openssl@...1554... lzo lz4 man2html cmocka libtool automake autoconf libressl
+       - name: Checkout OpenVPN
+-        uses: actions/checkout@...2691...
++        uses: actions/checkout@...2813... # v4
+       - name: autoconf
+         run: autoreconf -fvi
+       - name: configure
+@@ -280,27 +280,27 @@
  
- int dco_del_peer(dco_context_t *dco, unsigned int peerid);
+       runs-on: windows-latest
+       steps:
+-      - uses: actions/checkout@...2691...
+-      - uses: lukka/get-cmake@...2809...
++      - uses: actions/checkout@...2813... # v4
++      - uses: lukka/get-cmake@...2818... # v3.30.3
  
-diff --git a/src/openvpn/dco_linux.c b/src/openvpn/dco_linux.c
-index 277cd64..b038382 100644
---- a/src/openvpn/dco_linux.c
-+++ b/src/openvpn/dco_linux.c
-@@ -220,7 +220,7 @@
- int
- dco_new_peer(dco_context_t *dco, unsigned int peerid, int sd,
-              struct sockaddr *localaddr, struct sockaddr *remoteaddr,
--             struct in_addr *remote_in4, struct in6_addr *remote_in6)
-+             struct in_addr *vpn_ipv4, struct in6_addr *vpn_ipv6)
- {
-     struct gc_arena gc = gc_new();
-     const char *remotestr = "[undefined]";
-@@ -263,14 +263,14 @@
-     }
+       - name: Install rst2html
+         run: python -m pip install --upgrade pip docutils
  
-     /* Set the primary VPN IP addresses of the peer */
--    if (remote_in4)
-+    if (vpn_ipv4)
-     {
--        NLA_PUT_U32(nl_msg, OVPN_NEW_PEER_ATTR_IPV4, remote_in4->s_addr);
-+        NLA_PUT_U32(nl_msg, OVPN_NEW_PEER_ATTR_IPV4, vpn_ipv4->s_addr);
-     }
--    if (remote_in6)
-+    if (vpn_ipv6)
-     {
-         NLA_PUT(nl_msg, OVPN_NEW_PEER_ATTR_IPV6, sizeof(struct in6_addr),
--                remote_in6);
-+                vpn_ipv6);
-     }
-     nla_nest_end(nl_msg, attr);
+       - name: Restore artifacts, or setup vcpkg (do not install any package)
+-        uses: lukka/run-vcpkg@...2807...
++        uses: lukka/run-vcpkg@...2815... # v11.5
+         with:
+           vcpkgGitCommitId: 8d3649ba34aab36914ddd897958599aa0a91b08e
+           vcpkgJsonGlob: '**/windows/vcpkg.json'
  
-diff --git a/src/openvpn/dco_win.c b/src/openvpn/dco_win.c
-index 892c616..9224bca 100644
---- a/src/openvpn/dco_win.c
-+++ b/src/openvpn/dco_win.c
-@@ -247,7 +247,7 @@
- int
- dco_new_peer(dco_context_t *dco, unsigned int peerid, int sd,
-              struct sockaddr *localaddr, struct sockaddr *remoteaddr,
--             struct in_addr *remote_in4, struct in6_addr *remote_in6)
-+             struct in_addr *vpn_ipv4, struct in6_addr *vpn_ipv6)
- {
-     msg(D_DCO_DEBUG, "%s: peer-id %d, fd %d", __func__, peerid, sd);
-     return 0;
+       - name: Run CMake with vcpkg.json manifest (NO TESTS)
+-        uses: lukka/run-cmake@...2808...
++        uses: lukka/run-cmake@...2816... # v10.8
+         if: ${{ matrix.arch == 'arm64' }}
+         with:
+           configurePreset: win-${{ matrix.arch }}-release
+           buildPreset: win-${{ matrix.arch }}-release
+ 
+       - name: Run CMake with vcpkg.json manifest
+-        uses: lukka/run-cmake@...2808...
++        uses: lukka/run-cmake@...2816... # v10.8
+         if: ${{ matrix.arch != 'arm64' }}
+         with:
+           configurePreset: win-${{ matrix.arch }}-release
+@@ -308,7 +308,7 @@
+           testPreset: win-${{ matrix.arch }}-release
+           testPresetAdditionalArgs: "['--output-on-failure']"
+ 
+-      - uses: actions/upload-artifact@...2691...
++      - uses: actions/upload-artifact@...2814... # v4
+         with:
+           name: openvpn-msvc-${{ matrix.arch }}
+           path: |
+@@ -348,7 +348,7 @@
+       - name: Install dependencies
+         run: sudo apt update && sudo apt install -y liblzo2-dev libpam0g-dev liblz4-dev linux-libc-dev man2html clang libcmocka-dev python3-docutils libtool automake autoconf pkg-config libcap-ng-dev libnl-genl-3-dev
+       - name: "libressl: checkout"
+-        uses: actions/checkout@...2691...
++        uses: actions/checkout@...2813... # v4
+         with:
+           path: libressl
+           # versioning=semver-coerced
+@@ -369,7 +369,7 @@
+       - name: "ldconfig"
+         run: sudo ldconfig
+       - name: Checkout OpenVPN
+-        uses: actions/checkout@...2691...
++        uses: actions/checkout@...2813... # v4
+       - name: autoconf
+         run: autoreconf -fvi
+       - name: configure
+@@ -410,7 +410,7 @@
+       - name: Install dependencies
+         run: sudo apt update && sudo apt install -y liblzo2-dev libpam0g-dev liblz4-dev linux-libc-dev man2html clang libcmocka-dev python3-docutils python3-jinja2 python3-jsonschema libtool automake autoconf pkg-config libcap-ng-dev libnl-genl-3-dev
+       - name: "mbedtls: checkout"
+-        uses: actions/checkout@...2691...
++        uses: actions/checkout@...2813... # v4
+         with:
+           path: mbedtls
+           submodules: true
+@@ -424,7 +424,7 @@
+         run: sudo make install DESTDIR=/usr
+         working-directory: mbedtls
+       - name: Checkout OpenVPN
+-        uses: actions/checkout@...2691...
++        uses: actions/checkout@...2813... # v4
+       - name: autoconf
+         run: autoreconf -fvi
+       - name: configure
+diff --git a/.github/workflows/coverity-scan.yml b/.github/workflows/coverity-scan.yml
+index 37b8102..16c979d 100644
+--- a/.github/workflows/coverity-scan.yml
++++ b/.github/workflows/coverity-scan.yml
+@@ -13,7 +13,7 @@
+     steps:
+       - name: Check submission cache
+         id: check_submit
+-        uses: actions/cache/restore@...2691...
++        uses: actions/cache/restore@...2819... # v4
+         with:
+           path: |
+             cov-int
+@@ -25,7 +25,7 @@
+ 
+       - name: Checkout OpenVPN
+         if: steps.check_submit.outputs.cache-hit != 'true'
+-        uses: actions/checkout@...2691...
++        uses: actions/checkout@...2813... # v4
+ 
+       - name: Download Coverity Build Tool
+         if: steps.check_submit.outputs.cache-hit != 'true'
+@@ -65,7 +65,7 @@
+ 
+       - name: Cache submission
+         if: steps.check_submit.outputs.cache-hit != 'true'
+-        uses: actions/cache/save@...2691...
++        uses: actions/cache/save@...2819... # v4
+         with:
+           path: |
+             cov-int
 
