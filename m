@@ -1,14 +1,14 @@
-From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Fri, 27 Sep 2024 10:23:53 +0000
+From: "flichtenheld (Code Review)" <gerrit@...515...>
+Date: Fri, 27 Sep 2024 10:28:07 +0000
 In-Reply-To: <gerrit.1727186481000.Iec1953415afb53755488dd44407568e72d28e854@...2715...>
 References: <gerrit.1727186481000.Iec1953415afb53755488dd44407568e72d28e854@...2715...>
-Reply-To: gert@...1296..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <f61f5954340bc42e5f852fe5137b9e485e561596-EmailReplacePatchSet-HTML@...2715...>
+Reply-To: frank@...2641..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net, gert@...1296...
+Message-ID: <2ef979ae0903aa8cd18520cad44599ee131ee894-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="q+oD8je2bII="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="WEDtE2CAY/0="; charset=UTF-8
 Subject: [Openvpn-devel] [S] Change in openvpn[master]: t_client.sh:
  conditionally skip ifconfig+route check
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -19,88 +19,34 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: cron2 <gert@...1296...>
+Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---q+oD8je2bII=
+--WEDtE2CAY/0=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: cron2, flichtenheld, plaisthos.
+Attention is currently required from: cron2, plaisthos.
 
-Hello flichtenheld, plaisthos,
-
-I'd like you to reexamine a change. Please visit
-
-    http://gerrit.openvpn.net/c/openvpn/+/768?usp=3Demail
-
-to look at the new patch set (#2).
-
-The following approvals got outdated and were removed:
-Code-Review-1 by flichtenheld
-
+flichtenheld has posted comments on this change. ( http://gerrit.openvpn.ne=
+t/c/openvpn/+/768?usp=3Demail )
 
 Change subject: t_client.sh: conditionally skip ifconfig+route check
 ......................................................................
 
-t_client.sh: conditionally skip ifconfig+route check
 
-For --dev null or --dev-type af_unix:lwipopenvn tests, there will be
-no visible change to ifconfig or route output, so tests will fail
-("how can this be?").  Set EXPECT_IFCONFIG4_<n>=3D- to skip this
-check.
+Patch Set 2: Code-Review+2
 
-(Simply leaving both EXPECT_IFCONFIG* vars empty and using that as
-trigger would interfere with the magic from commit df0b00c25)
+(1 comment)
 
-v2: fix string-equal comparison
+File tests/t_client.sh.in:
 
-Change-Id: Iec1953415afb53755488dd44407568e72d28e854
-Signed-off-by: Gert Doering <gert@...1296...>
----
-M tests/t_client.sh.in
-1 file changed, 11 insertions(+), 6 deletions(-)
+http://gerrit.openvpn.net/c/openvpn/+/768/comment/289b91ad_8a8b5afc :
+PS1, Line 408:     if [ "$expect_ifconfig4" =3D=3D "-" ] ; then
+> The rest of the code uses "=3D" not "=3D=3D", so let's be consistent
+Done
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/68/768/2
-
-diff --git a/tests/t_client.sh.in b/tests/t_client.sh.in
-index f6654dd..1ccadeb 100755
---- a/tests/t_client.sh.in
-+++ b/tests/t_client.sh.in
-@@ -225,6 +225,7 @@
-     expect_list=3D"$@"
-
-     if [ -z "$expect_list" ] ; then return ; fi
-+    if [ "$expect_list" =3D "-" ] ; then return ; fi
-
-     for expect in $expect_list
-     do
-@@ -404,13 +405,17 @@
-     output "save ifconfig+route"
-     get_ifconfig_route >$LOGDIR/$SUF:ifconfig_route.txt
-
--    output -n "compare pre-openvpn ifconfig+route with current values..."
--    if diff $LOGDIR/$SUF:ifconfig_route_pre.txt \
--	    $LOGDIR/$SUF:ifconfig_route.txt >/dev/null
--    then
--	fail "no differences between ifconfig/route before OpenVPN start and now."
-+    if [ "$expect_ifconfig4" =3D "-" ] ; then
-+        output "skip ifconfig+route check"
-     else
--	output " OK!\n"
-+	output -n "compare pre-openvpn ifconfig+route with current values..."
-+	if diff $LOGDIR/$SUF:ifconfig_route_pre.txt \
-+		$LOGDIR/$SUF:ifconfig_route.txt >/dev/null
-+	then
-+	    fail "no differences between ifconfig/route before OpenVPN start and =
-now."
-+	else
-+	    output " OK!\n"
-+	fi
-     fi
-
-     # post init script needed?
 
 --
 To view, visit http://gerrit.openvpn.net/c/openvpn/+/768?usp=3Demail
@@ -118,73 +64,38 @@ Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
 Gerrit-Attention: cron2 <gert@...1296...>
-Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-MessageType: newpatchset
+Gerrit-Comment-Date: Fri, 27 Sep 2024 10:28:07 +0000
+Gerrit-HasComments: Yes
+Gerrit-Has-Labels: Yes
+Comment-In-Reply-To: flichtenheld <frank@...2641...>
+Gerrit-MessageType: comment
 
---q+oD8je2bII=
+--WEDtE2CAY/0=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p> Attention is currently required from: cron2, flichtenheld, plaisthos. <=
-/p>
-<p>cron2 <strong>uploaded patch set #2</strong> to this change.</p><p><a hr=
-ef=3D"http://gerrit.openvpn.net/c/openvpn/+/768?usp=3Demail">View Change</a=
-></p><p>The following approvals got outdated and were removed:
-Code-Review-1 by flichtenheld</p><pre style=3D"font-family: monospace,monos=
-pace; white-space: pre-wrap;">t_client.sh: conditionally skip ifconfig+rout=
-e check<br><br>For --dev null or --dev-type af_unix:lwipopenvn tests, there=
- will be<br>no visible change to ifconfig or route output, so tests will fa=
-il<br>(&quot;how can this be?&quot;).  Set EXPECT_IFCONFIG4_&lt;n&gt;=3D- t=
-o skip this<br>check.<br><br>(Simply leaving both EXPECT_IFCONFIG* vars emp=
-ty and using that as<br>trigger would interfere with the magic from commit =
-df0b00c25)<br><br>v2: fix string-equal comparison<br><br>Change-Id: Iec1953=
-415afb53755488dd44407568e72d28e854<br>Signed-off-by: Gert Doering &lt;gert@=
-...1296...&gt;<br>---<br>M tests/t_client.sh.in<br>1 file changed, 11 inser=
-tions(+), 6 deletions(-)<br><br></pre><pre style=3D"font-family: monospace,=
-monospace; white-space: pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/=
-openvpn refs/changes/68/768/2</pre><pre style=3D"font-family: monospace,mon=
-ospace; white-space: pre-wrap;"><span>diff --git a/tests/t_client.sh.in b/t=
-ests/t_client.sh.in</span><br><span>index f6654dd..1ccadeb 100755</span><br=
-><span>--- a/tests/t_client.sh.in</span><br><span>+++ b/tests/t_client.sh.i=
-n</span><br><span>@@ -225,6 +225,7 @@</span><br><span>     expect_list=3D&q=
-uot;$@&quot;</span><br><span> </span><br><span>     if [ -z &quot;$expect_l=
-ist&quot; ] ; then return ; fi</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+    if [ &quot;$expect_list&quot; =3D &quot;-&quot; ] ; then ret=
-urn ; fi</span><br><span> </span><br><span>     for expect in $expect_list<=
-/span><br><span>     do</span><br><span>@@ -404,13 +405,17 @@</span><br><sp=
-an>     output &quot;save ifconfig+route&quot;</span><br><span>     get_ifc=
-onfig_route &gt;$LOGDIR/$SUF:ifconfig_route.txt</span><br><span> </span><br=
-><span style=3D"color: hsl(0, 100%, 40%);">-    output -n &quot;compare pre=
--openvpn ifconfig+route with current values...&quot;</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-    if diff $LOGDIR/$SUF:ifconfig_route_pre=
-.txt \</span><br><span style=3D"color: hsl(0, 100%, 40%);">-	    $LOGDIR/$S=
-UF:ifconfig_route.txt &gt;/dev/null</span><br><span style=3D"color: hsl(0, =
-100%, 40%);">-    then</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
--	fail &quot;no differences between ifconfig/route before OpenVPN start and=
- now.&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if [=
- &quot;$expect_ifconfig4&quot; =3D &quot;-&quot; ] ; then</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+        output &quot;skip ifconfig+ro=
-ute check&quot;</span><br><span>     else</span><br><span style=3D"color: h=
-sl(0, 100%, 40%);">-	output &quot; OK!\n&quot;</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+	output -n &quot;compare pre-openvpn ifconfig+ro=
-ute with current values...&quot;</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+	if diff $LOGDIR/$SUF:ifconfig_route_pre.txt \</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+		$LOGDIR/$SUF:ifconfig_route.txt &=
-gt;/dev/null</span><br><span style=3D"color: hsl(120, 100%, 40%);">+	then</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+	    fail &quot;no di=
-fferences between ifconfig/route before OpenVPN start and now.&quot;</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+	else</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+	    output &quot; OK!\n&quot;</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+	fi</span><br><span>     fi</=
-span><br><span> </span><br><span>     # post init script needed?</span><br>=
-<span></span><br></pre><p>To view, visit <a href=3D"http://gerrit.openvpn.n=
-et/c/openvpn/+/768?usp=3Demail">change 768</a>. To unsubscribe, or for help=
- writing mail filters, visit <a href=3D"http://gerrit.openvpn.net/settings"=
->settings</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage=
-"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewActi=
-on"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/76=
-8?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div></di=
-v>
+<p> Attention is currently required from: cron2, plaisthos. </p>
+<p>Patch set 2:<span style=3D"border-radius: 3px; display: inline-block; ma=
+rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/768?usp=3Demail">Vi=
+ew Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0=
+;"><li style=3D"margin: 0; padding: 0;"><p>File tests/t_client.sh.in:</p><u=
+l style=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; padding: =
+0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.open=
+vpn.net/c/openvpn/+/768/comment/289b91ad_8a8b5afc">Patch Set #1, Line 408:<=
+/a> <code style=3D"font-family:monospace,monospace">    if [ &quot;$expect_=
+ifconfig4&quot; =3D=3D &quot;-&quot; ] ; then</code></p><p><blockquote styl=
+e=3D"border-left: 1px solid #aaa; margin: 10px 0; padding: 0 10px;">The res=
+t of the code uses &quot;=3D&quot; not &quot;=3D=3D&quot;, so let&#39;s be =
+consistent</blockquote></p><p style=3D"white-space: pre-wrap; word-wrap: br=
+eak-word;">Done</p></li></ul></li></ul><p>To view, visit <a href=3D"http://=
+gerrit.openvpn.net/c/openvpn/+/768?usp=3Demail">change 768</a>. To unsubscr=
+ibe, or for help writing mail filters, visit <a href=3D"http://gerrit.openv=
+pn.net/settings">settings</a>.</p><div itemscope itemtype=3D"http://schema.=
+org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://sch=
+ema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.ne=
+t/c/openvpn/+/768?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Cha=
+nge"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
@@ -204,10 +115,14 @@ ts.sourceforge.net&gt; </div>
 ..1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: cron2 &lt;gert@...1296...&gt=
 ; </div>
-<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
-41...&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Fri, 27 Sep 2024 10:28:07=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
+<div style=3D"display:none"> Comment-In-Reply-To: flichtenheld &lt;frank@...1186...=
+.2641...&gt; </div>
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
 
 
---q+oD8je2bII=--
+--WEDtE2CAY/0=--
 
