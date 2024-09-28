@@ -1,10 +1,9 @@
+Date: Sat, 28 Sep 2024 22:12:09 +0200 (CEST)
+Message-Id: <202409282012.48SKC9UH091013@...2054...>
 From: Gert Doering <gert@...1296...>
-Date: Sat, 28 Sep 2024 22:05:08 +0200
-Message-ID: <20240928200508.23747-1-gert@...1296...>
-In-Reply-To: <gerrit.1727186481000.Iec1953415afb53755488dd44407568e72d28e854@...2715...>
-References: <gerrit.1727186481000.Iec1953415afb53755488dd44407568e72d28e854@...2715...>
-MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v2] t_client.sh: conditionally skip
+In-Reply-To: <20240928200508.23747-1-gert@...1296...>
+References: <20240928200508.23747-1-gert@...1296...>
+Subject: [Openvpn-devel] [PATCH applied] Re: t_client.sh: conditionally skip
  ifconfig+route check
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
@@ -16,67 +15,29 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Gert Doering <gert@...1296...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-For --dev null or --dev-type af_unix:lwipopenvn tests, there will be
-no visible change to ifconfig or route output, so tests will fail
-("how can this be?").  Set EXPECT_IFCONFIG4_<n>=- to skip this
-check.
+Tested (quite a bit :-) ) in the testing phase of the AF_UNIX patch set...
 
-(Simply leaving both EXPECT_IFCONFIG* vars empty and using that as
-trigger would interfere with the magic from commit df0b00c25)
+Patch has been applied to the master branch.
 
-v2: fix string-equal comparison
+commit 5ccaa49e0323ce468b156b3fa0930f7840050387
+Author: Gert Doering
+Date:   Sat Sep 28 22:05:08 2024 +0200
 
-Change-Id: Iec1953415afb53755488dd44407568e72d28e854
-Signed-off-by: Gert Doering <gert@...1296...>
-Acked-by: Frank Lichtenheld <frank@...2641...>
----
+     t_client.sh: conditionally skip ifconfig+route check
 
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to master.
+     Signed-off-by: Gert Doering <gert@...1296...>
+     Acked-by: Frank Lichtenheld <frank@...2641...>
+     Message-Id: <20240928200508.23747-1-gert@...1296...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg29473.html
+     Signed-off-by: Gert Doering <gert@...1296...>
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/768
-This mail reflects revision 2 of this Change.
 
-Acked-by according to Gerrit (reflected above):
-Frank Lichtenheld <frank@...2641...>
+--
+kind regards,
 
-        
-diff --git a/tests/t_client.sh.in b/tests/t_client.sh.in
-index f6654dd..1ccadeb 100755
---- a/tests/t_client.sh.in
-+++ b/tests/t_client.sh.in
-@@ -225,6 +225,7 @@
-     expect_list="$@"
- 
-     if [ -z "$expect_list" ] ; then return ; fi
-+    if [ "$expect_list" = "-" ] ; then return ; fi
- 
-     for expect in $expect_list
-     do
-@@ -404,13 +405,17 @@
-     output "save ifconfig+route"
-     get_ifconfig_route >$LOGDIR/$SUF:ifconfig_route.txt
- 
--    output -n "compare pre-openvpn ifconfig+route with current values..."
--    if diff $LOGDIR/$SUF:ifconfig_route_pre.txt \
--	    $LOGDIR/$SUF:ifconfig_route.txt >/dev/null
--    then
--	fail "no differences between ifconfig/route before OpenVPN start and now."
-+    if [ "$expect_ifconfig4" = "-" ] ; then
-+        output "skip ifconfig+route check"
-     else
--	output " OK!\n"
-+	output -n "compare pre-openvpn ifconfig+route with current values..."
-+	if diff $LOGDIR/$SUF:ifconfig_route_pre.txt \
-+		$LOGDIR/$SUF:ifconfig_route.txt >/dev/null
-+	then
-+	    fail "no differences between ifconfig/route before OpenVPN start and now."
-+	else
-+	    output " OK!\n"
-+	fi
-     fi
- 
-     # post init script needed?
+Gert Doering
+
 
