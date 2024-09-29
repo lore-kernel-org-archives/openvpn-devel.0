@@ -1,16 +1,15 @@
-From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Sat, 28 Sep 2024 20:12:24 +0000
-In-Reply-To: <gerrit.1727186481000.Iec1953415afb53755488dd44407568e72d28e854@...2715...>
-References: <gerrit.1727186481000.Iec1953415afb53755488dd44407568e72d28e854@...2715...>
-Reply-To: gert@...1296..., arne-openvpn@...1227...,
+From: "syzzer (Code Review)" <gerrit@...515...>
+Date: Sun, 29 Sep 2024 08:18:54 +0000
+References: <gerrit.1727597930000.I0fd48191babe4fe5c56f10eb3ba88182ffb075d1@...2715...>
+Reply-To: steffan@...1856..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <b93a89581721e2965f513bf6f054a293ba7c6eb4-EmailReplacePatchSet-HTML@...2715...>
+Message-ID: <c3f2b7b20d867f4cd686a918ec93f53869ec40ff-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="t6BX7pvj4/o="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: t_client.sh:
- conditionally skip ifconfig+route check
+Content-Type: multipart/alternative; boundary="EiW/QCM+G/w="; charset=UTF-8
+Subject: [Openvpn-devel] [S] Change in openvpn[master]: Improve data channel
+ crypto error messages
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -22,187 +21,263 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---t6BX7pvj4/o=
+--EiW/QCM+G/w=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Hello flichtenheld, plaisthos,
+Attention is currently required from: flichtenheld, plaisthos.
 
-I'd like you to reexamine a change. Please visit
+Hello plaisthos, flichtenheld,
 
-    http://gerrit.openvpn.net/c/openvpn/+/768?usp=3Demail
+I'd like you to do a code review.
+Please visit
 
-to look at the new patch set (#3).
+    http://gerrit.openvpn.net/c/openvpn/+/774?usp=3Demail
 
-The following approvals got outdated and were removed:
-Code-Review+2 by flichtenheld
+to review the following change.
 
 
-Change subject: t_client.sh: conditionally skip ifconfig+route check
+Change subject: Improve data channel crypto error messages
 ......................................................................
 
-t_client.sh: conditionally skip ifconfig+route check
+Improve data channel crypto error messages
 
-For --dev null or --dev-type af_unix:lwipopenvn tests, there will be
-no visible change to ifconfig or route output, so tests will fail
-("how can this be?").  Set EXPECT_IFCONFIG4_<n>=3D- to skip this
-check.
+ * Make decryption error messages better understandable.
+ * Increase verbosity level for authentication errors, because those can
+   be expected on bad connections.
 
-(Simply leaving both EXPECT_IFCONFIG* vars empty and using that as
-trigger would interfere with the magic from commit df0b00c25)
-
-v2: fix string-equal comparison
-
-Change-Id: Iec1953415afb53755488dd44407568e72d28e854
-Signed-off-by: Gert Doering <gert@...1296...>
-Acked-by: Frank Lichtenheld <frank@...2641...>
-Message-Id: <20240928200508.23747-1-gert@...1296...>
-URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg29=
-473.html
-Signed-off-by: Gert Doering <gert@...1296...>
+Change-Id: I0fd48191babe4fe5c56f10eb3ba88182ffb075d1
+Signed-off-by: Steffan Karger <steffan@...1856...>
 ---
-M tests/t_client.sh.in
-1 file changed, 11 insertions(+), 6 deletions(-)
+M src/openvpn/crypto.c
+M src/openvpn/crypto.h
+2 files changed, 12 insertions(+), 9 deletions(-)
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/68/768/3
 
-diff --git a/tests/t_client.sh.in b/tests/t_client.sh.in
-index f6654dd..1ccadeb 100755
---- a/tests/t_client.sh.in
-+++ b/tests/t_client.sh.in
-@@ -225,6 +225,7 @@
-     expect_list=3D"$@"
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/74/774/1
 
-     if [ -z "$expect_list" ] ; then return ; fi
-+    if [ "$expect_list" =3D "-" ] ; then return ; fi
+diff --git a/src/openvpn/crypto.c b/src/openvpn/crypto.c
+index 12ad0b9..064e59e 100644
+--- a/src/openvpn/crypto.c
++++ b/src/openvpn/crypto.c
+@@ -459,14 +459,14 @@
+     if (!cipher_ctx_update(ctx->cipher, BPTR(&work), &outlen, BPTR(buf),
+                            data_len))
+     {
+-        CRYPT_ERROR("cipher update failed");
++        CRYPT_ERROR("packet decryption failed");
+     }
 
-     for expect in $expect_list
-     do
-@@ -404,13 +405,17 @@
-     output "save ifconfig+route"
-     get_ifconfig_route >$LOGDIR/$SUF:ifconfig_route.txt
+     ASSERT(buf_inc_len(&work, outlen));
+     if (!cipher_ctx_final_check_tag(ctx->cipher, BPTR(&work) + outlen,
+                                     &outlen, tag_ptr, tag_size))
+     {
+-        CRYPT_ERROR("cipher final failed");
++        CRYPT_DROP("packet tag authentication failed");
+     }
+     ASSERT(buf_inc_len(&work, outlen));
 
--    output -n "compare pre-openvpn ifconfig+route with current values..."
--    if diff $LOGDIR/$SUF:ifconfig_route_pre.txt \
--	    $LOGDIR/$SUF:ifconfig_route.txt >/dev/null
--    then
--	fail "no differences between ifconfig/route before OpenVPN start and now."
-+    if [ "$expect_ifconfig4" =3D "-" ] ; then
-+        output "skip ifconfig+route check"
-     else
--	output " OK!\n"
-+	output -n "compare pre-openvpn ifconfig+route with current values..."
-+	if diff $LOGDIR/$SUF:ifconfig_route_pre.txt \
-+		$LOGDIR/$SUF:ifconfig_route.txt >/dev/null
-+	then
-+	    fail "no differences between ifconfig/route before OpenVPN start and =
-now."
-+	else
-+	    output " OK!\n"
-+	fi
-     fi
+@@ -538,7 +538,7 @@
+             /* Compare locally computed HMAC with packet HMAC */
+             if (memcmp_constant_time(local_hmac, BPTR(buf), hmac_len))
+             {
+-                CRYPT_ERROR("packet HMAC authentication failed");
++                CRYPT_DROP("packet HMAC authentication failed");
+             }
 
-     # post init script needed?
+             ASSERT(buf_advance(buf, hmac_len));
+@@ -572,26 +572,26 @@
+             /* ctx->cipher was already initialized with key & keylen */
+             if (!cipher_ctx_reset(ctx->cipher, iv_buf))
+             {
+-                CRYPT_ERROR("cipher init failed");
++                CRYPT_ERROR("decrypt initialization failed");
+             }
+
+             /* Buffer overflow check (should never happen) */
+             if (!buf_safe(&work, buf->len + cipher_ctx_block_size(ctx->cip=
+her)))
+             {
+-                CRYPT_ERROR("potential buffer overflow");
++                CRYPT_ERROR("packet too big to decrypt");
+             }
+
+             /* Decrypt packet ID, payload */
+             if (!cipher_ctx_update(ctx->cipher, BPTR(&work), &outlen, BPTR=
+(buf), BLEN(buf)))
+             {
+-                CRYPT_ERROR("cipher update failed");
++                CRYPT_ERROR("packet decryption failed");
+             }
+             ASSERT(buf_inc_len(&work, outlen));
+
+             /* Flush the decryption buffer */
+             if (!cipher_ctx_final(ctx->cipher, BPTR(&work) + outlen, &outl=
+en))
+             {
+-                CRYPT_ERROR("cipher final failed");
++                CRYPT_DROP("packet authentication failed, dropping.");
+             }
+             ASSERT(buf_inc_len(&work, outlen));
+
+diff --git a/src/openvpn/crypto.h b/src/openvpn/crypto.h
+index 61184bc..d91de74 100644
+--- a/src/openvpn/crypto.h
++++ b/src/openvpn/crypto.h
+@@ -288,8 +288,11 @@
+                                  *   security operation functions. */
+ };
+
+-#define CRYPT_ERROR(format) \
+-    do { msg(D_CRYPT_ERRORS, "%s: " format, error_prefix); goto error_exit=
+; } while (false)
++#define CRYPT_ERROR_EXIT(flags, format) \
++    do { msg(flags, "%s: " format, error_prefix); goto error_exit; } while=
+ (false)
++
++#define CRYPT_ERROR(format) CRYPT_ERROR_EXIT(D_CRYPT_ERRORS, format)
++#define CRYPT_DROP(format) CRYPT_ERROR_EXIT(D_MULTI_DROPPED, format)
+
+ /**
+  * Minimal IV length for AEAD mode ciphers (in bytes):
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/768?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/774?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings
 
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: Iec1953415afb53755488dd44407568e72d28e854
-Gerrit-Change-Number: 768
-Gerrit-PatchSet: 3
-Gerrit-Owner: cron2 <gert@...1296...>
+Gerrit-Change-Id: I0fd48191babe4fe5c56f10eb3ba88182ffb075d1
+Gerrit-Change-Number: 774
+Gerrit-PatchSet: 1
+Gerrit-Owner: syzzer <steffan@...1856...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-MessageType: newpatchset
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Attention: flichtenheld <frank@...2641...>
+Gerrit-MessageType: newchange
 
---t6BX7pvj4/o=
+--EiW/QCM+G/w=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p>cron2 <strong>uploaded patch set #3</strong> to this change.</p><p><a hr=
-ef=3D"http://gerrit.openvpn.net/c/openvpn/+/768?usp=3Demail">View Change</a=
-></p><p>The following approvals got outdated and were removed:
-Code-Review+2 by flichtenheld</p><pre style=3D"font-family: monospace,monos=
-pace; white-space: pre-wrap;">t_client.sh: conditionally skip ifconfig+rout=
-e check<br><br>For --dev null or --dev-type af_unix:lwipopenvn tests, there=
- will be<br>no visible change to ifconfig or route output, so tests will fa=
-il<br>(&quot;how can this be?&quot;).  Set EXPECT_IFCONFIG4_&lt;n&gt;=3D- t=
-o skip this<br>check.<br><br>(Simply leaving both EXPECT_IFCONFIG* vars emp=
-ty and using that as<br>trigger would interfere with the magic from commit =
-df0b00c25)<br><br>v2: fix string-equal comparison<br><br>Change-Id: Iec1953=
-415afb53755488dd44407568e72d28e854<br>Signed-off-by: Gert Doering &lt;gert@=
-...1296...&gt;<br>Acked-by: Frank Lichtenheld &lt;frank@...2641...&gt;<br>M=
-essage-Id: &lt;20240928200508.23747-1-gert@...1296...&gt;<br>URL: https://w=
-ww.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg29473.html<br>Si=
-gned-off-by: Gert Doering &lt;gert@...1296...&gt;<br>---<br>M tests/t_clien=
-t.sh.in<br>1 file changed, 11 insertions(+), 6 deletions(-)<br><br></pre><p=
-re style=3D"font-family: monospace,monospace; white-space: pre-wrap;">git p=
-ull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/68/768/3</pre><pre =
-style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><span>di=
-ff --git a/tests/t_client.sh.in b/tests/t_client.sh.in</span><br><span>inde=
-x f6654dd..1ccadeb 100755</span><br><span>--- a/tests/t_client.sh.in</span>=
-<br><span>+++ b/tests/t_client.sh.in</span><br><span>@@ -225,6 +225,7 @@</s=
-pan><br><span>     expect_list=3D&quot;$@&quot;</span><br><span> </span><br=
-><span>     if [ -z &quot;$expect_list&quot; ] ; then return ; fi</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+    if [ &quot;$expect_list&q=
-uot; =3D &quot;-&quot; ] ; then return ; fi</span><br><span> </span><br><sp=
-an>     for expect in $expect_list</span><br><span>     do</span><br><span>=
-@@ -404,13 +405,17 @@</span><br><span>     output &quot;save ifconfig+route=
-&quot;</span><br><span>     get_ifconfig_route &gt;$LOGDIR/$SUF:ifconfig_ro=
-ute.txt</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%)=
-;">-    output -n &quot;compare pre-openvpn ifconfig+route with current val=
-ues...&quot;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    if di=
-ff $LOGDIR/$SUF:ifconfig_route_pre.txt \</span><br><span style=3D"color: hs=
-l(0, 100%, 40%);">-	    $LOGDIR/$SUF:ifconfig_route.txt &gt;/dev/null</span=
-><br><span style=3D"color: hsl(0, 100%, 40%);">-    then</span><br><span st=
-yle=3D"color: hsl(0, 100%, 40%);">-	fail &quot;no differences between ifcon=
-fig/route before OpenVPN start and now.&quot;</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+    if [ &quot;$expect_ifconfig4&quot; =3D &quot;=
--&quot; ] ; then</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
-     output &quot;skip ifconfig+route check&quot;</span><br><span>     else=
-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-	output &quot; OK!\n&=
-quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+	output -n &qu=
-ot;compare pre-openvpn ifconfig+route with current values...&quot;</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+	if diff $LOGDIR/$SUF:ifconf=
-ig_route_pre.txt \</span><br><span style=3D"color: hsl(120, 100%, 40%);">+	=
-	$LOGDIR/$SUF:ifconfig_route.txt &gt;/dev/null</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+	then</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+	    fail &quot;no differences between ifconfig/route before O=
-penVPN start and now.&quot;</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+	else</span><br><span style=3D"color: hsl(120, 100%, 40%);">+	    o=
-utput &quot; OK!\n&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+	fi</span><br><span>     fi</span><br><span> </span><br><span>     # p=
-ost init script needed?</span><br><span></span><br></pre><p>To view, visit =
-<a href=3D"http://gerrit.openvpn.net/c/openvpn/+/768?usp=3Demail">change 76=
-8</a>. To unsubscribe, or for help writing mail filters, visit <a href=3D"h=
-ttp://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope itemtype=
-=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"action" item=
-type=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http:/=
-/gerrit.openvpn.net/c/openvpn/+/768?usp=3Demail"/><meta itemprop=3D"name" c=
-ontent=3D"View Change"/></div></div>
+<p> Attention is currently required from: flichtenheld, plaisthos. </p>
+<p>syzzer would like plaisthos and flichtenheld to <strong>review</strong> =
+this change.
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/774?usp=3Demail">Vi=
+ew Change</a></p><pre style=3D"font-family: monospace,monospace; white-spac=
+e: pre-wrap;">Improve data channel crypto error messages<br><br> * Make dec=
+ryption error messages better understandable.<br> * Increase verbosity leve=
+l for authentication errors, because those can<br>   be expected on bad con=
+nections.<br><br>Change-Id: I0fd48191babe4fe5c56f10eb3ba88182ffb075d1<br>Si=
+gned-off-by: Steffan Karger &lt;steffan@...1856...&gt;<br>---<br>M src/open=
+vpn/crypto.c<br>M src/openvpn/crypto.h<br>2 files changed, 12 insertions(+)=
+, 9 deletions(-)<br><br></pre><pre style=3D"font-family: monospace,monospac=
+e; white-space: pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/openvpn =
+refs/changes/74/774/1</pre><pre style=3D"font-family: monospace,monospace; =
+white-space: pre-wrap;"><span>diff --git a/src/openvpn/crypto.c b/src/openv=
+pn/crypto.c</span><br><span>index 12ad0b9..064e59e 100644</span><br><span>-=
+-- a/src/openvpn/crypto.c</span><br><span>+++ b/src/openvpn/crypto.c</span>=
+<br><span>@@ -459,14 +459,14 @@</span><br><span>     if (!cipher_ctx_update=
+(ctx-&gt;cipher, BPTR(&amp;work), &amp;outlen, BPTR(buf),</span><br><span> =
+                           data_len))</span><br><span>     {</span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">-        CRYPT_ERROR(&quot;cipher upd=
+ate failed&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+       CRYPT_ERROR(&quot;packet decryption failed&quot;);</span><br><span> =
+    }</span><br><span> </span><br><span>     ASSERT(buf_inc_len(&amp;work, =
+outlen));</span><br><span>     if (!cipher_ctx_final_check_tag(ctx-&gt;ciph=
+er, BPTR(&amp;work) + outlen,</span><br><span>                             =
+        &amp;outlen, tag_ptr, tag_size))</span><br><span>     {</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-        CRYPT_ERROR(&quot;cipher =
+final failed&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++        CRYPT_DROP(&quot;packet tag authentication failed&quot;);</span><b=
+r><span>     }</span><br><span>     ASSERT(buf_inc_len(&amp;work, outlen));=
+</span><br><span> </span><br><span>@@ -538,7 +538,7 @@</span><br><span>    =
+         /* Compare locally computed HMAC with packet HMAC */</span><br><sp=
+an>             if (memcmp_constant_time(local_hmac, BPTR(buf), hmac_len))<=
+/span><br><span>             {</span><br><span style=3D"color: hsl(0, 100%,=
+ 40%);">-                CRYPT_ERROR(&quot;packet HMAC authentication faile=
+d&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+          =
+      CRYPT_DROP(&quot;packet HMAC authentication failed&quot;);</span><br>=
+<span>             }</span><br><span> </span><br><span>             ASSERT(=
+buf_advance(buf, hmac_len));</span><br><span>@@ -572,26 +572,26 @@</span><b=
+r><span>             /* ctx-&gt;cipher was already initialized with key &am=
+p; keylen */</span><br><span>             if (!cipher_ctx_reset(ctx-&gt;cip=
+her, iv_buf))</span><br><span>             {</span><br><span style=3D"color=
+: hsl(0, 100%, 40%);">-                CRYPT_ERROR(&quot;cipher init failed=
+&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+           =
+     CRYPT_ERROR(&quot;decrypt initialization failed&quot;);</span><br><spa=
+n>             }</span><br><span> </span><br><span>             /* Buffer o=
+verflow check (should never happen) */</span><br><span>             if (!bu=
+f_safe(&amp;work, buf-&gt;len + cipher_ctx_block_size(ctx-&gt;cipher)))</sp=
+an><br><span>             {</span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">-                CRYPT_ERROR(&quot;potential buffer overflow&quot;);</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+                CRYPT=
+_ERROR(&quot;packet too big to decrypt&quot;);</span><br><span>            =
+ }</span><br><span> </span><br><span>             /* Decrypt packet ID, pay=
+load */</span><br><span>             if (!cipher_ctx_update(ctx-&gt;cipher,=
+ BPTR(&amp;work), &amp;outlen, BPTR(buf), BLEN(buf)))</span><br><span>     =
+        {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            =
+    CRYPT_ERROR(&quot;cipher update failed&quot;);</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+                CRYPT_ERROR(&quot;packet dec=
+ryption failed&quot;);</span><br><span>             }</span><br><span>     =
+        ASSERT(buf_inc_len(&amp;work, outlen));</span><br><span> </span><br=
+><span>             /* Flush the decryption buffer */</span><br><span>     =
+        if (!cipher_ctx_final(ctx-&gt;cipher, BPTR(&amp;work) + outlen, &am=
+p;outlen))</span><br><span>             {</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-                CRYPT_ERROR(&quot;cipher final failed&q=
+uot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+             =
+   CRYPT_DROP(&quot;packet authentication failed, dropping.&quot;);</span><=
+br><span>             }</span><br><span>             ASSERT(buf_inc_len(&am=
+p;work, outlen));</span><br><span> </span><br><span>diff --git a/src/openvp=
+n/crypto.h b/src/openvpn/crypto.h</span><br><span>index 61184bc..d91de74 10=
+0644</span><br><span>--- a/src/openvpn/crypto.h</span><br><span>+++ b/src/o=
+penvpn/crypto.h</span><br><span>@@ -288,8 +288,11 @@</span><br><span>      =
+                            *   security operation functions. */</span><br>=
+<span> };</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">-#define CRYPT_ERROR(format) \</span><br><span style=3D"color: hsl(0, =
+100%, 40%);">-    do { msg(D_CRYPT_ERRORS, &quot;%s: &quot; format, error_p=
+refix); goto error_exit; } while (false)</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+#define CRYPT_ERROR_EXIT(flags, format) \</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+    do { msg(flags, &quot;%s: &q=
+uot; format, error_prefix); goto error_exit; } while (false)</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+#define CRYPT_ERROR(format) CRYPT_ERROR_EXIT(D_CRYPT_=
+ERRORS, format)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#def=
+ine CRYPT_DROP(format) CRYPT_ERROR_EXIT(D_MULTI_DROPPED, format)</span><br>=
+<span> </span><br><span> /**</span><br><span>  * Minimal IV length for AEAD=
+ mode ciphers (in bytes):</span><br><span></span><br></pre><p>To view, visi=
+t <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/774?usp=3Demail">change =
+774</a>. To unsubscribe, or for help writing mail filters, visit <a href=3D=
+"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope itemty=
+pe=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"action" it=
+emtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http=
+://gerrit.openvpn.net/c/openvpn/+/774?usp=3Demail"/><meta itemprop=3D"name"=
+ content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: Iec1953415afb53755488dd44407=
-568e72d28e854 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 768 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 3 </div>
-<div style=3D"display:none"> Gerrit-Owner: cron2 &lt;gert@...1296...&gt; </=
-div>
+<div style=3D"display:none"> Gerrit-Change-Id: I0fd48191babe4fe5c56f10eb3ba=
+88182ffb075d1 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 774 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
+<div style=3D"display:none"> Gerrit-Owner: syzzer &lt;steffan@...1856...&gt=
+; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
 1...&gt; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
 .1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
+41...&gt; </div>
+<div style=3D"display:none"> Gerrit-MessageType: newchange </div>
 
 
---t6BX7pvj4/o=--
+--EiW/QCM+G/w=--
 
