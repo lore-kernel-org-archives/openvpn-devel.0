@@ -1,16 +1,16 @@
-From: "plaisthos (Code Review)" <gerrit@...515...>
-Date: Mon, 30 Sep 2024 08:43:54 +0000
-In-Reply-To: <gerrit.1727014533000.I402ba016b75cfcfec4fc8b2b01cc4eca7e2bcc60@...2715...>
-References: <gerrit.1727014533000.I402ba016b75cfcfec4fc8b2b01cc4eca7e2bcc60@...2715...>
-Reply-To: arne-openvpn@...1227..., openvpn-devel@lists.sourceforge.net,
- frank@...2641...
-Message-ID: <aa130ee8b56c79ba7ae9d66f1ddb3b248045c984-EmailReviewComments-HTML@...2715...>
+From: "flichtenheld (Code Review)" <gerrit@...515...>
+Date: Mon, 30 Sep 2024 09:58:46 +0000
+In-Reply-To: <gerrit.1727098847000.I8eae2d3356bbcc5d632eeb4fbe80de8009d9b40d@...2715...>
+References: <gerrit.1727098847000.I8eae2d3356bbcc5d632eeb4fbe80de8009d9b40d@...2715...>
+Reply-To: frank@...2641..., arne-openvpn@...1227...,
+ gianmarco@...2726..., openvpn-devel@lists.sourceforge.net, a@...2181...
+Message-ID: <13df187a715f394f5b6fccff969e5e9dbda407a8-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="8oPyrRrdeoQ="; charset=UTF-8
-Subject: [Openvpn-devel] [L] Change in openvpn[master]: Remove support for
- compression on send
+Content-Type: multipart/alternative; boundary="KnJ7/gADQ5k="; charset=UTF-8
+Subject: [Openvpn-devel] [M] Change in openvpn[master]: pass link_socket
+ object to i/o functions
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,81 +19,104 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: flichtenheld <frank@...2641...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: its_Giaan <gianmarco@...2726...>
+Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---8oPyrRrdeoQ=
+--KnJ7/gADQ5k=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: flichtenheld.
+Attention is currently required from: its_Giaan, plaisthos.
 
-plaisthos has posted comments on this change. ( http://gerrit.openvpn.net/c=
-/openvpn/+/755?usp=3Demail )
+flichtenheld has posted comments on this change. ( http://gerrit.openvpn.ne=
+t/c/openvpn/+/758?usp=3Demail )
 
-Change subject: Remove support for compression on send
+Change subject: pass link_socket object to i/o functions
 ......................................................................
 
 
-Patch Set 5: Code-Review+2
+Patch Set 1:
+
+(1 comment)
+
+File src/openvpn/forward.h:
+
+http://gerrit.openvpn.net/c/openvpn/+/758/comment/bd7de7d5_c8dd6740 :
+PS1, Line 75: void process_io(struct context *ci, struct link_socket *ls);
+Stray "i"
+
 
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/755?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/758?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings
 
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: I402ba016b75cfcfec4fc8b2b01cc4eca7e2bcc60
-Gerrit-Change-Number: 755
-Gerrit-PatchSet: 5
-Gerrit-Owner: flichtenheld <frank@...2641...>
+Gerrit-Change-Id: I8eae2d3356bbcc5d632eeb4fbe80de8009d9b40d
+Gerrit-Change-Number: 758
+Gerrit-PatchSet: 1
+Gerrit-Owner: its_Giaan <gianmarco@...2726...>
+Gerrit-Reviewer: flichtenheld <frank@...2641...>
+Gerrit-Reviewer: ordex <a@...2181...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Comment-Date: Mon, 30 Sep 2024 08:43:54 +0000
-Gerrit-HasComments: No
-Gerrit-Has-Labels: Yes
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Attention: its_Giaan <gianmarco@...2726...>
+Gerrit-Comment-Date: Mon, 30 Sep 2024 09:58:46 +0000
+Gerrit-HasComments: Yes
+Gerrit-Has-Labels: No
 Gerrit-MessageType: comment
 
---8oPyrRrdeoQ=
+--KnJ7/gADQ5k=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p> Attention is currently required from: flichtenheld. </p>
-<p>Patch set 5:<span style=3D"border-radius: 3px; display: inline-block; ma=
-rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/755?usp=3Demail">Vi=
-ew Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To vie=
-w, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/755?usp=3Demail">=
-change 755</a>. To unsubscribe, or for help writing mail filters, visit <a =
-href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope=
- itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"act=
-ion" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=
-=3D"http://gerrit.openvpn.net/c/openvpn/+/755?usp=3Demail"/><meta itemprop=
-=3D"name" content=3D"View Change"/></div></div>
+<p> Attention is currently required from: its_Giaan, plaisthos. </p>
+<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/758?usp=3Demail">View C=
+hange</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0;"><=
+li style=3D"margin: 0; padding: 0;"><p>File src/openvpn/forward.h:</p><ul s=
+tyle=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0=
+ 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn=
+.net/c/openvpn/+/758/comment/bd7de7d5_c8dd6740">Patch Set #1, Line 75:</a> =
+<code style=3D"font-family:monospace,monospace">void process_io(struct cont=
+ext *ci, struct link_socket *ls);</code></p><p style=3D"white-space: pre-wr=
+ap; word-wrap: break-word;">Stray &quot;i&quot;</p></li></ul></li></ul><p>T=
+o view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/758?usp=3Dem=
+ail">change 758</a>. To unsubscribe, or for help writing mail filters, visi=
+t <a href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div item=
+scope itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=
+=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url=
+" href=3D"http://gerrit.openvpn.net/c/openvpn/+/758?usp=3Demail"/><meta ite=
+mprop=3D"name" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I402ba016b75cfcfec4fc8b2b01c=
-c4eca7e2bcc60 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 755 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 5 </div>
-<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
-.&gt; </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I8eae2d3356bbcc5d632eeb4fbe8=
+0de8009d9b40d </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 758 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
+<div style=3D"display:none"> Gerrit-Owner: its_Giaan &lt;gianmarco@...2786...=
+..&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
+1...&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: ordex &lt;a@...2181...&gt; </=
+div>
 <div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
 .1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
-41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Mon, 30 Sep 2024 08:43:54=
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: its_Giaan &lt;gianmarco@...1665...=
+726...&gt; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Mon, 30 Sep 2024 09:58:46=
  +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: No </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
+<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: No </div>
 <div style=3D"display:none"> Gerrit-MessageType: comment </div>
 
 
---8oPyrRrdeoQ=--
+--KnJ7/gADQ5k=--
 
