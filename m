@@ -1,16 +1,15 @@
-From: "flichtenheld (Code Review)" <gerrit@...515...>
-Date: Wed, 2 Oct 2024 16:55:15 +0000
-In-Reply-To: <gerrit.1727098847000.Ib583bf17e35b14aed78fd8217b6e71e8c2b78089@...2715...>
-References: <gerrit.1727098847000.Ib583bf17e35b14aed78fd8217b6e71e8c2b78089@...2715...>
-Reply-To: frank@...2641..., arne-openvpn@...1227...,
- gianmarco@...2726..., openvpn-devel@lists.sourceforge.net, a@...2181...
-Message-ID: <5d4d3c14d9684fa70aa5d5a654d46cf9989dcb3c-EmailReviewComments-HTML@...2715...>
+From: "mattock (Code Review)" <gerrit@...515...>
+Date: Fri, 4 Oct 2024 06:00:24 +0000
+References: <gerrit.1728021620000.Ic0f98cd3b87a7b86e032e63167ac9036f7c08fcb@...2715...>
+Reply-To: samuli@...515..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net, frank@...2641...
+Message-ID: <3086a86985d7f9217cde0db8b3104088fe6c513c-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="S3lE9/AWH/s="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: io_work: convert
- shift argument to uintptr_t
+Content-Type: multipart/alternative; boundary="IaUa6GqGNys="; charset=UTF-8
+Subject: [Openvpn-devel] [XS] Change in openvpn[master]: t_server_null:
+ forcibly kill misbehaving servers
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,92 +18,134 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: its_Giaan <gianmarco@...2726...>
-Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---S3lE9/AWH/s=
+--IaUa6GqGNys=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: its_Giaan, ordex, plaisthos.
+Attention is currently required from: flichtenheld, plaisthos.
 
-flichtenheld has posted comments on this change. ( http://gerrit.openvpn.ne=
-t/c/openvpn/+/759?usp=3Demail )
+Hello plaisthos, flichtenheld,
 
-Change subject: io_work: convert shift argument to uintptr_t
+I'd like you to do a code review.
+Please visit
+
+    http://gerrit.openvpn.net/c/openvpn/+/775?usp=3Demail
+
+to review the following change.
+
+
+Change subject: t_server_null: forcibly kill misbehaving servers
 ......................................................................
 
+t_server_null: forcibly kill misbehaving servers
 
-Patch Set 2: Code-Review+2
+Change-Id: Ic0f98cd3b87a7b86e032e63167ac9036f7c08fcb
+Signed-off-by: Samuli Sepp=C3=A4nen <samuli.seppanen@...277...>
+---
+M tests/t_server_null_server.sh
+1 file changed, 2 insertions(+), 2 deletions(-)
 
+
+
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/75/775/1
+
+diff --git a/tests/t_server_null_server.sh b/tests/t_server_null_server.sh
+index 10bb44b..dea2a04 100755
+--- a/tests/t_server_null_server.sh
++++ b/tests/t_server_null_server.sh
+@@ -88,9 +88,9 @@
+     fi
+
+     if [ -z "${RUN_SUDO}" ]; then
+-        $KILL_EXEC "${SERVER_PID}"
++        $KILL_EXEC -15 "${SERVER_PID}" || $KILL_EXEC -9 "${SERVER_PID}"
+     else
+-        $RUN_SUDO $KILL_EXEC "${SERVER_PID}"
++        $RUN_SUDO $KILL_EXEC -15 "${SERVER_PID}" || $RUN_SUDO $KILL_EXEC -=
+9 "${SERVER_PID}"
+     fi
+
+     count=3D0
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/759?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/775?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings
 
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: Ib583bf17e35b14aed78fd8217b6e71e8c2b78089
-Gerrit-Change-Number: 759
-Gerrit-PatchSet: 2
-Gerrit-Owner: its_Giaan <gianmarco@...2726...>
+Gerrit-Change-Id: Ic0f98cd3b87a7b86e032e63167ac9036f7c08fcb
+Gerrit-Change-Number: 775
+Gerrit-PatchSet: 1
+Gerrit-Owner: mattock <samuli@...515...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-CC: ordex <a@...2181...>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: its_Giaan <gianmarco@...2726...>
-Gerrit-Attention: ordex <a@...2181...>
-Gerrit-Comment-Date: Wed, 02 Oct 2024 16:55:15 +0000
-Gerrit-HasComments: No
-Gerrit-Has-Labels: Yes
-Gerrit-MessageType: comment
+Gerrit-Attention: flichtenheld <frank@...2641...>
+Gerrit-MessageType: newchange
 
---S3lE9/AWH/s=
+--IaUa6GqGNys=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p> Attention is currently required from: its_Giaan, ordex, plaisthos. </p>
-<p>Patch set 2:<span style=3D"border-radius: 3px; display: inline-block; ma=
-rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/759?usp=3Demail">Vi=
-ew Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To vie=
-w, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/759?usp=3Demail">=
-change 759</a>. To unsubscribe, or for help writing mail filters, visit <a =
-href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope=
- itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"act=
-ion" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=
-=3D"http://gerrit.openvpn.net/c/openvpn/+/759?usp=3Demail"/><meta itemprop=
-=3D"name" content=3D"View Change"/></div></div>
+<p> Attention is currently required from: flichtenheld, plaisthos. </p>
+<p>mattock would like plaisthos and flichtenheld to <strong>review</strong>=
+ this change.
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/775?usp=3Demail">Vi=
+ew Change</a></p><pre style=3D"font-family: monospace,monospace; white-spac=
+e: pre-wrap;">t_server_null: forcibly kill misbehaving servers<br><br>Chang=
+e-Id: Ic0f98cd3b87a7b86e032e63167ac9036f7c08fcb<br>Signed-off-by: Samuli Se=
+pp=C3=A4nen &lt;samuli.seppanen@...277...&gt;<br>---<br>M tests/t_server_nu=
+ll_server.sh<br>1 file changed, 2 insertions(+), 2 deletions(-)<br><br></pr=
+e><pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;">g=
+it pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/75/775/1</pre><=
+pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><spa=
+n>diff --git a/tests/t_server_null_server.sh b/tests/t_server_null_server.s=
+h</span><br><span>index 10bb44b..dea2a04 100755</span><br><span>--- a/tests=
+/t_server_null_server.sh</span><br><span>+++ b/tests/t_server_null_server.s=
+h</span><br><span>@@ -88,9 +88,9 @@</span><br><span>     fi</span><br><span=
+> </span><br><span>     if [ -z &quot;${RUN_SUDO}&quot; ]; then</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-        $KILL_EXEC &quot;${SERVER=
+_PID}&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        =
+$KILL_EXEC -15 &quot;${SERVER_PID}&quot; || $KILL_EXEC -9 &quot;${SERVER_PI=
+D}&quot;</span><br><span>     else</span><br><span style=3D"color: hsl(0, 1=
+00%, 40%);">-        $RUN_SUDO $KILL_EXEC &quot;${SERVER_PID}&quot;</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+        $RUN_SUDO $KILL_EXE=
+C -15 &quot;${SERVER_PID}&quot; || $RUN_SUDO $KILL_EXEC -9 &quot;${SERVER_P=
+ID}&quot;</span><br><span>     fi</span><br><span> </span><br><span>     co=
+unt=3D0</span><br><span></span><br></pre><p>To view, visit <a href=3D"http:=
+//gerrit.openvpn.net/c/openvpn/+/775?usp=3Demail">change 775</a>. To unsubs=
+cribe, or for help writing mail filters, visit <a href=3D"http://gerrit.ope=
+nvpn.net/settings">settings</a>.</p><div itemscope itemtype=3D"http://schem=
+a.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://s=
+chema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.=
+net/c/openvpn/+/775?usp=3Demail"/><meta itemprop=3D"name" content=3D"View C=
+hange"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: Ib583bf17e35b14aed78fd8217b6=
-e71e8c2b78089 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 759 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
-<div style=3D"display:none"> Gerrit-Owner: its_Giaan &lt;gianmarco@...2786...=
-..&gt; </div>
+<div style=3D"display:none"> Gerrit-Change-Id: Ic0f98cd3b87a7b86e032e63167a=
+c9036f7c08fcb </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 775 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
+<div style=3D"display:none"> Gerrit-Owner: mattock &lt;samuli@...515...&gt;=
+ </div>
 <div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
 1...&gt; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
 .1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: ordex &lt;a@...2181...&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
 ..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: its_Giaan &lt;gianmarco@...1665...=
-726...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: ordex &lt;a@...2181...&gt; <=
-/div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Wed, 02 Oct 2024 16:55:15=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: No </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
+<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
+41...&gt; </div>
+<div style=3D"display:none"> Gerrit-MessageType: newchange </div>
 
 
---S3lE9/AWH/s=--
+--IaUa6GqGNys=--
 
