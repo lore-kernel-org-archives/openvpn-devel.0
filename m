@@ -1,14 +1,15 @@
-From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Fri, 4 Oct 2024 06:45:15 +0000
+From: "mattock (Code Review)" <gerrit@...515...>
+Date: Fri, 4 Oct 2024 07:02:36 +0000
 In-Reply-To: <gerrit.1728021620000.Ic0f98cd3b87a7b86e032e63167ac9036f7c08fcb@...2715...>
 References: <gerrit.1728021620000.Ic0f98cd3b87a7b86e032e63167ac9036f7c08fcb@...2715...>
-Reply-To: gert@...1296..., arne-openvpn@...1227..., samuli@...515...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <906a41ad54f9cec55be1e8f620deb52e21ea1e3b-EmailReviewComments-HTML@...2715...>
+Reply-To: samuli@...515..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net, frank@...2641...,
+ gert@...1296...
+Message-ID: <00a530c976744f94bf985f0d0d5ebf73027ef862-EmailReplacePatchSet-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="UvMoYcpY9Qg="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="y94JKRPm1D4="; charset=UTF-8
 Subject: [Openvpn-devel] [XS] Change in openvpn[master]: t_server_null:
  forcibly kill misbehaving servers
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -19,32 +20,66 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: mattock <samuli@...515...>
-Cc: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: plaisthos <arne-openvpn@...1227...>, cron2 <gert@...1296...>, flichtenheld <frank@...2641...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---UvMoYcpY9Qg=
+--y94JKRPm1D4=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 Attention is currently required from: flichtenheld, mattock, plaisthos.
 
-cron2 has posted comments on this change. ( http://gerrit.openvpn.net/c/ope=
-nvpn/+/775?usp=3Demail )
+Hello cron2, flichtenheld, plaisthos,
+
+I'd like you to reexamine a change. Please visit
+
+    http://gerrit.openvpn.net/c/openvpn/+/775?usp=3Demail
+
+to look at the new patch set (#2).
+
 
 Change subject: t_server_null: forcibly kill misbehaving servers
 ......................................................................
 
+t_server_null: forcibly kill misbehaving servers
 
-Patch Set 1: Code-Review-2
-
-(1 comment)
-
-Patchset:
-
-PS1:
-this does not work the way it is intended
+Change-Id: Ic0f98cd3b87a7b86e032e63167ac9036f7c08fcb
+Signed-off-by: Samuli Sepp=C3=A4nen <samuli.seppanen@...277...>
+---
+M tests/t_server_null_server.sh
+1 file changed, 8 insertions(+), 1 deletion(-)
 
 
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/75/775/2
+
+diff --git a/tests/t_server_null_server.sh b/tests/t_server_null_server.sh
+index 10bb44b..5fab897 100755
+--- a/tests/t_server_null_server.sh
++++ b/tests/t_server_null_server.sh
+@@ -87,6 +87,7 @@
+         continue
+     fi
+
++    # Attempt to kill the OpenVPN server gracefully with SIGTERM
+     if [ -z "${RUN_SUDO}" ]; then
+         $KILL_EXEC "${SERVER_PID}"
+     else
+@@ -102,7 +103,13 @@
+         sleep 0.2
+     done
+
++    # If server is still up send a SIGKILL
+     if [ $count -ge $maxcount ]; then
+-        echo "WARNING: could not kill server with pid ${SERVER_PID}!"
++        if [ -z "${RUN_SUDO}" ]; then
++            $KILL_EXEC -9 "${SERVER_PID}"
++        else
++            $RUN_SUDO $KILL_EXEC -9 "${SERVER_PID}"
++        fi
++        echo "WARNING: had to send SIGKILL to server with pid ${SERVER_PID=
+}!"
+     fi
+ done
 
 --
 To view, visit http://gerrit.openvpn.net/c/openvpn/+/775?usp=3Demail
@@ -55,7 +90,7 @@ Gerrit-Project: openvpn
 Gerrit-Branch: master
 Gerrit-Change-Id: Ic0f98cd3b87a7b86e032e63167ac9036f7c08fcb
 Gerrit-Change-Number: 775
-Gerrit-PatchSet: 1
+Gerrit-PatchSet: 2
 Gerrit-Owner: mattock <samuli@...515...>
 Gerrit-Reviewer: cron2 <gert@...1296...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
@@ -64,40 +99,61 @@ Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
 Gerrit-Attention: flichtenheld <frank@...2641...>
 Gerrit-Attention: mattock <samuli@...515...>
-Gerrit-Comment-Date: Fri, 04 Oct 2024 06:45:15 +0000
-Gerrit-HasComments: Yes
-Gerrit-Has-Labels: Yes
-Gerrit-MessageType: comment
+Gerrit-MessageType: newpatchset
 
---UvMoYcpY9Qg=
+--y94JKRPm1D4=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <p> Attention is currently required from: flichtenheld, mattock, plaisthos.=
  </p>
-<p>Patch set 1:<span style=3D"border-radius: 3px; display: inline-block; ma=
-rgin: 0 2px; padding: 4px;background-color: #ffd4d4;">Code-Review -2</span>=
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/775?usp=3Demail">Vi=
-ew Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0=
-;"><li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-s=
-tyle: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p s=
-tyle=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn=
-/+/775?tab=3Dcomments">Patch Set #1:</a> </p><p style=3D"white-space: pre-w=
-rap; word-wrap: break-word;">this does not work the way it is intended</p><=
-/li></ul></li></ul><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c=
-/openvpn/+/775?usp=3Demail">change 775</a>. To unsubscribe, or for help wri=
-ting mail filters, visit <a href=3D"http://gerrit.openvpn.net/settings">set=
-tings</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><d=
-iv itemscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction">=
-<link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/775?us=
-p=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
+<p>mattock <strong>uploaded patch set #2</strong> to this change.</p><p><a =
+href=3D"http://gerrit.openvpn.net/c/openvpn/+/775?usp=3Demail">View Change<=
+/a></p><pre style=3D"font-family: monospace,monospace; white-space: pre-wra=
+p;">t_server_null: forcibly kill misbehaving servers<br><br>Change-Id: Ic0f=
+98cd3b87a7b86e032e63167ac9036f7c08fcb<br>Signed-off-by: Samuli Sepp=C3=A4ne=
+n &lt;samuli.seppanen@...277...&gt;<br>---<br>M tests/t_server_null_server.=
+sh<br>1 file changed, 8 insertions(+), 1 deletion(-)<br><br></pre><pre styl=
+e=3D"font-family: monospace,monospace; white-space: pre-wrap;">git pull ssh=
+://gerrit.openvpn.net:29418/openvpn refs/changes/75/775/2</pre><pre style=
+=3D"font-family: monospace,monospace; white-space: pre-wrap;"><span>diff --=
+git a/tests/t_server_null_server.sh b/tests/t_server_null_server.sh</span><=
+br><span>index 10bb44b..5fab897 100755</span><br><span>--- a/tests/t_server=
+_null_server.sh</span><br><span>+++ b/tests/t_server_null_server.sh</span><=
+br><span>@@ -87,6 +87,7 @@</span><br><span>         continue</span><br><spa=
+n>     fi</span><br><span> </span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+    # Attempt to kill the OpenVPN server gracefully with SIGTERM</s=
+pan><br><span>     if [ -z &quot;${RUN_SUDO}&quot; ]; then</span><br><span>=
+         $KILL_EXEC &quot;${SERVER_PID}&quot;</span><br><span>     else</sp=
+an><br><span>@@ -102,7 +103,13 @@</span><br><span>         sleep 0.2</span>=
+<br><span>     done</span><br><span> </span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+    # If server is still up send a SIGKILL</span><br><spa=
+n>     if [ $count -ge $maxcount ]; then</span><br><span style=3D"color: hs=
+l(0, 100%, 40%);">-        echo &quot;WARNING: could not kill server with p=
+id ${SERVER_PID}!&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+        if [ -z &quot;${RUN_SUDO}&quot; ]; then</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+            $KILL_EXEC -9 &quot;${SERVER_=
+PID}&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        e=
+lse</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            $RUN=
+_SUDO $KILL_EXEC -9 &quot;${SERVER_PID}&quot;</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+        fi</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+        echo &quot;WARNING: had to send SIGKILL to server =
+with pid ${SERVER_PID}!&quot;</span><br><span>     fi</span><br><span> done=
+</span><br><span></span><br></pre><p>To view, visit <a href=3D"http://gerri=
+t.openvpn.net/c/openvpn/+/775?usp=3Demail">change 775</a>. To unsubscribe, =
+or for help writing mail filters, visit <a href=3D"http://gerrit.openvpn.ne=
+t/settings">settings</a>.</p><div itemscope itemtype=3D"http://schema.org/E=
+mailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.o=
+rg/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/o=
+penvpn/+/775?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/=
+></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
 <div style=3D"display:none"> Gerrit-Change-Id: Ic0f98cd3b87a7b86e032e63167a=
 c9036f7c08fcb </div>
 <div style=3D"display:none"> Gerrit-Change-Number: 775 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
 <div style=3D"display:none"> Gerrit-Owner: mattock &lt;samuli@...515...&gt;=
  </div>
 <div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
@@ -114,12 +170,8 @@ ts.sourceforge.net&gt; </div>
 41...&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: mattock &lt;samuli@...515...=
 &gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Fri, 04 Oct 2024 06:45:15=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
+<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
 
 
---UvMoYcpY9Qg=--
+--y94JKRPm1D4=--
 
