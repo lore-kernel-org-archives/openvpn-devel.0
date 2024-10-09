@@ -1,16 +1,16 @@
 From: "its_Giaan (Code Review)" <gerrit@...515...>
 Date: Wed, 9 Oct 2024 08:14:06 +0000
-In-Reply-To: <gerrit.1727098847000.Icd7f6a2ad350cdc2312b3e80fa0dbdd7e4311d2e@...2715...>
-References: <gerrit.1727098847000.Icd7f6a2ad350cdc2312b3e80fa0dbdd7e4311d2e@...2715...>
+In-Reply-To: <gerrit.1727098847000.Ib583bf17e35b14aed78fd8217b6e71e8c2b78089@...2715...>
+References: <gerrit.1727098847000.Ib583bf17e35b14aed78fd8217b6e71e8c2b78089@...2715...>
 Reply-To: gianmarco@...2726..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net, frank@...2641..., a@...2181...
-Message-ID: <53761bab5280ab4ec159ec4d15988470e25b9cf0-EmailReplacePatchSet-HTML@...2715...>
+Message-ID: <b678cdb8978854f6d461601b435c506f0f41fe61-EmailReplacePatchSet-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="6HArjR+bGzs="; charset=UTF-8
-Subject: [Openvpn-devel] [M] Change in openvpn[master]: event/multi: add
- event_arg object to make event handling more generic
+Content-Type: multipart/alternative; boundary="fBj+5YcFtKA="; charset=UTF-8
+Subject: [Openvpn-devel] [S] Change in openvpn[master]: io_work: convert
+ shift argument to uintptr_t
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -22,286 +22,158 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---6HArjR+bGzs=
+--fBj+5YcFtKA=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: flichtenheld, its_Giaan, ordex, plais=
-thos.
+Attention is currently required from: its_Giaan, ordex, plaisthos.
 
 Hello flichtenheld, ordex, plaisthos,
 
 I'd like you to reexamine a change. Please visit
 
-    http://gerrit.openvpn.net/c/openvpn/+/757?usp=3Demail
+    http://gerrit.openvpn.net/c/openvpn/+/759?usp=3Demail
 
 to look at the new patch set (#3).
 
-The following approvals got outdated and were removed:
-Code-Review-1 by flichtenheld
+The change is no longer submittable: checks~ChecksSubmitRule is unsatisfied=
+ now.
 
 
-Change subject: event/multi: add event_arg object to make event handling mo=
-re generic
+Change subject: io_work: convert shift argument to uintptr_t
 ......................................................................
 
-event/multi: add event_arg object to make event handling more generic
+io_work: convert shift argument to uintptr_t
 
-In order to prepare the event handling code to deal with multiple
-listening sockets, we have to make sure that it is possible to
-distinguish which of these sockets have been poked by an incoming
-connection request.
+Instead of passing the shift argument as pointer, pass
+directly its integer value. This will allow the code to
+distinguish a shift value from a real object pointer,
+like we already do in multi_tcp_process_io().
 
-To achieve that, this patch changes the object being passed as
-event handler argument, from a "partly integer-evaluated variable"
-to a full struct with a proper type attribute.
+This change will allow us later to pass an event_arg
+object as event handler argument instead of a simple
+integer value.
 
-This struct will allow the code to carry around the particular
-listening socket where the connection is being established.
-
-This change affects the TCP server code path only as UDP servers
-use only one socket to handle all clients.
-
-Change-Id: Icd7f6a2ad350cdc2312b3e80fa0dbdd7e4311d2e
+Change-Id: Ib583bf17e35b14aed78fd8217b6e71e8c2b78089
 Signed-off-by: Antonio Quartulli <a@...2181...>
 ---
-M src/openvpn/event.h
-M src/openvpn/mtcp.c
-M src/openvpn/multi.c
-M src/openvpn/multi.h
-M src/openvpn/socket.c
-M src/openvpn/socket.h
-6 files changed, 68 insertions(+), 28 deletions(-)
+M src/openvpn/forward.c
+1 file changed, 14 insertions(+), 16 deletions(-)
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/57/757/3
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/59/759/3
 
-diff --git a/src/openvpn/event.h b/src/openvpn/event.h
-index 856551a..844ea7b 100644
---- a/src/openvpn/event.h
-+++ b/src/openvpn/event.h
-@@ -126,6 +126,20 @@
-     struct event_set_functions func;
- };
+diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c
+index 6f279ec..66e5be1 100644
+--- a/src/openvpn/forward.c
++++ b/src/openvpn/forward.c
+@@ -2065,20 +2065,18 @@
+     unsigned int tuntap =3D 0;
+     struct event_set_return esr[4];
 
-+typedef enum {
-+    EVENT_ARG_MULTI_INSTANCE =3D 0,
-+    EVENT_ARG_LINK_SOCKET,
-+} event_arg_t;
-+
-+/* generic event argument object to pass to event_ctl() */
-+struct event_arg
-+{
-+    event_arg_t type;
-+    union {
-+        struct multi_instance *mi; /* if type =3D EVENT_ARG_MULTI_INSTANCE=
- */
-+    } u;
-+};
-+
- /*
-  * maxevents on input:  desired max number of event_t descriptors
-  *                      simultaneously set with event_ctl
-diff --git a/src/openvpn/mtcp.c b/src/openvpn/mtcp.c
-index 96408d1..bb151af 100644
---- a/src/openvpn/mtcp.c
-+++ b/src/openvpn/mtcp.c
-@@ -54,7 +54,6 @@
- /*
-  * Special tags passed to event.[ch] functions
-  */
--#define MTCP_SOCKET      ((void *)1)
- #define MTCP_TUN         ((void *)2)
- #define MTCP_SIG         ((void *)3) /* Only on Windows */
- #define MTCP_MANAGEMENT ((void *)4)
-@@ -253,7 +252,7 @@
-         socket_set(mi->context.c2.link_socket,
-                    m->mtcp->es,
-                    mbuf_defined(mi->tcp_link_out_deferred) ? EVENT_WRITE :=
- EVENT_READ,
--                   mi,
-+                   &mi->ev_arg,
-                    &mi->tcp_rwflags);
-     }
- }
-@@ -263,8 +262,8 @@
-                struct multi_tcp *mtcp)
- {
-     int status;
--    unsigned int *persistent =3D &mtcp->tun_rwflags;
--    socket_set_listen_persistent(c->c2.link_socket, mtcp->es, MTCP_SOCKET);
-+    socket_set_listen_persistent(c->c2.link_socket, mtcp->es,
-+                                 &c->c2.link_socket->ev_arg);
-
- #ifdef _WIN32
-     if (tuntap_is_wintun(c->c1.tuntap))
-@@ -280,7 +279,7 @@
-         persistent =3D NULL;
-     }
+-    /* These shifts all depend on EVENT_READ (=3D1) and EVENT_WRITE (=3D2)
+-     * and are added to the shift. Check openvpn.h for more details.
+-     */
+-    static int socket_shift =3D SOCKET_SHIFT;
+-    static int tun_shift =3D TUN_SHIFT;
+-    static int err_shift =3D ERR_SHIFT;
++    /* These shifts all depend on EVENT_READ and EVENT_WRITE */
++    static uintptr_t socket_shift =3D SOCKET_SHIFT;   /* depends on SOCKET=
+_READ and SOCKET_WRITE */
++    static uintptr_t tun_shift =3D TUN_SHIFT;      /* depends on TUN_READ =
+and TUN_WRITE */
++    static uintptr_t err_shift =3D ERR_SHIFT;      /* depends on ES_ERROR =
+*/
+ #ifdef ENABLE_MANAGEMENT
+-    static int management_shift =3D MANAGEMENT_SHIFT;
++    static uintptr_t management_shift =3D MANAGEMENT_SHIFT; /* depends on =
+MANAGEMENT_READ and MANAGEMENT_WRITE */
  #endif
--    tun_set(c->c1.tuntap, mtcp->es, EVENT_READ, MTCP_TUN, persistent);
-+    tun_set(c->c1.tuntap, mtcp->es, EVENT_READ, MTCP_TUN, &mtcp->tun_rwfla=
-gs);
+ #ifdef ENABLE_ASYNC_PUSH
+-    static int file_shift =3D FILE_SHIFT;
++    static uintptr_t file_shift =3D FILE_SHIFT;
+ #endif
  #if defined(TARGET_LINUX) || defined(TARGET_FREEBSD)
-     dco_event_set(&c->c1.tuntap->dco, mtcp->es, MTCP_DCO);
+-    static int dco_shift =3D DCO_SHIFT;    /* Event from DCO linux kernel =
+module */
++    static uintptr_t dco_shift =3D DCO_SHIFT;    /* Event from DCO linux k=
+ernel module */
  #endif
-@@ -692,21 +691,44 @@
-     for (i =3D 0; i < mtcp->n_esr; ++i)
-     {
-         struct event_set_return *e =3D &mtcp->esr[i];
-+        struct event_arg *ev_arg =3D (struct event_arg *)e->arg;
 
--        /* incoming data for instance? */
-+        /* incoming data for instance or listening socket? */
-         if (e->arg >=3D MTCP_N)
-         {
--            struct multi_instance *mi =3D (struct multi_instance *) e->arg;
--            if (mi)
-+            switch (ev_arg->type)
-             {
--                if (e->rwflags & EVENT_WRITE)
--                {
--                    multi_tcp_action(m, mi, TA_SOCKET_WRITE_READY, false);
--                }
--                else if (e->rwflags & EVENT_READ)
--                {
--                    multi_tcp_action(m, mi, TA_SOCKET_READ, false);
--                }
-+                struct multi_instance *mi;
-+
-+                /* react to event on child instance */
-+                case EVENT_ARG_MULTI_INSTANCE:
-+                    if (!ev_arg->u.mi)
-+                    {
-+                        msg(D_MULTI_ERRORS, "MULTI: mtcp_proc_io: null min=
-stance");
-+                        break;
-+                    }
-+
-+                    mi =3D ev_arg->u.mi;
-+                    if (e->rwflags & EVENT_WRITE)
-+                    {
-+                        multi_tcp_action(m, mi, TA_SOCKET_WRITE_READY, fal=
-se);
-+                    }
-+                    else if (e->rwflags & EVENT_READ)
-+                    {
-+                        multi_tcp_action(m, mi, TA_SOCKET_READ, false);
-+                    }
-+                    break;
-+
-+                /* new incoming TCP client attempting to connect? */
-+                case EVENT_ARG_LINK_SOCKET:
-+                    ASSERT(m->top.c2.link_socket);
-+                    socket_reset_listen_persistent(m->top.c2.link_socket);
-+                    mi =3D multi_create_instance_tcp(m);
-+                    if (mi)
-+                    {
-+                        multi_tcp_action(m, mi, TA_INITIAL, false);
-+                    }
-+                    break;
-             }
-         }
-         else
-@@ -731,18 +753,6 @@
-                     multi_tcp_action(m, NULL, TA_TUN_READ, false);
+     /*
+@@ -2092,7 +2090,7 @@
+      */
+     if (flags & IOW_WAIT_SIGNAL)
+     {
+-        wait_signal(c->c2.event_set, (void *)&err_shift);
++        wait_signal(c->c2.event_set, (void *)err_shift);
+     }
+
+     /*
+@@ -2185,19 +2183,19 @@
+     /*
+      * Configure event wait based on socket, tuntap flags.
+      */
+-    socket_set(c->c2.link_socket, c->c2.event_set, socket, (void *)&socket=
+_shift, NULL);
+-    tun_set(c->c1.tuntap, c->c2.event_set, tuntap, (void *)&tun_shift, NUL=
+L);
++    socket_set(c->c2.link_socket, c->c2.event_set, socket, (void *)socket_=
+shift, NULL);
++    tun_set(c->c1.tuntap, c->c2.event_set, tuntap, (void *)tun_shift, NULL=
+);
+ #if defined(TARGET_LINUX) || defined(TARGET_FREEBSD)
+     if (socket & EVENT_READ && c->c2.did_open_tun)
+     {
+-        dco_event_set(&c->c1.tuntap->dco, c->c2.event_set, (void *)&dco_sh=
+ift);
++        dco_event_set(&c->c1.tuntap->dco, c->c2.event_set, (void *)dco_shi=
+ft);
+     }
+ #endif
+
+ #ifdef ENABLE_MANAGEMENT
+     if (management)
+     {
+-        management_socket_set(management, c->c2.event_set, (void *)&manage=
+ment_shift, NULL);
++        management_socket_set(management, c->c2.event_set, (void *)managem=
+ent_shift, NULL);
+     }
+ #endif
+
+@@ -2205,7 +2203,7 @@
+     /* arm inotify watcher */
+     if (c->options.mode =3D=3D MODE_SERVER)
+     {
+-        event_ctl(c->c2.event_set, c->c2.inotify_fd, EVENT_READ, (void *)&=
+file_shift);
++        event_ctl(c->c2.event_set, c->c2.inotify_fd, EVENT_READ, (void *)f=
+ile_shift);
+     }
+ #endif
+
+@@ -2248,7 +2246,7 @@
+                 for (i =3D 0; i < status; ++i)
+                 {
+                     const struct event_set_return *e =3D &esr[i];
+-                    c->c2.event_set_status |=3D ((e->rwflags & 3) << *((in=
+t *)e->arg));
++                    c->c2.event_set_status |=3D ((e->rwflags & 3) << (uint=
+ptr_t)e->arg);
                  }
              }
--            /* new incoming TCP client attempting to connect? */
--            else if (e->arg =3D=3D MTCP_SOCKET)
--            {
--                struct multi_instance *mi;
--                ASSERT(m->top.c2.link_socket);
--                socket_reset_listen_persistent(m->top.c2.link_socket);
--                mi =3D multi_create_instance_tcp(m);
--                if (mi)
--                {
--                    multi_tcp_action(m, mi, TA_INITIAL, false);
--                }
--            }
- #if defined(ENABLE_DCO) && (defined(TARGET_LINUX) || defined(TARGET_FREEBS=
-D))
-             /* incoming data on DCO? */
-             else if (e->arg =3D=3D MTCP_DCO)
-diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
-index 0509911..45b3cfa 100644
---- a/src/openvpn/multi.c
-+++ b/src/openvpn/multi.c
-@@ -823,6 +823,9 @@
-         goto err;
-     }
-
-+    mi->ev_arg.type =3D EVENT_ARG_MULTI_INSTANCE;
-+    mi->ev_arg.u.mi =3D mi;
-+
-     perf_pop();
-     gc_free(&gc);
-     return mi;
-diff --git a/src/openvpn/multi.h b/src/openvpn/multi.h
-index 7167639..7b78ddd 100644
---- a/src/openvpn/multi.h
-+++ b/src/openvpn/multi.h
-@@ -102,6 +102,12 @@
-     struct schedule_entry se;  /* this must be the first element of the st=
-ructure,
-                                 * We cast between this and schedule_entry =
-so the
-                                 * beginning of the struct must be identica=
-l */
-+
-+    struct event_arg ev_arg;   /** this struct will store a pointer to eit=
-her mi or
-+                                * link_socket, depending on the event type=
-, to keep
-+                                * it accessible it's placed within the sam=
-e struct
-+                                * it points to. */
-+
-     struct gc_arena gc;
-     bool halt;
-     int refcount;
-diff --git a/src/openvpn/socket.c b/src/openvpn/socket.c
-index 7b1e603..cf04090 100644
---- a/src/openvpn/socket.c
-+++ b/src/openvpn/socket.c
-@@ -1830,6 +1830,8 @@
-     ALLOC_OBJ_CLEAR(sock, struct link_socket);
-     sock->sd =3D SOCKET_UNDEFINED;
-     sock->ctrl_sd =3D SOCKET_UNDEFINED;
-+    sock->ev_arg.type =3D EVENT_ARG_LINK_SOCKET;
-+
-     return sock;
- }
-
-diff --git a/src/openvpn/socket.h b/src/openvpn/socket.h
-index 2e583af..5ff31ea 100644
---- a/src/openvpn/socket.h
-+++ b/src/openvpn/socket.h
-@@ -178,6 +178,11 @@
- {
-     struct link_socket_info info;
-
-+    struct event_arg ev_arg;   /** this struct will store a pointer to eit=
-her mi or
-+                                * link_socket, depending on the event type=
-, to keep
-+                                * it accessible it's placed within the sam=
-e struct
-+                                * it points to. */
-+
-     socket_descriptor_t sd;
-     socket_descriptor_t ctrl_sd; /* only used for UDP over Socks */
-
+             else if (status =3D=3D 0)
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/757?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/759?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings
 
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: Icd7f6a2ad350cdc2312b3e80fa0dbdd7e4311d2e
-Gerrit-Change-Number: 757
+Gerrit-Change-Id: Ib583bf17e35b14aed78fd8217b6e71e8c2b78089
+Gerrit-Change-Number: 759
 Gerrit-PatchSet: 3
 Gerrit-Owner: its_Giaan <gianmarco@...2726...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
@@ -310,238 +182,122 @@ Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
 Gerrit-Attention: its_Giaan <gianmarco@...2726...>
-Gerrit-Attention: flichtenheld <frank@...2641...>
 Gerrit-Attention: ordex <a@...2181...>
 Gerrit-MessageType: newpatchset
 
---6HArjR+bGzs=
+--fBj+5YcFtKA=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p> Attention is currently required from: flichtenheld, its_Giaan, ordex, p=
-laisthos. </p>
+<p> Attention is currently required from: its_Giaan, ordex, plaisthos. </p>
 <p>its_Giaan <strong>uploaded patch set #3</strong> to this change.</p><p><=
-a href=3D"http://gerrit.openvpn.net/c/openvpn/+/757?usp=3Demail">View Chang=
-e</a></p><p>The following approvals got outdated and were removed:
-Code-Review-1 by flichtenheld</p><pre style=3D"font-family: monospace,monos=
-pace; white-space: pre-wrap;">event/multi: add event_arg object to make eve=
-nt handling more generic<br><br>In order to prepare the event handling code=
- to deal with multiple<br>listening sockets, we have to make sure that it i=
-s possible to<br>distinguish which of these sockets have been poked by an i=
-ncoming<br>connection request.<br><br>To achieve that, this patch changes t=
-he object being passed as<br>event handler argument, from a &quot;partly in=
-teger-evaluated variable&quot;<br>to a full struct with a proper type attri=
-bute.<br><br>This struct will allow the code to carry around the particular=
-<br>listening socket where the connection is being established.<br><br>This=
- change affects the TCP server code path only as UDP servers<br>use only on=
-e socket to handle all clients.<br><br>Change-Id: Icd7f6a2ad350cdc2312b3e80=
-fa0dbdd7e4311d2e<br>Signed-off-by: Antonio Quartulli &lt;a@...2181...&gt;<b=
-r>---<br>M src/openvpn/event.h<br>M src/openvpn/mtcp.c<br>M src/openvpn/mul=
-ti.c<br>M src/openvpn/multi.h<br>M src/openvpn/socket.c<br>M src/openvpn/so=
-cket.h<br>6 files changed, 68 insertions(+), 28 deletions(-)<br><br></pre><=
-pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;">git =
-pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/57/757/3</pre><pre=
- style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><span>d=
-iff --git a/src/openvpn/event.h b/src/openvpn/event.h</span><br><span>index=
- 856551a..844ea7b 100644</span><br><span>--- a/src/openvpn/event.h</span><b=
-r><span>+++ b/src/openvpn/event.h</span><br><span>@@ -126,6 +126,20 @@</spa=
-n><br><span>     struct event_set_functions func;</span><br><span> };</span=
-><br><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+typedef=
- enum {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    EVENT_AR=
-G_MULTI_INSTANCE =3D 0,</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+    EVENT_ARG_LINK_SOCKET,</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+} event_arg_t;</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+/* generic ev=
-ent argument object to pass to event_ctl() */</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+struct event_arg</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+    event_arg_t type;</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+    union {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-       struct multi_instance *mi; /* if type =3D EVENT_ARG_MULTI_INSTANCE *=
-/</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    } u;</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+};</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+</span><br><span> /*</span><br><span>  * maxev=
-ents on input:  desired max number of event_t descriptors</span><br><span> =
- *                      simultaneously set with event_ctl</span><br><span>d=
-iff --git a/src/openvpn/mtcp.c b/src/openvpn/mtcp.c</span><br><span>index 9=
-6408d1..bb151af 100644</span><br><span>--- a/src/openvpn/mtcp.c</span><br><=
-span>+++ b/src/openvpn/mtcp.c</span><br><span>@@ -54,7 +54,6 @@</span><br><=
-span> /*</span><br><span>  * Special tags passed to event.[ch] functions</s=
-pan><br><span>  */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#de=
-fine MTCP_SOCKET      ((void *)1)</span><br><span> #define MTCP_TUN        =
- ((void *)2)</span><br><span> #define MTCP_SIG         ((void *)3) /* Only =
-on Windows */</span><br><span> #define MTCP_MANAGEMENT ((void *)4)</span><b=
-r><span>@@ -253,7 +252,7 @@</span><br><span>         socket_set(mi-&gt;cont=
-ext.c2.link_socket,</span><br><span>                    m-&gt;mtcp-&gt;es,<=
-/span><br><span>                    mbuf_defined(mi-&gt;tcp_link_out_deferr=
-ed) ? EVENT_WRITE : EVENT_READ,</span><br><span style=3D"color: hsl(0, 100%=
-, 40%);">-                   mi,</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+                   &amp;mi-&gt;ev_arg,</span><br><span>       =
-             &amp;mi-&gt;tcp_rwflags);</span><br><span>     }</span><br><sp=
-an> }</span><br><span>@@ -263,8 +262,8 @@</span><br><span>                s=
-truct multi_tcp *mtcp)</span><br><span> {</span><br><span>     int status;<=
-/span><br><span style=3D"color: hsl(0, 100%, 40%);">-    unsigned int *pers=
-istent =3D &amp;mtcp-&gt;tun_rwflags;</span><br><span style=3D"color: hsl(0=
-, 100%, 40%);">-    socket_set_listen_persistent(c-&gt;c2.link_socket, mtcp=
--&gt;es, MTCP_SOCKET);</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+    socket_set_listen_persistent(c-&gt;c2.link_socket, mtcp-&gt;es,</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+                        =
-         &amp;c-&gt;c2.link_socket-&gt;ev_arg);</span><br><span> </span><br=
-><span> #ifdef _WIN32</span><br><span>     if (tuntap_is_wintun(c-&gt;c1.tu=
-ntap))</span><br><span>@@ -280,7 +279,7 @@</span><br><span>         persist=
-ent =3D NULL;</span><br><span>     }</span><br><span> #endif</span><br><spa=
-n style=3D"color: hsl(0, 100%, 40%);">-    tun_set(c-&gt;c1.tuntap, mtcp-&g=
-t;es, EVENT_READ, MTCP_TUN, persistent);</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+    tun_set(c-&gt;c1.tuntap, mtcp-&gt;es, EVENT_READ, =
-MTCP_TUN, &amp;mtcp-&gt;tun_rwflags);</span><br><span> #if defined(TARGET_L=
-INUX) || defined(TARGET_FREEBSD)</span><br><span>     dco_event_set(&amp;c-=
-&gt;c1.tuntap-&gt;dco, mtcp-&gt;es, MTCP_DCO);</span><br><span> #endif</spa=
-n><br><span>@@ -692,21 +691,44 @@</span><br><span>     for (i =3D 0; i &lt;=
- mtcp-&gt;n_esr; ++i)</span><br><span>     {</span><br><span>         struc=
-t event_set_return *e =3D &amp;mtcp-&gt;esr[i];</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+        struct event_arg *ev_arg =3D (struct ev=
-ent_arg *)e-&gt;arg;</span><br><span> </span><br><span style=3D"color: hsl(=
-0, 100%, 40%);">-        /* incoming data for instance? */</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+        /* incoming data for instanc=
-e or listening socket? */</span><br><span>         if (e-&gt;arg &gt;=3D MT=
-CP_N)</span><br><span>         {</span><br><span style=3D"color: hsl(0, 100=
-%, 40%);">-            struct multi_instance *mi =3D (struct multi_instance=
- *) e-&gt;arg;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-       =
-     if (mi)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
-     switch (ev_arg-&gt;type)</span><br><span>             {</span><br><spa=
-n style=3D"color: hsl(0, 100%, 40%);">-                if (e-&gt;rwflags &a=
-mp; EVENT_WRITE)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-     =
-           {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-         =
-           multi_tcp_action(m, mi, TA_SOCKET_WRITE_READY, false);</span><br=
-><span style=3D"color: hsl(0, 100%, 40%);">-                }</span><br><sp=
-an style=3D"color: hsl(0, 100%, 40%);">-                else if (e-&gt;rwfl=
-ags &amp; EVENT_READ)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
-                {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
-                multi_tcp_action(m, mi, TA_SOCKET_READ, false);</span><br><=
-span style=3D"color: hsl(0, 100%, 40%);">-                }</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+                struct multi_instan=
-ce *mi;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+                /* react to eve=
-nt on child instance */</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+                case EVENT_ARG_MULTI_INSTANCE:</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+                    if (!ev_arg-&gt;u.mi)</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+                    {<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+                    =
-    msg(D_MULTI_ERRORS, &quot;MULTI: mtcp_proc_io: null minstance&quot;);</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+                     =
-   break;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+          =
-          }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+                    mi =3D =
-ev_arg-&gt;u.mi;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
-                 if (e-&gt;rwflags &amp; EVENT_WRITE)</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+                    {</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+                        multi_tcp_actio=
-n(m, mi, TA_SOCKET_WRITE_READY, false);</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+                    }</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+                    else if (e-&gt;rwflags &amp; EVEN=
-T_READ)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            =
-        {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+          =
-              multi_tcp_action(m, mi, TA_SOCKET_READ, false);</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+                    }</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+                    break;</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+                /* new incoming TCP clien=
-t attempting to connect? */</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+                case EVENT_ARG_LINK_SOCKET:</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+                    ASSERT(m-&gt;top.c2.l=
-ink_socket);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
-             socket_reset_listen_persistent(m-&gt;top.c2.link_socket);</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+                    mi =
-=3D multi_create_instance_tcp(m);</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+                    if (mi)</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+                    {</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+                        multi_tcp_action(m, mi, TA_=
-INITIAL, false);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
-                 }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-                   break;</span><br><span>             }</span><br><span>  =
-       }</span><br><span>         else</span><br><span>@@ -731,18 +753,6 @@=
-</span><br><span>                     multi_tcp_action(m, NULL, TA_TUN_READ=
-, false);</span><br><span>                 }</span><br><span>             }=
-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            /* new in=
-coming TCP client attempting to connect? */</span><br><span style=3D"color:=
- hsl(0, 100%, 40%);">-            else if (e-&gt;arg =3D=3D MTCP_SOCKET)</s=
-pan><br><span style=3D"color: hsl(0, 100%, 40%);">-            {</span><br>=
-<span style=3D"color: hsl(0, 100%, 40%);">-                struct multi_ins=
-tance *mi;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-           =
-     ASSERT(m-&gt;top.c2.link_socket);</span><br><span style=3D"color: hsl(=
-0, 100%, 40%);">-                socket_reset_listen_persistent(m-&gt;top.c=
-2.link_socket);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-      =
-          mi =3D multi_create_instance_tcp(m);</span><br><span style=3D"col=
-or: hsl(0, 100%, 40%);">-                if (mi)</span><br><span style=3D"c=
-olor: hsl(0, 100%, 40%);">-                {</span><br><span style=3D"color=
-: hsl(0, 100%, 40%);">-                    multi_tcp_action(m, mi, TA_INITI=
-AL, false);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-          =
-      }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            }<=
-/span><br><span> #if defined(ENABLE_DCO) &amp;&amp; (defined(TARGET_LINUX) =
-|| defined(TARGET_FREEBSD))</span><br><span>             /* incoming data o=
-n DCO? */</span><br><span>             else if (e-&gt;arg =3D=3D MTCP_DCO)<=
-/span><br><span>diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c</spa=
-n><br><span>index 0509911..45b3cfa 100644</span><br><span>--- a/src/openvpn=
-/multi.c</span><br><span>+++ b/src/openvpn/multi.c</span><br><span>@@ -823,=
-6 +823,9 @@</span><br><span>         goto err;</span><br><span>     }</span=
-><br><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+    mi-=
-&gt;ev_arg.type =3D EVENT_ARG_MULTI_INSTANCE;</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+    mi-&gt;ev_arg.u.mi =3D mi;</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+</span><br><span>     perf_pop();</spa=
-n><br><span>     gc_free(&amp;gc);</span><br><span>     return mi;</span><b=
-r><span>diff --git a/src/openvpn/multi.h b/src/openvpn/multi.h</span><br><s=
-pan>index 7167639..7b78ddd 100644</span><br><span>--- a/src/openvpn/multi.h=
-</span><br><span>+++ b/src/openvpn/multi.h</span><br><span>@@ -102,6 +102,1=
-2 @@</span><br><span>     struct schedule_entry se;  /* this must be the fi=
-rst element of the structure,</span><br><span>                             =
-    * We cast between this and schedule_entry so the</span><br><span>      =
-                           * beginning of the struct must be identical */</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+    struct event_arg ev_arg;   /** this =
-struct will store a pointer to either mi or</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+                                * link_socket, depe=
-nding on the event type, to keep</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+                                * it accessible it&#39;s place=
-d within the same struct</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+                                * it points to. */</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+</span><br><span>     struct gc_arena g=
-c;</span><br><span>     bool halt;</span><br><span>     int refcount;</span=
-><br><span>diff --git a/src/openvpn/socket.c b/src/openvpn/socket.c</span><=
-br><span>index 7b1e603..cf04090 100644</span><br><span>--- a/src/openvpn/so=
-cket.c</span><br><span>+++ b/src/openvpn/socket.c</span><br><span>@@ -1830,=
-6 +1830,8 @@</span><br><span>     ALLOC_OBJ_CLEAR(sock, struct link_socket)=
-;</span><br><span>     sock-&gt;sd =3D SOCKET_UNDEFINED;</span><br><span>  =
-   sock-&gt;ctrl_sd =3D SOCKET_UNDEFINED;</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+    sock-&gt;ev_arg.type =3D EVENT_ARG_LINK_SOCKET;</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span>    =
- return sock;</span><br><span> }</span><br><span> </span><br><span>diff --g=
-it a/src/openvpn/socket.h b/src/openvpn/socket.h</span><br><span>index 2e58=
-3af..5ff31ea 100644</span><br><span>--- a/src/openvpn/socket.h</span><br><s=
-pan>+++ b/src/openvpn/socket.h</span><br><span>@@ -178,6 +178,11 @@</span><=
-br><span> {</span><br><span>     struct link_socket_info info;</span><br><s=
-pan> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+    struct eve=
-nt_arg ev_arg;   /** this struct will store a pointer to either mi or</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+                         =
-       * link_socket, depending on the event type, to keep</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+                                * it=
- accessible it&#39;s placed within the same struct</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+                                * it points =
-to. */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><s=
-pan>     socket_descriptor_t sd;</span><br><span>     socket_descriptor_t c=
-trl_sd; /* only used for UDP over Socks */</span><br><span> </span><br><spa=
-n></span><br></pre><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c=
-/openvpn/+/757?usp=3Demail">change 757</a>. To unsubscribe, or for help wri=
-ting mail filters, visit <a href=3D"http://gerrit.openvpn.net/settings">set=
-tings</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><d=
-iv itemscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction">=
-<link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/757?us=
-p=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
+a href=3D"http://gerrit.openvpn.net/c/openvpn/+/759?usp=3Demail">View Chang=
+e</a></p><p>The change is no longer submittable: checks~ChecksSubmitRule is=
+ unsatisfied now.</p><pre style=3D"font-family: monospace,monospace; white-=
+space: pre-wrap;">io_work: convert shift argument to uintptr_t<br><br>Inste=
+ad of passing the shift argument as pointer, pass<br>directly its integer v=
+alue. This will allow the code to<br>distinguish a shift value from a real =
+object pointer,<br>like we already do in multi_tcp_process_io().<br><br>Thi=
+s change will allow us later to pass an event_arg<br>object as event handle=
+r argument instead of a simple<br>integer value.<br><br>Change-Id: Ib583bf1=
+7e35b14aed78fd8217b6e71e8c2b78089<br>Signed-off-by: Antonio Quartulli &lt;a=
+@...2181...&gt;<br>---<br>M src/openvpn/forward.c<br>1 file changed, 14 ins=
+ertions(+), 16 deletions(-)<br><br></pre><pre style=3D"font-family: monospa=
+ce,monospace; white-space: pre-wrap;">git pull ssh://gerrit.openvpn.net:294=
+18/openvpn refs/changes/59/759/3</pre><pre style=3D"font-family: monospace,=
+monospace; white-space: pre-wrap;"><span>diff --git a/src/openvpn/forward.c=
+ b/src/openvpn/forward.c</span><br><span>index 6f279ec..66e5be1 100644</spa=
+n><br><span>--- a/src/openvpn/forward.c</span><br><span>+++ b/src/openvpn/f=
+orward.c</span><br><span>@@ -2065,20 +2065,18 @@</span><br><span>     unsig=
+ned int tuntap =3D 0;</span><br><span>     struct event_set_return esr[4];<=
+/span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
+/* These shifts all depend on EVENT_READ (=3D1) and EVENT_WRITE (=3D2)</spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-     * and are added to th=
+e shift. Check openvpn.h for more details.</span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">-     */</span><br><span style=3D"color: hsl(0, 100%, 4=
+0%);">-    static int socket_shift =3D SOCKET_SHIFT;</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-    static int tun_shift =3D TUN_SHIFT;</sp=
+an><br><span style=3D"color: hsl(0, 100%, 40%);">-    static int err_shift =
+=3D ERR_SHIFT;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    /=
+* These shifts all depend on EVENT_READ and EVENT_WRITE */</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+    static uintptr_t socket_shift =
+=3D SOCKET_SHIFT;   /* depends on SOCKET_READ and SOCKET_WRITE */</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+    static uintptr_t tun_shif=
+t =3D TUN_SHIFT;      /* depends on TUN_READ and TUN_WRITE */</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+    static uintptr_t err_shift =
+=3D ERR_SHIFT;      /* depends on ES_ERROR */</span><br><span> #ifdef ENABL=
+E_MANAGEMENT</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    stati=
+c int management_shift =3D MANAGEMENT_SHIFT;</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+    static uintptr_t management_shift =3D MANAGEME=
+NT_SHIFT; /* depends on MANAGEMENT_READ and MANAGEMENT_WRITE */</span><br><=
+span> #endif</span><br><span> #ifdef ENABLE_ASYNC_PUSH</span><br><span styl=
+e=3D"color: hsl(0, 100%, 40%);">-    static int file_shift =3D FILE_SHIFT;<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+    static uintptr_t=
+ file_shift =3D FILE_SHIFT;</span><br><span> #endif</span><br><span> #if de=
+fined(TARGET_LINUX) || defined(TARGET_FREEBSD)</span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-    static int dco_shift =3D DCO_SHIFT;    /* Even=
+t from DCO linux kernel module */</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+    static uintptr_t dco_shift =3D DCO_SHIFT;    /* Event fro=
+m DCO linux kernel module */</span><br><span> #endif</span><br><span> </spa=
+n><br><span>     /*</span><br><span>@@ -2092,7 +2090,7 @@</span><br><span> =
+     */</span><br><span>     if (flags &amp; IOW_WAIT_SIGNAL)</span><br><sp=
+an>     {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        wait=
+_signal(c-&gt;c2.event_set, (void *)&amp;err_shift);</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+        wait_signal(c-&gt;c2.event_set, (=
+void *)err_shift);</span><br><span>     }</span><br><span> </span><br><span=
+>     /*</span><br><span>@@ -2185,19 +2183,19 @@</span><br><span>     /*</s=
+pan><br><span>      * Configure event wait based on socket, tuntap flags.</=
+span><br><span>      */</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>-    socket_set(c-&gt;c2.link_socket, c-&gt;c2.event_set, socket, (void *)=
+&amp;socket_shift, NULL);</span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">-    tun_set(c-&gt;c1.tuntap, c-&gt;c2.event_set, tuntap, (void *)&amp;t=
+un_shift, NULL);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+ socket_set(c-&gt;c2.link_socket, c-&gt;c2.event_set, socket, (void *)socke=
+t_shift, NULL);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+tun_set(c-&gt;c1.tuntap, c-&gt;c2.event_set, tuntap, (void *)tun_shift, NUL=
+L);</span><br><span> #if defined(TARGET_LINUX) || defined(TARGET_FREEBSD)</=
+span><br><span>     if (socket &amp; EVENT_READ &amp;&amp; c-&gt;c2.did_ope=
+n_tun)</span><br><span>     {</span><br><span style=3D"color: hsl(0, 100%, =
+40%);">-        dco_event_set(&amp;c-&gt;c1.tuntap-&gt;dco, c-&gt;c2.event_=
+set, (void *)&amp;dco_shift);</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+        dco_event_set(&amp;c-&gt;c1.tuntap-&gt;dco, c-&gt;c2.even=
+t_set, (void *)dco_shift);</span><br><span>     }</span><br><span> #endif</=
+span><br><span> </span><br><span> #ifdef ENABLE_MANAGEMENT</span><br><span>=
+     if (management)</span><br><span>     {</span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-        management_socket_set(management, c-&gt;c2.ev=
+ent_set, (void *)&amp;management_shift, NULL);</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+        management_socket_set(management, c-&gt;=
+c2.event_set, (void *)management_shift, NULL);</span><br><span>     }</span=
+><br><span> #endif</span><br><span> </span><br><span>@@ -2205,7 +2203,7 @@<=
+/span><br><span>     /* arm inotify watcher */</span><br><span>     if (c-&=
+gt;options.mode =3D=3D MODE_SERVER)</span><br><span>     {</span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">-        event_ctl(c-&gt;c2.event_set, =
+c-&gt;c2.inotify_fd, EVENT_READ, (void *)&amp;file_shift);</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+        event_ctl(c-&gt;c2.event_set=
+, c-&gt;c2.inotify_fd, EVENT_READ, (void *)file_shift);</span><br><span>   =
+  }</span><br><span> #endif</span><br><span> </span><br><span>@@ -2248,7 +2=
+246,7 @@</span><br><span>                 for (i =3D 0; i &lt; status; ++i)=
+</span><br><span>                 {</span><br><span>                     co=
+nst struct event_set_return *e =3D &amp;esr[i];</span><br><span style=3D"co=
+lor: hsl(0, 100%, 40%);">-                    c-&gt;c2.event_set_status |=
+=3D ((e-&gt;rwflags &amp; 3) &lt;&lt; *((int *)e-&gt;arg));</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+                    c-&gt;c2.event_=
+set_status |=3D ((e-&gt;rwflags &amp; 3) &lt;&lt; (uintptr_t)e-&gt;arg);</s=
+pan><br><span>                 }</span><br><span>             }</span><br><=
+span>             else if (status =3D=3D 0)</span><br><span></span><br></pr=
+e><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/759?us=
+p=3Demail">change 759</a>. To unsubscribe, or for help writing mail filters=
+, visit <a href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><di=
+v itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope item=
+prop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D=
+"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/759?usp=3Demail"/><meta=
+ itemprop=3D"name" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: Icd7f6a2ad350cdc2312b3e80fa0=
-dbdd7e4311d2e </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 757 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: Ib583bf17e35b14aed78fd8217b6=
+e71e8c2b78089 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 759 </div>
 <div style=3D"display:none"> Gerrit-PatchSet: 3 </div>
 <div style=3D"display:none"> Gerrit-Owner: its_Giaan &lt;gianmarco@...2786...=
 ..&gt; </div>
@@ -557,12 +313,10 @@ ts.sourceforge.net&gt; </div>
 ..1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: its_Giaan &lt;gianmarco@...1665...=
 726...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
-41...&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: ordex &lt;a@...2181...&gt; <=
 /div>
 <div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
 
 
---6HArjR+bGzs=--
+--fBj+5YcFtKA=--
 
