@@ -1,11 +1,16 @@
-Content-Type: multipart/alternative;
- boundary="------------Qu79MxUI0Ylr8gEoMIercDip"
-Message-ID: <48287498-b9c3-4f35-9bf2-66bedc4bdad5@...2751...>
-Date: Wed, 9 Oct 2024 14:40:53 +0200
+From: "flichtenheld (Code Review)" <gerrit@...515...>
+Date: Wed, 9 Oct 2024 16:41:24 +0000
+In-Reply-To: <gerrit.1727098847000.Icd7f6a2ad350cdc2312b3e80fa0dbdd7e4311d2e@...2715...>
+References: <gerrit.1727098847000.Icd7f6a2ad350cdc2312b3e80fa0dbdd7e4311d2e@...2715...>
+Reply-To: frank@...2641..., arne-openvpn@...1227...,
+ gianmarco@...2726..., openvpn-devel@lists.sourceforge.net, a@...2181...
+Message-ID: <66a5d851e8705eff51f80ff942eba8a663e7417b-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-From: Johan Draaisma <johan@...2751...>
-Content-Language: en-US
-Subject: [Openvpn-devel]  IRC community meeting summary
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="iu8P/xe/2c0="; charset=UTF-8
+Subject: [Openvpn-devel] [M] Change in openvpn[master]: event/multi: add
+ event_arg object to make event handling more generic
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,96 +19,139 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: openvpn-devel@lists.sourceforge.net
+To: its_Giaan <gianmarco@...2726...>
+Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-This is a multi-part message in MIME format.
---------------Qu79MxUI0Ylr8gEoMIercDip
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+--iu8P/xe/2c0=
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Meeting summary for 9 October 2024:
+Attention is currently required from: its_Giaan, ordex, plaisthos.
 
-  * *Updated: DCO and Linux upstreaming, API change*
-    /Upstreaming DCO to Linux is proceeding, it is in review stage at
-    the moment./
-    /ordex is collecting feedback on*patchset version 8*. Plan is to
-    send v9 after collecting feedback./
-    /During meetup it was discussed that if the patchset does not make
-    it into the kernel before 2.7 we should update the out-of-tree
-    module to match the new API anyway. So that 2.7 supports the new API
-    and we need no or minimal further changes to work with the eventual
-    in-tree version./
+flichtenheld has posted comments on this change. ( http://gerrit.openvpn.ne=
+t/c/openvpn/+/757?usp=3Demail )
 
-  * *Updated: buildbot improvements*
-    /djpig reports that the first arm64 architecture buildbot agent now
-    works. We can add more workers as required./
-    /mattock has a patch to split the mails for different project to
-    different mail addresses./
-    /The idea is to split openvpn3 and openvpn3-linux out so it doesn't
-    go to openvpn-builds@ ML anymore./
-    /Instead we could create a openvpn3-builds@ ML. djpig will look into
-    that./
+Change subject: event/multi: add event_arg object to make event handling mo=
+re generic
+......................................................................
 
-  * *Updated: t_server_null improvements*
-    /The tests against latest git master server against older openvpn
-    client versions are almost done./
 
-As always you're welcome to join at #openvpn-meeting on Libera IRC 
-network every Wednesday at 14:00 Central European Time.
+Patch Set 3: Code-Review-1
 
-Kind regards,
-Johan Draaisma
+(3 comments)
 
---------------Qu79MxUI0Ylr8gEoMIercDip
-Content-Type: text/html; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+File src/openvpn/mtcp.c:
 
-<!DOCTYPE html>
-<html>
-  <head>
-    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
-  </head>
-  <body>
-    <p> Meeting summary for 9 October 2024:</p>
-    <ul
-style="color: rgb(0, 0, 0); font-family: Verdana, Arial, &quot;Bitstream Vera Sans&quot;, Helvetica, sans-serif; font-size: 13px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;">
-      <li><strong>Updated: DCO and Linux upstreaming, API change</strong><br>
-        <em>Upstreaming DCO to Linux is proceeding, it is in review
-          stage at the moment.</em><br>
-        <em>ordex is collecting feedback on<span> </span><strong>patchset
-            version 8</strong>. Plan is to send v9 after collecting
-          feedback.</em><br>
-        <em>During meetup it was discussed that if the patchset does not
-          make it into the kernel before 2.7 we should update the
-          out-of-tree module to match the new API anyway. So that 2.7
-          supports the new API and we need no or minimal further changes
-          to work with the eventual in-tree version.</em></li>
-    </ul>
-    <ul
-style="color: rgb(0, 0, 0); font-family: Verdana, Arial, &quot;Bitstream Vera Sans&quot;, Helvetica, sans-serif; font-size: 13px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;">
-      <li><strong>Updated: buildbot improvements</strong><br>
-        <em>djpig reports that the first arm64 architecture buildbot
-          agent now works. We can add more workers as required.</em><br>
-        <em>mattock has a patch to split the mails for different project
-          to different mail addresses.</em><br>
-        <em>The idea is to split openvpn3 and openvpn3-linux out so it
-          doesn't go to openvpn-builds@ ML anymore.</em><br>
-        <em>Instead we could create a openvpn3-builds@ ML. djpig will
-          look into that.</em></li>
-    </ul>
-    <ul
-style="color: rgb(0, 0, 0); font-family: Verdana, Arial, &quot;Bitstream Vera Sans&quot;, Helvetica, sans-serif; font-size: 13px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;">
-      <li><strong>Updated: t_server_null improvements</strong><br>
-        <em>The tests against latest git master server against older
-          openvpn client versions are almost done.</em></li>
-    </ul>
-    As always you're welcome to join at #openvpn-meeting on Libera IRC
-    network every Wednesday at 14:00 Central European Time.
-    <p>Kind regards,<br>
-      Johan Draaisma<br>
-    </p>
-  </body>
-</html>
+http://gerrit.openvpn.net/c/openvpn/+/757/comment/ade8c2b8_33f9715f :
+PS3, Line 694: *
+any reason to define this before the if?
 
---------------Qu79MxUI0Ylr8gEoMIercDip--
+
+File src/openvpn/multi.h:
+
+http://gerrit.openvpn.net/c/openvpn/+/757/comment/6dd1c266_a3590871 :
+PS3, Line 106: this
+Forgot "<" so this comment applies to gc
+
+
+File src/openvpn/socket.h:
+
+http://gerrit.openvpn.net/c/openvpn/+/757/comment/3c66faa3_fd3f993f :
+PS3, Line 181:     struct event_arg ev_arg;   /** this struct will store a =
+pointer to either mi or
+Forgot "<" so this comment applies to sd
+
+
+
+--
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/757?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings
+
+Gerrit-Project: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: Icd7f6a2ad350cdc2312b3e80fa0dbdd7e4311d2e
+Gerrit-Change-Number: 757
+Gerrit-PatchSet: 3
+Gerrit-Owner: its_Giaan <gianmarco@...2726...>
+Gerrit-Reviewer: flichtenheld <frank@...2641...>
+Gerrit-Reviewer: ordex <a@...2181...>
+Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Attention: its_Giaan <gianmarco@...2726...>
+Gerrit-Attention: ordex <a@...2181...>
+Gerrit-Comment-Date: Wed, 09 Oct 2024 16:41:24 +0000
+Gerrit-HasComments: Yes
+Gerrit-Has-Labels: Yes
+Gerrit-MessageType: comment
+
+--iu8P/xe/2c0=
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<p> Attention is currently required from: its_Giaan, ordex, plaisthos. </p>
+<p>Patch set 3:<span style=3D"border-radius: 3px; display: inline-block; ma=
+rgin: 0 2px; padding: 4px;background-color: #ffd4d4;">Code-Review -1</span>=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/757?usp=3Demail">Vi=
+ew Change</a></p><p>3 comments:</p><ul style=3D"list-style: none; padding: =
+0;"><li style=3D"margin: 0; padding: 0;"><p>File src/openvpn/mtcp.c:</p><ul=
+ style=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; padding: 0=
+ 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openv=
+pn.net/c/openvpn/+/757/comment/ade8c2b8_33f9715f">Patch Set #3, Line 694:</=
+a> <code style=3D"font-family:monospace,monospace">*</code></p><p style=3D"=
+white-space: pre-wrap; word-wrap: break-word;">any reason to define this be=
+fore the if?</p></li></ul></li><li style=3D"margin: 0; padding: 0;"><p>File=
+ src/openvpn/multi.h:</p><ul style=3D"list-style: none; padding: 0;"><li st=
+yle=3D"margin: 0; padding: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a=
+ href=3D"http://gerrit.openvpn.net/c/openvpn/+/757/comment/6dd1c266_a359087=
+1">Patch Set #3, Line 106:</a> <code style=3D"font-family:monospace,monospa=
+ce">this</code></p><p style=3D"white-space: pre-wrap; word-wrap: break-word=
+;">Forgot &quot;&lt;&quot; so this comment applies to gc</p></li></ul></li>=
+<li style=3D"margin: 0; padding: 0;"><p>File src/openvpn/socket.h:</p><ul s=
+tyle=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0=
+ 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn=
+.net/c/openvpn/+/757/comment/3c66faa3_fd3f993f">Patch Set #3, Line 181:</a>=
+ <code style=3D"font-family:monospace,monospace">    struct event_arg ev_ar=
+g;   /** this struct will store a pointer to either mi or</code></p><p styl=
+e=3D"white-space: pre-wrap; word-wrap: break-word;">Forgot &quot;&lt;&quot;=
+ so this comment applies to sd</p></li></ul></li></ul><p>To view, visit <a =
+href=3D"http://gerrit.openvpn.net/c/openvpn/+/757?usp=3Demail">change 757</=
+a>. To unsubscribe, or for help writing mail filters, visit <a href=3D"http=
+://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope itemtype=3D=
+"http://schema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtyp=
+e=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://ge=
+rrit.openvpn.net/c/openvpn/+/757?usp=3Demail"/><meta itemprop=3D"name" cont=
+ent=3D"View Change"/></div></div>
+
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: Icd7f6a2ad350cdc2312b3e80fa0=
+dbdd7e4311d2e </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 757 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 3 </div>
+<div style=3D"display:none"> Gerrit-Owner: its_Giaan &lt;gianmarco@...2786...=
+..&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
+1...&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: ordex &lt;a@...2181...&gt; </=
+div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
+.1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: its_Giaan &lt;gianmarco@...1665...=
+726...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: ordex &lt;a@...2181...&gt; <=
+/div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Wed, 09 Oct 2024 16:41:24=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
+
+
+--iu8P/xe/2c0=--
 
