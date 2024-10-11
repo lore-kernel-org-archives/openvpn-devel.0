@@ -1,16 +1,16 @@
 From: "its_Giaan (Code Review)" <gerrit@...515...>
 Date: Fri, 11 Oct 2024 14:07:43 +0000
-In-Reply-To: <gerrit.1727098847000.I31bbf87e4e568021445c7512ecefadfd4a69b363@...2715...>
-References: <gerrit.1727098847000.I31bbf87e4e568021445c7512ecefadfd4a69b363@...2715...>
+In-Reply-To: <gerrit.1727098847000.I1e5a84969988e4f027a18658d4ab268c13fbf929@...2715...>
+References: <gerrit.1727098847000.I1e5a84969988e4f027a18658d4ab268c13fbf929@...2715...>
 Reply-To: gianmarco@...2726..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <6f0cb31fe07e9f65601094aefc1fcc5790750144-EmailReplacePatchSet-HTML@...2715...>
+Message-ID: <28fd37af94be85139abfdb8dc04aabe29b03b076-EmailReplacePatchSet-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="xWhg6TeD8Cw="; charset=UTF-8
-Subject: [Openvpn-devel] [L] Change in openvpn[master]: Bind to multiple
- ipv4/ipv6 addresses
+Content-Type: multipart/alternative; boundary="4MZ8k4yh/h8="; charset=UTF-8
+Subject: [Openvpn-devel] [XL] Change in openvpn[master]: multiproto: move
+ generic event handling code in dedicated files
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -22,2898 +22,3848 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---xWhg6TeD8Cw=
+--4MZ8k4yh/h8=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: its_Giaan, plaisthos.
+Attention is currently required from: flichtenheld, plaisthos.
 
 Hello flichtenheld, plaisthos,
 
 I'd like you to reexamine a change. Please visit
 
-    http://gerrit.openvpn.net/c/openvpn/+/764?usp=3Demail
+    http://gerrit.openvpn.net/c/openvpn/+/763?usp=3Demail
 
 to look at the new patch set (#4).
 
 
-Change subject: Bind to multiple ipv4/ipv6 addresses
+Change subject: multiproto: move generic event handling code in dedicated f=
+iles
 ......................................................................
 
-Bind to multiple ipv4/ipv6 addresses
+multiproto: move generic event handling code in dedicated files
 
-Enables the binding of multiple listen sockets based
-on the specified "--local" directives.
+    Introduced multi_io.h and multi_io.c files to centralize
+    all codes related to multiple protocols.
 
-The main server loop has been updated to handle both
-TCP and UDP connections.
+    Renamed the struct mtcp to struct multi_protocol since it
+    encompasses the event_set used by the parent context in server mode.
 
-The hash function has also been modified to include the
-protocol during the creation of new client instances.
+    Several methods have also been renamed and moved to fit the
+    multiproto structure:
 
-There are also a couple of refinements to make the
-whole code flow management capable of handling
-different kind of clients:
+    - multi_tcp_init() -> multi_protocol_init();
+    - multi_tcp_free() -> multi_protocol_free();
+    - multi_tcp_wait() -> multi_protocol_io_wait();
+    and so forth.
 
-MULTI: properly remove TCP instances by checking the multi_instance
-       protocol instead of the global one.
-
-TLS: set the tls_option xmit_hold bool value to true only in case of
-     TCP child instance to avoid checking the global protocol
-     value.
-
-INIT: initialize the c->c2.event_set in the inherit_context_top()
-      by default and not only in case of UDP since we could have
-      multiple different sockets.
-
-Change-Id: I31bbf87e4e568021445c7512ecefadfd4a69b363
+Change-Id: I1e5a84969988e4f027a18658d4ab268c13fbf929
 Signed-off-by: Gianmarco De Gregori <gianmarco@...2726...>
 ---
-M doc/man-sections/link-options.rst
+M CMakeLists.txt
+M src/openvpn/Makefile.am
 M src/openvpn/forward.c
 M src/openvpn/forward.h
 M src/openvpn/init.c
-M src/openvpn/mroute.c
-M src/openvpn/mroute.h
+M src/openvpn/init.h
 M src/openvpn/mtcp.c
 M src/openvpn/mtcp.h
 M src/openvpn/mudp.c
 M src/openvpn/mudp.h
 M src/openvpn/multi.c
 M src/openvpn/multi.h
-M src/openvpn/multi_io.c
-M src/openvpn/openvpn.h
-M src/openvpn/options.c
-M src/openvpn/options.h
-16 files changed, 548 insertions(+), 320 deletions(-)
+A src/openvpn/multi_io.c
+A src/openvpn/multi_io.h
+14 files changed, 765 insertions(+), 635 deletions(-)
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/64/764/4
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/63/763/4
 
-diff --git a/doc/man-sections/link-options.rst b/doc/man-sections/link-opti=
-ons.rst
-index 05909ca..e2cf9b8 100644
---- a/doc/man-sections/link-options.rst
-+++ b/doc/man-sections/link-options.rst
-@@ -106,7 +106,7 @@
-   is not reliable. It is recommended to set tun-mtu with enough headroom
-   instead.
-
----local host|* [port]
-+--local host|* [port] [protocol]
-   Local host name or IP address and port for bind. If specified, OpenVPN w=
-ill bind
-   to this address. If unspecified, OpenVPN will bind to all interfaces.
-   '*' can be used as hostname and means 'any host' (OpenVPN will listen on=
- what
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 5db207d..d5202da 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -458,6 +458,8 @@
+     src/openvpn/mudp.h
+     src/openvpn/multi.c
+     src/openvpn/multi.h
++    src/openvpn/multi_io.h
++    src/openvpn/multi_io.c
+     src/openvpn/ntlm.c
+     src/openvpn/ntlm.h
+     src/openvpn/occ.c
+diff --git a/src/openvpn/Makefile.am b/src/openvpn/Makefile.am
+index ecb2bcf..4436dbc 100644
+--- a/src/openvpn/Makefile.am
++++ b/src/openvpn/Makefile.am
+@@ -92,6 +92,7 @@
+ 	mtu.c mtu.h \
+ 	mudp.c mudp.h \
+ 	multi.c multi.h \
++	multi_io.c multi_io.h \
+ 	networking_freebsd.c \
+ 	networking_iproute2.c networking_iproute2.h \
+ 	networking_sitnl.c networking_sitnl.h \
 diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c
-index 04f2075..f84a512 100644
+index 5e56be0..e7518e7 100644
 --- a/src/openvpn/forward.c
 +++ b/src/openvpn/forward.c
-@@ -1775,7 +1775,7 @@
-             if (c->options.shaper)
+@@ -1659,7 +1659,7 @@
+
+ void
+ process_ip_header(struct context *c, unsigned int flags, struct buffer *bu=
+f,
+-                  struct link_socket *ls)
++                  struct link_socket *sock)
+ {
+     if (!c->options.ce.mssfix)
+     {
+@@ -1693,7 +1693,7 @@
+             /* extract TOS from IP header */
+             if (flags & PIPV4_PASSTOS)
              {
-                 int overhead =3D datagram_overhead(c->c2.to_link_addr->des=
-t.addr.sa.sa_family,
--                                                 c->options.ce.proto);
-+                                                 sock->info.proto);
-                 shaper_wrote_bytes(&c->c2.shaper,
-                                    BLEN(&c->c2.to_link) + overhead);
+-                link_socket_extract_tos(ls, &ipbuf);
++                link_socket_extract_tos(sock, &ipbuf);
              }
-@@ -2072,6 +2072,173 @@
-  */
+ #endif
 
- void
-+get_io_flags_dowork_udp(struct context *c, struct multi_protocol *multi_io=
-, const unsigned int flags)
-+{
-+    unsigned int socket =3D 0;
-+    unsigned int tuntap =3D 0;
-+    static uintptr_t tun_shift =3D 2;
-+    static uintptr_t err_shift =3D 4;
-+
-+    /*
-+     * Calculate the flags based on the provided 'flags' argument.
-+     */
-+    if (flags & IOW_WAIT_SIGNAL)
-+    {
-+        wait_signal(multi_io->es, (void *)err_shift);
-+    }
-+
-+    if (flags & IOW_TO_LINK)
-+    {
-+        if (flags & IOW_SHAPER)
-+        {
-+            /*
-+             * If sending this packet would put us over our traffic shaping
-+             * quota, don't send -- instead compute the delay we must wait
-+             * until it will be OK to send the packet.
-+             */
-+            int delay =3D 0;
-+
-+            /* set traffic shaping delay in microseconds */
-+            if (c->options.shaper)
-+            {
-+                delay =3D max_int(delay, shaper_delay(&c->c2.shaper));
-+            }
-+
-+            if (delay < 1000)
-+            {
-+                socket |=3D EVENT_WRITE;
-+            }
-+            else
-+            {
-+                shaper_soonest_event(&c->c2.timeval, delay);
-+            }
-+        }
-+        else
-+        {
-+            socket |=3D EVENT_WRITE;
-+        }
-+    }
-+    else if (!((flags & IOW_FRAG) && TO_LINK_FRAG(c)))
-+    {
-+        if (flags & IOW_READ_TUN)
-+        {
-+            tuntap |=3D EVENT_READ;
-+        }
-+    }
-+
-+    /*
-+     * If outgoing data (for TUN/TAP device) pending, wait for ready-to-se=
-nd status
-+     * from device.  Otherwise, wait for incoming data on TCP/UDP port.
-+     */
-+    if (flags & IOW_TO_TUN)
-+    {
-+        tuntap |=3D EVENT_WRITE;
-+    }
-+    else
-+    {
-+        if (flags & IOW_READ_LINK)
-+        {
-+            socket |=3D EVENT_READ;
-+        }
-+    }
-+
-+    /*
-+     * outgoing bcast buffer waiting to be sent?
-+     */
-+    if (flags & IOW_MBUF)
-+    {
-+        socket |=3D EVENT_WRITE;
-+    }
-+
-+    /*
-+     * Force wait on TUN input, even if also waiting on TCP/UDP output
-+     */
-+    if (flags & IOW_READ_TUN_FORCE)
-+    {
-+        tuntap |=3D EVENT_READ;
-+    }
-+
-+#ifdef _WIN32
-+    if (tuntap_is_wintun(c->c1.tuntap))
-+    {
-+        /*
-+         * With wintun we are only interested in read event. Ring buffer is
-+         * always ready for write, so we don't do wait.
-+         */
-+        tuntap =3D EVENT_READ;
-+    }
-+#endif
-+
-+    /*
-+     * Configure event wait based on socket, tuntap flags.
-+     */
-+    for (int i =3D 0; i < c->c1.link_sockets_num; i++)
-+    {
-+        if (proto_is_dgram(c->c2.link_sockets[i]->info.proto))
-+        {
-+            socket_set(c->c2.link_sockets[i], multi_io->es, socket,
-+                       &c->c2.link_sockets[i]->ev_arg, NULL);
-+        }
-+    }
-+    tun_set(c->c1.tuntap, multi_io->es, tuntap, (void *)tun_shift, NULL);
-+
-+    multi_io->udp_flags =3D socket | tuntap;
-+}
-+
-+void
-+get_io_flags_udp(struct context *c, struct multi_protocol *multi_io, const=
- unsigned int flags)
-+{
-+    multi_io->udp_flags =3D ES_ERROR;
-+    if (c->c2.fast_io && (flags & (IOW_TO_TUN | IOW_TO_LINK | IOW_MBUF)))
-+    {
-+        /* fast path -- only for TUN/TAP/UDP writes */
-+        unsigned int ret =3D 0;
-+        if (flags & IOW_TO_TUN)
-+        {
-+            ret |=3D TUN_WRITE;
-+        }
-+        if (flags & (IOW_TO_LINK | IOW_MBUF))
-+        {
-+            ret |=3D SOCKET_WRITE;
-+        }
-+        multi_io->udp_flags =3D ret;
-+    }
-+    else
-+    {
-+#ifdef _WIN32
-+        bool skip_iowait =3D flags & IOW_TO_TUN;
-+        if (flags & IOW_READ_TUN)
-+        {
-+            /*
-+             * don't read from tun if we have pending write to link,
-+             * since every tun read overwrites to_link buffer filled
-+             * by previous tun read
-+             */
-+            skip_iowait =3D !(flags & IOW_TO_LINK);
-+        }
-+        if (tuntap_is_wintun(c->c1.tuntap) && skip_iowait)
-+        {
-+            unsigned int ret =3D 0;
-+            if (flags & IOW_TO_TUN)
-+            {
-+                ret |=3D TUN_WRITE;
-+            }
-+            if (flags & IOW_READ_TUN)
-+            {
-+                ret |=3D TUN_READ;
-+            }
-+            multi_io->udp_flags =3D ret;
-+        }
-+        else
-+#endif /* ifdef _WIN32 */
-+        {
-+            /* slow path - delegate to io_wait_dowork_udp to calculate fla=
-gs */
-+            get_io_flags_dowork_udp(c, multi_io, flags);
-+        }
-+    }
-+}
-+
-+void
- io_wait_dowork(struct context *c, const unsigned int flags)
- {
-     unsigned int socket =3D 0;
-@@ -2313,6 +2480,7 @@
-     dmsg(D_EVENT_WAIT, "I/O WAIT status=3D0x%04x", c->c2.event_set_status);
- }
-
-+
- void
- process_io(struct context *c, struct link_socket *sock)
- {
 diff --git a/src/openvpn/forward.h b/src/openvpn/forward.h
-index 0415726..fc4ff68 100644
+index 4ff5b04..0415726 100644
 --- a/src/openvpn/forward.h
 +++ b/src/openvpn/forward.h
-@@ -69,6 +69,10 @@
+@@ -50,6 +50,7 @@
+ #include "openvpn.h"
+ #include "occ.h"
+ #include "ping.h"
++#include "multi_io.h"
 
- extern counter_type link_write_bytes_global;
+ #define IOW_TO_TUN          (1<<0)
+ #define IOW_TO_LINK         (1<<1)
+@@ -308,7 +309,7 @@
 
-+void get_io_flags_dowork_udp(struct context *c, struct multi_protocol *mul=
-ti_io, const unsigned int flags);
-+
-+void get_io_flags_udp(struct context *c, struct multi_protocol *multi_io, =
-const unsigned int flags);
-+
- void io_wait_dowork(struct context *c, const unsigned int flags);
 
- void pre_select(struct context *c);
+ void process_ip_header(struct context *c, unsigned int flags, struct buffe=
+r *buf,
+-                       struct link_socket *ls);
++                       struct link_socket *sock);
+
+ bool schedule_exit(struct context *c);
+
 diff --git a/src/openvpn/init.c b/src/openvpn/init.c
-index 4eb286a..b2f772b 100644
+index 575b4d2..4eb286a 100644
 --- a/src/openvpn/init.c
 +++ b/src/openvpn/init.c
-@@ -225,7 +225,7 @@
-         if (streq(p[1], "HTTP"))
-         {
-             struct http_proxy_options *ho;
--            if (ce->proto !=3D PROTO_TCP && ce->proto !=3D PROTO_TCP_CLIEN=
-T)
-+            if (ce->proto !=3D PROTO_TCP && c->mode !=3D CM_CHILD_TCP)
-             {
-                 msg(M_WARN, "HTTP proxy support only works for TCP based c=
-onnections");
-                 return false;
-@@ -602,7 +602,10 @@
-             ce_defined =3D false;
-         }
-
-+        int proto =3D c->options.ce.proto;
-         c->options.ce =3D *ce;
-+        c->options.ce.proto =3D proto;
-+
- #ifdef ENABLE_MANAGEMENT
-         if (ce_defined && management && management_query_remote_enabled(ma=
-nagement))
-         {
-@@ -2673,7 +2676,7 @@
-
-     if (found & OPT_P_EXPLICIT_NOTIFY)
-     {
--        if (!proto_is_udp(c->options.ce.proto) && c->options.ce.explicit_e=
-xit_notification)
-+        if (!proto_is_udp(c->c2.link_sockets[0]->info.proto) && c->options=
-.ce.explicit_exit_notification)
-         {
-             msg(D_PUSH, "OPTIONS IMPORT: --explicit-exit-notify can only b=
-e used with --proto udp");
-             c->options.ce.explicit_exit_notification =3D 0;
-@@ -2833,14 +2836,21 @@
-     int sec =3D 2;
-     int backoff =3D 0;
-
--    switch (c->options.ce.proto)
-+    switch (c->mode)
-     {
--        case PROTO_TCP_SERVER:
--            sec =3D 1;
-+        case CM_TOP:
-+            if (has_udp_in_local_list(&c->options))
-+            {
-+                sec =3D c->options.ce.connect_retry_seconds;
-+            }
-+            else
-+            {
-+                sec =3D 1;
-+            }
-             break;
-
--        case PROTO_UDP:
--        case PROTO_TCP_CLIENT:
-+        case CM_CHILD_UDP:
-+        case CM_CHILD_TCP:
-             sec =3D c->options.ce.connect_retry_seconds;
-             break;
-     }
-@@ -2858,7 +2868,7 @@
-     }
-
-     /* Slow down reconnection after 5 retries per remote -- for TCP client=
- or UDP tls-client only */
--    if (c->options.ce.proto =3D=3D PROTO_TCP_CLIENT
-+    if (c->mode =3D=3D CM_CHILD_TCP
-         || (c->options.ce.proto =3D=3D PROTO_UDP && c->options.tls_client))
-     {
-         backoff =3D (c->options.unsuccessful_attempts / c->options.connect=
-ion_list->len) - 4;
-@@ -3338,7 +3348,21 @@
-     to.server =3D options->tls_server;
-     to.replay_window =3D options->replay_window;
-     to.replay_time =3D options->replay_time;
--    to.tcp_mode =3D link_socket_proto_connection_oriented(options->ce.prot=
-o);
-+
-+    if (c->options.ce.local_list->len > 1)
-+    {
-+        for (int i =3D 0; i < c->options.ce.local_list->len; i++)
-+        {
-+            if (proto_is_dgram(c->options.ce.local_list->array[i]->proto))
-+            {
-+                to.tcp_mode =3D false;
-+            }
-+        }
-+    }
-+    else
-+    {
-+        to.tcp_mode =3D link_socket_proto_connection_oriented(c->options.c=
-e.local_list->array[0]->proto);
-+    }
-     to.config_ciphername =3D c->options.ciphername;
-     to.config_ncp_ciphers =3D c->options.ncp_ciphers;
-     to.transition_window =3D options->transition_window;
-@@ -3383,7 +3407,7 @@
-
-     /* should we not xmit any packets until we get an initial
-      * response from client? */
--    if (to.server && options->ce.proto =3D=3D PROTO_TCP_SERVER)
-+    if (to.server && c->mode =3D=3D CM_CHILD_TCP)
-     {
-         to.xmit_hold =3D true;
-     }
-@@ -3829,6 +3853,24 @@
-     unsigned int sockflags =3D c->options.sockflags;
-     int i;
-
-+    int mode =3D LS_MODE_DEFAULT;
-+    /* mode allows CM_CHILD_TCP
-+     * instances to inherit acceptable fds
-+     * from a top-level parent */
-+    if (c->options.mode =3D=3D MODE_SERVER)
-+    {
-+        /* initializing listening socket */
-+        if (c->mode =3D=3D CM_TOP)
-+        {
-+            mode =3D LS_MODE_TCP_LISTEN;
-+        }
-+        /* initializing socket to client */
-+        else if (c->mode =3D=3D CM_CHILD_TCP)
-+        {
-+            mode =3D LS_MODE_TCP_ACCEPT_FROM;
-+        }
-+    }
-+
- #if PORT_SHARE
-     if (c->options.port_share_host && c->options.port_share_port)
-     {
-@@ -3838,33 +3880,37 @@
-
-     for (i =3D 0; i < c->c1.link_sockets_num; i++)
-     {
--        int mode =3D LS_MODE_DEFAULT;
-+        const char *host =3D c->options.ce.local_list->array[i]->local;
-+        const char *port =3D c->options.ce.local_list->array[i]->port;
-+        int proto =3D c->options.ce.local_list->array[i]->proto;
-+        bool bind_local =3D c->options.ce.local_list->array[i]->bind_local;
-
--        /* mode allows CM_CHILD_TCP
--         * instances to inherit acceptable fds
--         * from a top-level parent */
--        if (c->options.mode =3D=3D MODE_SERVER)
-+        if (c->mode =3D=3D CM_CHILD_TCP || c->mode =3D=3D CM_CHILD_UDP)
-         {
--            /* initializing listening socket */
--            if (c->mode =3D=3D CM_TOP)
-+            const struct link_socket *ls =3D NULL;
-+            if (c->mode =3D=3D CM_CHILD_TCP)
-             {
--                mode =3D LS_MODE_TCP_LISTEN;
-+                ls =3D c->c2.accept_from;
-             }
--            /* initializing socket to client */
--            else if (c->mode =3D=3D CM_CHILD_TCP)
-+            else if (c->mode =3D=3D CM_CHILD_UDP)
-             {
--                mode =3D LS_MODE_TCP_ACCEPT_FROM;
-+                ls =3D c->c2.link_sockets[0];
-             }
-+
-+            host =3D ls->local_host;
-+            port =3D ls->local_port;
-+            proto =3D ls->info.proto;
-+            bind_local =3D ls->bind_local;
-         }
-
-         /* init each socket with its specific port */
-         link_socket_init_phase1(c->c2.link_sockets[i],
--                                c->options.ce.local_list->array[i]->local,
--                                c->options.ce.local_list->array[i]->port,
-+                                host,
-+                                port,
-                                 c->options.ce.remote,
-                                 c->options.ce.remote_port,
-                                 c->c1.dns_cache,
--                                c->options.ce.proto,
-+                                proto,
-                                 c->options.ce.af,
-                                 c->options.ce.bind_ipv6_only,
-                                 mode,
-@@ -3874,7 +3920,7 @@
- #ifdef ENABLE_DEBUG
-                                 c->options.gremlin,
- #endif
--                                c->options.ce.local_list->array[i]->bind_l=
-ocal,
-+                                bind_local,
-                                 c->options.ce.remote_float,
-                                 &c->c1.link_socket_addrs[i],
-                                 c->options.ipchange,
-@@ -4265,20 +4311,13 @@
- #ifdef _WIN32
-         msg(M_INFO, "NOTE: --fast-io is disabled since we are running on W=
-indows");
- #else
--        if (!proto_is_udp(c->options.ce.proto))
-+        if (c->options.shaper)
-         {
--            msg(M_INFO, "NOTE: --fast-io is disabled since we are not usin=
-g UDP");
-+            msg(M_INFO, "NOTE: --fast-io is disabled since we are using --=
-shaper");
-         }
-         else
-         {
--            if (c->options.shaper)
--            {
--                msg(M_INFO, "NOTE: --fast-io is disabled since we are usin=
-g --shaper");
--            }
--            else
--            {
--                c->c2.fast_io =3D true;
--            }
-+            c->c2.fast_io =3D true;
-         }
- #endif
-     }
-@@ -4685,7 +4724,7 @@
-     }
-
-     /* our wait-for-i/o objects, different for posix vs. win32 */
--    if (c->mode =3D=3D CM_P2P)
-+    if (c->mode =3D=3D CM_P2P || c->mode =3D=3D CM_TOP)
-     {
-         do_event_set_init(c, SHAPER_DEFINED(&c->options));
-     }
-@@ -4949,7 +4988,7 @@
-     CLEAR(*dest);
-
-     /* proto_is_dgram will ASSERT(0) if proto is invalid */
--    dest->mode =3D proto_is_dgram(src->options.ce.proto) ? CM_CHILD_UDP : =
-CM_CHILD_TCP;
-+    dest->mode =3D proto_is_dgram(sock->info.proto) ? CM_CHILD_UDP : CM_CH=
-ILD_TCP;
-
-     dest->gc =3D gc_new();
-
-@@ -4975,8 +5014,11 @@
-
-     /* options */
-     dest->options =3D src->options;
-+    dest->options.ce.proto =3D sock->info.proto;
-     options_detach(&dest->options);
-
-+    dest->c2.event_set =3D src->c2.event_set;
-+
-     if (dest->mode =3D=3D CM_CHILD_TCP)
-     {
-         /*
-@@ -5071,10 +5113,7 @@
-     dest->c2.es_owned =3D false;
-
-     dest->c2.event_set =3D NULL;
--    if (proto_is_dgram(src->options.ce.proto))
--    {
--        do_event_set_init(dest, false);
--    }
-+    do_event_set_init(dest, false);
-
- #ifdef USE_COMP
-     dest->c2.comp_context =3D NULL;
-diff --git a/src/openvpn/mroute.c b/src/openvpn/mroute.c
-index 3a0224e..6f0170a 100644
---- a/src/openvpn/mroute.c
-+++ b/src/openvpn/mroute.c
-@@ -421,6 +421,7 @@
-                 {
-                     buf_printf(&out, ":%d", ntohs(maddr.v4.port));
-                 }
-+                buf_printf(&out, ":%d", maddr.proto);
-             }
-             break;
-
-diff --git a/src/openvpn/mroute.h b/src/openvpn/mroute.h
-index 570ccaa..e844c21 100644
---- a/src/openvpn/mroute.h
-+++ b/src/openvpn/mroute.h
-@@ -201,6 +201,10 @@
-     {
-         return false;
-     }
-+    if (a1->proto !=3D a2->proto)
-+    {
-+        return false;
-+    }
-     if (a1->netbits !=3D a2->netbits)
-     {
-         return false;
-@@ -222,7 +226,7 @@
- static inline uint32_t
- mroute_addr_hash_len(const struct mroute_addr *a)
+@@ -4944,7 +4944,7 @@
+ void
+ inherit_context_child(struct context *dest,
+                       const struct context *src,
+-                      struct link_socket *ls)
++                      struct link_socket *sock)
  {
--    return (uint32_t) a->len + 2;
-+    return (uint32_t) a->len + 3;
- }
+     CLEAR(*dest);
+=20
+@@ -4983,7 +4983,7 @@
+          * The CM_TOP context does the socket listen(),
+          * and the CM_CHILD_TCP context does the accept().
+          */
+-        dest->c2.accept_from =3D ls;
++        dest->c2.accept_from =3D sock;
+     }
 
- static inline void
+ #ifdef ENABLE_PLUGIN
+@@ -5017,13 +5017,13 @@
+                        &dest->gc);
+
+         /* inherit parent link_socket and tuntap */
+-        dest->c2.link_sockets[0] =3D ls;
++        dest->c2.link_sockets[0] =3D sock;
+
+         ALLOC_ARRAY_GC(dest->c2.link_socket_infos, struct link_socket_info=
+ *, 1,
+                        &dest->gc);
+         ALLOC_OBJ_GC(dest->c2.link_socket_infos[0], struct link_socket_inf=
+o,
+                      &dest->gc);
+-        *dest->c2.link_socket_infos[0] =3D ls->info;
++        *dest->c2.link_socket_infos[0] =3D sock->info;
+
+         /* locally override some link_socket_info fields */
+         dest->c2.link_socket_infos[0]->lsa =3D &dest->c1.link_socket_addrs=
+[0];
+diff --git a/src/openvpn/init.h b/src/openvpn/init.h
+index 11c32ac..50b38e3 100644
+--- a/src/openvpn/init.h
++++ b/src/openvpn/init.h
+@@ -96,7 +96,7 @@
+
+ void inherit_context_child(struct context *dest,
+                            const struct context *src,
+-                           struct link_socket *ls);
++                           struct link_socket *sock);
+
+ void inherit_context_top(struct context *dest,
+                          const struct context *src);
 diff --git a/src/openvpn/mtcp.c b/src/openvpn/mtcp.c
-index e173b80..c1107ab 100644
+index 5a03146..1dae184 100644
 --- a/src/openvpn/mtcp.c
 +++ b/src/openvpn/mtcp.c
-@@ -54,7 +54,7 @@
+@@ -29,6 +29,8 @@
+
+ #include "multi.h"
+ #include "forward.h"
++#include "mtcp.h"
++#include "multi_io.h"
+
+ #include "memdbg.h"
+
+@@ -36,30 +38,6 @@
+ #include <sys/inotify.h>
+ #endif
+
+-/*
+- * TCP States
+- */
+-#define TA_UNDEF                 0
+-#define TA_SOCKET_READ           1
+-#define TA_SOCKET_READ_RESIDUAL  2
+-#define TA_SOCKET_WRITE          3
+-#define TA_SOCKET_WRITE_READY    4
+-#define TA_SOCKET_WRITE_DEFERRED 5
+-#define TA_TUN_READ              6
+-#define TA_TUN_WRITE             7
+-#define TA_INITIAL               8
+-#define TA_TIMEOUT               9
+-#define TA_TUN_WRITE_TIMEOUT     10
+-
+-/*
+- * Special tags passed to event.[ch] functions
+- */
+-#define MTCP_TUN         ((void *)2)
+-#define MTCP_SIG         ((void *)3) /* Only on Windows */
+-#define MTCP_MANAGEMENT ((void *)4)
+-#define MTCP_FILE_CLOSE_WRITE ((void *)5)
+-#define MTCP_DCO        ((void *)6)
+-
+ struct ta_iow_flags
+ {
+     unsigned int flags;
+@@ -68,59 +46,14 @@
+     unsigned int sock;
+ };
+
+-#ifdef ENABLE_DEBUG
+-static const char *
+-pract(int action)
+-{
+-    switch (action)
+-    {
+-        case TA_UNDEF:
+-            return "TA_UNDEF";
+-
+-        case TA_SOCKET_READ:
+-            return "TA_SOCKET_READ";
+-
+-        case TA_SOCKET_READ_RESIDUAL:
+-            return "TA_SOCKET_READ_RESIDUAL";
+-
+-        case TA_SOCKET_WRITE:
+-            return "TA_SOCKET_WRITE";
+-
+-        case TA_SOCKET_WRITE_READY:
+-            return "TA_SOCKET_WRITE_READY";
+-
+-        case TA_SOCKET_WRITE_DEFERRED:
+-            return "TA_SOCKET_WRITE_DEFERRED";
+-
+-        case TA_TUN_READ:
+-            return "TA_TUN_READ";
+-
+-        case TA_TUN_WRITE:
+-            return "TA_TUN_WRITE";
+-
+-        case TA_INITIAL:
+-            return "TA_INITIAL";
+-
+-        case TA_TIMEOUT:
+-            return "TA_TIMEOUT";
+-
+-        case TA_TUN_WRITE_TIMEOUT:
+-            return "TA_TUN_WRITE_TIMEOUT";
+-
+-        default:
+-            return "?";
+-    }
+-}
+-#endif /* ENABLE_DEBUG */
+-
+-static struct multi_instance *
+-multi_create_instance_tcp(struct multi_context *m, struct link_socket *ls)
++struct multi_instance *
++multi_create_instance_tcp(struct multi_context *m, struct link_socket *soc=
+k)
+ {
+     struct gc_arena gc =3D gc_new();
+     struct multi_instance *mi =3D NULL;
      struct hash *hash =3D m->hash;
 
-     mi =3D multi_create_instance(m, NULL, sock);
--    if (mi)
-+    if (mi && !proto_is_dgram(sock->info.proto))
+-    mi =3D multi_create_instance(m, NULL, ls);
++    mi =3D multi_create_instance(m, NULL, sock);
+     if (mi)
      {
-         mi->real.proto =3D sock->info.proto;
          struct hash_element *he;
-@@ -153,12 +153,19 @@
+@@ -193,126 +126,42 @@
+     mbuf_free(mi->tcp_link_out_deferred);
+ }
+
+-struct multi_tcp *
+-multi_tcp_init(int maxevents, int *maxclients)
+-{
+-    struct multi_tcp *mtcp;
+-    const int extra_events =3D BASE_N_EVENTS;
+-
+-    ASSERT(maxevents >=3D 1);
+-    ASSERT(maxclients);
+-
+-    ALLOC_OBJ_CLEAR(mtcp, struct multi_tcp);
+-    mtcp->maxevents =3D maxevents + extra_events;
+-    mtcp->es =3D event_set_init(&mtcp->maxevents, 0);
+-    wait_signal(mtcp->es, MTCP_SIG);
+-    ALLOC_ARRAY(mtcp->esr, struct event_set_return, mtcp->maxevents);
+-    *maxclients =3D max_int(min_int(mtcp->maxevents - extra_events, *maxcl=
+ients), 1);
+-    msg(D_MULTI_LOW, "MULTI: TCP INIT maxclients=3D%d maxevents=3D%d", *ma=
+xclients, mtcp->maxevents);
+-    return mtcp;
+-}
+-
+ void
+-multi_tcp_delete_event(struct multi_tcp *mtcp, event_t event)
++multi_tcp_delete_event(struct multi_protocol *multi_io, event_t event)
+ {
+-    if (mtcp && mtcp->es)
++    if (multi_io && multi_io->es)
+     {
+-        event_del(mtcp->es, event);
++        event_del(multi_io->es, event);
+     }
+ }
+=20
+ void
+-multi_tcp_free(struct multi_tcp *mtcp)
++multi_tcp_dereference_instance(struct multi_protocol *multi_io, struct mul=
+ti_instance *mi)
+ {
+-    if (mtcp)
++    struct link_socket *sock =3D mi->context.c2.link_sockets[0];
++    if (sock && mi->socket_set_called)
+     {
+-        event_free(mtcp->es);
+-        free(mtcp->esr);
+-        free(mtcp);
+-    }
+-}
+-
+-void
+-multi_tcp_dereference_instance(struct multi_tcp *mtcp, struct multi_instan=
+ce *mi)
+-{
+-    struct link_socket *ls =3D mi->context.c2.link_sockets[0];
+-    if (ls && mi->socket_set_called)
+-    {
+-        event_del(mtcp->es, socket_event_handle(ls));
++        event_del(multi_io->es, socket_event_handle(sock));
+         mi->socket_set_called =3D false;
+     }
+-    mtcp->n_esr =3D 0;
++    multi_io->n_esr =3D 0;
+ }
+
+-static inline void
++void
+ multi_tcp_set_global_rw_flags(struct multi_context *m, struct multi_instan=
+ce *mi)
  {
      if (mi)
      {
--        mi->socket_set_called =3D true;
--        socket_set(mi->context.c2.link_sockets[0],
--                   m->multi_io->es,
--                   mbuf_defined(mi->tcp_link_out_deferred) ? EVENT_WRITE :=
+         mi->socket_set_called =3D true;
+         socket_set(mi->context.c2.link_sockets[0],
+-                   m->mtcp->es,
++                   m->multi_io->es,
+                    mbuf_defined(mi->tcp_link_out_deferred) ? EVENT_WRITE :=
  EVENT_READ,
--                   &mi->ev_arg,
--                   &mi->tcp_rwflags);
-+        if (proto_is_dgram(mi->context.c2.link_sockets[0]->info.proto))
-+        {
-+            return;
-+        }
-+        else
-+        {
-+            mi->socket_set_called =3D true;
-+            socket_set(mi->context.c2.link_sockets[0],
-+                       m->multi_io->es,
-+                       mbuf_defined(mi->tcp_link_out_deferred) ? EVENT_WRI=
-TE : EVENT_READ,
-+                       &mi->ev_arg,
-+                       &mi->tcp_rwflags);
-+        }
+                    &mi->ev_arg,
+                    &mi->tcp_rwflags);
      }
  }
 
-@@ -242,87 +249,3 @@
+-static inline int
+-multi_tcp_wait(const struct context *c,
+-               struct multi_tcp *mtcp)
+-{
+-    int status, i;
+-
+-    for (i =3D 0; i < c->c1.link_sockets_num; i++)
+-    {
+-        socket_set_listen_persistent(c->c2.link_sockets[i], mtcp->es,
+-                                     &c->c2.link_sockets[i]->ev_arg);
+-    }
+-
+-#ifdef _WIN32
+-    if (tuntap_is_wintun(c->c1.tuntap))
+-    {
+-        if (!tuntap_ring_empty(c->c1.tuntap))
+-        {
+-            /* there is data in wintun ring buffer, read it immediately */
+-            mtcp->esr[0].arg =3D MTCP_TUN;
+-            mtcp->esr[0].rwflags =3D EVENT_READ;
+-            mtcp->n_esr =3D 1;
+-            return 1;
+-        }
+-        persistent =3D NULL;
+-    }
+-#endif
+-
+-    tun_set(c->c1.tuntap, mtcp->es, EVENT_READ, MTCP_TUN, &mtcp->tun_rwfla=
+gs);
+-#if defined(TARGET_LINUX) || defined(TARGET_FREEBSD)
+-    dco_event_set(&c->c1.tuntap->dco, mtcp->es, MTCP_DCO);
+-#endif
+-
+-#ifdef ENABLE_MANAGEMENT
+-    if (management)
+-    {
+-        management_socket_set(management, mtcp->es, MTCP_MANAGEMENT, &mtcp=
+->management_persist_flags);
+-    }
+-#endif
+-
+-#ifdef ENABLE_ASYNC_PUSH
+-    /* arm inotify watcher */
+-    event_ctl(mtcp->es, c->c2.inotify_fd, EVENT_READ, MTCP_FILE_CLOSE_WRIT=
+E);
+-#endif
+-
+-    status =3D event_wait(mtcp->es, &c->c2.timeval, mtcp->esr, mtcp->maxev=
+ents);
+-    update_time();
+-    mtcp->n_esr =3D 0;
+-    if (status > 0)
+-    {
+-        mtcp->n_esr =3D status;
+-    }
+-    return status;
+-}
+-
+-static inline struct context *
++struct context *
+ multi_tcp_context(struct multi_context *m, struct multi_instance *mi)
+ {
+     if (mi)
+@@ -325,7 +174,7 @@
      }
+ }
+
+-static bool
++bool
+ multi_tcp_process_outgoing_link_ready(struct multi_context *m, struct mult=
+i_instance *mi, const unsigned int mpp_flags)
+ {
+     struct mbuf_item item;
+@@ -349,7 +198,7 @@
      return ret;
  }
--
--/*
-- * Top level event loop for single-threaded operation.
-- * TCP mode.
-- */
--void
--tunnel_server_tcp(struct context *top)
+
+-static bool
++bool
+ multi_tcp_process_outgoing_link(struct multi_context *m, bool defer, const=
+ unsigned int mpp_flags)
+ {
+     struct multi_instance *mi =3D multi_process_outgoing_link_pre(m);
+@@ -393,417 +242,6 @@
+     return ret;
+ }
+
+-static int
+-multi_tcp_wait_lite(struct multi_context *m, struct multi_instance *mi, co=
+nst int action, bool *tun_input_pending)
 -{
--    struct multi_context multi;
--    int status;
+-    struct context *c =3D multi_tcp_context(m, mi);
+-    unsigned int looking_for =3D 0;
 -
--    top->mode =3D CM_TOP;
--    context_clear_2(top);
+-    dmsg(D_MULTI_DEBUG, "MULTI TCP: multi_tcp_wait_lite a=3D%s mi=3D" ptr_=
+format,
+-         pract(action),
+-         (ptr_type)mi);
 -
--    /* initialize top-tunnel instance */
--    init_instance_handle_signals(top, top->es, CC_HARD_USR1_TO_HUP);
--    if (IS_SIG(top))
+-    tv_clear(&c->c2.timeval); /* ZERO-TIMEOUT */
+-
+-    switch (action)
 -    {
--        return;
+-        case TA_TUN_READ:
+-            looking_for =3D TUN_READ;
+-            tun_input_pending =3D NULL;
+-            io_wait(c, IOW_READ_TUN);
+-            break;
+-
+-        case TA_SOCKET_READ:
+-            looking_for =3D SOCKET_READ;
+-            tun_input_pending =3D NULL;
+-            io_wait(c, IOW_READ_LINK);
+-            break;
+-
+-        case TA_TUN_WRITE:
+-            looking_for =3D TUN_WRITE;
+-            tun_input_pending =3D NULL;
+-            c->c2.timeval.tv_sec =3D 1; /* For some reason, the Linux 2.2 =
+TUN/TAP driver hits this timeout */
+-            perf_push(PERF_PROC_OUT_TUN_MTCP);
+-            io_wait(c, IOW_TO_TUN);
+-            perf_pop();
+-            break;
+-
+-        case TA_SOCKET_WRITE:
+-            looking_for =3D SOCKET_WRITE;
+-            io_wait(c, IOW_TO_LINK|IOW_READ_TUN_FORCE);
+-            break;
+-
+-        default:
+-            msg(M_FATAL, "MULTI TCP: multi_tcp_wait_lite, unhandled action=
+=3D%d", action);
 -    }
 -
--    /* initialize global multi_context object */
--    multi_init(&multi, top, true);
--
--    /* initialize our cloned top object */
--    multi_top_init(&multi, top);
--
--    /* initialize management interface */
--    init_management_callback_multi(&multi);
--
--    /* finished with initialization */
--    initialization_sequence_completed(top, ISC_SERVER); /* --mode server -=
--proto tcp-server */
--
--#ifdef ENABLE_ASYNC_PUSH
--    multi.top.c2.inotify_fd =3D inotify_init();
--    if (multi.top.c2.inotify_fd < 0)
+-    if (tun_input_pending && (c->c2.event_set_status & TUN_READ))
 -    {
--        msg(D_MULTI_ERRORS | M_ERRNO, "MULTI: inotify_init error");
+-        *tun_input_pending =3D true;
 -    }
--#endif
 -
--    /* per-packet event loop */
--    while (true)
+-    if (c->c2.event_set_status & looking_for)
 -    {
--        perf_push(PERF_EVENT_LOOP);
--
--        /* wait on tun/socket list */
--        multi_get_timeout(&multi, &multi.top.c2.timeval);
--        status =3D multi_protocol_io_wait(&multi);
--        MULTI_CHECK_SIG(&multi);
--
--        /* check on status of coarse timers */
--        multi_process_per_second_timers(&multi);
--
--        /* timeout? */
--        if (status > 0)
+-        return action;
+-    }
+-    else
+-    {
+-        switch (action)
 -        {
--            /* process the I/O which triggered select */
--            multi_protocol_process_io(&multi);
--            MULTI_CHECK_SIG(&multi);
--        }
--        else if (status =3D=3D 0)
--        {
--            multi_protocol_action(&multi, NULL, TA_TIMEOUT, false);
+-            /* TCP socket output buffer is full */
+-            case TA_SOCKET_WRITE:
+-                return TA_SOCKET_WRITE_DEFERRED;
+-
+-            /* TUN device timed out on accepting write */
+-            case TA_TUN_WRITE:
+-                return TA_TUN_WRITE_TIMEOUT;
 -        }
 -
--        perf_pop();
+-        return TA_UNDEF;
 -    }
--
--#ifdef ENABLE_ASYNC_PUSH
--    close(top->c2.inotify_fd);
--#endif
--
--    /* shut down management interface */
--    uninit_management_callback();
--
--    /* save ifconfig-pool */
--    multi_ifconfig_pool_persist(&multi, true);
--
--    /* tear down tunnel instance (unless --persist-tun) */
--    multi_uninit(&multi);
--    multi_top_free(&multi);
--    close_instance(top);
 -}
+-
+-static struct multi_instance *
+-multi_tcp_dispatch(struct multi_context *m, struct multi_instance *mi, con=
+st int action)
+-{
+-    const unsigned int mpp_flags =3D MPP_PRE_SELECT|MPP_RECORD_TOUCH;
+-    struct multi_instance *touched =3D mi;
+-    m->mpp_touched =3D &touched;
+-
+-    dmsg(D_MULTI_DEBUG, "MULTI TCP: multi_tcp_dispatch a=3D%s mi=3D" ptr_f=
+ormat,
+-         pract(action),
+-         (ptr_type)mi);
+-
+-    switch (action)
+-    {
+-        case TA_TUN_READ:
+-            read_incoming_tun(&m->top);
+-            if (!IS_SIG(&m->top))
+-            {
+-                multi_process_incoming_tun(m, mpp_flags);
+-            }
+-            break;
+-
+-        case TA_SOCKET_READ:
+-        case TA_SOCKET_READ_RESIDUAL:
+-            ASSERT(mi);
+-            ASSERT(mi->context.c2.link_sockets);
+-            ASSERT(mi->context.c2.link_sockets[0]);
+-            set_prefix(mi);
+-            read_incoming_link(&mi->context, mi->context.c2.link_sockets[0=
+]);
+-            clear_prefix();
+-            if (!IS_SIG(&mi->context))
+-            {
+-                multi_process_incoming_link(m, mi, mpp_flags,
+-                                            mi->context.c2.link_sockets[0]=
+);
+-                if (!IS_SIG(&mi->context))
+-                {
+-                    stream_buf_read_setup(mi->context.c2.link_sockets[0]);
+-                }
+-            }
+-            break;
+-
+-        case TA_TIMEOUT:
+-            multi_process_timeout(m, mpp_flags);
+-            break;
+-
+-        case TA_TUN_WRITE:
+-            multi_process_outgoing_tun(m, mpp_flags);
+-            break;
+-
+-        case TA_TUN_WRITE_TIMEOUT:
+-            multi_process_drop_outgoing_tun(m, mpp_flags);
+-            break;
+-
+-        case TA_SOCKET_WRITE_READY:
+-            ASSERT(mi);
+-            multi_tcp_process_outgoing_link_ready(m, mi, mpp_flags);
+-            break;
+-
+-        case TA_SOCKET_WRITE:
+-            multi_tcp_process_outgoing_link(m, false, mpp_flags);
+-            break;
+-
+-        case TA_SOCKET_WRITE_DEFERRED:
+-            multi_tcp_process_outgoing_link(m, true, mpp_flags);
+-            break;
+-
+-        case TA_INITIAL:
+-            ASSERT(mi);
+-            multi_tcp_set_global_rw_flags(m, mi);
+-            multi_process_post(m, mi, mpp_flags);
+-            break;
+-
+-        default:
+-            msg(M_FATAL, "MULTI TCP: multi_tcp_dispatch, unhandled action=
+=3D%d", action);
+-    }
+-
+-    m->mpp_touched =3D NULL;
+-    return touched;
+-}
+-
+-static int
+-multi_tcp_post(struct multi_context *m, struct multi_instance *mi, const i=
+nt action)
+-{
+-    struct context *c =3D multi_tcp_context(m, mi);
+-    int newaction =3D TA_UNDEF;
+-
+-#define MTP_NONE         0
+-#define MTP_TUN_OUT      (1<<0)
+-#define MTP_LINK_OUT     (1<<1)
+-    unsigned int flags =3D MTP_NONE;
+-
+-    if (TUN_OUT(c))
+-    {
+-        flags |=3D MTP_TUN_OUT;
+-    }
+-    if (LINK_OUT(c))
+-    {
+-        flags |=3D MTP_LINK_OUT;
+-    }
+-
+-    switch (flags)
+-    {
+-        case MTP_TUN_OUT|MTP_LINK_OUT:
+-        case MTP_TUN_OUT:
+-            newaction =3D TA_TUN_WRITE;
+-            break;
+-
+-        case MTP_LINK_OUT:
+-            newaction =3D TA_SOCKET_WRITE;
+-            break;
+-
+-        case MTP_NONE:
+-            if (mi && sockets_read_residual(c))
+-            {
+-                newaction =3D TA_SOCKET_READ_RESIDUAL;
+-            }
+-            else
+-            {
+-                multi_tcp_set_global_rw_flags(m, mi);
+-            }
+-            break;
+-
+-        default:
+-        {
+-            struct gc_arena gc =3D gc_new();
+-            msg(M_FATAL, "MULTI TCP: multi_tcp_post bad state, mi=3D%s fla=
+gs=3D%d",
+-                multi_instance_string(mi, false, &gc),
+-                flags);
+-            gc_free(&gc);
+-            break;
+-        }
+-    }
+-
+-    dmsg(D_MULTI_DEBUG, "MULTI TCP: multi_tcp_post %s -> %s",
+-         pract(action),
+-         pract(newaction));
+-
+-    return newaction;
+-}
+-
+-static void
+-multi_tcp_action(struct multi_context *m, struct multi_instance *mi, int a=
+ction, bool poll)
+-{
+-    bool tun_input_pending =3D false;
+-
+-    do
+-    {
+-        dmsg(D_MULTI_DEBUG, "MULTI TCP: multi_tcp_action a=3D%s p=3D%d",
+-             pract(action),
+-             poll);
+-
+-        /*
+-         * If TA_SOCKET_READ_RESIDUAL, it means we still have pending
+-         * input packets which were read by a prior TCP recv.
+-         *
+-         * Otherwise do a "lite" wait, which means we wait with 0 timeout
+-         * on I/O events only related to the current instance, not
+-         * the big list of events.
+-         *
+-         * On our first pass, poll will be false because we already know
+-         * that input is available, and to call io_wait would be redundant.
+-         */
+-        if (poll && action !=3D TA_SOCKET_READ_RESIDUAL)
+-        {
+-            const int orig_action =3D action;
+-            action =3D multi_tcp_wait_lite(m, mi, action, &tun_input_pendi=
+ng);
+-            if (action =3D=3D TA_UNDEF)
+-            {
+-                msg(M_FATAL, "MULTI TCP: I/O wait required blocking in mul=
+ti_tcp_action, action=3D%d", orig_action);
+-            }
+-        }
+-
+-        /*
+-         * Dispatch the action
+-         */
+-        struct multi_instance *touched =3D multi_tcp_dispatch(m, mi, actio=
+n);
+-
+-        /*
+-         * Signal received or TCP connection
+-         * reset by peer?
+-         */
+-        if (touched && IS_SIG(&touched->context))
+-        {
+-            if (mi =3D=3D touched)
+-            {
+-                mi =3D NULL;
+-            }
+-            multi_close_instance_on_signal(m, touched);
+-        }
+-
+-
+-        /*
+-         * If dispatch produced any pending output
+-         * for a particular instance, point to
+-         * that instance.
+-         */
+-        if (m->pending)
+-        {
+-            mi =3D m->pending;
+-        }
+-
+-        /*
+-         * Based on the effects of the action,
+-         * such as generating pending output,
+-         * possibly transition to a new action state.
+-         */
+-        action =3D multi_tcp_post(m, mi, action);
+-
+-        /*
+-         * If we are finished processing the original action,
+-         * check if we have any TUN input.  If so, transition
+-         * our action state to processing this input.
+-         */
+-        if (tun_input_pending && action =3D=3D TA_UNDEF)
+-        {
+-            action =3D TA_TUN_READ;
+-            mi =3D NULL;
+-            tun_input_pending =3D false;
+-            poll =3D false;
+-        }
+-        else
+-        {
+-            poll =3D true;
+-        }
+-
+-    } while (action !=3D TA_UNDEF);
+-}
+-
+-static void
+-multi_tcp_process_io(struct multi_context *m)
+-{
+-    struct multi_tcp *mtcp =3D m->mtcp;
+-    int i;
+-
+-    for (i =3D 0; i < mtcp->n_esr; ++i)
+-    {
+-        struct event_set_return *e =3D &mtcp->esr[i];
+-
+-        /* incoming data for instance or listening socket? */
+-        if (e->arg >=3D MULTI_N)
+-        {
+-            struct event_arg *ev_arg =3D (struct event_arg *)e->arg;
+-            switch (ev_arg->type)
+-            {
+-                struct multi_instance *mi;
+-
+-                /* react to event on child instance */
+-                case EVENT_ARG_MULTI_INSTANCE:
+-                    if (!ev_arg->u.mi)
+-                    {
+-                        msg(D_MULTI_ERRORS, "MULTI: mtcp_proc_io: null min=
+stance");
+-                        break;
+-                    }
+-
+-                    mi =3D ev_arg->u.mi;
+-                    if (e->rwflags & EVENT_WRITE)
+-                    {
+-                        multi_tcp_action(m, mi, TA_SOCKET_WRITE_READY, fal=
+se);
+-                    }
+-                    else if (e->rwflags & EVENT_READ)
+-                    {
+-                        multi_tcp_action(m, mi, TA_SOCKET_READ, false);
+-                    }
+-                    break;
+-
+-                /* new incoming TCP client attempting to connect? */
+-                case EVENT_ARG_LINK_SOCKET:
+-                    if (!ev_arg->u.sock)
+-                    {
+-                        msg(D_MULTI_ERRORS, "MULTI: mtcp_proc_io: null soc=
+ket");
+-                        break;
+-                    }
+-
+-                    socket_reset_listen_persistent(ev_arg->u.sock);
+-                    mi =3D multi_create_instance_tcp(m, ev_arg->u.sock);
+-                    if (mi)
+-                    {
+-                        multi_tcp_action(m, mi, TA_INITIAL, false);
+-                    }
+-                    break;
+-            }
+-        }
+-        else
+-        {
+-#ifdef ENABLE_MANAGEMENT
+-            if (e->arg =3D=3D MTCP_MANAGEMENT)
+-            {
+-                ASSERT(management);
+-                management_io(management);
+-            }
+-            else
+-#endif
+-            /* incoming data on TUN? */
+-            if (e->arg =3D=3D MTCP_TUN)
+-            {
+-                if (e->rwflags & EVENT_WRITE)
+-                {
+-                    multi_tcp_action(m, NULL, TA_TUN_WRITE, false);
+-                }
+-                else if (e->rwflags & EVENT_READ)
+-                {
+-                    multi_tcp_action(m, NULL, TA_TUN_READ, false);
+-                }
+-            }
+-#if defined(ENABLE_DCO) && (defined(TARGET_LINUX) || defined(TARGET_FREEBS=
+D))
+-            /* incoming data on DCO? */
+-            else if (e->arg =3D=3D MTCP_DCO)
+-            {
+-                multi_process_incoming_dco(m);
+-            }
+-#endif
+-            /* signal received? */
+-            else if (e->arg =3D=3D MTCP_SIG)
+-            {
+-                get_signal(&m->top.sig->signal_received);
+-            }
+-#ifdef ENABLE_ASYNC_PUSH
+-            else if (e->arg =3D=3D MTCP_FILE_CLOSE_WRITE)
+-            {
+-                multi_process_file_closed(m, MPP_PRE_SELECT | MPP_RECORD_T=
+OUCH);
+-            }
+-#endif
+-        }
+-        if (IS_SIG(&m->top))
+-        {
+-            break;
+-        }
+-    }
+-    mtcp->n_esr =3D 0;
+-
+-    /*
+-     * Process queued mbuf packets destined for TCP socket
+-     */
+-    {
+-        struct multi_instance *mi;
+-        while (!IS_SIG(&m->top) && (mi =3D mbuf_peek(m->mbuf)) !=3D NULL)
+-        {
+-            multi_tcp_action(m, mi, TA_SOCKET_WRITE, true);
+-        }
+-    }
+-}
+-
+ /*
+  * Top level event loop for single-threaded operation.
+  * TCP mode.
+@@ -851,7 +289,7 @@
+
+         /* wait on tun/socket list */
+         multi_get_timeout(&multi, &multi.top.c2.timeval);
+-        status =3D multi_tcp_wait(&multi.top, multi.mtcp);
++        status =3D multi_protocol_io_wait(&multi);
+         MULTI_CHECK_SIG(&multi);
+
+         /* check on status of coarse timers */
+@@ -861,12 +299,12 @@
+         if (status > 0)
+         {
+             /* process the I/O which triggered select */
+-            multi_tcp_process_io(&multi);
++            multi_protocol_process_io(&multi);
+             MULTI_CHECK_SIG(&multi);
+         }
+         else if (status =3D=3D 0)
+         {
+-            multi_tcp_action(&multi, NULL, TA_TIMEOUT, false);
++            multi_protocol_action(&multi, NULL, TA_TIMEOUT, false);
+         }
+
+         perf_pop();
 diff --git a/src/openvpn/mtcp.h b/src/openvpn/mtcp.h
-index b9f73d4..51b209b 100644
+index 886d2cc..b9f73d4 100644
 --- a/src/openvpn/mtcp.h
 +++ b/src/openvpn/mtcp.h
-@@ -51,17 +51,6 @@
+@@ -30,34 +30,25 @@
 
+ #include "event.h"
+
+-/*
+- * Extra state info needed for TCP mode
+- */
+-struct multi_tcp
+-{
+-    struct event_set *es;
+-    struct event_set_return *esr;
+-    int n_esr;
+-    int maxevents;
+-    unsigned int tun_rwflags;
+-#ifdef ENABLE_MANAGEMENT
+-    unsigned int management_persist_flags;
+-#endif
+-};
+-
+ struct multi_instance;
+ struct context;
+
+-struct multi_tcp *multi_tcp_init(int maxevents, int *maxclients);
+-
+-void multi_tcp_free(struct multi_tcp *mtcp);
+-
+-void multi_tcp_dereference_instance(struct multi_tcp *mtcp, struct multi_i=
+nstance *mi);
++void multi_tcp_dereference_instance(struct multi_protocol *multi_io, struc=
+t multi_instance *mi);
+
+ bool multi_tcp_instance_specific_init(struct multi_context *m, struct mult=
+i_instance *mi);
+
+ void multi_tcp_instance_specific_free(struct multi_instance *mi);
+
++struct context *multi_tcp_context(struct multi_context *m, struct multi_in=
+stance *mi);
++
++void multi_tcp_set_global_rw_flags(struct multi_context *m, struct multi_i=
+nstance *mi);
++
++bool multi_tcp_process_outgoing_link(struct multi_context *m, bool defer, =
+const unsigned int mpp_flags);
++
++bool multi_tcp_process_outgoing_link_ready(struct multi_context *m, struct=
+ multi_instance *mi, const unsigned int mpp_flags);
++
++struct multi_instance *multi_create_instance_tcp(struct multi_context *m, =
+struct link_socket *sock);
++
  void multi_tcp_link_out_deferred(struct multi_context *m, struct multi_ins=
 tance *mi);
 
--
--/*************************************************************************=
-*/
--/**
-- * Main event loop for OpenVPN in TCP server mode.
-- * @ingroup eventloop
-- *
-- * @param top - Top-level context structure.
-- */
--void tunnel_server_tcp(struct context *top);
--
--
- void multi_tcp_delete_event(struct multi_protocol *multi_io, event_t event=
+
+@@ -71,6 +62,6 @@
+ void tunnel_server_tcp(struct context *top);
+
+
+-void multi_tcp_delete_event(struct multi_tcp *mtcp, event_t event);
++void multi_tcp_delete_event(struct multi_protocol *multi_io, event_t event=
 );
 
  #endif /* ifndef MTCP_H */
 diff --git a/src/openvpn/mudp.c b/src/openvpn/mudp.c
-index fee706d..3189fe9 100644
+index 37af88e..5092665 100644
 --- a/src/openvpn/mudp.c
 +++ b/src/openvpn/mudp.c
-@@ -194,6 +194,7 @@
-     struct hash *hash =3D m->hash;
-     real.proto =3D sock->info.proto;
-     m->local.proto =3D real.proto;
-+    m->hmac_reply_ls =3D sock;
+@@ -186,7 +186,7 @@
 
-     if (mroute_extract_openvpn_sockaddr(&real, &m->top.c2.from.dest, true)
-         && m->top.c2.buf.len > 0)
-@@ -320,18 +321,59 @@
-         msg_set_prefix("Connection Attempt");
-         m->top.c2.to_link =3D m->hmac_reply;
-         m->top.c2.to_link_addr =3D m->hmac_reply_dest;
--        process_outgoing_link(&m->top, m->top.c2.link_sockets[0]);
-+        process_outgoing_link(&m->top, m->hmac_reply_ls);
-+        m->hmac_reply_ls =3D NULL;
-         m->hmac_reply_dest =3D NULL;
-     }
- }
-
- /*
-+ * Return the io_wait() flags appropriate for
-+ * a point-to-multipoint tunnel.
-+ */
-+unsigned int
-+p2mp_iow_flags(const struct multi_context *m)
-+{
-+    unsigned int flags =3D IOW_WAIT_SIGNAL;
-+    if (m->pending)
-+    {
-+        if (TUN_OUT(&m->pending->context))
-+        {
-+            flags |=3D IOW_TO_TUN;
-+        }
-+        if (LINK_OUT(&m->pending->context))
-+        {
-+            flags |=3D IOW_TO_LINK;
-+        }
-+    }
-+    else if (mbuf_defined(m->mbuf))
-+    {
-+        flags |=3D IOW_MBUF;
-+    }
-+    else if (m->hmac_reply_dest)
-+    {
-+        flags |=3D IOW_TO_LINK;
-+    }
-+    else
-+    {
-+        flags |=3D IOW_READ;
-+    }
-+#ifdef _WIN32
-+    if (tuntap_ring_empty(m->top.c1.tuntap))
-+    {
-+        flags &=3D ~IOW_READ_TUN;
-+    }
-+#endif
-+    return flags;
-+}
-+
-+/*
-  * Process an I/O event.
-  */
--static void
-+void
- multi_process_io_udp(struct multi_context *m)
+ struct multi_instance *
+ multi_get_create_instance_udp(struct multi_context *m, bool *floated,
+-                              struct link_socket *ls)
++                              struct link_socket *sock)
  {
--    const unsigned int status =3D m->top.c2.event_set_status;
-+    const unsigned int status =3D m->multi_io->udp_flags;
-     const unsigned int mpp_flags =3D m->top.c2.fast_io
-                                    ? (MPP_CONDITIONAL_PRE_SELECT | MPP_CLO=
-SE_ON_SIGNAL)
-                                    : (MPP_PRE_SELECT | MPP_CLOSE_ON_SIGNAL=
-);
-@@ -429,123 +471,3 @@
-     }
- #endif
- }
--
--/*
-- * Return the io_wait() flags appropriate for
-- * a point-to-multipoint tunnel.
-- */
--static inline unsigned int
--p2mp_iow_flags(const struct multi_context *m)
--{
--    unsigned int flags =3D IOW_WAIT_SIGNAL;
--    if (m->pending)
--    {
--        if (TUN_OUT(&m->pending->context))
--        {
--            flags |=3D IOW_TO_TUN;
--        }
--        if (LINK_OUT(&m->pending->context))
--        {
--            flags |=3D IOW_TO_LINK;
--        }
--    }
--    else if (mbuf_defined(m->mbuf))
--    {
--        flags |=3D IOW_MBUF;
--    }
--    else if (m->hmac_reply_dest)
--    {
--        flags |=3D IOW_TO_LINK;
--    }
--    else
--    {
--        flags |=3D IOW_READ;
--    }
--#ifdef _WIN32
--    if (tuntap_ring_empty(m->top.c1.tuntap))
--    {
--        flags &=3D ~IOW_READ_TUN;
--    }
--#endif
--    return flags;
--}
--
--
--void
--tunnel_server_udp(struct context *top)
--{
--    struct multi_context multi;
--
--    top->mode =3D CM_TOP;
--    context_clear_2(top);
--
--    /* initialize top-tunnel instance */
--    init_instance_handle_signals(top, top->es, CC_HARD_USR1_TO_HUP);
--    if (IS_SIG(top))
--    {
--        return;
--    }
--
--    /* initialize global multi_context object */
--    multi_init(&multi, top, false);
--
--    /* initialize our cloned top object */
--    multi_top_init(&multi, top);
--
--    /* initialize management interface */
--    init_management_callback_multi(&multi);
--
--    /* finished with initialization */
--    initialization_sequence_completed(top, ISC_SERVER); /* --mode server -=
--proto udp */
--
--#ifdef ENABLE_ASYNC_PUSH
--    multi.top.c2.inotify_fd =3D inotify_init();
--    if (multi.top.c2.inotify_fd < 0)
--    {
--        msg(D_MULTI_ERRORS | M_ERRNO, "MULTI: inotify_init error");
--    }
--#endif
--
--    /* per-packet event loop */
--    while (true)
--    {
--        perf_push(PERF_EVENT_LOOP);
--
--        /* set up and do the io_wait() */
--        multi_get_timeout(&multi, &multi.top.c2.timeval);
--        io_wait(&multi.top, p2mp_iow_flags(&multi));
--        MULTI_CHECK_SIG(&multi);
--
--        /* check on status of coarse timers */
--        multi_process_per_second_timers(&multi);
--
--        /* timeout? */
--        if (multi.top.c2.event_set_status =3D=3D ES_TIMEOUT)
--        {
--            multi_process_timeout(&multi, MPP_PRE_SELECT|MPP_CLOSE_ON_SIGN=
-AL);
--        }
--        else
--        {
--            /* process I/O */
--            multi_process_io_udp(&multi);
--            MULTI_CHECK_SIG(&multi);
--        }
--
--        perf_pop();
--    }
--
--#ifdef ENABLE_ASYNC_PUSH
--    close(top->c2.inotify_fd);
--#endif
--
--    /* shut down management interface */
--    uninit_management_callback();
--
--    /* save ifconfig-pool */
--    multi_ifconfig_pool_persist(&multi, true);
--
--    /* tear down tunnel instance (unless --persist-tun) */
--    multi_uninit(&multi);
--    multi_top_free(&multi);
--    close_instance(top);
--}
+     struct gc_arena gc =3D gc_new();
+     struct mroute_addr real =3D {0};
+@@ -257,7 +257,7 @@
+                      * connect-freq but not against connect-freq-initial */
+                     reflect_filter_rate_limit_decrease(m->initial_rate_lim=
+iter);
+
+-                    mi =3D multi_create_instance(m, &real, ls);
++                    mi =3D multi_create_instance(m, &real, sock);
+                     if (mi)
+                     {
+                         hash_add_fast(hash, bucket, &mi->real, hv, mi);
 diff --git a/src/openvpn/mudp.h b/src/openvpn/mudp.h
-index 3107cc6..e329832 100644
+index b378754..3107cc6 100644
 --- a/src/openvpn/mudp.h
 +++ b/src/openvpn/mudp.h
-@@ -31,18 +31,9 @@
- struct context;
- struct multi_context;
-=20
-+unsigned int p2mp_iow_flags(const struct multi_context *m);
+@@ -56,13 +56,13 @@
+  * successful, returns the newly created instance.
+  *
+  * @param m           - The single multi_context structure.
+- * @param ls          - Listening socket where this instance is connecting=
+ to
++ * @param sock        - Listening socket where this instance is connecting=
+ to
+  *
+  * @return A pointer to a multi_instance if one already existed for the
+  *     packet's source address or if one was a newly created successfully.
+  *      NULL if one did not yet exist and a new one was not created.
+  */
+ struct multi_instance *multi_get_create_instance_udp(struct multi_context =
+*m, bool *floated,
+-                                                     struct link_socket *l=
+s);
++                                                     struct link_socket *s=
+ock);
 
--/**
-- * Main event loop for OpenVPN in UDP server mode.
-- * @ingroup eventloop
-- *
-- * This function implements OpenVPN's main event loop for UDP server mode.
-- *
-- * @param top - Top-level context structure.
-- */
--void tunnel_server_udp(struct context *top);
--
--
-+void multi_process_io_udp(struct multi_context *m);
- /*************************************************************************=
-*/
- /**
-  * Get, and if necessary create, the multi_instance associated with a
+ #endif /* ifndef MUDP_H */
 diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
-index 4d7b5e6..b5efb3a 100644
+index e7d742b..fc700de 100644
 --- a/src/openvpn/multi.c
 +++ b/src/openvpn/multi.c
-@@ -289,7 +289,7 @@
-  * Main initialization function, init multi_context object.
-  */
- void
--multi_init(struct multi_context *m, struct context *t, bool tcp_mode)
-+multi_init(struct multi_context *m, struct context *t)
- {
-     int dev =3D DEV_TYPE_UNDEF;
-
-@@ -435,13 +435,12 @@
-
-     m->instances =3D calloc(m->max_clients, sizeof(struct multi_instance *=
-));
-
-+    m->top.c2.event_set =3D t->c2.event_set;
-+
-     /*
--     * Initialize multi-socket TCP I/O wait object
-+     * Initialize multi-socket I/O wait object
+@@ -440,7 +440,7 @@
       */
--    if (tcp_mode)
--    {
--        m->multi_io =3D multi_protocol_init(t->options.max_clients, &m->ma=
+     if (tcp_mode)
+     {
+-        m->mtcp =3D multi_tcp_init(t->options.max_clients, &m->max_clients=
+);
++        m->multi_io =3D multi_protocol_init(t->options.max_clients, &m->ma=
 x_clients);
--    }
-+    m->multi_io =3D multi_protocol_init(t->options.max_clients, &m->max_cl=
-ients);
+     }
      m->tcp_queue_limit =3D t->options.tcp_queue_limit;
 
-     /*
-@@ -607,6 +606,7 @@
-
-     ASSERT(!mi->halt);
-     mi->halt =3D true;
-+    bool is_dgram =3D proto_is_dgram(mi->context.c2.link_sockets[0]->info.=
-proto);
-
-     dmsg(D_MULTI_DEBUG, "MULTI: multi_close_instance called");
-
-@@ -665,7 +665,7 @@
+@@ -665,9 +665,9 @@
              mi->did_iroutes =3D false;
          }
 
--        if (m->multi_io)
-+        if (!is_dgram)
+-        if (m->mtcp)
++        if (m->multi_io)
          {
-             multi_tcp_dereference_instance(m->multi_io, mi);
+-            multi_tcp_dereference_instance(m->mtcp, mi);
++            multi_tcp_dereference_instance(m->multi_io, mi);
          }
-@@ -776,7 +776,6 @@
-         mi->real =3D *real;
-         generate_prefix(mi);
-     }
--
-     mi->did_open_context =3D true;
-     inherit_context_child(&mi->context, &m->top, sock);
-     if (IS_SIG(&mi->context))
-@@ -798,6 +797,7 @@
-         {
-             goto err;
-         }
-+        mi->real.proto =3D sock->info.proto;
-         generate_prefix(mi);
-     }
 
-@@ -3401,7 +3401,7 @@
-             /* decrypt in instance context */
-
-             perf_push(PERF_PROC_IN_LINK);
--            lsi =3D get_link_socket_info(c);
-+            lsi =3D &sock->info;
-             orig_buf =3D c->c2.buf.data;
-             if (process_incoming_link_part1(c, lsi, floated))
-             {
-@@ -3852,7 +3852,7 @@
-     while ((he =3D hash_iterator_next(&hi)))
-     {
-         struct multi_instance *mi =3D (struct multi_instance *) he->value;
--        if (!mi->halt)
-+        if (!mi->halt && proto_is_dgram(mi->context.options.ce.proto))
-         {
-             send_control_channel_string(&mi->context, next_server ? "RESTA=
-RT,[N]" : "RESTART", D_PUSH);
-             multi_schedule_context_wakeup(m, mi);
-@@ -3890,13 +3890,15 @@
-         status_close(so);
-         return false;
+         mbuf_dereference_instance(m->mbuf, mi);
+@@ -745,7 +745,7 @@
+         initial_rate_limit_free(m->initial_rate_limiter);
+         multi_reap_free(m->reaper);
+         mroute_helper_free(m->route_helper);
+-        multi_tcp_free(m->mtcp);
++        multi_protocol_free(m->multi_io);
      }
--    else if (proto_is_dgram(m->top.options.ce.proto)
--             && is_exit_restart(m->top.sig->signal_received)
--             && (m->deferred_shutdown_signal.signal_received =3D=3D 0)
--             && m->top.options.ce.explicit_exit_notification !=3D 0)
-+    else if (has_udp_in_local_list(&m->top.options))
-     {
--        multi_push_restart_schedule_exit(m, m->top.options.ce.explicit_exi=
-t_notification =3D=3D 2);
--        return false;
-+        if (is_exit_restart(m->top.sig->signal_received)
-+            && (m->deferred_shutdown_signal.signal_received =3D=3D 0)
-+            && m->top.options.ce.explicit_exit_notification !=3D 0)
-+        {
-+            multi_push_restart_schedule_exit(m, m->top.options.ce.explicit=
-_exit_notification =3D=3D 2);
-+            return false;
-+        }
-     }
-     return true;
- }
-@@ -4169,6 +4171,98 @@
-     ASSERT(mi->context.c2.tls_multi->peer_id < m->max_clients);
  }
 
-+/*************************************************************************=
-*/
-+/**
-+ * Main event loop for OpenVPN in multi-protocol server mode.
-+ * @ingroup eventloop
-+ *
-+ * @param top - Top-level context structure.
-+ */
-+void
-+tunnel_server_loop(struct multi_context *multi)
-+{
-+    int status;
-+
-+    while (true)
-+    {
-+        perf_push(PERF_EVENT_LOOP);
-+
-+        /* wait on tun/socket list */
-+        multi_get_timeout(multi, &multi->top.c2.timeval);
-+        status =3D multi_protocol_io_wait(multi);
-+        MULTI_CHECK_SIG(multi);
-+
-+        /* check on status of coarse timers */
-+        multi_process_per_second_timers(multi);
-+
-+        /* timeout? */
-+        if (status > 0)
-+        {
-+            /* process the I/O which triggered select */
-+            multi_protocol_process_io(multi);
-+            MULTI_CHECK_SIG(multi);
-+        }
-+        else if (status =3D=3D 0)
-+        {
-+            multi_protocol_action(multi, NULL, TA_TIMEOUT, false);
-+        }
-+
-+        perf_pop();
-+    }
-+}
-+
-+void
-+tunnel_server_init(struct context *top)
-+{
-+    struct multi_context multi;
-+
-+    top->mode =3D CM_TOP;
-+    context_clear_2(top);
-+
-+    /* initialize top-tunnel instance */
-+    init_instance_handle_signals(top, top->es, CC_HARD_USR1_TO_HUP);
-+    if (IS_SIG(top))
-+    {
-+        return;
-+    }
-+
-+    /* initialize global multi_context object */
-+    multi_init(&multi, top);
-+
-+    /* initialize our cloned top object */
-+    multi_top_init(&multi, top);
-+
-+    /* initialize management interface */
-+    init_management_callback_multi(&multi);
-+
-+    /* finished with initialization */
-+    initialization_sequence_completed(top, ISC_SERVER); /* --mode server -=
--proto tcp-server */
-+
-+#ifdef ENABLE_ASYNC_PUSH
-+    multi.top.c2.inotify_fd =3D inotify_init();
-+    if (multi.top.c2.inotify_fd < 0)
-+    {
-+        msg(D_MULTI_ERRORS | M_ERRNO, "MULTI: inotify_init error");
-+    }
-+#endif
-+
-+    tunnel_server_loop(&multi);
-+
-+    #ifdef ENABLE_ASYNC_PUSH
-+    close(top->c2.inotify_fd);
-+#endif
-+
-+    /* shut down management interface */
-+    uninit_management_callback();
-+
-+    /* save ifconfig-pool */
-+    multi_ifconfig_pool_persist(&multi, true);
-+
-+    /* tear down tunnel instance (unless --persist-tun) */
-+    multi_uninit(&multi);
-+    multi_top_free(&multi);
-+    close_instance(top);
-+}
-
- /*
-  * Top level event loop.
-@@ -4178,12 +4272,6 @@
+@@ -754,7 +754,7 @@
+  */
+ struct multi_instance *
+ multi_create_instance(struct multi_context *m, const struct mroute_addr *r=
+eal,
+-                      struct link_socket *ls)
++                      struct link_socket *sock)
  {
-     ASSERT(top->options.mode =3D=3D MODE_SERVER);
+     struct gc_arena gc =3D gc_new();
+     struct multi_instance *mi;
+@@ -778,7 +778,7 @@
+     }
 
--    if (proto_is_dgram(top->options.ce.proto))
--    {
--        tunnel_server_udp(top);
--    }
--    else
--    {
--        tunnel_server_tcp(top);
--    }
-+    tunnel_server_init(top);
-+
+     mi->did_open_context =3D true;
+-    inherit_context_child(&mi->context, &m->top, ls);
++    inherit_context_child(&mi->context, &m->top, sock);
+     if (IS_SIG(&mi->context))
+     {
+         goto err;
+@@ -3130,7 +3130,7 @@
+
+ void
+ multi_process_float(struct multi_context *m, struct multi_instance *mi,
+-                    struct link_socket *ls)
++                    struct link_socket *sock)
+ {
+     struct mroute_addr real =3D {0};
+     struct hash *hash =3D m->hash;
+@@ -3186,7 +3186,7 @@
+     mi->context.c2.to_link_addr =3D &mi->context.c2.from;
+
+     /* inherit parent link_socket and link_socket_info */
+-    mi->context.c2.link_sockets[0] =3D ls;
++    mi->context.c2.link_sockets[0] =3D sock;
+     mi->context.c2.link_socket_infos[0]->lsa->actual =3D m->top.c2.from;
+
+     tls_update_remote_addr(mi->context.c2.tls_multi, &mi->context.c2.from);
+@@ -3336,7 +3336,7 @@
+  */
+ bool
+ multi_process_incoming_link(struct multi_context *m, struct multi_instance=
+ *instance, const unsigned int mpp_flags,
+-                            struct link_socket *ls)
++                            struct link_socket *sock)
+ {
+     struct gc_arena gc =3D gc_new();
+
+@@ -3357,7 +3357,7 @@
+ #ifdef MULTI_DEBUG_EVENT_LOOP
+         printf("TCP/UDP -> TUN [%d]\n", BLEN(&m->top.c2.buf));
+ #endif
+-        multi_set_pending(m, multi_get_create_instance_udp(m, &floated, ls=
+));
++        multi_set_pending(m, multi_get_create_instance_udp(m, &floated, so=
+ck));
+     }
+     else
+     {
+@@ -3398,7 +3398,7 @@
+                 /* nonzero length means that we have a valid, decrypted pa=
+cked */
+                 if (floated && c->c2.buf.len > 0)
+                 {
+-                    multi_process_float(m, m->pending, ls);
++                    multi_process_float(m, m->pending, sock);
+                 }
+
+                 process_incoming_link_part2(c, lsi, orig_buf);
+@@ -3978,9 +3978,9 @@
+ management_delete_event(void *arg, event_t event)
+ {
+     struct multi_context *m =3D (struct multi_context *) arg;
+-    if (m->mtcp)
++    if (m->multi_io)
+     {
+-        multi_tcp_delete_event(m->mtcp, event);
++        multi_tcp_delete_event(m->multi_io, event);
+     }
  }
+
 diff --git a/src/openvpn/multi.h b/src/openvpn/multi.h
-index 5ecb86a..c537c44 100644
+index 5175f90..5ecb86a 100644
 --- a/src/openvpn/multi.h
 +++ b/src/openvpn/multi.h
-@@ -205,6 +205,7 @@
+@@ -37,6 +37,7 @@
+ #include "pool.h"
+ #include "mudp.h"
+ #include "mtcp.h"
++#include "multi_io.h"
+ #include "perf.h"
+ #include "vlan.h"
+ #include "reflect_filter.h"
+@@ -174,8 +175,8 @@
+     struct mbuf_set *mbuf;      /**< Set of buffers for passing data
+                                  *   channel packets between VPN tunnel
+                                  *   instances. */
+-    struct multi_tcp *mtcp;     /**< State specific to OpenVPN using TCP
+-                                 *   as external transport. */
++    struct multi_protocol *multi_io;     /**< State specific to OpenVPN us=
+ing TCP
++                                          *   as external transport. */
+     struct ifconfig_pool *ifconfig_pool;
+     struct frequency_limit *new_connection_limiter;
+     struct initial_packet_rate_limit *initial_rate_limiter;
+@@ -276,7 +277,7 @@
+ void multi_top_free(struct multi_context *m);
+=20
+ struct multi_instance *multi_create_instance(struct multi_context *m, cons=
+t struct mroute_addr *real,
+-                                             struct link_socket *ls);
++                                             struct link_socket *sock);
 
-     struct buffer hmac_reply;
-     struct link_socket_actual *hmac_reply_dest;
-+    struct link_socket *hmac_reply_ls;
+ void multi_close_instance(struct multi_context *m, struct multi_instance *=
+mi, bool shutdown);
 
-     /*
-      * Timer object for stale route check
-@@ -252,10 +253,8 @@
-  * Main event loop for OpenVPN in server mode.
-  * @ingroup eventloop
-  *
-- * This function calls the appropriate main event loop function depending
-- * on the transport protocol used:
-- *  - \c tunnel_server_udp()
-- *  - \c tunnel_server_tcp()
-+ * This function calls the main event loop function
-+ * on the transport protocols:
-  *
-  * @param top          - Top-level context structure.
+@@ -291,7 +292,7 @@
+  * updates hashtables in multi_context.
   */
-@@ -268,7 +267,7 @@
-  * Called by mtcp.c, mudp.c, or other (to be written) protocol drivers
+ void multi_process_float(struct multi_context *m, struct multi_instance *m=
+i,
+-                         struct link_socket *ls);
++                         struct link_socket *sock);
+
+ #define MPP_PRE_SELECT             (1<<0)
+ #define MPP_CONDITIONAL_PRE_SELECT (1<<1)
+@@ -356,10 +357,10 @@
+  *                       when using TCP transport. Otherwise NULL, as is
+  *                       the case when using UDP transport.
+  * @param mpp_flags    - Fast I/O optimization flags.
+- * @param ls           - Socket where the packet was received.
++ * @param sock           - Socket where the packet was received.
   */
+ bool multi_process_incoming_link(struct multi_context *m, struct multi_ins=
+tance *instance, const unsigned int mpp_flags,
+-                                 struct link_socket *ls);
++                                 struct link_socket *sock);
 
--void multi_init(struct multi_context *m, struct context *t, bool tcp_mode);
-+void multi_init(struct multi_context *m, struct context *t);
 
- void multi_uninit(struct multi_context *m);
-
-@@ -664,9 +663,12 @@
- multi_process_outgoing_tun(struct multi_context *m, const unsigned int mpp=
-_flags)
- {
-     struct multi_instance *mi =3D m->pending;
-+    if (!mi)
-+    {
-+        return false;
-+    }
-     bool ret =3D true;
-
--    ASSERT(mi);
- #ifdef MULTI_DEBUG_EVENT_LOOP
-     printf("%s -> TUN len=3D%d\n",
-            id(mi),
+ /**
 diff --git a/src/openvpn/multi_io.c b/src/openvpn/multi_io.c
-index 43fe24b..59661ed 100644
---- a/src/openvpn/multi_io.c
+new file mode 100644
+index 0000000..43fe24b
+--- /dev/null
 +++ b/src/openvpn/multi_io.c
-@@ -142,6 +142,11 @@
-                                      &m->top.c2.link_sockets[i]->ev_arg);
-     }
-
-+    if (has_udp_in_local_list(&m->top.options))
+@@ -0,0 +1,619 @@
++/*
++ *  OpenVPN -- An application to securely tunnel IP networks
++ *             over a single TCP/UDP port, with support for SSL/TLS-based
++ *             session authentication and key exchange,
++ *             packet encryption, packet authentication, and
++ *             packet compression.
++ *
++ *  Copyright (C) 2002-2023 OpenVPN Inc <sales@...515...>
++ *
++ *  This program is free software; you can redistribute it and/or modify
++ *  it under the terms of the GNU General Public License version 2
++ *  as published by the Free Software Foundation.
++ *
++ *  This program is distributed in the hope that it will be useful,
++ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
++ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ *  GNU General Public License for more details.
++ *
++ *  You should have received a copy of the GNU General Public License along
++ *  with this program; if not, write to the Free Software Foundation, Inc.,
++ *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
++ */
++
++#ifdef HAVE_CONFIG_H
++#include "config.h"
++#endif
++
++#include "syshead.h"
++
++#include "memdbg.h"
++
++#include "multi.h"
++#include "forward.h"
++#include "multi_io.h"
++
++#ifdef HAVE_SYS_INOTIFY_H
++#include <sys/inotify.h>
++#endif
++
++/*
++ * Special tags passed to event.[ch] functions
++ */
++#define MULTI_IO_SOCKET      ((void *)1)
++#define MULTI_IO_TUN         ((void *)2)
++#define MULTI_IO_SIG         ((void *)3) /* Only on Windows */
++#define MULTI_IO_MANAGEMENT ((void *)4)
++#define MULTI_IO_FILE_CLOSE_WRITE ((void *)5)
++#define MULTI_IO_DCO        ((void *)6)
++
++struct ta_iow_flags
++{
++    unsigned int flags;
++    unsigned int ret;
++    unsigned int tun;
++    unsigned int sock;
++};
++
++#ifdef ENABLE_DEBUG
++static const char *
++pract(int action)
++{
++    switch (action)
 +    {
-+        get_io_flags_udp(&m->top, m->multi_io, p2mp_iow_flags(m));
++        case TA_UNDEF:
++            return "TA_UNDEF";
++
++        case TA_SOCKET_READ:
++            return "TA_SOCKET_READ";
++
++        case TA_SOCKET_READ_RESIDUAL:
++            return "TA_SOCKET_READ_RESIDUAL";
++
++        case TA_SOCKET_WRITE:
++            return "TA_SOCKET_WRITE";
++
++        case TA_SOCKET_WRITE_READY:
++            return "TA_SOCKET_WRITE_READY";
++
++        case TA_SOCKET_WRITE_DEFERRED:
++            return "TA_SOCKET_WRITE_DEFERRED";
++
++        case TA_TUN_READ:
++            return "TA_TUN_READ";
++
++        case TA_TUN_WRITE:
++            return "TA_TUN_WRITE";
++
++        case TA_INITIAL:
++            return "TA_INITIAL";
++
++        case TA_TIMEOUT:
++            return "TA_TIMEOUT";
++
++        case TA_TUN_WRITE_TIMEOUT:
++            return "TA_TUN_WRITE_TIMEOUT";
++
++        default:
++            return "?";
++    }
++}
++#endif /* ENABLE_DEBUG */
++
++struct multi_protocol *
++multi_protocol_init(int maxevents, int *maxclients)
++{
++    struct multi_protocol *multi_io;
++    const int extra_events =3D BASE_N_EVENTS;
++
++    ASSERT(maxevents >=3D 1);
++    ASSERT(maxclients);
++
++    ALLOC_OBJ_CLEAR(multi_io, struct multi_protocol);
++    multi_io->maxevents =3D maxevents + extra_events;
++    multi_io->es =3D event_set_init(&multi_io->maxevents, 0);
++    wait_signal(multi_io->es, MULTI_IO_SIG);
++    ALLOC_ARRAY(multi_io->esr, struct event_set_return, multi_io->maxevent=
+s);
++    *maxclients =3D max_int(min_int(multi_io->maxevents - extra_events, *m=
+axclients), 1);
++    msg(D_MULTI_LOW, "MULTI: TCP INIT maxclients=3D%d maxevents=3D%d", *ma=
+xclients, multi_io->maxevents);
++    return multi_io;
++}
++
++void
++multi_protocol_free(struct multi_protocol *multi_io)
++{
++    if (multi_io)
++    {
++        event_free(multi_io->es);
++        free(multi_io->esr);
++        free(multi_io);
++    }
++}
++
++int
++multi_protocol_io_wait(struct multi_context *m)
++{
++    int status, i;
++    unsigned int *persistent =3D &m->multi_io->tun_rwflags;
++
++    for (i =3D 0; i < m->top.c1.link_sockets_num; i++)
++    {
++        socket_set_listen_persistent(m->top.c2.link_sockets[i], m->multi_i=
+o->es,
++                                     &m->top.c2.link_sockets[i]->ev_arg);
 +    }
 +
- #ifdef _WIN32
-     if (tuntap_is_wintun(m->top.c1.tuntap))
-     {
-@@ -396,6 +401,10 @@
- multi_protocol_process_io(struct multi_context *m)
- {
-     struct multi_protocol *multi_io =3D m->multi_io;
-+    const unsigned int udp_status =3D multi_io->udp_flags;
-+    const unsigned int mpp_flags =3D m->top.c2.fast_io
-+                                   ? (MPP_CONDITIONAL_PRE_SELECT | MPP_CLO=
-SE_ON_SIGNAL)
-+                                   : (MPP_PRE_SELECT | MPP_CLOSE_ON_SIGNAL=
-);
-     int i;
-
-     for (i =3D 0; i < multi_io->n_esr; ++i)
-@@ -447,6 +456,39 @@
-                         }
-                         break;
-                     }
-+                    else
-+                    {
-+                        if (e->arg >=3D MULTI_N)
-+                        {
-+                            struct event_arg *ev_arg =3D (struct event_arg=
- *)e->arg;
-+                            if (ev_arg->type !=3D EVENT_ARG_LINK_SOCKET)
-+                            {
-+                                multi_io->udp_flags =3D ES_ERROR;
-+                                msg(D_LINK_ERRORS,
-+                                    "MULTI PROTOCOL: io_work: non socket e=
-vent delivered");
-+                                break;
-+                            }
-+                        }
-+                        else
-+                        {
-+                            ev_arg->pending =3D true;
-+                        }
++#ifdef _WIN32
++    if (tuntap_is_wintun(m->top.c1.tuntap))
++    {
++        if (!tuntap_ring_empty(m->top.c1.tuntap))
++        {
++            /* there is data in wintun ring buffer, read it immediately */
++            m->multi_io->esr[0].arg =3D MULTI_IO_TUN;
++            m->multi_io->esr[0].rwflags =3D EVENT_READ;
++            m->multi_io->n_esr =3D 1;
++            return 1;
++        }
++        persistent =3D NULL;
++    }
++#endif
++    tun_set(m->top.c1.tuntap, m->multi_io->es, EVENT_READ, MULTI_IO_TUN, p=
+ersistent);
++#if defined(TARGET_LINUX) || defined(TARGET_FREEBSD)
++    dco_event_set(&m->top.c1.tuntap->dco, m->multi_io->es, MULTI_IO_DCO);
++#endif
 +
-+                        if (udp_status & SOCKET_READ)
-+                        {
-+                            read_incoming_link(&m->top, ev_arg->u.sock);
-+                            if (!IS_SIG(&m->top))
-+                            {
-+                                multi_process_incoming_link(m, NULL, mpp_f=
-lags,
-+                                                            ev_arg->u.sock=
++#ifdef ENABLE_MANAGEMENT
++    if (management)
++    {
++        management_socket_set(management, m->multi_io->es, MULTI_IO_MANAGE=
+MENT, &m->multi_io->management_persist_flags);
++    }
++#endif
++
++#ifdef ENABLE_ASYNC_PUSH
++    /* arm inotify watcher */
++    event_ctl(m->multi_io->es, m->top.c2.inotify_fd, EVENT_READ, MULTI_IO_=
+FILE_CLOSE_WRITE);
++#endif
++
++    status =3D event_wait(m->multi_io->es, &m->top.c2.timeval, m->multi_io=
+->esr, m->multi_io->maxevents);
++    update_time();
++    m->multi_io->n_esr =3D 0;
++    if (status > 0)
++    {
++        m->multi_io->n_esr =3D status;
++    }
++    return status;
++}
++
++static int
++multi_protocol_wait_lite(struct multi_context *m, struct multi_instance *m=
+i, const int action, bool *tun_input_pending)
++{
++    struct context *c =3D multi_tcp_context(m, mi);
++    unsigned int looking_for =3D 0;
++
++    dmsg(D_MULTI_DEBUG, "MULTI PROTOCOL: multi_protocol_wait_lite a=3D%s m=
+i=3D" ptr_format,
++         pract(action),
++         (ptr_type)mi);
++
++    tv_clear(&c->c2.timeval); /* ZERO-TIMEOUT */
++
++    switch (action)
++    {
++        case TA_TUN_READ:
++            looking_for =3D TUN_READ;
++            tun_input_pending =3D NULL;
++            io_wait(c, IOW_READ_TUN);
++            break;
++
++        case TA_SOCKET_READ:
++            looking_for =3D SOCKET_READ;
++            tun_input_pending =3D NULL;
++            io_wait(c, IOW_READ_LINK);
++            break;
++
++        case TA_TUN_WRITE:
++            looking_for =3D TUN_WRITE;
++            tun_input_pending =3D NULL;
++            c->c2.timeval.tv_sec =3D 1; /* For some reason, the Linux 2.2 =
+TUN/TAP driver hits this timeout */
++            perf_push(PERF_PROC_OUT_TUN_MTCP);
++            io_wait(c, IOW_TO_TUN);
++            perf_pop();
++            break;
++
++        case TA_SOCKET_WRITE:
++            looking_for =3D SOCKET_WRITE;
++            io_wait(c, IOW_TO_LINK|IOW_READ_TUN_FORCE);
++            break;
++
++        default:
++            msg(M_FATAL, "MULTI PROTOCOL: multi_protocol_wait_lite, unhand=
+led action=3D%d", action);
++    }
++
++    if (tun_input_pending && (c->c2.event_set_status & TUN_READ))
++    {
++        *tun_input_pending =3D true;
++    }
++
++    if (c->c2.event_set_status & looking_for)
++    {
++        return action;
++    }
++    else
++    {
++        switch (action)
++        {
++            /* MULTI PROTOCOL socket output buffer is full */
++            case TA_SOCKET_WRITE:
++                return TA_SOCKET_WRITE_DEFERRED;
++
++            /* TUN device timed out on accepting write */
++            case TA_TUN_WRITE:
++                return TA_TUN_WRITE_TIMEOUT;
++        }
++
++        return TA_UNDEF;
++    }
++}
++
++static struct multi_instance *
++multi_protocol_dispatch(struct multi_context *m, struct multi_instance *mi=
+, const int action)
++{
++    const unsigned int mpp_flags =3D MPP_PRE_SELECT|MPP_RECORD_TOUCH;
++    struct multi_instance *touched =3D mi;
++    m->mpp_touched =3D &touched;
++
++    dmsg(D_MULTI_DEBUG, "MULTI PROTOCOL: multi_protocol_dispatch a=3D%s mi=
+=3D" ptr_format,
++         pract(action),
++         (ptr_type)mi);
++
++    switch (action)
++    {
++        case TA_TUN_READ:
++            read_incoming_tun(&m->top);
++            if (!IS_SIG(&m->top))
++            {
++                multi_process_incoming_tun(m, mpp_flags);
++            }
++            break;
++
++        case TA_SOCKET_READ:
++        case TA_SOCKET_READ_RESIDUAL:
++            ASSERT(mi);
++            ASSERT(mi->context.c2.link_sockets);
++            ASSERT(mi->context.c2.link_sockets[0]);
++            set_prefix(mi);
++            read_incoming_link(&mi->context, mi->context.c2.link_sockets[0=
+]);
++            clear_prefix();
++            if (!IS_SIG(&mi->context))
++            {
++                multi_process_incoming_link(m, mi, mpp_flags,
++                                            mi->context.c2.link_sockets[0]=
 );
-+                            }
-+                        }
-+                        else
++                if (!IS_SIG(&mi->context))
++                {
++                    stream_buf_read_setup(mi->context.c2.link_sockets[0]);
++                }
++            }
++            break;
++
++        case TA_TIMEOUT:
++            multi_process_timeout(m, mpp_flags);
++            break;
++
++        case TA_TUN_WRITE:
++            multi_process_outgoing_tun(m, mpp_flags);
++            break;
++
++        case TA_TUN_WRITE_TIMEOUT:
++            multi_process_drop_outgoing_tun(m, mpp_flags);
++            break;
++
++        case TA_SOCKET_WRITE_READY:
++            ASSERT(mi);
++            multi_tcp_process_outgoing_link_ready(m, mi, mpp_flags);
++            break;
++
++        case TA_SOCKET_WRITE:
++            multi_tcp_process_outgoing_link(m, false, mpp_flags);
++            break;
++
++        case TA_SOCKET_WRITE_DEFERRED:
++            multi_tcp_process_outgoing_link(m, true, mpp_flags);
++            break;
++
++        case TA_INITIAL:
++            ASSERT(mi);
++            multi_tcp_set_global_rw_flags(m, mi);
++            multi_process_post(m, mi, mpp_flags);
++            break;
++
++        default:
++            msg(M_FATAL, "MULTI PROTOCOL: multi_protocol_dispatch, unhandl=
+ed action=3D%d", action);
++    }
++
++    m->mpp_touched =3D NULL;
++    return touched;
++}
++
++static int
++multi_protocol_post(struct multi_context *m, struct multi_instance *mi, co=
+nst int action)
++{
++    struct context *c =3D multi_tcp_context(m, mi);
++    int newaction =3D TA_UNDEF;
++
++#define MTP_NONE         0
++#define MTP_TUN_OUT      (1<<0)
++#define MTP_LINK_OUT     (1<<1)
++    unsigned int flags =3D MTP_NONE;
++
++    if (TUN_OUT(c))
++    {
++        flags |=3D MTP_TUN_OUT;
++    }
++    if (LINK_OUT(c))
++    {
++        flags |=3D MTP_LINK_OUT;
++    }
++
++    switch (flags)
++    {
++        case MTP_TUN_OUT|MTP_LINK_OUT:
++        case MTP_TUN_OUT:
++            newaction =3D TA_TUN_WRITE;
++            break;
++
++        case MTP_LINK_OUT:
++            newaction =3D TA_SOCKET_WRITE;
++            break;
++
++        case MTP_NONE:
++            if (mi && sockets_read_residual(c))
++            {
++                newaction =3D TA_SOCKET_READ_RESIDUAL;
++            }
++            else
++            {
++                multi_tcp_set_global_rw_flags(m, mi);
++            }
++            break;
++
++        default:
++        {
++            struct gc_arena gc =3D gc_new();
++            msg(M_FATAL, "MULTI PROTOCOL: multi_protocol_post bad state, m=
+i=3D%s flags=3D%d",
++                multi_instance_string(mi, false, &gc),
++                flags);
++            gc_free(&gc);
++            break;
++        }
++    }
++
++    dmsg(D_MULTI_DEBUG, "MULTI PROTOCOL: multi_protocol_post %s -> %s",
++         pract(action),
++         pract(newaction));
++
++    return newaction;
++}
++
++void
++multi_protocol_process_io(struct multi_context *m)
++{
++    struct multi_protocol *multi_io =3D m->multi_io;
++    int i;
++
++    for (i =3D 0; i < multi_io->n_esr; ++i)
++    {
++        struct event_set_return *e =3D &multi_io->esr[i];
++        struct event_arg *ev_arg =3D (struct event_arg *)e->arg;
++
++        /* incoming data for instance or listening socket? */
++        if (e->arg >=3D MULTI_N)
++        {
++            switch (ev_arg->type)
++            {
++                struct multi_instance *mi;
++
++                /* react to event on child instance */
++                case EVENT_ARG_MULTI_INSTANCE:
++                    if (!ev_arg->u.mi)
++                    {
++                        msg(D_MULTI_ERRORS, "MULTI PROTOCOL: multi_proto_p=
+roc_io: null minstance");
++                        break;
++                    }
++
++                    mi =3D ev_arg->u.mi;
++                    if (e->rwflags & EVENT_WRITE)
++                    {
++                        multi_protocol_action(m, mi, TA_SOCKET_WRITE_READY=
+, false);
++                    }
++                    else if (e->rwflags & EVENT_READ)
++                    {
++                        multi_protocol_action(m, mi, TA_SOCKET_READ, false=
+);
++                    }
++                    break;
++
++                /* new incoming TCP client attempting to connect? */
++                case EVENT_ARG_LINK_SOCKET:
++                    if (!ev_arg->u.sock)
++                    {
++                        msg(D_MULTI_ERRORS, "MULTI PROTOCOL: multi_proto_p=
+roc_io: null socket");
++                        break;
++                    }
++
++                    if (!proto_is_dgram(ev_arg->u.sock->info.proto))
++                    {
++                        socket_reset_listen_persistent(ev_arg->u.sock);
++                        mi =3D multi_create_instance_tcp(m, ev_arg->u.sock=
+);
++                        if (mi)
 +                        {
-+                            multi_process_io_udp(m);
++                            multi_protocol_action(m, mi, TA_INITIAL, false=
+);
 +                        }
 +                        break;
 +                    }
-             }
-         }
-         else
-diff --git a/src/openvpn/openvpn.h b/src/openvpn/openvpn.h
-index 77bb41d..821ac2e 100644
---- a/src/openvpn/openvpn.h
-+++ b/src/openvpn/openvpn.h
-@@ -220,8 +220,8 @@
-  * \c SIGUSR1 restarts.
-  *
-  * This structure is initialized at the top of the \c
-- * tunnel_point_to_point(), \c tunnel_server_udp(), and \c
-- * tunnel_server_tcp() functions.  In other words, it is reset for every
-+ * tunnel_point_to_point(), \c tunnel_server() \c
-+ * functions.  In other words, it is reset for every
-  * iteration of the \c main() function's inner \c SIGUSR1 loop.
-  */
- struct context_2
-diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index f216456..edda0bb 100644
---- a/src/openvpn/options.c
-+++ b/src/openvpn/options.c
-@@ -993,10 +993,13 @@
-                         const struct connection_entry *e,
-                         const int i)
- {
--    setenv_str_i(es, "proto", proto2ascii(e->proto, e->af, false), i);
--    /* expected to be for single socket contexts only */
--    setenv_str_i(es, "local", e->local_list->array[0]->local, i);
--    setenv_str_i(es, "local_port", e->local_list->array[0]->port, i);
-+    for (int j =3D 0; j < e->local_list->len; j++)
-+    {
-+        setenv_str_i(es, "proto", proto2ascii(e->local_list->array[j]->pro=
-to, e->af, false), i);
-+        /* expected to be for single socket contexts only */
-+        setenv_str_i(es, "local", e->local_list->array[j]->local, i);
-+        setenv_str_i(es, "local_port", e->local_list->array[j]->port, i);
-+    }
-     setenv_str_i(es, "remote", e->remote, i);
-     setenv_str_i(es, "remote_port", e->remote_port, i);
-
-@@ -2199,6 +2202,7 @@
-     }
-
-     ALLOC_OBJ_CLEAR_GC(e, struct local_entry, gc);
-+    e->proto =3D PROTO_NONE;
-     l->array[l->len++] =3D e;
-
-     return e;
-@@ -2465,7 +2469,7 @@
-     {
-         struct local_entry *le =3D ce->local_list->array[i];
-
--        if (proto_is_net(ce->proto)
-+        if (proto_is_net(le->proto)
-             && string_defined_equal(le->local, ce->remote)
-             && string_defined_equal(le->port, ce->remote_port))
-         {
-@@ -3170,14 +3174,30 @@
-         if (ce->proto =3D=3D PROTO_TCP)
-         {
-             ce->proto =3D PROTO_TCP_SERVER;
-+            o->ce.proto =3D ce->proto;
-+        }
-+        if (ce->local_list)
-+        {
-+            for (int i =3D 0; i < ce->local_list->len; i++)
-+            {
-+                if (ce->local_list->array[i]->proto =3D=3D PROTO_TCP)
-+                {
-+                    ce->local_list->array[i]->proto =3D PROTO_TCP_SERVER;
-+                }
-+                else if (ce->local_list->array[i]->proto =3D=3D PROTO_NONE)
-+                {
-+                    ce->local_list->array[i]->proto =3D ce->proto;
-+                }
-+            }
-         }
-     }
-
--    if (o->client)
-+    if (o->mode !=3D MODE_SERVER)
-     {
-         if (ce->proto =3D=3D PROTO_TCP)
-         {
-             ce->proto =3D PROTO_TCP_CLIENT;
-+            o->ce.proto =3D ce->proto;
-         }
-     }
-
-@@ -3331,6 +3351,10 @@
-     {
-         le->port =3D o->ce.local_port;
-     }
-+    if (!le->proto)
-+    {
-+        le->proto =3D o->ce.proto;
-+    }
- }
-
- #ifdef _WIN32
-@@ -3807,6 +3831,12 @@
-         options_postprocess_mutate_ce(o, o->connection_list->array[i]);
-     }
-
-+    if (!has_udp_in_local_list(o))
-+    {
-+        o->fast_io =3D false;
-+        msg(M_INFO, "NOTE: --fast-io is disabled while using multi-socket"=
-);
-+    }
-+
-     if (o->ce.local_list)
-     {
-         for (i =3D 0; i < o->ce.local_list->len; i++)
-@@ -3822,6 +3852,7 @@
-         ASSERT(e);
-         e->port =3D o->ce.local_port;
-         e->bind_local =3D o->connection_list->array[0]->bind_local;
-+        e->proto =3D o->ce.proto;
-     }
-
-     /* use the same listen list for every outgoing connection */
-@@ -6232,7 +6263,7 @@
-         VERIFY_PERMISSION(OPT_P_UP);
-         options->ifconfig_nowarn =3D true;
-     }
--    else if (streq(p[0], "local") && p[1] && !p[3])
-+    else if (streq(p[0], "local") && p[1] && !p[4])
-     {
-         struct local_entry *e;
-
-@@ -6253,7 +6284,12 @@
-         if (p[2])
-         {
-             e->port =3D p[2];
--            e->bind_local =3D true;
-+            /*e->bind_local =3D true; */
-+        }
-+
-+        if (p[3])
-+        {
-+            e->proto =3D ascii2proto(p[3]);
-         }
-     }
-     else if (streq(p[0], "remote-random") && !p[1])
-@@ -9695,3 +9731,19 @@
- err:
-     gc_free(&gc);
- }
-+
-+bool
-+has_udp_in_local_list(const struct options *options)
-+{
-+    if (options->ce.local_list)
-+    {
-+        for (int i =3D 0; i < options->ce.local_list->len; i++)
-+        {
-+            if (proto_is_dgram(options->ce.local_list->array[i]->proto))
-+            {
-+                return true;
 +            }
 +        }
++        else
++        {
++#ifdef ENABLE_MANAGEMENT
++            if (e->arg =3D=3D MULTI_IO_MANAGEMENT)
++            {
++                ASSERT(management);
++                management_io(management);
++            }
++            else
++#endif
++            /* incoming data on TUN? */
++            if (e->arg =3D=3D MULTI_IO_TUN)
++            {
++                if (e->rwflags & EVENT_WRITE)
++                {
++                    multi_protocol_action(m, NULL, TA_TUN_WRITE, false);
++                }
++                else if (e->rwflags & EVENT_READ)
++                {
++                    multi_protocol_action(m, NULL, TA_TUN_READ, false);
++                }
++            }
++            /* new incoming TCP client attempting to connect? */
++            else if (e->arg =3D=3D MULTI_IO_SOCKET)
++            {
++                struct multi_instance *mi;
++                ASSERT(m->top.c2.link_sockets[0]);
++                socket_reset_listen_persistent(m->top.c2.link_sockets[0]);
++                mi =3D multi_create_instance_tcp(m, m->top.c2.link_sockets=
+[0]);
++                if (mi)
++                {
++                    multi_protocol_action(m, mi, TA_INITIAL, false);
++                }
++            }
++#if defined(ENABLE_DCO) && (defined(TARGET_LINUX) || defined(TARGET_FREEBS=
+D))
++            /* incoming data on DCO? */
++            else if (e->arg =3D=3D MULTI_IO_DCO)
++            {
++                multi_process_incoming_dco(m);
++            }
++#endif
++            /* signal received? */
++            else if (e->arg =3D=3D MULTI_IO_SIG)
++            {
++                get_signal(&m->top.sig->signal_received);
++            }
++#ifdef ENABLE_ASYNC_PUSH
++            else if (e->arg =3D=3D MULTI_IO_FILE_CLOSE_WRITE)
++            {
++                multi_process_file_closed(m, MPP_PRE_SELECT | MPP_RECORD_T=
+OUCH);
++            }
++#endif
++        }
++        if (IS_SIG(&m->top))
++        {
++            break;
++        }
 +    }
-+    return false;
++    multi_io->n_esr =3D 0;
++
++    /*
++     * Process queued mbuf packets destined for TCP socket
++     */
++    {
++        struct multi_instance *mi;
++        while (!IS_SIG(&m->top) && (mi =3D mbuf_peek(m->mbuf)) !=3D NULL)
++        {
++            multi_protocol_action(m, mi, TA_SOCKET_WRITE, true);
++        }
++    }
 +}
-diff --git a/src/openvpn/options.h b/src/openvpn/options.h
-index 6942455..30bd5aa 100644
---- a/src/openvpn/options.h
-+++ b/src/openvpn/options.h
-@@ -99,6 +99,7 @@
-     const char *local;
-     const char *port;
-     bool bind_local;
-+    int proto;
- };
-
- struct connection_entry
-@@ -916,6 +917,8 @@
-
- bool key_is_external(const struct options *options);
-
-+bool has_udp_in_local_list(const struct options *options);
 +
- /**
-  * Returns whether the current configuration has dco enabled.
-  */
++void
++multi_protocol_action(struct multi_context *m, struct multi_instance *mi, =
+int action, bool poll)
++{
++    bool tun_input_pending =3D false;
++
++    do
++    {
++        dmsg(D_MULTI_DEBUG, "MULTI PROTOCOL: multi_protocol_action a=3D%s =
+p=3D%d",
++             pract(action),
++             poll);
++
++        /*
++         * If TA_SOCKET_READ_RESIDUAL, it means we still have pending
++         * input packets which were read by a prior recv.
++         *
++         * Otherwise do a "lite" wait, which means we wait with 0 timeout
++         * on I/O events only related to the current instance, not
++         * the big list of events.
++         *
++         * On our first pass, poll will be false because we already know
++         * that input is available, and to call io_wait would be redundant.
++         */
++        if (poll && action !=3D TA_SOCKET_READ_RESIDUAL)
++        {
++            const int orig_action =3D action;
++            action =3D multi_protocol_wait_lite(m, mi, action, &tun_input_=
+pending);
++            if (action =3D=3D TA_UNDEF)
++            {
++                msg(M_FATAL, "MULTI PROTOCOL: I/O wait required blocking i=
+n multi_protocol_action, action=3D%d", orig_action);
++            }
++        }
++
++        /*
++         * Dispatch the action
++         */
++        struct multi_instance *touched =3D multi_protocol_dispatch(m, mi, =
+action);
++
++        /*
++         * Signal received or connection
++         * reset by peer?
++         */
++        if (touched && IS_SIG(&touched->context))
++        {
++            if (mi =3D=3D touched)
++            {
++                mi =3D NULL;
++            }
++            multi_close_instance_on_signal(m, touched);
++        }
++
++
++        /*
++         * If dispatch produced any pending output
++         * for a particular instance, point to
++         * that instance.
++         */
++        if (m->pending)
++        {
++            mi =3D m->pending;
++        }
++
++        /*
++         * Based on the effects of the action,
++         * such as generating pending output,
++         * possibly transition to a new action state.
++         */
++        action =3D multi_protocol_post(m, mi, action);
++
++        /*
++         * If we are finished processing the original action,
++         * check if we have any TUN input.  If so, transition
++         * our action state to processing this input.
++         */
++        if (tun_input_pending && action =3D=3D TA_UNDEF)
++        {
++            action =3D TA_TUN_READ;
++            mi =3D NULL;
++            tun_input_pending =3D false;
++            poll =3D false;
++        }
++        else
++        {
++            poll =3D true;
++        }
++
++    } while (action !=3D TA_UNDEF);
++}
++
++void
++multi_protocol_delete_event(struct multi_protocol *multi_io, event_t event)
++{
++    if (multi_io && multi_io->es)
++    {
++        event_del(multi_io->es, event);
++    }
++}
+diff --git a/src/openvpn/multi_io.h b/src/openvpn/multi_io.h
+new file mode 100644
+index 0000000..07fc935
+--- /dev/null
++++ b/src/openvpn/multi_io.h
+@@ -0,0 +1,77 @@
++/*
++ *  OpenVPN -- An application to securely tunnel IP networks
++ *             over a single TCP/UDP port, with support for SSL/TLS-based
++ *             session authentication and key exchange,
++ *             packet encryption, packet authentication, and
++ *             packet compression.
++ *
++ *  Copyright (C) 2002-2023 OpenVPN Inc <sales@...515...>
++ *
++ *  This program is free software; you can redistribute it and/or modify
++ *  it under the terms of the GNU General Public License version 2
++ *  as published by the Free Software Foundation.
++ *
++ *  This program is distributed in the hope that it will be useful,
++ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
++ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ *  GNU General Public License for more details.
++ *
++ *  You should have received a copy of the GNU General Public License along
++ *  with this program; if not, write to the Free Software Foundation, Inc.,
++ *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
++ */
++
++/*
++ * Multi-protocol specific code for --mode server
++ */
++
++#ifndef MULTI_IO_H
++#define MULTI_IO_H
++
++#include "event.h"
++
++/*
++ * I/O processing States
++ */
++
++#define TA_UNDEF                 0
++#define TA_SOCKET_READ           1
++#define TA_SOCKET_READ_RESIDUAL  2
++#define TA_SOCKET_WRITE          3
++#define TA_SOCKET_WRITE_READY    4
++#define TA_SOCKET_WRITE_DEFERRED 5
++#define TA_TUN_READ              6
++#define TA_TUN_WRITE             7
++#define TA_INITIAL               8
++#define TA_TIMEOUT               9
++#define TA_TUN_WRITE_TIMEOUT     10
++
++/*
++ * Extra state info needed for Multi-protocol
++ */
++struct multi_protocol
++{
++    struct event_set *es;
++    struct event_set_return *esr;
++    int n_esr;
++    int maxevents;
++    unsigned int tun_rwflags;
++    unsigned int udp_flags;
++#ifdef ENABLE_MANAGEMENT
++    unsigned int management_persist_flags;
++#endif
++};
++
++struct multi_protocol *multi_protocol_init(int maxevents, int *maxclients);
++
++void multi_protocol_free(struct multi_protocol *multi_io);
++
++int multi_protocol_io_wait(struct multi_context *m);
++
++void multi_protocol_process_io(struct multi_context *m);
++
++void multi_protocol_action(struct multi_context *m, struct multi_instance =
+*mi, int action, bool poll);
++
++void multi_protocol_delete_event(struct multi_protocol *multi_io, event_t =
+event);
++
++#endif /* ifndef MULTI_IO_H */
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/764?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/763?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings
 
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: I31bbf87e4e568021445c7512ecefadfd4a69b363
-Gerrit-Change-Number: 764
+Gerrit-Change-Id: I1e5a84969988e4f027a18658d4ab268c13fbf929
+Gerrit-Change-Number: 763
 Gerrit-PatchSet: 4
 Gerrit-Owner: its_Giaan <gianmarco@...2726...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: its_Giaan <gianmarco@...2726...>
+Gerrit-Attention: flichtenheld <frank@...2641...>
 Gerrit-MessageType: newpatchset
 
---xWhg6TeD8Cw=
+--4MZ8k4yh/h8=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p> Attention is currently required from: its_Giaan, plaisthos. </p>
+<p> Attention is currently required from: flichtenheld, plaisthos. </p>
 <p>its_Giaan <strong>uploaded patch set #4</strong> to this change.</p><p><=
-a href=3D"http://gerrit.openvpn.net/c/openvpn/+/764?usp=3Demail">View Chang=
+a href=3D"http://gerrit.openvpn.net/c/openvpn/+/763?usp=3Demail">View Chang=
 e</a></p><pre style=3D"font-family: monospace,monospace; white-space: pre-w=
-rap;">Bind to multiple ipv4/ipv6 addresses<br><br>Enables the binding of mu=
-ltiple listen sockets based<br>on the specified &quot;--local&quot; directi=
-ves.<br><br>The main server loop has been updated to handle both<br>TCP and=
- UDP connections.<br><br>The hash function has also been modified to includ=
-e the<br>protocol during the creation of new client instances.<br><br>There=
- are also a couple of refinements to make the<br>whole code flow management=
- capable of handling<br>different kind of clients:<br><br>MULTI: properly r=
-emove TCP instances by checking the multi_instance<br>       protocol inste=
-ad of the global one.<br><br>TLS: set the tls_option xmit_hold bool value t=
-o true only in case of<br>     TCP child instance to avoid checking the glo=
-bal protocol<br>     value.<br><br>INIT: initialize the c-&gt;c2.event_set =
-in the inherit_context_top()<br>      by default and not only in case of UD=
-P since we could have<br>      multiple different sockets.<br><br>Change-Id=
-: I31bbf87e4e568021445c7512ecefadfd4a69b363<br>Signed-off-by: Gianmarco De =
-Gregori &lt;gianmarco@...2726...&gt;<br>---<br>M doc/man-sections/link-opti=
-ons.rst<br>M src/openvpn/forward.c<br>M src/openvpn/forward.h<br>M src/open=
-vpn/init.c<br>M src/openvpn/mroute.c<br>M src/openvpn/mroute.h<br>M src/ope=
-nvpn/mtcp.c<br>M src/openvpn/mtcp.h<br>M src/openvpn/mudp.c<br>M src/openvp=
-n/mudp.h<br>M src/openvpn/multi.c<br>M src/openvpn/multi.h<br>M src/openvpn=
-/multi_io.c<br>M src/openvpn/openvpn.h<br>M src/openvpn/options.c<br>M src/=
-openvpn/options.h<br>16 files changed, 548 insertions(+), 320 deletions(-)<=
-br><br></pre><pre style=3D"font-family: monospace,monospace; white-space: p=
-re-wrap;">git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/64/7=
-64/4</pre><pre style=3D"font-family: monospace,monospace; white-space: pre-=
-wrap;"><span>diff --git a/doc/man-sections/link-options.rst b/doc/man-secti=
-ons/link-options.rst</span><br><span>index 05909ca..e2cf9b8 100644</span><b=
-r><span>--- a/doc/man-sections/link-options.rst</span><br><span>+++ b/doc/m=
-an-sections/link-options.rst</span><br><span>@@ -106,7 +106,7 @@</span><br>=
-<span>   is not reliable. It is recommended to set tun-mtu with enough head=
-room</span><br><span>   instead.</span><br><span> </span><br><span>---local=
- host|* [port]</span><br><span style=3D"color: hsl(120, 100%, 40%);">+--loc=
-al host|* [port] [protocol]</span><br><span>   Local host name or IP addres=
-s and port for bind. If specified, OpenVPN will bind</span><br><span>   to =
-this address. If unspecified, OpenVPN will bind to all interfaces.</span><b=
-r><span>   &#39;*&#39; can be used as hostname and means &#39;any host&#39;=
- (OpenVPN will listen on what</span><br><span>diff --git a/src/openvpn/forw=
-ard.c b/src/openvpn/forward.c</span><br><span>index 04f2075..f84a512 100644=
-</span><br><span>--- a/src/openvpn/forward.c</span><br><span>+++ b/src/open=
-vpn/forward.c</span><br><span>@@ -1775,7 +1775,7 @@</span><br><span>       =
-      if (c-&gt;options.shaper)</span><br><span>             {</span><br><s=
-pan>                 int overhead =3D datagram_overhead(c-&gt;c2.to_link_ad=
-dr-&gt;dest.addr.sa.sa_family,</span><br><span style=3D"color: hsl(0, 100%,=
- 40%);">-                                                 c-&gt;options.ce.=
-proto);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            =
-                                     sock-&gt;info.proto);</span><br><span>=
-                 shaper_wrote_bytes(&amp;c-&gt;c2.shaper,</span><br><span> =
-                                   BLEN(&amp;c-&gt;c2.to_link) + overhead);=
-</span><br><span>             }</span><br><span>@@ -2072,6 +2072,173 @@</sp=
-an><br><span>  */</span><br><span> </span><br><span> void</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+get_io_flags_dowork_udp(struct contex=
-t *c, struct multi_protocol *multi_io, const unsigned int flags)</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+    unsigned int socket =3D 0;</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+    unsigned int tuntap =3D 0;</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+    static uintptr_t tun_s=
-hift =3D 2;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    stat=
-ic uintptr_t err_shift =3D 4;</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    /*</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+     * Calculate the f=
-lags based on the provided &#39;flags&#39; argument.</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+     */</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+    if (flags &amp; IOW_WAIT_SIGNAL)</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+        wait_signal(multi_io-&gt;es, (void *)err_s=
-hift);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+    if (flags &amp; IOW_TO_LINK)</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+        if (flags &amp; IOW_SHAPER)</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+        {</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+            /*</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+             * If sending this packet would pu=
-t us over our traffic shaping</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+             * quota, don&#39;t send -- instead compute the delay=
- we must wait</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
-       * until it will be OK to send the packet.</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+             */</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+            int delay =3D 0;</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+            /* set traffic shaping delay in microseconds */<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+            if (c-&g=
-t;options.shaper)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-          {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        =
-        delay =3D max_int(delay, shaper_delay(&amp;c-&gt;c2.shaper));</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+            }</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+            if (delay &lt; 1000)</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+            {</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+                socket |=3D EVENT_WRITE;<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+            }</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+            else</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+            {</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+                shaper_soonest_even=
-t(&amp;c-&gt;c2.timeval, delay);</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+            }</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+        }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
-     else</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        {<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+            socket |=
-=3D EVENT_WRITE;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
-     }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+    else if (!((flags &amp;=
- IOW_FRAG) &amp;&amp; TO_LINK_FRAG(c)))</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+        if (flags &amp; IOW_READ_TUN)</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+        {</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+            tuntap |=3D EVENT_READ;</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+        }</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    /*</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+     * If outgoing data (f=
-or TUN/TAP device) pending, wait for ready-to-send status</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+     * from device.  Otherwise, wait =
-for incoming data on TCP/UDP port.</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+     */</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+    if (flags &amp; IOW_TO_TUN)</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+        tuntap |=3D EVENT_WRITE;</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-    else</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+        if (flags &amp; I=
-OW_READ_LINK)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
-  {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            sock=
-et |=3D EVENT_READ;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-        }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    /*</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+     * outgoing bcast buffer waiting to be sent?</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+     */</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+    if (flags &amp; IOW_MBUF)</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+        socket |=3D EVENT_WRITE;</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+    /*</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+     * Force wait on TUN input, even if also waiting on TCP/UDP output</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+     */</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+    if (flags &amp; IOW_READ_TUN_F=
-ORCE)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+        tuntap |=3D EVENT_RE=
-AD;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+#ifdef _WIN32</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+    if (tuntap_is_wintun(c-&gt;c1.tuntap))</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+        /*</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+         * With wintun we are only interested in read e=
-vent. Ring buffer is</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+         * always ready for write, so we don&#39;t do wait.</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+         */</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+        tuntap =3D EVENT_READ;</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+#endif</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-   /*</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     * Configu=
-re event wait based on socket, tuntap flags.</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+     */</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+    for (int i =3D 0; i &lt; c-&gt;c1.link_sockets_num; i++)</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+        if (proto_is_dgram(c-&gt;c2=
-.link_sockets[i]-&gt;info.proto))</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+        {</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+            socket_set(c-&gt;c2.link_sockets[i], multi_io-&gt;es, socke=
-t,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+                 =
-      &amp;c-&gt;c2.link_sockets[i]-&gt;ev_arg, NULL);</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+        }</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+    tun_set(c-&gt;c1.tuntap, multi_io-&gt;es, tuntap, (void *)tu=
-n_shift, NULL);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+    multi_io-&gt;udp_fl=
-ags =3D socket | tuntap;</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+void</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+get_io_flags_udp(struct context *c, struct mult=
-i_protocol *multi_io, const unsigned int flags)</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+    multi_io-&gt;udp_flags =3D ES_ERROR;</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+    if (c-&gt;c2.fast_io &amp;&amp; (flags &=
-amp; (IOW_TO_TUN | IOW_TO_LINK | IOW_MBUF)))</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+        /* fast path -- only for TUN/TAP/UDP writes */</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+        unsigned int ret =3D =
-0;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        if (flags=
- &amp; IOW_TO_TUN)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-       {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+           =
- ret |=3D TUN_WRITE;</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+        }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        i=
-f (flags &amp; (IOW_TO_LINK | IOW_MBUF))</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+        {</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+            ret |=3D SOCKET_WRITE;</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+        }</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+        multi_io-&gt;udp_flags =3D ret;</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+    else</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#if=
-def _WIN32</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        b=
-ool skip_iowait =3D flags &amp; IOW_TO_TUN;</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+        if (flags &amp; IOW_READ_TUN)</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+        {</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+            /*</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+             * don&#39;t read from tun if we h=
-ave pending write to link,</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+             * since every tun read overwrites to_link buffer filled=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+             * by p=
-revious tun read</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
-          */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
-     skip_iowait =3D !(flags &amp; IOW_TO_LINK);</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+        }</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+        if (tuntap_is_wintun(c-&gt;c1.tuntap) &amp;&amp;=
- skip_iowait)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
-  {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            unsi=
-gned int ret =3D 0;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-            if (flags &amp; IOW_TO_TUN)</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+            {</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+                ret |=3D TUN_WRITE;</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+            }</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+            if (flags &amp; IOW_READ_TUN)</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+            {</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+                ret |=3D TUN_READ;<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+            }</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+            multi_io-&gt;u=
-dp_flags =3D ret;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-      }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        else=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#endif /* ifdef _WI=
-N32 */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        {</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+            /* slow pat=
-h - delegate to io_wait_dowork_udp to calculate flags */</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+            get_io_flags_dowork_udp(c,=
- multi_io, flags);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-       }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+void</span><br><span> io_wait_dowork(struct context *c, cons=
-t unsigned int flags)</span><br><span> {</span><br><span>     unsigned int =
-socket =3D 0;</span><br><span>@@ -2313,6 +2480,7 @@</span><br><span>     dm=
-sg(D_EVENT_WAIT, &quot;I/O WAIT status=3D0x%04x&quot;, c-&gt;c2.event_set_s=
-tatus);</span><br><span> }</span><br><span> </span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+</span><br><span> void</span><br><span> process_io=
-(struct context *c, struct link_socket *sock)</span><br><span> {</span><br>=
-<span>diff --git a/src/openvpn/forward.h b/src/openvpn/forward.h</span><br>=
-<span>index 0415726..fc4ff68 100644</span><br><span>--- a/src/openvpn/forwa=
-rd.h</span><br><span>+++ b/src/openvpn/forward.h</span><br><span>@@ -69,6 +=
-69,10 @@</span><br><span> </span><br><span> extern counter_type link_write_=
-bytes_global;</span><br><span> </span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+void get_io_flags_dowork_udp(struct context *c, struct multi_pr=
-otocol *multi_io, const unsigned int flags);</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+void get_io_flags_udp(struct context *c, struct multi_protocol *multi=
-_io, const unsigned int flags);</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+</span><br><span> void io_wait_dowork(struct context *c, const =
-unsigned int flags);</span><br><span> </span><br><span> void pre_select(str=
-uct context *c);</span><br><span>diff --git a/src/openvpn/init.c b/src/open=
-vpn/init.c</span><br><span>index 4eb286a..b2f772b 100644</span><br><span>--=
-- a/src/openvpn/init.c</span><br><span>+++ b/src/openvpn/init.c</span><br><=
-span>@@ -225,7 +225,7 @@</span><br><span>         if (streq(p[1], &quot;HTT=
-P&quot;))</span><br><span>         {</span><br><span>             struct ht=
-tp_proxy_options *ho;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
-            if (ce-&gt;proto !=3D PROTO_TCP &amp;&amp; ce-&gt;proto !=3D PR=
-OTO_TCP_CLIENT)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-        if (ce-&gt;proto !=3D PROTO_TCP &amp;&amp; c-&gt;mode !=3D CM_CHILD=
-_TCP)</span><br><span>             {</span><br><span>                 msg(M=
-_WARN, &quot;HTTP proxy support only works for TCP based connections&quot;)=
-;</span><br><span>                 return false;</span><br><span>@@ -602,7 =
-+602,10 @@</span><br><span>             ce_defined =3D false;</span><br><sp=
-an>         }</span><br><span> </span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+        int proto =3D c-&gt;options.ce.proto;</span><br><span> =
-        c-&gt;options.ce =3D *ce;</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+        c-&gt;options.ce.proto =3D proto;</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+</span><br><span> #ifdef ENABLE_MANAGEM=
-ENT</span><br><span>         if (ce_defined &amp;&amp; management &amp;&amp=
-; management_query_remote_enabled(management))</span><br><span>         {</=
-span><br><span>@@ -2673,7 +2676,7 @@</span><br><span> </span><br><span>    =
- if (found &amp; OPT_P_EXPLICIT_NOTIFY)</span><br><span>     {</span><br><s=
-pan style=3D"color: hsl(0, 100%, 40%);">-        if (!proto_is_udp(c-&gt;op=
-tions.ce.proto) &amp;&amp; c-&gt;options.ce.explicit_exit_notification)</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+        if (!proto_is_u=
-dp(c-&gt;c2.link_sockets[0]-&gt;info.proto) &amp;&amp; c-&gt;options.ce.exp=
-licit_exit_notification)</span><br><span>         {</span><br><span>       =
-      msg(D_PUSH, &quot;OPTIONS IMPORT: --explicit-exit-notify can only be =
-used with --proto udp&quot;);</span><br><span>             c-&gt;options.ce=
-.explicit_exit_notification =3D 0;</span><br><span>@@ -2833,14 +2836,21 @@<=
-/span><br><span>     int sec =3D 2;</span><br><span>     int backoff =3D 0;=
-</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
- switch (c-&gt;options.ce.proto)</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+    switch (c-&gt;mode)</span><br><span>     {</span><br><span=
- style=3D"color: hsl(0, 100%, 40%);">-        case PROTO_TCP_SERVER:</span>=
-<br><span style=3D"color: hsl(0, 100%, 40%);">-            sec =3D 1;</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+        case CM_TOP:</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+            if (has_udp_=
-in_local_list(&amp;c-&gt;options))</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+            {</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+                sec =3D c-&gt;options.ce.connect_retry_seconds;</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+            }</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+            else</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+            {</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+                sec =3D 1;</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+            }</span><br><span>=
-             break;</span><br><span> </span><br><span style=3D"color: hsl(0=
-, 100%, 40%);">-        case PROTO_UDP:</span><br><span style=3D"color: hsl=
-(0, 100%, 40%);">-        case PROTO_TCP_CLIENT:</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+        case CM_CHILD_UDP:</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+        case CM_CHILD_TCP:</span><br><s=
-pan>             sec =3D c-&gt;options.ce.connect_retry_seconds;</span><br>=
-<span>             break;</span><br><span>     }</span><br><span>@@ -2858,7=
- +2868,7 @@</span><br><span>     }</span><br><span> </span><br><span>     /=
-* Slow down reconnection after 5 retries per remote -- for TCP client or UD=
-P tls-client only */</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
-   if (c-&gt;options.ce.proto =3D=3D PROTO_TCP_CLIENT</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    if (c-&gt;mode =3D=3D CM_CHILD_TCP</s=
-pan><br><span>         || (c-&gt;options.ce.proto =3D=3D PROTO_UDP &amp;&am=
-p; c-&gt;options.tls_client))</span><br><span>     {</span><br><span>      =
-   backoff =3D (c-&gt;options.unsuccessful_attempts / c-&gt;options.connect=
-ion_list-&gt;len) - 4;</span><br><span>@@ -3338,7 +3348,21 @@</span><br><sp=
-an>     to.server =3D options-&gt;tls_server;</span><br><span>     to.repla=
-y_window =3D options-&gt;replay_window;</span><br><span>     to.replay_time=
- =3D options-&gt;replay_time;</span><br><span style=3D"color: hsl(0, 100%, =
-40%);">-    to.tcp_mode =3D link_socket_proto_connection_oriented(options-&=
-gt;ce.proto);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (c-&gt;options.ce.=
-local_list-&gt;len &gt; 1)</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
- for (int i =3D 0; i &lt; c-&gt;options.ce.local_list-&gt;len; i++)</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+        {</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+            if (proto_is_dgram(c-&gt;=
-options.ce.local_list-&gt;array[i]-&gt;proto))</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+            {</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+                to.tcp_mode =3D false;</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+            }</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+        }</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+    else</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-   {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        to.tcp_=
-mode =3D link_socket_proto_connection_oriented(c-&gt;options.ce.local_list-=
-&gt;array[0]-&gt;proto);</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+    }</span><br><span>     to.config_ciphername =3D c-&gt;options.ciph=
-ername;</span><br><span>     to.config_ncp_ciphers =3D c-&gt;options.ncp_ci=
-phers;</span><br><span>     to.transition_window =3D options-&gt;transition=
-_window;</span><br><span>@@ -3383,7 +3407,7 @@</span><br><span> </span><br>=
-<span>     /* should we not xmit any packets until we get an initial</span>=
-<br><span>      * response from client? */</span><br><span style=3D"color: =
-hsl(0, 100%, 40%);">-    if (to.server &amp;&amp; options-&gt;ce.proto =3D=
-=3D PROTO_TCP_SERVER)</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+    if (to.server &amp;&amp; c-&gt;mode =3D=3D CM_CHILD_TCP)</span><br><s=
-pan>     {</span><br><span>         to.xmit_hold =3D true;</span><br><span>=
-     }</span><br><span>@@ -3829,6 +3853,24 @@</span><br><span>     unsigned=
- int sockflags =3D c-&gt;options.sockflags;</span><br><span>     int i;</sp=
-an><br><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+    i=
-nt mode =3D LS_MODE_DEFAULT;</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+    /* mode allows CM_CHILD_TCP</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+     * instances to inherit acceptable fds</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+     * from a top-level parent =
-*/</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (c-&gt;opt=
-ions.mode =3D=3D MODE_SERVER)</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-    /* initializing listening socket */</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+        if (c-&gt;mode =3D=3D CM_TOP)</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+        {</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+            mode =3D LS_MODE_TCP_LISTEN;</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+        }</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+        /* initializing socket to cl=
-ient */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        else=
- if (c-&gt;mode =3D=3D CM_CHILD_TCP)</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+        {</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+            mode =3D LS_MODE_TCP_ACCEPT_FROM;</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+        }</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+</span><br><span> #if PORT_SHARE</span><br><span>     if (c-&gt;o=
-ptions.port_share_host &amp;&amp; c-&gt;options.port_share_port)</span><br>=
-<span>     {</span><br><span>@@ -3838,33 +3880,37 @@</span><br><span> </spa=
-n><br><span>     for (i =3D 0; i &lt; c-&gt;c1.link_sockets_num; i++)</span=
-><br><span>     {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
-    int mode =3D LS_MODE_DEFAULT;</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+        const char *host =3D c-&gt;options.ce.local_list-&gt;=
-array[i]-&gt;local;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-        const char *port =3D c-&gt;options.ce.local_list-&gt;array[i]-&gt;p=
-ort;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        int pro=
-to =3D c-&gt;options.ce.local_list-&gt;array[i]-&gt;proto;</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+        bool bind_local =3D c-&gt;op=
-tions.ce.local_list-&gt;array[i]-&gt;bind_local;</span><br><span> </span><b=
-r><span style=3D"color: hsl(0, 100%, 40%);">-        /* mode allows CM_CHIL=
-D_TCP</span><br><span style=3D"color: hsl(0, 100%, 40%);">-         * insta=
-nces to inherit acceptable fds</span><br><span style=3D"color: hsl(0, 100%,=
- 40%);">-         * from a top-level parent */</span><br><span style=3D"col=
-or: hsl(0, 100%, 40%);">-        if (c-&gt;options.mode =3D=3D MODE_SERVER)=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        if (c-&gt;m=
-ode =3D=3D CM_CHILD_TCP || c-&gt;mode =3D=3D CM_CHILD_UDP)</span><br><span>=
-         {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-           =
- /* initializing listening socket */</span><br><span style=3D"color: hsl(0,=
- 100%, 40%);">-            if (c-&gt;mode =3D=3D CM_TOP)</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+            const struct link_socket *=
-ls =3D NULL;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
-     if (c-&gt;mode =3D=3D CM_CHILD_TCP)</span><br><span>             {</sp=
-an><br><span style=3D"color: hsl(0, 100%, 40%);">-                mode =3D =
-LS_MODE_TCP_LISTEN;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-                ls =3D c-&gt;c2.accept_from;</span><br><span>             }=
-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            /* initia=
-lizing socket to client */</span><br><span style=3D"color: hsl(0, 100%, 40%=
-);">-            else if (c-&gt;mode =3D=3D CM_CHILD_TCP)</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+            else if (c-&gt;mode =3D=
-=3D CM_CHILD_UDP)</span><br><span>             {</span><br><span style=3D"c=
-olor: hsl(0, 100%, 40%);">-                mode =3D LS_MODE_TCP_ACCEPT_FROM=
-;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+                ls=
- =3D c-&gt;c2.link_sockets[0];</span><br><span>             }</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+            host =3D ls-&gt;local_host;</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+            port =3D ls-&gt;loca=
-l_port;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            =
-proto =3D ls-&gt;info.proto;</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+            bind_local =3D ls-&gt;bind_local;</span><br><span>    =
-     }</span><br><span> </span><br><span>         /* init each socket with =
-its specific port */</span><br><span>         link_socket_init_phase1(c-&gt=
-;c2.link_sockets[i],</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
-                               c-&gt;options.ce.local_list-&gt;array[i]-&gt=
-;local,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-              =
-                  c-&gt;options.ce.local_list-&gt;array[i]-&gt;port,</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+                          =
-      host,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        =
-                        port,</span><br><span>                             =
-    c-&gt;options.ce.remote,</span><br><span>                              =
-   c-&gt;options.ce.remote_port,</span><br><span>                          =
-       c-&gt;c1.dns_cache,</span><br><span style=3D"color: hsl(0, 100%, 40%=
-);">-                                c-&gt;options.ce.proto,</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+                                pr=
-oto,</span><br><span>                                 c-&gt;options.ce.af,<=
-/span><br><span>                                 c-&gt;options.ce.bind_ipv6=
-_only,</span><br><span>                                 mode,</span><br><sp=
-an>@@ -3874,7 +3920,7 @@</span><br><span> #ifdef ENABLE_DEBUG</span><br><sp=
-an>                                 c-&gt;options.gremlin,</span><br><span>=
- #endif</span><br><span style=3D"color: hsl(0, 100%, 40%);">-              =
-                  c-&gt;options.ce.local_list-&gt;array[i]-&gt;bind_local,<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+                    =
-            bind_local,</span><br><span>                                 c-=
-&gt;options.ce.remote_float,</span><br><span>                              =
-   &amp;c-&gt;c1.link_socket_addrs[i],</span><br><span>                    =
-             c-&gt;options.ipchange,</span><br><span>@@ -4265,20 +4311,13 @=
-@</span><br><span> #ifdef _WIN32</span><br><span>         msg(M_INFO, &quot=
-;NOTE: --fast-io is disabled since we are running on Windows&quot;);</span>=
-<br><span> #else</span><br><span style=3D"color: hsl(0, 100%, 40%);">-     =
-   if (!proto_is_udp(c-&gt;options.ce.proto))</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+        if (c-&gt;options.shaper)</span><br><span=
->         {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-          =
-  msg(M_INFO, &quot;NOTE: --fast-io is disabled since we are not using UDP&=
-quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            =
-msg(M_INFO, &quot;NOTE: --fast-io is disabled since we are using --shaper&q=
-uot;);</span><br><span>         }</span><br><span>         else</span><br><=
-span>         {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-      =
-      if (c-&gt;options.shaper)</span><br><span style=3D"color: hsl(0, 100%=
-, 40%);">-            {</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
->-                msg(M_INFO, &quot;NOTE: --fast-io is disabled since we ar=
-e using --shaper&quot;);</span><br><span style=3D"color: hsl(0, 100%, 40%);=
-">-            }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-     =
-       else</span><br><span style=3D"color: hsl(0, 100%, 40%);">-          =
-  {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-                c-=
-&gt;c2.fast_io =3D true;</span><br><span style=3D"color: hsl(0, 100%, 40%);=
-">-            }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
-         c-&gt;c2.fast_io =3D true;</span><br><span>         }</span><br><s=
-pan> #endif</span><br><span>     }</span><br><span>@@ -4685,7 +4724,7 @@</s=
-pan><br><span>     }</span><br><span> </span><br><span>     /* our wait-for=
--i/o objects, different for posix vs. win32 */</span><br><span style=3D"col=
-or: hsl(0, 100%, 40%);">-    if (c-&gt;mode =3D=3D CM_P2P)</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+    if (c-&gt;mode =3D=3D CM_P2P || =
-c-&gt;mode =3D=3D CM_TOP)</span><br><span>     {</span><br><span>         d=
-o_event_set_init(c, SHAPER_DEFINED(&amp;c-&gt;options));</span><br><span>  =
-   }</span><br><span>@@ -4949,7 +4988,7 @@</span><br><span>     CLEAR(*dest=
-);</span><br><span> </span><br><span>     /* proto_is_dgram will ASSERT(0) =
-if proto is invalid */</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
--    dest-&gt;mode =3D proto_is_dgram(src-&gt;options.ce.proto) ? CM_CHILD_=
-UDP : CM_CHILD_TCP;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-    dest-&gt;mode =3D proto_is_dgram(sock-&gt;info.proto) ? CM_CHILD_UDP : =
-CM_CHILD_TCP;</span><br><span> </span><br><span>     dest-&gt;gc =3D gc_new=
-();</span><br><span> </span><br><span>@@ -4975,8 +5014,11 @@</span><br><spa=
-n> </span><br><span>     /* options */</span><br><span>     dest-&gt;option=
-s =3D src-&gt;options;</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+    dest-&gt;options.ce.proto =3D sock-&gt;info.proto;</span><br><span> =
-    options_detach(&amp;dest-&gt;options);</span><br><span> </span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+    dest-&gt;c2.event_set =3D src-=
-&gt;c2.event_set;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</=
-span><br><span>     if (dest-&gt;mode =3D=3D CM_CHILD_TCP)</span><br><span>=
-     {</span><br><span>         /*</span><br><span>@@ -5071,10 +5113,7 @@</=
-span><br><span>     dest-&gt;c2.es_owned =3D false;</span><br><span> </span=
-><br><span>     dest-&gt;c2.event_set =3D NULL;</span><br><span style=3D"co=
-lor: hsl(0, 100%, 40%);">-    if (proto_is_dgram(src-&gt;options.ce.proto))=
-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    {</span><br><span=
- style=3D"color: hsl(0, 100%, 40%);">-        do_event_set_init(dest, false=
-);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    }</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+    do_event_set_init(dest, false=
-);</span><br><span> </span><br><span> #ifdef USE_COMP</span><br><span>     =
-dest-&gt;c2.comp_context =3D NULL;</span><br><span>diff --git a/src/openvpn=
-/mroute.c b/src/openvpn/mroute.c</span><br><span>index 3a0224e..6f0170a 100=
-644</span><br><span>--- a/src/openvpn/mroute.c</span><br><span>+++ b/src/op=
-envpn/mroute.c</span><br><span>@@ -421,6 +421,7 @@</span><br><span>        =
-         {</span><br><span>                     buf_printf(&amp;out, &quot;=
-:%d&quot;, ntohs(maddr.v4.port));</span><br><span>                 }</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+                buf_printf=
-(&amp;out, &quot;:%d&quot;, maddr.proto);</span><br><span>             }</s=
-pan><br><span>             break;</span><br><span> </span><br><span>diff --=
-git a/src/openvpn/mroute.h b/src/openvpn/mroute.h</span><br><span>index 570=
-ccaa..e844c21 100644</span><br><span>--- a/src/openvpn/mroute.h</span><br><=
-span>+++ b/src/openvpn/mroute.h</span><br><span>@@ -201,6 +201,10 @@</span>=
-<br><span>     {</span><br><span>         return false;</span><br><span>   =
-  }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (a1-&gt;p=
-roto !=3D a2-&gt;proto)</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        re=
-turn false;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</s=
-pan><br><span>     if (a1-&gt;netbits !=3D a2-&gt;netbits)</span><br><span>=
-     {</span><br><span>         return false;</span><br><span>@@ -222,7 +22=
-6,7 @@</span><br><span> static inline uint32_t</span><br><span> mroute_addr=
-_hash_len(const struct mroute_addr *a)</span><br><span> {</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-    return (uint32_t) a-&gt;len + 2;</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+    return (uint32_t) =
-a-&gt;len + 3;</span><br><span> }</span><br><span> </span><br><span> static=
- inline void</span><br><span>diff --git a/src/openvpn/mtcp.c b/src/openvpn/=
-mtcp.c</span><br><span>index e173b80..c1107ab 100644</span><br><span>--- a/=
-src/openvpn/mtcp.c</span><br><span>+++ b/src/openvpn/mtcp.c</span><br><span=
->@@ -54,7 +54,7 @@</span><br><span>     struct hash *hash =3D m-&gt;hash;</=
-span><br><span> </span><br><span>     mi =3D multi_create_instance(m, NULL,=
- sock);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    if (mi)</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (mi &amp;&amp; =
-!proto_is_dgram(sock-&gt;info.proto))</span><br><span>     {</span><br><spa=
-n>         mi-&gt;real.proto =3D sock-&gt;info.proto;</span><br><span>     =
-    struct hash_element *he;</span><br><span>@@ -153,12 +153,19 @@</span><b=
-r><span> {</span><br><span>     if (mi)</span><br><span>     {</span><br><s=
-pan style=3D"color: hsl(0, 100%, 40%);">-        mi-&gt;socket_set_called =
-=3D true;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        sock=
-et_set(mi-&gt;context.c2.link_sockets[0],</span><br><span style=3D"color: h=
-sl(0, 100%, 40%);">-                   m-&gt;multi_io-&gt;es,</span><br><sp=
-an style=3D"color: hsl(0, 100%, 40%);">-                   mbuf_defined(mi-=
-&gt;tcp_link_out_deferred) ? EVENT_WRITE : EVENT_READ,</span><br><span styl=
-e=3D"color: hsl(0, 100%, 40%);">-                   &amp;mi-&gt;ev_arg,</sp=
-an><br><span style=3D"color: hsl(0, 100%, 40%);">-                   &amp;m=
-i-&gt;tcp_rwflags);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-        if (proto_is_dgram(mi-&gt;context.c2.link_sockets[0]-&gt;info.proto=
-))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        {</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+            return;</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+        }</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+        else</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+        {</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+            mi-&gt;socket_set_called =3D true;</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+            socket_set(mi-&=
-gt;context.c2.link_sockets[0],</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+                       m-&gt;multi_io-&gt;es,</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+                       mbuf_defined(mi=
--&gt;tcp_link_out_deferred) ? EVENT_WRITE : EVENT_READ,</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+                       &amp;mi-&gt;ev_a=
-rg,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+                =
-       &amp;mi-&gt;tcp_rwflags);</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+        }</span><br><span>     }</span><br><span> }</span><br>=
-<span> </span><br><span>@@ -242,87 +249,3 @@</span><br><span>     }</span><=
-br><span>     return ret;</span><br><span> }</span><br><span style=3D"color=
-: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
->-/*</span><br><span style=3D"color: hsl(0, 100%, 40%);">- * Top level even=
-t loop for single-threaded operation.</span><br><span style=3D"color: hsl(0=
-, 100%, 40%);">- * TCP mode.</span><br><span style=3D"color: hsl(0, 100%, 4=
-0%);">- */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-void</span>=
-<br><span style=3D"color: hsl(0, 100%, 40%);">-tunnel_server_tcp(struct con=
-text *top)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-{</span><br=
-><span style=3D"color: hsl(0, 100%, 40%);">-    struct multi_context multi;=
-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    int status;</span=
-><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"c=
-olor: hsl(0, 100%, 40%);">-    top-&gt;mode =3D CM_TOP;</span><br><span sty=
-le=3D"color: hsl(0, 100%, 40%);">-    context_clear_2(top);</span><br><span=
- style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(=
-0, 100%, 40%);">-    /* initialize top-tunnel instance */</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-    init_instance_handle_signals(top, t=
-op-&gt;es, CC_HARD_USR1_TO_HUP);</span><br><span style=3D"color: hsl(0, 100=
-%, 40%);">-    if (IS_SIG(top))</span><br><span style=3D"color: hsl(0, 100%=
-, 40%);">-    {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-      =
-  return;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    }</span>=
-<br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"co=
-lor: hsl(0, 100%, 40%);">-    /* initialize global multi_context object */<=
-/span><br><span style=3D"color: hsl(0, 100%, 40%);">-    multi_init(&amp;mu=
-lti, top, true);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</spa=
-n><br><span style=3D"color: hsl(0, 100%, 40%);">-    /* initialize our clon=
-ed top object */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    m=
-ulti_top_init(&amp;multi, top);</span><br><span style=3D"color: hsl(0, 100%=
-, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    /* init=
-ialize management interface */</span><br><span style=3D"color: hsl(0, 100%,=
- 40%);">-    init_management_callback_multi(&amp;multi);</span><br><span st=
-yle=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, =
-100%, 40%);">-    /* finished with initialization */</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-    initialization_sequence_completed(top, =
-ISC_SERVER); /* --mode server --proto tcp-server */</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100=
-%, 40%);">-#ifdef ENABLE_ASYNC_PUSH</span><br><span style=3D"color: hsl(0, =
-100%, 40%);">-    multi.top.c2.inotify_fd =3D inotify_init();</span><br><sp=
-an style=3D"color: hsl(0, 100%, 40%);">-    if (multi.top.c2.inotify_fd &lt=
-; 0)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    {</span><br><=
-span style=3D"color: hsl(0, 100%, 40%);">-        msg(D_MULTI_ERRORS | M_ER=
-RNO, &quot;MULTI: inotify_init error&quot;);</span><br><span style=3D"color=
-: hsl(0, 100%, 40%);">-    }</span><br><span style=3D"color: hsl(0, 100%, 4=
-0%);">-#endif</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><=
-br><span style=3D"color: hsl(0, 100%, 40%);">-    /* per-packet event loop =
-*/</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    while (true)</s=
-pan><br><span style=3D"color: hsl(0, 100%, 40%);">-    {</span><br><span st=
-yle=3D"color: hsl(0, 100%, 40%);">-        perf_push(PERF_EVENT_LOOP);</spa=
-n><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"=
-color: hsl(0, 100%, 40%);">-        /* wait on tun/socket list */</span><br=
-><span style=3D"color: hsl(0, 100%, 40%);">-        multi_get_timeout(&amp;=
-multi, &amp;multi.top.c2.timeval);</span><br><span style=3D"color: hsl(0, 1=
-00%, 40%);">-        status =3D multi_protocol_io_wait(&amp;multi);</span><=
-br><span style=3D"color: hsl(0, 100%, 40%);">-        MULTI_CHECK_SIG(&amp;=
-multi);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><sp=
-an style=3D"color: hsl(0, 100%, 40%);">-        /* check on status of coars=
-e timers */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        mu=
-lti_process_per_second_timers(&amp;multi);</span><br><span style=3D"color: =
-hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
-        /* timeout? */</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
--        if (status &gt; 0)</span><br><span style=3D"color: hsl(0, 100%, 40=
-%);">-        {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-      =
-      /* process the I/O which triggered select */</span><br><span style=3D=
-"color: hsl(0, 100%, 40%);">-            multi_protocol_process_io(&amp;mul=
-ti);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            MULTI=
-_CHECK_SIG(&amp;multi);</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
->-        }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        el=
-se if (status =3D=3D 0)</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
->-        {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-          =
-  multi_protocol_action(&amp;multi, NULL, TA_TIMEOUT, false);</span><br><sp=
-an style=3D"color: hsl(0, 100%, 40%);">-        }</span><br><span style=3D"=
-color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 4=
-0%);">-        perf_pop();</span><br><span style=3D"color: hsl(0, 100%, 40%=
-);">-    }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br>=
-<span style=3D"color: hsl(0, 100%, 40%);">-#ifdef ENABLE_ASYNC_PUSH</span><=
-br><span style=3D"color: hsl(0, 100%, 40%);">-    close(top-&gt;c2.inotify_=
-fd);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#endif</span><br>=
-<span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color:=
- hsl(0, 100%, 40%);">-    /* shut down management interface */</span><br><s=
-pan style=3D"color: hsl(0, 100%, 40%);">-    uninit_management_callback();<=
-/span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-    /* save ifconfig-pool */</span><br><spa=
-n style=3D"color: hsl(0, 100%, 40%);">-    multi_ifconfig_pool_persist(&amp=
-;multi, true);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span>=
-<br><span style=3D"color: hsl(0, 100%, 40%);">-    /* tear down tunnel inst=
-ance (unless --persist-tun) */</span><br><span style=3D"color: hsl(0, 100%,=
- 40%);">-    multi_uninit(&amp;multi);</span><br><span style=3D"color: hsl(=
-0, 100%, 40%);">-    multi_top_free(&amp;multi);</span><br><span style=3D"c=
-olor: hsl(0, 100%, 40%);">-    close_instance(top);</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-}</span><br><span>diff --git a/src/openvpn/=
-mtcp.h b/src/openvpn/mtcp.h</span><br><span>index b9f73d4..51b209b 100644</=
-span><br><span>--- a/src/openvpn/mtcp.h</span><br><span>+++ b/src/openvpn/m=
-tcp.h</span><br><span>@@ -51,17 +51,6 @@</span><br><span> </span><br><span>=
- void multi_tcp_link_out_deferred(struct multi_context *m, struct multi_ins=
-tance *mi);</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, =
-40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-/************=
-**************************************************************/</span><br><=
-span style=3D"color: hsl(0, 100%, 40%);">-/**</span><br><span style=3D"colo=
-r: hsl(0, 100%, 40%);">- * Main event loop for OpenVPN in TCP server mode.<=
-/span><br><span style=3D"color: hsl(0, 100%, 40%);">- * @ingroup eventloop<=
-/span><br><span style=3D"color: hsl(0, 100%, 40%);">- *</span><br><span sty=
-le=3D"color: hsl(0, 100%, 40%);">- * @param top - Top-level context structu=
-re.</span><br><span style=3D"color: hsl(0, 100%, 40%);">- */</span><br><spa=
-n style=3D"color: hsl(0, 100%, 40%);">-void tunnel_server_tcp(struct contex=
-t *top);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><s=
-pan style=3D"color: hsl(0, 100%, 40%);">-</span><br><span> void multi_tcp_d=
-elete_event(struct multi_protocol *multi_io, event_t event);</span><br><spa=
-n> </span><br><span> #endif /* ifndef MTCP_H */</span><br><span>diff --git =
-a/src/openvpn/mudp.c b/src/openvpn/mudp.c</span><br><span>index fee706d..31=
-89fe9 100644</span><br><span>--- a/src/openvpn/mudp.c</span><br><span>+++ b=
-/src/openvpn/mudp.c</span><br><span>@@ -194,6 +194,7 @@</span><br><span>   =
-  struct hash *hash =3D m-&gt;hash;</span><br><span>     real.proto =3D soc=
-k-&gt;info.proto;</span><br><span>     m-&gt;local.proto =3D real.proto;</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+    m-&gt;hmac_reply_l=
-s =3D sock;</span><br><span> </span><br><span>     if (mroute_extract_openv=
-pn_sockaddr(&amp;real, &amp;m-&gt;top.c2.from.dest, true)</span><br><span> =
-        &amp;&amp; m-&gt;top.c2.buf.len &gt; 0)</span><br><span>@@ -320,18 =
-+321,59 @@</span><br><span>         msg_set_prefix(&quot;Connection Attempt=
-&quot;);</span><br><span>         m-&gt;top.c2.to_link =3D m-&gt;hmac_reply=
-;</span><br><span>         m-&gt;top.c2.to_link_addr =3D m-&gt;hmac_reply_d=
-est;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        process_o=
-utgoing_link(&amp;m-&gt;top, m-&gt;top.c2.link_sockets[0]);</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+        process_outgoing_link(&amp;=
-m-&gt;top, m-&gt;hmac_reply_ls);</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+        m-&gt;hmac_reply_ls =3D NULL;</span><br><span>        =
- m-&gt;hmac_reply_dest =3D NULL;</span><br><span>     }</span><br><span> }<=
-/span><br><span> </span><br><span> /*</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+ * Return the io_wait() flags appropriate for</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+ * a point-to-multipoint tunnel=
-.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ */</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+unsigned int</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+p2mp_iow_flags(const struct multi_context=
- *m)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+    unsigned int flags =3D IOW_WA=
-IT_SIGNAL;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (m=
--&gt;pending)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+        if (TUN_OUT(=
-&amp;m-&gt;pending-&gt;context))</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+        {</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+            flags |=3D IOW_TO_TUN;</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+        }</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+        if (LINK_OUT(&amp;m-&gt;pending-&gt;context))</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+        {</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+            flags |=3D IOW_TO_LINK;</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+        }</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+    else if (mbuf_defined(m-&gt;mbuf))</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+        flags |=3D IOW_MBUF;</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+    else if (m-&gt;hmac_reply_dest)</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+        flags |=3D IOW_TO_LINK;</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+    else</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+        flags |=3D IOW_READ;</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#ifd=
-ef _WIN32</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (tu=
-ntap_ring_empty(m-&gt;top.c1.tuntap))</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+        flags &amp;=3D ~IOW_READ_TUN;</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+#endif</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    r=
-eturn flags;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+/*</span><br><span>  * Process an I/O event.=
-</span><br><span>  */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
-static void</span><br><span style=3D"color: hsl(120, 100%, 40%);">+void</sp=
-an><br><span> multi_process_io_udp(struct multi_context *m)</span><br><span=
-> {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    const unsigned=
- int status =3D m-&gt;top.c2.event_set_status;</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+    const unsigned int status =3D m-&gt;multi_io=
--&gt;udp_flags;</span><br><span>     const unsigned int mpp_flags =3D m-&gt=
-;top.c2.fast_io</span><br><span>                                    ? (MPP_=
-CONDITIONAL_PRE_SELECT | MPP_CLOSE_ON_SIGNAL)</span><br><span>             =
-                       : (MPP_PRE_SELECT | MPP_CLOSE_ON_SIGNAL);</span><br>=
-<span>@@ -429,123 +471,3 @@</span><br><span>     }</span><br><span> #endif<=
-/span><br><span> }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</s=
-pan><br><span style=3D"color: hsl(0, 100%, 40%);">-/*</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">- * Return the io_wait() flags appropriate f=
-or</span><br><span style=3D"color: hsl(0, 100%, 40%);">- * a point-to-multi=
-point tunnel.</span><br><span style=3D"color: hsl(0, 100%, 40%);">- */</spa=
-n><br><span style=3D"color: hsl(0, 100%, 40%);">-static inline unsigned int=
-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-p2mp_iow_flags(const =
-struct multi_context *m)</span><br><span style=3D"color: hsl(0, 100%, 40%);=
-">-{</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    unsigned int =
-flags =3D IOW_WAIT_SIGNAL;</span><br><span style=3D"color: hsl(0, 100%, 40%=
-);">-    if (m-&gt;pending)</span><br><span style=3D"color: hsl(0, 100%, 40=
-%);">-    {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        if=
- (TUN_OUT(&amp;m-&gt;pending-&gt;context))</span><br><span style=3D"color: =
-hsl(0, 100%, 40%);">-        {</span><br><span style=3D"color: hsl(0, 100%,=
- 40%);">-            flags |=3D IOW_TO_TUN;</span><br><span style=3D"color:=
- hsl(0, 100%, 40%);">-        }</span><br><span style=3D"color: hsl(0, 100%=
-, 40%);">-        if (LINK_OUT(&amp;m-&gt;pending-&gt;context))</span><br><=
-span style=3D"color: hsl(0, 100%, 40%);">-        {</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-            flags |=3D IOW_TO_LINK;</span><=
-br><span style=3D"color: hsl(0, 100%, 40%);">-        }</span><br><span sty=
-le=3D"color: hsl(0, 100%, 40%);">-    }</span><br><span style=3D"color: hsl=
-(0, 100%, 40%);">-    else if (mbuf_defined(m-&gt;mbuf))</span><br><span st=
-yle=3D"color: hsl(0, 100%, 40%);">-    {</span><br><span style=3D"color: hs=
-l(0, 100%, 40%);">-        flags |=3D IOW_MBUF;</span><br><span style=3D"co=
-lor: hsl(0, 100%, 40%);">-    }</span><br><span style=3D"color: hsl(0, 100%=
-, 40%);">-    else if (m-&gt;hmac_reply_dest)</span><br><span style=3D"colo=
-r: hsl(0, 100%, 40%);">-    {</span><br><span style=3D"color: hsl(0, 100%, =
-40%);">-        flags |=3D IOW_TO_LINK;</span><br><span style=3D"color: hsl=
-(0, 100%, 40%);">-    }</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
->-    else</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    {</span=
-><br><span style=3D"color: hsl(0, 100%, 40%);">-        flags |=3D IOW_READ=
-;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    }</span><br><spa=
-n style=3D"color: hsl(0, 100%, 40%);">-#ifdef _WIN32</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-    if (tuntap_ring_empty(m-&gt;top.c1.tunt=
-ap))</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    {</span><br><=
-span style=3D"color: hsl(0, 100%, 40%);">-        flags &amp;=3D ~IOW_READ_=
-TUN;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    }</span><br><=
-span style=3D"color: hsl(0, 100%, 40%);">-#endif</span><br><span style=3D"c=
-olor: hsl(0, 100%, 40%);">-    return flags;</span><br><span style=3D"color=
-: hsl(0, 100%, 40%);">-}</span><br><span style=3D"color: hsl(0, 100%, 40%);=
-">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-void</span><br><span style=3D"color: hs=
-l(0, 100%, 40%);">-tunnel_server_udp(struct context *top)</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-{</span><br><span style=3D"color: hsl(0=
-, 100%, 40%);">-    struct multi_context multi;</span><br><span style=3D"co=
-lor: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%=
-);">-    top-&gt;mode =3D CM_TOP;</span><br><span style=3D"color: hsl(0, 10=
-0%, 40%);">-    context_clear_2(top);</span><br><span style=3D"color: hsl(0=
-, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    /=
-* initialize top-tunnel instance */</span><br><span style=3D"color: hsl(0, =
-100%, 40%);">-    init_instance_handle_signals(top, top-&gt;es, CC_HARD_USR=
-1_TO_HUP);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    if (IS_=
-SIG(top))</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    {</span>=
-<br><span style=3D"color: hsl(0, 100%, 40%);">-        return;</span><br><s=
-pan style=3D"color: hsl(0, 100%, 40%);">-    }</span><br><span style=3D"col=
+rap;">multiproto: move generic event handling code in dedicated files<br><b=
+r>    Introduced multi_io.h and multi_io.c files to centralize<br>    all c=
+odes related to multiple protocols.<br><br>    Renamed the struct mtcp to s=
+truct multi_protocol since it<br>    encompasses the event_set used by the =
+parent context in server mode.<br><br>    Several methods have also been re=
+named and moved to fit the<br>    multiproto structure:<br><br>    - multi_=
+tcp_init() -&gt; multi_protocol_init();<br>    - multi_tcp_free() -&gt; mul=
+ti_protocol_free();<br>    - multi_tcp_wait() -&gt; multi_protocol_io_wait(=
+);<br>    and so forth.<br><br>Change-Id: I1e5a84969988e4f027a18658d4ab268c=
+13fbf929<br>Signed-off-by: Gianmarco De Gregori &lt;gianmarco@...2726...&gt=
+;<br>---<br>M CMakeLists.txt<br>M src/openvpn/Makefile.am<br>M src/openvpn/=
+forward.c<br>M src/openvpn/forward.h<br>M src/openvpn/init.c<br>M src/openv=
+pn/init.h<br>M src/openvpn/mtcp.c<br>M src/openvpn/mtcp.h<br>M src/openvpn/=
+mudp.c<br>M src/openvpn/mudp.h<br>M src/openvpn/multi.c<br>M src/openvpn/mu=
+lti.h<br>A src/openvpn/multi_io.c<br>A src/openvpn/multi_io.h<br>14 files c=
+hanged, 765 insertions(+), 635 deletions(-)<br><br></pre><pre style=3D"font=
+-family: monospace,monospace; white-space: pre-wrap;">git pull ssh://gerrit=
+.openvpn.net:29418/openvpn refs/changes/63/763/4</pre><pre style=3D"font-fa=
+mily: monospace,monospace; white-space: pre-wrap;"><span>diff --git a/CMake=
+Lists.txt b/CMakeLists.txt</span><br><span>index 5db207d..d5202da 100644</s=
+pan><br><span>--- a/CMakeLists.txt</span><br><span>+++ b/CMakeLists.txt</sp=
+an><br><span>@@ -458,6 +458,8 @@</span><br><span>     src/openvpn/mudp.h</s=
+pan><br><span>     src/openvpn/multi.c</span><br><span>     src/openvpn/mul=
+ti.h</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    src/openvpn=
+/multi_io.h</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    src/=
+openvpn/multi_io.c</span><br><span>     src/openvpn/ntlm.c</span><br><span>=
+     src/openvpn/ntlm.h</span><br><span>     src/openvpn/occ.c</span><br><s=
+pan>diff --git a/src/openvpn/Makefile.am b/src/openvpn/Makefile.am</span><b=
+r><span>index ecb2bcf..4436dbc 100644</span><br><span>--- a/src/openvpn/Mak=
+efile.am</span><br><span>+++ b/src/openvpn/Makefile.am</span><br><span>@@ -=
+92,6 +92,7 @@</span><br><span> 	mtu.c mtu.h \</span><br><span> 	mudp.c mudp=
+.h \</span><br><span> 	multi.c multi.h \</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+	multi_io.c multi_io.h \</span><br><span> 	networking_=
+freebsd.c \</span><br><span> 	networking_iproute2.c networking_iproute2.h \=
+</span><br><span> 	networking_sitnl.c networking_sitnl.h \</span><br><span>=
+diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c</span><br><span>=
+index 5e56be0..e7518e7 100644</span><br><span>--- a/src/openvpn/forward.c</=
+span><br><span>+++ b/src/openvpn/forward.c</span><br><span>@@ -1659,7 +1659=
+,7 @@</span><br><span> </span><br><span> void</span><br><span> process_ip_h=
+eader(struct context *c, unsigned int flags, struct buffer *buf,</span><br>=
+<span style=3D"color: hsl(0, 100%, 40%);">-                  struct link_so=
+cket *ls)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+          =
+        struct link_socket *sock)</span><br><span> {</span><br><span>     i=
+f (!c-&gt;options.ce.mssfix)</span><br><span>     {</span><br><span>@@ -169=
+3,7 +1693,7 @@</span><br><span>             /* extract TOS from IP header *=
+/</span><br><span>             if (flags &amp; PIPV4_PASSTOS)</span><br><sp=
+an>             {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
+            link_socket_extract_tos(ls, &amp;ipbuf);</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+                link_socket_extract_tos(s=
+ock, &amp;ipbuf);</span><br><span>             }</span><br><span> #endif</s=
+pan><br><span> </span><br><span>diff --git a/src/openvpn/forward.h b/src/op=
+envpn/forward.h</span><br><span>index 4ff5b04..0415726 100644</span><br><sp=
+an>--- a/src/openvpn/forward.h</span><br><span>+++ b/src/openvpn/forward.h<=
+/span><br><span>@@ -50,6 +50,7 @@</span><br><span> #include &quot;openvpn.h=
+&quot;</span><br><span> #include &quot;occ.h&quot;</span><br><span> #includ=
+e &quot;ping.h&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++#include &quot;multi_io.h&quot;</span><br><span> </span><br><span> #define=
+ IOW_TO_TUN          (1&lt;&lt;0)</span><br><span> #define IOW_TO_LINK     =
+    (1&lt;&lt;1)</span><br><span>@@ -308,7 +309,7 @@</span><br><span> </spa=
+n><br><span> </span><br><span> void process_ip_header(struct context *c, un=
+signed int flags, struct buffer *buf,</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-                       struct link_socket *ls);</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+                       struct l=
+ink_socket *sock);</span><br><span> </span><br><span> bool schedule_exit(st=
+ruct context *c);</span><br><span> </span><br><span>diff --git a/src/openvp=
+n/init.c b/src/openvpn/init.c</span><br><span>index 575b4d2..4eb286a 100644=
+</span><br><span>--- a/src/openvpn/init.c</span><br><span>+++ b/src/openvpn=
+/init.c</span><br><span>@@ -4944,7 +4944,7 @@</span><br><span> void</span><=
+br><span> inherit_context_child(struct context *dest,</span><br><span>     =
+                  const struct context *src,</span><br><span style=3D"color=
+: hsl(0, 100%, 40%);">-                      struct link_socket *ls)</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+                      stru=
+ct link_socket *sock)</span><br><span> {</span><br><span>     CLEAR(*dest);=
+</span><br><span> </span><br><span>@@ -4983,7 +4983,7 @@</span><br><span>  =
+        * The CM_TOP context does the socket listen(),</span><br><span>    =
+      * and the CM_CHILD_TCP context does the accept().</span><br><span>   =
+       */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        dest=
+-&gt;c2.accept_from =3D ls;</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+        dest-&gt;c2.accept_from =3D sock;</span><br><span>     }</s=
+pan><br><span> </span><br><span> #ifdef ENABLE_PLUGIN</span><br><span>@@ -5=
+017,13 +5017,13 @@</span><br><span>                        &amp;dest-&gt;gc=
+);</span><br><span> </span><br><span>         /* inherit parent link_socket=
+ and tuntap */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-       =
+ dest-&gt;c2.link_sockets[0] =3D ls;</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+        dest-&gt;c2.link_sockets[0] =3D sock;</span><br><s=
+pan> </span><br><span>         ALLOC_ARRAY_GC(dest-&gt;c2.link_socket_infos=
+, struct link_socket_info *, 1,</span><br><span>                        &am=
+p;dest-&gt;gc);</span><br><span>         ALLOC_OBJ_GC(dest-&gt;c2.link_sock=
+et_infos[0], struct link_socket_info,</span><br><span>                     =
+ &amp;dest-&gt;gc);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
+      *dest-&gt;c2.link_socket_infos[0] =3D ls-&gt;info;</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+        *dest-&gt;c2.link_socket_infos=
+[0] =3D sock-&gt;info;</span><br><span> </span><br><span>         /* locall=
+y override some link_socket_info fields */</span><br><span>         dest-&g=
+t;c2.link_socket_infos[0]-&gt;lsa =3D &amp;dest-&gt;c1.link_socket_addrs[0]=
+;</span><br><span>diff --git a/src/openvpn/init.h b/src/openvpn/init.h</spa=
+n><br><span>index 11c32ac..50b38e3 100644</span><br><span>--- a/src/openvpn=
+/init.h</span><br><span>+++ b/src/openvpn/init.h</span><br><span>@@ -96,7 +=
+96,7 @@</span><br><span> </span><br><span> void inherit_context_child(struc=
+t context *dest,</span><br><span>                            const struct c=
+ontext *src,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-         =
+                  struct link_socket *ls);</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+                           struct link_socket *sock)=
+;</span><br><span> </span><br><span> void inherit_context_top(struct contex=
+t *dest,</span><br><span>                          const struct context *sr=
+c);</span><br><span>diff --git a/src/openvpn/mtcp.c b/src/openvpn/mtcp.c</s=
+pan><br><span>index 5a03146..1dae184 100644</span><br><span>--- a/src/openv=
+pn/mtcp.c</span><br><span>+++ b/src/openvpn/mtcp.c</span><br><span>@@ -29,6=
+ +29,8 @@</span><br><span> </span><br><span> #include &quot;multi.h&quot;</=
+span><br><span> #include &quot;forward.h&quot;</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+#include &quot;mtcp.h&quot;</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+#include &quot;multi_io.h&quot;</span><b=
+r><span> </span><br><span> #include &quot;memdbg.h&quot;</span><br><span> <=
+/span><br><span>@@ -36,30 +38,6 @@</span><br><span> #include &lt;sys/inotif=
+y.h&gt;</span><br><span> #endif</span><br><span> </span><br><span style=3D"=
+color: hsl(0, 100%, 40%);">-/*</span><br><span style=3D"color: hsl(0, 100%,=
+ 40%);">- * TCP States</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
+- */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#define TA_UNDEF =
+                0</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#def=
+ine TA_SOCKET_READ           1</span><br><span style=3D"color: hsl(0, 100%,=
+ 40%);">-#define TA_SOCKET_READ_RESIDUAL  2</span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-#define TA_SOCKET_WRITE          3</span><br><span st=
+yle=3D"color: hsl(0, 100%, 40%);">-#define TA_SOCKET_WRITE_READY    4</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-#define TA_SOCKET_WRITE_DEF=
+ERRED 5</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#define TA_TUN=
+_READ              6</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#=
+define TA_TUN_WRITE             7</span><br><span style=3D"color: hsl(0, 10=
+0%, 40%);">-#define TA_INITIAL               8</span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-#define TA_TIMEOUT               9</span><br><span=
+ style=3D"color: hsl(0, 100%, 40%);">-#define TA_TUN_WRITE_TIMEOUT     10</=
+span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-/*</span><br><span style=3D"color: hsl(0, 1=
+00%, 40%);">- * Special tags passed to event.[ch] functions</span><br><span=
+ style=3D"color: hsl(0, 100%, 40%);">- */</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-#define MTCP_TUN         ((void *)2)</span><br><span st=
+yle=3D"color: hsl(0, 100%, 40%);">-#define MTCP_SIG         ((void *)3) /* =
+Only on Windows */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#de=
+fine MTCP_MANAGEMENT ((void *)4)</span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-#define MTCP_FILE_CLOSE_WRITE ((void *)5)</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-#define MTCP_DCO        ((void *)6)</span><=
+br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span> struct ta_i=
+ow_flags</span><br><span> {</span><br><span>     unsigned int flags;</span>=
+<br><span>@@ -68,59 +46,14 @@</span><br><span>     unsigned int sock;</span=
+><br><span> };</span><br><span> </span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-#ifdef ENABLE_DEBUG</span><br><span style=3D"color: hsl(0, 100%,=
+ 40%);">-static const char *</span><br><span style=3D"color: hsl(0, 100%, 4=
+0%);">-pract(int action)</span><br><span style=3D"color: hsl(0, 100%, 40%);=
+">-{</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    switch (actio=
+n)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    {</span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-        case TA_UNDEF:</span><br><s=
+pan style=3D"color: hsl(0, 100%, 40%);">-            return &quot;TA_UNDEF&=
+quot;;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">-        case TA_SOCKET_READ:</span><=
+br><span style=3D"color: hsl(0, 100%, 40%);">-            return &quot;TA_S=
+OCKET_READ&quot;;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</sp=
+an><br><span style=3D"color: hsl(0, 100%, 40%);">-        case TA_SOCKET_RE=
+AD_RESIDUAL:</span><br><span style=3D"color: hsl(0, 100%, 40%);">-         =
+   return &quot;TA_SOCKET_READ_RESIDUAL&quot;;</span><br><span style=3D"col=
 or: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%)=
-;">-    /* initialize global multi_context object */</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-    multi_init(&amp;multi, top, false);</sp=
-an><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D=
-"color: hsl(0, 100%, 40%);">-    /* initialize our cloned top object */</sp=
-an><br><span style=3D"color: hsl(0, 100%, 40%);">-    multi_top_init(&amp;m=
-ulti, top);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br=
-><span style=3D"color: hsl(0, 100%, 40%);">-    /* initialize management in=
-terface */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    init_ma=
-nagement_callback_multi(&amp;multi);</span><br><span style=3D"color: hsl(0,=
- 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    /*=
- finished with initialization */</span><br><span style=3D"color: hsl(0, 100=
-%, 40%);">-    initialization_sequence_completed(top, ISC_SERVER); /* --mod=
-e server --proto udp */</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
->-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#ifdef ENABLE_ASYNC=
-_PUSH</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    multi.top.c2=
-.inotify_fd =3D inotify_init();</span><br><span style=3D"color: hsl(0, 100%=
-, 40%);">-    if (multi.top.c2.inotify_fd &lt; 0)</span><br><span style=3D"=
-color: hsl(0, 100%, 40%);">-    {</span><br><span style=3D"color: hsl(0, 10=
-0%, 40%);">-        msg(D_MULTI_ERRORS | M_ERRNO, &quot;MULTI: inotify_init=
- error&quot;);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    }</=
-span><br><span style=3D"color: hsl(0, 100%, 40%);">-#endif</span><br><span =
-style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0=
-, 100%, 40%);">-    /* per-packet event loop */</span><br><span style=3D"co=
-lor: hsl(0, 100%, 40%);">-    while (true)</span><br><span style=3D"color: =
-hsl(0, 100%, 40%);">-    {</span><br><span style=3D"color: hsl(0, 100%, 40%=
-);">-        perf_push(PERF_EVENT_LOOP);</span><br><span style=3D"color: hs=
-l(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
-      /* set up and do the io_wait() */</span><br><span style=3D"color: hsl=
-(0, 100%, 40%);">-        multi_get_timeout(&amp;multi, &amp;multi.top.c2.t=
-imeval);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        io_wa=
-it(&amp;multi.top, p2mp_iow_flags(&amp;multi));</span><br><span style=3D"co=
-lor: hsl(0, 100%, 40%);">-        MULTI_CHECK_SIG(&amp;multi);</span><br><s=
-pan style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: h=
-sl(0, 100%, 40%);">-        /* check on status of coarse timers */</span><b=
-r><span style=3D"color: hsl(0, 100%, 40%);">-        multi_process_per_seco=
-nd_timers(&amp;multi);</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
--</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        /* timeout? =
-*/</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        if (multi.t=
-op.c2.event_set_status =3D=3D ES_TIMEOUT)</span><br><span style=3D"color: h=
-sl(0, 100%, 40%);">-        {</span><br><span style=3D"color: hsl(0, 100%, =
-40%);">-            multi_process_timeout(&amp;multi, MPP_PRE_SELECT|MPP_CL=
-OSE_ON_SIGNAL);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-      =
-  }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        else</span=
-><br><span style=3D"color: hsl(0, 100%, 40%);">-        {</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-            /* process I/O */</span><br=
-><span style=3D"color: hsl(0, 100%, 40%);">-            multi_process_io_ud=
-p(&amp;multi);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-       =
-     MULTI_CHECK_SIG(&amp;multi);</span><br><span style=3D"color: hsl(0, 10=
-0%, 40%);">-        }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        perf_pop();</=
-span><br><span style=3D"color: hsl(0, 100%, 40%);">-    }</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0,=
- 100%, 40%);">-#ifdef ENABLE_ASYNC_PUSH</span><br><span style=3D"color: hsl=
-(0, 100%, 40%);">-    close(top-&gt;c2.inotify_fd);</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-#endif</span><br><span style=3D"color: hsl(=
-0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
-/* shut down management interface */</span><br><span style=3D"color: hsl(0,=
- 100%, 40%);">-    uninit_management_callback();</span><br><span style=3D"c=
-olor: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40=
-%);">-    /* save ifconfig-pool */</span><br><span style=3D"color: hsl(0, 1=
-00%, 40%);">-    multi_ifconfig_pool_persist(&amp;multi, true);</span><br><=
-span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: =
-hsl(0, 100%, 40%);">-    /* tear down tunnel instance (unless --persist-tun=
-) */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    multi_uninit(=
-&amp;multi);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    multi=
-_top_free(&amp;multi);</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
--    close_instance(top);</span><br><span style=3D"color: hsl(0, 100%, 40%)=
-;">-}</span><br><span>diff --git a/src/openvpn/mudp.h b/src/openvpn/mudp.h<=
-/span><br><span>index 3107cc6..e329832 100644</span><br><span>--- a/src/ope=
-nvpn/mudp.h</span><br><span>+++ b/src/openvpn/mudp.h</span><br><span>@@ -31=
-,18 +31,9 @@</span><br><span> struct context;</span><br><span> struct multi=
-_context;</span><br><span> </span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+unsigned int p2mp_iow_flags(const struct multi_context *m);</span><=
-br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-/**</span><=
-br><span style=3D"color: hsl(0, 100%, 40%);">- * Main event loop for OpenVP=
-N in UDP server mode.</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
- * @ingroup eventloop</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
- *</span><br><span style=3D"color: hsl(0, 100%, 40%);">- * This function im=
-plements OpenVPN&#39;s main event loop for UDP server mode.</span><br><span=
- style=3D"color: hsl(0, 100%, 40%);">- *</span><br><span style=3D"color: hs=
-l(0, 100%, 40%);">- * @param top - Top-level context structure.</span><br><=
-span style=3D"color: hsl(0, 100%, 40%);">- */</span><br><span style=3D"colo=
-r: hsl(0, 100%, 40%);">-void tunnel_server_udp(struct context *top);</span>=
-<br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"co=
-lor: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+void multi_process_io_udp(struct multi_context *m);</span><br><span>=
- /*************************************************************************=
-*/</span><br><span> /**</span><br><span>  * Get, and if necessary create, t=
-he multi_instance associated with a</span><br><span>diff --git a/src/openvp=
-n/multi.c b/src/openvpn/multi.c</span><br><span>index 4d7b5e6..b5efb3a 1006=
-44</span><br><span>--- a/src/openvpn/multi.c</span><br><span>+++ b/src/open=
-vpn/multi.c</span><br><span>@@ -289,7 +289,7 @@</span><br><span>  * Main in=
-itialization function, init multi_context object.</span><br><span>  */</spa=
-n><br><span> void</span><br><span style=3D"color: hsl(0, 100%, 40%);">-mult=
-i_init(struct multi_context *m, struct context *t, bool tcp_mode)</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+multi_init(struct multi_conte=
-xt *m, struct context *t)</span><br><span> {</span><br><span>     int dev =
-=3D DEV_TYPE_UNDEF;</span><br><span> </span><br><span>@@ -435,13 +435,12 @@=
-</span><br><span> </span><br><span>     m-&gt;instances =3D calloc(m-&gt;ma=
-x_clients, sizeof(struct multi_instance *));</span><br><span> </span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+    m-&gt;top.c2.event_set =3D t=
--&gt;c2.event_set;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+<=
-/span><br><span>     /*</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
->-     * Initialize multi-socket TCP I/O wait object</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+     * Initialize multi-socket I/O wait o=
-bject</span><br><span>      */</span><br><span style=3D"color: hsl(0, 100%,=
- 40%);">-    if (tcp_mode)</span><br><span style=3D"color: hsl(0, 100%, 40%=
-);">-    {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        m-&=
-gt;multi_io =3D multi_protocol_init(t-&gt;options.max_clients, &amp;m-&gt;m=
-ax_clients);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    }</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+    m-&gt;multi_io =3D =
-multi_protocol_init(t-&gt;options.max_clients, &amp;m-&gt;max_clients);</sp=
-an><br><span>     m-&gt;tcp_queue_limit =3D t-&gt;options.tcp_queue_limit;<=
-/span><br><span> </span><br><span>     /*</span><br><span>@@ -607,6 +606,7 =
-@@</span><br><span> </span><br><span>     ASSERT(!mi-&gt;halt);</span><br><=
-span>     mi-&gt;halt =3D true;</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+    bool is_dgram =3D proto_is_dgram(mi-&gt;context.c2.link_soc=
-kets[0]-&gt;info.proto);</span><br><span> </span><br><span>     dmsg(D_MULT=
-I_DEBUG, &quot;MULTI: multi_close_instance called&quot;);</span><br><span> =
-</span><br><span>@@ -665,7 +665,7 @@</span><br><span>             mi-&gt;di=
-d_iroutes =3D false;</span><br><span>         }</span><br><span> </span><br=
-><span style=3D"color: hsl(0, 100%, 40%);">-        if (m-&gt;multi_io)</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+        if (!is_dgram)<=
-/span><br><span>         {</span><br><span>             multi_tcp_dereferen=
-ce_instance(m-&gt;multi_io, mi);</span><br><span>         }</span><br><span=
->@@ -776,7 +776,6 @@</span><br><span>         mi-&gt;real =3D *real;</span>=
-<br><span>         generate_prefix(mi);</span><br><span>     }</span><br><s=
-pan style=3D"color: hsl(0, 100%, 40%);">-</span><br><span>     mi-&gt;did_o=
-pen_context =3D true;</span><br><span>     inherit_context_child(&amp;mi-&g=
-t;context, &amp;m-&gt;top, sock);</span><br><span>     if (IS_SIG(&amp;mi-&=
-gt;context))</span><br><span>@@ -798,6 +797,7 @@</span><br><span>         {=
-</span><br><span>             goto err;</span><br><span>         }</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+        mi-&gt;real.proto =
-=3D sock-&gt;info.proto;</span><br><span>         generate_prefix(mi);</spa=
-n><br><span>     }</span><br><span> </span><br><span>@@ -3401,7 +3401,7 @@<=
-/span><br><span>             /* decrypt in instance context */</span><br><s=
-pan> </span><br><span>             perf_push(PERF_PROC_IN_LINK);</span><br>=
-<span style=3D"color: hsl(0, 100%, 40%);">-            lsi =3D get_link_soc=
-ket_info(c);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
-     lsi =3D &amp;sock-&gt;info;</span><br><span>             orig_buf =3D =
-c-&gt;c2.buf.data;</span><br><span>             if (process_incoming_link_p=
-art1(c, lsi, floated))</span><br><span>             {</span><br><span>@@ -3=
-852,7 +3852,7 @@</span><br><span>     while ((he =3D hash_iterator_next(&am=
-p;hi)))</span><br><span>     {</span><br><span>         struct multi_instan=
-ce *mi =3D (struct multi_instance *) he-&gt;value;</span><br><span style=3D=
-"color: hsl(0, 100%, 40%);">-        if (!mi-&gt;halt)</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+        if (!mi-&gt;halt &amp;&amp; prot=
-o_is_dgram(mi-&gt;context.options.ce.proto))</span><br><span>         {</sp=
-an><br><span>             send_control_channel_string(&amp;mi-&gt;context, =
-next_server ? &quot;RESTART,[N]&quot; : &quot;RESTART&quot;, D_PUSH);</span=
-><br><span>             multi_schedule_context_wakeup(m, mi);</span><br><sp=
-an>@@ -3890,13 +3890,15 @@</span><br><span>         status_close(so);</span=
-><br><span>         return false;</span><br><span>     }</span><br><span st=
-yle=3D"color: hsl(0, 100%, 40%);">-    else if (proto_is_dgram(m-&gt;top.op=
-tions.ce.proto)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-      =
-       &amp;&amp; is_exit_restart(m-&gt;top.sig-&gt;signal_received)</span>=
-<br><span style=3D"color: hsl(0, 100%, 40%);">-             &amp;&amp; (m-&=
-gt;deferred_shutdown_signal.signal_received =3D=3D 0)</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-             &amp;&amp; m-&gt;top.options.c=
-e.explicit_exit_notification !=3D 0)</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+    else if (has_udp_in_local_list(&amp;m-&gt;top.options)=
-)</span><br><span>     {</span><br><span style=3D"color: hsl(0, 100%, 40%);=
-">-        multi_push_restart_schedule_exit(m, m-&gt;top.options.ce.explici=
-t_exit_notification =3D=3D 2);</span><br><span style=3D"color: hsl(0, 100%,=
- 40%);">-        return false;</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+        if (is_exit_restart(m-&gt;top.sig-&gt;signal_received)</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+            &amp;&amp=
-; (m-&gt;deferred_shutdown_signal.signal_received =3D=3D 0)</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+            &amp;&amp; m-&gt;top.op=
-tions.ce.explicit_exit_notification !=3D 0)</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+        {</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+            multi_push_restart_schedule_exit(m, m-&gt;top.opt=
-ions.ce.explicit_exit_notification =3D=3D 2);</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+            return false;</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+        }</span><br><span>     }</span><b=
-r><span>     return true;</span><br><span> }</span><br><span>@@ -4169,6 +41=
-71,98 @@</span><br><span>     ASSERT(mi-&gt;context.c2.tls_multi-&gt;peer_i=
-d &lt; m-&gt;max_clients);</span><br><span> }</span><br><span> </span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+/******************************=
-********************************************/</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+/**</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+ * Main event loop for OpenVPN in multi-protocol server mode.</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @ingroup eventloop</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+ * @param top - Top-level context stru=
-cture.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ */</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+void</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+tunnel_server_loop(struct multi_context *mul=
-ti)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+    int status;</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+    while (true)</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+        perf_push(PERF_EVENT_LOOP);</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-      /* wait on tun/socket list */</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+        multi_get_timeout(multi, &amp;multi-&gt;top.c2.time=
-val);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        status=
- =3D multi_protocol_io_wait(multi);</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+        MULTI_CHECK_SIG(multi);</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+        /* check on status of coarse timers */</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+        multi_process_per_second_timers=
-(multi);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+        /* timeout? */</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+        if (status &gt; 0)<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+        {</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+            /* process the I/O=
- which triggered select */</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+            multi_protocol_process_io(multi);</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+            MULTI_CHECK_SIG(multi);</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+        }</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+        else if (status =3D=3D 0)</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+        {</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+            multi_protocol_acti=
-on(multi, NULL, TA_TIMEOUT, false);</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+        }</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        perf_=
-pop();</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+void</span><br><span style=3D"color: hsl(120, 100%, 40%);">+tunn=
-el_server_init(struct context *top)</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-  struct multi_context multi;</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    top-&=
-gt;mode =3D CM_TOP;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-    context_clear_2(top);</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    /* initia=
-lize top-tunnel instance */</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+    init_instance_handle_signals(top, top-&gt;es, CC_HARD_USR1_TO_H=
-UP);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (IS_SIG(=
-top))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+        return;</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+    /* initialize global multi_context object */</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+    multi_init(&amp;multi, top);</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    /* initialize our cloned top object *=
-/</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    multi_top_init=
-(&amp;multi, top);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+    /* initialize ma=
-nagement interface */</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+    init_management_callback_multi(&amp;multi);</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+    /* finished with initialization */</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+    initialization_sequence_completed(top, IS=
-C_SERVER); /* --mode server --proto tcp-server */</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+#ifdef ENABLE_ASYNC_PUSH</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+    multi.top.c2.inotify_fd =3D inotify_init();</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+    if (multi.top.c2.inotify_fd=
- &lt; 0)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+        msg(D_MULTI_ERROR=
-S | M_ERRNO, &quot;MULTI: inotify_init error&quot;);</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+#endif</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    tunnel_s=
-erver_loop(&amp;multi);</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    #ifdef ENAB=
-LE_ASYNC_PUSH</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    cl=
-ose(top-&gt;c2.inotify_fd);</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+#endif</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+    /* shut down managem=
-ent interface */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
- uninit_management_callback();</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    /* s=
-ave ifconfig-pool */</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+    multi_ifconfig_pool_persist(&amp;multi, true);</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+    /* tear down tunnel instance (unless --persist-tun) */</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+    multi_uninit(&amp=
-;multi);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    multi_t=
-op_free(&amp;multi);</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+    close_instance(top);</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+}</span><br><span> </span><br><span> /*</span><br><span>  * Top level=
- event loop.</span><br><span>@@ -4178,12 +4272,6 @@</span><br><span> {</spa=
-n><br><span>     ASSERT(top-&gt;options.mode =3D=3D MODE_SERVER);</span><br=
-><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-    if (proto=
-_is_dgram(top-&gt;options.ce.proto))</span><br><span style=3D"color: hsl(0,=
- 100%, 40%);">-    {</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
-       tunnel_server_udp(top);</span><br><span style=3D"color: hsl(0, 100%,=
- 40%);">-    }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    els=
-e</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    {</span><br><spa=
-n style=3D"color: hsl(0, 100%, 40%);">-        tunnel_server_tcp(top);</spa=
+;">-        case TA_SOCKET_WRITE:</span><br><span style=3D"color: hsl(0, 10=
+0%, 40%);">-            return &quot;TA_SOCKET_WRITE&quot;;</span><br><span=
+ style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(=
+0, 100%, 40%);">-        case TA_SOCKET_WRITE_READY:</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-            return &quot;TA_SOCKET_WRITE_RE=
+ADY&quot;;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br>=
+<span style=3D"color: hsl(0, 100%, 40%);">-        case TA_SOCKET_WRITE_DEF=
+ERRED:</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            ret=
+urn &quot;TA_SOCKET_WRITE_DEFERRED&quot;;</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
+       case TA_TUN_READ:</span><br><span style=3D"color: hsl(0, 100%, 40%);=
+">-            return &quot;TA_TUN_READ&quot;;</span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">-        case TA_TUN_WRITE:</span><br><span style=3D"color: hsl(0, 100%,=
+ 40%);">-            return &quot;TA_TUN_WRITE&quot;;</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-        case TA_INITIAL:</span><br><span style=3D"color: hsl(0, =
+100%, 40%);">-            return &quot;TA_INITIAL&quot;;</span><br><span st=
+yle=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, =
+100%, 40%);">-        case TA_TIMEOUT:</span><br><span style=3D"color: hsl(=
+0, 100%, 40%);">-            return &quot;TA_TIMEOUT&quot;;</span><br><span=
+ style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(=
+0, 100%, 40%);">-        case TA_TUN_WRITE_TIMEOUT:</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-            return &quot;TA_TUN_WRITE_TIMEO=
+UT&quot;;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-        default:</span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">-            return &quot;?&quot;;</spa=
 n><br><span style=3D"color: hsl(0, 100%, 40%);">-    }</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+    tunnel_server_init(top);</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> }</span><br><=
-span>diff --git a/src/openvpn/multi.h b/src/openvpn/multi.h</span><br><span=
->index 5ecb86a..c537c44 100644</span><br><span>--- a/src/openvpn/multi.h</s=
-pan><br><span>+++ b/src/openvpn/multi.h</span><br><span>@@ -205,6 +205,7 @@=
-</span><br><span> </span><br><span>     struct buffer hmac_reply;</span><br=
-><span>     struct link_socket_actual *hmac_reply_dest;</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+    struct link_socket *hmac_reply_ls;<=
-/span><br><span> </span><br><span>     /*</span><br><span>      * Timer obj=
-ect for stale route check</span><br><span>@@ -252,10 +253,8 @@</span><br><s=
-pan>  * Main event loop for OpenVPN in server mode.</span><br><span>  * @in=
-group eventloop</span><br><span>  *</span><br><span style=3D"color: hsl(0, =
-100%, 40%);">- * This function calls the appropriate main event loop functi=
-on depending</span><br><span style=3D"color: hsl(0, 100%, 40%);">- * on the=
- transport protocol used:</span><br><span style=3D"color: hsl(0, 100%, 40%)=
-;">- *  - \c tunnel_server_udp()</span><br><span style=3D"color: hsl(0, 100=
-%, 40%);">- *  - \c tunnel_server_tcp()</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+ * This function calls the main event loop function</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+ * on the transport pro=
-tocols:</span><br><span>  *</span><br><span>  * @param top          - Top-l=
-evel context structure.</span><br><span>  */</span><br><span>@@ -268,7 +267=
-,7 @@</span><br><span>  * Called by mtcp.c, mudp.c, or other (to be written=
-) protocol drivers</span><br><span>  */</span><br><span> </span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-void multi_init(struct multi_context *m=
-, struct context *t, bool tcp_mode);</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+void multi_init(struct multi_context *m, struct context *t=
-);</span><br><span> </span><br><span> void multi_uninit(struct multi_contex=
-t *m);</span><br><span> </span><br><span>@@ -664,9 +663,12 @@</span><br><sp=
-an> multi_process_outgoing_tun(struct multi_context *m, const unsigned int =
-mpp_flags)</span><br><span> {</span><br><span>     struct multi_instance *m=
-i =3D m-&gt;pending;</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+    if (!mi)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+        return false=
-;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><s=
-pan>     bool ret =3D true;</span><br><span> </span><br><span style=3D"colo=
-r: hsl(0, 100%, 40%);">-    ASSERT(mi);</span><br><span> #ifdef MULTI_DEBUG=
-_EVENT_LOOP</span><br><span>     printf(&quot;%s -&gt; TUN len=3D%d\n&quot;=
-,</span><br><span>            id(mi),</span><br><span>diff --git a/src/open=
-vpn/multi_io.c b/src/openvpn/multi_io.c</span><br><span>index 43fe24b..5966=
-1ed 100644</span><br><span>--- a/src/openvpn/multi_io.c</span><br><span>+++=
- b/src/openvpn/multi_io.c</span><br><span>@@ -142,6 +142,11 @@</span><br><s=
-pan>                                      &amp;m-&gt;top.c2.link_sockets[i]=
--&gt;ev_arg);</span><br><span>     }</span><br><span> </span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+    if (has_udp_in_local_list(&amp;m-&gt=
-;top.options))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        get_io_flag=
-s_udp(&amp;m-&gt;top, m-&gt;multi_io, p2mp_iow_flags(m));</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+</span><br><span> #ifdef _WIN32</span><br><span>   =
-  if (tuntap_is_wintun(m-&gt;top.c1.tuntap))</span><br><span>     {</span><=
-br><span>@@ -396,6 +401,10 @@</span><br><span> multi_protocol_process_io(st=
-ruct multi_context *m)</span><br><span> {</span><br><span>     struct multi=
-_protocol *multi_io =3D m-&gt;multi_io;</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+    const unsigned int udp_status =3D multi_io-&gt;udp_=
-flags;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    const uns=
-igned int mpp_flags =3D m-&gt;top.c2.fast_io</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+                                   ? (MPP_CONDITIO=
-NAL_PRE_SELECT | MPP_CLOSE_ON_SIGNAL)</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+                                   : (MPP_PRE_SELECT | MP=
-P_CLOSE_ON_SIGNAL);</span><br><span>     int i;</span><br><span> </span><br=
-><span>     for (i =3D 0; i &lt; multi_io-&gt;n_esr; ++i)</span><br><span>@=
-@ -447,6 +456,39 @@</span><br><span>                         }</span><br><s=
-pan>                         break;</span><br><span>                     }<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+                    =
-else</span><br><span style=3D"color: hsl(120, 100%, 40%);">+               =
-     {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+             =
-           if (e-&gt;arg &gt;=3D MULTI_N)</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+                        {</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+                            struct event_arg *e=
-v_arg =3D (struct event_arg *)e-&gt;arg;</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+                            if (ev_arg-&gt;type !=3D E=
-VENT_ARG_LINK_SOCKET)</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+                            {</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+                                multi_io-&gt;udp_flags =3D ES_E=
-RROR;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+              =
-                  msg(D_LINK_ERRORS,</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+                                    &quot;MULTI PROTOCOL: =
-io_work: non socket event delivered&quot;);</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+                                break;</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+                            }</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+                      =
-  }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+                =
-        else</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
-                 {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-                           ev_arg-&gt;pending =3D true;</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+                        }</span><br><sp=
+e=3D"color: hsl(0, 100%, 40%);">-}</span><br><span style=3D"color: hsl(0, 1=
+00%, 40%);">-#endif /* ENABLE_DEBUG */</span><br><span style=3D"color: hsl(=
+0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-stat=
+ic struct multi_instance *</span><br><span style=3D"color: hsl(0, 100%, 40%=
+);">-multi_create_instance_tcp(struct multi_context *m, struct link_socket =
+*ls)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+struct multi_in=
+stance *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+multi_creat=
+e_instance_tcp(struct multi_context *m, struct link_socket *sock)</span><br=
+><span> {</span><br><span>     struct gc_arena gc =3D gc_new();</span><br><=
+span>     struct multi_instance *mi =3D NULL;</span><br><span>     struct h=
+ash *hash =3D m-&gt;hash;</span><br><span> </span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-    mi =3D multi_create_instance(m, NULL, ls);</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+    mi =3D multi_create_in=
+stance(m, NULL, sock);</span><br><span>     if (mi)</span><br><span>     {<=
+/span><br><span>         struct hash_element *he;</span><br><span>@@ -193,1=
+26 +126,42 @@</span><br><span>     mbuf_free(mi-&gt;tcp_link_out_deferred);=
+</span><br><span> }</span><br><span> </span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-struct multi_tcp *</span><br><span style=3D"color: hsl(0, 1=
+00%, 40%);">-multi_tcp_init(int maxevents, int *maxclients)</span><br><span=
+ style=3D"color: hsl(0, 100%, 40%);">-{</span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-    struct multi_tcp *mtcp;</span><br><span style=3D"colo=
+r: hsl(0, 100%, 40%);">-    const int extra_events =3D BASE_N_EVENTS;</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"c=
+olor: hsl(0, 100%, 40%);">-    ASSERT(maxevents &gt;=3D 1);</span><br><span=
+ style=3D"color: hsl(0, 100%, 40%);">-    ASSERT(maxclients);</span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hs=
+l(0, 100%, 40%);">-    ALLOC_OBJ_CLEAR(mtcp, struct multi_tcp);</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-    mtcp-&gt;maxevents =3D maxeve=
+nts + extra_events;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
+  mtcp-&gt;es =3D event_set_init(&amp;mtcp-&gt;maxevents, 0);</span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-    wait_signal(mtcp-&gt;es, MTCP_S=
+IG);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    ALLOC_ARRAY(m=
+tcp-&gt;esr, struct event_set_return, mtcp-&gt;maxevents);</span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">-    *maxclients =3D max_int(min_int(mt=
+cp-&gt;maxevents - extra_events, *maxclients), 1);</span><br><span style=3D=
+"color: hsl(0, 100%, 40%);">-    msg(D_MULTI_LOW, &quot;MULTI: TCP INIT max=
+clients=3D%d maxevents=3D%d&quot;, *maxclients, mtcp-&gt;maxevents);</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-    return mtcp;</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-}</span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-</span><br><span> void</span><br><span style=3D"color=
+: hsl(0, 100%, 40%);">-multi_tcp_delete_event(struct multi_tcp *mtcp, event=
+_t event)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+multi_tcp_=
+delete_event(struct multi_protocol *multi_io, event_t event)</span><br><spa=
+n> {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    if (mtcp &amp=
+;&amp; mtcp-&gt;es)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+    if (multi_io &amp;&amp; multi_io-&gt;es)</span><br><span>     {</span><=
+br><span style=3D"color: hsl(0, 100%, 40%);">-        event_del(mtcp-&gt;es=
+, event);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        ev=
+ent_del(multi_io-&gt;es, event);</span><br><span>     }</span><br><span> }<=
+/span><br><span> </span><br><span> void</span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-multi_tcp_free(struct multi_tcp *mtcp)</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+multi_tcp_dereference_instance(struct =
+multi_protocol *multi_io, struct multi_instance *mi)</span><br><span> {</sp=
+an><br><span style=3D"color: hsl(0, 100%, 40%);">-    if (mtcp)</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+    struct link_socket *sock =
+=3D mi-&gt;context.c2.link_sockets[0];</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+    if (sock &amp;&amp; mi-&gt;socket_set_called)</span>=
+<br><span>     {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-     =
+   event_free(mtcp-&gt;es);</span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">-        free(mtcp-&gt;esr);</span><br><span style=3D"color: hsl(0, 10=
+0%, 40%);">-        free(mtcp);</span><br><span style=3D"color: hsl(0, 100%=
+, 40%);">-    }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-}</spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"=
+color: hsl(0, 100%, 40%);">-void</span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-multi_tcp_dereference_instance(struct multi_tcp *mtcp, struct mu=
+lti_instance *mi)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-{</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-    struct link_socket *=
+ls =3D mi-&gt;context.c2.link_sockets[0];</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-    if (ls &amp;&amp; mi-&gt;socket_set_called)</span><=
+br><span style=3D"color: hsl(0, 100%, 40%);">-    {</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-        event_del(mtcp-&gt;es, socket_event=
+_handle(ls));</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
+  event_del(multi_io-&gt;es, socket_event_handle(sock));</span><br><span>  =
+       mi-&gt;socket_set_called =3D false;</span><br><span>     }</span><br=
+><span style=3D"color: hsl(0, 100%, 40%);">-    mtcp-&gt;n_esr =3D 0;</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+    multi_io-&gt;n_esr =
+=3D 0;</span><br><span> }</span><br><span> </span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-static inline void</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+void</span><br><span> multi_tcp_set_global_rw_flags(st=
+ruct multi_context *m, struct multi_instance *mi)</span><br><span> {</span>=
+<br><span>     if (mi)</span><br><span>     {</span><br><span>         mi-&=
+gt;socket_set_called =3D true;</span><br><span>         socket_set(mi-&gt;c=
+ontext.c2.link_sockets[0],</span><br><span style=3D"color: hsl(0, 100%, 40%=
+);">-                   m-&gt;mtcp-&gt;es,</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+                   m-&gt;multi_io-&gt;es,</span><br>=
+<span>                    mbuf_defined(mi-&gt;tcp_link_out_deferred) ? EVEN=
+T_WRITE : EVENT_READ,</span><br><span>                    &amp;mi-&gt;ev_ar=
+g,</span><br><span>                    &amp;mi-&gt;tcp_rwflags);</span><br>=
+<span>     }</span><br><span> }</span><br><span> </span><br><span style=3D"=
+color: hsl(0, 100%, 40%);">-static inline int</span><br><span style=3D"colo=
+r: hsl(0, 100%, 40%);">-multi_tcp_wait(const struct context *c,</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-               struct multi_tcp *=
+mtcp)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-{</span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">-    int status, i;</span><br><span s=
+tyle=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0,=
+ 100%, 40%);">-    for (i =3D 0; i &lt; c-&gt;c1.link_sockets_num; i++)</sp=
+an><br><span style=3D"color: hsl(0, 100%, 40%);">-    {</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-        socket_set_listen_persistent(c-&g=
+t;c2.link_sockets[i], mtcp-&gt;es,</span><br><span style=3D"color: hsl(0, 1=
+00%, 40%);">-                                     &amp;c-&gt;c2.link_socket=
+s[i]-&gt;ev_arg);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
+}</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-#ifdef _WIN32</span><br><span style=3D"co=
+lor: hsl(0, 100%, 40%);">-    if (tuntap_is_wintun(c-&gt;c1.tuntap))</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-    {</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-        if (!tuntap_ring_empty(c-&gt;c1.tun=
+tap))</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        {</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-            /* there is data=
+ in wintun ring buffer, read it immediately */</span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-            mtcp-&gt;esr[0].arg =3D MTCP_TUN;</spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-            mtcp-&gt;esr[0=
+].rwflags =3D EVENT_READ;</span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">-            mtcp-&gt;n_esr =3D 1;</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-            return 1;</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-        }</span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">-        persistent =3D NULL;</span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-    }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#endi=
+f</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-    tun_set(c-&gt;c1.tuntap, mtcp-&gt;es,=
+ EVENT_READ, MTCP_TUN, &amp;mtcp-&gt;tun_rwflags);</span><br><span style=3D=
+"color: hsl(0, 100%, 40%);">-#if defined(TARGET_LINUX) || defined(TARGET_FR=
+EEBSD)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    dco_event_s=
+et(&amp;c-&gt;c1.tuntap-&gt;dco, mtcp-&gt;es, MTCP_DCO);</span><br><span st=
+yle=3D"color: hsl(0, 100%, 40%);">-#endif</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#=
+ifdef ENABLE_MANAGEMENT</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>-    if (management)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
+    {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        manageme=
+nt_socket_set(management, mtcp-&gt;es, MTCP_MANAGEMENT, &amp;mtcp-&gt;manag=
+ement_persist_flags);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
+    }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#endif</span><br=
+><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color=
+: hsl(0, 100%, 40%);">-#ifdef ENABLE_ASYNC_PUSH</span><br><span style=3D"co=
+lor: hsl(0, 100%, 40%);">-    /* arm inotify watcher */</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-    event_ctl(mtcp-&gt;es, c-&gt;c2.inoti=
+fy_fd, EVENT_READ, MTCP_FILE_CLOSE_WRITE);</span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">-#endif</span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    status =3D =
+event_wait(mtcp-&gt;es, &amp;c-&gt;c2.timeval, mtcp-&gt;esr, mtcp-&gt;maxev=
+ents);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    update_time=
+();</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    mtcp-&gt;n_esr=
+ =3D 0;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    if (status=
+ &gt; 0)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    {</span><=
+br><span style=3D"color: hsl(0, 100%, 40%);">-        mtcp-&gt;n_esr =3D st=
+atus;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    }</span><br>=
+<span style=3D"color: hsl(0, 100%, 40%);">-    return status;</span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-}</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-s=
+tatic inline struct context *</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+struct context *</span><br><span> multi_tcp_context(struct multi_=
+context *m, struct multi_instance *mi)</span><br><span> {</span><br><span> =
+    if (mi)</span><br><span>@@ -325,7 +174,7 @@</span><br><span>     }</spa=
+n><br><span> }</span><br><span> </span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-static bool</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+bool</span><br><span> multi_tcp_process_outgoing_link_ready(struct multi=
+_context *m, struct multi_instance *mi, const unsigned int mpp_flags)</span=
+><br><span> {</span><br><span>     struct mbuf_item item;</span><br><span>@=
+@ -349,7 +198,7 @@</span><br><span>     return ret;</span><br><span> }</spa=
+n><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-static b=
+ool</span><br><span style=3D"color: hsl(120, 100%, 40%);">+bool</span><br><=
+span> multi_tcp_process_outgoing_link(struct multi_context *m, bool defer, =
+const unsigned int mpp_flags)</span><br><span> {</span><br><span>     struc=
+t multi_instance *mi =3D multi_process_outgoing_link_pre(m);</span><br><spa=
+n>@@ -393,417 +242,6 @@</span><br><span>     return ret;</span><br><span> }=
+</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-sta=
+tic int</span><br><span style=3D"color: hsl(0, 100%, 40%);">-multi_tcp_wait=
+_lite(struct multi_context *m, struct multi_instance *mi, const int action,=
+ bool *tun_input_pending)</span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">-{</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    struct conte=
+xt *c =3D multi_tcp_context(m, mi);</span><br><span style=3D"color: hsl(0, =
+100%, 40%);">-    unsigned int looking_for =3D 0;</span><br><span style=3D"=
+color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 4=
+0%);">-    dmsg(D_MULTI_DEBUG, &quot;MULTI TCP: multi_tcp_wait_lite a=3D%s =
+mi=3D&quot; ptr_format,</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>-         pract(action),</span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">-         (ptr_type)mi);</span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    tv_clear(&a=
+mp;c-&gt;c2.timeval); /* ZERO-TIMEOUT */</span><br><span style=3D"color: hs=
+l(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
+  switch (action)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
+{</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        case TA_TUN_=
+READ:</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            look=
+ing_for =3D TUN_READ;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
+            tun_input_pending =3D NULL;</span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-            io_wait(c, IOW_READ_TUN);</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-            break;</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-        case TA_SOCKET_READ:</span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-            looking_for =3D SOCKET_READ;</span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">-            tun_input_pending =3D NULL=
+;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            io_wait(=
+c, IOW_READ_LINK);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
+         break;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-        case TA_TUN_WRITE:<=
+/span><br><span style=3D"color: hsl(0, 100%, 40%);">-            looking_fo=
+r =3D TUN_WRITE;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-     =
+       tun_input_pending =3D NULL;</span><br><span style=3D"color: hsl(0, 1=
+00%, 40%);">-            c-&gt;c2.timeval.tv_sec =3D 1; /* For some reason,=
+ the Linux 2.2 TUN/TAP driver hits this timeout */</span><br><span style=3D=
+"color: hsl(0, 100%, 40%);">-            perf_push(PERF_PROC_OUT_TUN_MTCP);=
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            io_wait(c=
+, IOW_TO_TUN);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-       =
+     perf_pop();</span><br><span style=3D"color: hsl(0, 100%, 40%);">-     =
+       break;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><=
+br><span style=3D"color: hsl(0, 100%, 40%);">-        case TA_SOCKET_WRITE:=
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            looking_f=
+or =3D SOCKET_WRITE;</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
+           io_wait(c, IOW_TO_LINK|IOW_READ_TUN_FORCE);</span><br><span styl=
+e=3D"color: hsl(0, 100%, 40%);">-            break;</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-        default:</span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">-            msg(M_FATAL, &quot;MULTI TCP: multi_tcp_wait_lite, unhand=
+led action=3D%d&quot;, action);</span><br><span style=3D"color: hsl(0, 100%=
+, 40%);">-    }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-    if (tun_input_pending &=
+amp;&amp; (c-&gt;c2.event_set_status &amp; TUN_READ))</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-    {</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-        *tun_input_pending =3D true;</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-    }</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    i=
+f (c-&gt;c2.event_set_status &amp; looking_for)</span><br><span style=3D"co=
+lor: hsl(0, 100%, 40%);">-    {</span><br><span style=3D"color: hsl(0, 100%=
+, 40%);">-        return action;</span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-    }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    e=
+lse</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    {</span><br><s=
+pan style=3D"color: hsl(0, 100%, 40%);">-        switch (action)</span><br>=
+<span style=3D"color: hsl(0, 100%, 40%);">-        {</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-            /* TCP socket output buffer is =
+full */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            ca=
+se TA_SOCKET_WRITE:</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
+              return TA_SOCKET_WRITE_DEFERRED;</span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">-            /* TUN device timed out on accepting write */</span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-            case TA_TUN_WRITE:</spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-                return TA_=
+TUN_WRITE_TIMEOUT;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
+     }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">-        return TA_UNDEF;</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-    }</span><br><span style=3D"co=
+lor: hsl(0, 100%, 40%);">-}</span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-static struct m=
+ulti_instance *</span><br><span style=3D"color: hsl(0, 100%, 40%);">-multi_=
+tcp_dispatch(struct multi_context *m, struct multi_instance *mi, const int =
+action)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-{</span><br><s=
+pan style=3D"color: hsl(0, 100%, 40%);">-    const unsigned int mpp_flags =
+=3D MPP_PRE_SELECT|MPP_RECORD_TOUCH;</span><br><span style=3D"color: hsl(0,=
+ 100%, 40%);">-    struct multi_instance *touched =3D mi;</span><br><span s=
+tyle=3D"color: hsl(0, 100%, 40%);">-    m-&gt;mpp_touched =3D &amp;touched;=
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span styl=
+e=3D"color: hsl(0, 100%, 40%);">-    dmsg(D_MULTI_DEBUG, &quot;MULTI TCP: m=
+ulti_tcp_dispatch a=3D%s mi=3D&quot; ptr_format,</span><br><span style=3D"c=
+olor: hsl(0, 100%, 40%);">-         pract(action),</span><br><span style=3D=
+"color: hsl(0, 100%, 40%);">-         (ptr_type)mi);</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-    switch (action)</span><br><span style=3D"color: hsl(0, 100%,=
+ 40%);">-    {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-       =
+ case TA_TUN_READ:</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
+         read_incoming_tun(&amp;m-&gt;top);</span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-            if (!IS_SIG(&amp;m-&gt;top))</span><br><s=
+pan style=3D"color: hsl(0, 100%, 40%);">-            {</span><br><span styl=
+e=3D"color: hsl(0, 100%, 40%);">-                multi_process_incoming_tun=
+(m, mpp_flags);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-      =
+      }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            br=
+eak;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">-        case TA_SOCKET_READ:</span><br=
+><span style=3D"color: hsl(0, 100%, 40%);">-        case TA_SOCKET_READ_RES=
+IDUAL:</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            ASS=
+ERT(mi);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            A=
+SSERT(mi-&gt;context.c2.link_sockets);</span><br><span style=3D"color: hsl(=
+0, 100%, 40%);">-            ASSERT(mi-&gt;context.c2.link_sockets[0]);</sp=
+an><br><span style=3D"color: hsl(0, 100%, 40%);">-            set_prefix(mi=
+);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            read_in=
+coming_link(&amp;mi-&gt;context, mi-&gt;context.c2.link_sockets[0]);</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-            clear_prefix();<=
+/span><br><span style=3D"color: hsl(0, 100%, 40%);">-            if (!IS_SI=
+G(&amp;mi-&gt;context))</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>-            {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-      =
+          multi_process_incoming_link(m, mi, mpp_flags,</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-                                         =
+   mi-&gt;context.c2.link_sockets[0]);</span><br><span style=3D"color: hsl(=
+0, 100%, 40%);">-                if (!IS_SIG(&amp;mi-&gt;context))</span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-                {</span><br><s=
+pan style=3D"color: hsl(0, 100%, 40%);">-                    stream_buf_rea=
+d_setup(mi-&gt;context.c2.link_sockets[0]);</span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-                }</span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-            }</span><br><span style=3D"color: hsl(0, 100%=
+, 40%);">-            break;</span><br><span style=3D"color: hsl(0, 100%, 4=
+0%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        case T=
+A_TIMEOUT:</span><br><span style=3D"color: hsl(0, 100%, 40%);">-           =
+ multi_process_timeout(m, mpp_flags);</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-            break;</span><br><span style=3D"color: hsl(0, 1=
+00%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        =
+case TA_TUN_WRITE:</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
+         multi_process_outgoing_tun(m, mpp_flags);</span><br><span style=3D=
+"color: hsl(0, 100%, 40%);">-            break;</span><br><span style=3D"co=
+lor: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%=
+);">-        case TA_TUN_WRITE_TIMEOUT:</span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-            multi_process_drop_outgoing_tun(m, mpp_flags)=
+;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            break;</=
+span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-        case TA_SOCKET_WRITE_READY:</span><=
+br><span style=3D"color: hsl(0, 100%, 40%);">-            ASSERT(mi);</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-            multi_tcp_proce=
+ss_outgoing_link_ready(m, mi, mpp_flags);</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-            break;</span><br><span style=3D"color: hsl(=
+0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
+    case TA_SOCKET_WRITE:</span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">-            multi_tcp_process_outgoing_link(m, false, mpp_flags);</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-            break;</span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"colo=
+r: hsl(0, 100%, 40%);">-        case TA_SOCKET_WRITE_DEFERRED:</span><br><s=
+pan style=3D"color: hsl(0, 100%, 40%);">-            multi_tcp_process_outg=
+oing_link(m, true, mpp_flags);</span><br><span style=3D"color: hsl(0, 100%,=
+ 40%);">-            break;</span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        case TA=
+_INITIAL:</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            =
+ASSERT(mi);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-          =
+  multi_tcp_set_global_rw_flags(m, mi);</span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-            multi_process_post(m, mi, mpp_flags);</span><=
+br><span style=3D"color: hsl(0, 100%, 40%);">-            break;</span><br>=
+<span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-        default:</span><br><span style=3D"color: hsl(=
+0, 100%, 40%);">-            msg(M_FATAL, &quot;MULTI TCP: multi_tcp_dispat=
+ch, unhandled action=3D%d&quot;, action);</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-    }</span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    m-&gt;mpp_tou=
+ched =3D NULL;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    ret=
+urn touched;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-}</span><=
+br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-static int</span><br><span style=3D"color: hsl(0, =
+100%, 40%);">-multi_tcp_post(struct multi_context *m, struct multi_instance=
+ *mi, const int action)</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>-{</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    struct context=
+ *c =3D multi_tcp_context(m, mi);</span><br><span style=3D"color: hsl(0, 10=
+0%, 40%);">-    int newaction =3D TA_UNDEF;</span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
+-#define MTP_NONE         0</span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">-#define MTP_TUN_OUT      (1&lt;&lt;0)</span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-#define MTP_LINK_OUT     (1&lt;&lt;1)</span><br><span=
+ style=3D"color: hsl(0, 100%, 40%);">-    unsigned int flags =3D MTP_NONE;<=
+/span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-    if (TUN_OUT(c))</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-    {</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-        flags |=3D MTP_TUN_OUT;</span><br><span style=3D"co=
+lor: hsl(0, 100%, 40%);">-    }</span><br><span style=3D"color: hsl(0, 100%=
+, 40%);">-    if (LINK_OUT(c))</span><br><span style=3D"color: hsl(0, 100%,=
+ 40%);">-    {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-       =
+ flags |=3D MTP_LINK_OUT;</span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">-    }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-    switch (flags)</span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">-    {</span><br><span style=3D"color=
+: hsl(0, 100%, 40%);">-        case MTP_TUN_OUT|MTP_LINK_OUT:</span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-        case MTP_TUN_OUT:</span><br=
+><span style=3D"color: hsl(0, 100%, 40%);">-            newaction =3D TA_TU=
+N_WRITE;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            b=
+reak;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span=
+ style=3D"color: hsl(0, 100%, 40%);">-        case MTP_LINK_OUT:</span><br>=
+<span style=3D"color: hsl(0, 100%, 40%);">-            newaction =3D TA_SOC=
+KET_WRITE;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-           =
+ break;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-        case MTP_NONE:</span><br><s=
+pan style=3D"color: hsl(0, 100%, 40%);">-            if (mi &amp;&amp; sock=
+ets_read_residual(c))</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
+            {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        =
+        newaction =3D TA_SOCKET_READ_RESIDUAL;</span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-            }</span><br><span style=3D"color: hsl(=
+0, 100%, 40%);">-            else</span><br><span style=3D"color: hsl(0, 10=
+0%, 40%);">-            {</span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">-                multi_tcp_set_global_rw_flags(m, mi);</span><br><span s=
+tyle=3D"color: hsl(0, 100%, 40%);">-            }</span><br><span style=3D"=
+color: hsl(0, 100%, 40%);">-            break;</span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">-        default:</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
+       {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            s=
+truct gc_arena gc =3D gc_new();</span><br><span style=3D"color: hsl(0, 100%=
+, 40%);">-            msg(M_FATAL, &quot;MULTI TCP: multi_tcp_post bad stat=
+e, mi=3D%s flags=3D%d&quot;,</span><br><span style=3D"color: hsl(0, 100%, 4=
+0%);">-                multi_instance_string(mi, false, &amp;gc),</span><br=
+><span style=3D"color: hsl(0, 100%, 40%);">-                flags);</span><=
+br><span style=3D"color: hsl(0, 100%, 40%);">-            gc_free(&amp;gc);=
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            break;</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-        }</span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">-    }</span><br><span style=3D"color=
+: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>-    dmsg(D_MULTI_DEBUG, &quot;MULTI TCP: multi_tcp_post %s -&gt; %s&quot;=
+,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-         pract(actio=
+n),</span><br><span style=3D"color: hsl(0, 100%, 40%);">-         pract(new=
+action));</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-    return newaction;</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-}</span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
+-static void</span><br><span style=3D"color: hsl(0, 100%, 40%);">-multi_tcp=
+_action(struct multi_context *m, struct multi_instance *mi, int action, boo=
+l poll)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-{</span><br><s=
+pan style=3D"color: hsl(0, 100%, 40%);">-    bool tun_input_pending =3D fal=
+se;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span s=
+tyle=3D"color: hsl(0, 100%, 40%);">-    do</span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">-    {</span><br><span style=3D"color: hsl(0, 100%, 40%=
+);">-        dmsg(D_MULTI_DEBUG, &quot;MULTI TCP: multi_tcp_action a=3D%s p=
+=3D%d&quot;,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-         =
+    pract(action),</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
+          poll);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-        /*</span><br><span=
+ style=3D"color: hsl(0, 100%, 40%);">-         * If TA_SOCKET_READ_RESIDUAL=
+, it means we still have pending</span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-         * input packets which were read by a prior TCP recv.</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-         *</span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-         * Otherwise do a &quot;lit=
+e&quot; wait, which means we wait with 0 timeout</span><br><span style=3D"c=
+olor: hsl(0, 100%, 40%);">-         * on I/O events only related to the cur=
+rent instance, not</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
+      * the big list of events.</span><br><span style=3D"color: hsl(0, 100%=
+, 40%);">-         *</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
+        * On our first pass, poll will be false because we already know</sp=
+an><br><span style=3D"color: hsl(0, 100%, 40%);">-         * that input is =
+available, and to call io_wait would be redundant.</span><br><span style=3D=
+"color: hsl(0, 100%, 40%);">-         */</span><br><span style=3D"color: hs=
+l(0, 100%, 40%);">-        if (poll &amp;&amp; action !=3D TA_SOCKET_READ_R=
+ESIDUAL)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        {</sp=
+an><br><span style=3D"color: hsl(0, 100%, 40%);">-            const int ori=
+g_action =3D action;</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
+           action =3D multi_tcp_wait_lite(m, mi, action, &amp;tun_input_pen=
+ding);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            if =
+(action =3D=3D TA_UNDEF)</span><br><span style=3D"color: hsl(0, 100%, 40%);=
+">-            {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-     =
+           msg(M_FATAL, &quot;MULTI TCP: I/O wait required blocking in mult=
+i_tcp_action, action=3D%d&quot;, orig_action);</span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-            }</span><br><span style=3D"color: hsl(=
+0, 100%, 40%);">-        }</span><br><span style=3D"color: hsl(0, 100%, 40%=
+);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        /*</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-         * Dispatch the act=
+ion</span><br><span style=3D"color: hsl(0, 100%, 40%);">-         */</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-        struct multi_instanc=
+e *touched =3D multi_tcp_dispatch(m, mi, action);</span><br><span style=3D"=
+color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 4=
+0%);">-        /*</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
+     * Signal received or TCP connection</span><br><span style=3D"color: hs=
+l(0, 100%, 40%);">-         * reset by peer?</span><br><span style=3D"color=
+: hsl(0, 100%, 40%);">-         */</span><br><span style=3D"color: hsl(0, 1=
+00%, 40%);">-        if (touched &amp;&amp; IS_SIG(&amp;touched-&gt;context=
+))</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        {</span><br=
+><span style=3D"color: hsl(0, 100%, 40%);">-            if (mi =3D=3D touch=
+ed)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            {</spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-                mi =3D NUL=
+L;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            }</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-            multi_close_ins=
+tance_on_signal(m, touched);</span><br><span style=3D"color: hsl(0, 100%, 4=
+0%);">-        }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"=
+color: hsl(0, 100%, 40%);">-        /*</span><br><span style=3D"color: hsl(=
+0, 100%, 40%);">-         * If dispatch produced any pending output</span><=
+br><span style=3D"color: hsl(0, 100%, 40%);">-         * for a particular i=
+nstance, point to</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
+     * that instance.</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
+         */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        if=
+ (m-&gt;pending)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-     =
+   {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            mi =
+=3D m-&gt;pending;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
+     }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">-        /*</span><br><span style=3D"=
+color: hsl(0, 100%, 40%);">-         * Based on the effects of the action,<=
+/span><br><span style=3D"color: hsl(0, 100%, 40%);">-         * such as gen=
+erating pending output,</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>-         * possibly transition to a new action state.</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-         */</span><br><span style=3D"colo=
+r: hsl(0, 100%, 40%);">-        action =3D multi_tcp_post(m, mi, action);</=
+span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-        /*</span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">-         * If we are finished processing the original =
+action,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-         * che=
+ck if we have any TUN input.  If so, transition</span><br><span style=3D"co=
+lor: hsl(0, 100%, 40%);">-         * our action state to processing this in=
+put.</span><br><span style=3D"color: hsl(0, 100%, 40%);">-         */</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-        if (tun_input_pendi=
+ng &amp;&amp; action =3D=3D TA_UNDEF)</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-        {</span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">-            action =3D TA_TUN_READ;</span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-            mi =3D NULL;</span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">-            tun_input_pending =3D false;</span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-            poll =3D false;</span><=
+br><span style=3D"color: hsl(0, 100%, 40%);">-        }</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-        else</span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-        {</span><br><span style=3D"color: hsl(0, 1=
+00%, 40%);">-            poll =3D true;</span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-        }</span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    } while (ac=
+tion !=3D TA_UNDEF);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-}=
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span styl=
+e=3D"color: hsl(0, 100%, 40%);">-static void</span><br><span style=3D"color=
+: hsl(0, 100%, 40%);">-multi_tcp_process_io(struct multi_context *m)</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-{</span><br><span style=3D"c=
+olor: hsl(0, 100%, 40%);">-    struct multi_tcp *mtcp =3D m-&gt;mtcp;</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-    int i;</span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-    for (i =3D 0; i &lt; mtcp-&gt;n_esr; ++i)</span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-    {</span><br><span style=3D"colo=
+r: hsl(0, 100%, 40%);">-        struct event_set_return *e =3D &amp;mtcp-&g=
+t;esr[i];</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-        /* incoming data for inst=
+ance or listening socket? */</span><br><span style=3D"color: hsl(0, 100%, 4=
+0%);">-        if (e-&gt;arg &gt;=3D MULTI_N)</span><br><span style=3D"colo=
+r: hsl(0, 100%, 40%);">-        {</span><br><span style=3D"color: hsl(0, 10=
+0%, 40%);">-            struct event_arg *ev_arg =3D (struct event_arg *)e-=
+&gt;arg;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            s=
+witch (ev_arg-&gt;type)</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>-            {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-      =
+          struct multi_instance *mi;</span><br><span style=3D"color: hsl(0,=
+ 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-      =
+          /* react to event on child instance */</span><br><span style=3D"c=
+olor: hsl(0, 100%, 40%);">-                case EVENT_ARG_MULTI_INSTANCE:</=
+span><br><span style=3D"color: hsl(0, 100%, 40%);">-                    if =
+(!ev_arg-&gt;u.mi)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
+                 {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
+                     msg(D_MULTI_ERRORS, &quot;MULTI: mtcp_proc_io: null mi=
+nstance&quot;);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-      =
+                  break;</span><br><span style=3D"color: hsl(0, 100%, 40%);=
+">-                    }</span><br><span style=3D"color: hsl(0, 100%, 40%);=
+">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-                  =
+  mi =3D ev_arg-&gt;u.mi;</span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">-                    if (e-&gt;rwflags &amp; EVENT_WRITE)</span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">-                    {</span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">-                        multi_tcp_ac=
+tion(m, mi, TA_SOCKET_WRITE_READY, false);</span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">-                    }</span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">-                    else if (e-&gt;rwflags &amp; EVENT=
+_READ)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-               =
+     {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-               =
+         multi_tcp_action(m, mi, TA_SOCKET_READ, false);</span><br><span st=
+yle=3D"color: hsl(0, 100%, 40%);">-                    }</span><br><span st=
+yle=3D"color: hsl(0, 100%, 40%);">-                    break;</span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hs=
+l(0, 100%, 40%);">-                /* new incoming TCP client attempting to=
+ connect? */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-         =
+       case EVENT_ARG_LINK_SOCKET:</span><br><span style=3D"color: hsl(0, 1=
+00%, 40%);">-                    if (!ev_arg-&gt;u.sock)</span><br><span st=
+yle=3D"color: hsl(0, 100%, 40%);">-                    {</span><br><span st=
+yle=3D"color: hsl(0, 100%, 40%);">-                        msg(D_MULTI_ERRO=
+RS, &quot;MULTI: mtcp_proc_io: null socket&quot;);</span><br><span style=3D=
+"color: hsl(0, 100%, 40%);">-                        break;</span><br><span=
+ style=3D"color: hsl(0, 100%, 40%);">-                    }</span><br><span=
+ style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(=
+0, 100%, 40%);">-                    socket_reset_listen_persistent(ev_arg-=
+&gt;u.sock);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-         =
+           mi =3D multi_create_instance_tcp(m, ev_arg-&gt;u.sock);</span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-                    if (mi)</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-                    {</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-                        =
+multi_tcp_action(m, mi, TA_INITIAL, false);</span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-                    }</span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-                    break;</span><br><span style=3D"c=
+olor: hsl(0, 100%, 40%);">-            }</span><br><span style=3D"color: hs=
+l(0, 100%, 40%);">-        }</span><br><span style=3D"color: hsl(0, 100%, 4=
+0%);">-        else</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
+      {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#ifdef ENABLE_=
+MANAGEMENT</span><br><span style=3D"color: hsl(0, 100%, 40%);">-           =
+ if (e-&gt;arg =3D=3D MTCP_MANAGEMENT)</span><br><span style=3D"color: hsl(=
+0, 100%, 40%);">-            {</span><br><span style=3D"color: hsl(0, 100%,=
+ 40%);">-                ASSERT(management);</span><br><span style=3D"color=
+: hsl(0, 100%, 40%);">-                management_io(management);</span><br=
+><span style=3D"color: hsl(0, 100%, 40%);">-            }</span><br><span s=
+tyle=3D"color: hsl(0, 100%, 40%);">-            else</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-#endif</span><br><span style=3D"color: hsl(=
+0, 100%, 40%);">-            /* incoming data on TUN? */</span><br><span st=
+yle=3D"color: hsl(0, 100%, 40%);">-            if (e-&gt;arg =3D=3D MTCP_TU=
+N)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            {</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-                if (e-&gt;r=
+wflags &amp; EVENT_WRITE)</span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">-                {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
+                    multi_tcp_action(m, NULL, TA_TUN_WRITE, false);</span><=
+br><span style=3D"color: hsl(0, 100%, 40%);">-                }</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-                else if (e-&gt;rw=
+flags &amp; EVENT_READ)</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>-                {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
+                  multi_tcp_action(m, NULL, TA_TUN_READ, false);</span><br>=
+<span style=3D"color: hsl(0, 100%, 40%);">-                }</span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">-            }</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-#if defined(ENABLE_DCO) &amp;&amp; (defined=
+(TARGET_LINUX) || defined(TARGET_FREEBSD))</span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">-            /* incoming data on DCO? */</span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">-            else if (e-&gt;arg =3D=
+=3D MTCP_DCO)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        =
+    {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-                =
+multi_process_incoming_dco(m);</span><br><span style=3D"color: hsl(0, 100%,=
+ 40%);">-            }</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
+-#endif</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            /*=
+ signal received? */</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
+           else if (e-&gt;arg =3D=3D MTCP_SIG)</span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-            {</span><br><span style=3D"color: hsl(=
+0, 100%, 40%);">-                get_signal(&amp;m-&gt;top.sig-&gt;signal_r=
+eceived);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            =
+}</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#ifdef ENABLE_ASYNC_=
+PUSH</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            else =
+if (e-&gt;arg =3D=3D MTCP_FILE_CLOSE_WRITE)</span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-            {</span><br><span style=3D"color: hsl(0, =
+100%, 40%);">-                multi_process_file_closed(m, MPP_PRE_SELECT |=
+ MPP_RECORD_TOUCH);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
+          }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#endif</sp=
+an><br><span style=3D"color: hsl(0, 100%, 40%);">-        }</span><br><span=
+ style=3D"color: hsl(0, 100%, 40%);">-        if (IS_SIG(&amp;m-&gt;top))</=
+span><br><span style=3D"color: hsl(0, 100%, 40%);">-        {</span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-            break;</span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">-        }</span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-    }</span><br><span style=3D"color: hsl(0, 100%,=
+ 40%);">-    mtcp-&gt;n_esr =3D 0;</span><br><span style=3D"color: hsl(0, 1=
+00%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    /*</=
+span><br><span style=3D"color: hsl(0, 100%, 40%);">-     * Process queued m=
+buf packets destined for TCP socket</span><br><span style=3D"color: hsl(0, =
+100%, 40%);">-     */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
+    {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        struct m=
+ulti_instance *mi;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
+     while (!IS_SIG(&amp;m-&gt;top) &amp;&amp; (mi =3D mbuf_peek(m-&gt;mbuf=
+)) !=3D NULL)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        =
+{</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            multi_tc=
+p_action(m, mi, TA_SOCKET_WRITE, true);</span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-        }</span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">-    }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-}</span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span> /*</span><br=
+><span>  * Top level event loop for single-threaded operation.</span><br><s=
+pan>  * TCP mode.</span><br><span>@@ -851,7 +289,7 @@</span><br><span> </sp=
+an><br><span>         /* wait on tun/socket list */</span><br><span>       =
+  multi_get_timeout(&amp;multi, &amp;multi.top.c2.timeval);</span><br><span=
+ style=3D"color: hsl(0, 100%, 40%);">-        status =3D multi_tcp_wait(&am=
+p;multi.top, multi.mtcp);</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+        status =3D multi_protocol_io_wait(&amp;multi);</span><br><spa=
+n>         MULTI_CHECK_SIG(&amp;multi);</span><br><span> </span><br><span> =
+        /* check on status of coarse timers */</span><br><span>@@ -861,12 +=
+299,12 @@</span><br><span>         if (status &gt; 0)</span><br><span>     =
+    {</span><br><span>             /* process the I/O which triggered selec=
+t */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            multi=
+_tcp_process_io(&amp;multi);</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+            multi_protocol_process_io(&amp;multi);</span><br><span=
+>             MULTI_CHECK_SIG(&amp;multi);</span><br><span>         }</span=
+><br><span>         else if (status =3D=3D 0)</span><br><span>         {</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-            multi_tcp_ac=
+tion(&amp;multi, NULL, TA_TIMEOUT, false);</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+            multi_protocol_action(&amp;multi, NULL, =
+TA_TIMEOUT, false);</span><br><span>         }</span><br><span> </span><br>=
+<span>         perf_pop();</span><br><span>diff --git a/src/openvpn/mtcp.h =
+b/src/openvpn/mtcp.h</span><br><span>index 886d2cc..b9f73d4 100644</span><b=
+r><span>--- a/src/openvpn/mtcp.h</span><br><span>+++ b/src/openvpn/mtcp.h</=
+span><br><span>@@ -30,34 +30,25 @@</span><br><span> </span><br><span> #incl=
+ude &quot;event.h&quot;</span><br><span> </span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-/*</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
+- * Extra state info needed for TCP mode</span><br><span style=3D"color: hs=
+l(0, 100%, 40%);">- */</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
+-struct multi_tcp</span><br><span style=3D"color: hsl(0, 100%, 40%);">-{</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-    struct event_set *es=
+;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    struct event_set=
+_return *esr;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    int =
+n_esr;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    int maxeven=
+ts;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    unsigned int t=
+un_rwflags;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#ifdef ENA=
+BLE_MANAGEMENT</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    uns=
+igned int management_persist_flags;</span><br><span style=3D"color: hsl(0, =
+100%, 40%);">-#endif</span><br><span style=3D"color: hsl(0, 100%, 40%);">-}=
+;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span> st=
+ruct multi_instance;</span><br><span> struct context;</span><br><span> </sp=
+an><br><span style=3D"color: hsl(0, 100%, 40%);">-struct multi_tcp *multi_t=
+cp_init(int maxevents, int *maxclients);</span><br><span style=3D"color: hs=
+l(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-vo=
+id multi_tcp_free(struct multi_tcp *mtcp);</span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
+void multi_tcp_dereference_instance(struct multi_tcp *mtcp, struct multi_in=
+stance *mi);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+void mu=
+lti_tcp_dereference_instance(struct multi_protocol *multi_io, struct multi_=
+instance *mi);</span><br><span> </span><br><span> bool multi_tcp_instance_s=
+pecific_init(struct multi_context *m, struct multi_instance *mi);</span><br=
+><span> </span><br><span> void multi_tcp_instance_specific_free(struct mult=
+i_instance *mi);</span><br><span> </span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+struct context *multi_tcp_context(struct multi_context *m, s=
+truct multi_instance *mi);</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+void multi_t=
+cp_set_global_rw_flags(struct multi_context *m, struct multi_instance *mi);=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+bool multi_tcp_process_outgoing_link(s=
+truct multi_context *m, bool defer, const unsigned int mpp_flags);</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+bool multi_tcp_process_outgoing_link_ready(stru=
+ct multi_context *m, struct multi_instance *mi, const unsigned int mpp_flag=
+s);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+struct multi_instance *multi_create=
+_instance_tcp(struct multi_context *m, struct link_socket *sock);</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> void multi_=
+tcp_link_out_deferred(struct multi_context *m, struct multi_instance *mi);<=
+/span><br><span> </span><br><span> </span><br><span>@@ -71,6 +62,6 @@</span=
+><br><span> void tunnel_server_tcp(struct context *top);</span><br><span> <=
+/span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-void=
+ multi_tcp_delete_event(struct multi_tcp *mtcp, event_t event);</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+void multi_tcp_delete_event(str=
+uct multi_protocol *multi_io, event_t event);</span><br><span> </span><br><=
+span> #endif /* ifndef MTCP_H */</span><br><span>diff --git a/src/openvpn/m=
+udp.c b/src/openvpn/mudp.c</span><br><span>index 37af88e..5092665 100644</s=
+pan><br><span>--- a/src/openvpn/mudp.c</span><br><span>+++ b/src/openvpn/mu=
+dp.c</span><br><span>@@ -186,7 +186,7 @@</span><br><span> </span><br><span>=
+ struct multi_instance *</span><br><span> multi_get_create_instance_udp(str=
+uct multi_context *m, bool *floated,</span><br><span style=3D"color: hsl(0,=
+ 100%, 40%);">-                              struct link_socket *ls)</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+                          =
+    struct link_socket *sock)</span><br><span> {</span><br><span>     struc=
+t gc_arena gc =3D gc_new();</span><br><span>     struct mroute_addr real =
+=3D {0};</span><br><span>@@ -257,7 +257,7 @@</span><br><span>              =
+        * connect-freq but not against connect-freq-initial */</span><br><s=
+pan>                     reflect_filter_rate_limit_decrease(m-&gt;initial_r=
+ate_limiter);</span><br><span> </span><br><span style=3D"color: hsl(0, 100%=
+, 40%);">-                    mi =3D multi_create_instance(m, &amp;real, ls=
+);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+                 =
+   mi =3D multi_create_instance(m, &amp;real, sock);</span><br><span>      =
+               if (mi)</span><br><span>                     {</span><br><sp=
+an>                         hash_add_fast(hash, bucket, &amp;mi-&gt;real, h=
+v, mi);</span><br><span>diff --git a/src/openvpn/mudp.h b/src/openvpn/mudp.=
+h</span><br><span>index b378754..3107cc6 100644</span><br><span>--- a/src/o=
+penvpn/mudp.h</span><br><span>+++ b/src/openvpn/mudp.h</span><br><span>@@ -=
+56,13 +56,13 @@</span><br><span>  * successful, returns the newly created i=
+nstance.</span><br><span>  *</span><br><span>  * @param m           - The s=
+ingle multi_context structure.</span><br><span style=3D"color: hsl(0, 100%,=
+ 40%);">- * @param ls          - Listening socket where this instance is co=
+nnecting to</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @para=
+m sock        - Listening socket where this instance is connecting to</span=
+><br><span>  *</span><br><span>  * @return A pointer to a multi_instance if=
+ one already existed for the</span><br><span>  *     packet&#39;s source ad=
+dress or if one was a newly created successfully.</span><br><span>  *      =
+NULL if one did not yet exist and a new one was not created.</span><br><spa=
+n>  */</span><br><span> struct multi_instance *multi_get_create_instance_ud=
+p(struct multi_context *m, bool *floated,</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-                                                     st=
+ruct link_socket *ls);</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+                                                     struct link_socket =
+*sock);</span><br><span> </span><br><span> #endif /* ifndef MUDP_H */</span=
+><br><span>diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c</span><br=
+><span>index e7d742b..fc700de 100644</span><br><span>--- a/src/openvpn/mult=
+i.c</span><br><span>+++ b/src/openvpn/multi.c</span><br><span>@@ -440,7 +44=
+0,7 @@</span><br><span>      */</span><br><span>     if (tcp_mode)</span><b=
+r><span>     {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-       =
+ m-&gt;mtcp =3D multi_tcp_init(t-&gt;options.max_clients, &amp;m-&gt;max_cl=
+ients);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        m-&g=
+t;multi_io =3D multi_protocol_init(t-&gt;options.max_clients, &amp;m-&gt;ma=
+x_clients);</span><br><span>     }</span><br><span>     m-&gt;tcp_queue_lim=
+it =3D t-&gt;options.tcp_queue_limit;</span><br><span> </span><br><span>@@ =
+-665,9 +665,9 @@</span><br><span>             mi-&gt;did_iroutes =3D false;=
+</span><br><span>         }</span><br><span> </span><br><span style=3D"colo=
+r: hsl(0, 100%, 40%);">-        if (m-&gt;mtcp)</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+        if (m-&gt;multi_io)</span><br><span>   =
+      {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            mu=
+lti_tcp_dereference_instance(m-&gt;mtcp, mi);</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+            multi_tcp_dereference_instance(m-&gt;=
+multi_io, mi);</span><br><span>         }</span><br><span> </span><br><span=
+>         mbuf_dereference_instance(m-&gt;mbuf, mi);</span><br><span>@@ -74=
+5,7 +745,7 @@</span><br><span>         initial_rate_limit_free(m-&gt;initia=
+l_rate_limiter);</span><br><span>         multi_reap_free(m-&gt;reaper);</s=
+pan><br><span>         mroute_helper_free(m-&gt;route_helper);</span><br><s=
+pan style=3D"color: hsl(0, 100%, 40%);">-        multi_tcp_free(m-&gt;mtcp)=
+;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        multi_prot=
+ocol_free(m-&gt;multi_io);</span><br><span>     }</span><br><span> }</span>=
+<br><span> </span><br><span>@@ -754,7 +754,7 @@</span><br><span>  */</span>=
+<br><span> struct multi_instance *</span><br><span> multi_create_instance(s=
+truct multi_context *m, const struct mroute_addr *real,</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-                      struct link_socket =
+*ls)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+               =
+       struct link_socket *sock)</span><br><span> {</span><br><span>     st=
+ruct gc_arena gc =3D gc_new();</span><br><span>     struct multi_instance *=
+mi;</span><br><span>@@ -778,7 +778,7 @@</span><br><span>     }</span><br><s=
+pan> </span><br><span>     mi-&gt;did_open_context =3D true;</span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">-    inherit_context_child(&amp;mi-&g=
+t;context, &amp;m-&gt;top, ls);</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+    inherit_context_child(&amp;mi-&gt;context, &amp;m-&gt;top, =
+sock);</span><br><span>     if (IS_SIG(&amp;mi-&gt;context))</span><br><spa=
+n>     {</span><br><span>         goto err;</span><br><span>@@ -3130,7 +313=
+0,7 @@</span><br><span> </span><br><span> void</span><br><span> multi_proce=
+ss_float(struct multi_context *m, struct multi_instance *mi,</span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">-                    struct link_sock=
+et *ls)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            =
+        struct link_socket *sock)</span><br><span> {</span><br><span>     s=
+truct mroute_addr real =3D {0};</span><br><span>     struct hash *hash =3D =
+m-&gt;hash;</span><br><span>@@ -3186,7 +3186,7 @@</span><br><span>     mi-&=
+gt;context.c2.to_link_addr =3D &amp;mi-&gt;context.c2.from;</span><br><span=
+> </span><br><span>     /* inherit parent link_socket and link_socket_info =
+*/</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    mi-&gt;context.=
+c2.link_sockets[0] =3D ls;</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+    mi-&gt;context.c2.link_sockets[0] =3D sock;</span><br><span>    =
+ mi-&gt;context.c2.link_socket_infos[0]-&gt;lsa-&gt;actual =3D m-&gt;top.c2=
+.from;</span><br><span> </span><br><span>     tls_update_remote_addr(mi-&gt=
+;context.c2.tls_multi, &amp;mi-&gt;context.c2.from);</span><br><span>@@ -33=
+36,7 +3336,7 @@</span><br><span>  */</span><br><span> bool</span><br><span>=
+ multi_process_incoming_link(struct multi_context *m, struct multi_instance=
+ *instance, const unsigned int mpp_flags,</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-                            struct link_socket *ls)</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+                       =
+     struct link_socket *sock)</span><br><span> {</span><br><span>     stru=
+ct gc_arena gc =3D gc_new();</span><br><span> </span><br><span>@@ -3357,7 +=
+3357,7 @@</span><br><span> #ifdef MULTI_DEBUG_EVENT_LOOP</span><br><span>  =
+       printf(&quot;TCP/UDP -&gt; TUN [%d]\n&quot;, BLEN(&amp;m-&gt;top.c2.=
+buf));</span><br><span> #endif</span><br><span style=3D"color: hsl(0, 100%,=
+ 40%);">-        multi_set_pending(m, multi_get_create_instance_udp(m, &amp=
+;floated, ls));</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+    multi_set_pending(m, multi_get_create_instance_udp(m, &amp;floated, soc=
+k));</span><br><span>     }</span><br><span>     else</span><br><span>     =
+{</span><br><span>@@ -3398,7 +3398,7 @@</span><br><span>                 /*=
+ nonzero length means that we have a valid, decrypted packed */</span><br><=
+span>                 if (floated &amp;&amp; c-&gt;c2.buf.len &gt; 0)</span=
+><br><span>                 {</span><br><span style=3D"color: hsl(0, 100%, =
+40%);">-                    multi_process_float(m, m-&gt;pending, ls);</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+                    mult=
+i_process_float(m, m-&gt;pending, sock);</span><br><span>                 }=
+</span><br><span> </span><br><span>                 process_incoming_link_p=
+art2(c, lsi, orig_buf);</span><br><span>@@ -3978,9 +3978,9 @@</span><br><sp=
+an> management_delete_event(void *arg, event_t event)</span><br><span> {</s=
+pan><br><span>     struct multi_context *m =3D (struct multi_context *) arg=
+;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    if (m-&gt;mtcp)<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (m-&gt;multi_=
+io)</span><br><span>     {</span><br><span style=3D"color: hsl(0, 100%, 40%=
+);">-        multi_tcp_delete_event(m-&gt;mtcp, event);</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+        multi_tcp_delete_event(m-&gt;mu=
+lti_io, event);</span><br><span>     }</span><br><span> }</span><br><span> =
+</span><br><span>diff --git a/src/openvpn/multi.h b/src/openvpn/multi.h</sp=
+an><br><span>index 5175f90..5ecb86a 100644</span><br><span>--- a/src/openvp=
+n/multi.h</span><br><span>+++ b/src/openvpn/multi.h</span><br><span>@@ -37,=
+6 +37,7 @@</span><br><span> #include &quot;pool.h&quot;</span><br><span> #i=
+nclude &quot;mudp.h&quot;</span><br><span> #include &quot;mtcp.h&quot;</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+#include &quot;multi_io.=
+h&quot;</span><br><span> #include &quot;perf.h&quot;</span><br><span> #incl=
+ude &quot;vlan.h&quot;</span><br><span> #include &quot;reflect_filter.h&quo=
+t;</span><br><span>@@ -174,8 +175,8 @@</span><br><span>     struct mbuf_set=
+ *mbuf;      /**&lt; Set of buffers for passing data</span><br><span>      =
+                            *   channel packets between VPN tunnel</span><b=
+r><span>                                  *   instances. */</span><br><span=
+ style=3D"color: hsl(0, 100%, 40%);">-    struct multi_tcp *mtcp;     /**&l=
+t; State specific to OpenVPN using TCP</span><br><span style=3D"color: hsl(=
+0, 100%, 40%);">-                                 *   as external transport=
+. */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    struct mult=
+i_protocol *multi_io;     /**&lt; State specific to OpenVPN using TCP</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+                         =
+                 *   as external transport. */</span><br><span>     struct =
+ifconfig_pool *ifconfig_pool;</span><br><span>     struct frequency_limit *=
+new_connection_limiter;</span><br><span>     struct initial_packet_rate_lim=
+it *initial_rate_limiter;</span><br><span>@@ -276,7 +277,7 @@</span><br><sp=
+an> void multi_top_free(struct multi_context *m);</span><br><span> </span><=
+br><span> struct multi_instance *multi_create_instance(struct multi_context=
+ *m, const struct mroute_addr *real,</span><br><span style=3D"color: hsl(0,=
+ 100%, 40%);">-                                             struct link_soc=
+ket *ls);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+          =
+                                   struct link_socket *sock);</span><br><sp=
+an> </span><br><span> void multi_close_instance(struct multi_context *m, st=
+ruct multi_instance *mi, bool shutdown);</span><br><span> </span><br><span>=
+@@ -291,7 +292,7 @@</span><br><span>  * updates hashtables in multi_context=
+.</span><br><span>  */</span><br><span> void multi_process_float(struct mul=
+ti_context *m, struct multi_instance *mi,</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-                         struct link_socket *ls);</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+                         =
+struct link_socket *sock);</span><br><span> </span><br><span> #define MPP_P=
+RE_SELECT             (1&lt;&lt;0)</span><br><span> #define MPP_CONDITIONAL=
+_PRE_SELECT (1&lt;&lt;1)</span><br><span>@@ -356,10 +357,10 @@</span><br><s=
+pan>  *                       when using TCP transport. Otherwise NULL, as =
+is</span><br><span>  *                       the case when using UDP transp=
+ort.</span><br><span>  * @param mpp_flags    - Fast I/O optimization flags.=
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">- * @param ls         =
+  - Socket where the packet was received.</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+ * @param sock           - Socket where the packet wa=
+s received.</span><br><span>  */</span><br><span> bool multi_process_incomi=
+ng_link(struct multi_context *m, struct multi_instance *instance, const uns=
+igned int mpp_flags,</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
+                                struct link_socket *ls);</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+                                 struc=
+t link_socket *sock);</span><br><span> </span><br><span> </span><br><span> =
+/**</span><br><span>diff --git a/src/openvpn/multi_io.c b/src/openvpn/multi=
+_io.c</span><br><span>new file mode 100644</span><br><span>index 0000000..4=
+3fe24b</span><br><span>--- /dev/null</span><br><span>+++ b/src/openvpn/mult=
+i_io.c</span><br><span>@@ -0,0 +1,619 @@</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+/*</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+ *  OpenVPN -- An application to securely tunnel IP networks</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+ *             over a single T=
+CP/UDP port, with support for SSL/TLS-based</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+ *             session authentication and key excha=
+nge,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *             =
+packet encryption, packet authentication, and</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+ *             packet compression.</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+ *  Copyright (C) 2002-2023 OpenVPN Inc &lt;sales@...220...=
+..515...&gt;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  This program is free=
+ software; you can redistribute it and/or modify</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+ *  it under the terms of the GNU General Publ=
+ic License version 2</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++ *  as published by the Free Software Foundation.</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+ *</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+ *  This program is distributed in the hope that it will be u=
+seful,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  but WITHO=
+UT ANY WARRANTY; without even the implied warranty of</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+ *  MERCHANTABILITY or FITNESS FOR A PART=
+ICULAR PURPOSE.  See the</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+ *  GNU General Public License for more details.</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+ *  You should have received a copy of the GNU General Pub=
+lic License along</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *=
+  with this program; if not, write to the Free Software Foundation, Inc.,</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  51 Franklin Stree=
+t, Fifth Floor, Boston, MA 02110-1301 USA.</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+ */</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#ifdef HAVE_=
+CONFIG_H</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#include &q=
+uot;config.h&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#=
+endif</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+#include &quot;syshead.h&quot;</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+#include &quot;memdbg.h&quot;</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+#include &quot;multi.h&quot;</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+#include &quot;forward.h&quot;</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+#include &quot;multi_io.h&quot=
+;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+#ifdef HAVE_SYS_INOTIFY_H</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+#include &lt;sys/inotify.h&gt;<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+#endif</span><br><sp=
 an style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+                        if (udp_status &amp; SOCKET_=
-READ)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+              =
-          {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        =
-                    read_incoming_link(&amp;m-&gt;top, ev_arg-&gt;u.sock);<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+                    =
-        if (!IS_SIG(&amp;m-&gt;top))</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+                            {</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+                                multi_process_in=
-coming_link(m, NULL, mpp_flags,</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+                                                            ev_=
-arg-&gt;u.sock);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
-                         }</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+                        }</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+                        else</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+                        {</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+                            multi_process_io_ud=
-p(m);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+              =
-          }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        =
-                break;</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+                    }</span><br><span>             }</span><br><span>   =
-      }</span><br><span>         else</span><br><span>diff --git a/src/open=
-vpn/openvpn.h b/src/openvpn/openvpn.h</span><br><span>index 77bb41d..821ac2=
-e 100644</span><br><span>--- a/src/openvpn/openvpn.h</span><br><span>+++ b/=
-src/openvpn/openvpn.h</span><br><span>@@ -220,8 +220,8 @@</span><br><span> =
- * \c SIGUSR1 restarts.</span><br><span>  *</span><br><span>  * This struct=
-ure is initialized at the top of the \c</span><br><span style=3D"color: hsl=
-(0, 100%, 40%);">- * tunnel_point_to_point(), \c tunnel_server_udp(), and \=
-c</span><br><span style=3D"color: hsl(0, 100%, 40%);">- * tunnel_server_tcp=
-() functions.  In other words, it is reset for every</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+ * tunnel_point_to_point(), \c tunnel_ser=
-ver() \c</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * function=
-s.  In other words, it is reset for every</span><br><span>  * iteration of =
-the \c main() function&#39;s inner \c SIGUSR1 loop.</span><br><span>  */</s=
-pan><br><span> struct context_2</span><br><span>diff --git a/src/openvpn/op=
-tions.c b/src/openvpn/options.c</span><br><span>index f216456..edda0bb 1006=
-44</span><br><span>--- a/src/openvpn/options.c</span><br><span>+++ b/src/op=
-envpn/options.c</span><br><span>@@ -993,10 +993,13 @@</span><br><span>     =
-                    const struct connection_entry *e,</span><br><span>     =
-                    const int i)</span><br><span> {</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-    setenv_str_i(es, &quot;proto&quot;, pro=
-to2ascii(e-&gt;proto, e-&gt;af, false), i);</span><br><span style=3D"color:=
- hsl(0, 100%, 40%);">-    /* expected to be for single socket contexts only=
- */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    setenv_str_i(e=
-s, &quot;local&quot;, e-&gt;local_list-&gt;array[0]-&gt;local, i);</span><b=
-r><span style=3D"color: hsl(0, 100%, 40%);">-    setenv_str_i(es, &quot;loc=
-al_port&quot;, e-&gt;local_list-&gt;array[0]-&gt;port, i);</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+    for (int j =3D 0; j &lt; e-&gt;l=
-ocal_list-&gt;len; j++)</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        se=
-tenv_str_i(es, &quot;proto&quot;, proto2ascii(e-&gt;local_list-&gt;array[j]=
--&gt;proto, e-&gt;af, false), i);</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+        /* expected to be for single socket contexts only */<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+        setenv_str_i=
-(es, &quot;local&quot;, e-&gt;local_list-&gt;array[j]-&gt;local, i);</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+        setenv_str_i(es, &=
-quot;local_port&quot;, e-&gt;local_list-&gt;array[j]-&gt;port, i);</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span>     s=
-etenv_str_i(es, &quot;remote&quot;, e-&gt;remote, i);</span><br><span>     =
-setenv_str_i(es, &quot;remote_port&quot;, e-&gt;remote_port, i);</span><br>=
-<span> </span><br><span>@@ -2199,6 +2202,7 @@</span><br><span>     }</span>=
-<br><span> </span><br><span>     ALLOC_OBJ_CLEAR_GC(e, struct local_entry, =
-gc);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    e-&gt;proto=
- =3D PROTO_NONE;</span><br><span>     l-&gt;array[l-&gt;len++] =3D e;</span=
-><br><span> </span><br><span>     return e;</span><br><span>@@ -2465,7 +246=
-9,7 @@</span><br><span>     {</span><br><span>         struct local_entry *=
-le =3D ce-&gt;local_list-&gt;array[i];</span><br><span> </span><br><span st=
-yle=3D"color: hsl(0, 100%, 40%);">-        if (proto_is_net(ce-&gt;proto)</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+        if (proto_is_=
-net(le-&gt;proto)</span><br><span>             &amp;&amp; string_defined_eq=
-ual(le-&gt;local, ce-&gt;remote)</span><br><span>             &amp;&amp; st=
-ring_defined_equal(le-&gt;port, ce-&gt;remote_port))</span><br><span>      =
-   {</span><br><span>@@ -3170,14 +3174,30 @@</span><br><span>         if (c=
-e-&gt;proto =3D=3D PROTO_TCP)</span><br><span>         {</span><br><span>  =
-           ce-&gt;proto =3D PROTO_TCP_SERVER;</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+            o-&gt;ce.proto =3D ce-&gt;proto;</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+        }</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+        if (ce-&gt;local_list)</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+        {</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+            for (int i =3D 0; i &=
-lt; ce-&gt;local_list-&gt;len; i++)</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+            {</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+                if (ce-&gt;local_list-&gt;array[i]-&gt;proto =3D=
-=3D PROTO_TCP)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
-           {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
-             ce-&gt;local_list-&gt;array[i]-&gt;proto =3D PROTO_TCP_SERVER;=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+                }</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+                else =
-if (ce-&gt;local_list-&gt;array[i]-&gt;proto =3D=3D PROTO_NONE)</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+                {</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+                    ce-&gt;local_=
-list-&gt;array[i]-&gt;proto =3D ce-&gt;proto;</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+                }</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+            }</span><br><span>         }</span><br>=
-<span>     }</span><br><span> </span><br><span style=3D"color: hsl(0, 100%,=
- 40%);">-    if (o-&gt;client)</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+    if (o-&gt;mode !=3D MODE_SERVER)</span><br><span>     {</spa=
-n><br><span>         if (ce-&gt;proto =3D=3D PROTO_TCP)</span><br><span>   =
-      {</span><br><span>             ce-&gt;proto =3D PROTO_TCP_CLIENT;</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+            o-&gt;ce.pr=
-oto =3D ce-&gt;proto;</span><br><span>         }</span><br><span>     }</sp=
-an><br><span> </span><br><span>@@ -3331,6 +3351,10 @@</span><br><span>     =
-{</span><br><span>         le-&gt;port =3D o-&gt;ce.local_port;</span><br><=
-span>     }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (=
-!le-&gt;proto)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        le-&gt;prot=
-o =3D o-&gt;ce.proto;</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+    }</span><br><span> }</span><br><span> </span><br><span> #ifdef _WIN32=
-</span><br><span>@@ -3807,6 +3831,12 @@</span><br><span>         options_po=
-stprocess_mutate_ce(o, o-&gt;connection_list-&gt;array[i]);</span><br><span=
->     }</span><br><span> </span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+    if (!has_udp_in_local_list(o))</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+        o-&gt;fast_io =3D false;</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+        msg(M_INFO, &quot;NOTE: --fast-io is disabled w=
-hile using multi-socket&quot;);</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</=
-span><br><span>     if (o-&gt;ce.local_list)</span><br><span>     {</span><=
-br><span>         for (i =3D 0; i &lt; o-&gt;ce.local_list-&gt;len; i++)</s=
-pan><br><span>@@ -3822,6 +3852,7 @@</span><br><span>         ASSERT(e);</sp=
-an><br><span>         e-&gt;port =3D o-&gt;ce.local_port;</span><br><span> =
-        e-&gt;bind_local =3D o-&gt;connection_list-&gt;array[0]-&gt;bind_lo=
-cal;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        e-&gt;p=
-roto =3D o-&gt;ce.proto;</span><br><span>     }</span><br><span> </span><br=
-><span>     /* use the same listen list for every outgoing connection */</s=
-pan><br><span>@@ -6232,7 +6263,7 @@</span><br><span>         VERIFY_PERMISS=
-ION(OPT_P_UP);</span><br><span>         options-&gt;ifconfig_nowarn =3D tru=
-e;</span><br><span>     }</span><br><span style=3D"color: hsl(0, 100%, 40%)=
-;">-    else if (streq(p[0], &quot;local&quot;) &amp;&amp; p[1] &amp;&amp; =
-!p[3])</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    else if (=
-streq(p[0], &quot;local&quot;) &amp;&amp; p[1] &amp;&amp; !p[4])</span><br>=
-<span>     {</span><br><span>         struct local_entry *e;</span><br><spa=
-n> </span><br><span>@@ -6253,7 +6284,12 @@</span><br><span>         if (p[2=
-])</span><br><span>         {</span><br><span>             e-&gt;port =3D p=
-[2];</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            e-&gt=
-;bind_local =3D true;</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+            /*e-&gt;bind_local =3D true; */</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+        }</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
-     if (p[3])</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
-   {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            e-&=
-gt;proto =3D ascii2proto(p[3]);</span><br><span>         }</span><br><span>=
-     }</span><br><span>     else if (streq(p[0], &quot;remote-random&quot;)=
- &amp;&amp; !p[1])</span><br><span>@@ -9695,3 +9731,19 @@</span><br><span> =
-err:</span><br><span>     gc_free(&amp;gc);</span><br><span> }</span><br><s=
+hsl(120, 100%, 40%);">+/*</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+ * Special tags passed to event.[ch] functions</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+ */</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+#define MULTI_IO_SOCKET      ((void *)1)</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+#define MULTI_IO_TUN         ((void =
+*)2)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#define MULTI_I=
+O_SIG         ((void *)3) /* Only on Windows */</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+#define MULTI_IO_MANAGEMENT ((void *)4)</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+#define MULTI_IO_FILE_CLOSE=
+_WRITE ((void *)5)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#=
+define MULTI_IO_DCO        ((void *)6)</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+struct ta_iow_flags</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    unsigned int f=
+lags;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    unsigned i=
+nt ret;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    unsigned=
+ int tun;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    unsign=
+ed int sock;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+};</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+#ifdef ENABLE_DEBUG</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+static const char *</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+pract(int action)</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+    switch (action)</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+        case TA_UNDEF:</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+            return &quot;TA_UNDEF&quot;;</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+        case TA_SOCKET_READ:</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+            return &quot;TA_SOCKET_READ&quot;;</span><br><s=
 pan style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+bool</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+has_udp_in_local_list(const struct options *options)</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+    if (options-&gt;ce.local_list)</span><br><span =
+ hsl(120, 100%, 40%);">+        case TA_SOCKET_READ_RESIDUAL:</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+            return &quot;TA_SOCKE=
+T_READ_RESIDUAL&quot;;</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        case TA_=
+SOCKET_WRITE:</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
+      return &quot;TA_SOCKET_WRITE&quot;;</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+        case TA_SOCKET_WRITE_READY:</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+            return &quot;TA_SOCKET_WRITE_READY&quot;;</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+        case TA_SOCKET_WRITE_DEFERRED:</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+            return &qu=
+ot;TA_SOCKET_WRITE_DEFERRED&quot;;</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+    case TA_TUN_READ:</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+            return &quot;TA_TUN_READ&quot;;</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+        case TA_TUN_WRITE:</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+            return &quot;TA_TUN_WRITE&quot;;</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+        case TA_INITIAL:</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+            return &quot;TA_INITIAL&quot;;</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+        case TA_TIMEOUT:</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+            return &quot;TA_TIMEOUT&quot;=
+;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+        case TA_TUN_WRITE_TIMEOUT:</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+            return &qu=
+ot;TA_TUN_WRITE_TIMEOUT&quot;;</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        =
+default:</span><br><span style=3D"color: hsl(120, 100%, 40%);">+           =
+ return &quot;?&quot;;</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+#endif /* ENABLE_DEBUG */</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+struct multi_protocol *</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+multi_protocol_init(int maxevents, in=
+t *maxclients)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+    struct multi_protoc=
+ol *multi_io;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    co=
+nst int extra_events =3D BASE_N_EVENTS;</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++    ASSERT(maxevents &gt;=3D 1);</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+    ASSERT(maxclients);</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+   ALLOC_OBJ_CLEAR(multi_io, struct multi_protocol);</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    multi_io-&gt;maxevents =3D maxevents =
++ extra_events;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+multi_io-&gt;es =3D event_set_init(&amp;multi_io-&gt;maxevents, 0);</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+    wait_signal(multi_io-&g=
+t;es, MULTI_IO_SIG);</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++    ALLOC_ARRAY(multi_io-&gt;esr, struct event_set_return, multi_io-&gt;ma=
+xevents);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    *maxcl=
+ients =3D max_int(min_int(multi_io-&gt;maxevents - extra_events, *maxclient=
+s), 1);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    msg(D_MU=
+LTI_LOW, &quot;MULTI: TCP INIT maxclients=3D%d maxevents=3D%d&quot;, *maxcl=
+ients, multi_io-&gt;maxevents);</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+    return multi_io;</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+void</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+multi_protocol_free(struct multi_protoc=
+ol *multi_io)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (multi_io)</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+        event_free(multi_io-&gt;es);</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+        free(multi_io-&=
+gt;esr);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        fre=
+e(multi_io);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+int</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++multi_protocol_io_wait(struct multi_context *m)</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+    int status, i;</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+    unsigned int *persistent =3D &amp;m-&gt;multi_io-&gt;tun_rwfl=
+ags;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+    for (i =3D 0; i &lt; m-&gt;top=
+.c1.link_sockets_num; i++)</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
+ socket_set_listen_persistent(m-&gt;top.c2.link_sockets[i], m-&gt;multi_io-=
+&gt;es,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            =
+                         &amp;m-&gt;top.c2.link_sockets[i]-&gt;ev_arg);</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+#ifdef _WIN32</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+    if (tuntap_is_wintun(m-&gt;top.c1.tuntap))</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+        if (!tuntap_ring_empty(m-&gt;top.c1.tunta=
+p))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        {</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+            /* there is da=
+ta in wintun ring buffer, read it immediately */</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+            m-&gt;multi_io-&gt;esr[0].arg =3D =
+MULTI_IO_TUN;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
+      m-&gt;multi_io-&gt;esr[0].rwflags =3D EVENT_READ;</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+            m-&gt;multi_io-&gt;n_esr =
+=3D 1;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            r=
+eturn 1;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        }</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+        persistent =
+=3D NULL;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+#endif</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+    tun_set(m-&gt;top.c1.tuntap, m-&g=
+t;multi_io-&gt;es, EVENT_READ, MULTI_IO_TUN, persistent);</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+#if defined(TARGET_LINUX) || defined(=
+TARGET_FREEBSD)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+dco_event_set(&amp;m-&gt;top.c1.tuntap-&gt;dco, m-&gt;multi_io-&gt;es, MULT=
+I_IO_DCO);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#endif</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+#ifdef ENABLE_MANAGEMENT</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+    if (management)</span><br><span =
 style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+        for (int i =3D 0; i &lt; options-&gt;ce.lo=
-cal_list-&gt;len; i++)</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+        {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
-     if (proto_is_dgram(options-&gt;ce.local_list-&gt;array[i]-&gt;proto))<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+            {</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+                return tru=
-e;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            }</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+        }</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+    return false;</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+}</span><br><span>diff --git a/src/openvpn/option=
-s.h b/src/openvpn/options.h</span><br><span>index 6942455..30bd5aa 100644</=
-span><br><span>--- a/src/openvpn/options.h</span><br><span>+++ b/src/openvp=
-n/options.h</span><br><span>@@ -99,6 +99,7 @@</span><br><span>     const ch=
-ar *local;</span><br><span>     const char *port;</span><br><span>     bool=
- bind_local;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    int=
- proto;</span><br><span> };</span><br><span> </span><br><span> struct conne=
-ction_entry</span><br><span>@@ -916,6 +917,8 @@</span><br><span> </span><br=
-><span> bool key_is_external(const struct options *options);</span><br><spa=
-n> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+bool has_udp_in_=
-local_list(const struct options *options);</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+</span><br><span> /**</span><br><span>  * Returns wh=
-ether the current configuration has dco enabled.</span><br><span>  */</span=
-><br><span></span><br></pre><p>To view, visit <a href=3D"http://gerrit.open=
-vpn.net/c/openvpn/+/764?usp=3Demail">change 764</a>. To unsubscribe, or for=
- help writing mail filters, visit <a href=3D"http://gerrit.openvpn.net/sett=
-ings">settings</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMe=
-ssage"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.org/Vie=
-wAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn=
-/+/764?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div=
-></div>
+: hsl(120, 100%, 40%);">+        management_socket_set(management, m-&gt;mu=
+lti_io-&gt;es, MULTI_IO_MANAGEMENT, &amp;m-&gt;multi_io-&gt;management_pers=
+ist_flags);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+#endif</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+#ifdef ENABLE_ASYNC_PUSH</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+    /* arm inotify watcher */</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+    event_ctl(m-&gt;multi_io-&gt;es, m-=
+&gt;top.c2.inotify_fd, EVENT_READ, MULTI_IO_FILE_CLOSE_WRITE);</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+#endif</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+    status =3D event_wait(m-&gt;multi_io-&gt;es, &amp;m-&gt;top.=
+c2.timeval, m-&gt;multi_io-&gt;esr, m-&gt;multi_io-&gt;maxevents);</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+    update_time();</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+    m-&gt;multi_io-&gt;n_esr =
+=3D 0;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (statu=
+s &gt; 0)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+        m-&gt;multi_io-&=
+gt;n_esr =3D status;</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    return st=
+atus;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+static int</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+multi_protocol_wait_lite(struct multi_context *m, struct mul=
+ti_instance *mi, const int action, bool *tun_input_pending)</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+    struct context *c =3D multi_tcp_context(m, mi);</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+    unsigned int look=
+ing_for =3D 0;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+    dmsg(D_MULTI_DEBUG, =
+&quot;MULTI PROTOCOL: multi_protocol_wait_lite a=3D%s mi=3D&quot; ptr_forma=
+t,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+         pract(ac=
+tion),</span><br><span style=3D"color: hsl(120, 100%, 40%);">+         (ptr=
+_type)mi);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+    tv_clear(&amp;c-&gt;c2.t=
+imeval); /* ZERO-TIMEOUT */</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    switch =
+(action)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+        case TA_TUN_READ:=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            looking=
+_for =3D TUN_READ;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+           tun_input_pending =3D NULL;</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+            io_wait(c, IOW_READ_TUN);</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+            break;</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+        case TA_SOCKET_READ:</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+            looking_for =3D SOCKET_READ;</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+            tun_input_pendin=
+g =3D NULL;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        =
+    io_wait(c, IOW_READ_LINK);</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+            break;</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        c=
+ase TA_TUN_WRITE:</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+          looking_for =3D TUN_WRITE;</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+            tun_input_pending =3D NULL;</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+            c-&gt;c2.timeval.tv_sec =
+=3D 1; /* For some reason, the Linux 2.2 TUN/TAP driver hits this timeout *=
+/</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            perf_p=
+ush(PERF_PROC_OUT_TUN_MTCP);</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+            io_wait(c, IOW_TO_TUN);</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+            perf_pop();</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+            break;</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+        case TA_SOCKET_WRITE:</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+            looking_for =3D SOCKET_WRITE;</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+            io_wait(c, IOW_TO_LINK=
+|IOW_READ_TUN_FORCE);</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+            break;</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        default:</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+            msg(M_FAT=
+AL, &quot;MULTI PROTOCOL: multi_protocol_wait_lite, unhandled action=3D%d&q=
+uot;, action);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+    if (tun_input_pending &amp;&amp; (=
+c-&gt;c2.event_set_status &amp; TUN_READ))</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+        *tun_input_pending =3D true;</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if =
+(c-&gt;c2.event_set_status &amp; looking_for)</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+        return action;</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++    else</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+        switch (action)<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+        {</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+            /* MULTI PROTOCOL =
+socket output buffer is full */</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+            case TA_SOCKET_WRITE:</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+                return TA_SOCKET_WRITE_DEFERRED;<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+            /* TUN device timed out on =
+accepting write */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+           case TA_TUN_WRITE:</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+                return TA_TUN_WRITE_TIMEOUT;</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+        }</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+        return TA_UNDEF;</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+static struct multi_instance *</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+multi_protocol_dispatch(struc=
+t multi_context *m, struct multi_instance *mi, const int action)</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+    const unsigned int mpp_flags =3D MPP_PRE_SEL=
+ECT|MPP_RECORD_TOUCH;</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+    struct multi_instance *touched =3D mi;</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+    m-&gt;mpp_touched =3D &amp;touched;</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+    dmsg(D_MULTI_DEBUG, &quot;MULTI PROTOCOL: mul=
+ti_protocol_dispatch a=3D%s mi=3D&quot; ptr_format,</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+         pract(action),</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+         (ptr_type)mi);</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+    switch (action)</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+        case TA_TUN_READ:</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+            read_incoming_tun(&amp;m-&gt;top);</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+            if (!IS_SIG(&amp;m-&g=
+t;top))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            =
+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+                mu=
+lti_process_incoming_tun(m, mpp_flags);</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+            }</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+            break;</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
+  case TA_SOCKET_READ:</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+        case TA_SOCKET_READ_RESIDUAL:</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+            ASSERT(mi);</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+            ASSERT(mi-&gt;context.c2.link_sockets)=
+;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            ASSERT=
+(mi-&gt;context.c2.link_sockets[0]);</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+            set_prefix(mi);</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+            read_incoming_link(&amp;mi-&gt;context=
+, mi-&gt;context.c2.link_sockets[0]);</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+            clear_prefix();</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+            if (!IS_SIG(&amp;mi-&gt;context))</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+            {</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+                multi_process=
+_incoming_link(m, mi, mpp_flags,</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+                                            mi-&gt;context.c2.=
+link_sockets[0]);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+              if (!IS_SIG(&amp;mi-&gt;context))</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+                {</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+                    stream_buf_read_setup(mi-&gt;=
+context.c2.link_sockets[0]);</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+                }</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+            }</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++            break;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        case TA_TIM=
+EOUT:</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            mu=
+lti_process_timeout(m, mpp_flags);</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+            break;</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
+   case TA_TUN_WRITE:</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+            multi_process_outgoing_tun(m, mpp_flags);</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+            break;</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+        case TA_TUN_WRITE_TIMEOUT:</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+            multi_process_drop_outgoing_tun(=
+m, mpp_flags);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
+       break;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+        case TA_SOCKET_WR=
+ITE_READY:</span><br><span style=3D"color: hsl(120, 100%, 40%);">+         =
+   ASSERT(mi);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
+       multi_tcp_process_outgoing_link_ready(m, mi, mpp_flags);</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+            break;</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+        case TA_SOCKET_WRITE:</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+            multi_tcp_process_outgoing_li=
+nk(m, false, mpp_flags);</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+            break;</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        case TA=
+_SOCKET_WRITE_DEFERRED:</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+            multi_tcp_process_outgoing_link(m, true, mpp_flags);</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+            break;</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+        case TA_INITIAL:</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+            ASSERT(mi);</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+            multi_tcp_set_global_rw_f=
+lags(m, mi);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
+     multi_process_post(m, mi, mpp_flags);</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+            break;</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+        default:</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+            msg(M_FATAL, &quot;MULTI PROTOCOL: multi_protocol_dispatch, unh=
+andled action=3D%d&quot;, action);</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    m-&gt;mpp_touc=
+hed =3D NULL;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    re=
+turn touched;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+static int</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+multi_protocol_post(struct multi_context *m, struc=
+t multi_instance *mi, const int action)</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+    struct context *c =3D multi_tcp_context(m, mi);</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    int newaction =3D TA_UNDEF;</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+#define MTP_NONE         0</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+#define MTP_TUN_OUT      (1&lt;&lt;0)</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+#define MTP_LINK_OUT   =
+  (1&lt;&lt;1)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    u=
+nsigned int flags =3D MTP_NONE;</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if =
+(TUN_OUT(c))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+        flags |=3D MT=
+P_TUN_OUT;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (LINK_OUT(c))</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+        flags |=3D MTP_LINK_OUT;</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+    switch (flags)</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+        case MTP_TUN_OUT|MTP_LINK_OUT:</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+        case MTP_TUN_OUT:</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+            newaction =3D TA_TUN_WRITE;</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+            break;</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+        case MTP_LINK_OUT:</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+            newaction =3D TA_SOCKET_WRI=
+TE;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            brea=
+k;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+        case MTP_NONE:</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+            if (mi &amp;&amp; soc=
+kets_read_residual(c))</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+            {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+             newaction =3D TA_SOCKET_READ_RESIDUAL;</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+            }</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+            else</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+            {</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+                multi_tcp_set_global_rw_flags(m, mi);</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+            }</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+            break;</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+        default:</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+        {</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+            struct gc_arena gc =3D gc_new();</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+            msg(M_FATAL, &quot;MULTI=
+ PROTOCOL: multi_protocol_post bad state, mi=3D%s flags=3D%d&quot;,</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+                multi_insta=
+nce_string(mi, false, &amp;gc),</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+                flags);</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+            gc_free(&amp;gc);</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+            break;</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+        }</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    dmsg(D_MULTI_D=
+EBUG, &quot;MULTI PROTOCOL: multi_protocol_post %s -&gt; %s&quot;,</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+         pract(action),</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+         pract(newaction=
+));</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+    return newaction;</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+void</span><br><span style=3D"color: hsl(120, 100%, 40%);">+multi_prot=
+ocol_process_io(struct multi_context *m)</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+    struct multi_protocol *multi_io =3D m-&gt;multi_io;</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+    int i;</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+    for (i =3D 0; i &lt; multi_io-&gt;n_esr; ++i)</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+        struct event_set_return *e =3D &amp;mult=
+i_io-&gt;esr[i];</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+     struct event_arg *ev_arg =3D (struct event_arg *)e-&gt;arg;</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+        /* incoming data for instance or listenin=
+g socket? */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
+ if (e-&gt;arg &gt;=3D MULTI_N)</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+        {</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+            switch (ev_arg-&gt;type)</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+            {</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+                struct multi_instance *mi;</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+                /* react to event on child instance */</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+                case EV=
+ENT_ARG_MULTI_INSTANCE:</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+                    if (!ev_arg-&gt;u.mi)</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+                    {</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+                        msg(D_MULTI_ERRORS, &qu=
+ot;MULTI PROTOCOL: multi_proto_proc_io: null minstance&quot;);</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+                        break;</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+                    }=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+                    mi =3D ev_arg-&gt;=
+u.mi;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+              =
+      if (e-&gt;rwflags &amp; EVENT_WRITE)</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+                    {</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+                        multi_protocol_action(m, m=
+i, TA_SOCKET_WRITE_READY, false);</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+                    }</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+                    else if (e-&gt;rwflags &amp; EVENT_READ=
+)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+                  =
+  {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+                =
+        multi_protocol_action(m, mi, TA_SOCKET_READ, false);</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+                    }</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+                    break;</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+                /* new incoming TCP client a=
+ttempting to connect? */</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+                case EVENT_ARG_LINK_SOCKET:</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+                    if (!ev_arg-&gt;u.sock)</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+                    {<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+                    =
+    msg(D_MULTI_ERRORS, &quot;MULTI PROTOCOL: multi_proto_proc_io: null soc=
+ket&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        =
+                break;</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+                    }</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+              =
+      if (!proto_is_dgram(ev_arg-&gt;u.sock-&gt;info.proto))</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+                    {</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+                        socket_r=
+eset_listen_persistent(ev_arg-&gt;u.sock);</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+                        mi =3D multi_create_instance=
+_tcp(m, ev_arg-&gt;u.sock);</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+                        if (mi)</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+                        {</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+                            multi_protocol_action=
+(m, mi, TA_INITIAL, false);</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+                        }</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+                        break;</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+                    }</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+            }</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+        }</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+        else</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+        {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#ifdef=
+ ENABLE_MANAGEMENT</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+           if (e-&gt;arg =3D=3D MULTI_IO_MANAGEMENT)</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+            {</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+                ASSERT(management);</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+                management_io(m=
+anagement);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        =
+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            el=
+se</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#endif</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+            /* incoming data o=
+n TUN? */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+          =
+  if (e-&gt;arg =3D=3D MULTI_IO_TUN)</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+            {</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+                if (e-&gt;rwflags &amp; EVENT_WRITE)</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+                {</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+                    multi_protoco=
+l_action(m, NULL, TA_TUN_WRITE, false);</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+                }</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+                else if (e-&gt;rwflags &amp; EVENT_READ)<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+                {</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+                    mu=
+lti_protocol_action(m, NULL, TA_TUN_READ, false);</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+                }</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+            }</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+            /* new incoming TCP client attempting to =
+connect? */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        =
+    else if (e-&gt;arg =3D=3D MULTI_IO_SOCKET)</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+            {</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+                struct multi_instance *mi;</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+                ASSERT(m-&gt;to=
+p.c2.link_sockets[0]);</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+                socket_reset_listen_persistent(m-&gt;top.c2.link_sockets=
+[0]);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+              =
+  mi =3D multi_create_instance_tcp(m, m-&gt;top.c2.link_sockets[0]);</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+                if (mi)</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+                {</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+                    mult=
+i_protocol_action(m, mi, TA_INITIAL, false);</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+                }</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+            }</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+#if defined(ENABLE_DCO) &amp;&amp; (defined(TARGET_LINUX) =
+|| defined(TARGET_FREEBSD))</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+            /* incoming data on DCO? */</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+            else if (e-&gt;arg =3D=3D MULTI_IO_=
+DCO)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            {</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+                multi=
+_process_incoming_dco(m);</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+            }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+#endif</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            /=
+* signal received? */</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+            else if (e-&gt;arg =3D=3D MULTI_IO_SIG)</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+            {</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+                get_signal(&amp;m-&gt;top.sig-&=
+gt;signal_received);</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++            }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#ifde=
+f ENABLE_ASYNC_PUSH</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+            else if (e-&gt;arg =3D=3D MULTI_IO_FILE_CLOSE_WRITE)</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+            {</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+                multi_process_file_c=
+losed(m, MPP_PRE_SELECT | MPP_RECORD_TOUCH);</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+            }</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+#endif</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+        }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+    if (IS_SIG(&amp;m-&gt;top))</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+        {</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+            break;</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++        }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+    multi_io-&gt;n_esr =
+=3D 0;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+    /*</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+     * Process queued mbuf packets destined f=
+or TCP socket</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     *=
+/</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+        struct multi_instance *m=
+i;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        while (!I=
+S_SIG(&amp;m-&gt;top) &amp;&amp; (mi =3D mbuf_peek(m-&gt;mbuf)) !=3D NULL)<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+        {</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+            multi_protocol_act=
+ion(m, mi, TA_SOCKET_WRITE, true);</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+        }</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+void</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+multi_protocol_action(struct multi_context *m, struct multi_i=
+nstance *mi, int action, bool poll)</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+  bool tun_input_pending =3D false;</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+ do</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+        dmsg(D_MULTI_DEBUG, &q=
+uot;MULTI PROTOCOL: multi_protocol_action a=3D%s p=3D%d&quot;,</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+             pract(action),</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+             poll);</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+        /*</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+         * If TA_SOCKET_READ_RESIDUAL, it means we=
+ still have pending</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+         * input packets which were read by a prior recv.</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+         *</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+         * Otherwise do a &quot;lite&quot; wai=
+t, which means we wait with 0 timeout</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+         * on I/O events only related to the current inst=
+ance, not</span><br><span style=3D"color: hsl(120, 100%, 40%);">+         *=
+ the big list of events.</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+         *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+     * On our first pass, poll will be false because we already know</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+         * that input is a=
+vailable, and to call io_wait would be redundant.</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+         */</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+        if (poll &amp;&amp; action !=3D TA_SOCKET_REA=
+D_RESIDUAL)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        =
+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            const =
+int orig_action =3D action;</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+            action =3D multi_protocol_wait_lite(m, mi, action, &amp=
+;tun_input_pending);</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++            if (action =3D=3D TA_UNDEF)</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+            {</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+                msg(M_FATAL, &quot;MULTI PROTOCOL: I/O wait =
+required blocking in multi_protocol_action, action=3D%d&quot;, orig_action)=
+;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            }</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+        }</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+        /*</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+         * Dispatch the action</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+         */</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+        struct multi_instance *touched =3D multi_protocol_d=
+ispatch(m, mi, action);</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        /*</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+         * Signal receiv=
+ed or connection</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+      * reset by peer?</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+         */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
+   if (touched &amp;&amp; IS_SIG(&amp;touched-&gt;context))</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+        {</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+            if (mi =3D=3D touched)</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+            {</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+                mi =3D NULL;</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+            }</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+            multi_close_instance_=
+on_signal(m, touched);</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+        }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+        /*</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+         * If dispatch produced any pending output</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+         * for a partic=
+ular instance, point to</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+         * that instance.</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+         */</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+        if (m-&gt;pending)</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+        {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+           mi =3D m-&gt;pending;</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+        }</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        /*</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+         * Based on the e=
+ffects of the action,</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+         * such as generating pending output,</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+         * possibly transition to a new action =
+state.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+         */</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+        action =3D mu=
+lti_protocol_post(m, mi, action);</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
+   /*</span><br><span style=3D"color: hsl(120, 100%, 40%);">+         * If =
+we are finished processing the original action,</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+         * check if we have any TUN input.  If =
+so, transition</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
+    * our action state to processing this input.</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+         */</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+        if (tun_input_pending &amp;&amp; action =3D=3D=
+ TA_UNDEF)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        {=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            action =
+=3D TA_TUN_READ;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+         mi =3D NULL;</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+            tun_input_pending =3D false;</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+            poll =3D false;</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+        }</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+        else</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+        {</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+            poll =3D true;</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+        }</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    } while (actio=
+n !=3D TA_UNDEF);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+void</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+multi_protocol_delete_event(struct multi_protocol *mul=
+ti_io, event_t event)</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (multi_io=
+ &amp;&amp; multi_io-&gt;es)</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
+   event_del(multi_io-&gt;es, event);</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+}</span><br><span>diff --git a/src/openvpn/multi_io.h b/src/openvpn/mul=
+ti_io.h</span><br><span>new file mode 100644</span><br><span>index 0000000.=
+.07fc935</span><br><span>--- /dev/null</span><br><span>+++ b/src/openvpn/mu=
+lti_io.h</span><br><span>@@ -0,0 +1,77 @@</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+/*</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+ *  OpenVPN -- An application to securely tunnel IP networks</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+ *             over a single =
+TCP/UDP port, with support for SSL/TLS-based</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+ *             session authentication and key exch=
+ange,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *            =
+ packet encryption, packet authentication, and</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+ *             packet compression.</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+ *  Copyright (C) 2002-2023 OpenVPN Inc &lt;sales@=
+...515...&gt;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  This program is fre=
+e software; you can redistribute it and/or modify</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+ *  it under the terms of the GNU General Pub=
+lic License version 2</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+ *  as published by the Free Software Foundation.</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+ *  This program is distributed in the hope that it will b=
+e useful,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  but WI=
+THOUT ANY WARRANTY; without even the implied warranty of</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+ *  MERCHANTABILITY or FITNESS FOR A P=
+ARTICULAR PURPOSE.  See the</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+ *  GNU General Public License for more details.</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+ *  You should have received a copy of the GNU General =
+Public License along</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++ *  with this program; if not, write to the Free Software Foundation, Inc.=
+,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  51 Franklin St=
+reet, Fifth Floor, Boston, MA 02110-1301 USA.</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+ */</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+/*</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+ * Multi-protocol specific=
+ code for --mode server</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+ */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+#ifndef MULTI_IO_H</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+#define MULTI_IO_H</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+#include &quot;event.h&quot;</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+/*</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *=
+ I/O processing States</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+ */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+#define TA_UNDEF                =
+ 0</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#define TA_SOCKET=
+_READ           1</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#d=
+efine TA_SOCKET_READ_RESIDUAL  2</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+#define TA_SOCKET_WRITE          3</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+#define TA_SOCKET_WRITE_READY    4</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+#define TA_SOCKET_WRITE_DEFERRED=
+ 5</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#define TA_TUN_RE=
+AD              6</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#d=
+efine TA_TUN_WRITE             7</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+#define TA_INITIAL               8</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+#define TA_TIMEOUT               9</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+#define TA_TUN_WRITE_TIMEOUT    =
+ 10</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+/*</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+ * Extra state info needed for Multi-protocol</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+ */</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+struct multi_protocol</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+    struct event_set *es;</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+    struct event_set_return *esr;</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+    int n_esr;</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    int maxevents;</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    unsigned int tun_rwflags;</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+    unsigned int udp_flags;</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+#ifdef ENABLE_MANAGEMEN=
+T</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    unsigned int m=
+anagement_persist_flags;</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+#endif</span><br><span style=3D"color: hsl(120, 100%, 40%);">+};</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+struct multi_protocol *multi_protocol_init(i=
+nt maxevents, int *maxclients);</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+void mu=
+lti_protocol_free(struct multi_protocol *multi_io);</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+int multi_protocol_io_wait(struct multi_context *m);</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+void multi_protocol_process_io(struct multi_co=
+ntext *m);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+void multi_protocol_action(s=
+truct multi_context *m, struct multi_instance *mi, int action, bool poll);<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+void multi_protocol_delete_event(struct=
+ multi_protocol *multi_io, event_t event);</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+#endif /* ifndef MULTI_IO_H */</span><br><span></span><br></pre><p>To v=
+iew, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/763?usp=3Demail=
+">change 763</a>. To unsubscribe, or for help writing mail filters, visit <=
+a href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemsco=
+pe itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"a=
+ction" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" hre=
+f=3D"http://gerrit.openvpn.net/c/openvpn/+/763?usp=3Demail"/><meta itemprop=
+=3D"name" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I31bbf87e4e568021445c7512ece=
-fadfd4a69b363 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 764 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I1e5a84969988e4f027a18658d4a=
+b268c13fbf929 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 763 </div>
 <div style=3D"display:none"> Gerrit-PatchSet: 4 </div>
 <div style=3D"display:none"> Gerrit-Owner: its_Giaan &lt;gianmarco@...2786...=
 ..&gt; </div>
@@ -2925,10 +3875,10 @@ fadfd4a69b363 </div>
 ts.sourceforge.net&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
 ..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: its_Giaan &lt;gianmarco@...1665...=
-726...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
+41...&gt; </div>
 <div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
 
 
---xWhg6TeD8Cw=--
+--4MZ8k4yh/h8=--
 
