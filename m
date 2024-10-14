@@ -1,16 +1,11 @@
-From: "flichtenheld (Code Review)" <gerrit@...515...>
-Date: Mon, 14 Oct 2024 12:22:16 +0000
-In-Reply-To: <gerrit.1727098847000.I8eae2d3356bbcc5d632eeb4fbe80de8009d9b40d@...2715...>
-References: <gerrit.1727098847000.I8eae2d3356bbcc5d632eeb4fbe80de8009d9b40d@...2715...>
-Reply-To: frank@...2641..., arne-openvpn@...1227...,
- gianmarco@...2726..., openvpn-devel@lists.sourceforge.net, a@...2181...
-Message-ID: <1cf0d85bc0e4da8ed5ad59925ad287d644c84fdc-EmailReviewComments-HTML@...2715...>
+From: Frank Lichtenheld <frank@...2641...>
+Date: Mon, 14 Oct 2024 14:24:50 +0200
+Message-Id: <20241014122450.37546-1-frank@...2641...>
+In-Reply-To: <20241014121600.36187-1-frank@...2641...>
+References: <20241014121600.36187-1-frank@...2641...>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="9f8YczJUkMU="; charset=UTF-8
-Subject: [Openvpn-devel] [M] Change in openvpn[master]: pass link_socket
- object to i/o functions
+Subject: [Openvpn-devel] [PATCH v4] event/multi: add event_arg object to
+ make event handling more generic
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,107 +14,244 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: its_Giaan <gianmarco@...2726...>
-Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
+Cc: Antonio Quartulli <a@...2181...>, Gianmarco De Gregori <gianmarco@...2726...>
 
---9f8YczJUkMU=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+From: Antonio Quartulli <a@...2181...>
 
-Attention is currently required from: its_Giaan, plaisthos.
+In order to prepare the event handling code to deal with multiple
+listening sockets, we have to make sure that it is possible to
+distinguish which of these sockets have been poked by an incoming
+connection request.
 
-flichtenheld has posted comments on this change. ( http://gerrit.openvpn.ne=
-t/c/openvpn/+/758?usp=3Demail )
+To achieve that, this patch changes the object being passed as
+event handler argument, from a "partly integer-evaluated variable"
+to a full struct with a proper type attribute.
 
-Change subject: pass link_socket object to i/o functions
-......................................................................
+This struct will allow the code to carry around the particular
+listening socket where the connection is being established.
 
+This change affects the TCP server code path only as UDP servers
+use only one socket to handle all clients.
 
-Patch Set 4: Code-Review+2
+Change-Id: Icd7f6a2ad350cdc2312b3e80fa0dbdd7e4311d2e
+Signed-off-by: Antonio Quartulli <a@...2181...>
+Signed-off-by: Gianmarco De Gregori <gianmarco@...2726...>
+Acked-by: Frank Lichtenheld <frank@...2641...>
+---
 
-(1 comment)
+This change was reviewed on Gerrit and approved by at least one
+developer. I request to merge it to master.
 
-Commit Message:
+Manually added Signed-off-by for Giaan.
 
-http://gerrit.openvpn.net/c/openvpn/+/758/comment/5e021526_9a57f5d4 :
-PS4, Line 17: Signed-off-by: Antonio Quartulli <a@...2181...>
-This probably should have a Signed-off-by line from Giaan as well, since he=
- submitted it. For now I will add it manually.
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/757
+This mail reflects revision 4 of this Change.
 
+Acked-by according to Gerrit (reflected above):
+Frank Lichtenheld <frank@...2641...>
 
-
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/758?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings
-
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: I8eae2d3356bbcc5d632eeb4fbe80de8009d9b40d
-Gerrit-Change-Number: 758
-Gerrit-PatchSet: 4
-Gerrit-Owner: its_Giaan <gianmarco@...2726...>
-Gerrit-Reviewer: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-CC: ordex <a@...2181...>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: its_Giaan <gianmarco@...2726...>
-Gerrit-Comment-Date: Mon, 14 Oct 2024 12:22:16 +0000
-Gerrit-HasComments: Yes
-Gerrit-Has-Labels: Yes
-Gerrit-MessageType: comment
-
---9f8YczJUkMU=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<p> Attention is currently required from: its_Giaan, plaisthos. </p>
-<p>Patch set 4:<span style=3D"border-radius: 3px; display: inline-block; ma=
-rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/758?usp=3Demail">Vi=
-ew Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0=
-;"><li style=3D"margin: 0; padding: 0;"><p>Commit Message:</p><ul style=3D"=
-list-style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;=
-"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/o=
-penvpn/+/758/comment/5e021526_9a57f5d4">Patch Set #4, Line 17:</a> <code st=
-yle=3D"font-family:monospace,monospace">Signed-off-by: Antonio Quartulli &l=
-t;a@...2181...&gt;</code></p><p style=3D"white-space: pre-wrap; word-wrap: =
-break-word;">This probably should have a Signed-off-by line from Giaan as w=
-ell, since he submitted it. For now I will add it manually.</p></li></ul></=
-li></ul><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/=
-758?usp=3Demail">change 758</a>. To unsubscribe, or for help writing mail f=
-ilters, visit <a href=3D"http://gerrit.openvpn.net/settings">settings</a>.<=
-/p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscop=
-e itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itemp=
-rop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/758?usp=3Demail"/=
-><meta itemprop=3D"name" content=3D"View Change"/></div></div>
-
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I8eae2d3356bbcc5d632eeb4fbe8=
-0de8009d9b40d </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 758 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 4 </div>
-<div style=3D"display:none"> Gerrit-Owner: its_Giaan &lt;gianmarco@...2786...=
-..&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
-1...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: ordex &lt;a@...2181...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: its_Giaan &lt;gianmarco@...1665...=
-726...&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Mon, 14 Oct 2024 12:22:16=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
-
-
---9f8YczJUkMU=--
+        
+diff --git a/src/openvpn/event.h b/src/openvpn/event.h
+index 856551a..844ea7b 100644
+--- a/src/openvpn/event.h
++++ b/src/openvpn/event.h
+@@ -126,6 +126,20 @@
+     struct event_set_functions func;
+ };
+ 
++typedef enum {
++    EVENT_ARG_MULTI_INSTANCE = 0,
++    EVENT_ARG_LINK_SOCKET,
++} event_arg_t;
++
++/* generic event argument object to pass to event_ctl() */
++struct event_arg
++{
++    event_arg_t type;
++    union {
++        struct multi_instance *mi; /* if type = EVENT_ARG_MULTI_INSTANCE */
++    } u;
++};
++
+ /*
+  * maxevents on input:  desired max number of event_t descriptors
+  *                      simultaneously set with event_ctl
+diff --git a/src/openvpn/mtcp.c b/src/openvpn/mtcp.c
+index 96408d1..c002a38 100644
+--- a/src/openvpn/mtcp.c
++++ b/src/openvpn/mtcp.c
+@@ -54,7 +54,6 @@
+ /*
+  * Special tags passed to event.[ch] functions
+  */
+-#define MTCP_SOCKET      ((void *)1)
+ #define MTCP_TUN         ((void *)2)
+ #define MTCP_SIG         ((void *)3) /* Only on Windows */
+ #define MTCP_MANAGEMENT ((void *)4)
+@@ -253,7 +252,7 @@
+         socket_set(mi->context.c2.link_socket,
+                    m->mtcp->es,
+                    mbuf_defined(mi->tcp_link_out_deferred) ? EVENT_WRITE : EVENT_READ,
+-                   mi,
++                   &mi->ev_arg,
+                    &mi->tcp_rwflags);
+     }
+ }
+@@ -263,8 +262,8 @@
+                struct multi_tcp *mtcp)
+ {
+     int status;
+-    unsigned int *persistent = &mtcp->tun_rwflags;
+-    socket_set_listen_persistent(c->c2.link_socket, mtcp->es, MTCP_SOCKET);
++    socket_set_listen_persistent(c->c2.link_socket, mtcp->es,
++                                 &c->c2.link_socket->ev_arg);
+ 
+ #ifdef _WIN32
+     if (tuntap_is_wintun(c->c1.tuntap))
+@@ -280,7 +279,7 @@
+         persistent = NULL;
+     }
+ #endif
+-    tun_set(c->c1.tuntap, mtcp->es, EVENT_READ, MTCP_TUN, persistent);
++    tun_set(c->c1.tuntap, mtcp->es, EVENT_READ, MTCP_TUN, &mtcp->tun_rwflags);
+ #if defined(TARGET_LINUX) || defined(TARGET_FREEBSD)
+     dco_event_set(&c->c1.tuntap->dco, mtcp->es, MTCP_DCO);
+ #endif
+@@ -693,20 +692,43 @@
+     {
+         struct event_set_return *e = &mtcp->esr[i];
+ 
+-        /* incoming data for instance? */
++        /* incoming data for instance or listening socket? */
+         if (e->arg >= MTCP_N)
+         {
+-            struct multi_instance *mi = (struct multi_instance *) e->arg;
+-            if (mi)
++            struct event_arg *ev_arg = (struct event_arg *)e->arg;
++            switch (ev_arg->type)
+             {
+-                if (e->rwflags & EVENT_WRITE)
+-                {
+-                    multi_tcp_action(m, mi, TA_SOCKET_WRITE_READY, false);
+-                }
+-                else if (e->rwflags & EVENT_READ)
+-                {
+-                    multi_tcp_action(m, mi, TA_SOCKET_READ, false);
+-                }
++                struct multi_instance *mi;
++
++                /* react to event on child instance */
++                case EVENT_ARG_MULTI_INSTANCE:
++                    if (!ev_arg->u.mi)
++                    {
++                        msg(D_MULTI_ERRORS, "MULTI: mtcp_proc_io: null minstance");
++                        break;
++                    }
++
++                    mi = ev_arg->u.mi;
++                    if (e->rwflags & EVENT_WRITE)
++                    {
++                        multi_tcp_action(m, mi, TA_SOCKET_WRITE_READY, false);
++                    }
++                    else if (e->rwflags & EVENT_READ)
++                    {
++                        multi_tcp_action(m, mi, TA_SOCKET_READ, false);
++                    }
++                    break;
++
++                /* new incoming TCP client attempting to connect? */
++                case EVENT_ARG_LINK_SOCKET:
++                    ASSERT(m->top.c2.link_socket);
++                    socket_reset_listen_persistent(m->top.c2.link_socket);
++                    mi = multi_create_instance_tcp(m);
++                    if (mi)
++                    {
++                        multi_tcp_action(m, mi, TA_INITIAL, false);
++                    }
++                    break;
+             }
+         }
+         else
+@@ -731,18 +753,6 @@
+                     multi_tcp_action(m, NULL, TA_TUN_READ, false);
+                 }
+             }
+-            /* new incoming TCP client attempting to connect? */
+-            else if (e->arg == MTCP_SOCKET)
+-            {
+-                struct multi_instance *mi;
+-                ASSERT(m->top.c2.link_socket);
+-                socket_reset_listen_persistent(m->top.c2.link_socket);
+-                mi = multi_create_instance_tcp(m);
+-                if (mi)
+-                {
+-                    multi_tcp_action(m, mi, TA_INITIAL, false);
+-                }
+-            }
+ #if defined(ENABLE_DCO) && (defined(TARGET_LINUX) || defined(TARGET_FREEBSD))
+             /* incoming data on DCO? */
+             else if (e->arg == MTCP_DCO)
+diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
+index 0509911..45b3cfa 100644
+--- a/src/openvpn/multi.c
++++ b/src/openvpn/multi.c
+@@ -823,6 +823,9 @@
+         goto err;
+     }
+ 
++    mi->ev_arg.type = EVENT_ARG_MULTI_INSTANCE;
++    mi->ev_arg.u.mi = mi;
++
+     perf_pop();
+     gc_free(&gc);
+     return mi;
+diff --git a/src/openvpn/multi.h b/src/openvpn/multi.h
+index 7167639..1b99ef7 100644
+--- a/src/openvpn/multi.h
++++ b/src/openvpn/multi.h
+@@ -102,6 +102,12 @@
+     struct schedule_entry se;  /* this must be the first element of the structure,
+                                 * We cast between this and schedule_entry so the
+                                 * beginning of the struct must be identical */
++
++    struct event_arg ev_arg;   /**< this struct will store a pointer to either mi or
++                                * link_socket, depending on the event type, to keep
++                                * it accessible it's placed within the same struct
++                                * it points to. */
++
+     struct gc_arena gc;
+     bool halt;
+     int refcount;
+diff --git a/src/openvpn/socket.c b/src/openvpn/socket.c
+index 7b1e603..cf04090 100644
+--- a/src/openvpn/socket.c
++++ b/src/openvpn/socket.c
+@@ -1830,6 +1830,8 @@
+     ALLOC_OBJ_CLEAR(sock, struct link_socket);
+     sock->sd = SOCKET_UNDEFINED;
+     sock->ctrl_sd = SOCKET_UNDEFINED;
++    sock->ev_arg.type = EVENT_ARG_LINK_SOCKET;
++
+     return sock;
+ }
+ 
+diff --git a/src/openvpn/socket.h b/src/openvpn/socket.h
+index 2e583af..c152ab0 100644
+--- a/src/openvpn/socket.h
++++ b/src/openvpn/socket.h
+@@ -178,6 +178,11 @@
+ {
+     struct link_socket_info info;
+ 
++    struct event_arg ev_arg;   /**< this struct will store a pointer to either mi or
++                                * link_socket, depending on the event type, to keep
++                                * it accessible it's placed within the same struct
++                                * it points to. */
++
+     socket_descriptor_t sd;
+     socket_descriptor_t ctrl_sd; /* only used for UDP over Socks */
+ 
 
