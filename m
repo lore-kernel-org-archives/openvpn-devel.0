@@ -1,11 +1,11 @@
 From: Frank Lichtenheld <frank@...2641...>
-Date: Mon, 14 Oct 2024 14:24:50 +0200
-Message-Id: <20241014122450.37546-1-frank@...2641...>
-In-Reply-To: <20241014121600.36187-1-frank@...2641...>
-References: <20241014121600.36187-1-frank@...2641...>
+Date: Mon, 14 Oct 2024 14:27:59 +0200
+Message-Id: <20241014122759.38094-1-frank@...2641...>
+In-Reply-To: <gerrit.1727098847000.Ib583bf17e35b14aed78fd8217b6e71e8c2b78089@...2715...>
+References: <gerrit.1727098847000.Ib583bf17e35b14aed78fd8217b6e71e8c2b78089@...2715...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v4] event/multi: add event_arg object to
- make event handling more generic
+Subject: [Openvpn-devel] [PATCH v4] io_work: convert shift argument to
+ uintptr_t
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -21,22 +21,16 @@ Cc: Antonio Quartulli <a@...2181...>, Gianmarco De Gregori <gianmarco@...2726...
 
 From: Antonio Quartulli <a@...2181...>
 
-In order to prepare the event handling code to deal with multiple
-listening sockets, we have to make sure that it is possible to
-distinguish which of these sockets have been poked by an incoming
-connection request.
+Instead of passing the shift argument as pointer, pass
+directly its integer value. This will allow the code to
+distinguish a shift value from a real object pointer,
+like we already do in multi_tcp_process_io().
 
-To achieve that, this patch changes the object being passed as
-event handler argument, from a "partly integer-evaluated variable"
-to a full struct with a proper type attribute.
+This change will allow us later to pass an event_arg
+object as event handler argument instead of a simple
+integer value.
 
-This struct will allow the code to carry around the particular
-listening socket where the connection is being established.
-
-This change affects the TCP server code path only as UDP servers
-use only one socket to handle all clients.
-
-Change-Id: Icd7f6a2ad350cdc2312b3e80fa0dbdd7e4311d2e
+Change-Id: Ib583bf17e35b14aed78fd8217b6e71e8c2b78089
 Signed-off-by: Antonio Quartulli <a@...2181...>
 Signed-off-by: Gianmarco De Gregori <gianmarco@...2726...>
 Acked-by: Frank Lichtenheld <frank@...2641...>
@@ -45,213 +39,96 @@ Acked-by: Frank Lichtenheld <frank@...2641...>
 This change was reviewed on Gerrit and approved by at least one
 developer. I request to merge it to master.
 
-Manually added Signed-off-by for Giaan.
+Same as v3 but I added Signed-off-by for Giaan.
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/757
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/759
 This mail reflects revision 4 of this Change.
 
 Acked-by according to Gerrit (reflected above):
 Frank Lichtenheld <frank@...2641...>
 
         
-diff --git a/src/openvpn/event.h b/src/openvpn/event.h
-index 856551a..844ea7b 100644
---- a/src/openvpn/event.h
-+++ b/src/openvpn/event.h
-@@ -126,6 +126,20 @@
-     struct event_set_functions func;
- };
+diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c
+index 6f279ec..66e5be1 100644
+--- a/src/openvpn/forward.c
++++ b/src/openvpn/forward.c
+@@ -2065,20 +2065,18 @@
+     unsigned int tuntap = 0;
+     struct event_set_return esr[4];
  
-+typedef enum {
-+    EVENT_ARG_MULTI_INSTANCE = 0,
-+    EVENT_ARG_LINK_SOCKET,
-+} event_arg_t;
-+
-+/* generic event argument object to pass to event_ctl() */
-+struct event_arg
-+{
-+    event_arg_t type;
-+    union {
-+        struct multi_instance *mi; /* if type = EVENT_ARG_MULTI_INSTANCE */
-+    } u;
-+};
-+
- /*
-  * maxevents on input:  desired max number of event_t descriptors
-  *                      simultaneously set with event_ctl
-diff --git a/src/openvpn/mtcp.c b/src/openvpn/mtcp.c
-index 96408d1..c002a38 100644
---- a/src/openvpn/mtcp.c
-+++ b/src/openvpn/mtcp.c
-@@ -54,7 +54,6 @@
- /*
-  * Special tags passed to event.[ch] functions
-  */
--#define MTCP_SOCKET      ((void *)1)
- #define MTCP_TUN         ((void *)2)
- #define MTCP_SIG         ((void *)3) /* Only on Windows */
- #define MTCP_MANAGEMENT ((void *)4)
-@@ -253,7 +252,7 @@
-         socket_set(mi->context.c2.link_socket,
-                    m->mtcp->es,
-                    mbuf_defined(mi->tcp_link_out_deferred) ? EVENT_WRITE : EVENT_READ,
--                   mi,
-+                   &mi->ev_arg,
-                    &mi->tcp_rwflags);
-     }
- }
-@@ -263,8 +262,8 @@
-                struct multi_tcp *mtcp)
- {
-     int status;
--    unsigned int *persistent = &mtcp->tun_rwflags;
--    socket_set_listen_persistent(c->c2.link_socket, mtcp->es, MTCP_SOCKET);
-+    socket_set_listen_persistent(c->c2.link_socket, mtcp->es,
-+                                 &c->c2.link_socket->ev_arg);
- 
- #ifdef _WIN32
-     if (tuntap_is_wintun(c->c1.tuntap))
-@@ -280,7 +279,7 @@
-         persistent = NULL;
-     }
+-    /* These shifts all depend on EVENT_READ (=1) and EVENT_WRITE (=2)
+-     * and are added to the shift. Check openvpn.h for more details.
+-     */
+-    static int socket_shift = SOCKET_SHIFT;
+-    static int tun_shift = TUN_SHIFT;
+-    static int err_shift = ERR_SHIFT;
++    /* These shifts all depend on EVENT_READ and EVENT_WRITE */
++    static uintptr_t socket_shift = SOCKET_SHIFT;   /* depends on SOCKET_READ and SOCKET_WRITE */
++    static uintptr_t tun_shift = TUN_SHIFT;      /* depends on TUN_READ and TUN_WRITE */
++    static uintptr_t err_shift = ERR_SHIFT;      /* depends on ES_ERROR */
+ #ifdef ENABLE_MANAGEMENT
+-    static int management_shift = MANAGEMENT_SHIFT;
++    static uintptr_t management_shift = MANAGEMENT_SHIFT; /* depends on MANAGEMENT_READ and MANAGEMENT_WRITE */
  #endif
--    tun_set(c->c1.tuntap, mtcp->es, EVENT_READ, MTCP_TUN, persistent);
-+    tun_set(c->c1.tuntap, mtcp->es, EVENT_READ, MTCP_TUN, &mtcp->tun_rwflags);
+ #ifdef ENABLE_ASYNC_PUSH
+-    static int file_shift = FILE_SHIFT;
++    static uintptr_t file_shift = FILE_SHIFT;
+ #endif
  #if defined(TARGET_LINUX) || defined(TARGET_FREEBSD)
-     dco_event_set(&c->c1.tuntap->dco, mtcp->es, MTCP_DCO);
+-    static int dco_shift = DCO_SHIFT;    /* Event from DCO linux kernel module */
++    static uintptr_t dco_shift = DCO_SHIFT;    /* Event from DCO linux kernel module */
  #endif
-@@ -693,20 +692,43 @@
-     {
-         struct event_set_return *e = &mtcp->esr[i];
  
--        /* incoming data for instance? */
-+        /* incoming data for instance or listening socket? */
-         if (e->arg >= MTCP_N)
-         {
--            struct multi_instance *mi = (struct multi_instance *) e->arg;
--            if (mi)
-+            struct event_arg *ev_arg = (struct event_arg *)e->arg;
-+            switch (ev_arg->type)
-             {
--                if (e->rwflags & EVENT_WRITE)
--                {
--                    multi_tcp_action(m, mi, TA_SOCKET_WRITE_READY, false);
--                }
--                else if (e->rwflags & EVENT_READ)
--                {
--                    multi_tcp_action(m, mi, TA_SOCKET_READ, false);
--                }
-+                struct multi_instance *mi;
-+
-+                /* react to event on child instance */
-+                case EVENT_ARG_MULTI_INSTANCE:
-+                    if (!ev_arg->u.mi)
-+                    {
-+                        msg(D_MULTI_ERRORS, "MULTI: mtcp_proc_io: null minstance");
-+                        break;
-+                    }
-+
-+                    mi = ev_arg->u.mi;
-+                    if (e->rwflags & EVENT_WRITE)
-+                    {
-+                        multi_tcp_action(m, mi, TA_SOCKET_WRITE_READY, false);
-+                    }
-+                    else if (e->rwflags & EVENT_READ)
-+                    {
-+                        multi_tcp_action(m, mi, TA_SOCKET_READ, false);
-+                    }
-+                    break;
-+
-+                /* new incoming TCP client attempting to connect? */
-+                case EVENT_ARG_LINK_SOCKET:
-+                    ASSERT(m->top.c2.link_socket);
-+                    socket_reset_listen_persistent(m->top.c2.link_socket);
-+                    mi = multi_create_instance_tcp(m);
-+                    if (mi)
-+                    {
-+                        multi_tcp_action(m, mi, TA_INITIAL, false);
-+                    }
-+                    break;
-             }
-         }
-         else
-@@ -731,18 +753,6 @@
-                     multi_tcp_action(m, NULL, TA_TUN_READ, false);
+     /*
+@@ -2092,7 +2090,7 @@
+      */
+     if (flags & IOW_WAIT_SIGNAL)
+     {
+-        wait_signal(c->c2.event_set, (void *)&err_shift);
++        wait_signal(c->c2.event_set, (void *)err_shift);
+     }
+ 
+     /*
+@@ -2185,19 +2183,19 @@
+     /*
+      * Configure event wait based on socket, tuntap flags.
+      */
+-    socket_set(c->c2.link_socket, c->c2.event_set, socket, (void *)&socket_shift, NULL);
+-    tun_set(c->c1.tuntap, c->c2.event_set, tuntap, (void *)&tun_shift, NULL);
++    socket_set(c->c2.link_socket, c->c2.event_set, socket, (void *)socket_shift, NULL);
++    tun_set(c->c1.tuntap, c->c2.event_set, tuntap, (void *)tun_shift, NULL);
+ #if defined(TARGET_LINUX) || defined(TARGET_FREEBSD)
+     if (socket & EVENT_READ && c->c2.did_open_tun)
+     {
+-        dco_event_set(&c->c1.tuntap->dco, c->c2.event_set, (void *)&dco_shift);
++        dco_event_set(&c->c1.tuntap->dco, c->c2.event_set, (void *)dco_shift);
+     }
+ #endif
+ 
+ #ifdef ENABLE_MANAGEMENT
+     if (management)
+     {
+-        management_socket_set(management, c->c2.event_set, (void *)&management_shift, NULL);
++        management_socket_set(management, c->c2.event_set, (void *)management_shift, NULL);
+     }
+ #endif
+ 
+@@ -2205,7 +2203,7 @@
+     /* arm inotify watcher */
+     if (c->options.mode == MODE_SERVER)
+     {
+-        event_ctl(c->c2.event_set, c->c2.inotify_fd, EVENT_READ, (void *)&file_shift);
++        event_ctl(c->c2.event_set, c->c2.inotify_fd, EVENT_READ, (void *)file_shift);
+     }
+ #endif
+ 
+@@ -2248,7 +2246,7 @@
+                 for (i = 0; i < status; ++i)
+                 {
+                     const struct event_set_return *e = &esr[i];
+-                    c->c2.event_set_status |= ((e->rwflags & 3) << *((int *)e->arg));
++                    c->c2.event_set_status |= ((e->rwflags & 3) << (uintptr_t)e->arg);
                  }
              }
--            /* new incoming TCP client attempting to connect? */
--            else if (e->arg == MTCP_SOCKET)
--            {
--                struct multi_instance *mi;
--                ASSERT(m->top.c2.link_socket);
--                socket_reset_listen_persistent(m->top.c2.link_socket);
--                mi = multi_create_instance_tcp(m);
--                if (mi)
--                {
--                    multi_tcp_action(m, mi, TA_INITIAL, false);
--                }
--            }
- #if defined(ENABLE_DCO) && (defined(TARGET_LINUX) || defined(TARGET_FREEBSD))
-             /* incoming data on DCO? */
-             else if (e->arg == MTCP_DCO)
-diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
-index 0509911..45b3cfa 100644
---- a/src/openvpn/multi.c
-+++ b/src/openvpn/multi.c
-@@ -823,6 +823,9 @@
-         goto err;
-     }
- 
-+    mi->ev_arg.type = EVENT_ARG_MULTI_INSTANCE;
-+    mi->ev_arg.u.mi = mi;
-+
-     perf_pop();
-     gc_free(&gc);
-     return mi;
-diff --git a/src/openvpn/multi.h b/src/openvpn/multi.h
-index 7167639..1b99ef7 100644
---- a/src/openvpn/multi.h
-+++ b/src/openvpn/multi.h
-@@ -102,6 +102,12 @@
-     struct schedule_entry se;  /* this must be the first element of the structure,
-                                 * We cast between this and schedule_entry so the
-                                 * beginning of the struct must be identical */
-+
-+    struct event_arg ev_arg;   /**< this struct will store a pointer to either mi or
-+                                * link_socket, depending on the event type, to keep
-+                                * it accessible it's placed within the same struct
-+                                * it points to. */
-+
-     struct gc_arena gc;
-     bool halt;
-     int refcount;
-diff --git a/src/openvpn/socket.c b/src/openvpn/socket.c
-index 7b1e603..cf04090 100644
---- a/src/openvpn/socket.c
-+++ b/src/openvpn/socket.c
-@@ -1830,6 +1830,8 @@
-     ALLOC_OBJ_CLEAR(sock, struct link_socket);
-     sock->sd = SOCKET_UNDEFINED;
-     sock->ctrl_sd = SOCKET_UNDEFINED;
-+    sock->ev_arg.type = EVENT_ARG_LINK_SOCKET;
-+
-     return sock;
- }
- 
-diff --git a/src/openvpn/socket.h b/src/openvpn/socket.h
-index 2e583af..c152ab0 100644
---- a/src/openvpn/socket.h
-+++ b/src/openvpn/socket.h
-@@ -178,6 +178,11 @@
- {
-     struct link_socket_info info;
- 
-+    struct event_arg ev_arg;   /**< this struct will store a pointer to either mi or
-+                                * link_socket, depending on the event type, to keep
-+                                * it accessible it's placed within the same struct
-+                                * it points to. */
-+
-     socket_descriptor_t sd;
-     socket_descriptor_t ctrl_sd; /* only used for UDP over Socks */
- 
+             else if (status == 0)
 
