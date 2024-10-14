@@ -1,11 +1,16 @@
-From: Frank Lichtenheld <frank@...2641...>
-Date: Mon, 14 Oct 2024 14:29:08 +0200
-Message-Id: <20241014122908.38342-1-frank@...2641...>
-In-Reply-To: <gerrit.1727098847000.I7ebf0d4fb2a23278e16003b2e35598178155d658@...2715...>
-References: <gerrit.1727098847000.I7ebf0d4fb2a23278e16003b2e35598178155d658@...2715...>
+From: "flichtenheld (Code Review)" <gerrit@...515...>
+Date: Mon, 14 Oct 2024 12:32:45 +0000
+In-Reply-To: <gerrit.1727098847000.Ib583bf17e35b14aed78fd8217b6e71e8c2b78089@...2715...>
+References: <gerrit.1727098847000.Ib583bf17e35b14aed78fd8217b6e71e8c2b78089@...2715...>
+Reply-To: frank@...2641..., arne-openvpn@...1227...,
+ gianmarco@...2726..., openvpn-devel@lists.sourceforge.net, a@...2181...
+Message-ID: <400d4f0dadb48d8306ea7d1a5193b0f058d6efa8-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v4] io_work: pass event_arg object to event
- handler in case of socket event
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="iTwJIQIcbO8="; charset=UTF-8
+Subject: [Openvpn-devel] [S] Change in openvpn[master]: io_work: convert
+ shift argument to uintptr_t
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,120 +19,102 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
-Cc: Antonio Quartulli <a@...2181...>, Gianmarco De Gregori <gianmarco@...2726...>
+To: its_Giaan <gianmarco@...2726...>
+Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-From: Antonio Quartulli <a@...2181...>
+--iTwJIQIcbO8=
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-In order to allow the code to work with multiple listening sockets
-it is essential to allow the generic multi_io event handler
-to distinguish between the various socket objects.
+Attention is currently required from: its_Giaan, plaisthos.
 
-This can be achieved by passing an event_arg object that contains
-a pointer to the link_socket.
+flichtenheld has posted comments on this change. ( http://gerrit.openvpn.ne=
+t/c/openvpn/+/759?usp=3Demail )
 
-This code path is used on clients as well as UDP servers.
+Change subject: io_work: convert shift argument to uintptr_t
+......................................................................
 
-Change-Id: I7ebf0d4fb2a23278e16003b2e35598178155d658
-Signed-off-by: Antonio Quartulli <a@...2181...>
-Signed-off-by: Gianmarco De Gregori <gianmarco@...2726...>
-Acked-by: Frank Lichtenheld <frank@...2641...>
----
 
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to master.
+Patch Set 4: Code-Review+2
 
-Manually added Signed-off-by for Giaan
+(1 comment)
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/760
-This mail reflects revision 4 of this Change.
+Patchset:
 
-Acked-by according to Gerrit (reflected above):
-Frank Lichtenheld <frank@...2641...>
+PS4:
+resubmitted v4 with added sign-off for Giaan
 
-        
-diff --git a/src/openvpn/event.h b/src/openvpn/event.h
-index b3ba183..c212e07 100644
---- a/src/openvpn/event.h
-+++ b/src/openvpn/event.h
-@@ -82,6 +82,12 @@
- #define EVENT_METHOD_US_TIMEOUT   (1<<0)
- #define EVENT_METHOD_FAST         (1<<1)
- 
-+/*
-+ * The following constant is used as boundary between integer value
-+ * and real addresses when passing arguments to event handlers as (void *)
-+ */
-+#define MULTI_N           ((void *)16) /* upper bound on MTCP_x */
-+
- #ifdef _WIN32
- 
- typedef const struct rw_handle *event_t;
-diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c
-index 66e5be1..d50b24c 100644
---- a/src/openvpn/forward.c
-+++ b/src/openvpn/forward.c
-@@ -2183,7 +2183,8 @@
-     /*
-      * Configure event wait based on socket, tuntap flags.
-      */
--    socket_set(c->c2.link_socket, c->c2.event_set, socket, (void *)socket_shift, NULL);
-+    socket_set(c->c2.link_socket, c->c2.event_set, socket,
-+               &c->c2.link_socket->ev_arg, NULL);
-     tun_set(c->c1.tuntap, c->c2.event_set, tuntap, (void *)tun_shift, NULL);
- #if defined(TARGET_LINUX) || defined(TARGET_FREEBSD)
-     if (socket & EVENT_READ && c->c2.did_open_tun)
-@@ -2246,7 +2247,27 @@
-                 for (i = 0; i < status; ++i)
-                 {
-                     const struct event_set_return *e = &esr[i];
--                    c->c2.event_set_status |= ((e->rwflags & 3) << (uintptr_t)e->arg);
-+                    uintptr_t shift;
-+
-+                    if (e->arg >= MULTI_N)
-+                    {
-+                        struct event_arg *ev_arg = (struct event_arg *)e->arg;
-+                        if (ev_arg->type != EVENT_ARG_LINK_SOCKET)
-+                        {
-+                            c->c2.event_set_status = ES_ERROR;
-+                            msg(D_LINK_ERRORS,
-+                                "io_work: non socket event delivered");
-+                            return;
-+                        }
-+
-+                        shift = socket_shift;
-+                    }
-+                    else
-+                    {
-+                        shift = (uintptr_t)e->arg;
-+                    }
-+
-+                    c->c2.event_set_status |= ((e->rwflags & 3) << shift);
-                 }
-             }
-             else if (status == 0)
-diff --git a/src/openvpn/mtcp.c b/src/openvpn/mtcp.c
-index 1b956f4..e89ddba 100644
---- a/src/openvpn/mtcp.c
-+++ b/src/openvpn/mtcp.c
-@@ -60,8 +60,6 @@
- #define MTCP_FILE_CLOSE_WRITE ((void *)5)
- #define MTCP_DCO        ((void *)6)
- 
--#define MTCP_N           ((void *)16) /* upper bound on MTCP_x */
--
- struct ta_iow_flags
- {
-     unsigned int flags;
-@@ -693,7 +691,7 @@
-         struct event_set_return *e = &mtcp->esr[i];
- 
-         /* incoming data for instance or listening socket? */
--        if (e->arg >= MTCP_N)
-+        if (e->arg >= MULTI_N)
-         {
-             struct event_arg *ev_arg = (struct event_arg *)e->arg;
-             switch (ev_arg->type)
+
+
+--
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/759?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings
+
+Gerrit-Project: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: Ib583bf17e35b14aed78fd8217b6e71e8c2b78089
+Gerrit-Change-Number: 759
+Gerrit-PatchSet: 4
+Gerrit-Owner: its_Giaan <gianmarco@...2726...>
+Gerrit-Reviewer: flichtenheld <frank@...2641...>
+Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-CC: ordex <a@...2181...>
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Attention: its_Giaan <gianmarco@...2726...>
+Gerrit-Comment-Date: Mon, 14 Oct 2024 12:32:45 +0000
+Gerrit-HasComments: Yes
+Gerrit-Has-Labels: Yes
+Gerrit-MessageType: comment
+
+--iTwJIQIcbO8=
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<p> Attention is currently required from: its_Giaan, plaisthos. </p>
+<p>Patch set 4:<span style=3D"border-radius: 3px; display: inline-block; ma=
+rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/759?usp=3Demail">Vi=
+ew Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0=
+;"><li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-s=
+tyle: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p s=
+tyle=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn=
+/+/759?tab=3Dcomments">Patch Set #4:</a> </p><p style=3D"white-space: pre-w=
+rap; word-wrap: break-word;">resubmitted v4 with added sign-off for Giaan</=
+p></li></ul></li></ul><p>To view, visit <a href=3D"http://gerrit.openvpn.ne=
+t/c/openvpn/+/759?usp=3Demail">change 759</a>. To unsubscribe, or for help =
+writing mail filters, visit <a href=3D"http://gerrit.openvpn.net/settings">=
+settings</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage"=
+><div itemscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewActio=
+n"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/759=
+?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
+
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: Ib583bf17e35b14aed78fd8217b6=
+e71e8c2b78089 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 759 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 4 </div>
+<div style=3D"display:none"> Gerrit-Owner: its_Giaan &lt;gianmarco@...2786...=
+..&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
+1...&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
+.1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: ordex &lt;a@...2181...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: its_Giaan &lt;gianmarco@...1665...=
+726...&gt; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Mon, 14 Oct 2024 12:32:45=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
+
+
+--iTwJIQIcbO8=--
 
