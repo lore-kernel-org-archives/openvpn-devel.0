@@ -1,17 +1,10 @@
-From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Wed, 16 Oct 2024 11:58:55 +0000
+From: Gert Doering <gert@...1296...>
+Date: Wed, 16 Oct 2024 13:59:14 +0200
+Message-ID: <20241016115914.28098-1-gert@...1296...>
 In-Reply-To: <gerrit.1729079770000.Ie922ce67685228eb7043749a7f1a61a33be678d2@...2715...>
 References: <gerrit.1729079770000.Ie922ce67685228eb7043749a7f1a61a33be678d2@...2715...>
-Reply-To: gert@...1296..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...,
- yura.uddr@...277...
-Message-ID: <c2c28fdfc120b28032a81f8788ea7a3315c9ff75-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="FPrngDWK1dM="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[release/2.6]: GHA: Simplify
- macOS builds
+Subject: [Openvpn-devel] [PATCH v1] GHA: Simplify macOS builds
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,94 +13,103 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: flichtenheld <frank@...2641...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>, plaisthos <arne-openvpn@...1227...>, uddr <yura.uddr@...277...>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---FPrngDWK1dM=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+From: Frank Lichtenheld <frank@...2641...>
 
-Attention is currently required from: flichtenheld, plaisthos, uddr.
+Reduce redundant configuration.
 
-cron2 has posted comments on this change. ( http://gerrit.openvpn.net/c/ope=
-nvpn/+/782?usp=3Demail )
+Change-Id: Ie922ce67685228eb7043749a7f1a61a33be678d2
+Signed-off-by: Frank Lichtenheld <frank@...2641...>
+Acked-by: Arne Schwabe <arne-openvpn@...1227...>
+Acked-by: Yuriy Darnobyt <yura.uddr@...277...>
+Signed-off-by: Gert Doering <gert@...1296...>
+Acked-by: Gert Doering <gert@...1296...>
+(cherry picked from commit 33a700d61e5b1a724b00f17fa0ed75d694e2823a)
+---
 
-Change subject: GHA: Simplify macOS builds
-......................................................................
+This change was reviewed on Gerrit and approved by at least one
+developer. I request to merge it to release/2.6.
 
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/782
+This mail reflects revision 1 of this Change.
 
-Patch Set 1: Code-Review+2
+Acked-by according to Gerrit (reflected above):
+Gert Doering <gert@...1296...>
 
-
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/782?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings
-
-Gerrit-Project: openvpn
-Gerrit-Branch: release/2.6
-Gerrit-Change-Id: Ie922ce67685228eb7043749a7f1a61a33be678d2
-Gerrit-Change-Number: 782
-Gerrit-PatchSet: 1
-Gerrit-Owner: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: cron2 <gert@...1296...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-Reviewer: uddr <yura.uddr@...277...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Attention: uddr <yura.uddr@...277...>
-Gerrit-Comment-Date: Wed, 16 Oct 2024 11:58:55 +0000
-Gerrit-HasComments: No
-Gerrit-Has-Labels: Yes
-Gerrit-MessageType: comment
-
---FPrngDWK1dM=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<p> Attention is currently required from: flichtenheld, plaisthos, uddr. </=
-p>
-<p>Patch set 1:<span style=3D"border-radius: 3px; display: inline-block; ma=
-rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/782?usp=3Demail">Vi=
-ew Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To vie=
-w, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/782?usp=3Demail">=
-change 782</a>. To unsubscribe, or for help writing mail filters, visit <a =
-href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope=
- itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"act=
-ion" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=
-=3D"http://gerrit.openvpn.net/c/openvpn/+/782?usp=3Demail"/><meta itemprop=
-=3D"name" content=3D"View Change"/></div></div>
-
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: release/2.6 </div>
-<div style=3D"display:none"> Gerrit-Change-Id: Ie922ce67685228eb7043749a7f1=
-a61a33be678d2 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 782 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
-<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
-.&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
- </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: uddr &lt;yura.uddr@...277...&=
-gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
-41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: uddr &lt;yura.uddr@...277...=
-&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Wed, 16 Oct 2024 11:58:55=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: No </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
-
-
---FPrngDWK1dM=--
+        
+diff --git a/.github/workflows/build.yaml b/.github/workflows/build.yaml
+index e4959ba..d930197 100644
+--- a/.github/workflows/build.yaml
++++ b/.github/workflows/build.yaml
+@@ -192,18 +192,10 @@
+     strategy:
+       fail-fast: false
+       matrix:
+-        ssllib: [ openssl11, openssl3, libressl]
+-        build: [ normal, asan ]
++        ssllib: [openssl@...2560..., openssl@...1554..., libressl]
++        build: [normal, asan]
+         os: [macos-13, macos-14, macos-15]
+         include:
+-           # macos14 and newer runners use ARM CPUs and homebrew uses /opt/homebrew/
+-           # on ARM instead of /usr/local/
+-          - os: macos-13
+-            homebrew: /usr/local/opt
+-          - os: macos-14
+-            homebrew: /opt/homebrew/opt
+-          - os: macos-15
+-            homebrew: /opt/homebrew/opt
+           - build: asan
+             cflags: "-fsanitize=address -fno-optimize-sibling-calls -fsanitize-address-use-after-scope -fno-omit-frame-pointer -g -O1"
+             ldflags: -fsanitize=address
+@@ -213,35 +205,30 @@
+             cflags: "-O2 -g"
+             ldflags: ""
+             configureflags: ""
+-          - ssllib: openssl11
+-            libdir: openssl@...2560...
+-            configuressllib: ""
+-          - ssllib: openssl3
+-            libdir: openssl@...1554...
+-            configuressllib: ""
+-          - ssllib: libressl
+-            libdir: libressl
+-            configuressllib: "--with-openssl-engine=no"
+ 
+     runs-on: ${{matrix.os}}
+-    name: "${{matrix.os}} - ${{matrix.libdir}} - ${{matrix.build}}"
++    name: "${{matrix.os}} - ${{matrix.ssllib}} - ${{matrix.build}}"
+     env:
+       CFLAGS: ${{ matrix.cflags }}
+       LDFLAGS: ${{ matrix.ldflags }}
+-      OPENSSL_CFLAGS: "-I${{matrix.homebrew}}/${{matrix.libdir}}/include"
+-      OPENSSL_LIBS: "-L${{matrix.homebrew}}/${{matrix.libdir}}/lib -lcrypto -lssl"
+-      LZO_CFLAGS: "-I${{matrix.homebrew}}/lzo/include"
+-      LZO_LIBS: "-L${{matrix.homebrew}}/lzo/lib -llzo2"
+       UBSAN_OPTIONS: print_stacktrace=1
+     steps:
+       - name: Install dependencies
+-        run: brew install openssl@...2560... openssl@...1554... lzo lz4 man2html cmocka libtool automake autoconf libressl
++        run: brew install ${{matrix.ssllib}} lzo lz4 man2html cmocka libtool automake autoconf
+       - name: Checkout OpenVPN
+         uses: actions/checkout@...2691...
++      - name: Set environment
++        run: |
++          cat >>$GITHUB_ENV <<EOF;
++          OPENSSL_CFLAGS=-I$(brew --prefix ${{matrix.ssllib}})/include
++          OPENSSL_LIBS=-L$(brew --prefix ${{matrix.ssllib}})/lib -lcrypto -lssl
++          LZO_CFLAGS=-I$(brew --prefix lzo)/include
++          LZO_LIBS=-L$(brew --prefix lzo)/lib -llzo2
++          EOF
+       - name: autoconf
+         run: autoreconf -fvi
+       - name: configure
+-        run: ./configure --enable-werror ${{matrix.configureflags}} ${{matrix.configuressllib}}
++        run: ./configure --enable-werror ${{matrix.configureflags}}
+       - name: make all
+         run: make -j4
+       - name: make check
 
