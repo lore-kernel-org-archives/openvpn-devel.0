@@ -1,17 +1,17 @@
 From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Wed, 16 Oct 2024 09:57:54 +0000
-In-Reply-To: <gerrit.1728995699000.Ie922ce67685228eb7043749a7f1a61a33be678d2@...2715...>
-References: <gerrit.1728995699000.Ie922ce67685228eb7043749a7f1a61a33be678d2@...2715...>
+Date: Wed, 16 Oct 2024 09:57:49 +0000
+In-Reply-To: <gerrit.1728995699000.Ibaa591904095a824df2c0c5aaff73687e0af24fe@...2715...>
+References: <gerrit.1728995699000.Ibaa591904095a824df2c0c5aaff73687e0af24fe@...2715...>
 Reply-To: gert@...1296..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net, frank@...2641...,
  yura.uddr@...277...
-Message-ID: <b292eb4e183adea08a3b9c70b3fa32b5b08e8e6f-HTML@...2715...>
+Message-ID: <804433e532c95627ba858a76e41751c20b59140f-EmailReplacePatchSet-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="17h5JLMLc5U="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: GHA: Simplify macOS
- builds
+Content-Type: multipart/alternative; boundary="uP/OGiGYhWc="; charset=UTF-8
+Subject: [Openvpn-devel] [XS] Change in openvpn[master]: GHA: Update macOS
+ runners
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,245 +20,146 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: flichtenheld <frank@...2641...>
-Cc: uddr <yura.uddr@...277...>, plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: flichtenheld <frank@...2641...>, plaisthos <arne-openvpn@...1227...>, uddr <yura.uddr@...277...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---17h5JLMLc5U=
+--uP/OGiGYhWc=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-cron2 has submitted this change. ( http://gerrit.openvpn.net/c/openvpn/+/78=
-1?usp=3Demail )
+cron2 has uploaded a new patch set (#2) to the change originally created by=
+ flichtenheld. ( http://gerrit.openvpn.net/c/openvpn/+/780?usp=3Demail )
 
-Change subject: GHA: Simplify macOS builds
+The following approvals got outdated and were removed:
+Code-Review+2 by plaisthos, Code-Review+2 by uddr
+
+
+Change subject: GHA: Update macOS runners
 ......................................................................
 
-GHA: Simplify macOS builds
+GHA: Update macOS runners
 
-Reduce redundant configuration.
+Remove macos-12, not supported anymore.
+Add macos-15, runner is available in Beta status.
 
-Change-Id: Ie922ce67685228eb7043749a7f1a61a33be678d2
+Change-Id: Ibaa591904095a824df2c0c5aaff73687e0af24fe
 Signed-off-by: Frank Lichtenheld <frank@...2641...>
 Acked-by: Arne Schwabe <arne-openvpn@...1227...>
 Acked-by: Yuriy Darnobyt <yura.uddr@...277...>
-Message-Id: <20241015205643.25779-1-gert@...1296...>
+Message-Id: <20241015205627.25644-1-gert@...1296...>
 URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg29=
-552.html
+551.html
 Signed-off-by: Gert Doering <gert@...1296...>
 ---
 M .github/workflows/build.yaml
-1 file changed, 13 insertions(+), 26 deletions(-)
+1 file changed, 3 insertions(+), 3 deletions(-)
 
 
-
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/80/780/2
 
 diff --git a/.github/workflows/build.yaml b/.github/workflows/build.yaml
-index fdd133e..3958ef0 100644
+index 1bc250d..fdd133e 100644
 --- a/.github/workflows/build.yaml
 +++ b/.github/workflows/build.yaml
-@@ -211,18 +211,10 @@
-     strategy:
-       fail-fast: false
+@@ -213,16 +213,16 @@
        matrix:
--        ssllib: [ openssl11, openssl3, libressl]
--        build: [ normal, asan ]
-+        ssllib: [openssl@...2560..., openssl@...1554..., libressl]
-+        build: [normal, asan]
-         os: [macos-13, macos-14, macos-15]
+         ssllib: [ openssl11, openssl3, libressl]
+         build: [ normal, asan ]
+-        os: [macos-12, macos-13, macos-14]
++        os: [macos-13, macos-14, macos-15]
          include:
--           # macos14 and newer runners use ARM CPUs and homebrew uses /opt=
+            # macos14 and newer runners use ARM CPUs and homebrew uses /opt=
 /homebrew/
--           # on ARM instead of /usr/local/
--          - os: macos-13
+            # on ARM instead of /usr/local/
+-          - os: macos-12
 -            homebrew: /usr/local/opt
--          - os: macos-14
--            homebrew: /opt/homebrew/opt
--          - os: macos-15
--            homebrew: /opt/homebrew/opt
+           - os: macos-13
+             homebrew: /usr/local/opt
+           - os: macos-14
+             homebrew: /opt/homebrew/opt
++          - os: macos-15
++            homebrew: /opt/homebrew/opt
            - build: asan
              cflags: "-fsanitize=3Daddress,undefined -fno-sanitize-recover=
 =3Dall  -fno-optimize-sibling-calls -fsanitize-address-use-after-scope -fno=
 -omit-frame-pointer -g -O1"
              ldflags: -fsanitize=3Daddress,undefined -fno-sanitize-recover=
 =3Dall
-@@ -232,35 +224,30 @@
-             cflags: "-O2 -g"
-             ldflags: ""
-             configureflags: ""
--          - ssllib: openssl11
--            libdir: openssl@...2560...
--            configuressllib: ""
--          - ssllib: openssl3
--            libdir: openssl@...1554...
--            configuressllib: ""
--          - ssllib: libressl
--            libdir: libressl
--            configuressllib: "--with-openssl-engine=3Dno"
-
-     runs-on: ${{matrix.os}}
--    name: "${{matrix.os}} - ${{matrix.libdir}} - ${{matrix.build}}"
-+    name: "${{matrix.os}} - ${{matrix.ssllib}} - ${{matrix.build}}"
-     env:
-       CFLAGS: ${{ matrix.cflags }}
-       LDFLAGS: ${{ matrix.ldflags }}
--      OPENSSL_CFLAGS: "-I${{matrix.homebrew}}/${{matrix.libdir}}/include"
--      OPENSSL_LIBS: "-L${{matrix.homebrew}}/${{matrix.libdir}}/lib -lcrypt=
-o -lssl"
--      LZO_CFLAGS: "-I${{matrix.homebrew}}/lzo/include"
--      LZO_LIBS: "-L${{matrix.homebrew}}/lzo/lib -llzo2"
-       UBSAN_OPTIONS: print_stacktrace=3D1
-     steps:
-       - name: Install dependencies
--        run: brew install openssl@...2560... openssl@...1554... lzo lz4 ma=
-n2html cmocka libtool automake autoconf libressl
-+        run: brew install ${{matrix.ssllib}} lzo lz4 man2html cmocka libto=
-ol automake autoconf
-       - name: Checkout OpenVPN
-         uses: actions/checkout@...2813... # v4
-+      - name: Set environment
-+        run: |
-+          cat >>$GITHUB_ENV <<EOF;
-+          OPENSSL_CFLAGS=3D-I$(brew --prefix ${{matrix.ssllib}})/include
-+          OPENSSL_LIBS=3D-L$(brew --prefix ${{matrix.ssllib}})/lib -lcrypt=
-o -lssl
-+          LZO_CFLAGS=3D-I$(brew --prefix lzo)/include
-+          LZO_LIBS=3D-L$(brew --prefix lzo)/lib -llzo2
-+          EOF
-       - name: autoconf
-         run: autoreconf -fvi
-       - name: configure
--        run: ./configure --enable-werror ${{matrix.configureflags}} ${{mat=
-rix.configuressllib}}
-+        run: ./configure --enable-werror ${{matrix.configureflags}}
-       - name: make all
-         run: make -j4
-       - name: configure checks
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/781?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/780?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings
 
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: Ie922ce67685228eb7043749a7f1a61a33be678d2
-Gerrit-Change-Number: 781
+Gerrit-Change-Id: Ibaa591904095a824df2c0c5aaff73687e0af24fe
+Gerrit-Change-Number: 780
 Gerrit-PatchSet: 2
 Gerrit-Owner: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-Reviewer: uddr <yura.uddr@...277...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-MessageType: merged
+Gerrit-MessageType: newpatchset
 
---17h5JLMLc5U=
+--uP/OGiGYhWc=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p>cron2 <strong>submitted</strong> this change.</p><p><a href=3D"http://ge=
-rrit.openvpn.net/c/openvpn/+/781?usp=3Demail">View Change</a></p><div style=
-=3D"white-space:pre-wrap"></div><pre style=3D"font-family: monospace,monosp=
-ace; white-space: pre-wrap;">GHA: Simplify macOS builds<br><br>Reduce redun=
-dant configuration.<br><br>Change-Id: Ie922ce67685228eb7043749a7f1a61a33be6=
-78d2<br>Signed-off-by: Frank Lichtenheld &lt;frank@...2641...&gt;<br>Acked-=
-by: Arne Schwabe &lt;arne-openvpn@...1227...&gt;<br>Acked-by: Yuriy Darnoby=
-t &lt;yura.uddr@...277...&gt;<br>Message-Id: &lt;20241015205643.25779-1-ger=
-t@...1296...&gt;<br>URL: https://www.mail-archive.com/openvpn-devel@...1096...=
-ourceforge.net/msg29552.html<br>Signed-off-by: Gert Doering &lt;gert@...1826...=
-6...&gt;<br>---<br>M .github/workflows/build.yaml<br>1 file changed, 13 ins=
-ertions(+), 26 deletions(-)<br><br></pre>
-<pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><sp=
-an>diff --git a/.github/workflows/build.yaml b/.github/workflows/build.yaml=
-</span><br><span>index fdd133e..3958ef0 100644</span><br><span>--- a/.githu=
-b/workflows/build.yaml</span><br><span>+++ b/.github/workflows/build.yaml</=
-span><br><span>@@ -211,18 +211,10 @@</span><br><span>     strategy:</span><=
-br><span>       fail-fast: false</span><br><span>       matrix:</span><br><=
-span style=3D"color: hsl(0, 100%, 40%);">-        ssllib: [ openssl11, open=
-ssl3, libressl]</span><br><span style=3D"color: hsl(0, 100%, 40%);">-      =
-  build: [ normal, asan ]</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+        ssllib: [openssl@...2560..., openssl@...1554..., libressl]</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+        build: [normal=
-, asan]</span><br><span>         os: [macos-13, macos-14, macos-15]</span><=
-br><span>         include:</span><br><span style=3D"color: hsl(0, 100%, 40%=
-);">-           # macos14 and newer runners use ARM CPUs and homebrew uses =
-/opt/homebrew/</span><br><span style=3D"color: hsl(0, 100%, 40%);">-       =
-    # on ARM instead of /usr/local/</span><br><span style=3D"color: hsl(0, =
-100%, 40%);">-          - os: macos-13</span><br><span style=3D"color: hsl(=
-0, 100%, 40%);">-            homebrew: /usr/local/opt</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-          - os: macos-14</span><br><span st=
-yle=3D"color: hsl(0, 100%, 40%);">-            homebrew: /opt/homebrew/opt<=
-/span><br><span style=3D"color: hsl(0, 100%, 40%);">-          - os: macos-=
-15</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            homebre=
-w: /opt/homebrew/opt</span><br><span>           - build: asan</span><br><sp=
-an>             cflags: &quot;-fsanitize=3Daddress,undefined -fno-sanitize-=
-recover=3Dall  -fno-optimize-sibling-calls -fsanitize-address-use-after-sco=
-pe -fno-omit-frame-pointer -g -O1&quot;</span><br><span>             ldflag=
-s: -fsanitize=3Daddress,undefined -fno-sanitize-recover=3Dall</span><br><sp=
-an>@@ -232,35 +224,30 @@</span><br><span>             cflags: &quot;-O2 -g&=
-quot;</span><br><span>             ldflags: &quot;&quot;</span><br><span>  =
-           configureflags: &quot;&quot;</span><br><span style=3D"color: hsl=
-(0, 100%, 40%);">-          - ssllib: openssl11</span><br><span style=3D"co=
-lor: hsl(0, 100%, 40%);">-            libdir: openssl@...2560...</span><br>=
-<span style=3D"color: hsl(0, 100%, 40%);">-            configuressllib: &qu=
-ot;&quot;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-          - =
-ssllib: openssl3</span><br><span style=3D"color: hsl(0, 100%, 40%);">-     =
-       libdir: openssl@...1554...</span><br><span style=3D"color: hsl(0, 10=
-0%, 40%);">-            configuressllib: &quot;&quot;</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-          - ssllib: libressl</span><br><spa=
-n style=3D"color: hsl(0, 100%, 40%);">-            libdir: libressl</span><=
-br><span style=3D"color: hsl(0, 100%, 40%);">-            configuressllib: =
-&quot;--with-openssl-engine=3Dno&quot;</span><br><span> </span><br><span>  =
-   runs-on: ${{matrix.os}}</span><br><span style=3D"color: hsl(0, 100%, 40%=
-);">-    name: &quot;${{matrix.os}} - ${{matrix.libdir}} - ${{matrix.build}=
-}&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    name: &q=
-uot;${{matrix.os}} - ${{matrix.ssllib}} - ${{matrix.build}}&quot;</span><br=
-><span>     env:</span><br><span>       CFLAGS: ${{ matrix.cflags }}</span>=
-<br><span>       LDFLAGS: ${{ matrix.ldflags }}</span><br><span style=3D"co=
-lor: hsl(0, 100%, 40%);">-      OPENSSL_CFLAGS: &quot;-I${{matrix.homebrew}=
-}/${{matrix.libdir}}/include&quot;</span><br><span style=3D"color: hsl(0, 1=
-00%, 40%);">-      OPENSSL_LIBS: &quot;-L${{matrix.homebrew}}/${{matrix.lib=
-dir}}/lib -lcrypto -lssl&quot;</span><br><span style=3D"color: hsl(0, 100%,=
- 40%);">-      LZO_CFLAGS: &quot;-I${{matrix.homebrew}}/lzo/include&quot;</=
-span><br><span style=3D"color: hsl(0, 100%, 40%);">-      LZO_LIBS: &quot;-=
-L${{matrix.homebrew}}/lzo/lib -llzo2&quot;</span><br><span>       UBSAN_OPT=
-IONS: print_stacktrace=3D1</span><br><span>     steps:</span><br><span>    =
-   - name: Install dependencies</span><br><span style=3D"color: hsl(0, 100%=
-, 40%);">-        run: brew install openssl@...2560... openssl@...1554... l=
-zo lz4 man2html cmocka libtool automake autoconf libressl</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+        run: brew install ${{matrix.s=
-sllib}} lzo lz4 man2html cmocka libtool automake autoconf</span><br><span> =
-      - name: Checkout OpenVPN</span><br><span>         uses: actions/check=
-out@...2813... # v4</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-      - name: Set environment</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+        run: |</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+          cat &gt;&gt;$GITHUB_ENV &lt;&lt;EOF;</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+          OPENSSL_CFLAGS=3D-I$(brew --pre=
-fix ${{matrix.ssllib}})/include</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+          OPENSSL_LIBS=3D-L$(brew --prefix ${{matrix.ssllib}})/=
-lib -lcrypto -lssl</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-         LZO_CFLAGS=3D-I$(brew --prefix lzo)/include</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+          LZO_LIBS=3D-L$(brew --prefix lz=
-o)/lib -llzo2</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
-    EOF</span><br><span>       - name: autoconf</span><br><span>         ru=
-n: autoreconf -fvi</span><br><span>       - name: configure</span><br><span=
- style=3D"color: hsl(0, 100%, 40%);">-        run: ./configure --enable-wer=
-ror ${{matrix.configureflags}} ${{matrix.configuressllib}}</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+        run: ./configure --enable-we=
-rror ${{matrix.configureflags}}</span><br><span>       - name: make all</sp=
-an><br><span>         run: make -j4</span><br><span>       - name: configur=
-e checks</span><br><span></span><br></pre><p>To view, visit <a href=3D"http=
-://gerrit.openvpn.net/c/openvpn/+/781?usp=3Demail">change 781</a>. To unsub=
-scribe, or for help writing mail filters, visit <a href=3D"http://gerrit.op=
-envpn.net/settings">settings</a>.</p><div itemscope itemtype=3D"http://sche=
-ma.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://=
-schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn=
-.net/c/openvpn/+/781?usp=3Demail"/><meta itemprop=3D"name" content=3D"View =
-Change"/></div></div>
+<p>cron2 <strong>uploaded patch set #2</strong> to the change originally cr=
+eated by flichtenheld.</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn=
+/+/780?usp=3Demail">View Change</a></p><p>The following approvals got outda=
+ted and were removed:
+Code-Review+2 by plaisthos, Code-Review+2 by uddr</p><pre style=3D"font-fam=
+ily: monospace,monospace; white-space: pre-wrap;">GHA: Update macOS runners=
+<br><br>Remove macos-12, not supported anymore.<br>Add macos-15, runner is =
+available in Beta status.<br><br>Change-Id: Ibaa591904095a824df2c0c5aaff736=
+87e0af24fe<br>Signed-off-by: Frank Lichtenheld &lt;frank@...2641...&gt;<br>=
+Acked-by: Arne Schwabe &lt;arne-openvpn@...1227...&gt;<br>Acked-by: Yuriy D=
+arnobyt &lt;yura.uddr@...277...&gt;<br>Message-Id: &lt;20241015205627.25644=
+-1-gert@...1296...&gt;<br>URL: https://www.mail-archive.com/openvpn-devel@...465...=
+ists.sourceforge.net/msg29551.html<br>Signed-off-by: Gert Doering &lt;gert@=
+...1296...&gt;<br>---<br>M .github/workflows/build.yaml<br>1 file changed, =
+3 insertions(+), 3 deletions(-)<br><br></pre><pre style=3D"font-family: mon=
+ospace,monospace; white-space: pre-wrap;">git pull ssh://gerrit.openvpn.net=
+:29418/openvpn refs/changes/80/780/2</pre><pre style=3D"font-family: monosp=
+ace,monospace; white-space: pre-wrap;"><span>diff --git a/.github/workflows=
+/build.yaml b/.github/workflows/build.yaml</span><br><span>index 1bc250d..f=
+dd133e 100644</span><br><span>--- a/.github/workflows/build.yaml</span><br>=
+<span>+++ b/.github/workflows/build.yaml</span><br><span>@@ -213,16 +213,16=
+ @@</span><br><span>       matrix:</span><br><span>         ssllib: [ opens=
+sl11, openssl3, libressl]</span><br><span>         build: [ normal, asan ]<=
+/span><br><span style=3D"color: hsl(0, 100%, 40%);">-        os: [macos-12,=
+ macos-13, macos-14]</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++        os: [macos-13, macos-14, macos-15]</span><br><span>         includ=
+e:</span><br><span>            # macos14 and newer runners use ARM CPUs and=
+ homebrew uses /opt/homebrew/</span><br><span>            # on ARM instead =
+of /usr/local/</span><br><span style=3D"color: hsl(0, 100%, 40%);">-       =
+   - os: macos-12</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
+        homebrew: /usr/local/opt</span><br><span>           - os: macos-13<=
+/span><br><span>             homebrew: /usr/local/opt</span><br><span>     =
+      - os: macos-14</span><br><span>             homebrew: /opt/homebrew/o=
+pt</span><br><span style=3D"color: hsl(120, 100%, 40%);">+          - os: m=
+acos-15</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            =
+homebrew: /opt/homebrew/opt</span><br><span>           - build: asan</span>=
+<br><span>             cflags: &quot;-fsanitize=3Daddress,undefined -fno-sa=
+nitize-recover=3Dall  -fno-optimize-sibling-calls -fsanitize-address-use-af=
+ter-scope -fno-omit-frame-pointer -g -O1&quot;</span><br><span>            =
+ ldflags: -fsanitize=3Daddress,undefined -fno-sanitize-recover=3Dall</span>=
+<br><span></span><br></pre><p>To view, visit <a href=3D"http://gerrit.openv=
+pn.net/c/openvpn/+/780?usp=3Demail">change 780</a>. To unsubscribe, or for =
+help writing mail filters, visit <a href=3D"http://gerrit.openvpn.net/setti=
+ngs">settings</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMes=
+sage"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.org/View=
+Action"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/=
++/780?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div>=
+</div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: Ie922ce67685228eb7043749a7f1=
-a61a33be678d2 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 781 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: Ibaa591904095a824df2c0c5aaff=
+73687e0af24fe </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 780 </div>
 <div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
 <div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
 .&gt; </div>
@@ -268,8 +169,8 @@ a61a33be678d2 </div>
 gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: merged </div>
+<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
 
 
---17h5JLMLc5U=--
+--uP/OGiGYhWc=--
 
