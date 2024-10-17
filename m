@@ -1,16 +1,11 @@
-From: "MaxF (Code Review)" <gerrit@...515...>
-Date: Wed, 16 Oct 2024 15:42:34 +0000
+From: Gert Doering <gert@...1296...>
+Date: Thu, 17 Oct 2024 08:49:55 +0200
+Message-ID: <20241017064955.23959-1-gert@...1296...>
 In-Reply-To: <gerrit.1727597930000.I0fd48191babe4fe5c56f10eb3ba88182ffb075d1@...2715...>
 References: <gerrit.1727597930000.I0fd48191babe4fe5c56f10eb3ba88182ffb075d1@...2715...>
-Reply-To: max@...2606..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, frank@...2641..., steffan@...1856...
-Message-ID: <8ae538589b6a066003d9c7c8d08868348a501d7a-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="q5m1vkDYK9c="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: Improve data channel
- crypto error messages
+Subject: [Openvpn-devel] [PATCH v1] Improve data channel crypto error
+ messages
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,94 +14,108 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: syzzer <steffan@...1856...>
-Cc: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---q5m1vkDYK9c=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+From: Steffan Karger <steffan@...1856...>
 
-Attention is currently required from: flichtenheld, plaisthos, syzzer.
+ * Make decryption error messages better understandable.
+ * Increase verbosity level for authentication errors, because those can
+   be expected on bad connections.
 
-MaxF has posted comments on this change. ( http://gerrit.openvpn.net/c/open=
-vpn/+/774?usp=3Demail )
+Change-Id: I0fd48191babe4fe5c56f10eb3ba88182ffb075d1
+Signed-off-by: Steffan Karger <steffan@...1856...>
+Acked-by: MaxF <max@...2606...>
+---
 
-Change subject: Improve data channel crypto error messages
-......................................................................
+This change was reviewed on Gerrit and approved by at least one
+developer. I request to merge it to master.
 
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/774
+This mail reflects revision 1 of this Change.
 
-Patch Set 1: Code-Review+2
+Acked-by according to Gerrit (reflected above):
+MaxF <max@...2606...>
 
-
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/774?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings
-
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: I0fd48191babe4fe5c56f10eb3ba88182ffb075d1
-Gerrit-Change-Number: 774
-Gerrit-PatchSet: 1
-Gerrit-Owner: syzzer <steffan@...1856...>
-Gerrit-Reviewer: MaxF <max@...2606...>
-Gerrit-Reviewer: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: syzzer <steffan@...1856...>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Comment-Date: Wed, 16 Oct 2024 15:42:34 +0000
-Gerrit-HasComments: No
-Gerrit-Has-Labels: Yes
-Gerrit-MessageType: comment
-
---q5m1vkDYK9c=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<p> Attention is currently required from: flichtenheld, plaisthos, syzzer. =
-</p>
-<p>Patch set 1:<span style=3D"border-radius: 3px; display: inline-block; ma=
-rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/774?usp=3Demail">Vi=
-ew Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To vie=
-w, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/774?usp=3Demail">=
-change 774</a>. To unsubscribe, or for help writing mail filters, visit <a =
-href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope=
- itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"act=
-ion" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=
-=3D"http://gerrit.openvpn.net/c/openvpn/+/774?usp=3Demail"/><meta itemprop=
-=3D"name" content=3D"View Change"/></div></div>
-
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I0fd48191babe4fe5c56f10eb3ba=
-88182ffb075d1 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 774 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
-<div style=3D"display:none"> Gerrit-Owner: syzzer &lt;steffan@...1856...&gt=
-; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: MaxF &lt;max@...2606...&gt; <=
-/div>
-<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
-1...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: syzzer &lt;steffan@...2115...=
-.&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
-41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Wed, 16 Oct 2024 15:42:34=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: No </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
-
-
---q5m1vkDYK9c=--
+        
+diff --git a/src/openvpn/crypto.c b/src/openvpn/crypto.c
+index 12ad0b9..064e59e 100644
+--- a/src/openvpn/crypto.c
++++ b/src/openvpn/crypto.c
+@@ -459,14 +459,14 @@
+     if (!cipher_ctx_update(ctx->cipher, BPTR(&work), &outlen, BPTR(buf),
+                            data_len))
+     {
+-        CRYPT_ERROR("cipher update failed");
++        CRYPT_ERROR("packet decryption failed");
+     }
+ 
+     ASSERT(buf_inc_len(&work, outlen));
+     if (!cipher_ctx_final_check_tag(ctx->cipher, BPTR(&work) + outlen,
+                                     &outlen, tag_ptr, tag_size))
+     {
+-        CRYPT_ERROR("cipher final failed");
++        CRYPT_DROP("packet tag authentication failed");
+     }
+     ASSERT(buf_inc_len(&work, outlen));
+ 
+@@ -538,7 +538,7 @@
+             /* Compare locally computed HMAC with packet HMAC */
+             if (memcmp_constant_time(local_hmac, BPTR(buf), hmac_len))
+             {
+-                CRYPT_ERROR("packet HMAC authentication failed");
++                CRYPT_DROP("packet HMAC authentication failed");
+             }
+ 
+             ASSERT(buf_advance(buf, hmac_len));
+@@ -572,26 +572,26 @@
+             /* ctx->cipher was already initialized with key & keylen */
+             if (!cipher_ctx_reset(ctx->cipher, iv_buf))
+             {
+-                CRYPT_ERROR("cipher init failed");
++                CRYPT_ERROR("decrypt initialization failed");
+             }
+ 
+             /* Buffer overflow check (should never happen) */
+             if (!buf_safe(&work, buf->len + cipher_ctx_block_size(ctx->cipher)))
+             {
+-                CRYPT_ERROR("potential buffer overflow");
++                CRYPT_ERROR("packet too big to decrypt");
+             }
+ 
+             /* Decrypt packet ID, payload */
+             if (!cipher_ctx_update(ctx->cipher, BPTR(&work), &outlen, BPTR(buf), BLEN(buf)))
+             {
+-                CRYPT_ERROR("cipher update failed");
++                CRYPT_ERROR("packet decryption failed");
+             }
+             ASSERT(buf_inc_len(&work, outlen));
+ 
+             /* Flush the decryption buffer */
+             if (!cipher_ctx_final(ctx->cipher, BPTR(&work) + outlen, &outlen))
+             {
+-                CRYPT_ERROR("cipher final failed");
++                CRYPT_DROP("packet authentication failed, dropping.");
+             }
+             ASSERT(buf_inc_len(&work, outlen));
+ 
+diff --git a/src/openvpn/crypto.h b/src/openvpn/crypto.h
+index 61184bc..d91de74 100644
+--- a/src/openvpn/crypto.h
++++ b/src/openvpn/crypto.h
+@@ -288,8 +288,11 @@
+                                  *   security operation functions. */
+ };
+ 
+-#define CRYPT_ERROR(format) \
+-    do { msg(D_CRYPT_ERRORS, "%s: " format, error_prefix); goto error_exit; } while (false)
++#define CRYPT_ERROR_EXIT(flags, format) \
++    do { msg(flags, "%s: " format, error_prefix); goto error_exit; } while (false)
++
++#define CRYPT_ERROR(format) CRYPT_ERROR_EXIT(D_CRYPT_ERRORS, format)
++#define CRYPT_DROP(format) CRYPT_ERROR_EXIT(D_MULTI_DROPPED, format)
+ 
+ /**
+  * Minimal IV length for AEAD mode ciphers (in bytes):
 
