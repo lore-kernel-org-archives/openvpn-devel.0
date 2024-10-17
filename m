@@ -1,16 +1,12 @@
-From: "flichtenheld (Code Review)" <gerrit@...515...>
-Date: Thu, 17 Oct 2024 15:41:00 +0000
-In-Reply-To: <gerrit.1727098847000.I1e5a84969988e4f027a18658d4ab268c13fbf929@...2715...>
-References: <gerrit.1727098847000.I1e5a84969988e4f027a18658d4ab268c13fbf929@...2715...>
-Reply-To: frank@...2641..., arne-openvpn@...1227...,
- gianmarco@...2726..., openvpn-devel@lists.sourceforge.net
-Message-ID: <e35a7c7d2e0d23fe8568efe37f606a40a0afc67d-EmailReviewComments-HTML@...2715...>
+Message-ID: <b5a7bbbe-fe1f-4f4f-b7a8-d911f289db8c@...1227...>
+Date: Fri, 18 Oct 2024 00:34:15 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="k7mr8AeXBGQ="; charset=UTF-8
-Subject: [Openvpn-devel] [XL] Change in openvpn[master]: multiproto: move
- generic event handling code in dedicated files
+References: <20241017064955.23959-1-gert@...1296...>
+ <202410170701.49H71192039177@...2054...>
+From: Arne Schwabe <arne@...1227...>
+In-Reply-To: <202410170701.49H71192039177@...2054...>
+Subject: Re: [Openvpn-devel] [PATCH applied] Re: Improve data channel crypto
+ error messages
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,115 +15,25 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: its_Giaan <gianmarco@...2726...>
-Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
-
---k7mr8AeXBGQ=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-Attention is currently required from: its_Giaan, plaisthos.
-
-flichtenheld has posted comments on this change. ( http://gerrit.openvpn.ne=
-t/c/openvpn/+/763?usp=3Demail )
-
-Change subject: multiproto: move generic event handling code in dedicated f=
-iles
-......................................................................
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+To: Gert Doering <gert@...1296...>, Steffan Karger <steffan@...1856...>
+Cc: openvpn-devel@lists.sourceforge.net
 
 
-Patch Set 5: Code-Review-2
+Am 17.10.2024 um 09:01 schrieb Gert Doering:
+> Stared a bit at the code, poked MaxF to do a more thorough review (thanks),
+> did a test compile.
+>
+> Out of curiosity - are you really seeing that many "authentication
+> errors on bad connections"?  Aka "shouldn't lower-layer checksums not
+> catch and drop packet corruptions"?
 
-(2 comments)
-
-Patchset:
-
-PS5:
-build broken
-
-
-File src/openvpn/multi.c:
-
-http://gerrit.openvpn.net/c/openvpn/+/763/comment/5daac845_5463efa8 :
-PS5, Line 777: m
-forgot to update reference to "ls"
+This is more the question of what happens if someone starts messing with 
+our packets. At that point we should not start spamming the logs without 
+any throttling.
 
 
+Arne
 
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/763?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings
-
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: I1e5a84969988e4f027a18658d4ab268c13fbf929
-Gerrit-Change-Number: 763
-Gerrit-PatchSet: 5
-Gerrit-Owner: its_Giaan <gianmarco@...2726...>
-Gerrit-Reviewer: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: its_Giaan <gianmarco@...2726...>
-Gerrit-Comment-Date: Thu, 17 Oct 2024 15:41:00 +0000
-Gerrit-HasComments: Yes
-Gerrit-Has-Labels: Yes
-Gerrit-MessageType: comment
-
---k7mr8AeXBGQ=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<p> Attention is currently required from: its_Giaan, plaisthos. </p>
-<p>Patch set 5:<span style=3D"border-radius: 3px; display: inline-block; ma=
-rgin: 0 2px; padding: 4px;background-color: #ffd4d4;">Code-Review -2</span>=
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/763?usp=3Demail">Vi=
-ew Change</a></p><p>2 comments:</p><ul style=3D"list-style: none; padding: =
-0;"><li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-=
-style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p =
-style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvp=
-n/+/763?tab=3Dcomments">Patch Set #5:</a> </p><p style=3D"white-space: pre-=
-wrap; word-wrap: break-word;">build broken</p></li></ul></li><li style=3D"m=
-argin: 0; padding: 0;"><p>File src/openvpn/multi.c:</p><ul style=3D"list-st=
-yle: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p st=
-yle=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/=
-+/763/comment/5daac845_5463efa8">Patch Set #5, Line 777:</a> <code style=3D=
-"font-family:monospace,monospace">m</code></p><p style=3D"white-space: pre-=
-wrap; word-wrap: break-word;">forgot to update reference to &quot;ls&quot;<=
-/p></li></ul></li></ul><p>To view, visit <a href=3D"http://gerrit.openvpn.n=
-et/c/openvpn/+/763?usp=3Demail">change 763</a>. To unsubscribe, or for help=
- writing mail filters, visit <a href=3D"http://gerrit.openvpn.net/settings"=
->settings</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage=
-"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewActi=
-on"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/76=
-3?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div></di=
-v>
-
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I1e5a84969988e4f027a18658d4a=
-b268c13fbf929 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 763 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 5 </div>
-<div style=3D"display:none"> Gerrit-Owner: its_Giaan &lt;gianmarco@...2786...=
-..&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
-1...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: its_Giaan &lt;gianmarco@...1665...=
-726...&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Thu, 17 Oct 2024 15:41:00=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
-
-
---k7mr8AeXBGQ=--
 
