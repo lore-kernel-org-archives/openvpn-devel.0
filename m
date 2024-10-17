@@ -1,16 +1,16 @@
 From: "its_Giaan (Code Review)" <gerrit@...515...>
-Date: Thu, 17 Oct 2024 14:49:41 +0000
-In-Reply-To: <gerrit.1700055887000.Ia0a889e800f0b36aed770ee36e31afeec5df6084@...2715...>
-References: <gerrit.1700055887000.Ia0a889e800f0b36aed770ee36e31afeec5df6084@...2715...>
+Date: Thu, 17 Oct 2024 14:50:31 +0000
+In-Reply-To: <gerrit.1700055887000.I4d1c96662c5a8c750d883e3b20adde09529e2764@...2715...>
+References: <gerrit.1700055887000.I4d1c96662c5a8c750d883e3b20adde09529e2764@...2715...>
 Reply-To: gianmarco@...2726..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net, frank@...2641..., a@...2181...
-Message-ID: <709208564909f23446223a9c860eacdbd22e270f-EmailReviewComments-HTML@...2715...>
+Message-ID: <10761432f72fe25425cb7c9583929d3332ca30c9-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="J8Jha8Phch0="; charset=UTF-8
-Subject: [Openvpn-devel] [L] Change in openvpn[master]: Adapt socket
- handling to support listening on multiple sockets
+Content-Type: multipart/alternative; boundary="zzOSbbzbSdE="; charset=UTF-8
+Subject: [Openvpn-devel] [M] Change in openvpn[master]: allow user to
+ specify 'local' multiple times in config files
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -21,163 +21,80 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Cc: flichtenheld <frank@...2641...>, plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---J8Jha8Phch0=
+--zzOSbbzbSdE=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 Attention is currently required from: flichtenheld, ordex, plaisthos.
 
 its_Giaan has posted comments on this change. ( http://gerrit.openvpn.net/c=
-/openvpn/+/434?usp=3Demail )
+/openvpn/+/436?usp=3Demail )
 
-Change subject: Adapt socket handling to support listening on multiple sock=
-ets
+Change subject: allow user to specify 'local' multiple times in config files
 ......................................................................
 
 
 Patch Set 6:
 
-(18 comments)
+(6 comments)
 
-Commit Message:
+File doc/man-sections/link-options.rst:
 
-http://gerrit.openvpn.net/c/openvpn/+/434/comment/1d41d2b6_a8f7ac05 :
-PS5, Line 7: allow tcp/udp server to listen on multiple ports at the same t=
-ime
-> For a change this fundamental this commit message is not enough. [=E2=80=
-=A6]
+http://gerrit.openvpn.net/c/openvpn/+/436/comment/e41c0651_4dde7880 :
+PS5, Line 114:   0.0.0.0 or :: can be used to specifically open a socket.
+> Sentence does end in the middle?
 Done
 
 
-File src/openvpn/forward.h:
-
-http://gerrit.openvpn.net/c/openvpn/+/434/comment/777e4574_22f8383d :
-PS5, Line 239: void process_incoming_tun(struct context *c, struct link_soc=
-ket *out_ls);
-> I think we have implicitly agreed to call those out_sock?
+http://gerrit.openvpn.net/c/openvpn/+/436/comment/5a0ba867_50a05ad8 :
+PS5, Line 117: or name
+> Should probably say "default TCP/UDP port number" or something like that =
+and mention that this can b [=E2=80=A6]
 Done
 
 
-http://gerrit.openvpn.net/c/openvpn/+/434/comment/45aee7e6_1b3916da :
-PS5, Line 311:                        struct link_socket *ls);
-> let's stick with sock to be consistent?
+File src/openvpn/options.c:
+
+http://gerrit.openvpn.net/c/openvpn/+/436/comment/bea38f19_4d89f447 :
+PS5, Line 2400:      * Sanity check on daemon mode
+> Not sure what daemon is supposed to mean in this context?
 Done
 
 
-File src/openvpn/forward.c:
-
-http://gerrit.openvpn.net/c/openvpn/+/434/comment/25eddf8f_88da1d83 :
-PS5, Line 67:     for (i =3D 0; i < c->c1.link_sockets_num; i++)
-> move declaration here.
+http://gerrit.openvpn.net/c/openvpn/+/436/comment/a4fc0da7_d28cb303 :
+PS5, Line 3198:     if (ce->proto =3D=3D PROTO_UDP && ce->socks_proxy_serve=
+r && !ce->local_list && !ce->local_port_defined && !ce->bind_defined)
+> Should use need_bind to simplify the condition.
 Done
 
 
-http://gerrit.openvpn.net/c/openvpn/+/434/comment/52741d0c_ed1cfbf5 :
-PS5, Line 1500:                           out_ls);
-> this looks weird, why the additional line break?
-Done
-
-
-http://gerrit.openvpn.net/c/openvpn/+/434/comment/c9729dd8_c23a63b3 :
-PS5, Line 2091:     int i;
-> no
-Done
-
-
-File src/openvpn/init.c:
-
-http://gerrit.openvpn.net/c/openvpn/+/434/comment/5db88ca1_62001647 :
-PS5, Line 2712:         int i;
-> no
-Done
-
-
-http://gerrit.openvpn.net/c/openvpn/+/434/comment/c4b1d0a7_caefad40 :
-PS5, Line 2726:         int i;
-> no
-Done
-
-
-http://gerrit.openvpn.net/c/openvpn/+/434/comment/d8bf560b_269e4c53 :
-PS5, Line 3809:     int i;
-> no
-Done
-
-
-http://gerrit.openvpn.net/c/openvpn/+/434/comment/3fbce72a_bc8f27b6 :
-PS5, Line 3830:     int i;
-> no
-Done
-
-
-http://gerrit.openvpn.net/c/openvpn/+/434/comment/96692862_fb70f0c5 :
-PS5, Line 3898:     int i;
-> no
-Done
-
-
-http://gerrit.openvpn.net/c/openvpn/+/434/comment/b06654d3_bd9889ea :
-PS5, Line 4059:         int i;
-> no
-Done
-
-
-File src/openvpn/mtcp.c:
-
-http://gerrit.openvpn.net/c/openvpn/+/434/comment/324654a5_bfaf62d1 :
-PS5, Line 265:     int status, i;
-> no
-Done
-
-
-File src/openvpn/mudp.c:
-
-http://gerrit.openvpn.net/c/openvpn/+/434/comment/9eba0158_a12ada55 :
-PS5, Line 384:         int i;
-> no
-Done
-
-
-File src/openvpn/multi.h:
-
-http://gerrit.openvpn.net/c/openvpn/+/434/comment/b0f20aa4_59ddfbd1 :
-PS5, Line 133:     bool did_open_context;
-> This must have been a rebase mistake, because: [=E2=80=A6]
-It was a rebase mistake indeed, so I removed this.
-
-
-File src/openvpn/socket.h:
-
-http://gerrit.openvpn.net/c/openvpn/+/434/comment/a49234a5_d2525f23 :
-PS5, Line 348: link_socket_init_phase1(struct link_socket *sock,
-> hmm, no? [=E2=80=A6]
-Done
-
-
-http://gerrit.openvpn.net/c/openvpn/+/434/comment/4d71982d_76aa122f :
-PS5, Line 1288: bool sockets_read_residual(const struct context *c);
-> please add minimal documentation
+http://gerrit.openvpn.net/c/openvpn/+/436/comment/08d0b545_36ce02f5 :
+PS5, Line 3327: options_postprocess_mutate_le(struct options *o, struct loc=
+al_entry *le)
+> should maybe take o->ce as input and not o, just to make clear that it do=
+esn't need the rest?
 Done
 
 
 File src/openvpn/socket.c:
 
-http://gerrit.openvpn.net/c/openvpn/+/434/comment/b48f0b7e_bcabdfe7 :
-PS5, Line 2239:     #if defined (_WIN32)
-> ??
+http://gerrit.openvpn.net/c/openvpn/+/436/comment/f094b608_24a1894e :
+PS5, Line 358: options
+> either this should use "l" or the definition of "l" should be removed com=
+pletely.
 Done
 
 
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/434?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/436?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings
 
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: Ia0a889e800f0b36aed770ee36e31afeec5df6084
-Gerrit-Change-Number: 434
+Gerrit-Change-Id: I4d1c96662c5a8c750d883e3b20adde09529e2764
+Gerrit-Change-Number: 436
 Gerrit-PatchSet: 6
 Gerrit-Owner: ordex <a@...2181...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
@@ -187,163 +104,83 @@ Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
 Gerrit-Attention: flichtenheld <frank@...2641...>
 Gerrit-Attention: ordex <a@...2181...>
-Gerrit-Comment-Date: Thu, 17 Oct 2024 14:49:41 +0000
+Gerrit-Comment-Date: Thu, 17 Oct 2024 14:50:31 +0000
 Gerrit-HasComments: Yes
 Gerrit-Has-Labels: No
 Comment-In-Reply-To: flichtenheld <frank@...2641...>
-Comment-In-Reply-To: ordex <a@...2181...>
 Gerrit-MessageType: comment
 
---J8Jha8Phch0=
+--zzOSbbzbSdE=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <p> Attention is currently required from: flichtenheld, ordex, plaisthos. <=
 /p>
-<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/434?usp=3Demail">View C=
-hange</a></p><p>18 comments:</p><ul style=3D"list-style: none; padding: 0;"=
-><li style=3D"margin: 0; padding: 0;"><p>Commit Message:</p><ul style=3D"li=
-st-style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;">=
-<p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/ope=
-nvpn/+/434/comment/1d41d2b6_a8f7ac05">Patch Set #5, Line 7:</a> <code style=
-=3D"font-family:monospace,monospace">allow tcp/udp server to listen on mult=
-iple ports at the same time</code></p><p><blockquote style=3D"border-left: =
-1px solid #aaa; margin: 10px 0; padding: 0 10px;">For a change this fundame=
-ntal this commit message is not enough. [=E2=80=A6]</blockquote></p><p styl=
+<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/436?usp=3Demail">View C=
+hange</a></p><p>6 comments:</p><ul style=3D"list-style: none; padding: 0;">=
+<li style=3D"margin: 0; padding: 0;"><p>File doc/man-sections/link-options.=
+rst:</p><ul style=3D"list-style: none; padding: 0;"><li style=3D"margin: 0;=
+ padding: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://g=
+errit.openvpn.net/c/openvpn/+/436/comment/e41c0651_4dde7880">Patch Set #5, =
+Line 114:</a> <code style=3D"font-family:monospace,monospace">  0.0.0.0 or =
+:: can be used to specifically open a socket.</code></p><p><blockquote styl=
+e=3D"border-left: 1px solid #aaa; margin: 10px 0; padding: 0 10px;">Sentenc=
+e does end in the middle?</blockquote></p><p style=3D"white-space: pre-wrap=
+; word-wrap: break-word;">Done</p></li><li style=3D"margin: 0; padding: 0 0=
+ 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn=
+.net/c/openvpn/+/436/comment/5a0ba867_50a05ad8">Patch Set #5, Line 117:</a>=
+ <code style=3D"font-family:monospace,monospace">or name</code></p><p><bloc=
+kquote style=3D"border-left: 1px solid #aaa; margin: 10px 0; padding: 0 10p=
+x;">Should probably say &quot;default TCP/UDP port number&quot; or somethin=
+g like that and mention that this can b [=E2=80=A6]</blockquote></p><p styl=
 e=3D"white-space: pre-wrap; word-wrap: break-word;">Done</p></li></ul></li>=
-<li style=3D"margin: 0; padding: 0;"><p>File src/openvpn/forward.h:</p><ul =
+<li style=3D"margin: 0; padding: 0;"><p>File src/openvpn/options.c:</p><ul =
 style=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 =
 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvp=
-n.net/c/openvpn/+/434/comment/777e4574_22f8383d">Patch Set #5, Line 239:</a=
-> <code style=3D"font-family:monospace,monospace">void process_incoming_tun=
-(struct context *c, struct link_socket *out_ls);</code></p><p><blockquote s=
-tyle=3D"border-left: 1px solid #aaa; margin: 10px 0; padding: 0 10px;">I th=
-ink we have implicitly agreed to call those out_sock?</blockquote></p><p st=
-yle=3D"white-space: pre-wrap; word-wrap: break-word;">Done</p></li><li styl=
-e=3D"margin: 0; padding: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a h=
-ref=3D"http://gerrit.openvpn.net/c/openvpn/+/434/comment/45aee7e6_1b3916da"=
->Patch Set #5, Line 311:</a> <code style=3D"font-family:monospace,monospace=
-">                       struct link_socket *ls);</code></p><p><blockquote =
-style=3D"border-left: 1px solid #aaa; margin: 10px 0; padding: 0 10px;">let=
-&#39;s stick with sock to be consistent?</blockquote></p><p style=3D"white-=
-space: pre-wrap; word-wrap: break-word;">Done</p></li></ul></li><li style=
-=3D"margin: 0; padding: 0;"><p>File src/openvpn/forward.c:</p><ul style=3D"=
-list-style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;=
-"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/o=
-penvpn/+/434/comment/25eddf8f_88da1d83">Patch Set #5, Line 67:</a> <code st=
-yle=3D"font-family:monospace,monospace">    for (i =3D 0; i &lt; c-&gt;c1.l=
-ink_sockets_num; i++)</code></p><p><blockquote style=3D"border-left: 1px so=
-lid #aaa; margin: 10px 0; padding: 0 10px;">move declaration here.</blockqu=
-ote></p><p style=3D"white-space: pre-wrap; word-wrap: break-word;">Done</p>=
-</li><li style=3D"margin: 0; padding: 0 0 0 16px;"><p style=3D"margin-botto=
-m: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/434/comment/52741=
-d0c_ed1cfbf5">Patch Set #5, Line 1500:</a> <code style=3D"font-family:monos=
-pace,monospace">                          out_ls);</code></p><p><blockquote=
- style=3D"border-left: 1px solid #aaa; margin: 10px 0; padding: 0 10px;">th=
-is looks weird, why the additional line break?</blockquote></p><p style=3D"=
-white-space: pre-wrap; word-wrap: break-word;">Done</p></li><li style=3D"ma=
-rgin: 0; padding: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"=
-http://gerrit.openvpn.net/c/openvpn/+/434/comment/c9729dd8_c23a63b3">Patch =
-Set #5, Line 2091:</a> <code style=3D"font-family:monospace,monospace">    =
-int i;</code></p><p><blockquote style=3D"border-left: 1px solid #aaa; margi=
-n: 10px 0; padding: 0 10px;">no</blockquote></p><p style=3D"white-space: pr=
-e-wrap; word-wrap: break-word;">Done</p></li></ul></li><li style=3D"margin:=
- 0; padding: 0;"><p>File src/openvpn/init.c:</p><ul style=3D"list-style: no=
-ne; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p style=3D"=
-margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/434/c=
-omment/5db88ca1_62001647">Patch Set #5, Line 2712:</a> <code style=3D"font-=
-family:monospace,monospace">        int i;</code></p><p><blockquote style=
-=3D"border-left: 1px solid #aaa; margin: 10px 0; padding: 0 10px;">no</bloc=
-kquote></p><p style=3D"white-space: pre-wrap; word-wrap: break-word;">Done<=
-/p></li><li style=3D"margin: 0; padding: 0 0 0 16px;"><p style=3D"margin-bo=
-ttom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/434/comment/c4=
-b1d0a7_caefad40">Patch Set #5, Line 2726:</a> <code style=3D"font-family:mo=
-nospace,monospace">        int i;</code></p><p><blockquote style=3D"border-=
-left: 1px solid #aaa; margin: 10px 0; padding: 0 10px;">no</blockquote></p>=
-<p style=3D"white-space: pre-wrap; word-wrap: break-word;">Done</p></li><li=
- style=3D"margin: 0; padding: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"=
-><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/434/comment/d8bf560b_269e=
-4c53">Patch Set #5, Line 3809:</a> <code style=3D"font-family:monospace,mon=
-ospace">    int i;</code></p><p><blockquote style=3D"border-left: 1px solid=
- #aaa; margin: 10px 0; padding: 0 10px;">no</blockquote></p><p style=3D"whi=
-te-space: pre-wrap; word-wrap: break-word;">Done</p></li><li style=3D"margi=
-n: 0; padding: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"htt=
-p://gerrit.openvpn.net/c/openvpn/+/434/comment/3fbce72a_bc8f27b6">Patch Set=
- #5, Line 3830:</a> <code style=3D"font-family:monospace,monospace">    int=
- i;</code></p><p><blockquote style=3D"border-left: 1px solid #aaa; margin: =
-10px 0; padding: 0 10px;">no</blockquote></p><p style=3D"white-space: pre-w=
-rap; word-wrap: break-word;">Done</p></li><li style=3D"margin: 0; padding: =
-0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.open=
-vpn.net/c/openvpn/+/434/comment/96692862_fb70f0c5">Patch Set #5, Line 3898:=
-</a> <code style=3D"font-family:monospace,monospace">    int i;</code></p><=
-p><blockquote style=3D"border-left: 1px solid #aaa; margin: 10px 0; padding=
-: 0 10px;">no</blockquote></p><p style=3D"white-space: pre-wrap; word-wrap:=
- break-word;">Done</p></li><li style=3D"margin: 0; padding: 0 0 0 16px;"><p=
- style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openv=
-pn/+/434/comment/b06654d3_bd9889ea">Patch Set #5, Line 4059:</a> <code styl=
-e=3D"font-family:monospace,monospace">        int i;</code></p><p><blockquo=
-te style=3D"border-left: 1px solid #aaa; margin: 10px 0; padding: 0 10px;">=
-no</blockquote></p><p style=3D"white-space: pre-wrap; word-wrap: break-word=
-;">Done</p></li></ul></li><li style=3D"margin: 0; padding: 0;"><p>File src/=
-openvpn/mtcp.c:</p><ul style=3D"list-style: none; padding: 0;"><li style=3D=
-"margin: 0; padding: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=
-=3D"http://gerrit.openvpn.net/c/openvpn/+/434/comment/324654a5_bfaf62d1">Pa=
-tch Set #5, Line 265:</a> <code style=3D"font-family:monospace,monospace"> =
-   int status, i;</code></p><p><blockquote style=3D"border-left: 1px solid =
-#aaa; margin: 10px 0; padding: 0 10px;">no</blockquote></p><p style=3D"whit=
-e-space: pre-wrap; word-wrap: break-word;">Done</p></li></ul></li><li style=
-=3D"margin: 0; padding: 0;"><p>File src/openvpn/mudp.c:</p><ul style=3D"lis=
-t-style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><=
-p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/open=
-vpn/+/434/comment/9eba0158_a12ada55">Patch Set #5, Line 384:</a> <code styl=
-e=3D"font-family:monospace,monospace">        int i;</code></p><p><blockquo=
-te style=3D"border-left: 1px solid #aaa; margin: 10px 0; padding: 0 10px;">=
-no</blockquote></p><p style=3D"white-space: pre-wrap; word-wrap: break-word=
-;">Done</p></li></ul></li><li style=3D"margin: 0; padding: 0;"><p>File src/=
-openvpn/multi.h:</p><ul style=3D"list-style: none; padding: 0;"><li style=
-=3D"margin: 0; padding: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a hr=
-ef=3D"http://gerrit.openvpn.net/c/openvpn/+/434/comment/b0f20aa4_59ddfbd1">=
-Patch Set #5, Line 133:</a> <code style=3D"font-family:monospace,monospace"=
->    bool did_open_context;</code></p><p><blockquote style=3D"border-left: =
-1px solid #aaa; margin: 10px 0; padding: 0 10px;">This must have been a reb=
-ase mistake, because: [=E2=80=A6]</blockquote></p><p style=3D"white-space: =
-pre-wrap; word-wrap: break-word;">It was a rebase mistake indeed, so I remo=
-ved this.</p></li></ul></li><li style=3D"margin: 0; padding: 0;"><p>File sr=
-c/openvpn/socket.h:</p><ul style=3D"list-style: none; padding: 0;"><li styl=
-e=3D"margin: 0; padding: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a h=
-ref=3D"http://gerrit.openvpn.net/c/openvpn/+/434/comment/a49234a5_d2525f23"=
->Patch Set #5, Line 348:</a> <code style=3D"font-family:monospace,monospace=
-">link_socket_init_phase1(struct link_socket *sock,</code></p><p><blockquot=
-e style=3D"border-left: 1px solid #aaa; margin: 10px 0; padding: 0 10px;">h=
-mm, no? [=E2=80=A6]</blockquote></p><p style=3D"white-space: pre-wrap; word=
--wrap: break-word;">Done</p></li><li style=3D"margin: 0; padding: 0 0 0 16p=
-x;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c=
-/openvpn/+/434/comment/4d71982d_76aa122f">Patch Set #5, Line 1288:</a> <cod=
-e style=3D"font-family:monospace,monospace">bool sockets_read_residual(cons=
-t struct context *c);</code></p><p><blockquote style=3D"border-left: 1px so=
-lid #aaa; margin: 10px 0; padding: 0 10px;">please add minimal documentatio=
-n</blockquote></p><p style=3D"white-space: pre-wrap; word-wrap: break-word;=
-">Done</p></li></ul></li><li style=3D"margin: 0; padding: 0;"><p>File src/o=
-penvpn/socket.c:</p><ul style=3D"list-style: none; padding: 0;"><li style=
-=3D"margin: 0; padding: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a hr=
-ef=3D"http://gerrit.openvpn.net/c/openvpn/+/434/comment/b48f0b7e_bcabdfe7">=
-Patch Set #5, Line 2239:</a> <code style=3D"font-family:monospace,monospace=
-">    #if defined (_WIN32)</code></p><p><blockquote style=3D"border-left: 1=
-px solid #aaa; margin: 10px 0; padding: 0 10px;">??</blockquote></p><p styl=
-e=3D"white-space: pre-wrap; word-wrap: break-word;">Done</p></li></ul></li>=
-</ul><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/434=
-?usp=3Demail">change 434</a>. To unsubscribe, or for help writing mail filt=
-ers, visit <a href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p>=
-<div itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope i=
-temprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=
-=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/434?usp=3Demail"/><m=
-eta itemprop=3D"name" content=3D"View Change"/></div></div>
+n.net/c/openvpn/+/436/comment/bea38f19_4d89f447">Patch Set #5, Line 2400:</=
+a> <code style=3D"font-family:monospace,monospace">     * Sanity check on d=
+aemon mode</code></p><p><blockquote style=3D"border-left: 1px solid #aaa; m=
+argin: 10px 0; padding: 0 10px;">Not sure what daemon is supposed to mean i=
+n this context?</blockquote></p><p style=3D"white-space: pre-wrap; word-wra=
+p: break-word;">Done</p></li><li style=3D"margin: 0; padding: 0 0 0 16px;">=
+<p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/ope=
+nvpn/+/436/comment/a4fc0da7_d28cb303">Patch Set #5, Line 3198:</a> <code st=
+yle=3D"font-family:monospace,monospace">    if (ce-&gt;proto =3D=3D PROTO_U=
+DP &amp;&amp; ce-&gt;socks_proxy_server &amp;&amp; !ce-&gt;local_list &amp;=
+&amp; !ce-&gt;local_port_defined &amp;&amp; !ce-&gt;bind_defined)</code></p=
+><p><blockquote style=3D"border-left: 1px solid #aaa; margin: 10px 0; paddi=
+ng: 0 10px;">Should use need_bind to simplify the condition.</blockquote></=
+p><p style=3D"white-space: pre-wrap; word-wrap: break-word;">Done</p></li><=
+li style=3D"margin: 0; padding: 0 0 0 16px;"><p style=3D"margin-bottom: 4px=
+;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/436/comment/08d0b545_36=
+ce02f5">Patch Set #5, Line 3327:</a> <code style=3D"font-family:monospace,m=
+onospace">options_postprocess_mutate_le(struct options *o, struct local_ent=
+ry *le)</code></p><p><blockquote style=3D"border-left: 1px solid #aaa; marg=
+in: 10px 0; padding: 0 10px;">should maybe take o-&gt;ce as input and not o=
+, just to make clear that it doesn&#39;t need the rest?</blockquote></p><p =
+style=3D"white-space: pre-wrap; word-wrap: break-word;">Done</p></li></ul><=
+/li><li style=3D"margin: 0; padding: 0;"><p>File src/openvpn/socket.c:</p><=
+ul style=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; padding:=
+ 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.ope=
+nvpn.net/c/openvpn/+/436/comment/f094b608_24a1894e">Patch Set #5, Line 358:=
+</a> <code style=3D"font-family:monospace,monospace">options</code></p><p><=
+blockquote style=3D"border-left: 1px solid #aaa; margin: 10px 0; padding: 0=
+ 10px;">either this should use &quot;l&quot; or the definition of &quot;l&q=
+uot; should be removed completely.</blockquote></p><p style=3D"white-space:=
+ pre-wrap; word-wrap: break-word;">Done</p></li></ul></li></ul><p>To view, =
+visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/436?usp=3Demail">cha=
+nge 436</a>. To unsubscribe, or for help writing mail filters, visit <a hre=
+f=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope it=
+emtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"action=
+" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"=
+http://gerrit.openvpn.net/c/openvpn/+/436?usp=3Demail"/><meta itemprop=3D"n=
+ame" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: Ia0a889e800f0b36aed770ee36e3=
-1afeec5df6084 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 434 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I4d1c96662c5a8c750d883e3b20a=
+dde09529e2764 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 436 </div>
 <div style=3D"display:none"> Gerrit-PatchSet: 6 </div>
 <div style=3D"display:none"> Gerrit-Owner: ordex &lt;a@...2181...&gt; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
@@ -360,16 +197,14 @@ ts.sourceforge.net&gt; </div>
 41...&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: ordex &lt;a@...2181...&gt; <=
 /div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Thu, 17 Oct 2024 14:49:41=
+<div style=3D"display:none"> Gerrit-Comment-Date: Thu, 17 Oct 2024 14:50:31=
  +0000 </div>
 <div style=3D"display:none"> Gerrit-HasComments: Yes </div>
 <div style=3D"display:none"> Gerrit-Has-Labels: No </div>
 <div style=3D"display:none"> Comment-In-Reply-To: flichtenheld &lt;frank@...1186...=
 .2641...&gt; </div>
-<div style=3D"display:none"> Comment-In-Reply-To: ordex &lt;a@...2181...&gt=
-; </div>
 <div style=3D"display:none"> Gerrit-MessageType: comment </div>
 
 
---J8Jha8Phch0=--
+--zzOSbbzbSdE=--
 
