@@ -1,16 +1,10 @@
-From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Fri, 18 Oct 2024 06:31:06 +0000
+From: Gert Doering <gert@...1296...>
+Date: Fri, 18 Oct 2024 08:31:23 +0200
+Message-ID: <20241018063123.11631-1-gert@...1296...>
 In-Reply-To: <gerrit.1729216832000.Ib480e57b62ea33f2aea52bee895badaf5607b72d@...2715...>
 References: <gerrit.1729216832000.Ib480e57b62ea33f2aea52bee895badaf5607b72d@...2715...>
-Reply-To: gert@...1296..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <5767f5f7671465eac3fed09381adb410cdd52b5e-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="AX93nHJxy/o="; charset=UTF-8
-Subject: [Openvpn-devel] [M] Change in openvpn[master]: Remove unused
- methods write_key/read_key
+Subject: [Openvpn-devel] [PATCH v1] Remove unused methods write_key/read_key
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,100 +13,138 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: plaisthos <arne-openvpn@...1227...>
-Cc: flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---AX93nHJxy/o=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+From: Arne Schwabe <arne@...1227...>
 
-Attention is currently required from: flichtenheld, plaisthos.
+These were used in the key-method 1 that we remove by commit
+36bef1b52 in 2020.  That commit unfortunately missed that these
+methods were only used for directly sending/receiving key material
+over the control channel.
 
-cron2 has posted comments on this change. ( http://gerrit.openvpn.net/c/ope=
-nvpn/+/784?usp=3Demail )
+Change-Id: Ib480e57b62ea33f2aea52bee895badaf5607b72d
+Signed-off-by: Arne Schwabe <arne@...1227...>
+Acked-by: Gert Doering <gert@...1296...>
+---
 
-Change subject: Remove unused methods write_key/read_key
-......................................................................
+This change was reviewed on Gerrit and approved by at least one
+developer. I request to merge it to master.
 
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/784
+This mail reflects revision 1 of this Change.
 
-Patch Set 1: Code-Review+2
+Acked-by according to Gerrit (reflected above):
+Gert Doering <gert@...1296...>
 
-(1 comment)
-
-Patchset:
-
-PS1:
-easy enough
-
-
-
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/784?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings
-
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: Ib480e57b62ea33f2aea52bee895badaf5607b72d
-Gerrit-Change-Number: 784
-Gerrit-PatchSet: 1
-Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
-Gerrit-Reviewer: cron2 <gert@...1296...>
-Gerrit-Reviewer: flichtenheld <frank@...2641...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Comment-Date: Fri, 18 Oct 2024 06:31:06 +0000
-Gerrit-HasComments: Yes
-Gerrit-Has-Labels: Yes
-Gerrit-MessageType: comment
-
---AX93nHJxy/o=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<p> Attention is currently required from: flichtenheld, plaisthos. </p>
-<p>Patch set 1:<span style=3D"border-radius: 3px; display: inline-block; ma=
-rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/784?usp=3Demail">Vi=
-ew Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0=
-;"><li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-s=
-tyle: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p s=
-tyle=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn=
-/+/784?tab=3Dcomments">Patch Set #1:</a> </p><p style=3D"white-space: pre-w=
-rap; word-wrap: break-word;">easy enough</p></li></ul></li></ul><p>To view,=
- visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/784?usp=3Demail">ch=
-ange 784</a>. To unsubscribe, or for help writing mail filters, visit <a hr=
-ef=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope i=
-temtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"actio=
-n" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D=
-"http://gerrit.openvpn.net/c/openvpn/+/784?usp=3Demail"/><meta itemprop=3D"=
-name" content=3D"View Change"/></div></div>
-
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: Ib480e57b62ea33f2aea52bee895=
-badaf5607b72d </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 784 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
-<div style=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@...1711...=
-27...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
- </div>
-<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
-1...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
-41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Fri, 18 Oct 2024 06:31:06=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
-
-
---AX93nHJxy/o=--
+        
+diff --git a/src/openvpn/crypto.c b/src/openvpn/crypto.c
+index 064e59e..8f34eaa 100644
+--- a/src/openvpn/crypto.c
++++ b/src/openvpn/crypto.c
+@@ -1540,87 +1540,6 @@
+     }
+ }
+ 
+-/* given a key and key_type, write key to buffer */
+-bool
+-write_key(const struct key *key, const struct key_type *kt,
+-          struct buffer *buf)
+-{
+-    ASSERT(cipher_kt_key_size(kt->cipher) <= MAX_CIPHER_KEY_LENGTH
+-           && md_kt_size(kt->digest) <= MAX_HMAC_KEY_LENGTH);
+-
+-    const uint8_t cipher_length = (uint8_t)cipher_kt_key_size(kt->cipher);
+-    if (!buf_write(buf, &cipher_length, 1))
+-    {
+-        return false;
+-    }
+-
+-    uint8_t hmac_length = (uint8_t)md_kt_size(kt->digest);
+-
+-    if (!buf_write(buf, &hmac_length, 1))
+-    {
+-        return false;
+-    }
+-    if (!buf_write(buf, key->cipher, cipher_kt_key_size(kt->cipher)))
+-    {
+-        return false;
+-    }
+-    if (!buf_write(buf, key->hmac, hmac_length))
+-    {
+-        return false;
+-    }
+-
+-    return true;
+-}
+-
+-/*
+- * Given a key_type and buffer, read key from buffer.
+- * Return: 1 on success
+- *        -1 read failure
+- *         0 on key length mismatch
+- */
+-int
+-read_key(struct key *key, const struct key_type *kt, struct buffer *buf)
+-{
+-    uint8_t cipher_length;
+-    uint8_t hmac_length;
+-
+-    CLEAR(*key);
+-    if (!buf_read(buf, &cipher_length, 1))
+-    {
+-        goto read_err;
+-    }
+-    if (!buf_read(buf, &hmac_length, 1))
+-    {
+-        goto read_err;
+-    }
+-
+-    if (cipher_length != cipher_kt_key_size(kt->cipher) || hmac_length != md_kt_size(kt->digest))
+-    {
+-        goto key_len_err;
+-    }
+-
+-    if (!buf_read(buf, key->cipher, cipher_length))
+-    {
+-        goto read_err;
+-    }
+-    if (!buf_read(buf, key->hmac, hmac_length))
+-    {
+-        goto read_err;
+-    }
+-
+-    return 1;
+-
+-read_err:
+-    msg(D_TLS_ERRORS, "TLS Error: error reading key from remote");
+-    return -1;
+-
+-key_len_err:
+-    msg(D_TLS_ERRORS,
+-        "TLS Error: key length mismatch, local cipher/hmac %d/%d, remote cipher/hmac %d/%d",
+-        cipher_kt_key_size(kt->cipher), md_kt_size(kt->digest), cipher_length, hmac_length);
+-    return 0;
+-}
+-
+ void
+ prng_bytes(uint8_t *output, int len)
+ {
+diff --git a/src/openvpn/crypto.h b/src/openvpn/crypto.h
+index d91de74..074dad6 100644
+--- a/src/openvpn/crypto.h
++++ b/src/openvpn/crypto.h
+@@ -313,11 +313,6 @@
+ 
+ bool check_key(struct key *key, const struct key_type *kt);
+ 
+-bool write_key(const struct key *key, const struct key_type *kt,
+-               struct buffer *buf);
+-
+-int read_key(struct key *key, const struct key_type *kt, struct buffer *buf);
+-
+ /**
+  * Initialize a key_type structure with.
+  *
 
