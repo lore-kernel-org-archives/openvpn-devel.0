@@ -1,11 +1,14 @@
-Message-ID: <4bf82643-74b0-4034-a4e1-67d0ac3ce51b@...277...>
-Date: Wed, 23 Oct 2024 17:40:43 +0300
-MIME-Version: 1.0
-Content-Language: en-US
+Date: Wed, 23 Oct 2024 16:43:39 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <ZxkLm_LadCi16JTV@...1296...>
 References: <20241023134903.66485-1-rzvncj@...277...>
  <ZxkG_T7Jw7fI-C1I@...1296...>
-From: Razvan Cojocaru <rzvncj@...277...>
-In-Reply-To: <ZxkG_T7Jw7fI-C1I@...1296...>
+ <4bf82643-74b0-4034-a4e1-67d0ac3ce51b@...277...>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ protocol="application/pgp-signature"; boundary="dqDAqMa9ulRLSIvq"
+Content-Disposition: inline
+In-Reply-To: <4bf82643-74b0-4034-a4e1-67d0ac3ce51b@...277...>
 Subject: Re: [Openvpn-devel] [PATCH] Allow setting an empty auth-token in
  push replies
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -16,54 +19,53 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-To: Gert Doering <gert@...1296...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: Razvan Cojocaru <rzvncj@...277...>
+Cc: Gert Doering <gert@...1296...>, openvpn-devel@lists.sourceforge.net
 
-On 10/23/24 17:23, Gert Doering wrote:
-> Hi,
-> 
-> On Wed, Oct 23, 2024 at 04:49:03PM +0300, Razvan Cojocaru wrote:
->> This in turn allows the server to signal to the client that it
->> should no longer attempt to reconnect, if it wants to keep the
->> client out after an AUTH_FAILED.
-> 
-> This should not be necessary.  After an AUTH_FAILED the token is
-> already invalidated on the client side.
-> 
-> Can you describe your use case a bit better?  This code is complex
-> enough as it is, so I'm not really willing to add more cases to it
-> (which I do have to test then and forever) if not needed.
+--dqDAqMa9ulRLSIvq
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-Thanks for the quick reply!
+Hi,
 
-Of course! The use case pertains to the device posture checks that 
-OpenVPN has rolled out.
+On Wed, Oct 23, 2024 at 05:40:43PM +0300, Razvan Cojocaru wrote:
+> In this case, we want to disconnect the client and it should stay
+> disconnected. A simple AUTH_FAILED for this scenario will have the client
+> attempt another connection. But if we invalidate the token, then the clie=
+nt
+> will not attempt to reconnect.
 
-Long story short, these are meant to allow the server to make decisions 
-on whether the client is allowed to connect (and stay connected, which 
-is the part I'm addressing here) based on information about it.
+AUTH_FAILED should do this automatically - invalidate the token, that is.
+Can you show a log where this is (not) happening?
 
-For example, if it has an up-to-date antivirus, or if it has full disk 
-encryption enabled.
+gert
+--=20
+"If was one thing all people took for granted, was conviction that if you=20
+ feed honest figures into a computer, honest figures come out. Never doubte=
+d=20
+ it myself till I met a computer with a sense of humor."
+                             Robert A. Heinlein, The Moon is a Harsh Mistre=
+ss
 
-So a client may connect and be allowed in, then for some reason its 
-antivirus may not be updated for a considerable while, at which point a 
-check will want to disconnect said client. Reconnects will be possible 
-after whoever manages the client machine updates the antivirus.
+Gert Doering - Munich, Germany                             gert@...1296...
 
-In this case, we want to disconnect the client and it should stay 
-disconnected. A simple AUTH_FAILED for this scenario will have the 
-client attempt another connection. But if we invalidate the token, then 
-the client will not attempt to reconnect.
+--dqDAqMa9ulRLSIvq
+Content-Type: application/pgp-signature; name="signature.asc"
 
-Another reason for this patch is that the OpenVPN 3 client does allow 
-setting the auth-token to an empty string, and when it is empty the 
-logic is to not reconnect - so this would allow both version 2 and 
-version 3 clients to behave the same way.
+-----BEGIN PGP SIGNATURE-----
 
+iQGcBAEBAgAGBQJnGQubAAoJEB2Cnv7KVigS/rcMAKZ1b/hgs9WvHstrm/S8jG9n
+5IJjXy8rLHsmSYwNs63fM065sKFxCWaf4BQ+R+ZU5Z1Skv95axfhCSPDCFxtrQlI
+FbXgZK27NXq7iOQ/35OhcKxKmGInHN/NdPpOqKis0lwlQjfG3UbZhvvQqrNHXeSP
+bFcpc/BgJbhNenG0N1J+EUZ6t0OsaE2KOw5CLYdnRdhmgc1CGdv9x6FHI8C4Ijnu
+bNbdgEw01TIUhWtLLH6s4Fxtuwt1HUDEIN4qaUILJrbz62SsfgAInhrVAmOdaXFe
+8q921mSMwLhbqgIXPBB03GrnmSDE/AcOhHWVlrqdYQob5fj6HwOjHwrGrn7vG7LH
+WQLsyr8ze+rYQEmtKWq/qWmoK+DXin+j94PetiK2++Z+zKMG9HAAXzos7bixrlMG
+RI9KHzJ0njVBTzF5pOLVM+/rhpPLIir2juVmLhWilg+nRQn/FvbmK6eNRBIsnubD
+yg5QzG0gmdFL/2Xdbdsh2q0dc4lWy0VXAFcf8WYeZw==
+=g+c7
+-----END PGP SIGNATURE-----
 
-Thanks,
-Razvan
+--dqDAqMa9ulRLSIvq--
 
