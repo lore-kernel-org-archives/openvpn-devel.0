@@ -1,20 +1,11 @@
+Content-Type: multipart/alternative;
+ boundary="------------nkEwN5EAxqBoOmMd0tLt6Cn9"
+Message-ID: <68304be6-ac91-4092-a3ed-9c286da2e265@...2751...>
+Date: Wed, 23 Oct 2024 19:49:04 +0200
 MIME-Version: 1.0
-References: <20241023134903.66485-1-rzvncj@...277...>
- <ZxkG_T7Jw7fI-C1I@...1296...>
- <4bf82643-74b0-4034-a4e1-67d0ac3ce51b@...277...>
- <ZxkLm_LadCi16JTV@...1296...>
- <b2c9b370-43b8-40c3-843b-adeabef79891@...277...>
- <ZxkNPBAus8JGMehg@...1296...>
- <babedac6-d487-4df6-b054-b961209be459@...277...>
- <CAKuzo_ifn6ma288DdFNm_=AURyU+uneuxo5HWuB6FHXTCDpVrQ@...278...>
- <56038512-a84a-4bb7-a1e0-38a0d4f99b70@...277...>
-In-Reply-To: <56038512-a84a-4bb7-a1e0-38a0d4f99b70@...277...>
-From: Selva Nair <selva.nair@...277...>
-Date: Wed, 23 Oct 2024 12:27:10 -0400
-Message-ID: <CAKuzo_jRr3cDGpPv3B2-CSah8x92VN1stqEtRjSEcMCXFLcv-A@...278...>
-Content-Type: multipart/alternative; boundary="0000000000008fdfbb0625275cc5"
-Subject: Re: [Openvpn-devel] [PATCH] Allow setting an empty auth-token in
- push replies
+From: Johan Draaisma <johan@...2751...>
+Content-Language: en-US
+Subject: [Openvpn-devel]  IRC community meeting summary
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -23,59 +14,133 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Razvan Cojocaru <rzvncj@...277...>
-Cc: Gert Doering <gert@...1296...>, openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
---0000000000008fdfbb0625275cc5
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+This is a multi-part message in MIME format.
+--------------nkEwN5EAxqBoOmMd0tLt6Cn9
+Content-Type: text/plain; charset="utf-8"; format="flowed"
+Content-Transfer-Encoding: 8bit
 
-On Wed, Oct 23, 2024 at 11:47=E2=80=AFAM Razvan Cojocaru <rzvncj@...277...>=
- wrote:
+Meeting summary for 23 October 2024:
 
-> On 10/23/24 18:25, Selva Nair wrote:
-> > Wouldn't pushing "HALT" instead of "AUTH_FAILED" work in this case?
-> > As in the management command "client-kill {cid} HALT" which calls
-> > send_restart() with kill_msg =3D "HALT".
->
-> Possibly, however the intent has always been to use this feature to
-> reject (authorize) clients (so this is a corner case of that, just that
-> we can retract authorization at a later time), and in addition
-> considerable work has already been done that relies on the AUTH_FAILED
-> code paths.
->
->
-Looks like a misuse of AUTH_FAILED to me. To kill a client while not in the
-authentication phase, use code paths meant for that purpose.
+  * *Updated: data format v3 / epoch data keys*
+    /plaisthos has written a new draft for new key handling for the data
+    channel based on discussions in Karlsruhe./
+    /See​https://github.com/OpenVPN/openvpn-rfc/pull/5
+    <https://github.com/OpenVPN/openvpn-rfc/pull/5>./
+    /Requesting feedback from community to review./
 
-Selva
+  * *Updated: DCO and Linux upstreaming, API change*
+    /Upstreaming DCO to Linux is proceeding, it is in review stage at
+    the moment./
+    /ordex sent in*patchset version 9*. Got some small feedback, a v10
+    will be sent in this week./
 
---0000000000008fdfbb0625275cc5
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+  * *Updated: buildbot improvements*
+    /cron2 requests that we pretty please have a mingw build in gerrit.
+    djpig indicates next week should be possible./
+    /mattock has a patch to split the mails for different project to
+    different mail addresses. The idea is to split openvpn3 and
+    openvpn3-linux out so it doesn't go to openvpn-builds@ ML anymore./
+    /Instead we could create a openvpn3-builds@ ML. djpig will look into
+    that./
 
-<div dir=3D"ltr"><div dir=3D"ltr"><div dir=3D"ltr"><br></div><br><div class=
-=3D"gmail_quote"><div dir=3D"ltr" class=3D"gmail_attr">On Wed, Oct 23, 2024=
- at 11:47=E2=80=AFAM Razvan Cojocaru &lt;<a href=3D"mailto:rzvncj@...277...=
-" target=3D"_blank">rzvncj@...277...</a>&gt; wrote:<br></div><blockquote cl=
-ass=3D"gmail_quote" style=3D"margin:0px 0px 0px 0.8ex;border-left:1px solid=
- rgb(204,204,204);padding-left:1ex">On 10/23/24 18:25, Selva Nair wrote:<br>
-&gt; Wouldn&#39;t pushing &quot;HALT&quot; instead of &quot;AUTH_FAILED&quo=
-t; work in this case?<br>
-&gt; As in the management=C2=A0command &quot;client-kill {cid} HALT&quot; w=
-hich calls<br>
-&gt; send_restart() with kill_msg =3D &quot;HALT&quot;.<br>
-<br>
-Possibly, however the intent has always been to use this feature to <br>
-reject (authorize) clients (so this is a corner case of that, just that <br>
-we can retract authorization at a later time), and in addition <br>
-considerable work has already been done that relies on the AUTH_FAILED <br>
-code paths.<br>
-<br></blockquote><div><br></div><div>Looks like a=C2=A0misuse of AUTH_FAILE=
-D to me. To kill a client while not in the</div><div>authentication phase, =
-use code paths meant for that purpose.=C2=A0</div><div><br></div><div>Selva=
-</div></div></div>
-</div>
+  * *Updated: DCO windows multi-peer*
+    /Getting closer - kernel side stuff seems to be getting near to
+    completion. Will look at user-space part next./
 
---0000000000008fdfbb0625275cc5--
+  * *Updated: multi-socket patch series*
+    /There were some issues building on Windows and some buildbot
+    failures pointed out by djpig when merging the preparation work
+    patches./
+    /These will be addressed in follow-up patches that are underway now./
+    /And then we'll move on to the real patch series./
+
+  * *Updated: push_update / live route updates*
+    /There were some clarification questions which resulted in the
+    decision we should add a few clarifying words to the RFC./
+    /Implementation for OpenVPN v2 will be looked at by ordex and his team./
+
+As always you're welcome to join at #openvpn-meeting on Libera IRC 
+network every Wednesday at 14:00 Central European Time.
+
+Kind regards,
+Johan Draaisma
+
+--------------nkEwN5EAxqBoOmMd0tLt6Cn9
+Content-Type: text/html; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  </head>
+  <body>
+    <p> Meeting summary for 23 October 2024:</p>
+    <ul
+style="color: rgb(0, 0, 0); font-family: Verdana, Arial, &quot;Bitstream Vera Sans&quot;, Helvetica, sans-serif; font-size: 13px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;">
+      <li><strong>Updated: data format v3 / epoch data keys</strong><br>
+        <em>plaisthos has written a new draft for new key handling for
+          the data channel based on discussions in Karlsruhe.</em><br>
+        <em>See<span> </span><a class="ext-link"
+            href="https://github.com/OpenVPN/openvpn-rfc/pull/5"
+style="text-decoration: none; color: rgb(187, 0, 0); border-bottom: 1px dotted rgb(187, 187, 187);"><span
+              class="icon"
+style="background: url(&quot;../extlink.gif&quot;) left center no-repeat; padding-left: 15px;">​</span>https://github.com/OpenVPN/openvpn-rfc/pull/5</a>.</em><br>
+        <em>Requesting feedback from community to review.</em></li>
+    </ul>
+    <ul
+style="color: rgb(0, 0, 0); font-family: Verdana, Arial, &quot;Bitstream Vera Sans&quot;, Helvetica, sans-serif; font-size: 13px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;">
+      <li><strong>Updated: DCO and Linux upstreaming, API change</strong><br>
+        <em>Upstreaming DCO to Linux is proceeding, it is in review
+          stage at the moment.</em><br>
+        <em>ordex sent in<span> </span><strong>patchset version 9</strong>.
+          Got some small feedback, a v10 will be sent in this week.</em></li>
+    </ul>
+    <ul
+style="color: rgb(0, 0, 0); font-family: Verdana, Arial, &quot;Bitstream Vera Sans&quot;, Helvetica, sans-serif; font-size: 13px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;">
+      <li><strong>Updated: buildbot improvements</strong><br>
+        <em>cron2 requests that we pretty please have a mingw build in
+          gerrit. djpig indicates next week should be possible.</em><br>
+        <em>mattock has a patch to split the mails for different project
+          to different mail addresses. The idea is to split openvpn3 and
+          openvpn3-linux out so it doesn't go to openvpn-builds@ ML
+          anymore.</em><br>
+        <em>Instead we could create a openvpn3-builds@ ML. djpig will
+          look into that.</em></li>
+    </ul>
+    <ul
+style="color: rgb(0, 0, 0); font-family: Verdana, Arial, &quot;Bitstream Vera Sans&quot;, Helvetica, sans-serif; font-size: 13px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;">
+      <li><strong>Updated: DCO windows multi-peer</strong><br>
+        <em>Getting closer - kernel side stuff seems to be getting near
+          to completion. Will look at user-space part next.</em></li>
+    </ul>
+    <ul
+style="color: rgb(0, 0, 0); font-family: Verdana, Arial, &quot;Bitstream Vera Sans&quot;, Helvetica, sans-serif; font-size: 13px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;">
+      <li><strong>Updated: multi-socket patch series</strong><br>
+        <em>There were some issues building on Windows and some buildbot
+          failures pointed out by djpig when merging the preparation
+          work patches.</em><br>
+        <em>These will be addressed in follow-up patches that are
+          underway now.</em><br>
+        <em>And then we'll move on to the real patch series.</em></li>
+    </ul>
+    <ul
+style="color: rgb(0, 0, 0); font-family: Verdana, Arial, &quot;Bitstream Vera Sans&quot;, Helvetica, sans-serif; font-size: 13px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;">
+      <li><strong>Updated: push_update / live route updates</strong><br>
+        <em>There were some clarification questions which resulted in
+          the decision we should add a few clarifying words to the RFC.</em><br>
+        <em>Implementation for OpenVPN v2 will be looked at by ordex and
+          his team.</em></li>
+    </ul>
+    As always you're welcome to join at #openvpn-meeting on Libera IRC
+    network every Wednesday at 14:00 Central European Time.
+    <p>Kind regards,<br>
+      Johan Draaisma<br>
+    </p>
+  </body>
+</html>
+
+--------------nkEwN5EAxqBoOmMd0tLt6Cn9--
 
