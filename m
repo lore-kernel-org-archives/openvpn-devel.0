@@ -1,10 +1,10 @@
+Date: Wed, 23 Oct 2024 14:02:56 +0200 (CEST)
+Message-Id: <202410231202.49NC2udf028582@...2054...>
 From: Gert Doering <gert@...1296...>
-Date: Wed, 23 Oct 2024 13:39:23 +0200
-Message-ID: <20241023113923.7420-1-gert@...1296...>
-In-Reply-To: <gerrit.1729681493000.I8526aadb5151ddc997c836d5a691bcdfee700938@...2715...>
-References: <gerrit.1729681493000.I8526aadb5151ddc997c836d5a691bcdfee700938@...2715...>
-MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v1] Fix for msbuild/mingw GHA failures
+In-Reply-To: <20241023113923.7420-1-gert@...1296...>
+References: <20241023113923.7420-1-gert@...1296...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Fix for msbuild/mingw GHA
+ failures
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,50 +15,41 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Gianmarco De Gregori <gianmarco@...2726...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-From: Gianmarco De Gregori <gianmarco@...2726...>
+Thanks for quickly fixing this.  (Morale 1: don't do "while I am here,
+let's clean up this other thing" changes..., Morale 2: we need windows
+builds in gerrit/buildbot)
 
-Commit ("event/multi: add event_arg object to make
-event handling more generic") accidentally removed
-a variable declaration and its usage because of a
-rebase, this fix restore the wiped out
-unsigned int *persistent in multi_tcp_wait().
+I've reworded the commit message a bit, to reference the actual commit
+ID in question, and to make it more clear what happened.
 
-Change-Id: I8526aadb5151ddc997c836d5a691bcdfee700938
-Signed-off-by: Gianmarco De Gregori <gianmarco@...2726...>
-Acked-by: Gert Doering <gert@...1296...>
----
+The patch itself is a trivial undo of those 2 lines, easily verified
+with "git diff HEAD~2".
 
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to master.
+(A later patch in the series actually does the same thing, when moving
+the code to multi_io.c - so "test the whole tree via GHA" did not
+expose the problem)
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/785
-This mail reflects revision 1 of this Change.
+Your patch has been applied to the master branch.
 
-Acked-by according to Gerrit (reflected above):
-Gert Doering <gert@...1296...>
+commit 3636da3b0f168d8e06a00ec5d1f33e4b9aded262
+Author: Gianmarco De Gregori
+Date:   Wed Oct 23 13:39:23 2024 +0200
 
-        
-diff --git a/src/openvpn/mtcp.c b/src/openvpn/mtcp.c
-index 67e3e8e..6faf45a 100644
---- a/src/openvpn/mtcp.c
-+++ b/src/openvpn/mtcp.c
-@@ -254,6 +254,7 @@
-                struct multi_tcp *mtcp)
- {
-     int status;
-+    unsigned int *persistent = &mtcp->tun_rwflags;
-     socket_set_listen_persistent(c->c2.link_socket, mtcp->es,
-                                  &c->c2.link_socket->ev_arg);
- 
-@@ -271,7 +272,7 @@
-         persistent = NULL;
-     }
- #endif
--    tun_set(c->c1.tuntap, mtcp->es, EVENT_READ, MTCP_TUN, &mtcp->tun_rwflags);
-+    tun_set(c->c1.tuntap, mtcp->es, EVENT_READ, MTCP_TUN, persistent);
- #if defined(TARGET_LINUX) || defined(TARGET_FREEBSD)
-     dco_event_set(&c->c1.tuntap->dco, mtcp->es, MTCP_DCO);
- #endif
+     Fix for msbuild/mingw GHA failures
+
+     Signed-off-by: Gianmarco De Gregori <gianmarco@...2726...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <20241023113923.7420-1-gert@...1296...>
+     URL: https://www.mail-archive.com/search?l=mid&q=20241023113923.7420-1-gert@...1296...
+     Signed-off-by: Gert Doering <gert@...1296...>
+
+
+--
+kind regards,
+
+Gert Doering
+
 
