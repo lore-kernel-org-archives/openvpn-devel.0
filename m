@@ -1,11 +1,14 @@
+Date: Wed, 23 Oct 2024 16:23:57 +0200
 From: Gert Doering <gert@...1296...>
-Date: Wed, 23 Oct 2024 16:20:30 +0200
-Message-ID: <20241023142030.731-1-gert@...1296...>
-In-Reply-To: <gerrit.1727098847000.I7ebf0d4fb2a23278e16003b2e35598178155d658@...2715...>
-References: <gerrit.1727098847000.I7ebf0d4fb2a23278e16003b2e35598178155d658@...2715...>
+Message-ID: <ZxkG_T7Jw7fI-C1I@...1296...>
+References: <20241023134903.66485-1-rzvncj@...277...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v6] io_work: pass event_arg object to event
- handler in case of socket event
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ protocol="application/pgp-signature"; boundary="MuOUxMlmjiKKNxMQ"
+Content-Disposition: inline
+In-Reply-To: <20241023134903.66485-1-rzvncj@...277...>
+Subject: Re: [Openvpn-devel] [PATCH] Allow setting an empty auth-token in
+ push replies
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,121 +17,55 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Razvan Cojocaru <rzvncj@...277...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-From: Antonio Quartulli <a@...2181...>
+--MuOUxMlmjiKKNxMQ
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-In order to allow the code to work with multiple listening sockets
-it is essential to allow the generic multi_io event handler
-to distinguish between the various socket objects.
+Hi,
 
-This can be achieved by passing an event_arg object that contains
-a pointer to the link_socket.
+On Wed, Oct 23, 2024 at 04:49:03PM +0300, Razvan Cojocaru wrote:
+> This in turn allows the server to signal to the client that it
+> should no longer attempt to reconnect, if it wants to keep the
+> client out after an AUTH_FAILED.
 
-This code path is used on clients as well as UDP servers.
+This should not be necessary.  After an AUTH_FAILED the token is
+already invalidated on the client side.
 
-Change-Id: I7ebf0d4fb2a23278e16003b2e35598178155d658
-Signed-off-by: Antonio Quartulli <a@...2181...>
-Signed-off-by: Gianmarco De Gregori <gianmarco@...2726...>
----
+Can you describe your use case a bit better?  This code is complex
+enough as it is, so I'm not really willing to add more cases to it
+(which I do have to test then and forever) if not needed.
 
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to master.
+gert
+--=20
+"If was one thing all people took for granted, was conviction that if you=20
+ feed honest figures into a computer, honest figures come out. Never doubte=
+d=20
+ it myself till I met a computer with a sense of humor."
+                             Robert A. Heinlein, The Moon is a Harsh Mistre=
+ss
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/760
-This mail reflects revision 6 of this Change.
+Gert Doering - Munich, Germany                             gert@...1296...
 
-Acked-by according to Gerrit (reflected above):
+--MuOUxMlmjiKKNxMQ
+Content-Type: application/pgp-signature; name="signature.asc"
 
-        
-diff --git a/src/openvpn/event.h b/src/openvpn/event.h
-index b3ba183..c212e07 100644
---- a/src/openvpn/event.h
-+++ b/src/openvpn/event.h
-@@ -82,6 +82,12 @@
- #define EVENT_METHOD_US_TIMEOUT   (1<<0)
- #define EVENT_METHOD_FAST         (1<<1)
- 
-+/*
-+ * The following constant is used as boundary between integer value
-+ * and real addresses when passing arguments to event handlers as (void *)
-+ */
-+#define MULTI_N           ((void *)16) /* upper bound on MTCP_x */
-+
- #ifdef _WIN32
- 
- typedef const struct rw_handle *event_t;
-diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c
-index 66e5be1..d50b24c 100644
---- a/src/openvpn/forward.c
-+++ b/src/openvpn/forward.c
-@@ -2183,7 +2183,8 @@
-     /*
-      * Configure event wait based on socket, tuntap flags.
-      */
--    socket_set(c->c2.link_socket, c->c2.event_set, socket, (void *)socket_shift, NULL);
-+    socket_set(c->c2.link_socket, c->c2.event_set, socket,
-+               &c->c2.link_socket->ev_arg, NULL);
-     tun_set(c->c1.tuntap, c->c2.event_set, tuntap, (void *)tun_shift, NULL);
- #if defined(TARGET_LINUX) || defined(TARGET_FREEBSD)
-     if (socket & EVENT_READ && c->c2.did_open_tun)
-@@ -2246,7 +2247,27 @@
-                 for (i = 0; i < status; ++i)
-                 {
-                     const struct event_set_return *e = &esr[i];
--                    c->c2.event_set_status |= ((e->rwflags & 3) << (uintptr_t)e->arg);
-+                    uintptr_t shift;
-+
-+                    if (e->arg >= MULTI_N)
-+                    {
-+                        struct event_arg *ev_arg = (struct event_arg *)e->arg;
-+                        if (ev_arg->type != EVENT_ARG_LINK_SOCKET)
-+                        {
-+                            c->c2.event_set_status = ES_ERROR;
-+                            msg(D_LINK_ERRORS,
-+                                "io_work: non socket event delivered");
-+                            return;
-+                        }
-+
-+                        shift = socket_shift;
-+                    }
-+                    else
-+                    {
-+                        shift = (uintptr_t)e->arg;
-+                    }
-+
-+                    c->c2.event_set_status |= ((e->rwflags & 3) << shift);
-                 }
-             }
-             else if (status == 0)
-diff --git a/src/openvpn/mtcp.c b/src/openvpn/mtcp.c
-index 28f6e8e..a2841f0 100644
---- a/src/openvpn/mtcp.c
-+++ b/src/openvpn/mtcp.c
-@@ -60,7 +60,13 @@
- #define MTCP_FILE_CLOSE_WRITE ((void *)5)
- #define MTCP_DCO        ((void *)6)
- 
--#define MTCP_N           ((void *)16) /* upper bound on MTCP_x */
-+struct ta_iow_flags
-+{
-+    unsigned int flags;
-+    unsigned int ret;
-+    unsigned int tun;
-+    unsigned int sock;
-+};
- 
- #ifdef ENABLE_DEBUG
- static const char *
-@@ -686,7 +692,7 @@
-         struct event_set_return *e = &mtcp->esr[i];
- 
-         /* incoming data for instance or listening socket? */
--        if (e->arg >= MTCP_N)
-+        if (e->arg >= MULTI_N)
-         {
-             struct event_arg *ev_arg = (struct event_arg *)e->arg;
-             switch (ev_arg->type)
+-----BEGIN PGP SIGNATURE-----
+
+iQGcBAEBAgAGBQJnGQb9AAoJEB2Cnv7KVigSbLQMAK8tmuV395cEtGZRl1ORY3Cs
+x7QCLCSFh4X/PzdZVv3hRCtnLkFxMppPdTbRGsnaBeU0vs1TDy5lwI6VTPniHYCY
+LO5RQwHPt3RquKR9918sXcgPGgx5/kHqSyVzBYP+w3/Sp5PQx4qI+MzI1JC9uuOP
+WzXhEK/sm7+Rkzr4L0jU2PwGiH80zANyeHPgSieNLWpR6093yDSeYEpEgbKuRLkZ
+SMOS55P+Xd+yx/NULc8PJ9sU28g0im5CjpdlwRa2rVruC2IyTLFPkMIzkJhiaZVD
+mNJdVjPAv2MFJ2fPxwqrnSMkHc7dXSCcJ5fMpY6shy0H5LE01pWXUr67mRmsUkhG
+DUyAFD+fNyu1lr/dNGkV5+YVtCONeqYKlcVbE+uFobzfHr5vGaDkte/PjCaxpY5O
+5ZPcMwjUJT8iqmugU6HHq9eR6W6S1fwgJ9jdi4cKtDFO9f2aq3lF0t85g0Zj0x4n
+7TJCAfNGBBaFd4MkOTwH+xJ+kkV5ApAUM9yl3d8bLg==
+=uiY6
+-----END PGP SIGNATURE-----
+
+--MuOUxMlmjiKKNxMQ--
 
