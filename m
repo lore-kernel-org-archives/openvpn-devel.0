@@ -1,13 +1,15 @@
-From: "its_Giaan (Code Review)" <gerrit@...515...>
-Date: Wed, 23 Oct 2024 11:05:12 +0000
+From: "cron2 (Code Review)" <gerrit@...515...>
+Date: Wed, 23 Oct 2024 11:38:55 +0000
+In-Reply-To: <gerrit.1729681493000.I8526aadb5151ddc997c836d5a691bcdfee700938@...2715...>
 References: <gerrit.1729681493000.I8526aadb5151ddc997c836d5a691bcdfee700938@...2715...>
-Reply-To: gianmarco@...2726..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <63d4a5e2c940a336b4ad361084ae02a7c6b6552f-HTML@...2715...>
+Reply-To: gert@...1296..., arne-openvpn@...1227...,
+ gianmarco@...2726..., openvpn-devel@lists.sourceforge.net,
+ frank@...2641...
+Message-ID: <5a2bbab0b09826516b36d1174b868ed8de050435-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="qtSChsl8y2o="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="Xy3tMr8w7aE="; charset=UTF-8
 Subject: [Openvpn-devel] [XS] Change in openvpn[master]: Fix for
  msbuild/mingw GHA failures
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -18,68 +20,33 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: its_Giaan <gianmarco@...2726...>
+Cc: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---qtSChsl8y2o=
+--Xy3tMr8w7aE=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: flichtenheld, plaisthos.
+Attention is currently required from: flichtenheld, its_Giaan, plaisthos.
 
-Hello plaisthos, flichtenheld,
-
-I'd like you to do a code review.
-Please visit
-
-    http://gerrit.openvpn.net/c/openvpn/+/785?usp=3Demail
-
-to review the following change.
-
+cron2 has posted comments on this change. ( http://gerrit.openvpn.net/c/ope=
+nvpn/+/785?usp=3Demail )
 
 Change subject: Fix for msbuild/mingw GHA failures
 ......................................................................
 
-Fix for msbuild/mingw GHA failures
 
-Commit ("event/multi: add event_arg object to make
-event handling more generic") accidentally removed
-a variable declaration and its usage because of a
-rebase, this fix restore the wiped out
-unsigned int *persistent in multi_tcp_wait().
+Patch Set 1: Code-Review+2
 
-Change-Id: I8526aadb5151ddc997c836d5a691bcdfee700938
-Signed-off-by: Gianmarco De Gregori <gianmarco@...2726...>
----
-M src/openvpn/mtcp.c
-1 file changed, 2 insertions(+), 1 deletion(-)
+(1 comment)
+
+Patchset:
+
+PS1:
+this basically undoes the "persistent" change in 757, which wasn't really n=
+eeded anyway - and broke windows builds.  Thanks.
 
 
-
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/85/785/1
-
-diff --git a/src/openvpn/mtcp.c b/src/openvpn/mtcp.c
-index 67e3e8e..6faf45a 100644
---- a/src/openvpn/mtcp.c
-+++ b/src/openvpn/mtcp.c
-@@ -254,6 +254,7 @@
-                struct multi_tcp *mtcp)
- {
-     int status;
-+    unsigned int *persistent =3D &mtcp->tun_rwflags;
-     socket_set_listen_persistent(c->c2.link_socket, mtcp->es,
-                                  &c->c2.link_socket->ev_arg);
-
-@@ -271,7 +272,7 @@
-         persistent =3D NULL;
-     }
- #endif
--    tun_set(c->c1.tuntap, mtcp->es, EVENT_READ, MTCP_TUN, &mtcp->tun_rwfla=
-gs);
-+    tun_set(c->c1.tuntap, mtcp->es, EVENT_READ, MTCP_TUN, persistent);
- #if defined(TARGET_LINUX) || defined(TARGET_FREEBSD)
-     dco_event_set(&c->c1.tuntap->dco, mtcp->es, MTCP_DCO);
- #endif
 
 --
 To view, visit http://gerrit.openvpn.net/c/openvpn/+/785?usp=3Demail
@@ -92,56 +59,42 @@ Gerrit-Change-Id: I8526aadb5151ddc997c836d5a691bcdfee700938
 Gerrit-Change-Number: 785
 Gerrit-PatchSet: 1
 Gerrit-Owner: its_Giaan <gianmarco@...2726...>
+Gerrit-Reviewer: cron2 <gert@...1296...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Attention: its_Giaan <gianmarco@...2726...>
 Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-MessageType: newchange
+Gerrit-Comment-Date: Wed, 23 Oct 2024 11:38:55 +0000
+Gerrit-HasComments: Yes
+Gerrit-Has-Labels: Yes
+Gerrit-MessageType: comment
 
---qtSChsl8y2o=
+--Xy3tMr8w7aE=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p> Attention is currently required from: flichtenheld, plaisthos. </p>
-<p>its_Giaan would like plaisthos and flichtenheld to <strong>review</stron=
-g> this change.
+<p> Attention is currently required from: flichtenheld, its_Giaan, plaistho=
+s. </p>
+<p>Patch set 1:<span style=3D"border-radius: 3px; display: inline-block; ma=
+rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
 </p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/785?usp=3Demail">Vi=
-ew Change</a></p><pre style=3D"font-family: monospace,monospace; white-spac=
-e: pre-wrap;">Fix for msbuild/mingw GHA failures<br><br>Commit (&quot;event=
-/multi: add event_arg object to make<br>event handling more generic&quot;) =
-accidentally removed<br>a variable declaration and its usage because of a<b=
-r>rebase, this fix restore the wiped out<br>unsigned int *persistent in mul=
-ti_tcp_wait().<br><br>Change-Id: I8526aadb5151ddc997c836d5a691bcdfee700938<=
-br>Signed-off-by: Gianmarco De Gregori &lt;gianmarco@...2726...&gt;<br>---<=
-br>M src/openvpn/mtcp.c<br>1 file changed, 2 insertions(+), 1 deletion(-)<b=
-r><br></pre><pre style=3D"font-family: monospace,monospace; white-space: pr=
-e-wrap;">git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/85/78=
-5/1</pre><pre style=3D"font-family: monospace,monospace; white-space: pre-w=
-rap;"><span>diff --git a/src/openvpn/mtcp.c b/src/openvpn/mtcp.c</span><br>=
-<span>index 67e3e8e..6faf45a 100644</span><br><span>--- a/src/openvpn/mtcp.=
-c</span><br><span>+++ b/src/openvpn/mtcp.c</span><br><span>@@ -254,6 +254,7=
- @@</span><br><span>                struct multi_tcp *mtcp)</span><br><span=
-> {</span><br><span>     int status;</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+    unsigned int *persistent =3D &amp;mtcp-&gt;tun_rwflags=
-;</span><br><span>     socket_set_listen_persistent(c-&gt;c2.link_socket, m=
-tcp-&gt;es,</span><br><span>                                  &amp;c-&gt;c2=
-.link_socket-&gt;ev_arg);</span><br><span> </span><br><span>@@ -271,7 +272,=
-7 @@</span><br><span>         persistent =3D NULL;</span><br><span>     }</=
-span><br><span> #endif</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
--    tun_set(c-&gt;c1.tuntap, mtcp-&gt;es, EVENT_READ, MTCP_TUN, &amp;mtcp-=
-&gt;tun_rwflags);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-  tun_set(c-&gt;c1.tuntap, mtcp-&gt;es, EVENT_READ, MTCP_TUN, persistent);<=
-/span><br><span> #if defined(TARGET_LINUX) || defined(TARGET_FREEBSD)</span=
-><br><span>     dco_event_set(&amp;c-&gt;c1.tuntap-&gt;dco, mtcp-&gt;es, MT=
-CP_DCO);</span><br><span> #endif</span><br><span></span><br></pre><p>To vie=
-w, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/785?usp=3Demail">=
-change 785</a>. To unsubscribe, or for help writing mail filters, visit <a =
-href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope=
- itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"act=
-ion" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=
-=3D"http://gerrit.openvpn.net/c/openvpn/+/785?usp=3Demail"/><meta itemprop=
-=3D"name" content=3D"View Change"/></div></div>
+ew Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0=
+;"><li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-s=
+tyle: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p s=
+tyle=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn=
+/+/785?tab=3Dcomments">Patch Set #1:</a> </p><p style=3D"white-space: pre-w=
+rap; word-wrap: break-word;">this basically undoes the &quot;persistent&quo=
+t; change in 757, which wasn&#39;t really needed anyway - and broke windows=
+ builds.  Thanks.</p></li></ul></li></ul><p>To view, visit <a href=3D"http:=
+//gerrit.openvpn.net/c/openvpn/+/785?usp=3Demail">change 785</a>. To unsubs=
+cribe, or for help writing mail filters, visit <a href=3D"http://gerrit.ope=
+nvpn.net/settings">settings</a>.</p><div itemscope itemtype=3D"http://schem=
+a.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://s=
+chema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.=
+net/c/openvpn/+/785?usp=3Demail"/><meta itemprop=3D"name" content=3D"View C=
+hange"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
@@ -151,6 +104,8 @@ ion" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=
 <div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
 <div style=3D"display:none"> Gerrit-Owner: its_Giaan &lt;gianmarco@...2786...=
 ..&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
+ </div>
 <div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
 1...&gt; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
@@ -159,10 +114,16 @@ ion" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=
 ts.sourceforge.net&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
 ..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: its_Giaan &lt;gianmarco@...1665...=
+726...&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
 41...&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: newchange </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Wed, 23 Oct 2024 11:38:55=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
 
 
---qtSChsl8y2o=--
+--Xy3tMr8w7aE=--
 
