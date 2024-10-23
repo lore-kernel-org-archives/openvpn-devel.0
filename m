@@ -1,10 +1,17 @@
-Date: Wed, 23 Oct 2024 14:02:56 +0200 (CEST)
-Message-Id: <202410231202.49NC2udf028582@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <20241023113923.7420-1-gert@...1296...>
-References: <20241023113923.7420-1-gert@...1296...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Fix for msbuild/mingw GHA
- failures
+From: "cron2 (Code Review)" <gerrit@...515...>
+Date: Wed, 23 Oct 2024 12:03:16 +0000
+In-Reply-To: <gerrit.1729681493000.I8526aadb5151ddc997c836d5a691bcdfee700938@...2715...>
+References: <gerrit.1729681493000.I8526aadb5151ddc997c836d5a691bcdfee700938@...2715...>
+Reply-To: gert@...1296..., arne-openvpn@...1227...,
+ gianmarco@...2726..., openvpn-devel@lists.sourceforge.net,
+ frank@...2641...
+Message-ID: <2e998e6fc7911dc25d043348d0dfb348544365bd-EmailReplacePatchSet-HTML@...2715...>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="mNpqEvMh0vY="; charset=UTF-8
+Subject: [Openvpn-devel] [XS] Change in openvpn[master]: Fix for
+ msbuild/mingw GHA failures
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,43 +20,154 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: Gianmarco De Gregori <gianmarco@...2726...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: its_Giaan <gianmarco@...2726...>, plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-Thanks for quickly fixing this.  (Morale 1: don't do "while I am here,
-let's clean up this other thing" changes..., Morale 2: we need windows
-builds in gerrit/buildbot)
+--mNpqEvMh0vY=
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-I've reworded the commit message a bit, to reference the actual commit
-ID in question, and to make it more clear what happened.
+cron2 has uploaded a new patch set (#2) to the change originally created by=
+ its_Giaan. ( http://gerrit.openvpn.net/c/openvpn/+/785?usp=3Demail )
 
-The patch itself is a trivial undo of those 2 lines, easily verified
-with "git diff HEAD~2".
+The following approvals got outdated and were removed:
+Code-Review+2 by cron2
 
-(A later patch in the series actually does the same thing, when moving
-the code to multi_io.c - so "test the whole tree via GHA" did not
-expose the problem)
 
-Your patch has been applied to the master branch.
+Change subject: Fix for msbuild/mingw GHA failures
+......................................................................
 
-commit 3636da3b0f168d8e06a00ec5d1f33e4b9aded262
-Author: Gianmarco De Gregori
-Date:   Wed Oct 23 13:39:23 2024 +0200
+Fix for msbuild/mingw GHA failures
 
-     Fix for msbuild/mingw GHA failures
+Commit cd8e25a6e9 removed a variable because it looked as if
+used only once anyway (1 assignment, 1 usage) - overlooking that
+on _WIN32 it's changed to NULL, which wasn't adjusted...
 
-     Signed-off-by: Gianmarco De Gregori <gianmarco@...2726...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20241023113923.7420-1-gert@...1296...>
-     URL: https://www.mail-archive.com/search?l=mid&q=20241023113923.7420-1-gert@...1296...
-     Signed-off-by: Gert Doering <gert@...1296...>
+This fix restores the wiped out "unsigned int *persistent" in
+multi_tcp_wait(), undoing this particular change of the previous
+commit.
 
+Change-Id: I8526aadb5151ddc997c836d5a691bcdfee700938
+Signed-off-by: Gianmarco De Gregori <gianmarco@...2726...>
+Acked-by: Gert Doering <gert@...1296...>
+Message-Id: <20241023113923.7420-1-gert@...1296...>
+URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg29=
+612.html
+Signed-off-by: Gert Doering <gert@...1296...>
+---
+M src/openvpn/mtcp.c
+1 file changed, 2 insertions(+), 1 deletion(-)
+
+
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/85/785/2
+
+diff --git a/src/openvpn/mtcp.c b/src/openvpn/mtcp.c
+index 67e3e8e..6faf45a 100644
+--- a/src/openvpn/mtcp.c
++++ b/src/openvpn/mtcp.c
+@@ -254,6 +254,7 @@
+                struct multi_tcp *mtcp)
+ {
+     int status;
++    unsigned int *persistent =3D &mtcp->tun_rwflags;
+     socket_set_listen_persistent(c->c2.link_socket, mtcp->es,
+                                  &c->c2.link_socket->ev_arg);
+=20
+@@ -271,7 +272,7 @@
+         persistent =3D NULL;
+     }
+ #endif
+-    tun_set(c->c1.tuntap, mtcp->es, EVENT_READ, MTCP_TUN, &mtcp->tun_rwfla=
+gs);
++    tun_set(c->c1.tuntap, mtcp->es, EVENT_READ, MTCP_TUN, persistent);
+ #if defined(TARGET_LINUX) || defined(TARGET_FREEBSD)
+     dco_event_set(&c->c1.tuntap->dco, mtcp->es, MTCP_DCO);
+ #endif
 
 --
-kind regards,
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/785?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings
 
-Gert Doering
+Gerrit-Project: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: I8526aadb5151ddc997c836d5a691bcdfee700938
+Gerrit-Change-Number: 785
+Gerrit-PatchSet: 2
+Gerrit-Owner: its_Giaan <gianmarco@...2726...>
+Gerrit-Reviewer: cron2 <gert@...1296...>
+Gerrit-Reviewer: flichtenheld <frank@...2641...>
+Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-MessageType: newpatchset
 
+--mNpqEvMh0vY=
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<p>cron2 <strong>uploaded patch set #2</strong> to the change originally cr=
+eated by its_Giaan.</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/=
+785?usp=3Demail">View Change</a></p><p>The following approvals got outdated=
+ and were removed:
+Code-Review+2 by cron2</p><pre style=3D"font-family: monospace,monospace; w=
+hite-space: pre-wrap;">Fix for msbuild/mingw GHA failures<br><br>Commit cd8=
+e25a6e9 removed a variable because it looked as if<br>used only once anyway=
+ (1 assignment, 1 usage) - overlooking that<br>on _WIN32 it&#39;s changed t=
+o NULL, which wasn&#39;t adjusted...<br><br>This fix restores the wiped out=
+ &quot;unsigned int *persistent&quot; in<br>multi_tcp_wait(), undoing this =
+particular change of the previous<br>commit.<br><br>Change-Id: I8526aadb515=
+1ddc997c836d5a691bcdfee700938<br>Signed-off-by: Gianmarco De Gregori &lt;gi=
+anmarco@...2726...&gt;<br>Acked-by: Gert Doering &lt;gert@...1296...&gt;<br=
+>Message-Id: &lt;20241023113923.7420-1-gert@...1296...&gt;<br>URL: https://=
+www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg29612.html<br>S=
+igned-off-by: Gert Doering &lt;gert@...1296...&gt;<br>---<br>M src/openvpn/=
+mtcp.c<br>1 file changed, 2 insertions(+), 1 deletion(-)<br><br></pre><pre =
+style=3D"font-family: monospace,monospace; white-space: pre-wrap;">git pull=
+ ssh://gerrit.openvpn.net:29418/openvpn refs/changes/85/785/2</pre><pre sty=
+le=3D"font-family: monospace,monospace; white-space: pre-wrap;"><span>diff =
+--git a/src/openvpn/mtcp.c b/src/openvpn/mtcp.c</span><br><span>index 67e3e=
+8e..6faf45a 100644</span><br><span>--- a/src/openvpn/mtcp.c</span><br><span=
+>+++ b/src/openvpn/mtcp.c</span><br><span>@@ -254,6 +254,7 @@</span><br><sp=
+an>                struct multi_tcp *mtcp)</span><br><span> {</span><br><sp=
+an>     int status;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+    unsigned int *persistent =3D &amp;mtcp-&gt;tun_rwflags;</span><br><span=
+>     socket_set_listen_persistent(c-&gt;c2.link_socket, mtcp-&gt;es,</span=
+><br><span>                                  &amp;c-&gt;c2.link_socket-&gt;=
+ev_arg);</span><br><span> </span><br><span>@@ -271,7 +272,7 @@</span><br><s=
+pan>         persistent =3D NULL;</span><br><span>     }</span><br><span> #=
+endif</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    tun_set(c-&g=
+t;c1.tuntap, mtcp-&gt;es, EVENT_READ, MTCP_TUN, &amp;mtcp-&gt;tun_rwflags);=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    tun_set(c-&gt;c=
+1.tuntap, mtcp-&gt;es, EVENT_READ, MTCP_TUN, persistent);</span><br><span> =
+#if defined(TARGET_LINUX) || defined(TARGET_FREEBSD)</span><br><span>     d=
+co_event_set(&amp;c-&gt;c1.tuntap-&gt;dco, mtcp-&gt;es, MTCP_DCO);</span><b=
+r><span> #endif</span><br><span></span><br></pre><p>To view, visit <a href=
+=3D"http://gerrit.openvpn.net/c/openvpn/+/785?usp=3Demail">change 785</a>. =
+To unsubscribe, or for help writing mail filters, visit <a href=3D"http://g=
+errit.openvpn.net/settings">settings</a>.</p><div itemscope itemtype=3D"htt=
+p://schema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D=
+"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit=
+.openvpn.net/c/openvpn/+/785?usp=3Demail"/><meta itemprop=3D"name" content=
+=3D"View Change"/></div></div>
+
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I8526aadb5151ddc997c836d5a69=
+1bcdfee700938 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 785 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
+<div style=3D"display:none"> Gerrit-Owner: its_Giaan &lt;gianmarco@...2786...=
+..&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
+ </div>
+<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
+1...&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
+.1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
+
+
+--mNpqEvMh0vY=--
 
