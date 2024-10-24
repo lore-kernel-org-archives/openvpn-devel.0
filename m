@@ -1,14 +1,14 @@
 From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Thu, 24 Oct 2024 17:51:17 +0000
+Date: Thu, 24 Oct 2024 17:51:15 +0000
 In-Reply-To: <gerrit.1728021778000.I49f1e7d25edb62bf202ffceb45dedc213f2eafdd@...2715...>
 References: <gerrit.1728021778000.I49f1e7d25edb62bf202ffceb45dedc213f2eafdd@...2715...>
 Reply-To: gert@...1296..., arne-openvpn@...1227..., samuli@...515...,
  openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <dc9bef8dab979e2da462053e2241dcc55ef00a2d-HTML@...2715...>
+Message-ID: <dc9bef8dab979e2da462053e2241dcc55ef00a2d-EmailReplacePatchSet-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="lfntKgv74bE="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="wbhigDpBzfA="; charset=UTF-8
 Subject: [Openvpn-devel] [S] Change in openvpn[master]: t_server_null:
  persist test log files
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -19,15 +19,19 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: mattock <samuli@...515...>
-Cc: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: mattock <samuli@...515...>, plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---lfntKgv74bE=
+--wbhigDpBzfA=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-cron2 has submitted this change. ( http://gerrit.openvpn.net/c/openvpn/+/77=
-6?usp=3Demail )
+cron2 has uploaded a new patch set (#3) to the change originally created by=
+ mattock. ( http://gerrit.openvpn.net/c/openvpn/+/776?usp=3Demail )
+
+The following approvals got outdated and were removed:
+Code-Review+2 by cron2
+
 
 Change subject: t_server_null: persist test log files
 ......................................................................
@@ -53,7 +57,7 @@ M tests/t_server_null_server.sh
 3 files changed, 7 insertions(+), 5 deletions(-)
 
 
-
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/76/776/3
 
 diff --git a/tests/t_server_null.sh b/tests/t_server_null.sh
 index 7627edf..d4311d4 100755
@@ -136,86 +140,89 @@ Gerrit-Reviewer: cron2 <gert@...1296...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-MessageType: merged
+Gerrit-MessageType: newpatchset
 
---lfntKgv74bE=
+--wbhigDpBzfA=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p>cron2 <strong>submitted</strong> this change.</p><p><a href=3D"http://ge=
-rrit.openvpn.net/c/openvpn/+/776?usp=3Demail">View Change</a></p><div style=
-=3D"white-space:pre-wrap"></div><pre style=3D"font-family: monospace,monosp=
-ace; white-space: pre-wrap;">t_server_null: persist test log files<br><br>T=
-he goal is to help debug issues with t_server_null. The immediate goal<br>i=
-s to be able to debug server startup issues encountered on some of the<br>*=
-BSD platforms.<br><br>Change-Id: I49f1e7d25edb62bf202ffceb45dedc213f2eafdd<=
-br>Signed-off-by: Samuli Sepp=C3=A4nen &lt;samuli.seppanen@...277...&gt;<br=
->Acked-by: Gert Doering &lt;gert@...1296...&gt;<br>Message-Id: &lt;20241024=
-133220.4864-1-gert@...1296...&gt;<br>URL: https://www.mail-archive.com/sear=
-ch?l=3Dmid&amp;q=3D20241024133220.4864-1-gert@...1296...<br>URL: https://ge=
-rrit.openvpn.net/c/openvpn/+/776<br>Signed-off-by: Gert Doering &lt;gert@...1186...=
-.1296...&gt;<br>---<br>M tests/t_server_null.sh<br>M tests/t_server_null_cl=
-ient.sh<br>M tests/t_server_null_server.sh<br>3 files changed, 7 insertions=
-(+), 5 deletions(-)<br><br></pre>
-<pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><sp=
-an>diff --git a/tests/t_server_null.sh b/tests/t_server_null.sh</span><br><=
-span>index 7627edf..d4311d4 100755</span><br><span>--- a/tests/t_server_nul=
-l.sh</span><br><span>+++ b/tests/t_server_null.sh</span><br><span>@@ -56,6 =
-+56,10 @@</span><br><span> fi</span><br><span> </span><br><span> srcdir=3D&=
-quot;${srcdir:-.}&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+export t_server_null_logdir=3Dt_server_null-`hostname`-`date +%Y%m%d-%H=
-%M%S`</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+# Create directory for server and=
- client logs</span><br><span style=3D"color: hsl(120, 100%, 40%);">+mkdir $=
-t_server_null_logdir</span><br><span> </span><br><span> &quot;${srcdir}/t_s=
-erver_null_server.sh&quot; &amp;</span><br><span> &quot;${srcdir}/t_server_=
-null_client.sh&quot;</span><br><span>diff --git a/tests/t_server_null_clien=
-t.sh b/tests/t_server_null_client.sh</span><br><span>index c1a25df..846f790=
- 100755</span><br><span>--- a/tests/t_server_null_client.sh</span><br><span=
->+++ b/tests/t_server_null_client.sh</span><br><span>@@ -14,7 +14,7 @@</spa=
-n><br><span>         $client_conf \</span><br><span>         --writepid &qu=
-ot;${pid}&quot; \</span><br><span>         --setenv pid $pid \</span><br><s=
-pan style=3D"color: hsl(0, 100%, 40%);">-        --log &quot;${log}&quot; &=
-amp;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        --log &=
-quot;${t_server_null_logdir}/${log}&quot; &amp;</span><br><span> }</span><b=
-r><span> </span><br><span> wait_for_results() {</span><br><span>@@ -44,7 +4=
-4,7 @@</span><br><span>     should_pass=3D$2</span><br><span>     log=3D&qu=
-ot;${test_name}.log&quot;</span><br><span> </span><br><span style=3D"color:=
- hsl(0, 100%, 40%);">-    grep &quot;Initialization Sequence Completed&quot=
-; &quot;${log}&quot; &gt; /dev/null</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+    grep &quot;Initialization Sequence Completed&quot; &quo=
-t;${t_server_null_logdir}/${log}&quot; &gt; /dev/null</span><br><span>     =
-exit_code=3D$?</span><br><span> </span><br><span>     if [ $exit_code -eq 0=
- ] &amp;&amp; [ &quot;${should_pass}&quot; =3D &quot;yes&quot; ]; then</spa=
-n><br><span>diff --git a/tests/t_server_null_server.sh b/tests/t_server_nul=
-l_server.sh</span><br><span>index 10bb44b..f8ba3a3 100755</span><br><span>-=
--- a/tests/t_server_null_server.sh</span><br><span>+++ b/tests/t_server_nul=
-l_server.sh</span><br><span>@@ -4,12 +4,11 @@</span><br><span>     server_n=
-ame=3D$1</span><br><span>     server_exec=3D$2</span><br><span>     server_=
-conf=3D$3</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    log=3D&q=
-uot;${server_name}.log&quot;</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+    log=3D&quot;${t_server_null_logdir}/${server_name}.log&quot;</=
-span><br><span>     status=3D&quot;${server_name}.status&quot;</span><br><s=
-pan>     pid=3D&quot;${server_name}.pid&quot;</span><br><span> </span><br><=
-span>     if [ -z &quot;${RUN_SUDO}&quot; ]; then</span><br><span style=3D"=
-color: hsl(0, 100%, 40%);">-        rm -f &quot;${status}&quot; &quot;${log=
-}&quot; &quot;${pid}&quot;</span><br><span>         &quot;${server_exec}&qu=
-ot; \</span><br><span>          $server_conf \</span><br><span>          --=
-status &quot;${status}&quot; 1 \</span><br><span>@@ -17,7 +16,6 @@</span><b=
-r><span>          --writepid &quot;${pid}&quot; \</span><br><span>         =
- --explicit-exit-notify 3</span><br><span>     else</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-        $RUN_SUDO rm -f &quot;${status}&quo=
-t; &quot;${log}&quot; &quot;${pid}&quot;</span><br><span>         $RUN_SUDO=
- &quot;${server_exec}&quot; \</span><br><span>                    $server_c=
-onf \</span><br><span>                    --status &quot;${status}&quot; 1 =
-\</span><br><span></span><br></pre><p>To view, visit <a href=3D"http://gerr=
-it.openvpn.net/c/openvpn/+/776?usp=3Demail">change 776</a>. To unsubscribe,=
- or for help writing mail filters, visit <a href=3D"http://gerrit.openvpn.n=
-et/settings">settings</a>.</p><div itemscope itemtype=3D"http://schema.org/=
-EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.=
-org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/=
-openvpn/+/776?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"=
-/></div></div>
+<p>cron2 <strong>uploaded patch set #3</strong> to the change originally cr=
+eated by mattock.</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/77=
+6?usp=3Demail">View Change</a></p><p>The following approvals got outdated a=
+nd were removed:
+Code-Review+2 by cron2</p><pre style=3D"font-family: monospace,monospace; w=
+hite-space: pre-wrap;">t_server_null: persist test log files<br><br>The goa=
+l is to help debug issues with t_server_null. The immediate goal<br>is to b=
+e able to debug server startup issues encountered on some of the<br>*BSD pl=
+atforms.<br><br>Change-Id: I49f1e7d25edb62bf202ffceb45dedc213f2eafdd<br>Sig=
+ned-off-by: Samuli Sepp=C3=A4nen &lt;samuli.seppanen@...277...&gt;<br>Acked=
+-by: Gert Doering &lt;gert@...1296...&gt;<br>Message-Id: &lt;20241024133220=
+.4864-1-gert@...1296...&gt;<br>URL: https://www.mail-archive.com/search?l=
+=3Dmid&amp;q=3D20241024133220.4864-1-gert@...1296...<br>URL: https://gerrit=
+.openvpn.net/c/openvpn/+/776<br>Signed-off-by: Gert Doering &lt;gert@...1826...=
+6...&gt;<br>---<br>M tests/t_server_null.sh<br>M tests/t_server_null_client=
+.sh<br>M tests/t_server_null_server.sh<br>3 files changed, 7 insertions(+),=
+ 5 deletions(-)<br><br></pre><pre style=3D"font-family: monospace,monospace=
+; white-space: pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/openvpn r=
+efs/changes/76/776/3</pre><pre style=3D"font-family: monospace,monospace; w=
+hite-space: pre-wrap;"><span>diff --git a/tests/t_server_null.sh b/tests/t_=
+server_null.sh</span><br><span>index 7627edf..d4311d4 100755</span><br><spa=
+n>--- a/tests/t_server_null.sh</span><br><span>+++ b/tests/t_server_null.sh=
+</span><br><span>@@ -56,6 +56,10 @@</span><br><span> fi</span><br><span> </=
+span><br><span> srcdir=3D&quot;${srcdir:-.}&quot;</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+export t_server_null_logdir=3Dt_server_null-`=
+hostname`-`date +%Y%m%d-%H%M%S`</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+# Creat=
+e directory for server and client logs</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+mkdir $t_server_null_logdir</span><br><span> </span><br>=
+<span> &quot;${srcdir}/t_server_null_server.sh&quot; &amp;</span><br><span>=
+ &quot;${srcdir}/t_server_null_client.sh&quot;</span><br><span>diff --git a=
+/tests/t_server_null_client.sh b/tests/t_server_null_client.sh</span><br><s=
+pan>index c1a25df..846f790 100755</span><br><span>--- a/tests/t_server_null=
+_client.sh</span><br><span>+++ b/tests/t_server_null_client.sh</span><br><s=
+pan>@@ -14,7 +14,7 @@</span><br><span>         $client_conf \</span><br><sp=
+an>         --writepid &quot;${pid}&quot; \</span><br><span>         --sete=
+nv pid $pid \</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        =
+--log &quot;${log}&quot; &amp;</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+        --log &quot;${t_server_null_logdir}/${log}&quot; &amp;</=
+span><br><span> }</span><br><span> </span><br><span> wait_for_results() {</=
+span><br><span>@@ -44,7 +44,7 @@</span><br><span>     should_pass=3D$2</spa=
+n><br><span>     log=3D&quot;${test_name}.log&quot;</span><br><span> </span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-    grep &quot;Initializati=
+on Sequence Completed&quot; &quot;${log}&quot; &gt; /dev/null</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+    grep &quot;Initialization Seq=
+uence Completed&quot; &quot;${t_server_null_logdir}/${log}&quot; &gt; /dev/=
+null</span><br><span>     exit_code=3D$?</span><br><span> </span><br><span>=
+     if [ $exit_code -eq 0 ] &amp;&amp; [ &quot;${should_pass}&quot; =3D &q=
+uot;yes&quot; ]; then</span><br><span>diff --git a/tests/t_server_null_serv=
+er.sh b/tests/t_server_null_server.sh</span><br><span>index 10bb44b..f8ba3a=
+3 100755</span><br><span>--- a/tests/t_server_null_server.sh</span><br><spa=
+n>+++ b/tests/t_server_null_server.sh</span><br><span>@@ -4,12 +4,11 @@</sp=
+an><br><span>     server_name=3D$1</span><br><span>     server_exec=3D$2</s=
+pan><br><span>     server_conf=3D$3</span><br><span style=3D"color: hsl(0, =
+100%, 40%);">-    log=3D&quot;${server_name}.log&quot;</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+    log=3D&quot;${t_server_null_logdir}/=
+${server_name}.log&quot;</span><br><span>     status=3D&quot;${server_name}=
+.status&quot;</span><br><span>     pid=3D&quot;${server_name}.pid&quot;</sp=
+an><br><span> </span><br><span>     if [ -z &quot;${RUN_SUDO}&quot; ]; then=
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        rm -f &quot;$=
+{status}&quot; &quot;${log}&quot; &quot;${pid}&quot;</span><br><span>      =
+   &quot;${server_exec}&quot; \</span><br><span>          $server_conf \</s=
+pan><br><span>          --status &quot;${status}&quot; 1 \</span><br><span>=
+@@ -17,7 +16,6 @@</span><br><span>          --writepid &quot;${pid}&quot; \=
+</span><br><span>          --explicit-exit-notify 3</span><br><span>     el=
+se</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        $RUN_SUDO r=
+m -f &quot;${status}&quot; &quot;${log}&quot; &quot;${pid}&quot;</span><br>=
+<span>         $RUN_SUDO &quot;${server_exec}&quot; \</span><br><span>     =
+               $server_conf \</span><br><span>                    --status =
+&quot;${status}&quot; 1 \</span><br><span></span><br></pre><p>To view, visi=
+t <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/776?usp=3Demail">change =
+776</a>. To unsubscribe, or for help writing mail filters, visit <a href=3D=
+"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope itemty=
+pe=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"action" it=
+emtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http=
+://gerrit.openvpn.net/c/openvpn/+/776?usp=3Demail"/><meta itemprop=3D"name"=
+ content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
@@ -233,8 +240,8 @@ edc213f2eafdd </div>
 .1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: merged </div>
+<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
 
 
---lfntKgv74bE=--
+--wbhigDpBzfA=--
 
