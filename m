@@ -1,16 +1,10 @@
-From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Thu, 24 Oct 2024 13:30:59 +0000
+From: Gert Doering <gert@...1296...>
+Date: Thu, 24 Oct 2024 15:32:17 +0200
+Message-ID: <20241024133220.4864-1-gert@...1296...>
 In-Reply-To: <gerrit.1728021778000.I49f1e7d25edb62bf202ffceb45dedc213f2eafdd@...2715...>
 References: <gerrit.1728021778000.I49f1e7d25edb62bf202ffceb45dedc213f2eafdd@...2715...>
-Reply-To: gert@...1296..., arne-openvpn@...1227..., samuli@...515...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <48fde6acdf08e5cf77354cc8ee89fd0e1399e550-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="K8/o/34CrpU="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: t_server_null:
- persist test log files
+Subject: [Openvpn-devel] [PATCH v2] t_server_null: persist test log files
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,94 +13,98 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: mattock <samuli@...515...>
-Cc: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---K8/o/34CrpU=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+From: Samuli Seppänen <samuli.seppanen@...277...>
 
-Attention is currently required from: flichtenheld, mattock, plaisthos.
+The goal is to help debug issues with t_server_null. The immediate goal
+is to be able to debug server startup issues encountered on some of the
+*BSD platforms.
 
-cron2 has posted comments on this change. ( http://gerrit.openvpn.net/c/ope=
-nvpn/+/776?usp=3Demail )
+Change-Id: I49f1e7d25edb62bf202ffceb45dedc213f2eafdd
+Signed-off-by: Samuli Seppänen <samuli.seppanen@...277...>
+Acked-by: Gert Doering <gert@...1296...>
+---
 
-Change subject: t_server_null: persist test log files
-......................................................................
+This change was reviewed on Gerrit and approved by at least one
+developer. I request to merge it to master.
 
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/776
+This mail reflects revision 2 of this Change.
 
-Patch Set 2: Code-Review+2
+Acked-by according to Gerrit (reflected above):
+Gert Doering <gert@...1296...>
 
-
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/776?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings
-
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: I49f1e7d25edb62bf202ffceb45dedc213f2eafdd
-Gerrit-Change-Number: 776
-Gerrit-PatchSet: 2
-Gerrit-Owner: mattock <samuli@...515...>
-Gerrit-Reviewer: cron2 <gert@...1296...>
-Gerrit-Reviewer: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Attention: mattock <samuli@...515...>
-Gerrit-Comment-Date: Thu, 24 Oct 2024 13:30:59 +0000
-Gerrit-HasComments: No
-Gerrit-Has-Labels: Yes
-Gerrit-MessageType: comment
-
---K8/o/34CrpU=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<p> Attention is currently required from: flichtenheld, mattock, plaisthos.=
- </p>
-<p>Patch set 2:<span style=3D"border-radius: 3px; display: inline-block; ma=
-rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/776?usp=3Demail">Vi=
-ew Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To vie=
-w, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/776?usp=3Demail">=
-change 776</a>. To unsubscribe, or for help writing mail filters, visit <a =
-href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope=
- itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"act=
-ion" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=
-=3D"http://gerrit.openvpn.net/c/openvpn/+/776?usp=3Demail"/><meta itemprop=
-=3D"name" content=3D"View Change"/></div></div>
-
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I49f1e7d25edb62bf202ffceb45d=
-edc213f2eafdd </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 776 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
-<div style=3D"display:none"> Gerrit-Owner: mattock &lt;samuli@...515...&gt;=
- </div>
-<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
- </div>
-<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
-1...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
-41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: mattock &lt;samuli@...515...=
-&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Thu, 24 Oct 2024 13:30:59=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: No </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
-
-
---K8/o/34CrpU=--
+        
+diff --git a/tests/t_server_null.sh b/tests/t_server_null.sh
+index 7627edf..61a9cdc 100755
+--- a/tests/t_server_null.sh
++++ b/tests/t_server_null.sh
+@@ -56,11 +56,16 @@
+ fi
+ 
+ srcdir="${srcdir:-.}"
++export t_server_null_logdir=t_server_null-`hostname`-`date +%Y%m%d-%H%M%S`
++
++# Create directory for server and client logs
++mkdir $t_server_null_logdir
+ 
+ "${srcdir}/t_server_null_server.sh" &
+ "${srcdir}/t_server_null_client.sh"
+ retval=$?
+ 
++
+ # When running make jobs in parallel ("make -j<x> check") we need to ensure
+ # that this script does not exit before all --dev null servers are dead and
+ # their network interfaces are gone. Otherwise t_client.sh will fail because
+diff --git a/tests/t_server_null_client.sh b/tests/t_server_null_client.sh
+index c1a25df..846f790 100755
+--- a/tests/t_server_null_client.sh
++++ b/tests/t_server_null_client.sh
+@@ -14,7 +14,7 @@
+         $client_conf \
+         --writepid "${pid}" \
+         --setenv pid $pid \
+-        --log "${log}" &
++        --log "${t_server_null_logdir}/${log}" &
+ }
+ 
+ wait_for_results() {
+@@ -44,7 +44,7 @@
+     should_pass=$2
+     log="${test_name}.log"
+ 
+-    grep "Initialization Sequence Completed" "${log}" > /dev/null
++    grep "Initialization Sequence Completed" "${t_server_null_logdir}/${log}" > /dev/null
+     exit_code=$?
+ 
+     if [ $exit_code -eq 0 ] && [ "${should_pass}" = "yes" ]; then
+diff --git a/tests/t_server_null_server.sh b/tests/t_server_null_server.sh
+index 10bb44b..f8ba3a3 100755
+--- a/tests/t_server_null_server.sh
++++ b/tests/t_server_null_server.sh
+@@ -4,12 +4,11 @@
+     server_name=$1
+     server_exec=$2
+     server_conf=$3
+-    log="${server_name}.log"
++    log="${t_server_null_logdir}/${server_name}.log"
+     status="${server_name}.status"
+     pid="${server_name}.pid"
+ 
+     if [ -z "${RUN_SUDO}" ]; then
+-        rm -f "${status}" "${log}" "${pid}"
+         "${server_exec}" \
+          $server_conf \
+          --status "${status}" 1 \
+@@ -17,7 +16,6 @@
+          --writepid "${pid}" \
+          --explicit-exit-notify 3
+     else
+-        $RUN_SUDO rm -f "${status}" "${log}" "${pid}"
+         $RUN_SUDO "${server_exec}" \
+                    $server_conf \
+                    --status "${status}" 1 \
 
