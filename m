@@ -1,16 +1,11 @@
-From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Fri, 25 Oct 2024 10:34:56 +0000
+From: Gert Doering <gert@...1296...>
+Date: Fri, 25 Oct 2024 12:36:31 +0200
+Message-ID: <20241025103632.4413-1-gert@...1296...>
 In-Reply-To: <gerrit.1728021620000.Ic0f98cd3b87a7b86e032e63167ac9036f7c08fcb@...2715...>
 References: <gerrit.1728021620000.Ic0f98cd3b87a7b86e032e63167ac9036f7c08fcb@...2715...>
-Reply-To: gert@...1296..., arne-openvpn@...1227..., samuli@...515...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <5909d9d4f6b21801cdc3924781201d820918ce02-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="jxv0aWbPrRw="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: t_server_null:
- forcibly kill misbehaving servers
+Subject: [Openvpn-devel] [PATCH v9] t_server_null: forcibly kill misbehaving
+ servers
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,142 +14,139 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: mattock <samuli@...515...>
-Cc: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---jxv0aWbPrRw=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+From: Samuli Seppänen <samuli.seppanen@...277...>
 
-Attention is currently required from: flichtenheld, mattock, plaisthos.
+Change-Id: Ic0f98cd3b87a7b86e032e63167ac9036f7c08fcb
+Signed-off-by: Samuli Seppänen <samuli.seppanen@...277...>
+Acked-by: Gert Doering <gert@...1296...>
+---
 
-cron2 has posted comments on this change. ( http://gerrit.openvpn.net/c/ope=
-nvpn/+/775?usp=3Demail )
+This change was reviewed on Gerrit and approved by at least one
+developer. I request to merge it to master.
 
-Change subject: t_server_null: forcibly kill misbehaving servers
-......................................................................
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/775
+This mail reflects revision 9 of this Change.
 
+Acked-by according to Gerrit (reflected above):
+Gert Doering <gert@...1296...>
 
-Patch Set 9: Code-Review+2
-
-(2 comments)
-
-Patchset:
-
-PS9:
-Waiting for servers to exit
-ERROR: had to send SIGKILL to server t_server_null_server-1194_udp with pid=
- 66227!
-Tail of server log:
-2024-10-25 12:33:41 127.0.0.1:57874 peer info: IV_PROTO=3D2974
-2024-10-25 12:33:41 127.0.0.1:57874 peer info: IV_LZO_STUB=3D1
-...
-2024-10-25 12:34:18 MPS: ignore signal
-FAIL: t_server_null.sh
-
-
-File tests/t_server_null_server.sh:
-
-http://gerrit.openvpn.net/c/openvpn/+/775/comment/6fdd0172_a2fa6e00 :
-PS8, Line 110:         tail -n 20 "${t_server_null_logdir}/${SERVER_NAME}.l=
-og"
-> this wants a `$RUN_SUDO` because root-owned logs are not readable otherwi=
-se (or we need to precreate [=E2=80=A6]
-Done
-
-
-
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/775?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings
-
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: Ic0f98cd3b87a7b86e032e63167ac9036f7c08fcb
-Gerrit-Change-Number: 775
-Gerrit-PatchSet: 9
-Gerrit-Owner: mattock <samuli@...515...>
-Gerrit-Reviewer: cron2 <gert@...1296...>
-Gerrit-Reviewer: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Attention: mattock <samuli@...515...>
-Gerrit-Comment-Date: Fri, 25 Oct 2024 10:34:56 +0000
-Gerrit-HasComments: Yes
-Gerrit-Has-Labels: Yes
-Comment-In-Reply-To: cron2 <gert@...1296...>
-Gerrit-MessageType: comment
-
---jxv0aWbPrRw=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<p> Attention is currently required from: flichtenheld, mattock, plaisthos.=
- </p>
-<p>Patch set 9:<span style=3D"border-radius: 3px; display: inline-block; ma=
-rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/775?usp=3Demail">Vi=
-ew Change</a></p><p>2 comments:</p><ul style=3D"list-style: none; padding: =
-0;"><li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-=
-style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p =
-style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvp=
-n/+/775?tab=3Dcomments">Patch Set #9:</a> </p><p style=3D"white-space: pre-=
-wrap; word-wrap: break-word;">Waiting for servers to exit<br>ERROR: had to =
-send SIGKILL to server t_server_null_server-1194_udp with pid 66227!<br>Tai=
-l of server log:<br>2024-10-25 12:33:41 127.0.0.1:57874 peer info: IV_PROTO=
-=3D2974<br>2024-10-25 12:33:41 127.0.0.1:57874 peer info: IV_LZO_STUB=3D1<b=
-r>...<br>2024-10-25 12:34:18 MPS: ignore signal<br>FAIL: t_server_null.sh</=
-p></li></ul></li><li style=3D"margin: 0; padding: 0;"><p>File tests/t_serve=
-r_null_server.sh:</p><ul style=3D"list-style: none; padding: 0;"><li style=
-=3D"margin: 0; padding: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a hr=
-ef=3D"http://gerrit.openvpn.net/c/openvpn/+/775/comment/6fdd0172_a2fa6e00">=
-Patch Set #8, Line 110:</a> <code style=3D"font-family:monospace,monospace"=
->        tail -n 20 &quot;${t_server_null_logdir}/${SERVER_NAME}.log&quot;<=
-/code></p><p><blockquote style=3D"border-left: 1px solid #aaa; margin: 10px=
- 0; padding: 0 10px;">this wants a `$RUN_SUDO` because root-owned logs are =
-not readable otherwise (or we need to precreate [=E2=80=A6]</blockquote></p=
-><p style=3D"white-space: pre-wrap; word-wrap: break-word;">Done</p></li></=
-ul></li></ul><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openv=
-pn/+/775?usp=3Demail">change 775</a>. To unsubscribe, or for help writing m=
-ail filters, visit <a href=3D"http://gerrit.openvpn.net/settings">settings<=
-/a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div ite=
-mscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link =
-itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/775?usp=3Dem=
-ail"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
-
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: Ic0f98cd3b87a7b86e032e63167a=
-c9036f7c08fcb </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 775 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 9 </div>
-<div style=3D"display:none"> Gerrit-Owner: mattock &lt;samuli@...515...&gt;=
- </div>
-<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
- </div>
-<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
-1...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
-41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: mattock &lt;samuli@...515...=
-&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Fri, 25 Oct 2024 10:34:56=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
-<div style=3D"display:none"> Comment-In-Reply-To: cron2 &lt;gert@...1296...=
-&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
-
-
---jxv0aWbPrRw=--
+        
+diff --git a/tests/t_server_null.sh b/tests/t_server_null.sh
+index d4311d4..3c0fc4b 100755
+--- a/tests/t_server_null.sh
++++ b/tests/t_server_null.sh
+@@ -71,4 +71,10 @@
+ # pre and post ifconfig output does not match.
+ wait
+ 
+-exit $retval
++. ./t_server_null_default.rc
++
++if [ -e $SERVER_KILL_FAIL_FILE ]; then
++    exit 1
++else
++    exit $retval
++fi
+diff --git a/tests/t_server_null_client.sh b/tests/t_server_null_client.sh
+index 846f790..2210e63 100755
+--- a/tests/t_server_null_client.sh
++++ b/tests/t_server_null_client.sh
+@@ -53,11 +53,11 @@
+         echo "PASS ${test_name} (test failure)"
+     elif [ $exit_code -eq 0 ] && [ "${should_pass}" = "no" ]; then
+         echo "FAIL ${test_name} (test failure)"
+-        cat "${log}"
++        cat "${t_server_null_logdir}/${log}"
+         retval=1
+     elif [ $exit_code -eq 1 ] && [ "${should_pass}" = "yes" ]; then
+         echo "FAIL ${test_name}"
+-        cat "${log}"
++        cat "${t_server_null_logdir}/${log}"
+         retval=1
+     fi
+ }
+diff --git a/tests/t_server_null_default.rc b/tests/t_server_null_default.rc
+index 825bb52..cbf4877 100755
+--- a/tests/t_server_null_default.rc
++++ b/tests/t_server_null_default.rc
+@@ -20,6 +20,10 @@
+ SERVER_KEY="${sample_keys}/server.key"
+ TA="${sample_keys}/ta.key"
+ 
++# Used to detect if graceful kill of any server instance failed during the test
++# run
++SERVER_KILL_FAIL_FILE=".t_server_null_server.kill_failed"
++
+ # Test server configurations
+ MAX_CLIENTS="10"
+ CLIENT_MATCH="Test-Client"
+diff --git a/tests/t_server_null_server.sh b/tests/t_server_null_server.sh
+index f8ba3a3..ab01dd2 100755
+--- a/tests/t_server_null_server.sh
++++ b/tests/t_server_null_server.sh
+@@ -8,6 +8,9 @@
+     status="${server_name}.status"
+     pid="${server_name}.pid"
+ 
++    # Allow reading this file even umask values are strict
++    touch "$log"
++
+     if [ -z "${RUN_SUDO}" ]; then
+         "${server_exec}" \
+          $server_conf \
+@@ -34,6 +37,9 @@
+ # Load local configuration, if any
+ test -r ./t_server_null.rc && . ./t_server_null.rc
+ 
++# Remove server kill failure marker file, if any
++rm -f $SERVER_KILL_FAIL_FILE
++
+ # Launch test servers
+ for SUF in $TEST_SERVER_LIST
+ do
+@@ -75,6 +81,7 @@
+ # Make sure that the server processes are truly dead before exiting.  If a
+ # server process does not exit in 15 seconds assume it never will, move on and
+ # hope for the best.
++
+ echo "Waiting for servers to exit"
+ for PID_FILE in $server_pid_files
+ do
+@@ -85,22 +92,25 @@
+         continue
+     fi
+ 
+-    if [ -z "${RUN_SUDO}" ]; then
+-        $KILL_EXEC "${SERVER_PID}"
+-    else
+-        $RUN_SUDO $KILL_EXEC "${SERVER_PID}"
+-    fi
++    # Attempt to kill the OpenVPN server gracefully with SIGTERM
++    $RUN_SUDO $KILL_EXEC "${SERVER_PID}"
+ 
+     count=0
+     maxcount=75
+     while [ $count -le $maxcount ]
+     do
+-        ps -p "${SERVER_PID}" > /dev/null || break
++        $RUN_SUDO kill -0 "${SERVER_PID}" 2> /dev/null || break
+         count=$(( count + 1))
+         sleep 0.2
+     done
+ 
++    # If server is still up send a SIGKILL
+     if [ $count -ge $maxcount ]; then
+-        echo "WARNING: could not kill server with pid ${SERVER_PID}!"
++        $RUN_SUDO $KILL_EXEC -9 "${SERVER_PID}"
++        SERVER_NAME=$(basename $PID_FILE|cut -d . -f 1)
++        echo "ERROR: had to send SIGKILL to server ${SERVER_NAME} with pid ${SERVER_PID}!"
++        echo "Tail of server log:"
++        tail -n 20 "${t_server_null_logdir}/${SERVER_NAME}.log"
++        touch $SERVER_KILL_FAIL_FILE
+     fi
+ done
 
