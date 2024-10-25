@@ -1,15 +1,14 @@
-From: "mattock (Code Review)" <gerrit@...515...>
-Date: Fri, 25 Oct 2024 06:50:13 +0000
+From: "cron2 (Code Review)" <gerrit@...515...>
+Date: Fri, 25 Oct 2024 09:02:19 +0000
 In-Reply-To: <gerrit.1728021620000.Ic0f98cd3b87a7b86e032e63167ac9036f7c08fcb@...2715...>
 References: <gerrit.1728021620000.Ic0f98cd3b87a7b86e032e63167ac9036f7c08fcb@...2715...>
-Reply-To: samuli@...515..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...,
- gert@...1296...
-Message-ID: <fa60cae43b83a628b258dfe0f05067b9ecfad17f-EmailReplacePatchSet-HTML@...2715...>
+Reply-To: gert@...1296..., arne-openvpn@...1227..., samuli@...515...,
+ openvpn-devel@lists.sourceforge.net, frank@...2641...
+Message-ID: <e4747663a14ae8194e09814d1a54ec6475322253-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="+KWtKJoGsdM="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="uMQbXLmIPtQ="; charset=UTF-8
 Subject: [Openvpn-devel] [S] Change in openvpn[master]: t_server_null:
  forcibly kill misbehaving servers
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -20,129 +19,77 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: plaisthos <arne-openvpn@...1227...>, cron2 <gert@...1296...>, flichtenheld <frank@...2641...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: mattock <samuli@...515...>
+Cc: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---+KWtKJoGsdM=
+--uMQbXLmIPtQ=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 Attention is currently required from: flichtenheld, mattock, plaisthos.
 
-Hello cron2, flichtenheld, plaisthos,
-
-I'd like you to reexamine a change. Please visit
-
-    http://gerrit.openvpn.net/c/openvpn/+/775?usp=3Demail
-
-to look at the new patch set (#8).
-
+cron2 has posted comments on this change. ( http://gerrit.openvpn.net/c/ope=
+nvpn/+/775?usp=3Demail )
 
 Change subject: t_server_null: forcibly kill misbehaving servers
 ......................................................................
 
-t_server_null: forcibly kill misbehaving servers
 
-Change-Id: Ic0f98cd3b87a7b86e032e63167ac9036f7c08fcb
-Signed-off-by: Samuli Sepp=C3=A4nen <samuli.seppanen@...277...>
----
-M tests/t_server_null.sh
-M tests/t_server_null_default.rc
-M tests/t_server_null_server.sh
-3 files changed, 25 insertions(+), 8 deletions(-)
+Patch Set 8: Code-Review-2
+
+(4 comments)
+
+Patchset:
+
+PS8:
+getting closer
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/75/775/8
+File tests/t_server_null.sh:
 
-diff --git a/tests/t_server_null.sh b/tests/t_server_null.sh
-index d4311d4..3c0fc4b 100755
---- a/tests/t_server_null.sh
-+++ b/tests/t_server_null.sh
-@@ -71,4 +71,10 @@
- # pre and post ifconfig output does not match.
- wait
+http://gerrit.openvpn.net/c/openvpn/+/775/comment/eede43c8_d60b792c :
+PS8, Line 72: wait
+remembering the pid of the t_server_null_server.sh job after launching (`se=
+rver_sh_pid=3D$!`) and then calling `wait $server_sh_pid` will nicely deliv=
+er child program exit status in `$!`, without having to dance around with a=
+n extra file that needs to be created, rc-filed, tested-for.
 
--exit $retval
-+. ./t_server_null_default.rc
-+
-+if [ -e $SERVER_KILL_FAIL_FILE ]; then
-+    exit 1
-+else
-+    exit $retval
-+fi
-diff --git a/tests/t_server_null_default.rc b/tests/t_server_null_default.rc
-index 825bb52..cbf4877 100755
---- a/tests/t_server_null_default.rc
-+++ b/tests/t_server_null_default.rc
-@@ -20,6 +20,10 @@
- SERVER_KEY=3D"${sample_keys}/server.key"
- TA=3D"${sample_keys}/ta.key"
+`wait` without a pid specified does not return child return code, which is =
+somewhat annoying.
 
-+# Used to detect if graceful kill of any server instance failed during the=
- test
-+# run
-+SERVER_KILL_FAIL_FILE=3D".t_server_null_server.kill_failed"
-+
- # Test server configurations
- MAX_CLIENTS=3D"10"
- CLIENT_MATCH=3D"Test-Client"
-diff --git a/tests/t_server_null_server.sh b/tests/t_server_null_server.sh
-index f8ba3a3..4d86f46 100755
---- a/tests/t_server_null_server.sh
-+++ b/tests/t_server_null_server.sh
-@@ -34,6 +34,9 @@
- # Load local configuration, if any
- test -r ./t_server_null.rc && . ./t_server_null.rc
 
-+# Remove server kill failure marker file, if any
-+rm -f $SERVER_KILL_FAIL_FILE
-+
- # Launch test servers
- for SUF in $TEST_SERVER_LIST
- do
-@@ -75,6 +78,7 @@
- # Make sure that the server processes are truly dead before exiting.  If a
- # server process does not exit in 15 seconds assume it never will, move on=
- and
- # hope for the best.
-+
- echo "Waiting for servers to exit"
- for PID_FILE in $server_pid_files
- do
-@@ -85,22 +89,25 @@
-         continue
-     fi
+File tests/t_server_null_server.sh:
 
--    if [ -z "${RUN_SUDO}" ]; then
--        $KILL_EXEC "${SERVER_PID}"
--    else
--        $RUN_SUDO $KILL_EXEC "${SERVER_PID}"
--    fi
-+    # Attempt to kill the OpenVPN server gracefully with SIGTERM
-+    $RUN_SUDO $KILL_EXEC "${SERVER_PID}"
+http://gerrit.openvpn.net/c/openvpn/+/775/comment/ea5470ba_cd74abb4 :
+PS3, Line 106:     fi
+> I think we should make this a "test fail". [=E2=80=A6]
+Done
 
-     count=3D0
-     maxcount=3D75
-     while [ $count -le $maxcount ]
-     do
--        ps -p "${SERVER_PID}" > /dev/null || break
-+        $RUN_SUDO kill -0 "${SERVER_PID}" 2> /dev/null || break
-         count=3D$(( count + 1))
-         sleep 0.2
-     done
 
-+    # If server is still up send a SIGKILL
-     if [ $count -ge $maxcount ]; then
--        echo "WARNING: could not kill server with pid ${SERVER_PID}!"
-+        $RUN_SUDO $KILL_EXEC -9 "${SERVER_PID}"
-+        SERVER_NAME=3D$(basename $PID_FILE|cut -d . -f 1)
-+        echo "ERROR: had to send SIGKILL to server ${SERVER_NAME} with pid=
- ${SERVER_PID}!"
-+        echo "Tail of server log:"
-+        tail -n 20 "${t_server_null_logdir}/${SERVER_NAME}.log"
-+        touch $SERVER_KILL_FAIL_FILE
-     fi
- done
+File tests/t_server_null_server.sh:
+
+http://gerrit.openvpn.net/c/openvpn/+/775/comment/81b60a59_9f45dafb :
+PS8, Line 110:         tail -n 20 "${t_server_null_logdir}/${SERVER_NAME}.l=
+og"
+this wants a `$RUN_SUDO` because root-owned logs are not readable otherwise=
+ (or we need to precreate them before openvpn startup)...
+
+```
+Waiting for servers to exit
+ERROR: had to send SIGKILL to server t_server_null_server-1194_udp with pid=
+ 23977!
+Tail of server log:
+tail: t_server_null-fbsd14bb.ov.greenie.net-20241025-105632/t_server_null_s=
+erver-1194_udp.log: Permission denied
+ERROR: had to send SIGKILL to server t_server_null_server-1195_tcp with pid=
+ 23983!
+Tail of server log:
+tail: t_server_null-fbsd14bb.ov.greenie.net-20241025-105632/t_server_null_s=
+erver-1195_tcp.log: Permission denied
+FAIL: t_server_null.sh
+```
+
+
 
 --
 To view, visit http://gerrit.openvpn.net/c/openvpn/+/775?usp=3Demail
@@ -162,104 +109,71 @@ Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
 Gerrit-Attention: flichtenheld <frank@...2641...>
 Gerrit-Attention: mattock <samuli@...515...>
-Gerrit-MessageType: newpatchset
+Gerrit-Comment-Date: Fri, 25 Oct 2024 09:02:19 +0000
+Gerrit-HasComments: Yes
+Gerrit-Has-Labels: Yes
+Comment-In-Reply-To: cron2 <gert@...1296...>
+Gerrit-MessageType: comment
 
---+KWtKJoGsdM=
+--uMQbXLmIPtQ=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <p> Attention is currently required from: flichtenheld, mattock, plaisthos.=
  </p>
-<p>mattock <strong>uploaded patch set #8</strong> to this change.</p><p><a =
-href=3D"http://gerrit.openvpn.net/c/openvpn/+/775?usp=3Demail">View Change<=
-/a></p><pre style=3D"font-family: monospace,monospace; white-space: pre-wra=
-p;">t_server_null: forcibly kill misbehaving servers<br><br>Change-Id: Ic0f=
-98cd3b87a7b86e032e63167ac9036f7c08fcb<br>Signed-off-by: Samuli Sepp=C3=A4ne=
-n &lt;samuli.seppanen@...277...&gt;<br>---<br>M tests/t_server_null.sh<br>M=
- tests/t_server_null_default.rc<br>M tests/t_server_null_server.sh<br>3 fil=
-es changed, 25 insertions(+), 8 deletions(-)<br><br></pre><pre style=3D"fon=
-t-family: monospace,monospace; white-space: pre-wrap;">git pull ssh://gerri=
-t.openvpn.net:29418/openvpn refs/changes/75/775/8</pre><pre style=3D"font-f=
-amily: monospace,monospace; white-space: pre-wrap;"><span>diff --git a/test=
-s/t_server_null.sh b/tests/t_server_null.sh</span><br><span>index d4311d4..=
-3c0fc4b 100755</span><br><span>--- a/tests/t_server_null.sh</span><br><span=
->+++ b/tests/t_server_null.sh</span><br><span>@@ -71,4 +71,10 @@</span><br>=
-<span> # pre and post ifconfig output does not match.</span><br><span> wait=
-</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-exi=
-t $retval</span><br><span style=3D"color: hsl(120, 100%, 40%);">+. ./t_serv=
-er_null_default.rc</span><br><span style=3D"color: hsl(120, 100%, 40%);">+<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+if [ -e $SERVER_KILL=
-_FAIL_FILE ]; then</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-   exit 1</span><br><span style=3D"color: hsl(120, 100%, 40%);">+else</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+    exit $retval</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+fi</span><br><span>diff --gi=
-t a/tests/t_server_null_default.rc b/tests/t_server_null_default.rc</span><=
-br><span>index 825bb52..cbf4877 100755</span><br><span>--- a/tests/t_server=
-_null_default.rc</span><br><span>+++ b/tests/t_server_null_default.rc</span=
-><br><span>@@ -20,6 +20,10 @@</span><br><span> SERVER_KEY=3D&quot;${sample_=
-keys}/server.key&quot;</span><br><span> TA=3D&quot;${sample_keys}/ta.key&qu=
-ot;</span><br><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+# Used to detect if graceful kill of any server instance failed during th=
-e test</span><br><span style=3D"color: hsl(120, 100%, 40%);">+# run</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+SERVER_KILL_FAIL_FILE=3D&qu=
-ot;.t_server_null_server.kill_failed&quot;</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+</span><br><span> # Test server configurations</span=
-><br><span> MAX_CLIENTS=3D&quot;10&quot;</span><br><span> CLIENT_MATCH=3D&q=
-uot;Test-Client&quot;</span><br><span>diff --git a/tests/t_server_null_serv=
-er.sh b/tests/t_server_null_server.sh</span><br><span>index f8ba3a3..4d86f4=
-6 100755</span><br><span>--- a/tests/t_server_null_server.sh</span><br><spa=
-n>+++ b/tests/t_server_null_server.sh</span><br><span>@@ -34,6 +34,9 @@</sp=
-an><br><span> # Load local configuration, if any</span><br><span> test -r .=
-/t_server_null.rc &amp;&amp; . ./t_server_null.rc</span><br><span> </span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+# Remove server kill failur=
-e marker file, if any</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+rm -f $SERVER_KILL_FAIL_FILE</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+</span><br><span> # Launch test servers</span><br><span> for SUF=
- in $TEST_SERVER_LIST</span><br><span> do</span><br><span>@@ -75,6 +78,7 @@=
-</span><br><span> # Make sure that the server processes are truly dead befo=
-re exiting.  If a</span><br><span> # server process does not exit in 15 sec=
-onds assume it never will, move on and</span><br><span> # hope for the best=
-.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> =
-echo &quot;Waiting for servers to exit&quot;</span><br><span> for PID_FILE =
-in $server_pid_files</span><br><span> do</span><br><span>@@ -85,22 +89,25 @=
-@</span><br><span>         continue</span><br><span>     fi</span><br><span=
-> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-    if [ -z &quot;$=
-{RUN_SUDO}&quot; ]; then</span><br><span style=3D"color: hsl(0, 100%, 40%);=
-">-        $KILL_EXEC &quot;${SERVER_PID}&quot;</span><br><span style=3D"co=
-lor: hsl(0, 100%, 40%);">-    else</span><br><span style=3D"color: hsl(0, 1=
-00%, 40%);">-        $RUN_SUDO $KILL_EXEC &quot;${SERVER_PID}&quot;</span><=
-br><span style=3D"color: hsl(0, 100%, 40%);">-    fi</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    # Attempt to kill the OpenVPN server =
-gracefully with SIGTERM</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+    $RUN_SUDO $KILL_EXEC &quot;${SERVER_PID}&quot;</span><br><span> </s=
-pan><br><span>     count=3D0</span><br><span>     maxcount=3D75</span><br><=
-span>     while [ $count -le $maxcount ]</span><br><span>     do</span><br>=
-<span style=3D"color: hsl(0, 100%, 40%);">-        ps -p &quot;${SERVER_PID=
-}&quot; &gt; /dev/null || break</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+        $RUN_SUDO kill -0 &quot;${SERVER_PID}&quot; 2&gt; /dev/=
-null || break</span><br><span>         count=3D$(( count + 1))</span><br><s=
-pan>         sleep 0.2</span><br><span>     done</span><br><span> </span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+    # If server is still up =
-send a SIGKILL</span><br><span>     if [ $count -ge $maxcount ]; then</span=
-><br><span style=3D"color: hsl(0, 100%, 40%);">-        echo &quot;WARNING:=
- could not kill server with pid ${SERVER_PID}!&quot;</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+        $RUN_SUDO $KILL_EXEC -9 &quot;${S=
-ERVER_PID}&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
-     SERVER_NAME=3D$(basename $PID_FILE|cut -d . -f 1)</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+        echo &quot;ERROR: had to send SI=
-GKILL to server ${SERVER_NAME} with pid ${SERVER_PID}!&quot;</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+        echo &quot;Tail of server =
-log:&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        t=
-ail -n 20 &quot;${t_server_null_logdir}/${SERVER_NAME}.log&quot;</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+        touch $SERVER_KILL_FAI=
-L_FILE</span><br><span>     fi</span><br><span> done</span><br><span></span=
-><br></pre><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn=
-/+/775?usp=3Demail">change 775</a>. To unsubscribe, or for help writing mai=
-l filters, visit <a href=3D"http://gerrit.openvpn.net/settings">settings</a=
->.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div items=
-cope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link it=
-emprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/775?usp=3Demai=
-l"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
+<p>Patch set 8:<span style=3D"border-radius: 3px; display: inline-block; ma=
+rgin: 0 2px; padding: 4px;background-color: #ffd4d4;">Code-Review -2</span>=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/775?usp=3Demail">Vi=
+ew Change</a></p><p>4 comments:</p><ul style=3D"list-style: none; padding: =
+0;"><li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-=
+style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p =
+style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvp=
+n/+/775?tab=3Dcomments">Patch Set #8:</a> </p><p style=3D"white-space: pre-=
+wrap; word-wrap: break-word;">getting closer</p></li></ul></li><li style=3D=
+"margin: 0; padding: 0;"><p>File tests/t_server_null.sh:</p><ul style=3D"li=
+st-style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;">=
+<p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/ope=
+nvpn/+/775/comment/eede43c8_d60b792c">Patch Set #8, Line 72:</a> <code styl=
+e=3D"font-family:monospace,monospace">wait</code></p><p style=3D"white-spac=
+e: pre-wrap; word-wrap: break-word;">remembering the pid of the t_server_nu=
+ll_server.sh job after launching (`server_sh_pid=3D$!`) and then calling `w=
+ait $server_sh_pid` will nicely deliver child program exit status in `$!`, =
+without having to dance around with an extra file that needs to be created,=
+ rc-filed, tested-for.</p><p style=3D"white-space: pre-wrap; word-wrap: bre=
+ak-word;">`wait` without a pid specified does not return child return code,=
+ which is somewhat annoying.</p></li></ul></li><li style=3D"margin: 0; padd=
+ing: 0;"><p>File tests/t_server_null_server.sh:</p><ul style=3D"list-style:=
+ none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p style=
+=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/7=
+75/comment/ea5470ba_cd74abb4">Patch Set #3, Line 106:</a> <code style=3D"fo=
+nt-family:monospace,monospace">    fi</code></p><p><blockquote style=3D"bor=
+der-left: 1px solid #aaa; margin: 10px 0; padding: 0 10px;">I think we shou=
+ld make this a &quot;test fail&quot;. [=E2=80=A6]</blockquote></p><p style=
+=3D"white-space: pre-wrap; word-wrap: break-word;">Done</p></li></ul></li><=
+li style=3D"margin: 0; padding: 0;"><p>File tests/t_server_null_server.sh:<=
+/p><ul style=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; padd=
+ing: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit=
+.openvpn.net/c/openvpn/+/775/comment/81b60a59_9f45dafb">Patch Set #8, Line =
+110:</a> <code style=3D"font-family:monospace,monospace">        tail -n 20=
+ &quot;${t_server_null_logdir}/${SERVER_NAME}.log&quot;</code></p><p style=
+=3D"white-space: pre-wrap; word-wrap: break-word;">this wants a `$RUN_SUDO`=
+ because root-owned logs are not readable otherwise (or we need to precreat=
+e them before openvpn startup)...</p><p style=3D"white-space: pre-wrap; wor=
+d-wrap: break-word;">```<br>Waiting for servers to exit<br>ERROR: had to se=
+nd SIGKILL to server t_server_null_server-1194_udp with pid 23977!<br>Tail =
+of server log:<br>tail: t_server_null-fbsd14bb.ov.greenie.net-20241025-1056=
+32/t_server_null_server-1194_udp.log: Permission denied<br>ERROR: had to se=
+nd SIGKILL to server t_server_null_server-1195_tcp with pid 23983!<br>Tail =
+of server log:<br>tail: t_server_null-fbsd14bb.ov.greenie.net-20241025-1056=
+32/t_server_null_server-1195_tcp.log: Permission denied<br>FAIL: t_server_n=
+ull.sh<br>```</p></li></ul></li></ul><p>To view, visit <a href=3D"http://ge=
+rrit.openvpn.net/c/openvpn/+/775?usp=3Demail">change 775</a>. To unsubscrib=
+e, or for help writing mail filters, visit <a href=3D"http://gerrit.openvpn=
+.net/settings">settings</a>.</p><div itemscope itemtype=3D"http://schema.or=
+g/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://schem=
+a.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/=
+c/openvpn/+/775?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Chang=
+e"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
@@ -283,8 +197,14 @@ ts.sourceforge.net&gt; </div>
 41...&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: mattock &lt;samuli@...515...=
 &gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Fri, 25 Oct 2024 09:02:19=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
+<div style=3D"display:none"> Comment-In-Reply-To: cron2 &lt;gert@...1296...=
+&gt; </div>
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
 
 
---+KWtKJoGsdM=--
+--uMQbXLmIPtQ=--
 
