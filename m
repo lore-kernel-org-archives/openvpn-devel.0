@@ -1,11 +1,11 @@
-From: =?iso-8859-1?Q?R=E9mi_FARAULT?= <Remi.FARAULT@...2828...>
-Date: Wed, 30 Oct 2024 10:31:57 +0000
-Message-ID: <fd473a5552ce4f91a95abf8c8b91df4e@...2828...>
-Content-Language: fr-FR
-Content-Type: multipart/mixed;
- boundary="_004_fd473a5552ce4f91a95abf8c8b91df4estormshieldeu_"
+Content-Type: multipart/alternative;
+ boundary="------------mzWTUjcqWIvzlEVnBACWqLrX"
+Message-ID: <50b5f599-bed9-48e3-b7e9-22d871efff39@...2751...>
+Date: Wed, 30 Oct 2024 14:28:20 +0100
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] Add calls to nvlist_destroy to avoid leaks
+From: Johan Draaisma <johan@...2751...>
+Content-Language: en-US
+Subject: [Openvpn-devel]  IRC community meeting summary
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,108 +14,97 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: openvpn-devel@lists.sourceforge.net
 
---_004_fd473a5552ce4f91a95abf8c8b91df4estormshieldeu_
-Content-Type: multipart/alternative;
-	boundary="_000_fd473a5552ce4f91a95abf8c8b91df4estormshieldeu_"
+This is a multi-part message in MIME format.
+--------------mzWTUjcqWIvzlEVnBACWqLrX
+Content-Type: text/plain; charset="utf-8"; format="flowed"
+Content-Transfer-Encoding: 8bit
 
---_000_fd473a5552ce4f91a95abf8c8b91df4estormshieldeu_
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+Meeting summary for 30 October 2024:
 
+  * *Updated: DCO and Linux upstreaming, API change*
+    /Upstreaming DCO to Linux is proceeding, it is in review stage at
+    the moment./
+    /ordex sent in*patchset version 11*. Awaiting feedback./
 
+  * *Updated: DCO windows multi-peer*
+    /Kernel-side stuff looks to be mostly done. Currently look into
+    user-space stuff and some proper locking and memory management
+    (refcounters etc)./
 
---_000_fd473a5552ce4f91a95abf8c8b91df4estormshieldeu_
-Content-Type: text/html; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+  * *Updated: multi-socket patch series*
+    /4 preparation work patches were merged. Now it's on to the real
+    patch series./
 
+  * *Updated: data format v3 / epoch data keys*
+    /plaisthos has written a new draft for new key handling for the data
+    channel based on discussions in Karlsruhe./
+    /See​https://github.com/OpenVPN/openvpn-rfc/pull/5
+    <https://github.com/OpenVPN/openvpn-rfc/pull/5>./
+    /The current state is that the work for it is done but not yet sent
+    in - plaisthos indicates he wants to test and implement it with
+    openvpn3 before submitting it to openvpn2./
+
+As always you're welcome to join at #openvpn-meeting on Libera IRC 
+network every Wednesday at 14:00 Central European Time.
+
+Kind regards,
+Johan Draaisma
+
+--------------mzWTUjcqWIvzlEVnBACWqLrX
+Content-Type: text/html; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+
+<!DOCTYPE html>
 <html>
-<head>
-<meta http-equiv=3D"Content-Type" content=3D"text/html; charset=3Diso-8859-=
-1">
-<style type=3D"text/css" style=3D"display:none;"><!-- P {margin-top:0;margi=
-n-bottom:0;} --></style>
-</head>
-<body dir=3D"ltr">
-<div id=3D"divtagdefaultwrapper" style=3D"font-size:12pt;color:#000000;font=
--family:Calibri,Helvetica,sans-serif;" dir=3D"ltr">
-<p><br>
-</p>
-</div>
-</body>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  </head>
+  <body>
+    <p> Meeting summary for 30 October 2024:</p>
+    <ul
+style="color: rgb(0, 0, 0); font-family: Verdana, Arial, &quot;Bitstream Vera Sans&quot;, Helvetica, sans-serif; font-size: 13px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;">
+      <li><strong>Updated: DCO and Linux upstreaming, API change</strong><br>
+        <em>Upstreaming DCO to Linux is proceeding, it is in review
+          stage at the moment.</em><br>
+        <em>ordex sent in<span> </span><strong>patchset version 11</strong>.
+          Awaiting feedback.</em></li>
+    </ul>
+    <ul
+style="color: rgb(0, 0, 0); font-family: Verdana, Arial, &quot;Bitstream Vera Sans&quot;, Helvetica, sans-serif; font-size: 13px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;">
+      <li><strong>Updated: DCO windows multi-peer</strong><br>
+        <em>Kernel-side stuff looks to be mostly done. Currently look
+          into user-space stuff and some proper locking and memory
+          management (refcounters etc).</em></li>
+    </ul>
+    <ul
+style="color: rgb(0, 0, 0); font-family: Verdana, Arial, &quot;Bitstream Vera Sans&quot;, Helvetica, sans-serif; font-size: 13px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;">
+      <li><strong>Updated: multi-socket patch series</strong><br>
+        <em>4 preparation work patches were merged. Now it's on to the
+          real patch series.</em></li>
+    </ul>
+    <ul
+style="color: rgb(0, 0, 0); font-family: Verdana, Arial, &quot;Bitstream Vera Sans&quot;, Helvetica, sans-serif; font-size: 13px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;">
+      <li><strong>Updated: data format v3 / epoch data keys</strong><br>
+        <em>plaisthos has written a new draft for new key handling for
+          the data channel based on discussions in Karlsruhe.</em><br>
+        <em>See<span> </span><a class="ext-link"
+            href="https://github.com/OpenVPN/openvpn-rfc/pull/5"
+style="text-decoration: none; color: rgb(187, 0, 0); border-bottom: 1px dotted rgb(187, 187, 187);"><span
+              class="icon"
+style="background: url(&quot;../extlink.gif&quot;) left center no-repeat; padding-left: 15px;">​</span>https://github.com/OpenVPN/openvpn-rfc/pull/5</a>.</em><br>
+        <em>The current state is that the work for it is done but not
+          yet sent in - plaisthos indicates he wants to test and
+          implement it with openvpn3 before submitting it to openvpn2.</em></li>
+    </ul>
+    As always you're welcome to join at #openvpn-meeting on Libera IRC
+    network every Wednesday at 14:00 Central European Time.
+    <p>Kind regards,<br>
+      Johan Draaisma<br>
+    </p>
+  </body>
 </html>
 
---_000_fd473a5552ce4f91a95abf8c8b91df4estormshieldeu_--
-
---_004_fd473a5552ce4f91a95abf8c8b91df4estormshieldeu_
-Content-Type: text/x-patch;
-	name="v1-0001-Add-calls-to-nvlist_destroy-to-avoid-leaks.patch"
-Content-Description: v1-0001-Add-calls-to-nvlist_destroy-to-avoid-leaks.patch
-Content-Disposition: attachment;
-	filename="v1-0001-Add-calls-to-nvlist_destroy-to-avoid-leaks.patch";
-	size=3256; creation-date="Wed, 30 Oct 2024 10:31:50 GMT";
-	modification-date="Wed, 30 Oct 2024 10:31:50 GMT"
-Content-Transfer-Encoding: base64
-
-RnJvbSA2NzEwMGY1NzYzNGIxYjU5YzJlYzhjMjk0ZmNjYWJkYThmYjdkODkzIE1vbiBTZXAgMTcg
-MDA6MDA6MDAgMjAwMQpGcm9tOiA9P1VURi04P3E/Uj1DMz1BOW1pPTIwRmFyYXVsdD89IDxyZW1p
-LmZhcmF1bHRAc3Rvcm1zaGllbGQuZXU+CkRhdGU6IFR1ZSwgMjkgT2N0IDIwMjQgMTI6MDY6MzUg
-KzAxMDAKU3ViamVjdDogW1BBVENIIHYxXSBBZGQgY2FsbHMgdG8gbnZsaXN0X2Rlc3Ryb3kgdG8g
-YXZvaWQgbGVha3MKCi0tLQogc3JjL29wZW52cG4vZGNvX2ZyZWVic2QuYyB8IDMxICsrKysrKysr
-KysrKysrKysrKysrKysrLS0tLS0tLS0KIDEgZmlsZSBjaGFuZ2VkLCAyMyBpbnNlcnRpb25zKCsp
-LCA4IGRlbGV0aW9ucygtKQoKZGlmZiAtLWdpdCBhL3NyYy9vcGVudnBuL2Rjb19mcmVlYnNkLmMg
-Yi9zcmMvb3BlbnZwbi9kY29fZnJlZWJzZC5jCmluZGV4IGM5MmU0MmExLi41NWYwYWIxZCAxMDA2
-NDQKLS0tIGEvc3JjL29wZW52cG4vZGNvX2ZyZWVic2QuYworKysgYi9zcmMvb3BlbnZwbi9kY29f
-ZnJlZWJzZC5jCkBAIC03OCw3ICs3OCw3IEBAIGRjb19uZXdfcGVlcihkY29fY29udGV4dF90ICpk
-Y28sIHVuc2lnbmVkIGludCBwZWVyaWQsIGludCBzZCwKICAgICAgICAgICAgICBzdHJ1Y3QgaW5f
-YWRkciAqdnBuX2lwdjQsIHN0cnVjdCBpbjZfYWRkciAqdnBuX2lwdjYpCiB7CiAgICAgc3RydWN0
-IGlmZHJ2IGRydjsKLSAgICBudmxpc3RfdCAqbnZsOworICAgIG52bGlzdF90ICpudmwsICpsb2Nh
-bF9udmwsICpyZW1vdGVfbnZsOwogICAgIGludCByZXQ7CiAKICAgICBudmwgPSBudmxpc3RfY3Jl
-YXRlKDApOwpAQCAtODcsMTIgKzg3LDE0IEBAIGRjb19uZXdfcGVlcihkY29fY29udGV4dF90ICpk
-Y28sIHVuc2lnbmVkIGludCBwZWVyaWQsIGludCBzZCwKIAogICAgIGlmIChsb2NhbGFkZHIpCiAg
-ICAgewotICAgICAgICBudmxpc3RfYWRkX252bGlzdChudmwsICJsb2NhbCIsIHNvY2thZGRyX3Rv
-X252bGlzdChsb2NhbGFkZHIpKTsKKyAgICAgICAgbG9jYWxfbnZsID0gc29ja2FkZHJfdG9fbnZs
-aXN0KGxvY2FsYWRkcik7CisgICAgICAgIG52bGlzdF9hZGRfbnZsaXN0KG52bCwgImxvY2FsIiwg
-bG9jYWxfbnZsKTsKICAgICB9CiAKICAgICBpZiAocmVtb3RlYWRkcikKICAgICB7Ci0gICAgICAg
-IG52bGlzdF9hZGRfbnZsaXN0KG52bCwgInJlbW90ZSIsIHNvY2thZGRyX3RvX252bGlzdChyZW1v
-dGVhZGRyKSk7CisgICAgICAgIHJlbW90ZV9udmwgPSBzb2NrYWRkcl90b19udmxpc3QocmVtb3Rl
-YWRkcik7CisgICAgICAgIG52bGlzdF9hZGRfbnZsaXN0KG52bCwgInJlbW90ZSIsIHJlbW92ZV9u
-dmwpOwogICAgIH0KIAogICAgIGlmICh2cG5faXB2NCkKQEAgLTEyMSw2ICsxMjMsMTQgQEAgZGNv
-X25ld19wZWVyKGRjb19jb250ZXh0X3QgKmRjbywgdW5zaWduZWQgaW50IHBlZXJpZCwgaW50IHNk
-LAogICAgIH0KIAogICAgIGZyZWUoZHJ2LmlmZF9kYXRhKTsKKyAgICBpZiAobG9jYWxhZGRyKQor
-ICAgIHsKKyAgICAgICAgbnZsaXN0X2Rlc3Ryb3kobG9jYWxfbnZsKTsKKyAgICB9CisgICAgaWYg
-KHJlbW90ZWFkZHIpCisgICAgeworICAgICAgICBudmxpc3RfZGVzdHJveShyZW1vdGVfbnZsKTsK
-KyAgICB9CiAgICAgbnZsaXN0X2Rlc3Ryb3kobnZsKTsKIAogICAgIHJldHVybiByZXQ7CkBAIC00
-MTgsNyArNDI4LDcgQEAgZGNvX25ld19rZXkoZGNvX2NvbnRleHRfdCAqZGNvLCB1bnNpZ25lZCBp
-bnQgcGVlcmlkLCBpbnQga2V5aWQsCiAgICAgICAgICAgICBjb25zdCBjaGFyICpjaXBoZXJuYW1l
-KQogewogICAgIHN0cnVjdCBpZmRydiBkcnY7Ci0gICAgbnZsaXN0X3QgKm52bDsKKyAgICBudmxp
-c3RfdCAqbnZsLCAqZW5jcnlwdF9udmwsICpkZWNyeXB0X252bDsKICAgICBpbnQgcmV0OwogCiAg
-ICAgbXNnKERfRENPX0RFQlVHLCAiJXM6IHNsb3QgJWQsIGtleS1pZCAlZCwgcGVlci1pZCAlZCwg
-Y2lwaGVyICVzIiwKQEAgLTQzMCwxMCArNDQwLDExIEBAIGRjb19uZXdfa2V5KGRjb19jb250ZXh0
-X3QgKmRjbywgdW5zaWduZWQgaW50IHBlZXJpZCwgaW50IGtleWlkLAogICAgIG52bGlzdF9hZGRf
-bnVtYmVyKG52bCwgImtleWlkIiwga2V5aWQpOwogICAgIG52bGlzdF9hZGRfbnVtYmVyKG52bCwg
-InBlZXJpZCIsIHBlZXJpZCk7CiAKLSAgICBudmxpc3RfYWRkX252bGlzdChudmwsICJlbmNyeXB0
-IiwKLSAgICAgICAgICAgICAgICAgICAgICBrZXlfdG9fbnZsaXN0KGVuY3J5cHRfa2V5LCBlbmNy
-eXB0X2l2LCBjaXBoZXJuYW1lKSk7Ci0gICAgbnZsaXN0X2FkZF9udmxpc3QobnZsLCAiZGVjcnlw
-dCIsCi0gICAgICAgICAgICAgICAgICAgICAga2V5X3RvX252bGlzdChkZWNyeXB0X2tleSwgZGVj
-cnlwdF9pdiwgY2lwaGVybmFtZSkpOworICAgIGVuY3J5cHRfbnZsID0ga2V5X3RvX252bGlzdChl
-bmNyeXB0X2tleSwgZW5jcnlwdF9pdiwgY2lwaGVybmFtZSk7CisgICAgZGVjcnlwdF9udmwgPSBr
-ZXlfdG9fbnZsaXN0KGRlY3J5cHRfa2V5LCBkZWNyeXB0X2l2LCBjaXBoZXJuYW1lKTsKKworICAg
-IG52bGlzdF9hZGRfbnZsaXN0KG52bCwgImVuY3J5cHQiLCBlbmNyeXB0X252bCk7CisgICAgbnZs
-aXN0X2FkZF9udmxpc3QobnZsLCAiZGVjcnlwdCIsIGRlY3J5cHRfbnZsKTsKIAogICAgIENMRUFS
-KGRydik7CiAgICAgc25wcmludGYoZHJ2LmlmZF9uYW1lLCBJRk5BTVNJWiwgIiVzIiwgZGNvLT5p
-Zm5hbWUpOwpAQCAtNDUxLDYgKzQ2Miw4IEBAIGRjb19uZXdfa2V5KGRjb19jb250ZXh0X3QgKmRj
-bywgdW5zaWduZWQgaW50IHBlZXJpZCwgaW50IGtleWlkLAogICAgIH0KIAogICAgIGZyZWUoZHJ2
-LmlmZF9kYXRhKTsKKyAgICBudmxpc3RfZGVzdHJveShlbmNyeXB0X252bCk7CisgICAgbnZsaXN0
-X2Rlc3Ryb3koZGVjcnlwdF9udmwpOwogICAgIG52bGlzdF9kZXN0cm95KG52bCk7CiAKICAgICBy
-ZXR1cm4gcmV0OwpAQCAtNzUwLDYgKzc2Myw3IEBAIHJldHJ5OgogICAgIGlmICghbnZsaXN0X2V4
-aXN0c19udmxpc3RfYXJyYXkobnZsLCAicGVlcnMiKSkKICAgICB7CiAgICAgICAgIC8qIG5vIHBl
-ZXJzICovCisgICAgICAgIG52bGlzdF9kZXN0cm95KG52bCk7CiAgICAgICAgIHJldHVybiAwOwog
-ICAgIH0KIApAQCAtNzYyLDYgKzc3Niw3IEBAIHJldHJ5OgogICAgICAgICBkY29fdXBkYXRlX3Bl
-ZXJfc3RhdChtLCBwZWVyaWQsIG52bGlzdF9nZXRfbnZsaXN0KHBlZXIsICJieXRlcyIpKTsKICAg
-ICB9CiAKKyAgICBudmxpc3RfZGVzdHJveShudmwpOwogICAgIHJldHVybiAwOwogfQogCi0tIAoy
-LjI1LjEKCg==
-
---_004_fd473a5552ce4f91a95abf8c8b91df4estormshieldeu_--
+--------------mzWTUjcqWIvzlEVnBACWqLrX--
 
