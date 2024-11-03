@@ -1,16 +1,15 @@
 From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Sun, 3 Nov 2024 20:19:01 +0000
-In-Reply-To: <gerrit.1728025749000.I7e5ac9b4a8594251c3b5c4655f9d74b021950098@...2715...>
-References: <gerrit.1728025749000.I7e5ac9b4a8594251c3b5c4655f9d74b021950098@...2715...>
+Date: Sun, 3 Nov 2024 20:19:07 +0000
+References: <gerrit.1730665141000.Id2b0c5a517f02e5c219fea2ae3ef2bdef7690169@...2715...>
 Reply-To: gert@...1296..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <ffe212c2fc57cc9604da0a21b11cbb2ce7600a3c-EmailReplacePatchSet-HTML@...2715...>
+Message-ID: <0c672d80dbb4ba15fff71ff55d3afeafe7237bec-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="nZtxW8mYJ4w="; charset=UTF-8
-Subject: [Openvpn-devel] [XS] Change in openvpn[master]: t_server_null: run
- server processes with 'ulimit -t 300'
+Content-Type: multipart/alternative; boundary="rOFlnlkBL7I="; charset=UTF-8
+Subject: [Openvpn-devel] [XS] Change in openvpn[master]: send uname()
+ release as IV_PLAT_VER= on non-windows versions
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -22,118 +21,163 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---nZtxW8mYJ4w=
+--rOFlnlkBL7I=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 Attention is currently required from: flichtenheld, plaisthos.
 
-Hello flichtenheld, plaisthos,
+Hello plaisthos, flichtenheld,
 
-I'd like you to reexamine a change. Please visit
+I'd like you to do a code review.
+Please visit
 
-    http://gerrit.openvpn.net/c/openvpn/+/777?usp=3Demail
+    http://gerrit.openvpn.net/c/openvpn/+/793?usp=3Demail
 
-to look at the new patch set (#2).
+to review the following change.
 
 
-Change subject: t_server_null: run server processes with 'ulimit -t 300'
+Change subject: send uname() release as IV_PLAT_VER=3D on non-windows versi=
+ons
 ......................................................................
 
-t_server_null: run server processes with 'ulimit -t 300'
+send uname() release as IV_PLAT_VER=3D on non-windows versions
 
-"ulimit -t" will hard limit the usable CPU time for any process started
-to the specified number of seconds.  So if we have a stuck-and-looping
-server process (which was observed frequently) this will make sure
-the situation will fix itself eventually.
+This is highly system specific, as the content of the uname()
+structure elements is not specified very well - uname(3) says:
 
-Change-Id: I7e5ac9b4a8594251c3b5c4655f9d74b021950098
+      release       Release level of the operating system
+
+which translates to "IV_PLAT_VER=3D13.3-RELEASE-p6" (FreeBSD) or
+"IV_PLAT_VER=3D22.6.0" (macOS) - the latter being the "Mach Kernel
+version", not what Apple calls the OS.
+
+It's still useful if a server operator needs to keep track of
+client versions (and the GUI does not set the corresponding
+environment variable, which neither Tunnelblick nor NM do).
+
+Change-Id: Id2b0c5a517f02e5c219fea2ae3ef2bdef7690169
+Signed-off-by: Gert Doering <gert@...1296...>
 ---
-M tests/t_server_null_server.sh
-1 file changed, 4 insertions(+), 0 deletions(-)
+M src/openvpn/ssl.c
+M src/openvpn/syshead.h
+2 files changed, 8 insertions(+), 0 deletions(-)
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/77/777/2
 
-diff --git a/tests/t_server_null_server.sh b/tests/t_server_null_server.sh
-index acf8479..40ce94b 100755
---- a/tests/t_server_null_server.sh
-+++ b/tests/t_server_null_server.sh
-@@ -11,6 +11,10 @@
-     # Allow reading this file even umask values are strict
-     touch "$log"
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/93/793/1
 
-+    # limit CPU time of processes to "5 minutes"
-+    # (so a stuck-and-looping process will auto-terminate)
-+    ulimit -t 300
+diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
+index 8040e7b..8632832 100644
+--- a/src/openvpn/ssl.c
++++ b/src/openvpn/ssl.c
+@@ -2010,6 +2010,10 @@
+             buf_printf(&out, "IV_SSL=3D%s\n", get_ssl_library_version() );
+ #if defined(_WIN32)
+             buf_printf(&out, "IV_PLAT_VER=3D%s\n", win32_version_string(&g=
+c, false));
++#else
++	    struct utsname u;
++	    uname(&u);
++            buf_printf(&out, "IV_PLAT_VER=3D%s\n", u.release);
+ #endif
+         }
+
+diff --git a/src/openvpn/syshead.h b/src/openvpn/syshead.h
+index 83a48fc..33a90c1 100644
+--- a/src/openvpn/syshead.h
++++ b/src/openvpn/syshead.h
+@@ -331,6 +331,10 @@
+ #include <sys/mman.h>
+ #endif
+
++#ifndef _WIN32
++#include <sys/utsname.h>
++#endif
 +
-     if [ -z "${RUN_SUDO}" ]; then
-         "${server_exec}" \
-          $server_conf \
+ /*
+  * Pedantic mode is meant to accomplish lint-style program checking,
+  * not to build a working executable.
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/777?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/793?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings
 
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: I7e5ac9b4a8594251c3b5c4655f9d74b021950098
-Gerrit-Change-Number: 777
-Gerrit-PatchSet: 2
+Gerrit-Change-Id: Id2b0c5a517f02e5c219fea2ae3ef2bdef7690169
+Gerrit-Change-Number: 793
+Gerrit-PatchSet: 1
 Gerrit-Owner: cron2 <gert@...1296...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
 Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-MessageType: newpatchset
+Gerrit-MessageType: newchange
 
---nZtxW8mYJ4w=
+--rOFlnlkBL7I=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <p> Attention is currently required from: flichtenheld, plaisthos. </p>
-<p>cron2 <strong>uploaded patch set #2</strong> to this change.</p><p><a hr=
-ef=3D"http://gerrit.openvpn.net/c/openvpn/+/777?usp=3Demail">View Change</a=
-></p><pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;=
-">t_server_null: run server processes with &#39;ulimit -t 300&#39;<br><br>&=
-quot;ulimit -t&quot; will hard limit the usable CPU time for any process st=
-arted<br>to the specified number of seconds.  So if we have a stuck-and-loo=
-ping<br>server process (which was observed frequently) this will make sure<=
-br>the situation will fix itself eventually.<br><br>Change-Id: I7e5ac9b4a85=
-94251c3b5c4655f9d74b021950098<br>---<br>M tests/t_server_null_server.sh<br>=
-1 file changed, 4 insertions(+), 0 deletions(-)<br><br></pre><pre style=3D"=
-font-family: monospace,monospace; white-space: pre-wrap;">git pull ssh://ge=
-rrit.openvpn.net:29418/openvpn refs/changes/77/777/2</pre><pre style=3D"fon=
-t-family: monospace,monospace; white-space: pre-wrap;"><span>diff --git a/t=
-ests/t_server_null_server.sh b/tests/t_server_null_server.sh</span><br><spa=
-n>index acf8479..40ce94b 100755</span><br><span>--- a/tests/t_server_null_s=
-erver.sh</span><br><span>+++ b/tests/t_server_null_server.sh</span><br><spa=
-n>@@ -11,6 +11,10 @@</span><br><span>     # Allow reading this file even um=
-ask values are strict</span><br><span>     touch &quot;$log&quot;</span><br=
-><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+    # limit=
- CPU time of processes to &quot;5 minutes&quot;</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+    # (so a stuck-and-looping process will auto=
--terminate)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    ulim=
-it -t 300</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br=
-><span>     if [ -z &quot;${RUN_SUDO}&quot; ]; then</span><br><span>       =
-  &quot;${server_exec}&quot; \</span><br><span>          $server_conf \</sp=
-an><br><span></span><br></pre><p>To view, visit <a href=3D"http://gerrit.op=
-envpn.net/c/openvpn/+/777?usp=3Demail">change 777</a>. To unsubscribe, or f=
-or help writing mail filters, visit <a href=3D"http://gerrit.openvpn.net/se=
-ttings">settings</a>.</p><div itemscope itemtype=3D"http://schema.org/Email=
-Message"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.org/V=
-iewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openv=
-pn/+/777?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></d=
-iv></div>
+<p>cron2 would like plaisthos and flichtenheld to <strong>review</strong> t=
+his change.
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/793?usp=3Demail">Vi=
+ew Change</a></p><pre style=3D"font-family: monospace,monospace; white-spac=
+e: pre-wrap;">send uname() release as IV_PLAT_VER=3D on non-windows version=
+s<br><br>This is highly system specific, as the content of the uname()<br>s=
+tructure elements is not specified very well - uname(3) says:<br><br>      =
+release       Release level of the operating system<br><br>which translates=
+ to &quot;IV_PLAT_VER=3D13.3-RELEASE-p6&quot; (FreeBSD) or<br>&quot;IV_PLAT=
+_VER=3D22.6.0&quot; (macOS) - the latter being the &quot;Mach Kernel<br>ver=
+sion&quot;, not what Apple calls the OS.<br><br>It&#39;s still useful if a =
+server operator needs to keep track of<br>client versions (and the GUI does=
+ not set the corresponding<br>environment variable, which neither Tunnelbli=
+ck nor NM do).<br><br>Change-Id: Id2b0c5a517f02e5c219fea2ae3ef2bdef7690169<=
+br>Signed-off-by: Gert Doering &lt;gert@...1296...&gt;<br>---<br>M src/open=
+vpn/ssl.c<br>M src/openvpn/syshead.h<br>2 files changed, 8 insertions(+), 0=
+ deletions(-)<br><br></pre><pre style=3D"font-family: monospace,monospace; =
+white-space: pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/openvpn ref=
+s/changes/93/793/1</pre><pre style=3D"font-family: monospace,monospace; whi=
+te-space: pre-wrap;"><span>diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl=
+.c</span><br><span>index 8040e7b..8632832 100644</span><br><span>--- a/src/=
+openvpn/ssl.c</span><br><span>+++ b/src/openvpn/ssl.c</span><br><span>@@ -2=
+010,6 +2010,10 @@</span><br><span>             buf_printf(&amp;out, &quot;I=
+V_SSL=3D%s\n&quot;, get_ssl_library_version() );</span><br><span> #if defin=
+ed(_WIN32)</span><br><span>             buf_printf(&amp;out, &quot;IV_PLAT_=
+VER=3D%s\n&quot;, win32_version_string(&amp;gc, false));</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+#else</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+	    struct utsname u;</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+	    uname(&amp;u);</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+            buf_printf(&amp;out, &quot;IV_PLAT_VE=
+R=3D%s\n&quot;, u.release);</span><br><span> #endif</span><br><span>       =
+  }</span><br><span> </span><br><span>diff --git a/src/openvpn/syshead.h b/=
+src/openvpn/syshead.h</span><br><span>index 83a48fc..33a90c1 100644</span><=
+br><span>--- a/src/openvpn/syshead.h</span><br><span>+++ b/src/openvpn/sysh=
+ead.h</span><br><span>@@ -331,6 +331,10 @@</span><br><span> #include &lt;sy=
+s/mman.h&gt;</span><br><span> #endif</span><br><span> </span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+#ifndef _WIN32</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+#include &lt;sys/utsname.h&gt;</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+#endif</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+</span><br><span> /*</span><br><span>  * Pedant=
+ic mode is meant to accomplish lint-style program checking,</span><br><span=
+>  * not to build a working executable.</span><br><span></span><br></pre><p=
+>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/793?usp=3D=
+email">change 793</a>. To unsubscribe, or for help writing mail filters, vi=
+sit <a href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div it=
+emscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=
+=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url=
+" href=3D"http://gerrit.openvpn.net/c/openvpn/+/793?usp=3Demail"/><meta ite=
+mprop=3D"name" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I7e5ac9b4a8594251c3b5c4655f9=
-d74b021950098 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 777 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: Id2b0c5a517f02e5c219fea2ae3e=
+f2bdef7690169 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 793 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
 <div style=3D"display:none"> Gerrit-Owner: cron2 &lt;gert@...1296...&gt; </=
 div>
 <div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
@@ -146,8 +190,8 @@ ts.sourceforge.net&gt; </div>
 ..1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
 41...&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
+<div style=3D"display:none"> Gerrit-MessageType: newchange </div>
 
 
---nZtxW8mYJ4w=--
+--rOFlnlkBL7I=--
 
