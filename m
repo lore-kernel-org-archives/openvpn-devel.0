@@ -1,17 +1,11 @@
-From: "ordex (Code Review)" <gerrit@...515...>
-Date: Mon, 4 Nov 2024 08:49:20 +0000
+From: Gert Doering <gert@...1296...>
+Date: Mon,  4 Nov 2024 09:58:08 +0100
+Message-ID: <20241104085808.17039-1-gert@...1296...>
 In-Reply-To: <gerrit.1730665141000.Id2b0c5a517f02e5c219fea2ae3ef2bdef7690169@...2715...>
 References: <gerrit.1730665141000.Id2b0c5a517f02e5c219fea2ae3ef2bdef7690169@...2715...>
-Reply-To: a@...2181..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...,
- gert@...1296...
-Message-ID: <898c8b080a5a30511d74d71dc6dacad60b97a195-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="8M7jddF3wb8="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: send uname() release
- as IV_PLAT_VER= on non-windows versions
+Subject: [Openvpn-devel] [PATCH v4] send uname() release as IV_PLAT_VER= on
+ non-windows versions
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,95 +14,88 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: cron2 <gert@...1296...>
-Cc: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---8M7jddF3wb8=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+This is highly system specific, as the content of the uname()
+structure elements is not specified very well - uname(3) says:
 
-Attention is currently required from: cron2, flichtenheld, plaisthos.
+      release       Release level of the operating system
 
-ordex has posted comments on this change. ( http://gerrit.openvpn.net/c/ope=
-nvpn/+/793?usp=3Demail )
+which translates to "IV_PLAT_VER=13.3-RELEASE-p6" (FreeBSD) or
+"IV_PLAT_VER=22.6.0" (macOS) - the latter being the "Mach Kernel
+version", not what Apple calls the OS.
 
-Change subject: send uname() release as IV_PLAT_VER=3D on non-windows versi=
-ons
-......................................................................
+It's still useful if a server operator needs to keep track of
+client versions (and the GUI does not set the corresponding
+environment variable, which neither Tunnelblick nor NM do).
 
+v2: manpage amendments
+v3: whitespace
+v4: reword manpage
 
-Patch Set 4: Code-Review+2
+Github: OpenVPN/openvpn#637
 
+Change-Id: Id2b0c5a517f02e5c219fea2ae3ef2bdef7690169
+Signed-off-by: Gert Doering <gert@...1296...>
+Acked-by: Antonio Quartulli <a@...2181...>
+---
 
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/793?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings
+This change was reviewed on Gerrit and approved by at least one
+developer. I request to merge it to master.
 
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: Id2b0c5a517f02e5c219fea2ae3ef2bdef7690169
-Gerrit-Change-Number: 793
-Gerrit-PatchSet: 4
-Gerrit-Owner: cron2 <gert@...1296...>
-Gerrit-Reviewer: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: ordex <a@...2181...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: cron2 <gert@...1296...>
-Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Comment-Date: Mon, 04 Nov 2024 08:49:20 +0000
-Gerrit-HasComments: No
-Gerrit-Has-Labels: Yes
-Gerrit-MessageType: comment
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/793
+This mail reflects revision 4 of this Change.
 
---8M7jddF3wb8=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Acked-by according to Gerrit (reflected above):
+Antonio Quartulli <a@...2181...>
 
-<p> Attention is currently required from: cron2, flichtenheld, plaisthos. <=
-/p>
-<p>Patch set 4:<span style=3D"border-radius: 3px; display: inline-block; ma=
-rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/793?usp=3Demail">Vi=
-ew Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To vie=
-w, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/793?usp=3Demail">=
-change 793</a>. To unsubscribe, or for help writing mail filters, visit <a =
-href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope=
- itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"act=
-ion" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=
-=3D"http://gerrit.openvpn.net/c/openvpn/+/793?usp=3Demail"/><meta itemprop=
-=3D"name" content=3D"View Change"/></div></div>
-
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: Id2b0c5a517f02e5c219fea2ae3e=
-f2bdef7690169 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 793 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 4 </div>
-<div style=3D"display:none"> Gerrit-Owner: cron2 &lt;gert@...1296...&gt; </=
-div>
-<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
-1...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: ordex &lt;a@...2181...&gt; </=
-div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: cron2 &lt;gert@...1296...&gt=
-; </div>
-<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
-41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Mon, 04 Nov 2024 08:49:20=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: No </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
-
-
---8M7jddF3wb8=--
+        
+diff --git a/doc/man-sections/client-options.rst b/doc/man-sections/client-options.rst
+index a06948e..5ca85e0 100644
+--- a/doc/man-sections/client-options.rst
++++ b/doc/man-sections/client-options.rst
+@@ -430,7 +430,10 @@
+         The version of the operating system, e.g. 6.1 for Windows 7.
+         This may be set by the client UI/GUI using ``--setenv``.
+         On Windows systems it is automatically determined by openvpn
+-        itself.
++        itself.  On other platforms OpenVPN will default to sending
++        the information returned by the `uname()` system call in
++        the `release` field, which is usually the currently running
++        kernel version.  This is highly system specific, though.
+ 
+   :code:`UV_<name>=<value>`
+         Client environment variables whose names start with
+diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
+index 8040e7b..93e31f1 100644
+--- a/src/openvpn/ssl.c
++++ b/src/openvpn/ssl.c
+@@ -2010,6 +2010,10 @@
+             buf_printf(&out, "IV_SSL=%s\n", get_ssl_library_version() );
+ #if defined(_WIN32)
+             buf_printf(&out, "IV_PLAT_VER=%s\n", win32_version_string(&gc, false));
++#else
++            struct utsname u;
++            uname(&u);
++            buf_printf(&out, "IV_PLAT_VER=%s\n", u.release);
+ #endif
+         }
+ 
+diff --git a/src/openvpn/syshead.h b/src/openvpn/syshead.h
+index 83a48fc..33a90c1 100644
+--- a/src/openvpn/syshead.h
++++ b/src/openvpn/syshead.h
+@@ -331,6 +331,10 @@
+ #include <sys/mman.h>
+ #endif
+ 
++#ifndef _WIN32
++#include <sys/utsname.h>
++#endif
++
+ /*
+  * Pedantic mode is meant to accomplish lint-style program checking,
+  * not to build a working executable.
 
