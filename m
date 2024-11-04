@@ -1,11 +1,14 @@
+Date: Mon, 4 Nov 2024 17:13:30 +0100
 From: Gert Doering <gert@...1296...>
-Date: Mon,  4 Nov 2024 09:58:08 +0100
-Message-ID: <20241104085808.17039-1-gert@...1296...>
-In-Reply-To: <gerrit.1730665141000.Id2b0c5a517f02e5c219fea2ae3ef2bdef7690169@...2715...>
-References: <gerrit.1730665141000.Id2b0c5a517f02e5c219fea2ae3ef2bdef7690169@...2715...>
+Message-ID: <Zyjyqilvfsmrx_yv@...1296...>
+References: <fd473a5552ce4f91a95abf8c8b91df4e@...2828...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v4] send uname() release as IV_PLAT_VER= on
- non-windows versions
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ protocol="application/pgp-signature"; boundary="aKxP2hacVdN5Ihy6"
+Content-Disposition: inline
+In-Reply-To: <fd473a5552ce4f91a95abf8c8b91df4e@...2828...>
+Subject: Re: [Openvpn-devel] [PATCH] Add calls to nvlist_destroy to avoid
+ leaks
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,88 +17,82 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: =?iso-8859-1?Q?R=E9mi?= FARAULT <Remi.FARAULT@...2828...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-This is highly system specific, as the content of the uname()
-structure elements is not specified very well - uname(3) says:
+--aKxP2hacVdN5Ihy6
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-      release       Release level of the operating system
+Hi,
 
-which translates to "IV_PLAT_VER=13.3-RELEASE-p6" (FreeBSD) or
-"IV_PLAT_VER=22.6.0" (macOS) - the latter being the "Mach Kernel
-version", not what Apple calls the OS.
+so, I had the ACK from Kristof in GH#636 and was going to apply it,
+but "this patch does not compile"
 
-It's still useful if a server operator needs to keep track of
-client versions (and the GUI does not set the corresponding
-environment variable, which neither Tunnelblick nor NM do).
+On Wed, Oct 30, 2024 at 10:31:57AM +0000, R=E9mi FARAULT via Openvpn-devel =
+wrote:
+>      if (remoteaddr)
+>      {
+> -        nvlist_add_nvlist(nvl, "remote", sockaddr_to_nvlist(remoteaddr));
+> +        remote_nvl =3D sockaddr_to_nvlist(remoteaddr);
+> +        nvlist_add_nvlist(nvl, "remote", remove_nvl);
+>      }
 
-v2: manpage amendments
-v3: whitespace
-v4: reword manpage
+There is an "remove" here, not "remote"...
 
-Github: OpenVPN/openvpn#637
+Can you please fix & send a v2 ("git send-email -v2")?
 
-Change-Id: Id2b0c5a517f02e5c219fea2ae3ef2bdef7690169
-Signed-off-by: Gert Doering <gert@...1296...>
-Acked-by: Antonio Quartulli <a@...2181...>
----
+While at it, please add all the stuff that's in the GH MR to the commit
+message ;-)  - I'm happy to do that for "infrequent contributors", but
+project rules disallow me to change actual code.  So when doing the
+new version, you can just add:
 
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to master.
+----------------------------------------------------
+    Add calls to nvlist_destroy to avoid leaks
+=20=20=20=20
+    Some memory leaks were detected by valgrind on the openvpn daemon, using
+    DCO mode on a FreeBSD platform.  The leaks are caused by missing
+    nvlist_destroy calls in the file dco_freebsd.c.
+=20=20=20=20
+    Calls to nvlist_destroy were added, sometimes using local variables to
+    store nvlist pointers temporarly.  A valgrind run on the updated daemon
+    confirmed that  the leaks were gone.
+=20=20=20=20
+    Github: OpenVPN/openvpn#636
+    Signed-off-by: R<A9>mi Farault <remi.farault@...2828...>
+----------------------------------------------------
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/793
-This mail reflects revision 4 of this Change.
+(sorry for the name mangling, I do my best to make the commit UTF8
+correct, but to/from e-mail tends to be... interesting)
 
-Acked-by according to Gerrit (reflected above):
-Antonio Quartulli <a@...2181...>
+gert
+--=20
+"If was one thing all people took for granted, was conviction that if you=20
+ feed honest figures into a computer, honest figures come out. Never doubte=
+d=20
+ it myself till I met a computer with a sense of humor."
+                             Robert A. Heinlein, The Moon is a Harsh Mistre=
+ss
 
-        
-diff --git a/doc/man-sections/client-options.rst b/doc/man-sections/client-options.rst
-index a06948e..5ca85e0 100644
---- a/doc/man-sections/client-options.rst
-+++ b/doc/man-sections/client-options.rst
-@@ -430,7 +430,10 @@
-         The version of the operating system, e.g. 6.1 for Windows 7.
-         This may be set by the client UI/GUI using ``--setenv``.
-         On Windows systems it is automatically determined by openvpn
--        itself.
-+        itself.  On other platforms OpenVPN will default to sending
-+        the information returned by the `uname()` system call in
-+        the `release` field, which is usually the currently running
-+        kernel version.  This is highly system specific, though.
- 
-   :code:`UV_<name>=<value>`
-         Client environment variables whose names start with
-diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
-index 8040e7b..93e31f1 100644
---- a/src/openvpn/ssl.c
-+++ b/src/openvpn/ssl.c
-@@ -2010,6 +2010,10 @@
-             buf_printf(&out, "IV_SSL=%s\n", get_ssl_library_version() );
- #if defined(_WIN32)
-             buf_printf(&out, "IV_PLAT_VER=%s\n", win32_version_string(&gc, false));
-+#else
-+            struct utsname u;
-+            uname(&u);
-+            buf_printf(&out, "IV_PLAT_VER=%s\n", u.release);
- #endif
-         }
- 
-diff --git a/src/openvpn/syshead.h b/src/openvpn/syshead.h
-index 83a48fc..33a90c1 100644
---- a/src/openvpn/syshead.h
-+++ b/src/openvpn/syshead.h
-@@ -331,6 +331,10 @@
- #include <sys/mman.h>
- #endif
- 
-+#ifndef _WIN32
-+#include <sys/utsname.h>
-+#endif
-+
- /*
-  * Pedantic mode is meant to accomplish lint-style program checking,
-  * not to build a working executable.
+Gert Doering - Munich, Germany                             gert@...1296...
+
+--aKxP2hacVdN5Ihy6
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQGcBAEBAgAGBQJnKPKqAAoJEB2Cnv7KVigSmTIL/2WnXzV5Z0hkjvtGQ7NZ7hg8
+YgNNtkxaAf5SATt9V2w8YZxqrytAqipW9syGWlJlL2InFvrWgwoKNnGHoVkKM2vS
+6vrnvjVhCuScV7swRr8f/XHOyGBCY4tAQ+/XBIOYzi+mjPLeUrGFBH6ZmaPoo5Hc
+xZMB+zm56NJDSCsvue2+0rzueMa2GKciIU5pkUUYJ3UI2se99VPWoQ0QDPXygzw/
+Bvu1vEMnpb/P2bv87bUjUaUnMrM3keItPTl3y11dPuP05Yppwkq/oxHy9bjRx7uv
+FBq0KGy3HaPhkcgWjjrrUdX4OudYUDIkNurauX6BZgsvRJacqS+rtMy3Tek5Ql5N
+g8hdwMCxrBTolUss6Fho0RdgU4BmzO6VL3fNUNFlbnPqNL8AMXGw5menQMatMCh5
+jxH8KCvbAkqchpO9Zg2d3DTPflIA7zgimxjzEFBabBKZtnuto78uiB/zNjv5JCZA
+rqYZnbRt7WggBbaceKpWeBW6JgWcKwDy4DFGjAOZ5Q==
+=g0ic
+-----END PGP SIGNATURE-----
+
+--aKxP2hacVdN5Ihy6--
 
