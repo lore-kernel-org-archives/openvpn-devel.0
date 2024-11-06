@@ -1,11 +1,11 @@
-From: Gert Doering <gert@...1296...>
-Date: Wed,  6 Nov 2024 14:17:03 +0100
-Message-ID: <20241106131705.11069-1-gert@...1296...>
-In-Reply-To: <gerrit.1730209445000.I9306a590a10a7d5cba32abe06d269494fec41ba6@...2715...>
-References: <gerrit.1730209445000.I9306a590a10a7d5cba32abe06d269494fec41ba6@...2715...>
+Content-Type: multipart/alternative;
+ boundary="------------HCXdVvCCQJsDRW0gZjwvUE49"
+Message-ID: <2ac1af32-3459-4f6d-acc1-e22f64aa80c2@...2751...>
+Date: Wed, 6 Nov 2024 14:35:35 +0100
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v5] sitnl: replace NLMSG_TAIL macro with
- noinline function
+From: Johan Draaisma <johan@...2751...>
+Content-Language: en-US
+Subject: [Openvpn-devel]  IRC community meeting summary
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,98 +14,105 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-From: Antonio Quartulli <antonio@...2726...>
+This is a multi-part message in MIME format.
+--------------HCXdVvCCQJsDRW0gZjwvUE49
+Content-Type: text/plain; charset="utf-8"; format="flowed"
+Content-Transfer-Encoding: 8bit
 
-The NLMSG_TAIL macro is confusing gcc when compiling with -O3, leading
-to warnings like:
+Meeting summary for 6 November 2024:
 
-networking_sitnl.c:143:9: warning: writing 4 bytes into a region of size 0 [-Wstringop-overflow=]
-  143 |         memcpy(RTA_DATA(rta), data, alen);
-      |         ^
-networking_sitnl.c:101:21: note: at offset [72, 88] into destination object ‘n’ of size 16
-  101 |     struct nlmsghdr n;
-      |                     ^
+  * *Updated: DCO windows multi-peer*
+    /Kernelspace looks done, now working on userspace stuff. It listens
+    for incoming clients and attempts handshake. Still a bit of work to do./
 
-Replacing the macro with a function is also not effective because gcc
-will inline it and get confused again.
+  * *Updated: multi-socket patch series*
+    /This has been rebased and comments addressed, waiting for another
+    review./
 
-The only way out is to write a function that never gets inline'd and
-replace the macro with it.
+  * *Updated: data format v3 / epoch data keys*
+    /Some comments from syzzer came in and were addressed on the RFC
+    addition for epoch keys:/
+    /See​https://github.com/OpenVPN/openvpn-rfc/pull/5
+    <https://github.com/OpenVPN/openvpn-rfc/pull/5>./
+    /plaisthos is working to implement it in openvpn3 first./
 
-Tested on linux with gcc and clang.
+  * *Updated: push_update / live route updates*
+    /Lev added some clarifying comments to the push_update section in
+    the RFC, as per popular demand./
+    /Implementation of push_update for OpenVPN v2 will be looked at by
+    ordex and his team./
 
-Change-Id: I9306a590a10a7d5cba32abe06d269494fec41ba6
-Signed-off-by: Antonio Quartulli <antonio@...2726...>
-Acked-by: Frank Lichtenheld <frank@...2641...>
----
+  * *New: TLS-exporter in mbedtls*
+    /Needed for TLS 1.3 support with openvpn and mbedtls - TLS-exporter
+    currently missing in mbedtls./
+    /maxf reports he's making some progress on implementing this./
 
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to master.
+As always you're welcome to join at #openvpn-meeting on Libera IRC 
+network every Wednesday at 14:00 Central European Time.
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/788
-This mail reflects revision 5 of this Change.
+Kind regards,
+Johan Draaisma
 
-Acked-by according to Gerrit (reflected above):
-Frank Lichtenheld <frank@...2641...>
+--------------HCXdVvCCQJsDRW0gZjwvUE49
+Content-Type: text/html; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 
-        
-diff --git a/src/openvpn/networking_sitnl.c b/src/openvpn/networking_sitnl.c
-index f53f5ee..6b750e8 100644
---- a/src/openvpn/networking_sitnl.c
-+++ b/src/openvpn/networking_sitnl.c
-@@ -52,21 +52,34 @@
-         }                                                           \
-     }
- 
--#define NLMSG_TAIL(nmsg) \
--    ((struct rtattr *)(((uint8_t *)(nmsg)) + NLMSG_ALIGN((nmsg)->nlmsg_len)))
--
- #define SITNL_NEST(_msg, _max_size, _attr)              \
-     ({                                                  \
--        struct rtattr *_nest = NLMSG_TAIL(_msg);        \
-+        struct rtattr *_nest = sitnl_nlmsg_tail(_msg);  \
-         SITNL_ADDATTR(_msg, _max_size, _attr, NULL, 0); \
-         _nest;                                          \
-     })
- 
--#define SITNL_NEST_END(_msg, _nest)                                 \
--    {                                                               \
--        _nest->rta_len = (void *)NLMSG_TAIL(_msg) - (void *)_nest;  \
-+#define SITNL_NEST_END(_msg, _nest)                                     \
-+    {                                                                   \
-+        _nest->rta_len = (void *)sitnl_nlmsg_tail(_msg) - (void *)_nest; \
-     }
- 
-+/* This function was originally implemented as a macro, but compiling with
-+ * gcc and -O3 was getting confused about the math and thus raising
-+ * security warnings on subsequent memcpy() calls.
-+ *
-+ * Converting the macro to a function was not enough, because gcc was still
-+ * inlining it and falling in the same math trap.
-+ *
-+ * The only way out to avoid any warning/error is to force the function to
-+ * not be inline'd.
-+ */
-+static __attribute__ ((noinline)) void *
-+sitnl_nlmsg_tail(const struct nlmsghdr *nlh)
-+{
-+    return (unsigned char *)nlh + NLMSG_ALIGN(nlh->nlmsg_len);
-+}
-+
- /**
-  * Generic address data structure used to pass addresses and prefixes as
-  * argument to AF family agnostic functions
-@@ -130,7 +143,7 @@
-         return -EMSGSIZE;
-     }
- 
--    rta = NLMSG_TAIL(n);
-+    rta = sitnl_nlmsg_tail(n);
-     rta->rta_type = type;
-     rta->rta_len = len;
- 
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  </head>
+  <body>
+    <p> Meeting summary for 6 November 2024:</p>
+    <ul
+style="color: rgb(0, 0, 0); font-family: Verdana, Arial, &quot;Bitstream Vera Sans&quot;, Helvetica, sans-serif; font-size: 13px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;">
+      <li><strong>Updated: DCO windows multi-peer</strong><br>
+        <em>Kernelspace looks done, now working on userspace stuff. It
+          listens for incoming clients and attempts handshake. Still a
+          bit of work to do.</em></li>
+    </ul>
+    <ul
+style="color: rgb(0, 0, 0); font-family: Verdana, Arial, &quot;Bitstream Vera Sans&quot;, Helvetica, sans-serif; font-size: 13px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;">
+      <li><strong>Updated: multi-socket patch series</strong><br>
+        <em>This has been rebased and comments addressed, waiting for
+          another review.</em></li>
+    </ul>
+    <ul
+style="color: rgb(0, 0, 0); font-family: Verdana, Arial, &quot;Bitstream Vera Sans&quot;, Helvetica, sans-serif; font-size: 13px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;">
+      <li><strong>Updated: data format v3 / epoch data keys</strong><br>
+        <em>Some comments from syzzer came in and were addressed on the
+          RFC addition for epoch keys:</em><br>
+        <em>See<span> </span><a class="ext-link"
+            href="https://github.com/OpenVPN/openvpn-rfc/pull/5"
+style="text-decoration: none; color: rgb(187, 0, 0); border-bottom: 1px dotted rgb(187, 187, 187);"><span
+              class="icon"
+style="background: url(&quot;../extlink.gif&quot;) left center no-repeat; padding-left: 15px;">​</span>https://github.com/OpenVPN/openvpn-rfc/pull/5</a>.</em><br>
+        <em>plaisthos is working to implement it in openvpn3 first.</em></li>
+    </ul>
+    <ul
+style="color: rgb(0, 0, 0); font-family: Verdana, Arial, &quot;Bitstream Vera Sans&quot;, Helvetica, sans-serif; font-size: 13px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;">
+      <li><strong>Updated: push_update / live route updates</strong><br>
+        <em>Lev added some clarifying comments to the push_update
+          section in the RFC, as per popular demand.</em><br>
+        <em>Implementation of push_update for OpenVPN v2 will be looked
+          at by ordex and his team.</em></li>
+    </ul>
+    <ul
+style="color: rgb(0, 0, 0); font-family: Verdana, Arial, &quot;Bitstream Vera Sans&quot;, Helvetica, sans-serif; font-size: 13px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;">
+      <li><strong>New: TLS-exporter in mbedtls</strong><br>
+        <em>Needed for TLS 1.3 support with openvpn and mbedtls -
+          TLS-exporter currently missing in mbedtls.</em><br>
+        <em>maxf reports he's making some progress on implementing this.</em></li>
+    </ul>
+    As always you're welcome to join at #openvpn-meeting on Libera IRC
+    network every Wednesday at 14:00 Central European Time.
+    <p>Kind regards,<br>
+      Johan Draaisma<br>
+    </p>
+  </body>
+</html>
+
+--------------HCXdVvCCQJsDRW0gZjwvUE49--
 
