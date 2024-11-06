@@ -1,16 +1,11 @@
-From: "flichtenheld (Code Review)" <gerrit@...515...>
-Date: Wed, 6 Nov 2024 13:15:49 +0000
-In-Reply-To: <gerrit.1700055887000.Ia0a889e800f0b36aed770ee36e31afeec5df6084@...2715...>
-References: <gerrit.1700055887000.Ia0a889e800f0b36aed770ee36e31afeec5df6084@...2715...>
-Reply-To: frank@...2641..., arne-openvpn@...1227...,
- gianmarco@...2726..., openvpn-devel@lists.sourceforge.net, a@...2181...
-Message-ID: <486fba57be034078dfa2484debc262f68eb7459f-EmailReviewComments-HTML@...2715...>
+From: Gert Doering <gert@...1296...>
+Date: Wed,  6 Nov 2024 14:17:03 +0100
+Message-ID: <20241106131705.11069-1-gert@...1296...>
+In-Reply-To: <gerrit.1730209445000.I9306a590a10a7d5cba32abe06d269494fec41ba6@...2715...>
+References: <gerrit.1730209445000.I9306a590a10a7d5cba32abe06d269494fec41ba6@...2715...>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="Vn1HSq6aGZ8="; charset=UTF-8
-Subject: [Openvpn-devel] [L] Change in openvpn[master]: Adapt socket
- handling to support listening on multiple sockets
+Subject: [Openvpn-devel] [PATCH v5] sitnl: replace NLMSG_TAIL macro with
+ noinline function
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,90 +14,98 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: its_Giaan <gianmarco@...2726...>
-Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---Vn1HSq6aGZ8=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+From: Antonio Quartulli <antonio@...2726...>
 
-Attention is currently required from: ordex, plaisthos.
+The NLMSG_TAIL macro is confusing gcc when compiling with -O3, leading
+to warnings like:
 
-flichtenheld has posted comments on this change. ( http://gerrit.openvpn.ne=
-t/c/openvpn/+/434?usp=3Demail )
+networking_sitnl.c:143:9: warning: writing 4 bytes into a region of size 0 [-Wstringop-overflow=]
+  143 |         memcpy(RTA_DATA(rta), data, alen);
+      |         ^
+networking_sitnl.c:101:21: note: at offset [72, 88] into destination object ‘n’ of size 16
+  101 |     struct nlmsghdr n;
+      |                     ^
 
-Change subject: Adapt socket handling to support listening on multiple sock=
-ets
-......................................................................
+Replacing the macro with a function is also not effective because gcc
+will inline it and get confused again.
 
+The only way out is to write a function that never gets inline'd and
+replace the macro with it.
 
-Patch Set 7: -Code-Review
+Tested on linux with gcc and clang.
 
+Change-Id: I9306a590a10a7d5cba32abe06d269494fec41ba6
+Signed-off-by: Antonio Quartulli <antonio@...2726...>
+Acked-by: Frank Lichtenheld <frank@...2641...>
+---
 
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/434?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings
+This change was reviewed on Gerrit and approved by at least one
+developer. I request to merge it to master.
 
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: Ia0a889e800f0b36aed770ee36e31afeec5df6084
-Gerrit-Change-Number: 434
-Gerrit-PatchSet: 7
-Gerrit-Owner: ordex <a@...2181...>
-Gerrit-Reviewer: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: its_Giaan <gianmarco@...2726...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: ordex <a@...2181...>
-Gerrit-Comment-Date: Wed, 06 Nov 2024 13:15:49 +0000
-Gerrit-HasComments: No
-Gerrit-Has-Labels: Yes
-Gerrit-MessageType: comment
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/788
+This mail reflects revision 5 of this Change.
 
---Vn1HSq6aGZ8=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Acked-by according to Gerrit (reflected above):
+Frank Lichtenheld <frank@...2641...>
 
-<p> Attention is currently required from: ordex, plaisthos. </p>
-<p>Patch set 7:<span style=3D"border-radius: 3px; display: inline-block; ma=
-rgin: 0 2px; padding: 4px;background-color: #ddd;">-Code-Review</span></p><=
-p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/434?usp=3Demail">View Ch=
-ange</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To view, vi=
-sit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/434?usp=3Demail">chang=
-e 434</a>. To unsubscribe, or for help writing mail filters, visit <a href=
-=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope ite=
-mtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"action"=
- itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"h=
-ttp://gerrit.openvpn.net/c/openvpn/+/434?usp=3Demail"/><meta itemprop=3D"na=
-me" content=3D"View Change"/></div></div>
-
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: Ia0a889e800f0b36aed770ee36e3=
-1afeec5df6084 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 434 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 7 </div>
-<div style=3D"display:none"> Gerrit-Owner: ordex &lt;a@...2181...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
-1...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: its_Giaan &lt;gianmarco@...1664...=
-26...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: ordex &lt;a@...2181...&gt; <=
-/div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Wed, 06 Nov 2024 13:15:49=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: No </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
-
-
---Vn1HSq6aGZ8=--
+        
+diff --git a/src/openvpn/networking_sitnl.c b/src/openvpn/networking_sitnl.c
+index f53f5ee..6b750e8 100644
+--- a/src/openvpn/networking_sitnl.c
++++ b/src/openvpn/networking_sitnl.c
+@@ -52,21 +52,34 @@
+         }                                                           \
+     }
+ 
+-#define NLMSG_TAIL(nmsg) \
+-    ((struct rtattr *)(((uint8_t *)(nmsg)) + NLMSG_ALIGN((nmsg)->nlmsg_len)))
+-
+ #define SITNL_NEST(_msg, _max_size, _attr)              \
+     ({                                                  \
+-        struct rtattr *_nest = NLMSG_TAIL(_msg);        \
++        struct rtattr *_nest = sitnl_nlmsg_tail(_msg);  \
+         SITNL_ADDATTR(_msg, _max_size, _attr, NULL, 0); \
+         _nest;                                          \
+     })
+ 
+-#define SITNL_NEST_END(_msg, _nest)                                 \
+-    {                                                               \
+-        _nest->rta_len = (void *)NLMSG_TAIL(_msg) - (void *)_nest;  \
++#define SITNL_NEST_END(_msg, _nest)                                     \
++    {                                                                   \
++        _nest->rta_len = (void *)sitnl_nlmsg_tail(_msg) - (void *)_nest; \
+     }
+ 
++/* This function was originally implemented as a macro, but compiling with
++ * gcc and -O3 was getting confused about the math and thus raising
++ * security warnings on subsequent memcpy() calls.
++ *
++ * Converting the macro to a function was not enough, because gcc was still
++ * inlining it and falling in the same math trap.
++ *
++ * The only way out to avoid any warning/error is to force the function to
++ * not be inline'd.
++ */
++static __attribute__ ((noinline)) void *
++sitnl_nlmsg_tail(const struct nlmsghdr *nlh)
++{
++    return (unsigned char *)nlh + NLMSG_ALIGN(nlh->nlmsg_len);
++}
++
+ /**
+  * Generic address data structure used to pass addresses and prefixes as
+  * argument to AF family agnostic functions
+@@ -130,7 +143,7 @@
+         return -EMSGSIZE;
+     }
+ 
+-    rta = NLMSG_TAIL(n);
++    rta = sitnl_nlmsg_tail(n);
+     rta->rta_type = type;
+     rta->rta_len = len;
+ 
 
