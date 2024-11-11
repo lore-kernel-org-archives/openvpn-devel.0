@@ -1,15 +1,15 @@
 From: "plaisthos (Code Review)" <gerrit@...515...>
-Date: Mon, 11 Nov 2024 01:59:53 +0000
-References: <gerrit.1731290343000.I4a981c5a70717e2276d89bf83a06c7fdbe6712d7@...2715...>
+Date: Mon, 11 Nov 2024 01:59:56 +0000
+References: <gerrit.1731290343000.If470af2eb456b2b10f9f2806933e026842188c42@...2715...>
 Reply-To: arne-openvpn@...1227..., openvpn-devel@lists.sourceforge.net,
  frank@...2641...
-Message-ID: <8225d8826baedeb4f58e8c6fa268d12bcfcce7d2-HTML@...2715...>
+Message-ID: <df9988bacf23b78a2dfd2332b82e95ab42bed28d-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="aOOTA5wJ0CI="; charset=UTF-8
-Subject: [Openvpn-devel] [M] Change in openvpn[master]: Change API of
- init_key_ctx to use struct key_paramters
+Content-Type: multipart/alternative; boundary="zH2zn5BBGgM="; charset=UTF-8
+Subject: [Openvpn-devel] [M] Change in openvpn[master]: Change internal id
+ of packet id to uint64
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -21,7 +21,7 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: flichtenheld <frank@...2641...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---aOOTA5wJ0CI=
+--zH2zn5BBGgM=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
@@ -32,360 +32,357 @@ Hello flichtenheld,
 I'd like you to do a code review.
 Please visit
 
-    http://gerrit.openvpn.net/c/openvpn/+/801?usp=3Demail
+    http://gerrit.openvpn.net/c/openvpn/+/802?usp=3Demail
 
 to review the following change.
 
 
-Change subject: Change API of init_key_ctx to use struct key_paramters
+Change subject: Change internal id of packet id to uint64
 ......................................................................
 
-Change API of init_key_ctx to use struct key_paramters
+Change internal id of packet id to uint64
 
-This introduces a new structure key_paramters. The reason is that the
-current struct serves both as an internal struct as well as an
-on-wire/in-file format. Separate these two different usages to allow
-extending the struct.
+This allows to get rid of multiple casts and also prepares for the
+larger packet id used by epoch data format.
 
-Change-Id: I4a981c5a70717e2276d89bf83a06c7fdbe6712d7
+Change-Id: If470af2eb456b2b10f9f2806933e026842188c42
 Signed-off-by: Arne Schwabe <arne@...1227...>
 ---
-M src/openvpn/auth_token.c
-M src/openvpn/crypto.c
-M src/openvpn/crypto.h
-M src/openvpn/tls_crypt.c
-M tests/unit_tests/openvpn/test_auth_token.c
-M tests/unit_tests/openvpn/test_tls_crypt.c
-6 files changed, 85 insertions(+), 37 deletions(-)
+M src/openvpn/packet_id.c
+M src/openvpn/packet_id.h
+M tests/unit_tests/openvpn/test_packet_id.c
+3 files changed, 55 insertions(+), 59 deletions(-)
 
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/01/801/1
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/02/802/1
 
-diff --git a/src/openvpn/auth_token.c b/src/openvpn/auth_token.c
-index 192c7c2..3cf55e8 100644
---- a/src/openvpn/auth_token.c
-+++ b/src/openvpn/auth_token.c
-@@ -152,7 +152,10 @@
+diff --git a/src/openvpn/packet_id.c b/src/openvpn/packet_id.c
+index fb962e4..117c95f 100644
+--- a/src/openvpn/packet_id.c
++++ b/src/openvpn/packet_id.c
+@@ -36,6 +36,8 @@
+
+ #include "syshead.h"
+
++#include <stddef.h>
++
+ #include "packet_id.h"
+ #include "misc.h"
+ #include "integer.h"
+@@ -56,7 +58,7 @@
+                                   const struct packet_id_rec *p,
+                                   const struct packet_id_net *pin,
+                                   const char *message,
+-                                  int value);
++                                  packet_id_print_type value);
+
+ #endif /* ENABLE_DEBUG */
+
+@@ -65,7 +67,7 @@
+                 const struct packet_id_rec *p,
+                 const struct packet_id_net *pin,
+                 const char *message,
+-                int value)
++                uint64_t value)
+ {
+ #ifdef ENABLE_DEBUG
+     if (unlikely(check_debug_level(msglevel)))
+@@ -115,22 +117,21 @@
+     const time_t local_now =3D now;
+     if (p->seq_list)
      {
-         msg(M_FATAL, "ERROR: not enough data in auth-token secret");
+-        packet_id_type diff;
++        int64_t diff;
+
+         /*
+-         * If time value increases, start a new
+-         * sequence number sequence.
++         * If time value increases, start a new sequence number sequence.
+          */
+         if (!CIRC_LIST_SIZE(p->seq_list)
+             || pin->time > p->time
+-            || (pin->id >=3D (packet_id_type)p->seq_backtrack
+-                && pin->id - (packet_id_type)p->seq_backtrack > p->id))
++            || (pin->id >=3D p->seq_backtrack
++                && pin->id - p->seq_backtrack > p->id))
+         {
+             p->time =3D pin->time;
+             p->id =3D 0;
+-            if (pin->id > (packet_id_type)p->seq_backtrack)
++            if (pin->id > p->seq_backtrack)
+             {
+-                p->id =3D pin->id - (packet_id_type)p->seq_backtrack;
++                p->id =3D pin->id - p->seq_backtrack;
+             }
+             CIRC_LIST_RESET(p->seq_list);
+         }
+@@ -146,7 +147,7 @@
+         }
+
+         diff =3D p->id - pin->id;
+-        if (diff < (packet_id_type) CIRC_LIST_SIZE(p->seq_list)
++        if (diff < CIRC_LIST_SIZE(p->seq_list)
+             && local_now > SEQ_EXPIRED)
+         {
+             CIRC_LIST_ITEM(p->seq_list, diff) =3D local_now;
+@@ -170,9 +171,8 @@
+     const time_t local_now =3D now;
+     if (p->time_backtrack)
+     {
+-        int i;
+         bool expire =3D false;
+-        for (i =3D 0; i < CIRC_LIST_SIZE(p->seq_list); ++i)
++        for (int i =3D 0; i < CIRC_LIST_SIZE(p->seq_list); ++i)
+         {
+             const time_t t =3D CIRC_LIST_ITEM(p->seq_list, i);
+             if (t =3D=3D SEQ_EXPIRED)
+@@ -200,7 +200,7 @@
+ packet_id_test(struct packet_id_rec *p,
+                const struct packet_id_net *pin)
+ {
+-    packet_id_type diff;
++    uint64_t diff;
+
+     packet_id_debug(D_PID_DEBUG, p, pin, "PID_TEST", 0);
+
+@@ -231,9 +231,9 @@
+             diff =3D p->id - pin->id;
+
+             /* keep track of maximum backtrack seen for debugging purposes=
+ */
+-            if ((int)diff > p->max_backtrack_stat)
++            if (diff > p->max_backtrack_stat)
+             {
+-                p->max_backtrack_stat =3D (int)diff;
++                p->max_backtrack_stat =3D diff;
+                 packet_id_debug(D_PID_DEBUG_LOW, p, pin, "PID_ERR replay-w=
+indow backtrack occurred", p->max_backtrack_stat);
+             }
+
+@@ -557,7 +557,7 @@
+                       const struct packet_id_rec *p,
+                       const struct packet_id_net *pin,
+                       const char *message,
+-                      int value)
++                      packet_id_print_type value)
+ {
+     struct gc_arena gc =3D gc_new();
+     struct buffer out =3D alloc_buf_gc(256, &gc);
+@@ -569,7 +569,7 @@
+     CLEAR(tv);
+     gettimeofday(&tv, NULL);
+
+-    buf_printf(&out, "%s [%d]", message, value);
++    buf_printf(&out, "%s [" packet_id_format "]", message, value);
+     buf_printf(&out, " [%s-%d] [", p->name, p->unit);
+     for (i =3D 0; sl !=3D NULL && i < sl->x_size; ++i)
+     {
+@@ -604,17 +604,17 @@
+         }
+         buf_printf(&out, "%c", c);
      }
--    init_key_ctx(key_ctx, &key, &kt, false, "auth-token secret");
-+
-+    struct key_parameters key_params;
-+    key_parameters_from_key(&key_params, &key);
-+    init_key_ctx(key_ctx, &key_params, &kt, false, "auth-token secret");
-
-     free_buf(&server_secret_key);
- }
-diff --git a/src/openvpn/crypto.c b/src/openvpn/crypto.c
-index 44c226c..f4453d8 100644
---- a/src/openvpn/crypto.c
-+++ b/src/openvpn/crypto.c
-@@ -903,7 +903,7 @@
-  * @param key                   key, hmac part used to calculate implicit =
-IV
-  */
- static void
--key_ctx_update_implicit_iv(struct key_ctx *ctx, const struct key *key)
-+key_ctx_update_implicit_iv(struct key_ctx *ctx, const struct key_parameter=
-s *key)
- {
-     /* Only use implicit IV in AEAD cipher mode, where HMAC key is not use=
-d */
-     if (cipher_ctx_mode_aead(ctx->cipher))
-@@ -913,6 +913,7 @@
-         impl_iv_len =3D cipher_ctx_iv_length(ctx->cipher) - sizeof(packet_=
-id_type);
-         ASSERT(impl_iv_len <=3D OPENVPN_MAX_IV_LENGTH);
-         ASSERT(impl_iv_len <=3D MAX_HMAC_KEY_LENGTH);
-+        ASSERT(key->hmac_size >=3D impl_iv_len);
-         CLEAR(ctx->implicit_iv);
-         /* The first bytes of the IV are filled with the packet id */
-         memcpy(ctx->implicit_iv + sizeof(packet_id_type), key->hmac, impl_=
-iv_len);
-@@ -921,7 +922,7 @@
-
- /* given a key and key_type, build a key_ctx */
- void
--init_key_ctx(struct key_ctx *ctx, const struct key *key,
-+init_key_ctx(struct key_ctx *ctx, const struct key_parameters *key,
-              const struct key_type *kt, int enc,
-              const char *prefix)
- {
-@@ -929,7 +930,7 @@
-     CLEAR(*ctx);
-     if (cipher_defined(kt->cipher))
+-    buf_printf(&out, "] %" PRIi64 ":" packet_id_format, (int64_t)p->time, =
+(packet_id_print_type)p->id);
++    buf_printf(&out, "] %" PRIi64 ":" packet_id_format, (int64_t)p->time, =
+p->id);
+     if (pin)
      {
--
-+        ASSERT(key->cipher_size >=3D cipher_kt_key_size(kt->cipher));
-         ctx->cipher =3D cipher_ctx_new();
-         cipher_ctx_init(ctx->cipher, key->cipher, kt->cipher, enc);
-
-@@ -944,8 +945,10 @@
-              cipher_kt_iv_size(kt->cipher));
-         warn_insecure_key_type(ciphername);
+-        buf_printf(&out, " %" PRIi64 ":" packet_id_format, (int64_t)pin->t=
+ime, (packet_id_print_type)pin->id);
++        buf_printf(&out, " %" PRIi64 ":" packet_id_format, (int64_t)pin->t=
+ime, pin->id);
      }
-+
-     if (md_defined(kt->digest))
-     {
-+        ASSERT(key->hmac_size >=3D md_kt_size(kt->digest));
-         ctx->hmac =3D hmac_ctx_new();
-         hmac_ctx_init(ctx->hmac, key->hmac, kt->digest);
 
-@@ -966,41 +969,43 @@
- }
+     buf_printf(&out, " t=3D%" PRIi64 "[%d]",
+                (int64_t)prev_now,
+                (int)(prev_now - tv.tv_sec));
 
- void
--init_key_bi_ctx_send(struct key_ctx *ctx, const struct key2 *key2,
--                     int key_direction, const struct key_type *kt, const c=
-har *name)
-+init_key_bi_ctx_send(struct key_ctx *ctx, const struct key_parameters *key=
-_params,
-+                     const struct key_type *kt, const char *name)
- {
-     char log_prefix[128] =3D { 0 };
--    struct key_direction_state kds;
--
--    key_direction_state_init(&kds, key_direction);
+-    buf_printf(&out, " r=3D[%d,%d,%d,%d,%d]",
++    buf_printf(&out, " r=3D[%d,%" PRIu64 ",%d,%" PRIu64 ",%d]",
+                (int)(p->last_reap - tv.tv_sec),
+                p->seq_backtrack,
+                p->time_backtrack,
+diff --git a/src/openvpn/packet_id.h b/src/openvpn/packet_id.h
+index 3778d19..d8a3e1a 100644
+--- a/src/openvpn/packet_id.h
++++ b/src/openvpn/packet_id.h
+@@ -35,11 +35,13 @@
+ #include "error.h"
+ #include "otime.h"
 
-     snprintf(log_prefix, sizeof(log_prefix), "Outgoing %s", name);
--    init_key_ctx(ctx, &key2->keys[kds.out_key], kt,
--                 OPENVPN_OP_ENCRYPT, log_prefix);
--    key_ctx_update_implicit_iv(ctx, &key2->keys[kds.out_key]);
-+    init_key_ctx(ctx, key_params, kt, OPENVPN_OP_ENCRYPT, log_prefix);
-+    key_ctx_update_implicit_iv(ctx, key_params);
- }
-
- void
--init_key_bi_ctx_recv(struct key_ctx *ctx, const struct key2 *key2,
--                     int key_direction, const struct key_type *kt, const c=
-har *name)
-+init_key_bi_ctx_recv(struct key_ctx *ctx, const struct key_parameters *key=
-_params,
-+                     const struct key_type *kt, const char *name)
- {
-     char log_prefix[128] =3D { 0 };
--    struct key_direction_state kds;
--
--    key_direction_state_init(&kds, key_direction);
-
-     snprintf(log_prefix, sizeof(log_prefix), "Incoming %s", name);
--    init_key_ctx(ctx, &key2->keys[kds.in_key], kt,
--                 OPENVPN_OP_DECRYPT, log_prefix);
--    key_ctx_update_implicit_iv(ctx, &key2->keys[kds.in_key]);
-+    init_key_ctx(ctx, key_params, kt, OPENVPN_OP_DECRYPT, log_prefix);
-+    key_ctx_update_implicit_iv(ctx, key_params);
- }
-
- void
- init_key_ctx_bi(struct key_ctx_bi *ctx, const struct key2 *key2,
-                 int key_direction, const struct key_type *kt, const char *=
-name)
- {
--    init_key_bi_ctx_send(&ctx->encrypt, key2, key_direction, kt, name);
--    init_key_bi_ctx_recv(&ctx->decrypt, key2, key_direction, kt, name);
-+    struct key_direction_state kds;
-+
-+    key_direction_state_init(&kds, key_direction);
-+
-+    struct key_parameters send_key;
-+    struct key_parameters recv_key;
-+
-+    key_parameters_from_key(&send_key, &key2->keys[kds.out_key]);
-+    key_parameters_from_key(&recv_key, &key2->keys[kds.in_key]);
-+
-+    init_key_bi_ctx_send(&ctx->encrypt, &send_key, kt, name);
-+    init_key_bi_ctx_recv(&ctx->decrypt, &recv_key, kt, name);
-     ctx->initialized =3D true;
- }
-
-@@ -1117,6 +1122,16 @@
- }
-
- void
-+key_parameters_from_key(struct key_parameters *key_params, const struct ke=
-y *key)
-+{
-+    CLEAR(*key_params);
-+    memcpy(key_params->cipher, key->cipher, MAX_CIPHER_KEY_LENGTH);
-+    key_params->cipher_size =3D MAX_HMAC_KEY_LENGTH;
-+    memcpy(key_params->hmac, key->hmac, MAX_CIPHER_KEY_LENGTH);
-+    key_params->hmac_size =3D MAX_HMAC_KEY_LENGTH;
-+}
-+
-+void
- test_crypto(struct crypto_options *co, struct frame *frame)
- {
-     int i, j;
-diff --git a/src/openvpn/crypto.h b/src/openvpn/crypto.h
-index 3331672..ff24f87 100644
---- a/src/openvpn/crypto.h
-+++ b/src/openvpn/crypto.h
-@@ -144,7 +144,8 @@
-
- /**
-  * Container for unidirectional cipher and HMAC %key material.
-- * @ingroup control_processor
-+ * @ingroup control_processor. This is used as a wire format/file format
-+ * key, so it cannot be changed to add fields or change the length of fiel=
-ds
+-#if 1
+ /*
+- * These are the types that members of
+- * a struct packet_id_net are converted
+- * to for network transmission.
++ * These are the types that members of a struct packet_id_net are converted
++ * to for network transmission and for saving to a persistent file.
++ *
++ * Note: data epoch data uses a 64 bit packet ID
++ * compromised of 16 bit epoch and 48 bit per-epoch packet counter.
++ * These are ephemeral and are never saved to a file.
   */
- struct key
+ typedef uint32_t packet_id_type;
+ #define PACKET_ID_MAX UINT32_MAX
+@@ -64,31 +66,12 @@
+ /* convert a net_time_t in network order to a time_t in host order */
+ #define ntohtime(x) ((time_t)ntohl(x))
+
+-#else  /* if 1 */
+-
+-/*
+- * DEBUGGING ONLY.
+- * Make packet_id_type and net_time_t small
+- * to test wraparound logic and corner cases.
+- */
+-
+-typedef uint8_t packet_id_type;
+-typedef uint16_t net_time_t;
+-
+-#define PACKET_ID_WRAP_TRIGGER 0x80
+-
+-#define htonpid(x) (x)
+-#define ntohpid(x) (x)
+-#define htontime(x) htons((net_time_t)x)
+-#define ntohtime(x) ((time_t)ntohs(x))
+-
+-#endif /* if 1 */
+
+ /*
+  * Printf formats for special types
+  */
+-#define packet_id_format "%u"
+-typedef unsigned int packet_id_print_type;
++#define packet_id_format "%" PRIu64
++typedef uint64_t packet_id_print_type;
+
+ /*
+  * Maximum allowed backtrack in
+@@ -128,10 +111,10 @@
  {
-@@ -154,6 +155,30 @@
-     /**< %Key material for HMAC operations. */
+     time_t last_reap;         /* last call of packet_id_reap */
+     time_t time;              /* highest time stamp received */
+-    packet_id_type id;        /* highest sequence number received */
+-    int seq_backtrack;        /* set from --replay-window */
++    uint64_t id;              /* highest sequence number received */
++    uint64_t seq_backtrack;   /* set from --replay-window */
+     int time_backtrack;       /* set from --replay-window */
+-    int max_backtrack_stat;   /* maximum backtrack seen so far */
++    uint64_t max_backtrack_stat;   /* maximum backtrack seen so far */
+     bool initialized;         /* true if packet_id_init was called */
+     struct seq_list *seq_list; /* packet-id "memory" */
+     const char *name;
+@@ -164,7 +147,7 @@
+  */
+ struct packet_id_send
+ {
+-    packet_id_type id;
++    uint64_t id;
+     time_t time;
  };
 
-+/** internal structure similar to struct key that hold key information
-+ * but is not represented on wire and can be changed/extended
-+ */
-+struct key_parameters {
-+    /** %Key material for cipher operations. */
-+    uint8_t cipher[MAX_CIPHER_KEY_LENGTH];
-+
-+    /** Number of bytes set in the cipher key material */
-+    int cipher_size;
-+
-+    /** %Key material for HMAC operations. */
-+    uint8_t hmac[MAX_HMAC_KEY_LENGTH];
-+
-+    /** Number of bytes set in the HMac key material */
-+    int hmac_size;
-+};
+@@ -174,8 +157,12 @@
+  * sequence number.  A long packet-id
+  * includes a timestamp as well.
+  *
++ * An epoch packet-id is a 16 bit epoch
++ * counter plus a 48 per-epoch packet-id
++ *
+  * Long packet-ids are used as IVs for
+- * CFB/OFB ciphers.
++ * CFB/OFB ciphers and for control channel
++ * messages.
+  *
+  * This data structure is always sent
+  * over the net in network byte order,
+@@ -191,9 +178,16 @@
+  * 64 bit platforms use a
+  * 64 bit time_t.
+  */
 +
 +/**
-+ * Converts a struct key representation into a struct key_params represent=
-ation.
-+ * @param key_params    destination for the converted struct
-+ * @param key           source of the conversion
++ * Data structure for describing the packet id that is received/send to the
++ * network. This struct does not match the on wire format.
 + */
-+void
-+key_parameters_from_key(struct key_parameters *key_params, const struct ke=
-y *key);
+ struct packet_id_net
+ {
+-    packet_id_type id;
++    /* converted to packet_id_type on non-epoch data ids, does not contain
++     * the epoch but is a flat id */
++    uint64_t id;
+     time_t time; /* converted to net_time_t before transmission */
+ };
 
- /**
-  * Container for one set of cipher and/or HMAC contexts.
-@@ -340,19 +365,17 @@
-  * Key context functions
-  */
+diff --git a/tests/unit_tests/openvpn/test_packet_id.c b/tests/unit_tests/o=
+penvpn/test_packet_id.c
+index a3567bc..d918985 100644
+--- a/tests/unit_tests/openvpn/test_packet_id.c
++++ b/tests/unit_tests/openvpn/test_packet_id.c
+@@ -90,8 +90,8 @@
+=20
+     now =3D 5010;
+     assert_true(packet_id_write(&data->pis, &data->test_buf, true, false));
+-    assert(data->pis.id =3D=3D 1);
+-    assert(data->pis.time =3D=3D now);
++    assert_int_equal(data->pis.id, 1);
++    assert_int_equal(data->pis.time, now);
+     assert_true(data->test_buf_data.buf_id =3D=3D htonl(1));
+     assert_true(data->test_buf_data.buf_time =3D=3D htonl((uint32_t)now));
+ }
+@@ -117,8 +117,8 @@
+     data->test_buf.offset =3D sizeof(data->test_buf_data);
+     now =3D 5010;
+     assert_true(packet_id_write(&data->pis, &data->test_buf, true, true));
+-    assert(data->pis.id =3D=3D 1);
+-    assert(data->pis.time =3D=3D now);
++    assert_int_equal(data->pis.id, 1);
++    assert_int_equal(data->pis.time, now);
+     assert_true(data->test_buf_data.buf_id =3D=3D htonl(1));
+     assert_true(data->test_buf_data.buf_time =3D=3D htonl((uint32_t)now));
+ }
+@@ -128,7 +128,8 @@
+ {
+     struct test_packet_id_write_data *data =3D *state;
 
--void init_key_ctx(struct key_ctx *ctx, const struct key *key,
-+void init_key_ctx(struct key_ctx *ctx, const struct key_parameters *key,
-                   const struct key_type *kt, int enc,
-                   const char *prefix);
-
- void
--init_key_bi_ctx_send(struct key_ctx *ctx, const struct key2 *key2,
--                     int key_direction, const struct key_type *kt,
--                     const char *name);
-+init_key_bi_ctx_send(struct key_ctx *ctx, const struct key_parameters *key,
-+                     const struct key_type *kt, const char *name);
-
- void
--init_key_bi_ctx_recv(struct key_ctx *ctx, const struct key2 *key2,
--                     int key_direction, const struct key_type *kt,
--                     const char *name);
-+init_key_bi_ctx_recv(struct key_ctx *ctx, const struct key_parameters *key,
-+                     const struct key_type *kt, const char *name);
-
- void free_key_ctx(struct key_ctx *ctx);
-
-diff --git a/src/openvpn/tls_crypt.c b/src/openvpn/tls_crypt.c
-index b8894db..76f06bc 100644
---- a/src/openvpn/tls_crypt.c
-+++ b/src/openvpn/tls_crypt.c
-@@ -377,7 +377,11 @@
-     {
-         msg(M_FATAL, "ERROR: --tls-crypt-v2 not supported");
-     }
--    init_key_ctx(key_ctx, &srv_key, &kt, encrypt, "tls-crypt-v2 server key=
-");
-+    struct key_parameters srv_key_params;
-+
-+    key_parameters_from_key(&srv_key_params, &srv_key);
-+
-+    init_key_ctx(key_ctx, &srv_key_params, &kt, encrypt, "tls-crypt-v2 ser=
-ver key");
-     secure_memzero(&srv_key, sizeof(srv_key));
+-    data->pis.id =3D ~0;
++    /* maximum 32-bit packet id */
++    data->pis.id =3D (packet_id_type)(~0);
+     assert_false(packet_id_write(&data->pis, &data->test_buf, false, false=
+));
  }
 
-diff --git a/tests/unit_tests/openvpn/test_auth_token.c b/tests/unit_tests/=
-openvpn/test_auth_token.c
-index 8a0c16a..9a21abf 100644
---- a/tests/unit_tests/openvpn/test_auth_token.c
-+++ b/tests/unit_tests/openvpn/test_auth_token.c
-@@ -87,7 +87,8 @@
-     struct test_context *ctx =3D calloc(1, sizeof(*ctx));
-     *state =3D ctx;
+@@ -137,7 +138,8 @@
+ {
+     struct test_packet_id_write_data *data =3D *state;
 
--    struct key key =3D { 0 };
-+    struct key_parameters key =3D { 0 };
-+    key.hmac_size =3D 64;     /* 64 byte of 0 */
+-    data->pis.id =3D ~0;
++    /* maximum 32-bit packet id */
++    data->pis.id =3D (packet_id_type)(~0);
+     data->pis.time =3D 5006;
 
-     ctx->kt =3D auth_token_kt();
-     if (!ctx->kt.digest)
-@@ -148,15 +149,17 @@
-                      AUTH_TOKEN_HMAC_OK);
+     /* Write fails if time did not change */
+@@ -148,8 +150,8 @@
+     now =3D 5010;
+     assert_true(packet_id_write(&data->pis, &data->test_buf, true, false));
 
-     /* Change auth-token key */
--    struct key key;
--    memset(&key, '1', sizeof(key));
-+    struct key_parameters key;
-+    memset(key.hmac, '1', sizeof(key.hmac));
-+    key.hmac_size =3D MAX_HMAC_KEY_LENGTH;
-+
-     free_key_ctx(&ctx->multi.opt.auth_token_key);
-     init_key_ctx(&ctx->multi.opt.auth_token_key, &key, &ctx->kt, false, "T=
-EST");
-
-     assert_int_equal(verify_auth_token(&ctx->up, &ctx->multi, ctx->session=
-), 0);
-
-     /* Load original test key again */
--    memset(&key, 0, sizeof(key));
-+    memset(&key.hmac, 0, sizeof(key.hmac));
-     free_key_ctx(&ctx->multi.opt.auth_token_key);
-     init_key_ctx(&ctx->multi.opt.auth_token_key, &key, &ctx->kt, false, "T=
-EST");
-     assert_int_equal(verify_auth_token(&ctx->up, &ctx->multi, ctx->session=
-),
-diff --git a/tests/unit_tests/openvpn/test_tls_crypt.c b/tests/unit_tests/o=
-penvpn/test_tls_crypt.c
-index 4f12f88..f4b30b7 100644
---- a/tests/unit_tests/openvpn/test_tls_crypt.c
-+++ b/tests/unit_tests/openvpn/test_tls_crypt.c
-@@ -157,7 +157,7 @@
-     struct test_tls_crypt_context *ctx =3D calloc(1, sizeof(*ctx));
-     *state =3D ctx;
-
--    struct key key =3D { 0 };
-+    struct key_parameters key =3D { .cipher =3D { 0 }, .hmac =3D { 0 }, .h=
-mac_size =3D 64, .cipher_size =3D 64 };
-
-     ctx->kt =3D tls_crypt_kt();
-     if (!ctx->kt.cipher || !ctx->kt.digest)
-@@ -367,7 +367,7 @@
-     skip_if_tls_crypt_not_supported(ctx);
-
-     /* Change decrypt key */
--    struct key key =3D { { 1 } };
-+    struct key_parameters key =3D { .cipher =3D { 1 }, .hmac =3D { 1 }, .c=
-ipher_size =3D 64, .hmac_size =3D 64 };
-     free_key_ctx(&ctx->co.key_ctx_bi.decrypt);
-     init_key_ctx(&ctx->co.key_ctx_bi.decrypt, &key, &ctx->kt, false, "TEST=
-");
-
+-    assert(data->pis.id =3D=3D 1);
+-    assert(data->pis.time =3D=3D now);
++    assert_int_equal(data->pis.id, 1);
++    assert_int_equal(data->pis.time, now);
+     assert_true(data->test_buf_data.buf_id =3D=3D htonl(1));
+     assert_true(data->test_buf_data.buf_time =3D=3D htonl((uint32_t)now));
+ }
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/801?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/802?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings
 
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: I4a981c5a70717e2276d89bf83a06c7fdbe6712d7
-Gerrit-Change-Number: 801
+Gerrit-Change-Id: If470af2eb456b2b10f9f2806933e026842188c42
+Gerrit-Change-Number: 802
 Gerrit-PatchSet: 1
 Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
@@ -393,310 +390,305 @@ Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: flichtenheld <frank@...2641...>
 Gerrit-MessageType: newchange
 
---aOOTA5wJ0CI=
+--zH2zn5BBGgM=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <p> Attention is currently required from: flichtenheld. </p>
 <p>plaisthos would like flichtenheld to <strong>review</strong> this change.
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/801?usp=3Demail">Vi=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/802?usp=3Demail">Vi=
 ew Change</a></p><pre style=3D"font-family: monospace,monospace; white-spac=
-e: pre-wrap;">Change API of init_key_ctx to use struct key_paramters<br><br=
->This introduces a new structure key_paramters. The reason is that the<br>c=
-urrent struct serves both as an internal struct as well as an<br>on-wire/in=
--file format. Separate these two different usages to allow<br>extending the=
- struct.<br><br>Change-Id: I4a981c5a70717e2276d89bf83a06c7fdbe6712d7<br>Sig=
-ned-off-by: Arne Schwabe &lt;arne@...1227...&gt;<br>---<br>M src/openvpn/au=
-th_token.c<br>M src/openvpn/crypto.c<br>M src/openvpn/crypto.h<br>M src/ope=
-nvpn/tls_crypt.c<br>M tests/unit_tests/openvpn/test_auth_token.c<br>M tests=
-/unit_tests/openvpn/test_tls_crypt.c<br>6 files changed, 85 insertions(+), =
-37 deletions(-)<br><br></pre><pre style=3D"font-family: monospace,monospace=
-; white-space: pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/openvpn r=
-efs/changes/01/801/1</pre><pre style=3D"font-family: monospace,monospace; w=
-hite-space: pre-wrap;"><span>diff --git a/src/openvpn/auth_token.c b/src/op=
-envpn/auth_token.c</span><br><span>index 192c7c2..3cf55e8 100644</span><br>=
-<span>--- a/src/openvpn/auth_token.c</span><br><span>+++ b/src/openvpn/auth=
-_token.c</span><br><span>@@ -152,7 +152,10 @@</span><br><span>     {</span>=
-<br><span>         msg(M_FATAL, &quot;ERROR: not enough data in auth-token =
-secret&quot;);</span><br><span>     }</span><br><span style=3D"color: hsl(0=
-, 100%, 40%);">-    init_key_ctx(key_ctx, &amp;key, &amp;kt, false, &quot;a=
-uth-token secret&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    struct key=
-_parameters key_params;</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+    key_parameters_from_key(&amp;key_params, &amp;key);</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+    init_key_ctx(key_ctx, &amp;key_=
-params, &amp;kt, false, &quot;auth-token secret&quot;);</span><br><span> </=
-span><br><span>     free_buf(&amp;server_secret_key);</span><br><span> }</s=
-pan><br><span>diff --git a/src/openvpn/crypto.c b/src/openvpn/crypto.c</spa=
-n><br><span>index 44c226c..f4453d8 100644</span><br><span>--- a/src/openvpn=
-/crypto.c</span><br><span>+++ b/src/openvpn/crypto.c</span><br><span>@@ -90=
-3,7 +903,7 @@</span><br><span>  * @param key                   key, hmac pa=
-rt used to calculate implicit IV</span><br><span>  */</span><br><span> stat=
-ic void</span><br><span style=3D"color: hsl(0, 100%, 40%);">-key_ctx_update=
-_implicit_iv(struct key_ctx *ctx, const struct key *key)</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+key_ctx_update_implicit_iv(struct key_=
-ctx *ctx, const struct key_parameters *key)</span><br><span> {</span><br><s=
-pan>     /* Only use implicit IV in AEAD cipher mode, where HMAC key is not=
- used */</span><br><span>     if (cipher_ctx_mode_aead(ctx-&gt;cipher))</sp=
-an><br><span>@@ -913,6 +913,7 @@</span><br><span>         impl_iv_len =3D c=
-ipher_ctx_iv_length(ctx-&gt;cipher) - sizeof(packet_id_type);</span><br><sp=
-an>         ASSERT(impl_iv_len &lt;=3D OPENVPN_MAX_IV_LENGTH);</span><br><s=
-pan>         ASSERT(impl_iv_len &lt;=3D MAX_HMAC_KEY_LENGTH);</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+        ASSERT(key-&gt;hmac_size =
-&gt;=3D impl_iv_len);</span><br><span>         CLEAR(ctx-&gt;implicit_iv);<=
-/span><br><span>         /* The first bytes of the IV are filled with the p=
-acket id */</span><br><span>         memcpy(ctx-&gt;implicit_iv + sizeof(pa=
-cket_id_type), key-&gt;hmac, impl_iv_len);</span><br><span>@@ -921,7 +922,7=
- @@</span><br><span> </span><br><span> /* given a key and key_type, build a=
- key_ctx */</span><br><span> void</span><br><span style=3D"color: hsl(0, 10=
-0%, 40%);">-init_key_ctx(struct key_ctx *ctx, const struct key *key,</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+init_key_ctx(struct key_ct=
-x *ctx, const struct key_parameters *key,</span><br><span>              con=
-st struct key_type *kt, int enc,</span><br><span>              const char *=
-prefix)</span><br><span> {</span><br><span>@@ -929,7 +930,7 @@</span><br><s=
-pan>     CLEAR(*ctx);</span><br><span>     if (cipher_defined(kt-&gt;cipher=
-))</span><br><span>     {</span><br><span style=3D"color: hsl(0, 100%, 40%)=
-;">-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        ASSERT(=
-key-&gt;cipher_size &gt;=3D cipher_kt_key_size(kt-&gt;cipher));</span><br><=
-span>         ctx-&gt;cipher =3D cipher_ctx_new();</span><br><span>        =
- cipher_ctx_init(ctx-&gt;cipher, key-&gt;cipher, kt-&gt;cipher, enc);</span=
-><br><span> </span><br><span>@@ -944,8 +945,10 @@</span><br><span>         =
-     cipher_kt_iv_size(kt-&gt;cipher));</span><br><span>         warn_insec=
-ure_key_type(ciphername);</span><br><span>     }</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+</span><br><span>     if (md_defined(kt-&gt;di=
-gest))</span><br><span>     {</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+        ASSERT(key-&gt;hmac_size &gt;=3D md_kt_size(kt-&gt;digest=
-));</span><br><span>         ctx-&gt;hmac =3D hmac_ctx_new();</span><br><sp=
-an>         hmac_ctx_init(ctx-&gt;hmac, key-&gt;hmac, kt-&gt;digest);</span=
-><br><span> </span><br><span>@@ -966,41 +969,43 @@</span><br><span> }</span=
-><br><span> </span><br><span> void</span><br><span style=3D"color: hsl(0, 1=
-00%, 40%);">-init_key_bi_ctx_send(struct key_ctx *ctx, const struct key2 *k=
-ey2,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-                 =
-    int key_direction, const struct key_type *kt, const char *name)</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+init_key_bi_ctx_send(struct=
- key_ctx *ctx, const struct key_parameters *key_params,</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+                     const struct key_t=
-ype *kt, const char *name)</span><br><span> {</span><br><span>     char log=
-_prefix[128] =3D { 0 };</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
->-    struct key_direction_state kds;</span><br><span style=3D"color: hsl(0=
-, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    k=
-ey_direction_state_init(&amp;kds, key_direction);</span><br><span> </span><=
-br><span>     snprintf(log_prefix, sizeof(log_prefix), &quot;Outgoing %s&qu=
-ot;, name);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    init_k=
-ey_ctx(ctx, &amp;key2-&gt;keys[kds.out_key], kt,</span><br><span style=3D"c=
-olor: hsl(0, 100%, 40%);">-                 OPENVPN_OP_ENCRYPT, log_prefix)=
-;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    key_ctx_update_i=
-mplicit_iv(ctx, &amp;key2-&gt;keys[kds.out_key]);</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+    init_key_ctx(ctx, key_params, kt, OPENVPN=
-_OP_ENCRYPT, log_prefix);</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+    key_ctx_update_implicit_iv(ctx, key_params);</span><br><span> }</=
-span><br><span> </span><br><span> void</span><br><span style=3D"color: hsl(=
-0, 100%, 40%);">-init_key_bi_ctx_recv(struct key_ctx *ctx, const struct key=
-2 *key2,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-             =
-        int key_direction, const struct key_type *kt, const char *name)</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+init_key_bi_ctx_recv(st=
-ruct key_ctx *ctx, const struct key_parameters *key_params,</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+                     const struct k=
-ey_type *kt, const char *name)</span><br><span> {</span><br><span>     char=
- log_prefix[128] =3D { 0 };</span><br><span style=3D"color: hsl(0, 100%, 40=
-%);">-    struct key_direction_state kds;</span><br><span style=3D"color: h=
-sl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
-   key_direction_state_init(&amp;kds, key_direction);</span><br><span> </sp=
-an><br><span>     snprintf(log_prefix, sizeof(log_prefix), &quot;Incoming %=
-s&quot;, name);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    in=
-it_key_ctx(ctx, &amp;key2-&gt;keys[kds.in_key], kt,</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-                 OPENVPN_OP_DECRYPT, log_pr=
-efix);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    key_ctx_upd=
-ate_implicit_iv(ctx, &amp;key2-&gt;keys[kds.in_key]);</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    init_key_ctx(ctx, key_params, kt, OPE=
-NVPN_OP_DECRYPT, log_prefix);</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+    key_ctx_update_implicit_iv(ctx, key_params);</span><br><span>=
- }</span><br><span> </span><br><span> void</span><br><span> init_key_ctx_bi=
-(struct key_ctx_bi *ctx, const struct key2 *key2,</span><br><span>         =
-        int key_direction, const struct key_type *kt, const char *name)</sp=
-an><br><span> {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    in=
-it_key_bi_ctx_send(&amp;ctx-&gt;encrypt, key2, key_direction, kt, name);</s=
-pan><br><span style=3D"color: hsl(0, 100%, 40%);">-    init_key_bi_ctx_recv=
-(&amp;ctx-&gt;decrypt, key2, key_direction, kt, name);</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+    struct key_direction_state kds;</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    key_direction_state_init(&amp;kds, ke=
-y_direction);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+    struct key_parameters=
- send_key;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    struc=
-t key_parameters recv_key;</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    key_para=
-meters_from_key(&amp;send_key, &amp;key2-&gt;keys[kds.out_key]);</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+    key_parameters_from_key(&a=
-mp;recv_key, &amp;key2-&gt;keys[kds.in_key]);</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+    init_key_bi_ctx_send(&amp;ctx-&gt;encrypt, &amp;send_key, kt, na=
-me);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    init_key_bi=
-_ctx_recv(&amp;ctx-&gt;decrypt, &amp;recv_key, kt, name);</span><br><span> =
-    ctx-&gt;initialized =3D true;</span><br><span> }</span><br><span> </spa=
-n><br><span>@@ -1117,6 +1122,16 @@</span><br><span> }</span><br><span> </sp=
-an><br><span> void</span><br><span style=3D"color: hsl(120, 100%, 40%);">+k=
-ey_parameters_from_key(struct key_parameters *key_params, const struct key =
-*key)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+    CLEAR(*key_params);</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+    memcpy(key_params-&gt;ci=
-pher, key-&gt;cipher, MAX_CIPHER_KEY_LENGTH);</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+    key_params-&gt;cipher_size =3D MAX_HMAC_KEY_L=
-ENGTH;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    memcpy(ke=
-y_params-&gt;hmac, key-&gt;hmac, MAX_CIPHER_KEY_LENGTH);</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+    key_params-&gt;hmac_size =3D MAX_H=
-MAC_KEY_LENGTH;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+void</span><br><span> test_crypto(struct =
-crypto_options *co, struct frame *frame)</span><br><span> {</span><br><span=
->     int i, j;</span><br><span>diff --git a/src/openvpn/crypto.h b/src/ope=
-nvpn/crypto.h</span><br><span>index 3331672..ff24f87 100644</span><br><span=
->--- a/src/openvpn/crypto.h</span><br><span>+++ b/src/openvpn/crypto.h</spa=
-n><br><span>@@ -144,7 +144,8 @@</span><br><span> </span><br><span> /**</spa=
-n><br><span>  * Container for unidirectional cipher and HMAC %key material.=
-</span><br><span style=3D"color: hsl(0, 100%, 40%);">- * @ingroup control_p=
-rocessor</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @ingroup=
- control_processor. This is used as a wire format/file format</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+ * key, so it cannot be changed t=
-o add fields or change the length of fields</span><br><span>  */</span><br>=
-<span> struct key</span><br><span> {</span><br><span>@@ -154,6 +155,30 @@</=
-span><br><span>     /**&lt; %Key material for HMAC operations. */</span><br=
-><span> };</span><br><span> </span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+/** internal structure similar to struct key that hold key informa=
-tion</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * but is not r=
-epresented on wire and can be changed/extended</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+ */</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+struct key_parameters {</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+    /** %Key material for cipher operations. */</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+    uint8_t cipher[MAX_CIPHER_KE=
-Y_LENGTH];</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+    /** Number of bytes set =
-in the cipher key material */</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+    int cipher_size;</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    /** =
-%Key material for HMAC operations. */</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+    uint8_t hmac[MAX_HMAC_KEY_LENGTH];</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+    /** Number of bytes set in the HMac key material */</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+    int hmac_size;</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+};</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+/**</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+ * Converts a struct key representation into a struct key_params represent=
-ation.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @param key=
-_params    destination for the converted struct</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+ * @param key           source of the conversio=
-n</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ */</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+void</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+key_parameters_from_key(struct key_parameters *ke=
-y_params, const struct key *key);</span><br><span> </span><br><span> /**</s=
-pan><br><span>  * Container for one set of cipher and/or HMAC contexts.</sp=
-an><br><span>@@ -340,19 +365,17 @@</span><br><span>  * Key context function=
-s</span><br><span>  */</span><br><span> </span><br><span style=3D"color: hs=
-l(0, 100%, 40%);">-void init_key_ctx(struct key_ctx *ctx, const struct key =
-*key,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+void init_key_=
-ctx(struct key_ctx *ctx, const struct key_parameters *key,</span><br><span>=
-                   const struct key_type *kt, int enc,</span><br><span>    =
-               const char *prefix);</span><br><span> </span><br><span> void=
-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-init_key_bi_ctx_send(=
-struct key_ctx *ctx, const struct key2 *key2,</span><br><span style=3D"colo=
-r: hsl(0, 100%, 40%);">-                     int key_direction, const struc=
-t key_type *kt,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-      =
-               const char *name);</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+init_key_bi_ctx_send(struct key_ctx *ctx, const struct key_pa=
-rameters *key,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
-                const struct key_type *kt, const char *name);</span><br><sp=
-an> </span><br><span> void</span><br><span style=3D"color: hsl(0, 100%, 40%=
-);">-init_key_bi_ctx_recv(struct key_ctx *ctx, const struct key2 *key2,</sp=
-an><br><span style=3D"color: hsl(0, 100%, 40%);">-                     int =
-key_direction, const struct key_type *kt,</span><br><span style=3D"color: h=
-sl(0, 100%, 40%);">-                     const char *name);</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+init_key_bi_ctx_recv(struct key_ctx=
- *ctx, const struct key_parameters *key,</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+                     const struct key_type *kt, const =
-char *name);</span><br><span> </span><br><span> void free_key_ctx(struct ke=
-y_ctx *ctx);</span><br><span> </span><br><span>diff --git a/src/openvpn/tls=
-_crypt.c b/src/openvpn/tls_crypt.c</span><br><span>index b8894db..76f06bc 1=
-00644</span><br><span>--- a/src/openvpn/tls_crypt.c</span><br><span>+++ b/s=
-rc/openvpn/tls_crypt.c</span><br><span>@@ -377,7 +377,11 @@</span><br><span=
->     {</span><br><span>         msg(M_FATAL, &quot;ERROR: --tls-crypt-v2 n=
-ot supported&quot;);</span><br><span>     }</span><br><span style=3D"color:=
- hsl(0, 100%, 40%);">-    init_key_ctx(key_ctx, &amp;srv_key, &amp;kt, encr=
-ypt, &quot;tls-crypt-v2 server key&quot;);</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+    struct key_parameters srv_key_params;</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+    key_parameters_from_key(&amp;srv_key_params, =
-&amp;srv_key);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+    init_key_ctx(key_ctx=
-, &amp;srv_key_params, &amp;kt, encrypt, &quot;tls-crypt-v2 server key&quot=
-;);</span><br><span>     secure_memzero(&amp;srv_key, sizeof(srv_key));</sp=
-an><br><span> }</span><br><span> </span><br><span>diff --git a/tests/unit_t=
-ests/openvpn/test_auth_token.c b/tests/unit_tests/openvpn/test_auth_token.c=
-</span><br><span>index 8a0c16a..9a21abf 100644</span><br><span>--- a/tests/=
-unit_tests/openvpn/test_auth_token.c</span><br><span>+++ b/tests/unit_tests=
-/openvpn/test_auth_token.c</span><br><span>@@ -87,7 +87,8 @@</span><br><spa=
-n>     struct test_context *ctx =3D calloc(1, sizeof(*ctx));</span><br><spa=
-n>     *state =3D ctx;</span><br><span> </span><br><span style=3D"color: hs=
-l(0, 100%, 40%);">-    struct key key =3D { 0 };</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+    struct key_parameters key =3D { 0 };</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+    key.hmac_size =3D 64;=
-     /* 64 byte of 0 */</span><br><span> </span><br><span>     ctx-&gt;kt =
-=3D auth_token_kt();</span><br><span>     if (!ctx-&gt;kt.digest)</span><br=
-><span>@@ -148,15 +149,17 @@</span><br><span>                      AUTH_TOK=
-EN_HMAC_OK);</span><br><span> </span><br><span>     /* Change auth-token ke=
-y */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    struct key ke=
-y;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    memset(&amp;key=
-, &#39;1&#39;, sizeof(key));</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+    struct key_parameters key;</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+    memset(key.hmac, &#39;1&#39;, sizeof(key.hmac));</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+    key.hmac_size =3D =
-MAX_HMAC_KEY_LENGTH;</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+</span><br><span>     free_key_ctx(&amp;ctx-&gt;multi.opt.auth_token_key);=
-</span><br><span>     init_key_ctx(&amp;ctx-&gt;multi.opt.auth_token_key, &=
-amp;key, &amp;ctx-&gt;kt, false, &quot;TEST&quot;);</span><br><span> </span=
-><br><span>     assert_int_equal(verify_auth_token(&amp;ctx-&gt;up, &amp;ct=
-x-&gt;multi, ctx-&gt;session), 0);</span><br><span> </span><br><span>     /=
-* Load original test key again */</span><br><span style=3D"color: hsl(0, 10=
-0%, 40%);">-    memset(&amp;key, 0, sizeof(key));</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+    memset(&amp;key.hmac, 0, sizeof(key.hmac)=
-);</span><br><span>     free_key_ctx(&amp;ctx-&gt;multi.opt.auth_token_key)=
-;</span><br><span>     init_key_ctx(&amp;ctx-&gt;multi.opt.auth_token_key, =
-&amp;key, &amp;ctx-&gt;kt, false, &quot;TEST&quot;);</span><br><span>     a=
-ssert_int_equal(verify_auth_token(&amp;ctx-&gt;up, &amp;ctx-&gt;multi, ctx-=
-&gt;session),</span><br><span>diff --git a/tests/unit_tests/openvpn/test_tl=
-s_crypt.c b/tests/unit_tests/openvpn/test_tls_crypt.c</span><br><span>index=
- 4f12f88..f4b30b7 100644</span><br><span>--- a/tests/unit_tests/openvpn/tes=
-t_tls_crypt.c</span><br><span>+++ b/tests/unit_tests/openvpn/test_tls_crypt=
-.c</span><br><span>@@ -157,7 +157,7 @@</span><br><span>     struct test_tls=
-_crypt_context *ctx =3D calloc(1, sizeof(*ctx));</span><br><span>     *stat=
-e =3D ctx;</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 4=
-0%);">-    struct key key =3D { 0 };</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+    struct key_parameters key =3D { .cipher =3D { 0 }, .hm=
-ac =3D { 0 }, .hmac_size =3D 64, .cipher_size =3D 64 };</span><br><span> </=
-span><br><span>     ctx-&gt;kt =3D tls_crypt_kt();</span><br><span>     if =
-(!ctx-&gt;kt.cipher || !ctx-&gt;kt.digest)</span><br><span>@@ -367,7 +367,7=
- @@</span><br><span>     skip_if_tls_crypt_not_supported(ctx);</span><br><s=
-pan> </span><br><span>     /* Change decrypt key */</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-    struct key key =3D { { 1 } };</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+    struct key_parameters key=
- =3D { .cipher =3D { 1 }, .hmac =3D { 1 }, .cipher_size =3D 64, .hmac_size =
-=3D 64 };</span><br><span>     free_key_ctx(&amp;ctx-&gt;co.key_ctx_bi.decr=
-ypt);</span><br><span>     init_key_ctx(&amp;ctx-&gt;co.key_ctx_bi.decrypt,=
- &amp;key, &amp;ctx-&gt;kt, false, &quot;TEST&quot;);</span><br><span> </sp=
-an><br><span></span><br></pre><p>To view, visit <a href=3D"http://gerrit.op=
-envpn.net/c/openvpn/+/801?usp=3Demail">change 801</a>. To unsubscribe, or f=
-or help writing mail filters, visit <a href=3D"http://gerrit.openvpn.net/se=
-ttings">settings</a>.</p><div itemscope itemtype=3D"http://schema.org/Email=
-Message"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.org/V=
-iewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openv=
-pn/+/801?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></d=
-iv></div>
+e: pre-wrap;">Change internal id of packet id to uint64<br><br>This allows =
+to get rid of multiple casts and also prepares for the<br>larger packet id =
+used by epoch data format.<br><br>Change-Id: If470af2eb456b2b10f9f2806933e0=
+26842188c42<br>Signed-off-by: Arne Schwabe &lt;arne@...1227...&gt;<br>---<b=
+r>M src/openvpn/packet_id.c<br>M src/openvpn/packet_id.h<br>M tests/unit_te=
+sts/openvpn/test_packet_id.c<br>3 files changed, 55 insertions(+), 59 delet=
+ions(-)<br><br></pre><pre style=3D"font-family: monospace,monospace; white-=
+space: pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/openvpn refs/chan=
+ges/02/802/1</pre><pre style=3D"font-family: monospace,monospace; white-spa=
+ce: pre-wrap;"><span>diff --git a/src/openvpn/packet_id.c b/src/openvpn/pac=
+ket_id.c</span><br><span>index fb962e4..117c95f 100644</span><br><span>--- =
+a/src/openvpn/packet_id.c</span><br><span>+++ b/src/openvpn/packet_id.c</sp=
+an><br><span>@@ -36,6 +36,8 @@</span><br><span> </span><br><span> #include =
+&quot;syshead.h&quot;</span><br><span> </span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+#include &lt;stddef.h&gt;</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+</span><br><span> #include &quot;packet_id.h&quot=
+;</span><br><span> #include &quot;misc.h&quot;</span><br><span> #include &q=
+uot;integer.h&quot;</span><br><span>@@ -56,7 +58,7 @@</span><br><span>     =
+                              const struct packet_id_rec *p,</span><br><spa=
+n>                                   const struct packet_id_net *pin,</span=
+><br><span>                                   const char *message,</span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-                              =
+    int value);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+                              packet_id_print_type value);</span><br><span>=
+ </span><br><span> #endif /* ENABLE_DEBUG */</span><br><span> </span><br><s=
+pan>@@ -65,7 +67,7 @@</span><br><span>                 const struct packet_=
+id_rec *p,</span><br><span>                 const struct packet_id_net *pin=
+,</span><br><span>                 const char *message,</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-                int value)</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+                uint64_t value)</s=
+pan><br><span> {</span><br><span> #ifdef ENABLE_DEBUG</span><br><span>     =
+if (unlikely(check_debug_level(msglevel)))</span><br><span>@@ -115,22 +117,=
+21 @@</span><br><span>     const time_t local_now =3D now;</span><br><span>=
+     if (p-&gt;seq_list)</span><br><span>     {</span><br><span style=3D"co=
+lor: hsl(0, 100%, 40%);">-        packet_id_type diff;</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+        int64_t diff;</span><br><span> <=
+/span><br><span>         /*</span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">-         * If time value increases, start a new</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-         * sequence number sequence.</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+         * If time value i=
+ncreases, start a new sequence number sequence.</span><br><span>          *=
+/</span><br><span>         if (!CIRC_LIST_SIZE(p-&gt;seq_list)</span><br><s=
+pan>             || pin-&gt;time &gt; p-&gt;time</span><br><span style=3D"c=
+olor: hsl(0, 100%, 40%);">-            || (pin-&gt;id &gt;=3D (packet_id_ty=
+pe)p-&gt;seq_backtrack</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
+-                &amp;&amp; pin-&gt;id - (packet_id_type)p-&gt;seq_backtrac=
+k &gt; p-&gt;id))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+          || (pin-&gt;id &gt;=3D p-&gt;seq_backtrack</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+                &amp;&amp; pin-&gt;id - p=
+-&gt;seq_backtrack &gt; p-&gt;id))</span><br><span>         {</span><br><sp=
+an>             p-&gt;time =3D pin-&gt;time;</span><br><span>             p=
+-&gt;id =3D 0;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-       =
+     if (pin-&gt;id &gt; (packet_id_type)p-&gt;seq_backtrack)</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+            if (pin-&gt;id &gt; p=
+-&gt;seq_backtrack)</span><br><span>             {</span><br><span style=3D=
+"color: hsl(0, 100%, 40%);">-                p-&gt;id =3D pin-&gt;id - (pac=
+ket_id_type)p-&gt;seq_backtrack;</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+                p-&gt;id =3D pin-&gt;id - p-&gt;seq_backtrack;=
+</span><br><span>             }</span><br><span>             CIRC_LIST_RESE=
+T(p-&gt;seq_list);</span><br><span>         }</span><br><span>@@ -146,7 +14=
+7,7 @@</span><br><span>         }</span><br><span> </span><br><span>       =
+  diff =3D p-&gt;id - pin-&gt;id;</span><br><span style=3D"color: hsl(0, 10=
+0%, 40%);">-        if (diff &lt; (packet_id_type) CIRC_LIST_SIZE(p-&gt;seq=
+_list)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        if (d=
+iff &lt; CIRC_LIST_SIZE(p-&gt;seq_list)</span><br><span>             &amp;&=
+amp; local_now &gt; SEQ_EXPIRED)</span><br><span>         {</span><br><span=
+>             CIRC_LIST_ITEM(p-&gt;seq_list, diff) =3D local_now;</span><br=
+><span>@@ -170,9 +171,8 @@</span><br><span>     const time_t local_now =3D =
+now;</span><br><span>     if (p-&gt;time_backtrack)</span><br><span>     {<=
+/span><br><span style=3D"color: hsl(0, 100%, 40%);">-        int i;</span><=
+br><span>         bool expire =3D false;</span><br><span style=3D"color: hs=
+l(0, 100%, 40%);">-        for (i =3D 0; i &lt; CIRC_LIST_SIZE(p-&gt;seq_li=
+st); ++i)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        fo=
+r (int i =3D 0; i &lt; CIRC_LIST_SIZE(p-&gt;seq_list); ++i)</span><br><span=
+>         {</span><br><span>             const time_t t =3D CIRC_LIST_ITEM(=
+p-&gt;seq_list, i);</span><br><span>             if (t =3D=3D SEQ_EXPIRED)<=
+/span><br><span>@@ -200,7 +200,7 @@</span><br><span> packet_id_test(struct =
+packet_id_rec *p,</span><br><span>                const struct packet_id_ne=
+t *pin)</span><br><span> {</span><br><span style=3D"color: hsl(0, 100%, 40%=
+);">-    packet_id_type diff;</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+    uint64_t diff;</span><br><span> </span><br><span>     packet_=
+id_debug(D_PID_DEBUG, p, pin, &quot;PID_TEST&quot;, 0);</span><br><span> </=
+span><br><span>@@ -231,9 +231,9 @@</span><br><span>             diff =3D p-=
+&gt;id - pin-&gt;id;</span><br><span> </span><br><span>             /* keep=
+ track of maximum backtrack seen for debugging purposes */</span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">-            if ((int)diff &gt; p-&gt;m=
+ax_backtrack_stat)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+           if (diff &gt; p-&gt;max_backtrack_stat)</span><br><span>        =
+     {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-               =
+ p-&gt;max_backtrack_stat =3D (int)diff;</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+                p-&gt;max_backtrack_stat =3D diff;</sp=
+an><br><span>                 packet_id_debug(D_PID_DEBUG_LOW, p, pin, &quo=
+t;PID_ERR replay-window backtrack occurred&quot;, p-&gt;max_backtrack_stat)=
+;</span><br><span>             }</span><br><span> </span><br><span>@@ -557,=
+7 +557,7 @@</span><br><span>                       const struct packet_id_r=
+ec *p,</span><br><span>                       const struct packet_id_net *p=
+in,</span><br><span>                       const char *message,</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-                      int value)<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+                    =
+  packet_id_print_type value)</span><br><span> {</span><br><span>     struc=
+t gc_arena gc =3D gc_new();</span><br><span>     struct buffer out =3D allo=
+c_buf_gc(256, &amp;gc);</span><br><span>@@ -569,7 +569,7 @@</span><br><span=
+>     CLEAR(tv);</span><br><span>     gettimeofday(&amp;tv, NULL);</span><b=
+r><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-    buf_prin=
+tf(&amp;out, &quot;%s [%d]&quot;, message, value);</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+    buf_printf(&amp;out, &quot;%s [&quot; pa=
+cket_id_format &quot;]&quot;, message, value);</span><br><span>     buf_pri=
+ntf(&amp;out, &quot; [%s-%d] [&quot;, p-&gt;name, p-&gt;unit);</span><br><s=
+pan>     for (i =3D 0; sl !=3D NULL &amp;&amp; i &lt; sl-&gt;x_size; ++i)</=
+span><br><span>     {</span><br><span>@@ -604,17 +604,17 @@</span><br><span=
+>         }</span><br><span>         buf_printf(&amp;out, &quot;%c&quot;, c=
+);</span><br><span>     }</span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">-    buf_printf(&amp;out, &quot;] %&quot; PRIi64 &quot;:&quot; packet_id=
+_format, (int64_t)p-&gt;time, (packet_id_print_type)p-&gt;id);</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+    buf_printf(&amp;out, &quot;]=
+ %&quot; PRIi64 &quot;:&quot; packet_id_format, (int64_t)p-&gt;time, p-&gt;=
+id);</span><br><span>     if (pin)</span><br><span>     {</span><br><span s=
+tyle=3D"color: hsl(0, 100%, 40%);">-        buf_printf(&amp;out, &quot; %&q=
+uot; PRIi64 &quot;:&quot; packet_id_format, (int64_t)pin-&gt;time, (packet_=
+id_print_type)pin-&gt;id);</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+        buf_printf(&amp;out, &quot; %&quot; PRIi64 &quot;:&quot; pac=
+ket_id_format, (int64_t)pin-&gt;time, pin-&gt;id);</span><br><span>     }</=
+span><br><span> </span><br><span>     buf_printf(&amp;out, &quot; t=3D%&quo=
+t; PRIi64 &quot;[%d]&quot;,</span><br><span>                (int64_t)prev_n=
+ow,</span><br><span>                (int)(prev_now - tv.tv_sec));</span><br=
+><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-    buf_print=
+f(&amp;out, &quot; r=3D[%d,%d,%d,%d,%d]&quot;,</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+    buf_printf(&amp;out, &quot; r=3D[%d,%&quot; =
+PRIu64 &quot;,%d,%&quot; PRIu64 &quot;,%d]&quot;,</span><br><span>         =
+       (int)(p-&gt;last_reap - tv.tv_sec),</span><br><span>                =
+p-&gt;seq_backtrack,</span><br><span>                p-&gt;time_backtrack,<=
+/span><br><span>diff --git a/src/openvpn/packet_id.h b/src/openvpn/packet_i=
+d.h</span><br><span>index 3778d19..d8a3e1a 100644</span><br><span>--- a/src=
+/openvpn/packet_id.h</span><br><span>+++ b/src/openvpn/packet_id.h</span><b=
+r><span>@@ -35,11 +35,13 @@</span><br><span> #include &quot;error.h&quot;</=
+span><br><span> #include &quot;otime.h&quot;</span><br><span> </span><br><s=
+pan style=3D"color: hsl(0, 100%, 40%);">-#if 1</span><br><span> /*</span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">- * These are the types that me=
+mbers of</span><br><span style=3D"color: hsl(0, 100%, 40%);">- * a struct p=
+acket_id_net are converted</span><br><span style=3D"color: hsl(0, 100%, 40%=
+);">- * to for network transmission.</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+ * These are the types that members of a struct packet_id_=
+net are converted</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *=
+ to for network transmission and for saving to a persistent file.</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+ * Note: data epoch data uses a 64 bit packet =
+ID</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * compromised of=
+ 16 bit epoch and 48 bit per-epoch packet counter.</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+ * These are ephemeral and are never saved t=
+o a file.</span><br><span>  */</span><br><span> typedef uint32_t packet_id_=
+type;</span><br><span> #define PACKET_ID_MAX UINT32_MAX</span><br><span>@@ =
+-64,31 +66,12 @@</span><br><span> /* convert a net_time_t in network order =
+to a time_t in host order */</span><br><span> #define ntohtime(x) ((time_t)=
+ntohl(x))</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">-#else  /* if 1 */</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-/*</span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">- * DEBUGGING ONLY.</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">- * Make packet_id_type and net_time_t sma=
+ll</span><br><span style=3D"color: hsl(0, 100%, 40%);">- * to test wraparou=
+nd logic and corner cases.</span><br><span style=3D"color: hsl(0, 100%, 40%=
+);">- */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><s=
+pan style=3D"color: hsl(0, 100%, 40%);">-typedef uint8_t packet_id_type;</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-typedef uint16_t net_tim=
+e_t;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">-#define PACKET_ID_WRAP_TRIGGER 0x80</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-#define htonpid(x) (x)</span><br><span styl=
+e=3D"color: hsl(0, 100%, 40%);">-#define ntohpid(x) (x)</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-#define htontime(x) htons((net_time_t)x)<=
+/span><br><span style=3D"color: hsl(0, 100%, 40%);">-#define ntohtime(x) ((=
+time_t)ntohs(x))</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-#endif /* if 1 */</span><b=
+r><span> </span><br><span> /*</span><br><span>  * Printf formats for specia=
+l types</span><br><span>  */</span><br><span style=3D"color: hsl(0, 100%, 4=
+0%);">-#define packet_id_format &quot;%u&quot;</span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-typedef unsigned int packet_id_print_type;</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+#define packet_id_format &q=
+uot;%&quot; PRIu64</span><br><span style=3D"color: hsl(120, 100%, 40%);">+t=
+ypedef uint64_t packet_id_print_type;</span><br><span> </span><br><span> /*=
+</span><br><span>  * Maximum allowed backtrack in</span><br><span>@@ -128,1=
+0 +111,10 @@</span><br><span> {</span><br><span>     time_t last_reap;     =
+    /* last call of packet_id_reap */</span><br><span>     time_t time;    =
+          /* highest time stamp received */</span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-    packet_id_type id;        /* highest sequence num=
+ber received */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    in=
+t seq_backtrack;        /* set from --replay-window */</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+    uint64_t id;              /* highest=
+ sequence number received */</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+    uint64_t seq_backtrack;   /* set from --replay-window */</span=
+><br><span>     int time_backtrack;       /* set from --replay-window */</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-    int max_backtrack_st=
+at;   /* maximum backtrack seen so far */</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+    uint64_t max_backtrack_stat;   /* maximum backtra=
+ck seen so far */</span><br><span>     bool initialized;         /* true if=
+ packet_id_init was called */</span><br><span>     struct seq_list *seq_lis=
+t; /* packet-id &quot;memory&quot; */</span><br><span>     const char *name=
+;</span><br><span>@@ -164,7 +147,7 @@</span><br><span>  */</span><br><span>=
+ struct packet_id_send</span><br><span> {</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-    packet_id_type id;</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+    uint64_t id;</span><br><span>     time_t time;</=
+span><br><span> };</span><br><span> </span><br><span>@@ -174,8 +157,12 @@</=
+span><br><span>  * sequence number.  A long packet-id</span><br><span>  * i=
+ncludes a timestamp as well.</span><br><span>  *</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+ * An epoch packet-id is a 16 bit epoch</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+ * counter plus a 48 per-e=
+poch packet-id</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *</s=
+pan><br><span>  * Long packet-ids are used as IVs for</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">- * CFB/OFB ciphers.</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+ * CFB/OFB ciphers and for control channe=
+l</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * messages.</span=
+><br><span>  *</span><br><span>  * This data structure is always sent</span=
+><br><span>  * over the net in network byte order,</span><br><span>@@ -191,=
+9 +178,16 @@</span><br><span>  * 64 bit platforms use a</span><br><span>  *=
+ 64 bit time_t.</span><br><span>  */</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+/*=
+*</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * Data structure =
+for describing the packet id that is received/send to the</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+ * network. This struct does not matc=
+h the on wire format.</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+ */</span><br><span> struct packet_id_net</span><br><span> {</span><br><s=
+pan style=3D"color: hsl(0, 100%, 40%);">-    packet_id_type id;</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+    /* converted to packet_id_t=
+ype on non-epoch data ids, does not contain</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+     * the epoch but is a flat id */</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+    uint64_t id;</span><br><span> =
+    time_t time; /* converted to net_time_t before transmission */</span><b=
+r><span> };</span><br><span> </span><br><span>diff --git a/tests/unit_tests=
+/openvpn/test_packet_id.c b/tests/unit_tests/openvpn/test_packet_id.c</span=
+><br><span>index a3567bc..d918985 100644</span><br><span>--- a/tests/unit_t=
+ests/openvpn/test_packet_id.c</span><br><span>+++ b/tests/unit_tests/openvp=
+n/test_packet_id.c</span><br><span>@@ -90,8 +90,8 @@</span><br><span> </spa=
+n><br><span>     now =3D 5010;</span><br><span>     assert_true(packet_id_w=
+rite(&amp;data-&gt;pis, &amp;data-&gt;test_buf, true, false));</span><br><s=
+pan style=3D"color: hsl(0, 100%, 40%);">-    assert(data-&gt;pis.id =3D=3D =
+1);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    assert(data-&g=
+t;pis.time =3D=3D now);</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+    assert_int_equal(data-&gt;pis.id, 1);</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+    assert_int_equal(data-&gt;pis.time, now);</sp=
+an><br><span>     assert_true(data-&gt;test_buf_data.buf_id =3D=3D htonl(1)=
+);</span><br><span>     assert_true(data-&gt;test_buf_data.buf_time =3D=3D =
+htonl((uint32_t)now));</span><br><span> }</span><br><span>@@ -117,8 +117,8 =
+@@</span><br><span>     data-&gt;test_buf.offset =3D sizeof(data-&gt;test_b=
+uf_data);</span><br><span>     now =3D 5010;</span><br><span>     assert_tr=
+ue(packet_id_write(&amp;data-&gt;pis, &amp;data-&gt;test_buf, true, true));=
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    assert(data-&gt;p=
+is.id =3D=3D 1);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    a=
+ssert(data-&gt;pis.time =3D=3D now);</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+    assert_int_equal(data-&gt;pis.id, 1);</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+    assert_int_equal(data-&gt;pis.ti=
+me, now);</span><br><span>     assert_true(data-&gt;test_buf_data.buf_id =
+=3D=3D htonl(1));</span><br><span>     assert_true(data-&gt;test_buf_data.b=
+uf_time =3D=3D htonl((uint32_t)now));</span><br><span> }</span><br><span>@@=
+ -128,7 +128,8 @@</span><br><span> {</span><br><span>     struct test_packe=
+t_id_write_data *data =3D *state;</span><br><span> </span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-    data-&gt;pis.id =3D ~0;</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+    /* maximum 32-bit packet id */<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+    data-&gt;pis.id =
+=3D (packet_id_type)(~0);</span><br><span>     assert_false(packet_id_write=
+(&amp;data-&gt;pis, &amp;data-&gt;test_buf, false, false));</span><br><span=
+> }</span><br><span> </span><br><span>@@ -137,7 +138,8 @@</span><br><span> =
+{</span><br><span>     struct test_packet_id_write_data *data =3D *state;</=
+span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-    d=
+ata-&gt;pis.id =3D ~0;</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+    /* maximum 32-bit packet id */</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+    data-&gt;pis.id =3D (packet_id_type)(~0);</span><br><=
+span>     data-&gt;pis.time =3D 5006;</span><br><span> </span><br><span>   =
+  /* Write fails if time did not change */</span><br><span>@@ -148,8 +150,8=
+ @@</span><br><span>     now =3D 5010;</span><br><span>     assert_true(pac=
+ket_id_write(&amp;data-&gt;pis, &amp;data-&gt;test_buf, true, false));</spa=
+n><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-    asse=
+rt(data-&gt;pis.id =3D=3D 1);</span><br><span style=3D"color: hsl(0, 100%, =
+40%);">-    assert(data-&gt;pis.time =3D=3D now);</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+    assert_int_equal(data-&gt;pis.id, 1);</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_int_equal(da=
+ta-&gt;pis.time, now);</span><br><span>     assert_true(data-&gt;test_buf_d=
+ata.buf_id =3D=3D htonl(1));</span><br><span>     assert_true(data-&gt;test=
+_buf_data.buf_time =3D=3D htonl((uint32_t)now));</span><br><span> }</span><=
+br><span></span><br></pre><p>To view, visit <a href=3D"http://gerrit.openvp=
+n.net/c/openvpn/+/802?usp=3Demail">change 802</a>. To unsubscribe, or for h=
+elp writing mail filters, visit <a href=3D"http://gerrit.openvpn.net/settin=
+gs">settings</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMess=
+age"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewA=
+ction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+=
+/802?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div><=
+/div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I4a981c5a70717e2276d89bf83a0=
-6c7fdbe6712d7 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 801 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: If470af2eb456b2b10f9f2806933=
+e026842188c42 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 802 </div>
 <div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
 <div style=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@...1711...=
 27...&gt; </div>
@@ -709,5 +701,5 @@ ts.sourceforge.net&gt; </div>
 <div style=3D"display:none"> Gerrit-MessageType: newchange </div>
 
 
---aOOTA5wJ0CI=--
+--zH2zn5BBGgM=--
 
