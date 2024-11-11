@@ -1,11 +1,10 @@
+Date: Mon, 11 Nov 2024 09:06:08 +0100 (CET)
+Message-Id: <202411110806.4AB8680S053305@...2054...>
 From: Gert Doering <gert@...1296...>
-Date: Mon, 11 Nov 2024 08:43:55 +0100
-Message-ID: <20241111074355.17918-1-gert@...1296...>
-In-Reply-To: <gerrit.1731290343000.I210fa255921e7115bd66ba5f3e431562552e3335@...2715...>
-References: <gerrit.1731290343000.I210fa255921e7115bd66ba5f3e431562552e3335@...2715...>
-MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v1] Move should_trigger_renegotiation into
- its own function
+In-Reply-To: <20241111074355.17918-1-gert@...1296...>
+References: <20241111074355.17918-1-gert@...1296...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Move
+ should_trigger_renegotiation into its own function
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,90 +15,43 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Arne Schwabe <arne@...1227...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-From: Arne Schwabe <arne@...1227...>
+Stared at the code, compared all the individual conditions before/after,
+reasonably sure it does the same thing.  Tested a few cases 
+(--reneg-sec 151, --reneg-pkts 20, --reneg-bytes 10000).
 
-The if statement has become quite large and unreadable. Reformat it
-and move it to a separate function.
+Noticed an interesting inconsistency...
 
-Change-Id: I210fa255921e7115bd66ba5f3e431562552e3335
-Signed-off-by: Arne Schwabe <arne@...1227...>
-Acked-by: Gert Doering <gert@...1296...>
----
+2024-11-11 08:55:36 TLS: soft reset sec=151/151 bytes=7002/-1 pkts=74/0
 
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to master.
+.. "bytes" is initialized to -1 if not used, "pkts" to "0", and
+the code also does "> 0" vs. "!= 0" (implicit)...  but this is as it 
+was before, so not a change this patch introduces.
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/794
-This mail reflects revision 1 of this Change.
 
-Acked-by according to Gerrit (reflected above):
-Gert Doering <gert@...1296...>
+I have fixed the broken indentation (uncrustify build fail) on the fly,
+"just one space to add".
 
-        
-diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
-index 93e31f1..c48a85c 100644
---- a/src/openvpn/ssl.c
-+++ b/src/openvpn/ssl.c
-@@ -2962,8 +2962,42 @@
-     return true;
- }
- 
-+/**
-+ * Determines if a renegotiation should be triggerred based on the various
-+ * factors that can trigger one
-+ */
-+static bool
-+should_trigger_renegotiation(const struct tls_session *session, const struct key_state *ks)
-+{
-+    /* Time limit */
-+    if (session->opt->renegotiate_seconds
-+        && now >= ks->established + session->opt->renegotiate_seconds)
-+    {
-+        return true;
-+    }
- 
-+    /* Byte limit */
-+    if (session->opt->renegotiate_bytes > 0
-+        && ks->n_bytes >= session->opt->renegotiate_bytes)
-+    {
-+        return true;
-+    }
- 
-+    /* Packet limit */
-+    if (session->opt->renegotiate_packets
-+        && ks->n_packets >= session->opt->renegotiate_packets)
-+    {
-+        return true;
-+    }
-+
-+    /* Packet id approach the limit of the packet id */
-+    if (packet_id_close_to_wrapping(&ks->crypto_options.packet_id.send))
-+    {
-+        return true;
-+    }
-+
-+    return false;
-+}
- /*
-  * This is the primary routine for processing TLS stuff inside the
-  * the main event loop.  When this routine exits
-@@ -2991,14 +3025,8 @@
- 
-     /* Should we trigger a soft reset? -- new key, keeps old key for a while */
-     if (ks->state >= S_GENERATED_KEYS
--        && ((session->opt->renegotiate_seconds
--             && now >= ks->established + session->opt->renegotiate_seconds)
--            || (session->opt->renegotiate_bytes > 0
--                && ks->n_bytes >= session->opt->renegotiate_bytes)
--            || (session->opt->renegotiate_packets
--                && ks->n_packets >= session->opt->renegotiate_packets)
--            || (packet_id_close_to_wrapping(&ks->crypto_options.packet_id.send))))
--    {
-+        && should_trigger_renegotiation(session, ks))
-+   {
-         msg(D_TLS_DEBUG_LOW, "TLS: soft reset sec=%d/%d bytes=" counter_format
-             "/%d pkts=" counter_format "/%d",
-             (int) (now - ks->established), session->opt->renegotiate_seconds,
+Your patch has been applied to the master branch.
+
+commit a4d0de10883fbec691a0301dd6fa04b095664711
+Author: Arne Schwabe
+Date:   Mon Nov 11 08:43:55 2024 +0100
+
+     Move should_trigger_renegotiation into its own function
+
+     Signed-off-by: Arne Schwabe <arne@...1227...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <20241111074355.17918-1-gert@...1296...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg29740.html
+     Signed-off-by: Gert Doering <gert@...1296...>
+
+
+--
+kind regards,
+
+Gert Doering
+
 
