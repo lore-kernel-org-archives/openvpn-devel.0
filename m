@@ -1,15 +1,15 @@
 From: "plaisthos (Code Review)" <gerrit@...515...>
-Date: Mon, 11 Nov 2024 01:59:50 +0000
-References: <gerrit.1731290343000.Id223612c7bcab91d49c013fb775024bd64ab0836@...2715...>
+Date: Mon, 11 Nov 2024 01:59:46 +0000
+References: <gerrit.1731290343000.I3a1c6561f4d9a69e2a441d49dff620b4258a1bcc@...2715...>
 Reply-To: arne-openvpn@...1227..., openvpn-devel@lists.sourceforge.net,
  frank@...2641...
-Message-ID: <1f3d1369ef5f4f20c559c21112f737d5dc72c22c-HTML@...2715...>
+Message-ID: <737fc6870bbfb1248baa1bacfc448ee774a4f5ea-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="zaRe/kYpPOY="; charset=UTF-8
-Subject: [Openvpn-devel] [M] Change in openvpn[master]: Move initialisation
- of implicit IVs to init_key_ctx_bi methods
+Content-Type: multipart/alternative; boundary="pxfq60mfpDE="; charset=UTF-8
+Subject: [Openvpn-devel] [L] Change in openvpn[master]: Implement HKDF
+ expand function based on RFC 8446
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -21,7 +21,7 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: flichtenheld <frank@...2641...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---zaRe/kYpPOY=
+--pxfq60mfpDE=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
@@ -32,231 +32,443 @@ Hello flichtenheld,
 I'd like you to do a code review.
 Please visit
 
-    http://gerrit.openvpn.net/c/openvpn/+/800?usp=3Demail
+    http://gerrit.openvpn.net/c/openvpn/+/798?usp=3Demail
 
 to review the following change.
 
 
-Change subject: Move initialisation of implicit IVs to init_key_ctx_bi meth=
-ods
+Change subject: Implement HKDF expand function based on RFC 8446
 ......................................................................
 
-Move initialisation of implicit IVs to init_key_ctx_bi methods
+Implement HKDF expand function based on RFC 8446
 
-This is really more a function of initialising the data cipher and key
-context and putting it into the init_key_ctx_bi makes more sense.
+Use crypto_epoch.c/h for the new functions since they are
+linked to the epoch key usage in OpenVPN.
 
-It will allow calling init_key_ctx_bi to fully initialise a
-data channel key without calling some extra functions after that
-which will make the (upcoming) epoch key implementation cleaner.
-
-Also ensure that free_ctx_bi actually also sets initialized to false.
-
-Change-Id: Id223612c7bcab91d49c013fb775024bd64ab0836
+Change-Id: I3a1c6561f4d9a69e2a441d49dff620b4258a1bcc
 Signed-off-by: Arne Schwabe <arne@...1227...>
 ---
-M src/openvpn/crypto.c
-M src/openvpn/ssl.c
-M tests/unit_tests/openvpn/test_ssl.c
-3 files changed, 30 insertions(+), 59 deletions(-)
+M CMakeLists.txt
+M src/openvpn/Makefile.am
+A src/openvpn/crypto_epoch.c
+A src/openvpn/crypto_epoch.h
+M src/openvpn/crypto_mbedtls.h
+M tests/unit_tests/openvpn/Makefile.am
+M tests/unit_tests/openvpn/test_crypto.c
+7 files changed, 304 insertions(+), 2 deletions(-)
 
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/00/800/1
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/98/798/1
 
-diff --git a/src/openvpn/crypto.c b/src/openvpn/crypto.c
-index f0b60a3..44c226c 100644
---- a/src/openvpn/crypto.c
-+++ b/src/openvpn/crypto.c
-@@ -892,6 +892,33 @@
-     }
- }
-
-+/**
-+ * Update the implicit IV for a key_ctx_bi based on TLS session ids and ci=
-pher
-+ * used.
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 5db207d..cbc93cd 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -389,6 +389,8 @@
+     src/openvpn/crypto.c
+     src/openvpn/crypto.h
+     src/openvpn/crypto_backend.h
++    src/openvpn/crypto_epoch.c
++    src/openvpn/crypto_epoch.h
+     src/openvpn/crypto_openssl.c
+     src/openvpn/crypto_openssl.h
+     src/openvpn/crypto_mbedtls.c
+@@ -717,6 +719,7 @@
+     target_sources(test_crypto PRIVATE
+         src/openvpn/crypto_mbedtls.c
+         src/openvpn/crypto_openssl.c
++        src/openvpn/crypto_epoch.c
+         src/openvpn/crypto.c
+         src/openvpn/otime.c
+         src/openvpn/packet_id.c
+diff --git a/src/openvpn/Makefile.am b/src/openvpn/Makefile.am
+index ecb2bcf..d6d6592 100644
+--- a/src/openvpn/Makefile.am
++++ b/src/openvpn/Makefile.am
+@@ -53,6 +53,7 @@
+ 	crypto.c crypto.h crypto_backend.h \
+ 	crypto_openssl.c crypto_openssl.h \
+ 	crypto_mbedtls.c crypto_mbedtls.h \
++	crypto_epoch.c crypto_epoch.h \
+ 	dco.c dco.h dco_internal.h \
+ 	dco_freebsd.c dco_freebsd.h \
+ 	dco_linux.c dco_linux.h \
+diff --git a/src/openvpn/crypto_epoch.c b/src/openvpn/crypto_epoch.c
+new file mode 100644
+index 0000000..7a5b460
+--- /dev/null
++++ b/src/openvpn/crypto_epoch.c
+@@ -0,0 +1,106 @@
++/*
++ *  OpenVPN -- An application to securely tunnel IP networks
++ *             over a single TCP/UDP port, with support for SSL/TLS-based
++ *             session authentication and key exchange,
++ *             packet encryption, packet authentication, and
++ *             packet compression.
 + *
-+ * Note that the implicit IV is based on the HMAC key, but only in AEAD mo=
-des
-+ * where the HMAC key is not used for an actual HMAC.
++ *  Copyright (C) 2024 OpenVPN Inc <sales@...515...>
++ *  Copyright (C) 2024 Arne Schwabe <arne@...1227...>
 + *
-+ * @param ctx                   Encrypt/decrypt key context
-+ * @param key                   key, hmac part used to calculate implicit =
-IV
-+ */
-+static void
-+key_ctx_update_implicit_iv(struct key_ctx *ctx, const struct key *key)
++ *
++ *  This program is free software; you can redistribute it and/or modify
++ *  it under the terms of the GNU General Public License version 2
++ *  as published by the Free Software Foundation.
++ *
++ *  This program is distributed in the hope that it will be useful,
++ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
++ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ *  GNU General Public License for more details.
++ *
++ *  You should have received a copy of the GNU General Public License along
++ *  with this program; if not, write to the Free Software Foundation, Inc.,
++ *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
++*/
++
++
++#ifdef HAVE_CONFIG_H
++#include "config.h"
++#endif
++
++#include <inttypes.h>
++#include "crypto_backend.h"
++#include "buffer.h"
++#include "integer.h"
++
++void
++ovpn_hdkf_expand(const uint8_t *secret,
++                 const uint8_t *info, int info_len,
++                 uint8_t *out, int out_len)
 +{
-+    /* Only use implicit IV in AEAD cipher mode, where HMAC key is not use=
-d */
-+    if (cipher_ctx_mode_aead(ctx->cipher))
++    hmac_ctx_t *hmac_ctx =3D hmac_ctx_new();
++    hmac_ctx_init(hmac_ctx, secret, "SHA256");
++
++    const int digest_size =3D SHA256_DIGEST_LENGTH;
++
++    /* T(0) =3D empty string */
++    uint8_t t_prev[SHA256_DIGEST_LENGTH];
++    int t_prev_len =3D 0;
++
++    for (uint8_t block =3D 1; (block - 1) * digest_size < out_len; block++)
 +    {
-+        size_t impl_iv_len =3D 0;
-+        ASSERT(cipher_ctx_iv_length(ctx->cipher) >=3D OPENVPN_AEAD_MIN_IV_=
-LEN);
-+        impl_iv_len =3D cipher_ctx_iv_length(ctx->cipher) - sizeof(packet_=
-id_type);
-+        ASSERT(impl_iv_len <=3D OPENVPN_MAX_IV_LENGTH);
-+        ASSERT(impl_iv_len <=3D MAX_HMAC_KEY_LENGTH);
-+        CLEAR(ctx->implicit_iv);
-+        /* The first bytes of the IV are filled with the packet id */
-+        memcpy(ctx->implicit_iv + sizeof(packet_id_type), key->hmac, impl_=
-iv_len);
++        hmac_ctx_reset(hmac_ctx);
++
++        /* calculate T(block) */
++        hmac_ctx_update(hmac_ctx, t_prev, t_prev_len);
++        hmac_ctx_update(hmac_ctx, info, info_len);
++        hmac_ctx_update(hmac_ctx, &block, 1);
++        hmac_ctx_final(hmac_ctx, t_prev);
++        t_prev_len =3D digest_size;
++
++        /* Copy a full hmac output or remaining bytes */
++        int out_offset =3D (block - 1) * digest_size;
++        int copylen =3D min_int(digest_size, out_len - out_offset);
++
++        memcpy(out + out_offset, t_prev, copylen);
 +    }
++    hmac_ctx_cleanup(hmac_ctx);
++    hmac_ctx_free(hmac_ctx);
 +}
 +
- /* given a key and key_type, build a key_ctx */
- void
- init_key_ctx(struct key_ctx *ctx, const struct key *key,
-@@ -950,7 +977,7 @@
-     snprintf(log_prefix, sizeof(log_prefix), "Outgoing %s", name);
-     init_key_ctx(ctx, &key2->keys[kds.out_key], kt,
-                  OPENVPN_OP_ENCRYPT, log_prefix);
--
-+    key_ctx_update_implicit_iv(ctx, &key2->keys[kds.out_key]);
++bool
++ovpn_expand_label(const uint8_t *secret, size_t secret_len,
++                  const uint8_t *label, size_t label_len,
++                  const uint8_t *context, size_t context_len,
++                  uint8_t *out, uint16_t out_len)
++{
++    if (secret_len !=3D 32)
++    {
++        /* Our current implementation is not a general purpose one
++         * and assume that the secret size matches the size of the
++         * hash (SHA256) key */
++        return false;
++    }
++
++    struct gc_arena gc =3D gc_new();
++    /* 2 byte for the outlen encoded as uint16, 5 bytes for "ovpn " */
++    int hkdf_label_len =3D 2 + 5 + label_len + context_len;
++    struct buffer hkdf_label =3D alloc_buf_gc(hkdf_label_len, &gc);
++
++
++    buf_write_u16(&hkdf_label, out_len);
++    buf_write(&hkdf_label, "ovpn ", 5);
++    buf_write(&hkdf_label, label, label_len);
++    if (context_len > 0)
++    {
++        buf_write(&hkdf_label, context, context_len);
++    }
++
++    ASSERT(buf_len(&hkdf_label) =3D=3D hkdf_label_len);
++
++    ovpn_hdkf_expand(secret, buf_bptr(&hkdf_label),
++                     buf_len(&hkdf_label), out, out_len);
++
++    gc_free(&gc);
++    return true;
++}
+\ No newline at end of file
+diff --git a/src/openvpn/crypto_epoch.h b/src/openvpn/crypto_epoch.h
+new file mode 100644
+index 0000000..dad2473
+--- /dev/null
++++ b/src/openvpn/crypto_epoch.h
+@@ -0,0 +1,69 @@
++/*
++ *  OpenVPN -- An application to securely tunnel IP networks
++ *             over a single TCP/UDP port, with support for SSL/TLS-based
++ *             session authentication and key exchange,
++ *             packet encryption, packet authentication, and
++ *             packet compression.
++ *
++ *  Copyright (C) 2024 OpenVPN Inc <sales@...515...>
++ *  Copyright (C) 2024 Arne Schwabe <arne@...1227...>
++ *
++ *
++ *  This program is free software; you can redistribute it and/or modify
++ *  it under the terms of the GNU General Public License version 2
++ *  as published by the Free Software Foundation.
++ *
++ *  This program is distributed in the hope that it will be useful,
++ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
++ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ *  GNU General Public License for more details.
++ *
++ *  You should have received a copy of the GNU General Public License along
++ *  with this program; if not, write to the Free Software Foundation, Inc.,
++ *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
++ */
++
++#ifndef CRYPTO_EPOCH_H
++#define CRYPTO_EPOCH_H
++
++/**
++ * Implementation of the RFC5869 HKDF-Expand function with the following
++ * restrictions
++ *  - salt is always assumed to be zero length (ie not supported)
++ *  - IKM (secret) is assumed to be always 32 bytes
++ *  - HASH is always SHA256
++ *
++ *  @param secret   the input keying material (HMAC key)
++ *  @param info     context and application specific information
++ *  @param out      output keying material
++ *  @param out_len  length of output keying material
++ */
++void
++ovpn_hdkf_expand(const uint8_t *secret,
++                 const uint8_t *info, int info_len,
++                 uint8_t *out, int out_len);
++
++/**
++ * Variant of the RFC 8446 TLS 1.3  HKDF-Expand-Label function with the
++ * following differences/restrictions:
++ *  - secret must 32 bytes in length
++ *  - label prefix is "ovpn " instead of "tls13 "
++ *  - HASH is always SHA256
++ *
++ * @param secret        Input secret
++ * @param secret_len    length of the input secret
++ * @param label         Label for the exported key material
++ * @param label_len     length of the label
++ * @param context       optional context
++ * @param context_len   length of the context
++ * @param out      output keying material
++ * @param out_len  length of output keying material
++ * @return
++ */
++bool
++ovpn_expand_label(const uint8_t *secret, size_t secret_len,
++                  const uint8_t *label, size_t label_len,
++                  const uint8_t *context, size_t context_len,
++                  uint8_t *out, uint16_t out_len);
++
++#endif
+diff --git a/src/openvpn/crypto_mbedtls.h b/src/openvpn/crypto_mbedtls.h
+index a966a7a..fe51359 100644
+--- a/src/openvpn/crypto_mbedtls.h
++++ b/src/openvpn/crypto_mbedtls.h
+@@ -29,6 +29,7 @@
+ #ifndef CRYPTO_MBEDTLS_H_
+ #define CRYPTO_MBEDTLS_H_
+
++#include <stdbool.h>
+ #include <mbedtls/cipher.h>
+ #include <mbedtls/md.h>
+ #include <mbedtls/ctr_drbg.h>
+diff --git a/tests/unit_tests/openvpn/Makefile.am b/tests/unit_tests/openvp=
+n/Makefile.am
+index a4e6235..307f9ed 100644
+--- a/tests/unit_tests/openvpn/Makefile.am
++++ b/tests/unit_tests/openvpn/Makefile.am
+@@ -66,6 +66,7 @@
+ 	$(top_srcdir)/src/openvpn/crypto.c \
+ 	$(top_srcdir)/src/openvpn/crypto_mbedtls.c \
+ 	$(top_srcdir)/src/openvpn/crypto_openssl.c \
++	$(top_srcdir)/src/openvpn/crypto_epoch.c \
+ 	$(top_srcdir)/src/openvpn/otime.c \
+ 	$(top_srcdir)/src/openvpn/packet_id.c \
+ 	$(top_srcdir)/src/openvpn/platform.c \
+diff --git a/tests/unit_tests/openvpn/test_crypto.c b/tests/unit_tests/open=
+vpn/test_crypto.c
+index 135cd15..c8d2a10 100644
+--- a/tests/unit_tests/openvpn/test_crypto.c
++++ b/tests/unit_tests/openvpn/test_crypto.c
+@@ -35,6 +35,7 @@
+ #include <cmocka.h>
+
+ #include "crypto.h"
++#include "crypto_epoch.h"
+ #include "options.h"
+ #include "ssl_backend.h"
+
+@@ -469,6 +470,122 @@
+     assert_int_equal(aeslimit / L, 122059461);
  }
 
- void
-@@ -965,7 +992,7 @@
-     snprintf(log_prefix, sizeof(log_prefix), "Incoming %s", name);
-     init_key_ctx(ctx, &key2->keys[kds.in_key], kt,
-                  OPENVPN_OP_DECRYPT, log_prefix);
--
-+    key_ctx_update_implicit_iv(ctx, &key2->keys[kds.in_key]);
- }
-
- void
-@@ -1000,6 +1027,7 @@
++void
++crypto_test_hkdf_expand_testa1(void **state)
++{
++    /* RFC 5889 A.1 Test Case 1 */
++    uint8_t prk[32] =3D
++    {0x07, 0x77, 0x09, 0x36, 0x2c, 0x2e, 0x32, 0xdf,
++     0x0d, 0xdc, 0x3f, 0x0d, 0xc4, 0x7b, 0xba, 0x63,
++     0x90, 0xb6, 0xc7, 0x3b, 0xb5, 0x0f, 0x9c, 0x31,
++     0x22, 0xec, 0x84, 0x4a, 0xd7, 0xc2, 0xb3, 0xe5};
++
++    uint8_t info[10] =3D {0xf0, 0xf1, 0xf2, 0xf3, 0xf4, 0xf5,
++                        0xf6, 0xf7, 0xf8, 0xf9};
++
++    uint8_t okm[42] =3D
++    {0x3c, 0xb2, 0x5f, 0x25, 0xfa, 0xac, 0xd5, 0x7a,
++     0x90, 0x43, 0x4f, 0x64, 0xd0, 0x36, 0x2f, 0x2a,
++     0x2d, 0x2d, 0x0a, 0x90, 0xcf, 0x1a, 0x5a, 0x4c,
++     0x5d, 0xb0, 0x2d, 0x56, 0xec, 0xc4, 0xc5, 0xbf,
++     0x34, 0x00, 0x72, 0x08, 0xd5, 0xb8, 0x87, 0x18,
++     0x58, 0x65};
++
++    uint8_t out[42];
++    ovpn_hdkf_expand(prk, info, sizeof(info), out, sizeof(out));
++
++    assert_memory_equal(out, okm, sizeof(out));
++}
++
++void
++crypto_test_hkdf_expand_testa2(void **state)
++{
++    /* RFC 5889 A.2 Test Case 2 */
++    uint8_t prk[32] =3D
++    {0x06, 0xa6, 0xb8, 0x8c, 0x58, 0x53, 0x36, 0x1a,
++     0x06, 0x10, 0x4c, 0x9c, 0xeb, 0x35, 0xb4, 0x5c,
++     0xef, 0x76, 0x00, 0x14, 0x90, 0x46, 0x71, 0x01,
++     0x4a, 0x19, 0x3f, 0x40, 0xc1, 0x5f, 0xc2, 0x44};
++
++    uint8_t info[80] =3D
++    {0xb0, 0xb1, 0xb2, 0xb3, 0xb4, 0xb5, 0xb6, 0xb7,
++     0xb8, 0xb9, 0xba, 0xbb, 0xbc, 0xbd, 0xbe, 0xbf,
++     0xc0, 0xc1, 0xc2, 0xc3, 0xc4, 0xc5, 0xc6, 0xc7,
++     0xc8, 0xc9, 0xca, 0xcb, 0xcc, 0xcd, 0xce, 0xcf,
++     0xd0, 0xd1, 0xd2, 0xd3, 0xd4, 0xd5, 0xd6, 0xd7,
++     0xd8, 0xd9, 0xda, 0xdb, 0xdc, 0xdd, 0xde, 0xdf,
++     0xe0, 0xe1, 0xe2, 0xe3, 0xe4, 0xe5, 0xe6, 0xe7,
++     0xe8, 0xe9, 0xea, 0xeb, 0xec, 0xed, 0xee, 0xef,
++     0xf0, 0xf1, 0xf2, 0xf3, 0xf4, 0xf5, 0xf6, 0xf7,
++     0xf8, 0xf9, 0xfa, 0xfb, 0xfc, 0xfd, 0xfe, 0xff};
++
++    const int L =3D 82;
++    uint8_t okm[82] =3D
++    {0xb1, 0x1e, 0x39, 0x8d, 0xc8, 0x03, 0x27, 0xa1,
++     0xc8, 0xe7, 0xf7, 0x8c, 0x59, 0x6a, 0x49, 0x34,
++     0x4f, 0x01, 0x2e, 0xda, 0x2d, 0x4e, 0xfa, 0xd8,
++     0xa0, 0x50, 0xcc, 0x4c, 0x19, 0xaf, 0xa9, 0x7c,
++     0x59, 0x04, 0x5a, 0x99, 0xca, 0xc7, 0x82, 0x72,
++     0x71, 0xcb, 0x41, 0xc6, 0x5e, 0x59, 0x0e, 0x09,
++     0xda, 0x32, 0x75, 0x60, 0x0c, 0x2f, 0x09, 0xb8,
++     0x36, 0x77, 0x93, 0xa9, 0xac, 0xa3, 0xdb, 0x71,
++     0xcc, 0x30, 0xc5, 0x81, 0x79, 0xec, 0x3e, 0x87,
++     0xc1, 0x4c, 0x01, 0xd5, 0xc1, 0xf3, 0x43, 0x4f,
++     0x1d, 0x87};
++
++    uint8_t out[82] =3D {0xaa};
++    ovpn_hdkf_expand(prk, info, sizeof(info), out, L);
++
++    assert_memory_equal(out, okm, L);
++}
++
++void
++crypto_test_hkdf_expand_testa3(void **state)
++{
++    /* RFC 5889 A.3 Test Case 3 */
++    uint8_t prk[32] =3D
++    {0x19, 0xef, 0x24, 0xa3, 0x2c, 0x71, 0x7b, 0x16,
++     0x7f, 0x33, 0xa9, 0x1d, 0x6f, 0x64, 0x8b, 0xdf,
++     0x96, 0x59, 0x67, 0x76, 0xaf, 0xdb, 0x63, 0x77,
++     0xac, 0x43, 0x4c, 0x1c, 0x29, 0x3c, 0xcb, 0x04};
++
++    uint8_t info[0] =3D {};
++
++    int L =3D 42;
++    uint8_t okm[42] =3D
++    {0x8d, 0xa4, 0xe7, 0x75, 0xa5, 0x63, 0xc1, 0x8f,
++     0x71, 0x5f, 0x80, 0x2a, 0x06, 0x3c, 0x5a, 0x31,
++     0xb8, 0xa1, 0x1f, 0x5c, 0x5e, 0xe1, 0x87, 0x9e,
++     0xc3, 0x45, 0x4e, 0x5f, 0x3c, 0x73, 0x8d, 0x2d,
++     0x9d, 0x20, 0x13, 0x95, 0xfa, 0xa4, 0xb6, 0x1a,
++     0x96, 0xc8};
++
++    uint8_t out[42];
++    ovpn_hdkf_expand(prk, info, sizeof(info), out, L);
++
++    assert_memory_equal(out, okm, L);
++}
++
++void
++crypto_test_ovpn_label_expand(void **state)
++{
++    uint8_t secret[32] =3D
++    {0x07, 0x77, 0x09, 0x36, 0x2c, 0x2e, 0x32, 0xdf,
++     0x0d, 0xdc, 0x3f, 0x0d, 0xc4, 0x7b, 0xba, 0x63,
++     0x90, 0xb6, 0xc7, 0x3b, 0xb5, 0x0f, 0x9c, 0x31,
++     0x22, 0xec, 0x84, 0x4a, 0xd7, 0xc2, 0xb3, 0xe5};
++
++    const uint8_t *label =3D (const uint8_t *)("unit test");
++    uint8_t out[16];
++    ovpn_expand_label(secret, sizeof(secret), label, 9, NULL, 0, out, size=
+of(out));
++
++    uint8_t out_expected[16] =3D
++    {0x6, 0x8C, 0x11, 0xA6, 0x48, 0xFE, 0xBC, 0xA0,
++     0x9D, 0x1A, 0xF0, 0xD6, 0xD5, 0xF7, 0xBE, 0xC6};
++
++    assert_memory_equal(out, out_expected, 16);
++}
++
+ int
+ main(void)
  {
-     free_key_ctx(&ctx->encrypt);
-     free_key_ctx(&ctx->decrypt);
-+    ctx->initialized =3D false;
- }
+@@ -480,8 +597,12 @@
+         cmocka_unit_test(crypto_test_hmac),
+         cmocka_unit_test(test_occ_mtu_calculation),
+         cmocka_unit_test(test_mssfix_mtu_calculation),
+-        cmocka_unit_test(crypto_test_aead_limits)
+-   };
++        cmocka_unit_test(crypto_test_aead_limits),
++        cmocka_unit_test(crypto_test_hkdf_expand_testa1),
++        cmocka_unit_test(crypto_test_hkdf_expand_testa2),
++        cmocka_unit_test(crypto_test_hkdf_expand_testa3),
++        cmocka_unit_test(crypto_test_ovpn_label_expand),
++    };
 
- static bool
-diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
-index 2d6cf64..9eaf3ac 100644
---- a/src/openvpn/ssl.c
-+++ b/src/openvpn/ssl.c
-@@ -96,21 +96,6 @@
- #endif /* ifdef MEASURE_TLS_HANDSHAKE_STATS */
-
- /**
-- * Update the implicit IV for a key_ctx_bi based on TLS session ids and ci=
-pher
-- * used.
-- *
-- * Note that the implicit IV is based on the HMAC key, but only in AEAD mo=
-des
-- * where the HMAC key is not used for an actual HMAC.
-- *
-- * @param ctx                   Encrypt/decrypt key context
-- * @param key                   HMAC key, used to calculate implicit IV
-- * @param key_len               HMAC key length
-- */
--static void
--key_ctx_update_implicit_iv(struct key_ctx *ctx, uint8_t *key, size_t key_l=
-en);
--
--
--/**
-  * Limit the reneg_bytes value when using a small-block (<128 bytes) ciphe=
-r.
-  *
-  * @param cipher        The current cipher (may be NULL).
-@@ -1409,12 +1394,6 @@
-     else
-     {
-         init_key_ctx_bi(key, key2, key_direction, key_type, "Data Channel"=
-);
--        /* Initialize implicit IVs */
--        key_ctx_update_implicit_iv(&key->encrypt, key2->keys[(int)server].=
-hmac,
--                                   MAX_HMAC_KEY_LENGTH);
--        key_ctx_update_implicit_iv(&key->decrypt,
--                                   key2->keys[1 - (int)server].hmac,
--                                   MAX_HMAC_KEY_LENGTH);
-     }
- }
-
-@@ -1551,23 +1530,6 @@
-     return ret;
- }
-
--static void
--key_ctx_update_implicit_iv(struct key_ctx *ctx, uint8_t *key, size_t key_l=
-en)
--{
--    /* Only use implicit IV in AEAD cipher mode, where HMAC key is not use=
-d */
--    if (cipher_ctx_mode_aead(ctx->cipher))
--    {
--        size_t impl_iv_len =3D 0;
--        ASSERT(cipher_ctx_iv_length(ctx->cipher) >=3D OPENVPN_AEAD_MIN_IV_=
-LEN);
--        impl_iv_len =3D cipher_ctx_iv_length(ctx->cipher) - sizeof(packet_=
-id_type);
--        ASSERT(impl_iv_len <=3D OPENVPN_MAX_IV_LENGTH);
--        ASSERT(impl_iv_len <=3D key_len);
--        CLEAR(ctx->implicit_iv);
--        /* The first bytes of the IV are filled with the packet id */
--        memcpy(ctx->implicit_iv + sizeof(packet_id_type), key, impl_iv_len=
-);
--    }
--}
--
- /**
-  * Generate data channel keys for the supplied TLS session.
-  *
-diff --git a/tests/unit_tests/openvpn/test_ssl.c b/tests/unit_tests/openvpn=
-/test_ssl.c
-index ae33cc6..caacd9e 100644
---- a/tests/unit_tests/openvpn/test_ssl.c
-+++ b/tests/unit_tests/openvpn/test_ssl.c
-@@ -277,24 +277,6 @@
- #endif /* HAVE_OPENSSL_STORE */
- }
-
--static void
--init_implicit_iv(struct crypto_options *co)
--{
--    cipher_ctx_t *cipher =3D co->key_ctx_bi.encrypt.cipher;
--
--    if (cipher_ctx_mode_aead(cipher))
--    {
--        ASSERT(cipher_ctx_iv_length(cipher) <=3D OPENVPN_MAX_IV_LENGTH);
--        ASSERT(cipher_ctx_iv_length(cipher) >=3D OPENVPN_AEAD_MIN_IV_LEN);
--
--        /* Generate dummy implicit IV */
--        ASSERT(rand_bytes(co->key_ctx_bi.encrypt.implicit_iv,
--                          OPENVPN_MAX_IV_LENGTH));
--
--        memcpy(co->key_ctx_bi.decrypt.implicit_iv,
--               co->key_ctx_bi.encrypt.implicit_iv, OPENVPN_MAX_IV_LENGTH);
--    }
--}
-
- static void
- init_frame_parameters(struct frame *frame)
-@@ -346,7 +328,6 @@
-     /* init work */
-     ASSERT(buf_init(&work, frame.buf.headroom));
-
--    init_implicit_iv(co);
-     update_time();
-
-     /* Test encryption, decryption for all packet sizes */
+ #if defined(ENABLE_CRYPTO_OPENSSL)
+     OpenSSL_add_all_algorithms();
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/800?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/798?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings
 
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: Id223612c7bcab91d49c013fb775024bd64ab0836
-Gerrit-Change-Number: 800
+Gerrit-Change-Id: I3a1c6561f4d9a69e2a441d49dff620b4258a1bcc
+Gerrit-Change-Number: 798
 Gerrit-PatchSet: 1
 Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
@@ -264,194 +476,463 @@ Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: flichtenheld <frank@...2641...>
 Gerrit-MessageType: newchange
 
---zaRe/kYpPOY=
+--pxfq60mfpDE=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <p> Attention is currently required from: flichtenheld. </p>
 <p>plaisthos would like flichtenheld to <strong>review</strong> this change.
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/800?usp=3Demail">Vi=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/798?usp=3Demail">Vi=
 ew Change</a></p><pre style=3D"font-family: monospace,monospace; white-spac=
-e: pre-wrap;">Move initialisation of implicit IVs to init_key_ctx_bi method=
-s<br><br>This is really more a function of initialising the data cipher and=
- key<br>context and putting it into the init_key_ctx_bi makes more sense.<b=
-r><br>It will allow calling init_key_ctx_bi to fully initialise a<br>data c=
-hannel key without calling some extra functions after that<br>which will ma=
-ke the (upcoming) epoch key implementation cleaner.<br><br>Also ensure that=
- free_ctx_bi actually also sets initialized to false.<br><br>Change-Id: Id2=
-23612c7bcab91d49c013fb775024bd64ab0836<br>Signed-off-by: Arne Schwabe &lt;a=
-rne@...1227...&gt;<br>---<br>M src/openvpn/crypto.c<br>M src/openvpn/ssl.c<=
-br>M tests/unit_tests/openvpn/test_ssl.c<br>3 files changed, 30 insertions(=
-+), 59 deletions(-)<br><br></pre><pre style=3D"font-family: monospace,monos=
-pace; white-space: pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/openv=
-pn refs/changes/00/800/1</pre><pre style=3D"font-family: monospace,monospac=
-e; white-space: pre-wrap;"><span>diff --git a/src/openvpn/crypto.c b/src/op=
-envpn/crypto.c</span><br><span>index f0b60a3..44c226c 100644</span><br><spa=
-n>--- a/src/openvpn/crypto.c</span><br><span>+++ b/src/openvpn/crypto.c</sp=
-an><br><span>@@ -892,6 +892,33 @@</span><br><span>     }</span><br><span> }=
-</span><br><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+/=
-**</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * Update the imp=
-licit IV for a key_ctx_bi based on TLS session ids and cipher</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+ * used.</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+ *</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+ * Note that the implicit IV is based on the HMAC key, but on=
-ly in AEAD modes</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * =
-where the HMAC key is not used for an actual HMAC.</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+ *</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+ * @param ctx                   Encrypt/decrypt key context</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @param key        =
-           key, hmac part used to calculate implicit IV</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+ */</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+static void</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+key_ctx_update_implicit_iv(struct key_ctx *ctx, const struct ke=
-y *key)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+    /* Only use implicit IV in=
- AEAD cipher mode, where HMAC key is not used */</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+    if (cipher_ctx_mode_aead(ctx-&gt;cipher))<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+        size_t impl_iv_len =3D 0;<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+        ASSERT(ciphe=
-r_ctx_iv_length(ctx-&gt;cipher) &gt;=3D OPENVPN_AEAD_MIN_IV_LEN);</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+        impl_iv_len =3D ciphe=
-r_ctx_iv_length(ctx-&gt;cipher) - sizeof(packet_id_type);</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+        ASSERT(impl_iv_len &lt;=3D OP=
-ENVPN_MAX_IV_LENGTH);</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+        ASSERT(impl_iv_len &lt;=3D MAX_HMAC_KEY_LENGTH);</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+        CLEAR(ctx-&gt;implicit_iv);<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+        /* The first=
- bytes of the IV are filled with the packet id */</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+        memcpy(ctx-&gt;implicit_iv + sizeof(p=
-acket_id_type), key-&gt;hmac, impl_iv_len);</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><=
-br><span> /* given a key and key_type, build a key_ctx */</span><br><span> =
-void</span><br><span> init_key_ctx(struct key_ctx *ctx, const struct key *k=
-ey,</span><br><span>@@ -950,7 +977,7 @@</span><br><span>     snprintf(log_p=
-refix, sizeof(log_prefix), &quot;Outgoing %s&quot;, name);</span><br><span>=
-     init_key_ctx(ctx, &amp;key2-&gt;keys[kds.out_key], kt,</span><br><span=
->                  OPENVPN_OP_ENCRYPT, log_prefix);</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+    key_ctx_update_implicit_iv(ctx, &amp;key2-&gt;keys[kds.out=
-_key]);</span><br><span> }</span><br><span> </span><br><span> void</span><b=
-r><span>@@ -965,7 +992,7 @@</span><br><span>     snprintf(log_prefix, sizeo=
-f(log_prefix), &quot;Incoming %s&quot;, name);</span><br><span>     init_ke=
-y_ctx(ctx, &amp;key2-&gt;keys[kds.in_key], kt,</span><br><span>            =
-      OPENVPN_OP_DECRYPT, log_prefix);</span><br><span style=3D"color: hsl(=
-0, 100%, 40%);">-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-  key_ctx_update_implicit_iv(ctx, &amp;key2-&gt;keys[kds.in_key]);</span><b=
-r><span> }</span><br><span> </span><br><span> void</span><br><span>@@ -1000=
-,6 +1027,7 @@</span><br><span> {</span><br><span>     free_key_ctx(&amp;ctx=
--&gt;encrypt);</span><br><span>     free_key_ctx(&amp;ctx-&gt;decrypt);</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+    ctx-&gt;initialized=
- =3D false;</span><br><span> }</span><br><span> </span><br><span> static bo=
-ol</span><br><span>diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c</span=
-><br><span>index 2d6cf64..9eaf3ac 100644</span><br><span>--- a/src/openvpn/=
-ssl.c</span><br><span>+++ b/src/openvpn/ssl.c</span><br><span>@@ -96,21 +96=
-,6 @@</span><br><span> #endif /* ifdef MEASURE_TLS_HANDSHAKE_STATS */</span=
-><br><span> </span><br><span> /**</span><br><span style=3D"color: hsl(0, 10=
-0%, 40%);">- * Update the implicit IV for a key_ctx_bi based on TLS session=
- ids and cipher</span><br><span style=3D"color: hsl(0, 100%, 40%);">- * use=
-d.</span><br><span style=3D"color: hsl(0, 100%, 40%);">- *</span><br><span =
-style=3D"color: hsl(0, 100%, 40%);">- * Note that the implicit IV is based =
-on the HMAC key, but only in AEAD modes</span><br><span style=3D"color: hsl=
-(0, 100%, 40%);">- * where the HMAC key is not used for an actual HMAC.</sp=
-an><br><span style=3D"color: hsl(0, 100%, 40%);">- *</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">- * @param ctx                   Encrypt/dec=
-rypt key context</span><br><span style=3D"color: hsl(0, 100%, 40%);">- * @p=
-aram key                   HMAC key, used to calculate implicit IV</span><b=
-r><span style=3D"color: hsl(0, 100%, 40%);">- * @param key_len             =
-  HMAC key length</span><br><span style=3D"color: hsl(0, 100%, 40%);">- */<=
-/span><br><span style=3D"color: hsl(0, 100%, 40%);">-static void</span><br>=
-<span style=3D"color: hsl(0, 100%, 40%);">-key_ctx_update_implicit_iv(struc=
-t key_ctx *ctx, uint8_t *key, size_t key_len);</span><br><span style=3D"col=
-or: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%)=
-;">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-/**</span><br><sp=
-an>  * Limit the reneg_bytes value when using a small-block (&lt;128 bytes)=
- cipher.</span><br><span>  *</span><br><span>  * @param cipher        The c=
-urrent cipher (may be NULL).</span><br><span>@@ -1409,12 +1394,6 @@</span><=
-br><span>     else</span><br><span>     {</span><br><span>         init_key=
-_ctx_bi(key, key2, key_direction, key_type, &quot;Data Channel&quot;);</spa=
-n><br><span style=3D"color: hsl(0, 100%, 40%);">-        /* Initialize impl=
-icit IVs */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        ke=
-y_ctx_update_implicit_iv(&amp;key-&gt;encrypt, key2-&gt;keys[(int)server].h=
-mac,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-                 =
-                  MAX_HMAC_KEY_LENGTH);</span><br><span style=3D"color: hsl=
-(0, 100%, 40%);">-        key_ctx_update_implicit_iv(&amp;key-&gt;decrypt,<=
-/span><br><span style=3D"color: hsl(0, 100%, 40%);">-                      =
-             key2-&gt;keys[1 - (int)server].hmac,</span><br><span style=3D"=
-color: hsl(0, 100%, 40%);">-                                   MAX_HMAC_KEY=
-_LENGTH);</span><br><span>     }</span><br><span> }</span><br><span> </span=
-><br><span>@@ -1551,23 +1530,6 @@</span><br><span>     return ret;</span><b=
-r><span> }</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 4=
-0%);">-static void</span><br><span style=3D"color: hsl(0, 100%, 40%);">-key=
-_ctx_update_implicit_iv(struct key_ctx *ctx, uint8_t *key, size_t key_len)<=
-/span><br><span style=3D"color: hsl(0, 100%, 40%);">-{</span><br><span styl=
-e=3D"color: hsl(0, 100%, 40%);">-    /* Only use implicit IV in AEAD cipher=
- mode, where HMAC key is not used */</span><br><span style=3D"color: hsl(0,=
- 100%, 40%);">-    if (cipher_ctx_mode_aead(ctx-&gt;cipher))</span><br><spa=
-n style=3D"color: hsl(0, 100%, 40%);">-    {</span><br><span style=3D"color=
-: hsl(0, 100%, 40%);">-        size_t impl_iv_len =3D 0;</span><br><span st=
-yle=3D"color: hsl(0, 100%, 40%);">-        ASSERT(cipher_ctx_iv_length(ctx-=
-&gt;cipher) &gt;=3D OPENVPN_AEAD_MIN_IV_LEN);</span><br><span style=3D"colo=
-r: hsl(0, 100%, 40%);">-        impl_iv_len =3D cipher_ctx_iv_length(ctx-&g=
-t;cipher) - sizeof(packet_id_type);</span><br><span style=3D"color: hsl(0, =
-100%, 40%);">-        ASSERT(impl_iv_len &lt;=3D OPENVPN_MAX_IV_LENGTH);</s=
-pan><br><span style=3D"color: hsl(0, 100%, 40%);">-        ASSERT(impl_iv_l=
-en &lt;=3D key_len);</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
-       CLEAR(ctx-&gt;implicit_iv);</span><br><span style=3D"color: hsl(0, 1=
-00%, 40%);">-        /* The first bytes of the IV are filled with the packe=
-t id */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        memcpy=
-(ctx-&gt;implicit_iv + sizeof(packet_id_type), key, impl_iv_len);</span><br=
-><span style=3D"color: hsl(0, 100%, 40%);">-    }</span><br><span style=3D"=
-color: hsl(0, 100%, 40%);">-}</span><br><span style=3D"color: hsl(0, 100%, =
-40%);">-</span><br><span> /**</span><br><span>  * Generate data channel key=
-s for the supplied TLS session.</span><br><span>  *</span><br><span>diff --=
-git a/tests/unit_tests/openvpn/test_ssl.c b/tests/unit_tests/openvpn/test_s=
-sl.c</span><br><span>index ae33cc6..caacd9e 100644</span><br><span>--- a/te=
-sts/unit_tests/openvpn/test_ssl.c</span><br><span>+++ b/tests/unit_tests/op=
-envpn/test_ssl.c</span><br><span>@@ -277,24 +277,6 @@</span><br><span> #end=
-if /* HAVE_OPENSSL_STORE */</span><br><span> }</span><br><span> </span><br>=
-<span style=3D"color: hsl(0, 100%, 40%);">-static void</span><br><span styl=
-e=3D"color: hsl(0, 100%, 40%);">-init_implicit_iv(struct crypto_options *co=
-)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-{</span><br><span st=
-yle=3D"color: hsl(0, 100%, 40%);">-    cipher_ctx_t *cipher =3D co-&gt;key_=
-ctx_bi.encrypt.cipher;</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
--</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    if (cipher_ctx_m=
-ode_aead(cipher))</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
-{</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        ASSERT(ciphe=
-r_ctx_iv_length(cipher) &lt;=3D OPENVPN_MAX_IV_LENGTH);</span><br><span sty=
-le=3D"color: hsl(0, 100%, 40%);">-        ASSERT(cipher_ctx_iv_length(ciphe=
-r) &gt;=3D OPENVPN_AEAD_MIN_IV_LEN);</span><br><span style=3D"color: hsl(0,=
- 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-      =
-  /* Generate dummy implicit IV */</span><br><span style=3D"color: hsl(0, 1=
-00%, 40%);">-        ASSERT(rand_bytes(co-&gt;key_ctx_bi.encrypt.implicit_i=
-v,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-                   =
-       OPENVPN_MAX_IV_LENGTH));</span><br><span style=3D"color: hsl(0, 100%=
-, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        mem=
-cpy(co-&gt;key_ctx_bi.decrypt.implicit_iv,</span><br><span style=3D"color: =
-hsl(0, 100%, 40%);">-               co-&gt;key_ctx_bi.encrypt.implicit_iv, =
-OPENVPN_MAX_IV_LENGTH);</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
->-    }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-}</span><br><s=
-pan> </span><br><span> static void</span><br><span> init_frame_parameters(s=
-truct frame *frame)</span><br><span>@@ -346,7 +328,6 @@</span><br><span>   =
-  /* init work */</span><br><span>     ASSERT(buf_init(&amp;work, frame.buf=
-.headroom));</span><br><span> </span><br><span style=3D"color: hsl(0, 100%,=
- 40%);">-    init_implicit_iv(co);</span><br><span>     update_time();</spa=
-n><br><span> </span><br><span>     /* Test encryption, decryption for all p=
-acket sizes */</span><br><span></span><br></pre><p>To view, visit <a href=
-=3D"http://gerrit.openvpn.net/c/openvpn/+/800?usp=3Demail">change 800</a>. =
-To unsubscribe, or for help writing mail filters, visit <a href=3D"http://g=
-errit.openvpn.net/settings">settings</a>.</p><div itemscope itemtype=3D"htt=
-p://schema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D=
-"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit=
-.openvpn.net/c/openvpn/+/800?usp=3Demail"/><meta itemprop=3D"name" content=
-=3D"View Change"/></div></div>
+e: pre-wrap;">Implement HKDF expand function based on RFC 8446<br><br>Use c=
+rypto_epoch.c/h for the new functions since they are<br>linked to the epoch=
+ key usage in OpenVPN.<br><br>Change-Id: I3a1c6561f4d9a69e2a441d49dff620b42=
+58a1bcc<br>Signed-off-by: Arne Schwabe &lt;arne@...1227...&gt;<br>---<br>M =
+CMakeLists.txt<br>M src/openvpn/Makefile.am<br>A src/openvpn/crypto_epoch.c=
+<br>A src/openvpn/crypto_epoch.h<br>M src/openvpn/crypto_mbedtls.h<br>M tes=
+ts/unit_tests/openvpn/Makefile.am<br>M tests/unit_tests/openvpn/test_crypto=
+.c<br>7 files changed, 304 insertions(+), 2 deletions(-)<br><br></pre><pre =
+style=3D"font-family: monospace,monospace; white-space: pre-wrap;">git pull=
+ ssh://gerrit.openvpn.net:29418/openvpn refs/changes/98/798/1</pre><pre sty=
+le=3D"font-family: monospace,monospace; white-space: pre-wrap;"><span>diff =
+--git a/CMakeLists.txt b/CMakeLists.txt</span><br><span>index 5db207d..cbc9=
+3cd 100644</span><br><span>--- a/CMakeLists.txt</span><br><span>+++ b/CMake=
+Lists.txt</span><br><span>@@ -389,6 +389,8 @@</span><br><span>     src/open=
+vpn/crypto.c</span><br><span>     src/openvpn/crypto.h</span><br><span>    =
+ src/openvpn/crypto_backend.h</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+    src/openvpn/crypto_epoch.c</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+    src/openvpn/crypto_epoch.h</span><br><span>     sr=
+c/openvpn/crypto_openssl.c</span><br><span>     src/openvpn/crypto_openssl.=
+h</span><br><span>     src/openvpn/crypto_mbedtls.c</span><br><span>@@ -717=
+,6 +719,7 @@</span><br><span>     target_sources(test_crypto PRIVATE</span>=
+<br><span>         src/openvpn/crypto_mbedtls.c</span><br><span>         sr=
+c/openvpn/crypto_openssl.c</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+        src/openvpn/crypto_epoch.c</span><br><span>         src/open=
+vpn/crypto.c</span><br><span>         src/openvpn/otime.c</span><br><span> =
+        src/openvpn/packet_id.c</span><br><span>diff --git a/src/openvpn/Ma=
+kefile.am b/src/openvpn/Makefile.am</span><br><span>index ecb2bcf..d6d6592 =
+100644</span><br><span>--- a/src/openvpn/Makefile.am</span><br><span>+++ b/=
+src/openvpn/Makefile.am</span><br><span>@@ -53,6 +53,7 @@</span><br><span> =
+	crypto.c crypto.h crypto_backend.h \</span><br><span> 	crypto_openssl.c cr=
+ypto_openssl.h \</span><br><span> 	crypto_mbedtls.c crypto_mbedtls.h \</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+	crypto_epoch.c crypto_e=
+poch.h \</span><br><span> 	dco.c dco.h dco_internal.h \</span><br><span> 	d=
+co_freebsd.c dco_freebsd.h \</span><br><span> 	dco_linux.c dco_linux.h \</s=
+pan><br><span>diff --git a/src/openvpn/crypto_epoch.c b/src/openvpn/crypto_=
+epoch.c</span><br><span>new file mode 100644</span><br><span>index 0000000.=
+.7a5b460</span><br><span>--- /dev/null</span><br><span>+++ b/src/openvpn/cr=
+ypto_epoch.c</span><br><span>@@ -0,0 +1,106 @@</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+/*</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+ *  OpenVPN -- An application to securely tunnel IP networks</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+ *             over a si=
+ngle TCP/UDP port, with support for SSL/TLS-based</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+ *             session authentication and key=
+ exchange,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *       =
+      packet encryption, packet authentication, and</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+ *             packet compression.</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+ *  Copyright (C) 2024 OpenVPN Inc &lt;sa=
+les@...515...&gt;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *=
+  Copyright (C) 2024 Arne Schwabe &lt;arne@...1227...&gt;</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+ *</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+ *  This program is free software; you can redistribute it and/or modif=
+y</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  it under the t=
+erms of the GNU General Public License version 2</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+ *  as published by the Free Software Foundati=
+on.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+ *  This program is distributed i=
+n the hope that it will be useful,</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+ *  but WITHOUT ANY WARRANTY; without even the implied warra=
+nty of</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  MERCHANTA=
+BILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+ *  GNU General Public License for more d=
+etails.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+ *  You should have received =
+a copy of the GNU General Public License along</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+ *  with this program; if not, write to the Free=
+ Software Foundation, Inc.,</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+ *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+*/</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#if=
+def HAVE_CONFIG_H</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#i=
+nclude &quot;config.h&quot;</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+#endif</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+#include &lt;inttypes.h&=
+gt;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#include &quot;c=
+rypto_backend.h&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+#include &quot;buffer.h&quot;</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+#include &quot;integer.h&quot;</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+void</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ovpn_hdkf_e=
+xpand(const uint8_t *secret,</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+                 const uint8_t *info, int info_len,</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+                 uint8_t *out, int=
+ out_len)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+    hmac_ctx_t *hmac_ctx =3D=
+ hmac_ctx_new();</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+ hmac_ctx_init(hmac_ctx, secret, &quot;SHA256&quot;);</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+    const int digest_size =3D SHA256_DIGEST_LENGTH;</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+    /* T(0) =3D empty string */</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+    uint8_t t_prev[SHA256_DIGEST_LE=
+NGTH];</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    int t_pre=
+v_len =3D 0;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+    for (uint8_t block =3D=
+ 1; (block - 1) * digest_size &lt; out_len; block++)</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+        hmac_ctx_reset(hmac_ctx);</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+        /* calculate T(block) */</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+        hmac_ctx_update(hmac_ctx, t_prev, t_pre=
+v_len);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        hmac=
+_ctx_update(hmac_ctx, info, info_len);</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+        hmac_ctx_update(hmac_ctx, &amp;block, 1);</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+        hmac_ctx_final(hma=
+c_ctx, t_prev);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+    t_prev_len =3D digest_size;</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
+ /* Copy a full hmac output or remaining bytes */</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+        int out_offset =3D (block - 1) * dige=
+st_size;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        int=
+ copylen =3D min_int(digest_size, out_len - out_offset);</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+        memcpy(out + out_offset, t_prev, copylen);</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+    hmac_ctx_cleanup(hmac_ctx);</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+    hmac_ctx_free(hmac_ctx);=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+bool</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+ovpn_expand_label(const uint8_t *secret, size_t secret_len,</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+                  const uint8_t=
+ *label, size_t label_len,</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+                  const uint8_t *context, size_t context_len,</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+                  uint8_t =
+*out, uint16_t out_len)</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (secret=
+_len !=3D 32)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+        /* Our curre=
+nt implementation is not a general purpose one</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+         * and assume that the secret size match=
+es the size of the</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+        * hash (SHA256) key */</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+        return false;</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+    struct gc_arena =
+gc =3D gc_new();</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+ /* 2 byte for the outlen encoded as uint16, 5 bytes for &quot;ovpn &quot; =
+*/</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    int hkdf_labe=
+l_len =3D 2 + 5 + label_len + context_len;</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+    struct buffer hkdf_label =3D alloc_buf_gc(hkdf_l=
+abel_len, &amp;gc);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+    buf_write_u16(&amp;hkdf_label, out=
+_len);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    buf_write=
+(&amp;hkdf_label, &quot;ovpn &quot;, 5);</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+    buf_write(&amp;hkdf_label, label, label_len);</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (context_len &gt;=
+ 0)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+        buf_write(&amp;hkdf_la=
+bel, context, context_len);</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+    ASSERT(buf_len(&amp;h=
+kdf_label) =3D=3D hkdf_label_len);</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+ovpn_hdkf_expand(secret, buf_bptr(&amp;hkdf_label),</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+                     buf_len(&amp;hkdf_la=
+bel), out, out_len);</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    gc_free(&amp;g=
+c);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    return true;=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span>\=
+ No newline at end of file</span><br><span>diff --git a/src/openvpn/crypto_=
+epoch.h b/src/openvpn/crypto_epoch.h</span><br><span>new file mode 100644</=
+span><br><span>index 0000000..dad2473</span><br><span>--- /dev/null</span><=
+br><span>+++ b/src/openvpn/crypto_epoch.h</span><br><span>@@ -0,0 +1,69 @@<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+/*</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+ *  OpenVPN -- An application to secu=
+rely tunnel IP networks</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+ *             over a single TCP/UDP port, with support for SSL/TLS-bas=
+ed</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *             se=
+ssion authentication and key exchange,</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+ *             packet encryption, packet authentication,=
+ and</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *             =
+packet compression.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+ *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  Copyright (C)=
+ 2024 OpenVPN Inc &lt;sales@...515...&gt;</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+ *  Copyright (C) 2024 Arne Schwabe &lt;arne@...2639...=
+..&gt;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+ *  This program is free software; you can redi=
+stribute it and/or modify</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+ *  it under the terms of the GNU General Public License version 2</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  as published by th=
+e Free Software Foundation.</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+ *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  This =
+program is distributed in the hope that it will be useful,</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+ *  but WITHOUT ANY WARRANTY; withou=
+t even the implied warranty of</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See th=
+e</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  GNU General Pu=
+blic License for more details.</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+ *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  Yo=
+u should have received a copy of the GNU General Public License along</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  with this program; if=
+ not, write to the Free Software Foundation, Inc.,</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+ *  51 Franklin Street, Fifth Floor, Boston,=
+ MA 02110-1301 USA.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+ */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+#ifndef CRYPTO_EPOCH_H</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+#define CRYPTO_EPOCH_H</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+/**</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+ * Implementation of the RFC5869 HKDF-Expand function with the f=
+ollowing</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * restrict=
+ions</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  - salt is a=
+lways assumed to be zero length (ie not supported)</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+ *  - IKM (secret) is assumed to be always 3=
+2 bytes</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  - HASH i=
+s always SHA256</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  @param secret   t=
+he input keying material (HMAC key)</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+ *  @param info     context and application specific inform=
+ation</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  @param out=
+      output keying material</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+ *  @param out_len  length of output keying material</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+ */</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+void</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+ovpn_hdkf_expand(const uint8_t *secret,</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+                 const uint8_t *info, int in=
+fo_len,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            =
+     uint8_t *out, int out_len);</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+/**</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+ * Variant of the RFC =
+8446 TLS 1.3  HKDF-Expand-Label function with the</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+ * following differences/restrictions:</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+ *  - secret must 32 bytes=
+ in length</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  - lab=
+el prefix is &quot;ovpn &quot; instead of &quot;tls13 &quot;</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+ *  - HASH is always SHA256</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+ * @param secret        Input secret</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @param secret_len    =
+length of the input secret</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+ * @param label         Label for the exported key material</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+ * @param label_len     leng=
+th of the label</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @=
+param context       optional context</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+ * @param context_len   length of the context</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+ * @param out      output keying=
+ material</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @param =
+out_len  length of output keying material</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+ * @return</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+ */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+boo=
+l</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ovpn_expand_label(=
+const uint8_t *secret, size_t secret_len,</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+                  const uint8_t *label, size_t label_=
+len,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+               =
+   const uint8_t *context, size_t context_len,</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+                  uint8_t *out, uint16_t out_len=
+);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+#endif</span><br><span>diff --git a/=
+src/openvpn/crypto_mbedtls.h b/src/openvpn/crypto_mbedtls.h</span><br><span=
+>index a966a7a..fe51359 100644</span><br><span>--- a/src/openvpn/crypto_mbe=
+dtls.h</span><br><span>+++ b/src/openvpn/crypto_mbedtls.h</span><br><span>@=
+@ -29,6 +29,7 @@</span><br><span> #ifndef CRYPTO_MBEDTLS_H_</span><br><span=
+> #define CRYPTO_MBEDTLS_H_</span><br><span> </span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+#include &lt;stdbool.h&gt;</span><br><span> #incl=
+ude &lt;mbedtls/cipher.h&gt;</span><br><span> #include &lt;mbedtls/md.h&gt;=
+</span><br><span> #include &lt;mbedtls/ctr_drbg.h&gt;</span><br><span>diff =
+--git a/tests/unit_tests/openvpn/Makefile.am b/tests/unit_tests/openvpn/Mak=
+efile.am</span><br><span>index a4e6235..307f9ed 100644</span><br><span>--- =
+a/tests/unit_tests/openvpn/Makefile.am</span><br><span>+++ b/tests/unit_tes=
+ts/openvpn/Makefile.am</span><br><span>@@ -66,6 +66,7 @@</span><br><span> 	=
+$(top_srcdir)/src/openvpn/crypto.c \</span><br><span> 	$(top_srcdir)/src/op=
+envpn/crypto_mbedtls.c \</span><br><span> 	$(top_srcdir)/src/openvpn/crypto=
+_openssl.c \</span><br><span style=3D"color: hsl(120, 100%, 40%);">+	$(top_=
+srcdir)/src/openvpn/crypto_epoch.c \</span><br><span> 	$(top_srcdir)/src/op=
+envpn/otime.c \</span><br><span> 	$(top_srcdir)/src/openvpn/packet_id.c \</=
+span><br><span> 	$(top_srcdir)/src/openvpn/platform.c \</span><br><span>dif=
+f --git a/tests/unit_tests/openvpn/test_crypto.c b/tests/unit_tests/openvpn=
+/test_crypto.c</span><br><span>index 135cd15..c8d2a10 100644</span><br><spa=
+n>--- a/tests/unit_tests/openvpn/test_crypto.c</span><br><span>+++ b/tests/=
+unit_tests/openvpn/test_crypto.c</span><br><span>@@ -35,6 +35,7 @@</span><b=
+r><span> #include &lt;cmocka.h&gt;</span><br><span> </span><br><span> #incl=
+ude &quot;crypto.h&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+#include &quot;crypto_epoch.h&quot;</span><br><span> #include &quot;op=
+tions.h&quot;</span><br><span> #include &quot;ssl_backend.h&quot;</span><br=
+><span> </span><br><span>@@ -469,6 +470,122 @@</span><br><span>     assert_=
+int_equal(aeslimit / L, 122059461);</span><br><span> }</span><br><span> </s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+void</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+crypto_test_hkdf_expand_testa1(void *=
+*state)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+    /* RFC 5889 A.1 Test Case =
+1 */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    uint8_t prk=
+[32] =3D</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {0x07, =
+0x77, 0x09, 0x36, 0x2c, 0x2e, 0x32, 0xdf,</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+     0x0d, 0xdc, 0x3f, 0x0d, 0xc4, 0x7b, 0xba, 0x63,<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+     0x90, 0xb6, 0xc=
+7, 0x3b, 0xb5, 0x0f, 0x9c, 0x31,</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+     0x22, 0xec, 0x84, 0x4a, 0xd7, 0xc2, 0xb3, 0xe5};</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+    uint8_t info[10] =3D {0xf0, 0xf1, 0xf2, 0xf=
+3, 0xf4, 0xf5,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
+                   0xf6, 0xf7, 0xf8, 0xf9};</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+    uint8_t okm[42] =3D</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+    {0x3c, 0xb2, 0x5f, 0x25, 0xfa, 0xac, 0xd5, 0x7a,</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+     0x90, 0x43, 0x4f, 0x64, 0xd0=
+, 0x36, 0x2f, 0x2a,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+     0x2d, 0x2d, 0x0a, 0x90, 0xcf, 0x1a, 0x5a, 0x4c,</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+     0x5d, 0xb0, 0x2d, 0x56, 0xec, 0xc4, =
+0xc5, 0xbf,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     0x3=
+4, 0x00, 0x72, 0x08, 0xd5, 0xb8, 0x87, 0x18,</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+     0x58, 0x65};</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+    uint8_t out[42];</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+    ovpn_hdkf_expand(prk, info, sizeof(info), out, sizeof(out));</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+    assert_memory_equal(out, okm, sizeof(out=
+));</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+void</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+crypto_test_hkdf_expand_testa2(void **state)</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+    /* RFC 5889 A.2 Test Case 2 */</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+    uint8_t prk[32] =3D</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+    {0x06, 0xa6, 0xb8, 0x8c, 0x58, 0x53,=
+ 0x36, 0x1a,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     0x=
+06, 0x10, 0x4c, 0x9c, 0xeb, 0x35, 0xb4, 0x5c,</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+     0xef, 0x76, 0x00, 0x14, 0x90, 0x46, 0x71, 0x=
+01,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     0x4a, 0x19,=
+ 0x3f, 0x40, 0xc1, 0x5f, 0xc2, 0x44};</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+   uint8_t info[80] =3D</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+    {0xb0, 0xb1, 0xb2, 0xb3, 0xb4, 0xb5, 0xb6, 0xb7,</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+     0xb8, 0xb9, 0xba, 0xbb, 0xbc, 0xb=
+d, 0xbe, 0xbf,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
+0xc0, 0xc1, 0xc2, 0xc3, 0xc4, 0xc5, 0xc6, 0xc7,</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+     0xc8, 0xc9, 0xca, 0xcb, 0xcc, 0xcd, 0xce, =
+0xcf,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     0xd0, 0xd=
+1, 0xd2, 0xd3, 0xd4, 0xd5, 0xd6, 0xd7,</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+     0xd8, 0xd9, 0xda, 0xdb, 0xdc, 0xdd, 0xde, 0xdf,</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+     0xe0, 0xe1, 0xe2, =
+0xe3, 0xe4, 0xe5, 0xe6, 0xe7,</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+     0xe8, 0xe9, 0xea, 0xeb, 0xec, 0xed, 0xee, 0xef,</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+     0xf0, 0xf1, 0xf2, 0xf3, 0xf=
+4, 0xf5, 0xf6, 0xf7,</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++     0xf8, 0xf9, 0xfa, 0xfb, 0xfc, 0xfd, 0xfe, 0xff};</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+    const int L =3D 82;</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+    uint8_t okm[82] =3D</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+    {0xb1, 0x1e, 0x39, 0x8d, 0xc8, 0x03, 0x27, 0xa1=
+,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     0xc8, 0xe7, 0=
+xf7, 0x8c, 0x59, 0x6a, 0x49, 0x34,</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+     0x4f, 0x01, 0x2e, 0xda, 0x2d, 0x4e, 0xfa, 0xd8,</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+     0xa0, 0x50, 0xcc, 0x4c=
+, 0x19, 0xaf, 0xa9, 0x7c,</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+     0x59, 0x04, 0x5a, 0x99, 0xca, 0xc7, 0x82, 0x72,</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+     0x71, 0xcb, 0x41, 0xc6, 0x5e, 0=
+x59, 0x0e, 0x09,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+  0xda, 0x32, 0x75, 0x60, 0x0c, 0x2f, 0x09, 0xb8,</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+     0x36, 0x77, 0x93, 0xa9, 0xac, 0xa3, 0xdb=
+, 0x71,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     0xcc, 0=
+x30, 0xc5, 0x81, 0x79, 0xec, 0x3e, 0x87,</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+     0xc1, 0x4c, 0x01, 0xd5, 0xc1, 0xf3, 0x43, 0x4f,</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+     0x1d, 0x87};</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    uint8_t out[82] =3D {0xaa};</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+    ovpn_hdkf_expand(prk, inf=
+o, sizeof(info), out, L);</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_me=
+mory_equal(out, okm, L);</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+void</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+crypto_test_hkdf_expand_testa3(void **state)</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+    /* RFC 5889 A.3 Test Case 3 */</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+    uint8_t prk[32] =3D</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {0x19, 0xef, 0x24=
+, 0xa3, 0x2c, 0x71, 0x7b, 0x16,</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+     0x7f, 0x33, 0xa9, 0x1d, 0x6f, 0x64, 0x8b, 0xdf,</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+     0x96, 0x59, 0x67, 0x76, 0=
+xaf, 0xdb, 0x63, 0x77,</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+     0xac, 0x43, 0x4c, 0x1c, 0x29, 0x3c, 0xcb, 0x04};</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+    uint8_t info[0] =3D {};</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+    int L =3D 42;</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+    uint8_t okm[42] =3D</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+    {0x8d, 0xa4, 0xe7, 0x75, 0xa5, 0x63, 0xc1, 0x8f,</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+     0x71, 0x5f, 0x80, 0x2a, 0x06=
+, 0x3c, 0x5a, 0x31,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+     0xb8, 0xa1, 0x1f, 0x5c, 0x5e, 0xe1, 0x87, 0x9e,</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+     0xc3, 0x45, 0x4e, 0x5f, 0x3c, 0x73, =
+0x8d, 0x2d,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     0x9=
+d, 0x20, 0x13, 0x95, 0xfa, 0xa4, 0xb6, 0x1a,</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+     0x96, 0xc8};</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+    uint8_t out[42];</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+    ovpn_hdkf_expand(prk, info, sizeof(info), out, L);</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+    assert_memory_equal(out, okm, L);</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+void</span><br><span style=3D"color: hsl(120, 100%, 40%);">+crypto_test_o=
+vpn_label_expand(void **state)</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    uin=
+t8_t secret[32] =3D</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+    {0x07, 0x77, 0x09, 0x36, 0x2c, 0x2e, 0x32, 0xdf,</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+     0x0d, 0xdc, 0x3f, 0x0d, 0xc4, 0x7b, =
+0xba, 0x63,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     0x9=
+0, 0xb6, 0xc7, 0x3b, 0xb5, 0x0f, 0x9c, 0x31,</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+     0x22, 0xec, 0x84, 0x4a, 0xd7, 0xc2, 0xb3, 0xe=
+5};</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+    const uint8_t *label =3D (const=
+ uint8_t *)(&quot;unit test&quot;);</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+    uint8_t out[16];</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+    ovpn_expand_label(secret, sizeof(secret), label, 9, NU=
+LL, 0, out, sizeof(out));</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    uint8_t o=
+ut_expected[16] =3D</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+    {0x6, 0x8C, 0x11, 0xA6, 0x48, 0xFE, 0xBC, 0xA0,</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+     0x9D, 0x1A, 0xF0, 0xD6, 0xD5, 0xF7, =
+0xBE, 0xC6};</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_memory_equal(ou=
+t, out_expected, 16);</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span=
+> int</span><br><span> main(void)</span><br><span> {</span><br><span>@@ -48=
+0,8 +597,12 @@</span><br><span>         cmocka_unit_test(crypto_test_hmac),=
+</span><br><span>         cmocka_unit_test(test_occ_mtu_calculation),</span=
+><br><span>         cmocka_unit_test(test_mssfix_mtu_calculation),</span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-        cmocka_unit_test(crypt=
+o_test_aead_limits)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
+ };</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        cmocka_u=
+nit_test(crypto_test_aead_limits),</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+        cmocka_unit_test(crypto_test_hkdf_expand_testa1),</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+        cmocka_unit_te=
+st(crypto_test_hkdf_expand_testa2),</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+        cmocka_unit_test(crypto_test_hkdf_expand_testa3),</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+        cmocka_unit_t=
+est(crypto_test_ovpn_label_expand),</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+    };</span><br><span> </span><br><span> #if defined(ENABL=
+E_CRYPTO_OPENSSL)</span><br><span>     OpenSSL_add_all_algorithms();</span>=
+<br><span></span><br></pre><p>To view, visit <a href=3D"http://gerrit.openv=
+pn.net/c/openvpn/+/798?usp=3Demail">change 798</a>. To unsubscribe, or for =
+help writing mail filters, visit <a href=3D"http://gerrit.openvpn.net/setti=
+ngs">settings</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMes=
+sage"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.org/View=
+Action"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/=
++/798?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div>=
+</div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: Id223612c7bcab91d49c013fb775=
-024bd64ab0836 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 800 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I3a1c6561f4d9a69e2a441d49dff=
+620b4258a1bcc </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 798 </div>
 <div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
 <div style=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@...1711...=
 27...&gt; </div>
@@ -464,5 +945,5 @@ ts.sourceforge.net&gt; </div>
 <div style=3D"display:none"> Gerrit-MessageType: newchange </div>
 
 
---zaRe/kYpPOY=--
+--pxfq60mfpDE=--
 
