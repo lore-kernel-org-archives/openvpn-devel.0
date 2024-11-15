@@ -1,6 +1,6 @@
 From: Hurukawa2121 <shujifurukawa1213@...277...>
-Date: Sat, 16 Nov 2024 04:40:06 +0900
-Message-Id: <20241115194005.38280-1-shujifurukawa1213@...277...>
+Date: Sat, 16 Nov 2024 04:42:03 +0900
+Message-Id: <20241115194202.39508-1-shujifurukawa1213@...277...>
 MIME-Version: 1.0
 Subject: [Openvpn-devel] [PATCH] Improve shuffling algorithm of connection
  list
@@ -28,7 +28,7 @@ From: Hurukawa2121 <shujifurukawa1213@...2831...>
  In the Fisher-Yates algorithm, there's only one way to obtain each permutation
  through these swaps, so all permutations occur with equal probability in theory.
 
- Signed-off-by: Hurukawa2121 <shujifurukawa1213@...2831...>
+ Signed-off-by: Hurukawa2121 <shujifurukawa1213@...277...>
 
  src/openvpn/init.c | 4 ++--
  1 file changed, 2 insertions(+), 2 deletions(-)
