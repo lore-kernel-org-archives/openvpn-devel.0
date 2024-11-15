@@ -1,6 +1,6 @@
 From: Hurukawa2121 <shujifurukawa1213@...277...>
-Date: Sat, 16 Nov 2024 04:35:04 +0900
-Message-Id: <20241115193503.35016-1-shujifurukawa1213@...2831...>
+Date: Sat, 16 Nov 2024 04:40:06 +0900
+Message-Id: <20241115194005.38280-1-shujifurukawa1213@...277...>
 MIME-Version: 1.0
 Subject: [Openvpn-devel] [PATCH] Improve shuffling algorithm of connection
  list
@@ -16,6 +16,8 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 Cc: Hurukawa2121 <shujifurukawa1213@...2831...>
+
+From: Hurukawa2121 <shujifurukawa1213@...2831...>
 
 ---
  Improve shuffling algorithm of connection list
