@@ -1,6 +1,6 @@
 From: Hurukawa2121 <shujifurukawa1213@...277...>
-Date: Sat, 16 Nov 2024 04:50:12 +0900
-Message-Id: <20241115195011.44764-1-shujifurukawa1213@...277...>
+Date: Sat, 16 Nov 2024 14:17:06 +0900
+Message-Id: <20241116051705.53061-1-shujifurukawa1213@...277...>
 MIME-Version: 1.0
 Subject: [Openvpn-devel] [PATCH] Improve shuffling algorithm of connection
  list
@@ -15,29 +15,38 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
-Cc: shujifurukawa1213@...277..., Hurukawa2121 <shujifurukawa1213@...2831...>
-
-From: Hurukawa2121 <shujifurukawa1213@...2831...>
 
 ---
  Improve shuffling algorithm of connection list
 
- This patch implements the Fisher-Yates shuffle algorithm to ensure that all permutations
- of the connection target list are generated with equal probability, eliminating
- biases present in the previous shuffling method.
- In the Fisher-Yates algorithm, there's only one way to obtain each permutation
- through these swaps, so all permutations occur with equal probability in theory.
-
+ This patch implements the Fisher-Yates shuffle algorithm to ensure that all permutations of the connection target list are generated with equal probability, eliminating biases present in the previous shuffling method. In the Fisher-Yates algorithm, there's only one way to obtain each permutation through a series of element swaps, so all permutations occur with equal probability in theory. 
+ 
  Signed-off-by: Hurukawa2121 <shujifurukawa1213@...277...>
 
- src/openvpn/init.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ src/openvpn/init.c | 13 ++++++++++---
+ 1 file changed, 10 insertions(+), 3 deletions(-)
 
 diff --git a/src/openvpn/init.c b/src/openvpn/init.c
-index 9371024e..3b00b49d 100644
+index 9371024e..c4fb5cd7 100644
 --- a/src/openvpn/init.c
 +++ b/src/openvpn/init.c
-@@ -478,9 +478,9 @@ init_connection_list(struct context *c)
+@@ -467,7 +467,14 @@ ce_management_query_remote(struct context *c)
+ #endif /* ENABLE_MANAGEMENT */
+ 
+ /*
+- * Initialize and possibly randomize connection list.
++ * Initialize and randomize the connection list.
++ * 
++ * Applies the Fisher-Yates shuffle algorithm to ensure all permutations are equally probable,
++ * thereby eliminating shuffling bias in the previous method.
++ * 
++ * The algorithm randomly selects an element from the unshuffled portion and places it at position i.
++ * There's only one way to obtain each permutation through these swaps.
++ * This guarantees that each permutation occurs with equal probability in theory.
+  */
+ static void
+ init_connection_list(struct context *c)
+@@ -478,9 +485,9 @@ init_connection_list(struct context *c)
      if (c->options.remote_random)
      {
          int i;
