@@ -11,9 +11,9 @@ References: <CAC8x_z0gMKW1b33J3HGL-9pQnXgpf9O6pRu+M2=xP03JyJMm6g@...278...>
  <9CbaYxoBHtEVLK-grSiz5jF3BIbqX9Sitzeet8RqF8GXL7Hv4BHdtdCAVEcBKdnM61OROzbjTALjF7NlvuuMJT-hHau7GUySueWeNzV0DaU=@protonmail.com>
 In-Reply-To: <9CbaYxoBHtEVLK-grSiz5jF3BIbqX9Sitzeet8RqF8GXL7Hv4BHdtdCAVEcBKdnM61OROzbjTALjF7NlvuuMJT-hHau7GUySueWeNzV0DaU=@protonmail.com>
 From: =?UTF-8?B?16DXqteZINep15jXqNef?= <nsh531@...277...>
-Date: Sun, 17 Nov 2024 06:33:33 +0200
-Message-ID: <CAC8x_z0U6ZpPpduqmCnEXJN=aFrajMCnFmzX5U58+Y3ToCmyNw@...278...>
-Content-Type: multipart/alternative; boundary="000000000000209e610627144e8c"
+Date: Sun, 17 Nov 2024 08:18:12 +0200
+Message-ID: <CAC8x_z28e_GMJXf4LgPkwwVnziDe3C+qcw3=zK1kBNt2KUxo+g@...278...>
+Content-Type: multipart/alternative; boundary="00000000000050ed6d062715c4a8"
 Subject: Re: [Openvpn-devel] Subject: OpenVPN Client Vulnerability - TLS Key
  Negotiation Timeout Leading to DoS (Black Box Pentest)
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -27,11 +27,11 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: tincantech <tincantech@...2282...>
 Cc: Johan Draaisma <johan@...2722...>, Antonio Quartulli <antonio@...515...>, Openvpn-devel@lists.sourceforge.net, SECURITY@...515...
 
---000000000000209e610627144e8c
+--00000000000050ed6d062715c4a8
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Thanks for the tip!
+how to write a patch to fix it?
 
 =E2=80=AB=D7=91=D7=AA=D7=90=D7=A8=D7=99=D7=9A =D7=99=D7=95=D7=9D =D7=90=D7=
 =B3, 17 =D7=91=D7=A0=D7=95=D7=91=D7=B3 2024 =D7=91-6:24 =D7=9E=D7=90=D7=AA =
@@ -212,18 +212,19 @@ ng
 --=20
 <https://netanel.ml>
 
---000000000000209e610627144e8c
+--00000000000050ed6d062715c4a8
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<div dir=3D"rtl">Thanks for the tip!=C2=A0</div><br><div class=3D"gmail_quo=
-te"><div dir=3D"rtl" class=3D"gmail_attr">=E2=80=AB=D7=91=D7=AA=D7=90=D7=A8=
-=D7=99=D7=9A =D7=99=D7=95=D7=9D =D7=90=D7=B3, 17 =D7=91=D7=A0=D7=95=D7=91=
-=D7=B3 2024 =D7=91-6:24 =D7=9E=D7=90=D7=AA =E2=80=AAtincantech=E2=80=AC=E2=
-=80=8F &lt;=E2=80=AA<a href=3D"mailto:tincantech@...2282...">tincantech@...493...=
-2282...</a>=E2=80=AC=E2=80=8F&gt;:=E2=80=AC<br></div><blockquote class=3D"g=
-mail_quote" style=3D"margin:0px 0px 0px 0.8ex;border-left:1px solid rgb(204=
-,204,204);padding-left:1ex">-----BEGIN PGP SIGNED MESSAGE-----<br>
+<div dir=3D"rtl"><div dir=3D"ltr">how to write a patch to fix it?</div></di=
+v><br><div class=3D"gmail_quote"><div dir=3D"rtl" class=3D"gmail_attr">=E2=
+=80=AB=D7=91=D7=AA=D7=90=D7=A8=D7=99=D7=9A =D7=99=D7=95=D7=9D =D7=90=D7=B3,=
+ 17 =D7=91=D7=A0=D7=95=D7=91=D7=B3 2024 =D7=91-6:24 =D7=9E=D7=90=D7=AA =E2=
+=80=AAtincantech=E2=80=AC=E2=80=8F &lt;=E2=80=AA<a href=3D"mailto:tincantec=
+h@...2282...">tincantech@...2282...</a>=E2=80=AC=E2=80=8F&gt;:=E2=80=AC<br>=
+</div><blockquote class=3D"gmail_quote" style=3D"margin:0px 0px 0px 0.8ex;b=
+order-left:1px solid rgb(204,204,204);padding-left:1ex">-----BEGIN PGP SIGN=
+ED MESSAGE-----<br>
 Hash: SHA256<br>
 <br>
 Hi <a href=3D"mailto:nsh531@...277..." target=3D"_blank">nsh531@...277...</=
@@ -396,5 +397,5 @@ ignature"><div dir=3D"rtl"><a href=3D"https://netanel.ml" target=3D"_blank"=
 mail-sig/AIorK4y1ahZg0mqH5UnDCjKIkW6FTSni5R5bezS1idSRECO6GXQ1uH3RgELXk8RqqC=
 oNk3985_jsnIQnnclo"></a></div></div>
 
---000000000000209e610627144e8c--
+--00000000000050ed6d062715c4a8--
 
