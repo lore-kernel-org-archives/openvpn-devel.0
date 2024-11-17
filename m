@@ -1,18 +1,16 @@
-MIME-Version: 1.0
+Date: Sun, 17 Nov 2024 16:51:10 +0100
+From: Gert Doering <gert@...1296...>
+Message-ID: <ZzoQ7jXbImL56HL6@...1296...>
 References: <CAC8x_z10PT_ToTzVUKQENA5ZJgJ4EMvBJARphDR5_wdytA2JSw@...278...>
  <b7c9a1ac-3322-4eeb-befd-e19c7f72da6b@...1227...>
  <CAC8x_z3Fwf0r-BuvuOo+Vg0708fsaPGWjg-2pnY3xgM+e4QxDg@...278...>
  <Zzm_gUxTAmFZjm_h@...1296...>
  <CAC8x_z1OtkMeuRCHNOHfg-rcJ3Kcj2uHua3pzK5ZqKJDjPvBjQ@...278...>
- <CAFHpkQGFrRL0KyHeLBy8au+r92NsXJ9YJUO1-RdwrVHCr0PpTg@...278...>
- <CAC8x_z3OExab3ouWXgNnoW=c2FXjWPpfU3DOvqGn+GjOOgrsOQ@...278...>
- <CAFHpkQFL4_1D=DUgmgnWQWcOHzjLgfM+D=cjU6cvtZpKYuMf1Q@...278...>
- <CAC8x_z2dU3QrcOrKCZO7m7Es7pT6KptJuTwi+FEjoxhJROkyFw@...278...>
-In-Reply-To: <CAC8x_z2dU3QrcOrKCZO7m7Es7pT6KptJuTwi+FEjoxhJROkyFw@...278...>
-From: =?UTF-8?B?0JjQu9GM0Y8g0KjQuNC/0LjRhtC40L0=?= <chipitsine@...277...>
-Date: Sun, 17 Nov 2024 16:15:52 +0100
-Message-ID: <CAFHpkQFtwxuCstMwd=uRY1_-wMUN7AdxshXxU185BdcYpiCUYA@...278...>
-Content-Type: multipart/alternative; boundary="00000000000050ace606271d47ad"
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ protocol="application/pgp-signature"; boundary="EL8zQnK2+QMfSJn/"
+Content-Disposition: inline
+In-Reply-To: <CAC8x_z1OtkMeuRCHNOHfg-rcJ3Kcj2uHua3pzK5ZqKJDjPvBjQ@...278...>
 Subject: Re: [Openvpn-devel] Subject: Potential OpenVPN Vulnerability
  Report: Repeated TLS Handshake Failures Leading to Denial-of-Service
  Conditions
@@ -24,281 +22,61 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: =?UTF-8?B?16DXqteZINep15jXqNef?= <nsh531@...277...>
-Cc: Gert Doering <gert@...1296...>, openvpn-devel@lists.sourceforge.net, Antonio Quartulli <antonio@...515...>, SECURITY@...515...
+To: ?????? ???????? <nsh531@...277...>
+Cc: Gert Doering <gert@...1296...>, Arne Schwabe <arne@...1227...>, Antonio Quartulli <antonio@...515...>, openvpn-devel@lists.sourceforge.net, SECURITY@...515...
 
---00000000000050ace606271d47ad
-Content-Type: text/plain; charset="UTF-8"
+--EL8zQnK2+QMfSJn/
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-having heard that, I still think it is social experiment.
+Hi,
 
-both questions are covered with numerous guides. you are not telling what
-you've tried already and whether thre some particular problem with opening
-CVE or writing a patch or you just want people to teach you from the
-beginning.
+On Sun, Nov 17, 2024 at 03:50:18PM +0200, ?????? ???????? wrote:
+> I think there is an option for DoS and therefore there is an option to cve
+> or to write a patch..........
 
+What you *think* is only relevant if you can actually *demonstrate* this.
 
+Show the DoS - in a way relevant to OpenVPN - "I broke the network so
+OpenVPN is no longer connecting" is only interesting if it leads to
+further problems, like "the client starts looping and fills all disk
+space with meaningless log lines" or "the server process can no longer
+handle other clients either".
 
+We've had all of this in some form or the other (mostly related to
+Linux DCO desynchronization between OpenVPN and kernel), but you have
+not given us any material that demonstrates anything interesting.
 
-=E2=80=AA=D0=B2=D1=81, 17 =D0=BD=D0=BE=D1=8F=D0=B1. 2024=E2=80=AF=D0=B3. =
-=D0=B2 16:10, =E2=80=AB=D7=A0=D7=AA=D7=99 =D7=A9=D7=98=D7=A8=D7=9F=E2=80=AC=
-=E2=80=8E <nsh531@...277...>:=E2=80=AC
+I will now stop answering your e-mails.
 
-> No problem, I understand.
->
-> it isn't social experiment
-> are 2 different  separated questions
-> 1. apply for CVE
-> 2. how to write a PATCH
->
-> =E2=80=AB=D7=91=D7=AA=D7=90=D7=A8=D7=99=D7=9A =D7=99=D7=95=D7=9D =D7=90=
-=D7=B3, 17 =D7=91=D7=A0=D7=95=D7=91=D7=B3 2024 =D7=91-17:06 =D7=9E=D7=90=D7=
-=AA =E2=80=AA=D0=98=D0=BB=D1=8C=D1=8F =D0=A8=D0=B8=D0=BF=D0=B8=D1=86=D0=B8=
-=D0=BD=E2=80=AC=E2=80=8F <=E2=80=AA
-> chipitsine@...277...=E2=80=AC=E2=80=8F>:=E2=80=AC
->
->>
->>
->> =E2=80=AA=D0=B2=D1=81, 17 =D0=BD=D0=BE=D1=8F=D0=B1. 2024=E2=80=AF=D0=B3.=
- =D0=B2 16:02, =E2=80=AB=D7=A0=D7=AA=D7=99 =D7=A9=D7=98=D7=A8=D7=9F=E2=80=
-=AC=E2=80=8E <nsh531@...277...>:=E2=80=AC
->>
->>> How to apply to CVE?
->>>
->>
->> sorry, it looks like social experiment. you ask how to write a patch, how
->> to apply for cve. maybe you expect people to be friendly, but I'm not su=
-re
->> people are motivated to teach you.
->>
->>
->> sorry, I quit. I'm sure there are a lot of very good guides on writing
->> patches and dealing with cve.
->>
->> please let me know how this social experiment will end after all.
->>
->>
->>>
->>>
->>> netanel
->>>
->>> =E2=80=AB=D7=91=D7=AA=D7=90=D7=A8=D7=99=D7=9A =D7=99=D7=95=D7=9D =D7=90=
-=D7=B3, 17 =D7=91=D7=A0=D7=95=D7=91=D7=B3 2024 =D7=91-16:56 =D7=9E=D7=90=D7=
-=AA =E2=80=AA=D0=98=D0=BB=D1=8C=D1=8F =D0=A8=D0=B8=D0=BF=D0=B8=D1=86=D0=B8=
-=D0=BD=E2=80=AC=E2=80=8F <=E2=80=AA
->>> chipitsine@...277...=E2=80=AC=E2=80=8F>:=E2=80=AC
->>>
->>>>
->>>>
->>>> =E2=80=AA=D0=B2=D1=81, 17 =D0=BD=D0=BE=D1=8F=D0=B1. 2024=E2=80=AF=D0=
-=B3. =D0=B2 14:51, =E2=80=AB=D7=A0=D7=AA=D7=99 =D7=A9=D7=98=D7=A8=D7=9F=E2=
-=80=AC=E2=80=8E <nsh531@...277...>:=E2=80=AC
->>>>
->>>>
->>>>
->>>>
->>>>> I think there is an option for DoS and therefore there is an option to
->>>>> cve or to write a patch..........
->>>>> =E2=80=AB=D7=91=D7=AA=D7=90=D7=A8=D7=99=D7=9A =D7=99=D7=95=D7=9D =D7=
-=90=D7=B3, 17 =D7=91=D7=A0=D7=95=D7=91=D7=B3 2024 =D7=91-12:03 =D7=9E=D7=90=
-=D7=AA =E2=80=AAGert Doering=E2=80=AC=E2=80=8F <=E2=80=AA
->>>>> gert@...1296...=E2=80=AC=E2=80=8F>:=E2=80=AC
->>>>>
->>>>
->>>> did you apply for CVE ?
->>>>
->>>>
->>>>> Hi,
->>>>>>
->>>>>> On Sun, Nov 17, 2024 at 05:45:16AM +0200, ?????? ???????? wrote:
->>>>>> > I send logs:
->>>>>>
->>>>>> Everything I can see in these logs is intentional - the exponential
->>>>>> backoff is there on purpose, to avoid (!) exhausting resources (CPU,
->>>>>> disk, ...) if there is a transient failure - as in "it can not succe=
-ed
->>>>>> now, no matter how hard you try, but might succeed later".
->>>>>>
->>>>>> The backoff timing can be controlled by the config, so to change the
->>>>>> timing, no code change is needed ("connect-retry 5 5" will make it
->>>>>> wait 5 seconds on every connect, for example).
->>>>>>
->>>>>> "restarting process" is not an indication of "anything crashed" - it=
-'s
->>>>>> just "we will not abort, but start again, from the beginning".  If y=
-ou
->>>>>> add "tls-exit" to the config, then it will not restart but exit.
->>>>>>
->>>>>> gert
->>>>>> --
->>>>>> "If was one thing all people took for granted, was conviction that if
->>>>>> you
->>>>>>  feed honest figures into a computer, honest figures come out. Never
->>>>>> doubted
->>>>>>  it myself till I met a computer with a sense of humor."
->>>>>>                              Robert A. Heinlein, The Moon is a Harsh
->>>>>> Mistress
->>>>>>
->>>>>> Gert Doering - Munich, Germany
->>>>>> gert@...1296...
->>>>>>
->>>>>
->>>>>
->>>>> --
->>>>> <https://netanel.ml>
->>>>> _______________________________________________
->>>>> Openvpn-devel mailing list
->>>>> Openvpn-devel@lists.sourceforge.net
->>>>> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
->>>>>
->>>>
->>>
->>> --
->>> <https://netanel.ml>
->>>
->>
->
-> --
-> <https://netanel.ml>
->
+gert
+--=20
+"If was one thing all people took for granted, was conviction that if you=20
+ feed honest figures into a computer, honest figures come out. Never doubte=
+d=20
+ it myself till I met a computer with a sense of humor."
+                             Robert A. Heinlein, The Moon is a Harsh Mistre=
+ss
 
---00000000000050ace606271d47ad
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Gert Doering - Munich, Germany                             gert@...1296...
 
-<div dir=3D"ltr">having heard=C2=A0that, I still think it is social experim=
-ent.<div><br></div><div>both questions are covered with numerous guides. yo=
-u are not telling what you&#39;ve tried already and whether thre=C2=A0some =
-particular problem with opening CVE or writing a patch or you just want peo=
-ple to teach you from the beginning.</div><div><br></div><div><br></div><di=
-v><br></div></div><br><div class=3D"gmail_quote"><div dir=3D"ltr" class=3D"=
-gmail_attr">=E2=80=AA=D0=B2=D1=81, 17 =D0=BD=D0=BE=D1=8F=D0=B1. 2024=E2=80=
-=AF=D0=B3. =D0=B2 16:10, =E2=80=AB=D7=A0=D7=AA=D7=99 =D7=A9=D7=98=D7=A8=D7=
-=9F=E2=80=AC=E2=80=8E &lt;<a href=3D"mailto:nsh531@...277...">nsh531@...1482...=
-...</a>&gt;:=E2=80=AC<br></div><blockquote class=3D"gmail_quote" style=3D"m=
-argin:0px 0px 0px 0.8ex;border-left:1px solid rgb(204,204,204);padding-left=
-:1ex"><div dir=3D"rtl">No problem, I understand.=C2=A0<div><br></div><div d=
-ir=3D"ltr">it isn&#39;t=C2=A0social experiment=C2=A0</div><div dir=3D"ltr">=
-are 2 different=C2=A0 separated=C2=A0questions</div><div dir=3D"ltr">1. app=
-ly for CVE</div><div dir=3D"ltr">2. how to write a PATCH=C2=A0</div></div><=
-br><div class=3D"gmail_quote"><div dir=3D"rtl" class=3D"gmail_attr">=E2=80=
-=AB=D7=91=D7=AA=D7=90=D7=A8=D7=99=D7=9A =D7=99=D7=95=D7=9D =D7=90=D7=B3, 17=
- =D7=91=D7=A0=D7=95=D7=91=D7=B3 2024 =D7=91-17:06 =D7=9E=D7=90=D7=AA =E2=80=
-=AA=D0=98=D0=BB=D1=8C=D1=8F =D0=A8=D0=B8=D0=BF=D0=B8=D1=86=D0=B8=D0=BD=E2=
-=80=AC=E2=80=8F &lt;=E2=80=AA<a href=3D"mailto:chipitsine@...277..." target=
-=3D"_blank">chipitsine@...277...</a>=E2=80=AC=E2=80=8F&gt;:=E2=80=AC<br></d=
-iv><blockquote class=3D"gmail_quote" style=3D"margin:0px 0px 0px 0.8ex;bord=
-er-left:1px solid rgb(204,204,204);padding-left:1ex"><div dir=3D"ltr"><div =
-dir=3D"ltr"><br></div><br><div class=3D"gmail_quote"><div dir=3D"ltr" class=
-=3D"gmail_attr">=E2=80=AA=D0=B2=D1=81, 17 =D0=BD=D0=BE=D1=8F=D0=B1. 2024=E2=
-=80=AF=D0=B3. =D0=B2 16:02, =E2=80=AB=D7=A0=D7=AA=D7=99 =D7=A9=D7=98=D7=A8=
-=D7=9F=E2=80=AC=E2=80=8E &lt;<a href=3D"mailto:nsh531@...277..." target=3D"=
-_blank">nsh531@...277...</a>&gt;:=E2=80=AC<br></div><blockquote class=3D"gm=
-ail_quote" style=3D"margin:0px 0px 0px 0.8ex;border-left:1px solid rgb(204,=
-204,204);padding-left:1ex"><div dir=3D"rtl"><div dir=3D"ltr">How to apply t=
-o CVE?</div></div></blockquote><div><br></div><div>sorry, it looks like soc=
-ial experiment. you ask how to write a patch, how to apply for cve. maybe y=
-ou expect people to be friendly, but I&#39;m not sure people are motivated =
-to teach you.=C2=A0</div><div><br></div><div><br></div><div>sorry, I quit. =
-I&#39;m sure there are a lot of very good guides on writing patches and dea=
-ling with cve.</div><div><br></div><div>please let me know how this social =
-experiment will end after all.</div><div>=C2=A0</div><blockquote class=3D"g=
-mail_quote" style=3D"margin:0px 0px 0px 0.8ex;border-left:1px solid rgb(204=
-,204,204);padding-left:1ex"><div dir=3D"rtl"><div dir=3D"ltr"><br></div><di=
-v dir=3D"ltr"><br></div><div dir=3D"ltr">netanel</div></div><br><div class=
-=3D"gmail_quote"><div dir=3D"rtl" class=3D"gmail_attr">=E2=80=AB=D7=91=D7=
-=AA=D7=90=D7=A8=D7=99=D7=9A =D7=99=D7=95=D7=9D =D7=90=D7=B3, 17 =D7=91=D7=
-=A0=D7=95=D7=91=D7=B3 2024 =D7=91-16:56 =D7=9E=D7=90=D7=AA =E2=80=AA=D0=98=
-=D0=BB=D1=8C=D1=8F =D0=A8=D0=B8=D0=BF=D0=B8=D1=86=D0=B8=D0=BD=E2=80=AC=E2=
-=80=8F &lt;=E2=80=AA<a href=3D"mailto:chipitsine@...277..." target=3D"_blan=
-k">chipitsine@...277...</a>=E2=80=AC=E2=80=8F&gt;:=E2=80=AC<br></div><block=
-quote class=3D"gmail_quote" style=3D"margin:0px 0px 0px 0.8ex;border-left:1=
-px solid rgb(204,204,204);padding-left:1ex"><div dir=3D"ltr"><div dir=3D"lt=
-r"><br></div><br><div class=3D"gmail_quote"><div dir=3D"ltr" class=3D"gmail=
-_attr">=E2=80=AA=D0=B2=D1=81, 17 =D0=BD=D0=BE=D1=8F=D0=B1. 2024=E2=80=AF=D0=
-=B3. =D0=B2 14:51, =E2=80=AB=D7=A0=D7=AA=D7=99 =D7=A9=D7=98=D7=A8=D7=9F=E2=
-=80=AC=E2=80=8E &lt;<a href=3D"mailto:nsh531@...277..." target=3D"_blank">n=
-sh531@...277...</a>&gt;:=E2=80=AC<br></div><div><br></div><div><br></div><d=
-iv>=C2=A0</div><blockquote class=3D"gmail_quote" style=3D"margin:0px 0px 0p=
-x 0.8ex;border-left:1px solid rgb(204,204,204);padding-left:1ex"><div dir=
-=3D"rtl">I think there is an option for DoS and therefore there is an optio=
-n to cve or to write a patch..........<br><div class=3D"gmail_quote"><div d=
-ir=3D"rtl" class=3D"gmail_attr">=E2=80=AB=D7=91=D7=AA=D7=90=D7=A8=D7=99=D7=
-=9A =D7=99=D7=95=D7=9D =D7=90=D7=B3, 17 =D7=91=D7=A0=D7=95=D7=91=D7=B3 2024=
- =D7=91-12:03 =D7=9E=D7=90=D7=AA =E2=80=AAGert Doering=E2=80=AC=E2=80=8F &l=
-t;=E2=80=AA<a href=3D"mailto:gert@...1296..." target=3D"_blank">gert@...1826...=
-6...</a>=E2=80=AC=E2=80=8F&gt;:=E2=80=AC<br></div></div></div></blockquote>=
-<div><br></div><div>did you apply for CVE ?</div><div>=C2=A0</div><blockquo=
-te class=3D"gmail_quote" style=3D"margin:0px 0px 0px 0.8ex;border-left:1px =
-solid rgb(204,204,204);padding-left:1ex"><div dir=3D"rtl"><div class=3D"gma=
-il_quote"><div dir=3D"rtl" class=3D"gmail_attr"></div><blockquote class=3D"=
-gmail_quote" style=3D"margin:0px 0px 0px 0.8ex;border-left:1px solid rgb(20=
-4,204,204);padding-left:1ex">Hi,<br>
-<br>
-On Sun, Nov 17, 2024 at 05:45:16AM +0200, ?????? ???????? wrote:<br>
-&gt; I send logs:<br>
-<br>
-Everything I can see in these logs is intentional - the exponential<br>
-backoff is there on purpose, to avoid (!) exhausting resources (CPU,<br>
-disk, ...) if there is a transient failure - as in &quot;it can not succeed=
-<br>
-now, no matter how hard you try, but might succeed later&quot;.<br>
-<br>
-The backoff timing can be controlled by the config, so to change the<br>
-timing, no code change is needed (&quot;connect-retry 5 5&quot; will make i=
-t<br>
-wait 5 seconds on every connect, for example).<br>
-<br>
-&quot;restarting process&quot; is not an indication of &quot;anything crash=
-ed&quot; - it&#39;s<br>
-just &quot;we will not abort, but start again, from the beginning&quot;.=C2=
-=A0 If you<br>
-add &quot;tls-exit&quot; to the config, then it will not restart but exit.<=
-br>
-<br>
-gert<br>
--- <br>
-&quot;If was one thing all people took for granted, was conviction that if =
-you <br>
-=C2=A0feed honest figures into a computer, honest figures come out. Never d=
-oubted <br>
-=C2=A0it myself till I met a computer with a sense of humor.&quot;<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
-=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0Robert A. Heinlein, The Moon is a Harsh Mist=
-ress<br>
-<br>
-Gert Doering - Munich, Germany=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
-=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0<a href=3D"mailt=
-o:gert@...1296..." target=3D"_blank">gert@...1296...</a><br>
-</blockquote></div></div><div><br clear=3D"all"></div><div><br></div><span =
-class=3D"gmail_signature_prefix">-- </span><br><div dir=3D"rtl" class=3D"gm=
-ail_signature"><div dir=3D"rtl"><a href=3D"https://netanel.ml" target=3D"_b=
-lank"><img width=3D"200" height=3D"51" src=3D"https://ci3.googleusercontent=
-.com/mail-sig/AIorK4y1ahZg0mqH5UnDCjKIkW6FTSni5R5bezS1idSRECO6GXQ1uH3RgELXk=
-8RqqCoNk3985_jsnIQnnclo"></a></div></div>
-_______________________________________________<br>
-Openvpn-devel mailing list<br>
-<a href=3D"mailto:Openvpn-devel@lists.sourceforge.net" target=3D"_blank">Op=
-envpn-devel@lists.sourceforge.net</a><br>
-<a href=3D"https://lists.sourceforge.net/lists/listinfo/openvpn-devel" rel=
-=3D"noreferrer" target=3D"_blank">https://lists.sourceforge.net/lists/listi=
-nfo/openvpn-devel</a><br>
-</blockquote></div></div>
-</blockquote></div><div><br clear=3D"all"></div><div><br></div><span class=
-=3D"gmail_signature_prefix">-- </span><br><div dir=3D"rtl" class=3D"gmail_s=
-ignature"><div dir=3D"rtl"><a href=3D"https://netanel.ml" target=3D"_blank"=
-><img width=3D"200" height=3D"51" src=3D"https://ci3.googleusercontent.com/=
-mail-sig/AIorK4y1ahZg0mqH5UnDCjKIkW6FTSni5R5bezS1idSRECO6GXQ1uH3RgELXk8RqqC=
-oNk3985_jsnIQnnclo"></a></div></div>
-</blockquote></div></div>
-</blockquote></div><div><br clear=3D"all"></div><div><br></div><span class=
-=3D"gmail_signature_prefix">-- </span><br><div dir=3D"rtl" class=3D"gmail_s=
-ignature"><div dir=3D"rtl"><a href=3D"https://netanel.ml" target=3D"_blank"=
-><img width=3D"200" height=3D"51" src=3D"https://ci3.googleusercontent.com/=
-mail-sig/AIorK4y1ahZg0mqH5UnDCjKIkW6FTSni5R5bezS1idSRECO6GXQ1uH3RgELXk8RqqC=
-oNk3985_jsnIQnnclo"></a></div></div>
-</blockquote></div>
+--EL8zQnK2+QMfSJn/
+Content-Type: application/pgp-signature; name="signature.asc"
 
---00000000000050ace606271d47ad--
+-----BEGIN PGP SIGNATURE-----
+
+iQGcBAEBAgAGBQJnOhDuAAoJEB2Cnv7KVigSDkgMAIxK40EydHUP2VaP6LqyrTS4
+hla4HZgEzR9SpKlT2jujDsp3zF7j4kB1HyjIyyOhW78bI+Izurcga4bvCFKF8RTs
++Wd6t925TA01XFeJfS3ZfX80yQTd3SSjSv0ptybKx/CRY16hNpg189sBqQfoxWoJ
+rERfDwqHAan9Rqb8VQ/8xgay2qYJzKgktThgzZeNHHV6jKx1NHCSCUuZGRBdmx1m
+BefKGAIVZphJOEyY7pJJIwHmrpoDLvApGJuvHBoSJ+fbdrpM1u37JTbLnRMDF6ZG
+xS9+8jO2CA+FJ3EpApR5nw4+eUfT9iHtKtflD4QlJtuMoHdoF1xtCPhebfDUU4Su
+f3MQbOMYtF+0ttcCnaYIFicjTRsebmR02zX0rZUN/VXnoFxOzPaA8rdHfmQUWi/N
+DNWxszTDJD13nN0eegLg9Y/6IwKaWSgZdOzg2/vL8b8bDtAZL7SPOEoqaosCuySx
+JPixAZlinpKHDtnB/P0gTVSIsfcHt6Aoj7KdyOgebQ==
+=Va/G
+-----END PGP SIGNATURE-----
+
+--EL8zQnK2+QMfSJn/--
 
