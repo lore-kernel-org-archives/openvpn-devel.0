@@ -1,10 +1,14 @@
+Content-Type: multipart/alternative;
+ boundary="------------2WJ0Pq9YCRd73EGdhzW0QGiS"
+Message-ID: <ff95b085-1c62-4771-aa96-cfdf6acb6c43@...277...>
+Date: Mon, 18 Nov 2024 15:59:24 +0100
 MIME-Version: 1.0
-From: =?UTF-8?B?16DXqteZINep15jXqNef?= <nsh531@...277...>
-Date: Mon, 18 Nov 2024 16:30:50 +0200
-Message-ID: <CAC8x_z3SUeiFVRehrHoPUWXvtbk30sQYRrbFts0YWjgXW8+-mw@...278...>
-Content-Type: multipart/alternative; boundary="0000000000000ca35b062730c461"
-Subject: [Openvpn-devel] Subject: Inquiry/Report Regarding OpenVPN CVE and
- Security Updates
+References: <CAC8x_z3SUeiFVRehrHoPUWXvtbk30sQYRrbFts0YWjgXW8+-mw@...278...>
+Content-Language: en-US
+From: Johan Draaisma <johandraaisma@...277...>
+In-Reply-To: <CAC8x_z3SUeiFVRehrHoPUWXvtbk30sQYRrbFts0YWjgXW8+-mw@...278...>
+Subject: Re: [Openvpn-devel] Subject: Inquiry/Report Regarding OpenVPN CVE
+ and Security Updates
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,77 +17,224 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: openvpn-devel <Openvpn-devel@lists.sourceforge.net>, SECURITY@...515...
-Cc: "Israel National CERT (119)" <119@...2832...>, =?UTF-8?B?15PXmdeV15XXl9eZINek15LXmdei15XXmdeV16o=?= <cve@...2832...>
+To: =?UTF-8?B?16DXqteZINep15jXqNef?= <nsh531@...277...>, openvpn-devel <Openvpn-devel@lists.sourceforge.net>, SECURITY@...515...
+Cc: =?UTF-8?B?15PXmdeV15XXl9eZINek15LXmdei15XXmdeV16o=?= <cve@...2832...>, "Israel National CERT (119)" <119@...2832...>
 
---0000000000000ca35b062730c461
-Content-Type: text/plain; charset="UTF-8"
+This is a multi-part message in MIME format.
+--------------2WJ0Pq9YCRd73EGdhzW0QGiS
+Content-Type: text/plain; charset="utf-8"; format="flowed"
+Content-Transfer-Encoding: 8bit
 
-Dear OpenVPN Security Team,
+Hello Netanal,
 
-I hope this message finds you well. I am writing to inquire about recent
-vulnerabilities disclosed in OpenVPN, specifically related to Data Channel
-Offload (DCO) and associated components.
+For security related issues, especially those under embargo, use 
+security@...515... only. Do not include the developer mailing list. It 
+is also not appreciated to add in other security reporting lists. If you 
+have something to report in terms of security for OpenVPN, then report 
+it only to OpenVPN (security@...515...).
 
-Our current deployment uses OpenVPN version *2.6.12*, which appears to
-include patches for the vulnerabilities described under CVE-2024-27459,
-CVE-2024-24974, CVE-2024-27903, and CVE-2024-1305. However, I would like to
-confirm the following:
+However since there is nothing known and that is not a secret I can 
+answer all 3 of your questions with a simple; no.
 
-   1. Are there additional security recommendations for mitigating
-   potential exploitation of DCO-specific features?
-   2. Are there any newly identified vulnerabilities in OpenVPN 2.6.12 that
-   have not yet been disclosed in advisories?
-   3. Could you provide more detailed guidance or best practices for
-   hardening configurations against these and similar vulnerabilities?
+Your idea of reporting security issues and doing security testing does 
+not seem to meet (our) standards, sorry. You've found nothing yet 
+continue to claim that you think there is something. We've proven there 
+isn't. You provide no proof there is. And your recent response to 
+"Please investigate, Tnx" is quite frankly hilarious as well as entirely 
+useless.
 
-If you require any additional information from our side, I am happy to
-provide details within the limits of operational confidentiality.
+We gave you explicit advice and instructions to make a decent report 
+that you just seem to ignore. You've proven nothing. You're quite 
+frankly embarrassing yourself in the community. Being inexperienced at 
+something is not a crime, we all had to start somewhere, and I've made 
+mistakes in the past too. But that's okay, we learn and get better. 
+However, there is a lot of information out there on the Internet and 
+also given in these email conversations that can help you to become a 
+decent security researcher and make sensible reports, if you would care 
+to actually follow that advice. It does not seem you are willing to do 
+what is necessary. Because of that, I am going to ignore messages from 
+you going forward, unless you actually have something relevant to report.
 
+Kind regards,
+Johan Draaisma
 
+On 18-11-2024 15:30, נתי שטרן wrote:
 
-TNX,
+> Dear OpenVPN Security Team,
+>
+> I hope this message finds you well. I am writing to inquire about 
+> recent vulnerabilities disclosed in OpenVPN, specifically related to 
+> Data Channel Offload (DCO) and associated components.
+>
+> Our current deployment uses OpenVPN version *2.6.12*, which appears to 
+> include patches for the vulnerabilities described under 
+> CVE-2024-27459, CVE-2024-24974, CVE-2024-27903, and CVE-2024-1305. 
+> However, I would like to confirm the following:
+>
+>  1. Are there additional security recommendations for mitigating
+>     potential exploitation of DCO-specific features?
+>  2. Are there any newly identified vulnerabilities in OpenVPN 2.6.12
+>     that have not yet been disclosed in advisories?
+>  3. Could you provide more detailed guidance or best practices for
+>     hardening configurations against these and similar vulnerabilities?
+>
+> If you require any additional information from our side, I am happy to 
+> provide details within the limits of operational confidentiality.
+>
+>
+>
+> TNX,
+>
+> NETANEL
+>
+>
+>
+>
+> _______________________________________________
+> Openvpn-devel mailing list
+> Openvpn-devel@lists.sourceforge.net
+> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
+--------------2WJ0Pq9YCRd73EGdhzW0QGiS
+Content-Type: text/html; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 
-NETANEL
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  </head>
+  <body>
+    <p>Hello Netanal,</p>
+    <p>For security related issues, especially those under embargo, use
+      <a class="moz-txt-link-abbreviated" href="mailto:security@...515...">security@...515...</a> only. Do not include the developer mailing
+      list. It is also not appreciated to add in other security
+      reporting lists. If you have something to report in terms of
+      security for OpenVPN, then report it only to OpenVPN
+      (<a class="moz-txt-link-abbreviated" href="mailto:security@...515...">security@...515...</a>). </p>
+    <p>However since there is nothing known and that is not a secret I
+      can answer all 3 of your questions with a simple; no.<br>
+    </p>
+    <p>Your idea of reporting security issues and doing security testing
+      does not seem to meet (our) standards, sorry. You've found nothing
+      yet continue to claim that you think there is something. We've
+      proven there isn't. You provide no proof there is. And your recent
+      response to "Please investigate, Tnx" is quite frankly hilarious
+      as well as entirely useless.<br>
+    </p>
+    <p>We gave you explicit advice and instructions to make a decent
+      report that you just seem to ignore. You've proven nothing. You're
+      quite frankly embarrassing yourself in the community. Being
+      inexperienced at something is not a crime, we all had to start
+      somewhere, and I've made mistakes in the past too. But that's
+      okay, we learn and get better. However, there is a lot of
+      information out there on the Internet and also given in these
+      email conversations that can help you to become a decent security
+      researcher and make sensible reports, if you would care to
+      actually follow that advice. It does not seem you are willing to
+      do what is necessary. Because of that, I am going to ignore
+      messages from you going forward, unless you actually have
+      something relevant to report.<br>
+    </p>
+    <p>Kind regards,<br>
+      Johan Draaisma<br>
+    </p>
+    <p>On 18-11-2024 15:30, נתי שטרן wrote:</p>
+    <blockquote type="cite"
+cite="mid:CAC8x_z3SUeiFVRehrHoPUWXvtbk30sQYRrbFts0YWjgXW8+-mw@...278...">
+      <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+      <div dir="rtl">
+        <div class="gmail-flex-1 gmail-overflow-hidden">
+          <div class="gmail-h-full">
+            <div
+class="gmail-react-scroll-to-bottom--css-mizfo-79elbk gmail-h-full">
+              <div
+                class="gmail-react-scroll-to-bottom--css-mizfo-1n7m0yu">
+                <div
+class="gmail-flex gmail-flex-col gmail-text-sm gmail-md:pb-9">
+                  <div
+class="gmail-m-auto gmail-text-base gmail-py-[18px] gmail-px-3 gmail-md:px-4 gmail-w-full gmail-md:px-5 gmail-lg:px-4 gmail-xl:px-5">
+                    <div
+class="gmail-mx-auto gmail-flex gmail-flex-1 gmail-gap-4 gmail-text-base gmail-md:gap-5 gmail-lg:gap-6 gmail-md:max-w-3xl gmail-lg:max-w-[40rem] gmail-xl:max-w-[48rem]">
+                      <div
+class="gmail-group/conversation-turn gmail-relative gmail-flex gmail-w-full gmail-min-w-0 gmail-flex-col gmail-agent-turn">
+                        <div
+class="gmail-flex-col gmail-gap-1 gmail-md:gap-3">
+                          <div
+class="gmail-flex gmail-max-w-full gmail-flex-col gmail-flex-grow">
+                            <div dir="auto"
+class="gmail-min-h-8 gmail-text-message gmail-flex gmail-w-full gmail-flex-col gmail-items-end gmail-gap-2 gmail-whitespace-normal gmail-break-words gmail-[.text-message+&amp;]:mt-5">
+                              <div
+class="gmail-flex gmail-w-full gmail-flex-col gmail-gap-1 empty:hidden gmail-first:pt-[3px]">
+                                <div
+class="gmail-result-streaming gmail-markdown gmail-prose gmail-w-full gmail-break-words gmail-dark:prose-invert gmail-light">
+                                  <p>Dear OpenVPN Security Team,</p>
+                                  <p>I hope this message finds you well.
+                                    I am writing to inquire about recent
+                                    vulnerabilities disclosed in
+                                    OpenVPN, specifically related to
+                                    Data Channel Offload (DCO) and
+                                    associated components.</p>
+                                  <p>Our current deployment uses OpenVPN
+                                    version <strong>2.6.12</strong>,
+                                    which appears to include patches for
+                                    the vulnerabilities described under
+                                    CVE-2024-27459, CVE-2024-24974,
+                                    CVE-2024-27903, and CVE-2024-1305.
+                                    However, I would like to confirm the
+                                    following:</p>
+                                  <ol>
+                                    <li>Are there additional security
+                                      recommendations for mitigating
+                                      potential exploitation of
+                                      DCO-specific features?</li>
+                                    <li>Are there any newly identified
+                                      vulnerabilities in OpenVPN 2.6.12
+                                      that have not yet been disclosed
+                                      in advisories?</li>
+                                    <li>Could you provide more detailed
+                                      guidance or best practices for
+                                      hardening configurations against
+                                      these and similar vulnerabilities?</li>
+                                  </ol>
+                                  <p>If you require any additional
+                                    information from our side, I am
+                                    happy to provide details within the
+                                    limits of operational
+                                    confidentiality.</p>
+                                  <p><br>
+                                  </p>
+                                  <p><br>
+                                  </p>
+                                  <p>TNX,</p>
+                                  <p>NETANEL</p>
+                                  <p><br>
+                                  </p>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <br>
+      <fieldset class="moz-mime-attachment-header"></fieldset>
+      <br>
+      <fieldset class="moz-mime-attachment-header"></fieldset>
+      <pre wrap="" class="moz-quote-pre">_______________________________________________
+Openvpn-devel mailing list
+<a class="moz-txt-link-abbreviated" href="mailto:Openvpn-devel@lists.sourceforge.net">Openvpn-devel@lists.sourceforge.net</a>
+<a class="moz-txt-link-freetext" href="https://lists.sourceforge.net/lists/listinfo/openvpn-devel">https://lists.sourceforge.net/lists/listinfo/openvpn-devel</a>
+</pre>
+    </blockquote>
+  </body>
+</html>
 
---0000000000000ca35b062730c461
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<div dir=3D"rtl"><div class=3D"gmail-flex-1 gmail-overflow-hidden"><div cla=
-ss=3D"gmail-h-full"><div class=3D"gmail-react-scroll-to-bottom--css-mizfo-7=
-9elbk gmail-h-full"><div class=3D"gmail-react-scroll-to-bottom--css-mizfo-1=
-n7m0yu"><div class=3D"gmail-flex gmail-flex-col gmail-text-sm gmail-md:pb-9=
-"><div class=3D"gmail-m-auto gmail-text-base gmail-py-[18px] gmail-px-3 gma=
-il-md:px-4 gmail-w-full gmail-md:px-5 gmail-lg:px-4 gmail-xl:px-5"><div cla=
-ss=3D"gmail-mx-auto gmail-flex gmail-flex-1 gmail-gap-4 gmail-text-base gma=
-il-md:gap-5 gmail-lg:gap-6 gmail-md:max-w-3xl gmail-lg:max-w-[40rem] gmail-=
-xl:max-w-[48rem]"><div class=3D"gmail-group/conversation-turn gmail-relativ=
-e gmail-flex gmail-w-full gmail-min-w-0 gmail-flex-col gmail-agent-turn"><d=
-iv class=3D"gmail-flex-col gmail-gap-1 gmail-md:gap-3"><div class=3D"gmail-=
-flex gmail-max-w-full gmail-flex-col gmail-flex-grow"><div dir=3D"auto" cla=
-ss=3D"gmail-min-h-8 gmail-text-message gmail-flex gmail-w-full gmail-flex-c=
-ol gmail-items-end gmail-gap-2 gmail-whitespace-normal gmail-break-words gm=
-ail-[.text-message+&amp;]:mt-5"><div class=3D"gmail-flex gmail-w-full gmail=
--flex-col gmail-gap-1 empty:hidden gmail-first:pt-[3px]"><div class=3D"gmai=
-l-result-streaming gmail-markdown gmail-prose gmail-w-full gmail-break-word=
-s gmail-dark:prose-invert gmail-light"><p>Dear OpenVPN Security Team,</p><p=
->I hope this message finds you well. I am writing to inquire about recent v=
-ulnerabilities disclosed in OpenVPN, specifically related to Data Channel O=
-ffload (DCO) and associated components.</p><p>Our current deployment uses O=
-penVPN version <strong>2.6.12</strong>, which appears to include patches fo=
-r the vulnerabilities described under CVE-2024-27459, CVE-2024-24974, CVE-2=
-024-27903, and CVE-2024-1305. However, I would like to confirm the followin=
-g:</p><ol><li>Are there additional security recommendations for mitigating =
-potential exploitation of DCO-specific features?</li><li>Are there any newl=
-y identified vulnerabilities in OpenVPN 2.6.12 that have not yet been discl=
-osed in advisories?</li><li>Could you provide more detailed guidance or bes=
-t practices for hardening configurations against these and similar vulnerab=
-ilities?</li></ol><p>If you require any additional information from our sid=
-e, I am happy to provide details within the limits of operational confident=
-iality.</p><p><br></p><p><br></p><p>TNX,</p><p>NETANEL</p><p><br></p></div>=
-</div></div></div></div></div></div></div></div></div></div></div></div></d=
-iv>
-
---0000000000000ca35b062730c461--
+--------------2WJ0Pq9YCRd73EGdhzW0QGiS--
 
