@@ -14,11 +14,12 @@ References: <CAC8x_z10PT_ToTzVUKQENA5ZJgJ4EMvBJARphDR5_wdytA2JSw@...278...>
  <NiEAJIgS9m7ZfNEendx_-DgdcR9mgMT7fRzEQkUbVYLFCz0ypiEj0WQmBGFcUYYPjPds9DYHnsE9C8LCC3TJaA==@protonmail.internalid>
  <CAC8x_z25BWNsGfTbJTk2000D_DHN0tTWBUzSO7USzqwh0VSAGw@...278...>
  <8b4f437c.AW4AAFgn2E0AAAAAAAAAAauy6DYAAYCsnhYAAAAAABXTlQBnOxEf@...2677...>
-In-Reply-To: <8b4f437c.AW4AAFgn2E0AAAAAAAAAAauy6DYAAYCsnhYAAAAAABXTlQBnOxEf@...2677...>
-From: =?UTF-8?B?16DXqteZINep15jXqNef?= <nsh531@...277...>
-Date: Mon, 18 Nov 2024 13:43:41 +0200
-Message-ID: <CAC8x_z177Yprk0RnVqaqoLGize5tByiU4wsRvdqh2ovAtQ92nw@...278...>
-Content-Type: multipart/alternative; boundary="00000000000044a56606272e6eed"
+ <CAC8x_z177Yprk0RnVqaqoLGize5tByiU4wsRvdqh2ovAtQ92nw@...278...>
+In-Reply-To: <CAC8x_z177Yprk0RnVqaqoLGize5tByiU4wsRvdqh2ovAtQ92nw@...278...>
+From: =?UTF-8?B?0JjQu9GM0Y8g0KjQuNC/0LjRhtC40L0=?= <chipitsine@...277...>
+Date: Mon, 18 Nov 2024 12:58:25 +0100
+Message-ID: <CAFHpkQFFq9q2MAzzGutSb88fgSz7EbJDXH4z5hSG6xLavfnh+w@...278...>
+Content-Type: multipart/alternative; boundary="000000000000f9ee3406272ea2fd"
 Subject: Re: [Openvpn-devel] Subject: Potential OpenVPN Vulnerability
  Report: Repeated TLS Handshake Failures Leading to Denial-of-Service
  Conditions
@@ -30,248 +31,286 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: David Sommerseth <dazo+openvpn@...2108...>
-Cc: =?UTF-8?B?0JjQu9GM0Y8g0KjQuNC/0LjRhtC40L0=?= <chipitsine@...277...>, =?UTF-8?B?15PXmdeV15XXl9eZINek15LXmdei15XXmdeV16o=?= <cve@...2832...>, Gert Doering <gert@...1296...>, Antonio Quartulli <antonio@...515...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>, SECURITY@...515...
+To: =?UTF-8?B?16DXqteZINep15jXqNef?= <nsh531@...277...>
+Cc: David Sommerseth <dazo+openvpn@...2108...>, =?UTF-8?B?15PXmdeV15XXl9eZINek15LXmdei15XXmdeV16o=?= <cve@...2832...>, Gert Doering <gert@...1296...>, Antonio Quartulli <antonio@...515...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>, SECURITY@...515...
 
---00000000000044a56606272e6eed
+--000000000000f9ee3406272ea2fd
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-How to solve this problem?
-because both the client and server are my  own
+I initially thought it was not your server, because you told us that you do
+not have server logs.
+
+do you have at least any client packet that reaches server ?
+
+(I know you may ask how to check that. I'd choose tcpdump. in case if you
+wish to ask how to use tcpdump - sorry, no answer. Please use the tool of
+your choice, whatever you are comfortable with)
 
 
-=E2=80=AB=D7=91=D7=AA=D7=90=D7=A8=D7=99=D7=9A =D7=99=D7=95=D7=9D =D7=91=D7=
-=B3, 18 =D7=91=D7=A0=D7=95=D7=91=D7=B3 2024 =D7=91-12:04 =D7=9E=D7=90=D7=AA=
- =E2=80=AADavid Sommerseth=E2=80=AC=E2=80=8F <=E2=80=AA
-dazo+openvpn@...2108...=E2=80=AC=E2=80=8F>:=E2=80=AC
+if no packet reaches server, most probably you did not open firewall
+(either on vm itself or in cloud level).
 
->
-> Please stop now.
->
-> A client which cannot reach a server because the client side has
-> connectivity issues towards the server is not a DoS, it is not a CVE and
-> will never be considered a security issue.
->
-> First of all, a DoS attack is commonly related to a SERVER becoming
-> unresponsive due to traffic to the server causing it to stop responding.
->   Or that one VPN clients misbehaviour (not due to misconfiguration,
-> though) results in no other clients being able to connect.
->
-> What you have described so far is that you cannot reach the server.  And
-> OpenVPN tries to reconnect regularly.  This is the expected behaviour of
-> most VPN clients - they try to keep the tunnel running with as little
-> user interaction as possible.  The back-off timer is there to also
-> needlessly keep trying if there seems to be longer persisting
-> connectivity issues.
->
-> And just to entertain you a bit more.  This is the logs when using
-> OpenVPN 3 Linux:
+(if you are going to ask how to manage firewall on vm or cloud level,
+sorry, no idea here, please consult cloud guides or contact cloud support).
+
+=E2=80=AA=D0=BF=D0=BD, 18 =D0=BD=D0=BE=D1=8F=D0=B1. 2024=E2=80=AF=D0=B3. =
+=D0=B2 12:43, =E2=80=AB=D7=A0=D7=AA=D7=99 =D7=A9=D7=98=D7=A8=D7=9F=E2=80=AC=
+=E2=80=8E <nsh531@...277...>:=E2=80=AC
+
+> How to solve this problem?
+> because both the client and server are my  own
 >
 >
-> -------------------------------------------------------------------------=
----
-> Press CTRL-C to stop the connection
+> =E2=80=AB=D7=91=D7=AA=D7=90=D7=A8=D7=99=D7=9A =D7=99=D7=95=D7=9D =D7=91=
+=D7=B3, 18 =D7=91=D7=A0=D7=95=D7=91=D7=B3 2024 =D7=91-12:04 =D7=9E=D7=90=D7=
+=AA =E2=80=AADavid Sommerseth=E2=80=AC=E2=80=8F <=E2=80=AA
+> dazo+openvpn@...2108...=E2=80=AC=E2=80=8F>:=E2=80=AC
 >
-> 2024-11-18 09:59:19.854568 [STATUS] (StatusMajor.CONNECTION,
-> StatusMinor.CFG_OK)
->
-> config_path=3D/net/openvpn/v3/configuration/4c2bba36x2151x4291xb7acx36000=
-0375d2a
-> 2024-11-18 09:59:19.854636 [LOG] Starting connection
-> 2024-11-18 09:59:19.854694 [LOG] Using DNS resolver scope: global
-> 2024-11-18 09:59:19.862369 [LOG] [Connect] DCO flag: disabled
-> 2024-11-18 09:59:19.862479 [STATUS] (StatusMajor.CONNECTION,
-> StatusMinor.CONN_CONNECTING)
-> 2024-11-18 09:59:19.862548 [LOG] [Core] OpenVPN core v3.10.1 linux
-> x86_64 64-bit OVPN-DCO
-> 2024-11-18 09:59:19.862596 [LOG] [Core] Frame=3D512/2112/512 mssfix-ctrl=
-=3D1250
-> 2024-11-18 09:59:19.862636 [LOG] Resolving
-> 2024-11-18 09:59:19.866525 [LOG] [Core] Contacting 103.6.170.21:1194 via
-> UDP
-> 2024-11-18 09:59:19.866638 [LOG] Waiting for server response
-> 2024-11-18 09:59:19.878505 [LOG] [Core] Connecting to
-> [103.6.170.21]:1194 (103.6.170.21) via UDP
-> 2024-11-18 09:59:29.861733 [LOG] [Core] Server poll timeout, trying next
-> remote entry...
-> 2024-11-18 09:59:29.861875 [LOG] Resolving
-> 2024-11-18 09:59:29.865648 [LOG] [Core] Contacting 103.6.170.21:1194 via
-> UDP
-> 2024-11-18 09:59:29.865769 [LOG] Waiting for server response
-> 2024-11-18 09:59:29.876299 [LOG] [Core] Connecting to
-> [103.6.170.21]:1194 (103.6.170.21) via UDP
-> 2024-11-18 09:59:39.862254 [LOG] [Core] Server poll timeout, trying next
-> remote entry...
-> 2024-11-18 09:59:39.862347 [LOG] Resolving
-> 2024-11-18 09:59:39.866157 [LOG] [Core] Contacting 103.6.170.21:1194 via
-> UDP
-> 2024-11-18 09:59:39.866262 [LOG] Waiting for server response
-> 2024-11-18 09:59:39.877288 [LOG] [Core] Connecting to
-> [103.6.170.21]:1194 (103.6.170.21) via UDP
-> 2024-11-18 09:59:49.862757 [LOG] [Core] Server poll timeout, trying next
-> remote entry...
-> 2024-11-18 09:59:49.862852 [LOG] Resolving
-> 2024-11-18 09:59:49.866514 [LOG] [Core] Contacting 103.6.170.21:1194 via
-> UDP
-> 2024-11-18 09:59:49.866614 [LOG] Waiting for server response
-> 2024-11-18 09:59:49.875998 [LOG] [Core] Connecting to
-> [103.6.170.21]:1194 (103.6.170.21) via UDP
-> 2024-11-18 09:59:59.863047 [LOG] [Core] Server poll timeout, trying next
-> remote entry...
-> 2024-11-18 09:59:59.863179 [LOG] Resolving
-> 2024-11-18 09:59:59.866699 [LOG] [Core] Contacting 103.6.170.21:1194 via
-> UDP
-> 2024-11-18 09:59:59.866798 [LOG] Waiting for server response
-> 2024-11-18 09:59:59.876724 [LOG] [Core] Connecting to
-> [103.6.170.21]:1194 (103.6.170.21) via UDP
-> 2024-11-18 10:00:09.863146 [LOG] [Core] Server poll timeout, trying next
-> remote entry...
-> 2024-11-18 10:00:09.863242 [LOG] Resolving
-> 2024-11-18 10:00:09.867305 [LOG] [Core] Contacting 103.6.170.21:1194 via
-> UDP
-> 2024-11-18 10:00:09.867406 [LOG] Waiting for server response
-> 2024-11-18 10:00:09.879292 [LOG] [Core] Connecting to
-> [103.6.170.21]:1194 (103.6.170.21) via UDP
-> 2024-11-18 10:00:19.863499 [LOG] [Core] Server poll timeout, trying next
-> remote entry...
-> 2024-11-18 10:00:19.863623 [LOG] Resolving
-> 2024-11-18 10:00:19.867758 [LOG] [Core] Contacting 103.6.170.21:1194 via
-> UDP
-> 2024-11-18 10:00:19.867845 [LOG] Waiting for server response
-> 2024-11-18 10:00:19.879066 [LOG] [Core] Connecting to
-> [103.6.170.21]:1194 (103.6.170.21) via UDP
-> ^C
-> Disconnecting...
-> Connection statistics:
->                      BYTES_OUT: 2814
->                    PACKETS_OUT: 67
->                    N_RECONNECT: 6
->
-> -------------------------------------------------------------------------=
----
->
-> This needs to stop.  This is not a CVE.  This is an OpenVPN server which
-> doesn't respond on port 1194/udp.
->
-> If you want to keep some kind of credibility with any security teams,
-> you need to back down and spend time looking for real issues and
-> document it far better.  And you will need to provide the server side
-> perspective as well, not just the client side.
->
-> Once again: Clients not being able to connect to the server because of
-> network connectivity issues is not a CVE.
->
->
-> This case is closed.
->
->
-> --
-> kind regards,
->
-> David Sommerseth
-> OpenVPN Inc
->
->
->
-> On 18/11/2024 08:37, =D7=A0=D7=AA=D7=99 =D7=A9=D7=98=D7=A8=D7=9F wrote:
-> > What can I do to assign a CVE?
-> >   I attached the CVE team of ISRAEL CERT  to conversation
-> >
-> > tnx
-> >
-> > =E2=80=AB=D7=91=D7=AA=D7=90=D7=A8=D7=99=D7=9A =D7=99=D7=95=D7=9D =D7=91=
-=D7=B3, 18 =D7=91=D7=A0=D7=95=D7=91=D7=B3 2024 =D7=91-9:29 =D7=9E=D7=90=D7=
-=AA =E2=80=AA=D0=98=D0=BB=D1=8C=D1=8F =D0=A8=D0=B8=D0=BF=D0=B8=D1=86=D0=B8=
-=D0=BD=E2=80=AC=E2=80=8F
-> > <=E2=80=AAchipitsine@...277... <mailto:chipitsine@...277...>=E2=80=AC=
+>>
+>> Please stop now.
+>>
+>> A client which cannot reach a server because the client side has
+>> connectivity issues towards the server is not a DoS, it is not a CVE and
+>> will never be considered a security issue.
+>>
+>> First of all, a DoS attack is commonly related to a SERVER becoming
+>> unresponsive due to traffic to the server causing it to stop responding.
+>>   Or that one VPN clients misbehaviour (not due to misconfiguration,
+>> though) results in no other clients being able to connect.
+>>
+>> What you have described so far is that you cannot reach the server.  And
+>> OpenVPN tries to reconnect regularly.  This is the expected behaviour of
+>> most VPN clients - they try to keep the tunnel running with as little
+>> user interaction as possible.  The back-off timer is there to also
+>> needlessly keep trying if there seems to be longer persisting
+>> connectivity issues.
+>>
+>> And just to entertain you a bit more.  This is the logs when using
+>> OpenVPN 3 Linux:
+>>
+>>
+>> ------------------------------------------------------------------------=
+----
+>> Press CTRL-C to stop the connection
+>>
+>> 2024-11-18 09:59:19.854568 [STATUS] (StatusMajor.CONNECTION,
+>> StatusMinor.CFG_OK)
+>>
+>> config_path=3D/net/openvpn/v3/configuration/4c2bba36x2151x4291xb7acx3600=
+00375d2a
+>> 2024-11-18 09:59:19.854636 [LOG] Starting connection
+>> 2024-11-18 09:59:19.854694 [LOG] Using DNS resolver scope: global
+>> 2024-11-18 09:59:19.862369 [LOG] [Connect] DCO flag: disabled
+>> 2024-11-18 09:59:19.862479 [STATUS] (StatusMajor.CONNECTION,
+>> StatusMinor.CONN_CONNECTING)
+>> 2024-11-18 09:59:19.862548 [LOG] [Core] OpenVPN core v3.10.1 linux
+>> x86_64 64-bit OVPN-DCO
+>> 2024-11-18 09:59:19.862596 [LOG] [Core] Frame=3D512/2112/512
+>> mssfix-ctrl=3D1250
+>> 2024-11-18 09:59:19.862636 [LOG] Resolving
+>> 2024-11-18 09:59:19.866525 [LOG] [Core] Contacting 103.6.170.21:1194 via
+>> UDP
+>> 2024-11-18 09:59:19.866638 [LOG] Waiting for server response
+>> 2024-11-18 09:59:19.878505 [LOG] [Core] Connecting to
+>> [103.6.170.21]:1194 (103.6.170.21) via UDP
+>> 2024-11-18 09:59:29.861733 [LOG] [Core] Server poll timeout, trying next
+>> remote entry...
+>> 2024-11-18 09:59:29.861875 [LOG] Resolving
+>> 2024-11-18 09:59:29.865648 [LOG] [Core] Contacting 103.6.170.21:1194 via
+>> UDP
+>> 2024-11-18 09:59:29.865769 [LOG] Waiting for server response
+>> 2024-11-18 09:59:29.876299 [LOG] [Core] Connecting to
+>> [103.6.170.21]:1194 (103.6.170.21) via UDP
+>> 2024-11-18 09:59:39.862254 [LOG] [Core] Server poll timeout, trying next
+>> remote entry...
+>> 2024-11-18 09:59:39.862347 [LOG] Resolving
+>> 2024-11-18 09:59:39.866157 [LOG] [Core] Contacting 103.6.170.21:1194 via
+>> UDP
+>> 2024-11-18 09:59:39.866262 [LOG] Waiting for server response
+>> 2024-11-18 09:59:39.877288 [LOG] [Core] Connecting to
+>> [103.6.170.21]:1194 (103.6.170.21) via UDP
+>> 2024-11-18 09:59:49.862757 [LOG] [Core] Server poll timeout, trying next
+>> remote entry...
+>> 2024-11-18 09:59:49.862852 [LOG] Resolving
+>> 2024-11-18 09:59:49.866514 [LOG] [Core] Contacting 103.6.170.21:1194 via
+>> UDP
+>> 2024-11-18 09:59:49.866614 [LOG] Waiting for server response
+>> 2024-11-18 09:59:49.875998 [LOG] [Core] Connecting to
+>> [103.6.170.21]:1194 (103.6.170.21) via UDP
+>> 2024-11-18 09:59:59.863047 [LOG] [Core] Server poll timeout, trying next
+>> remote entry...
+>> 2024-11-18 09:59:59.863179 [LOG] Resolving
+>> 2024-11-18 09:59:59.866699 [LOG] [Core] Contacting 103.6.170.21:1194 via
+>> UDP
+>> 2024-11-18 09:59:59.866798 [LOG] Waiting for server response
+>> 2024-11-18 09:59:59.876724 [LOG] [Core] Connecting to
+>> [103.6.170.21]:1194 (103.6.170.21) via UDP
+>> 2024-11-18 10:00:09.863146 [LOG] [Core] Server poll timeout, trying next
+>> remote entry...
+>> 2024-11-18 10:00:09.863242 [LOG] Resolving
+>> 2024-11-18 10:00:09.867305 [LOG] [Core] Contacting 103.6.170.21:1194 via
+>> UDP
+>> 2024-11-18 10:00:09.867406 [LOG] Waiting for server response
+>> 2024-11-18 10:00:09.879292 [LOG] [Core] Connecting to
+>> [103.6.170.21]:1194 (103.6.170.21) via UDP
+>> 2024-11-18 10:00:19.863499 [LOG] [Core] Server poll timeout, trying next
+>> remote entry...
+>> 2024-11-18 10:00:19.863623 [LOG] Resolving
+>> 2024-11-18 10:00:19.867758 [LOG] [Core] Contacting 103.6.170.21:1194 via
+>> UDP
+>> 2024-11-18 10:00:19.867845 [LOG] Waiting for server response
+>> 2024-11-18 10:00:19.879066 [LOG] [Core] Connecting to
+>> [103.6.170.21]:1194 (103.6.170.21) via UDP
+>> ^C
+>> Disconnecting...
+>> Connection statistics:
+>>                      BYTES_OUT: 2814
+>>                    PACKETS_OUT: 67
+>>                    N_RECONNECT: 6
+>>
+>> ------------------------------------------------------------------------=
+----
+>>
+>> This needs to stop.  This is not a CVE.  This is an OpenVPN server which
+>> doesn't respond on port 1194/udp.
+>>
+>> If you want to keep some kind of credibility with any security teams,
+>> you need to back down and spend time looking for real issues and
+>> document it far better.  And you will need to provide the server side
+>> perspective as well, not just the client side.
+>>
+>> Once again: Clients not being able to connect to the server because of
+>> network connectivity issues is not a CVE.
+>>
+>>
+>> This case is closed.
+>>
+>>
+>> --
+>> kind regards,
+>>
+>> David Sommerseth
+>> OpenVPN Inc
+>>
+>>
+>>
+>> On 18/11/2024 08:37, =D7=A0=D7=AA=D7=99 =D7=A9=D7=98=D7=A8=D7=9F wrote:
+>> > What can I do to assign a CVE?
+>> >   I attached the CVE team of ISRAEL CERT  to conversation
+>> >
+>> > tnx
+>> >
+>> > =E2=80=AB=D7=91=D7=AA=D7=90=D7=A8=D7=99=D7=9A =D7=99=D7=95=D7=9D =D7=
+=91=D7=B3, 18 =D7=91=D7=A0=D7=95=D7=91=D7=B3 2024 =D7=91-9:29 =D7=9E=D7=90=
+=D7=AA =E2=80=AA=D0=98=D0=BB=D1=8C=D1=8F =D0=A8=D0=B8=D0=BF=D0=B8=D1=86=D0=
+=B8=D0=BD=E2=80=AC=E2=80=8F
+>> > <=E2=80=AAchipitsine@...277... <mailto:chipitsine@...277...>=E2=80=AC=
 =E2=80=8F>:=E2=80=AC
-> >
-> >     As many details as possible. Configuration file usually helps.
-> >
-> >     Other than that also server side logs are nice to have. As well as
-> >     the detailed repro steps
-> >
-> >     On Mon, Nov 18, 2024, 08:27 =D7=A0=D7=AA=D7=99 =D7=A9=D7=98=D7=A8=
+>> >
+>> >     As many details as possible. Configuration file usually helps.
+>> >
+>> >     Other than that also server side logs are nice to have. As well as
+>> >     the detailed repro steps
+>> >
+>> >     On Mon, Nov 18, 2024, 08:27 =D7=A0=D7=AA=D7=99 =D7=A9=D7=98=D7=A8=
 =D7=9F <nsh531@...277...
-> >     <mailto:nsh531@...277...>> wrote:
-> >
-> >         Do you want the configuration file?
-> >
-> >         =E2=80=AB=D7=91=D7=AA=D7=90=D7=A8=D7=99=D7=9A =D7=99=D7=95=D7=
+>> >     <mailto:nsh531@...277...>> wrote:
+>> >
+>> >         Do you want the configuration file?
+>> >
+>> >         =E2=80=AB=D7=91=D7=AA=D7=90=D7=A8=D7=99=D7=9A =D7=99=D7=95=D7=
 =9D =D7=91=D7=B3, 18 =D7=91=D7=A0=D7=95=D7=91=D7=B3 2024 =D7=91-9:14 =D7=9E=
 =D7=90=D7=AA =E2=80=AAGert Doering=E2=80=AC=E2=80=8F
-> >         <=E2=80=AAgert@...1296... <mailto:gert@...1296...>=E2=80=AC=E2=
+>> >         <=E2=80=AAgert@...1296... <mailto:gert@...1296...>=E2=80=AC=E2=
 =80=8F>:=E2=80=AC
-> >
-> >             Hi,
-> >
-> >             On Mon, Nov 18, 2024 at 09:09:57AM +0200, ?????? ????????
-> wrote:
-> >              > I don't have access to server logs, I sent you the client
-> >             logs as well as
-> >              > the line pointing to the DoS:
-> >              > TLS Error: TLS key negotiation failed to occur within 5
-> >             seconds
-> >              > SIGUSR1[soft,tls-error] received, process restarting
-> >
-> >             What makes you think it's a DoS that can be fixed by a code
-> >             change?
-> >
-> >             If you break the network, programs will not be able to
-> >             connect - and there
-> >             is nothing "a patch to the software" will be able to fix.
-> >
-> >             gert
-> >             --
-> >             "If was one thing all people took for granted, was
-> >             conviction that if you
-> >               feed honest figures into a computer, honest figures come
-> >             out. Never doubted
-> >               it myself till I met a computer with a sense of humor."
-> >                                           Robert A. Heinlein, The Moon
-> >             is a Harsh Mistress
-> >
-> >             Gert Doering - Munich, Germany gert@...1296...
-> >             <mailto:gert@...1296...>
-> >
-> >
-> >
-> >         --
-> >         <https://netanel.ml>
-> >         _______________________________________________
-> >         Openvpn-devel mailing list
-> >         Openvpn-devel@lists.sourceforge.net
-> >         <mailto:Openvpn-devel@lists.sourceforge.net>
-> >         https://lists.sourceforge.net/lists/listinfo/openvpn-devel
-> >         <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>
-> >
-> >
-> >
-> > --
-> > <https://netanel.ml>
+>> >
+>> >             Hi,
+>> >
+>> >             On Mon, Nov 18, 2024 at 09:09:57AM +0200, ?????? ????????
+>> wrote:
+>> >              > I don't have access to server logs, I sent you the clie=
+nt
+>> >             logs as well as
+>> >              > the line pointing to the DoS:
+>> >              > TLS Error: TLS key negotiation failed to occur within 5
+>> >             seconds
+>> >              > SIGUSR1[soft,tls-error] received, process restarting
+>> >
+>> >             What makes you think it's a DoS that can be fixed by a code
+>> >             change?
+>> >
+>> >             If you break the network, programs will not be able to
+>> >             connect - and there
+>> >             is nothing "a patch to the software" will be able to fix.
+>> >
+>> >             gert
+>> >             --
+>> >             "If was one thing all people took for granted, was
+>> >             conviction that if you
+>> >               feed honest figures into a computer, honest figures come
+>> >             out. Never doubted
+>> >               it myself till I met a computer with a sense of humor."
+>> >                                           Robert A. Heinlein, The Moon
+>> >             is a Harsh Mistress
+>> >
+>> >             Gert Doering - Munich, Germany gert@...1296...
+>> >             <mailto:gert@...1296...>
+>> >
+>> >
+>> >
+>> >         --
+>> >         <https://netanel.ml>
+>> >         _______________________________________________
+>> >         Openvpn-devel mailing list
+>> >         Openvpn-devel@lists.sourceforge.net
+>> >         <mailto:Openvpn-devel@lists.sourceforge.net>
+>> >         https://lists.sourceforge.net/lists/listinfo/openvpn-devel
+>> >         <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>
+>> >
+>> >
+>> >
+>> > --
+>> > <https://netanel.ml>
+>>
+>>
+>>
+>>
 >
->
->
+> --
+> <https://netanel.ml>
 >
 
---=20
-<https://netanel.ml>
-
---00000000000044a56606272e6eed
+--000000000000f9ee3406272ea2fd
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
+<div dir=3D"ltr"><div>I initially thought it was not your server, because y=
+ou told us that you do not have server logs.</div><div><br></div><div>do yo=
+u have at least any client packet that reaches server ?</div><div><br></div=
+><div>(I know you may ask how to check that. I&#39;d choose tcpdump. in cas=
+e if you wish to ask how to use tcpdump - sorry, no answer. Please use the =
+tool of your choice, whatever you are comfortable with)</div><div><br></div=
+><div><br></div><div>if no packet reaches server, most probably you did not=
+ open firewall (either on vm itself or in cloud level).</div><div><br></div=
+><div>(if you are going to ask how to manage firewall on vm or cloud level,=
+ sorry, no idea here, please consult cloud guides=C2=A0or contact cloud sup=
+port).</div><br><div class=3D"gmail_quote"><div dir=3D"ltr" class=3D"gmail_=
+attr">=E2=80=AA=D0=BF=D0=BD, 18 =D0=BD=D0=BE=D1=8F=D0=B1. 2024=E2=80=AF=D0=
+=B3. =D0=B2 12:43, =E2=80=AB=D7=A0=D7=AA=D7=99 =D7=A9=D7=98=D7=A8=D7=9F=E2=
+=80=AC=E2=80=8E &lt;<a href=3D"mailto:nsh531@...277...">nsh531@...277...</a=
+>&gt;:=E2=80=AC<br></div><blockquote class=3D"gmail_quote" style=3D"margin:=
+0px 0px 0px 0.8ex;border-left:1px solid rgb(204,204,204);padding-left:1ex">=
 <div dir=3D"rtl"><div dir=3D"ltr">How to solve this problem?=C2=A0</div><di=
 v dir=3D"ltr">because both the client and server are my=C2=A0 own</div><div=
  dir=3D"ltr"><br></div></div><br><div class=3D"gmail_quote"><div dir=3D"rtl=
 " class=3D"gmail_attr">=E2=80=AB=D7=91=D7=AA=D7=90=D7=A8=D7=99=D7=9A =D7=99=
 =D7=95=D7=9D =D7=91=D7=B3, 18 =D7=91=D7=A0=D7=95=D7=91=D7=B3 2024 =D7=91-12=
 :04 =D7=9E=D7=90=D7=AA =E2=80=AADavid Sommerseth=E2=80=AC=E2=80=8F &lt;=E2=
-=80=AA<a href=3D"mailto:dazo%2Bopenvpn@...2108...">dazo+openvpn@...2108...<=
-/a>=E2=80=AC=E2=80=8F&gt;:=E2=80=AC<br></div><blockquote class=3D"gmail_quo=
-te" style=3D"margin:0px 0px 0px 0.8ex;border-left:1px solid rgb(204,204,204=
-);padding-left:1ex"><br>
+=80=AA<a href=3D"mailto:dazo%2Bopenvpn@...2108..." target=3D"_blank">dazo+o=
+penvpn@...2108...</a>=E2=80=AC=E2=80=8F&gt;:=E2=80=AC<br></div><blockquote =
+class=3D"gmail_quote" style=3D"margin:0px 0px 0px 0.8ex;border-left:1px sol=
+id rgb(204,204,204);padding-left:1ex"><br>
 Please stop now.<br>
 <br>
 A client which cannot reach a server because the client side has <br>
@@ -542,6 +581,7 @@ ignature"><div dir=3D"rtl"><a href=3D"https://netanel.ml" target=3D"_blank"=
 ><img width=3D"200" height=3D"51" src=3D"https://ci3.googleusercontent.com/=
 mail-sig/AIorK4y1ahZg0mqH5UnDCjKIkW6FTSni5R5bezS1idSRECO6GXQ1uH3RgELXk8RqqC=
 oNk3985_jsnIQnnclo"></a></div></div>
+</blockquote></div></div>
 
---00000000000044a56606272e6eed--
+--000000000000f9ee3406272ea2fd--
 
