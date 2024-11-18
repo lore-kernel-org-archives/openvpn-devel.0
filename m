@@ -1,12 +1,25 @@
-Message-ID: <9dc5b9e8-652e-4f6c-b58a-a7d616d085bf@...2181...>
-Date: Mon, 18 Nov 2024 10:33:29 +0100
+Message-ID: <0d08e6e1-28b1-43db-b5bb-84ca4135f32f@...1227...>
+Date: Mon, 18 Nov 2024 10:46:27 +0100
 MIME-Version: 1.0
-References: <20241116051705.53061-1-shujifurukawa1213@...277...>
-Content-Language: en-US
-From: Antonio Quartulli <a@...2181...>
-In-Reply-To: <20241116051705.53061-1-shujifurukawa1213@...277...>
-Subject: Re: [Openvpn-devel] [PATCH] Improve shuffling algorithm of
- connection list
+References: <CAC8x_z10PT_ToTzVUKQENA5ZJgJ4EMvBJARphDR5_wdytA2JSw@...278...>
+ <b7c9a1ac-3322-4eeb-befd-e19c7f72da6b@...1227...>
+ <CAC8x_z3Fwf0r-BuvuOo+Vg0708fsaPGWjg-2pnY3xgM+e4QxDg@...278...>
+ <Zzm_gUxTAmFZjm_h@...1296...>
+ <CAC8x_z1OtkMeuRCHNOHfg-rcJ3Kcj2uHua3pzK5ZqKJDjPvBjQ@...278...>
+ <ZzoQ7jXbImL56HL6@...1296...>
+ <CAC8x_z2=DL=t2V5oN_hBMLbYcVMH78XqbTLguxFifjDco+zWyQ@...278...>
+ <2dae1148-45d8-4f82-8b65-973b81a18645@...1227...>
+ <CAC8x_z25-XQEyk0O34nKFMMj-mXNR2r+WbbaseX70mzzZKT+QA@...278...>
+ <ZzrpT6DjykCOJwUB@...1296...>
+ <CAC8x_z18gdgGfgSkH4w2hy5KJ8qkbTWXMyjNe592bLGe6ipzsA@...278...>
+ <CAFHpkQEYLiq+QGA=gKk-f-3Bi33XWvsS8r5+UEd8GUdmjbE+Ng@...278...>
+ <CAC8x_z25BWNsGfTbJTk2000D_DHN0tTWBUzSO7USzqwh0VSAGw@...278...>
+Content-Language: en-GB
+From: Arne Schwabe <arne@...1227...>
+In-Reply-To: <CAC8x_z25BWNsGfTbJTk2000D_DHN0tTWBUzSO7USzqwh0VSAGw@...278...>
+Subject: Re: [Openvpn-devel] Subject: Potential OpenVPN Vulnerability
+ Report: Repeated TLS Handshake Failures Leading to Denial-of-Service
+ Conditions
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,69 +28,27 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-To: Hurukawa2121 <shujifurukawa1213@...277...>, openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"; format="flowed"
+Content-Transfer-Encoding: 8bit
+To: =?UTF-8?B?16DXqteZINep15jXqNef?= <nsh531@...277...>, =?UTF-8?B?0JjQu9GM0Y8g0KjQuNC/0LjRhtC40L0=?= <chipitsine@...277...>, =?UTF-8?B?15PXmdeV15XXl9eZINek15LXmdei15XXmdeV16o=?= <cve@...2832...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>, Gert Doering <gert@...1296...>, Antonio Quartulli <antonio@...515...>, SECURITY@...515...
 
-Hi,
+Am 18.11.24 um 08:37 schrieb נתי שטרן:
+> What can I do to assign a CVE?
+>   I attached the CVE team of ISRAEL CERT  to conversation
 
-On 16/11/2024 06:17, Hurukawa2121 wrote:
-> ---
->   Improve shuffling algorithm of connection list
-> 
->   This patch implements the Fisher-Yates shuffle algorithm to ensure that all permutations of the connection target list are generated with equal probability, eliminating biases present in the previous shuffling method. In the Fisher-Yates algorithm, there's only one way to obtain each permutation through a series of element swaps, so all permutations occur with equal probability in theory.
->   
->   Signed-off-by: Hurukawa2121 <shujifurukawa1213@...277...>
+Report something that is considered a vulnerability.
 
-We'd need a real name here, if possible, as this is a true signature 
-telling us that you accepted the project license.
+For the CVE team included in the CC:
 
-> 
->   src/openvpn/init.c | 13 ++++++++++---
->   1 file changed, 10 insertions(+), 3 deletions(-)
-> 
-> diff --git a/src/openvpn/init.c b/src/openvpn/init.c
-> index 9371024e..c4fb5cd7 100644
-> --- a/src/openvpn/init.c
-> +++ b/src/openvpn/init.c
-> @@ -467,7 +467,14 @@ ce_management_query_remote(struct context *c)
->   #endif /* ENABLE_MANAGEMENT */
->   
->   /*
-> - * Initialize and possibly randomize connection list.
-> + * Initialize and randomize the connection list.
-> + *
-> + * Applies the Fisher-Yates shuffle algorithm to ensure all permutations are equally probable,
-> + * thereby eliminating shuffling bias in the previous method.
-> + *
-> + * The algorithm randomly selects an element from the unshuffled portion and places it at position i.
-> + * There's only one way to obtain each permutation through these swaps.
-> + * This guarantees that each permutation occurs with equal probability in theory.
->    */
->   static void
->   init_connection_list(struct context *c)
-> @@ -478,9 +485,9 @@ init_connection_list(struct context *c)
->       if (c->options.remote_random)
->       {
->           int i;
-> -        for (i = 0; i < l->len; ++i)
-> +        for (i = l->len - 1; i > 0; --i)
+The reporter has submitted logs around the
 
-Is the the change above truly needed to achieve what you described in 
-the commit message?
-It's just changing the direction we iterate over the array, but it 
-should not make a real difference, no?
+TLS Error: TLS key negotiation failed to occur within 5 seconds
+SIGUSR1[soft,tls-error] received, process restarting
 
-Regards,
+from the client that indicate a normal connection problem together with 
+exponential backoff. He claims this is a server side DoS. The OpenVPN 
+team strongly disagrees based on the logs and lack of any other evidence.
 
->           {
-> -            const int j = get_random() % l->len;
-> +            const int j = get_random() % (i + 1);
->               if (i != j)
->               {
->                   struct connection_entry *tmp;
-
--- 
-Antonio Quartulli
-
+Arne
 
