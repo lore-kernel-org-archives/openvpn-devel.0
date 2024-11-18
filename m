@@ -1,4 +1,6 @@
-MIME-Version: 1.0
+Date: Mon, 18 Nov 2024 08:14:23 +0100
+From: Gert Doering <gert@...1296...>
+Message-ID: <ZzrpT6DjykCOJwUB@...1296...>
 References: <CAC8x_z10PT_ToTzVUKQENA5ZJgJ4EMvBJARphDR5_wdytA2JSw@...278...>
  <b7c9a1ac-3322-4eeb-befd-e19c7f72da6b@...1227...>
  <CAC8x_z3Fwf0r-BuvuOo+Vg0708fsaPGWjg-2pnY3xgM+e4QxDg@...278...>
@@ -7,11 +9,12 @@ References: <CAC8x_z10PT_ToTzVUKQENA5ZJgJ4EMvBJARphDR5_wdytA2JSw@...278...>
  <ZzoQ7jXbImL56HL6@...1296...>
  <CAC8x_z2=DL=t2V5oN_hBMLbYcVMH78XqbTLguxFifjDco+zWyQ@...278...>
  <2dae1148-45d8-4f82-8b65-973b81a18645@...1227...>
-In-Reply-To: <2dae1148-45d8-4f82-8b65-973b81a18645@...1227...>
-From: =?UTF-8?B?16DXqteZINep15jXqNef?= <nsh531@...277...>
-Date: Mon, 18 Nov 2024 09:09:57 +0200
-Message-ID: <CAC8x_z25-XQEyk0O34nKFMMj-mXNR2r+WbbaseX70mzzZKT+QA@...278...>
-Content-Type: multipart/alternative; boundary="00000000000049cdc106272a9b6d"
+ <CAC8x_z25-XQEyk0O34nKFMMj-mXNR2r+WbbaseX70mzzZKT+QA@...278...>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ protocol="application/pgp-signature"; boundary="LmYS5OnmtkSnjsub"
+Content-Disposition: inline
+In-Reply-To: <CAC8x_z25-XQEyk0O34nKFMMj-mXNR2r+WbbaseX70mzzZKT+QA@...278...>
 Subject: Re: [Openvpn-devel] Subject: Potential OpenVPN Vulnerability
  Report: Repeated TLS Handshake Failures Leading to Denial-of-Service
  Conditions
@@ -23,103 +26,54 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Arne Schwabe <arne@...1227...>
-Cc: Gert Doering <gert@...1296...>, Antonio Quartulli <antonio@...515...>, openvpn-devel@lists.sourceforge.net, SECURITY@...515...
+To: ?????? ???????? <nsh531@...277...>
+Cc: Arne Schwabe <arne@...1227...>, openvpn-devel@lists.sourceforge.net, Gert Doering <gert@...1296...>, Antonio Quartulli <antonio@...515...>, SECURITY@...515...
 
---00000000000049cdc106272a9b6d
-Content-Type: text/plain; charset="UTF-8"
+--LmYS5OnmtkSnjsub
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-Hello,
-I don't have access to server logs, I sent you the client logs as well as
-the line pointing to the DoS:
-TLS Error: TLS key negotiation failed to occur within 5 seconds
-SIGUSR1[soft,tls-error] received, process restarting
+Hi,
 
-=E2=80=AB=D7=91=D7=AA=D7=90=D7=A8=D7=99=D7=9A =D7=99=D7=95=D7=9D =D7=90=D7=
-=B3, 17 =D7=91=D7=A0=D7=95=D7=91=D7=B3 2024 =D7=91-21:09 =D7=9E=D7=90=D7=AA=
- =E2=80=AAArne Schwabe=E2=80=AC=E2=80=8F <=E2=80=AAarne@...1227...
-=E2=80=AC=E2=80=8F>:=E2=80=AC
+On Mon, Nov 18, 2024 at 09:09:57AM +0200, ?????? ???????? wrote:
+> I don't have access to server logs, I sent you the client logs as well as
+> the line pointing to the DoS:
+> TLS Error: TLS key negotiation failed to occur within 5 seconds
+> SIGUSR1[soft,tls-error] received, process restarting
 
-> We asked you for many things in the past mails. We expect to do ALL these
-> things to properly report the issue. Not just one of them. E.g. logs of
-> server, usage of a modern version, a description what the DoS vulnerabili=
-ty
-> actually is and so on are still missing. Just sending the client is just
-> not enough.
-> Am 17.11.2024 um 17:16 schrieb =D7=A0=D7=AA=D7=99 =D7=A9=D7=98=D7=A8=D7=
-=9F:
->
-> i attached logs
->
-> =E2=80=AB=D7=91=D7=AA=D7=90=D7=A8=D7=99=D7=9A =D7=99=D7=95=D7=9D =D7=90=
-=D7=B3, 17 =D7=91=D7=A0=D7=95=D7=91=D7=B3 2024 =D7=91-17:51 =D7=9E=D7=90=D7=
-=AA =E2=80=AAGert Doering=E2=80=AC=E2=80=8F <=E2=80=AA
-> gert@...1296...=E2=80=AC=E2=80=8F>:=E2=80=AC
->
->
+What makes you think it's a DoS that can be fixed by a code change?
 
---
-<https://netanel.ml>
+If you break the network, programs will not be able to connect - and there
+is nothing "a patch to the software" will be able to fix.
 
---00000000000049cdc106272a9b6d
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+gert
+--=20
+"If was one thing all people took for granted, was conviction that if you=20
+ feed honest figures into a computer, honest figures come out. Never doubte=
+d=20
+ it myself till I met a computer with a sense of humor."
+                             Robert A. Heinlein, The Moon is a Harsh Mistre=
+ss
 
-<div dir=3D"rtl"><div dir=3D"rtl"><div style=3D"direction:ltr">Hello,</div>=
-<div style=3D"direction:ltr">I don&#39;t have access to server logs, I sent=
- you the client logs as well as the line pointing to the DoS:</div><div sty=
-le=3D"direction:ltr">TLS Error: TLS key negotiation failed to occur within =
-5 seconds</div><div style=3D"direction:ltr">SIGUSR1[soft,tls-error] receive=
-d, process restarting</div></div><div style=3D"direction:ltr"><br></div><di=
-v class=3D"gmail_quote"><div dir=3D"rtl" class=3D"gmail_attr" style=3D"dire=
-ction:ltr">=E2=80=AB=D7=91=D7=AA=D7=90=D7=A8=D7=99=D7=9A =D7=99=D7=95=D7=9D=
- =D7=90=D7=B3, 17 =D7=91=D7=A0=D7=95=D7=91=D7=B3 2024 =D7=91-21:09 =D7=9E=
-=D7=90=D7=AA =E2=80=AAArne Schwabe=E2=80=AC=E2=80=8F &lt;=E2=80=AA<a href=
-=3D"mailto:arne@...1227...">arne@...1227...</a>=E2=80=AC=E2=80=8F&gt;:=E2=
-=80=AC<br></div><blockquote class=3D"gmail_quote" style=3D"margin:0px 0px 0=
-px 0.8ex;border-left:1px solid rgb(204,204,204);padding-left:1ex"><u></u>
+Gert Doering - Munich, Germany                             gert@...1296...
 
-=20=20
-=20=20=20=20
-=20=20
-  <div>
-    <p style=3D"direction:ltr">We asked you for many things in the past mai=
-ls. We expect to do
-      ALL these things to properly report the issue. Not just one of
-      them. E.g. logs of server, usage of a modern version, a
-      description what the DoS vulnerability actually is and so on are
-      still missing. Just sending the client is just not enough. <br>
-    </p>
-    <div style=3D"direction:ltr">Am 17.11.2024 um 17:16 schrieb =D7=A0=D7=
-=AA=D7=99
-      =D7=A9=D7=98=D7=A8=D7=9F:<br>
-    </div>
-    <blockquote type=3D"cite">
-=20=20=20=20=20=20
-      <div dir=3D"rtl">
-        <div dir=3D"ltr">i attached logs <br>
-        </div>
-      </div>
-      <div style=3D"direction:ltr"><br></div>
-      <div class=3D"gmail_quote">
-        <div dir=3D"rtl" class=3D"gmail_attr" style=3D"direction:ltr">=E2=
-=80=AB=D7=91=D7=AA=D7=90=D7=A8=D7=99=D7=9A =D7=99=D7=95=D7=9D =D7=90=D7=B3,=
- 17 =D7=91=D7=A0=D7=95=D7=91=D7=B3 2024
-          =D7=91-17:51 =D7=9E=D7=90=D7=AA =E2=80=AAGert Doering=E2=80=AC=E2=
-=80=8F &lt;=E2=80=AA<a href=3D"mailto:gert@...1296..." target=3D"_blank">ge=
-rt@...1296...</a>=E2=80=AC=E2=80=8F&gt;:=E2=80=AC</div>
-      </div>
-    </blockquote>
-  </div>
+--LmYS5OnmtkSnjsub
+Content-Type: application/pgp-signature; name="signature.asc"
 
-</blockquote></div><div style=3D"direction:ltr"><br clear=3D"all"></div><di=
-v style=3D"direction:ltr"><br></div><span class=3D"gmail_signature_prefix">=
-<div style=3D"direction:ltr">--</div></span><div dir=3D"rtl" class=3D"gmail=
-_signature"><div dir=3D"rtl" style=3D"direction:ltr"><a href=3D"https://net=
-anel.ml" target=3D"_blank"><img width=3D"200" height=3D"51" src=3D"https://=
-ci3.googleusercontent.com/mail-sig/AIorK4y1ahZg0mqH5UnDCjKIkW6FTSni5R5bezS1=
-idSRECO6GXQ1uH3RgELXk8RqqCoNk3985_jsnIQnnclo"></a></div></div></div>
+-----BEGIN PGP SIGNATURE-----
 
---00000000000049cdc106272a9b6d--
+iQGcBAEBAgAGBQJnOulPAAoJEB2Cnv7KVigSXLkL/18ocv9jADmVzbLmcwepFghE
+4BTWzJoJQnlzMJ+E7yRiEyViFDm9XyBgAOEMsyFJmvnbEaEyaxuCm3mp1M/Wm121
+Vt+sKjl4SWqbrOZo9nInPt+9h1dZpQhH83/RYA1Buq8obmX3stFxpR2dIen/OEKC
+uRSYIcunQP+7LK2Oa8XtPE0dU0nblyQb9+WudV8F9WXRlWQidrSTXbzbYvQ2EZmh
+CaYzD5827N5cLnRhXYKRx5S/3tIYqGcg7PkMQ8DnQmnEZJLeuQSac23yB+3Pj8Bv
+oJTsn6nEm/5qIsGVMOwGQ2EtfHNI8tp5vTK4qOHfwXeDXpieB3hXZfLA0vFYE7SH
+6QlOYG4j9tpOe1sXQWT9PmYrwJ+fc19O9VBolm/PGaWKA0TEmwUhQy7DVdSli+zC
+R5TvUnu84pyOIKvqYJPNeSckyTQXlES/VI/fWF2+7fUu4/AfyYBFrHG4C9+ioKjm
+Y/KJ/oIxEWRXW4NcH0aX3iDWM5E0WyJWiVulWPrwaw==
+=/WIi
+-----END PGP SIGNATURE-----
+
+--LmYS5OnmtkSnjsub--
 
