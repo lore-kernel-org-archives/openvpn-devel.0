@@ -1,12 +1,26 @@
-Message-ID: <82df15bb-dcbd-43d9-b47f-fbc80c2b14f2@...2181...>
-Date: Mon, 18 Nov 2024 16:11:36 +0100
+Message-ID: <40746fbf-9611-27fd-5873-8a028fe4937f@...2108...>
+Date: Tue, 19 Nov 2024 09:17:36 +0100
 MIME-Version: 1.0
-References: <20241118142019.31045-1-shujifurukawa1213@...277...>
+References: <CAC8x_z10PT_ToTzVUKQENA5ZJgJ4EMvBJARphDR5_wdytA2JSw@...278...>
+ <ZzoQ7jXbImL56HL6@...1296...>
+ <CAC8x_z2=DL=t2V5oN_hBMLbYcVMH78XqbTLguxFifjDco+zWyQ@...278...>
+ <2dae1148-45d8-4f82-8b65-973b81a18645@...1227...>
+ <CAC8x_z25-XQEyk0O34nKFMMj-mXNR2r+WbbaseX70mzzZKT+QA@...278...>
+ <ZzrpT6DjykCOJwUB@...1296...>
+ <CAC8x_z18gdgGfgSkH4w2hy5KJ8qkbTWXMyjNe592bLGe6ipzsA@...278...>
+ <CAFHpkQEYLiq+QGA=gKk-f-3Bi33XWvsS8r5+UEd8GUdmjbE+Ng@...278...>
+ <NiEAJIgS9m7ZfNEendx_-DgdcR9mgMT7fRzEQkUbVYLFCz0ypiEj0WQmBGFcUYYPjPds9DYHnsE9C8LCC3TJaA==@protonmail.internalid>
+ <CAC8x_z25BWNsGfTbJTk2000D_DHN0tTWBUzSO7USzqwh0VSAGw@...278...>
+ <8b4f437c.AW4AAFgn2E0AAAAAAAAAAauy6DYAAYCsnhYAAAAAABXTlQBnOxEf@...2677...>
+ <CAC8x_z177Yprk0RnVqaqoLGize5tByiU4wsRvdqh2ovAtQ92nw@...278...>
+ <CAFHpkQFFq9q2MAzzGutSb88fgSz7EbJDXH4z5hSG6xLavfnh+w@...278...>
+ <CAC8x_z2WjPATPgbOs9JPooP=gEShrvJfnVYddS=2pCYv+vq0fg@...278...>
+From: David Sommerseth <dazo+openvpn@...2108...>
 Content-Language: en-US
-From: Antonio Quartulli <a@...2181...>
-In-Reply-To: <20241118142019.31045-1-shujifurukawa1213@...277...>
-Subject: Re: [Openvpn-devel] [PATCH v2] Improve shuffling algorithm of
- connection list
+In-Reply-To: <CAC8x_z2WjPATPgbOs9JPooP=gEShrvJfnVYddS=2pCYv+vq0fg@...278...>
+Subject: Re: [Openvpn-devel] Subject: Potential OpenVPN Vulnerability
+ Report: Repeated TLS Handshake Failures Leading to Denial-of-Service
+ Conditions
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,87 +29,343 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-To: Hurukawa2121 <shujifurukawa1213@...277...>, openvpn-devel@lists.sourceforge.net
-
-Thanks for resending the patch!
-
-On 18/11/2024 15:20, Hurukawa2121 wrote:
-> ---
-
-However, please note that anything you write should go *before* these 
-three dashes, otherwise the text is ignored by git on commit.
-
-Anyway, no need to resend the patch for this.
-Probably Gert can easily fix this before moving forward with your patch.
-
->   Improve shuffling algorithm of connection list
-> 
->   This patch implements the Fisher-Yates shuffle algorithm to ensure that all permutations of the connection target list are generated with equal probability, eliminating biases present in the previous shuffling method. In the Fisher-Yates algorithm, there's only one way to obtain each permutation through a series of element swaps, so all permutations occur with equal probability in theory.
-
-Also one single loooong line in the commit message is absolutely not 
-acceptable.
-Better to split the text in lines no longer than 72 chars.
-Technically Gert can fix this too upon commit.
-
-But please do remember these details for your next patch.
-
-> 
->   Signed-off-by: Shuji Furukawa <shujifurukawa1213@...277...>
-
->   src/openvpn/init.c | 13 ++++++++++---
->   1 file changed, 10 insertions(+), 3 deletions(-)
-> 
-> diff --git a/src/openvpn/init.c b/src/openvpn/init.c
-> index 9371024e..c4fb5cd7 100644
-> --- a/src/openvpn/init.c
-> +++ b/src/openvpn/init.c
-> @@ -467,7 +467,14 @@ ce_management_query_remote(struct context *c)
->   #endif /* ENABLE_MANAGEMENT */
->   
->   /*
-> - * Initialize and possibly randomize connection list.
-> + * Initialize and randomize the connection list.
-> + *
-> + * Applies the Fisher-Yates shuffle algorithm to ensure all permutations are equally probable,
-> + * thereby eliminating shuffling bias in the previous method.
-> + *
-> + * The algorithm randomly selects an element from the unshuffled portion and places it at position i.
-> + * There's only one way to obtain each permutation through these swaps.
-> + * This guarantees that each permutation occurs with equal probability in theory.
-
-Same goes for comments (and any other line of code):
-maximum line length is 80 chars..
-
-This said, the patch looks good to me and I can apply my
-
-Acked-by: Antonio Quartulli <antonio@...2726...>
-
-However, I live it to Gert if he wants a new patch with these layout 
-errors fixed or not.
-
-Regards,
+Content-Type: text/plain; charset="utf-8"; format="flowed"
+Content-Transfer-Encoding: 8bit
+To: =?UTF-8?B?16DXqteZINep15jXqNef?= <nsh531@...277...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Cc: =?UTF-8?B?15PXmdeV15XXl9eZINek15LXmdei15XXmdeV16o=?= <cve@...2832...>
 
 
+The interesting lines are these:
 
->    */
->   static void
->   init_connection_list(struct context *c)
-> @@ -478,9 +485,9 @@ init_connection_list(struct context *c)
->       if (c->options.remote_random)
->       {
->           int i;
-> -        for (i = 0; i < l->len; ++i)
-> +        for (i = l->len - 1; i > 0; --i)
->           {
-> -            const int j = get_random() % l->len;
-> +            const int j = get_random() % (i + 1);
->               if (i != j)
->               {
->                   struct connection_entry *tmp;
+
+2024-11-18T20:53:01+1100 [stdout#info] [OVPN 0]
+      OUT: '2024-11-18 09:53:01 152.32.247.23:55730
+         Non-OpenVPN client protocol detected'
+
+These lines indicates the server seems to be configured with
+--port-share.  And those packets are forwarded to the service behind 
+OpenVPN.  In this case OpenVPN behaves like a proxy.
+
+
+2024-11-19T01:13:00+1100 [stdout#info] [OVPN 1]
+      OUT: '2024-11-18 14:13:00 TLS Error:
+          tls-crypt unwrapping failed from [AF_INET]195.28.180.102:36515
+              (via [AF_INET]103.6.170.21%eth0)'
+2024-11-19T01:13:35+1100 [stdout#info] [OVPN 1]
+      OUT: '2024-11-18 14:13:35 tls-crypt unwrap error: packet too short'
+
+
+That just means someone is trying to connect to the server not using 
+--tls-crypt or --tls-crypt-v2.  In this case, your client configuration 
+uses --tls-auth, which will result in this kind of error and not being 
+able to connect.
+
+I believe --mute will reduce the number of duplicated log lines in these 
+cases on the server side.
+
+I am not able to see anything extraordinary in these log lines.  This is 
+just plain misconfiguration.
+
+Since you seem to run OpenVPN Access Server, just log into the web 
+portal and download a new configuration profile.
+
+This has certainly nothing to do with any kind of security issues.
+
 
 -- 
-Antonio Quartulli
+kind regards,
+
+David Sommerseth
+OpenVPN Inc
+
+
+
+On 18/11/2024 15:17, נתי שטרן wrote:
+> *_
+> _*
+> *_server logs:_*
+[...snip...]
+> ‫בתאריך יום ב׳, 18 בנוב׳ 2024 ב-13:58 מאת ‪Илья Шипицин‬‏ 
+> <‪chipitsine@...277... <mailto:chipitsine@...277...>‬‏>:‬
+> 
+>     I initially thought it was not your server, because you told us that
+>     you do not have server logs.
+> 
+>     do you have at least any client packet that reaches server ?
+> 
+>     (I know you may ask how to check that. I'd choose tcpdump. in case
+>     if you wish to ask how to use tcpdump - sorry, no answer. Please use
+>     the tool of your choice, whatever you are comfortable with)
+> 
+> 
+>     if no packet reaches server, most probably you did not open firewall
+>     (either on vm itself or in cloud level).
+> 
+>     (if you are going to ask how to manage firewall on vm or cloud
+>     level, sorry, no idea here, please consult cloud guides or contact
+>     cloud support).
+> 
+>     ‪пн, 18 нояб. 2024 г. в 12:43, ‫נתי שטרן‬‎ <nsh531@...277...
+>     <mailto:nsh531@...277...>>:‬
+> 
+>         How to solve this problem?
+>         because both the client and server are my  own
+> 
+> 
+>         ‫בתאריך יום ב׳, 18 בנוב׳ 2024 ב-12:04 מאת ‪David Sommerseth‬‏
+>         <‪dazo+openvpn@...2108...
+>         <mailto:dazo%2Bopenvpn@...2108...>‬‏>:‬
+> 
+> 
+>             Please stop now.
+> 
+>             A client which cannot reach a server because the client side
+>             has
+>             connectivity issues towards the server is not a DoS, it is
+>             not a CVE and
+>             will never be considered a security issue.
+> 
+>             First of all, a DoS attack is commonly related to a SERVER
+>             becoming
+>             unresponsive due to traffic to the server causing it to stop
+>             responding.
+>                Or that one VPN clients misbehaviour (not due to
+>             misconfiguration,
+>             though) results in no other clients being able to connect.
+> 
+>             What you have described so far is that you cannot reach the
+>             server.  And
+>             OpenVPN tries to reconnect regularly.  This is the expected
+>             behaviour of
+>             most VPN clients - they try to keep the tunnel running with
+>             as little
+>             user interaction as possible.  The back-off timer is there
+>             to also
+>             needlessly keep trying if there seems to be longer persisting
+>             connectivity issues.
+> 
+>             And just to entertain you a bit more.  This is the logs when
+>             using
+>             OpenVPN 3 Linux:
+> 
+>             ----------------------------------------------------------------------------
+>             Press CTRL-C to stop the connection
+> 
+>             2024-11-18 09:59:19.854568 [STATUS] (StatusMajor.CONNECTION,
+>             StatusMinor.CFG_OK)
+>             config_path=/net/openvpn/v3/configuration/4c2bba36x2151x4291xb7acx360000375d2a
+>             2024-11-18 09:59:19.854636 [LOG] Starting connection
+>             2024-11-18 09:59:19.854694 [LOG] Using DNS resolver scope:
+>             global
+>             2024-11-18 09:59:19.862369 [LOG] [Connect] DCO flag: disabled
+>             2024-11-18 09:59:19.862479 [STATUS] (StatusMajor.CONNECTION,
+>             StatusMinor.CONN_CONNECTING)
+>             2024-11-18 09:59:19.862548 [LOG] [Core] OpenVPN core v3.10.1
+>             linux
+>             x86_64 64-bit OVPN-DCO
+>             2024-11-18 09:59:19.862596 [LOG] [Core] Frame=512/2112/512
+>             mssfix-ctrl=1250
+>             2024-11-18 09:59:19.862636 [LOG] Resolving
+>             2024-11-18 09:59:19.866525 [LOG] [Core] Contacting
+>             103.6.170.21:1194 <http://103.6.170.21:1194> via UDP
+>             2024-11-18 09:59:19.866638 [LOG] Waiting for server response
+>             2024-11-18 09:59:19.878505 [LOG] [Core] Connecting to
+>             [103.6.170.21]:1194 (103.6.170.21) via UDP
+>             2024-11-18 09:59:29.861733 [LOG] [Core] Server poll timeout,
+>             trying next
+>             remote entry...
+>             2024-11-18 09:59:29.861875 [LOG] Resolving
+>             2024-11-18 09:59:29.865648 [LOG] [Core] Contacting
+>             103.6.170.21:1194 <http://103.6.170.21:1194> via UDP
+>             2024-11-18 09:59:29.865769 [LOG] Waiting for server response
+>             2024-11-18 09:59:29.876299 [LOG] [Core] Connecting to
+>             [103.6.170.21]:1194 (103.6.170.21) via UDP
+>             2024-11-18 09:59:39.862254 [LOG] [Core] Server poll timeout,
+>             trying next
+>             remote entry...
+>             2024-11-18 09:59:39.862347 [LOG] Resolving
+>             2024-11-18 09:59:39.866157 [LOG] [Core] Contacting
+>             103.6.170.21:1194 <http://103.6.170.21:1194> via UDP
+>             2024-11-18 09:59:39.866262 [LOG] Waiting for server response
+>             2024-11-18 09:59:39.877288 [LOG] [Core] Connecting to
+>             [103.6.170.21]:1194 (103.6.170.21) via UDP
+>             2024-11-18 09:59:49.862757 [LOG] [Core] Server poll timeout,
+>             trying next
+>             remote entry...
+>             2024-11-18 09:59:49.862852 [LOG] Resolving
+>             2024-11-18 09:59:49.866514 [LOG] [Core] Contacting
+>             103.6.170.21:1194 <http://103.6.170.21:1194> via UDP
+>             2024-11-18 09:59:49.866614 [LOG] Waiting for server response
+>             2024-11-18 09:59:49.875998 [LOG] [Core] Connecting to
+>             [103.6.170.21]:1194 (103.6.170.21) via UDP
+>             2024-11-18 09:59:59.863047 [LOG] [Core] Server poll timeout,
+>             trying next
+>             remote entry...
+>             2024-11-18 09:59:59.863179 [LOG] Resolving
+>             2024-11-18 09:59:59.866699 [LOG] [Core] Contacting
+>             103.6.170.21:1194 <http://103.6.170.21:1194> via UDP
+>             2024-11-18 09:59:59.866798 [LOG] Waiting for server response
+>             2024-11-18 09:59:59.876724 [LOG] [Core] Connecting to
+>             [103.6.170.21]:1194 (103.6.170.21) via UDP
+>             2024-11-18 10:00:09.863146 [LOG] [Core] Server poll timeout,
+>             trying next
+>             remote entry...
+>             2024-11-18 10:00:09.863242 [LOG] Resolving
+>             2024-11-18 10:00:09.867305 [LOG] [Core] Contacting
+>             103.6.170.21:1194 <http://103.6.170.21:1194> via UDP
+>             2024-11-18 10:00:09.867406 [LOG] Waiting for server response
+>             2024-11-18 10:00:09.879292 [LOG] [Core] Connecting to
+>             [103.6.170.21]:1194 (103.6.170.21) via UDP
+>             2024-11-18 10:00:19.863499 [LOG] [Core] Server poll timeout,
+>             trying next
+>             remote entry...
+>             2024-11-18 10:00:19.863623 [LOG] Resolving
+>             2024-11-18 10:00:19.867758 [LOG] [Core] Contacting
+>             103.6.170.21:1194 <http://103.6.170.21:1194> via UDP
+>             2024-11-18 10:00:19.867845 [LOG] Waiting for server response
+>             2024-11-18 10:00:19.879066 [LOG] [Core] Connecting to
+>             [103.6.170.21]:1194 (103.6.170.21) via UDP
+>             ^C
+>             Disconnecting...
+>             Connection statistics:
+>                                   BYTES_OUT: 2814
+>                                 PACKETS_OUT: 67
+>                                 N_RECONNECT: 6
+>             ----------------------------------------------------------------------------
+> 
+>             This needs to stop.  This is not a CVE.  This is an OpenVPN
+>             server which
+>             doesn't respond on port 1194/udp.
+> 
+>             If you want to keep some kind of credibility with any
+>             security teams,
+>             you need to back down and spend time looking for real issues
+>             and
+>             document it far better.  And you will need to provide the
+>             server side
+>             perspective as well, not just the client side.
+> 
+>             Once again: Clients not being able to connect to the server
+>             because of
+>             network connectivity issues is not a CVE.
+> 
+> 
+>             This case is closed.
+> 
+> 
+>             -- 
+>             kind regards,
+> 
+>             David Sommerseth
+>             OpenVPN Inc
+> 
+> 
+> 
+>             On 18/11/2024 08:37, נתי שטרן wrote:
+>              > What can I do to assign a CVE?
+>              >   I attached the CVE team of ISRAEL CERT  to conversation
+>              >
+>              > tnx
+>              >
+>              > ‫בתאריך יום ב׳, 18 בנוב׳ 2024 ב-9:29 מאת ‪Илья Шипицин‬‏
+>              > <‪chipitsine@...277... <mailto:chipitsine@...277...>
+>             <mailto:chipitsine@...277... <mailto:chipitsine@...277...>>‬‏>:‬
+>              >
+>              >     As many details as possible. Configuration file
+>             usually helps.
+>              >
+>              >     Other than that also server side logs are nice to
+>             have. As well as
+>              >     the detailed repro steps
+>              >
+>              >     On Mon, Nov 18, 2024, 08:27 נתי שטרן
+>             <nsh531@...277... <mailto:nsh531@...277...>
+>              >     <mailto:nsh531@...277... <mailto:nsh531@...277...>>>
+>             wrote:
+>              >
+>              >         Do you want the configuration file?
+>              >
+>              >         ‫בתאריך יום ב׳, 18 בנוב׳ 2024 ב-9:14 מאת ‪Gert
+>             Doering‬‏
+>              >         <‪gert@...1296...
+>             <mailto:gert@...1296...> <mailto:gert@...1296...
+>             <mailto:gert@...1296...>>‬‏>:‬
+>              >
+>              >             Hi,
+>              >
+>              >             On Mon, Nov 18, 2024 at 09:09:57AM +0200,
+>             ?????? ???????? wrote:
+>              >              > I don't have access to server logs, I sent
+>             you the client
+>              >             logs as well as
+>              >              > the line pointing to the DoS:
+>              >              > TLS Error: TLS key negotiation failed to
+>             occur within 5
+>              >             seconds
+>              >              > SIGUSR1[soft,tls-error] received, process
+>             restarting
+>              >
+>              >             What makes you think it's a DoS that can be
+>             fixed by a code
+>              >             change?
+>              >
+>              >             If you break the network, programs will not
+>             be able to
+>              >             connect - and there
+>              >             is nothing "a patch to the software" will be
+>             able to fix.
+>              >
+>              >             gert
+>              >             --
+>              >             "If was one thing all people took for
+>             granted, was
+>              >             conviction that if you
+>              >               feed honest figures into a computer, honest
+>             figures come
+>              >             out. Never doubted
+>              >               it myself till I met a computer with a
+>             sense of humor."
+>              >                                           Robert A.
+>             Heinlein, The Moon
+>              >             is a Harsh Mistress
+>              >
+>              >             Gert Doering - Munich, Germany
+>             gert@...1296... <mailto:gert@...1296...>
+>              >             <mailto:gert@...1296...
+>             <mailto:gert@...1296...>>
+>              >
+>              >
+>              >
+>              >         --
+>              >         <https://netanel.ml <https://netanel.ml>>
+>              >         _______________________________________________
+>              >         Openvpn-devel mailing list
+>              > Openvpn-devel@lists.sourceforge.net
+>             <mailto:Openvpn-devel@lists.sourceforge.net>
+>              >         <mailto:Openvpn-devel@lists.sourceforge.net
+>             <mailto:Openvpn-devel@lists.sourceforge.net>>
+>              >
+>             https://lists.sourceforge.net/lists/listinfo/openvpn-devel
+>             <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>
+>              >       
+>               <https://lists.sourceforge.net/lists/listinfo/openvpn-devel <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>>
+>              >
+>              >
+>              >
+>              > --
+>              > <https://netanel.ml <https://netanel.ml>>
+> 
+> 
+> 
+> 
+> 
+>         -- 
+>         <https://netanel.ml>
+> 
+> 
+> 
+> -- 
+> <https://netanel.ml>
+
 
 
