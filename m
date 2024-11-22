@@ -1,16 +1,16 @@
 From: "stipa (Code Review)" <gerrit@...515...>
-Date: Fri, 22 Nov 2024 15:35:43 +0000
-In-Reply-To: <gerrit.1732212459000.I145573555aaace5e94774b5f977d032d3747ed72@...2715...>
-References: <gerrit.1732212459000.I145573555aaace5e94774b5f977d032d3747ed72@...2715...>
+Date: Fri, 22 Nov 2024 15:36:03 +0000
+In-Reply-To: <gerrit.1732212459000.I3232dd8d855ca3f198b4ca3b2ef4f67cec49f3d4@...2715...>
+References: <gerrit.1732212459000.I3232dd8d855ca3f198b4ca3b2ef4f67cec49f3d4@...2715...>
 Reply-To: lstipakov@...277..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <50defc64372d918cb5f03a5aa86138d080c0d453-EmailReviewComments-HTML@...2715...>
+Message-ID: <62ea5e82cbcda10c17d6ca9d639c07f36627de84-EmailReplacePatchSet-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="mGrPrJBurko="; charset=UTF-8
-Subject: [Openvpn-devel] [XS] Change in openvpn[master]: mudp.c: keep offset
- value when reset buffer
+Content-Type: multipart/alternative; boundary="2hYIB/AX+Bs="; charset=UTF-8
+Subject: [Openvpn-devel] [S] Change in openvpn[master]: dco-win: simplify
+ do_close_link_socket()
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,116 +19,159 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Cc: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---mGrPrJBurko=
+--2hYIB/AX+Bs=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 Attention is currently required from: flichtenheld, plaisthos.
 
-stipa has posted comments on this change. ( http://gerrit.openvpn.net/c/ope=
-nvpn/+/814?usp=3Demail )
+Hello flichtenheld, plaisthos,
 
-Change subject: mudp.c: keep offset value when reset buffer
+I'd like you to reexamine a change. Please visit
+
+    http://gerrit.openvpn.net/c/openvpn/+/813?usp=3Demail
+
+to look at the new patch set (#2).
+
+The following approvals got outdated and were removed:
+Code-Review+2 by flichtenheld
+
+The change is no longer submittable: Code-Review and checks~ChecksSubmitRul=
+e are unsatisfied now.
+
+
+Change subject: dco-win: simplify do_close_link_socket()
 ......................................................................
 
+dco-win: simplify do_close_link_socket()
 
-Patch Set 1:
+c->c2.link_socket_owned is true in client mode
+and for the global context in the server mode -
+those are exactly the cases when we want to
+set sd to undefined when using dco-win.
 
-(3 comments)
-
-Commit Message:
-
-http://gerrit.openvpn.net/c/openvpn/+/814/comment/535895da_8fa8d201 :
-PS1, Line 7: mudp.c: keep offset value when reset buffer
-> "resetting"
-Acknowledged
-
-
-File src/openvpn/mudp.c:
-
-http://gerrit.openvpn.net/c/openvpn/+/814/comment/c06e65ab_3f487764 :
-PS1, Line 57:     /* dco-win server requres prepend with sockaddr, so prese=
-rve offset */
-> "requires"
-Acknowledged
+Change-Id: I3232dd8d855ca3f198b4ca3b2ef4f67cec49f3d4
+Signed-off-by: Lev Stipakov <lev@...515...>
+---
+M src/openvpn/init.c
+1 file changed, 8 insertions(+), 8 deletions(-)
 
 
-http://gerrit.openvpn.net/c/openvpn/+/814/comment/7b8a5279_1096f128 :
-PS1, Line 58:     buf_init(&c->c2.buffers->aux_buf, buf.offset);
-> buf_init can fail (buf_reset_len cannot). [=E2=80=A6]
-Will wrap it into ASSERT.
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/13/813/2
 
-
+diff --git a/src/openvpn/init.c b/src/openvpn/init.c
+index 9371024..656fedf 100644
+--- a/src/openvpn/init.c
++++ b/src/openvpn/init.c
+@@ -3940,16 +3940,16 @@
+ static void
+ do_close_link_socket(struct context *c)
+ {
+-    /* in dco-win case, link socket is a tun handle which is
+-     * closed in do_close_tun(). Set it to UNDEFINED so
+-     * we won't use WinSock API to close it. */
+-    if (tuntap_is_dco_win(c->c1.tuntap) && c->c2.link_socket)
+-    {
+-        c->c2.link_socket->sd =3D SOCKET_UNDEFINED;
+-    }
+-
+     if (c->c2.link_socket && c->c2.link_socket_owned)
+     {
++        /* in dco-win case, link socket is a tun handle which is
++         * closed in do_close_tun(). Set it to UNDEFINED so
++         * we won't use WinSock API to close it. */
++        if (tuntap_is_dco_win(c->c1.tuntap))
++        {
++            c->c2.link_socket->sd =3D SOCKET_UNDEFINED;
++        }
++
+         link_socket_close(c->c2.link_socket);
+         c->c2.link_socket =3D NULL;
+     }
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/814?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/813?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings
 
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: I145573555aaace5e94774b5f977d032d3747ed72
-Gerrit-Change-Number: 814
-Gerrit-PatchSet: 1
+Gerrit-Change-Id: I3232dd8d855ca3f198b4ca3b2ef4f67cec49f3d4
+Gerrit-Change-Number: 813
+Gerrit-PatchSet: 2
 Gerrit-Owner: stipa <lstipakov@...277...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
 Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Comment-Date: Fri, 22 Nov 2024 15:35:43 +0000
-Gerrit-HasComments: Yes
-Gerrit-Has-Labels: No
-Comment-In-Reply-To: flichtenheld <frank@...2641...>
-Gerrit-MessageType: comment
+Gerrit-MessageType: newpatchset
 
---mGrPrJBurko=
+--2hYIB/AX+Bs=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <p> Attention is currently required from: flichtenheld, plaisthos. </p>
-<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/814?usp=3Demail">View C=
-hange</a></p><p>3 comments:</p><ul style=3D"list-style: none; padding: 0;">=
-<li style=3D"margin: 0; padding: 0;"><p>Commit Message:</p><ul style=3D"lis=
-t-style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><=
-p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/open=
-vpn/+/814/comment/535895da_8fa8d201">Patch Set #1, Line 7:</a> <code style=
-=3D"font-family:monospace,monospace">mudp.c: keep offset value when reset b=
-uffer</code></p><p><blockquote style=3D"border-left: 1px solid #aaa; margin=
-: 10px 0; padding: 0 10px;">&quot;resetting&quot;</blockquote></p><p style=
-=3D"white-space: pre-wrap; word-wrap: break-word;">Acknowledged</p></li></u=
-l></li><li style=3D"margin: 0; padding: 0;"><p>File src/openvpn/mudp.c:</p>=
-<ul style=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; padding=
-: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.op=
-envpn.net/c/openvpn/+/814/comment/c06e65ab_3f487764">Patch Set #1, Line 57:=
-</a> <code style=3D"font-family:monospace,monospace">    /* dco-win server =
-requres prepend with sockaddr, so preserve offset */</code></p><p><blockquo=
-te style=3D"border-left: 1px solid #aaa; margin: 10px 0; padding: 0 10px;">=
-&quot;requires&quot;</blockquote></p><p style=3D"white-space: pre-wrap; wor=
-d-wrap: break-word;">Acknowledged</p></li><li style=3D"margin: 0; padding: =
-0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.open=
-vpn.net/c/openvpn/+/814/comment/7b8a5279_1096f128">Patch Set #1, Line 58:</=
-a> <code style=3D"font-family:monospace,monospace">    buf_init(&amp;c-&gt;=
-c2.buffers-&gt;aux_buf, buf.offset);</code></p><p><blockquote style=3D"bord=
-er-left: 1px solid #aaa; margin: 10px 0; padding: 0 10px;">buf_init can fai=
-l (buf_reset_len cannot). [=E2=80=A6]</blockquote></p><p style=3D"white-spa=
-ce: pre-wrap; word-wrap: break-word;">Will wrap it into ASSERT.</p></li></u=
-l></li></ul><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvp=
-n/+/814?usp=3Demail">change 814</a>. To unsubscribe, or for help writing ma=
-il filters, visit <a href=3D"http://gerrit.openvpn.net/settings">settings</=
-a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div item=
-scope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link i=
-temprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/814?usp=3Dema=
-il"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
+<p>stipa <strong>uploaded patch set #2</strong> to this change.</p><p><a hr=
+ef=3D"http://gerrit.openvpn.net/c/openvpn/+/813?usp=3Demail">View Change</a=
+></p><p>The following approvals got outdated and were removed:
+Code-Review+2 by flichtenheld</p><p>The change is no longer submittable: Co=
+de-Review and checks~ChecksSubmitRule are unsatisfied now.</p><pre style=3D=
+"font-family: monospace,monospace; white-space: pre-wrap;">dco-win: simplif=
+y do_close_link_socket()<br><br>c-&gt;c2.link_socket_owned is true in clien=
+t mode<br>and for the global context in the server mode -<br>those are exac=
+tly the cases when we want to<br>set sd to undefined when using dco-win.<br=
+><br>Change-Id: I3232dd8d855ca3f198b4ca3b2ef4f67cec49f3d4<br>Signed-off-by:=
+ Lev Stipakov &lt;lev@...515...&gt;<br>---<br>M src/openvpn/init.c<br>1 fil=
+e changed, 8 insertions(+), 8 deletions(-)<br><br></pre><pre style=3D"font-=
+family: monospace,monospace; white-space: pre-wrap;">git pull ssh://gerrit.=
+openvpn.net:29418/openvpn refs/changes/13/813/2</pre><pre style=3D"font-fam=
+ily: monospace,monospace; white-space: pre-wrap;"><span>diff --git a/src/op=
+envpn/init.c b/src/openvpn/init.c</span><br><span>index 9371024..656fedf 10=
+0644</span><br><span>--- a/src/openvpn/init.c</span><br><span>+++ b/src/ope=
+nvpn/init.c</span><br><span>@@ -3940,16 +3940,16 @@</span><br><span> static=
+ void</span><br><span> do_close_link_socket(struct context *c)</span><br><s=
+pan> {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    /* in dco-w=
+in case, link socket is a tun handle which is</span><br><span style=3D"colo=
+r: hsl(0, 100%, 40%);">-     * closed in do_close_tun(). Set it to UNDEFINE=
+D so</span><br><span style=3D"color: hsl(0, 100%, 40%);">-     * we won&#39=
+;t use WinSock API to close it. */</span><br><span style=3D"color: hsl(0, 1=
+00%, 40%);">-    if (tuntap_is_dco_win(c-&gt;c1.tuntap) &amp;&amp; c-&gt;c2=
+.link_socket)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    {</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-        c-&gt;c2.link_so=
+cket-&gt;sd =3D SOCKET_UNDEFINED;</span><br><span style=3D"color: hsl(0, 10=
+0%, 40%);">-    }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</sp=
+an><br><span>     if (c-&gt;c2.link_socket &amp;&amp; c-&gt;c2.link_socket_=
+owned)</span><br><span>     {</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+        /* in dco-win case, link socket is a tun handle which is<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+         * closed in=
+ do_close_tun(). Set it to UNDEFINED so</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+         * we won&#39;t use WinSock API to close it. */=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        if (tuntap_=
+is_dco_win(c-&gt;c1.tuntap))</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+        {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+           c-&gt;c2.link_socket-&gt;sd =3D SOCKET_UNDEFINED;</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+        }</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+</span><br><span>         link_socket_close(=
+c-&gt;c2.link_socket);</span><br><span>         c-&gt;c2.link_socket =3D NU=
+LL;</span><br><span>     }</span><br><span></span><br></pre><p>To view, vis=
+it <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/813?usp=3Demail">change=
+ 813</a>. To unsubscribe, or for help writing mail filters, visit <a href=
+=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope ite=
+mtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"action"=
+ itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"h=
+ttp://gerrit.openvpn.net/c/openvpn/+/813?usp=3Demail"/><meta itemprop=3D"na=
+me" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I145573555aaace5e94774b5f977=
-d032d3747ed72 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 814 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I3232dd8d855ca3f198b4ca3b2ef=
+4f67cec49f3d4 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 813 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
 <div style=3D"display:none"> Gerrit-Owner: stipa &lt;lstipakov@...277...&gt=
 ; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
@@ -141,14 +184,8 @@ ts.sourceforge.net&gt; </div>
 ..1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
 41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Fri, 22 Nov 2024 15:35:43=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: No </div>
-<div style=3D"display:none"> Comment-In-Reply-To: flichtenheld &lt;frank@...1186...=
-.2641...&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
+<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
 
 
---mGrPrJBurko=--
+--2hYIB/AX+Bs=--
 
