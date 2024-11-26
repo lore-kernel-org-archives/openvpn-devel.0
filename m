@@ -1,16 +1,16 @@
-From: "kallisti5 (Code Review)" <gerrit@...515...>
-Date: Tue, 26 Nov 2024 15:38:37 +0000
-In-Reply-To: <gerrit.1732634928000.I9a278374f492a538f0c174ced1746c3b1f82b8c9@...2715...>
-References: <gerrit.1732634928000.I9a278374f492a538f0c174ced1746c3b1f82b8c9@...2715...>
-Reply-To: alex@...2837..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <edf797ede1536e876b6c538bdbc8a7b34c43d5f5-EmailReplacePatchSet-HTML@...2715...>
+From: "flichtenheld (Code Review)" <gerrit@...515...>
+Date: Tue, 26 Nov 2024 17:08:51 +0000
+In-Reply-To: <gerrit.1732634928000.I1a22724f28c5cd47f6df178b49f44087d7c2b6fd@...2715...>
+References: <gerrit.1732634928000.I1a22724f28c5cd47f6df178b49f44087d7c2b6fd@...2715...>
+Reply-To: frank@...2641..., arne-openvpn@...1227..., alex@...2837...,
+ openvpn-devel@lists.sourceforge.net
+Message-ID: <e9ad7e14bea6bb63aff6b52703d16cc47b933e9b-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="yrO5tIe0XlI="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: Haiku: Introduce
- basic platform / tun support
+Content-Type: multipart/alternative; boundary="gebqq+3XOSY="; charset=UTF-8
+Subject: [Openvpn-devel] [M] Change in openvpn[master]: Haiku: Add calls to
+ manage routing table
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,204 +19,148 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: kallisti5 <alex@...2837...>
+Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---yrO5tIe0XlI=
+--gebqq+3XOSY=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: flichtenheld, plaisthos.
+Attention is currently required from: kallisti5, plaisthos.
 
-Hello flichtenheld, plaisthos,
+flichtenheld has posted comments on this change. ( http://gerrit.openvpn.ne=
+t/c/openvpn/+/688?usp=3Demail )
 
-I'd like you to reexamine a change. Please visit
-
-    http://gerrit.openvpn.net/c/openvpn/+/687?usp=3Demail
-
-to look at the new patch set (#2).
-
-
-Change subject: Haiku: Introduce basic platform / tun support
+Change subject: Haiku: Add calls to manage routing table
 ......................................................................
 
-Haiku: Introduce basic platform / tun support
 
-* Special thanks to Sean Brady's hard work in GSoC 2023 towards creating
-  a TUN/TAP driver for Haiku!
-* More kudos to Augustin Cavalier for making it functional :-)
+Patch Set 3: Code-Review-1
 
-Change-Id: I9a278374f492a538f0c174ced1746c3b1f82b8c9
----
-M configure.ac
-M src/openvpn/tun.c
-2 files changed, 22 insertions(+), 0 deletions(-)
+(7 comments)
+
+File src/openvpn/route.c:
+
+http://gerrit.openvpn.net/c/openvpn/+/688/comment/cb24a5fc_d8a53a2e :
+PS3, Line 3940:     sockfd =3D socket(AF_INET, SOCK_DGRAM, 0);
+Can be merged with the previous line?
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/87/687/2
+http://gerrit.openvpn.net/c/openvpn/+/688/comment/e8a07f51_932f4e4e :
+PS3, Line 3942:         msg(M_INFO, "%s: Error opening socket for AF_INET",=
+ __func__);
+M_ERRNO?
 
-diff --git a/configure.ac b/configure.ac
-index 0876a6a..7f6e43d 100644
---- a/configure.ac
-+++ b/configure.ac
-@@ -368,6 +368,11 @@
- 		have_tap_header=3D"yes"
- 		ac_cv_header_net_if_h=3D"no"	# exists, but breaks things
- 		;;
-+	*-*-haiku*)
-+		AC_DEFINE([TARGET_HAIKU], [1], [Are we running Haiku?])
-+		AC_DEFINE_UNQUOTED([TARGET_PREFIX], ["H"], [Target prefix])
-+		LIBS=3D"${LIBS} -lnetwork"
-+		;;
- 	*)
- 		AC_DEFINE_UNQUOTED([TARGET_PREFIX], ["X"], [Target prefix])
- 		have_tap_header=3D"yes"
-diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
-index 85fe01a..e428fb9 100644
---- a/src/openvpn/tun.c
-+++ b/src/openvpn/tun.c
-@@ -1631,6 +1631,16 @@
-     {
-         windows_set_mtu(tt->adapter_index, AF_INET, tun_mtu);
-     }
-+#elif defined(TARGET_HAIKU)
-+    {
-+        /* example: ifconfig tun/0 inet 1.1.1.1 255.255.255.0 mtu 1450 up =
-*/
-+        /* XXX: Need to add ifconfig_remote_netmask since right now it is =
-just NULL */
-+        argv_printf(&argv, "%s %s inet %s %s mtu %d up", IFCONFIG_PATH,
-+            ifname, ifconfig_local, ifconfig_remote_netmask, tun_mtu);
-+
-+        argv_msg(M_INFO, &argv);
-+        openvpn_execve_check(&argv, es, S_FATAL, "Haiku ifconfig failed");
-+    }
- #else  /* if defined(TARGET_LINUX) */
-     msg(M_FATAL, "Sorry, but I don't know how to do 'ifconfig' commands on=
- this operating system.  You should ifconfig your TUN/TAP device manually o=
-r use an --up script.");
- #endif /* if defined(TARGET_LINUX) */
-@@ -1909,10 +1919,17 @@
-         {
-             for (int i =3D 0; i < 256; ++i)
-             {
-+#if defined(TARGET_HAIKU)
-+                snprintf(tunname, sizeof(tunname),
-+                         "/dev/%s/%d", dev, i);
-+                snprintf(dynamic_name, sizeof(dynamic_name),
-+                         "%s/%d", dev, i);
-+#else
-                 snprintf(tunname, sizeof(tunname),
-                          "/dev/%s%d", dev, i);
-                 snprintf(dynamic_name, sizeof(dynamic_name),
-                          "%s%d", dev, i);
-+#endif
-                 if ((tt->fd =3D open(tunname, O_RDWR)) > 0)
-                 {
-                     dynamic_opened =3D true;
+
+http://gerrit.openvpn.net/c/openvpn/+/688/comment/4b71cd90_2cc12dc0 :
+PS3, Line 3949:         msg(M_INFO, "%s: Error getting routing table size",=
+ __func__);
+M_ERRNO?
+
+
+http://gerrit.openvpn.net/c/openvpn/+/688/comment/cdfe37bd_7ed2e6c0 :
+PS3, Line 3958: N
+Use `check_malloc_return`.
+
+
+http://gerrit.openvpn.net/c/openvpn/+/688/comment/2837f36b_f5691068 :
+PS3, Line 3976:             strcpy(rgi->iface, interface->ifr_name);
+Should probably use `strcpynt`
+
+
+http://gerrit.openvpn.net/c/openvpn/+/688/comment/259f47d5_648923cf :
+PS3, Line 3979:         int32 addressSize =3D 0;
+no CamelCase please.
+
+
+http://gerrit.openvpn.net/c/openvpn/+/688/comment/dfdc0992_8f8edb22 :
+PS3, Line 3990: }
+This seems to leak memory from the malloc?
+
+
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/687?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/688?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings
 
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: I9a278374f492a538f0c174ced1746c3b1f82b8c9
-Gerrit-Change-Number: 687
-Gerrit-PatchSet: 2
+Gerrit-Change-Id: I1a22724f28c5cd47f6df178b49f44087d7c2b6fd
+Gerrit-Change-Number: 688
+Gerrit-PatchSet: 3
 Gerrit-Owner: kallisti5 <alex@...2837...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-MessageType: newpatchset
+Gerrit-Attention: kallisti5 <alex@...2837...>
+Gerrit-Comment-Date: Tue, 26 Nov 2024 17:08:51 +0000
+Gerrit-HasComments: Yes
+Gerrit-Has-Labels: Yes
+Gerrit-MessageType: comment
 
---yrO5tIe0XlI=
+--gebqq+3XOSY=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p> Attention is currently required from: flichtenheld, plaisthos. </p>
-<p>kallisti5 <strong>uploaded patch set #2</strong> to this change.</p><p><=
-a href=3D"http://gerrit.openvpn.net/c/openvpn/+/687?usp=3Demail">View Chang=
-e</a></p><pre style=3D"font-family: monospace,monospace; white-space: pre-w=
-rap;">Haiku: Introduce basic platform / tun support<br><br>* Special thanks=
- to Sean Brady&#39;s hard work in GSoC 2023 towards creating<br>  a TUN/TAP=
- driver for Haiku!<br>* More kudos to Augustin Cavalier for making it funct=
-ional :-)<br><br>Change-Id: I9a278374f492a538f0c174ced1746c3b1f82b8c9<br>--=
--<br>M configure.ac<br>M src/openvpn/tun.c<br>2 files changed, 22 insertion=
-s(+), 0 deletions(-)<br><br></pre><pre style=3D"font-family: monospace,mono=
-space; white-space: pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/open=
-vpn refs/changes/87/687/2</pre><pre style=3D"font-family: monospace,monospa=
-ce; white-space: pre-wrap;"><span>diff --git a/configure.ac b/configure.ac<=
-/span><br><span>index 0876a6a..7f6e43d 100644</span><br><span>--- a/configu=
-re.ac</span><br><span>+++ b/configure.ac</span><br><span>@@ -368,6 +368,11 =
-@@</span><br><span> 		have_tap_header=3D&quot;yes&quot;</span><br><span> 		=
-ac_cv_header_net_if_h=3D&quot;no&quot;	# exists, but breaks things</span><b=
-r><span> 		;;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+	*-*-h=
-aiku*)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+		AC_DEFINE([=
-TARGET_HAIKU], [1], [Are we running Haiku?])</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+		AC_DEFINE_UNQUOTED([TARGET_PREFIX], [&quot;H&quo=
-t;], [Target prefix])</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+		LIBS=3D&quot;${LIBS} -lnetwork&quot;</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+		;;</span><br><span> 	*)</span><br><span> 		AC_DEFINE=
-_UNQUOTED([TARGET_PREFIX], [&quot;X&quot;], [Target prefix])</span><br><spa=
-n> 		have_tap_header=3D&quot;yes&quot;</span><br><span>diff --git a/src/ope=
-nvpn/tun.c b/src/openvpn/tun.c</span><br><span>index 85fe01a..e428fb9 10064=
-4</span><br><span>--- a/src/openvpn/tun.c</span><br><span>+++ b/src/openvpn=
-/tun.c</span><br><span>@@ -1631,6 +1631,16 @@</span><br><span>     {</span>=
-<br><span>         windows_set_mtu(tt-&gt;adapter_index, AF_INET, tun_mtu);=
-</span><br><span>     }</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+#elif defined(TARGET_HAIKU)</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-      /* example: ifconfig tun/0 inet 1.1.1.1 255.255.255.0 mtu 1450 up */<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+        /* XXX: Need=
- to add ifconfig_remote_netmask since right now it is just NULL */</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+        argv_printf(&amp;arg=
-v, &quot;%s %s inet %s %s mtu %d up&quot;, IFCONFIG_PATH,</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+            ifname, ifconfig_local, i=
-fconfig_remote_netmask, tun_mtu);</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
-   argv_msg(M_INFO, &amp;argv);</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+        openvpn_execve_check(&amp;argv, es, S_FATAL, &quot;Haik=
-u ifconfig failed&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+    }</span><br><span> #else  /* if defined(TARGET_LINUX) */</span><b=
-r><span>     msg(M_FATAL, &quot;Sorry, but I don&#39;t know how to do &#39;=
-ifconfig&#39; commands on this operating system.  You should ifconfig your =
-TUN/TAP device manually or use an --up script.&quot;);</span><br><span> #en=
-dif /* if defined(TARGET_LINUX) */</span><br><span>@@ -1909,10 +1919,17 @@<=
-/span><br><span>         {</span><br><span>             for (int i =3D 0; i=
- &lt; 256; ++i)</span><br><span>             {</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+#if defined(TARGET_HAIKU)</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+                snprintf(tunname, sizeof(=
-tunname),</span><br><span style=3D"color: hsl(120, 100%, 40%);">+          =
-               &quot;/dev/%s/%d&quot;, dev, i);</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+                snprintf(dynamic_name, sizeof(d=
-ynamic_name),</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
-                   &quot;%s/%d&quot;, dev, i);</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+#else</span><br><span>                 snprintf(=
-tunname, sizeof(tunname),</span><br><span>                          &quot;/=
-dev/%s%d&quot;, dev, i);</span><br><span>                 snprintf(dynamic_=
-name, sizeof(dynamic_name),</span><br><span>                          &quot=
-;%s%d&quot;, dev, i);</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+#endif</span><br><span>                 if ((tt-&gt;fd =3D open(tunname, =
-O_RDWR)) &gt; 0)</span><br><span>                 {</span><br><span>       =
-              dynamic_opened =3D true;</span><br><span></span><br></pre><p>=
-To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/687?usp=3De=
-mail">change 687</a>. To unsubscribe, or for help writing mail filters, vis=
-it <a href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div ite=
-mscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=
-=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url=
-" href=3D"http://gerrit.openvpn.net/c/openvpn/+/687?usp=3Demail"/><meta ite=
-mprop=3D"name" content=3D"View Change"/></div></div>
+<p> Attention is currently required from: kallisti5, plaisthos. </p>
+<p>Patch set 3:<span style=3D"border-radius: 3px; display: inline-block; ma=
+rgin: 0 2px; padding: 4px;background-color: #ffd4d4;">Code-Review -1</span>=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/688?usp=3Demail">Vi=
+ew Change</a></p><p>7 comments:</p><ul style=3D"list-style: none; padding: =
+0;"><li style=3D"margin: 0; padding: 0;"><p>File src/openvpn/route.c:</p><u=
+l style=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; padding: =
+0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.open=
+vpn.net/c/openvpn/+/688/comment/cb24a5fc_d8a53a2e">Patch Set #3, Line 3940:=
+</a> <code style=3D"font-family:monospace,monospace">    sockfd =3D socket(=
+AF_INET, SOCK_DGRAM, 0);</code></p><p style=3D"white-space: pre-wrap; word-=
+wrap: break-word;">Can be merged with the previous line?</p></li><li style=
+=3D"margin: 0; padding: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a hr=
+ef=3D"http://gerrit.openvpn.net/c/openvpn/+/688/comment/e8a07f51_932f4e4e">=
+Patch Set #3, Line 3942:</a> <code style=3D"font-family:monospace,monospace=
+">        msg(M_INFO, &quot;%s: Error opening socket for AF_INET&quot;, __f=
+unc__);</code></p><p style=3D"white-space: pre-wrap; word-wrap: break-word;=
+">M_ERRNO?</p></li><li style=3D"margin: 0; padding: 0 0 0 16px;"><p style=
+=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/6=
+88/comment/4b71cd90_2cc12dc0">Patch Set #3, Line 3949:</a> <code style=3D"f=
+ont-family:monospace,monospace">        msg(M_INFO, &quot;%s: Error getting=
+ routing table size&quot;, __func__);</code></p><p style=3D"white-space: pr=
+e-wrap; word-wrap: break-word;">M_ERRNO?</p></li><li style=3D"margin: 0; pa=
+dding: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerr=
+it.openvpn.net/c/openvpn/+/688/comment/cdfe37bd_7ed2e6c0">Patch Set #3, Lin=
+e 3958:</a> <code style=3D"font-family:monospace,monospace">N</code></p><p =
+style=3D"white-space: pre-wrap; word-wrap: break-word;">Use `check_malloc_r=
+eturn`.</p></li><li style=3D"margin: 0; padding: 0 0 0 16px;"><p style=3D"m=
+argin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/688/co=
+mment/2837f36b_f5691068">Patch Set #3, Line 3976:</a> <code style=3D"font-f=
+amily:monospace,monospace">            strcpy(rgi-&gt;iface, interface-&gt;=
+ifr_name);</code></p><p style=3D"white-space: pre-wrap; word-wrap: break-wo=
+rd;">Should probably use `strcpynt`</p></li><li style=3D"margin: 0; padding=
+: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.op=
+envpn.net/c/openvpn/+/688/comment/259f47d5_648923cf">Patch Set #3, Line 397=
+9:</a> <code style=3D"font-family:monospace,monospace">        int32 addres=
+sSize =3D 0;</code></p><p style=3D"white-space: pre-wrap; word-wrap: break-=
+word;">no CamelCase please.</p></li><li style=3D"margin: 0; padding: 0 0 0 =
+16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.ne=
+t/c/openvpn/+/688/comment/dfdc0992_8f8edb22">Patch Set #3, Line 3990:</a> <=
+code style=3D"font-family:monospace,monospace">}</code></p><p style=3D"whit=
+e-space: pre-wrap; word-wrap: break-word;">This seems to leak memory from t=
+he malloc?</p></li></ul></li></ul><p>To view, visit <a href=3D"http://gerri=
+t.openvpn.net/c/openvpn/+/688?usp=3Demail">change 688</a>. To unsubscribe, =
+or for help writing mail filters, visit <a href=3D"http://gerrit.openvpn.ne=
+t/settings">settings</a>.</p><div itemscope itemtype=3D"http://schema.org/E=
+mailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.o=
+rg/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/o=
+penvpn/+/688?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/=
+></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I9a278374f492a538f0c174ced17=
-46c3b1f82b8c9 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 687 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I1a22724f28c5cd47f6df178b49f=
+44087d7c2b6fd </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 688 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 3 </div>
 <div style=3D"display:none"> Gerrit-Owner: kallisti5 &lt;alex@...2837...&gt=
 ; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
@@ -227,10 +171,14 @@ mprop=3D"name" content=3D"View Change"/></div></div>
 ts.sourceforge.net&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
 ..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
-41...&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
+<div style=3D"display:none"> Gerrit-Attention: kallisti5 &lt;alex@...2839...=
+.&gt; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Tue, 26 Nov 2024 17:08:51=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
 
 
---yrO5tIe0XlI=--
+--gebqq+3XOSY=--
 
