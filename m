@@ -1,10 +1,12 @@
-From: Gert Doering <gert@...1296...>
-Date: Tue, 26 Nov 2024 11:26:51 +0100
-Message-ID: <20241126102651.18905-1-gert@...1296...>
-In-Reply-To: <gerrit.1732583163000.Ib88ce925b20c5912de489ef1b62615c4b87d365c@...2715...>
-References: <gerrit.1732583163000.Ib88ce925b20c5912de489ef1b62615c4b87d365c@...2715...>
+Date: Tue, 26 Nov 2024 14:26:52 +0000
+From: Alexander von Gluck <alex@...2837...>
+Message-ID: <20241126142639.67446-1-alex@...2837...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v1] Fix wrong doxygen comments
+Content-Type: multipart/signed; protocol="application/pgp-signature";
+ micalg=pgp-sha256;
+ boundary="------5f946099762c5079e11c5cf6a5593d3baf259cab57b02d7d92174e35c7a8d5ee";
+ charset=utf-8
+Subject: [Openvpn-devel] [PATCH 1/2] Haiku: Introduce basic platform support
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,156 +15,133 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
+Cc: Alexander von Gluck IV <kallisti5@...2838...>
 
-From: Frank Lichtenheld <frank@...2641...>
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--------5f946099762c5079e11c5cf6a5593d3baf259cab57b02d7d92174e35c7a8d5ee
+From: Alexander von Gluck <alex@...2837...>
+To: openvpn-devel@lists.sourceforge.net
+Cc: Alexander von Gluck IV <kallisti5@...2838...>
+Subject: [PATCH 1/2] Haiku: Introduce basic platform support
+Date: Tue, 26 Nov 2024 08:26:38 -0600
+Message-ID: <20241126142639.67446-1-alex@...2837...>
+X-Mailer: git-send-email 2.47.1
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 
-Add some missing "<" to trailing comments
-to make sure they apply to the correct line.
+From: Alexander von Gluck IV <kallisti5@...2838...>
 
-Change-Id: Ib88ce925b20c5912de489ef1b62615c4b87d365c
-Signed-off-by: Frank Lichtenheld <frank@...2641...>
-Acked-by: Lev Stipakov <lstipakov@...277...>
 ---
+ configure.ac        |  5 +++++
+ src/openvpn/route.c | 15 +++++++++++++++
+ src/openvpn/tun.c   | 17 +++++++++++++++++
+ 3 files changed, 37 insertions(+)
 
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to master.
-
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/820
-This mail reflects revision 1 of this Change.
-
-Acked-by according to Gerrit (reflected above):
-Lev Stipakov <lstipakov@...277...>
-
-        
-diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index 10ee9f6..043b240 100644
---- a/src/openvpn/options.c
-+++ b/src/openvpn/options.c
-@@ -929,10 +929,10 @@
- 
- struct pull_filter
- {
--#define PUF_TYPE_UNDEF  0    /** undefined filter type */
--#define PUF_TYPE_ACCEPT 1    /** filter type to accept a matching option */
--#define PUF_TYPE_IGNORE 2    /** filter type to ignore a matching option */
--#define PUF_TYPE_REJECT 3    /** filter type to reject and trigger SIGUSR1 */
-+#define PUF_TYPE_UNDEF  0    /**< undefined filter type */
-+#define PUF_TYPE_ACCEPT 1    /**< filter type to accept a matching option */
-+#define PUF_TYPE_IGNORE 2    /**< filter type to ignore a matching option */
-+#define PUF_TYPE_REJECT 3    /**< filter type to reject and trigger SIGUSR1 */
-     int type;
-     int size;
-     char *pattern;
-@@ -3846,14 +3846,14 @@
-  *  Check file/directory sanity
-  *
-  */
--#ifndef ENABLE_SMALL  /** Expect people using the stripped down version to know what they do */
-+#ifndef ENABLE_SMALL  /* Expect people using the stripped down version to know what they do */
- 
--#define CHKACC_FILE (1<<0)       /** Check for a file/directory presence */
--#define CHKACC_DIRPATH (1<<1)    /** Check for directory presence where a file should reside */
--#define CHKACC_FILEXSTWR (1<<2)  /** If file exists, is it writable? */
--#define CHKACC_ACPTSTDIN (1<<3)  /** If filename is stdin, it's allowed and "exists" */
--#define CHKACC_PRIVATE (1<<4)    /** Warn if this (private) file is group/others accessible */
--#define CHKACC_ACCEPT_URI (1<<5) /** If filename is a URI, no check is done unless it starts with file: */
-+#define CHKACC_FILE (1<<0)       /**< Check for a file/directory presence */
-+#define CHKACC_DIRPATH (1<<1)    /**< Check for directory presence where a file should reside */
-+#define CHKACC_FILEXSTWR (1<<2)  /**< If file exists, is it writable? */
-+#define CHKACC_ACPTSTDIN (1<<3)  /**< If filename is stdin, it's allowed and "exists" */
-+#define CHKACC_PRIVATE (1<<4)    /**< Warn if this (private) file is group/others accessible */
-+#define CHKACC_ACCEPT_URI (1<<5) /**< Do not check URIs, unless they start with file: */
- 
- static bool
- check_file_access(const int type, const char *file, const int mode, const char *opt)
-diff --git a/src/openvpnmsica/msica_arg.h b/src/openvpnmsica/msica_arg.h
-index 6cd272c..cec046f 100644
---- a/src/openvpnmsica/msica_arg.h
-+++ b/src/openvpnmsica/msica_arg.h
-@@ -37,8 +37,8 @@
-  */
- struct msica_arg
- {
--    struct msica_arg *next; /** Pointer to the next argument in the sequence */
--    TCHAR val[];            /** Zero terminated argument string */
-+    struct msica_arg *next; /**< Pointer to the next argument in the sequence */
-+    TCHAR val[];            /**< Zero terminated argument string */
- };
- 
- 
-@@ -47,8 +47,8 @@
-  */
- struct msica_arg_seq
- {
--    struct msica_arg *head; /** Pointer to the first argument in the sequence */
--    struct msica_arg *tail; /** Pointer to the last argument in the sequence */
-+    struct msica_arg *head; /**< Pointer to the first argument in the sequence */
-+    struct msica_arg *tail; /**< Pointer to the last argument in the sequence */
- };
- 
- 
-diff --git a/src/openvpnmsica/openvpnmsica.c b/src/openvpnmsica/openvpnmsica.c
-index 5ffb5b3..154fff4 100644
---- a/src/openvpnmsica/openvpnmsica.c
-+++ b/src/openvpnmsica/openvpnmsica.c
-@@ -59,9 +59,10 @@
-  * Local constants
-  */
- 
--#define MSICA_ADAPTER_TICK_SIZE (16*1024) /** Amount of tick space to reserve for one TAP/TUN adapter creation/deletition. */
-+/** Amount of tick space to reserve for one TAP/TUN adapter creation/deletition. */
-+#define MSICA_ADAPTER_TICK_SIZE        (16 * 1024)
- 
--#define FILE_NEED_REBOOT        L".ovpn_need_reboot"
-+#define FILE_NEED_REBOOT               L".ovpn_need_reboot"
- 
- #define OPENVPN_CONNECT_ADAPTER_SUBSTR L"OpenVPN Connect"
- 
-@@ -88,7 +89,9 @@
-     free(szSequence);
-     if (uiResult != ERROR_SUCCESS)
-     {
--        SetLastError(uiResult); /* MSDN does not mention MsiSetProperty() to set GetLastError(). But we do have an error code. Set last error manually. */
-+        /* MSDN does not mention MsiSetProperty() to set GetLastError(). But we do have an error
-+         * code. Set last error manually. */
-+        SetLastError(uiResult);
-         msg(M_NONFATAL | M_ERRNO, "%s: MsiSetProperty(\"%" PRIsLPTSTR "\") failed", __FUNCTION__, szProperty);
-         return uiResult;
+diff --git a/configure.ac b/configure.ac
+index 0876a6a5..7f6e43dd 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -368,6 +368,11 @@ case "$host" in
+ 		have_tap_header="yes"
+ 		ac_cv_header_net_if_h="no"	# exists, but breaks things
+ 		;;
++	*-*-haiku*)
++		AC_DEFINE([TARGET_HAIKU], [1], [Are we running Haiku?])
++		AC_DEFINE_UNQUOTED([TARGET_PREFIX], ["H"], [Target prefix])
++		LIBS="${LIBS} -lnetwork"
++		;;
+ 	*)
+ 		AC_DEFINE_UNQUOTED([TARGET_PREFIX], ["X"], [Target prefix])
+ 		have_tap_header="yes"
+diff --git a/src/openvpn/route.c b/src/openvpn/route.c
+index 2e584c71..fa20d08f 100644
+--- a/src/openvpn/route.c
++++ b/src/openvpn/route.c
+@@ -1853,6 +1853,21 @@ add_route(struct route_ipv4 *r,
+         status = ret ? RTA_SUCCESS : RTA_ERROR;
      }
-diff --git a/src/openvpnmsica/openvpnmsica.h b/src/openvpnmsica/openvpnmsica.h
-index 6640d7e..7aacdf3 100644
---- a/src/openvpnmsica/openvpnmsica.h
-+++ b/src/openvpnmsica/openvpnmsica.h
-@@ -38,7 +38,7 @@
-  */
- struct openvpnmsica_thread_data
- {
--    MSIHANDLE hInstall; /** Handle to the installation session. */
-+    MSIHANDLE hInstall; /**< Handle to the installation session. */
- };
  
- 
-diff --git a/src/tapctl/tap.h b/src/tapctl/tap.h
-index 9c403cc..680c13a 100644
---- a/src/tapctl/tap.h
-+++ b/src/tapctl/tap.h
-@@ -135,11 +135,11 @@
-  */
- struct tap_adapter_node
- {
--    GUID guid;             /** Adapter GUID */
--    LPTSTR szzHardwareIDs; /** Device hardware ID(s) */
--    LPTSTR szName;         /** Adapter name */
-+    GUID guid;             /**< Adapter GUID */
-+    LPTSTR szzHardwareIDs; /**< Device hardware ID(s) */
-+    LPTSTR szName;         /**< Adapter name */
- 
--    struct tap_adapter_node *pNext; /** Pointer to next adapter */
-+    struct tap_adapter_node *pNext; /**< Pointer to next adapter */
- };
- 
- 
++#el
+if defined(TARGET_HAIKU)
++
++    {
++        /* ex: route add /dev/net/ipro1000/0 default gw 192.168.1.1 netmask 255.255.255.0 */
++        argv_printf(&argv, "route add %s inet default gw %s netmask %s",
++                    rgi->iface,
++                    gateway,
++                    netmask);
++
++        argv_msg(D_ROUTE, &argv);
++        bool ret = openvpn_execve_check(&argv, es, 0,
++                                        "ERROR: Haiku route add command failed");
++        status = ret ? RTA_SUCCESS : RTA_ERROR;
++    }
++
+ #else  /* if defined(TARGET_LINUX) */
+     msg(M_FATAL, "Sorry, but I don't know how to do 'route' commands on this operating system.  Try putting your routes in a --route-up script");
+ #endif /* if defined(TARGET_LINUX) */
+diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
+index 85fe01af..65e3b5ba 100644
+--- a/src/openvpn/tun.c
++++ b/src/openvpn/tun.c
+@@ -1631,6 +1631,16 @@ do_ifconfig_ipv4(struct tuntap *tt, const char *ifname, int tun_mtu,
+
+     {
+         windows_set_mtu(tt->adapter_index, AF_INET, tun_mtu);
+     }
++#elif defined(TARGET_HAIKU)
++    {
++        /* example: ifconfig tun/0 inet 1.1.1.1 255.255.255.0 mtu 1450 up */
++        // Need to add ifconfig_remote_netmask since right now it is just NULL
++        argv_printf(&argv, "%s %s inet %s %s mtu %d up", IFCONFIG_PATH,
++            ifname, ifconfig_local, ifconfig_remote_netmask, tun_mtu);
++
++        argv_msg(M_INFO, &argv);
++        openvpn_execve_check(&argv, es, S_FATAL, "Haiku ifconfig failed");
++    }
+ #else  /* if defined(TARGET_LINUX) */
+     msg(M_FATAL, "Sorry, but I don't know how to do 'ifconfig' commands on this operating system.  You should ifconfig your TUN/TAP device manually or use an --up script.");
+ #endif /* if defined(TARGET_LINUX) */
+@@ -1909,10 +1919,17 @@ open_tun_generic(const char *dev, const char *dev_type, const char *dev_node,
+         {
+             for (int i = 0; i < 256; ++i)
+             {
++#if defined(TARGET_H
+AIKU)
++                snprintf(tunname, sizeof(tunname),
++                         "/dev/%s/%d", dev, i);
++                snprintf(dynamic_name, sizeof(dynamic_name),
++                         "%s/%d", dev, i);
++#else
+                 snprintf(tunname, sizeof(tunname),
+                          "/dev/%s%d", dev, i);
+                 snprintf(dynamic_name, sizeof(dynamic_name),
+                          "%s%d", dev, i);
++#endif
+                 if ((tt->fd = open(tunname, O_RDWR)) > 0)
+                 {
+                     dynamic_opened = true;
+-- 
+2.47.1
+
+
+--------5f946099762c5079e11c5cf6a5593d3baf259cab57b02d7d92174e35c7a8d5ee
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: ProtonMail
+
+wnUEARYIACcFAmdF2qwJEAcdh4cOBuc9FiEE1fDK75YVVUznKdb2Bx2Hhw4G
+5z0AAH3JAP9mgara4Q+bfHkNHPRlv2z/Gs0T1REwP5sJK0J2fmWxCQEAxWem
+mgUNtonAjcdVoScSkH+m/I3d+ph+XKrT/ZNATwU=
+=iUwD
+-----END PGP SIGNATURE-----
+
+
+--------5f946099762c5079e11c5cf6a5593d3baf259cab57b02d7d92174e35c7a8d5ee--
+
 
