@@ -1,16 +1,16 @@
 From: "flichtenheld (Code Review)" <gerrit@...515...>
-Date: Tue, 26 Nov 2024 17:13:12 +0000
-In-Reply-To: <gerrit.1732634928000.I9a278374f492a538f0c174ced1746c3b1f82b8c9@...2715...>
-References: <gerrit.1732634928000.I9a278374f492a538f0c174ced1746c3b1f82b8c9@...2715...>
-Reply-To: frank@...2641..., arne-openvpn@...1227..., alex@...2837...,
- openvpn-devel@lists.sourceforge.net
-Message-ID: <5cd5d2701c1c969065c0517e83455cc8a16b2cbc-EmailReviewComments-HTML@...2715...>
+Date: Tue, 26 Nov 2024 17:18:17 +0000
+In-Reply-To: <gerrit.1732545464000.I6816f61b308ca9f6d1f9f687a6dc8e0aa2d044e0@...2715...>
+References: <gerrit.1732545464000.I6816f61b308ca9f6d1f9f687a6dc8e0aa2d044e0@...2715...>
+Reply-To: frank@...2641..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net, a@...2181...
+Message-ID: <1e2fa48b024770d07fe11ed1beac623ef414ccc6-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="NgM5tKaLnAA="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: Haiku: Introduce
- basic platform / tun support
+Content-Type: multipart/alternative; boundary="eTeXBMEPC2c="; charset=UTF-8
+Subject: [Openvpn-devel] [XS] Change in openvpn[master]: man: extend
+ --persist-tun section
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,87 +19,87 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: kallisti5 <alex@...2837...>
 Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---NgM5tKaLnAA=
+--eTeXBMEPC2c=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: kallisti5, plaisthos.
+Attention is currently required from: ordex, plaisthos.
 
 flichtenheld has posted comments on this change. ( http://gerrit.openvpn.ne=
-t/c/openvpn/+/687?usp=3Demail )
+t/c/openvpn/+/819?usp=3Demail )
 
-Change subject: Haiku: Introduce basic platform / tun support
+Change subject: man: extend --persist-tun section
 ......................................................................
 
 
-Patch Set 2:
+Patch Set 1: Code-Review-1
 
 (1 comment)
 
-File src/openvpn/tun.c:
+File doc/man-sections/vpn-network-options.rst:
 
-http://gerrit.openvpn.net/c/openvpn/+/687/comment/253bd262_14f53440 :
-PS2, Line 1924:                          "/dev/%s/%d", dev, i);
-It might be nicer to put the `"/"` into a variable (e.g. `sep`) and reduce =
-the duplicated code this way?
+http://gerrit.openvpn.net/c/openvpn/+/819/comment/383c99e4_008f120f :
+PS1, Line 321:   any advanced traffic leaking protection (please ntoe that =
+for full
+"note"
 
 
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/687?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/819?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings
 
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: I9a278374f492a538f0c174ced1746c3b1f82b8c9
-Gerrit-Change-Number: 687
-Gerrit-PatchSet: 2
-Gerrit-Owner: kallisti5 <alex@...2837...>
+Gerrit-Change-Id: I6816f61b308ca9f6d1f9f687a6dc8e0aa2d044e0
+Gerrit-Change-Number: 819
+Gerrit-PatchSet: 1
+Gerrit-Owner: ordex <a@...2181...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: kallisti5 <alex@...2837...>
-Gerrit-Comment-Date: Tue, 26 Nov 2024 17:13:12 +0000
+Gerrit-Attention: ordex <a@...2181...>
+Gerrit-Comment-Date: Tue, 26 Nov 2024 17:18:17 +0000
 Gerrit-HasComments: Yes
-Gerrit-Has-Labels: No
+Gerrit-Has-Labels: Yes
 Gerrit-MessageType: comment
 
---NgM5tKaLnAA=
+--eTeXBMEPC2c=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p> Attention is currently required from: kallisti5, plaisthos. </p>
-<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/687?usp=3Demail">View C=
-hange</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0;"><=
-li style=3D"margin: 0; padding: 0;"><p>File src/openvpn/tun.c:</p><ul style=
-=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 1=
-6px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net=
-/c/openvpn/+/687/comment/253bd262_14f53440">Patch Set #2, Line 1924:</a> <c=
-ode style=3D"font-family:monospace,monospace">                         &quo=
-t;/dev/%s/%d&quot;, dev, i);</code></p><p style=3D"white-space: pre-wrap; w=
-ord-wrap: break-word;">It might be nicer to put the `&quot;/&quot;` into a =
-variable (e.g. `sep`) and reduce the duplicated code this way?</p></li></ul=
-></li></ul><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn=
-/+/687?usp=3Demail">change 687</a>. To unsubscribe, or for help writing mai=
-l filters, visit <a href=3D"http://gerrit.openvpn.net/settings">settings</a=
->.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div items=
-cope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link it=
-emprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/687?usp=3Demai=
-l"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
+<p> Attention is currently required from: ordex, plaisthos. </p>
+<p>Patch set 1:<span style=3D"border-radius: 3px; display: inline-block; ma=
+rgin: 0 2px; padding: 4px;background-color: #ffd4d4;">Code-Review -1</span>=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/819?usp=3Demail">Vi=
+ew Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0=
+;"><li style=3D"margin: 0; padding: 0;"><p>File doc/man-sections/vpn-networ=
+k-options.rst:</p><ul style=3D"list-style: none; padding: 0;"><li style=3D"=
+margin: 0; padding: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=
+=3D"http://gerrit.openvpn.net/c/openvpn/+/819/comment/383c99e4_008f120f">Pa=
+tch Set #1, Line 321:</a> <code style=3D"font-family:monospace,monospace"> =
+ any advanced traffic leaking protection (please ntoe that for full</code><=
+/p><p style=3D"white-space: pre-wrap; word-wrap: break-word;">&quot;note&qu=
+ot;</p></li></ul></li></ul><p>To view, visit <a href=3D"http://gerrit.openv=
+pn.net/c/openvpn/+/819?usp=3Demail">change 819</a>. To unsubscribe, or for =
+help writing mail filters, visit <a href=3D"http://gerrit.openvpn.net/setti=
+ngs">settings</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMes=
+sage"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.org/View=
+Action"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/=
++/819?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div>=
+</div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I9a278374f492a538f0c174ced17=
-46c3b1f82b8c9 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 687 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
-<div style=3D"display:none"> Gerrit-Owner: kallisti5 &lt;alex@...2837...&gt=
-; </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I6816f61b308ca9f6d1f9f687a6d=
+c8e0aa2d044e0 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 819 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
+<div style=3D"display:none"> Gerrit-Owner: ordex &lt;a@...2181...&gt; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
 1...&gt; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
@@ -108,14 +108,14 @@ l"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
 ts.sourceforge.net&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
 ..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: kallisti5 &lt;alex@...2839...=
-.&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Tue, 26 Nov 2024 17:13:12=
+<div style=3D"display:none"> Gerrit-Attention: ordex &lt;a@...2181...&gt; <=
+/div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Tue, 26 Nov 2024 17:18:17=
  +0000 </div>
 <div style=3D"display:none"> Gerrit-HasComments: Yes </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: No </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
 <div style=3D"display:none"> Gerrit-MessageType: comment </div>
 
 
---NgM5tKaLnAA=--
+--eTeXBMEPC2c=--
 
