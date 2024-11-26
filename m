@@ -1,16 +1,16 @@
-From: "flichtenheld (Code Review)" <gerrit@...515...>
-Date: Tue, 26 Nov 2024 17:18:17 +0000
-In-Reply-To: <gerrit.1732545464000.I6816f61b308ca9f6d1f9f687a6dc8e0aa2d044e0@...2715...>
-References: <gerrit.1732545464000.I6816f61b308ca9f6d1f9f687a6dc8e0aa2d044e0@...2715...>
-Reply-To: frank@...2641..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, a@...2181...
-Message-ID: <1e2fa48b024770d07fe11ed1beac623ef414ccc6-EmailReviewComments-HTML@...2715...>
+From: "kallisti5 (Code Review)" <gerrit@...515...>
+Date: Tue, 26 Nov 2024 17:27:42 +0000
+In-Reply-To: <gerrit.1732634928000.I9a278374f492a538f0c174ced1746c3b1f82b8c9@...2715...>
+References: <gerrit.1732634928000.I9a278374f492a538f0c174ced1746c3b1f82b8c9@...2715...>
+Reply-To: alex@...2837..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net, frank@...2641...
+Message-ID: <a9509f1d2965f935e44541ce03bc4d8e9e23e74d-EmailReplacePatchSet-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="eTeXBMEPC2c="; charset=UTF-8
-Subject: [Openvpn-devel] [XS] Change in openvpn[master]: man: extend
- --persist-tun section
+Content-Type: multipart/alternative; boundary="pUAPvdhhSPQ="; charset=UTF-8
+Subject: [Openvpn-devel] [S] Change in openvpn[master]: Haiku: Introduce
+ basic platform / tun support
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,87 +19,208 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---eTeXBMEPC2c=
+--pUAPvdhhSPQ=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: ordex, plaisthos.
+Attention is currently required from: kallisti5, plaisthos.
 
-flichtenheld has posted comments on this change. ( http://gerrit.openvpn.ne=
-t/c/openvpn/+/819?usp=3Demail )
+Hello flichtenheld, plaisthos,
 
-Change subject: man: extend --persist-tun section
+I'd like you to reexamine a change. Please visit
+
+    http://gerrit.openvpn.net/c/openvpn/+/687?usp=3Demail
+
+to look at the new patch set (#3).
+
+
+Change subject: Haiku: Introduce basic platform / tun support
 ......................................................................
 
+Haiku: Introduce basic platform / tun support
 
-Patch Set 1: Code-Review-1
+* Special thanks to Sean Brady's hard work in GSoC 2023 towards creating
+  a TUN/TAP driver for Haiku!
+* More kudos to Augustin Cavalier for making it functional :-)
 
-(1 comment)
-
-File doc/man-sections/vpn-network-options.rst:
-
-http://gerrit.openvpn.net/c/openvpn/+/819/comment/383c99e4_008f120f :
-PS1, Line 321:   any advanced traffic leaking protection (please ntoe that =
-for full
-"note"
+Change-Id: I9a278374f492a538f0c174ced1746c3b1f82b8c9
+---
+M configure.ac
+M src/openvpn/tun.c
+2 files changed, 22 insertions(+), 2 deletions(-)
 
 
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/87/687/3
+
+diff --git a/configure.ac b/configure.ac
+index 0876a6a..7f6e43d 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -368,6 +368,11 @@
+ 		have_tap_header=3D"yes"
+ 		ac_cv_header_net_if_h=3D"no"	# exists, but breaks things
+ 		;;
++	*-*-haiku*)
++		AC_DEFINE([TARGET_HAIKU], [1], [Are we running Haiku?])
++		AC_DEFINE_UNQUOTED([TARGET_PREFIX], ["H"], [Target prefix])
++		LIBS=3D"${LIBS} -lnetwork"
++		;;
+ 	*)
+ 		AC_DEFINE_UNQUOTED([TARGET_PREFIX], ["X"], [Target prefix])
+ 		have_tap_header=3D"yes"
+diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
+index 85fe01a..f9fc28a 100644
+--- a/src/openvpn/tun.c
++++ b/src/openvpn/tun.c
+@@ -1631,6 +1631,16 @@
+     {
+         windows_set_mtu(tt->adapter_index, AF_INET, tun_mtu);
+     }
++#elif defined(TARGET_HAIKU)
++    {
++        /* example: ifconfig tun/0 inet 1.1.1.1 255.255.255.0 mtu 1450 up =
+*/
++        /* XXX: Need to add ifconfig_remote_netmask since right now it is =
+just NULL */
++        argv_printf(&argv, "%s %s inet %s %s mtu %d up", IFCONFIG_PATH,
++            ifname, ifconfig_local, ifconfig_remote_netmask, tun_mtu);
++
++        argv_msg(M_INFO, &argv);
++        openvpn_execve_check(&argv, es, S_FATAL, "Haiku ifconfig failed");
++    }
+ #else  /* if defined(TARGET_LINUX) */
+     msg(M_FATAL, "Sorry, but I don't know how to do 'ifconfig' commands on=
+ this operating system.  You should ifconfig your TUN/TAP device manually o=
+r use an --up script.");
+ #endif /* if defined(TARGET_LINUX) */
+@@ -1909,10 +1919,15 @@
+         {
+             for (int i =3D 0; i < 256; ++i)
+             {
++                /* some platforms have a dedicated directory per driver */
++                char sep =3D '';
++#if defined(TARGET_HAIKU)
++                sep =3D '/';
++#endif
+                 snprintf(tunname, sizeof(tunname),
+-                         "/dev/%s%d", dev, i);
++                         "/dev/%s%c%d", dev, sep, i);
+                 snprintf(dynamic_name, sizeof(dynamic_name),
+-                         "%s%d", dev, i);
++                         "%s%c%d", dev, sep, i);
+                 if ((tt->fd =3D open(tunname, O_RDWR)) > 0)
+                 {
+                     dynamic_opened =3D true;
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/819?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/687?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings
 
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: I6816f61b308ca9f6d1f9f687a6dc8e0aa2d044e0
-Gerrit-Change-Number: 819
-Gerrit-PatchSet: 1
-Gerrit-Owner: ordex <a@...2181...>
+Gerrit-Change-Id: I9a278374f492a538f0c174ced1746c3b1f82b8c9
+Gerrit-Change-Number: 687
+Gerrit-PatchSet: 3
+Gerrit-Owner: kallisti5 <alex@...2837...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: ordex <a@...2181...>
-Gerrit-Comment-Date: Tue, 26 Nov 2024 17:18:17 +0000
-Gerrit-HasComments: Yes
-Gerrit-Has-Labels: Yes
-Gerrit-MessageType: comment
+Gerrit-Attention: kallisti5 <alex@...2837...>
+Gerrit-MessageType: newpatchset
 
---eTeXBMEPC2c=
+--pUAPvdhhSPQ=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p> Attention is currently required from: ordex, plaisthos. </p>
-<p>Patch set 1:<span style=3D"border-radius: 3px; display: inline-block; ma=
-rgin: 0 2px; padding: 4px;background-color: #ffd4d4;">Code-Review -1</span>=
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/819?usp=3Demail">Vi=
-ew Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0=
-;"><li style=3D"margin: 0; padding: 0;"><p>File doc/man-sections/vpn-networ=
-k-options.rst:</p><ul style=3D"list-style: none; padding: 0;"><li style=3D"=
-margin: 0; padding: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=
-=3D"http://gerrit.openvpn.net/c/openvpn/+/819/comment/383c99e4_008f120f">Pa=
-tch Set #1, Line 321:</a> <code style=3D"font-family:monospace,monospace"> =
- any advanced traffic leaking protection (please ntoe that for full</code><=
-/p><p style=3D"white-space: pre-wrap; word-wrap: break-word;">&quot;note&qu=
-ot;</p></li></ul></li></ul><p>To view, visit <a href=3D"http://gerrit.openv=
-pn.net/c/openvpn/+/819?usp=3Demail">change 819</a>. To unsubscribe, or for =
-help writing mail filters, visit <a href=3D"http://gerrit.openvpn.net/setti=
-ngs">settings</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMes=
-sage"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.org/View=
-Action"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/=
-+/819?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div>=
-</div>
+<p> Attention is currently required from: kallisti5, plaisthos. </p>
+<p>kallisti5 <strong>uploaded patch set #3</strong> to this change.</p><p><=
+a href=3D"http://gerrit.openvpn.net/c/openvpn/+/687?usp=3Demail">View Chang=
+e</a></p><pre style=3D"font-family: monospace,monospace; white-space: pre-w=
+rap;">Haiku: Introduce basic platform / tun support<br><br>* Special thanks=
+ to Sean Brady&#39;s hard work in GSoC 2023 towards creating<br>  a TUN/TAP=
+ driver for Haiku!<br>* More kudos to Augustin Cavalier for making it funct=
+ional :-)<br><br>Change-Id: I9a278374f492a538f0c174ced1746c3b1f82b8c9<br>--=
+-<br>M configure.ac<br>M src/openvpn/tun.c<br>2 files changed, 22 insertion=
+s(+), 2 deletions(-)<br><br></pre><pre style=3D"font-family: monospace,mono=
+space; white-space: pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/open=
+vpn refs/changes/87/687/3</pre><pre style=3D"font-family: monospace,monospa=
+ce; white-space: pre-wrap;"><span>diff --git a/configure.ac b/configure.ac<=
+/span><br><span>index 0876a6a..7f6e43d 100644</span><br><span>--- a/configu=
+re.ac</span><br><span>+++ b/configure.ac</span><br><span>@@ -368,6 +368,11 =
+@@</span><br><span> 		have_tap_header=3D&quot;yes&quot;</span><br><span> 		=
+ac_cv_header_net_if_h=3D&quot;no&quot;	# exists, but breaks things</span><b=
+r><span> 		;;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+	*-*-h=
+aiku*)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+		AC_DEFINE([=
+TARGET_HAIKU], [1], [Are we running Haiku?])</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+		AC_DEFINE_UNQUOTED([TARGET_PREFIX], [&quot;H&quo=
+t;], [Target prefix])</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+		LIBS=3D&quot;${LIBS} -lnetwork&quot;</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+		;;</span><br><span> 	*)</span><br><span> 		AC_DEFINE=
+_UNQUOTED([TARGET_PREFIX], [&quot;X&quot;], [Target prefix])</span><br><spa=
+n> 		have_tap_header=3D&quot;yes&quot;</span><br><span>diff --git a/src/ope=
+nvpn/tun.c b/src/openvpn/tun.c</span><br><span>index 85fe01a..f9fc28a 10064=
+4</span><br><span>--- a/src/openvpn/tun.c</span><br><span>+++ b/src/openvpn=
+/tun.c</span><br><span>@@ -1631,6 +1631,16 @@</span><br><span>     {</span>=
+<br><span>         windows_set_mtu(tt-&gt;adapter_index, AF_INET, tun_mtu);=
+</span><br><span>     }</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+#elif defined(TARGET_HAIKU)</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+      /* example: ifconfig tun/0 inet 1.1.1.1 255.255.255.0 mtu 1450 up */<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+        /* XXX: Need=
+ to add ifconfig_remote_netmask since right now it is just NULL */</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+        argv_printf(&amp;arg=
+v, &quot;%s %s inet %s %s mtu %d up&quot;, IFCONFIG_PATH,</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+            ifname, ifconfig_local, i=
+fconfig_remote_netmask, tun_mtu);</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
+   argv_msg(M_INFO, &amp;argv);</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+        openvpn_execve_check(&amp;argv, es, S_FATAL, &quot;Haik=
+u ifconfig failed&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+    }</span><br><span> #else  /* if defined(TARGET_LINUX) */</span><b=
+r><span>     msg(M_FATAL, &quot;Sorry, but I don&#39;t know how to do &#39;=
+ifconfig&#39; commands on this operating system.  You should ifconfig your =
+TUN/TAP device manually or use an --up script.&quot;);</span><br><span> #en=
+dif /* if defined(TARGET_LINUX) */</span><br><span>@@ -1909,10 +1919,15 @@<=
+/span><br><span>         {</span><br><span>             for (int i =3D 0; i=
+ &lt; 256; ++i)</span><br><span>             {</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+                /* some platforms have a dedicat=
+ed directory per driver */</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+                char sep =3D &#39;&#39;;</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+#if defined(TARGET_HAIKU)</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+                sep =3D &#39;/&#39;;</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+#endif</span><br><span> =
+                snprintf(tunname, sizeof(tunname),</span><br><span style=3D=
+"color: hsl(0, 100%, 40%);">-                         &quot;/dev/%s%d&quot;=
+, dev, i);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+         =
+                &quot;/dev/%s%c%d&quot;, dev, sep, i);</span><br><span>    =
+             snprintf(dynamic_name, sizeof(dynamic_name),</span><br><span s=
+tyle=3D"color: hsl(0, 100%, 40%);">-                         &quot;%s%d&quo=
+t;, dev, i);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
+                  &quot;%s%c%d&quot;, dev, sep, i);</span><br><span>       =
+          if ((tt-&gt;fd =3D open(tunname, O_RDWR)) &gt; 0)</span><br><span=
+>                 {</span><br><span>                     dynamic_opened =3D=
+ true;</span><br><span></span><br></pre><p>To view, visit <a href=3D"http:/=
+/gerrit.openvpn.net/c/openvpn/+/687?usp=3Demail">change 687</a>. To unsubsc=
+ribe, or for help writing mail filters, visit <a href=3D"http://gerrit.open=
+vpn.net/settings">settings</a>.</p><div itemscope itemtype=3D"http://schema=
+.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://sc=
+hema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.n=
+et/c/openvpn/+/687?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Ch=
+ange"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I6816f61b308ca9f6d1f9f687a6d=
-c8e0aa2d044e0 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 819 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
-<div style=3D"display:none"> Gerrit-Owner: ordex &lt;a@...2181...&gt; </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I9a278374f492a538f0c174ced17=
+46c3b1f82b8c9 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 687 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 3 </div>
+<div style=3D"display:none"> Gerrit-Owner: kallisti5 &lt;alex@...2837...&gt=
+; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
 1...&gt; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
@@ -108,14 +229,10 @@ c8e0aa2d044e0 </div>
 ts.sourceforge.net&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
 ..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: ordex &lt;a@...2181...&gt; <=
-/div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Tue, 26 Nov 2024 17:18:17=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
+<div style=3D"display:none"> Gerrit-Attention: kallisti5 &lt;alex@...2839...=
+.&gt; </div>
+<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
 
 
---eTeXBMEPC2c=--
+--pUAPvdhhSPQ=--
 
