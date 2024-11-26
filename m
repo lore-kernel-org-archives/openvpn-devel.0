@@ -1,17 +1,15 @@
-From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Tue, 26 Nov 2024 15:09:18 +0000
-In-Reply-To: <gerrit.1732583163000.Ib88ce925b20c5912de489ef1b62615c4b87d365c@...2715...>
-References: <gerrit.1732583163000.Ib88ce925b20c5912de489ef1b62615c4b87d365c@...2715...>
-Reply-To: gert@...1296..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...,
- lstipakov@...277...
-Message-ID: <3f9d4beb14d34fee5c56e8f49cd92eae72d7f90d-HTML@...2715...>
+From: "kallisti5 (Code Review)" <gerrit@...515...>
+Date: Tue, 26 Nov 2024 15:28:52 +0000
+References: <gerrit.1732634928000.I9a278374f492a538f0c174ced1746c3b1f82b8c9@...2715...>
+Reply-To: alex@...2837..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net, frank@...2641...
+Message-ID: <71d8c8b97a5882cec6a753c43cc242d2956458f5-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="Cm95nrjvLFc="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: Fix wrong doxygen
- comments
+Content-Type: multipart/alternative; boundary="AvBbgwTFN9w="; charset=UTF-8
+Subject: [Openvpn-devel] [S] Change in openvpn[master]: Haiku: Introduce
+ basic platform / tun support
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,387 +18,221 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: flichtenheld <frank@...2641...>
-Cc: stipa <lstipakov@...277...>, plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---Cm95nrjvLFc=
+--AvBbgwTFN9w=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-cron2 has submitted this change. ( http://gerrit.openvpn.net/c/openvpn/+/82=
-0?usp=3Demail )
+Attention is currently required from: flichtenheld, plaisthos.
 
-Change subject: Fix wrong doxygen comments
+Hello plaisthos, flichtenheld,
+
+I'd like you to do a code review.
+Please visit
+
+    http://gerrit.openvpn.net/c/openvpn/+/687?usp=3Demail
+
+to review the following change.
+
+
+Change subject: Haiku: Introduce basic platform / tun support
 ......................................................................
 
-Fix wrong doxygen comments
+Haiku: Introduce basic platform / tun support
 
-Add some missing "<" to trailing comments
-to make sure they apply to the correct line.
+* Special thanks to Sean Brady's hard work in GSoC 2023 towards creating
+  a TUN/TAP driver for Haiku!
+* More kudos to Augustin Cavalie for making it functional :-)
 
-Change-Id: Ib88ce925b20c5912de489ef1b62615c4b87d365c
-Signed-off-by: Frank Lichtenheld <frank@...2641...>
-Acked-by: Lev Stipakov <lstipakov@...277...>
-Message-Id: <20241126102651.18905-1-gert@...1296...>
-URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg29=
-897.html
-Signed-off-by: Gert Doering <gert@...1296...>
+Change-Id: I9a278374f492a538f0c174ced1746c3b1f82b8c9
 ---
-M src/openvpn/options.c
-M src/openvpnmsica/msica_arg.h
-M src/openvpnmsica/openvpnmsica.c
-M src/openvpnmsica/openvpnmsica.h
-M src/tapctl/tap.h
-5 files changed, 26 insertions(+), 23 deletions(-)
+M configure.ac
+M src/openvpn/tun.c
+2 files changed, 22 insertions(+), 0 deletions(-)
 
 
 
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/87/687/1
 
-diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index 10ee9f6..043b240 100644
---- a/src/openvpn/options.c
-+++ b/src/openvpn/options.c
-@@ -929,10 +929,10 @@
-
- struct pull_filter
- {
--#define PUF_TYPE_UNDEF  0    /** undefined filter type */
--#define PUF_TYPE_ACCEPT 1    /** filter type to accept a matching option */
--#define PUF_TYPE_IGNORE 2    /** filter type to ignore a matching option */
--#define PUF_TYPE_REJECT 3    /** filter type to reject and trigger SIGUSR1=
- */
-+#define PUF_TYPE_UNDEF  0    /**< undefined filter type */
-+#define PUF_TYPE_ACCEPT 1    /**< filter type to accept a matching option =
-*/
-+#define PUF_TYPE_IGNORE 2    /**< filter type to ignore a matching option =
-*/
-+#define PUF_TYPE_REJECT 3    /**< filter type to reject and trigger SIGUSR=
-1 */
-     int type;
-     int size;
-     char *pattern;
-@@ -3846,14 +3846,14 @@
-  *  Check file/directory sanity
-  *
-  */
--#ifndef ENABLE_SMALL  /** Expect people using the stripped down version to=
- know what they do */
-+#ifndef ENABLE_SMALL  /* Expect people using the stripped down version to =
-know what they do */
-
--#define CHKACC_FILE (1<<0)       /** Check for a file/directory presence */
--#define CHKACC_DIRPATH (1<<1)    /** Check for directory presence where a =
-file should reside */
--#define CHKACC_FILEXSTWR (1<<2)  /** If file exists, is it writable? */
--#define CHKACC_ACPTSTDIN (1<<3)  /** If filename is stdin, it's allowed an=
-d "exists" */
--#define CHKACC_PRIVATE (1<<4)    /** Warn if this (private) file is group/=
-others accessible */
--#define CHKACC_ACCEPT_URI (1<<5) /** If filename is a URI, no check is don=
-e unless it starts with file: */
-+#define CHKACC_FILE (1<<0)       /**< Check for a file/directory presence =
-*/
-+#define CHKACC_DIRPATH (1<<1)    /**< Check for directory presence where a=
- file should reside */
-+#define CHKACC_FILEXSTWR (1<<2)  /**< If file exists, is it writable? */
-+#define CHKACC_ACPTSTDIN (1<<3)  /**< If filename is stdin, it's allowed a=
-nd "exists" */
-+#define CHKACC_PRIVATE (1<<4)    /**< Warn if this (private) file is group=
-/others accessible */
-+#define CHKACC_ACCEPT_URI (1<<5) /**< Do not check URIs, unless they start=
- with file: */
-
- static bool
- check_file_access(const int type, const char *file, const int mode, const =
-char *opt)
-diff --git a/src/openvpnmsica/msica_arg.h b/src/openvpnmsica/msica_arg.h
-index 6cd272c..cec046f 100644
---- a/src/openvpnmsica/msica_arg.h
-+++ b/src/openvpnmsica/msica_arg.h
-@@ -37,8 +37,8 @@
-  */
- struct msica_arg
- {
--    struct msica_arg *next; /** Pointer to the next argument in the sequen=
-ce */
--    TCHAR val[];            /** Zero terminated argument string */
-+    struct msica_arg *next; /**< Pointer to the next argument in the seque=
-nce */
-+    TCHAR val[];            /**< Zero terminated argument string */
- };
-
-
-@@ -47,8 +47,8 @@
-  */
- struct msica_arg_seq
- {
--    struct msica_arg *head; /** Pointer to the first argument in the seque=
-nce */
--    struct msica_arg *tail; /** Pointer to the last argument in the sequen=
-ce */
-+    struct msica_arg *head; /**< Pointer to the first argument in the sequ=
-ence */
-+    struct msica_arg *tail; /**< Pointer to the last argument in the seque=
-nce */
- };
-
-
-diff --git a/src/openvpnmsica/openvpnmsica.c b/src/openvpnmsica/openvpnmsic=
-a.c
-index 5ffb5b3..154fff4 100644
---- a/src/openvpnmsica/openvpnmsica.c
-+++ b/src/openvpnmsica/openvpnmsica.c
-@@ -59,9 +59,10 @@
-  * Local constants
-  */
-
--#define MSICA_ADAPTER_TICK_SIZE (16*1024) /** Amount of tick space to rese=
-rve for one TAP/TUN adapter creation/deletition. */
-+/** Amount of tick space to reserve for one TAP/TUN adapter creation/delet=
-ition. */
-+#define MSICA_ADAPTER_TICK_SIZE        (16 * 1024)
-
--#define FILE_NEED_REBOOT        L".ovpn_need_reboot"
-+#define FILE_NEED_REBOOT               L".ovpn_need_reboot"
-
- #define OPENVPN_CONNECT_ADAPTER_SUBSTR L"OpenVPN Connect"
-
-@@ -88,7 +89,9 @@
-     free(szSequence);
-     if (uiResult !=3D ERROR_SUCCESS)
+diff --git a/configure.ac b/configure.ac
+index 0876a6a..7f6e43d 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -368,6 +368,11 @@
+ 		have_tap_header=3D"yes"
+ 		ac_cv_header_net_if_h=3D"no"	# exists, but breaks things
+ 		;;
++	*-*-haiku*)
++		AC_DEFINE([TARGET_HAIKU], [1], [Are we running Haiku?])
++		AC_DEFINE_UNQUOTED([TARGET_PREFIX], ["H"], [Target prefix])
++		LIBS=3D"${LIBS} -lnetwork"
++		;;
+ 	*)
+ 		AC_DEFINE_UNQUOTED([TARGET_PREFIX], ["X"], [Target prefix])
+ 		have_tap_header=3D"yes"
+diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
+index 85fe01a..e428fb9 100644
+--- a/src/openvpn/tun.c
++++ b/src/openvpn/tun.c
+@@ -1631,6 +1631,16 @@
      {
--        SetLastError(uiResult); /* MSDN does not mention MsiSetProperty() =
-to set GetLastError(). But we do have an error code. Set last error manuall=
-y. */
-+        /* MSDN does not mention MsiSetProperty() to set GetLastError(). B=
-ut we do have an error
-+         * code. Set last error manually. */
-+        SetLastError(uiResult);
-         msg(M_NONFATAL | M_ERRNO, "%s: MsiSetProperty(\"%" PRIsLPTSTR "\")=
- failed", __FUNCTION__, szProperty);
-         return uiResult;
+         windows_set_mtu(tt->adapter_index, AF_INET, tun_mtu);
      }
-diff --git a/src/openvpnmsica/openvpnmsica.h b/src/openvpnmsica/openvpnmsic=
-a.h
-index 6640d7e..7aacdf3 100644
---- a/src/openvpnmsica/openvpnmsica.h
-+++ b/src/openvpnmsica/openvpnmsica.h
-@@ -38,7 +38,7 @@
-  */
- struct openvpnmsica_thread_data
- {
--    MSIHANDLE hInstall; /** Handle to the installation session. */
-+    MSIHANDLE hInstall; /**< Handle to the installation session. */
- };
-
-
-diff --git a/src/tapctl/tap.h b/src/tapctl/tap.h
-index 9c403cc..680c13a 100644
---- a/src/tapctl/tap.h
-+++ b/src/tapctl/tap.h
-@@ -135,11 +135,11 @@
-  */
- struct tap_adapter_node
- {
--    GUID guid;             /** Adapter GUID */
--    LPTSTR szzHardwareIDs; /** Device hardware ID(s) */
--    LPTSTR szName;         /** Adapter name */
-+    GUID guid;             /**< Adapter GUID */
-+    LPTSTR szzHardwareIDs; /**< Device hardware ID(s) */
-+    LPTSTR szName;         /**< Adapter name */
-
--    struct tap_adapter_node *pNext; /** Pointer to next adapter */
-+    struct tap_adapter_node *pNext; /**< Pointer to next adapter */
- };
-
-
++#elif defined(TARGET_HAIKU)
++    {
++        /* example: ifconfig tun/0 inet 1.1.1.1 255.255.255.0 mtu 1450 up =
+*/
++        /* XXX: Need to add ifconfig_remote_netmask since right now it is =
+just NULL */
++        argv_printf(&argv, "%s %s inet %s %s mtu %d up", IFCONFIG_PATH,
++            ifname, ifconfig_local, ifconfig_remote_netmask, tun_mtu);
++
++        argv_msg(M_INFO, &argv);
++        openvpn_execve_check(&argv, es, S_FATAL, "Haiku ifconfig failed");
++    }
+ #else  /* if defined(TARGET_LINUX) */
+     msg(M_FATAL, "Sorry, but I don't know how to do 'ifconfig' commands on=
+ this operating system.  You should ifconfig your TUN/TAP device manually o=
+r use an --up script.");
+ #endif /* if defined(TARGET_LINUX) */
+@@ -1909,10 +1919,17 @@
+         {
+             for (int i =3D 0; i < 256; ++i)
+             {
++#if defined(TARGET_HAIKU)
++                snprintf(tunname, sizeof(tunname),
++                         "/dev/%s/%d", dev, i);
++                snprintf(dynamic_name, sizeof(dynamic_name),
++                         "%s/%d", dev, i);
++#else
+                 snprintf(tunname, sizeof(tunname),
+                          "/dev/%s%d", dev, i);
+                 snprintf(dynamic_name, sizeof(dynamic_name),
+                          "%s%d", dev, i);
++#endif
+                 if ((tt->fd =3D open(tunname, O_RDWR)) > 0)
+                 {
+                     dynamic_opened =3D true;
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/820?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/687?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings
 
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: Ib88ce925b20c5912de489ef1b62615c4b87d365c
-Gerrit-Change-Number: 820
-Gerrit-PatchSet: 2
-Gerrit-Owner: flichtenheld <frank@...2641...>
+Gerrit-Change-Id: I9a278374f492a538f0c174ced1746c3b1f82b8c9
+Gerrit-Change-Number: 687
+Gerrit-PatchSet: 1
+Gerrit-Owner: kallisti5 <alex@...2837...>
+Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-Reviewer: stipa <lstipakov@...277...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-MessageType: merged
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Attention: flichtenheld <frank@...2641...>
+Gerrit-MessageType: newchange
 
---Cm95nrjvLFc=
+--AvBbgwTFN9w=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p>cron2 <strong>submitted</strong> this change.</p><p><a href=3D"http://ge=
-rrit.openvpn.net/c/openvpn/+/820?usp=3Demail">View Change</a></p><div style=
-=3D"white-space:pre-wrap"></div><pre style=3D"font-family: monospace,monosp=
-ace; white-space: pre-wrap;">Fix wrong doxygen comments<br><br>Add some mis=
-sing &quot;&lt;&quot; to trailing comments<br>to make sure they apply to th=
-e correct line.<br><br>Change-Id: Ib88ce925b20c5912de489ef1b62615c4b87d365c=
-<br>Signed-off-by: Frank Lichtenheld &lt;frank@...2641...&gt;<br>Acked-by: =
-Lev Stipakov &lt;lstipakov@...277...&gt;<br>Message-Id: &lt;20241126102651.=
-18905-1-gert@...1296...&gt;<br>URL: https://www.mail-archive.com/openvpn-de=
-vel@lists.sourceforge.net/msg29897.html<br>Signed-off-by: Gert Doering &lt;=
-gert@...1296...&gt;<br>---<br>M src/openvpn/options.c<br>M src/openvpnmsica=
-/msica_arg.h<br>M src/openvpnmsica/openvpnmsica.c<br>M src/openvpnmsica/ope=
-nvpnmsica.h<br>M src/tapctl/tap.h<br>5 files changed, 26 insertions(+), 23 =
-deletions(-)<br><br></pre>
-<pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><sp=
-an>diff --git a/src/openvpn/options.c b/src/openvpn/options.c</span><br><sp=
-an>index 10ee9f6..043b240 100644</span><br><span>--- a/src/openvpn/options.=
-c</span><br><span>+++ b/src/openvpn/options.c</span><br><span>@@ -929,10 +9=
-29,10 @@</span><br><span> </span><br><span> struct pull_filter</span><br><s=
-pan> {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#define PUF_TYP=
-E_UNDEF  0    /** undefined filter type */</span><br><span style=3D"color: =
-hsl(0, 100%, 40%);">-#define PUF_TYPE_ACCEPT 1    /** filter type to accept=
- a matching option */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
-#define PUF_TYPE_IGNORE 2    /** filter type to ignore a matching option */=
-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#define PUF_TYPE_REJE=
-CT 3    /** filter type to reject and trigger SIGUSR1 */</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+#define PUF_TYPE_UNDEF  0    /**&lt; u=
-ndefined filter type */</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+#define PUF_TYPE_ACCEPT 1    /**&lt; filter type to accept a matching o=
-ption */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#define PUF=
-_TYPE_IGNORE 2    /**&lt; filter type to ignore a matching option */</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+#define PUF_TYPE_REJECT 3 =
-   /**&lt; filter type to reject and trigger SIGUSR1 */</span><br><span>   =
-  int type;</span><br><span>     int size;</span><br><span>     char *patte=
-rn;</span><br><span>@@ -3846,14 +3846,14 @@</span><br><span>  *  Check file=
-/directory sanity</span><br><span>  *</span><br><span>  */</span><br><span =
-style=3D"color: hsl(0, 100%, 40%);">-#ifndef ENABLE_SMALL  /** Expect peopl=
-e using the stripped down version to know what they do */</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+#ifndef ENABLE_SMALL  /* Expect peopl=
-e using the stripped down version to know what they do */</span><br><span> =
-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#define CHKACC_FILE (=
-1&lt;&lt;0)       /** Check for a file/directory presence */</span><br><spa=
-n style=3D"color: hsl(0, 100%, 40%);">-#define CHKACC_DIRPATH (1&lt;&lt;1) =
-   /** Check for directory presence where a file should reside */</span><br=
-><span style=3D"color: hsl(0, 100%, 40%);">-#define CHKACC_FILEXSTWR (1&lt;=
-&lt;2)  /** If file exists, is it writable? */</span><br><span style=3D"col=
-or: hsl(0, 100%, 40%);">-#define CHKACC_ACPTSTDIN (1&lt;&lt;3)  /** If file=
-name is stdin, it&#39;s allowed and &quot;exists&quot; */</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-#define CHKACC_PRIVATE (1&lt;&lt;4)    =
-/** Warn if this (private) file is group/others accessible */</span><br><sp=
-an style=3D"color: hsl(0, 100%, 40%);">-#define CHKACC_ACCEPT_URI (1&lt;&lt=
-;5) /** If filename is a URI, no check is done unless it starts with file: =
-*/</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#define CHKACC_FI=
-LE (1&lt;&lt;0)       /**&lt; Check for a file/directory presence */</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+#define CHKACC_DIRPATH (1&=
-lt;&lt;1)    /**&lt; Check for directory presence where a file should resid=
-e */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#define CHKACC_=
-FILEXSTWR (1&lt;&lt;2)  /**&lt; If file exists, is it writable? */</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+#define CHKACC_ACPTSTDIN (1&=
-lt;&lt;3)  /**&lt; If filename is stdin, it&#39;s allowed and &quot;exists&=
-quot; */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#define CHK=
-ACC_PRIVATE (1&lt;&lt;4)    /**&lt; Warn if this (private) file is group/ot=
-hers accessible */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#=
-define CHKACC_ACCEPT_URI (1&lt;&lt;5) /**&lt; Do not check URIs, unless the=
-y start with file: */</span><br><span> </span><br><span> static bool</span>=
-<br><span> check_file_access(const int type, const char *file, const int mo=
-de, const char *opt)</span><br><span>diff --git a/src/openvpnmsica/msica_ar=
-g.h b/src/openvpnmsica/msica_arg.h</span><br><span>index 6cd272c..cec046f 1=
-00644</span><br><span>--- a/src/openvpnmsica/msica_arg.h</span><br><span>++=
-+ b/src/openvpnmsica/msica_arg.h</span><br><span>@@ -37,8 +37,8 @@</span><b=
-r><span>  */</span><br><span> struct msica_arg</span><br><span> {</span><br=
-><span style=3D"color: hsl(0, 100%, 40%);">-    struct msica_arg *next; /**=
- Pointer to the next argument in the sequence */</span><br><span style=3D"c=
-olor: hsl(0, 100%, 40%);">-    TCHAR val[];            /** Zero terminated =
-argument string */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-   struct msica_arg *next; /**&lt; Pointer to the next argument in the sequ=
-ence */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    TCHAR va=
-l[];            /**&lt; Zero terminated argument string */</span><br><span>=
- };</span><br><span> </span><br><span> </span><br><span>@@ -47,8 +47,8 @@</=
-span><br><span>  */</span><br><span> struct msica_arg_seq</span><br><span> =
-{</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    struct msica_arg=
- *head; /** Pointer to the first argument in the sequence */</span><br><spa=
-n style=3D"color: hsl(0, 100%, 40%);">-    struct msica_arg *tail; /** Poin=
-ter to the last argument in the sequence */</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+    struct msica_arg *head; /**&lt; Pointer to the =
-first argument in the sequence */</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+    struct msica_arg *tail; /**&lt; Pointer to the last argum=
-ent in the sequence */</span><br><span> };</span><br><span> </span><br><spa=
-n> </span><br><span>diff --git a/src/openvpnmsica/openvpnmsica.c b/src/open=
-vpnmsica/openvpnmsica.c</span><br><span>index 5ffb5b3..154fff4 100644</span=
-><br><span>--- a/src/openvpnmsica/openvpnmsica.c</span><br><span>+++ b/src/=
-openvpnmsica/openvpnmsica.c</span><br><span>@@ -59,9 +59,10 @@</span><br><s=
-pan>  * Local constants</span><br><span>  */</span><br><span> </span><br><s=
-pan style=3D"color: hsl(0, 100%, 40%);">-#define MSICA_ADAPTER_TICK_SIZE (1=
-6*1024) /** Amount of tick space to reserve for one TAP/TUN adapter creatio=
-n/deletition. */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+/**=
- Amount of tick space to reserve for one TAP/TUN adapter creation/deletitio=
-n. */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#define MSICA_=
-ADAPTER_TICK_SIZE        (16 * 1024)</span><br><span> </span><br><span styl=
-e=3D"color: hsl(0, 100%, 40%);">-#define FILE_NEED_REBOOT        L&quot;.ov=
-pn_need_reboot&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+#define FILE_NEED_REBOOT               L&quot;.ovpn_need_reboot&quot;</spa=
-n><br><span> </span><br><span> #define OPENVPN_CONNECT_ADAPTER_SUBSTR L&quo=
-t;OpenVPN Connect&quot;</span><br><span> </span><br><span>@@ -88,7 +89,9 @@=
-</span><br><span>     free(szSequence);</span><br><span>     if (uiResult !=
-=3D ERROR_SUCCESS)</span><br><span>     {</span><br><span style=3D"color: h=
-sl(0, 100%, 40%);">-        SetLastError(uiResult); /* MSDN does not mentio=
-n MsiSetProperty() to set GetLastError(). But we do have an error code. Set=
- last error manually. */</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+        /* MSDN does not mention MsiSetProperty() to set GetLastError(=
-). But we do have an error</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+         * code. Set last error manually. */</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+        SetLastError(uiResult);</span><br=
-><span>         msg(M_NONFATAL | M_ERRNO, &quot;%s: MsiSetProperty(\&quot;%=
-&quot; PRIsLPTSTR &quot;\&quot;) failed&quot;, __FUNCTION__, szProperty);</=
-span><br><span>         return uiResult;</span><br><span>     }</span><br><=
-span>diff --git a/src/openvpnmsica/openvpnmsica.h b/src/openvpnmsica/openvp=
-nmsica.h</span><br><span>index 6640d7e..7aacdf3 100644</span><br><span>--- =
-a/src/openvpnmsica/openvpnmsica.h</span><br><span>+++ b/src/openvpnmsica/op=
-envpnmsica.h</span><br><span>@@ -38,7 +38,7 @@</span><br><span>  */</span><=
-br><span> struct openvpnmsica_thread_data</span><br><span> {</span><br><spa=
-n style=3D"color: hsl(0, 100%, 40%);">-    MSIHANDLE hInstall; /** Handle t=
-o the installation session. */</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+    MSIHANDLE hInstall; /**&lt; Handle to the installation sessi=
-on. */</span><br><span> };</span><br><span> </span><br><span> </span><br><s=
-pan>diff --git a/src/tapctl/tap.h b/src/tapctl/tap.h</span><br><span>index =
-9c403cc..680c13a 100644</span><br><span>--- a/src/tapctl/tap.h</span><br><s=
-pan>+++ b/src/tapctl/tap.h</span><br><span>@@ -135,11 +135,11 @@</span><br>=
-<span>  */</span><br><span> struct tap_adapter_node</span><br><span> {</spa=
-n><br><span style=3D"color: hsl(0, 100%, 40%);">-    GUID guid;            =
- /** Adapter GUID */</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
-   LPTSTR szzHardwareIDs; /** Device hardware ID(s) */</span><br><span styl=
-e=3D"color: hsl(0, 100%, 40%);">-    LPTSTR szName;         /** Adapter nam=
-e */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    GUID guid; =
-            /**&lt; Adapter GUID */</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+    LPTSTR szzHardwareIDs; /**&lt; Device hardware ID(s) */=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    LPTSTR szName; =
-        /**&lt; Adapter name */</span><br><span> </span><br><span style=3D"=
-color: hsl(0, 100%, 40%);">-    struct tap_adapter_node *pNext; /** Pointer=
- to next adapter */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-    struct tap_adapter_node *pNext; /**&lt; Pointer to next adapter */</spa=
-n><br><span> };</span><br><span> </span><br><span> </span><br><span></span>=
-<br></pre><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/=
-+/820?usp=3Demail">change 820</a>. To unsubscribe, or for help writing mail=
- filters, visit <a href=3D"http://gerrit.openvpn.net/settings">settings</a>=
-.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemsc=
-ope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link ite=
-mprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/820?usp=3Demail=
-"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
+<p> Attention is currently required from: flichtenheld, plaisthos. </p>
+<p>kallisti5 would like plaisthos and flichtenheld to <strong>review</stron=
+g> this change.
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/687?usp=3Demail">Vi=
+ew Change</a></p><pre style=3D"font-family: monospace,monospace; white-spac=
+e: pre-wrap;">Haiku: Introduce basic platform / tun support<br><br>* Specia=
+l thanks to Sean Brady&#39;s hard work in GSoC 2023 towards creating<br>  a=
+ TUN/TAP driver for Haiku!<br>* More kudos to Augustin Cavalie for making i=
+t functional :-)<br><br>Change-Id: I9a278374f492a538f0c174ced1746c3b1f82b8c=
+9<br>---<br>M configure.ac<br>M src/openvpn/tun.c<br>2 files changed, 22 in=
+sertions(+), 0 deletions(-)<br><br></pre><pre style=3D"font-family: monospa=
+ce,monospace; white-space: pre-wrap;">git pull ssh://gerrit.openvpn.net:294=
+18/openvpn refs/changes/87/687/1</pre><pre style=3D"font-family: monospace,=
+monospace; white-space: pre-wrap;"><span>diff --git a/configure.ac b/config=
+ure.ac</span><br><span>index 0876a6a..7f6e43d 100644</span><br><span>--- a/=
+configure.ac</span><br><span>+++ b/configure.ac</span><br><span>@@ -368,6 +=
+368,11 @@</span><br><span> 		have_tap_header=3D&quot;yes&quot;</span><br><s=
+pan> 		ac_cv_header_net_if_h=3D&quot;no&quot;	# exists, but breaks things</=
+span><br><span> 		;;</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++	*-*-haiku*)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+		AC_D=
+EFINE([TARGET_HAIKU], [1], [Are we running Haiku?])</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+		AC_DEFINE_UNQUOTED([TARGET_PREFIX], [&q=
+uot;H&quot;], [Target prefix])</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+		LIBS=3D&quot;${LIBS} -lnetwork&quot;</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+		;;</span><br><span> 	*)</span><br><span> 		=
+AC_DEFINE_UNQUOTED([TARGET_PREFIX], [&quot;X&quot;], [Target prefix])</span=
+><br><span> 		have_tap_header=3D&quot;yes&quot;</span><br><span>diff --git =
+a/src/openvpn/tun.c b/src/openvpn/tun.c</span><br><span>index 85fe01a..e428=
+fb9 100644</span><br><span>--- a/src/openvpn/tun.c</span><br><span>+++ b/sr=
+c/openvpn/tun.c</span><br><span>@@ -1631,6 +1631,16 @@</span><br><span>    =
+ {</span><br><span>         windows_set_mtu(tt-&gt;adapter_index, AF_INET, =
+tun_mtu);</span><br><span>     }</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+#elif defined(TARGET_HAIKU)</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+        /* example: ifconfig tun/0 inet 1.1.1.1 255.255.255.0 mtu 14=
+50 up */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        /* =
+XXX: Need to add ifconfig_remote_netmask since right now it is just NULL */=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        argv_printf=
+(&amp;argv, &quot;%s %s inet %s %s mtu %d up&quot;, IFCONFIG_PATH,</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+            ifname, ifconfig=
+_local, ifconfig_remote_netmask, tun_mtu);</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+        argv_msg(M_INFO, &amp;argv);</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+        openvpn_execve_check(&amp;argv, es, S_FATAL, &=
+quot;Haiku ifconfig failed&quot;);</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+    }</span><br><span> #else  /* if defined(TARGET_LINUX) */=
+</span><br><span>     msg(M_FATAL, &quot;Sorry, but I don&#39;t know how to=
+ do &#39;ifconfig&#39; commands on this operating system.  You should ifcon=
+fig your TUN/TAP device manually or use an --up script.&quot;);</span><br><=
+span> #endif /* if defined(TARGET_LINUX) */</span><br><span>@@ -1909,10 +19=
+19,17 @@</span><br><span>         {</span><br><span>             for (int i=
+ =3D 0; i &lt; 256; ++i)</span><br><span>             {</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+#if defined(TARGET_HAIKU)</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+                snprintf(tunname,=
+ sizeof(tunname),</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+                       &quot;/dev/%s/%d&quot;, dev, i);</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+                snprintf(dynamic_name, =
+sizeof(dynamic_name),</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+                         &quot;%s/%d&quot;, dev, i);</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+#else</span><br><span>                 s=
+nprintf(tunname, sizeof(tunname),</span><br><span>                         =
+ &quot;/dev/%s%d&quot;, dev, i);</span><br><span>                 snprintf(=
+dynamic_name, sizeof(dynamic_name),</span><br><span>                       =
+   &quot;%s%d&quot;, dev, i);</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+#endif</span><br><span>                 if ((tt-&gt;fd =3D open(t=
+unname, O_RDWR)) &gt; 0)</span><br><span>                 {</span><br><span=
+>                     dynamic_opened =3D true;</span><br><span></span><br><=
+/pre><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/687=
+?usp=3Demail">change 687</a>. To unsubscribe, or for help writing mail filt=
+ers, visit <a href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p>=
+<div itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope i=
+temprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=
+=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/687?usp=3Demail"/><m=
+eta itemprop=3D"name" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: Ib88ce925b20c5912de489ef1b62=
-615c4b87d365c </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 820 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
-<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
-.&gt; </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I9a278374f492a538f0c174ced17=
+46c3b1f82b8c9 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 687 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
+<div style=3D"display:none"> Gerrit-Owner: kallisti5 &lt;alex@...2837...&gt=
+; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
+1...&gt; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
 .1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: stipa &lt;lstipakov@...277...=
-&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: merged </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
+41...&gt; </div>
+<div style=3D"display:none"> Gerrit-MessageType: newchange </div>
 
 
---Cm95nrjvLFc=--
+--AvBbgwTFN9w=--
 
