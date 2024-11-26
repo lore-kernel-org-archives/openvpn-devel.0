@@ -1,12 +1,15 @@
-Date: Tue, 26 Nov 2024 14:26:52 +0000
+Date: Tue, 26 Nov 2024 14:26:59 +0000
 From: Alexander von Gluck <alex@...2837...>
-Message-ID: <20241126142639.67446-1-alex@...2837...>
+Message-ID: <20241126142639.67446-2-alex@...2837...>
+In-Reply-To: <20241126142639.67446-1-alex@...2837...>
+References: <20241126142639.67446-1-alex@...2837...>
 MIME-Version: 1.0
 Content-Type: multipart/signed; protocol="application/pgp-signature";
  micalg=pgp-sha256;
- boundary="------5f946099762c5079e11c5cf6a5593d3baf259cab57b02d7d92174e35c7a8d5ee";
+ boundary="------e1475470d6a9c9337d97ed22113c21c3ac39719356f5da3697b66a51dfcad031";
  charset=utf-8
-Subject: [Openvpn-devel] [PATCH 1/2] Haiku: Introduce basic platform support
+Subject: [Openvpn-devel] [PATCH 2/2] Haiku: Pull in routing table to get
+ default route
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,118 +19,190 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 To: openvpn-devel@lists.sourceforge.net
-Cc: Alexander von Gluck IV <kallisti5@...2838...>
 
 This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---------5f946099762c5079e11c5cf6a5593d3baf259cab57b02d7d92174e35c7a8d5ee
+--------e1475470d6a9c9337d97ed22113c21c3ac39719356f5da3697b66a51dfcad031
 From: Alexander von Gluck <alex@...2837...>
 To: openvpn-devel@lists.sourceforge.net
-Cc: Alexander von Gluck IV <kallisti5@...2838...>
-Subject: [PATCH 1/2] Haiku: Introduce basic platform support
-Date: Tue, 26 Nov 2024 08:26:38 -0600
-Message-ID: <20241126142639.67446-1-alex@...2837...>
+Cc: Alexander von Gluck <alex@...2837...>
+Subject: [PATCH 2/2] Haiku: Pull in routing table to get default route
+Date: Tue, 26 Nov 2024 08:26:39 -0600
+Message-ID: <20241126142639.67446-2-alex@...2837...>
 X-Mailer: git-send-email 2.47.1
+In-Reply-To: <20241126142639.67446-1-alex@...2837...>
+References: <20241126142639.67446-1-alex@...2837...>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
-From: Alexander von Gluck IV <kallisti5@...2838...>
-
 ---
- configure.ac        |  5 +++++
- src/openvpn/route.c | 15 +++++++++++++++
- src/openvpn/tun.c   | 17 +++++++++++++++++
- 3 files changed, 37 insertions(+)
+ src/openvpn/route.c | 109 +++++++++++++++++++++++++++++++++++++++++++-
+ 1 file changed, 107 insertions(+), 2 deletions(-)
 
-diff --git a/configure.ac b/configure.ac
-index 0876a6a5..7f6e43dd 100644
---- a/configure.ac
-+++ b/configure.ac
-@@ -368,6 +368,11 @@ case "$host" in
- 		have_tap_header="yes"
- 		ac_cv_header_net_if_h="no"	# exists, but breaks things
- 		;;
-+	*-*-haiku*)
-+		AC_DEFINE([TARGET_HAIKU], [1], [Are we running Haiku?])
-+		AC_DEFINE_UNQUOTED([TARGET_PREFIX], ["H"], [Target prefix])
-+		LIBS="${LIBS} -lnetwork"
-+		;;
- 	*)
- 		AC_DEFINE_UNQUOTED([TARGET_PREFIX], ["X"], [Target prefix])
- 		have_tap_header="yes"
 diff --git a/src/openvpn/route.c b/src/openvpn/route.c
-index 2e584c71..fa20d08f 100644
+index fa20d08f..8d319123 100644
 --- a/src/openvpn/route.c
 +++ b/src/openvpn/route.c
-@@ -1853,6 +1853,21 @@ add_route(struct route_ipv4 *r,
+@@ -54,6 +54,12 @@
+ #include <net/route.h>                  /* RT_ROUNDUP(), RT_ADVANCE() */
+ #endif
+ 
++#if defined(TARGET_HAIKU)
++#include <SupportDefs.h>    /* uint32, etc */
++#include <net/if.h>         /* ifconf etc */
++#include <sys/sockio.h>     /* SIOCGRTTABLE, etc */
++#endif /* TARGET_HAIKU */
++
+ #ifdef _WIN32
+ #include "openvpn-msg.h"
+ 
+@@ -1857,14 +1863,16 @@ add_route(struct route_ipv4 *r,
+ 
+     {
+         /* ex: route add /dev/net/ipro1000/0 default gw 192.168.1.1 netmask 255.255.255.0 */
+-        argv_printf(&argv, "route add %s inet default gw %s netmask %s",
++        argv_printf(&argv, "%s add %s inet %s gw %s netmask %s",
++                    ROUTE_PATH,
+                     rgi-
+>iface,
++                    network,
+                     gateway,
+                     netmask);
+ 
+         argv_msg(D_ROUTE, &argv);
+         bool ret = openvpn_execve_check(&argv, es, 0,
+-                                        "ERROR: Haiku route add command failed");
++                                        "ERROR: Haiku inet route add command failed");
          status = ret ? RTA_SUCCESS : RTA_ERROR;
      }
  
-+#el
-if defined(TARGET_HAIKU)
+@@ -2344,6 +2352,21 @@ delete_route(struct route_ipv4 *r,
+         openvpn_execve_check(&argv, es, 0, "ERROR: AIX route delete command failed");
+     }
+ 
++#elif defined(TARGET_HAIKU)
 +
 +    {
-+        /* ex: route add /dev/net/ipro1000/0 default gw 192.168.1.1 netmask 255.255.255.0 */
-+        argv_printf(&argv, "route add %s inet default gw %s netmask %s",
++        // route del /dev/net/ipro1000/0 inet 192.168.0.0 gw 192.168.1.1 netmask 255.255.0.0
++        argv_printf(&argv, "%s del %s inet %s gw %s netmask %s",
++                    ROUTE_PATH,
 +                    rgi->iface,
++                    network,
 +                    gateway,
 +                    netmask);
 +
 +        argv_msg(D_ROUTE, &argv);
-+        bool ret = openvpn_execve_check(&argv, es, 0,
-+                                        "ERROR: Haiku route add command failed");
-+        status = ret ? RTA_SUCCESS : RTA_ERROR;
++     
+   openvpn_execve_check(&argv, es, 0, "ERROR: Haiku inet route delete command failed");
 +    }
 +
  #else  /* if defined(TARGET_LINUX) */
      msg(M_FATAL, "Sorry, but I don't know how to do 'route' commands on this operating system.  Try putting your routes in a --route-up script");
  #endif /* if defined(TARGET_LINUX) */
-diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
-index 85fe01af..65e3b5ba 100644
---- a/src/openvpn/tun.c
-+++ b/src/openvpn/tun.c
-@@ -1631,6 +1631,16 @@ do_ifconfig_ipv4(struct tuntap *tt, const char *ifname, int tun_mtu,
-
-     {
-         windows_set_mtu(tt->adapter_index, AF_INET, tun_mtu);
-     }
+@@ -2523,6 +2546,19 @@ delete_route_ipv6(const struct route_ipv6 *r6, const struct tuntap *tt,
+     msg(D_ROUTE_DEBUG, "Deleting routes on Android is not possible/not "
+         "needed. The VpnService API allows routes to be set "
+         "on connect only and will clean up automatically.");
 +#elif defined(TARGET_HAIKU)
 +    {
-+        /* example: ifconfig tun/0 inet 1.1.1.1 255.255.255.0 mtu 1450 up */
-+        // Need to add ifconfig_remote_netmask since right now it is just NULL
-+        argv_printf(&argv, "%s %s inet %s %s mtu %d up", IFCONFIG_PATH,
-+            ifname, ifconfig_local, ifconfig_remote_netmask, tun_mtu);
++        argv_printf(&argv, "%s del %s inet6 %s gw %s prefixlen %d",
++                    ROUTE_PATH,
++                    r6->iface,
++                    network,
++                    gateway,
++                    r6->netbits);
 +
-+        argv_msg(M_INFO, &argv);
-+        openvpn_execve_check(&argv, es, S_FATAL, "Haiku ifconfig failed");
++        argv_msg(D_ROUTE, &argv);
++        openvpn_execve_check(&argv, es, 0, "ERROR: Haiku inet
+6 route delete command failed");
++
 +    }
  #else  /* if defined(TARGET_LINUX) */
-     msg(M_FATAL, "Sorry, but I don't know how to do 'ifconfig' commands on this operating system.  You should ifconfig your TUN/TAP device manually or use an --up script.");
+     msg(M_FATAL, "Sorry, but I don't know how to do 'route ipv6' commands on this operating system.  Try putting your routes in a --route-down script");
  #endif /* if defined(TARGET_LINUX) */
-@@ -1909,10 +1919,17 @@ open_tun_generic(const char *dev, const char *dev_type, const char *dev_node,
-         {
-             for (int i = 0; i < 256; ++i)
-             {
-+#if defined(TARGET_H
-AIKU)
-+                snprintf(tunname, sizeof(tunname),
-+                         "/dev/%s/%d", dev, i);
-+                snprintf(dynamic_name, sizeof(dynamic_name),
-+                         "%s/%d", dev, i);
-+#else
-                 snprintf(tunname, sizeof(tunname),
-                          "/dev/%s%d", dev, i);
-                 snprintf(dynamic_name, sizeof(dynamic_name),
-                          "%s%d", dev, i);
-+#endif
-                 if ((tt->fd = open(tunname, O_RDWR)) > 0)
-                 {
-                     dynamic_opened = true;
+@@ -3460,6 +3496,75 @@ get_default_gateway_ipv6(struct route_ipv6_gateway_info *rgi6,
+     }
+ }
+ 
++#elif defined(TARGET_HAIKU)
++
++void
++get_default_gateway(struct route_gateway_info *rgi, openvpn_net_ctx_t *ctx)
++{
++    CLEAR(*rgi);
++
++    int sockfd = -1;
++    sockfd = socket(AF_INET, SOCK_DGRAM, 0);
++    if (sockfd < 0) {
++        msg(M_INFO, "%s: Error opening socket for AF_INET", __func__);
++        return;
++    }
++
++    struct ifconf config;
++    config.ifc_len = sizeof(config.ifc_value);
++    if (ioctl(sockfd, SIOCGRTSIZE, &config, sizeof(struct ifconf)) < 0) {
++        msg(M_INFO, "%s: Error getting routing table size", __func__);
++        return;
++    }
++
++    uint32 size = (uin
+t32)config.ifc_value;
++    if (size == 0)
++        return;
++
++    void *buffer = malloc(size);
++    if (buffer == NULL) {
++        fprintf(stderr, "%s: Out of memory.\n", __func__);
++        return;
++    }
++
++    config.ifc_len = size;
++    config.ifc_buf = buffer;
++    if (ioctl(sockfd, SIOCGRTTABLE, &config, sizeof(struct ifconf)) < 0)
++        return;
++
++    struct ifreq *interface = (struct ifreq*)buffer;
++    struct ifreq *end = (struct ifreq*)((uint8*)buffer + size);
++
++    while (interface < end) {
++        struct route_entry route = interface->ifr_route;
++        if ((route.flags & RTF_GATEWAY) != 0 && (route.flags & RTF_DEFAULT) != 0) {
++            //msg(M_INFO, "%s: FOUND DEFAULT GATEWAY ON %s", __func__, interface->ifr_name);
++            rgi->gateway.addr = ntohl(((struct sockaddr_in *)route.gateway)->sin_addr.s_addr);
++            rgi->flags = RGI_ADDR_DEFINED | RGI_IFACE_DEFINED;
++            strcpy(rgi->iface, interface->ifr_name);
++        }
++
+
++        int32 addressSize = 0;
++        if (route.destination != NULL)
++            addressSize += route.destination->sa_len;
++        if (route.mask != NULL)
++            addressSize += route.mask->sa_len;
++        if (route.gateway != NULL)
++            addressSize += route.gateway->sa_len;
++
++        interface = (struct ifreq*)((addr_t)interface + IF_NAMESIZE
++          + sizeof(struct route_entry) + addressSize);
++    }
++}
++
++void
++get_default_gateway_ipv6(struct route_ipv6_gateway_info *rgi6,
++                         const struct in6_addr *dest, openvpn_net_ctx_t *ctx)
++{
++    /* TODO: Same for ipv6 with AF_INET6 */
++    CLEAR(*rgi6);
++}
++
+ #elif defined(TARGET_DARWIN) || defined(TARGET_SOLARIS)    \
+     || defined(TARGET_FREEBSD) || defined(TARGET_DRAGONFLY)    \
+     || defined(TARGET_OPENBSD) || defined(TARGET_NETBSD)
 -- 
 2.47.1
 
 
---------5f946099762c5079e11c5cf6a5593d3baf259cab57b02d7d92174e35c7a8d5ee
+--------e1475470d6a9c9337d97ed22113c21c3ac39719356f5da3697b66a51dfcad031
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
@@ -135,13 +210,13 @@ Content-Disposition: attachment; filename="signature.asc"
 -----BEGIN PGP SIGNATURE-----
 Version: ProtonMail
 
-wnUEARYIACcFAmdF2qwJEAcdh4cOBuc9FiEE1fDK75YVVUznKdb2Bx2Hhw4G
-5z0AAH3JAP9mgara4Q+bfHkNHPRlv2z/Gs0T1REwP5sJK0J2fmWxCQEAxWem
-mgUNtonAjcdVoScSkH+m/I3d+ph+XKrT/ZNATwU=
-=iUwD
+wnUEARYIACcFAmdF2rIJEAcdh4cOBuc9FiEE1fDK75YVVUznKdb2Bx2Hhw4G
+5z0AANVIAQDtIdFyr2zjhf2NjBqG0u8pP10/q5fQLVxP4p48zT5LzgEA0Ytq
+bu+1pmSTTfu3r8/lqXXthawT8r3Vcl2W6zjm9gw=
+=QvMI
 -----END PGP SIGNATURE-----
 
 
---------5f946099762c5079e11c5cf6a5593d3baf259cab57b02d7d92174e35c7a8d5ee--
+--------e1475470d6a9c9337d97ed22113c21c3ac39719356f5da3697b66a51dfcad031--
 
 
