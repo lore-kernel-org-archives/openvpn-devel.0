@@ -1,17 +1,11 @@
-From: "kallisti5 (Code Review)" <gerrit@...515...>
-Date: Wed, 27 Nov 2024 12:53:52 +0000
-In-Reply-To: <gerrit.1732634928000.I9a278374f492a538f0c174ced1746c3b1f82b8c9@...2715...>
-References: <gerrit.1732634928000.I9a278374f492a538f0c174ced1746c3b1f82b8c9@...2715...>
-Reply-To: alex@...2837..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...,
- gert@...1296...
-Message-ID: <82720f4634ab1224c9de90101d95a202d0192538-EmailReviewComments-HTML@...2715...>
+Content-Type: multipart/alternative;
+ boundary="------------P1fmAhJS7Sgtji1gJyuHomGU"
+Message-ID: <6a836b82-9ae8-47d8-980d-e26896114011@...277...>
+Date: Wed, 27 Nov 2024 15:00:39 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="WEMZDX5t3KI="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: Haiku: Introduce
- basic platform / tun support
+From: Johan Draaisma <johandraaisma@...277...>
+Content-Language: en-US
+Subject: [Openvpn-devel]  IRC community meeting summary
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,125 +14,136 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Cc: cron2 <gert@...1296...>, plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: openvpn-devel@lists.sourceforge.net
 
---WEMZDX5t3KI=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+This is a multi-part message in MIME format.
+--------------P1fmAhJS7Sgtji1gJyuHomGU
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-Attention is currently required from: cron2, flichtenheld, plaisthos.
+Meeting summary for 27 November 2024:
 
-kallisti5 has posted comments on this change. ( http://gerrit.openvpn.net/c=
-/openvpn/+/687?usp=3Demail )
+  * *New: swupdate.openvpn.net/org cleanup*
+    /Basically this has become a dumping ground for just about
+    everything. We're cleaning it up./
+    /Need to discuss how to handle community files that are on there./
+    /A priority is to ensure no interruptions to existing content/links./
+    /The plan we want to propose to OpenVPN Inc. is to get all
+    proprietary stuff moved off of swupdate.openvpn.net, which seems to
+    already be ongoing anyhow./
+    /And then keep swupdate.openvpn.net purely for community and move
+    the s3 bucket to community AWS account and reduce the amount of
+    caching layers to just one./
+    /Will relay this plan to OpenVPN Inc. and see what they say./
 
-Change subject: Haiku: Introduce basic platform / tun support
-......................................................................
+  * *Updated: DCO Linux upstreaming*
+    /Upstreaming DCO to Linux is proceeding, it is in review stage at
+    the moment./
+    /patchset v12 had 2 weeks delay, hoping to get it out this week now.
+    Main reason is having to deal with someone with a lot of comments to
+    make./
 
+  * *Updated: community.openvpn.net wiki*
+    /A more suitable production deployment schema for otterwiki has been
+    submitted upstream. That does not block us however./
+    /uddr35 has arranged a node for mattock to use and the DNS record
+    for it should be ready today./
+    /That means mattock will have access to a node to set things up on
+    in the next few hours or so./
 
-Patch Set 6:
+  * *Updated: t_server_null improvements*
+    /The LWIP ping testing in t_server_null.sh is working and a PR is up./
 
-(1 comment)
+  * *Updated: OpenVPN community meetup 2025*
+    /When: september/october ish, a poll will be made soonish to gather
+    people's availabilities./
+    /Where: Napoli, Italy./
+    /Meeting room: tbd./
+    /Hotel: tbd./
+    /Beer: yes./
+    /T-shirts: yes./
 
-File src/openvpn/tun.c:
+As always you're welcome to join at #openvpn-meeting on Libera IRC 
+network every Wednesday at 14:00 Central European Time.
 
-http://gerrit.openvpn.net/c/openvpn/+/687/comment/d9705ee7_b7044362 :
-PS4, Line 1637:         /* XXX: Need to add ifconfig_remote_netmask since r=
-ight now it is just NULL */
-> this XXX line irks me. [=E2=80=A6]
-It's a common old-school FIXME comment. (something searchable that somethin=
-g needs done)
+Kind regards,
+Johan Draaisma
 
-https://stackoverflow.com/a/1452945
+--------------P1fmAhJS7Sgtji1gJyuHomGU
+Content-Type: text/html; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-However, I do think the original reason for it being there no longer exists=
-... Removed :-)
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  </head>
+  <body>
+    <p> Meeting summary for 27 November 2024:</p>
+    <ul
+style="color: rgb(0, 0, 0); font-family: Verdana, Arial, &quot;Bitstream Vera Sans&quot;, Helvetica, sans-serif; font-size: 13px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;">
+      <li><strong>New: swupdate.openvpn.net/org cleanup</strong><br>
+        <em>Basically this has become a dumping ground for just about
+          everything. We're cleaning it up.</em><br>
+        <em>Need to discuss how to handle community files that are on
+          there.</em><br>
+        <em>A priority is to ensure no interruptions to existing
+          content/links.</em><br>
+        <em>The plan we want to propose to OpenVPN Inc. is to get all
+          proprietary stuff moved off of swupdate.openvpn.net, which
+          seems to already be ongoing anyhow.</em><br>
+        <em>And then keep swupdate.openvpn.net purely for community and
+          move the s3 bucket to community AWS account and reduce the
+          amount of caching layers to just one.</em><br>
+        <em>Will relay this plan to OpenVPN Inc. and see what they say.</em></li>
+    </ul>
+    <ul
+style="color: rgb(0, 0, 0); font-family: Verdana, Arial, &quot;Bitstream Vera Sans&quot;, Helvetica, sans-serif; font-size: 13px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;">
+      <li><strong>Updated: DCO Linux upstreaming</strong><br>
+        <em>Upstreaming DCO to Linux is proceeding, it is in review
+          stage at the moment.</em><br>
+        <em>patchset v12 had 2 weeks delay, hoping to get it out this
+          week now. Main reason is having to deal with someone with a
+          lot of comments to make.</em></li>
+    </ul>
+    <ul
+style="color: rgb(0, 0, 0); font-family: Verdana, Arial, &quot;Bitstream Vera Sans&quot;, Helvetica, sans-serif; font-size: 13px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;">
+      <li><strong>Updated: community.openvpn.net wiki</strong><br>
+        <em>A more suitable production deployment schema for otterwiki
+          has been submitted upstream. That does not block us however.</em><br>
+        <em>uddr35 has arranged a node for mattock to use and the DNS
+          record for it should be ready today.</em><br>
+        <em>That means mattock will have access to a node to set things
+          up on in the next few hours or so.</em><br>
+      </li>
+    </ul>
+    <p
+style="color: rgb(0, 0, 0); font-family: Verdana, Arial, &quot;Bitstream Vera Sans&quot;, Helvetica, sans-serif; font-size: 13px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;"></p>
+    <ul
+style="color: rgb(0, 0, 0); font-family: Verdana, Arial, &quot;Bitstream Vera Sans&quot;, Helvetica, sans-serif; font-size: 13px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;">
+      <li><strong>Updated: t_server_null improvements</strong><br>
+        <em>The LWIP ping testing in t_server_null.sh is working and a
+          PR is up.</em><br>
+      </li>
+    </ul>
+    <ul
+style="color: rgb(0, 0, 0); font-family: Verdana, Arial, &quot;Bitstream Vera Sans&quot;, Helvetica, sans-serif; font-size: 13px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;">
+      <li><strong>Updated: OpenVPN community meetup 2025</strong><br>
+        <em>When: september/october ish, a poll will be made soonish to
+          gather people's availabilities.</em><br>
+        <em>Where: Napoli, Italy.</em><br>
+        <em>Meeting room: tbd.</em><br>
+        <em>Hotel: tbd.</em><br>
+        <em>Beer: yes.</em><br>
+        <em>T-shirts: yes.</em></li>
+    </ul>
+    As always you're welcome to join at #openvpn-meeting on Libera IRC
+    network every Wednesday at 14:00 Central European Time.
+    <p>Kind regards,<br>
+      Johan Draaisma<br>
+    </p>
+  </body>
+</html>
 
-
-
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/687?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings
-
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: I9a278374f492a538f0c174ced1746c3b1f82b8c9
-Gerrit-Change-Number: 687
-Gerrit-PatchSet: 6
-Gerrit-Owner: kallisti5 <alex@...2837...>
-Gerrit-Reviewer: cron2 <gert@...1296...>
-Gerrit-Reviewer: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: cron2 <gert@...1296...>
-Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Comment-Date: Wed, 27 Nov 2024 12:53:52 +0000
-Gerrit-HasComments: Yes
-Gerrit-Has-Labels: No
-Comment-In-Reply-To: cron2 <gert@...1296...>
-Gerrit-MessageType: comment
-
---WEMZDX5t3KI=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<p> Attention is currently required from: cron2, flichtenheld, plaisthos. <=
-/p>
-<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/687?usp=3Demail">View C=
-hange</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0;"><=
-li style=3D"margin: 0; padding: 0;"><p>File src/openvpn/tun.c:</p><ul style=
-=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 1=
-6px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net=
-/c/openvpn/+/687/comment/d9705ee7_b7044362">Patch Set #4, Line 1637:</a> <c=
-ode style=3D"font-family:monospace,monospace">        /* XXX: Need to add i=
-fconfig_remote_netmask since right now it is just NULL */</code></p><p><blo=
-ckquote style=3D"border-left: 1px solid #aaa; margin: 10px 0; padding: 0 10=
-px;">this XXX line irks me. [=E2=80=A6]</blockquote></p><p style=3D"white-s=
-pace: pre-wrap; word-wrap: break-word;">It&#39;s a common old-school FIXME =
-comment. (something searchable that something needs done)</p><p style=3D"wh=
-ite-space: pre-wrap; word-wrap: break-word;">https://stackoverflow.com/a/14=
-52945</p><p style=3D"white-space: pre-wrap; word-wrap: break-word;">However=
-, I do think the original reason for it being there no longer exists... Rem=
-oved :-)</p></li></ul></li></ul><p>To view, visit <a href=3D"http://gerrit.=
-openvpn.net/c/openvpn/+/687?usp=3Demail">change 687</a>. To unsubscribe, or=
- for help writing mail filters, visit <a href=3D"http://gerrit.openvpn.net/=
-settings">settings</a>.</p><div itemscope itemtype=3D"http://schema.org/Ema=
-ilMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.org=
-/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/ope=
-nvpn/+/687?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/><=
-/div></div>
-
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I9a278374f492a538f0c174ced17=
-46c3b1f82b8c9 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 687 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 6 </div>
-<div style=3D"display:none"> Gerrit-Owner: kallisti5 &lt;alex@...2837...&gt=
-; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
- </div>
-<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
-1...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: cron2 &lt;gert@...1296...&gt=
-; </div>
-<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
-41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Wed, 27 Nov 2024 12:53:52=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: No </div>
-<div style=3D"display:none"> Comment-In-Reply-To: cron2 &lt;gert@...1296...=
-&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
-
-
---WEMZDX5t3KI=--
+--------------P1fmAhJS7Sgtji1gJyuHomGU--
 
