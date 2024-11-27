@@ -1,17 +1,17 @@
 From: "kallisti5 (Code Review)" <gerrit@...515...>
 Date: Wed, 27 Nov 2024 12:48:55 +0000
-In-Reply-To: <gerrit.1732634928000.I9a278374f492a538f0c174ced1746c3b1f82b8c9@...2715...>
-References: <gerrit.1732634928000.I9a278374f492a538f0c174ced1746c3b1f82b8c9@...2715...>
+In-Reply-To: <gerrit.1732634928000.I1a22724f28c5cd47f6df178b49f44087d7c2b6fd@...2715...>
+References: <gerrit.1732634928000.I1a22724f28c5cd47f6df178b49f44087d7c2b6fd@...2715...>
 Reply-To: alex@...2837..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net, frank@...2641...,
  gert@...1296...
-Message-ID: <1bd33b9b8dea6be40ab02a4262f48c3527523cff-EmailReplacePatchSet-HTML@...2715...>
+Message-ID: <ab0fb53ccbb44272766f01733e9d06a5b67b7f32-EmailReplacePatchSet-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="rGSW4ax3RNA="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: Haiku: Introduce
- basic platform / tun support
+Content-Type: multipart/alternative; boundary="O45hClqehUE="; charset=UTF-8
+Subject: [Openvpn-devel] [M] Change in openvpn[master]: Haiku: Add calls to
+ manage routing table
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -23,7 +23,7 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: plaisthos <arne-openvpn@...1227...>, cron2 <gert@...1296...>, flichtenheld <frank@...2641...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---rGSW4ax3RNA=
+--O45hClqehUE=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
@@ -34,125 +34,219 @@ Hello cron2, flichtenheld, plaisthos,
 
 I'd like you to reexamine a change. Please visit
 
-    http://gerrit.openvpn.net/c/openvpn/+/687?usp=3Demail
+    http://gerrit.openvpn.net/c/openvpn/+/688?usp=3Demail
 
-to look at the new patch set (#5).
+to look at the new patch set (#9).
 
 The following approvals got outdated and were removed:
 Code-Review-1 by cron2
 
 
-Change subject: Haiku: Introduce basic platform / tun support
+Change subject: Haiku: Add calls to manage routing table
 ......................................................................
 
-Haiku: Introduce basic platform / tun support
+Haiku: Add calls to manage routing table
 
-* Special thanks to Sean Brady's hard work in GSoC 2023 towards creating
-  a TUN/TAP driver for Haiku!
-* More kudos to Augustin Cavalier for making it functional :-)
-
-Change-Id: I9a278374f492a538f0c174ced1746c3b1f82b8c9
+Change-Id: I1a22724f28c5cd47f6df178b49f44087d7c2b6fd
 ---
-M INSTALL
-M configure.ac
-M src/openvpn/tun.c
-3 files changed, 31 insertions(+), 2 deletions(-)
+M src/openvpn/route.c
+M src/openvpn/syshead.h
+2 files changed, 117 insertions(+), 1 deletion(-)
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/87/687/5
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/88/688/9
 
-diff --git a/INSTALL b/INSTALL
-index 6007338..9739272 100644
---- a/INSTALL
-+++ b/INSTALL
-@@ -263,6 +263,16 @@
-
-     http://www.whiteboard.ne.jp/~admin2/tuntap/
-
-+* Haiku:
-+
-+   Haiku can't yet dynamically create TUN/TAP devices, so you need to manu=
-ally
-+   create one before running openvpn:
-+
-+     # ifconfig tun/0 up
-+
-+   A standard reference the dev as "tun" in your config is all that's need=
-ed
-+   to use the tunnel device.
-+
- * Windows
-
-   OpenVPN on Windows needs a TUN/TAP kernel driver to work. OpenVPN instal=
-lers
-diff --git a/configure.ac b/configure.ac
-index 0876a6a..7f6e43d 100644
---- a/configure.ac
-+++ b/configure.ac
-@@ -368,6 +368,11 @@
- 		have_tap_header=3D"yes"
- 		ac_cv_header_net_if_h=3D"no"	# exists, but breaks things
- 		;;
-+	*-*-haiku*)
-+		AC_DEFINE([TARGET_HAIKU], [1], [Are we running Haiku?])
-+		AC_DEFINE_UNQUOTED([TARGET_PREFIX], ["H"], [Target prefix])
-+		LIBS=3D"${LIBS} -lnetwork"
-+		;;
- 	*)
- 		AC_DEFINE_UNQUOTED([TARGET_PREFIX], ["X"], [Target prefix])
- 		have_tap_header=3D"yes"
-diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
-index 85fe01a..3355508 100644
---- a/src/openvpn/tun.c
-+++ b/src/openvpn/tun.c
-@@ -1631,6 +1631,15 @@
-     {
-         windows_set_mtu(tt->adapter_index, AF_INET, tun_mtu);
+diff --git a/src/openvpn/route.c b/src/openvpn/route.c
+index 2e584c7..dcce09c 100644
+--- a/src/openvpn/route.c
++++ b/src/openvpn/route.c
+@@ -1853,7 +1853,23 @@
+         status =3D ret ? RTA_SUCCESS : RTA_ERROR;
      }
+
+-#else  /* if defined(TARGET_LINUX) */
++#elif defined(TARGET_HAIKU)
++
++    {
++        /* ex: route add /dev/net/ipro1000/0 0.0.0.0 gw 192.168.1.1 netmas=
+k 128.0.0.0 */
++        argv_printf(&argv, "%s add %s inet %s gw %s netmask %s",
++                    ROUTE_PATH,
++                    rgi->iface,
++                    network,
++                    gateway,
++                    netmask);
++        argv_msg(D_ROUTE, &argv);
++        bool ret =3D openvpn_execve_check(&argv, es, 0,
++                                        "ERROR: Haiku inet route add comma=
+nd failed");
++        status =3D ret ? RTA_SUCCESS : RTA_ERROR;
++    }
++
++#else /* if defined(TARGET_LINUX) */
+     msg(M_FATAL, "Sorry, but I don't know how to do 'route' commands on th=
+is operating system.  Try putting your routes in a --route-up script");
+ #endif /* if defined(TARGET_LINUX) */
+
+@@ -2329,6 +2345,20 @@
+         openvpn_execve_check(&argv, es, 0, "ERROR: AIX route delete comman=
+d failed");
+     }
+
++#elif defined(TARGET_HAIKU)
++
++    {
++        /* ex: route del /dev/net/ipro1000/0 inet 192.168.0.0 gw 192.168.1=
+.1 netmask 255.255.0.0 */
++        argv_printf(&argv, "%s del %s inet %s gw %s netmask %s",
++                    ROUTE_PATH,
++                    rgi->iface,
++                    network,
++                    gateway,
++                    netmask);
++        argv_msg(D_ROUTE, &argv);
++        openvpn_execve_check(&argv, es, 0, "ERROR: Haiku inet route delete=
+ command failed");
++    }
++
+ #else  /* if defined(TARGET_LINUX) */
+     msg(M_FATAL, "Sorry, but I don't know how to do 'route' commands on th=
+is operating system.  Try putting your routes in a --route-up script");
+ #endif /* if defined(TARGET_LINUX) */
+@@ -2504,10 +2534,23 @@
+                 network, r6->netbits, gateway);
+     argv_msg(D_ROUTE, &argv);
+     openvpn_execve_check(&argv, es, 0, "ERROR: AIX route add command faile=
+d");
++
+ #elif defined(TARGET_ANDROID)
+     msg(D_ROUTE_DEBUG, "Deleting routes on Android is not possible/not "
+         "needed. The VpnService API allows routes to be set "
+         "on connect only and will clean up automatically.");
 +#elif defined(TARGET_HAIKU)
 +    {
-+        /* example: ifconfig tun/0 inet 1.1.1.1 255.255.255.0 mtu 1450 up =
-*/
-+        argv_printf(&argv, "%s %s inet %s %s mtu %d up", IFCONFIG_PATH,
-+            ifname, ifconfig_local, ifconfig_remote_netmask, tun_mtu);
-+
-+        argv_msg(M_INFO, &argv);
-+        openvpn_execve_check(&argv, es, S_FATAL, "Haiku ifconfig failed");
++        /* ex: route del /dev/net/ipro1000/0 inet6 :: gw beef::cafe prefix=
+len 64 */
++        argv_printf(&argv, "%s del %s inet6 %s gw %s prefixlen %d",
++                    ROUTE_PATH,
++                    r6->iface,
++                    network,
++                    gateway,
++                    r6->netbits);
++        argv_msg(D_ROUTE, &argv);
++        openvpn_execve_check(&argv, es, 0, "ERROR: Haiku inet6 route delet=
+e command failed");
 +    }
  #else  /* if defined(TARGET_LINUX) */
-     msg(M_FATAL, "Sorry, but I don't know how to do 'ifconfig' commands on=
- this operating system.  You should ifconfig your TUN/TAP device manually o=
-r use an --up script.");
+     msg(M_FATAL, "Sorry, but I don't know how to do 'route ipv6' commands =
+on this operating system.  Try putting your routes in a --route-down script=
+");
  #endif /* if defined(TARGET_LINUX) */
-@@ -1909,10 +1918,15 @@
-         {
-             for (int i =3D 0; i < 256; ++i)
-             {
-+                /* some platforms have a dedicated directory per driver */
-+                char* sep =3D "";
+@@ -3886,6 +3929,73 @@
+
+ #undef max
+
++#elif defined(TARGET_HAIKU)
++
++void
++get_default_gateway(struct route_gateway_info *rgi, openvpn_net_ctx_t *ctx)
++{
++    CLEAR(*rgi);
++
++    int sockfd =3D socket(AF_INET, SOCK_DGRAM, 0);
++    if (sockfd < 0) {
++        msg(M_ERRNO, "%s: Error opening socket for AF_INET", __func__);
++        return;
++    }
++
++    struct ifconf config;
++    config.ifc_len =3D sizeof(config.ifc_value);
++    if (ioctl(sockfd, SIOCGRTSIZE, &config, sizeof(struct ifconf)) < 0) {
++        msg(M_ERRNO, "%s: Error getting routing table size", __func__);
++        return;
++    }
++
++    uint32 size =3D (uint32)config.ifc_value;
++    if (size =3D=3D 0)
++        return;
++
++    void *buffer =3D malloc(size);
++    check_malloc_return(buffer);
++
++    config.ifc_len =3D size;
++    config.ifc_buf =3D buffer;
++    if (ioctl(sockfd, SIOCGRTTABLE, &config, sizeof(struct ifconf)) < 0) {
++        free(buffer);
++        return;
++    }
++
++    struct ifreq *interface =3D (struct ifreq*)buffer;
++    struct ifreq *end =3D (struct ifreq*)((uint8*)buffer + size);
++
++    while (interface < end) {
++        struct route_entry route =3D interface->ifr_route;
++        if ((route.flags & RTF_GATEWAY) !=3D 0 && (route.flags & RTF_DEFAU=
+LT) !=3D 0) {
++            rgi->gateway.addr =3D ntohl(((struct sockaddr_in *)route.gatew=
+ay)->sin_addr.s_addr);
++            rgi->flags =3D RGI_ADDR_DEFINED | RGI_IFACE_DEFINED;
++            strncpy(rgi->iface, interface->ifr_name, sizeof(rgi->iface));
++        }
++
++        int32 address_size =3D 0;
++        if (route.destination !=3D NULL)
++            address_size +=3D route.destination->sa_len;
++        if (route.mask !=3D NULL)
++            address_size +=3D route.mask->sa_len;
++        if (route.gateway !=3D NULL)
++            address_size +=3D route.gateway->sa_len;
++
++        interface =3D (struct ifreq*)((addr_t)interface + IF_NAMESIZE
++            + sizeof(struct route_entry) + address_size);
++    }
++    free(buffer);
++}
++
++void
++get_default_gateway_ipv6(struct route_ipv6_gateway_info *rgi6,
++                         const struct in6_addr *dest, openvpn_net_ctx_t *c=
+tx)
++{
++    /* TODO: Same for ipv6 with AF_INET6 */
++    CLEAR(*rgi6);
++}
++
+ #else  /* if defined(_WIN32) */
+
+ /*
+diff --git a/src/openvpn/syshead.h b/src/openvpn/syshead.h
+index 33a90c1..844e47a 100644
+--- a/src/openvpn/syshead.h
++++ b/src/openvpn/syshead.h
+@@ -166,6 +166,12 @@
+ #include <string.h>
+ #endif
+
 +#if defined(TARGET_HAIKU)
-+                sep =3D "/";
-+#endif
-                 snprintf(tunname, sizeof(tunname),
--                         "/dev/%s%d", dev, i);
-+                         "/dev/%s%s%d", dev, sep, i);
-                 snprintf(dynamic_name, sizeof(dynamic_name),
--                         "%s%d", dev, i);
-+                         "%s%s%d", dev, sep, i);
-                 if ((tt->fd =3D open(tunname, O_RDWR)) > 0)
-                 {
-                     dynamic_opened =3D true;
++#include <SupportDefs.h>   /* uint32, etc */
++#include <net/if.h>        /* ifconf etc */
++#include <sys/sockio.h>    /* SIOCGRTTABLE, etc */
++#endif /* TARGET_HAIKU */
++
+ #ifdef HAVE_ARPA_INET_H
+ #include <arpa/inet.h>
+ #endif
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/687?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/688?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings
 
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: I9a278374f492a538f0c174ced1746c3b1f82b8c9
-Gerrit-Change-Number: 687
-Gerrit-PatchSet: 5
+Gerrit-Change-Id: I1a22724f28c5cd47f6df178b49f44087d7c2b6fd
+Gerrit-Change-Number: 688
+Gerrit-PatchSet: 9
 Gerrit-Owner: kallisti5 <alex@...2837...>
 Gerrit-Reviewer: cron2 <gert@...1296...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
@@ -164,109 +258,213 @@ Gerrit-Attention: flichtenheld <frank@...2641...>
 Gerrit-Attention: kallisti5 <alex@...2837...>
 Gerrit-MessageType: newpatchset
 
---rGSW4ax3RNA=
+--O45hClqehUE=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <p> Attention is currently required from: cron2, flichtenheld, kallisti5, p=
 laisthos. </p>
-<p>kallisti5 <strong>uploaded patch set #5</strong> to this change.</p><p><=
-a href=3D"http://gerrit.openvpn.net/c/openvpn/+/687?usp=3Demail">View Chang=
+<p>kallisti5 <strong>uploaded patch set #9</strong> to this change.</p><p><=
+a href=3D"http://gerrit.openvpn.net/c/openvpn/+/688?usp=3Demail">View Chang=
 e</a></p><p>The following approvals got outdated and were removed:
 Code-Review-1 by cron2</p><pre style=3D"font-family: monospace,monospace; w=
-hite-space: pre-wrap;">Haiku: Introduce basic platform / tun support<br><br=
->* Special thanks to Sean Brady&#39;s hard work in GSoC 2023 towards creati=
-ng<br>  a TUN/TAP driver for Haiku!<br>* More kudos to Augustin Cavalier fo=
-r making it functional :-)<br><br>Change-Id: I9a278374f492a538f0c174ced1746=
-c3b1f82b8c9<br>---<br>M INSTALL<br>M configure.ac<br>M src/openvpn/tun.c<br=
->3 files changed, 31 insertions(+), 2 deletions(-)<br><br></pre><pre style=
-=3D"font-family: monospace,monospace; white-space: pre-wrap;">git pull ssh:=
-//gerrit.openvpn.net:29418/openvpn refs/changes/87/687/5</pre><pre style=3D=
-"font-family: monospace,monospace; white-space: pre-wrap;"><span>diff --git=
- a/INSTALL b/INSTALL</span><br><span>index 6007338..9739272 100644</span><b=
-r><span>--- a/INSTALL</span><br><span>+++ b/INSTALL</span><br><span>@@ -263=
-,6 +263,16 @@</span><br><span> </span><br><span>     http://www.whiteboard.=
-ne.jp/~admin2/tuntap/</span><br><span> </span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+* Haiku:</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   Haiku c=
-an&#39;t yet dynamically create TUN/TAP devices, so you need to manually</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+   create one before r=
-unning openvpn:</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+     # ifconfig tun/0 u=
-p</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+   A standard reference the dev as &q=
-uot;tun&quot; in your config is all that&#39;s needed</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+   to use the tunnel device.</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> * Windows</spa=
-n><br><span> </span><br><span>   OpenVPN on Windows needs a TUN/TAP kernel =
-driver to work. OpenVPN installers</span><br><span>diff --git a/configure.a=
-c b/configure.ac</span><br><span>index 0876a6a..7f6e43d 100644</span><br><s=
-pan>--- a/configure.ac</span><br><span>+++ b/configure.ac</span><br><span>@=
-@ -368,6 +368,11 @@</span><br><span> 		have_tap_header=3D&quot;yes&quot;</s=
-pan><br><span> 		ac_cv_header_net_if_h=3D&quot;no&quot;	# exists, but break=
-s things</span><br><span> 		;;</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+	*-*-haiku*)</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+		AC_DEFINE([TARGET_HAIKU], [1], [Are we running Haiku?])</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+		AC_DEFINE_UNQUOTED([TARGET_PREF=
-IX], [&quot;H&quot;], [Target prefix])</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+		LIBS=3D&quot;${LIBS} -lnetwork&quot;</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+		;;</span><br><span> 	*)</span><br><=
-span> 		AC_DEFINE_UNQUOTED([TARGET_PREFIX], [&quot;X&quot;], [Target prefix=
-])</span><br><span> 		have_tap_header=3D&quot;yes&quot;</span><br><span>dif=
-f --git a/src/openvpn/tun.c b/src/openvpn/tun.c</span><br><span>index 85fe0=
-1a..3355508 100644</span><br><span>--- a/src/openvpn/tun.c</span><br><span>=
-+++ b/src/openvpn/tun.c</span><br><span>@@ -1631,6 +1631,15 @@</span><br><s=
-pan>     {</span><br><span>         windows_set_mtu(tt-&gt;adapter_index, A=
-F_INET, tun_mtu);</span><br><span>     }</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+#elif defined(TARGET_HAIKU)</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+        /* example: ifconfig tun/0 inet 1.1.1.1 255.255.255.=
-0 mtu 1450 up */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
-     argv_printf(&amp;argv, &quot;%s %s inet %s %s mtu %d up&quot;, IFCONFI=
-G_PATH,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            =
-ifname, ifconfig_local, ifconfig_remote_netmask, tun_mtu);</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+        argv_msg(M_INFO, &amp;argv);</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+        openvpn_execve_check(&amp;argv=
-, es, S_FATAL, &quot;Haiku ifconfig failed&quot;);</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+    }</span><br><span> #else  /* if defined(=
-TARGET_LINUX) */</span><br><span>     msg(M_FATAL, &quot;Sorry, but I don&#=
-39;t know how to do &#39;ifconfig&#39; commands on this operating system.  =
-You should ifconfig your TUN/TAP device manually or use an --up script.&quo=
-t;);</span><br><span> #endif /* if defined(TARGET_LINUX) */</span><br><span=
->@@ -1909,10 +1918,15 @@</span><br><span>         {</span><br><span>       =
-      for (int i =3D 0; i &lt; 256; ++i)</span><br><span>             {</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+                /* some=
- platforms have a dedicated directory per driver */</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+                char* sep =3D &quot;&quot=
-;;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#if defined(TARGE=
-T_HAIKU)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+           =
-     sep =3D &quot;/&quot;;</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+#endif</span><br><span>                 snprintf(tunname, sizeof(tu=
-nname),</span><br><span style=3D"color: hsl(0, 100%, 40%);">-              =
-           &quot;/dev/%s%d&quot;, dev, i);</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+                         &quot;/dev/%s%s%d&quot;, de=
-v, sep, i);</span><br><span>                 snprintf(dynamic_name, sizeof(=
-dynamic_name),</span><br><span style=3D"color: hsl(0, 100%, 40%);">-       =
-                  &quot;%s%d&quot;, dev, i);</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+                         &quot;%s%s%d&quot;, dev, =
-sep, i);</span><br><span>                 if ((tt-&gt;fd =3D open(tunname, =
-O_RDWR)) &gt; 0)</span><br><span>                 {</span><br><span>       =
-              dynamic_opened =3D true;</span><br><span></span><br></pre><p>=
-To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/687?usp=3De=
-mail">change 687</a>. To unsubscribe, or for help writing mail filters, vis=
-it <a href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div ite=
-mscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=
-=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url=
-" href=3D"http://gerrit.openvpn.net/c/openvpn/+/687?usp=3Demail"/><meta ite=
-mprop=3D"name" content=3D"View Change"/></div></div>
+hite-space: pre-wrap;">Haiku: Add calls to manage routing table<br><br>Chan=
+ge-Id: I1a22724f28c5cd47f6df178b49f44087d7c2b6fd<br>---<br>M src/openvpn/ro=
+ute.c<br>M src/openvpn/syshead.h<br>2 files changed, 117 insertions(+), 1 d=
+eletion(-)<br><br></pre><pre style=3D"font-family: monospace,monospace; whi=
+te-space: pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/openvpn refs/c=
+hanges/88/688/9</pre><pre style=3D"font-family: monospace,monospace; white-=
+space: pre-wrap;"><span>diff --git a/src/openvpn/route.c b/src/openvpn/rout=
+e.c</span><br><span>index 2e584c7..dcce09c 100644</span><br><span>--- a/src=
+/openvpn/route.c</span><br><span>+++ b/src/openvpn/route.c</span><br><span>=
+@@ -1853,7 +1853,23 @@</span><br><span>         status =3D ret ? RTA_SUCCES=
+S : RTA_ERROR;</span><br><span>     }</span><br><span> </span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-#else  /* if defined(TARGET_LINUX) */</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+#elif defined(TARGET_HA=
+IKU)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+        /* ex: route add /dev/net/ipro1000/0 0.0=
+.0.0 gw 192.168.1.1 netmask 128.0.0.0 */</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+        argv_printf(&amp;argv, &quot;%s add %s inet %s=
+ gw %s netmask %s&quot;,</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+                    ROUTE_PATH,</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+                    rgi-&gt;iface,</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+                    network,</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+                    gateway,</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+                    net=
+mask);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        argv_=
+msg(D_ROUTE, &amp;argv);</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+        bool ret =3D openvpn_execve_check(&amp;argv, es, 0,</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+                              =
+          &quot;ERROR: Haiku inet route add command failed&quot;);</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+        status =3D ret ? RTA=
+_SUCCESS : RTA_ERROR;</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+#else /* if defined(TARGET_LINU=
+X) */</span><br><span>     msg(M_FATAL, &quot;Sorry, but I don&#39;t know h=
+ow to do &#39;route&#39; commands on this operating system.  Try putting yo=
+ur routes in a --route-up script&quot;);</span><br><span> #endif /* if defi=
+ned(TARGET_LINUX) */</span><br><span> </span><br><span>@@ -2329,6 +2345,20 =
+@@</span><br><span>         openvpn_execve_check(&amp;argv, es, 0, &quot;ER=
+ROR: AIX route delete command failed&quot;);</span><br><span>     }</span><=
+br><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+#elif def=
+ined(TARGET_HAIKU)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+        /* ex: route del /dev/net/=
+ipro1000/0 inet 192.168.0.0 gw 192.168.1.1 netmask 255.255.0.0 */</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+        argv_printf(&amp;argv=
+, &quot;%s del %s inet %s gw %s netmask %s&quot;,</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+                    ROUTE_PATH,</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+                    rgi-&gt;iface=
+,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+                  =
+  network,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+         =
+           gateway,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+                    netmask);</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+        argv_msg(D_ROUTE, &amp;argv);</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+        openvpn_execve_check(&amp;argv, es, 0, =
+&quot;ERROR: Haiku inet route delete command failed&quot;);</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+</span><br><span> #else  /* if defined(TARGET_LIN=
+UX) */</span><br><span>     msg(M_FATAL, &quot;Sorry, but I don&#39;t know =
+how to do &#39;route&#39; commands on this operating system.  Try putting y=
+our routes in a --route-up script&quot;);</span><br><span> #endif /* if def=
+ined(TARGET_LINUX) */</span><br><span>@@ -2504,10 +2534,23 @@</span><br><sp=
+an>                 network, r6-&gt;netbits, gateway);</span><br><span>    =
+ argv_msg(D_ROUTE, &amp;argv);</span><br><span>     openvpn_execve_check(&a=
+mp;argv, es, 0, &quot;ERROR: AIX route add command failed&quot;);</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> #elif defin=
+ed(TARGET_ANDROID)</span><br><span>     msg(D_ROUTE_DEBUG, &quot;Deleting r=
+outes on Android is not possible/not &quot;</span><br><span>         &quot;=
+needed. The VpnService API allows routes to be set &quot;</span><br><span> =
+        &quot;on connect only and will clean up automatically.&quot;);</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+#elif defined(TARGET_HAI=
+KU)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+        /* ex: route del /dev/=
+net/ipro1000/0 inet6 :: gw beef::cafe prefixlen 64 */</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+        argv_printf(&amp;argv, &quot;%s d=
+el %s inet6 %s gw %s prefixlen %d&quot;,</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+                    ROUTE_PATH,</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+                    r6-&gt;iface,</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+                    network=
+,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+                  =
+  gateway,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+         =
+           r6-&gt;netbits);</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+        argv_msg(D_ROUTE, &amp;argv);</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+        openvpn_execve_check(&amp;argv, es, 0, &q=
+uot;ERROR: Haiku inet6 route delete command failed&quot;);</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span> #else  /* if =
+defined(TARGET_LINUX) */</span><br><span>     msg(M_FATAL, &quot;Sorry, but=
+ I don&#39;t know how to do &#39;route ipv6&#39; commands on this operating=
+ system.  Try putting your routes in a --route-down script&quot;);</span><b=
+r><span> #endif /* if defined(TARGET_LINUX) */</span><br><span>@@ -3886,6 +=
+3929,73 @@</span><br><span> </span><br><span> #undef max</span><br><span> <=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+#elif defined(TARGET=
+_HAIKU)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+void</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+get_default_gateway(struct route_gateway_info =
+*rgi, openvpn_net_ctx_t *ctx)</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    CLEA=
+R(*rgi);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+    int sockfd =3D socket(AF_I=
+NET, SOCK_DGRAM, 0);</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++    if (sockfd &lt; 0) {</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+        msg(M_ERRNO, &quot;%s: Error opening socket for AF_INET&quot;=
+, __func__);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
+ return;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+    struct ifconf config;</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+    config.ifc_len =3D sizeof(config.i=
+fc_value);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (i=
+octl(sockfd, SIOCGRTSIZE, &amp;config, sizeof(struct ifconf)) &lt; 0) {</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+        msg(M_ERRNO, &q=
+uot;%s: Error getting routing table size&quot;, __func__);</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+        return;</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+    uint32 size =3D (uint32)config.ifc_value;</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+    if (size =3D=3D 0)</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+        return;</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+    void *buffer =3D malloc(size);</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+    check_malloc_return(buffer);</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+    config.ifc_len =3D size;</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+    config.ifc_buf =3D buffer;</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+    if (ioctl(sockfd, SIOCGRTTABLE, &a=
+mp;config, sizeof(struct ifconf)) &lt; 0) {</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+        free(buffer);</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+        return;</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    struct =
+ifreq *interface =3D (struct ifreq*)buffer;</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+    struct ifreq *end =3D (struct ifreq*)((uint8*)b=
+uffer + size);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+    while (interface &lt=
+; end) {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        str=
+uct route_entry route =3D interface-&gt;ifr_route;</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+        if ((route.flags &amp; RTF_GATEWAY) =
+!=3D 0 &amp;&amp; (route.flags &amp; RTF_DEFAULT) !=3D 0) {</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+            rgi-&gt;gateway.addr =
+=3D ntohl(((struct sockaddr_in *)route.gateway)-&gt;sin_addr.s_addr);</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+            rgi-&gt;flags=
+ =3D RGI_ADDR_DEFINED | RGI_IFACE_DEFINED;</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+            strncpy(rgi-&gt;iface, interface-&gt;ifr=
+_name, sizeof(rgi-&gt;iface));</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+        }</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        int32 addr=
+ess_size =3D 0;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+    if (route.destination !=3D NULL)</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+            address_size +=3D route.destination-&gt;sa_len=
+;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        if (route.=
+mask !=3D NULL)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+        address_size +=3D route.mask-&gt;sa_len;</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+        if (route.gateway !=3D NULL)</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+            address_size +=3D=
+ route.gateway-&gt;sa_len;</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        inte=
+rface =3D (struct ifreq*)((addr_t)interface + IF_NAMESIZE</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+            + sizeof(struct route_ent=
+ry) + address_size);</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    free(buff=
+er);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+void</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+get_default_gateway_ipv6(struct route_ipv6_gateway_info *rgi6,</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+                        =
+ const struct in6_addr *dest, openvpn_net_ctx_t *ctx)</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+    /* TODO: Same for ipv6 with AF_INET6 */</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+    CLEAR(*rgi6);</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+</span><br><span> #else  /* if defined(_WIN32) */</span=
+><br><span> </span><br><span> /*</span><br><span>diff --git a/src/openvpn/s=
+yshead.h b/src/openvpn/syshead.h</span><br><span>index 33a90c1..844e47a 100=
+644</span><br><span>--- a/src/openvpn/syshead.h</span><br><span>+++ b/src/o=
+penvpn/syshead.h</span><br><span>@@ -166,6 +166,12 @@</span><br><span> #inc=
+lude &lt;string.h&gt;</span><br><span> #endif</span><br><span> </span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+#if defined(TARGET_HAIKU)</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+#include &lt;SupportDefs.=
+h&gt;   /* uint32, etc */</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+#include &lt;net/if.h&gt;        /* ifconf etc */</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+#include &lt;sys/sockio.h&gt;    /* SIO=
+CGRTTABLE, etc */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#e=
+ndif /* TARGET_HAIKU */</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+</span><br><span> #ifdef HAVE_ARPA_INET_H</span><br><span> #include &lt=
+;arpa/inet.h&gt;</span><br><span> #endif</span><br><span></span><br></pre><=
+p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/688?usp=
+=3Demail">change 688</a>. To unsubscribe, or for help writing mail filters,=
+ visit <a href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div=
+ itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemp=
+rop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"=
+url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/688?usp=3Demail"/><meta =
+itemprop=3D"name" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I9a278374f492a538f0c174ced17=
-46c3b1f82b8c9 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 687 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 5 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I1a22724f28c5cd47f6df178b49f=
+44087d7c2b6fd </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 688 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 9 </div>
 <div style=3D"display:none"> Gerrit-Owner: kallisti5 &lt;alex@...2837...&gt=
 ; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
@@ -288,5 +486,5 @@ ts.sourceforge.net&gt; </div>
 <div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
 
 
---rGSW4ax3RNA=--
+--O45hClqehUE=--
 
