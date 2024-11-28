@@ -1,15 +1,16 @@
-From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Thu, 28 Nov 2024 12:34:12 +0000
-In-Reply-To: <gerrit.1732795471000.Ifad21a2841e97e910775f3618ddac1c483d74b65@...2715...>
-References: <gerrit.1732795471000.Ifad21a2841e97e910775f3618ddac1c483d74b65@...2715...>
-Reply-To: gert@...1296..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <ff39ca1fa4b33ab06dab0feff9c994aa411486e9-HTML@...2715...>
+From: "flichtenheld (Code Review)" <gerrit@...515...>
+Date: Thu, 28 Nov 2024 13:14:12 +0000
+In-Reply-To: <gerrit.1732795471000.If645c3faf149bac82167a91be13541b30a1b8d6a@...2715...>
+References: <gerrit.1732795471000.If645c3faf149bac82167a91be13541b30a1b8d6a@...2715...>
+Reply-To: frank@...2641..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net
+Message-ID: <f7d86a70ca9cf4811ea78ddb87508c1790e4389c-EmailReplacePatchSet-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="CxgYjxMSRS4="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: Various typo fixes
+Content-Type: multipart/alternative; boundary="YRPRRK1PnQU="; charset=UTF-8
+Subject: [Openvpn-devel] [S] Change in openvpn[master]: Fix some formatting
+ related to if/else and macros
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,216 +19,317 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: flichtenheld <frank@...2641...>
-Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: plaisthos <arne-openvpn@...1227...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---CxgYjxMSRS4=
+--YRPRRK1PnQU=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-cron2 has submitted this change. ( http://gerrit.openvpn.net/c/openvpn/+/82=
-2?usp=3Demail )
+Attention is currently required from: plaisthos.
 
-Change subject: Various typo fixes
+Hello plaisthos,
+
+I'd like you to reexamine a change. Please visit
+
+    http://gerrit.openvpn.net/c/openvpn/+/821?usp=3Demail
+
+to look at the new patch set (#3).
+
+
+Change subject: Fix some formatting related to if/else and macros
 ......................................................................
 
-Various typo fixes
+Fix some formatting related to if/else and macros
 
-This collects some minor typo fixes that are not
-worth each their own commit.
+Make it clearer where the blocks are.
 
-Fixes: OpenVPN/openvpn#644
-Fixes: OpenVPN/openvpn#442
-
-Change-Id: Ifad21a2841e97e910775f3618ddac1c483d74b65
+Change-Id: If645c3faf149bac82167a91be13541b30a1b8d6a
 Signed-off-by: Frank Lichtenheld <frank@...2641...>
-Acked-by: Gert Doering <gert@...1296...>
-Message-Id: <20241128123016.10444-1-gert@...1296...>
-URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg29=
-956.html
-Signed-off-by: Gert Doering <gert@...1296...>
 ---
-M doc/man-sections/connection-profiles.rst
-M sample/sample-config-files/server.conf
-M src/openvpn/options.c
-3 files changed, 5 insertions(+), 5 deletions(-)
+M src/openvpn/helper.c
+M src/openvpn/manage.c
+M src/openvpn/openvpn.c
+M src/openvpn/route.c
+M src/openvpn/socket.c
+M src/openvpn/ssl.c
+6 files changed, 23 insertions(+), 14 deletions(-)
 
 
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/21/821/3
 
+diff --git a/src/openvpn/helper.c b/src/openvpn/helper.c
+index bbdbc04..9e28e87 100644
+--- a/src/openvpn/helper.c
++++ b/src/openvpn/helper.c
+@@ -500,7 +500,7 @@
+             push_option(o, print_opt_route_gateway_dhcp(&o->gc), M_USAGE);
+         }
+     }
+-    else
++
+     /*
+      * HELPER DIRECTIVE:
+      *
+@@ -511,7 +511,7 @@
+      * pull
+      * tls-client
+      */
+-    if (o->client)
++    else if (o->client)
+     {
+         o->pull =3D true;
+         o->tls_client =3D true;
+diff --git a/src/openvpn/manage.c b/src/openvpn/manage.c
+index f296788..e79a118 100644
+--- a/src/openvpn/manage.c
++++ b/src/openvpn/manage.c
+@@ -1822,7 +1822,9 @@
+     }
+     else
+ #endif
+-    man->connection.sd_cli =3D socket_do_accept(man->connection.sd_top, &a=
+ct, false);
++    {
++        man->connection.sd_cli =3D socket_do_accept(man->connection.sd_top=
+, &act, false);
++    }
 
-diff --git a/doc/man-sections/connection-profiles.rst b/doc/man-sections/co=
-nnection-profiles.rst
-index 520bbef..767ff3a 100644
---- a/doc/man-sections/connection-profiles.rst
-+++ b/doc/man-sections/connection-profiles.rst
-@@ -6,7 +6,7 @@
- options which are related to specific ``--remote`` options.  For these
- use cases, connection profiles are the solution.
+     if (socket_defined(man->connection.sd_cli))
+     {
+@@ -1971,9 +1973,11 @@
+         }
+         else
+ #endif
+-        msg(D_LINK_ERRORS | M_ERRNO,
+-            "MANAGEMENT: connect to %s failed",
+-            print_sockaddr(man->settings.local->ai_addr, &gc));
++        {
++            msg(D_LINK_ERRORS | M_ERRNO,
++                "MANAGEMENT: connect to %s failed",
++                print_sockaddr(man->settings.local->ai_addr, &gc));
++        }
+         throw_signal_soft(SIGTERM, "management-connect-failed");
+         goto done;
+     }
+diff --git a/src/openvpn/openvpn.c b/src/openvpn/openvpn.c
+index 1db5422..c52540c 100644
+--- a/src/openvpn/openvpn.c
++++ b/src/openvpn/openvpn.c
+@@ -274,10 +274,10 @@
 
--By enacpulating the ``--remote`` option and related options within
-+By encapsulating the ``--remote`` option and related options within
- ``<connection>`` and ``</connection>``, these options are handled as a
- group.
+             /* Query passwords before becoming a daemon if we don't use the
+              * management interface to get them. */
+-#ifdef ENABLE_MANAGEMENT
+             if (!(c.options.management_flags & MF_QUERY_PASSWORDS))
+-#endif
+-            init_query_passwords(&c);
++            {
++                init_query_passwords(&c);
++            }
 
-diff --git a/sample/sample-config-files/server.conf b/sample/sample-config-=
-files/server.conf
-index 48716a0..f6d9e65 100644
---- a/sample/sample-config-files/server.conf
-+++ b/sample/sample-config-files/server.conf
-@@ -199,7 +199,7 @@
- # all clients to redirect their default
- # network gateway through the VPN, causing
- # all IP traffic such as web browsing and
--# and DNS lookups to go through the VPN
-+# DNS lookups to go through the VPN
- # (The OpenVPN server machine may need to NAT
- # or bridge the TUN/TAP interface to the internet
- # in order for this to work properly).
-diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index 043b240..d8dd518 100644
---- a/src/openvpn/options.c
-+++ b/src/openvpn/options.c
-@@ -879,7 +879,7 @@
-     o->pkcs11_pin_cache_period =3D -1;
- #endif                  /* ENABLE_PKCS11 */
+             /* become a daemon if --daemon */
+             if (c.first_time)
+diff --git a/src/openvpn/route.c b/src/openvpn/route.c
+index 2e584c7..3d33844 100644
+--- a/src/openvpn/route.c
++++ b/src/openvpn/route.c
+@@ -3861,8 +3861,9 @@
+         }
+         else
+ #endif
+-
+-        rgi6->gateway.addr_ipv6 =3D gw;
++        {
++            rgi6->gateway.addr_ipv6 =3D gw;
++        }
+         rgi6->flags |=3D RGI_ADDR_DEFINED;
 
--/* P2MP server context features */
-+    /* P2MP server context features */
-     o->auth_token_generate =3D false;
+         if (ifp)
+diff --git a/src/openvpn/socket.c b/src/openvpn/socket.c
+index efd742c..01874fe 100644
+--- a/src/openvpn/socket.c
++++ b/src/openvpn/socket.c
+@@ -3389,8 +3389,10 @@
+     }
+     else
+ #endif
+-    buf->len =3D recvfrom(sock->sd, BPTR(buf), buf_forward_capacity(buf), =
+0,
+-                        &from->dest.addr.sa, &fromlen);
++    {
++        buf->len =3D recvfrom(sock->sd, BPTR(buf), buf_forward_capacity(bu=
+f), 0,
++                            &from->dest.addr.sa, &fromlen);
++    }
+     /* FIXME: won't do anything when sock->info.af =3D=3D AF_UNSPEC */
+     if (buf->len >=3D 0 && expectedlen && fromlen !=3D expectedlen)
+     {
+diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
+index 1f8eb1e..33c22b4 100644
+--- a/src/openvpn/ssl.c
++++ b/src/openvpn/ssl.c
+@@ -327,7 +327,9 @@
+         }
+         else
+ #endif /* ifdef ENABLE_MANAGEMENT */
+-        get_user_pass(&auth_user_pass, auth_file, UP_TYPE_AUTH, flags);
++        {
++            get_user_pass(&auth_user_pass, auth_file, UP_TYPE_AUTH, flags);
++        }
+     }
+ }
 
-     /* Set default --tmp-dir */
-@@ -2966,7 +2966,7 @@
-         if (options->pkcs12_file)
-         {
- #ifdef ENABLE_CRYPTO_MBEDTLS
--            msg(M_USAGE, "Parameter --pkcs12 cannot be used with the mbed =
-TLS version version of OpenVPN.");
-+            msg(M_USAGE, "Parameter --pkcs12 cannot be used with the mbed =
-TLS version of OpenVPN.");
- #else
-             if (options->ca_path)
-             {
-@@ -2995,7 +2995,7 @@
- #ifdef ENABLE_CRYPTO_MBEDTLS
-             if (options->ca_path)
-             {
--                msg(M_USAGE, "Parameter --capath cannot be used with the m=
-bed TLS version version of OpenVPN.");
-+                msg(M_USAGE, "Parameter --capath cannot be used with the m=
-bed TLS version of OpenVPN.");
-             }
- #endif  /* ifdef ENABLE_CRYPTO_MBEDTLS */
-             if (pull)
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/822?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/821?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings
 
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: Ifad21a2841e97e910775f3618ddac1c483d74b65
-Gerrit-Change-Number: 822
+Gerrit-Change-Id: If645c3faf149bac82167a91be13541b30a1b8d6a
+Gerrit-Change-Number: 821
 Gerrit-PatchSet: 3
 Gerrit-Owner: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: cron2 <gert@...1296...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-MessageType: merged
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-MessageType: newpatchset
 
---CxgYjxMSRS4=
+--YRPRRK1PnQU=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p>cron2 <strong>submitted</strong> this change.</p><p><a href=3D"http://ge=
-rrit.openvpn.net/c/openvpn/+/822?usp=3Demail">View Change</a></p><div style=
-=3D"white-space:pre-wrap"></div><pre style=3D"font-family: monospace,monosp=
-ace; white-space: pre-wrap;">Various typo fixes<br><br>This collects some m=
-inor typo fixes that are not<br>worth each their own commit.<br><br>Fixes: =
-OpenVPN/openvpn#644<br>Fixes: OpenVPN/openvpn#442<br><br>Change-Id: Ifad21a=
-2841e97e910775f3618ddac1c483d74b65<br>Signed-off-by: Frank Lichtenheld &lt;=
-frank@...2641...&gt;<br>Acked-by: Gert Doering &lt;gert@...1296...&gt;<br>M=
-essage-Id: &lt;20241128123016.10444-1-gert@...1296...&gt;<br>URL: https://w=
-ww.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg29956.html<br>Si=
-gned-off-by: Gert Doering &lt;gert@...1296...&gt;<br>---<br>M doc/man-secti=
-ons/connection-profiles.rst<br>M sample/sample-config-files/server.conf<br>=
-M src/openvpn/options.c<br>3 files changed, 5 insertions(+), 5 deletions(-)=
-<br><br></pre>
-<pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><sp=
-an>diff --git a/doc/man-sections/connection-profiles.rst b/doc/man-sections=
-/connection-profiles.rst</span><br><span>index 520bbef..767ff3a 100644</spa=
-n><br><span>--- a/doc/man-sections/connection-profiles.rst</span><br><span>=
-+++ b/doc/man-sections/connection-profiles.rst</span><br><span>@@ -6,7 +6,7=
- @@</span><br><span> options which are related to specific ``--remote`` opt=
-ions.  For these</span><br><span> use cases, connection profiles are the so=
-lution.</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%)=
-;">-By enacpulating the ``--remote`` option and related options within</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+By encapsulating the ``-=
--remote`` option and related options within</span><br><span> ``&lt;connecti=
-on&gt;`` and ``&lt;/connection&gt;``, these options are handled as a</span>=
-<br><span> group.</span><br><span> </span><br><span>diff --git a/sample/sam=
-ple-config-files/server.conf b/sample/sample-config-files/server.conf</span=
-><br><span>index 48716a0..f6d9e65 100644</span><br><span>--- a/sample/sampl=
-e-config-files/server.conf</span><br><span>+++ b/sample/sample-config-files=
-/server.conf</span><br><span>@@ -199,7 +199,7 @@</span><br><span> # all cli=
-ents to redirect their default</span><br><span> # network gateway through t=
-he VPN, causing</span><br><span> # all IP traffic such as web browsing and<=
-/span><br><span style=3D"color: hsl(0, 100%, 40%);">-# and DNS lookups to g=
-o through the VPN</span><br><span style=3D"color: hsl(120, 100%, 40%);">+# =
-DNS lookups to go through the VPN</span><br><span> # (The OpenVPN server ma=
-chine may need to NAT</span><br><span> # or bridge the TUN/TAP interface to=
- the internet</span><br><span> # in order for this to work properly).</span=
-><br><span>diff --git a/src/openvpn/options.c b/src/openvpn/options.c</span=
-><br><span>index 043b240..d8dd518 100644</span><br><span>--- a/src/openvpn/=
-options.c</span><br><span>+++ b/src/openvpn/options.c</span><br><span>@@ -8=
-79,7 +879,7 @@</span><br><span>     o-&gt;pkcs11_pin_cache_period =3D -1;</=
-span><br><span> #endif                  /* ENABLE_PKCS11 */</span><br><span=
-> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-/* P2MP server cont=
-ext features */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-/* P2MP server context features */</span><br><span>     o-&gt;auth_token_ge=
-nerate =3D false;</span><br><span> </span><br><span>     /* Set default --t=
-mp-dir */</span><br><span>@@ -2966,7 +2966,7 @@</span><br><span>         if=
- (options-&gt;pkcs12_file)</span><br><span>         {</span><br><span> #ifd=
-ef ENABLE_CRYPTO_MBEDTLS</span><br><span style=3D"color: hsl(0, 100%, 40%);=
-">-            msg(M_USAGE, &quot;Parameter --pkcs12 cannot be used with th=
-e mbed TLS version version of OpenVPN.&quot;);</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+            msg(M_USAGE, &quot;Parameter --pkcs1=
-2 cannot be used with the mbed TLS version of OpenVPN.&quot;);</span><br><s=
-pan> #else</span><br><span>             if (options-&gt;ca_path)</span><br>=
-<span>             {</span><br><span>@@ -2995,7 +2995,7 @@</span><br><span>=
- #ifdef ENABLE_CRYPTO_MBEDTLS</span><br><span>             if (options-&gt;=
-ca_path)</span><br><span>             {</span><br><span style=3D"color: hsl=
-(0, 100%, 40%);">-                msg(M_USAGE, &quot;Parameter --capath can=
-not be used with the mbed TLS version version of OpenVPN.&quot;);</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+                msg(M_USAGE, =
-&quot;Parameter --capath cannot be used with the mbed TLS version of OpenVP=
-N.&quot;);</span><br><span>             }</span><br><span> #endif  /* ifdef=
- ENABLE_CRYPTO_MBEDTLS */</span><br><span>             if (pull)</span><br>=
-<span></span><br></pre><p>To view, visit <a href=3D"http://gerrit.openvpn.n=
-et/c/openvpn/+/822?usp=3Demail">change 822</a>. To unsubscribe, or for help=
- writing mail filters, visit <a href=3D"http://gerrit.openvpn.net/settings"=
->settings</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage=
-"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewActi=
-on"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/82=
-2?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div></di=
-v>
+<p> Attention is currently required from: plaisthos. </p>
+<p>flichtenheld <strong>uploaded patch set #3</strong> to this change.</p><=
+p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/821?usp=3Demail">View Ch=
+ange</a></p><pre style=3D"font-family: monospace,monospace; white-space: pr=
+e-wrap;">Fix some formatting related to if/else and macros<br><br>Make it c=
+learer where the blocks are.<br><br>Change-Id: If645c3faf149bac82167a91be13=
+541b30a1b8d6a<br>Signed-off-by: Frank Lichtenheld &lt;frank@...2641...&gt;<=
+br>---<br>M src/openvpn/helper.c<br>M src/openvpn/manage.c<br>M src/openvpn=
+/openvpn.c<br>M src/openvpn/route.c<br>M src/openvpn/socket.c<br>M src/open=
+vpn/ssl.c<br>6 files changed, 23 insertions(+), 14 deletions(-)<br><br></pr=
+e><pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;">g=
+it pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/21/821/3</pre><=
+pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><spa=
+n>diff --git a/src/openvpn/helper.c b/src/openvpn/helper.c</span><br><span>=
+index bbdbc04..9e28e87 100644</span><br><span>--- a/src/openvpn/helper.c</s=
+pan><br><span>+++ b/src/openvpn/helper.c</span><br><span>@@ -500,7 +500,7 @=
+@</span><br><span>             push_option(o, print_opt_route_gateway_dhcp(=
+&amp;o-&gt;gc), M_USAGE);</span><br><span>         }</span><br><span>     }=
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    else</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+</span><br><span>     /*</span><=
+br><span>      * HELPER DIRECTIVE:</span><br><span>      *</span><br><span>=
+@@ -511,7 +511,7 @@</span><br><span>      * pull</span><br><span>      * tl=
+s-client</span><br><span>      */</span><br><span style=3D"color: hsl(0, 10=
+0%, 40%);">-    if (o-&gt;client)</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+    else if (o-&gt;client)</span><br><span>     {</span><br><=
+span>         o-&gt;pull =3D true;</span><br><span>         o-&gt;tls_clien=
+t =3D true;</span><br><span>diff --git a/src/openvpn/manage.c b/src/openvpn=
+/manage.c</span><br><span>index f296788..e79a118 100644</span><br><span>---=
+ a/src/openvpn/manage.c</span><br><span>+++ b/src/openvpn/manage.c</span><b=
+r><span>@@ -1822,7 +1822,9 @@</span><br><span>     }</span><br><span>     e=
+lse</span><br><span> #endif</span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">-    man-&gt;connection.sd_cli =3D socket_do_accept(man-&gt;connection=
+.sd_top, &amp;act, false);</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
+ man-&gt;connection.sd_cli =3D socket_do_accept(man-&gt;connection.sd_top, =
+&amp;act, false);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+  }</span><br><span> </span><br><span>     if (socket_defined(man-&gt;conne=
+ction.sd_cli))</span><br><span>     {</span><br><span>@@ -1971,9 +1973,11 @=
+@</span><br><span>         }</span><br><span>         else</span><br><span>=
+ #endif</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        msg(D_=
+LINK_ERRORS | M_ERRNO,</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
+-            &quot;MANAGEMENT: connect to %s failed&quot;,</span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">-            print_sockaddr(man-&gt;set=
+tings.local-&gt;ai_addr, &amp;gc));</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+        {</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+            msg(D_LINK_ERRORS | M_ERRNO,</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+                &quot;MANAGEMENT: connect to %s =
+failed&quot;,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
+          print_sockaddr(man-&gt;settings.local-&gt;ai_addr, &amp;gc));</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+        }</span><br><sp=
+an>         throw_signal_soft(SIGTERM, &quot;management-connect-failed&quot=
+;);</span><br><span>         goto done;</span><br><span>     }</span><br><s=
+pan>diff --git a/src/openvpn/openvpn.c b/src/openvpn/openvpn.c</span><br><s=
+pan>index 1db5422..c52540c 100644</span><br><span>--- a/src/openvpn/openvpn=
+.c</span><br><span>+++ b/src/openvpn/openvpn.c</span><br><span>@@ -274,10 +=
+274,10 @@</span><br><span> </span><br><span>             /* Query passwords=
+ before becoming a daemon if we don&#39;t use the</span><br><span>         =
+     * management interface to get them. */</span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-#ifdef ENABLE_MANAGEMENT</span><br><span>            =
+ if (!(c.options.management_flags &amp; MF_QUERY_PASSWORDS))</span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">-#endif</span><br><span style=3D"colo=
+r: hsl(0, 100%, 40%);">-            init_query_passwords(&amp;c);</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+            {</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+                init_query_password=
+s(&amp;c);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+         =
+   }</span><br><span> </span><br><span>             /* become a daemon if -=
+-daemon */</span><br><span>             if (c.first_time)</span><br><span>d=
+iff --git a/src/openvpn/route.c b/src/openvpn/route.c</span><br><span>index=
+ 2e584c7..3d33844 100644</span><br><span>--- a/src/openvpn/route.c</span><b=
+r><span>+++ b/src/openvpn/route.c</span><br><span>@@ -3861,8 +3861,9 @@</sp=
+an><br><span>         }</span><br><span>         else</span><br><span> #end=
+if</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span st=
+yle=3D"color: hsl(0, 100%, 40%);">-        rgi6-&gt;gateway.addr_ipv6 =3D g=
+w;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        {</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+            rgi6-&gt;gatewa=
+y.addr_ipv6 =3D gw;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+        }</span><br><span>         rgi6-&gt;flags |=3D RGI_ADDR_DEFINED;</s=
+pan><br><span> </span><br><span>         if (ifp)</span><br><span>diff --gi=
+t a/src/openvpn/socket.c b/src/openvpn/socket.c</span><br><span>index efd74=
+2c..01874fe 100644</span><br><span>--- a/src/openvpn/socket.c</span><br><sp=
+an>+++ b/src/openvpn/socket.c</span><br><span>@@ -3389,8 +3389,10 @@</span>=
+<br><span>     }</span><br><span>     else</span><br><span> #endif</span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-    buf-&gt;len =3D recvfrom(s=
+ock-&gt;sd, BPTR(buf), buf_forward_capacity(buf), 0,</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-                        &amp;from-&gt;dest.=
+addr.sa, &amp;fromlen);</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        bu=
+f-&gt;len =3D recvfrom(sock-&gt;sd, BPTR(buf), buf_forward_capacity(buf), 0=
+,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+                  =
+          &amp;from-&gt;dest.addr.sa, &amp;fromlen);</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span>     /* FIXME: won&=
+#39;t do anything when sock-&gt;info.af =3D=3D AF_UNSPEC */</span><br><span=
+>     if (buf-&gt;len &gt;=3D 0 &amp;&amp; expectedlen &amp;&amp; fromlen !=
+=3D expectedlen)</span><br><span>     {</span><br><span>diff --git a/src/op=
+envpn/ssl.c b/src/openvpn/ssl.c</span><br><span>index 1f8eb1e..33c22b4 1006=
+44</span><br><span>--- a/src/openvpn/ssl.c</span><br><span>+++ b/src/openvp=
+n/ssl.c</span><br><span>@@ -327,7 +327,9 @@</span><br><span>         }</spa=
+n><br><span>         else</span><br><span> #endif /* ifdef ENABLE_MANAGEMEN=
+T */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        get_user_=
+pass(&amp;auth_user_pass, auth_file, UP_TYPE_AUTH, flags);</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+        {</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+            get_user_pass(&amp;auth_user_pass,=
+ auth_file, UP_TYPE_AUTH, flags);</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+        }</span><br><span>     }</span><br><span> }</span><br=
+><span> </span><br><span></span><br></pre><p>To view, visit <a href=3D"http=
+://gerrit.openvpn.net/c/openvpn/+/821?usp=3Demail">change 821</a>. To unsub=
+scribe, or for help writing mail filters, visit <a href=3D"http://gerrit.op=
+envpn.net/settings">settings</a>.</p><div itemscope itemtype=3D"http://sche=
+ma.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://=
+schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn=
+.net/c/openvpn/+/821?usp=3Demail"/><meta itemprop=3D"name" content=3D"View =
+Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: Ifad21a2841e97e910775f3618dd=
-ac1c483d74b65 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 822 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: If645c3faf149bac82167a91be13=
+541b30a1b8d6a </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 821 </div>
 <div style=3D"display:none"> Gerrit-PatchSet: 3 </div>
 <div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
 .&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
- </div>
 <div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
 .1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: merged </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
 
 
---CxgYjxMSRS4=--
+--YRPRRK1PnQU=--
 
