@@ -1,16 +1,16 @@
 From: "stipa (Code Review)" <gerrit@...515...>
-Date: Fri, 29 Nov 2024 10:39:54 +0000
-In-Reply-To: <gerrit.1732124549000.I6ecd4cb47571cc8c20e46de8595c742aeec6064a@...2715...>
-References: <gerrit.1732124549000.I6ecd4cb47571cc8c20e46de8595c742aeec6064a@...2715...>
-Reply-To: lstipakov@...277..., arne-openvpn@...1227..., marco@...2726...,
+Date: Fri, 29 Nov 2024 11:15:44 +0000
+In-Reply-To: <gerrit.1732795471000.If645c3faf149bac82167a91be13541b30a1b8d6a@...2715...>
+References: <gerrit.1732795471000.If645c3faf149bac82167a91be13541b30a1b8d6a@...2715...>
+Reply-To: lstipakov@...277..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <933b29041908eeaea25a1a416ace3d69a5ba5071-EmailReviewComments-HTML@...2715...>
+Message-ID: <d91b8d974ebfc6a07487c5b58c4bbc5ef5e7e3f0-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="jVFyatG9OBI="; charset=UTF-8
-Subject: [Openvpn-devel] [L] Change in openvpn[master]: PUSH_UPDATE: Allow
- OpenVPN in client mode to receive and handle PUSH ...
+Content-Type: multipart/alternative; boundary="jEXNpnwZai8="; charset=UTF-8
+Subject: [Openvpn-devel] [S] Change in openvpn[master]: Fix some formatting
+ related to if/else and macros
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,134 +19,84 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: mrbff <marco@...2726...>
-Cc: flichtenheld <frank@...2641...>, plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: flichtenheld <frank@...2641...>
+Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---jVFyatG9OBI=
+--jEXNpnwZai8=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: flichtenheld, mrbff, plaisthos.
+Attention is currently required from: flichtenheld, plaisthos.
 
 stipa has posted comments on this change. ( http://gerrit.openvpn.net/c/ope=
-nvpn/+/808?usp=3Demail )
+nvpn/+/821?usp=3Demail )
 
-Change subject: PUSH_UPDATE: Allow OpenVPN in client mode to receive and ha=
-ndle PUSH UPDATE control messages to allow options updating at runtime.
+Change subject: Fix some formatting related to if/else and macros
 ......................................................................
 
 
-Patch Set 6: Code-Review-1
+Patch Set 3: Code-Review+2
 
-(2 comments)
+(1 comment)
 
 Patchset:
 
-PS6:
-I did a quick test and following doesn't work:
-
-2024-11-29 11:11:30 us=3D656000 PUSH: Received control message: 'PUSH_UPDAT=
-E,ifconfig 10.8.0.4 255.255.255.0'
-2024-11-29 11:11:30 us=3D656000 No option found
-2024-11-29 11:12:48 us=3D265000 Closing ovpn-dco interface
-2024-11-29 11:12:48 us=3D265000 NETSH: C:\Windows\system32\netsh.exe interf=
-ace ipv4 delete dns 20 all
-2024-11-29 11:12:48 us=3D421000 NETSH: C:\Windows\system32\netsh.exe interf=
-ace ipv4 delete address 20 10.8.0.2 store=3Dactive
-2024-11-29 11:12:48 us=3D609000 SIGTERM[hard,] received, process exiting
-
-
-File src/openvpn/push.c:
-
-http://gerrit.openvpn.net/c/openvpn/+/808/comment/8d650f48_e00d63e5 :
-PS6, Line 543:                     msg(M_WARN, "No option found");
-This warning is a bit confusing.
-
-2024-11-29 10:58:57 us=3D140000 PUSH: Received control message: 'PUSH_UPDAT=
-E,-dns'
-2024-11-29 10:58:57 us=3D140000 No option found
-
-It is unclear what exactly does it mean and what user/admin is supposed to =
-do with it.
+PS3:
+LGTM
 
 
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/808?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/821?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings
 
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: I6ecd4cb47571cc8c20e46de8595c742aeec6064a
-Gerrit-Change-Number: 808
-Gerrit-PatchSet: 6
-Gerrit-Owner: mrbff <marco@...2726...>
-Gerrit-Reviewer: flichtenheld <frank@...2641...>
+Gerrit-Change-Id: If645c3faf149bac82167a91be13541b30a1b8d6a
+Gerrit-Change-Number: 821
+Gerrit-PatchSet: 3
+Gerrit-Owner: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-Reviewer: stipa <lstipakov@...277...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
 Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Attention: mrbff <marco@...2726...>
-Gerrit-Comment-Date: Fri, 29 Nov 2024 10:39:54 +0000
+Gerrit-Comment-Date: Fri, 29 Nov 2024 11:15:44 +0000
 Gerrit-HasComments: Yes
 Gerrit-Has-Labels: Yes
 Gerrit-MessageType: comment
 
---jVFyatG9OBI=
+--jEXNpnwZai8=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p> Attention is currently required from: flichtenheld, mrbff, plaisthos. <=
-/p>
-<p>Patch set 6:<span style=3D"border-radius: 3px; display: inline-block; ma=
-rgin: 0 2px; padding: 4px;background-color: #ffd4d4;">Code-Review -1</span>=
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/808?usp=3Demail">Vi=
-ew Change</a></p><p>2 comments:</p><ul style=3D"list-style: none; padding: =
-0;"><li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-=
-style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p =
-style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvp=
-n/+/808?tab=3Dcomments">Patch Set #6:</a> </p><p style=3D"white-space: pre-=
-wrap; word-wrap: break-word;">I did a quick test and following doesn&#39;t =
-work:</p><p style=3D"white-space: pre-wrap; word-wrap: break-word;">2024-11=
--29 11:11:30 us=3D656000 PUSH: Received control message: &#39;PUSH_UPDATE,i=
-fconfig 10.8.0.4 255.255.255.0&#39;<br>2024-11-29 11:11:30 us=3D656000 No o=
-ption found<br>2024-11-29 11:12:48 us=3D265000 Closing ovpn-dco interface<b=
-r>2024-11-29 11:12:48 us=3D265000 NETSH: C:\Windows\system32\netsh.exe inte=
-rface ipv4 delete dns 20 all<br>2024-11-29 11:12:48 us=3D421000 NETSH: C:\W=
-indows\system32\netsh.exe interface ipv4 delete address 20 10.8.0.2 store=
-=3Dactive<br>2024-11-29 11:12:48 us=3D609000 SIGTERM[hard,] received, proce=
-ss exiting</p></li></ul></li><li style=3D"margin: 0; padding: 0;"><p>File s=
-rc/openvpn/push.c:</p><ul style=3D"list-style: none; padding: 0;"><li style=
-=3D"margin: 0; padding: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a hr=
-ef=3D"http://gerrit.openvpn.net/c/openvpn/+/808/comment/8d650f48_e00d63e5">=
-Patch Set #6, Line 543:</a> <code style=3D"font-family:monospace,monospace"=
->                    msg(M_WARN, &quot;No option found&quot;);</code></p><p=
- style=3D"white-space: pre-wrap; word-wrap: break-word;">This warning is a =
-bit confusing.</p><p style=3D"white-space: pre-wrap; word-wrap: break-word;=
-">2024-11-29 10:58:57 us=3D140000 PUSH: Received control message: &#39;PUSH=
-_UPDATE,-dns&#39;<br>2024-11-29 10:58:57 us=3D140000 No option found</p><p =
-style=3D"white-space: pre-wrap; word-wrap: break-word;">It is unclear what =
-exactly does it mean and what user/admin is supposed to do with it.</p></li=
-></ul></li></ul><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/op=
-envpn/+/808?usp=3Demail">change 808</a>. To unsubscribe, or for help writin=
-g mail filters, visit <a href=3D"http://gerrit.openvpn.net/settings">settin=
-gs</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div =
-itemscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><li=
-nk itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/808?usp=
-=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
+<p> Attention is currently required from: flichtenheld, plaisthos. </p>
+<p>Patch set 3:<span style=3D"border-radius: 3px; display: inline-block; ma=
+rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/821?usp=3Demail">Vi=
+ew Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0=
+;"><li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-s=
+tyle: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p s=
+tyle=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn=
+/+/821?tab=3Dcomments">Patch Set #3:</a> </p><p style=3D"white-space: pre-w=
+rap; word-wrap: break-word;">LGTM</p></li></ul></li></ul><p>To view, visit =
+<a href=3D"http://gerrit.openvpn.net/c/openvpn/+/821?usp=3Demail">change 82=
+1</a>. To unsubscribe, or for help writing mail filters, visit <a href=3D"h=
+ttp://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope itemtype=
+=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"action" item=
+type=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http:/=
+/gerrit.openvpn.net/c/openvpn/+/821?usp=3Demail"/><meta itemprop=3D"name" c=
+ontent=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I6ecd4cb47571cc8c20e46de8595=
-c742aeec6064a </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 808 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 6 </div>
-<div style=3D"display:none"> Gerrit-Owner: mrbff &lt;marco@...2726...&gt; <=
-/div>
-<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
-1...&gt; </div>
+<div style=3D"display:none"> Gerrit-Change-Id: If645c3faf149bac82167a91be13=
+541b30a1b8d6a </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 821 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 3 </div>
+<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
+.&gt; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
 .1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: stipa &lt;lstipakov@...277...=
@@ -157,14 +107,12 @@ ts.sourceforge.net&gt; </div>
 ..1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
 41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: mrbff &lt;marco@...2726...&g=
-t; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Fri, 29 Nov 2024 10:39:54=
+<div style=3D"display:none"> Gerrit-Comment-Date: Fri, 29 Nov 2024 11:15:44=
  +0000 </div>
 <div style=3D"display:none"> Gerrit-HasComments: Yes </div>
 <div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
 <div style=3D"display:none"> Gerrit-MessageType: comment </div>
 
 
---jVFyatG9OBI=--
+--jEXNpnwZai8=--
 
