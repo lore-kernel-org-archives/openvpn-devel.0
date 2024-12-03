@@ -1,15 +1,15 @@
 From: "mrbff (Code Review)" <gerrit@...515...>
-Date: Tue, 3 Dec 2024 11:12:22 +0000
+Date: Tue, 3 Dec 2024 11:12:45 +0000
 In-Reply-To: <gerrit.1732124549000.I6ecd4cb47571cc8c20e46de8595c742aeec6064a@...2715...>
 References: <gerrit.1732124549000.I6ecd4cb47571cc8c20e46de8595c742aeec6064a@...2715...>
 Reply-To: marco@...2726..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net, frank@...2641...,
  lstipakov@...277...
-Message-ID: <3878f3700e6a165df624117140ab936106e38407-HTML@...2715...>
+Message-ID: <c1a61dfdc8132de430b5b61d78c663778d714049-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="Mz04W9rrFM4="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="qCG9acAbP5M="; charset=UTF-8
 Subject: [Openvpn-devel] [L] Change in openvpn[master]: PUSH_UPDATE: Allow
  OpenVPN in client mode to receive and handle PUSH ...
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -22,19 +22,19 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Cc: stipa <lstipakov@...277...>, flichtenheld <frank@...2641...>, plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---Mz04W9rrFM4=
+--qCG9acAbP5M=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-mrbff has abandoned this change. ( http://gerrit.openvpn.net/c/openvpn/+/80=
-8?usp=3Demail )
+mrbff has restored this change. ( http://gerrit.openvpn.net/c/openvpn/+/808=
+?usp=3Demail )
 
 Change subject: PUSH_UPDATE: Allow OpenVPN in client mode to receive and ha=
 ndle PUSH UPDATE control messages to allow options updating at runtime.
 ......................................................................
 
 
-Abandoned
+Restored
 --
 To view, visit http://gerrit.openvpn.net/c/openvpn/+/808?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
@@ -50,22 +50,21 @@ Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-Reviewer: stipa <lstipakov@...277...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-MessageType: abandon
+Gerrit-MessageType: restore
 
---Mz04W9rrFM4=
+--qCG9acAbP5M=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p>mrbff <strong>abandoned</strong> this change.</p><p><a href=3D"http://ge=
-rrit.openvpn.net/c/openvpn/+/808?usp=3Demail">View Change</a></p><div style=
-=3D"white-space:pre-wrap">Abandoned</div><p>To view, visit <a href=3D"http:=
-//gerrit.openvpn.net/c/openvpn/+/808?usp=3Demail">change 808</a>. To unsubs=
-cribe, or for help writing mail filters, visit <a href=3D"http://gerrit.ope=
-nvpn.net/settings">settings</a>.</p><div itemscope itemtype=3D"http://schem=
-a.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://s=
-chema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.=
-net/c/openvpn/+/808?usp=3Demail"/><meta itemprop=3D"name" content=3D"View C=
-hange"/></div></div>
+<p>mrbff <strong>restored</strong> this change.</p><p><a href=3D"http://ger=
+rit.openvpn.net/c/openvpn/+/808?usp=3Demail">View Change</a></p><p>To view,=
+ visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/808?usp=3Demail">ch=
+ange 808</a>. To unsubscribe, or for help writing mail filters, visit <a hr=
+ef=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope i=
+temtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"actio=
+n" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D=
+"http://gerrit.openvpn.net/c/openvpn/+/808?usp=3Demail"/><meta itemprop=3D"=
+name" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
@@ -83,8 +82,8 @@ c742aeec6064a </div>
 &gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: abandon </div>
+<div style=3D"display:none"> Gerrit-MessageType: restore </div>
 
 
---Mz04W9rrFM4=--
+--qCG9acAbP5M=--
 
