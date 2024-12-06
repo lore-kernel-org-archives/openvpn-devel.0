@@ -1,9 +1,8 @@
 MIME-Version: 1.0
 From: Marc Leeman <marc.leeman@...277...>
-Date: Fri, 6 Dec 2024 10:29:19 +0100
-Message-ID: <CAH+fs=9t5VvejtnxVFTCS8zVjM54HQaXw_bowXLmnr_r3PDJAg@...278...>
-Content-Type: multipart/mixed; boundary="000000000000344164062896a74a"
-Subject: [Openvpn-devel] SystemD user names
+Date: Fri, 6 Dec 2024 10:35:26 +0100
+Message-ID: <CAH+fs=-Ng0RGzX3E5d9Q9HUEci8DYDEDVSK3V15tjXbWCepdfA@...278...>
+Subject: [Openvpn-devel] spelling errors
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,64 +11,35 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
---000000000000344164062896a74a
-Content-Type: text/plain; charset="UTF-8"
+FYI
 
-David,
+While preparing a package for debian, lintian complained about some
+spelling errors. I had a quick look, but since some are signals (e.g.
+succeded), I didn't want to meddle with them atm.
 
-cf. att.
-
-
+I: openvpn3-client: spelling-error-in-binary Configration
+Configuration [usr/libexec/openvpn3-linux/openvpn3-service-configmgr]
+I: openvpn3-client: spelling-error-in-binary nam name
+[usr/libexec/openvpn3-linux/openvpn3-service-backendstart]
+I: openvpn3-client: spelling-error-in-binary occured occurred
+[usr/libexec/openvpn3-linux/openvpn3-service-client]
+I: openvpn3-client: spelling-error-in-binary recieved received
+[usr/libexec/openvpn3-linux/openvpn3-service-sessionmgr]
+I: openvpn3-client: spelling-error-in-binary succeded succeeded
+[usr/libexec/openvpn3-linux/openvpn3-service-netcfg]
+I: openvpn3-client: spelling-error-in-binary unkown unknown
+[usr/sbin/openvpn3-admin]
+I: openvpn3-client: typo-in-manual-page "allows to" "allows one to"
+[usr/share/man/man1/openvpn3-config-manage.1.gz:41]
+I: openvpn3-client: typo-in-manual-page reponsible responsible
+[usr/share/man/man8/openvpn3-service-devposture.8.gz:42]
 
 -- 
 g. Marc
 
 GPG: 827C FD74 BA46 8152 A041 F3A0 7A6A 4F17 5995 A65B
-
---000000000000344164062896a74a
-Content-Type: text/x-patch; charset="US-ASCII"; name="0002_fix-openvpn-to-_openvpn.patch"
-Content-Disposition: attachment; 
-	filename="0002_fix-openvpn-to-_openvpn.patch"
-Content-Transfer-Encoding: base64
-Content-ID: <f_m4cjnpuo0>
-X-Attachment-Id: f_m4cjnpuo0
-
-RGVzY3JpcHRpb246IFJlbW92ZSBoYXJkIGNvZGVkIGBvcGVudnBuYCB1c2VyIGluIG1lc29uIGZp
-bGVzCiBUaGUgYnVpbGQgc3lzdGVtIGFsbG93cyB0byByZXBsYWNlIHRoZSBkZWZhdWx0IGBvcGVu
-dnBuYCB1c2VyIHdpdGgKIHNvbWUgb3RoZXIgbmFtZS4gVGhpcyB3b3JrcyBmb3IgbW9zdCBzZXJ2
-aWNlcywgYnV0IGR1cmluZyByZWZhY3RvcmluZywKIDMgaGFyZCBjb2RlZCByZWZlcmVuY2VzIHdl
-cmUgb21pdHRlZC4KIFRoaXMgcG9wcGVkIHVwIHdoaWxlIHBhY2thZ2luZyBmb3IgZGViaWFuIHNp
-bmNlIHRoZSBzeXN0ZW0gdXNlcnMgc2hvdWxkCiBiZSBwcmVwZW5kZWQgd2l0aCBhICdfJy4KQXV0
-aG9yOiBNYXJjIExlZW1hbiA8bWFyYy5sZWVtYW5AZ21haWwuY29tPgpGb3J3YXJkZWQ6IGh0dHBz
-Oi8vZ2l0aHViLmNvbS9PcGVuVlBOL29wZW52cG4zLWxpbnV4L2lzc3Vlcy8xOTMjaXNzdWVjb21t
-ZW50LTI1MjIzOTk4ODkKTGFzdC1VcGRhdGU6IDIwMjQtMTItMDYKCkluZGV4OiBvcGVudnBuMy1j
-bGllbnQvc3JjL2NvbmZpZ21nci9tZXNvbi5idWlsZAo9PT09PT09PT09PT09PT09PT09PT09PT09
-PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09Ci0tLSBvcGVudnBuMy1j
-bGllbnQub3JpZy9zcmMvY29uZmlnbWdyL21lc29uLmJ1aWxkCisrKyBvcGVudnBuMy1jbGllbnQv
-c3JjL2NvbmZpZ21nci9tZXNvbi5idWlsZApAQCAtNDUsNyArNDUsNiBAQCBjb25maWd1cmVfZmls
-ZSgKICAgICAgICAgICAgICdCVVNOQU1FJzogJ25ldC5vcGVudnBuLnYzLmNvbmZpZ3VyYXRpb24n
-LAogICAgICAgICAgICAgJ1NFUlZJQ0VfQklOJzogYmluX2JhY2tlbmRfY29uZmlnbWdyLm5hbWUo
-KSwKICAgICAgICAgICAgICdTRVJWSUNFX0FSR1MnOiAnLS1zdGF0ZS1kaXIgIicgKyBvcGVudnBu
-M19zdGF0ZWRpciArICcvY29uZmlncyInLAotICAgICAgICAgICAgJ09QRU5WUE5fVVNFUk5BTUUn
-OiAnb3BlbnZwbicsCiAgICAgICAgIH0KICAgICApLAogICAgIGluc3RhbGw6IHRydWUsCkluZGV4
-OiBvcGVudnBuMy1jbGllbnQvc3JjL2xvZy9tZXNvbi5idWlsZAo9PT09PT09PT09PT09PT09PT09
-PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09Ci0tLSBvcGVu
-dnBuMy1jbGllbnQub3JpZy9zcmMvbG9nL21lc29uLmJ1aWxkCisrKyBvcGVudnBuMy1jbGllbnQv
-c3JjL2xvZy9tZXNvbi5idWlsZApAQCAtNDQsNyArNDQsNiBAQCBjb25maWd1cmVfZmlsZSgKICAg
-ICAgICAgICAgICdCVVNOQU1FJzogJ25ldC5vcGVudnBuLnYzLmxvZycsCiAgICAgICAgICAgICAn
-U0VSVklDRV9CSU4nOiBiaW5fYmFja2VuZF9sb2cubmFtZSgpLAogICAgICAgICAgICAgJ1NFUlZJ
-Q0VfQVJHUyc6ICctLXN0YXRlLWRpciAiJyArIG9wZW52cG4zX3N0YXRlZGlyICsgJyInLAotICAg
-ICAgICAgICAgJ09QRU5WUE5fVVNFUk5BTUUnOiAnb3BlbnZwbicsCiAgICAgICAgIH0KICAgICAp
-LAogICAgIGluc3RhbGw6IHRydWUsCkluZGV4OiBvcGVudnBuMy1jbGllbnQvc3JjL3Nlc3Npb25t
-Z3IvbWVzb24uYnVpbGQKPT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09
-PT09PT09PT09PT09PT09PT09PT09PT09PQotLS0gb3BlbnZwbjMtY2xpZW50Lm9yaWcvc3JjL3Nl
-c3Npb25tZ3IvbWVzb24uYnVpbGQKKysrIG9wZW52cG4zLWNsaWVudC9zcmMvc2Vzc2lvbm1nci9t
-ZXNvbi5idWlsZApAQCAtNDYsNyArNDYsNiBAQCBjb25maWd1cmVfZmlsZSgKICAgICAgICAgICAg
-ICdCVVNOQU1FJzogJ25ldC5vcGVudnBuLnYzLnNlc3Npb25zJywKICAgICAgICAgICAgICdTRVJW
-SUNFX0JJTic6IGJpbl9iYWNrZW5kX3Nlc3Npb25tZ3IubmFtZSgpLAogICAgICAgICAgICAgJ1NF
-UlZJQ0VfQVJHUyc6ICcnLAotICAgICAgICAgICAgJ09QRU5WUE5fVVNFUk5BTUUnOiAnb3BlbnZw
-bicsCiAgICAgICAgIH0KICAgICApLAogICAgIGluc3RhbGw6IHRydWUsCg==
---000000000000344164062896a74a--
 
