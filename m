@@ -1,9 +1,11 @@
-Message-ID: <8de5660b-d917-4092-8871-250495d8c7a4@...68...>
-Date: Sun, 8 Dec 2024 00:17:05 +0100
+Message-ID: <d7c52354-8263-4423-8a4f-39bab3bd4d97@...68...>
+Date: Sun, 8 Dec 2024 00:19:35 +0100
 MIME-Version: 1.0
-Content-Language: de-CH
 From: corubba <corubba@...68...>
-Subject: [Openvpn-devel] [PATCH 1/2] Fix IPv6 in port-share journal
+References: <8de5660b-d917-4092-8871-250495d8c7a4@...68...>
+Content-Language: de-CH
+In-Reply-To: <8de5660b-d917-4092-8871-250495d8c7a4@...68...>
+Subject: [Openvpn-devel] [PATCH 2/2] Fix port-share journal doc
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,37 +18,29 @@ Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 To: openvpn-devel@lists.sourceforge.net
 
-getpeername() and getsockname() will truncate the result if it is
-larger than the passed-in length. Because here always the size of the
-`sa` IPv4 union member was passed in, all larger (aka IPv6) results
-were truncated. Instead use the size of the `addr` union, which is the
-maximum size of all union members.
-
-The bug was introduced in 0b6450c9.
-
-Fixes https://community.openvpn.net/openvpn/ticket/1358
+Filename and content descriptions were switched.
 
 Signed-off-by: corubba <corubba@...68...>
 ---
- src/openvpn/ps.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ doc/man-sections/server-options.rst | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/src/openvpn/ps.c b/src/openvpn/ps.c
-index 4ca3a129..06bf91a8 100644
---- a/src/openvpn/ps.c
-+++ b/src/openvpn/ps.c
-@@ -344,8 +344,8 @@ journal_add(const char *journal_dir, struct proxy_conne=
-ction *pc, struct proxy_c
-     char *jfn;
-     int fd;
+diff --git a/doc/man-sections/server-options.rst b/doc/man-sections/server-=
+options.rst
+index 0632e314..3fe9862c 100644
+--- a/doc/man-sections/server-options.rst
++++ b/doc/man-sections/server-options.rst
+@@ -429,7 +429,7 @@ fast hardware. SSL/TLS authentication must be used in t=
+his mode.
 
--    slen =3D sizeof(from.addr.sa);
--    dlen =3D sizeof(to.addr.sa);
-+    slen =3D sizeof(from.addr);
-+    dlen =3D sizeof(to.addr);
-     if (!getpeername(pc->sd, (struct sockaddr *) &from.addr.sa, &slen)
-         && !getsockname(cp->sd, (struct sockaddr *) &to.addr.sa, &dlen))
-     {
+   ``dir`` specifies an optional directory where a temporary file with name
+   N containing content C will be dynamically generated for each proxy
+-  connection, where N is the source IP:port of the client connection and C
++  connection, where C is the source IP:port of the client connection and N
+   is the source IP:port of the connection to the proxy receiver. This
+   directory can be used as a dictionary by the proxy receiver to determine
+   the origin of the connection. Each generated file will be automatically
 --
 2.47.1
+
 
