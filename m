@@ -1,17 +1,11 @@
-From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Mon, 9 Dec 2024 20:09:45 +0000
-In-Reply-To: <gerrit.1733766865000.If472398d4ff8323de485f084a07160b365dfc501@...2715...>
-References: <gerrit.1733766865000.If472398d4ff8323de485f084a07160b365dfc501@...2715...>
-Reply-To: gert@...1296..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...,
- lstipakov@...277...
-Message-ID: <9d77e6708aea37f27bf32ca8a91ef17ec8024673-HTML@...2715...>
+From: Gert Doering <gert@...1296...>
+Date: Mon,  9 Dec 2024 22:09:56 +0100
+Message-ID: <20241209210956.13536-1-gert@...1296...>
+In-Reply-To: <gerrit.1731290343000.I74216d776d3e0a8dc987ec7b1671c8e8dcccdbd6@...2715...>
+References: <gerrit.1731290343000.I74216d776d3e0a8dc987ec7b1671c8e8dcccdbd6@...2715...>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="l4aRDN0uElQ="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: Fix memory leak in
- ntlm_support
+Subject: [Openvpn-devel] [PATCH v8] Use XOR instead of concatenation for
+ calculation of IV from implicit IV
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,153 +14,170 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: flichtenheld <frank@...2641...>
-Cc: stipa <lstipakov@...277...>, plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---l4aRDN0uElQ=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+From: Arne Schwabe <arne@...1227...>
 
-cron2 has submitted this change. ( http://gerrit.openvpn.net/c/openvpn/+/82=
-6?usp=3Demail )
+This change prepares the extended packet id data where also the packet id
+part of the IV will be derived using xor.  Using xor also in the AEAD
+case where this degenerates to a concatenation allows using the same
+IV generation code later.
 
-Change subject: Fix memory leak in ntlm_support
-......................................................................
-
-Fix memory leak in ntlm_support
-
-Not really important but prevents running the NTLM
-t_client tests with ASAN enabled.
-
-Change-Id: If472398d4ff8323de485f084a07160b365dfc501
-Signed-off-by: Frank Lichtenheld <frank@...2641...>
-Acked-by: Lev Stipakov <lstipakov@...277...>
-Message-Id: <20241209194957.358-1-gert@...1296...>
-URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg30=
-049.html
-Signed-off-by: Gert Doering <gert@...1296...>
+Change-Id: I74216d776d3e0a8dc987ec7b1671c8e8dcccdbd6
+Signed-off-by: Arne Schwabe <arne@...1227...>
+Acked-by: MaxF <max@...2606...>
 ---
-M tests/ntlm_support.c
-1 file changed, 8 insertions(+), 4 deletions(-)
 
+This change was reviewed on Gerrit and approved by at least one
+developer. I request to merge it to master.
 
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/797
+This mail reflects revision 8 of this Change.
 
+Acked-by according to Gerrit (reflected above):
+MaxF <max@...2606...>
 
-diff --git a/tests/ntlm_support.c b/tests/ntlm_support.c
-index ccf8962..18d555a 100644
---- a/tests/ntlm_support.c
-+++ b/tests/ntlm_support.c
-@@ -33,11 +33,11 @@
- int
- main(void)
- {
--#if defined(ENABLE_CRYPTO_OPENSSL)
--    crypto_load_provider("legacy");
--    crypto_load_provider("default");
--#endif
- #ifdef NTLM
-+#if defined(ENABLE_CRYPTO_OPENSSL)
-+    provider_t *legacy =3D crypto_load_provider("legacy");
-+    provider_t *def =3D crypto_load_provider("default");
-+#endif
-     if (!md_valid("MD4"))
+        
+diff --git a/src/openvpn/crypto.c b/src/openvpn/crypto.c
+index 67c5b04..d6cd256 100644
+--- a/src/openvpn/crypto.c
++++ b/src/openvpn/crypto.c
+@@ -94,12 +94,16 @@
+             goto err;
+         }
+ 
+-        /* Remainder of IV consists of implicit part (unique per session) */
+-        ASSERT(buf_write(&iv_buffer, ctx->implicit_iv, ctx->implicit_iv_len));
+-        ASSERT(iv_buffer.len == iv_len);
++        /* Write packet id part of IV to work buffer */
++        ASSERT(buf_write(&work, iv, packet_id_size(false)));
+ 
+-        /* Write explicit part of IV to work buffer */
+-        ASSERT(buf_write(&work, iv, iv_len - ctx->implicit_iv_len));
++        /* This generates the IV by XORing the implicit part of the IV
++         * with the packet id already written to the iv buffer */
++        for (int i = 0; i < iv_len; i++)
++        {
++            iv[i] = iv[i] ^ ctx->implicit_iv[i];
++        }
++
+         dmsg(D_PACKET_CONTENT, "ENCRYPT IV: %s", format_hex(iv, iv_len, 0, &gc));
+ 
+         /* Init cipher_ctx with IV.  key & keylen are already initialized */
+@@ -426,16 +430,21 @@
      {
-         msg(M_FATAL, "MD4 not supported");
-@@ -46,6 +46,10 @@
-     {
-         msg(M_FATAL, "MD5 not supported");
+         uint8_t iv[OPENVPN_MAX_IV_LENGTH] = { 0 };
+         const int iv_len = cipher_ctx_iv_length(ctx->cipher);
+-        const size_t packet_iv_len = iv_len - ctx->implicit_iv_len;
++        const size_t packet_iv_len = packet_id_size(false);
+ 
+-        ASSERT(ctx->implicit_iv_len <= iv_len);
+-        if (buf->len + ctx->implicit_iv_len < iv_len)
++        if (buf->len < packet_iv_len)
+         {
+             CRYPT_ERROR("missing IV info");
+         }
+ 
+         memcpy(iv, BPTR(buf), packet_iv_len);
+-        memcpy(iv + packet_iv_len, ctx->implicit_iv, ctx->implicit_iv_len);
++
++        /* This generates the IV by XORing the implicit part of the IV
++         * with the packet id already written to the iv buffer */
++        for (int i = 0; i < iv_len; i++)
++        {
++            iv[i] = iv[i] ^ ctx->implicit_iv[i];
++        }
+ 
+         dmsg(D_PACKET_CONTENT, "DECRYPT IV: %s", format_hex(iv, iv_len, 0, &gc));
+ 
+@@ -962,7 +971,6 @@
+         hmac_ctx_free(ctx->hmac);
+         ctx->hmac = NULL;
      }
-+#if defined(ENABLE_CRYPTO_OPENSSL)
-+    crypto_unload_provider("legacy", legacy);
-+    crypto_unload_provider("default", def);
-+#endif
- #else  /* ifdef NTLM */
-     msg(M_FATAL, "NTLM support not compiled in");
- #endif
-
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/826?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings
-
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: If472398d4ff8323de485f084a07160b365dfc501
-Gerrit-Change-Number: 826
-Gerrit-PatchSet: 2
-Gerrit-Owner: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-Reviewer: stipa <lstipakov@...277...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-MessageType: merged
-
---l4aRDN0uElQ=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<p>cron2 <strong>submitted</strong> this change.</p><p><a href=3D"http://ge=
-rrit.openvpn.net/c/openvpn/+/826?usp=3Demail">View Change</a></p><div style=
-=3D"white-space:pre-wrap"></div><pre style=3D"font-family: monospace,monosp=
-ace; white-space: pre-wrap;">Fix memory leak in ntlm_support<br><br>Not rea=
-lly important but prevents running the NTLM<br>t_client tests with ASAN ena=
-bled.<br><br>Change-Id: If472398d4ff8323de485f084a07160b365dfc501<br>Signed=
--off-by: Frank Lichtenheld &lt;frank@...2641...&gt;<br>Acked-by: Lev Stipak=
-ov &lt;lstipakov@...277...&gt;<br>Message-Id: &lt;20241209194957.358-1-gert=
-@...1296...&gt;<br>URL: https://www.mail-archive.com/openvpn-devel@...1466...=
-urceforge.net/msg30049.html<br>Signed-off-by: Gert Doering &lt;gert@...1726...=
-...&gt;<br>---<br>M tests/ntlm_support.c<br>1 file changed, 8 insertions(+)=
-, 4 deletions(-)<br><br></pre>
-<pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><sp=
-an>diff --git a/tests/ntlm_support.c b/tests/ntlm_support.c</span><br><span=
->index ccf8962..18d555a 100644</span><br><span>--- a/tests/ntlm_support.c</=
-span><br><span>+++ b/tests/ntlm_support.c</span><br><span>@@ -33,11 +33,11 =
-@@</span><br><span> int</span><br><span> main(void)</span><br><span> {</spa=
-n><br><span style=3D"color: hsl(0, 100%, 40%);">-#if defined(ENABLE_CRYPTO_=
-OPENSSL)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    crypto_lo=
-ad_provider(&quot;legacy&quot;);</span><br><span style=3D"color: hsl(0, 100=
-%, 40%);">-    crypto_load_provider(&quot;default&quot;);</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-#endif</span><br><span> #ifdef NTLM</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+#if defined(ENABLE_CRYP=
-TO_OPENSSL)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    prov=
-ider_t *legacy =3D crypto_load_provider(&quot;legacy&quot;);</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+    provider_t *def =3D crypto_loa=
-d_provider(&quot;default&quot;);</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+#endif</span><br><span>     if (!md_valid(&quot;MD4&quot;))</s=
-pan><br><span>     {</span><br><span>         msg(M_FATAL, &quot;MD4 not su=
-pported&quot;);</span><br><span>@@ -46,6 +46,10 @@</span><br><span>     {</=
-span><br><span>         msg(M_FATAL, &quot;MD5 not supported&quot;);</span>=
-<br><span>     }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#if=
- defined(ENABLE_CRYPTO_OPENSSL)</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+    crypto_unload_provider(&quot;legacy&quot;, legacy);</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+    crypto_unload_provider(=
-&quot;default&quot;, def);</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+#endif</span><br><span> #else  /* ifdef NTLM */</span><br><span>    =
- msg(M_FATAL, &quot;NTLM support not compiled in&quot;);</span><br><span> #=
-endif</span><br><span></span><br></pre><p>To view, visit <a href=3D"http://=
-gerrit.openvpn.net/c/openvpn/+/826?usp=3Demail">change 826</a>. To unsubscr=
-ibe, or for help writing mail filters, visit <a href=3D"http://gerrit.openv=
-pn.net/settings">settings</a>.</p><div itemscope itemtype=3D"http://schema.=
-org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://sch=
-ema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.ne=
-t/c/openvpn/+/826?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Cha=
-nge"/></div></div>
-
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: If472398d4ff8323de485f084a07=
-160b365dfc501 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 826 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
-<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
-.&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: stipa &lt;lstipakov@...277...=
-&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: merged </div>
-
-
---l4aRDN0uElQ=--
+-    ctx->implicit_iv_len = 0;
+ }
+ 
+ void
+@@ -1078,18 +1086,15 @@
+         cipher_ctx_t *cipher = co->key_ctx_bi.encrypt.cipher;
+         if (cipher_ctx_mode_aead(cipher))
+         {
+-            size_t impl_iv_len = cipher_ctx_iv_length(cipher) - sizeof(packet_id_type);
+             ASSERT(cipher_ctx_iv_length(cipher) <= OPENVPN_MAX_IV_LENGTH);
+             ASSERT(cipher_ctx_iv_length(cipher) >= OPENVPN_AEAD_MIN_IV_LEN);
+ 
+             /* Generate dummy implicit IV */
+             ASSERT(rand_bytes(co->key_ctx_bi.encrypt.implicit_iv,
+                               OPENVPN_MAX_IV_LENGTH));
+-            co->key_ctx_bi.encrypt.implicit_iv_len = impl_iv_len;
+ 
+             memcpy(co->key_ctx_bi.decrypt.implicit_iv,
+                    co->key_ctx_bi.encrypt.implicit_iv, OPENVPN_MAX_IV_LENGTH);
+-            co->key_ctx_bi.decrypt.implicit_iv_len = impl_iv_len;
+         }
+     }
+ 
+diff --git a/src/openvpn/crypto.h b/src/openvpn/crypto.h
+index 7d32353..531664d 100644
+--- a/src/openvpn/crypto.h
++++ b/src/openvpn/crypto.h
+@@ -163,6 +163,17 @@
+ {
+     cipher_ctx_t *cipher;       /**< Generic cipher %context. */
+     hmac_ctx_t *hmac;           /**< Generic HMAC %context. */
++    /**
++     * This implicit IV will be always XORed with the packet id that is sent on
++     * the wire to get the IV. For the common AEAD ciphers of AES-GCM and
++     * Chacha20-Poly1305, the length of the IV is 12 bytes (96 bits).
++     *
++     * For non-epoch 32bit packet id AEAD format we set the first 32
++     * bits of implicit_iv to 0.
++     * Xor with the packet id in this case works as concatenation:
++     * after xor the lower 32 bit of the IV are the packet id and
++     * the rest of the IV is from the implicit IV.
++     */
+     uint8_t implicit_iv[OPENVPN_MAX_IV_LENGTH];
+     /**< The implicit part of the IV */
+     size_t implicit_iv_len;     /**< The length of implicit_iv */
+diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
+index 2acf985..05079cc 100644
+--- a/src/openvpn/ssl.c
++++ b/src/openvpn/ssl.c
+@@ -1562,8 +1562,9 @@
+         impl_iv_len = cipher_ctx_iv_length(ctx->cipher) - sizeof(packet_id_type);
+         ASSERT(impl_iv_len <= OPENVPN_MAX_IV_LENGTH);
+         ASSERT(impl_iv_len <= key_len);
+-        memcpy(ctx->implicit_iv, key, impl_iv_len);
+-        ctx->implicit_iv_len = impl_iv_len;
++        CLEAR(ctx->implicit_iv);
++        /* The first bytes of the IV are filled with the packet id */
++        memcpy(ctx->implicit_iv + sizeof(packet_id_type), key, impl_iv_len);
+     }
+ }
+ 
+diff --git a/tests/unit_tests/openvpn/test_ssl.c b/tests/unit_tests/openvpn/test_ssl.c
+index a1ca344..ae33cc6 100644
+--- a/tests/unit_tests/openvpn/test_ssl.c
++++ b/tests/unit_tests/openvpn/test_ssl.c
+@@ -284,18 +284,15 @@
+ 
+     if (cipher_ctx_mode_aead(cipher))
+     {
+-        size_t impl_iv_len = cipher_ctx_iv_length(cipher) - sizeof(packet_id_type);
+         ASSERT(cipher_ctx_iv_length(cipher) <= OPENVPN_MAX_IV_LENGTH);
+         ASSERT(cipher_ctx_iv_length(cipher) >= OPENVPN_AEAD_MIN_IV_LEN);
+ 
+         /* Generate dummy implicit IV */
+         ASSERT(rand_bytes(co->key_ctx_bi.encrypt.implicit_iv,
+                           OPENVPN_MAX_IV_LENGTH));
+-        co->key_ctx_bi.encrypt.implicit_iv_len = impl_iv_len;
+ 
+         memcpy(co->key_ctx_bi.decrypt.implicit_iv,
+                co->key_ctx_bi.encrypt.implicit_iv, OPENVPN_MAX_IV_LENGTH);
+-        co->key_ctx_bi.decrypt.implicit_iv_len = impl_iv_len;
+     }
+ }
+ 
 
