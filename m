@@ -1,11 +1,16 @@
-From: Gert Doering <gert@...1296...>
-Date: Mon,  9 Dec 2024 22:09:56 +0100
-Message-ID: <20241209210956.13536-1-gert@...1296...>
-In-Reply-To: <gerrit.1731290343000.I74216d776d3e0a8dc987ec7b1671c8e8dcccdbd6@...2715...>
-References: <gerrit.1731290343000.I74216d776d3e0a8dc987ec7b1671c8e8dcccdbd6@...2715...>
+From: "mattock (Code Review)" <gerrit@...515...>
+Date: Tue, 10 Dec 2024 07:14:03 +0000
+In-Reply-To: <gerrit.1732208116000.Ie63f302402f469c3aa48ac146ca6b8c029f0d250@...2715...>
+References: <gerrit.1732208116000.Ie63f302402f469c3aa48ac146ca6b8c029f0d250@...2715...>
+Reply-To: samuli@...515..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net, frank@...2641...
+Message-ID: <004ecf4f290f87b9fba82417e4d4f5be1e6c691b-EmailReplacePatchSet-HTML@...2715...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v8] Use XOR instead of concatenation for
- calculation of IV from implicit IV
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="ph0Ad3nuXdw="; charset=UTF-8
+Subject: [Openvpn-devel] [M] Change in openvpn[master]: Add lwip support to
+ t_server_null
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,170 +19,765 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-From: Arne Schwabe <arne@...1227...>
+--ph0Ad3nuXdw=
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-This change prepares the extended packet id data where also the packet id
-part of the IV will be derived using xor.  Using xor also in the AEAD
-case where this degenerates to a concatenation allows using the same
-IV generation code later.
+Attention is currently required from: flichtenheld, mattock, plaisthos.
 
-Change-Id: I74216d776d3e0a8dc987ec7b1671c8e8dcccdbd6
-Signed-off-by: Arne Schwabe <arne@...1227...>
-Acked-by: MaxF <max@...2606...>
+Hello flichtenheld, plaisthos,
+
+I'd like you to reexamine a change. Please visit
+
+    http://gerrit.openvpn.net/c/openvpn/+/811?usp=3Demail
+
+to look at the new patch set (#4).
+
+
+Change subject: Add lwip support to t_server_null
+......................................................................
+
+Add lwip support to t_server_null
+
+Change-Id: Ie63f302402f469c3aa48ac146ca6b8c029f0d250
+Signed-off-by: Samuli Sepp=C3=A4nen <samuli.seppanen@...277...>
 ---
+M doc/t_server_null.rst
+A tests/lwip_client_up.sh
+M tests/t_server_null_client.sh
+M tests/t_server_null_default.rc
+4 files changed, 145 insertions(+), 13 deletions(-)
 
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to master.
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/797
-This mail reflects revision 8 of this Change.
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/11/811/4
 
-Acked-by according to Gerrit (reflected above):
-MaxF <max@...2606...>
+diff --git a/doc/t_server_null.rst b/doc/t_server_null.rst
+index 5fe9080..022793a 100644
+--- a/doc/t_server_null.rst
++++ b/doc/t_server_null.rst
+@@ -16,7 +16,7 @@
 
-        
-diff --git a/src/openvpn/crypto.c b/src/openvpn/crypto.c
-index 67c5b04..d6cd256 100644
---- a/src/openvpn/crypto.c
-+++ b/src/openvpn/crypto.c
-@@ -94,12 +94,16 @@
-             goto err;
-         }
- 
--        /* Remainder of IV consists of implicit part (unique per session) */
--        ASSERT(buf_write(&iv_buffer, ctx->implicit_iv, ctx->implicit_iv_len));
--        ASSERT(iv_buffer.len == iv_len);
-+        /* Write packet id part of IV to work buffer */
-+        ASSERT(buf_write(&work, iv, packet_id_size(false)));
- 
--        /* Write explicit part of IV to work buffer */
--        ASSERT(buf_write(&work, iv, iv_len - ctx->implicit_iv_len));
-+        /* This generates the IV by XORing the implicit part of the IV
-+         * with the packet id already written to the iv buffer */
-+        for (int i = 0; i < iv_len; i++)
-+        {
-+            iv[i] = iv[i] ^ ctx->implicit_iv[i];
-+        }
+ * Parallelized for fairly high performance
+ * Mostly operating-system agnostic
+-* Tested on Fedora Linux 38/39/40 and FreeBSD 14
++* Tested on Fedora Linux 38/39/40, FreeBSD 14, NetBSD 10.0 and OpenBSD 7.5
+ * POSIX-compliant
+ * Tested and known to work with Bash, Dash, Ksh, Yash and FreeBSD's defaul=
+t /bin/sh
+ * Uses the sample certificates and keys
+@@ -31,6 +31,7 @@
+ * Test cases (client configurations) and server setups (server configurati=
+ons) are stored in a configuration file, i.e. data and code have been separ=
+ated
+ * Configuration file format is nearly identical to t_client.rc configurati=
+on
+ * Supports a set of default tests, overriding default test settings and ad=
+ding local tests
++* Supports client ping tests if ovpnlwip is available
+=20
+ Prerequisites
+ -------------
+@@ -60,8 +61,9 @@
+ #. Server instances start
+ #. Brief wait
+ #. Client instances start
+-#. Tests run
++#. ovpnlwip ping tests run
+ #. Client instances stop
++#. Test results are collected
+ #. Brief wait
+ #. Server instances stop
+
+@@ -77,7 +79,8 @@
+
+     * t_server_null_client.sh
+
+-      * Waits until servers have launched. Then launch all clients, wait f=
+or them to exit and then check test results by parsing the client log files=
+. Each client kills itself after some delay using an "--up" script.
++      * Waits until servers have launched. Then launch all clients, run ov=
+pnlwip ping tests (if any), wait for clients to exit and then check test re=
+sults by parsing the client log files. Each client kills itself after some =
+delay using an "--up" script.
 +
-         dmsg(D_PACKET_CONTENT, "ENCRYPT IV: %s", format_hex(iv, iv_len, 0, &gc));
- 
-         /* Init cipher_ctx with IV.  key & keylen are already initialized */
-@@ -426,16 +430,21 @@
-     {
-         uint8_t iv[OPENVPN_MAX_IV_LENGTH] = { 0 };
-         const int iv_len = cipher_ctx_iv_length(ctx->cipher);
--        const size_t packet_iv_len = iv_len - ctx->implicit_iv_len;
-+        const size_t packet_iv_len = packet_id_size(false);
- 
--        ASSERT(ctx->implicit_iv_len <= iv_len);
--        if (buf->len + ctx->implicit_iv_len < iv_len)
-+        if (buf->len < packet_iv_len)
-         {
-             CRYPT_ERROR("missing IV info");
-         }
- 
-         memcpy(iv, BPTR(buf), packet_iv_len);
--        memcpy(iv + packet_iv_len, ctx->implicit_iv, ctx->implicit_iv_len);
+
+ Configuration
+ -------------
+@@ -116,6 +119,19 @@
+
+   TEST_RUN_LIST=3D"1 2 5 9"
+
++Client ping tests that use ovpnlwip can be added similarly:
 +
-+        /* This generates the IV by XORing the implicit part of the IV
-+         * with the packet id already written to the iv buffer */
-+        for (int i = 0; i < iv_len; i++)
-+        {
-+            iv[i] = iv[i] ^ ctx->implicit_iv[i];
-+        }
- 
-         dmsg(D_PACKET_CONTENT, "DECRYPT IV: %s", format_hex(iv, iv_len, 0, &gc));
- 
-@@ -962,7 +971,6 @@
-         hmac_ctx_free(ctx->hmac);
-         ctx->hmac = NULL;
-     }
--    ctx->implicit_iv_len = 0;
++  TEST_NAME_9L=3D"t_server_null_client.sh-openvpn_current_udp_custom_lwip"
++  SHOULD_PASS_9L=3D"yes"
++  CLIENT_EXEC_9L=3D"${CLIENT_EXEC}"
++  CLIENT_CONF_9L=3D"${CLIENT_CONF_BASE_LWIP} --remote 127.0.0.1 1194 udp -=
+-proto udp"
++
++Note that all ovpnlwip test names need to include a "_lwip" suffix: withou=
+t if
++ping tests won't get activated. Also note that the *tests* directory needs=
+ to
++have the lwipovpn executable or ovpnlwip tests will get skipped. The ovpnl=
+wip
++ping tests get the IP addresses to ping from the \*.ips files created by t=
+he
++lwip_client_up.sh script --up script.
++
+ Stress-testing the --dev null test suite
+ ----------------------------------------
+
+diff --git a/tests/lwip_client_up.sh b/tests/lwip_client_up.sh
+new file mode 100755
+index 0000000..a07c4b7
+--- /dev/null
++++ b/tests/lwip_client_up.sh
+@@ -0,0 +1,30 @@
++#!/bin/sh
++#
++# Add this client's IP to a file
++if ! grep "$ifconfig_local" ./$test_name.ips; then
++    echo -n "$ifconfig_local " >> ./$test_name.ips
++fi
++
++# Determine the OpenVPN PID from its pid file. This works reliably even wh=
+en
++# the OpenVPN process is backgrounded for parallel tests.
++MY_PPID=3D`cat $pid`
++
++# Allow OpenVPN to finish initializing while waiting in the background and=
+ then
++# killing the process gracefully. Also wait for fping tests to finish.
++(sleep 5
++
++count=3D0
++maxcount=3D15
++while [ $count -le $maxcount ]; do
++    if pgrep fping > /dev/null 2>&1; then
++        echo "Waiting for fping to exit ($count/$maxcount)"
++        count=3D$(( count + 1))
++        sleep 1
++    else
++        echo "fping not running anymore"
++        break
++    fi
++done
++
++kill -15 $MY_PPID
++) &
+diff --git a/tests/t_server_null_client.sh b/tests/t_server_null_client.sh
+index 2210e63..77e1cc5 100755
+--- a/tests/t_server_null_client.sh
++++ b/tests/t_server_null_client.sh
+@@ -1,5 +1,17 @@
+ #!/bin/sh
+
++should_run_test() {
++    test_name=3D"$1"
++
++    if echo "$test_name"|grep -q _lwip; then
++        if [ "$has_lwipovpn" =3D "no" ]; then
++            return 1
++        fi
++    fi
++
++    return 0
++}
++
+ launch_client() {
+     test_name=3D$1
+     log=3D"${test_name}.log"
+@@ -13,10 +25,45 @@
+     "${client_exec}" \
+         $client_conf \
+         --writepid "${pid}" \
+-        --setenv pid $pid \
++        --setenv pid "$pid" \
++        --setenv test_name "$test_name" \
+         --log "${t_server_null_logdir}/${log}" &
  }
- 
- void
-@@ -1078,18 +1086,15 @@
-         cipher_ctx_t *cipher = co->key_ctx_bi.encrypt.cipher;
-         if (cipher_ctx_mode_aead(cipher))
-         {
--            size_t impl_iv_len = cipher_ctx_iv_length(cipher) - sizeof(packet_id_type);
-             ASSERT(cipher_ctx_iv_length(cipher) <= OPENVPN_MAX_IV_LENGTH);
-             ASSERT(cipher_ctx_iv_length(cipher) >= OPENVPN_AEAD_MIN_IV_LEN);
- 
-             /* Generate dummy implicit IV */
-             ASSERT(rand_bytes(co->key_ctx_bi.encrypt.implicit_iv,
-                               OPENVPN_MAX_IV_LENGTH));
--            co->key_ctx_bi.encrypt.implicit_iv_len = impl_iv_len;
- 
-             memcpy(co->key_ctx_bi.decrypt.implicit_iv,
-                    co->key_ctx_bi.encrypt.implicit_iv, OPENVPN_MAX_IV_LENGTH);
--            co->key_ctx_bi.decrypt.implicit_iv_len = impl_iv_len;
-         }
-     }
- 
-diff --git a/src/openvpn/crypto.h b/src/openvpn/crypto.h
-index 7d32353..531664d 100644
---- a/src/openvpn/crypto.h
-+++ b/src/openvpn/crypto.h
-@@ -163,6 +163,17 @@
- {
-     cipher_ctx_t *cipher;       /**< Generic cipher %context. */
-     hmac_ctx_t *hmac;           /**< Generic HMAC %context. */
-+    /**
-+     * This implicit IV will be always XORed with the packet id that is sent on
-+     * the wire to get the IV. For the common AEAD ciphers of AES-GCM and
-+     * Chacha20-Poly1305, the length of the IV is 12 bytes (96 bits).
-+     *
-+     * For non-epoch 32bit packet id AEAD format we set the first 32
-+     * bits of implicit_iv to 0.
-+     * Xor with the packet id in this case works as concatenation:
-+     * after xor the lower 32 bit of the IV are the packet id and
-+     * the rest of the IV is from the implicit IV.
-+     */
-     uint8_t implicit_iv[OPENVPN_MAX_IV_LENGTH];
-     /**< The implicit part of the IV */
-     size_t implicit_iv_len;     /**< The length of implicit_iv */
-diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
-index 2acf985..05079cc 100644
---- a/src/openvpn/ssl.c
-+++ b/src/openvpn/ssl.c
-@@ -1562,8 +1562,9 @@
-         impl_iv_len = cipher_ctx_iv_length(ctx->cipher) - sizeof(packet_id_type);
-         ASSERT(impl_iv_len <= OPENVPN_MAX_IV_LENGTH);
-         ASSERT(impl_iv_len <= key_len);
--        memcpy(ctx->implicit_iv, key, impl_iv_len);
--        ctx->implicit_iv_len = impl_iv_len;
-+        CLEAR(ctx->implicit_iv);
-+        /* The first bytes of the IV are filled with the packet id */
-+        memcpy(ctx->implicit_iv + sizeof(packet_id_type), key, impl_iv_len);
-     }
- }
- 
-diff --git a/tests/unit_tests/openvpn/test_ssl.c b/tests/unit_tests/openvpn/test_ssl.c
-index a1ca344..ae33cc6 100644
---- a/tests/unit_tests/openvpn/test_ssl.c
-+++ b/tests/unit_tests/openvpn/test_ssl.c
-@@ -284,18 +284,15 @@
- 
-     if (cipher_ctx_mode_aead(cipher))
-     {
--        size_t impl_iv_len = cipher_ctx_iv_length(cipher) - sizeof(packet_id_type);
-         ASSERT(cipher_ctx_iv_length(cipher) <= OPENVPN_MAX_IV_LENGTH);
-         ASSERT(cipher_ctx_iv_length(cipher) >= OPENVPN_AEAD_MIN_IV_LEN);
- 
-         /* Generate dummy implicit IV */
-         ASSERT(rand_bytes(co->key_ctx_bi.encrypt.implicit_iv,
-                           OPENVPN_MAX_IV_LENGTH));
--        co->key_ctx_bi.encrypt.implicit_iv_len = impl_iv_len;
- 
-         memcpy(co->key_ctx_bi.decrypt.implicit_iv,
-                co->key_ctx_bi.encrypt.implicit_iv, OPENVPN_MAX_IV_LENGTH);
--        co->key_ctx_bi.decrypt.implicit_iv_len = impl_iv_len;
-     }
- }
- 
+
++ping_lwip_clients() {
++    if [ "$has_lwipovpn" =3D "yes" ]; then
++        lwip_client_count=3D$(echo "$lwip_test_names"|wc -w|tr -d " ")
++    else
++        lwip_client_count=3D0
++    fi
++
++    if [ $lwip_client_count -eq 0 ]; then
++        return 0
++    fi
++
++    count=3D0
++    maxcount=3D10
++    while [ $count -le $maxcount ]; do
++        lwip_client_ips=3D$(cat ./*.ips 2>/dev/null|wc -w|tr -d " ")
++        if [ $lwip_client_ips -lt $lwip_client_count ]; then
++            echo "Waiting for LWIP clients to start up ($count/$maxcount)"
++            count=3D$(( count + 1))
++            sleep 1
++        else
++            echo "$lwip_client_ips/$lwip_client_count LWIP clients up"
++            break
++        fi
++    done
++
++    LWIP_CLIENTS=3D$(cat ./*.ips 2>/dev/null)
++    if [ "$LWIP_CLIENTS" ]; then
++        if ! fping -c 5 $LWIP_CLIENTS; then
++            echo "ERROR: pinging one or more openvpnlwip client IP address=
+es failed!"
++            retval=3D1
++        fi
++    fi
++}
++
+ wait_for_results() {
+     tests_running=3D"yes"
+
+@@ -77,7 +124,7 @@
+ server_max_wait=3D15
+ while [ $count -lt $server_max_wait ]; do
+     servers_up=3D0
+-    server_count=3D$(echo $TEST_SERVER_LIST|wc -w)
++    server_count=3D$(echo "$TEST_SERVER_LIST"|wc -w|tr -d " ")
+
+     # We need to trim single-quotes because some shells return quoted valu=
+es
+     # and some don't. Using "set -o posix" which would resolve this proble=
+m is
+@@ -85,8 +132,8 @@
+     #
+     # While inactive server configurations may get checked they won't incr=
+ease
+     # the active server count as the processes won't be running.
+-    for i in `set|grep 'SERVER_NAME_'|cut -d "=3D" -f 2|tr -d "[\']"`; do
+-        server_pid=3D$(cat $i.pid 2> /dev/null)
++    for i in $(set|grep 'SERVER_NAME_'|cut -d "=3D" -f 2|tr -d "[\']"); do
++        server_pid=3D$(cat "$i.pid" 2> /dev/null)
+         if [ -z "$server_pid" ] ; then
+             continue
+         fi
+@@ -111,6 +158,18 @@
+     fi
+ done
+
++# Check for presence of the lwipovpn executable
++if test -r "$LWIPOVPN_PATH"; then
++    has_lwipovpn=3D"yes"
++else
++    has_lwipovpn=3D"no"
++    echo "WARNING: lwipovpn executable is missing: lwip tests will be skip=
+ped"
++fi
++
++# Remove existing LWIP client IP files. This is to avoid pinging non-exist=
+ent
++# IP addresses when tests are disabled.
++$RUN_SUDO rm -f ./*.ips
++
+ # Wait a while to let server processes to settle down
+ sleep 1
+
+@@ -118,6 +177,7 @@
+ # is used later to determine when all OpenVPN clients have exited and it is
+ # safe to check the test results.
+ test_names=3D""
++lwip_test_names=3D""
+ for SUF in $TEST_RUN_LIST
+ do
+     eval test_name=3D\"\$TEST_NAME_$SUF\"
+@@ -125,9 +185,18 @@
+     eval client_conf=3D\"\$CLIENT_CONF_$SUF\"
+
+     test_names=3D"${test_names} ${test_name}"
+-    (launch_client "${test_name}" "${client_exec}" "${client_conf}")
++
++    if echo "$test_name"|grep -q _lwip; then
++        lwip_test_names=3D"${lwip_test_names} ${test_name}"
++    fi
++
++    if should_run_test "$test_name"; then
++        (launch_client "${test_name}" "${client_exec}" "${client_conf}")
++    fi
+ done
+
++ping_lwip_clients
++
+ # Wait until all OpenVPN clients have exited
+ (wait_for_results)
+
+@@ -137,7 +206,9 @@
+     eval test_name=3D\"\$TEST_NAME_$SUF\"
+     eval should_pass=3D\"\$SHOULD_PASS_$SUF\"
+
+-    get_client_test_result "${test_name}" "${should_pass}"
++    if should_run_test "$test_name"; then
++        get_client_test_result "${test_name}" "${should_pass}"
++    fi
+ done
+
+ exit $retval
+diff --git a/tests/t_server_null_default.rc b/tests/t_server_null_default.rc
+index cbf4877..fc77c53 100755
+--- a/tests/t_server_null_default.rc
++++ b/tests/t_server_null_default.rc
+@@ -19,6 +19,7 @@
+ SERVER_CERT=3D"${sample_keys}/server.crt"
+ SERVER_KEY=3D"${sample_keys}/server.key"
+ TA=3D"${sample_keys}/ta.key"
++LWIPOVPN_PATH=3D"${LWIPOVPN_PATH:-lwipovpn}"
+
+ # Used to detect if graceful kill of any server instance failed during the=
+ test
+ # run
+@@ -28,7 +29,7 @@
+ MAX_CLIENTS=3D"10"
+ CLIENT_MATCH=3D"Test-Client"
+ SERVER_EXEC=3D"${top_builddir}/src/openvpn/openvpn"
+-SERVER_BASE_OPTS=3D"--daemon --local 127.0.0.1 --dev tun --topology subnet=
+ --max-clients $MAX_CLIENTS --persist-tun --verb 3"
++SERVER_BASE_OPTS=3D"--daemon --local 127.0.0.1 --dev tun --topology subnet=
+ --max-clients $MAX_CLIENTS --persist-tun --verb 3 --duplicate-cn"
+ SERVER_CIPHER_OPTS=3D""
+ SERVER_CERT_OPTS=3D"--ca ${CA} --dh ${DH} --cert ${SERVER_CERT} --key ${SE=
+RVER_KEY} --tls-auth ${TA} 0"
+ SERVER_CONF_BASE=3D"${SERVER_BASE_OPTS} ${SERVER_CIPHER_OPTS} ${SERVER_CER=
+T_OPTS}"
+@@ -49,23 +50,37 @@
+
+ # Test client configurations
+ CLIENT_EXEC=3D"${top_builddir}/src/openvpn/openvpn"
+-CLIENT_BASE_OPTS=3D"--client --dev null --ifconfig-noexec --nobind --remot=
+e-cert-tls server --persist-tun --verb 3 --resolv-retry infinite --connect-=
+retry-max 3 --server-poll-timeout 5 --explicit-exit-notify 3 --script-secur=
+ity 2 --up ${srcdir}/null_client_up.sh"
++CLIENT_BASE_OPTS=3D"--client --nobind --remote-cert-tls server --persist-t=
+un --verb 3 --resolv-retry infinite --connect-retry-max 3 --server-poll-tim=
+eout 5 --explicit-exit-notify 3 --script-security 2"
++CLIENT_NULL_OPTS=3D"--dev null --ifconfig-noexec --up ${srcdir}/null_clien=
+t_up.sh"
++CLIENT_LWIP_OPTS=3D"--dev null --dev-node unix:${LWIPOVPN_PATH} --up ${src=
+dir}/lwip_client_up.sh"
++
+ CLIENT_CIPHER_OPTS=3D""
+ CLIENT_CERT_OPTS=3D"--ca ${CA} --cert ${CLIENT_CERT} --key ${CLIENT_KEY} -=
+-tls-auth ${TA} 1"
+
+-TEST_RUN_LIST=3D"1 2 3"
+-CLIENT_CONF_BASE=3D"${CLIENT_BASE_OPTS} ${CLIENT_CIPHER_OPTS} ${CLIENT_CER=
+T_OPTS}"
++TEST_RUN_LIST=3D"1 1L 2 2L 3"
++CLIENT_CONF_BASE=3D"${CLIENT_NULL_OPTS} ${CLIENT_BASE_OPTS} ${CLIENT_CIPHE=
+R_OPTS} ${CLIENT_CERT_OPTS}"
++CLIENT_CONF_BASE_LWIP=3D"${CLIENT_LWIP_OPTS} ${CLIENT_BASE_OPTS} ${CLIENT_=
+CIPHER_OPTS} ${CLIENT_CERT_OPTS}"
+
+ TEST_NAME_1=3D"t_server_null_client.sh-openvpn_current_udp"
+ SHOULD_PASS_1=3D"yes"
+ CLIENT_EXEC_1=3D"${CLIENT_EXEC}"
+ CLIENT_CONF_1=3D"${CLIENT_CONF_BASE} --remote 127.0.0.1 1194 udp --proto u=
+dp"
+
++TEST_NAME_1L=3D"t_server_null_client.sh-openvpn_current_udp_lwip"
++SHOULD_PASS_1L=3D"yes"
++CLIENT_EXEC_1L=3D"${CLIENT_EXEC}"
++CLIENT_CONF_1L=3D"${CLIENT_CONF_BASE_LWIP} --remote 127.0.0.1 1194 udp --p=
+roto udp"
++
+ TEST_NAME_2=3D"t_server_null_client.sh-openvpn_current_tcp"
+ SHOULD_PASS_2=3D"yes"
+ CLIENT_EXEC_2=3D"${CLIENT_EXEC}"
+ CLIENT_CONF_2=3D"${CLIENT_CONF_BASE} --remote 127.0.0.1 1195 tcp --proto t=
+cp"
+
++TEST_NAME_2L=3D"t_server_null_client.sh-openvpn_current_tcp_lwip"
++SHOULD_PASS_2L=3D"yes"
++CLIENT_EXEC_2L=3D"${CLIENT_EXEC}"
++CLIENT_CONF_2L=3D"${CLIENT_CONF_BASE_LWIP} --remote 127.0.0.1 1195 tcp --p=
+roto tcp"
++
+ TEST_NAME_3=3D"t_server_null_client.sh-openvpn_current_udp_fail"
+ SHOULD_PASS_3=3D"no"
+ CLIENT_EXEC_3=3D"${CLIENT_EXEC}"
+
+--
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/811?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings
+
+Gerrit-Project: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: Ie63f302402f469c3aa48ac146ca6b8c029f0d250
+Gerrit-Change-Number: 811
+Gerrit-PatchSet: 4
+Gerrit-Owner: mattock <samuli@...515...>
+Gerrit-Reviewer: flichtenheld <frank@...2641...>
+Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Attention: flichtenheld <frank@...2641...>
+Gerrit-Attention: mattock <samuli@...515...>
+Gerrit-MessageType: newpatchset
+
+--ph0Ad3nuXdw=
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<p> Attention is currently required from: flichtenheld, mattock, plaisthos.=
+ </p>
+<p>mattock <strong>uploaded patch set #4</strong> to this change.</p><p><a =
+href=3D"http://gerrit.openvpn.net/c/openvpn/+/811?usp=3Demail">View Change<=
+/a></p><pre style=3D"font-family: monospace,monospace; white-space: pre-wra=
+p;">Add lwip support to t_server_null<br><br>Change-Id: Ie63f302402f469c3aa=
+48ac146ca6b8c029f0d250<br>Signed-off-by: Samuli Sepp=C3=A4nen &lt;samuli.se=
+ppanen@...277...&gt;<br>---<br>M doc/t_server_null.rst<br>A tests/lwip_clie=
+nt_up.sh<br>M tests/t_server_null_client.sh<br>M tests/t_server_null_defaul=
+t.rc<br>4 files changed, 145 insertions(+), 13 deletions(-)<br><br></pre><p=
+re style=3D"font-family: monospace,monospace; white-space: pre-wrap;">git p=
+ull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/11/811/4</pre><pre =
+style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><span>di=
+ff --git a/doc/t_server_null.rst b/doc/t_server_null.rst</span><br><span>in=
+dex 5fe9080..022793a 100644</span><br><span>--- a/doc/t_server_null.rst</sp=
+an><br><span>+++ b/doc/t_server_null.rst</span><br><span>@@ -16,7 +16,7 @@<=
+/span><br><span> </span><br><span> * Parallelized for fairly high performan=
+ce</span><br><span> * Mostly operating-system agnostic</span><br><span styl=
+e=3D"color: hsl(0, 100%, 40%);">-* Tested on Fedora Linux 38/39/40 and Free=
+BSD 14</span><br><span style=3D"color: hsl(120, 100%, 40%);">+* Tested on F=
+edora Linux 38/39/40, FreeBSD 14, NetBSD 10.0 and OpenBSD 7.5</span><br><sp=
+an> * POSIX-compliant</span><br><span> * Tested and known to work with Bash=
+, Dash, Ksh, Yash and FreeBSD&#39;s default /bin/sh</span><br><span> * Uses=
+ the sample certificates and keys</span><br><span>@@ -31,6 +31,7 @@</span><=
+br><span> * Test cases (client configurations) and server setups (server co=
+nfigurations) are stored in a configuration file, i.e. data and code have b=
+een separated</span><br><span> * Configuration file format is nearly identi=
+cal to t_client.rc configuration</span><br><span> * Supports a set of defau=
+lt tests, overriding default test settings and adding local tests</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+* Supports client ping tests =
+if ovpnlwip is available</span><br><span> </span><br><span> Prerequisites</=
+span><br><span> -------------</span><br><span>@@ -60,8 +61,9 @@</span><br><=
+span> #. Server instances start</span><br><span> #. Brief wait</span><br><s=
+pan> #. Client instances start</span><br><span style=3D"color: hsl(0, 100%,=
+ 40%);">-#. Tests run</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+#. ovpnlwip ping tests run</span><br><span> #. Client instances stop</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+#. Test results are coll=
+ected</span><br><span> #. Brief wait</span><br><span> #. Server instances s=
+top</span><br><span> </span><br><span>@@ -77,7 +79,8 @@</span><br><span> </=
+span><br><span>     * t_server_null_client.sh</span><br><span> </span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-      * Waits until servers have =
+launched. Then launch all clients, wait for them to exit and then check tes=
+t results by parsing the client log files. Each client kills itself after s=
+ome delay using an &quot;--up&quot; script.</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+      * Waits until servers have launched. Then lau=
+nch all clients, run ovpnlwip ping tests (if any), wait for clients to exit=
+ and then check test results by parsing the client log files. Each client k=
+ills itself after some delay using an &quot;--up&quot; script.</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> </span><br><sp=
+an> Configuration</span><br><span> -------------</span><br><span>@@ -116,6 =
++119,19 @@</span><br><span> </span><br><span>   TEST_RUN_LIST=3D&quot;1 2 5=
+ 9&quot;</span><br><span> </span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+Client ping tests that use ovpnlwip can be added similarly:</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+  TEST_NAME_9L=3D&quot;t_server_null_client.sh-=
+openvpn_current_udp_custom_lwip&quot;</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+  SHOULD_PASS_9L=3D&quot;yes&quot;</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+  CLIENT_EXEC_9L=3D&quot;${CLIENT_EXEC}&q=
+uot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  CLIENT_CONF_9=
+L=3D&quot;${CLIENT_CONF_BASE_LWIP} --remote 127.0.0.1 1194 udp --proto udp&=
+quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+Note that all ovpnlwip test names=
+ need to include a &quot;_lwip&quot; suffix: without if</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+ping tests won&#39;t get activated. Als=
+o note that the *tests* directory needs to</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+have the lwipovpn executable or ovpnlwip tests will =
+get skipped. The ovpnlwip</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+ping tests get the IP addresses to ping from the \*.ips files created=
+ by the</span><br><span style=3D"color: hsl(120, 100%, 40%);">+lwip_client_=
+up.sh script --up script.</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+</span><br><span> Stress-testing the --dev null test suite</span><br>=
+<span> ----------------------------------------</span><br><span> </span><br=
+><span>diff --git a/tests/lwip_client_up.sh b/tests/lwip_client_up.sh</span=
+><br><span>new file mode 100755</span><br><span>index 0000000..a07c4b7</spa=
+n><br><span>--- /dev/null</span><br><span>+++ b/tests/lwip_client_up.sh</sp=
+an><br><span>@@ -0,0 +1,30 @@</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+#!/bin/sh</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+#</span><br><span style=3D"color: hsl(120, 100%, 40%);">+# Add this client&=
+#39;s IP to a file</span><br><span style=3D"color: hsl(120, 100%, 40%);">+i=
+f ! grep &quot;$ifconfig_local&quot; ./$test_name.ips; then</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+    echo -n &quot;$ifconfig_local &=
+quot; &gt;&gt; ./$test_name.ips</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+fi</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+# Determine the OpenVPN =
+PID from its pid file. This works reliably even when</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+# the OpenVPN process is backgrounded for=
+ parallel tests.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+MY_=
+PPID=3D`cat $pid`</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+# Allow OpenVPN to fi=
+nish initializing while waiting in the background and then</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+# killing the process gracefully. Al=
+so wait for fping tests to finish.</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+(sleep 5</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+count=3D0</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+maxcount=3D15</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+while [ $count -le $maxcount ];=
+ do</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if pgrep fpi=
+ng &gt; /dev/null 2&gt;&amp;1; then</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+        echo &quot;Waiting for fping to exit ($count/$maxco=
+unt)&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        c=
+ount=3D$(( count + 1))</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+        sleep 1</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+   else</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        echo=
+ &quot;fping not running anymore&quot;</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+        break</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+    fi</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+done</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+kill -15 $MY_PPID</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+) &amp;</span><br><span>diff --git a=
+/tests/t_server_null_client.sh b/tests/t_server_null_client.sh</span><br><s=
+pan>index 2210e63..77e1cc5 100755</span><br><span>--- a/tests/t_server_null=
+_client.sh</span><br><span>+++ b/tests/t_server_null_client.sh</span><br><s=
+pan>@@ -1,5 +1,17 @@</span><br><span> #!/bin/sh</span><br><span> </span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+should_run_test() {</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+    test_name=3D&quot;$1&quot=
+;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+    if echo &quot;$test_name&quot;|gr=
+ep -q _lwip; then</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+      if [ &quot;$has_lwipovpn&quot; =3D &quot;no&quot; ]; then</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+            return 1</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+        fi</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+    fi</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+    return 0</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> lau=
+nch_client() {</span><br><span>     test_name=3D$1</span><br><span>     log=
+=3D&quot;${test_name}.log&quot;</span><br><span>@@ -13,10 +25,45 @@</span><=
+br><span>     &quot;${client_exec}&quot; \</span><br><span>         $client=
+_conf \</span><br><span>         --writepid &quot;${pid}&quot; \</span><br>=
+<span style=3D"color: hsl(0, 100%, 40%);">-        --setenv pid $pid \</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+        --setenv pid &qu=
+ot;$pid&quot; \</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+    --setenv test_name &quot;$test_name&quot; \</span><br><span>         --=
+log &quot;${t_server_null_logdir}/${log}&quot; &amp;</span><br><span> }</sp=
+an><br><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+ping_=
+lwip_clients() {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+ if [ &quot;$has_lwipovpn&quot; =3D &quot;yes&quot; ]; then</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+        lwip_client_count=3D$(echo =
+&quot;$lwip_test_names&quot;|wc -w|tr -d &quot; &quot;)</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+    else</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+        lwip_client_count=3D0</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+    fi</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+    if [ $lwip_client_count -eq 0 ]; then</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+        return 0</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+    fi</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    count=
+=3D0</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    maxcount=3D=
+10</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    while [ $coun=
+t -le $maxcount ]; do</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+        lwip_client_ips=3D$(cat ./*.ips 2&gt;/dev/null|wc -w|tr -d &quot;=
+ &quot;)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        if =
+[ $lwip_client_ips -lt $lwip_client_count ]; then</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+            echo &quot;Waiting for LWIP clien=
+ts to start up ($count/$maxcount)&quot;</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+            count=3D$(( count + 1))</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+            sleep 1</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+        else</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+            echo &quot;$lwip_client_ips/$lwip_=
+client_count LWIP clients up&quot;</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+            break</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+        fi</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+    done</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+    LWIP_CLIENTS=3D$(cat .=
+/*.ips 2&gt;/dev/null)</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+    if [ &quot;$LWIP_CLIENTS&quot; ]; then</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+        if ! fping -c 5 $LWIP_CLIENTS; then</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+            echo &quot;ER=
+ROR: pinging one or more openvpnlwip client IP addresses failed!&quot;</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+            retval=3D1</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+        fi</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+    fi</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+</span><br><span> wait_for_results() {</span><br><span>    =
+ tests_running=3D&quot;yes&quot;</span><br><span> </span><br><span>@@ -77,7=
+ +124,7 @@</span><br><span> server_max_wait=3D15</span><br><span> while [ $=
+count -lt $server_max_wait ]; do</span><br><span>     servers_up=3D0</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-    server_count=3D$(echo $T=
+EST_SERVER_LIST|wc -w)</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+    server_count=3D$(echo &quot;$TEST_SERVER_LIST&quot;|wc -w|tr -d &quo=
+t; &quot;)</span><br><span> </span><br><span>     # We need to trim single-=
+quotes because some shells return quoted values</span><br><span>     # and =
+some don&#39;t. Using &quot;set -o posix&quot; which would resolve this pro=
+blem is</span><br><span>@@ -85,8 +132,8 @@</span><br><span>     #</span><br=
+><span>     # While inactive server configurations may get checked they won=
+&#39;t increase</span><br><span>     # the active server count as the proce=
+sses won&#39;t be running.</span><br><span style=3D"color: hsl(0, 100%, 40%=
+);">-    for i in `set|grep &#39;SERVER_NAME_&#39;|cut -d &quot;=3D&quot; -=
+f 2|tr -d &quot;[\&#39;]&quot;`; do</span><br><span style=3D"color: hsl(0, =
+100%, 40%);">-        server_pid=3D$(cat $i.pid 2&gt; /dev/null)</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+    for i in $(set|grep &#39;S=
+ERVER_NAME_&#39;|cut -d &quot;=3D&quot; -f 2|tr -d &quot;[\&#39;]&quot;); d=
+o</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        server_pid=
+=3D$(cat &quot;$i.pid&quot; 2&gt; /dev/null)</span><br><span>         if [ =
+-z &quot;$server_pid&quot; ] ; then</span><br><span>             continue</=
+span><br><span>         fi</span><br><span>@@ -111,6 +158,18 @@</span><br><=
+span>     fi</span><br><span> done</span><br><span> </span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+# Check for presence of the lwipovpn exec=
+utable</span><br><span style=3D"color: hsl(120, 100%, 40%);">+if test -r &q=
+uot;$LWIPOVPN_PATH&quot;; then</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+    has_lwipovpn=3D&quot;yes&quot;</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+else</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+    has_lwipovpn=3D&quot;no&quot;</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+    echo &quot;WARNING: lwipovpn executable is mis=
+sing: lwip tests will be skipped&quot;</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+fi</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+# Remove existing=
+ LWIP client IP files. This is to avoid pinging non-existent</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+# IP addresses when tests are disa=
+bled.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+$RUN_SUDO rm -=
+f ./*.ips</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br=
+><span> # Wait a while to let server processes to settle down</span><br><sp=
+an> sleep 1</span><br><span> </span><br><span>@@ -118,6 +177,7 @@</span><br=
+><span> # is used later to determine when all OpenVPN clients have exited a=
+nd it is</span><br><span> # safe to check the test results.</span><br><span=
+> test_names=3D&quot;&quot;</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+lwip_test_names=3D&quot;&quot;</span><br><span> for SUF in $TEST_RU=
+N_LIST</span><br><span> do</span><br><span>     eval test_name=3D\&quot;\$T=
+EST_NAME_$SUF\&quot;</span><br><span>@@ -125,9 +185,18 @@</span><br><span> =
+    eval client_conf=3D\&quot;\$CLIENT_CONF_$SUF\&quot;</span><br><span> </=
+span><br><span>     test_names=3D&quot;${test_names} ${test_name}&quot;</sp=
+an><br><span style=3D"color: hsl(0, 100%, 40%);">-    (launch_client &quot;=
+${test_name}&quot; &quot;${client_exec}&quot; &quot;${client_conf}&quot;)</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+    if echo &quot;$test_name&quot;|grep =
+-q _lwip; then</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
+   lwip_test_names=3D&quot;${lwip_test_names} ${test_name}&quot;</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+    fi</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+    if should_run_test &quot;$test_name&quot;; then</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+        (launch_client &quot=
+;${test_name}&quot; &quot;${client_exec}&quot; &quot;${client_conf}&quot;)<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+    fi</span><br><sp=
+an> done</span><br><span> </span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+ping_lwip_clients</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+</span><br><span> # Wait until all OpenVPN clients have exited</span><=
+br><span> (wait_for_results)</span><br><span> </span><br><span>@@ -137,7 +2=
+06,9 @@</span><br><span>     eval test_name=3D\&quot;\$TEST_NAME_$SUF\&quot=
+;</span><br><span>     eval should_pass=3D\&quot;\$SHOULD_PASS_$SUF\&quot;<=
+/span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
+get_client_test_result &quot;${test_name}&quot; &quot;${should_pass}&quot;<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if should_run_te=
+st &quot;$test_name&quot;; then</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+        get_client_test_result &quot;${test_name}&quot; &quot;$=
+{should_pass}&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+    fi</span><br><span> done</span><br><span> </span><br><span> exit $retva=
+l</span><br><span>diff --git a/tests/t_server_null_default.rc b/tests/t_ser=
+ver_null_default.rc</span><br><span>index cbf4877..fc77c53 100755</span><br=
+><span>--- a/tests/t_server_null_default.rc</span><br><span>+++ b/tests/t_s=
+erver_null_default.rc</span><br><span>@@ -19,6 +19,7 @@</span><br><span> SE=
+RVER_CERT=3D&quot;${sample_keys}/server.crt&quot;</span><br><span> SERVER_K=
+EY=3D&quot;${sample_keys}/server.key&quot;</span><br><span> TA=3D&quot;${sa=
+mple_keys}/ta.key&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+LWIPOVPN_PATH=3D&quot;${LWIPOVPN_PATH:-lwipovpn}&quot;</span><br><span>=
+ </span><br><span> # Used to detect if graceful kill of any server instance=
+ failed during the test</span><br><span> # run</span><br><span>@@ -28,7 +29=
+,7 @@</span><br><span> MAX_CLIENTS=3D&quot;10&quot;</span><br><span> CLIENT=
+_MATCH=3D&quot;Test-Client&quot;</span><br><span> SERVER_EXEC=3D&quot;${top=
+_builddir}/src/openvpn/openvpn&quot;</span><br><span style=3D"color: hsl(0,=
+ 100%, 40%);">-SERVER_BASE_OPTS=3D&quot;--daemon --local 127.0.0.1 --dev tu=
+n --topology subnet --max-clients $MAX_CLIENTS --persist-tun --verb 3&quot;=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+SERVER_BASE_OPTS=3D=
+&quot;--daemon --local 127.0.0.1 --dev tun --topology subnet --max-clients =
+$MAX_CLIENTS --persist-tun --verb 3 --duplicate-cn&quot;</span><br><span> S=
+ERVER_CIPHER_OPTS=3D&quot;&quot;</span><br><span> SERVER_CERT_OPTS=3D&quot;=
+--ca ${CA} --dh ${DH} --cert ${SERVER_CERT} --key ${SERVER_KEY} --tls-auth =
+${TA} 0&quot;</span><br><span> SERVER_CONF_BASE=3D&quot;${SERVER_BASE_OPTS}=
+ ${SERVER_CIPHER_OPTS} ${SERVER_CERT_OPTS}&quot;</span><br><span>@@ -49,23 =
++50,37 @@</span><br><span> </span><br><span> # Test client configurations</=
+span><br><span> CLIENT_EXEC=3D&quot;${top_builddir}/src/openvpn/openvpn&quo=
+t;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-CLIENT_BASE_OPTS=3D=
+&quot;--client --dev null --ifconfig-noexec --nobind --remote-cert-tls serv=
+er --persist-tun --verb 3 --resolv-retry infinite --connect-retry-max 3 --s=
+erver-poll-timeout 5 --explicit-exit-notify 3 --script-security 2 --up ${sr=
+cdir}/null_client_up.sh&quot;</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+CLIENT_BASE_OPTS=3D&quot;--client --nobind --remote-cert-tls serv=
+er --persist-tun --verb 3 --resolv-retry infinite --connect-retry-max 3 --s=
+erver-poll-timeout 5 --explicit-exit-notify 3 --script-security 2&quot;</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+CLIENT_NULL_OPTS=3D&quo=
+t;--dev null --ifconfig-noexec --up ${srcdir}/null_client_up.sh&quot;</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+CLIENT_LWIP_OPTS=3D&quot;=
+--dev null --dev-node unix:${LWIPOVPN_PATH} --up ${srcdir}/lwip_client_up.s=
+h&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><=
+span> CLIENT_CIPHER_OPTS=3D&quot;&quot;</span><br><span> CLIENT_CERT_OPTS=
+=3D&quot;--ca ${CA} --cert ${CLIENT_CERT} --key ${CLIENT_KEY} --tls-auth ${=
+TA} 1&quot;</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, =
+40%);">-TEST_RUN_LIST=3D&quot;1 2 3&quot;</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-CLIENT_CONF_BASE=3D&quot;${CLIENT_BASE_OPTS} ${CLIENT_C=
+IPHER_OPTS} ${CLIENT_CERT_OPTS}&quot;</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+TEST_RUN_LIST=3D&quot;1 1L 2 2L 3&quot;</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+CLIENT_CONF_BASE=3D&quot;${CLIENT_NUL=
+L_OPTS} ${CLIENT_BASE_OPTS} ${CLIENT_CIPHER_OPTS} ${CLIENT_CERT_OPTS}&quot;=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+CLIENT_CONF_BASE_LW=
+IP=3D&quot;${CLIENT_LWIP_OPTS} ${CLIENT_BASE_OPTS} ${CLIENT_CIPHER_OPTS} ${=
+CLIENT_CERT_OPTS}&quot;</span><br><span> </span><br><span> TEST_NAME_1=3D&q=
+uot;t_server_null_client.sh-openvpn_current_udp&quot;</span><br><span> SHOU=
+LD_PASS_1=3D&quot;yes&quot;</span><br><span> CLIENT_EXEC_1=3D&quot;${CLIENT=
+_EXEC}&quot;</span><br><span> CLIENT_CONF_1=3D&quot;${CLIENT_CONF_BASE} --r=
+emote 127.0.0.1 1194 udp --proto udp&quot;</span><br><span> </span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+TEST_NAME_1L=3D&quot;t_server_null=
+_client.sh-openvpn_current_udp_lwip&quot;</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+SHOULD_PASS_1L=3D&quot;yes&quot;</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+CLIENT_EXEC_1L=3D&quot;${CLIENT_EXEC}&qu=
+ot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+CLIENT_CONF_1L=
+=3D&quot;${CLIENT_CONF_BASE_LWIP} --remote 127.0.0.1 1194 udp --proto udp&q=
+uot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><spa=
+n> TEST_NAME_2=3D&quot;t_server_null_client.sh-openvpn_current_tcp&quot;</s=
+pan><br><span> SHOULD_PASS_2=3D&quot;yes&quot;</span><br><span> CLIENT_EXEC=
+_2=3D&quot;${CLIENT_EXEC}&quot;</span><br><span> CLIENT_CONF_2=3D&quot;${CL=
+IENT_CONF_BASE} --remote 127.0.0.1 1195 tcp --proto tcp&quot;</span><br><sp=
+an> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+TEST_NAME_2L=3D=
+&quot;t_server_null_client.sh-openvpn_current_tcp_lwip&quot;</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+SHOULD_PASS_2L=3D&quot;yes&quot;</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+CLIENT_EXEC_2L=3D&quo=
+t;${CLIENT_EXEC}&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+CLIENT_CONF_2L=3D&quot;${CLIENT_CONF_BASE_LWIP} --remote 127.0.0.1 1195 =
+tcp --proto tcp&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+</span><br><span> TEST_NAME_3=3D&quot;t_server_null_client.sh-openvpn_cur=
+rent_udp_fail&quot;</span><br><span> SHOULD_PASS_3=3D&quot;no&quot;</span><=
+br><span> CLIENT_EXEC_3=3D&quot;${CLIENT_EXEC}&quot;</span><br><span></span=
+><br></pre><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn=
+/+/811?usp=3Demail">change 811</a>. To unsubscribe, or for help writing mai=
+l filters, visit <a href=3D"http://gerrit.openvpn.net/settings">settings</a=
+>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div items=
+cope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link it=
+emprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/811?usp=3Demai=
+l"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
+
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: Ie63f302402f469c3aa48ac146ca=
+6b8c029f0d250 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 811 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 4 </div>
+<div style=3D"display:none"> Gerrit-Owner: mattock &lt;samuli@...515...&gt;=
+ </div>
+<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
+1...&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
+.1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
+41...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: mattock &lt;samuli@...515...=
+&gt; </div>
+<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
+
+
+--ph0Ad3nuXdw=--
 
