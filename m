@@ -1,17 +1,15 @@
-From: "its_Giaan (Code Review)" <gerrit@...515...>
-Date: Tue, 10 Dec 2024 13:10:35 +0000
-In-Reply-To: <gerrit.1700055887000.Ia0a889e800f0b36aed770ee36e31afeec5df6084@...2715...>
-References: <gerrit.1700055887000.Ia0a889e800f0b36aed770ee36e31afeec5df6084@...2715...>
-Reply-To: gianmarco@...2726..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...,
- gert@...1296..., a@...2181...
-Message-ID: <e9e9041e727b2c7fd8234cf766320634af55cd79-EmailReviewComments-HTML@...2715...>
+From: "ralf_lici (Code Review)" <gerrit@...515...>
+Date: Tue, 10 Dec 2024 16:53:32 +0000
+References: <gerrit.1733849609000.Ib118426c5a69256894040c69856a4003d9f4637c@...2715...>
+Reply-To: ralf@...2726..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net, frank@...2641...
+Message-ID: <60542e3cbcd523a4391cc3a40577d474b02c4499-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="kVm3pvlzIKw="; charset=UTF-8
-Subject: [Openvpn-devel] [L] Change in openvpn[master]: Adapt socket
- handling to support listening on multiple sockets
+Content-Type: multipart/alternative; boundary="aosOOzHyI0k="; charset=UTF-8
+Subject: [Openvpn-devel] [M] Change in openvpn[master]: Handle missing DCO
+ peer by restarting the session
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,350 +18,408 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Cc: cron2 <gert@...1296...>, flichtenheld <frank@...2641...>, plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---kVm3pvlzIKw=
+--aosOOzHyI0k=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: cron2, ordex, plaisthos.
+Attention is currently required from: flichtenheld, plaisthos.
 
-its_Giaan has posted comments on this change. ( http://gerrit.openvpn.net/c=
-/openvpn/+/434?usp=3Demail )
+Hello plaisthos, flichtenheld,
 
-Change subject: Adapt socket handling to support listening on multiple sock=
-ets
+I'd like you to do a code review.
+Please visit
+
+    http://gerrit.openvpn.net/c/openvpn/+/831?usp=3Demail
+
+to review the following change.
+
+
+Change subject: Handle missing DCO peer by restarting the session
 ......................................................................
 
+Handle missing DCO peer by restarting the session
 
-Patch Set 7:
+Occasionally, CMD_DEL_PEER is not delivered to userspace, preventing the
+openvpn process from registering the event. To handle this case, we
+check if calls to the DCO module return an error, and, if so, send a
+SIGUSR1 signal to reset the session.
 
-(16 comments)
-
-File src/openvpn/forward.c:
-
-http://gerrit.openvpn.net/c/openvpn/+/434/comment/5c3d2260_ff08a995 :
-PS7, Line 1133:             /* all sockets are of the same type, so just ch=
-eck the first one */
-> this confuses me. [=E2=80=A6]
-Done
-
-
-File src/openvpn/init.c:
-
-http://gerrit.openvpn.net/c/openvpn/+/434/comment/c8bba806_c5354795 :
-PS7, Line 533:             {
-> this is a behavioural change, not checking `advance_next_remote` anymore.=
- [=E2=80=A6]
-Done
+Change-Id: Ib118426c5a69256894040c69856a4003d9f4637c
+Signed-off-by: Ralf Lici <ralf@...2726...>
+---
+M src/openvpn/dco_linux.c
+M src/openvpn/forward.c
+M src/openvpn/manage.c
+M src/openvpn/multi.c
+M src/openvpn/sig.c
+5 files changed, 61 insertions(+), 14 deletions(-)
 
 
-http://gerrit.openvpn.net/c/openvpn/+/434/comment/0274c355_3b2e8c19 :
-PS7, Line 1959:         ASSERT(c->c2.link_sockets);
-> this is not doing the same thing as before... [=E2=80=A6]
-Done
 
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/31/831/1
 
-http://gerrit.openvpn.net/c/openvpn/+/434/comment/9e623ad9_318662fe :
-PS7, Line 2015:             do_ifconfig(c->c1.tuntap, c->c1.tuntap->actual_=
-name, c->c2.frame.tun_mtu, c->c2.es, &c->net_ctx);
-> line length exceeded, and the old version wasn't that bad (the unwrapping=
- above was reasonable, with [=E2=80=A6]
-Done
+diff --git a/src/openvpn/dco_linux.c b/src/openvpn/dco_linux.c
+index b038382..3f8e206 100644
+--- a/src/openvpn/dco_linux.c
++++ b/src/openvpn/dco_linux.c
+@@ -979,7 +979,12 @@
+ int
+ dco_get_peer_stats(struct context *c)
+ {
+-    uint32_t peer_id =3D c->c2.tls_multi->dco_peer_id;
++    int peer_id =3D c->c2.tls_multi->dco_peer_id;
++    if (peer_id =3D=3D -1)
++    {
++        return 0;
++    }
++
+     msg(D_DCO_DEBUG, "%s: peer-id %d", __func__, peer_id);
 
+     if (!c->c1.tuntap)
+diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c
+index d50b24c..4c4f3f7 100644
+--- a/src/openvpn/forward.c
++++ b/src/openvpn/forward.c
+@@ -483,16 +483,27 @@
+ static void
+ check_inactivity_timeout(struct context *c)
+ {
+-    if (dco_enabled(&c->options) && dco_get_peer_stats(c) =3D=3D 0)
++    if (dco_enabled(&c->options))
+     {
+-        int64_t tot_bytes =3D c->c2.tun_read_bytes + c->c2.tun_write_bytes;
+-        int64_t new_bytes =3D tot_bytes - c->c2.inactivity_bytes;
+-
+-        if (new_bytes > c->options.inactivity_minimum_bytes)
++        const int stats_request =3D dco_get_peer_stats(c);
++        if (stats_request =3D=3D 0)
+         {
+-            c->c2.inactivity_bytes =3D tot_bytes;
+-            event_timeout_reset(&c->c2.inactivity_interval);
++            int64_t tot_bytes =3D c->c2.tun_read_bytes + c->c2.tun_write_b=
+ytes;
++            int64_t new_bytes =3D tot_bytes - c->c2.inactivity_bytes;
 
-http://gerrit.openvpn.net/c/openvpn/+/434/comment/83e1f2b3_82aeffb6 :
-PS7, Line 3819: do_init_socket_1(struct context *c)
-> I think we should stick to `phase1` as function name, otherwise it reads =
-as if this is "init socket  [=E2=80=A6]
-Done
++            if (new_bytes > c->options.inactivity_minimum_bytes)
++            {
++                c->c2.inactivity_bytes =3D tot_bytes;
++                event_timeout_reset(&c->c2.inactivity_interval);
++
++                return;
++            }
++        }
++        else if (stats_request < 0)
++        {
++            msg(M_WARN, "Error requesting peer %d DCO stats (%s). Restarti=
+ng the session",
++                c->c2.tls_multi->dco_peer_id, strerror(-stats_request));
++            register_signal(c->sig, SIGUSR1, "dco peer stats error");
+             return;
+         }
+     }
+diff --git a/src/openvpn/manage.c b/src/openvpn/manage.c
+index e79a118..be2da4a 100644
+--- a/src/openvpn/manage.c
++++ b/src/openvpn/manage.c
+@@ -4138,10 +4138,21 @@
+         counter_type dco_read_bytes =3D 0;
+         counter_type dco_write_bytes =3D 0;
 
+-        if (dco_enabled(&c->options) && (dco_get_peer_stats(c) =3D=3D 0))
++        if (dco_enabled(&c->options) && c->c2.tls_multi->peer_id !=3D -1)
+         {
+-            dco_read_bytes =3D c->c2.dco_read_bytes;
+-            dco_write_bytes =3D c->c2.dco_write_bytes;
++            const int stats_request =3D dco_get_peer_stats(c);
++            if (stats_request =3D=3D 0)
++            {
++                dco_read_bytes =3D c->c2.dco_read_bytes;
++                dco_write_bytes =3D c->c2.dco_write_bytes;
++            }
++            else if (stats_request < 0)
++            {
++                msg(D_MANAGEMENT, "MANAGEMENT: Error requesting peer %d DC=
+O stats (%s). Restarting the session",
++                    c->c2.tls_multi->dco_peer_id, strerror(-stats_request)=
+);
++                register_signal(c->sig, SIGUSR1, "dco peer stats error");
++                return;
++            }
+         }
 
-http://gerrit.openvpn.net/c/openvpn/+/434/comment/983be341_eb72cb9c :
-PS7, Line 4011:     if (c->c2.link_sockets && c->c2.link_socket_owned)
-> what happened to the `is_dco_win()` part here?  This looks like a rebase =
-accident
-Done
+         if (!(man->persist.callback.flags & MCF_SERVER))
+diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
+index 45b3cfa..20724a0 100644
+--- a/src/openvpn/multi.c
++++ b/src/openvpn/multi.c
+@@ -549,7 +549,13 @@
+ {
+     if (dco_enabled(&m->top.options))
+     {
+-        dco_get_peer_stats_multi(&m->top.c1.tuntap->dco, m);
++        const int stats_request =3D dco_get_peer_stats_multi(&m->top.c1.tu=
+ntap->dco, m);
++        if (stats_request < 0)
++        {
++            msg(D_DCO, "Error requesting peer %d DCO stats (%s)",
++                c->c2.tls_multi->dco_peer_id, strerror(-stats_request));
++            return;
++        }
+     }
 
+     setenv_counter(c->c2.es, "bytes_received", c->c2.link_read_bytes + c->=
+c2.dco_read_bytes);
+@@ -855,7 +861,14 @@
 
-http://gerrit.openvpn.net/c/openvpn/+/434/comment/0dd0c10f_cbddc037 :
-PS7, Line 4040:         CLEAR(c->c1.link_socket_addrs[0].actual);
-> this looks inconsistent - freeaddrinfo() is called in the loop, while the=
- CLEAR() is only called for [=E2=80=A6]
-Done
+         if (dco_enabled(&m->top.options))
+         {
+-            dco_get_peer_stats_multi(&m->top.c1.tuntap->dco, m);
++            const int stats_request =3D dco_get_peer_stats_multi(&m->top.c=
+1.tuntap->dco, m);
++            if (stats_request =3D=3D -ENOENT)
++            {
++                msg(M_WARN, "Error requesting peer DCO stats (%s)",
++                    strerror(-stats_request));
++                register_signal(m->top.sig, SIGUSR1, "dco peer stats error=
+");
++                return;
++            }
+         }
 
+         if (version =3D=3D 1)
+diff --git a/src/openvpn/sig.c b/src/openvpn/sig.c
+index 8323f0d..3654033 100644
+--- a/src/openvpn/sig.c
++++ b/src/openvpn/sig.c
+@@ -489,7 +489,14 @@
 
-http://gerrit.openvpn.net/c/openvpn/+/434/comment/8c4402d6_a5c9227d :
-PS7, Line 4719:         do_init_socket_1(c);
-> mmmh, see comment above, maybe name this `do_init_link_sockets_phase1()`?=
- [=E2=80=A6]
-Done
+     if (dco_enabled(&c->options))
+     {
+-        dco_get_peer_stats(c);
++        const int stats_request =3D dco_get_peer_stats(c);
++        if (stats_request < 0)
++        {
++            msg(M_WARN, "Error requesting peer %d DCO stats (%s). Restarti=
+ng the session",
++                c->c2.tls_multi->dco_peer_id, strerror(-stats_request));
++            register_signal(c->sig, SIGUSR1, "dco peer stats error");
++            return;
++        }
+     }
 
-
-http://gerrit.openvpn.net/c/openvpn/+/434/comment/90c989e7_e8b47bfa :
-PS7, Line 4762:         do_init_socket_2(c);
-> `_phase2()`
-Done
-
-
-http://gerrit.openvpn.net/c/openvpn/+/434/comment/da819cb1_03b64f6a :
-PS7, Line 4968:                        &dest->gc);
-> is this wrapping necessary?  Comparing to the lines below it does not see=
-m like it
-Acknowledged
-
-
-File src/openvpn/mudp.c:
-
-http://gerrit.openvpn.net/c/openvpn/+/434/comment/d1d68fc6_23406680 :
-PS7, Line 384:         for (int i =3D 0; i < m->top.c1.link_sockets_num; i+=
-+)
-> this comment opened a little pandora's box... [=E2=80=A6]
-In the next patches we will have a common server loop for both TCP and UDP =
-however the I/O processing will remain separate, for this specific case we =
-decided to pass directly the link_socket to avoid to walk through all of th=
-em, in the final patch we will handle directly the link_socket returned by =
-the event_set.
-
-
-File src/openvpn/socket.c:
-
-http://gerrit.openvpn.net/c/openvpn/+/434/comment/6534f7ed_de52f295 :
-PS7, Line 1858:     c->c2.link_sockets[sock_index]->local_host =3D c->optio=
-ns.ce.local;
-> Can this be changed to `*sock =3D &c->c2. [=E2=80=A6]
-Done
-
-
-http://gerrit.openvpn.net/c/openvpn/+/434/comment/b247da87_2274fb46 :
-PS7, Line 2222: #if defined (_WIN32)
-> unrelated whitespace change, please do not (also, this extra space is not=
- how it's done elsewhere)
-Done
-
-
-http://gerrit.openvpn.net/c/openvpn/+/434/comment/58256377_1c734eb8 :
-PS7, Line 2259:         sig_info->signal_received =3D SIGUSR1;
-> I think this is a rebase artefact, the multisocket patch colliding with S=
-elva's signal handler rewor [=E2=80=A6]
-Done
-
-
-http://gerrit.openvpn.net/c/openvpn/+/434/comment/72e83319_3a6cdcc6 :
-PS7, Line 2271:                           sig_info);
-> please do not wrap.  The line is not long and not changed by this patch.
-Done
-
-
-http://gerrit.openvpn.net/c/openvpn/+/434/comment/93ac21b3_d36b9855 :
-PS7, Line 2297:     if (sig_save)
-> again, please thoroughly double check. [=E2=80=A6]
-Done
-
-
+     status_printf(so, "OpenVPN STATISTICS");
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/434?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/831?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings
 
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: Ia0a889e800f0b36aed770ee36e31afeec5df6084
-Gerrit-Change-Number: 434
-Gerrit-PatchSet: 7
-Gerrit-Owner: ordex <a@...2181...>
-Gerrit-Reviewer: cron2 <gert@...1296...>
+Gerrit-Change-Id: Ib118426c5a69256894040c69856a4003d9f4637c
+Gerrit-Change-Number: 831
+Gerrit-PatchSet: 1
+Gerrit-Owner: ralf_lici <ralf@...2726...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: its_Giaan <gianmarco@...2726...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: cron2 <gert@...1296...>
-Gerrit-Attention: ordex <a@...2181...>
-Gerrit-Comment-Date: Tue, 10 Dec 2024 13:10:35 +0000
-Gerrit-HasComments: Yes
-Gerrit-Has-Labels: No
-Comment-In-Reply-To: cron2 <gert@...1296...>
-Comment-In-Reply-To: ordex <a@...2181...>
-Gerrit-MessageType: comment
+Gerrit-Attention: flichtenheld <frank@...2641...>
+Gerrit-MessageType: newchange
 
---kVm3pvlzIKw=
+--aosOOzHyI0k=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p> Attention is currently required from: cron2, ordex, plaisthos. </p>
-<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/434?usp=3Demail">View C=
-hange</a></p><p>16 comments:</p><ul style=3D"list-style: none; padding: 0;"=
-><li style=3D"margin: 0; padding: 0;"><p>File src/openvpn/forward.c:</p><ul=
- style=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; padding: 0=
- 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openv=
-pn.net/c/openvpn/+/434/comment/5c3d2260_ff08a995">Patch Set #7, Line 1133:<=
-/a> <code style=3D"font-family:monospace,monospace">            /* all sock=
-ets are of the same type, so just check the first one */</code></p><p><bloc=
-kquote style=3D"border-left: 1px solid #aaa; margin: 10px 0; padding: 0 10p=
-x;">this confuses me. [=E2=80=A6]</blockquote></p><p style=3D"white-space: =
-pre-wrap; word-wrap: break-word;">Done</p></li></ul></li><li style=3D"margi=
-n: 0; padding: 0;"><p>File src/openvpn/init.c:</p><ul style=3D"list-style: =
-none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p style=
-=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/4=
-34/comment/c8bba806_c5354795">Patch Set #7, Line 533:</a> <code style=3D"fo=
-nt-family:monospace,monospace">            {</code></p><p><blockquote style=
-=3D"border-left: 1px solid #aaa; margin: 10px 0; padding: 0 10px;">this is =
-a behavioural change, not checking `advance_next_remote` anymore. [=E2=80=
-=A6]</blockquote></p><p style=3D"white-space: pre-wrap; word-wrap: break-wo=
-rd;">Done</p></li><li style=3D"margin: 0; padding: 0 0 0 16px;"><p style=3D=
-"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/434/=
-comment/0274c355_3b2e8c19">Patch Set #7, Line 1959:</a> <code style=3D"font=
--family:monospace,monospace">        ASSERT(c-&gt;c2.link_sockets);</code><=
-/p><p><blockquote style=3D"border-left: 1px solid #aaa; margin: 10px 0; pad=
-ding: 0 10px;">this is not doing the same thing as before... [=E2=80=A6]</b=
-lockquote></p><p style=3D"white-space: pre-wrap; word-wrap: break-word;">Do=
-ne</p></li><li style=3D"margin: 0; padding: 0 0 0 16px;"><p style=3D"margin=
--bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/434/comment=
-/9e623ad9_318662fe">Patch Set #7, Line 2015:</a> <code style=3D"font-family=
-:monospace,monospace">            do_ifconfig(c-&gt;c1.tuntap, c-&gt;c1.tun=
-tap-&gt;actual_name, c-&gt;c2.frame.tun_mtu, c-&gt;c2.es, &amp;c-&gt;net_ct=
-x);</code></p><p><blockquote style=3D"border-left: 1px solid #aaa; margin: =
-10px 0; padding: 0 10px;">line length exceeded, and the old version wasn&#3=
-9;t that bad (the unwrapping above was reasonable, with [=E2=80=A6]</blockq=
-uote></p><p style=3D"white-space: pre-wrap; word-wrap: break-word;">Done</p=
-></li><li style=3D"margin: 0; padding: 0 0 0 16px;"><p style=3D"margin-bott=
-om: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/434/comment/83e1=
-f2b3_82aeffb6">Patch Set #7, Line 3819:</a> <code style=3D"font-family:mono=
-space,monospace">do_init_socket_1(struct context *c)</code></p><p><blockquo=
-te style=3D"border-left: 1px solid #aaa; margin: 10px 0; padding: 0 10px;">=
-I think we should stick to `phase1` as function name, otherwise it reads as=
- if this is &quot;init socket  [=E2=80=A6]</blockquote></p><p style=3D"whit=
-e-space: pre-wrap; word-wrap: break-word;">Done</p></li><li style=3D"margin=
-: 0; padding: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http=
-://gerrit.openvpn.net/c/openvpn/+/434/comment/983be341_eb72cb9c">Patch Set =
-#7, Line 4011:</a> <code style=3D"font-family:monospace,monospace">    if (=
-c-&gt;c2.link_sockets &amp;&amp; c-&gt;c2.link_socket_owned)</code></p><p><=
-blockquote style=3D"border-left: 1px solid #aaa; margin: 10px 0; padding: 0=
- 10px;">what happened to the `is_dco_win()` part here?  This looks like a r=
-ebase accident</blockquote></p><p style=3D"white-space: pre-wrap; word-wrap=
-: break-word;">Done</p></li><li style=3D"margin: 0; padding: 0 0 0 16px;"><=
-p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/open=
-vpn/+/434/comment/0dd0c10f_cbddc037">Patch Set #7, Line 4040:</a> <code sty=
-le=3D"font-family:monospace,monospace">        CLEAR(c-&gt;c1.link_socket_a=
-ddrs[0].actual);</code></p><p><blockquote style=3D"border-left: 1px solid #=
-aaa; margin: 10px 0; padding: 0 10px;">this looks inconsistent - freeaddrin=
-fo() is called in the loop, while the CLEAR() is only called for [=E2=80=A6=
-]</blockquote></p><p style=3D"white-space: pre-wrap; word-wrap: break-word;=
-">Done</p></li><li style=3D"margin: 0; padding: 0 0 0 16px;"><p style=3D"ma=
-rgin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/434/com=
-ment/8c4402d6_a5c9227d">Patch Set #7, Line 4719:</a> <code style=3D"font-fa=
-mily:monospace,monospace">        do_init_socket_1(c);</code></p><p><blockq=
-uote style=3D"border-left: 1px solid #aaa; margin: 10px 0; padding: 0 10px;=
-">mmmh, see comment above, maybe name this `do_init_link_sockets_phase1()`?=
- [=E2=80=A6]</blockquote></p><p style=3D"white-space: pre-wrap; word-wrap: =
-break-word;">Done</p></li><li style=3D"margin: 0; padding: 0 0 0 16px;"><p =
-style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvp=
-n/+/434/comment/90c989e7_e8b47bfa">Patch Set #7, Line 4762:</a> <code style=
-=3D"font-family:monospace,monospace">        do_init_socket_2(c);</code></p=
-><p><blockquote style=3D"border-left: 1px solid #aaa; margin: 10px 0; paddi=
-ng: 0 10px;">`_phase2()`</blockquote></p><p style=3D"white-space: pre-wrap;=
- word-wrap: break-word;">Done</p></li><li style=3D"margin: 0; padding: 0 0 =
-0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.=
-net/c/openvpn/+/434/comment/da819cb1_03b64f6a">Patch Set #7, Line 4968:</a>=
- <code style=3D"font-family:monospace,monospace">                       &am=
-p;dest-&gt;gc);</code></p><p><blockquote style=3D"border-left: 1px solid #a=
-aa; margin: 10px 0; padding: 0 10px;">is this wrapping necessary?  Comparin=
-g to the lines below it does not seem like it</blockquote></p><p style=3D"w=
-hite-space: pre-wrap; word-wrap: break-word;">Acknowledged</p></li></ul></l=
-i><li style=3D"margin: 0; padding: 0;"><p>File src/openvpn/mudp.c:</p><ul s=
-tyle=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0=
- 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn=
-.net/c/openvpn/+/434/comment/d1d68fc6_23406680">Patch Set #7, Line 384:</a>=
- <code style=3D"font-family:monospace,monospace">        for (int i =3D 0; =
-i &lt; m-&gt;top.c1.link_sockets_num; i++)</code></p><p><blockquote style=
-=3D"border-left: 1px solid #aaa; margin: 10px 0; padding: 0 10px;">this com=
-ment opened a little pandora&#39;s box... [=E2=80=A6]</blockquote></p><p st=
-yle=3D"white-space: pre-wrap; word-wrap: break-word;">In the next patches w=
-e will have a common server loop for both TCP and UDP however the I/O proce=
-ssing will remain separate, for this specific case we decided to pass direc=
-tly the link_socket to avoid to walk through all of them, in the final patc=
-h we will handle directly the link_socket returned by the event_set.</p></l=
-i></ul></li><li style=3D"margin: 0; padding: 0;"><p>File src/openvpn/socket=
-.c:</p><ul style=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; =
-padding: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://ge=
-rrit.openvpn.net/c/openvpn/+/434/comment/6534f7ed_de52f295">Patch Set #7, L=
-ine 1858:</a> <code style=3D"font-family:monospace,monospace">    c-&gt;c2.=
-link_sockets[sock_index]-&gt;local_host =3D c-&gt;options.ce.local;</code><=
-/p><p><blockquote style=3D"border-left: 1px solid #aaa; margin: 10px 0; pad=
-ding: 0 10px;">Can this be changed to `*sock =3D &amp;c-&gt;c2. [=E2=80=A6]=
-</blockquote></p><p style=3D"white-space: pre-wrap; word-wrap: break-word;"=
->Done</p></li><li style=3D"margin: 0; padding: 0 0 0 16px;"><p style=3D"mar=
-gin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/434/comm=
-ent/b247da87_2274fb46">Patch Set #7, Line 2222:</a> <code style=3D"font-fam=
-ily:monospace,monospace">#if defined (_WIN32)</code></p><p><blockquote styl=
-e=3D"border-left: 1px solid #aaa; margin: 10px 0; padding: 0 10px;">unrelat=
-ed whitespace change, please do not (also, this extra space is not how it&#=
-39;s done elsewhere)</blockquote></p><p style=3D"white-space: pre-wrap; wor=
-d-wrap: break-word;">Done</p></li><li style=3D"margin: 0; padding: 0 0 0 16=
-px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/=
-c/openvpn/+/434/comment/58256377_1c734eb8">Patch Set #7, Line 2259:</a> <co=
-de style=3D"font-family:monospace,monospace">        sig_info-&gt;signal_re=
-ceived =3D SIGUSR1;</code></p><p><blockquote style=3D"border-left: 1px soli=
-d #aaa; margin: 10px 0; padding: 0 10px;">I think this is a rebase artefact=
-, the multisocket patch colliding with Selva&#39;s signal handler rewor [=
-=E2=80=A6]</blockquote></p><p style=3D"white-space: pre-wrap; word-wrap: br=
-eak-word;">Done</p></li><li style=3D"margin: 0; padding: 0 0 0 16px;"><p st=
-yle=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/=
-+/434/comment/72e83319_3a6cdcc6">Patch Set #7, Line 2271:</a> <code style=
-=3D"font-family:monospace,monospace">                          sig_info);</=
-code></p><p><blockquote style=3D"border-left: 1px solid #aaa; margin: 10px =
-0; padding: 0 10px;">please do not wrap.  The line is not long and not chan=
-ged by this patch.</blockquote></p><p style=3D"white-space: pre-wrap; word-=
-wrap: break-word;">Done</p></li><li style=3D"margin: 0; padding: 0 0 0 16px=
-;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/=
-openvpn/+/434/comment/93ac21b3_d36b9855">Patch Set #7, Line 2297:</a> <code=
- style=3D"font-family:monospace,monospace">    if (sig_save)</code></p><p><=
-blockquote style=3D"border-left: 1px solid #aaa; margin: 10px 0; padding: 0=
- 10px;">again, please thoroughly double check. [=E2=80=A6]</blockquote></p>=
-<p style=3D"white-space: pre-wrap; word-wrap: break-word;">Done</p></li></u=
-l></li></ul><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvp=
-n/+/434?usp=3Demail">change 434</a>. To unsubscribe, or for help writing ma=
-il filters, visit <a href=3D"http://gerrit.openvpn.net/settings">settings</=
-a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div item=
-scope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link i=
-temprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/434?usp=3Dema=
-il"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
+<p> Attention is currently required from: flichtenheld, plaisthos. </p>
+<p>ralf_lici would like plaisthos and flichtenheld to <strong>review</stron=
+g> this change.
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/831?usp=3Demail">Vi=
+ew Change</a></p><pre style=3D"font-family: monospace,monospace; white-spac=
+e: pre-wrap;">Handle missing DCO peer by restarting the session<br><br>Occa=
+sionally, CMD_DEL_PEER is not delivered to userspace, preventing the<br>ope=
+nvpn process from registering the event. To handle this case, we<br>check i=
+f calls to the DCO module return an error, and, if so, send a<br>SIGUSR1 si=
+gnal to reset the session.<br><br>Change-Id: Ib118426c5a69256894040c69856a4=
+003d9f4637c<br>Signed-off-by: Ralf Lici &lt;ralf@...2726...&gt;<br>---<br>M=
+ src/openvpn/dco_linux.c<br>M src/openvpn/forward.c<br>M src/openvpn/manage=
+.c<br>M src/openvpn/multi.c<br>M src/openvpn/sig.c<br>5 files changed, 61 i=
+nsertions(+), 14 deletions(-)<br><br></pre><pre style=3D"font-family: monos=
+pace,monospace; white-space: pre-wrap;">git pull ssh://gerrit.openvpn.net:2=
+9418/openvpn refs/changes/31/831/1</pre><pre style=3D"font-family: monospac=
+e,monospace; white-space: pre-wrap;"><span>diff --git a/src/openvpn/dco_lin=
+ux.c b/src/openvpn/dco_linux.c</span><br><span>index b038382..3f8e206 10064=
+4</span><br><span>--- a/src/openvpn/dco_linux.c</span><br><span>+++ b/src/o=
+penvpn/dco_linux.c</span><br><span>@@ -979,7 +979,12 @@</span><br><span> in=
+t</span><br><span> dco_get_peer_stats(struct context *c)</span><br><span> {=
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    uint32_t peer_id =
+=3D c-&gt;c2.tls_multi-&gt;dco_peer_id;</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+    int peer_id =3D c-&gt;c2.tls_multi-&gt;dco_peer_id;=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (peer_id =3D=
+=3D -1)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+        return 0;</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+</span><br><span>     msg(D_DCO_DEBUG, &q=
+uot;%s: peer-id %d&quot;, __func__, peer_id);</span><br><span> </span><br><=
+span>     if (!c-&gt;c1.tuntap)</span><br><span>diff --git a/src/openvpn/fo=
+rward.c b/src/openvpn/forward.c</span><br><span>index d50b24c..4c4f3f7 1006=
+44</span><br><span>--- a/src/openvpn/forward.c</span><br><span>+++ b/src/op=
+envpn/forward.c</span><br><span>@@ -483,16 +483,27 @@</span><br><span> stat=
+ic void</span><br><span> check_inactivity_timeout(struct context *c)</span>=
+<br><span> {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    if (d=
+co_enabled(&amp;c-&gt;options) &amp;&amp; dco_get_peer_stats(c) =3D=3D 0)</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (dco_enabled(&=
+amp;c-&gt;options))</span><br><span>     {</span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">-        int64_t tot_bytes =3D c-&gt;c2.tun_read_bytes =
++ c-&gt;c2.tun_write_bytes;</span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">-        int64_t new_bytes =3D tot_bytes - c-&gt;c2.inactivity_bytes;<=
+/span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-        if (new_bytes &gt; c-&gt;options.in=
+activity_minimum_bytes)</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+        const int stats_request =3D dco_get_peer_stats(c);</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+        if (stats_request =3D=3D=
+ 0)</span><br><span>         {</span><br><span style=3D"color: hsl(0, 100%,=
+ 40%);">-            c-&gt;c2.inactivity_bytes =3D tot_bytes;</span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-            event_timeout_reset(&am=
+p;c-&gt;c2.inactivity_interval);</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+            int64_t tot_bytes =3D c-&gt;c2.tun_read_bytes + c-=
+&gt;c2.tun_write_bytes;</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+            int64_t new_bytes =3D tot_bytes - c-&gt;c2.inactivity_bytes=
+;</span><br><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+            if (new_bytes &gt; c-&gt;options.inactivity_minimum_bytes)</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+            {</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+                c-&gt;c2.inact=
+ivity_bytes =3D tot_bytes;</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+                event_timeout_reset(&amp;c-&gt;c2.inactivity_interva=
+l);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+                return;</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+            }</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+        }</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+        else if (stats_request &lt; 0)</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+        {</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+            msg(M_WARN, &quot;Error re=
+questing peer %d DCO stats (%s). Restarting the session&quot;,</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+                c-&gt;c2.tls_mul=
+ti-&gt;dco_peer_id, strerror(-stats_request));</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+            register_signal(c-&gt;sig, SIGUSR1, =
+&quot;dco peer stats error&quot;);</span><br><span>             return;</sp=
+an><br><span>         }</span><br><span>     }</span><br><span>diff --git a=
+/src/openvpn/manage.c b/src/openvpn/manage.c</span><br><span>index e79a118.=
+.be2da4a 100644</span><br><span>--- a/src/openvpn/manage.c</span><br><span>=
++++ b/src/openvpn/manage.c</span><br><span>@@ -4138,10 +4138,21 @@</span><b=
+r><span>         counter_type dco_read_bytes =3D 0;</span><br><span>       =
+  counter_type dco_write_bytes =3D 0;</span><br><span> </span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-        if (dco_enabled(&amp;c-&gt;option=
+s) &amp;&amp; (dco_get_peer_stats(c) =3D=3D 0))</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+        if (dco_enabled(&amp;c-&gt;options) &am=
+p;&amp; c-&gt;c2.tls_multi-&gt;peer_id !=3D -1)</span><br><span>         {<=
+/span><br><span style=3D"color: hsl(0, 100%, 40%);">-            dco_read_b=
+ytes =3D c-&gt;c2.dco_read_bytes;</span><br><span style=3D"color: hsl(0, 10=
+0%, 40%);">-            dco_write_bytes =3D c-&gt;c2.dco_write_bytes;</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+            const int sta=
+ts_request =3D dco_get_peer_stats(c);</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+            if (stats_request =3D=3D 0)</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+            {</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+                dco_read_bytes =3D c-&gt;=
+c2.dco_read_bytes;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+               dco_write_bytes =3D c-&gt;c2.dco_write_bytes;</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+            }</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+            else if (stats_request &lt; =
+0)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            {</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+                msg(D_M=
+ANAGEMENT, &quot;MANAGEMENT: Error requesting peer %d DCO stats (%s). Resta=
+rting the session&quot;,</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+                    c-&gt;c2.tls_multi-&gt;dco_peer_id, strerror(-stat=
+s_request));</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
+         register_signal(c-&gt;sig, SIGUSR1, &quot;dco peer stats error&quo=
+t;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+               =
+ return;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+           =
+ }</span><br><span>         }</span><br><span> </span><br><span>         if=
+ (!(man-&gt;persist.callback.flags &amp; MCF_SERVER))</span><br><span>diff =
+--git a/src/openvpn/multi.c b/src/openvpn/multi.c</span><br><span>index 45b=
+3cfa..20724a0 100644</span><br><span>--- a/src/openvpn/multi.c</span><br><s=
+pan>+++ b/src/openvpn/multi.c</span><br><span>@@ -549,7 +549,13 @@</span><b=
+r><span> {</span><br><span>     if (dco_enabled(&amp;m-&gt;top.options))</s=
+pan><br><span>     {</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
+       dco_get_peer_stats_multi(&amp;m-&gt;top.c1.tuntap-&gt;dco, m);</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+        const int stats_r=
+equest =3D dco_get_peer_stats_multi(&amp;m-&gt;top.c1.tuntap-&gt;dco, m);</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+        if (stats_req=
+uest &lt; 0)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
+ {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            msg(D=
+_DCO, &quot;Error requesting peer %d DCO stats (%s)&quot;,</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+                c-&gt;c2.tls_multi-&=
+gt;dco_peer_id, strerror(-stats_request));</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+            return;</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+        }</span><br><span>     }</span><br><span> </=
+span><br><span>     setenv_counter(c-&gt;c2.es, &quot;bytes_received&quot;,=
+ c-&gt;c2.link_read_bytes + c-&gt;c2.dco_read_bytes);</span><br><span>@@ -8=
+55,7 +861,14 @@</span><br><span> </span><br><span>         if (dco_enabled(=
+&amp;m-&gt;top.options))</span><br><span>         {</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-            dco_get_peer_stats_multi(&amp;m=
+-&gt;top.c1.tuntap-&gt;dco, m);</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+            const int stats_request =3D dco_get_peer_stats_mult=
+i(&amp;m-&gt;top.c1.tuntap-&gt;dco, m);</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+            if (stats_request =3D=3D -ENOENT)</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+            {</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+                msg(M_WARN, &quot;E=
+rror requesting peer DCO stats (%s)&quot;,</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+                    strerror(-stats_request));</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+                register_=
+signal(m-&gt;top.sig, SIGUSR1, &quot;dco peer stats error&quot;);</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+                return;</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+            }</span><br><=
+span>         }</span><br><span> </span><br><span>         if (version =3D=
+=3D 1)</span><br><span>diff --git a/src/openvpn/sig.c b/src/openvpn/sig.c</=
+span><br><span>index 8323f0d..3654033 100644</span><br><span>--- a/src/open=
+vpn/sig.c</span><br><span>+++ b/src/openvpn/sig.c</span><br><span>@@ -489,7=
+ +489,14 @@</span><br><span> </span><br><span>     if (dco_enabled(&amp;c-&=
+gt;options))</span><br><span>     {</span><br><span style=3D"color: hsl(0, =
+100%, 40%);">-        dco_get_peer_stats(c);</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+        const int stats_request =3D dco_get_peer_s=
+tats(c);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        if =
+(stats_request &lt; 0)</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+        {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
+     msg(M_WARN, &quot;Error requesting peer %d DCO stats (%s). Restarting =
+the session&quot;,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+               c-&gt;c2.tls_multi-&gt;dco_peer_id, strerror(-stats_request)=
+);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            regis=
+ter_signal(c-&gt;sig, SIGUSR1, &quot;dco peer stats error&quot;);</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+            return;</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+        }</span><br><span>   =
+  }</span><br><span> </span><br><span>     status_printf(so, &quot;OpenVPN =
+STATISTICS&quot;);</span><br><span></span><br></pre><p>To view, visit <a hr=
+ef=3D"http://gerrit.openvpn.net/c/openvpn/+/831?usp=3Demail">change 831</a>=
+. To unsubscribe, or for help writing mail filters, visit <a href=3D"http:/=
+/gerrit.openvpn.net/settings">settings</a>.</p><div itemscope itemtype=3D"h=
+ttp://schema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=
+=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://ger=
+rit.openvpn.net/c/openvpn/+/831?usp=3Demail"/><meta itemprop=3D"name" conte=
+nt=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: Ia0a889e800f0b36aed770ee36e3=
-1afeec5df6084 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 434 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 7 </div>
-<div style=3D"display:none"> Gerrit-Owner: ordex &lt;a@...2181...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
- </div>
+<div style=3D"display:none"> Gerrit-Change-Id: Ib118426c5a69256894040c69856=
+a4003d9f4637c </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 831 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
+<div style=3D"display:none"> Gerrit-Owner: ralf_lici &lt;ralf@...2726...&gt=
+; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
 1...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: its_Giaan &lt;gianmarco@...1664...=
-26...&gt; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
 .1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
 ..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: cron2 &lt;gert@...1296...&gt=
-; </div>
-<div style=3D"display:none"> Gerrit-Attention: ordex &lt;a@...2181...&gt; <=
-/div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Tue, 10 Dec 2024 13:10:35=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: No </div>
-<div style=3D"display:none"> Comment-In-Reply-To: cron2 &lt;gert@...1296...=
-&gt; </div>
-<div style=3D"display:none"> Comment-In-Reply-To: ordex &lt;a@...2181...&gt=
-; </div>
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
+<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
+41...&gt; </div>
+<div style=3D"display:none"> Gerrit-MessageType: newchange </div>
 
 
---kVm3pvlzIKw=--
+--aosOOzHyI0k=--
 
