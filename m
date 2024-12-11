@@ -1,11 +1,16 @@
-Content-Type: multipart/alternative;
- boundary="------------2xgJwdT6v0ji859n1Qdm6424"
-Message-ID: <16434247-3667-4bab-ba81-e9e8b45342cd@...2722...>
-Date: Wed, 11 Dec 2024 14:48:03 +0100
+From: "cron2 (Code Review)" <gerrit@...515...>
+Date: Wed, 11 Dec 2024 14:23:26 +0000
+In-Reply-To: <gerrit.1733831072000.I74a9eec4954f3f9d208792b6b34357571f76ae4c@...2715...>
+References: <gerrit.1733831072000.I74a9eec4954f3f9d208792b6b34357571f76ae4c@...2715...>
+Reply-To: gert@...1296..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net, frank@...2641...
+Message-ID: <5ac033bcd649168d77e97e8dcb95dc9304da8bb9-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-From: Johan Draaisma <johan@...2722...>
-Content-Language: en-US
-Subject: [Openvpn-devel]  IRC community meeting summary
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="HM2sxGhGTj0="; charset=UTF-8
+Subject: [Openvpn-devel] [S] Change in openvpn[master]: forward: Fix
+ potential unaligned access in drop_if_recursive_routing
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,115 +19,136 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: openvpn-devel@lists.sourceforge.net
+To: flichtenheld <frank@...2641...>
+Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-This is a multi-part message in MIME format.
---------------2xgJwdT6v0ji859n1Qdm6424
-Content-Type: text/plain; charset="utf-8"; format="flowed"
-Content-Transfer-Encoding: 8bit
+--HM2sxGhGTj0=
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Meeting summary for 11 December 2024:
+Attention is currently required from: flichtenheld, plaisthos.
 
-  * *Reminder: no meetings on 25th of December, 1st of January*
-    /For obvious reasons./
+cron2 has posted comments on this change. ( http://gerrit.openvpn.net/c/ope=
+nvpn/+/827?usp=3Demail )
 
-  * *Updated: DCO Linux upstreaming*
-    /Upstreaming DCO to Linux is proceeding, it is in review stage at
-    the moment./
-    /Patchset v13 and v14 followed really fast and v14 is now under review./
-    /Interesting news article appeared on the
-    webs:​https://www.phoronix.com/news/OpenVPN-Data-Channel-DCO-Soon
-    <https://www.phoronix.com/news/OpenVPN-Data-Channel-DCO-Soon>/
+Change subject: forward: Fix potential unaligned access in drop_if_recursiv=
+e_routing
+......................................................................
 
-  * *Updated: OpenVPN community meetup 2025*
-    /​https://community.openvpn.net/openvpn/wiki/CommunityMeetup2025
-    <https://community.openvpn.net/openvpn/wiki/CommunityMeetup2025>/
-    /When: september/october ish, a poll for checking availibity is
-    here: https://nuudel.digitalcourage.de/NROHeFlkfaYnoNGC/
-    /Where: Napoli, Italy./
-    /Meeting room: tbd./
-    /Hotel: tbd./
-    /Beer: yes./
-    /T-shirts: yes./
 
-/*Note: obviously, there will be no meetings on 25th of December or 1st 
-of January for obvious reasons. Obviously.*/
+Patch Set 1: Code-Review-1
 
-/*Note number 2: We are already gathering availability for people 
-attending the community meetup for 2025. A poll can be filled in here;
-https://nuudel.digitalcourage.de/NROHeFlkfaYnoNGC
-*/
+(2 comments)
 
-As always you're welcome to join at #openvpn-meeting on Libera IRC 
-network every Wednesday at 14:00 Central European Time.
+File src/openvpn/forward.c:
 
-Kind regards,
-Johan Draaisma
+http://gerrit.openvpn.net/c/openvpn/+/827/comment/70a6dbae_af15a5b9 :
+PS1, Line 1406:         memcpy(&pip, BPTR(buf) + ip_hdr_offset, sizeof(stru=
+ct openvpn_iphdr));
+I don't like that.  We're in the per-packet fast path here, and this is exe=
+cuted for every single packet - so we shouldn't memcpy() the whole I header=
+ around.
 
---------------2xgJwdT6v0ji859n1Qdm6424
-Content-Type: text/html; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+I'd suggest doing a `memcmp(pip->daddr, ..., sizeof(pip->daddr))`.  That sh=
+ould be of similar cost.
 
-<!DOCTYPE html>
-<html>
-  <head>
-    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
-  </head>
-  <body>
-    <p> Meeting summary for 11 December 2024:</p>
-    <ul
-style="color: rgb(0, 0, 0); font-family: Verdana, Arial, &quot;Bitstream Vera Sans&quot;, Helvetica, sans-serif; font-size: 13px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;">
-      <li><strong>Reminder: no meetings on 25th of December, 1st of
-          January</strong><br>
-        <em>For obvious reasons.</em></li>
-    </ul>
-    <ul
-style="color: rgb(0, 0, 0); font-family: Verdana, Arial, &quot;Bitstream Vera Sans&quot;, Helvetica, sans-serif; font-size: 13px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;">
-      <li><strong>Updated: DCO Linux upstreaming</strong><br>
-        <em>Upstreaming DCO to Linux is proceeding, it is in review
-          stage at the moment.</em><br>
-        <em>Patchset v13 and v14 followed really fast and v14 is now
-          under review.</em><br>
-        <em>Interesting news article appeared on the webs:<span> </span><a
-            class="ext-link"
-href="https://www.phoronix.com/news/OpenVPN-Data-Channel-DCO-Soon"
-style="text-decoration: none; color: rgb(187, 0, 0); border-bottom: 1px dotted rgb(187, 187, 187);"><span
-              class="icon"
-style="background: url(&quot;../extlink.gif&quot;) left center no-repeat; padding-left: 15px;">​</span>https://www.phoronix.com/news/OpenVPN-Data-Channel-DCO-Soon</a></em></li>
-    </ul>
-    <ul
-style="color: rgb(0, 0, 0); font-family: Verdana, Arial, &quot;Bitstream Vera Sans&quot;, Helvetica, sans-serif; font-size: 13px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;">
-      <li><strong>Updated: OpenVPN community meetup 2025</strong><br>
-        <em><a class="ext-link"
-href="https://community.openvpn.net/openvpn/wiki/CommunityMeetup2025"
-style="text-decoration: none; color: rgb(187, 0, 0); border-bottom: 1px dotted rgb(187, 187, 187);"><span
-              class="icon"
-style="background: url(&quot;../extlink.gif&quot;) left center no-repeat; padding-left: 15px;">​</span>https://community.openvpn.net/openvpn/wiki/CommunityMeetup2025</a></em><br>
-        <em>When: september/october ish, a poll for checking availibity
-          is here: <a class="moz-txt-link-freetext" href="https://nuudel.digitalcourage.de/NROHeFlkfaYnoNGC">https://nuudel.digitalcourage.de/NROHeFlkfaYnoNGC</a></em><br>
-        <em>Where: Napoli, Italy.</em><br>
-        <em>Meeting room: tbd.</em><br>
-        <em>Hotel: tbd.</em><br>
-        <em>Beer: yes.</em><br>
-        <em>T-shirts: yes.</em></li>
-    </ul>
-    <p><em><b>Note: obviously, there will be no meetings on 25th of
-          December or 1st of January for obvious reasons. Obviously.</b></em></p>
-    <p><em><b>Note number 2: We are already gathering availability for
-          people attending the community meetup for 2025. A poll can be
-          filled in here;<br>
-          <a class="moz-txt-link-freetext" href="https://nuudel.digitalcourage.de/NROHeFlkfaYnoNGC">https://nuudel.digitalcourage.de/NROHeFlkfaYnoNGC</a><br>
-        </b></em> </p>
-    <ul
-style="color: rgb(0, 0, 0); font-family: Verdana, Arial, &quot;Bitstream Vera Sans&quot;, Helvetica, sans-serif; font-size: 13px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;">
-    </ul>
-    As always you're welcome to join at #openvpn-meeting on Libera IRC
-    network every Wednesday at 14:00 Central European Time.
-    <p>Kind regards,<br>
-      Johan Draaisma<br>
-    </p>
-  </body>
-</html>
 
---------------2xgJwdT6v0ji859n1Qdm6424--
+http://gerrit.openvpn.net/c/openvpn/+/827/comment/d54bde03_5397571d :
+PS1, Line 1432:         if (IN6_ARE_ADDR_EQUAL(&tun_sa.addr.in6.sin6_addr, =
+&pip6.daddr))
+This is doing the `memcmp()` already, so we should be fine here...
+
+```
+#define IN6_ARE_ADDR_EQUAL(a, b)                        \
+    (memcmp(&(a)->s6_addr[0], &(b)->s6_addr[0], sizeof(struct in6_addr)) =
+=3D=3D 0)
+```
+
+
+
+--
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/827?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings
+
+Gerrit-Project: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: I74a9eec4954f3f9d208792b6b34357571f76ae4c
+Gerrit-Change-Number: 827
+Gerrit-PatchSet: 1
+Gerrit-Owner: flichtenheld <frank@...2641...>
+Gerrit-Reviewer: cron2 <gert@...1296...>
+Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Attention: flichtenheld <frank@...2641...>
+Gerrit-Comment-Date: Wed, 11 Dec 2024 14:23:26 +0000
+Gerrit-HasComments: Yes
+Gerrit-Has-Labels: Yes
+Gerrit-MessageType: comment
+
+--HM2sxGhGTj0=
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<p> Attention is currently required from: flichtenheld, plaisthos. </p>
+<p>Patch set 1:<span style=3D"border-radius: 3px; display: inline-block; ma=
+rgin: 0 2px; padding: 4px;background-color: #ffd4d4;">Code-Review -1</span>=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/827?usp=3Demail">Vi=
+ew Change</a></p><p>2 comments:</p><ul style=3D"list-style: none; padding: =
+0;"><li style=3D"margin: 0; padding: 0;"><p>File src/openvpn/forward.c:</p>=
+<ul style=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; padding=
+: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.op=
+envpn.net/c/openvpn/+/827/comment/70a6dbae_af15a5b9">Patch Set #1, Line 140=
+6:</a> <code style=3D"font-family:monospace,monospace">        memcpy(&amp;=
+pip, BPTR(buf) + ip_hdr_offset, sizeof(struct openvpn_iphdr));</code></p><p=
+ style=3D"white-space: pre-wrap; word-wrap: break-word;">I don&#39;t like t=
+hat.  We&#39;re in the per-packet fast path here, and this is executed for =
+every single packet - so we shouldn&#39;t memcpy() the whole I header aroun=
+d.</p><p style=3D"white-space: pre-wrap; word-wrap: break-word;">I&#39;d su=
+ggest doing a `memcmp(pip-&gt;daddr, ..., sizeof(pip-&gt;daddr))`.  That sh=
+ould be of similar cost.</p></li><li style=3D"margin: 0; padding: 0 0 0 16p=
+x;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c=
+/openvpn/+/827/comment/d54bde03_5397571d">Patch Set #1, Line 1432:</a> <cod=
+e style=3D"font-family:monospace,monospace">        if (IN6_ARE_ADDR_EQUAL(=
+&amp;tun_sa.addr.in6.sin6_addr, &amp;pip6.daddr))</code></p><p style=3D"whi=
+te-space: pre-wrap; word-wrap: break-word;">This is doing the `memcmp()` al=
+ready, so we should be fine here...</p><pre style=3D"font-family: monospace=
+,monospace; white-space: pre-wrap;">```<br>#define IN6_ARE_ADDR_EQUAL(a, b)=
+                        \<br>    (memcmp(&amp;(a)-&gt;s6_addr[0], &amp;(b)-=
+&gt;s6_addr[0], sizeof(struct in6_addr)) =3D=3D 0)<br>```</pre></li></ul></=
+li></ul><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/=
+827?usp=3Demail">change 827</a>. To unsubscribe, or for help writing mail f=
+ilters, visit <a href=3D"http://gerrit.openvpn.net/settings">settings</a>.<=
+/p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscop=
+e itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itemp=
+rop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/827?usp=3Demail"/=
+><meta itemprop=3D"name" content=3D"View Change"/></div></div>
+
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I74a9eec4954f3f9d208792b6b34=
+357571f76ae4c </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 827 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
+<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
+.&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
+ </div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
+.1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
+41...&gt; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Wed, 11 Dec 2024 14:23:26=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
+
+
+--HM2sxGhGTj0=--
 
