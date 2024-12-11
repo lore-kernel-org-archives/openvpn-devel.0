@@ -1,16 +1,16 @@
 From: "flichtenheld (Code Review)" <gerrit@...515...>
-Date: Tue, 10 Dec 2024 17:35:16 +0000
-In-Reply-To: <gerrit.1733833084000.Ia1c5209022d3ab4c0dac6438c41891c7d059f812@...2715...>
-References: <gerrit.1733833084000.Ia1c5209022d3ab4c0dac6438c41891c7d059f812@...2715...>
+Date: Wed, 11 Dec 2024 11:52:14 +0000
+In-Reply-To: <gerrit.1733851405000.I4f766fa22865eaf4466c31cf55e3d73b00008c38@...2715...>
+References: <gerrit.1733851405000.I4f766fa22865eaf4466c31cf55e3d73b00008c38@...2715...>
 Reply-To: frank@...2641..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net
-Message-ID: <ffce36c87807a775beae7032ca1ccc058d8cf93e-EmailReviewComments-HTML@...2715...>
+Message-ID: <7380e02aa7957c066fda164643b84c729da45872-EmailReplacePatchSet-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="YbrOm9arLvc="; charset=UTF-8
-Subject: [Openvpn-devel] [L] Change in openvpn[master]: Allow DEFAULT in
- data-ciphers and report both expanded and user set o...
+Content-Type: multipart/alternative; boundary="58TspYt3N2c="; charset=UTF-8
+Subject: [Openvpn-devel] [L] Change in openvpn[master]: options: Cleanup and
+ simplify options_postprocess_verify_ce
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -22,172 +22,1440 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: plaisthos <arne-openvpn@...1227...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---YbrOm9arLvc=
+--58TspYt3N2c=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 Attention is currently required from: plaisthos.
 
-flichtenheld has posted comments on this change. ( http://gerrit.openvpn.ne=
-t/c/openvpn/+/828?usp=3Demail )
+Hello plaisthos,
 
-Change subject: Allow DEFAULT in data-ciphers and report both expanded and =
-user set option
+I'd like you to reexamine a change. Please visit
+
+    http://gerrit.openvpn.net/c/openvpn/+/832?usp=3Demail
+
+to look at the new patch set (#2).
+
+
+Change subject: options: Cleanup and simplify options_postprocess_verify_ce
 ......................................................................
 
+options: Cleanup and simplify options_postprocess_verify_ce
 
-Patch Set 1: Code-Review-1
+- Reuse the MUST_BE_UNDEF macro in more places
+- Add a second parameter so it actually reports the
+  correct option name
+- Add MUST_BE_FALSE for similar cases
+- Reorder the checks for cert/key options to make
+  more sense. Some of the checks could have never
+  fired due to wrong placement of the management
+  checks
+- Some other small cleanups like missing spaces
+  in multiline string literal
 
-(6 comments)
-
-Patchset:
-
-PS1:
-Some nitpicks
-
-
-File doc/man-sections/protocol-options.rst:
-
-http://gerrit.openvpn.net/c/openvpn/+/828/comment/5f75330f_045154c7 :
-PS1, Line 181:   Starting with OpenVPN 2.7 the special keyword DEFAULT can =
-be used in the
-Probably makes sense to use ``DEFAULT`` here.
-
-
-File src/openvpn/multi.c:
-
-http://gerrit.openvpn.net/c/openvpn/+/828/comment/9501c1ac_eab351db :
-PS1, Line 1905:             "Server data-ciphers: '%s'%s, client supports c=
-ipher '%s'",
-make consistent with the other case. Either '%s%s' or '%s'%s, but not both.
+Change-Id: I4f766fa22865eaf4466c31cf55e3d73b00008c38
+Signed-off-by: Frank Lichtenheld <frank@...2641...>
+---
+M src/openvpn/options.c
+1 file changed, 142 insertions(+), 272 deletions(-)
 
 
-File src/openvpn/ssl_ncp.h:
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/32/832/2
 
-http://gerrit.openvpn.net/c/openvpn/+/828/comment/1d04131f_fb1c7b2c :
-PS1, Line 174:  *  The returned string will be allocated in the passed \par=
-am gc
-If you want to format a word as param use \p, \param is for documenting par=
-ameters.
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index d8dd518..aa89595 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -2300,6 +2300,13 @@
+ static void
+ check_ca_required(const struct options *options)
+ {
++#ifdef ENABLE_CRYPTO_MBEDTLS
++    if (options->ca_path)
++    {
++        msg(M_USAGE, "Parameter --capath cannot be used with the mbed TLS =
+version of OpenVPN.");
++    }
++#endif
++
+     if (options->verify_hash_no_ca
+         || options->pkcs12_file
+         || options->ca_file
+@@ -2319,6 +2326,11 @@
+     msg(M_USAGE, "%s", str);
+ }
 
++#define MUST_BE_UNDEF(parm, parm_name) \
++    if (options->parm !=3D defaults.parm) { msg(M_USAGE, use_err, parm_nam=
+e); }
++#define MUST_BE_FALSE(condition, parm_name) \
++    if (condition) { msg(M_USAGE, use_err, parm_name); }
++
+ static void
+ options_postprocess_verify_ce(const struct options *options,
+                               const struct connection_entry *ce)
+@@ -2555,6 +2567,8 @@
+      */
+     if (options->mode =3D=3D MODE_SERVER)
+     {
++        const char use_err[] =3D "--%s cannot be used with --mode server.";
++
+ #define USAGE_VALID_SERVER_PROTOS "--mode server currently only supports "=
+ \
+     "--proto values of udp, tcp-server, tcp4-server, or tcp6-server"
+ #ifdef TARGET_ANDROID
+@@ -2564,10 +2578,7 @@
+         {
+             msg(M_USAGE, "--mode server only works with --dev tun or --dev=
+ tap");
+         }
+-        if (options->pull)
+-        {
+-            msg(M_USAGE, "--pull cannot be used with --mode server");
+-        }
++        MUST_BE_UNDEF(pull, "pull");
+         if (options->pull_filter_list)
+         {
+             msg(M_WARN, "--pull-filter ignored for --mode server");
+@@ -2588,22 +2599,10 @@
+         {
+             msg(M_USAGE, "--mode server requires --tls-server");
+         }
+-        if (ce->remote)
+-        {
+-            msg(M_USAGE, "--remote cannot be used with --mode server");
+-        }
+-        if (!ce->bind_local)
+-        {
+-            msg(M_USAGE, "--nobind cannot be used with --mode server");
+-        }
+-        if (ce->http_proxy_options)
+-        {
+-            msg(M_USAGE, "--http-proxy cannot be used with --mode server");
+-        }
+-        if (ce->socks_proxy_server)
+-        {
+-            msg(M_USAGE, "--socks-proxy cannot be used with --mode server"=
+);
+-        }
++        MUST_BE_FALSE(ce->remote, "remote");
++        MUST_BE_FALSE(!ce->bind_local, "nobind");
++        MUST_BE_FALSE(ce->http_proxy_options, "http-proxy");
++        MUST_BE_FALSE(ce->socks_proxy_server, "socks-proxy");
+         /* <connection> blocks force to have a remote embedded, so we check
+          * for the --remote and bail out if it is present
+          */
+@@ -2613,10 +2612,7 @@
+             msg(M_USAGE, "<connection> cannot be used with --mode server");
+         }
 
-File src/openvpn/ssl_ncp.c:
+-        if (options->shaper)
+-        {
+-            msg(M_USAGE, "--shaper cannot be used with --mode server");
+-        }
++        MUST_BE_UNDEF(shaper, "shaper");
+         if (options->ipchange)
+         {
+             msg(M_USAGE,
+@@ -2639,14 +2635,8 @@
+         {
+             msg(M_USAGE, "--redirect-gateway cannot be used with --mode se=
+rver (however --push \"redirect-gateway\" is fine)");
+         }
+-        if (options->route_delay_defined)
+-        {
+-            msg(M_USAGE, "--route-delay cannot be used with --mode server"=
+);
+-        }
+-        if (options->up_delay)
+-        {
+-            msg(M_USAGE, "--up-delay cannot be used with --mode server");
+-        }
++        MUST_BE_UNDEF(route_delay_defined, "route-delay");
++        MUST_BE_UNDEF(up_delay, "up-delay");
+         if (!options->ifconfig_pool_defined
+             && !options->ifconfig_ipv6_pool_defined
+             && options->ifconfig_pool_persist_filename)
+@@ -2658,10 +2648,7 @@
+         {
+             msg(M_USAGE, "--ifconfig-ipv6-pool needs --ifconfig-ipv6");
+         }
+-        if (options->allow_recursive_routing)
+-        {
+-            msg(M_USAGE, "--allow-recursive-routing cannot be used with --=
+mode server");
+-        }
++        MUST_BE_UNDEF(allow_recursive_routing, "allow-recursive-routing");
+         if (options->auth_user_pass_file)
+         {
+             msg(M_USAGE, "--auth-user-pass cannot be used with --mode serv=
+er (it should be used on the client side only)");
+@@ -2683,23 +2670,19 @@
+                 options->handshake_window);
 
-http://gerrit.openvpn.net/c/openvpn/+/828/comment/c25085e2_a57ade0c :
-PS1, Line 537:  * Replaces the string DEFAULT with the string \param replac=
-e. The
-\p
+         }
++        if (!options->auth_user_pass_verify_script
++            || PLUGIN_OPTION_LIST(options)
++            || MAN_CLIENT_AUTH_ENABLED(options))
+         {
+-            const bool ccnr =3D (options->auth_user_pass_verify_script
+-                               || PLUGIN_OPTION_LIST(options)
+-                               || MAN_CLIENT_AUTH_ENABLED(options));
+-            const char *postfix =3D "must be used with --management-client=
+-auth, an --auth-user-pass-verify script, or plugin";
+-            if ((options->ssl_flags & (SSLF_CLIENT_CERT_NOT_REQUIRED|SSLF_=
+CLIENT_CERT_OPTIONAL)) && !ccnr)
+-            {
+-                msg(M_USAGE, "--verify-client-cert none|optional %s", post=
+fix);
+-            }
+-            if ((options->ssl_flags & SSLF_USERNAME_AS_COMMON_NAME) && !cc=
+nr)
+-            {
+-                msg(M_USAGE, "--username-as-common-name %s", postfix);
+-            }
+-            if ((options->ssl_flags & SSLF_AUTH_USER_PASS_OPTIONAL) && !cc=
+nr)
+-            {
+-                msg(M_USAGE, "--auth-user-pass-optional %s", postfix);
+-            }
++            const char *use_err =3D "--%s must be used with --management-c=
+lient-auth, an --auth-user-pass-verify script, or plugin";
++
++            MUST_BE_FALSE(options->ssl_flags
++                          & (SSLF_CLIENT_CERT_NOT_REQUIRED|SSLF_CLIENT_CER=
+T_OPTIONAL),
++                          "verify-client-cert none|optional");
++            MUST_BE_FALSE(options->ssl_flags & SSLF_USERNAME_AS_COMMON_NAM=
+E,
++                          "username-as-common-name");
++            MUST_BE_FALSE(options->ssl_flags & SSLF_AUTH_USER_PASS_OPTIONA=
+L,
++                          "auth-user-pass-optional");
+         }
 
+         if (options->vlan_tagging && dev !=3D DEV_TYPE_TAP)
+@@ -2708,125 +2691,65 @@
+         }
+         if (!options->vlan_tagging)
+         {
+-            if (options->vlan_accept !=3D defaults.vlan_accept)
+-            {
+-                msg(M_USAGE, "--vlan-accept requires --vlan-tagging");
+-            }
+-            if (options->vlan_pvid !=3D defaults.vlan_pvid)
+-            {
+-                msg(M_USAGE, "--vlan-pvid requires --vlan-tagging");
+-            }
++            const char use_err[] =3D "--%s requires --vlan-tagging";
++            MUST_BE_UNDEF(vlan_accept, "vlan-accept");
++            MUST_BE_UNDEF(vlan_pvid, "vlan-pvid");
+         }
+     }
+     else
+     {
++        const char use_err[] =3D "--%s requires --mode server";
+         /*
+          * When not in server mode, err if parameters are
+          * specified which require --mode server.
+          */
+-        if (options->ifconfig_pool_defined || options->ifconfig_pool_persi=
+st_filename)
+-        {
+-            msg(M_USAGE, "--ifconfig-pool/--ifconfig-pool-persist requires=
+ --mode server");
+-        }
+-        if (options->ifconfig_ipv6_pool_defined)
+-        {
+-            msg(M_USAGE, "--ifconfig-ipv6-pool requires --mode server");
+-        }
+-        if (options->real_hash_size !=3D defaults.real_hash_size
+-            || options->virtual_hash_size !=3D defaults.virtual_hash_size)
+-        {
+-            msg(M_USAGE, "--hash-size requires --mode server");
+-        }
+-        if (options->learn_address_script)
+-        {
+-            msg(M_USAGE, "--learn-address requires --mode server");
+-        }
+-        if (options->client_connect_script)
+-        {
+-            msg(M_USAGE, "--client-connect requires --mode server");
+-        }
+-        if (options->client_crresponse_script)
+-        {
+-            msg(M_USAGE, "--client-crresponse requires --mode server");
+-        }
+-        if (options->client_disconnect_script)
+-        {
+-            msg(M_USAGE, "--client-disconnect requires --mode server");
+-        }
+-        if (options->client_config_dir || options->ccd_exclusive)
+-        {
+-            msg(M_USAGE, "--client-config-dir/--ccd-exclusive requires --m=
+ode server");
+-        }
+-        if (options->enable_c2c)
+-        {
+-            msg(M_USAGE, "--client-to-client requires --mode server");
+-        }
+-        if (options->duplicate_cn)
+-        {
+-            msg(M_USAGE, "--duplicate-cn requires --mode server");
+-        }
+-        if (options->cf_max || options->cf_per)
+-        {
+-            msg(M_USAGE, "--connect-freq requires --mode server");
+-        }
+-        if (options->ssl_flags & (SSLF_CLIENT_CERT_NOT_REQUIRED|SSLF_CLIEN=
+T_CERT_OPTIONAL))
+-        {
+-            msg(M_USAGE, "--verify-client-cert requires --mode server");
+-        }
+-        if (options->ssl_flags & SSLF_USERNAME_AS_COMMON_NAME)
+-        {
+-            msg(M_USAGE, "--username-as-common-name requires --mode server=
+");
+-        }
+-        if (options->ssl_flags & SSLF_AUTH_USER_PASS_OPTIONAL)
+-        {
+-            msg(M_USAGE, "--auth-user-pass-optional requires --mode server=
+");
+-        }
+-        if (options->ssl_flags & SSLF_OPT_VERIFY)
+-        {
+-            msg(M_USAGE, "--opt-verify requires --mode server");
+-        }
++        MUST_BE_UNDEF(ifconfig_pool_defined, "ifconfig-pool");
++        MUST_BE_UNDEF(ifconfig_pool_persist_filename, "ifconfig-pool-persi=
+st");
++        MUST_BE_UNDEF(ifconfig_ipv6_pool_defined, "ifconfig-ipv6-pool");
++        MUST_BE_UNDEF(real_hash_size, "hash-size");
++        MUST_BE_UNDEF(virtual_hash_size, "hash-size");
++        MUST_BE_UNDEF(learn_address_script, "learn-address");
++        MUST_BE_UNDEF(client_connect_script, "client-connect");
++        MUST_BE_UNDEF(client_crresponse_script, "client-crresponse");
++        MUST_BE_UNDEF(client_disconnect_script, "client-disconnect");
++        MUST_BE_UNDEF(client_config_dir, "client-config-dir");
++        MUST_BE_UNDEF(ccd_exclusive, "ccd-exclusive");
++        MUST_BE_UNDEF(enable_c2c, "client-to-client");
++        MUST_BE_UNDEF(duplicate_cn, "duplicate-cn");
++        MUST_BE_UNDEF(cf_max, "connect-freq");
++        MUST_BE_UNDEF(cf_per, "connect-freq");
++        MUST_BE_FALSE(options->ssl_flags
++                      & (SSLF_CLIENT_CERT_NOT_REQUIRED|SSLF_CLIENT_CERT_OP=
+TIONAL),
++                      "verify-client-cert");
++        MUST_BE_FALSE(options->ssl_flags & SSLF_USERNAME_AS_COMMON_NAME, "=
+username-as-common-name");
++        MUST_BE_FALSE(options->ssl_flags & SSLF_AUTH_USER_PASS_OPTIONAL, "=
+auth-user-pass-optional");
++        MUST_BE_FALSE(options->ssl_flags & SSLF_OPT_VERIFY, "opt-verify");
+         if (options->server_flags & SF_TCP_NODELAY_HELPER)
+         {
+             msg(M_WARN, "WARNING: setting tcp-nodelay on the client side w=
+ill not "
+                 "affect the server. To have TCP_NODELAY in both direction =
+use "
+                 "tcp-nodelay in the server configuration instead.");
+         }
+-        if (options->auth_user_pass_verify_script)
+-        {
+-            msg(M_USAGE, "--auth-user-pass-verify requires --mode server");
+-        }
+-        if (options->auth_token_generate)
+-        {
+-            msg(M_USAGE, "--auth-gen-token requires --mode server");
+-        }
++        MUST_BE_UNDEF(auth_user_pass_verify_script, "auth-user-pass-verify=
+");
++        MUST_BE_UNDEF(auth_token_generate, "auth-gen-token");
+ #if PORT_SHARE
+         if (options->port_share_host || options->port_share_port)
+         {
+             msg(M_USAGE, "--port-share requires TCP server mode (--mode se=
+rver --proto tcp-server)");
+         }
+ #endif
+-
+-        if (options->stale_routes_check_interval)
+-        {
+-            msg(M_USAGE, "--stale-routes-check requires --mode server");
+-        }
+-
+-        if (options->vlan_tagging)
+-        {
+-            msg(M_USAGE, "--vlan-tagging requires --mode server");
+-        }
+-
+-        if (options->force_key_material_export)
+-        {
+-            msg(M_USAGE, "--force-tls-key-material-export requires --mode =
+server");
+-        }
++        MUST_BE_UNDEF(stale_routes_check_interval, "stale-routes-check");
++        MUST_BE_UNDEF(vlan_tagging, "vlan-tagging");
++        MUST_BE_UNDEF(vlan_accept, "vlan-accept");
++        MUST_BE_UNDEF(vlan_pvid, "vlan-pvid");
++        MUST_BE_UNDEF(force_key_material_export, "force-key-material-expor=
+t");
+     }
 
-File tests/unit_tests/openvpn/test_ncp.c:
+     /*
+      * SSL/TLS mode sanity checks.
+      */
+     if (options->tls_server + options->tls_client
+-        +(options->shared_secret_file !=3D NULL) > 1)
++        + (options->shared_secret_file !=3D NULL) > 1)
+     {
+         msg(M_USAGE, "specify only one of --tls-server, --tls-client, or -=
+-secret");
+     }
+@@ -2843,9 +2766,9 @@
+             "configuration detected. OpenVPN 2.8 will remove the "
+             "functionality to run a VPN without TLS. "
+             "See the examples section in the manual page for "
+-            "examples of a similar quick setup with peer-fingerprint."
++            "examples of a similar quick setup with peer-fingerprint. "
+             "OpenVPN 2.7 allows using this configuration when using "
+-            "--allow-deprecated-insecure-static-crypto but you should move"
++            "--allow-deprecated-insecure-static-crypto but you should move=
+ "
+             "to a proper configuration using TLS as soon as possible."
+             );
+     }
+@@ -2892,112 +2815,60 @@
+             {
+                 msg(M_USAGE, "Parameter --pkcs11-id or --pkcs11-id-managem=
+ent should be specified.");
+             }
+-            if (options->cert_file)
+-            {
+-                msg(M_USAGE, "Parameter --cert cannot be used when --pkcs1=
+1-provider is also specified.");
+-            }
+-            if (options->priv_key_file)
+-            {
+-                msg(M_USAGE, "Parameter --key cannot be used when --pkcs11=
+-provider is also specified.");
+-            }
+-            if (options->management_flags & MF_EXTERNAL_KEY)
+-            {
+-                msg(M_USAGE, "Parameter --management-external-key cannot b=
+e used when --pkcs11-provider is also specified.");
+-            }
+-            if (options->management_flags & MF_EXTERNAL_CERT)
+-            {
+-                msg(M_USAGE, "Parameter --management-external-cert cannot =
+be used when --pkcs11-provider is also specified.");
+-            }
+-            if (options->pkcs12_file)
+-            {
+-                msg(M_USAGE, "Parameter --pkcs12 cannot be used when --pkc=
+s11-provider is also specified.");
+-            }
++            const char use_err[] =3D "Parameter --%s cannot be used when -=
+-pkcs11-provider is also specified.";
++            MUST_BE_UNDEF(cert_file, "cert");
++            MUST_BE_UNDEF(priv_key_file, "key");
++            MUST_BE_UNDEF(pkcs12_file, "pkcs12");
++            MUST_BE_FALSE(options->management_flags & MF_EXTERNAL_KEY, "ma=
+nagement-external-key");
++            MUST_BE_FALSE(options->management_flags & MF_EXTERNAL_CERT, "m=
+anagement-external-cert");
+ #ifdef ENABLE_CRYPTOAPI
+-            if (options->cryptoapi_cert)
+-            {
+-                msg(M_USAGE, "Parameter --cryptoapicert cannot be used whe=
+n --pkcs11-provider is also specified.");
+-            }
++            MUST_BE_UNDEF(cryptoapi_cert, "cryptoapicert");
+ #endif
+         }
+         else
+ #endif /* ifdef ENABLE_PKCS11 */
+-        if ((options->management_flags & MF_EXTERNAL_KEY) && options->priv=
+_key_file)
+-        {
+-            msg(M_USAGE, "--key and --management-external-key are mutually=
+ exclusive");
+-        }
+-        else if ((options->management_flags & MF_EXTERNAL_CERT))
+-        {
+-            if (options->cert_file)
+-            {
+-                msg(M_USAGE, "--cert and --management-external-cert are mu=
+tually exclusive");
+-            }
+-            else if (!(options->management_flags & MF_EXTERNAL_KEY))
+-            {
+-                msg(M_USAGE, "--management-external-cert must be used with=
+ --management-external-key");
+-            }
+-        }
+-        else
+ #ifdef ENABLE_CRYPTOAPI
+         if (options->cryptoapi_cert)
+         {
+-            if (options->cert_file)
+-            {
+-                msg(M_USAGE, "Parameter --cert cannot be used when --crypt=
+oapicert is also specified.");
+-            }
+-            if (options->priv_key_file)
+-            {
+-                msg(M_USAGE, "Parameter --key cannot be used when --crypto=
+apicert is also specified.");
+-            }
+-            if (options->pkcs12_file)
+-            {
+-                msg(M_USAGE, "Parameter --pkcs12 cannot be used when --cry=
+ptoapicert is also specified.");
+-            }
+-            if (options->management_flags & MF_EXTERNAL_KEY)
+-            {
+-                msg(M_USAGE, "Parameter --management-external-key cannot b=
+e used when --cryptoapicert is also specified.");
+-            }
+-            if (options->management_flags & MF_EXTERNAL_CERT)
+-            {
+-                msg(M_USAGE, "Parameter --management-external-cert cannot =
+be used when --cryptoapicert is also specified.");
+-            }
++            const char use_err[] =3D "Parameter --%s cannot be used when -=
+-cryptoapicert is also specified.";
++            MUST_BE_UNDEF(cert_file, "cert");
++            MUST_BE_UNDEF(priv_key_file, "key");
++            MUST_BE_UNDEF(pkcs12_file, "pkcs12");
++            MUST_BE_FALSE(options->management_flags & MF_EXTERNAL_KEY, "ma=
+nagement-external-key");
++            MUST_BE_FALSE(options->management_flags & MF_EXTERNAL_CERT, "m=
+anagement-external-cert");
+         }
+         else
+-#endif /* ifdef ENABLE_CRYPTOAPI */
++#endif
+         if (options->pkcs12_file)
+         {
+ #ifdef ENABLE_CRYPTO_MBEDTLS
+             msg(M_USAGE, "Parameter --pkcs12 cannot be used with the mbed =
+TLS version of OpenVPN.");
+ #else
+-            if (options->ca_path)
+-            {
+-                msg(M_USAGE, "Parameter --capath cannot be used when --pkc=
+s12 is also specified.");
+-            }
+-            if (options->cert_file)
+-            {
+-                msg(M_USAGE, "Parameter --cert cannot be used when --pkcs1=
+2 is also specified.");
+-            }
+-            if (options->priv_key_file)
+-            {
+-                msg(M_USAGE, "Parameter --key cannot be used when --pkcs12=
+ is also specified.");
+-            }
+-            if (options->management_flags & MF_EXTERNAL_KEY)
+-            {
+-                msg(M_USAGE, "Parameter --management-external-key cannot b=
+e used when --pkcs12 is also specified.");
+-            }
+-            if (options->management_flags & MF_EXTERNAL_CERT)
+-            {
+-                msg(M_USAGE, "Parameter --management-external-cert cannot =
+be used when --pkcs12 is also specified.");
+-            }
++            const char use_err[] =3D "Parameter --%s cannot be used when -=
+-pkcs12 is also specified.";
++            MUST_BE_UNDEF(ca_path, "capath");
++            MUST_BE_UNDEF(cert_file, "cert");
++            MUST_BE_UNDEF(priv_key_file, "key");
++            MUST_BE_FALSE(options->management_flags & MF_EXTERNAL_KEY, "ma=
+nagement-external-key");
++            MUST_BE_FALSE(options->management_flags & MF_EXTERNAL_CERT, "m=
+anagement-external-cert");
+ #endif /* ifdef ENABLE_CRYPTO_MBEDTLS */
+         }
+-        else
++        else /* cert/key from none of pkcs11, pkcs12, cryptoapi */
+         {
+-#ifdef ENABLE_CRYPTO_MBEDTLS
+-            if (options->ca_path)
++            if ((options->management_flags & MF_EXTERNAL_KEY) && options->=
+priv_key_file)
+             {
+-                msg(M_USAGE, "Parameter --capath cannot be used with the m=
+bed TLS version of OpenVPN.");
++                msg(M_USAGE, "--key and --management-external-key are mutu=
+ally exclusive");
+             }
+-#endif  /* ifdef ENABLE_CRYPTO_MBEDTLS */
++            if ((options->management_flags & MF_EXTERNAL_CERT))
++            {
++                if (options->cert_file)
++                {
++                    msg(M_USAGE, "--cert and --management-external-cert ar=
+e mutually exclusive");
++                }
++                else if (!(options->management_flags & MF_EXTERNAL_KEY))
++                {
++                    msg(M_USAGE, "--management-external-cert must be used =
+with --management-external-key");
++                }
++            }
+             if (pull)
+             {
 
-http://gerrit.openvpn.net/c/openvpn/+/828/comment/87f080cb_fef0e6b6 :
-PS1, Line 356: test_ncp_expand(void **state)
-I would suggest to add a testcase here where ncp_cipher_conf contains DEFAU=
-LT but is not equal to DEFAULT.
+@@ -3049,55 +2920,51 @@
+          * when in non-TLS mode.
+          */
 
+-#define MUST_BE_UNDEF(parm) if (options->parm !=3D defaults.parm) {msg(M_U=
+SAGE, err, #parm); \
+-}
++        const char use_err[] =3D "Parameter %s can only be specified in TL=
+S-mode, "
++                               "i.e. where --tls-server or --tls-client is=
+ also specified.";
 
+-        const char err[] =3D "Parameter %s can only be specified in TLS-mo=
+de, i.e. where --tls-server or --tls-client is also specified.";
+-
+-        MUST_BE_UNDEF(ca_file);
+-        MUST_BE_UNDEF(ca_path);
+-        MUST_BE_UNDEF(dh_file);
+-        MUST_BE_UNDEF(cert_file);
+-        MUST_BE_UNDEF(priv_key_file);
++        MUST_BE_UNDEF(ca_file, "ca");
++        MUST_BE_UNDEF(ca_path, "capath");
++        MUST_BE_UNDEF(dh_file, "dh");
++        MUST_BE_UNDEF(cert_file, "cert");
++        MUST_BE_UNDEF(priv_key_file, "key");
+ #ifndef ENABLE_CRYPTO_MBEDTLS
+-        MUST_BE_UNDEF(pkcs12_file);
++        MUST_BE_UNDEF(pkcs12_file, "pkcs12");
+ #endif
+-        MUST_BE_UNDEF(cipher_list);
+-        MUST_BE_UNDEF(cipher_list_tls13);
+-        MUST_BE_UNDEF(tls_cert_profile);
+-        MUST_BE_UNDEF(tls_verify);
+-        MUST_BE_UNDEF(tls_export_peer_cert_dir);
+-        MUST_BE_UNDEF(verify_x509_name);
+-        MUST_BE_UNDEF(tls_timeout);
+-        MUST_BE_UNDEF(renegotiate_bytes);
+-        MUST_BE_UNDEF(renegotiate_packets);
+-        MUST_BE_UNDEF(renegotiate_seconds);
+-        MUST_BE_UNDEF(handshake_window);
+-        MUST_BE_UNDEF(transition_window);
+-        MUST_BE_UNDEF(tls_auth_file);
+-        MUST_BE_UNDEF(tls_crypt_file);
+-        MUST_BE_UNDEF(tls_crypt_v2_file);
+-        MUST_BE_UNDEF(single_session);
+-        MUST_BE_UNDEF(push_peer_info);
+-        MUST_BE_UNDEF(tls_exit);
+-        MUST_BE_UNDEF(crl_file);
+-        MUST_BE_UNDEF(ns_cert_type);
+-        MUST_BE_UNDEF(remote_cert_ku[0]);
+-        MUST_BE_UNDEF(remote_cert_eku);
++        MUST_BE_UNDEF(cipher_list, "tls-cipher");
++        MUST_BE_UNDEF(cipher_list_tls13, "tls-ciphersuites");
++        MUST_BE_UNDEF(tls_cert_profile, "tls-cert-profile");
++        MUST_BE_UNDEF(tls_verify, "tls-verify");
++        MUST_BE_UNDEF(tls_export_peer_cert_dir, "tls-export-cert");
++        MUST_BE_UNDEF(verify_x509_name, "verify-x509-name");
++        MUST_BE_UNDEF(tls_timeout, "tls-timeout");
++        MUST_BE_UNDEF(renegotiate_bytes, "reneg-bytes");
++        MUST_BE_UNDEF(renegotiate_packets, "reneg-pkts");
++        MUST_BE_UNDEF(renegotiate_seconds, "reneg-sec");
++        MUST_BE_UNDEF(handshake_window, "hand-window");
++        MUST_BE_UNDEF(transition_window, "tran-window");
++        MUST_BE_UNDEF(tls_auth_file, "tls-auth");
++        MUST_BE_UNDEF(tls_crypt_file, "tls-crypt");
++        MUST_BE_UNDEF(tls_crypt_v2_file, "tls-crypt-v2");
++        MUST_BE_UNDEF(single_session, "single-session");
++        MUST_BE_UNDEF(push_peer_info, "push-peer-info");
++        MUST_BE_UNDEF(tls_exit, "tls-exit");
++        MUST_BE_UNDEF(crl_file, "crl-verify");
++        MUST_BE_UNDEF(ns_cert_type, "ns-cert-type");
++        MUST_BE_UNDEF(remote_cert_ku[0], "remote-cert-ku");
++        MUST_BE_UNDEF(remote_cert_eku, "remote-cert-eku");
+ #ifdef ENABLE_PKCS11
+-        MUST_BE_UNDEF(pkcs11_providers[0]);
+-        MUST_BE_UNDEF(pkcs11_private_mode[0]);
+-        MUST_BE_UNDEF(pkcs11_id);
+-        MUST_BE_UNDEF(pkcs11_id_management);
++        MUST_BE_UNDEF(pkcs11_providers[0], "pkcs11-providers");
++        MUST_BE_UNDEF(pkcs11_private_mode[0], "pkcs11-private-mode");
++        MUST_BE_UNDEF(pkcs11_id, "pkcs11-id");
++        MUST_BE_UNDEF(pkcs11_id_management, "pkcs11-id-management");
+ #endif
+
+         if (pull)
+         {
+-            msg(M_USAGE, err, "--pull");
++            msg(M_USAGE, use_err, "--pull");
+         }
+     }
+-#undef MUST_BE_UNDEF
+-
+     if (options->auth_user_pass_file && !options->pull)
+     {
+         msg(M_USAGE, "--auth-user-pass requires --pull");
+@@ -3106,6 +2973,9 @@
+     uninit_options(&defaults);
+ }
+
++#undef MUST_BE_UNDEF
++#undef MUST_BE_FALSE
++
+ static void
+ options_postprocess_mutate_ce(struct options *o, struct connection_entry *=
+ce)
+ {
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/828?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/832?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings
 
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: Ia1c5209022d3ab4c0dac6438c41891c7d059f812
-Gerrit-Change-Number: 828
-Gerrit-PatchSet: 1
-Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
-Gerrit-Reviewer: flichtenheld <frank@...2641...>
+Gerrit-Change-Id: I4f766fa22865eaf4466c31cf55e3d73b00008c38
+Gerrit-Change-Number: 832
+Gerrit-PatchSet: 2
+Gerrit-Owner: flichtenheld <frank@...2641...>
+Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Comment-Date: Tue, 10 Dec 2024 17:35:16 +0000
-Gerrit-HasComments: Yes
-Gerrit-Has-Labels: Yes
-Gerrit-MessageType: comment
+Gerrit-MessageType: newpatchset
 
---YbrOm9arLvc=
+--58TspYt3N2c=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <p> Attention is currently required from: plaisthos. </p>
-<p>Patch set 1:<span style=3D"border-radius: 3px; display: inline-block; ma=
-rgin: 0 2px; padding: 4px;background-color: #ffd4d4;">Code-Review -1</span>=
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/828?usp=3Demail">Vi=
-ew Change</a></p><p>6 comments:</p><ul style=3D"list-style: none; padding: =
-0;"><li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-=
-style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p =
-style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvp=
-n/+/828?tab=3Dcomments">Patch Set #1:</a> </p><p style=3D"white-space: pre-=
-wrap; word-wrap: break-word;">Some nitpicks</p></li></ul></li><li style=3D"=
-margin: 0; padding: 0;"><p>File doc/man-sections/protocol-options.rst:</p><=
-ul style=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; padding:=
- 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.ope=
-nvpn.net/c/openvpn/+/828/comment/5f75330f_045154c7">Patch Set #1, Line 181:=
-</a> <code style=3D"font-family:monospace,monospace">  Starting with OpenVP=
-N 2.7 the special keyword DEFAULT can be used in the</code></p><p style=3D"=
-white-space: pre-wrap; word-wrap: break-word;">Probably makes sense to use =
-``DEFAULT`` here.</p></li></ul></li><li style=3D"margin: 0; padding: 0;"><p=
->File src/openvpn/multi.c:</p><ul style=3D"list-style: none; padding: 0;"><=
-li style=3D"margin: 0; padding: 0 0 0 16px;"><p style=3D"margin-bottom: 4px=
-;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/828/comment/9501c1ac_ea=
-b351db">Patch Set #1, Line 1905:</a> <code style=3D"font-family:monospace,m=
-onospace">            &quot;Server data-ciphers: &#39;%s&#39;%s, client sup=
-ports cipher &#39;%s&#39;&quot;,</code></p><p style=3D"white-space: pre-wra=
-p; word-wrap: break-word;">make consistent with the other case. Either &#39=
-;%s%s&#39; or &#39;%s&#39;%s, but not both.</p></li></ul></li><li style=3D"=
-margin: 0; padding: 0;"><p>File src/openvpn/ssl_ncp.h:</p><ul style=3D"list=
--style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p=
- style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openv=
-pn/+/828/comment/1d04131f_fb1c7b2c">Patch Set #1, Line 174:</a> <code style=
-=3D"font-family:monospace,monospace"> *  The returned string will be alloca=
-ted in the passed \param gc</code></p><p style=3D"white-space: pre-wrap; wo=
-rd-wrap: break-word;">If you want to format a word as param use \p, \param =
-is for documenting parameters.</p></li></ul></li><li style=3D"margin: 0; pa=
-dding: 0;"><p>File src/openvpn/ssl_ncp.c:</p><ul style=3D"list-style: none;=
- padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p style=3D"mar=
-gin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/828/comm=
-ent/c25085e2_a57ade0c">Patch Set #1, Line 537:</a> <code style=3D"font-fami=
-ly:monospace,monospace"> * Replaces the string DEFAULT with the string \par=
-am replace. The</code></p><p style=3D"white-space: pre-wrap; word-wrap: bre=
-ak-word;">\p</p></li></ul></li><li style=3D"margin: 0; padding: 0;"><p>File=
- tests/unit_tests/openvpn/test_ncp.c:</p><ul style=3D"list-style: none; pad=
-ding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p style=3D"margin-=
-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/828/comment/=
-87f080cb_fef0e6b6">Patch Set #1, Line 356:</a> <code style=3D"font-family:m=
-onospace,monospace">test_ncp_expand(void **state)</code></p><p style=3D"whi=
-te-space: pre-wrap; word-wrap: break-word;">I would suggest to add a testca=
-se here where ncp_cipher_conf contains DEFAULT but is not equal to DEFAULT.=
-</p></li></ul></li></ul><p>To view, visit <a href=3D"http://gerrit.openvpn.=
-net/c/openvpn/+/828?usp=3Demail">change 828</a>. To unsubscribe, or for hel=
-p writing mail filters, visit <a href=3D"http://gerrit.openvpn.net/settings=
-">settings</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessag=
-e"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAct=
-ion"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/8=
-28?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div></d=
-iv>
+<p>flichtenheld <strong>uploaded patch set #2</strong> to this change.</p><=
+p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/832?usp=3Demail">View Ch=
+ange</a></p><pre style=3D"font-family: monospace,monospace; white-space: pr=
+e-wrap;">options: Cleanup and simplify options_postprocess_verify_ce<br><br=
+>- Reuse the MUST_BE_UNDEF macro in more places<br>- Add a second parameter=
+ so it actually reports the<br>  correct option name<br>- Add MUST_BE_FALSE=
+ for similar cases<br>- Reorder the checks for cert/key options to make<br>=
+  more sense. Some of the checks could have never<br>  fired due to wrong p=
+lacement of the management<br>  checks<br>- Some other small cleanups like =
+missing spaces<br>  in multiline string literal<br><br>Change-Id: I4f766fa2=
+2865eaf4466c31cf55e3d73b00008c38<br>Signed-off-by: Frank Lichtenheld &lt;fr=
+ank@...2641...&gt;<br>---<br>M src/openvpn/options.c<br>1 file changed, 142=
+ insertions(+), 272 deletions(-)<br><br></pre><pre style=3D"font-family: mo=
+nospace,monospace; white-space: pre-wrap;">git pull ssh://gerrit.openvpn.ne=
+t:29418/openvpn refs/changes/32/832/2</pre><pre style=3D"font-family: monos=
+pace,monospace; white-space: pre-wrap;"><span>diff --git a/src/openvpn/opti=
+ons.c b/src/openvpn/options.c</span><br><span>index d8dd518..aa89595 100644=
+</span><br><span>--- a/src/openvpn/options.c</span><br><span>+++ b/src/open=
+vpn/options.c</span><br><span>@@ -2300,6 +2300,13 @@</span><br><span> stati=
+c void</span><br><span> check_ca_required(const struct options *options)</s=
+pan><br><span> {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#if=
+def ENABLE_CRYPTO_MBEDTLS</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+    if (options-&gt;ca_path)</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++        msg(M_USAGE, &quot;Parameter --capath cannot be used with the mbed=
+ TLS version of OpenVPN.&quot;);</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#=
+endif</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><sp=
+an>     if (options-&gt;verify_hash_no_ca</span><br><span>         || optio=
+ns-&gt;pkcs12_file</span><br><span>         || options-&gt;ca_file</span><b=
+r><span>@@ -2319,6 +2326,11 @@</span><br><span>     msg(M_USAGE, &quot;%s&q=
+uot;, str);</span><br><span> }</span><br><span> </span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+#define MUST_BE_UNDEF(parm, parm_name) \</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (options-&gt;parm =
+!=3D defaults.parm) { msg(M_USAGE, use_err, parm_name); }</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+#define MUST_BE_FALSE(condition, parm=
+_name) \</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (con=
+dition) { msg(M_USAGE, use_err, parm_name); }</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+</span><br><span> static void</span><br><span> op=
+tions_postprocess_verify_ce(const struct options *options,</span><br><span>=
+                               const struct connection_entry *ce)</span><br=
+><span>@@ -2555,6 +2567,8 @@</span><br><span>      */</span><br><span>     =
+if (options-&gt;mode =3D=3D MODE_SERVER)</span><br><span>     {</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+        const char use_err[] =
+=3D &quot;--%s cannot be used with --mode server.&quot;;</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+</span><br><span> #define USAGE_VALID_=
+SERVER_PROTOS &quot;--mode server currently only supports &quot; \</span><b=
+r><span>     &quot;--proto values of udp, tcp-server, tcp4-server, or tcp6-=
+server&quot;</span><br><span> #ifdef TARGET_ANDROID</span><br><span>@@ -256=
+4,10 +2578,7 @@</span><br><span>         {</span><br><span>             msg=
+(M_USAGE, &quot;--mode server only works with --dev tun or --dev tap&quot;)=
+;</span><br><span>         }</span><br><span style=3D"color: hsl(0, 100%, 4=
+0%);">-        if (options-&gt;pull)</span><br><span style=3D"color: hsl(0,=
+ 100%, 40%);">-        {</span><br><span style=3D"color: hsl(0, 100%, 40%);=
+">-            msg(M_USAGE, &quot;--pull cannot be used with --mode server&=
+quot;);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        }</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+        MUST_BE_UNDEF(pu=
+ll, &quot;pull&quot;);</span><br><span>         if (options-&gt;pull_filter=
+_list)</span><br><span>         {</span><br><span>             msg(M_WARN, =
+&quot;--pull-filter ignored for --mode server&quot;);</span><br><span>@@ -2=
+588,22 +2599,10 @@</span><br><span>         {</span><br><span>             =
+msg(M_USAGE, &quot;--mode server requires --tls-server&quot;);</span><br><s=
+pan>         }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-       =
+ if (ce-&gt;remote)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
+      {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            ms=
+g(M_USAGE, &quot;--remote cannot be used with --mode server&quot;);</span><=
+br><span style=3D"color: hsl(0, 100%, 40%);">-        }</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-        if (!ce-&gt;bind_local)</span><br=
+><span style=3D"color: hsl(0, 100%, 40%);">-        {</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-            msg(M_USAGE, &quot;--nobind can=
+not be used with --mode server&quot;);</span><br><span style=3D"color: hsl(=
+0, 100%, 40%);">-        }</span><br><span style=3D"color: hsl(0, 100%, 40%=
+);">-        if (ce-&gt;http_proxy_options)</span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-        {</span><br><span style=3D"color: hsl(0, 100%=
+, 40%);">-            msg(M_USAGE, &quot;--http-proxy cannot be used with -=
+-mode server&quot;);</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
+       }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        if (c=
+e-&gt;socks_proxy_server)</span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">-        {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        =
+    msg(M_USAGE, &quot;--socks-proxy cannot be used with --mode server&quot=
+;);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        }</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+        MUST_BE_FALSE(ce-&gt=
+;remote, &quot;remote&quot;);</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+        MUST_BE_FALSE(!ce-&gt;bind_local, &quot;nobind&quot;);</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+        MUST_BE_FALSE(=
+ce-&gt;http_proxy_options, &quot;http-proxy&quot;);</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+        MUST_BE_FALSE(ce-&gt;socks_proxy_=
+server, &quot;socks-proxy&quot;);</span><br><span>         /* &lt;connectio=
+n&gt; blocks force to have a remote embedded, so we check</span><br><span> =
+         * for the --remote and bail out if it is present</span><br><span> =
+         */</span><br><span>@@ -2613,10 +2612,7 @@</span><br><span>        =
+     msg(M_USAGE, &quot;&lt;connection&gt; cannot be used with --mode serve=
+r&quot;);</span><br><span>         }</span><br><span> </span><br><span styl=
+e=3D"color: hsl(0, 100%, 40%);">-        if (options-&gt;shaper)</span><br>=
+<span style=3D"color: hsl(0, 100%, 40%);">-        {</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-            msg(M_USAGE, &quot;--shaper can=
+not be used with --mode server&quot;);</span><br><span style=3D"color: hsl(=
+0, 100%, 40%);">-        }</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+        MUST_BE_UNDEF(shaper, &quot;shaper&quot;);</span><br><span> =
+        if (options-&gt;ipchange)</span><br><span>         {</span><br><spa=
+n>             msg(M_USAGE,</span><br><span>@@ -2639,14 +2635,8 @@</span><b=
+r><span>         {</span><br><span>             msg(M_USAGE, &quot;--redire=
+ct-gateway cannot be used with --mode server (however --push \&quot;redirec=
+t-gateway\&quot; is fine)&quot;);</span><br><span>         }</span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">-        if (options-&gt;route_delay_=
+defined)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        {</sp=
+an><br><span style=3D"color: hsl(0, 100%, 40%);">-            msg(M_USAGE, =
+&quot;--route-delay cannot be used with --mode server&quot;);</span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-        }</span><br><span style=3D"=
+color: hsl(0, 100%, 40%);">-        if (options-&gt;up_delay)</span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-        {</span><br><span style=3D"=
+color: hsl(0, 100%, 40%);">-            msg(M_USAGE, &quot;--up-delay canno=
+t be used with --mode server&quot;);</span><br><span style=3D"color: hsl(0,=
+ 100%, 40%);">-        }</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+        MUST_BE_UNDEF(route_delay_defined, &quot;route-delay&quot;);</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+        MUST_BE_UNDEF=
+(up_delay, &quot;up-delay&quot;);</span><br><span>         if (!options-&gt=
+;ifconfig_pool_defined</span><br><span>             &amp;&amp; !options-&gt=
+;ifconfig_ipv6_pool_defined</span><br><span>             &amp;&amp; options=
+-&gt;ifconfig_pool_persist_filename)</span><br><span>@@ -2658,10 +2648,7 @@=
+</span><br><span>         {</span><br><span>             msg(M_USAGE, &quot=
+;--ifconfig-ipv6-pool needs --ifconfig-ipv6&quot;);</span><br><span>       =
+  }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        if (option=
+s-&gt;allow_recursive_routing)</span><br><span style=3D"color: hsl(0, 100%,=
+ 40%);">-        {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
+         msg(M_USAGE, &quot;--allow-recursive-routing cannot be used with -=
+-mode server&quot;);</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
+       }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        MUS=
+T_BE_UNDEF(allow_recursive_routing, &quot;allow-recursive-routing&quot;);</=
+span><br><span>         if (options-&gt;auth_user_pass_file)</span><br><spa=
+n>         {</span><br><span>             msg(M_USAGE, &quot;--auth-user-pa=
+ss cannot be used with --mode server (it should be used on the client side =
+only)&quot;);</span><br><span>@@ -2683,23 +2670,19 @@</span><br><span>     =
+            options-&gt;handshake_window);</span><br><span> </span><br><spa=
+n>         }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
+ if (!options-&gt;auth_user_pass_verify_script</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+            || PLUGIN_OPTION_LIST(options)</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+            || MAN_CLIENT=
+_AUTH_ENABLED(options))</span><br><span>         {</span><br><span style=3D=
+"color: hsl(0, 100%, 40%);">-            const bool ccnr =3D (options-&gt;a=
+uth_user_pass_verify_script</span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">-                               || PLUGIN_OPTION_LIST(options)</span><=
+br><span style=3D"color: hsl(0, 100%, 40%);">-                             =
+  || MAN_CLIENT_AUTH_ENABLED(options));</span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-            const char *postfix =3D &quot;must be used wi=
+th --management-client-auth, an --auth-user-pass-verify script, or plugin&q=
+uot;;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            if (=
+(options-&gt;ssl_flags &amp; (SSLF_CLIENT_CERT_NOT_REQUIRED|SSLF_CLIENT_CER=
+T_OPTIONAL)) &amp;&amp; !ccnr)</span><br><span style=3D"color: hsl(0, 100%,=
+ 40%);">-            {</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
+-                msg(M_USAGE, &quot;--verify-client-cert none|optional %s&q=
+uot;, postfix);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-      =
+      }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            if=
+ ((options-&gt;ssl_flags &amp; SSLF_USERNAME_AS_COMMON_NAME) &amp;&amp; !cc=
+nr)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            {</spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-                msg(M_USAG=
+E, &quot;--username-as-common-name %s&quot;, postfix);</span><br><span styl=
+e=3D"color: hsl(0, 100%, 40%);">-            }</span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-            if ((options-&gt;ssl_flags &amp; SSLF_=
+AUTH_USER_PASS_OPTIONAL) &amp;&amp; !ccnr)</span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">-            {</span><br><span style=3D"color: hsl(0, 1=
+00%, 40%);">-                msg(M_USAGE, &quot;--auth-user-pass-optional %=
+s&quot;, postfix);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
+         }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+         =
+   const char *use_err =3D &quot;--%s must be used with --management-client=
+-auth, an --auth-user-pass-verify script, or plugin&quot;;</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+            MUST_BE_FALSE(options-&gt;ssl_flags</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+                          &=
+amp; (SSLF_CLIENT_CERT_NOT_REQUIRED|SSLF_CLIENT_CERT_OPTIONAL),</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+                          &quot=
+;verify-client-cert none|optional&quot;);</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+            MUST_BE_FALSE(options-&gt;ssl_flags &amp;=
+ SSLF_USERNAME_AS_COMMON_NAME,</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+                          &quot;username-as-common-name&quot;);<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+            MUST_BE_=
+FALSE(options-&gt;ssl_flags &amp; SSLF_AUTH_USER_PASS_OPTIONAL,</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+                          &quot=
+;auth-user-pass-optional&quot;);</span><br><span>         }</span><br><span=
+> </span><br><span>         if (options-&gt;vlan_tagging &amp;&amp; dev !=
+=3D DEV_TYPE_TAP)</span><br><span>@@ -2708,125 +2691,65 @@</span><br><span>=
+         }</span><br><span>         if (!options-&gt;vlan_tagging)</span><b=
+r><span>         {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
+         if (options-&gt;vlan_accept !=3D defaults.vlan_accept)</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-            {</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-                msg(M_USAGE, &quot;--vlan=
+-accept requires --vlan-tagging&quot;);</span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-            }</span><br><span style=3D"color: hsl(0, 100%=
+, 40%);">-            if (options-&gt;vlan_pvid !=3D defaults.vlan_pvid)</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-            {</span><br>=
+<span style=3D"color: hsl(0, 100%, 40%);">-                msg(M_USAGE, &qu=
+ot;--vlan-pvid requires --vlan-tagging&quot;);</span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-            }</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+            const char use_err[] =3D &quot;--%s requires=
+ --vlan-tagging&quot;;</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+            MUST_BE_UNDEF(vlan_accept, &quot;vlan-accept&quot;);</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+            MUST_BE_UNDEF(v=
+lan_pvid, &quot;vlan-pvid&quot;);</span><br><span>         }</span><br><spa=
+n>     }</span><br><span>     else</span><br><span>     {</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+        const char use_err[] =3D &quo=
+t;--%s requires --mode server&quot;;</span><br><span>         /*</span><br>=
+<span>          * When not in server mode, err if parameters are</span><br>=
+<span>          * specified which require --mode server.</span><br><span>  =
+        */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        if =
+(options-&gt;ifconfig_pool_defined || options-&gt;ifconfig_pool_persist_fil=
+ename)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        {</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-            msg(M_USAGE, &q=
+uot;--ifconfig-pool/--ifconfig-pool-persist requires --mode server&quot;);<=
+/span><br><span style=3D"color: hsl(0, 100%, 40%);">-        }</span><br><s=
+pan style=3D"color: hsl(0, 100%, 40%);">-        if (options-&gt;ifconfig_i=
+pv6_pool_defined)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
+    {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            msg(=
+M_USAGE, &quot;--ifconfig-ipv6-pool requires --mode server&quot;);</span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-        }</span><br><span styl=
+e=3D"color: hsl(0, 100%, 40%);">-        if (options-&gt;real_hash_size !=
+=3D defaults.real_hash_size</span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">-            || options-&gt;virtual_hash_size !=3D defaults.virtual_ha=
+sh_size)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        {</sp=
+an><br><span style=3D"color: hsl(0, 100%, 40%);">-            msg(M_USAGE, =
+&quot;--hash-size requires --mode server&quot;);</span><br><span style=3D"c=
+olor: hsl(0, 100%, 40%);">-        }</span><br><span style=3D"color: hsl(0,=
+ 100%, 40%);">-        if (options-&gt;learn_address_script)</span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">-        {</span><br><span style=3D"c=
+olor: hsl(0, 100%, 40%);">-            msg(M_USAGE, &quot;--learn-address r=
+equires --mode server&quot;);</span><br><span style=3D"color: hsl(0, 100%, =
+40%);">-        }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
+    if (options-&gt;client_connect_script)</span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">-        {</span><br><span style=3D"color: hsl(0, 100%,=
+ 40%);">-            msg(M_USAGE, &quot;--client-connect requires --mode se=
+rver&quot;);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        }=
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        if (options-&=
+gt;client_crresponse_script)</span><br><span style=3D"color: hsl(0, 100%, 4=
+0%);">-        {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-     =
+       msg(M_USAGE, &quot;--client-crresponse requires --mode server&quot;)=
+;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        }</span><br>=
+<span style=3D"color: hsl(0, 100%, 40%);">-        if (options-&gt;client_d=
+isconnect_script)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
+    {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            msg(=
+M_USAGE, &quot;--client-disconnect requires --mode server&quot;);</span><br=
+><span style=3D"color: hsl(0, 100%, 40%);">-        }</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-        if (options-&gt;client_config_dir |=
+| options-&gt;ccd_exclusive)</span><br><span style=3D"color: hsl(0, 100%, 4=
+0%);">-        {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-     =
+       msg(M_USAGE, &quot;--client-config-dir/--ccd-exclusive requires --mo=
+de server&quot;);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
+    }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        if (opti=
+ons-&gt;enable_c2c)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
+      {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            ms=
+g(M_USAGE, &quot;--client-to-client requires --mode server&quot;);</span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-        }</span><br><span styl=
+e=3D"color: hsl(0, 100%, 40%);">-        if (options-&gt;duplicate_cn)</spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-        {</span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">-            msg(M_USAGE, &quot;--dupli=
+cate-cn requires --mode server&quot;);</span><br><span style=3D"color: hsl(=
+0, 100%, 40%);">-        }</span><br><span style=3D"color: hsl(0, 100%, 40%=
+);">-        if (options-&gt;cf_max || options-&gt;cf_per)</span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">-        {</span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-            msg(M_USAGE, &quot;--connect-freq requ=
+ires --mode server&quot;);</span><br><span style=3D"color: hsl(0, 100%, 40%=
+);">-        }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-       =
+ if (options-&gt;ssl_flags &amp; (SSLF_CLIENT_CERT_NOT_REQUIRED|SSLF_CLIENT=
+_CERT_OPTIONAL))</span><br><span style=3D"color: hsl(0, 100%, 40%);">-     =
+   {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            msg(M=
+_USAGE, &quot;--verify-client-cert requires --mode server&quot;);</span><br=
+><span style=3D"color: hsl(0, 100%, 40%);">-        }</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-        if (options-&gt;ssl_flags &amp; SSL=
+F_USERNAME_AS_COMMON_NAME)</span><br><span style=3D"color: hsl(0, 100%, 40%=
+);">-        {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-       =
+     msg(M_USAGE, &quot;--username-as-common-name requires --mode server&qu=
+ot;);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        }</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-        if (options-&gt;ssl_=
+flags &amp; SSLF_AUTH_USER_PASS_OPTIONAL)</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-        {</span><br><span style=3D"color: hsl(0, 100%, =
+40%);">-            msg(M_USAGE, &quot;--auth-user-pass-optional requires -=
+-mode server&quot;);</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
+       }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        if (o=
+ptions-&gt;ssl_flags &amp; SSLF_OPT_VERIFY)</span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-        {</span><br><span style=3D"color: hsl(0, 100%=
+, 40%);">-            msg(M_USAGE, &quot;--opt-verify requires --mode serve=
+r&quot;);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        }</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+        MUST_BE_UNDEF(=
+ifconfig_pool_defined, &quot;ifconfig-pool&quot;);</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+        MUST_BE_UNDEF(ifconfig_pool_persist_=
+filename, &quot;ifconfig-pool-persist&quot;);</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+        MUST_BE_UNDEF(ifconfig_ipv6_pool_defined,=
+ &quot;ifconfig-ipv6-pool&quot;);</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+        MUST_BE_UNDEF(real_hash_size, &quot;hash-size&quot;);=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        MUST_BE_UND=
+EF(virtual_hash_size, &quot;hash-size&quot;);</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+        MUST_BE_UNDEF(learn_address_script, &quot=
+;learn-address&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+        MUST_BE_UNDEF(client_connect_script, &quot;client-connect&quot;)=
+;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        MUST_BE_UN=
+DEF(client_crresponse_script, &quot;client-crresponse&quot;);</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+        MUST_BE_UNDEF(client_disc=
+onnect_script, &quot;client-disconnect&quot;);</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+        MUST_BE_UNDEF(client_config_dir, &quot;c=
+lient-config-dir&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+        MUST_BE_UNDEF(ccd_exclusive, &quot;ccd-exclusive&quot;);</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+        MUST_BE_UNDEF(ena=
+ble_c2c, &quot;client-to-client&quot;);</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+        MUST_BE_UNDEF(duplicate_cn, &quot;duplicate-cn&=
+quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        MUST=
+_BE_UNDEF(cf_max, &quot;connect-freq&quot;);</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+        MUST_BE_UNDEF(cf_per, &quot;connect-freq&q=
+uot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        MUST_=
+BE_FALSE(options-&gt;ssl_flags</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+                      &amp; (SSLF_CLIENT_CERT_NOT_REQUIRED|SSLF_=
+CLIENT_CERT_OPTIONAL),</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+                      &quot;verify-client-cert&quot;);</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+        MUST_BE_FALSE(options-&gt;ssl=
+_flags &amp; SSLF_USERNAME_AS_COMMON_NAME, &quot;username-as-common-name&qu=
+ot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        MUST_B=
+E_FALSE(options-&gt;ssl_flags &amp; SSLF_AUTH_USER_PASS_OPTIONAL, &quot;aut=
+h-user-pass-optional&quot;);</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+        MUST_BE_FALSE(options-&gt;ssl_flags &amp; SSLF_OPT_VERIFY,=
+ &quot;opt-verify&quot;);</span><br><span>         if (options-&gt;server_f=
+lags &amp; SF_TCP_NODELAY_HELPER)</span><br><span>         {</span><br><spa=
+n>             msg(M_WARN, &quot;WARNING: setting tcp-nodelay on the client=
+ side will not &quot;</span><br><span>                 &quot;affect the ser=
+ver. To have TCP_NODELAY in both direction use &quot;</span><br><span>     =
+            &quot;tcp-nodelay in the server configuration instead.&quot;);<=
+/span><br><span>         }</span><br><span style=3D"color: hsl(0, 100%, 40%=
+);">-        if (options-&gt;auth_user_pass_verify_script)</span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">-        {</span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-            msg(M_USAGE, &quot;--auth-user-pass-ve=
+rify requires --mode server&quot;);</span><br><span style=3D"color: hsl(0, =
+100%, 40%);">-        }</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>-        if (options-&gt;auth_token_generate)</span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-        {</span><br><span style=3D"color: hsl(0, 1=
+00%, 40%);">-            msg(M_USAGE, &quot;--auth-gen-token requires --mod=
+e server&quot;);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-     =
+   }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        MUST_BE=
+_UNDEF(auth_user_pass_verify_script, &quot;auth-user-pass-verify&quot;);</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+        MUST_BE_UNDEF(=
+auth_token_generate, &quot;auth-gen-token&quot;);</span><br><span> #if PORT=
+_SHARE</span><br><span>         if (options-&gt;port_share_host || options-=
+&gt;port_share_port)</span><br><span>         {</span><br><span>           =
+  msg(M_USAGE, &quot;--port-share requires TCP server mode (--mode server -=
+-proto tcp-server)&quot;);</span><br><span>         }</span><br><span> #end=
+if</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span st=
+yle=3D"color: hsl(0, 100%, 40%);">-        if (options-&gt;stale_routes_che=
+ck_interval)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        {=
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            msg(M_USA=
+GE, &quot;--stale-routes-check requires --mode server&quot;);</span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-        }</span><br><span style=3D"=
+color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 4=
+0%);">-        if (options-&gt;vlan_tagging)</span><br><span style=3D"color=
+: hsl(0, 100%, 40%);">-        {</span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-            msg(M_USAGE, &quot;--vlan-tagging requires --mode se=
+rver&quot;);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        }=
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span styl=
+e=3D"color: hsl(0, 100%, 40%);">-        if (options-&gt;force_key_material=
+_export)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        {</sp=
+an><br><span style=3D"color: hsl(0, 100%, 40%);">-            msg(M_USAGE, =
+&quot;--force-tls-key-material-export requires --mode server&quot;);</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-        }</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+        MUST_BE_UNDEF(stale_routes_che=
+ck_interval, &quot;stale-routes-check&quot;);</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+        MUST_BE_UNDEF(vlan_tagging, &quot;vlan-ta=
+gging&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
+  MUST_BE_UNDEF(vlan_accept, &quot;vlan-accept&quot;);</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+        MUST_BE_UNDEF(vlan_pvid, &quot;v=
+lan-pvid&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+     MUST_BE_UNDEF(force_key_material_export, &quot;force-key-material-expo=
+rt&quot;);</span><br><span>     }</span><br><span> </span><br><span>     /*=
+</span><br><span>      * SSL/TLS mode sanity checks.</span><br><span>      =
+*/</span><br><span>     if (options-&gt;tls_server + options-&gt;tls_client=
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        +(options-&gt=
+;shared_secret_file !=3D NULL) &gt; 1)</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+        + (options-&gt;shared_secret_file !=3D NULL) &gt=
+; 1)</span><br><span>     {</span><br><span>         msg(M_USAGE, &quot;spe=
+cify only one of --tls-server, --tls-client, or --secret&quot;);</span><br>=
+<span>     }</span><br><span>@@ -2843,9 +2766,9 @@</span><br><span>        =
+     &quot;configuration detected. OpenVPN 2.8 will remove the &quot;</span=
+><br><span>             &quot;functionality to run a VPN without TLS. &quot=
+;</span><br><span>             &quot;See the examples section in the manual=
+ page for &quot;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-     =
+       &quot;examples of a similar quick setup with peer-fingerprint.&quot;=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            &quot;e=
+xamples of a similar quick setup with peer-fingerprint. &quot;</span><br><s=
+pan>             &quot;OpenVPN 2.7 allows using this configuration when usi=
+ng &quot;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            =
+&quot;--allow-deprecated-insecure-static-crypto but you should move&quot;</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+            &quot;--a=
+llow-deprecated-insecure-static-crypto but you should move &quot;</span><br=
+><span>             &quot;to a proper configuration using TLS as soon as po=
+ssible.&quot;</span><br><span>             );</span><br><span>     }</span>=
+<br><span>@@ -2892,112 +2815,60 @@</span><br><span>             {</span><br=
+><span>                 msg(M_USAGE, &quot;Parameter --pkcs11-id or --pkcs1=
+1-id-management should be specified.&quot;);</span><br><span>             }=
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            if (optio=
+ns-&gt;cert_file)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
+        {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            =
+    msg(M_USAGE, &quot;Parameter --cert cannot be used when --pkcs11-provid=
+er is also specified.&quot;);</span><br><span style=3D"color: hsl(0, 100%, =
+40%);">-            }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
+            if (options-&gt;priv_key_file)</span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">-            {</span><br><span style=3D"color: hsl(0, 1=
+00%, 40%);">-                msg(M_USAGE, &quot;Parameter --key cannot be u=
+sed when --pkcs11-provider is also specified.&quot;);</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-            }</span><br><span style=3D"colo=
+r: hsl(0, 100%, 40%);">-            if (options-&gt;management_flags &amp; =
+MF_EXTERNAL_KEY)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-     =
+       {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-             =
+   msg(M_USAGE, &quot;Parameter --management-external-key cannot be used wh=
+en --pkcs11-provider is also specified.&quot;);</span><br><span style=3D"co=
+lor: hsl(0, 100%, 40%);">-            }</span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-            if (options-&gt;management_flags &amp; MF_EXT=
+ERNAL_CERT)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-          =
+  {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-                ms=
+g(M_USAGE, &quot;Parameter --management-external-cert cannot be used when -=
+-pkcs11-provider is also specified.&quot;);</span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-            }</span><br><span style=3D"color: hsl(0, =
+100%, 40%);">-            if (options-&gt;pkcs12_file)</span><br><span styl=
+e=3D"color: hsl(0, 100%, 40%);">-            {</span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-                msg(M_USAGE, &quot;Parameter --pkc=
+s12 cannot be used when --pkcs11-provider is also specified.&quot;);</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-            }</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+            const char use_err[] =
+=3D &quot;Parameter --%s cannot be used when --pkcs11-provider is also spec=
+ified.&quot;;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
+      MUST_BE_UNDEF(cert_file, &quot;cert&quot;);</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+            MUST_BE_UNDEF(priv_key_file, &quo=
+t;key&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
+      MUST_BE_UNDEF(pkcs12_file, &quot;pkcs12&quot;);</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+            MUST_BE_FALSE(options-&gt;man=
+agement_flags &amp; MF_EXTERNAL_KEY, &quot;management-external-key&quot;);<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+            MUST_BE_=
+FALSE(options-&gt;management_flags &amp; MF_EXTERNAL_CERT, &quot;management=
+-external-cert&quot;);</span><br><span> #ifdef ENABLE_CRYPTOAPI</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-            if (options-&gt;crypt=
+oapi_cert)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-           =
+ {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-                msg=
+(M_USAGE, &quot;Parameter --cryptoapicert cannot be used when --pkcs11-prov=
+ider is also specified.&quot;);</span><br><span style=3D"color: hsl(0, 100%=
+, 40%);">-            }</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+            MUST_BE_UNDEF(cryptoapi_cert, &quot;cryptoapicert&quot;);</=
+span><br><span> #endif</span><br><span>         }</span><br><span>         =
+else</span><br><span> #endif /* ifdef ENABLE_PKCS11 */</span><br><span styl=
+e=3D"color: hsl(0, 100%, 40%);">-        if ((options-&gt;management_flags =
+&amp; MF_EXTERNAL_KEY) &amp;&amp; options-&gt;priv_key_file)</span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">-        {</span><br><span style=3D"c=
+olor: hsl(0, 100%, 40%);">-            msg(M_USAGE, &quot;--key and --manag=
+ement-external-key are mutually exclusive&quot;);</span><br><span style=3D"=
+color: hsl(0, 100%, 40%);">-        }</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-        else if ((options-&gt;management_flags &amp; MF_EXT=
+ERNAL_CERT))</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        {=
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            if (optio=
+ns-&gt;cert_file)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
+        {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            =
+    msg(M_USAGE, &quot;--cert and --management-external-cert are mutually e=
+xclusive&quot;);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-     =
+       }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            e=
+lse if (!(options-&gt;management_flags &amp; MF_EXTERNAL_KEY))</span><br><s=
+pan style=3D"color: hsl(0, 100%, 40%);">-            {</span><br><span styl=
+e=3D"color: hsl(0, 100%, 40%);">-                msg(M_USAGE, &quot;--manag=
+ement-external-cert must be used with --management-external-key&quot;);</sp=
+an><br><span style=3D"color: hsl(0, 100%, 40%);">-            }</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-        }</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-        else</span><br><span> #ifdef ENABLE=
+_CRYPTOAPI</span><br><span>         if (options-&gt;cryptoapi_cert)</span><=
+br><span>         {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
+          if (options-&gt;cert_file)</span><br><span style=3D"color: hsl(0,=
+ 100%, 40%);">-            {</span><br><span style=3D"color: hsl(0, 100%, 4=
+0%);">-                msg(M_USAGE, &quot;Parameter --cert cannot be used w=
+hen --cryptoapicert is also specified.&quot;);</span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-            }</span><br><span style=3D"color: hsl(=
+0, 100%, 40%);">-            if (options-&gt;priv_key_file)</span><br><span=
+ style=3D"color: hsl(0, 100%, 40%);">-            {</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-                msg(M_USAGE, &quot;Paramete=
+r --key cannot be used when --cryptoapicert is also specified.&quot;);</spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-            }</span><br><s=
+pan style=3D"color: hsl(0, 100%, 40%);">-            if (options-&gt;pkcs12=
+_file)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            {</=
+span><br><span style=3D"color: hsl(0, 100%, 40%);">-                msg(M_U=
+SAGE, &quot;Parameter --pkcs12 cannot be used when --cryptoapicert is also =
+specified.&quot;);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
+         }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-           =
+ if (options-&gt;management_flags &amp; MF_EXTERNAL_KEY)</span><br><span st=
+yle=3D"color: hsl(0, 100%, 40%);">-            {</span><br><span style=3D"c=
+olor: hsl(0, 100%, 40%);">-                msg(M_USAGE, &quot;Parameter --m=
+anagement-external-key cannot be used when --cryptoapicert is also specifie=
+d.&quot;);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-           =
+ }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            if (opt=
+ions-&gt;management_flags &amp; MF_EXTERNAL_CERT)</span><br><span style=3D"=
+color: hsl(0, 100%, 40%);">-            {</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-                msg(M_USAGE, &quot;Parameter --manageme=
+nt-external-cert cannot be used when --cryptoapicert is also specified.&quo=
+t;);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            }</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+            const char =
+use_err[] =3D &quot;Parameter --%s cannot be used when --cryptoapicert is a=
+lso specified.&quot;;</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+            MUST_BE_UNDEF(cert_file, &quot;cert&quot;);</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+            MUST_BE_UNDEF(priv_key_fi=
+le, &quot;key&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+            MUST_BE_UNDEF(pkcs12_file, &quot;pkcs12&quot;);</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+            MUST_BE_FALSE(options=
+-&gt;management_flags &amp; MF_EXTERNAL_KEY, &quot;management-external-key&=
+quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            =
+MUST_BE_FALSE(options-&gt;management_flags &amp; MF_EXTERNAL_CERT, &quot;ma=
+nagement-external-cert&quot;);</span><br><span>         }</span><br><span> =
+        else</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#endif /*=
+ ifdef ENABLE_CRYPTOAPI */</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+#endif</span><br><span>         if (options-&gt;pkcs12_file)</span><=
+br><span>         {</span><br><span> #ifdef ENABLE_CRYPTO_MBEDTLS</span><br=
+><span>             msg(M_USAGE, &quot;Parameter --pkcs12 cannot be used wi=
+th the mbed TLS version of OpenVPN.&quot;);</span><br><span> #else</span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-            if (options-&gt;ca=
+_path)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            {</=
+span><br><span style=3D"color: hsl(0, 100%, 40%);">-                msg(M_U=
+SAGE, &quot;Parameter --capath cannot be used when --pkcs12 is also specifi=
+ed.&quot;);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-          =
+  }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            if (op=
+tions-&gt;cert_file)</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
+           {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-         =
+       msg(M_USAGE, &quot;Parameter --cert cannot be used when --pkcs12 is =
+also specified.&quot;);</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>-            }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-      =
+      if (options-&gt;priv_key_file)</span><br><span style=3D"color: hsl(0,=
+ 100%, 40%);">-            {</span><br><span style=3D"color: hsl(0, 100%, 4=
+0%);">-                msg(M_USAGE, &quot;Parameter --key cannot be used wh=
+en --pkcs12 is also specified.&quot;);</span><br><span style=3D"color: hsl(=
+0, 100%, 40%);">-            }</span><br><span style=3D"color: hsl(0, 100%,=
+ 40%);">-            if (options-&gt;management_flags &amp; MF_EXTERNAL_KEY=
+)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            {</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-                msg(M_USAGE,=
+ &quot;Parameter --management-external-key cannot be used when --pkcs12 is =
+also specified.&quot;);</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>-            }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-      =
+      if (options-&gt;management_flags &amp; MF_EXTERNAL_CERT)</span><br><s=
+pan style=3D"color: hsl(0, 100%, 40%);">-            {</span><br><span styl=
+e=3D"color: hsl(0, 100%, 40%);">-                msg(M_USAGE, &quot;Paramet=
+er --management-external-cert cannot be used when --pkcs12 is also specifie=
+d.&quot;);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-           =
+ }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            const=
+ char use_err[] =3D &quot;Parameter --%s cannot be used when --pkcs12 is al=
+so specified.&quot;;</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++            MUST_BE_UNDEF(ca_path, &quot;capath&quot;);</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+            MUST_BE_UNDEF(cert_file, &=
+quot;cert&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+          MUST_BE_UNDEF(priv_key_file, &quot;key&quot;);</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+            MUST_BE_FALSE(options-&gt;=
+management_flags &amp; MF_EXTERNAL_KEY, &quot;management-external-key&quot;=
+);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            MUST_=
+BE_FALSE(options-&gt;management_flags &amp; MF_EXTERNAL_CERT, &quot;managem=
+ent-external-cert&quot;);</span><br><span> #endif /* ifdef ENABLE_CRYPTO_MB=
+EDTLS */</span><br><span>         }</span><br><span style=3D"color: hsl(0, =
+100%, 40%);">-        else</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+        else /* cert/key from none of pkcs11, pkcs12, cryptoapi */</=
+span><br><span>         {</span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">-#ifdef ENABLE_CRYPTO_MBEDTLS</span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-            if (options-&gt;ca_path)</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+            if ((options-&gt;management_flags &=
+amp; MF_EXTERNAL_KEY) &amp;&amp; options-&gt;priv_key_file)</span><br><span=
+>             {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-      =
+          msg(M_USAGE, &quot;Parameter --capath cannot be used with the mbe=
+d TLS version of OpenVPN.&quot;);</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+                msg(M_USAGE, &quot;--key and --management-ext=
+ernal-key are mutually exclusive&quot;);</span><br><span>             }</sp=
+an><br><span style=3D"color: hsl(0, 100%, 40%);">-#endif  /* ifdef ENABLE_C=
+RYPTO_MBEDTLS */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+         if ((options-&gt;management_flags &amp; MF_EXTERNAL_CERT))</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+            {</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+                if (options-&gt;c=
+ert_file)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+          =
+      {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            =
+        msg(M_USAGE, &quot;--cert and --management-external-cert are mutual=
+ly exclusive&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++                }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+               else if (!(options-&gt;management_flags &amp; MF_EXTERNAL_KE=
+Y))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+                =
+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+                  =
+  msg(M_USAGE, &quot;--management-external-cert must be used with --managem=
+ent-external-key&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+                }</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+            }</span><br><span>             if (pull)</span><br><span>   =
+          {</span><br><span> </span><br><span>@@ -3049,55 +2920,51 @@</span=
+><br><span>          * when in non-TLS mode.</span><br><span>          */</=
+span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-#defi=
+ne MUST_BE_UNDEF(parm) if (options-&gt;parm !=3D defaults.parm) {msg(M_USAG=
+E, err, #parm); \</span><br><span style=3D"color: hsl(0, 100%, 40%);">-}</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+        const char use=
+_err[] =3D &quot;Parameter %s can only be specified in TLS-mode, &quot;</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+                       =
+        &quot;i.e. where --tls-server or --tls-client is also specified.&qu=
+ot;;</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">=
+-        const char err[] =3D &quot;Parameter %s can only be specified in T=
+LS-mode, i.e. where --tls-server or --tls-client is also specified.&quot;;<=
+/span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-        MUST_BE_UNDEF(ca_file);</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-        MUST_BE_UNDEF(ca_path);</=
+span><br><span style=3D"color: hsl(0, 100%, 40%);">-        MUST_BE_UNDEF(d=
+h_file);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        MUST_=
+BE_UNDEF(cert_file);</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
+       MUST_BE_UNDEF(priv_key_file);</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+        MUST_BE_UNDEF(ca_file, &quot;ca&quot;);</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+        MUST_BE_UNDEF(ca_path,=
+ &quot;capath&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+        MUST_BE_UNDEF(dh_file, &quot;dh&quot;);</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+        MUST_BE_UNDEF(cert_file, &quot;cert&q=
+uot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        MUST_=
+BE_UNDEF(priv_key_file, &quot;key&quot;);</span><br><span> #ifndef ENABLE_C=
+RYPTO_MBEDTLS</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        =
+MUST_BE_UNDEF(pkcs12_file);</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+        MUST_BE_UNDEF(pkcs12_file, &quot;pkcs12&quot;);</span><br><=
+span> #endif</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        M=
+UST_BE_UNDEF(cipher_list);</span><br><span style=3D"color: hsl(0, 100%, 40%=
+);">-        MUST_BE_UNDEF(cipher_list_tls13);</span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-        MUST_BE_UNDEF(tls_cert_profile);</span><br=
+><span style=3D"color: hsl(0, 100%, 40%);">-        MUST_BE_UNDEF(tls_verif=
+y);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        MUST_BE_UN=
+DEF(tls_export_peer_cert_dir);</span><br><span style=3D"color: hsl(0, 100%,=
+ 40%);">-        MUST_BE_UNDEF(verify_x509_name);</span><br><span style=3D"=
+color: hsl(0, 100%, 40%);">-        MUST_BE_UNDEF(tls_timeout);</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-        MUST_BE_UNDEF(renegotiate=
+_bytes);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        MUST_=
+BE_UNDEF(renegotiate_packets);</span><br><span style=3D"color: hsl(0, 100%,=
+ 40%);">-        MUST_BE_UNDEF(renegotiate_seconds);</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-        MUST_BE_UNDEF(handshake_window);</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-        MUST_BE_UNDEF(tr=
+ansition_window);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
+    MUST_BE_UNDEF(tls_auth_file);</span><br><span style=3D"color: hsl(0, 10=
+0%, 40%);">-        MUST_BE_UNDEF(tls_crypt_file);</span><br><span style=3D=
+"color: hsl(0, 100%, 40%);">-        MUST_BE_UNDEF(tls_crypt_v2_file);</spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-        MUST_BE_UNDEF(sing=
+le_session);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        M=
+UST_BE_UNDEF(push_peer_info);</span><br><span style=3D"color: hsl(0, 100%, =
+40%);">-        MUST_BE_UNDEF(tls_exit);</span><br><span style=3D"color: hs=
+l(0, 100%, 40%);">-        MUST_BE_UNDEF(crl_file);</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-        MUST_BE_UNDEF(ns_cert_type);</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-        MUST_BE_UNDEF(remote=
+_cert_ku[0]);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        =
+MUST_BE_UNDEF(remote_cert_eku);</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+        MUST_BE_UNDEF(cipher_list, &quot;tls-cipher&quot;);</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+        MUST_BE_UNDEF(c=
+ipher_list_tls13, &quot;tls-ciphersuites&quot;);</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+        MUST_BE_UNDEF(tls_cert_profile, &quot;=
+tls-cert-profile&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+        MUST_BE_UNDEF(tls_verify, &quot;tls-verify&quot;);</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+        MUST_BE_UNDEF(tls_expor=
+t_peer_cert_dir, &quot;tls-export-cert&quot;);</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+        MUST_BE_UNDEF(verify_x509_name, &quot;ve=
+rify-x509-name&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+        MUST_BE_UNDEF(tls_timeout, &quot;tls-timeout&quot;);</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+        MUST_BE_UNDEF(renegotia=
+te_bytes, &quot;reneg-bytes&quot;);</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+        MUST_BE_UNDEF(renegotiate_packets, &quot;reneg-pkts=
+&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        MUS=
+T_BE_UNDEF(renegotiate_seconds, &quot;reneg-sec&quot;);</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+        MUST_BE_UNDEF(handshake_window,=
+ &quot;hand-window&quot;);</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+        MUST_BE_UNDEF(transition_window, &quot;tran-window&quot;);</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+        MUST_BE_UNDEF=
+(tls_auth_file, &quot;tls-auth&quot;);</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+        MUST_BE_UNDEF(tls_crypt_file, &quot;tls-crypt&qu=
+ot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        MUST_B=
+E_UNDEF(tls_crypt_v2_file, &quot;tls-crypt-v2&quot;);</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+        MUST_BE_UNDEF(single_session, &qu=
+ot;single-session&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+        MUST_BE_UNDEF(push_peer_info, &quot;push-peer-info&quot;);</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+        MUST_BE_UNDEF(=
+tls_exit, &quot;tls-exit&quot;);</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+        MUST_BE_UNDEF(crl_file, &quot;crl-verify&quot;);</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+        MUST_BE_UNDEF(ns_=
+cert_type, &quot;ns-cert-type&quot;);</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+        MUST_BE_UNDEF(remote_cert_ku[0], &quot;remote-cer=
+t-ku&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
+ MUST_BE_UNDEF(remote_cert_eku, &quot;remote-cert-eku&quot;);</span><br><sp=
+an> #ifdef ENABLE_PKCS11</span><br><span style=3D"color: hsl(0, 100%, 40%);=
+">-        MUST_BE_UNDEF(pkcs11_providers[0]);</span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-        MUST_BE_UNDEF(pkcs11_private_mode[0]);</sp=
+an><br><span style=3D"color: hsl(0, 100%, 40%);">-        MUST_BE_UNDEF(pkc=
+s11_id);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        MUST_=
+BE_UNDEF(pkcs11_id_management);</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+        MUST_BE_UNDEF(pkcs11_providers[0], &quot;pkcs11-provide=
+rs&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        M=
+UST_BE_UNDEF(pkcs11_private_mode[0], &quot;pkcs11-private-mode&quot;);</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+        MUST_BE_UNDEF(pk=
+cs11_id, &quot;pkcs11-id&quot;);</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+        MUST_BE_UNDEF(pkcs11_id_management, &quot;pkcs11-id-ma=
+nagement&quot;);</span><br><span> #endif</span><br><span> </span><br><span>=
+         if (pull)</span><br><span>         {</span><br><span style=3D"colo=
+r: hsl(0, 100%, 40%);">-            msg(M_USAGE, err, &quot;--pull&quot;);<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+            msg(M_US=
+AGE, use_err, &quot;--pull&quot;);</span><br><span>         }</span><br><sp=
+an>     }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#undef MUST_=
+BE_UNDEF</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><s=
+pan>     if (options-&gt;auth_user_pass_file &amp;&amp; !options-&gt;pull)<=
+/span><br><span>     {</span><br><span>         msg(M_USAGE, &quot;--auth-u=
+ser-pass requires --pull&quot;);</span><br><span>@@ -3106,6 +2973,9 @@</spa=
+n><br><span>     uninit_options(&amp;defaults);</span><br><span> }</span><b=
+r><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+#undef MUS=
+T_BE_UNDEF</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#undef MU=
+ST_BE_FALSE</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><=
+br><span> static void</span><br><span> options_postprocess_mutate_ce(struct=
+ options *o, struct connection_entry *ce)</span><br><span> {</span><br><spa=
+n></span><br></pre><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c=
+/openvpn/+/832?usp=3Demail">change 832</a>. To unsubscribe, or for help wri=
+ting mail filters, visit <a href=3D"http://gerrit.openvpn.net/settings">set=
+tings</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><d=
+iv itemscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction">=
+<link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/832?us=
+p=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: Ia1c5209022d3ab4c0dac6438c41=
-891c7d059f812 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 828 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
-<div style=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@...1711...=
-27...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
-1...&gt; </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I4f766fa22865eaf4466c31cf55e=
+3d73b00008c38 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 832 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
+<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
+.&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
+.1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
 ..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Tue, 10 Dec 2024 17:35:16=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
+<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
 
 
---YbrOm9arLvc=--
+--58TspYt3N2c=--
 
