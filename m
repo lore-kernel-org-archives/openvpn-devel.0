@@ -1,17 +1,11 @@
-From: "MaxF (Code Review)" <gerrit@...515...>
-Date: Wed, 11 Dec 2024 13:15:12 +0000
-In-Reply-To: <gerrit.1731290343000.I74216d776d3e0a8dc987ec7b1671c8e8dcccdbd6@...2715...>
-References: <gerrit.1731290343000.I74216d776d3e0a8dc987ec7b1671c8e8dcccdbd6@...2715...>
-Reply-To: max@...2606..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...,
- gert@...1296..., a@...2181...
-Message-ID: <c292dba363fd86b961331de47b830173049cb1d6-EmailReviewComments-HTML@...2715...>
+Content-Type: multipart/alternative;
+ boundary="------------2xgJwdT6v0ji859n1Qdm6424"
+Message-ID: <16434247-3667-4bab-ba81-e9e8b45342cd@...2722...>
+Date: Wed, 11 Dec 2024 14:48:03 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="vBvrO+SKDIs="; charset=UTF-8
-Subject: [Openvpn-devel] [M] Change in openvpn[master]: Use XOR instead of
- concatenation for calculation of IV from implicit IV
+From: Johan Draaisma <johan@...2722...>
+Content-Language: en-US
+Subject: [Openvpn-devel]  IRC community meeting summary
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,103 +14,115 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: plaisthos <arne-openvpn@...1227...>
-Cc: cron2 <gert@...1296...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: openvpn-devel@lists.sourceforge.net
 
---vBvrO+SKDIs=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+This is a multi-part message in MIME format.
+--------------2xgJwdT6v0ji859n1Qdm6424
+Content-Type: text/plain; charset="utf-8"; format="flowed"
+Content-Transfer-Encoding: 8bit
 
-Attention is currently required from: cron2, flichtenheld, ordex, plaisthos.
+Meeting summary for 11 December 2024:
 
-MaxF has posted comments on this change. ( http://gerrit.openvpn.net/c/open=
-vpn/+/797?usp=3Demail )
+  * *Reminder: no meetings on 25th of December, 1st of January*
+    /For obvious reasons./
 
-The change is no longer submittable: Code-Review is unsatisfied now.
+  * *Updated: DCO Linux upstreaming*
+    /Upstreaming DCO to Linux is proceeding, it is in review stage at
+    the moment./
+    /Patchset v13 and v14 followed really fast and v14 is now under review./
+    /Interesting news article appeared on the
+    webs:​https://www.phoronix.com/news/OpenVPN-Data-Channel-DCO-Soon
+    <https://www.phoronix.com/news/OpenVPN-Data-Channel-DCO-Soon>/
 
-Change subject: Use XOR instead of concatenation for calculation of  IV fro=
-m implicit IV
-......................................................................
+  * *Updated: OpenVPN community meetup 2025*
+    /​https://community.openvpn.net/openvpn/wiki/CommunityMeetup2025
+    <https://community.openvpn.net/openvpn/wiki/CommunityMeetup2025>/
+    /When: september/october ish, a poll for checking availibity is
+    here: https://nuudel.digitalcourage.de/NROHeFlkfaYnoNGC/
+    /Where: Napoli, Italy./
+    /Meeting room: tbd./
+    /Hotel: tbd./
+    /Beer: yes./
+    /T-shirts: yes./
 
+/*Note: obviously, there will be no meetings on 25th of December or 1st 
+of January for obvious reasons. Obviously.*/
 
-Patch Set 8: -Code-Review
+/*Note number 2: We are already gathering availability for people 
+attending the community meetup for 2025. A poll can be filled in here;
+https://nuudel.digitalcourage.de/NROHeFlkfaYnoNGC
+*/
 
+As always you're welcome to join at #openvpn-meeting on Libera IRC 
+network every Wednesday at 14:00 Central European Time.
 
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/797?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings
+Kind regards,
+Johan Draaisma
 
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: I74216d776d3e0a8dc987ec7b1671c8e8dcccdbd6
-Gerrit-Change-Number: 797
-Gerrit-PatchSet: 8
-Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
-Gerrit-Reviewer: MaxF <max@...2606...>
-Gerrit-Reviewer: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: ordex <a@...2181...>
-Gerrit-CC: cron2 <gert@...1296...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: cron2 <gert@...1296...>
-Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Attention: ordex <a@...2181...>
-Gerrit-Comment-Date: Wed, 11 Dec 2024 13:15:12 +0000
-Gerrit-HasComments: No
-Gerrit-Has-Labels: Yes
-Gerrit-MessageType: comment
+--------------2xgJwdT6v0ji859n1Qdm6424
+Content-Type: text/html; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 
---vBvrO+SKDIs=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  </head>
+  <body>
+    <p> Meeting summary for 11 December 2024:</p>
+    <ul
+style="color: rgb(0, 0, 0); font-family: Verdana, Arial, &quot;Bitstream Vera Sans&quot;, Helvetica, sans-serif; font-size: 13px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;">
+      <li><strong>Reminder: no meetings on 25th of December, 1st of
+          January</strong><br>
+        <em>For obvious reasons.</em></li>
+    </ul>
+    <ul
+style="color: rgb(0, 0, 0); font-family: Verdana, Arial, &quot;Bitstream Vera Sans&quot;, Helvetica, sans-serif; font-size: 13px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;">
+      <li><strong>Updated: DCO Linux upstreaming</strong><br>
+        <em>Upstreaming DCO to Linux is proceeding, it is in review
+          stage at the moment.</em><br>
+        <em>Patchset v13 and v14 followed really fast and v14 is now
+          under review.</em><br>
+        <em>Interesting news article appeared on the webs:<span> </span><a
+            class="ext-link"
+href="https://www.phoronix.com/news/OpenVPN-Data-Channel-DCO-Soon"
+style="text-decoration: none; color: rgb(187, 0, 0); border-bottom: 1px dotted rgb(187, 187, 187);"><span
+              class="icon"
+style="background: url(&quot;../extlink.gif&quot;) left center no-repeat; padding-left: 15px;">​</span>https://www.phoronix.com/news/OpenVPN-Data-Channel-DCO-Soon</a></em></li>
+    </ul>
+    <ul
+style="color: rgb(0, 0, 0); font-family: Verdana, Arial, &quot;Bitstream Vera Sans&quot;, Helvetica, sans-serif; font-size: 13px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;">
+      <li><strong>Updated: OpenVPN community meetup 2025</strong><br>
+        <em><a class="ext-link"
+href="https://community.openvpn.net/openvpn/wiki/CommunityMeetup2025"
+style="text-decoration: none; color: rgb(187, 0, 0); border-bottom: 1px dotted rgb(187, 187, 187);"><span
+              class="icon"
+style="background: url(&quot;../extlink.gif&quot;) left center no-repeat; padding-left: 15px;">​</span>https://community.openvpn.net/openvpn/wiki/CommunityMeetup2025</a></em><br>
+        <em>When: september/october ish, a poll for checking availibity
+          is here: <a class="moz-txt-link-freetext" href="https://nuudel.digitalcourage.de/NROHeFlkfaYnoNGC">https://nuudel.digitalcourage.de/NROHeFlkfaYnoNGC</a></em><br>
+        <em>Where: Napoli, Italy.</em><br>
+        <em>Meeting room: tbd.</em><br>
+        <em>Hotel: tbd.</em><br>
+        <em>Beer: yes.</em><br>
+        <em>T-shirts: yes.</em></li>
+    </ul>
+    <p><em><b>Note: obviously, there will be no meetings on 25th of
+          December or 1st of January for obvious reasons. Obviously.</b></em></p>
+    <p><em><b>Note number 2: We are already gathering availability for
+          people attending the community meetup for 2025. A poll can be
+          filled in here;<br>
+          <a class="moz-txt-link-freetext" href="https://nuudel.digitalcourage.de/NROHeFlkfaYnoNGC">https://nuudel.digitalcourage.de/NROHeFlkfaYnoNGC</a><br>
+        </b></em> </p>
+    <ul
+style="color: rgb(0, 0, 0); font-family: Verdana, Arial, &quot;Bitstream Vera Sans&quot;, Helvetica, sans-serif; font-size: 13px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;">
+    </ul>
+    As always you're welcome to join at #openvpn-meeting on Libera IRC
+    network every Wednesday at 14:00 Central European Time.
+    <p>Kind regards,<br>
+      Johan Draaisma<br>
+    </p>
+  </body>
+</html>
 
-<p> Attention is currently required from: cron2, flichtenheld, ordex, plais=
-thos. </p>
-<p>Patch set 8:<span style=3D"border-radius: 3px; display: inline-block; ma=
-rgin: 0 2px; padding: 4px;background-color: #ddd;">-Code-Review</span></p><=
-p>The change is no longer submittable: Code-Review is unsatisfied now.</p><=
-p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/797?usp=3Demail">View Ch=
-ange</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To view, vi=
-sit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/797?usp=3Demail">chang=
-e 797</a>. To unsubscribe, or for help writing mail filters, visit <a href=
-=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope ite=
-mtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"action"=
- itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"h=
-ttp://gerrit.openvpn.net/c/openvpn/+/797?usp=3Demail"/><meta itemprop=3D"na=
-me" content=3D"View Change"/></div></div>
-
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I74216d776d3e0a8dc987ec7b167=
-1c8e8dcccdbd6 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 797 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 8 </div>
-<div style=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@...1711...=
-27...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: MaxF &lt;max@...2606...&gt; <=
-/div>
-<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
-1...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: ordex &lt;a@...2181...&gt; </=
-div>
-<div style=3D"display:none"> Gerrit-CC: cron2 &lt;gert@...1296...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: cron2 &lt;gert@...1296...&gt=
-; </div>
-<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
-41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: ordex &lt;a@...2181...&gt; <=
-/div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Wed, 11 Dec 2024 13:15:12=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: No </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
-
-
---vBvrO+SKDIs=--
+--------------2xgJwdT6v0ji859n1Qdm6424--
 
