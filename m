@@ -1,17 +1,15 @@
-From: "syzzer (Code Review)" <gerrit@...515...>
-Date: Thu, 12 Dec 2024 20:02:46 +0000
-In-Reply-To: <gerrit.1731290343000.I057f007577f10c6ac917ee4620ee3d2559187dc7@...2715...>
-References: <gerrit.1731290343000.I057f007577f10c6ac917ee4620ee3d2559187dc7@...2715...>
-Reply-To: steffan@...1856..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...,
- max@...2606..., gert@...1296...
-Message-ID: <85ce9192c2649af6e02fdbe55f8d4ee290e76847-EmailReviewComments-HTML@...2715...>
+From: "ordex (Code Review)" <gerrit@...515...>
+Date: Fri, 13 Dec 2024 10:51:24 +0000
+References: <gerrit.1734087083000.I9e27ff335d892429334137d028f8503da4e4ca5b@...2715...>
+Reply-To: a@...2181..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net, frank@...2641...
+Message-ID: <2e91e04f0d7c5b3289abf729faff133a762dd353-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="hpPCq+/wdQM="; charset=UTF-8
-Subject: [Openvpn-devel] [M] Change in openvpn[master]: Trigger
- renegotiation of data key if getting close to the AEAD usage ...
+Content-Type: multipart/alternative; boundary="GkUxwMEcXKQ="; charset=UTF-8
+Subject: [Openvpn-devel] [S] Change in openvpn[master]: dco_linux: extend
+ netlink error cb with extra info
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,138 +18,152 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: plaisthos <arne-openvpn@...1227...>
-Cc: MaxF <max@...2606...>, flichtenheld <frank@...2641...>, cron2 <gert@...1296...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---hpPCq+/wdQM=
+--GkUxwMEcXKQ=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: MaxF, cron2, plaisthos.
+Attention is currently required from: flichtenheld, plaisthos.
 
-syzzer has posted comments on this change. ( http://gerrit.openvpn.net/c/op=
-envpn/+/796?usp=3Demail )
+Hello plaisthos, flichtenheld,
 
-Change subject: Trigger renegotiation of data key if getting close to the A=
-EAD usage limit
+I'd like you to do a code review.
+Please visit
+
+    http://gerrit.openvpn.net/c/openvpn/+/841?usp=3Demail
+
+to review the following change.
+
+
+Change subject: dco_linux: extend netlink error cb with extra info
 ......................................................................
 
+dco_linux: extend netlink error cb with extra info
 
-Patch Set 13: Code-Review+1
+A netlink error may contain more specific attributes: i.e.
+missing attributes or missing neted objects.
 
-(2 comments)
+Parse and print this information too.
 
-Patchset:
+Change-Id: I9e27ff335d892429334137d028f8503da4e4ca5b
+Signed-off-by: Antonio Quartulli <antonio@...2726...>
+---
+M src/openvpn/dco_linux.c
+1 file changed, 12 insertions(+), 0 deletions(-)
 
-PS13:
-Looks good conceptually. I don't have a dev/test setup available to actuall=
-y do a full review, so sticking to +1.
 
 
-File src/openvpn/ssl.c:
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/41/841/1
 
-http://gerrit.openvpn.net/c/openvpn/+/796/comment/5601c42a_7ba38f22 :
-PS12, Line 149:         PRIi64 " for block and packets before renegotiation=
-",
-> The hard limit of 2**32-1 is still there. [=E2=80=A6]
-Ahh, I didn't realize the hard limit arrived with the epoch patches. That's=
- perfect.
+diff --git a/src/openvpn/dco_linux.c b/src/openvpn/dco_linux.c
+index b038382..3f0715e 100644
+--- a/src/openvpn/dco_linux.c
++++ b/src/openvpn/dco_linux.c
+@@ -339,6 +339,18 @@
+             (char *)nla_data(tb_msg[NLMSGERR_ATTR_MSG]));
+     }
 
++    if (tb_msg[NLMSGERR_ATTR_MISS_NEST])
++    {
++        msg(M_WARN, "kernel error: missing required nesting type %u\n",
++            nla_get_u32(tb_msg[NLMSGERR_ATTR_MISS_NEST]));
++    }
++
++    if (tb_msg[NLMSGERR_ATTR_MISS_TYPE])
++    {
++        msg(M_WARN, "kernel error: missing required attribute type %u\n",
++            nla_get_u32(tb_msg[NLMSGERR_ATTR_MISS_TYPE]));
++    }
++
+     return NL_STOP;
+ }
 
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/796?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/841?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings
 
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: I057f007577f10c6ac917ee4620ee3d2559187dc7
-Gerrit-Change-Number: 796
-Gerrit-PatchSet: 13
-Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
-Gerrit-Reviewer: MaxF <max@...2606...>
+Gerrit-Change-Id: I9e27ff335d892429334137d028f8503da4e4ca5b
+Gerrit-Change-Number: 841
+Gerrit-PatchSet: 1
+Gerrit-Owner: ordex <a@...2181...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: syzzer <steffan@...1856...>
-Gerrit-CC: cron2 <gert@...1296...>
+Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: cron2 <gert@...1296...>
-Gerrit-Attention: MaxF <max@...2606...>
-Gerrit-Comment-Date: Thu, 12 Dec 2024 20:02:46 +0000
-Gerrit-HasComments: Yes
-Gerrit-Has-Labels: Yes
-Comment-In-Reply-To: plaisthos <arne-openvpn@...1227...>
-Comment-In-Reply-To: syzzer <steffan@...1856...>
-Gerrit-MessageType: comment
+Gerrit-Attention: flichtenheld <frank@...2641...>
+Gerrit-MessageType: newchange
 
---hpPCq+/wdQM=
+--GkUxwMEcXKQ=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p> Attention is currently required from: MaxF, cron2, plaisthos. </p>
-<p>Patch set 13:<span style=3D"border-radius: 3px; display: inline-block; m=
-argin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +1</span=
-></p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/796?usp=3Demail">V=
-iew Change</a></p><p>2 comments:</p><ul style=3D"list-style: none; padding:=
- 0;"><li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list=
--style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p=
- style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openv=
-pn/+/796?tab=3Dcomments">Patch Set #13:</a> </p><p style=3D"white-space: pr=
-e-wrap; word-wrap: break-word;">Looks good conceptually. I don&#39;t have a=
- dev/test setup available to actually do a full review, so sticking to +1.<=
-/p></li></ul></li><li style=3D"margin: 0; padding: 0;"><p>File src/openvpn/=
-ssl.c:</p><ul style=3D"list-style: none; padding: 0;"><li style=3D"margin: =
-0; padding: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http:/=
-/gerrit.openvpn.net/c/openvpn/+/796/comment/5601c42a_7ba38f22">Patch Set #1=
-2, Line 149:</a> <code style=3D"font-family:monospace,monospace">        PR=
-Ii64 &quot; for block and packets before renegotiation&quot;,</code></p><p>=
-<blockquote style=3D"border-left: 1px solid #aaa; margin: 10px 0; padding: =
-0 10px;">The hard limit of 2**32-1 is still there. [=E2=80=A6]</blockquote>=
-</p><p style=3D"white-space: pre-wrap; word-wrap: break-word;">Ahh, I didn&=
-#39;t realize the hard limit arrived with the epoch patches. That&#39;s per=
-fect.</p></li></ul></li></ul><p>To view, visit <a href=3D"http://gerrit.ope=
-nvpn.net/c/openvpn/+/796?usp=3Demail">change 796</a>. To unsubscribe, or fo=
-r help writing mail filters, visit <a href=3D"http://gerrit.openvpn.net/set=
-tings">settings</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailM=
-essage"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.org/Vi=
-ewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvp=
-n/+/796?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></di=
-v></div>
+<p> Attention is currently required from: flichtenheld, plaisthos. </p>
+<p>ordex would like plaisthos and flichtenheld to <strong>review</strong> t=
+his change.
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/841?usp=3Demail">Vi=
+ew Change</a></p><pre style=3D"font-family: monospace,monospace; white-spac=
+e: pre-wrap;">dco_linux: extend netlink error cb with extra info<br><br>A n=
+etlink error may contain more specific attributes: i.e.<br>missing attribut=
+es or missing neted objects.<br><br>Parse and print this information too.<b=
+r><br>Change-Id: I9e27ff335d892429334137d028f8503da4e4ca5b<br>Signed-off-by=
+: Antonio Quartulli &lt;antonio@...2726...&gt;<br>---<br>M src/openvpn/dco_=
+linux.c<br>1 file changed, 12 insertions(+), 0 deletions(-)<br><br></pre><p=
+re style=3D"font-family: monospace,monospace; white-space: pre-wrap;">git p=
+ull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/41/841/1</pre><pre =
+style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><span>di=
+ff --git a/src/openvpn/dco_linux.c b/src/openvpn/dco_linux.c</span><br><spa=
+n>index b038382..3f0715e 100644</span><br><span>--- a/src/openvpn/dco_linux=
+.c</span><br><span>+++ b/src/openvpn/dco_linux.c</span><br><span>@@ -339,6 =
++339,18 @@</span><br><span>             (char *)nla_data(tb_msg[NLMSGERR_AT=
+TR_MSG]));</span><br><span>     }</span><br><span> </span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    if (tb_msg[NLMSGERR_ATTR_MISS_NEST])<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+        msg(M_WARN, &quot;kernel e=
+rror: missing required nesting type %u\n&quot;,</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+            nla_get_u32(tb_msg[NLMSGERR_ATTR_MI=
+SS_NEST]));</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    if (tb_msg[NLMSGERR_ATTR_MISS_TYPE])<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+        msg(M_WARN, &quot;kernel e=
+rror: missing required attribute type %u\n&quot;,</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+            nla_get_u32(tb_msg[NLMSGERR_ATTR_=
+MISS_TYPE]));</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span>   =
+  return NL_STOP;</span><br><span> }</span><br><span> </span><br><span></sp=
+an><br></pre><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openv=
+pn/+/841?usp=3Demail">change 841</a>. To unsubscribe, or for help writing m=
+ail filters, visit <a href=3D"http://gerrit.openvpn.net/settings">settings<=
+/a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div ite=
+mscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link =
+itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/841?usp=3Dem=
+ail"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I057f007577f10c6ac917ee4620e=
-e3d2559187dc7 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 796 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 13 </div>
-<div style=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@...1711...=
-27...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: MaxF &lt;max@...2606...&gt; <=
-/div>
+<div style=3D"display:none"> Gerrit-Change-Id: I9e27ff335d892429334137d028f=
+8503da4e4ca5b </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 841 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
+<div style=3D"display:none"> Gerrit-Owner: ordex &lt;a@...2181...&gt; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
 1...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: syzzer &lt;steffan@...1856...=
-&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: cron2 &lt;gert@...1296...&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
+.1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
 ..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: cron2 &lt;gert@...1296...&gt=
-; </div>
-<div style=3D"display:none"> Gerrit-Attention: MaxF &lt;max@...2606...&gt; =
-</div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Thu, 12 Dec 2024 20:02:46=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
-<div style=3D"display:none"> Comment-In-Reply-To: plaisthos &lt;arne-openvp=
-n@...1227...&gt; </div>
-<div style=3D"display:none"> Comment-In-Reply-To: syzzer &lt;steffan@...1852...=
-6...&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
+<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
+41...&gt; </div>
+<div style=3D"display:none"> Gerrit-MessageType: newchange </div>
 
 
---hpPCq+/wdQM=--
+--GkUxwMEcXKQ=--
 
