@@ -1,11 +1,15 @@
-From: Frank Lichtenheld <frank@...2641...>
-Date: Fri, 13 Dec 2024 17:46:30 +0100
-Message-Id: <20241213164630.266045-1-frank@...2641...>
-In-Reply-To: <gerrit.1733989644000.I12b8bb26c0cb70e50b2d42b1c69018894e9f080c@...2715...>
-References: <gerrit.1733989644000.I12b8bb26c0cb70e50b2d42b1c69018894e9f080c@...2715...>
+From: "ordex (Code Review)" <gerrit@...515...>
+Date: Fri, 13 Dec 2024 17:09:31 +0000
+References: <gerrit.1734109769000.I76e2e616c6ffe436a9627fa71aaace74030b2f4a@...2715...>
+Reply-To: a@...2181..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net, frank@...2641...
+Message-ID: <ef088f4d459f0badb62893055dacc51d12013a28-HTML@...2715...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v1] dns: clone options via pointer instead
- of copy
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="GD1FJMW3gyA="; charset=UTF-8
+Subject: [Openvpn-devel] [XS] Change in openvpn[master]: dco: pass
+ remoteaddr only for UDP peers
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,85 +18,147 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-From: Heiko Hund <heiko@...2662...>
+--GD1FJMW3gyA=
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Change-Id: I12b8bb26c0cb70e50b2d42b1c69018894e9f080c
-Signed-off-by: Heiko Hund <heiko@...2662...>
-Acked-by: Frank Lichtenheld <frank@...2641...>
+Attention is currently required from: flichtenheld, plaisthos.
+
+Hello plaisthos, flichtenheld,
+
+I'd like you to do a code review.
+Please visit
+
+    http://gerrit.openvpn.net/c/openvpn/+/842?usp=3Demail
+
+to review the following change.
+
+
+Change subject: dco: pass remoteaddr only for UDP peers
+......................................................................
+
+dco: pass remoteaddr only for UDP peers
+
+TCP connected sockets do not need any remote addr
+because the destination is fixed.
+For this reason we can avoid sending the remote addr
+along the peer-new dco call.
+
+This change is important on Linux because the new 'ovpn'
+kernel module is stricter when it comes to accepting
+netlink messages and will reject calls with TCP sockets
+if a remote address is specified.
+
+Change-Id: I76e2e616c6ffe436a9627fa71aaace74030b2f4a
+Signed-off-by: Antonio Quartulli <antonio@...2726...>
 ---
+M src/openvpn/dco.c
+1 file changed, 3 insertions(+), 1 deletion(-)
 
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to master.
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/835
-This mail reflects revision 1 of this Change.
 
-Acked-by according to Gerrit (reflected above):
-Frank Lichtenheld <frank@...2641...>
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/42/842/1
 
-        
-diff --git a/src/openvpn/dns.c b/src/openvpn/dns.c
-index 15e7322..e22ea00 100644
---- a/src/openvpn/dns.c
-+++ b/src/openvpn/dns.c
-@@ -248,13 +248,15 @@
- }
- 
- struct dns_options
--clone_dns_options(const struct dns_options o, struct gc_arena *gc)
-+clone_dns_options(const struct dns_options *o, struct gc_arena *gc)
- {
-     struct dns_options clone;
-+
-     memset(&clone, 0, sizeof(clone));
--    clone.search_domains = clone_dns_domains(o.search_domains, gc);
--    clone.servers = clone_dns_servers(o.servers, gc);
--    clone.servers_prepull = clone_dns_servers(o.servers_prepull, gc);
-+    clone.search_domains = clone_dns_domains(o->search_domains, gc);
-+    clone.servers = clone_dns_servers(o->servers, gc);
-+    clone.servers_prepull = clone_dns_servers(o->servers_prepull, gc);
-+
-     return clone;
- }
- 
-diff --git a/src/openvpn/dns.h b/src/openvpn/dns.h
-index a4ccb95..838ebe1 100644
---- a/src/openvpn/dns.h
-+++ b/src/openvpn/dns.h
-@@ -129,7 +129,8 @@
-  * @param   gc          Pointer to the gc_arena to use for the clone
-  * @return              The dns_options clone
-  */
--struct dns_options clone_dns_options(const struct dns_options o, struct gc_arena *gc);
-+struct dns_options clone_dns_options(const struct dns_options *o,
-+                                     struct gc_arena *gc);
- 
- /**
-  * Saves and resets the server options, so that pulled ones don't mix in.
-diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index fa22eca..cc723ca 100644
---- a/src/openvpn/options.c
-+++ b/src/openvpn/options.c
-@@ -3311,7 +3311,7 @@
-     o->pre_connect->route_default_gateway = o->route_default_gateway;
-     o->pre_connect->route_ipv6_default_gateway = o->route_ipv6_default_gateway;
- 
--    o->pre_connect->dns_options = clone_dns_options(o->dns_options, &o->gc);
-+    o->pre_connect->dns_options = clone_dns_options(&o->dns_options, &o->gc);
- 
-     /* NCP related options that can be overwritten by a push */
-     o->pre_connect->ciphername = o->ciphername;
-@@ -3364,7 +3364,7 @@
-         /* Free DNS options and reset them to pre-pull state */
-         gc_free(&o->dns_options.gc);
-         struct gc_arena dns_gc = gc_new();
--        o->dns_options = clone_dns_options(pp->dns_options, &dns_gc);
-+        o->dns_options = clone_dns_options(&pp->dns_options, &dns_gc);
-         o->dns_options.gc = dns_gc;
- 
-         if (pp->client_nat_defined)
+diff --git a/src/openvpn/dco.c b/src/openvpn/dco.c
+index dcc80d3..b1a3715 100644
+--- a/src/openvpn/dco.c
++++ b/src/openvpn/dco.c
+@@ -494,7 +494,9 @@
+     }
+ #endif
+     int ret =3D dco_new_peer(&c->c1.tuntap->dco, multi->peer_id,
+-                           c->c2.link_socket->sd, NULL, remoteaddr, NULL, =
+NULL);
++                           c->c2.link_socket->sd, NULL,
++                           proto_is_dgram(ls->info.proto) ? remoteaddr : N=
+ULL,
++                           NULL, NULL);
+     if (ret < 0)
+     {
+         return ret;
+
+--
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/842?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings
+
+Gerrit-Project: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: I76e2e616c6ffe436a9627fa71aaace74030b2f4a
+Gerrit-Change-Number: 842
+Gerrit-PatchSet: 1
+Gerrit-Owner: ordex <a@...2181...>
+Gerrit-Reviewer: flichtenheld <frank@...2641...>
+Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Attention: flichtenheld <frank@...2641...>
+Gerrit-MessageType: newchange
+
+--GD1FJMW3gyA=
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<p> Attention is currently required from: flichtenheld, plaisthos. </p>
+<p>ordex would like plaisthos and flichtenheld to <strong>review</strong> t=
+his change.
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/842?usp=3Demail">Vi=
+ew Change</a></p><pre style=3D"font-family: monospace,monospace; white-spac=
+e: pre-wrap;">dco: pass remoteaddr only for UDP peers<br><br>TCP connected =
+sockets do not need any remote addr<br>because the destination is fixed.<br=
+>For this reason we can avoid sending the remote addr<br>along the peer-new=
+ dco call.<br><br>This change is important on Linux because the new &#39;ov=
+pn&#39;<br>kernel module is stricter when it comes to accepting<br>netlink =
+messages and will reject calls with TCP sockets<br>if a remote address is s=
+pecified.<br><br>Change-Id: I76e2e616c6ffe436a9627fa71aaace74030b2f4a<br>Si=
+gned-off-by: Antonio Quartulli &lt;antonio@...2726...&gt;<br>---<br>M src/o=
+penvpn/dco.c<br>1 file changed, 3 insertions(+), 1 deletion(-)<br><br></pre=
+><pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;">gi=
+t pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/42/842/1</pre><p=
+re style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><span=
+>diff --git a/src/openvpn/dco.c b/src/openvpn/dco.c</span><br><span>index d=
+cc80d3..b1a3715 100644</span><br><span>--- a/src/openvpn/dco.c</span><br><s=
+pan>+++ b/src/openvpn/dco.c</span><br><span>@@ -494,7 +494,9 @@</span><br><=
+span>     }</span><br><span> #endif</span><br><span>     int ret =3D dco_ne=
+w_peer(&amp;c-&gt;c1.tuntap-&gt;dco, multi-&gt;peer_id,</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-                           c-&gt;c2.link_=
+socket-&gt;sd, NULL, remoteaddr, NULL, NULL);</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+                           c-&gt;c2.link_socket-&=
+gt;sd, NULL,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
+                    proto_is_dgram(ls-&gt;info.proto) ? remoteaddr : NULL,<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+                    =
+       NULL, NULL);</span><br><span>     if (ret &lt; 0)</span><br><span>  =
+   {</span><br><span>         return ret;</span><br><span></span><br></pre>=
+<p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/842?usp=
+=3Demail">change 842</a>. To unsubscribe, or for help writing mail filters,=
+ visit <a href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div=
+ itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemp=
+rop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"=
+url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/842?usp=3Demail"/><meta =
+itemprop=3D"name" content=3D"View Change"/></div></div>
+
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I76e2e616c6ffe436a9627fa71aa=
+ace74030b2f4a </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 842 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
+<div style=3D"display:none"> Gerrit-Owner: ordex &lt;a@...2181...&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
+1...&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
+.1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
+41...&gt; </div>
+<div style=3D"display:none"> Gerrit-MessageType: newchange </div>
+
+
+--GD1FJMW3gyA=--
 
