@@ -1,10 +1,9 @@
-Message-ID: <dcc7e538-2035-4697-b306-10eb470632f3@...68...>
-Date: Sat, 14 Dec 2024 20:56:56 +0100
+Message-ID: <7e42399c-3a94-40a2-bcaa-15545c3b761c@...68...>
+Date: Sun, 15 Dec 2024 00:18:14 +0100
 MIME-Version: 1.0
 Content-Language: de-CH
 From: corubba <corubba@...68...>
-Subject: [Openvpn-devel] [PATCH] Support IPv6 towards port-share proxy
- receiver
+Subject: [Openvpn-devel] [PATCH 0/2] proxy protocol v2 for port-share
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,99 +16,61 @@ Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 To: openvpn-devel@lists.sourceforge.net
 
-While port-share already supports IPv6 connections from clients, it only
-supported IPv4 connections towards the proxy receiver. The used
-common/shared OpenVPN machinery is already IPv6-ready, so all needed was
-to use properly-sized `sockaddr` structs and removing hardcoded IPv4
-restrictions.
+Hello,
 
-Signed-off-by: corubba <corubba@...68...>
----
- src/openvpn/ps.c | 25 +++++++++++++++++--------
- 1 file changed, 17 insertions(+), 8 deletions(-)
+since v2.1 (released 2009) OpenVPN has the "port-share" feature, where
+it listens on a tcp port (like 443) and forwards/proxies all incoming
+non-OpenVPN connections (like HTTPS) to a different server/port
+(hereafter called the "downstream server"). Because this terminates the
+tcp connection and the downstream server does not see the actual client
+ip, in v2.3 (released 2013) a "journal directory" feature was added
+where OpenVPN writes temporary files for every forwarded connection
+which the downstream server can use to determine the real client ip.
+While this works okay, it has a few drawbacks:
 
-diff --git a/src/openvpn/ps.c b/src/openvpn/ps.c
-index 06bf91a8..d12ac9e6 100644
---- a/src/openvpn/ps.c
-+++ b/src/openvpn/ps.c
-@@ -414,7 +414,7 @@ proxy_connection_io_requeue(struct proxy_connection *pc=
-, const int rwflags_new,
- static bool
- proxy_entry_new(struct proxy_connection **list,
-                 struct event_set *es,
--                const struct sockaddr_in server_addr,
-+                const struct openvpn_sockaddr server_addr,
-                 const socket_descriptor_t sd_client,
-                 struct buffer *initial_data,
-                 const char *journal_dir)
-@@ -425,12 +425,12 @@ proxy_entry_new(struct proxy_connection **list,
-     struct proxy_connection *cp;
+1) Since this is a custom solution, you also need a custom integration
+   in the downstream server software to consume the journal files.
+2) It is relatively straight forward to use on the same host, getting it
+   to work across hosts is more difficult; but not impossible.
+3) Because it basically is an side channel, there is the potential for
+   race conditions. For example is the journal file written *after* the
+   connection to the downstream server is opened, so it may not exist
+   yet when the downstream server tries to access/read it.
 
-     /* connect to port share server */
--    if ((sd_server =3D socket(PF_INET, SOCK_STREAM, IPPROTO_TCP)) < 0)
-+    if ((sd_server =3D socket(server_addr.addr.sa.sa_family, SOCK_STREAM, =
-IPPROTO_TCP)) < 0)
-     {
-         msg(M_WARN|M_ERRNO, "PORT SHARE PROXY: cannot create socket");
-         return false;
-     }
--    status =3D openvpn_connect(sd_server, (const struct sockaddr *)  &serv=
-er_addr, 5, NULL);
-+    status =3D openvpn_connect(sd_server, &server_addr.addr.sa, 5, NULL);
-     if (status)
-     {
-         msg(M_WARN, "PORT SHARE PROXY: connect to port-share server failed=
-");
-@@ -492,7 +492,7 @@ static bool
- control_message_from_parent(const socket_descriptor_t sd_control,
-                             struct proxy_connection **list,
-                             struct event_set *es,
--                            const struct sockaddr_in server_addr,
-+                            const struct openvpn_sockaddr server_addr,
-                             const int max_initial_buf,
-                             const char *journal_dir)
- {
-@@ -740,7 +740,7 @@ bad:
-  * This is the main function for the port share proxy background process.
-  */
- static void
--port_share_proxy(const struct sockaddr_in hostaddr,
-+port_share_proxy(const struct openvpn_sockaddr hostaddr,
-                  const socket_descriptor_t sd_control,
-                  const int max_initial_buf,
-                  const char *journal_dir)
-@@ -822,7 +822,7 @@ port_share_open(const char *host,
- {
-     pid_t pid;
-     socket_descriptor_t fd[2];
--    struct sockaddr_in hostaddr;
-+    struct openvpn_sockaddr hostaddr;
-     struct port_share *ps;
-     int status;
-     struct addrinfo *ai;
-@@ -836,11 +836,20 @@ port_share_open(const char *host,
-      */
+The goal of this patch set is to add an additional mechanism for
+transmitting the real client ip to the downstream server using the
+PROXY protocol [0]. It was created by the fine people from HAProxy,
+releasing the specification of protocol version 1 in 2010, followed by
+version 2 in 2012. OpenVPNs port-share feature behaves like a "dumb
+proxy", for which that protocol was designed. Compared to the "journal
+directory" feature, it does not suffer from the above-mentioned
+drawbacks:
 
-     status =3D openvpn_getaddrinfo(GETADDR_RESOLVE|GETADDR_FATAL,
--                                 host, port,  0, NULL, AF_INET, &ai);
-+                                 host, port,  0, NULL, AF_UNSPEC, &ai);
-     ASSERT(status=3D=3D0);
--    hostaddr =3D *((struct sockaddr_in *) ai->ai_addr);
-+    ASSERT(sizeof(hostaddr.addr) >=3D ai->ai_addrlen);
-+    memcpy(&hostaddr.addr.sa, ai->ai_addr, ai->ai_addrlen);
-     freeaddrinfo(ai);
+1) Standardized protocol which is natively supported by a wide range of
+   software, allowing plug-and-play deployment.
+2) Easy to use on the same or across different hosts.
+3) Uses in-band transmission, no side-channel required.
 
-+    if (msg_test(D_PS_PROXY_DEBUG))
-+    {
-+        struct gc_arena gc =3D gc_new();
-+        dmsg(D_PS_PROXY_DEBUG, "PORT SHARE PROXY: receiver will be %s",
-+             print_openvpn_sockaddr(&hostaddr, &gc));
-+        gc_free(&gc);
-+    }
-+
-     /*
-      * Make a socket for foreground and background processes
-      * to communicate.
+The first patch adds normalization of IPv4-mapped IPv6 addresses to
+plain IPv4 addresses, which can be seen as a general improvement of the
+"journal" feature. The second patch adds the PROXY protocol (version 2)
+implementation.
+
+The third patch extends the PROXY protocol implementation beyond what
+is currently required. It is not meant to be merged as-is right now, but
+only attached for completeness should these features ever be needed.
+
+This patch set was not created out of necessity, but rather as an
+exercise while playing around with the port-share feature. Feel free to
+consider accepting this patch set without any pressure. I do believe it
+has merit thought, and it may be worth considering to go as far as to
+completely deprecate/replace the "journal directory" with it.
+
+
+[0] https://www.haproxy.org/download/1.8/doc/proxy-protocol.txt
+
+
+Best regards
 --
-2.47.1
+Corubba
 
