@@ -1,14 +1,16 @@
-Message-ID: <14907efd-e18b-4bb2-94b7-51fe44011abd@...68...>
-Date: Mon, 16 Dec 2024 13:23:10 +0100
+From: "stipa (Code Review)" <gerrit@...515...>
+Date: Mon, 16 Dec 2024 13:16:19 +0000
+In-Reply-To: <gerrit.1734109769000.I76e2e616c6ffe436a9627fa71aaace74030b2f4a@...2715...>
+References: <gerrit.1734109769000.I76e2e616c6ffe436a9627fa71aaace74030b2f4a@...2715...>
+Reply-To: lstipakov@...277..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net, frank@...2641..., a@...2181...
+Message-ID: <11fa7686215157c4d499a6b9adf1196fc869cd3f-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-References: <7e42399c-3a94-40a2-bcaa-15545c3b761c@...68...>
- <6a00da72-dc11-409e-9d47-4694e1d6f02f@...68...>
- <a986633d-69d7-4bd1-b288-2f0de53b106e@...2181...>
-Content-Language: de-CH
-From: corubba <corubba@...68...>
-In-Reply-To: <a986633d-69d7-4bd1-b288-2f0de53b106e@...2181...>
-Subject: [Openvpn-devel] [PATCH v2 3/2] port-share: Add unix-socket and udp
- support for proxy protocol
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="zXi06Ar4gvI="; charset=UTF-8
+Subject: [Openvpn-devel] [XS] Change in openvpn[master]: dco: pass
+ remoteaddr only for UDP peers
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,114 +19,92 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
+Cc: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+
+--zXi06Ar4gvI=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-To: openvpn-devel@lists.sourceforge.net
 
-Just in case it is ever needed.
+Attention is currently required from: flichtenheld, ordex, plaisthos.
 
-Signed-off-by: Corubba Smith <corubba@...68...>
----
- src/openvpn/ps.c     | 42 +++++++++++++++++++++++++++++++++++-------
- src/openvpn/socket.h |  1 +
- 2 files changed, 36 insertions(+), 7 deletions(-)
+stipa has posted comments on this change. ( http://gerrit.openvpn.net/c/ope=
+nvpn/+/842?usp=3Demail )
 
-diff --git a/src/openvpn/ps.c b/src/openvpn/ps.c
-index b5d04c5b..b34df315 100644
---- a/src/openvpn/ps.c
-+++ b/src/openvpn/ps.c
-@@ -400,18 +400,19 @@ journal_add(const char *journal_dir, struct proxy_con=
-nection *pc, struct proxy_c
- static void
- send_proxy_protocol_v2_header(const struct proxy_connection *const pc, con=
-st struct proxy_connection *const cp)
- {
--    static const uint8_t PP2_AF_UNSPEC =3D 0x0, PP2_AF_INET =3D 0x1, PP2_A=
-F_INET6 =3D 0x2;
--    static const uint8_t PP2_PROTO_STREAM =3D 0x1;
-+    static const uint8_t PP2_AF_UNSPEC =3D 0x0, PP2_AF_INET =3D 0x1, PP2_A=
-F_INET6 =3D 0x2, PP2_AF_UNIX =3D 0x3;
-+    static const uint8_t PP2_PROTO_UNSPEC =3D 0x0, PP2_PROTO_STREAM =3D 0x=
-1, PP2_PROTO_DGRAM =3D 0x2;
+Change subject: dco: pass remoteaddr only for UDP peers
+......................................................................
 
-     struct openvpn_sockaddr src, dst;
--    socklen_t src_len, dst_len;
--    unsigned char header[52] =3D {
-+    socklen_t src_len, dst_len, socket_type_len;
-+    unsigned char header[232] =3D {
-         "\x0D\x0A\x0D\x0A\x00\x0D\x0A\x51\x55\x49\x54\x0A" /* signature */
-         "\x21" /* version=3D2 + command=3Dproxy */
-         /* initialize the rest to zero for now */
-     };
--    uint8_t addr_fam, header_len =3D 16;
-+    uint8_t addr_fam, proto, header_len =3D 16;
-     uint16_t addr_len;
-+    int socket_type;
 
-     src_len =3D sizeof(src.addr);
-     dst_len =3D sizeof(dst.addr);
-@@ -467,7 +468,14 @@ send_proxy_protocol_v2_header(const struct proxy_conne=
-ction *const pc, const str
-             memcpy(&header[50], &dst.addr.in6.sin6_port, sizeof(dst.addr.i=
-n6.sin6_port));
-             break;
+Patch Set 1: Code-Review+2
 
--        /* AF_UNIX is currently not suppported by OpenVPN */
-+        case AF_UNIX:
-+            addr_fam =3D PP2_AF_UNIX;
-+            addr_len =3D 216;
-+            ASSERT(108 >=3D sizeof(src.addr.un.sun_path));
-+            ASSERT(108 >=3D sizeof(dst.addr.un.sun_path));
-+            memcpy(&header[16], &src.addr.un.sun_path, 108);
-+            memcpy(&header[124], &dst.addr.un.sun_path, 108);
-+            break;
-
-         default:
-             addr_fam =3D PP2_AF_UNSPEC;
-@@ -475,7 +483,27 @@ send_proxy_protocol_v2_header(const struct proxy_conne=
-ction *const pc, const str
-             break;
-     }
-
--    const uint8_t proto =3D PP2_PROTO_STREAM; /* DGRAM is currently not su=
-pported by port-share */
-+    socket_type_len =3D sizeof(socket_type);
-+    if (0 !=3D getsockopt(pc->sd, SOL_SOCKET, SO_TYPE, &socket_type, &sock=
-et_type_len))
-+    {
-+        msg(M_WARN, "PORT SHARE PROXY: getting socket type failed");
-+        socket_type =3D -1; /* fallback to unspec */
-+    }
-+    switch (socket_type)
-+    {
-+        case SOCK_STREAM:
-+            proto =3D PP2_PROTO_STREAM;
-+            break;
-+
-+        case SOCK_DGRAM:
-+            proto =3D PP2_PROTO_DGRAM;
-+            break;
-+
-+        default:
-+            proto =3D PP2_PROTO_UNSPEC;
-+            break;
-+    }
-+
-     header[13] =3D (addr_fam << 4) | proto;
-
-     /* TLV is currently not implemented */
-diff --git a/src/openvpn/socket.h b/src/openvpn/socket.h
-index 465d92ba..3578b3c3 100644
---- a/src/openvpn/socket.h
-+++ b/src/openvpn/socket.h
-@@ -69,6 +69,7 @@ struct openvpn_sockaddr
-         struct sockaddr sa;
-         struct sockaddr_in in4;
-         struct sockaddr_in6 in6;
-+        struct sockaddr_un un;
-     } addr;
- };
 
 --
-2.47.1
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/842?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings
+
+Gerrit-Project: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: I76e2e616c6ffe436a9627fa71aaace74030b2f4a
+Gerrit-Change-Number: 842
+Gerrit-PatchSet: 1
+Gerrit-Owner: ordex <a@...2181...>
+Gerrit-Reviewer: flichtenheld <frank@...2641...>
+Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
+Gerrit-Reviewer: stipa <lstipakov@...277...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Attention: flichtenheld <frank@...2641...>
+Gerrit-Attention: ordex <a@...2181...>
+Gerrit-Comment-Date: Mon, 16 Dec 2024 13:16:19 +0000
+Gerrit-HasComments: No
+Gerrit-Has-Labels: Yes
+Gerrit-MessageType: comment
+
+--zXi06Ar4gvI=
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<p> Attention is currently required from: flichtenheld, ordex, plaisthos. <=
+/p>
+<p>Patch set 1:<span style=3D"border-radius: 3px; display: inline-block; ma=
+rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/842?usp=3Demail">Vi=
+ew Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To vie=
+w, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/842?usp=3Demail">=
+change 842</a>. To unsubscribe, or for help writing mail filters, visit <a =
+href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope=
+ itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"act=
+ion" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=
+=3D"http://gerrit.openvpn.net/c/openvpn/+/842?usp=3Demail"/><meta itemprop=
+=3D"name" content=3D"View Change"/></div></div>
+
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I76e2e616c6ffe436a9627fa71aa=
+ace74030b2f4a </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 842 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
+<div style=3D"display:none"> Gerrit-Owner: ordex &lt;a@...2181...&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
+1...&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
+.1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: stipa &lt;lstipakov@...277...=
+&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
+41...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: ordex &lt;a@...2181...&gt; <=
+/div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Mon, 16 Dec 2024 13:16:19=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: No </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
+
+
+--zXi06Ar4gvI=--
 
