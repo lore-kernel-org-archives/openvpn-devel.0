@@ -1,12 +1,13 @@
-Message-ID: <27c62e07-1f28-4e2a-b68d-32963f6d6da9@...68...>
-Date: Sun, 15 Dec 2024 00:21:31 +0100
+Message-ID: <a986633d-69d7-4bd1-b288-2f0de53b106e@...2181...>
+Date: Mon, 16 Dec 2024 09:41:24 +0100
 MIME-Version: 1.0
-From: corubba <corubba@...68...>
 References: <7e42399c-3a94-40a2-bcaa-15545c3b761c@...68...>
-Content-Language: de-CH
-In-Reply-To: <7e42399c-3a94-40a2-bcaa-15545c3b761c@...68...>
-Subject: [Openvpn-devel] [PATCH 3/2] port-share: Add unix-socket and udp
- support for proxy protocol
+ <6a00da72-dc11-409e-9d47-4694e1d6f02f@...68...>
+Content-Language: en-US
+From: Antonio Quartulli <a@...2181...>
+In-Reply-To: <6a00da72-dc11-409e-9d47-4694e1d6f02f@...68...>
+Subject: Re: [Openvpn-devel] [PATCH 1/2] port-share: Normalize IPv4-mapped
+ IPv6 addresses
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,118 +16,36 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-To: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+To: corubba <corubba@...68...>, openvpn-devel@lists.sourceforge.net
 
-Subject: [PATCH 3/3] port-share: Add unix-socket and udp support for proxy
- protocol v2
+Hello,
 
-Just in case it is ever needed.
+On 15/12/2024 00:19, corubba via Openvpn-devel wrote:
+> Before passing IPv4-mapped IPv6 addresses to the proxy journal,
+> translate them to plain IPv4 addresses. Whether the connection was
+> accepted by OpenVPN on a "dual stack" socket is of no importance to the
+> proxy receiver.
 
-Signed-off-by: corubba <corubba@...68...>
----
- src/openvpn/ps.c     | 42 +++++++++++++++++++++++++++++++++++-------
- src/openvpn/socket.h |  1 +
- 2 files changed, 36 insertions(+), 7 deletions(-)
+Thank you very much for all these improvements!
+We truly appreciate your work (especially because they are IPv6 related ;-D)
 
-diff --git a/src/openvpn/ps.c b/src/openvpn/ps.c
-index b5d04c5b..b34df315 100644
---- a/src/openvpn/ps.c
-+++ b/src/openvpn/ps.c
-@@ -400,18 +400,19 @@ journal_add(const char *journal_dir, struct proxy_con=
-nection *pc, struct proxy_c
- static void
- send_proxy_protocol_v2_header(const struct proxy_connection *const pc, con=
-st struct proxy_connection *const cp)
- {
--    static const uint8_t PP2_AF_UNSPEC =3D 0x0, PP2_AF_INET =3D 0x1, PP2_A=
-F_INET6 =3D 0x2;
--    static const uint8_t PP2_PROTO_STREAM =3D 0x1;
-+    static const uint8_t PP2_AF_UNSPEC =3D 0x0, PP2_AF_INET =3D 0x1, PP2_A=
-F_INET6 =3D 0x2, PP2_AF_UNIX =3D 0x3;
-+    static const uint8_t PP2_PROTO_UNSPEC =3D 0x0, PP2_PROTO_STREAM =3D 0x=
-1, PP2_PROTO_DGRAM =3D 0x2;
+> 
+> Signed-off-by: corubba <corubba@...68...>
 
-     struct openvpn_sockaddr src, dst;
--    socklen_t src_len, dst_len;
--    unsigned char header[52] =3D {
-+    socklen_t src_len, dst_len, socket_type_len;
-+    unsigned char header[232] =3D {
-         "\x0D\x0A\x0D\x0A\x00\x0D\x0A\x51\x55\x49\x54\x0A" /* signature */
-         "\x21" /* version=3D2 + command=3Dproxy */
-         /* initialize the rest to zero for now */
-     };
--    uint8_t addr_fam, header_len =3D 16;
-+    uint8_t addr_fam, proto, header_len =3D 16;
-     uint16_t addr_len;
-+    int socket_type;
+However, for legal reasons we need the Signed-off-by line to contain 
+your real name and surname. This line represents a real signature of 
+acceptance of the license OpenVPN is shipped with.
 
-     src_len =3D sizeof(src.addr);
-     dst_len =3D sizeof(dst.addr);
-@@ -467,7 +468,14 @@ send_proxy_protocol_v2_header(const struct proxy_conne=
-ction *const pc, const str
-             memcpy(&header[50], &dst.addr.in6.sin6_port, sizeof(dst.addr.i=
-n6.sin6_port));
-             break;
+Would you mind sending a v2 of this patchset with the modified 
+signed-off-by line?
 
--        /* AF_UNIX is currently not suppported by OpenVPN */
-+        case AF_UNIX:
-+            addr_fam =3D PP2_AF_UNIX;
-+            addr_len =3D 216;
-+            ASSERT(108 >=3D sizeof(src.addr.un.sun_path));
-+            ASSERT(108 >=3D sizeof(dst.addr.un.sun_path));
-+            memcpy(&header[16], &src.addr.un.sun_path, 108);
-+            memcpy(&header[124], &dst.addr.un.sun_path, 108);
-+            break;
+Thanks a lot.
 
-         default:
-             addr_fam =3D PP2_AF_UNSPEC;
-@@ -475,7 +483,27 @@ send_proxy_protocol_v2_header(const struct proxy_conne=
-ction *const pc, const str
-             break;
-     }
+Best Regards,
 
--    const uint8_t proto =3D PP2_PROTO_STREAM; /* DGRAM is currently not su=
-pported by port-share */
-+    socket_type_len =3D sizeof(socket_type);
-+    if (0 !=3D getsockopt(pc->sd, SOL_SOCKET, SO_TYPE, &socket_type, &sock=
-et_type_len))
-+    {
-+        msg(M_WARN, "PORT SHARE PROXY: getting socket type failed");
-+        socket_type =3D -1; /* fallback to unspec */
-+    }
-+    switch (socket_type)
-+    {
-+        case SOCK_STREAM:
-+            proto =3D PP2_PROTO_STREAM;
-+            break;
-+
-+        case SOCK_DGRAM:
-+            proto =3D PP2_PROTO_DGRAM;
-+            break;
-+
-+        default:
-+            proto =3D PP2_PROTO_UNSPEC;
-+            break;
-+    }
-+
-     header[13] =3D (addr_fam << 4) | proto;
-
-     /* TLV is currently not implemented */
-diff --git a/src/openvpn/socket.h b/src/openvpn/socket.h
-index 465d92ba..3578b3c3 100644
---- a/src/openvpn/socket.h
-+++ b/src/openvpn/socket.h
-@@ -69,6 +69,7 @@ struct openvpn_sockaddr
-         struct sockaddr sa;
-         struct sockaddr_in in4;
-         struct sockaddr_in6 in6;
-+        struct sockaddr_un un;
-     } addr;
- };
-
---
-2.47.1
+-- 
+Antonio Quartulli
 
 
