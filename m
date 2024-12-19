@@ -1,16 +1,16 @@
-From: "stipa (Code Review)" <gerrit@...515...>
-Date: Tue, 17 Dec 2024 10:10:54 +0000
-In-Reply-To: <gerrit.1733316222000.Icaffbfa6b2e8efa2bd24a05537cb74b15f4fed96@...2715...>
-References: <gerrit.1733316222000.Icaffbfa6b2e8efa2bd24a05537cb74b15f4fed96@...2715...>
-Reply-To: lstipakov@...277..., arne-openvpn@...1227..., heiko@...515...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <9da3b09dd2913b526009ff6d304f42f70be5ccf6-EmailReviewComments-HTML@...2715...>
+From: "plaisthos (Code Review)" <gerrit@...515...>
+Date: Thu, 19 Dec 2024 18:05:32 +0000
+In-Reply-To: <gerrit.1733833084000.Ia1c5209022d3ab4c0dac6438c41891c7d059f812@...2715...>
+References: <gerrit.1733833084000.Ia1c5209022d3ab4c0dac6438c41891c7d059f812@...2715...>
+Reply-To: arne-openvpn@...1227..., openvpn-devel@lists.sourceforge.net,
+ frank@...2641...
+Message-ID: <0eb8aebb5097b3c0686a7ebd9ecf56fd06310762-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="MrEEaBMjxoU="; charset=UTF-8
-Subject: [Openvpn-devel] [L] Change in openvpn[master]: dns: support
- multiple domains without DHCP
+Content-Type: multipart/alternative; boundary="D2QCeI2TIJE="; charset=UTF-8
+Subject: [Openvpn-devel] [L] Change in openvpn[master]: Allow DEFAULT in
+ data-ciphers and report both expanded and user set o...
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,130 +19,180 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: d12fk <heiko@...515...>
-Cc: flichtenheld <frank@...2641...>, plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Cc: flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---MrEEaBMjxoU=
+--D2QCeI2TIJE=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: d12fk, plaisthos.
+Attention is currently required from: flichtenheld.
 
-stipa has posted comments on this change. ( http://gerrit.openvpn.net/c/ope=
-nvpn/+/824?usp=3Demail )
+plaisthos has posted comments on this change. ( http://gerrit.openvpn.net/c=
+/openvpn/+/828?usp=3Demail )
 
-Change subject: dns: support multiple domains without DHCP
+Change subject: Allow DEFAULT in data-ciphers and report both expanded and =
+user set option
 ......................................................................
 
 
-Patch Set 3: Code-Review-1
+Patch Set 1:
 
-(2 comments)
+(5 comments)
 
-File src/openvpn/tun.c:
+File doc/man-sections/protocol-options.rst:
 
-http://gerrit.openvpn.net/c/openvpn/+/824/comment/0f9f3597_7d564171 :
-PS3, Line 232:         strncpynt(dns.domains + dstlen, o->domain_search_lis=
-t[i], srclen);
-Hm, this doesn't appear to work.
-
-  PUSH: Received control message: 'PUSH_REPLY,dns search-domains lol1 lol2,
-
-In this case srclen is 4, but strncpynt copies first 3 chars and then adds =
-\0. Shall we use just strncpy?
+http://gerrit.openvpn.net/c/openvpn/+/828/comment/51d7502e_31b1c083 :
+PS1, Line 181:   Starting with OpenVPN 2.7 the special keyword DEFAULT can =
+be used in the
+> Probably makes sense to use ``DEFAULT`` here.
+Done
 
 
-File src/openvpnserv/interactive.c:
+File src/openvpn/multi.c:
 
-http://gerrit.openvpn.net/c/openvpn/+/824/comment/2b842d94_2e39b8fd :
-PS3, Line 2302:                     break;
-extra "break"
+http://gerrit.openvpn.net/c/openvpn/+/828/comment/d1714501_fb5ceee1 :
+PS1, Line 1905:             "Server data-ciphers: '%s'%s, client supports c=
+ipher '%s'",
+> make consistent with the other case. Either '%s%s' or '%s'%s, but not bot=
+h.
+Done
+
+
+File src/openvpn/ssl_ncp.h:
+
+http://gerrit.openvpn.net/c/openvpn/+/828/comment/0e004a12_dc41d0f5 :
+PS1, Line 174:  *  The returned string will be allocated in the passed \par=
+am gc
+> If you want to format a word as param use \p, \param is for documenting p=
+arameters.
+I will use \c since \c and \p are the same according to documentation and s=
+eem to use \c rather than \p in OpenVPN 2.x
+
+
+File src/openvpn/ssl_ncp.c:
+
+http://gerrit.openvpn.net/c/openvpn/+/828/comment/711f6f13_504c6970 :
+PS1, Line 537:  * Replaces the string DEFAULT with the string \param replac=
+e. The
+> \p
+Done
+
+
+File tests/unit_tests/openvpn/test_ncp.c:
+
+http://gerrit.openvpn.net/c/openvpn/+/828/comment/b36dcfd7_095812e3 :
+PS1, Line 356: test_ncp_expand(void **state)
+> I would suggest to add a testcase here where ncp_cipher_conf contains DEF=
+AULT but is not equal to DE [=E2=80=A6]
+added
 
 
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/824?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/828?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings
 
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: Icaffbfa6b2e8efa2bd24a05537cb74b15f4fed96
-Gerrit-Change-Number: 824
-Gerrit-PatchSet: 3
-Gerrit-Owner: d12fk <heiko@...515...>
+Gerrit-Change-Id: Ia1c5209022d3ab4c0dac6438c41891c7d059f812
+Gerrit-Change-Number: 828
+Gerrit-PatchSet: 1
+Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-Reviewer: stipa <lstipakov@...277...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: d12fk <heiko@...515...>
-Gerrit-Comment-Date: Tue, 17 Dec 2024 10:10:54 +0000
+Gerrit-Attention: flichtenheld <frank@...2641...>
+Gerrit-Comment-Date: Thu, 19 Dec 2024 18:05:32 +0000
 Gerrit-HasComments: Yes
-Gerrit-Has-Labels: Yes
+Gerrit-Has-Labels: No
+Comment-In-Reply-To: flichtenheld <frank@...2641...>
 Gerrit-MessageType: comment
 
---MrEEaBMjxoU=
+--D2QCeI2TIJE=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p> Attention is currently required from: d12fk, plaisthos. </p>
-<p>Patch set 3:<span style=3D"border-radius: 3px; display: inline-block; ma=
-rgin: 0 2px; padding: 4px;background-color: #ffd4d4;">Code-Review -1</span>=
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/824?usp=3Demail">Vi=
-ew Change</a></p><p>2 comments:</p><ul style=3D"list-style: none; padding: =
-0;"><li style=3D"margin: 0; padding: 0;"><p>File src/openvpn/tun.c:</p><ul =
-style=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 =
-0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvp=
-n.net/c/openvpn/+/824/comment/0f9f3597_7d564171">Patch Set #3, Line 232:</a=
-> <code style=3D"font-family:monospace,monospace">        strncpynt(dns.dom=
-ains + dstlen, o-&gt;domain_search_list[i], srclen);</code></p><p style=3D"=
-white-space: pre-wrap; word-wrap: break-word;">Hm, this doesn&#39;t appear =
-to work.</p><pre style=3D"font-family: monospace,monospace; white-space: pr=
-e-wrap;">  PUSH: Received control message: &#39;PUSH_REPLY,dns search-domai=
-ns lol1 lol2,<br>  <br>In this case srclen is 4, but strncpynt copies first=
- 3 chars and then adds \0. Shall we use just strncpy?</pre></li></ul></li><=
-li style=3D"margin: 0; padding: 0;"><p>File src/openvpnserv/interactive.c:<=
-/p><ul style=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; padd=
-ing: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit=
-.openvpn.net/c/openvpn/+/824/comment/2b842d94_2e39b8fd">Patch Set #3, Line =
-2302:</a> <code style=3D"font-family:monospace,monospace">                 =
-   break;</code></p><p style=3D"white-space: pre-wrap; word-wrap: break-wor=
-d;">extra &quot;break&quot;</p></li></ul></li></ul><p>To view, visit <a hre=
-f=3D"http://gerrit.openvpn.net/c/openvpn/+/824?usp=3Demail">change 824</a>.=
- To unsubscribe, or for help writing mail filters, visit <a href=3D"http://=
-gerrit.openvpn.net/settings">settings</a>.</p><div itemscope itemtype=3D"ht=
-tp://schema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=
-=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://ger=
-rit.openvpn.net/c/openvpn/+/824?usp=3Demail"/><meta itemprop=3D"name" conte=
-nt=3D"View Change"/></div></div>
+<p> Attention is currently required from: flichtenheld. </p>
+<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/828?usp=3Demail">View C=
+hange</a></p><p>5 comments:</p><ul style=3D"list-style: none; padding: 0;">=
+<li style=3D"margin: 0; padding: 0;"><p>File doc/man-sections/protocol-opti=
+ons.rst:</p><ul style=3D"list-style: none; padding: 0;"><li style=3D"margin=
+: 0; padding: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http=
+://gerrit.openvpn.net/c/openvpn/+/828/comment/51d7502e_31b1c083">Patch Set =
+#1, Line 181:</a> <code style=3D"font-family:monospace,monospace">  Startin=
+g with OpenVPN 2.7 the special keyword DEFAULT can be used in the</code></p=
+><p><blockquote style=3D"border-left: 1px solid #aaa; margin: 10px 0; paddi=
+ng: 0 10px;">Probably makes sense to use ``DEFAULT`` here.</blockquote></p>=
+<p style=3D"white-space: pre-wrap; word-wrap: break-word;">Done</p></li></u=
+l></li><li style=3D"margin: 0; padding: 0;"><p>File src/openvpn/multi.c:</p=
+><ul style=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; paddin=
+g: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.o=
+penvpn.net/c/openvpn/+/828/comment/d1714501_fb5ceee1">Patch Set #1, Line 19=
+05:</a> <code style=3D"font-family:monospace,monospace">            &quot;S=
+erver data-ciphers: &#39;%s&#39;%s, client supports cipher &#39;%s&#39;&quo=
+t;,</code></p><p><blockquote style=3D"border-left: 1px solid #aaa; margin: =
+10px 0; padding: 0 10px;">make consistent with the other case. Either &#39;=
+%s%s&#39; or &#39;%s&#39;%s, but not both.</blockquote></p><p style=3D"whit=
+e-space: pre-wrap; word-wrap: break-word;">Done</p></li></ul></li><li style=
+=3D"margin: 0; padding: 0;"><p>File src/openvpn/ssl_ncp.h:</p><ul style=3D"=
+list-style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;=
+"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/o=
+penvpn/+/828/comment/0e004a12_dc41d0f5">Patch Set #1, Line 174:</a> <code s=
+tyle=3D"font-family:monospace,monospace"> *  The returned string will be al=
+located in the passed \param gc</code></p><p><blockquote style=3D"border-le=
+ft: 1px solid #aaa; margin: 10px 0; padding: 0 10px;">If you want to format=
+ a word as param use \p, \param is for documenting parameters.</blockquote>=
+</p><p style=3D"white-space: pre-wrap; word-wrap: break-word;">I will use \=
+c since \c and \p are the same according to documentation and seem to use \=
+c rather than \p in OpenVPN 2.x</p></li></ul></li><li style=3D"margin: 0; p=
+adding: 0;"><p>File src/openvpn/ssl_ncp.c:</p><ul style=3D"list-style: none=
+; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p style=3D"ma=
+rgin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/828/com=
+ment/711f6f13_504c6970">Patch Set #1, Line 537:</a> <code style=3D"font-fam=
+ily:monospace,monospace"> * Replaces the string DEFAULT with the string \pa=
+ram replace. The</code></p><p><blockquote style=3D"border-left: 1px solid #=
+aaa; margin: 10px 0; padding: 0 10px;">\p</blockquote></p><p style=3D"white=
+-space: pre-wrap; word-wrap: break-word;">Done</p></li></ul></li><li style=
+=3D"margin: 0; padding: 0;"><p>File tests/unit_tests/openvpn/test_ncp.c:</p=
+><ul style=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; paddin=
+g: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.o=
+penvpn.net/c/openvpn/+/828/comment/b36dcfd7_095812e3">Patch Set #1, Line 35=
+6:</a> <code style=3D"font-family:monospace,monospace">test_ncp_expand(void=
+ **state)</code></p><p><blockquote style=3D"border-left: 1px solid #aaa; ma=
+rgin: 10px 0; padding: 0 10px;">I would suggest to add a testcase here wher=
+e ncp_cipher_conf contains DEFAULT but is not equal to DE [=E2=80=A6]</bloc=
+kquote></p><p style=3D"white-space: pre-wrap; word-wrap: break-word;">added=
+</p></li></ul></li></ul><p>To view, visit <a href=3D"http://gerrit.openvpn.=
+net/c/openvpn/+/828?usp=3Demail">change 828</a>. To unsubscribe, or for hel=
+p writing mail filters, visit <a href=3D"http://gerrit.openvpn.net/settings=
+">settings</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessag=
+e"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAct=
+ion"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/8=
+28?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div></d=
+iv>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: Icaffbfa6b2e8efa2bd24a05537c=
-b74b15f4fed96 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 824 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 3 </div>
-<div style=3D"display:none"> Gerrit-Owner: d12fk &lt;heiko@...515...&gt; </=
-div>
+<div style=3D"display:none"> Gerrit-Change-Id: Ia1c5209022d3ab4c0dac6438c41=
+891c7d059f812 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 828 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
+<div style=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@...1711...=
+27...&gt; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
 1...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: stipa &lt;lstipakov@...277...=
-&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: d12fk &lt;heiko@...515...&gt=
-; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Tue, 17 Dec 2024 10:10:54=
+<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
+41...&gt; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Thu, 19 Dec 2024 18:05:32=
  +0000 </div>
 <div style=3D"display:none"> Gerrit-HasComments: Yes </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: No </div>
+<div style=3D"display:none"> Comment-In-Reply-To: flichtenheld &lt;frank@...1186...=
+.2641...&gt; </div>
 <div style=3D"display:none"> Gerrit-MessageType: comment </div>
 
 
---MrEEaBMjxoU=--
+--D2QCeI2TIJE=--
 
