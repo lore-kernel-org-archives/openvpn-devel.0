@@ -1,16 +1,16 @@
 From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Fri, 20 Dec 2024 21:41:33 +0000
-In-Reply-To: <gerrit.1733989644000.I81d4bb0abdd421f5ba260c10c610918652334a4d@...2715...>
-References: <gerrit.1733989644000.I81d4bb0abdd421f5ba260c10c610918652334a4d@...2715...>
-Reply-To: gert@...1296..., arne-openvpn@...1227..., heiko@...515...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <2131d8df3887d70ac7e6e84d54fc7181cb0d1869-EmailReplacePatchSet-HTML@...2715...>
+Date: Fri, 20 Dec 2024 21:56:39 +0000
+In-Reply-To: <gerrit.1734714757000.I806757a8c6f9a589665624f176391b5f7b87f581@...2715...>
+References: <gerrit.1734714757000.I806757a8c6f9a589665624f176391b5f7b87f581@...2715...>
+Reply-To: gert@...1296..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net, ralf@...2726..., frank@...2641...
+Message-ID: <26ae51594b7447d382477fac1ca2de0f0eec31c8-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="DO5rHcTDBLY="; charset=UTF-8
-Subject: [Openvpn-devel] [XS] Change in openvpn[master]: dns: store IPv4
- addresses in network byte order
+Content-Type: multipart/alternative; boundary="fMyRQfDlbtg="; charset=UTF-8
+Subject: [Openvpn-devel] [S] Change in openvpn[master]: Fix float support in
+ P2P topology
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,171 +19,152 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: d12fk <heiko@...515...>, plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: ralf_lici <ralf@...2726...>
+Cc: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---DO5rHcTDBLY=
+--fMyRQfDlbtg=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-cron2 has uploaded a new patch set (#2) to the change originally created by=
- d12fk. ( http://gerrit.openvpn.net/c/openvpn/+/834?usp=3Demail )
+Attention is currently required from: flichtenheld, plaisthos, ralf_lici.
 
-The following approvals got outdated and were removed:
-Code-Review+2 by flichtenheld
+cron2 has posted comments on this change. ( http://gerrit.openvpn.net/c/ope=
+nvpn/+/844?usp=3Demail )
 
-
-Change subject: dns: store IPv4 addresses in network byte order
+Change subject: Fix float support in P2P topology
 ......................................................................
 
-dns: store IPv4 addresses in network byte order
 
-This is done so that inet_ntop(3) can be used with IPv4 name server
-addresses. It expects the binary address in network byte order. If they
-are not that way the address octets are reversed.
+Patch Set 1:
 
-Change-Id: I81d4bb0abdd421f5ba260c10c610918652334a4d
-Signed-off-by: Heiko Hund <heiko@...2662...>
-Acked-by: Frank Lichtenheld <frank@...2641...>
-Message-Id: <20241213164552.265863-1-frank@...2641...>
-URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg30=
-111.html
-Signed-off-by: Gert Doering <gert@...1296...>
----
-M src/openvpn/dns.c
-1 file changed, 3 insertions(+), 3 deletions(-)
+(4 comments)
+
+Patchset:
+
+PS1:
+This looks like it should work (I do have a few nags)
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/34/834/2
+File src/openvpn/forward.c:
 
-diff --git a/src/openvpn/dns.c b/src/openvpn/dns.c
-index 0539ca5..15e7322 100644
---- a/src/openvpn/dns.c
-+++ b/src/openvpn/dns.c
-@@ -121,7 +121,7 @@
-     if (ai->ai_family =3D=3D AF_INET)
-     {
-         struct sockaddr_in *sin =3D (struct sockaddr_in *)ai->ai_addr;
--        server->addr[server->addr_count].in.a4.s_addr =3D ntohl(sin->sin_a=
-ddr.s_addr);
-+        server->addr[server->addr_count].in.a4.s_addr =3D sin->sin_addr.s_=
-addr;
-     }
-     else
-     {
-@@ -384,7 +384,7 @@
-             if (s->addr[j].family =3D=3D AF_INET)
-             {
-                 setenv_dns_option(es, "dns_server_%d_address_%d", i, j + 1,
--                                  print_in_addr_t(s->addr[j].in.a4.s_addr,=
- 0, &gc));
-+                                  print_in_addr_t(s->addr[j].in.a4.s_addr,=
- IA_NET_ORDER, &gc));
-             }
-             else
-             {
-@@ -443,7 +443,7 @@
-             const char *fmt_port;
-             if (server->addr[j].family =3D=3D AF_INET)
-             {
--                addr =3D print_in_addr_t(server->addr[j].in.a4.s_addr, 0, =
-&gc);
-+                addr =3D print_in_addr_t(server->addr[j].in.a4.s_addr, IA_=
-NET_ORDER, &gc);
-                 fmt_port =3D "    address =3D %s:%s";
-             }
-             else
+http://gerrit.openvpn.net/c/openvpn/+/844/comment/54eabdc3_8b8edf10 :
+PS1, Line 1238:     if (remote && (family =3D=3D AF_INET || family =3D=3D A=
+F_INET6))
+I'm not sure what *that* does?  When can we ever have a `remote` and an fam=
+ily that is neither `AF_INET` nor `AF_INET6`?  (If we're waiting for incomi=
+ng data it can be `AF_UNSPEC`, but then we have no `remote`, no?)
+
+
+http://gerrit.openvpn.net/c/openvpn/+/844/comment/c48925bd_4bc7c300 :
+PS1, Line 1245:         if (floated && c->c2.buf.len > 0)
+the GC seems only used inside here, and since this is a performance relevan=
+t function ("hot path", executed for each packet) we should not doing unnec=
+cessary work -> `gc_new(), gc_free()` can be inside the `if (floated)`.
+
+
+http://gerrit.openvpn.net/c/openvpn/+/844/comment/21341812_f18c537c :
+PS1, Line 1253:         process_incoming_link_part2(c, lsi, orig_buf);
+should this be *inside* the `if()`?  In the old code `_part2()` is uncondit=
+ionally called always
+
+
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/834?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/844?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings
 
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: I81d4bb0abdd421f5ba260c10c610918652334a4d
-Gerrit-Change-Number: 834
-Gerrit-PatchSet: 2
-Gerrit-Owner: d12fk <heiko@...515...>
+Gerrit-Change-Id: I806757a8c6f9a589665624f176391b5f7b87f581
+Gerrit-Change-Number: 844
+Gerrit-PatchSet: 1
+Gerrit-Owner: ralf_lici <ralf@...2726...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
+Gerrit-CC: cron2 <gert@...1296...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-MessageType: newpatchset
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Attention: flichtenheld <frank@...2641...>
+Gerrit-Attention: ralf_lici <ralf@...2726...>
+Gerrit-Comment-Date: Fri, 20 Dec 2024 21:56:39 +0000
+Gerrit-HasComments: Yes
+Gerrit-Has-Labels: No
+Gerrit-MessageType: comment
 
---DO5rHcTDBLY=
+--fMyRQfDlbtg=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p>cron2 <strong>uploaded patch set #2</strong> to the change originally cr=
-eated by d12fk.</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/834?=
-usp=3Demail">View Change</a></p><p>The following approvals got outdated and=
- were removed:
-Code-Review+2 by flichtenheld</p><pre style=3D"font-family: monospace,monos=
-pace; white-space: pre-wrap;">dns: store IPv4 addresses in network byte ord=
-er<br><br>This is done so that inet_ntop(3) can be used with IPv4 name serv=
-er<br>addresses. It expects the binary address in network byte order. If th=
-ey<br>are not that way the address octets are reversed.<br><br>Change-Id: I=
-81d4bb0abdd421f5ba260c10c610918652334a4d<br>Signed-off-by: Heiko Hund &lt;h=
-eiko@...2662...&gt;<br>Acked-by: Frank Lichtenheld &lt;frank@...2641...&gt;=
-<br>Message-Id: &lt;20241213164552.265863-1-frank@...2641...&gt;<br>URL: ht=
-tps://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg30111.htm=
-l<br>Signed-off-by: Gert Doering &lt;gert@...1296...&gt;<br>---<br>M src/op=
-envpn/dns.c<br>1 file changed, 3 insertions(+), 3 deletions(-)<br><br></pre=
-><pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;">gi=
-t pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/34/834/2</pre><p=
-re style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><span=
->diff --git a/src/openvpn/dns.c b/src/openvpn/dns.c</span><br><span>index 0=
-539ca5..15e7322 100644</span><br><span>--- a/src/openvpn/dns.c</span><br><s=
-pan>+++ b/src/openvpn/dns.c</span><br><span>@@ -121,7 +121,7 @@</span><br><=
-span>     if (ai-&gt;ai_family =3D=3D AF_INET)</span><br><span>     {</span=
-><br><span>         struct sockaddr_in *sin =3D (struct sockaddr_in *)ai-&g=
-t;ai_addr;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        ser=
-ver-&gt;addr[server-&gt;addr_count].in.a4.s_addr =3D ntohl(sin-&gt;sin_addr=
-.s_addr);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        se=
-rver-&gt;addr[server-&gt;addr_count].in.a4.s_addr =3D sin-&gt;sin_addr.s_ad=
-dr;</span><br><span>     }</span><br><span>     else</span><br><span>     {=
-</span><br><span>@@ -384,7 +384,7 @@</span><br><span>             if (s-&gt=
-;addr[j].family =3D=3D AF_INET)</span><br><span>             {</span><br><s=
-pan>                 setenv_dns_option(es, &quot;dns_server_%d_address_%d&q=
-uot;, i, j + 1,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-      =
-                            print_in_addr_t(s-&gt;addr[j].in.a4.s_addr, 0, =
-&amp;gc));</span><br><span style=3D"color: hsl(120, 100%, 40%);">+         =
-                         print_in_addr_t(s-&gt;addr[j].in.a4.s_addr, IA_NET=
-_ORDER, &amp;gc));</span><br><span>             }</span><br><span>         =
-    else</span><br><span>             {</span><br><span>@@ -443,7 +443,7 @@=
-</span><br><span>             const char *fmt_port;</span><br><span>       =
-      if (server-&gt;addr[j].family =3D=3D AF_INET)</span><br><span>       =
-      {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-              =
-  addr =3D print_in_addr_t(server-&gt;addr[j].in.a4.s_addr, 0, &amp;gc);</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+                addr =
-=3D print_in_addr_t(server-&gt;addr[j].in.a4.s_addr, IA_NET_ORDER, &amp;gc)=
-;</span><br><span>                 fmt_port =3D &quot;    address =3D %s:%s=
-&quot;;</span><br><span>             }</span><br><span>             else</s=
-pan><br><span></span><br></pre><p>To view, visit <a href=3D"http://gerrit.o=
-penvpn.net/c/openvpn/+/834?usp=3Demail">change 834</a>. To unsubscribe, or =
-for help writing mail filters, visit <a href=3D"http://gerrit.openvpn.net/s=
-ettings">settings</a>.</p><div itemscope itemtype=3D"http://schema.org/Emai=
-lMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.org/=
-ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/open=
-vpn/+/834?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></=
-div></div>
+<p> Attention is currently required from: flichtenheld, plaisthos, ralf_lic=
+i. </p>
+<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/844?usp=3Demail">View C=
+hange</a></p><p>4 comments:</p><ul style=3D"list-style: none; padding: 0;">=
+<li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-styl=
+e: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p styl=
+e=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/=
+844?tab=3Dcomments">Patch Set #1:</a> </p><p style=3D"white-space: pre-wrap=
+; word-wrap: break-word;">This looks like it should work (I do have a few n=
+ags)</p></li></ul></li><li style=3D"margin: 0; padding: 0;"><p>File src/ope=
+nvpn/forward.c:</p><ul style=3D"list-style: none; padding: 0;"><li style=3D=
+"margin: 0; padding: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=
+=3D"http://gerrit.openvpn.net/c/openvpn/+/844/comment/54eabdc3_8b8edf10">Pa=
+tch Set #1, Line 1238:</a> <code style=3D"font-family:monospace,monospace">=
+    if (remote &amp;&amp; (family =3D=3D AF_INET || family =3D=3D AF_INET6)=
+)</code></p><p style=3D"white-space: pre-wrap; word-wrap: break-word;">I&#3=
+9;m not sure what *that* does?  When can we ever have a `remote` and an fam=
+ily that is neither `AF_INET` nor `AF_INET6`?  (If we&#39;re waiting for in=
+coming data it can be `AF_UNSPEC`, but then we have no `remote`, no?)</p></=
+li><li style=3D"margin: 0; padding: 0 0 0 16px;"><p style=3D"margin-bottom:=
+ 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/844/comment/c48925b=
+d_4bc7c300">Patch Set #1, Line 1245:</a> <code style=3D"font-family:monospa=
+ce,monospace">        if (floated &amp;&amp; c-&gt;c2.buf.len &gt; 0)</code=
+></p><p style=3D"white-space: pre-wrap; word-wrap: break-word;">the GC seem=
+s only used inside here, and since this is a performance relevant function =
+(&quot;hot path&quot;, executed for each packet) we should not doing unnecc=
+essary work -&gt; `gc_new(), gc_free()` can be inside the `if (floated)`.</=
+p></li><li style=3D"margin: 0; padding: 0 0 0 16px;"><p style=3D"margin-bot=
+tom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/844/comment/213=
+41812_f18c537c">Patch Set #1, Line 1253:</a> <code style=3D"font-family:mon=
+ospace,monospace">        process_incoming_link_part2(c, lsi, orig_buf);</c=
+ode></p><p style=3D"white-space: pre-wrap; word-wrap: break-word;">should t=
+his be *inside* the `if()`?  In the old code `_part2()` is unconditionally =
+called always</p></li></ul></li></ul><p>To view, visit <a href=3D"http://ge=
+rrit.openvpn.net/c/openvpn/+/844?usp=3Demail">change 844</a>. To unsubscrib=
+e, or for help writing mail filters, visit <a href=3D"http://gerrit.openvpn=
+.net/settings">settings</a>.</p><div itemscope itemtype=3D"http://schema.or=
+g/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://schem=
+a.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/=
+c/openvpn/+/844?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Chang=
+e"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I81d4bb0abdd421f5ba260c10c61=
-0918652334a4d </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 834 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
-<div style=3D"display:none"> Gerrit-Owner: d12fk &lt;heiko@...515...&gt; </=
-div>
+<div style=3D"display:none"> Gerrit-Change-Id: I806757a8c6f9a589665624f1763=
+91b5f7b87f581 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 844 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
+<div style=3D"display:none"> Gerrit-Owner: ralf_lici &lt;ralf@...2726...&gt=
+; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
 1...&gt; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
 .1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: cron2 &lt;gert@...1296...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
+41...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: ralf_lici &lt;ralf@...2804...=
+.&gt; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Fri, 20 Dec 2024 21:56:39=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: No </div>
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
 
 
---DO5rHcTDBLY=--
+--fMyRQfDlbtg=--
 
