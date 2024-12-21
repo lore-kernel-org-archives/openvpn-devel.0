@@ -1,15 +1,15 @@
 From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Sat, 21 Dec 2024 22:19:26 +0000
+Date: Sat, 21 Dec 2024 22:19:21 +0000
 In-Reply-To: <gerrit.1731290343000.I057f007577f10c6ac917ee4620ee3d2559187dc7@...2715...>
 References: <gerrit.1731290343000.I057f007577f10c6ac917ee4620ee3d2559187dc7@...2715...>
 Reply-To: gert@...1296..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net, frank@...2641..., steffan@...1856...,
  max@...2606...
-Message-ID: <60cdace5e0fa2f3fd463c8fcd46c1d139e56ad01-HTML@...2715...>
+Message-ID: <60cdace5e0fa2f3fd463c8fcd46c1d139e56ad01-EmailReplacePatchSet-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="nAaZlLA8FD4="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="FepzxgQWFrA="; charset=UTF-8
 Subject: [Openvpn-devel] [M] Change in openvpn[master]: Trigger
  renegotiation of data key if getting close to the AEAD usage ...
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -20,15 +20,19 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: plaisthos <arne-openvpn@...1227...>
-Cc: syzzer <steffan@...1856...>, MaxF <max@...2606...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: plaisthos <arne-openvpn@...1227...>, syzzer <steffan@...1856...>, flichtenheld <frank@...2641...>, MaxF <max@...2606...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---nAaZlLA8FD4=
+--FepzxgQWFrA=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-cron2 has submitted this change. ( http://gerrit.openvpn.net/c/openvpn/+/79=
-6?usp=3Demail )
+cron2 has uploaded a new patch set (#15) to the change originally created b=
+y plaisthos. ( http://gerrit.openvpn.net/c/openvpn/+/796?usp=3Demail )
+
+The following approvals got outdated and were removed:
+Code-Review+1 by syzzer, Code-Review+2 by cron2
+
 
 Change subject: Trigger renegotiation of data key if getting close to the A=
 EAD usage limit
@@ -94,7 +98,7 @@ M tests/unit_tests/openvpn/test_crypto.c
 6 files changed, 169 insertions(+), 3 deletions(-)
 
 
-
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/96/796/15
 
 diff --git a/Changes.rst b/Changes.rst
 index a6cc3be..34542a5 100644
@@ -431,348 +435,351 @@ Gerrit-Reviewer: cron2 <gert@...1296...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: syzzer <steffan@...1856...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-MessageType: merged
+Gerrit-MessageType: newpatchset
 
---nAaZlLA8FD4=
+--FepzxgQWFrA=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p>cron2 <strong>submitted</strong> this change.</p><p><a href=3D"http://ge=
-rrit.openvpn.net/c/openvpn/+/796?usp=3Demail">View Change</a></p><div style=
-=3D"white-space:pre-wrap"></div><pre style=3D"font-family: monospace,monosp=
-ace; white-space: pre-wrap;">Trigger renegotiation of data key if getting c=
-lose to the AEAD usage limit<br><br>This implements the limitation of AEAD =
-key usage[1] with a confidentiality<br>margin of 2^-57, the same as TLS 1.3=
-.  In this implementation, unlike<br>TLS 1.3 that counts the number of reco=
-rds, we count the actual number of<br>packets and plaintext blocks. TLS 1.3=
- can reasonable assume that for<br>large data transfers, full records are u=
-sed and therefore the maximum<br>record size of 2**14 (2*10 blocks) is used=
- to calculate the number of<br>records before a new key needs to be used.<b=
-r><br>For a VPN like OpenVPN, the same calculation would either require usi=
-ng a<br>pessimistic assumption of using a MTU size of 65k which limits us t=
-o<br>2^24 packets, which equals only 24 GB with more common MTU/MSS of 1400=
-<br>or requiring a dynamic calculation which includes the actual MTU that<b=
-r>we allow to send. For 1500 the calculation yields 2*29.4 which is a<br>qu=
-ite significant higher number of packets (923 GB at 1400 MSS/MTU).<br><br>T=
-o avoid this dynamic calculation and also avoid needing to know the<br>MSS/=
-MTU size in the crypto layer, this implementation foregoes the<br>simplific=
-ation of counting just packets but will count blocks and packets<br>instead=
- and determines the limit from that.<br><br>This also has the side effect t=
-hat connections with a lot of small packets<br>(like TCP ACKs) mixed with l=
-arge packets will be able to keep using the same<br>key much longer until r=
-equiring a renegotiation.<br><br>This patch will set the limit where to tri=
-gger the renegotiation at 7/8<br>of the recommended maximum value.<br><br>[=
-1]  https://www.ietf.org/archive/id/draft-irtf-cfrg-aead-limits-08.html<br>=
-<br>Testing instructions:<br><br>The easiest way to test if this patch work=
-s as<br>intended is to manually change the return value of cipher_get_aead_=
-limits<br>to some silly low value like 2048. After a bit of VPN traffic, a =
-soft<br>reset should occur that indicates being over the<br><br>    TLS: so=
-ft reset sec=3D41/3600 bytes=3D59720/-1 pkts=3D78/0 aead_limit_send=3D1883/=
-1792 aead_limit_recv=3D1937/1792<br><br>Here the send limit is over the lim=
-it (1792 =3D 2048 * 8/7).<br><br>Change-Id: I057f007577f10c6ac917ee4620ee3d=
-2559187dc7<br>Signed-off-by: Arne Schwabe &lt;arne@...1227...&gt;<br>Acked-=
-by: Gert Doering &lt;gert@...1296...&gt;<br>Message-Id: &lt;20241221153731.=
-1755-1-gert@...1296...&gt;<br>URL: https://www.mail-archive.com/openvpn-dev=
-el@lists.sourceforge.net/msg30144.html<br>Signed-off-by: Gert Doering &lt;g=
-ert@...1296...&gt;<br>---<br>M Changes.rst<br>M src/openvpn/crypto.c<br>M s=
-rc/openvpn/crypto.h<br>M src/openvpn/ssl.c<br>M src/openvpn/ssl_common.h<br=
->M tests/unit_tests/openvpn/test_crypto.c<br>6 files changed, 169 insertion=
-s(+), 3 deletions(-)<br><br></pre>
-<pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><sp=
-an>diff --git a/Changes.rst b/Changes.rst</span><br><span>index a6cc3be..34=
-542a5 100644</span><br><span>--- a/Changes.rst</span><br><span>+++ b/Change=
-s.rst</span><br><span>@@ -22,6 +22,14 @@</span><br><span> </span><br><span>=
-     For more details see [lwipovpn on Gihtub](https://github.com/OpenVPN/l=
-wipovpn).</span><br><span> </span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+Enforcement of AES-GCM usage limit</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+    OpenVPN will now enforce the usage limits on AES=
--GCM with the same</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-   confidentiality margin as TLS 1.3 does. This mean that renegotiation wil=
-l</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    be triggered a=
-fter roughly 2^28 to 2^31 packets depending of the packet</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+    size. More details about usage li=
-mit of AES-GCM can be found here:</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    h=
-ttps://datatracker.ietf.org/doc/draft-irtf-cfrg-aead-limits/</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> Deprecated featu=
-res</span><br><span> -------------------</span><br><span> ``secret`` suppor=
-t has been removed by default.</span><br><span>diff --git a/src/openvpn/cry=
-pto.c b/src/openvpn/crypto.c</span><br><span>index d548c8d..faf69fc 100644<=
-/span><br><span>--- a/src/openvpn/crypto.c</span><br><span>+++ b/src/openvp=
-n/crypto.c</span><br><span>@@ -138,6 +138,11 @@</span><br><span>     ASSERT=
-(cipher_ctx_update(ctx-&gt;cipher, BEND(&amp;work), &amp;outlen, BPTR(buf),=
- BLEN(buf)));</span><br><span>     ASSERT(buf_inc_len(&amp;work, outlen));<=
-/span><br><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-  /* update number of plaintext blocks encrypted. Use the (x + (n-1))/n tri=
-ck</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     * to round u=
-p the result to the number of blocks used */</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+    const int blocksize =3D AEAD_LIMIT_BLOCKSIZE;<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+    opt-&gt;key_ctx_=
-bi.encrypt.plaintext_blocks +=3D (outlen + (blocksize - 1))/blocksize;</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span>     /*=
- Flush the encryption buffer */</span><br><span>     ASSERT(cipher_ctx_fina=
-l(ctx-&gt;cipher, BEND(&amp;work), &amp;outlen));</span><br><span>     ASSE=
-RT(buf_inc_len(&amp;work, outlen));</span><br><span>@@ -325,6 +330,37 @@</s=
-pan><br><span>     }</span><br><span> }</span><br><span> </span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+uint64_t</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+cipher_get_aead_limits(const char *ciphername)</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+    if (!cipher_kt_mode_aead(ciphername=
+<p>cron2 <strong>uploaded patch set #15</strong> to the change originally c=
+reated by plaisthos.</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+=
+/796?usp=3Demail">View Change</a></p><p>The following approvals got outdate=
+d and were removed:
+Code-Review+1 by syzzer, Code-Review+2 by cron2</p><pre style=3D"font-famil=
+y: monospace,monospace; white-space: pre-wrap;">Trigger renegotiation of da=
+ta key if getting close to the AEAD usage limit<br><br>This implements the =
+limitation of AEAD key usage[1] with a confidentiality<br>margin of 2^-57, =
+the same as TLS 1.3.  In this implementation, unlike<br>TLS 1.3 that counts=
+ the number of records, we count the actual number of<br>packets and plaint=
+ext blocks. TLS 1.3 can reasonable assume that for<br>large data transfers,=
+ full records are used and therefore the maximum<br>record size of 2**14 (2=
+*10 blocks) is used to calculate the number of<br>records before a new key =
+needs to be used.<br><br>For a VPN like OpenVPN, the same calculation would=
+ either require using a<br>pessimistic assumption of using a MTU size of 65=
+k which limits us to<br>2^24 packets, which equals only 24 GB with more com=
+mon MTU/MSS of 1400<br>or requiring a dynamic calculation which includes th=
+e actual MTU that<br>we allow to send. For 1500 the calculation yields 2*29=
+.4 which is a<br>quite significant higher number of packets (923 GB at 1400=
+ MSS/MTU).<br><br>To avoid this dynamic calculation and also avoid needing =
+to know the<br>MSS/MTU size in the crypto layer, this implementation forego=
+es the<br>simplification of counting just packets but will count blocks and=
+ packets<br>instead and determines the limit from that.<br><br>This also ha=
+s the side effect that connections with a lot of small packets<br>(like TCP=
+ ACKs) mixed with large packets will be able to keep using the same<br>key =
+much longer until requiring a renegotiation.<br><br>This patch will set the=
+ limit where to trigger the renegotiation at 7/8<br>of the recommended maxi=
+mum value.<br><br>[1]  https://www.ietf.org/archive/id/draft-irtf-cfrg-aead=
+-limits-08.html<br><br>Testing instructions:<br><br>The easiest way to test=
+ if this patch works as<br>intended is to manually change the return value =
+of cipher_get_aead_limits<br>to some silly low value like 2048. After a bit=
+ of VPN traffic, a soft<br>reset should occur that indicates being over the=
+<br><br>    TLS: soft reset sec=3D41/3600 bytes=3D59720/-1 pkts=3D78/0 aead=
+_limit_send=3D1883/1792 aead_limit_recv=3D1937/1792<br><br>Here the send li=
+mit is over the limit (1792 =3D 2048 * 8/7).<br><br>Change-Id: I057f007577f=
+10c6ac917ee4620ee3d2559187dc7<br>Signed-off-by: Arne Schwabe &lt;arne@...1711...=
+27...&gt;<br>Acked-by: Gert Doering &lt;gert@...1296...&gt;<br>Message-Id: =
+&lt;20241221153731.1755-1-gert@...1296...&gt;<br>URL: https://www.mail-arch=
+ive.com/openvpn-devel@lists.sourceforge.net/msg30144.html<br>Signed-off-by:=
+ Gert Doering &lt;gert@...1296...&gt;<br>---<br>M Changes.rst<br>M src/open=
+vpn/crypto.c<br>M src/openvpn/crypto.h<br>M src/openvpn/ssl.c<br>M src/open=
+vpn/ssl_common.h<br>M tests/unit_tests/openvpn/test_crypto.c<br>6 files cha=
+nged, 169 insertions(+), 3 deletions(-)<br><br></pre><pre style=3D"font-fam=
+ily: monospace,monospace; white-space: pre-wrap;">git pull ssh://gerrit.ope=
+nvpn.net:29418/openvpn refs/changes/96/796/15</pre><pre style=3D"font-famil=
+y: monospace,monospace; white-space: pre-wrap;"><span>diff --git a/Changes.=
+rst b/Changes.rst</span><br><span>index a6cc3be..34542a5 100644</span><br><=
+span>--- a/Changes.rst</span><br><span>+++ b/Changes.rst</span><br><span>@@=
+ -22,6 +22,14 @@</span><br><span> </span><br><span>     For more details se=
+e [lwipovpn on Gihtub](https://github.com/OpenVPN/lwipovpn).</span><br><spa=
+n> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+Enforcement of A=
+ES-GCM usage limit</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+   OpenVPN will now enforce the usage limits on AES-GCM with the same</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+    confidentiality margi=
+n as TLS 1.3 does. This mean that renegotiation will</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    be triggered after roughly 2^28 to 2^=
+31 packets depending of the packet</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+    size. More details about usage limit of AES-GCM can be f=
+ound here:</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+    https://datatracker.ietf=
+.org/doc/draft-irtf-cfrg-aead-limits/</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+</span><br><span> Deprecated features</span><br><span> --=
+-----------------</span><br><span> ``secret`` support has been removed by d=
+efault.</span><br><span>diff --git a/src/openvpn/crypto.c b/src/openvpn/cry=
+pto.c</span><br><span>index d548c8d..faf69fc 100644</span><br><span>--- a/s=
+rc/openvpn/crypto.c</span><br><span>+++ b/src/openvpn/crypto.c</span><br><s=
+pan>@@ -138,6 +138,11 @@</span><br><span>     ASSERT(cipher_ctx_update(ctx-=
+&gt;cipher, BEND(&amp;work), &amp;outlen, BPTR(buf), BLEN(buf)));</span><br=
+><span>     ASSERT(buf_inc_len(&amp;work, outlen));</span><br><span> </span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+    /* update number of p=
+laintext blocks encrypted. Use the (x + (n-1))/n trick</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+     * to round up the result to the num=
+ber of blocks used */</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+    const int blocksize =3D AEAD_LIMIT_BLOCKSIZE;</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    opt-&gt;key_ctx_bi.encrypt.plaintext_=
+blocks +=3D (outlen + (blocksize - 1))/blocksize;</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+</span><br><span>     /* Flush the encryption=
+ buffer */</span><br><span>     ASSERT(cipher_ctx_final(ctx-&gt;cipher, BEN=
+D(&amp;work), &amp;outlen));</span><br><span>     ASSERT(buf_inc_len(&amp;w=
+ork, outlen));</span><br><span>@@ -325,6 +330,37 @@</span><br><span>     }<=
+/span><br><span> }</span><br><span> </span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+uint64_t</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+cipher_get_aead_limits(const char *ciphername)</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+    if (!cipher_kt_mode_aead(ciphername))</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+        return 0;</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (cip=
+her_kt_name(ciphername) =3D=3D cipher_kt_name(&quot;CHACHA20-POLY1305&quot;=
 ))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><=
 span style=3D"color: hsl(120, 100%, 40%);">+        return 0;</span><br><sp=
 an style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"co=
 lor: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+    if (cipher_kt_name(ciphername) =3D=3D cipher_kt_name(&quot;CHA=
-CHA20-POLY1305&quot;))</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        ret=
-urn 0;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+    /* Assume all other ciphers require the li=
-mit */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+    /* We focus here on the equa=
-tion</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     *</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+     *       q + s &lt;=3D p=
-^(1/2) * 2^(129/2) - 1</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+     *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     * as =
-is the one that is limiting us.</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+     *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-    *  With p =3D 2^-57 this becomes</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+     *</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+     *      q + s &lt;=3D (2^36 - 1)</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+     *</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+     */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-uint64_t rs =3D (1ull &lt;&lt; 36) - 1;</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+    return rs;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> bool=
-</span><br><span> crypto_check_replay(struct crypto_options *opt,</span><br=
-><span>                     const struct packet_id_net *pin, const char *er=
-ror_prefix,</span><br><span>@@ -487,6 +523,12 @@</span><br><span>         g=
-oto error_exit;</span><br><span>     }</span><br><span> </span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+    /* update number of plaintext blocks decrypted. Use t=
-he (x + (n-1))/n trick</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+     * to round up the result to the number of blocks used. */</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+    const int blocksize =3D A=
-EAD_LIMIT_BLOCKSIZE;</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+    opt-&gt;key_ctx_bi.decrypt.plaintext_blocks +=3D (outlen + (blocksize =
-- 1))/blocksize;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</s=
-pan><br><span>     *buf =3D work;</span><br><span> </span><br><span>     gc=
-_free(&amp;gc);</span><br><span>diff --git a/src/openvpn/crypto.h b/src/ope=
-nvpn/crypto.h</span><br><span>index 04d7bb2..4579b65 100644</span><br><span=
->--- a/src/openvpn/crypto.h</span><br><span>+++ b/src/openvpn/crypto.h</spa=
-n><br><span>@@ -177,6 +177,10 @@</span><br><span>     uint8_t implicit_iv[O=
-PENVPN_MAX_IV_LENGTH];</span><br><span>     /**&lt; The implicit part of th=
-e IV */</span><br><span>     size_t implicit_iv_len;     /**&lt; The length=
- of implicit_iv */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-   /** Counter for the number of plaintext block encrypted using this ciphe=
-r</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     * with the cu=
-rrent key in number of 128 bit blocks (only used for</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+     * AEAD ciphers) */</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+    uint64_t plaintext_blocks;</span>=
-<br><span> };</span><br><span> </span><br><span> #define KEY_DIRECTION_BIDI=
-RECTIONAL 0 /* same keys for both directions */</span><br><span>@@ -607,6 +=
-611,25 @@</span><br><span> }</span><br><span> </span><br><span> /**</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+ * Check if the cipher is a=
-n AEAD cipher and needs to be limited to a certain</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+ * number of number of blocks + packets. Ret=
-urn 0 if ciphername is not an AEAD</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+ * cipher or no limit (e.g. Chacha20-Poly1305) is needed. (O=
-r the limit is</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * la=
-rger than 2^64)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * For reference see =
-the OpenVPN RFC draft and</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+ * https://www.ietf.org/archive/id/draft-irtf-cfrg-aead-limits-08.htm=
-l</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ */</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+uint64_t</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+cipher_get_aead_limits(const char *ciphername=
-);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+/**</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+ * Blocksize used for the AEAD limit caluclation</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+ * Since cipher_ctx_block_size() is not =
-reliable and will return 1 in many</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+ * cases use a hardcoded blocksize instead */</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+#define     AEAD_LIMIT_BLOCKSIZE  =
-  16</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+/**</span><br><span>  * Checks if =
-the current TLS library supports the TLS 1.0 PRF with MD5+SHA1</span><br><s=
-pan>  * that OpenVPN uses when TLS Keying Material Export is not available.=
-</span><br><span>  *</span><br><span>@@ -614,4 +637,20 @@</span><br><span> =
- */</span><br><span> bool check_tls_prf_working(void);</span><br><span> </s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+/**</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+ * Checks if the usage limit for an AE=
-AD cipher is reached</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+ *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * This method a=
-bstracts the calculation to make the calling function easier</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+ * to read.</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+ */</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+static inline bool</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+aead_usage_limit_reached(const uint64_t limit, const struc=
-t key_ctx *key_ctx,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-                         int64_t higest_pid)</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+    /* This is the  q + s &lt;=3D  p^(1/2) * 2^(129/2) - 1 calculati=
-on where</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     * q is=
- the number of protected messages (highest_pid)</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+     * s Total plaintext length in all messages=
- (in blocks) */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-return (limit &gt; 0 &amp;&amp; key_ctx-&gt;plaintext_blocks + (uint64_t) h=
-igest_pid &gt; limit);</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><spa=
-n> #endif /* CRYPTO_H */</span><br><span>diff --git a/src/openvpn/ssl.c b/s=
-rc/openvpn/ssl.c</span><br><span>index fcfb344..c77c4ed 100644</span><br><s=
-pan>--- a/src/openvpn/ssl.c</span><br><span>+++ b/src/openvpn/ssl.c</span><=
-br><span>@@ -131,6 +131,26 @@</span><br><span>     }</span><br><span> }</sp=
-an><br><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+stati=
-c uint64_t</span><br><span style=3D"color: hsl(120, 100%, 40%);">+tls_get_l=
-imit_aead(const char *ciphername)</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-uint64_t limit =3D cipher_get_aead_limits(ciphername);</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+    if (limit =3D=3D 0)</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+        return 0;</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+    /* set limit to 7/8 of th=
-e limit so the renegotiation can succeed before</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+     * we go over the limit */</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+    limit =3D limit/8 * 7;</span><br=
+ 40%);">+    /* Assume all other ciphers require the limit */</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+    /* We focus here on the equation</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+     *</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+     *       q + s &lt;=3D p^(1/2) * 2^(129/2) -=
+ 1</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     *</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+     * as is the one that is l=
+imiting us.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     *</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+     *  With p =3D 2^=
+-57 this becomes</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+  *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     *      q + =
+s &lt;=3D (2^36 - 1)</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++     *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     */</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+    uint64_t rs =3D (1ul=
+l &lt;&lt; 36) - 1;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    return rs;</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+</span><br><span> bool</span><br><span> c=
+rypto_check_replay(struct crypto_options *opt,</span><br><span>            =
+         const struct packet_id_net *pin, const char *error_prefix,</span><=
+br><span>@@ -487,6 +523,12 @@</span><br><span>         goto error_exit;</sp=
+an><br><span>     }</span><br><span> </span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+   /* update number of plaintext blocks decrypted. Use the (x + (n-1))/n tr=
+ick</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     * to round =
+up the result to the number of blocks used. */</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+    const int blocksize =3D AEAD_LIMIT_BLOCKSIZE=
+;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    opt-&gt;key_ct=
+x_bi.decrypt.plaintext_blocks +=3D (outlen + (blocksize - 1))/blocksize;</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span>     =
+*buf =3D work;</span><br><span> </span><br><span>     gc_free(&amp;gc);</sp=
+an><br><span>diff --git a/src/openvpn/crypto.h b/src/openvpn/crypto.h</span=
+><br><span>index 04d7bb2..4579b65 100644</span><br><span>--- a/src/openvpn/=
+crypto.h</span><br><span>+++ b/src/openvpn/crypto.h</span><br><span>@@ -177=
+,6 +177,10 @@</span><br><span>     uint8_t implicit_iv[OPENVPN_MAX_IV_LENGT=
+H];</span><br><span>     /**&lt; The implicit part of the IV */</span><br><=
+span>     size_t implicit_iv_len;     /**&lt; The length of implicit_iv */<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+    /** Counter for =
+the number of plaintext block encrypted using this cipher</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+     * with the current key in number=
+ of 128 bit blocks (only used for</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+     * AEAD ciphers) */</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+    uint64_t plaintext_blocks;</span><br><span> };</span>=
+<br><span> </span><br><span> #define KEY_DIRECTION_BIDIRECTIONAL 0 /* same =
+keys for both directions */</span><br><span>@@ -607,6 +611,25 @@</span><br>=
+<span> }</span><br><span> </span><br><span> /**</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+ * Check if the cipher is an AEAD cipher and ne=
+eds to be limited to a certain</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+ * number of number of blocks + packets. Return 0 if ciphername =
+is not an AEAD</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * ci=
+pher or no limit (e.g. Chacha20-Poly1305) is needed. (Or the limit is</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+ * larger than 2^64)</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+ * For reference see the OpenVPN RFC draf=
+t and</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * https://www=
+.ietf.org/archive/id/draft-irtf-cfrg-aead-limits-08.html</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+ */</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+uint64_t</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+cipher_get_aead_limits(const char *ciphername);</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+/**</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+ * Blocksize used for the AEAD limit caluclation</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+ * Since cipher_ctx_block_size() is not reliable and will =
+return 1 in many</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * =
+cases use a hardcoded blocksize instead */</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+#define     AEAD_LIMIT_BLOCKSIZE    16</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+/**</span><br><span>  * Checks if the current TLS li=
+brary supports the TLS 1.0 PRF with MD5+SHA1</span><br><span>  * that OpenV=
+PN uses when TLS Keying Material Export is not available.</span><br><span> =
+ *</span><br><span>@@ -614,4 +637,20 @@</span><br><span>  */</span><br><spa=
+n> bool check_tls_prf_working(void);</span><br><span> </span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+/**</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+ * Checks if the usage limit for an AEAD cipher is reach=
+ed</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+ * This method abstracts the calcu=
+lation to make the calling function easier</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+ * to read.</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+ */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+s=
+tatic inline bool</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ae=
+ad_usage_limit_reached(const uint64_t limit, const struct key_ctx *key_ctx,=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+                   =
+      int64_t higest_pid)</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    /* This =
+is the  q + s &lt;=3D  p^(1/2) * 2^(129/2) - 1 calculation where</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+     * q is the number of prot=
+ected messages (highest_pid)</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+     * s Total plaintext length in all messages (in blocks) */</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+    return (limit &gt; =
+0 &amp;&amp; key_ctx-&gt;plaintext_blocks + (uint64_t) higest_pid &gt; limi=
+t);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> #endif /* CRYPTO=
+_H */</span><br><span>diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c</s=
+pan><br><span>index fcfb344..c77c4ed 100644</span><br><span>--- a/src/openv=
+pn/ssl.c</span><br><span>+++ b/src/openvpn/ssl.c</span><br><span>@@ -131,6 =
++131,26 @@</span><br><span>     }</span><br><span> }</span><br><span> </spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+static uint64_t</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+tls_get_limit_aead(const cha=
+r *ciphername)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+    uint64_t limit =3D =
+cipher_get_aead_limits(ciphername);</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+ if (limit =3D=3D 0)</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        retur=
+n 0;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br=
 ><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+    msg(D_SHOW_KEYS, &quot;Note: AEAD cipher %s =
-will trigger a renegotiation&quot;</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+        &quot; at a sum of %&quot; PRIi64 &quot; blocks and =
-packets.&quot;,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-    ciphername, limit);</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+    return limit;</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span=
-> void</span><br><span> tls_init_control_channel_frame_parameters(struct fr=
-ame *frame, int tls_mtu)</span><br><span> {</span><br><span>@@ -1579,6 +159=
-9,8 @@</span><br><span>     tls_limit_reneg_bytes(session-&gt;opt-&gt;key_t=
-ype.cipher,</span><br><span>                           &amp;session-&gt;opt=
--&gt;renegotiate_bytes);</span><br><span> </span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+    session-&gt;opt-&gt;aead_usage_limit =3D tls_get=
-_limit_aead(session-&gt;opt-&gt;key_type.cipher);</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+</span><br><span>     /* set the state of the=
- keys for the session to generated */</span><br><span>     ks-&gt;state =3D=
- S_GENERATED_KEYS;</span><br><span> </span><br><span>@@ -2999,6 +3021,27 @@=
-</span><br><span>         return true;</span><br><span>     }</span><br><sp=
-an> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+    /* Check th=
-e AEAD usage limit of cleartext blocks + packets.</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+     *</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+     *  Contrary to when epoch data mode is active, where =
-only the sender side</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+     *  checks the limit, here we check both receive and send limit since<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+     *  we assume th=
-at only one side is aware of the limit.</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+     *</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+     *  Since if both sides were aware, then both sides will probabl=
-y also</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     *  switc=
-h to use epoch data channel instead, so this code is not</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+     *  in effect then.</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+     */</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+    const struct key_ctx_bi *key_ctx_bi =3D &a=
-mp;ks-&gt;crypto_options.key_ctx_bi;</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+    const uint64_t usage_limit =3D session-&gt;opt-&gt;aea=
-d_usage_limit;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (aead_usage_limit=
-_reached(usage_limit, &amp;key_ctx_bi-&gt;encrypt,</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+                                 ks-&gt;cryp=
-to_options.packet_id.send.id)</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+        || aead_usage_limit_reached(usage_limit, &amp;key_ctx_bi-=
-&gt;decrypt,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
-                             ks-&gt;crypto_options.packet_id.rec.id))</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+        return true;</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+</span><br><span>     return false;</span><br><span>=
- }</span><br><span> /*</span><br><span>@@ -3031,10 +3074,17 @@</span><br><s=
-pan>         &amp;&amp; should_trigger_renegotiation(session, ks))</span><b=
-r><span>     {</span><br><span>         msg(D_TLS_DEBUG_LOW, &quot;TLS: sof=
-t reset sec=3D%d/%d bytes=3D&quot; counter_format</span><br><span style=3D"=
-color: hsl(0, 100%, 40%);">-            &quot;/%&quot; PRIi64 &quot; pkts=
-=3D&quot; counter_format &quot;/%&quot; PRIi64,</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+            &quot;/%&quot; PRIi64 &quot; pkts=
-=3D&quot; counter_format &quot;/%&quot; PRIi64</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+            &quot; aead_limit_send=3D%&quot; PRI=
-u64 &quot;/%&quot; PRIu64</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+            &quot; aead_limit_recv=3D%&quot; PRIu64 &quot;/%&quot; PR=
-Iu64,</span><br><span>             (int) (now - ks-&gt;established), sessio=
-n-&gt;opt-&gt;renegotiate_seconds,</span><br><span>             ks-&gt;n_by=
-tes, session-&gt;opt-&gt;renegotiate_bytes,</span><br><span style=3D"color:=
- hsl(0, 100%, 40%);">-            ks-&gt;n_packets, session-&gt;opt-&gt;ren=
-egotiate_packets);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-           ks-&gt;n_packets, session-&gt;opt-&gt;renegotiate_packets,</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+            ks-&gt;crypto=
-_options.key_ctx_bi.encrypt.plaintext_blocks + ks-&gt;n_packets,</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+            session-&gt;opt-&g=
-t;aead_usage_limit,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-            ks-&gt;crypto_options.key_ctx_bi.decrypt.plaintext_blocks + ks-=
-&gt;n_packets,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
-       session-&gt;opt-&gt;aead_usage_limit</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+            );</span><br><span>         key_state_s=
-oft_reset(session);</span><br><span>     }</span><br><span> </span><br><spa=
-n>diff --git a/src/openvpn/ssl_common.h b/src/openvpn/ssl_common.h</span><b=
-r><span>index 5840e2d..ccbc053 100644</span><br><span>--- a/src/openvpn/ssl=
-_common.h</span><br><span>+++ b/src/openvpn/ssl_common.h</span><br><span>@@=
- -333,6 +333,9 @@</span><br><span>     interval_t packet_timeout;</span><br=
-><span>     int64_t renegotiate_bytes;</span><br><span>     int64_t renegot=
-iate_packets;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    /*=
-* limit for AEAD cipher, this is the sum of packets + blocks</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+     * that are allowed to be used=
- */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    uint64_t aea=
-d_usage_limit;</span><br><span>     interval_t renegotiate_seconds;</span><=
-br><span> </span><br><span>     /* cert verification parms */</span><br><sp=
-an>diff --git a/tests/unit_tests/openvpn/test_crypto.c b/tests/unit_tests/o=
-penvpn/test_crypto.c</span><br><span>index fdc8fbd..ec8e661 100644</span><b=
-r><span>--- a/tests/unit_tests/openvpn/test_crypto.c</span><br><span>+++ b/=
-tests/unit_tests/openvpn/test_crypto.c</span><br><span>@@ -448,6 +448,29 @@=
-</span><br><span>     gc_free(&amp;gc);</span><br><span> }</span><br><span>=
- </span><br><span style=3D"color: hsl(120, 100%, 40%);">+void</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+crypto_test_aead_limits(void **st=
-ate)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+    /* if ChaCha20-Poly1305 is no=
-t supported by the crypto library or in the</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+     * current mode (FIPS), this will still return =
--1 */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_int=
-_equal(cipher_get_aead_limits(&quot;CHACHA20-POLY1305&quot;), 0);</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+    int64_t aeslimit =3D cipher_get_aead_limits(=
-&quot;AES-128-GCM&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_in=
-t_equal(aeslimit, (1ull &lt;&lt; 36) - 1);</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+    /* Check if this matches our exception for 1600 size packets assumi=
-ng</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     * AEAD_LIMIT=
-_BLOCKSIZE (128 bits/ 16 bytes). Gives us 100 blocks</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+     * + 1 for the packet */</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+    int64_t L =3D 101;</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+    /* 2 ^ 29.34, using the r=
-esult here to avoid linking to libm */</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+    assert_int_equal(aeslimit / L, 680390858);</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+    /* and for 9000, 2^26.86 */</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+    L =3D 563;</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    assert_int_equal(aeslimit / L, 122059=
-461);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> int</span><br>=
-<span> main(void)</span><br><span> {</span><br><span>@@ -458,7 +481,8 @@</s=
-pan><br><span>         cmocka_unit_test(crypto_test_tls_prf),</span><br><sp=
-an>         cmocka_unit_test(crypto_test_hmac),</span><br><span>         cm=
-ocka_unit_test(test_occ_mtu_calculation),</span><br><span style=3D"color: h=
-sl(0, 100%, 40%);">-        cmocka_unit_test(test_mssfix_mtu_calculation)</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+        cmocka_unit_t=
-est(test_mssfix_mtu_calculation),</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+        cmocka_unit_test(crypto_test_aead_limits)</span><br><=
-span>     };</span><br><span> </span><br><span> #if defined(ENABLE_CRYPTO_O=
-PENSSL)</span><br><span></span><br></pre><p>To view, visit <a href=3D"http:=
-//gerrit.openvpn.net/c/openvpn/+/796?usp=3Demail">change 796</a>. To unsubs=
-cribe, or for help writing mail filters, visit <a href=3D"http://gerrit.ope=
-nvpn.net/settings">settings</a>.</p><div itemscope itemtype=3D"http://schem=
-a.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://s=
-chema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.=
-net/c/openvpn/+/796?usp=3Demail"/><meta itemprop=3D"name" content=3D"View C=
-hange"/></div></div>
+or: hsl(120, 100%, 40%);">+    /* set limit to 7/8 of the limit so the rene=
+gotiation can succeed before</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+     * we go over the limit */</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+    limit =3D limit/8 * 7;</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+    msg(D_SHOW_KEYS, &quot;Note: AEAD cipher %s will trigger a rene=
+gotiation&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+    &quot; at a sum of %&quot; PRIi64 &quot; blocks and packets.&quot;,</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+        ciphername, lim=
+it);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    return limi=
+t;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> void</span><br><s=
+pan> tls_init_control_channel_frame_parameters(struct frame *frame, int tls=
+_mtu)</span><br><span> {</span><br><span>@@ -1579,6 +1599,8 @@</span><br><s=
+pan>     tls_limit_reneg_bytes(session-&gt;opt-&gt;key_type.cipher,</span><=
+br><span>                           &amp;session-&gt;opt-&gt;renegotiate_by=
+tes);</span><br><span> </span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+    session-&gt;opt-&gt;aead_usage_limit =3D tls_get_limit_aead(session=
+-&gt;opt-&gt;key_type.cipher);</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+</span><br><span>     /* set the state of the keys for the sessi=
+on to generated */</span><br><span>     ks-&gt;state =3D S_GENERATED_KEYS;<=
+/span><br><span> </span><br><span>@@ -2999,6 +3021,27 @@</span><br><span>  =
+       return true;</span><br><span>     }</span><br><span> </span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+    /* Check the AEAD usage limit =
+of cleartext blocks + packets.</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+     *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+   *  Contrary to when epoch data mode is active, where only the sender sid=
+e</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     *  checks the=
+ limit, here we check both receive and send limit since</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+     *  we assume that only one side is=
+ aware of the limit.</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++     *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     *  Sinc=
+e if both sides were aware, then both sides will probably also</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+     *  switch to use epoch data=
+ channel instead, so this code is not</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+     *  in effect then.</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+     */</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+    const struct key_ctx_bi *key_ctx_bi =3D &amp;ks-&gt;crypto_op=
+tions.key_ctx_bi;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+  const uint64_t usage_limit =3D session-&gt;opt-&gt;aead_usage_limit;</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    if (aead_usage_limit_reached(usage_li=
+mit, &amp;key_ctx_bi-&gt;encrypt,</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+                                 ks-&gt;crypto_options.packet=
+_id.send.id)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
+ || aead_usage_limit_reached(usage_limit, &amp;key_ctx_bi-&gt;decrypt,</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+                        =
+            ks-&gt;crypto_options.packet_id.rec.id))</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+        return true;</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+</span><br><span>     return false;</span><br><span> }</span><br><sp=
+an> /*</span><br><span>@@ -3031,10 +3074,17 @@</span><br><span>         &am=
+p;&amp; should_trigger_renegotiation(session, ks))</span><br><span>     {</=
+span><br><span>         msg(D_TLS_DEBUG_LOW, &quot;TLS: soft reset sec=3D%d=
+/%d bytes=3D&quot; counter_format</span><br><span style=3D"color: hsl(0, 10=
+0%, 40%);">-            &quot;/%&quot; PRIi64 &quot; pkts=3D&quot; counter_=
+format &quot;/%&quot; PRIi64,</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+            &quot;/%&quot; PRIi64 &quot; pkts=3D&quot; counter_fo=
+rmat &quot;/%&quot; PRIi64</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+            &quot; aead_limit_send=3D%&quot; PRIu64 &quot;/%&quot; P=
+RIu64</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            &q=
+uot; aead_limit_recv=3D%&quot; PRIu64 &quot;/%&quot; PRIu64,</span><br><spa=
+n>             (int) (now - ks-&gt;established), session-&gt;opt-&gt;renego=
+tiate_seconds,</span><br><span>             ks-&gt;n_bytes, session-&gt;opt=
+-&gt;renegotiate_bytes,</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>-            ks-&gt;n_packets, session-&gt;opt-&gt;renegotiate_packets);</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+            ks-&gt;n_=
+packets, session-&gt;opt-&gt;renegotiate_packets,</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+            ks-&gt;crypto_options.key_ctx_bi.=
+encrypt.plaintext_blocks + ks-&gt;n_packets,</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+            session-&gt;opt-&gt;aead_usage_limit,<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+            ks-&gt;c=
+rypto_options.key_ctx_bi.decrypt.plaintext_blocks + ks-&gt;n_packets,</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+            session-&gt;o=
+pt-&gt;aead_usage_limit</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+            );</span><br><span>         key_state_soft_reset(session);<=
+/span><br><span>     }</span><br><span> </span><br><span>diff --git a/src/o=
+penvpn/ssl_common.h b/src/openvpn/ssl_common.h</span><br><span>index 5840e2=
+d..ccbc053 100644</span><br><span>--- a/src/openvpn/ssl_common.h</span><br>=
+<span>+++ b/src/openvpn/ssl_common.h</span><br><span>@@ -333,6 +333,9 @@</s=
+pan><br><span>     interval_t packet_timeout;</span><br><span>     int64_t =
+renegotiate_bytes;</span><br><span>     int64_t renegotiate_packets;</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+    /** limit for AEAD cip=
+her, this is the sum of packets + blocks</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+     * that are allowed to be used */</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+    uint64_t aead_usage_limit;</span=
+><br><span>     interval_t renegotiate_seconds;</span><br><span> </span><br=
+><span>     /* cert verification parms */</span><br><span>diff --git a/test=
+s/unit_tests/openvpn/test_crypto.c b/tests/unit_tests/openvpn/test_crypto.c=
+</span><br><span>index fdc8fbd..ec8e661 100644</span><br><span>--- a/tests/=
+unit_tests/openvpn/test_crypto.c</span><br><span>+++ b/tests/unit_tests/ope=
+nvpn/test_crypto.c</span><br><span>@@ -448,6 +448,29 @@</span><br><span>   =
+  gc_free(&amp;gc);</span><br><span> }</span><br><span> </span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+void</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+crypto_test_aead_limits(void **state)</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+    /* if ChaCha20-Poly1305 is not supported by the c=
+rypto library or in the</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+     * current mode (FIPS), this will still return -1 */</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+    assert_int_equal(cipher_get_ae=
+ad_limits(&quot;CHACHA20-POLY1305&quot;), 0);</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+    int64_t aeslimit =3D cipher_get_aead_limits(&quot;AES-128-GCM&qu=
+ot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+    assert_int_equal(aeslimit, (1=
+ull &lt;&lt; 36) - 1);</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    /* Check if =
+this matches our exception for 1600 size packets assuming</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+     * AEAD_LIMIT_BLOCKSIZE (128 bits=
+/ 16 bytes). Gives us 100 blocks</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+     * + 1 for the packet */</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+    int64_t L =3D 101;</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+    /* 2 ^ 29.34, using the result here to avoid l=
+inking to libm */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+  assert_int_equal(aeslimit / L, 680390858);</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+    /* and for 9000, 2^26.86 */</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+    L =3D 563;</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+    assert_int_equal(aeslimit / L, 122059461);</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+</span><br><span> int</span><br><span> main(void)</sp=
+an><br><span> {</span><br><span>@@ -458,7 +481,8 @@</span><br><span>       =
+  cmocka_unit_test(crypto_test_tls_prf),</span><br><span>         cmocka_un=
+it_test(crypto_test_hmac),</span><br><span>         cmocka_unit_test(test_o=
+cc_mtu_calculation),</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
+       cmocka_unit_test(test_mssfix_mtu_calculation)</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+        cmocka_unit_test(test_mssfix_mtu_=
+calculation),</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
+  cmocka_unit_test(crypto_test_aead_limits)</span><br><span>     };</span><=
+br><span> </span><br><span> #if defined(ENABLE_CRYPTO_OPENSSL)</span><br><s=
+pan></span><br></pre><p>To view, visit <a href=3D"http://gerrit.openvpn.net=
+/c/openvpn/+/796?usp=3Demail">change 796</a>. To unsubscribe, or for help w=
+riting mail filters, visit <a href=3D"http://gerrit.openvpn.net/settings">s=
+ettings</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage">=
+<div itemscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction=
+"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/796?=
+usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
@@ -792,8 +799,8 @@ e3d2559187dc7 </div>
 &gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: merged </div>
+<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
 
 
---nAaZlLA8FD4=--
+--FepzxgQWFrA=--
 
