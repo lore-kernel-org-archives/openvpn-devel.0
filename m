@@ -1,16 +1,17 @@
-From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Fri, 20 Dec 2024 21:17:18 +0000
-In-Reply-To: <gerrit.1733989644000.I6b4aa3d63c0b684bf95841271c04bc5d9c37793b@...2715...>
-References: <gerrit.1733989644000.I6b4aa3d63c0b684bf95841271c04bc5d9c37793b@...2715...>
-Reply-To: gert@...1296..., arne-openvpn@...1227..., heiko@...515...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <008125d668e2b857eee9e3411985dca8e27e23f5-EmailReviewComments-HTML@...2715...>
+From: "ralf_lici (Code Review)" <gerrit@...515...>
+Date: Sat, 21 Dec 2024 15:23:08 +0000
+In-Reply-To: <gerrit.1734714757000.I806757a8c6f9a589665624f176391b5f7b87f581@...2715...>
+References: <gerrit.1734714757000.I806757a8c6f9a589665624f176391b5f7b87f581@...2715...>
+Reply-To: ralf@...2726..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net, frank@...2641...,
+ gert@...1296...
+Message-ID: <85d1cbd99244998c8632fb89a095d70d03466b48-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="RcIjqA6zFzM="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: service: add
- utf8to16 function that takes a size
+Content-Type: multipart/alternative; boundary="EVmA6ECMwZY="; charset=UTF-8
+Subject: [Openvpn-devel] [S] Change in openvpn[master]: Fix float support in
+ P2P topology
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,106 +20,173 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: d12fk <heiko@...515...>
-Cc: flichtenheld <frank@...2641...>, plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Cc: cron2 <gert@...1296...>, plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---RcIjqA6zFzM=
+--EVmA6ECMwZY=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: d12fk, plaisthos.
+Attention is currently required from: cron2, flichtenheld, plaisthos.
 
-cron2 has posted comments on this change. ( http://gerrit.openvpn.net/c/ope=
-nvpn/+/836?usp=3Demail )
+ralf_lici has posted comments on this change. ( http://gerrit.openvpn.net/c=
+/openvpn/+/844?usp=3Demail )
 
-Change subject: service: add utf8to16 function that takes a size
+Change subject: Fix float support in P2P topology
 ......................................................................
 
 
 Patch Set 1:
 
-(1 comment)
+(4 comments)
 
-File src/openvpnserv/service.h:
+File src/openvpn/forward.c:
 
-http://gerrit.openvpn.net/c/openvpn/+/836/comment/84ac0384_0496d81f :
-PS1, Line 121: inline wchar_t *
-`static inline...` will fix the MinGW builds.  I forgot why this is needed,=
- but all our other inlines-in-headers also have a `static`.
+http://gerrit.openvpn.net/c/openvpn/+/844/comment/a2f4224f_180af603 :
+PS1, Line 1238:     if (remote && (family =3D=3D AF_INET || family =3D=3D A=
+F_INET6))
+> I'm not sure what *that* does?  When can we ever have a `remote` and an f=
+amily that is neither `AF_I [=E2=80=A6]
+Acknowledged
+
+
+http://gerrit.openvpn.net/c/openvpn/+/844/comment/ed3d6af5_b5a33468 :
+PS1, Line 1245:         if (floated && c->c2.buf.len > 0)
+> the GC seems only used inside here, and since this is a performance relev=
+ant function ("hot path", e [=E2=80=A6]
+Definitely, I think I forgot to reorder this when I removed the other debug=
+ging prints I used for testing purposes. Acknowledged.
+
+
+http://gerrit.openvpn.net/c/openvpn/+/844/comment/34c401d6_00f96d38 :
+PS1, Line 1251: tls_update_remote_addr
+Tested the non-tls p2p configuration (`--secret`) and realized that this li=
+ne obviously segfaults. Sorry for this, I will fix it on the next patch.
+
+
+http://gerrit.openvpn.net/c/openvpn/+/844/comment/ee561cd1_89c6d5cc :
+PS1, Line 1253:         process_incoming_link_part2(c, lsi, orig_buf);
+> should this be *inside* the `if()`?  In the old code `_part2()` is uncond=
+itionally called always
+AFAICT the output of `_part1()` is correlated with `c->c2.buf.len` such tha=
+t `buf.len` is always <=3D 0 if `_part1()` returns false (though the revers=
+e isn't always true). Since `_part2()` processes a packet only if `buf.len =
+> 0`, it seems safe to call `_part2()` only if `_part1()` returns true. How=
+ever, as the current implementation works and I=E2=80=99m not entirely cert=
+ain, I suggest leaving it as is unless there=E2=80=99s a strong reason to s=
+witch to conditional execution. What do you think?
 
 
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/836?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/844?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings
 
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: I6b4aa3d63c0b684bf95841271c04bc5d9c37793b
-Gerrit-Change-Number: 836
+Gerrit-Change-Id: I806757a8c6f9a589665624f176391b5f7b87f581
+Gerrit-Change-Number: 844
 Gerrit-PatchSet: 1
-Gerrit-Owner: d12fk <heiko@...515...>
-Gerrit-Reviewer: cron2 <gert@...1296...>
+Gerrit-Owner: ralf_lici <ralf@...2726...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
+Gerrit-CC: cron2 <gert@...1296...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: d12fk <heiko@...515...>
-Gerrit-Comment-Date: Fri, 20 Dec 2024 21:17:18 +0000
+Gerrit-Attention: cron2 <gert@...1296...>
+Gerrit-Attention: flichtenheld <frank@...2641...>
+Gerrit-Comment-Date: Sat, 21 Dec 2024 15:23:08 +0000
 Gerrit-HasComments: Yes
 Gerrit-Has-Labels: No
+Comment-In-Reply-To: cron2 <gert@...1296...>
 Gerrit-MessageType: comment
 
---RcIjqA6zFzM=
+--EVmA6ECMwZY=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p> Attention is currently required from: d12fk, plaisthos. </p>
-<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/836?usp=3Demail">View C=
-hange</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0;"><=
-li style=3D"margin: 0; padding: 0;"><p>File src/openvpnserv/service.h:</p><=
-ul style=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; padding:=
- 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.ope=
-nvpn.net/c/openvpn/+/836/comment/84ac0384_0496d81f">Patch Set #1, Line 121:=
-</a> <code style=3D"font-family:monospace,monospace">inline wchar_t *</code=
-></p><p style=3D"white-space: pre-wrap; word-wrap: break-word;">`static inl=
-ine...` will fix the MinGW builds.  I forgot why this is needed, but all ou=
-r other inlines-in-headers also have a `static`.</p></li></ul></li></ul><p>=
-To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/836?usp=3De=
-mail">change 836</a>. To unsubscribe, or for help writing mail filters, vis=
-it <a href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div ite=
-mscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=
-=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url=
-" href=3D"http://gerrit.openvpn.net/c/openvpn/+/836?usp=3Demail"/><meta ite=
-mprop=3D"name" content=3D"View Change"/></div></div>
+<p> Attention is currently required from: cron2, flichtenheld, plaisthos. <=
+/p>
+<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/844?usp=3Demail">View C=
+hange</a></p><p>4 comments:</p><ul style=3D"list-style: none; padding: 0;">=
+<li style=3D"margin: 0; padding: 0;"><p>File src/openvpn/forward.c:</p><ul =
+style=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 =
+0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvp=
+n.net/c/openvpn/+/844/comment/a2f4224f_180af603">Patch Set #1, Line 1238:</=
+a> <code style=3D"font-family:monospace,monospace">    if (remote &amp;&amp=
+; (family =3D=3D AF_INET || family =3D=3D AF_INET6))</code></p><p><blockquo=
+te style=3D"border-left: 1px solid #aaa; margin: 10px 0; padding: 0 10px;">=
+I&#39;m not sure what *that* does?  When can we ever have a `remote` and an=
+ family that is neither `AF_I [=E2=80=A6]</blockquote></p><p style=3D"white=
+-space: pre-wrap; word-wrap: break-word;">Acknowledged</p></li><li style=3D=
+"margin: 0; padding: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=
+=3D"http://gerrit.openvpn.net/c/openvpn/+/844/comment/ed3d6af5_b5a33468">Pa=
+tch Set #1, Line 1245:</a> <code style=3D"font-family:monospace,monospace">=
+        if (floated &amp;&amp; c-&gt;c2.buf.len &gt; 0)</code></p><p><block=
+quote style=3D"border-left: 1px solid #aaa; margin: 10px 0; padding: 0 10px=
+;">the GC seems only used inside here, and since this is a performance rele=
+vant function (&quot;hot path&quot;, e [=E2=80=A6]</blockquote></p><p style=
+=3D"white-space: pre-wrap; word-wrap: break-word;">Definitely, I think I fo=
+rgot to reorder this when I removed the other debugging prints I used for t=
+esting purposes. Acknowledged.</p></li><li style=3D"margin: 0; padding: 0 0=
+ 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn=
+.net/c/openvpn/+/844/comment/34c401d6_00f96d38">Patch Set #1, Line 1251:</a=
+> <code style=3D"font-family:monospace,monospace">tls_update_remote_addr</c=
+ode></p><p style=3D"white-space: pre-wrap; word-wrap: break-word;">Tested t=
+he non-tls p2p configuration (`--secret`) and realized that this line obvio=
+usly segfaults. Sorry for this, I will fix it on the next patch.</p></li><l=
+i style=3D"margin: 0; padding: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;=
+"><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/844/comment/ee561cd1_89c=
+6d5cc">Patch Set #1, Line 1253:</a> <code style=3D"font-family:monospace,mo=
+nospace">        process_incoming_link_part2(c, lsi, orig_buf);</code></p><=
+p><blockquote style=3D"border-left: 1px solid #aaa; margin: 10px 0; padding=
+: 0 10px;">should this be *inside* the `if()`?  In the old code `_part2()` =
+is unconditionally called always</blockquote></p><p style=3D"white-space: p=
+re-wrap; word-wrap: break-word;">AFAICT the output of `_part1()` is correla=
+ted with `c-&gt;c2.buf.len` such that `buf.len` is always &lt;=3D 0 if `_pa=
+rt1()` returns false (though the reverse isn&#39;t always true). Since `_pa=
+rt2()` processes a packet only if `buf.len &gt; 0`, it seems safe to call `=
+_part2()` only if `_part1()` returns true. However, as the current implemen=
+tation works and I=E2=80=99m not entirely certain, I suggest leaving it as =
+is unless there=E2=80=99s a strong reason to switch to conditional executio=
+n. What do you think?</p></li></ul></li></ul><p>To view, visit <a href=3D"h=
+ttp://gerrit.openvpn.net/c/openvpn/+/844?usp=3Demail">change 844</a>. To un=
+subscribe, or for help writing mail filters, visit <a href=3D"http://gerrit=
+.openvpn.net/settings">settings</a>.</p><div itemscope itemtype=3D"http://s=
+chema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http=
+://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.open=
+vpn.net/c/openvpn/+/844?usp=3Demail"/><meta itemprop=3D"name" content=3D"Vi=
+ew Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I6b4aa3d63c0b684bf95841271c0=
-4bc5d9c37793b </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 836 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I806757a8c6f9a589665624f1763=
+91b5f7b87f581 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 844 </div>
 <div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
-<div style=3D"display:none"> Gerrit-Owner: d12fk &lt;heiko@...515...&gt; </=
-div>
-<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
- </div>
+<div style=3D"display:none"> Gerrit-Owner: ralf_lici &lt;ralf@...2726...&gt=
+; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
 1...&gt; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
 .1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: cron2 &lt;gert@...1296...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
 ..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: d12fk &lt;heiko@...515...&gt=
+<div style=3D"display:none"> Gerrit-Attention: cron2 &lt;gert@...1296...&gt=
 ; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Fri, 20 Dec 2024 21:17:18=
+<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
+41...&gt; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Sat, 21 Dec 2024 15:23:08=
  +0000 </div>
 <div style=3D"display:none"> Gerrit-HasComments: Yes </div>
 <div style=3D"display:none"> Gerrit-Has-Labels: No </div>
+<div style=3D"display:none"> Comment-In-Reply-To: cron2 &lt;gert@...1296...=
+&gt; </div>
 <div style=3D"display:none"> Gerrit-MessageType: comment </div>
 
 
---RcIjqA6zFzM=--
+--EVmA6ECMwZY=--
 
