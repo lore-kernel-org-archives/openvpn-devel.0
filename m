@@ -1,15 +1,15 @@
 From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Sun, 22 Dec 2024 10:24:00 +0000
+Date: Sun, 22 Dec 2024 10:24:04 +0000
 In-Reply-To: <gerrit.1731290343000.I3a1c6561f4d9a69e2a441d49dff620b4258a1bcc@...2715...>
 References: <gerrit.1731290343000.I3a1c6561f4d9a69e2a441d49dff620b4258a1bcc@...2715...>
 Reply-To: gert@...1296..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net, frank@...2641...,
  max@...2606...
-Message-ID: <faae8fb48dd6e0b9283c054b8eb0fdff20e36b16-EmailReplacePatchSet-HTML@...2715...>
+Message-ID: <faae8fb48dd6e0b9283c054b8eb0fdff20e36b16-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="RxS51usXLgI="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="NH5tsgqTHuw="; charset=UTF-8
 Subject: [Openvpn-devel] [L] Change in openvpn[master]: Implement HKDF
  expand function based on RFC 8446
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -20,19 +20,15 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, MaxF <max@...2606...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: plaisthos <arne-openvpn@...1227...>
+Cc: flichtenheld <frank@...2641...>, MaxF <max@...2606...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---RxS51usXLgI=
+--NH5tsgqTHuw=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-cron2 has uploaded a new patch set (#10) to the change originally created b=
-y plaisthos. ( http://gerrit.openvpn.net/c/openvpn/+/798?usp=3Demail )
-
-The following approvals got outdated and were removed:
-Code-Review+2 by cron2
-
+cron2 has submitted this change. ( http://gerrit.openvpn.net/c/openvpn/+/79=
+8?usp=3Demail )
 
 Change subject: Implement HKDF expand function based on RFC 8446
 ......................................................................
@@ -61,7 +57,7 @@ M tests/unit_tests/openvpn/test_crypto.c
 7 files changed, 434 insertions(+), 1 deletion(-)
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/98/798/10
+
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
 index ca58cd7..61f0cc5 100644
@@ -625,76 +621,73 @@ Gerrit-Reviewer: MaxF <max@...2606...>
 Gerrit-Reviewer: cron2 <gert@...1296...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-MessageType: newpatchset
+Gerrit-MessageType: merged
 
---RxS51usXLgI=
+--NH5tsgqTHuw=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p>cron2 <strong>uploaded patch set #10</strong> to the change originally c=
-reated by plaisthos.</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+=
-/798?usp=3Demail">View Change</a></p><p>The following approvals got outdate=
-d and were removed:
-Code-Review+2 by cron2</p><pre style=3D"font-family: monospace,monospace; w=
-hite-space: pre-wrap;">Implement HKDF expand function based on RFC 8446<br>=
-<br>Use crypto_epoch.c/h for the new functions since they are<br>linked to =
-the epoch key usage in OpenVPN.<br><br>Change-Id: I3a1c6561f4d9a69e2a441d49=
-dff620b4258a1bcc<br>Signed-off-by: Arne Schwabe &lt;arne@...1227...&gt;<br>=
-Acked-by: MaxF &lt;max@...2606...&gt;<br>Acked-by: Gert Doering &lt;gert@...1186...=
-.1296...&gt;<br>Message-Id: &lt;20241221222404.10266-1-gert@...1296...&gt;<=
-br>URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/ms=
-g30149.html<br>Signed-off-by: Gert Doering &lt;gert@...1296...&gt;<br>---<b=
-r>M CMakeLists.txt<br>M src/openvpn/Makefile.am<br>A src/openvpn/crypto_epo=
-ch.c<br>A src/openvpn/crypto_epoch.h<br>M src/openvpn/crypto_mbedtls.h<br>M=
- tests/unit_tests/openvpn/Makefile.am<br>M tests/unit_tests/openvpn/test_cr=
-ypto.c<br>7 files changed, 434 insertions(+), 1 deletion(-)<br><br></pre><p=
-re style=3D"font-family: monospace,monospace; white-space: pre-wrap;">git p=
-ull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/98/798/10</pre><pre=
- style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><span>d=
-iff --git a/CMakeLists.txt b/CMakeLists.txt</span><br><span>index ca58cd7..=
-61f0cc5 100644</span><br><span>--- a/CMakeLists.txt</span><br><span>+++ b/C=
-MakeLists.txt</span><br><span>@@ -387,6 +387,8 @@</span><br><span>     src/=
-openvpn/crypto.c</span><br><span>     src/openvpn/crypto.h</span><br><span>=
-     src/openvpn/crypto_backend.h</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+    src/openvpn/crypto_epoch.c</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+    src/openvpn/crypto_epoch.h</span><br><span>   =
-  src/openvpn/crypto_openssl.c</span><br><span>     src/openvpn/crypto_open=
-ssl.h</span><br><span>     src/openvpn/crypto_mbedtls.c</span><br><span>@@ =
--715,6 +717,7 @@</span><br><span>     target_sources(test_crypto PRIVATE</s=
-pan><br><span>         src/openvpn/crypto_mbedtls.c</span><br><span>       =
-  src/openvpn/crypto_openssl.c</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+        src/openvpn/crypto_epoch.c</span><br><span>         src/=
-openvpn/crypto.c</span><br><span>         src/openvpn/otime.c</span><br><sp=
-an>         src/openvpn/packet_id.c</span><br><span>diff --git a/src/openvp=
-n/Makefile.am b/src/openvpn/Makefile.am</span><br><span>index ecb2bcf..d6d6=
-592 100644</span><br><span>--- a/src/openvpn/Makefile.am</span><br><span>++=
-+ b/src/openvpn/Makefile.am</span><br><span>@@ -53,6 +53,7 @@</span><br><sp=
-an> 	crypto.c crypto.h crypto_backend.h \</span><br><span> 	crypto_openssl.=
-c crypto_openssl.h \</span><br><span> 	crypto_mbedtls.c crypto_mbedtls.h \<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+	crypto_epoch.c cryp=
-to_epoch.h \</span><br><span> 	dco.c dco.h dco_internal.h \</span><br><span=
-> 	dco_freebsd.c dco_freebsd.h \</span><br><span> 	dco_linux.c dco_linux.h =
-\</span><br><span>diff --git a/src/openvpn/crypto_epoch.c b/src/openvpn/cry=
-pto_epoch.c</span><br><span>new file mode 100644</span><br><span>index 0000=
-000..667e12a6</span><br><span>--- /dev/null</span><br><span>+++ b/src/openv=
-pn/crypto_epoch.c</span><br><span>@@ -0,0 +1,114 @@</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+/*</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+ *  OpenVPN -- An application to securely tunnel IP networ=
-ks</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *             ov=
-er a single TCP/UDP port, with support for SSL/TLS-based</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+ *             session authentication =
-and key exchange,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *=
-             packet encryption, packet authentication, and</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+ *             packet compression.</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+ *  Copyright (C) 2024 OpenVPN Inc &lt=
-;sales@...515...&gt;</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+ *  Copyright (C) 2024 Arne Schwabe &lt;arne@...1227...&gt;</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+ *</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+ *  This program is free software; you can redistribute it and/or mo=
-dify</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  it under th=
-e terms of the GNU General Public License version 2</span><br><span style=
+<p>cron2 <strong>submitted</strong> this change.</p><p><a href=3D"http://ge=
+rrit.openvpn.net/c/openvpn/+/798?usp=3Demail">View Change</a></p><div style=
+=3D"white-space:pre-wrap"></div><pre style=3D"font-family: monospace,monosp=
+ace; white-space: pre-wrap;">Implement HKDF expand function based on RFC 84=
+46<br><br>Use crypto_epoch.c/h for the new functions since they are<br>link=
+ed to the epoch key usage in OpenVPN.<br><br>Change-Id: I3a1c6561f4d9a69e2a=
+441d49dff620b4258a1bcc<br>Signed-off-by: Arne Schwabe &lt;arne@...1227...&g=
+t;<br>Acked-by: MaxF &lt;max@...2606...&gt;<br>Acked-by: Gert Doering &lt;g=
+ert@...1296...&gt;<br>Message-Id: &lt;20241221222404.10266-1-gert@...2132...=
+.&gt;<br>URL: https://www.mail-archive.com/openvpn-devel@...290...=
+net/msg30149.html<br>Signed-off-by: Gert Doering &lt;gert@...1296...&gt;<br=
+>---<br>M CMakeLists.txt<br>M src/openvpn/Makefile.am<br>A src/openvpn/cryp=
+to_epoch.c<br>A src/openvpn/crypto_epoch.h<br>M src/openvpn/crypto_mbedtls.=
+h<br>M tests/unit_tests/openvpn/Makefile.am<br>M tests/unit_tests/openvpn/t=
+est_crypto.c<br>7 files changed, 434 insertions(+), 1 deletion(-)<br><br></=
+pre>
+<pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><sp=
+an>diff --git a/CMakeLists.txt b/CMakeLists.txt</span><br><span>index ca58c=
+d7..61f0cc5 100644</span><br><span>--- a/CMakeLists.txt</span><br><span>+++=
+ b/CMakeLists.txt</span><br><span>@@ -387,6 +387,8 @@</span><br><span>     =
+src/openvpn/crypto.c</span><br><span>     src/openvpn/crypto.h</span><br><s=
+pan>     src/openvpn/crypto_backend.h</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+    src/openvpn/crypto_epoch.c</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+    src/openvpn/crypto_epoch.h</span><br><span=
+>     src/openvpn/crypto_openssl.c</span><br><span>     src/openvpn/crypto_=
+openssl.h</span><br><span>     src/openvpn/crypto_mbedtls.c</span><br><span=
+>@@ -715,6 +717,7 @@</span><br><span>     target_sources(test_crypto PRIVAT=
+E</span><br><span>         src/openvpn/crypto_mbedtls.c</span><br><span>   =
+      src/openvpn/crypto_openssl.c</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+        src/openvpn/crypto_epoch.c</span><br><span>         =
+src/openvpn/crypto.c</span><br><span>         src/openvpn/otime.c</span><br=
+><span>         src/openvpn/packet_id.c</span><br><span>diff --git a/src/op=
+envpn/Makefile.am b/src/openvpn/Makefile.am</span><br><span>index ecb2bcf..=
+d6d6592 100644</span><br><span>--- a/src/openvpn/Makefile.am</span><br><spa=
+n>+++ b/src/openvpn/Makefile.am</span><br><span>@@ -53,6 +53,7 @@</span><br=
+><span> 	crypto.c crypto.h crypto_backend.h \</span><br><span> 	crypto_open=
+ssl.c crypto_openssl.h \</span><br><span> 	crypto_mbedtls.c crypto_mbedtls.=
+h \</span><br><span style=3D"color: hsl(120, 100%, 40%);">+	crypto_epoch.c =
+crypto_epoch.h \</span><br><span> 	dco.c dco.h dco_internal.h \</span><br><=
+span> 	dco_freebsd.c dco_freebsd.h \</span><br><span> 	dco_linux.c dco_linu=
+x.h \</span><br><span>diff --git a/src/openvpn/crypto_epoch.c b/src/openvpn=
+/crypto_epoch.c</span><br><span>new file mode 100644</span><br><span>index =
+0000000..667e12a6</span><br><span>--- /dev/null</span><br><span>+++ b/src/o=
+penvpn/crypto_epoch.c</span><br><span>@@ -0,0 +1,114 @@</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+/*</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+ *  OpenVPN -- An application to securely tunnel IP netw=
+orks</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *             =
+over a single TCP/UDP port, with support for SSL/TLS-based</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+ *             session authenticatio=
+n and key exchange,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+ *             packet encryption, packet authentication, and</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+ *             packet compression.=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+ *  Copyright (C) 2024 OpenVPN Inc &=
+lt;sales@...515...&gt;</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+ *  Copyright (C) 2024 Arne Schwabe &lt;arne@...1227...&gt;</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+ *</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+ *  This program is free software; you can redistribute it and/or =
+modify</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  it under =
+the terms of the GNU General Public License version 2</span><br><span style=
 =3D"color: hsl(120, 100%, 40%);">+ *  as published by the Free Software Fou=
 ndation.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *</span><b=
 r><span style=3D"color: hsl(120, 100%, 40%);">+ *  This program is distribu=
@@ -1259,8 +1252,8 @@ eta itemprop=3D"name" content=3D"View Change"/></div></div>
 1...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
+<div style=3D"display:none"> Gerrit-MessageType: merged </div>
 
 
---RxS51usXLgI=--
+--NH5tsgqTHuw=--
 
