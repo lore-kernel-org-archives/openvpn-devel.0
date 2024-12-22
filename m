@@ -1,11 +1,10 @@
+Date: Sun, 22 Dec 2024 11:23:05 +0100 (CET)
+Message-Id: <202412221023.4BMAN5k3081993@...2054...>
 From: Gert Doering <gert@...1296...>
-Date: Sat, 21 Dec 2024 23:41:36 +0100
-Message-ID: <20241221224136.20984-1-gert@...1296...>
-In-Reply-To: <gerrit.1733989644000.I6b4aa3d63c0b684bf95841271c04bc5d9c37793b@...2715...>
-References: <gerrit.1733989644000.I6b4aa3d63c0b684bf95841271c04bc5d9c37793b@...2715...>
-MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v2] service: add utf8to16 function that
- takes a size
+In-Reply-To: <20241221222404.10266-1-gert@...1296...>
+References: <20241221222404.10266-1-gert@...1296...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Implement HKDF expand function
+ based on RFC 8446
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,99 +15,37 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Arne Schwabe <arne@...1227...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-From: Heiko Hund <heiko@...2662...>
+There is not much for me to test here - this is new code which is not
+yet used anywhere.  But it does not break anything :-) - and the crypto
+part has a +2 by MaxF in gerrit, which is most important.  Plus, it
+brings a unit tests (using OpenSSL 3.0 to verify identical behaviour).
 
-utf8to16_size() takes the size of the to be converted string. This is
-needed to convert MULTI_SZ strings, which contain inline NUL characters,
-but can be useful in other cases as well.
+Since this introduces two new files, doing GHA builds with cmake and
+autoconf also confirms that both build systems have been correctly
+adjusted (and inclusion in openvpn_SOURCES will take care of "make dist").
 
-Change-Id: I6b4aa3d63c0b684bf95841271c04bc5d9c37793b
-Signed-off-by: Heiko Hund <heiko@...2662...>
-Acked-by: Gert Doering <gert@...1296...>
----
+Your patch has been applied to the master branch.
 
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to master.
+commit 5d3d2e42c332443e57eeff7d81c89ae8916815d9
+Author: Arne Schwabe
+Date:   Sat Dec 21 23:24:04 2024 +0100
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/836
-This mail reflects revision 2 of this Change.
+     Implement HKDF expand function based on RFC 8446
 
-Acked-by according to Gerrit (reflected above):
-Gert Doering <gert@...1296...>
+     Signed-off-by: Arne Schwabe <arne@...1227...>
+     Acked-by: MaxF <max@...2606...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <20241221222404.10266-1-gert@...1296...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg30149.html
+     Signed-off-by: Gert Doering <gert@...1296...>
 
-        
-diff --git a/src/openvpnserv/common.c b/src/openvpnserv/common.c
-index 96bf800..61a7296 100644
---- a/src/openvpnserv/common.c
-+++ b/src/openvpnserv/common.c
-@@ -247,17 +247,16 @@
-     return error;
- }
- 
--/* Convert a utf8 string to utf16. Caller should free the result */
- wchar_t *
--utf8to16(const char *utf8)
-+utf8to16_size(const char *utf8, int size)
- {
--    int n = MultiByteToWideChar(CP_UTF8, 0, utf8, -1, NULL, 0);
-+    int n = MultiByteToWideChar(CP_UTF8, 0, utf8, size, NULL, 0);
-     wchar_t *utf16 = malloc(n * sizeof(wchar_t));
-     if (!utf16)
-     {
-         return NULL;
-     }
--    MultiByteToWideChar(CP_UTF8, 0, utf8, -1, utf16, n);
-+    MultiByteToWideChar(CP_UTF8, 0, utf8, size, utf16, n);
-     return utf16;
- }
- 
-diff --git a/src/openvpnserv/service.h b/src/openvpnserv/service.h
-index 6d0827d..6b559a5 100644
---- a/src/openvpnserv/service.h
-+++ b/src/openvpnserv/service.h
-@@ -89,8 +89,40 @@
- 
- DWORD MsgToEventLog(DWORD flags, LPCTSTR lpszMsg, ...);
- 
--/* Convert a utf8 string to utf16. Caller should free the result */
--wchar_t *utf8to16(const char *utf8);
-+/**
-+ * Convert a UTF-8 string to UTF-16
-+ *
-+ * The size parameter can be used to convert strings which contain inline NUL
-+ * characters, like MULTI_SZ strings used as values in the registry do,
-+ * or (sub)strings that are not zero terminated. If size is -1 the length
-+ * of the string is determined automatically by the WIN32 API. Make sure
-+ * you pass a terminated string or else bad things will happen. Note that
-+ * the size you pass should always include the terminating zero as well.
-+ *
-+ * If the returned string is not NULL it must be freed by the caller.
-+ *
-+ * @param utf8  const string to be converted
-+ * @param size  the size of the string
-+ *
-+ * @return wchar_t* heap allocated result string
-+ */
-+wchar_t *utf8to16_size(const char *utf8, int size);
-+
-+/**
-+ * Convert a zero terminated UTF-8 string to UTF-16
-+ *
-+ * This is just a wrapper function that always passes -1 as string size
-+ * to \ref utf8to16_size.
-+ *
-+ * @param utf8  const string to be converted
-+ *
-+ * @return wchar_t* heap allocated result string
-+ */
-+static inline wchar_t *
-+utf8to16(const char *utf8)
-+{
-+    return utf8to16_size(utf8, -1);
-+}
- 
- /* return windows system directory as a pointer to a static string */
- const wchar_t *get_win_sys_path(void);
+
+--
+kind regards,
+
+Gert Doering
+
 
