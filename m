@@ -1,14 +1,14 @@
 From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Sun, 22 Dec 2024 10:48:06 +0000
+Date: Sun, 22 Dec 2024 10:48:08 +0000
 In-Reply-To: <gerrit.1733989644000.I6b4aa3d63c0b684bf95841271c04bc5d9c37793b@...2715...>
 References: <gerrit.1733989644000.I6b4aa3d63c0b684bf95841271c04bc5d9c37793b@...2715...>
 Reply-To: gert@...1296..., arne-openvpn@...1227..., heiko@...515...,
  openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <4d4b56348091358fa0cede8b76ab647e0f06a7e7-EmailReplacePatchSet-HTML@...2715...>
+Message-ID: <4d4b56348091358fa0cede8b76ab647e0f06a7e7-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="hDexAgVLbLw="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="bfZRVrAsNBc="; charset=UTF-8
 Subject: [Openvpn-devel] [S] Change in openvpn[master]: service: add
  utf8to16 function that takes a size
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -19,19 +19,15 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: d12fk <heiko@...515...>, plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: d12fk <heiko@...515...>
+Cc: flichtenheld <frank@...2641...>, plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---hDexAgVLbLw=
+--bfZRVrAsNBc=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-cron2 has uploaded a new patch set (#3) to the change originally created by=
- d12fk. ( http://gerrit.openvpn.net/c/openvpn/+/836?usp=3Demail )
-
-The following approvals got outdated and were removed:
-Code-Review+2 by cron2
-
+cron2 has submitted this change. ( http://gerrit.openvpn.net/c/openvpn/+/83=
+6?usp=3Demail )
 
 Change subject: service: add utf8to16 function that takes a size
 ......................................................................
@@ -56,7 +52,7 @@ M src/openvpnserv/service.h
 2 files changed, 37 insertions(+), 6 deletions(-)
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/36/836/3
+
 
 diff --git a/src/openvpnserv/common.c b/src/openvpnserv/common.c
 index 96bf800..61a7296 100644
@@ -147,30 +143,27 @@ Gerrit-Reviewer: cron2 <gert@...1296...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-MessageType: newpatchset
+Gerrit-MessageType: merged
 
---hDexAgVLbLw=
+--bfZRVrAsNBc=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p>cron2 <strong>uploaded patch set #3</strong> to the change originally cr=
-eated by d12fk.</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/836?=
-usp=3Demail">View Change</a></p><p>The following approvals got outdated and=
- were removed:
-Code-Review+2 by cron2</p><pre style=3D"font-family: monospace,monospace; w=
-hite-space: pre-wrap;">service: add utf8to16 function that takes a size<br>=
-<br>utf8to16_size() takes the size of the to be converted string. This is<b=
-r>needed to convert MULTI_SZ strings, which contain inline NUL characters,<=
-br>but can be useful in other cases as well.<br><br>Change-Id: I6b4aa3d63c0=
-b684bf95841271c04bc5d9c37793b<br>Signed-off-by: Heiko Hund &lt;heiko@...2843...=
-2...&gt;<br>Acked-by: Frank Lichtenheld &lt;frank@...2641...&gt;<br>Acked-b=
-y: Gert Doering &lt;gert@...1296...&gt;<br>Message-Id: &lt;20241221224136.2=
-0984-1-gert@...1296...&gt;<br>URL: https://www.mail-archive.com/openvpn-dev=
-el@lists.sourceforge.net/msg30158.html<br>Signed-off-by: Gert Doering &lt;g=
-ert@...1296...&gt;<br>---<br>M src/openvpnserv/common.c<br>M src/openvpnser=
-v/service.h<br>2 files changed, 37 insertions(+), 6 deletions(-)<br><br></p=
-re><pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;">=
-git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/36/836/3</pre>=
+<p>cron2 <strong>submitted</strong> this change.</p><p><a href=3D"http://ge=
+rrit.openvpn.net/c/openvpn/+/836?usp=3Demail">View Change</a></p><div style=
+=3D"white-space:pre-wrap"></div><pre style=3D"font-family: monospace,monosp=
+ace; white-space: pre-wrap;">service: add utf8to16 function that takes a si=
+ze<br><br>utf8to16_size() takes the size of the to be converted string. Thi=
+s is<br>needed to convert MULTI_SZ strings, which contain inline NUL charac=
+ters,<br>but can be useful in other cases as well.<br><br>Change-Id: I6b4aa=
+3d63c0b684bf95841271c04bc5d9c37793b<br>Signed-off-by: Heiko Hund &lt;heiko@=
+...2662...&gt;<br>Acked-by: Frank Lichtenheld &lt;frank@...2641...&gt;<br>A=
+cked-by: Gert Doering &lt;gert@...1296...&gt;<br>Message-Id: &lt;2024122122=
+4136.20984-1-gert@...1296...&gt;<br>URL: https://www.mail-archive.com/openv=
+pn-devel@lists.sourceforge.net/msg30158.html<br>Signed-off-by: Gert Doering=
+ &lt;gert@...1296...&gt;<br>---<br>M src/openvpnserv/common.c<br>M src/open=
+vpnserv/service.h<br>2 files changed, 37 insertions(+), 6 deletions(-)<br><=
+br></pre>
 <pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><sp=
 an>diff --git a/src/openvpnserv/common.c b/src/openvpnserv/common.c</span><=
 br><span>index 96bf800..61a7296 100644</span><br><span>--- a/src/openvpnser=
@@ -265,8 +258,8 @@ div>
 .1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
+<div style=3D"display:none"> Gerrit-MessageType: merged </div>
 
 
---hDexAgVLbLw=--
+--bfZRVrAsNBc=--
 
