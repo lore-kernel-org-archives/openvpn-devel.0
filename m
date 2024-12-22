@@ -1,16 +1,11 @@
-From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Sun, 22 Dec 2024 21:45:15 +0000
+From: Gert Doering <gert@...1296...>
+Date: Sun, 22 Dec 2024 22:45:41 +0100
+Message-ID: <20241222214541.11021-1-gert@...1296...>
 In-Reply-To: <gerrit.1731290343000.Id223612c7bcab91d49c013fb775024bd64ab0836@...2715...>
 References: <gerrit.1731290343000.Id223612c7bcab91d49c013fb775024bd64ab0836@...2715...>
-Reply-To: gert@...1296..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <4e014742dc92542d3c634b3bcb4f5f60b60834d1-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="oDJ6fpRgzUY="; charset=UTF-8
-Subject: [Openvpn-devel] [M] Change in openvpn[master]: Move initialisation
- of implicit IVs to init_key_ctx_bi methods
+Subject: [Openvpn-devel] [PATCH v8] Move initialisation of implicit IVs to
+ init_key_ctx_bi methods
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,108 +14,198 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: plaisthos <arne-openvpn@...1227...>
-Cc: flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---oDJ6fpRgzUY=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+From: Arne Schwabe <arne@...1227...>
 
-Attention is currently required from: flichtenheld, plaisthos.
+This is really more a function of initialising the data cipher and key
+context and putting it into the init_key_ctx_bi makes more sense.
 
-cron2 has posted comments on this change. ( http://gerrit.openvpn.net/c/ope=
-nvpn/+/800?usp=3Demail )
+It will allow calling init_key_ctx_bi to fully initialise a
+data channel key without calling some extra functions after that
+which will make the (upcoming) epoch key implementation cleaner.
 
-Change subject: Move initialisation of implicit IVs to init_key_ctx_bi meth=
-ods
-......................................................................
+Also ensure that free_ctx_bi actually also sets initialized to false.
 
+Change-Id: Id223612c7bcab91d49c013fb775024bd64ab0836
+Signed-off-by: Arne Schwabe <arne@...1227...>
+Acked-by: Gert Doering <gert@...1296...>
+---
 
-Patch Set 8: Code-Review+2
+This change was reviewed on Gerrit and approved by at least one
+developer. I request to merge it to master.
 
-(1 comment)
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/800
+This mail reflects revision 8 of this Change.
 
-Patchset:
+Acked-by according to Gerrit (reflected above):
+Gert Doering <gert@...1296...>
 
-PS8:
-Looks good. It's a bit more complex than "just move `key_ctx_update_implici=
-t_iv()` around, as the calling convention changes and not all current calle=
-rs of `init_key_ctx_bi()` are calling it afterwards - but these are all non=
--AEAD cases, so the function will not do anything in these cases.
-
-
-
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/800?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings
-
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: Id223612c7bcab91d49c013fb775024bd64ab0836
-Gerrit-Change-Number: 800
-Gerrit-PatchSet: 8
-Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
-Gerrit-Reviewer: cron2 <gert@...1296...>
-Gerrit-Reviewer: flichtenheld <frank@...2641...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Comment-Date: Sun, 22 Dec 2024 21:45:15 +0000
-Gerrit-HasComments: Yes
-Gerrit-Has-Labels: Yes
-Gerrit-MessageType: comment
-
---oDJ6fpRgzUY=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<p> Attention is currently required from: flichtenheld, plaisthos. </p>
-<p>Patch set 8:<span style=3D"border-radius: 3px; display: inline-block; ma=
-rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/800?usp=3Demail">Vi=
-ew Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0=
-;"><li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-s=
-tyle: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p s=
-tyle=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn=
-/+/800?tab=3Dcomments">Patch Set #8:</a> </p><p style=3D"white-space: pre-w=
-rap; word-wrap: break-word;">Looks good. It&#39;s a bit more complex than &=
-quot;just move `key_ctx_update_implicit_iv()` around, as the calling conven=
-tion changes and not all current callers of `init_key_ctx_bi()` are calling=
- it afterwards - but these are all non-AEAD cases, so the function will not=
- do anything in these cases.</p></li></ul></li></ul><p>To view, visit <a hr=
-ef=3D"http://gerrit.openvpn.net/c/openvpn/+/800?usp=3Demail">change 800</a>=
-. To unsubscribe, or for help writing mail filters, visit <a href=3D"http:/=
-/gerrit.openvpn.net/settings">settings</a>.</p><div itemscope itemtype=3D"h=
-ttp://schema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=
-=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://ger=
-rit.openvpn.net/c/openvpn/+/800?usp=3Demail"/><meta itemprop=3D"name" conte=
-nt=3D"View Change"/></div></div>
-
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: Id223612c7bcab91d49c013fb775=
-024bd64ab0836 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 800 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 8 </div>
-<div style=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@...1711...=
-27...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
- </div>
-<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
-1...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
-41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Sun, 22 Dec 2024 21:45:15=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
-
-
---oDJ6fpRgzUY=--
+        
+diff --git a/src/openvpn/crypto.c b/src/openvpn/crypto.c
+index 53f50de..67c4d3b 100644
+--- a/src/openvpn/crypto.c
++++ b/src/openvpn/crypto.c
+@@ -900,6 +900,33 @@
+     }
+ }
+ 
++/**
++ * Update the implicit IV for a key_ctx_bi based on TLS session ids and cipher
++ * used.
++ *
++ * Note that the implicit IV is based on the HMAC key, but only in AEAD modes
++ * where the HMAC key is not used for an actual HMAC.
++ *
++ * @param ctx                   Encrypt/decrypt key context
++ * @param key                   key, hmac part used to calculate implicit IV
++ */
++static void
++key_ctx_update_implicit_iv(struct key_ctx *ctx, const struct key *key)
++{
++    /* Only use implicit IV in AEAD cipher mode, where HMAC key is not used */
++    if (cipher_ctx_mode_aead(ctx->cipher))
++    {
++        size_t impl_iv_len = 0;
++        ASSERT(cipher_ctx_iv_length(ctx->cipher) >= OPENVPN_AEAD_MIN_IV_LEN);
++        impl_iv_len = cipher_ctx_iv_length(ctx->cipher) - sizeof(packet_id_type);
++        ASSERT(impl_iv_len + sizeof(packet_id_type) <= OPENVPN_MAX_IV_LENGTH);
++        ASSERT(impl_iv_len <= MAX_HMAC_KEY_LENGTH);
++        CLEAR(ctx->implicit_iv);
++        /* The first bytes of the IV are filled with the packet id */
++        memcpy(ctx->implicit_iv + sizeof(packet_id_type), key->hmac, impl_iv_len);
++    }
++}
++
+ /* given a key and key_type, build a key_ctx */
+ void
+ init_key_ctx(struct key_ctx *ctx, const struct key *key,
+@@ -958,7 +985,7 @@
+     snprintf(log_prefix, sizeof(log_prefix), "Outgoing %s", name);
+     init_key_ctx(ctx, &key2->keys[kds.out_key], kt,
+                  OPENVPN_OP_ENCRYPT, log_prefix);
+-
++    key_ctx_update_implicit_iv(ctx, &key2->keys[kds.out_key]);
+ }
+ 
+ void
+@@ -973,7 +1000,7 @@
+     snprintf(log_prefix, sizeof(log_prefix), "Incoming %s", name);
+     init_key_ctx(ctx, &key2->keys[kds.in_key], kt,
+                  OPENVPN_OP_DECRYPT, log_prefix);
+-
++    key_ctx_update_implicit_iv(ctx, &key2->keys[kds.in_key]);
+ }
+ 
+ void
+@@ -1008,6 +1035,7 @@
+ {
+     free_key_ctx(&ctx->encrypt);
+     free_key_ctx(&ctx->decrypt);
++    ctx->initialized = false;
+ }
+ 
+ static bool
+diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
+index 73201ef..5adc6b1 100644
+--- a/src/openvpn/ssl.c
++++ b/src/openvpn/ssl.c
+@@ -96,21 +96,6 @@
+ #endif /* ifdef MEASURE_TLS_HANDSHAKE_STATS */
+ 
+ /**
+- * Update the implicit IV for a key_ctx_bi based on TLS session ids and cipher
+- * used.
+- *
+- * Note that the implicit IV is based on the HMAC key, but only in AEAD modes
+- * where the HMAC key is not used for an actual HMAC.
+- *
+- * @param ctx                   Encrypt/decrypt key context
+- * @param key                   HMAC key, used to calculate implicit IV
+- * @param key_len               HMAC key length
+- */
+-static void
+-key_ctx_update_implicit_iv(struct key_ctx *ctx, uint8_t *key, size_t key_len);
+-
+-
+-/**
+  * Limit the reneg_bytes value when using a small-block (<128 bytes) cipher.
+  *
+  * @param cipher        The current cipher (may be NULL).
+@@ -1411,12 +1396,6 @@
+     else
+     {
+         init_key_ctx_bi(key, key2, key_direction, key_type, "Data Channel");
+-        /* Initialize implicit IVs */
+-        key_ctx_update_implicit_iv(&key->encrypt, key2->keys[(int)server].hmac,
+-                                   MAX_HMAC_KEY_LENGTH);
+-        key_ctx_update_implicit_iv(&key->decrypt,
+-                                   key2->keys[1 - (int)server].hmac,
+-                                   MAX_HMAC_KEY_LENGTH);
+     }
+ }
+ 
+@@ -1553,23 +1532,6 @@
+     return ret;
+ }
+ 
+-static void
+-key_ctx_update_implicit_iv(struct key_ctx *ctx, uint8_t *key, size_t key_len)
+-{
+-    /* Only use implicit IV in AEAD cipher mode, where HMAC key is not used */
+-    if (cipher_ctx_mode_aead(ctx->cipher))
+-    {
+-        size_t impl_iv_len = 0;
+-        ASSERT(cipher_ctx_iv_length(ctx->cipher) >= OPENVPN_AEAD_MIN_IV_LEN);
+-        impl_iv_len = cipher_ctx_iv_length(ctx->cipher) - sizeof(packet_id_type);
+-        ASSERT(impl_iv_len + sizeof(packet_id_type) <= OPENVPN_MAX_IV_LENGTH);
+-        ASSERT(impl_iv_len <= key_len);
+-        CLEAR(ctx->implicit_iv);
+-        /* The first bytes of the IV are filled with the packet id */
+-        memcpy(ctx->implicit_iv + sizeof(packet_id_type), key, impl_iv_len);
+-    }
+-}
+-
+ /**
+  * Generate data channel keys for the supplied TLS session.
+  *
+diff --git a/tests/unit_tests/openvpn/test_ssl.c b/tests/unit_tests/openvpn/test_ssl.c
+index ae33cc6..caacd9e 100644
+--- a/tests/unit_tests/openvpn/test_ssl.c
++++ b/tests/unit_tests/openvpn/test_ssl.c
+@@ -277,24 +277,6 @@
+ #endif /* HAVE_OPENSSL_STORE */
+ }
+ 
+-static void
+-init_implicit_iv(struct crypto_options *co)
+-{
+-    cipher_ctx_t *cipher = co->key_ctx_bi.encrypt.cipher;
+-
+-    if (cipher_ctx_mode_aead(cipher))
+-    {
+-        ASSERT(cipher_ctx_iv_length(cipher) <= OPENVPN_MAX_IV_LENGTH);
+-        ASSERT(cipher_ctx_iv_length(cipher) >= OPENVPN_AEAD_MIN_IV_LEN);
+-
+-        /* Generate dummy implicit IV */
+-        ASSERT(rand_bytes(co->key_ctx_bi.encrypt.implicit_iv,
+-                          OPENVPN_MAX_IV_LENGTH));
+-
+-        memcpy(co->key_ctx_bi.decrypt.implicit_iv,
+-               co->key_ctx_bi.encrypt.implicit_iv, OPENVPN_MAX_IV_LENGTH);
+-    }
+-}
+ 
+ static void
+ init_frame_parameters(struct frame *frame)
+@@ -346,7 +328,6 @@
+     /* init work */
+     ASSERT(buf_init(&work, frame.buf.headroom));
+ 
+-    init_implicit_iv(co);
+     update_time();
+ 
+     /* Test encryption, decryption for all packet sizes */
 
