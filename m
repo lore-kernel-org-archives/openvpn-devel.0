@@ -1,16 +1,16 @@
 From: "plaisthos (Code Review)" <gerrit@...515...>
-Date: Mon, 23 Dec 2024 19:55:19 +0000
-In-Reply-To: <gerrit.1733833084000.Ia1c5209022d3ab4c0dac6438c41891c7d059f812@...2715...>
-References: <gerrit.1733833084000.Ia1c5209022d3ab4c0dac6438c41891c7d059f812@...2715...>
+Date: Mon, 23 Dec 2024 20:02:26 +0000
+In-Reply-To: <gerrit.1731290343000.I4a981c5a70717e2276d89bf83a06c7fdbe6712d7@...2715...>
+References: <gerrit.1731290343000.I4a981c5a70717e2276d89bf83a06c7fdbe6712d7@...2715...>
 Reply-To: arne-openvpn@...1227..., openvpn-devel@lists.sourceforge.net,
  frank@...2641...
-Message-ID: <3e525589cf19f15aa027b90100ce416d47d57a9f-EmailReplacePatchSet-HTML@...2715...>
+Message-ID: <77139793d73f1a25f6804de6aa4f0ce423c1d543-EmailReplacePatchSet-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="Z1sa+6C7s4c="; charset=UTF-8
-Subject: [Openvpn-devel] [L] Change in openvpn[master]: Allow DEFAULT in
- data-ciphers and report both expanded and user set o...
+Content-Type: multipart/alternative; boundary="xkawUcn2MFE="; charset=UTF-8
+Subject: [Openvpn-devel] [M] Change in openvpn[master]: Change API of
+ init_key_ctx to use struct key_parameters
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -22,1128 +22,743 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: flichtenheld <frank@...2641...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---Z1sa+6C7s4c=
+--xkawUcn2MFE=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: flichtenheld.
+Attention is currently required from: flichtenheld, plaisthos.
 
-Hello flichtenheld,=20
+Hello flichtenheld,
 
 I'd like you to reexamine a change. Please visit
 
-    http://gerrit.openvpn.net/c/openvpn/+/828?usp=3Demail
+    http://gerrit.openvpn.net/c/openvpn/+/801?usp=3Demail
 
-to look at the new patch set (#3).
+to look at the new patch set (#9).
+
+The following approvals got outdated and were removed:
+Code-Review-1 by flichtenheld
 
 
-Change subject: Allow DEFAULT in data-ciphers and report both expanded and =
-user set option
+Change subject: Change API of init_key_ctx to use struct key_parameters
 ......................................................................
 
-Allow DEFAULT in data-ciphers and report both expanded and user set option
+Change API of init_key_ctx to use struct key_parameters
 
-This adds support for parsing DEFAULT in data-ciphers, the idea is that peo=
-ple
-can modify the default without repeating the default ciphers.
+This introduces a new structure key_parameters. The reason is that the
+current struct serves both as an internal struct as well as an
+on-wire/in-file format. Separate these two different usages to allow
+extending the struct.
 
-In the past we have seem that people will use data-ciphers BF-CBC or
-data-ciphers AES-128-CBC when getting the warning that the cipher is not
-supported by the server.  This commit aims to provide a better way for
-these situation as we still want people to rely on default cipher selection
-from OpenVPN when possible.
-
-Change-Id: Ia1c5209022d3ab4c0dac6438c41891c7d059f812
+Change-Id: I4a981c5a70717e2276d89bf83a06c7fdbe6712d7
 Signed-off-by: Arne Schwabe <arne@...1227...>
 ---
-M Changes.rst
-M doc/man-sections/protocol-options.rst
-M src/openvpn/multi.c
-M src/openvpn/options.c
-M src/openvpn/options.h
-M src/openvpn/ssl_ncp.c
-M src/openvpn/ssl_ncp.h
-M tests/unit_tests/openvpn/test_ncp.c
-8 files changed, 284 insertions(+), 48 deletions(-)
+M src/openvpn/auth_token.c
+M src/openvpn/crypto.c
+M src/openvpn/crypto.h
+M src/openvpn/tls_crypt.c
+M tests/unit_tests/openvpn/test_auth_token.c
+M tests/unit_tests/openvpn/test_tls_crypt.c
+6 files changed, 94 insertions(+), 41 deletions(-)
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/28/828/3
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/01/801/9
 
-diff --git a/Changes.rst b/Changes.rst
-index 34542a5..16ae6fc 100644
---- a/Changes.rst
-+++ b/Changes.rst
-@@ -30,6 +30,12 @@
-
-     https://datatracker.ietf.org/doc/draft-irtf-cfrg-aead-limits/
-
-+Default ciphers in ``--data-ciphers``
-+    Ciphers in ``--data-ciphers`` can contain the string DEFAULT that is
-+    replaced by the default ciphers used by OpenVPN, making it easier to
-+    add an allowed cipher without having to spell out the default ciphers.
-+
-+
- Deprecated features
- -------------------
- ``secret`` support has been removed by default.
-diff --git a/doc/man-sections/protocol-options.rst b/doc/man-sections/proto=
-col-options.rst
-index 05f87cc..d04ace8 100644
---- a/doc/man-sections/protocol-options.rst
-+++ b/doc/man-sections/protocol-options.rst
-@@ -178,6 +178,12 @@
-   Chacha20-Poly1305 if the underlying SSL library (and its configuration)
-   supports it.
-
-+  Starting with OpenVPN 2.7 the special keyword :code:`DEFAULT` can be used
-+  in the string and is replaced by the default ciphers.  This can be used =
-to
-+  add an additional allowed cipher to the allowed ciphers, e.g.
-+  :code:`DEFAULT:AES-192-CBC` to use the default ciphers but also allow
-+  :code:`AES-192-CBC`.
-+
-   Cipher negotiation is enabled in client-server mode only. I.e. if
-   ``--mode`` is set to `server` (server-side, implied by setting
-   ``--server`` ), or if ``--pull`` is specified (client-side, implied by
-diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
-index 45b3cfa..279be57 100644
---- a/src/openvpn/multi.c
-+++ b/src/openvpn/multi.c
-@@ -1896,14 +1896,15 @@
-     if (strlen(peer_ciphers) > 0)
+diff --git a/src/openvpn/auth_token.c b/src/openvpn/auth_token.c
+index 192c7c2..3cf55e8 100644
+--- a/src/openvpn/auth_token.c
++++ b/src/openvpn/auth_token.c
+@@ -152,7 +152,10 @@
      {
-         msg(M_INFO, "PUSH: No common cipher between server and client. "
--            "Server data-ciphers: '%s', client supported ciphers '%s'",
--            o->ncp_ciphers, peer_ciphers);
-+            "Server data-ciphers: '%s'%s, client supported ciphers '%s'",
-+            o->ncp_ciphers_conf, ncp_expanded_ciphers(o, &gc), peer_cipher=
-s);
+         msg(M_FATAL, "ERROR: not enough data in auth-token secret");
      }
-     else if (tls_multi->remote_ciphername)
-     {
-         msg(M_INFO, "PUSH: No common cipher between server and client. "
--            "Server data-ciphers: '%s', client supports cipher '%s'",
--            o->ncp_ciphers, tls_multi->remote_ciphername);
-+            "Server data-ciphers: '%s'%s, client supports cipher '%s'",
-+            o->ncp_ciphers_conf, ncp_expanded_ciphers(o, &gc),
-+            tls_multi->remote_ciphername);
-     }
-     else
-     {
-diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index b2a3a8b..d1714fd 100644
---- a/src/openvpn/options.c
-+++ b/src/openvpn/options.c
-@@ -3486,40 +3486,6 @@
-     }
+-    init_key_ctx(key_ctx, &key, &kt, false, "auth-token secret");
++
++    struct key_parameters key_params;
++    key_parameters_from_key(&key_params, &key);
++    init_key_ctx(key_ctx, &key_params, &kt, false, "auth-token secret");
+
+     free_buf(&server_secret_key);
+ }
+diff --git a/src/openvpn/crypto.c b/src/openvpn/crypto.c
+index da503b3..df38cdd 100644
+--- a/src/openvpn/crypto.c
++++ b/src/openvpn/crypto.c
+@@ -892,17 +892,18 @@
  }
 
--
--/**
-- * Checks for availibility of Chacha20-Poly1305 and sets
-- * the ncp_cipher to either AES-256-GCM:AES-128-GCM or
-- * AES-256-GCM:AES-128-GCM:CHACHA20-POLY1305.
-- */
--static void
--options_postprocess_setdefault_ncpciphers(struct options *o)
--{
--    if (o->ncp_ciphers)
--    {
--        /* custom --data-ciphers set, keep list */
--        return;
--    }
--
--    /* check if crypto library supports chacha */
--    bool can_do_chacha =3D cipher_valid("CHACHA20-POLY1305");
--
--    if (can_do_chacha && dco_enabled(o))
--    {
--        /* also make sure that dco supports chacha */
--        can_do_chacha =3D tls_item_in_cipher_list("CHACHA20-POLY1305", dco=
-_get_supported_ciphers());
--    }
--
--    if (can_do_chacha)
--    {
--        o->ncp_ciphers =3D "AES-256-GCM:AES-128-GCM:CHACHA20-POLY1305";
--    }
--    else
--    {
--        o->ncp_ciphers =3D "AES-256-GCM:AES-128-GCM";
--    }
--}
--
+ /**
+- * Update the implicit IV for a key_ctx_bi based on TLS session ids and ci=
+pher
++ * Update the implicit IV for a key_ctx based on TLS session ids and cipher
+  * used.
+  *
+- * Note that the implicit IV is based on the HMAC key, but only in AEAD mo=
+des
+- * where the HMAC key is not used for an actual HMAC.
++ * Note that the implicit IV is based on the HMAC key of the \c key parame=
+ter,
++ * but only in AEAD modes where the HMAC key is not used for an actual HMA=
+C.
+  *
+  * @param ctx                   Encrypt/decrypt key context
+- * @param key                   key, hmac part used to calculate implicit =
+IV
++ * @param key                   key parameters holding the key and hmac/
++ *                              implicit iv used to calculate implicit IV
+  */
  static void
- options_postprocess_cipher(struct options *o)
+-key_ctx_update_implicit_iv(struct key_ctx *ctx, const struct key *key)
++key_ctx_update_implicit_iv(struct key_ctx *ctx, const struct key_parameter=
+s *key)
  {
-@@ -3550,7 +3516,8 @@
-             "defaulted to BF-CBC as fallback when cipher negotiation "
-             "failed in this case. If you need this fallback please add "
-             "'--data-ciphers-fallback BF-CBC' to your configuration "
--            "and/or add BF-CBC to --data-ciphers.");
-+            "and/or add BF-CBC to --data-ciphers. E.g. "
-+            "--data-ciphers %s:BF-CBC", o->ncp_ciphers_conf);
-     }
-     else if (!o->enable_ncp_fallback
-              && !tls_item_in_cipher_list(o->ciphername, o->ncp_ciphers))
-@@ -3558,7 +3525,7 @@
-         msg(M_WARN, "DEPRECATED OPTION: --cipher set to '%s' but missing i=
-n "
-             "--data-ciphers (%s). OpenVPN ignores --cipher for cipher "
-             "negotiations. ",
--            o->ciphername, o->ncp_ciphers);
-+            o->ciphername, o->ncp_ciphers_conf);
-     }
- }
+     /* Only use implicit IV in AEAD cipher mode, where HMAC key is not use=
+d */
+     if (cipher_ctx_mode_aead(ctx->cipher))
+@@ -912,6 +913,7 @@
+         impl_iv_len =3D cipher_ctx_iv_length(ctx->cipher) - sizeof(packet_=
+id_type);
+         ASSERT(impl_iv_len + sizeof(packet_id_type) <=3D OPENVPN_MAX_IV_LE=
+NGTH);
+         ASSERT(impl_iv_len <=3D MAX_HMAC_KEY_LENGTH);
++        ASSERT(impl_iv_len <=3D key->hmac_size);
+         CLEAR(ctx->implicit_iv);
+         /* The first bytes of the IV are filled with the packet id */
+         memcpy(ctx->implicit_iv + sizeof(packet_id_type), key->hmac, impl_=
+iv_len);
+@@ -920,7 +922,7 @@
 
-diff --git a/src/openvpn/options.h b/src/openvpn/options.h
-index 6ab92e2..55f12dd 100644
---- a/src/openvpn/options.h
-+++ b/src/openvpn/options.h
-@@ -559,6 +559,8 @@
-     const char *ciphername;
-     bool enable_ncp_fallback;      /**< If defined fall back to
-                                    * ciphername if NCP fails */
-+    /** The original ncp_ciphers specified by the user in the configuratio=
-n*/
-+    const char *ncp_ciphers_conf;
-     const char *ncp_ciphers;
-     const char *authname;
-     const char *engine;
-diff --git a/src/openvpn/ssl_ncp.c b/src/openvpn/ssl_ncp.c
-index 968858e..e403ae6 100644
---- a/src/openvpn/ssl_ncp.c
-+++ b/src/openvpn/ssl_ncp.c
-@@ -39,6 +39,8 @@
- #include "config.h"
- #endif
-
-+#include <string.h>
-+
- #include "syshead.h"
- #include "win32.h"
-
-@@ -222,7 +224,6 @@
-
-     return token !=3D NULL;
- }
+ /* given a key and key_type, build a key_ctx */
+ void
+-init_key_ctx(struct key_ctx *ctx, const struct key *key,
++init_key_ctx(struct key_ctx *ctx, const struct key_parameters *key,
+              const struct key_type *kt, int enc,
+              const char *prefix)
+ {
+@@ -928,7 +930,7 @@
+     CLEAR(*ctx);
+     if (cipher_defined(kt->cipher))
+     {
 -
- const char *
- tls_peer_ncp_list(const char *peer_info, struct gc_arena *gc)
- {
-@@ -334,15 +335,16 @@
-         return true;
-     }
++        ASSERT(key->cipher_size >=3D cipher_kt_key_size(kt->cipher));
+         ctx->cipher =3D cipher_ctx_new();
+         cipher_ctx_init(ctx->cipher, key->cipher, kt->cipher, enc);
 
--    /* We failed negotiation, give appropiate error message */
-+    /* We failed negotiation, give appropriate error message */
-     if (c->c2.tls_multi->remote_ciphername)
+@@ -943,8 +945,10 @@
+              cipher_kt_iv_size(kt->cipher));
+         warn_insecure_key_type(ciphername);
+     }
++
+     if (md_defined(kt->digest))
      {
-         msg(D_TLS_ERRORS, "OPTIONS ERROR: failed to negotiate "
-             "cipher with server.  Add the server's "
--            "cipher ('%s') to --data-ciphers (currently '%s') if "
--            "you want to connect to this server.",
-+            "cipher ('%s') to --data-ciphers (currently '%s'), e.g."
-+            "--data-ciphers %s:%s if you want to connect to this server.",
-             c->c2.tls_multi->remote_ciphername,
--            c->options.ncp_ciphers);
-+            c->options.ncp_ciphers_conf, c->options.ncp_ciphers_conf,
-+            c->c2.tls_multi->remote_ciphername);
-         return false;
++        ASSERT(key->hmac_size >=3D md_kt_size(kt->digest));
+         ctx->hmac =3D hmac_ctx_new();
+         hmac_ctx_init(ctx->hmac, key->hmac, kt->digest);
 
-     }
-@@ -516,10 +518,13 @@
-     if (!session->opt->server && !cipher_allowed_as_fallback
-         && !tls_item_in_cipher_list(options->ciphername, options->ncp_ciph=
-ers))
-     {
--        msg(D_TLS_ERRORS, "Error: negotiated cipher not allowed - %s not i=
-n %s",
--            options->ciphername, options->ncp_ciphers);
-+        struct gc_arena gc =3D gc_new();
-+        msg(D_TLS_ERRORS, "Error: negotiated cipher not allowed - %s not i=
-n %s%s",
-+            options->ciphername, options->ncp_ciphers_conf,
-+            ncp_expanded_ciphers(options, &gc));
-         /* undo cipher push, abort connection setup */
-         options->ciphername =3D session->opt->config_ciphername;
-+        gc_free(&gc);
-         return false;
-     }
-     else
-@@ -527,3 +532,100 @@
-         return true;
-     }
- }
-+
-+/**
-+ * Replaces the string DEFAULT with the string \c replace.
-+ *
-+ * @param o         Options struct to modify and to use the gc from
-+ * @param replace   string used to replace the DEFAULT string
-+ */
-+static void
-+replace_default_in_ncp_ciphers_option(struct options *o, const char *repla=
-ce)
-+{
-+    const char *search =3D "DEFAULT";
-+    const int ncp_ciphers_len =3D strlen(o->ncp_ciphers) + strlen(replace)=
- - strlen(search) + 1;
-+
-+    uint8_t *ncp_ciphers =3D gc_malloc(ncp_ciphers_len, true, &o->gc);
-+
-+    struct buffer ncp_ciphers_buf;
-+    buf_set_write(&ncp_ciphers_buf, ncp_ciphers, ncp_ciphers_len);
-+
-+    const char *def =3D strstr(o->ncp_ciphers, search);
-+
-+    /* Copy everything before the DEFAULT string */
-+    buf_write(&ncp_ciphers_buf, o->ncp_ciphers, def - o->ncp_ciphers);
-+
-+    /* copy the default string. */
-+    buf_write(&ncp_ciphers_buf, replace, strlen(replace));
-+
-+    /* copy the rest of the ncp cipher string */
-+    const char *after_default =3D def + strlen(search);
-+    buf_write(&ncp_ciphers_buf, after_default, strlen(after_default));
-+
-+    o->ncp_ciphers =3D (char *) ncp_ciphers;
-+}
-+
-+/**
-+ * Checks for availibility of Chacha20-Poly1305 and sets
-+ * the ncp_cipher to either AES-256-GCM:AES-128-GCM or
-+ * AES-256-GCM:AES-128-GCM:CHACHA20-POLY1305.
-+ */
-+void
-+options_postprocess_setdefault_ncpciphers(struct options *o)
-+{
-+    bool default_in_cipher_list =3D o->ncp_ciphers
-+                                  && tls_item_in_cipher_list("DEFAULT", o-=
->ncp_ciphers);
-+
-+    /* preserve the values that the user put into the configuration */
-+    o->ncp_ciphers_conf =3D o->ncp_ciphers;
-+
-+    /* check if crypto library supports chacha */
-+    bool can_do_chacha =3D cipher_valid("CHACHA20-POLY1305");
-+
-+    if (can_do_chacha && dco_enabled(o))
-+    {
-+        /* also make sure that dco supports chacha */
-+        can_do_chacha =3D tls_item_in_cipher_list("CHACHA20-POLY1305", dco=
-_get_supported_ciphers());
-+    }
-+
-+    const char *default_ciphers =3D "AES-256-GCM:AES-128-GCM:CHACHA20-POLY=
-1305";
-+
-+    if (!can_do_chacha)
-+    {
-+        default_ciphers =3D "AES-256-GCM:AES-128-GCM";
-+    }
-+
-+    /* want to rather print DEFAULT instead of a manually set default list=
- */
-+    if (!o->ncp_ciphers_conf || !strcmp(default_ciphers, o->ncp_ciphers_co=
-nf))
-+    {
-+        o->ncp_ciphers =3D default_ciphers;
-+        o->ncp_ciphers_conf =3D "DEFAULT";
-+    }
-+    else if (!default_in_cipher_list)
-+    {
-+        /* custom cipher list without DEFAULT string in it,
-+         * nothing to replace/mutate */
-+        return;
-+    }
-+    else
-+    {
-+        replace_default_in_ncp_ciphers_option(o, default_ciphers);
-+    }
-+}
-+
-+const char *
-+ncp_expanded_ciphers(struct options *o, struct gc_arena *gc)
-+{
-+    if (!strcmp(o->ncp_ciphers, o->ncp_ciphers_conf))
-+    {
-+        /* expanded ciphers and user set ciphers are identical, no need to
-+         * add an expanded version */
-+        return "";
-+    }
-+
-+    /* two extra brackets, one space, NUL byte */
-+    struct buffer expanded_ciphers_buf =3D alloc_buf_gc(strlen(o->ncp_ciph=
-ers) + 4, gc);
-+
-+    buf_printf(&expanded_ciphers_buf, " (%s)", o->ncp_ciphers);
-+    return BSTR(&expanded_ciphers_buf);
-+}
-diff --git a/src/openvpn/ssl_ncp.h b/src/openvpn/ssl_ncp.h
-index afbe331..f90b19a 100644
---- a/src/openvpn/ssl_ncp.h
-+++ b/src/openvpn/ssl_ncp.h
-@@ -156,4 +156,23 @@
- bool
- check_session_cipher(struct tls_session *session, struct options *options);
-
-+/**
-+ * Checks for availability of Chacha20-Poly1305 and sets
-+ * the ncp_cipher to either AES-256-GCM:AES-128-GCM or
-+ * AES-256-GCM:AES-128-GCM:CHACHA20-POLY1305 if not set.
-+ *
-+ * If DEFAULT is in the ncp_cipher string, it will be replaced
-+ * by the default cipher string as defined above.
-+ */
-+void
-+options_postprocess_setdefault_ncpciphers(struct options *o);
-+
-+/** returns the o->ncp_ciphers in brackets, e.g.
-+ *  (AES-256-GCM:CHACHA20-POLY1305) if o->ncp_ciphers_conf
-+ *  and o->ncp_ciphers differ, otherwise an empty string
-+ *
-+ *  The returned string will be allocated in the passed \c gc
-+ */
-+const char *
-+ncp_expanded_ciphers(struct options *o, struct gc_arena *gc);
- #endif /* ifndef OPENVPN_SSL_NCP_H */
-diff --git a/tests/unit_tests/openvpn/test_ncp.c b/tests/unit_tests/openvpn=
-/test_ncp.c
-index a8e1021..b744e96 100644
---- a/tests/unit_tests/openvpn/test_ncp.c
-+++ b/tests/unit_tests/openvpn/test_ncp.c
-@@ -54,6 +54,17 @@
-     ASSERT(0);
+@@ -965,41 +969,43 @@
  }
 
-+
-+/* Define a dummy dco cipher option to avoid linking against all the DCO
-+ * units */
-+#if defined(ENABLE_DCO)
-+const char *
-+dco_get_supported_ciphers(void)
-+{
-+    return "AES-192-GCM:AES-128-CBC:AES-256-GCM:AES-128-GCM:CHACHA20-POLY1=
-305";
-+}
-+#endif
-+
- static void
- test_check_ncp_ciphers_list(void **state)
+ void
+-init_key_bi_ctx_send(struct key_ctx *ctx, const struct key2 *key2,
+-                     int key_direction, const struct key_type *kt, const c=
+har *name)
++init_key_bi_ctx_send(struct key_ctx *ctx, const struct key_parameters *key=
+_params,
++                     const struct key_type *kt, const char *name)
  {
-@@ -260,13 +271,135 @@
-     gc_free(&gc);
+     char log_prefix[128] =3D { 0 };
+-    struct key_direction_state kds;
+-
+-    key_direction_state_init(&kds, key_direction);
+
+     snprintf(log_prefix, sizeof(log_prefix), "Outgoing %s", name);
+-    init_key_ctx(ctx, &key2->keys[kds.out_key], kt,
+-                 OPENVPN_OP_ENCRYPT, log_prefix);
+-    key_ctx_update_implicit_iv(ctx, &key2->keys[kds.out_key]);
++    init_key_ctx(ctx, key_params, kt, OPENVPN_OP_ENCRYPT, log_prefix);
++    key_ctx_update_implicit_iv(ctx, key_params);
  }
 
-+static void
-+test_ncp_default(void **state)
+ void
+-init_key_bi_ctx_recv(struct key_ctx *ctx, const struct key2 *key2,
+-                     int key_direction, const struct key_type *kt, const c=
+har *name)
++init_key_bi_ctx_recv(struct key_ctx *ctx, const struct key_parameters *key=
+_params,
++                     const struct key_type *kt, const char *name)
+ {
+     char log_prefix[128] =3D { 0 };
+-    struct key_direction_state kds;
+-
+-    key_direction_state_init(&kds, key_direction);
+
+     snprintf(log_prefix, sizeof(log_prefix), "Incoming %s", name);
+-    init_key_ctx(ctx, &key2->keys[kds.in_key], kt,
+-                 OPENVPN_OP_DECRYPT, log_prefix);
+-    key_ctx_update_implicit_iv(ctx, &key2->keys[kds.in_key]);
++    init_key_ctx(ctx, key_params, kt, OPENVPN_OP_DECRYPT, log_prefix);
++    key_ctx_update_implicit_iv(ctx, key_params);
+ }
+
+ void
+ init_key_ctx_bi(struct key_ctx_bi *ctx, const struct key2 *key2,
+                 int key_direction, const struct key_type *kt, const char *=
+name)
+ {
+-    init_key_bi_ctx_send(&ctx->encrypt, key2, key_direction, kt, name);
+-    init_key_bi_ctx_recv(&ctx->decrypt, key2, key_direction, kt, name);
++    struct key_direction_state kds;
++
++    key_direction_state_init(&kds, key_direction);
++
++    struct key_parameters send_key;
++    struct key_parameters recv_key;
++
++    key_parameters_from_key(&send_key, &key2->keys[kds.out_key]);
++    key_parameters_from_key(&recv_key, &key2->keys[kds.in_key]);
++
++    init_key_bi_ctx_send(&ctx->encrypt, &send_key, kt, name);
++    init_key_bi_ctx_recv(&ctx->decrypt, &recv_key, kt, name);
+     ctx->initialized =3D true;
+ }
+
+@@ -1116,6 +1122,16 @@
+ }
+
+ void
++key_parameters_from_key(struct key_parameters *key_params, const struct ke=
+y *key)
 +{
-+    bool have_chacha =3D cipher_valid("CHACHA20-POLY1305");
-+
-+    struct options o =3D { 0 };
-+
-+    o.gc =3D gc_new();
-+
-+    /* no user specified string */
-+    o.ncp_ciphers =3D NULL;
-+    options_postprocess_setdefault_ncpciphers(&o);
-+
-+    if (have_chacha)
-+    {
-+        assert_string_equal(o.ncp_ciphers, "AES-256-GCM:AES-128-GCM:CHACHA=
-20-POLY1305");
-+    }
-+    else
-+    {
-+        assert_string_equal(o.ncp_ciphers, "AES-256-GCM:AES-128-GCM");
-+    }
-+    assert_string_equal(o.ncp_ciphers_conf, "DEFAULT");
-+
-+    /* check that a default string is replaced with DEFAULT */
-+    if (have_chacha)
-+    {
-+        o.ncp_ciphers =3D "AES-256-GCM:AES-128-GCM:CHACHA20-POLY1305";
-+    }
-+    else
-+    {
-+        o.ncp_ciphers =3D "AES-256-GCM:AES-128-GCM";
-+    }
-+
-+    options_postprocess_setdefault_ncpciphers(&o);
-+    assert_string_equal(o.ncp_ciphers_conf, "DEFAULT");
-+
-+    /* test default in the middle of the string */
-+    o.ncp_ciphers =3D "BF-CBC:DEFAULT:AES-128-CBC:AES-256-CBC";
-+    options_postprocess_setdefault_ncpciphers(&o);
-+
-+    if (have_chacha)
-+    {
-+        assert_string_equal(o.ncp_ciphers, "BF-CBC:AES-256-GCM:AES-128-GCM=
-:CHACHA20-POLY1305:AES-128-CBC:AES-256-CBC");
-+    }
-+    else
-+    {
-+        assert_string_equal(o.ncp_ciphers, "BF-CBC:AES-256-GCM:AES-128-GCM=
-:AES-128-CBC:AES-256-CBC");
-+    }
-+    assert_string_equal(o.ncp_ciphers_conf, "BF-CBC:DEFAULT:AES-128-CBC:AE=
-S-256-CBC");
-+
-+    /* string at the beginning */
-+    o.ncp_ciphers =3D "DEFAULT:AES-128-CBC:AES-192-CBC";
-+    options_postprocess_setdefault_ncpciphers(&o);
-+
-+    if (have_chacha)
-+    {
-+        assert_string_equal(o.ncp_ciphers, "AES-256-GCM:AES-128-GCM:CHACHA=
-20-POLY1305:AES-128-CBC:AES-192-CBC");
-+    }
-+    else
-+    {
-+        assert_string_equal(o.ncp_ciphers, "AES-256-GCM:AES-128-GCM:AES-12=
-8-CBC:AES-192-CBC");
-+    }
-+    assert_string_equal(o.ncp_ciphers_conf, "DEFAULT:AES-128-CBC:AES-192-C=
-BC");
-+
-+    /* DEFAULT at the end */
-+    o.ncp_ciphers =3D "AES-192-GCM:AES-128-CBC:DEFAULT";
-+    options_postprocess_setdefault_ncpciphers(&o);
-+
-+    if (have_chacha)
-+    {
-+        assert_string_equal(o.ncp_ciphers, "AES-192-GCM:AES-128-CBC:AES-25=
-6-GCM:AES-128-GCM:CHACHA20-POLY1305");
-+    }
-+    else
-+    {
-+        assert_string_equal(o.ncp_ciphers, "AES-192-GCM:AES-128-CBC:AES-25=
-6-GCM:AES-128-GCM");
-+    }
-+    assert_string_equal(o.ncp_ciphers_conf, "AES-192-GCM:AES-128-CBC:DEFAU=
-LT");
-+
-+    gc_free(&o.gc);
++    CLEAR(*key_params);
++    memcpy(key_params->cipher, key->cipher, MAX_CIPHER_KEY_LENGTH);
++    key_params->cipher_size =3D MAX_CIPHER_KEY_LENGTH;
++    memcpy(key_params->hmac, key->hmac, MAX_HMAC_KEY_LENGTH);
++    key_params->hmac_size =3D MAX_HMAC_KEY_LENGTH;
 +}
 +
-+static void
-+test_ncp_expand(void **state)
-+{
-+    bool have_chacha =3D cipher_valid("CHACHA20-POLY1305");
-+    struct options o =3D {0};
-+
-+    o.gc =3D gc_new();
-+    struct gc_arena gc =3D gc_new();
-+
-+    /* no user specified string */
-+    o.ncp_ciphers =3D NULL;
-+    options_postprocess_setdefault_ncpciphers(&o);
-+
-+    const char *expanded =3D ncp_expanded_ciphers(&o, &gc);
-+
-+    /* user specificed string with DEFAULT in it */
-+    o.ncp_ciphers =3D "AES-192-GCM:DEFAULT";
-+    options_postprocess_setdefault_ncpciphers(&o);
-+    const char *expanded2 =3D ncp_expanded_ciphers(&o, &gc);
-+
-+    if (have_chacha)
-+    {
-+        assert_string_equal(expanded, " (AES-256-GCM:AES-128-GCM:CHACHA20-=
-POLY1305)");
-+        assert_string_equal(expanded2, " (AES-192-GCM:AES-256-GCM:AES-128-=
-GCM:CHACHA20-POLY1305)");
-+    }
-+    else
-+    {
-+        assert_string_equal(expanded, " (AES-256-GCM:AES-128-GCM)");
-+        assert_string_equal(expanded2, " (AES-192-GCM:AES-256-GCM:AES-128-=
-GCM)");
-+    }
-+
-+    o.ncp_ciphers =3D "AES-192-GCM:BF-CBC";
-+    options_postprocess_setdefault_ncpciphers(&o);
-+
-+    assert_string_equal(ncp_expanded_ciphers(&o, &gc), "");
-+
-+    gc_free(&o.gc);
-+    gc_free(&gc);
-+}
++void
+ test_crypto(struct crypto_options *co, struct frame *frame)
+ {
+     int i, j;
+diff --git a/src/openvpn/crypto.h b/src/openvpn/crypto.h
+index b3612fb..d765737 100644
+--- a/src/openvpn/crypto.h
++++ b/src/openvpn/crypto.h
+@@ -144,7 +144,8 @@
 
-
- const struct CMUnitTest ncp_tests[] =3D {
-     cmocka_unit_test(test_check_ncp_ciphers_list),
-     cmocka_unit_test(test_extract_client_ciphers),
-     cmocka_unit_test(test_poor_man),
--    cmocka_unit_test(test_ncp_best)
-+    cmocka_unit_test(test_ncp_best),
-+    cmocka_unit_test(test_ncp_default),
-+    cmocka_unit_test(test_ncp_expand),
+ /**
+  * Container for unidirectional cipher and HMAC %key material.
+- * @ingroup control_processor
++ * @ingroup control_processor. This is used as a wire format/file format
++ * key, so it cannot be changed to add fields or change the length of fiel=
+ds
+  */
+ struct key
+ {
+@@ -154,6 +155,32 @@
+     /**< %Key material for HMAC operations. */
  };
 
++/** internal structure similar to struct key that holds key information
++ * but is not represented on wire and can be changed/extended
++ */
++struct key_parameters {
++    /** %Key material for cipher operations. */
++    uint8_t cipher[MAX_CIPHER_KEY_LENGTH];
++
++    /** Number of bytes set in the cipher key material */
++    int cipher_size;
++
++    /** %Key material for HMAC operations. */
++    uint8_t hmac[MAX_HMAC_KEY_LENGTH];
++
++    /** Number of bytes set in the HMac key material */
++    int hmac_size;
++};
++
++/**
++ * Converts a struct key representation into a struct key_parameters
++ * representation.
++ *
++ * @param key_params    destination for the converted struct
++ * @param key           source of the conversion
++ */
++void
++key_parameters_from_key(struct key_parameters *key_params, const struct ke=
+y *key);
+
+ /**
+  * Container for one set of cipher and/or HMAC contexts.
+@@ -347,19 +374,17 @@
+  * Key context functions
+  */
+
+-void init_key_ctx(struct key_ctx *ctx, const struct key *key,
++void init_key_ctx(struct key_ctx *ctx, const struct key_parameters *key,
+                   const struct key_type *kt, int enc,
+                   const char *prefix);
+
+ void
+-init_key_bi_ctx_send(struct key_ctx *ctx, const struct key2 *key2,
+-                     int key_direction, const struct key_type *kt,
+-                     const char *name);
++init_key_bi_ctx_send(struct key_ctx *ctx, const struct key_parameters *key,
++                     const struct key_type *kt, const char *name);
+
+ void
+-init_key_bi_ctx_recv(struct key_ctx *ctx, const struct key2 *key2,
+-                     int key_direction, const struct key_type *kt,
+-                     const char *name);
++init_key_bi_ctx_recv(struct key_ctx *ctx, const struct key_parameters *key,
++                     const struct key_type *kt, const char *name);
+
+ void free_key_ctx(struct key_ctx *ctx);
+
+diff --git a/src/openvpn/tls_crypt.c b/src/openvpn/tls_crypt.c
+index b8894db..76f06bc 100644
+--- a/src/openvpn/tls_crypt.c
++++ b/src/openvpn/tls_crypt.c
+@@ -377,7 +377,11 @@
+     {
+         msg(M_FATAL, "ERROR: --tls-crypt-v2 not supported");
+     }
+-    init_key_ctx(key_ctx, &srv_key, &kt, encrypt, "tls-crypt-v2 server key=
+");
++    struct key_parameters srv_key_params;
++
++    key_parameters_from_key(&srv_key_params, &srv_key);
++
++    init_key_ctx(key_ctx, &srv_key_params, &kt, encrypt, "tls-crypt-v2 ser=
+ver key");
+     secure_memzero(&srv_key, sizeof(srv_key));
+ }
+
+diff --git a/tests/unit_tests/openvpn/test_auth_token.c b/tests/unit_tests/=
+openvpn/test_auth_token.c
+index 8a0c16a..be3b2b7 100644
+--- a/tests/unit_tests/openvpn/test_auth_token.c
++++ b/tests/unit_tests/openvpn/test_auth_token.c
+@@ -87,7 +87,8 @@
+     struct test_context *ctx =3D calloc(1, sizeof(*ctx));
+     *state =3D ctx;
+
+-    struct key key =3D { 0 };
++    struct key_parameters key =3D { 0 };
++    key.hmac_size =3D MAX_HMAC_KEY_LENGTH;     /* 64 byte of 0 */
+
+     ctx->kt =3D auth_token_kt();
+     if (!ctx->kt.digest)
+@@ -148,15 +149,17 @@
+                      AUTH_TOKEN_HMAC_OK);
+
+     /* Change auth-token key */
+-    struct key key;
+-    memset(&key, '1', sizeof(key));
++    struct key_parameters key;
++    memset(key.hmac, '1', sizeof(key.hmac));
++    key.hmac_size =3D MAX_HMAC_KEY_LENGTH;
++
+     free_key_ctx(&ctx->multi.opt.auth_token_key);
+     init_key_ctx(&ctx->multi.opt.auth_token_key, &key, &ctx->kt, false, "T=
+EST");
+
+     assert_int_equal(verify_auth_token(&ctx->up, &ctx->multi, ctx->session=
+), 0);
+
+     /* Load original test key again */
+-    memset(&key, 0, sizeof(key));
++    memset(&key.hmac, 0, sizeof(key.hmac));
+     free_key_ctx(&ctx->multi.opt.auth_token_key);
+     init_key_ctx(&ctx->multi.opt.auth_token_key, &key, &ctx->kt, false, "T=
+EST");
+     assert_int_equal(verify_auth_token(&ctx->up, &ctx->multi, ctx->session=
+),
+diff --git a/tests/unit_tests/openvpn/test_tls_crypt.c b/tests/unit_tests/o=
+penvpn/test_tls_crypt.c
+index 4f12f88..94cd0ee 100644
+--- a/tests/unit_tests/openvpn/test_tls_crypt.c
++++ b/tests/unit_tests/openvpn/test_tls_crypt.c
+@@ -157,7 +157,8 @@
+     struct test_tls_crypt_context *ctx =3D calloc(1, sizeof(*ctx));
+     *state =3D ctx;
+
+-    struct key key =3D { 0 };
++    struct key_parameters key =3D { .cipher =3D { 0 }, .hmac =3D { 0 },
++                                  .hmac_size =3D MAX_HMAC_KEY_LENGTH, .cip=
+her_size =3D MAX_CIPHER_KEY_LENGTH };
+
+     ctx->kt =3D tls_crypt_kt();
+     if (!ctx->kt.cipher || !ctx->kt.digest)
+@@ -367,7 +368,8 @@
+     skip_if_tls_crypt_not_supported(ctx);
+
+     /* Change decrypt key */
+-    struct key key =3D { { 1 } };
++    struct key_parameters key =3D { .cipher =3D { 1 }, .hmac =3D { 1 },
++                                  .cipher_size =3D MAX_CIPHER_KEY_LENGTH, =
+.hmac_size =3D MAX_HMAC_KEY_LENGTH };
+     free_key_ctx(&ctx->co.key_ctx_bi.decrypt);
+     init_key_ctx(&ctx->co.key_ctx_bi.decrypt, &key, &ctx->kt, false, "TEST=
+");
 
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/828?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/801?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings
 
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: Ia1c5209022d3ab4c0dac6438c41891c7d059f812
-Gerrit-Change-Number: 828
-Gerrit-PatchSet: 3
+Gerrit-Change-Id: I4a981c5a70717e2276d89bf83a06c7fdbe6712d7
+Gerrit-Change-Number: 801
+Gerrit-PatchSet: 9
 Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
 Gerrit-Attention: flichtenheld <frank@...2641...>
 Gerrit-MessageType: newpatchset
 
---Z1sa+6C7s4c=
+--xkawUcn2MFE=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p> Attention is currently required from: flichtenheld. </p>
-<p>plaisthos <strong>uploaded patch set #3</strong> to this change.</p><p><=
-a href=3D"http://gerrit.openvpn.net/c/openvpn/+/828?usp=3Demail">View Chang=
-e</a></p><pre style=3D"font-family: monospace,monospace; white-space: pre-w=
-rap;">Allow DEFAULT in data-ciphers and report both expanded and user set o=
-ption<br><br>This adds support for parsing DEFAULT in data-ciphers, the ide=
-a is that people<br>can modify the default without repeating the default ci=
-phers.<br><br>In the past we have seem that people will use data-ciphers BF=
--CBC or<br>data-ciphers AES-128-CBC when getting the warning that the ciphe=
-r is not<br>supported by the server.  This commit aims to provide a better =
-way for<br>these situation as we still want people to rely on default ciphe=
-r selection<br>from OpenVPN when possible.<br><br>Change-Id: Ia1c5209022d3a=
-b4c0dac6438c41891c7d059f812<br>Signed-off-by: Arne Schwabe &lt;arne@...1830...=
-...&gt;<br>---<br>M Changes.rst<br>M doc/man-sections/protocol-options.rst<=
-br>M src/openvpn/multi.c<br>M src/openvpn/options.c<br>M src/openvpn/option=
-s.h<br>M src/openvpn/ssl_ncp.c<br>M src/openvpn/ssl_ncp.h<br>M tests/unit_t=
-ests/openvpn/test_ncp.c<br>8 files changed, 284 insertions(+), 48 deletions=
-(-)<br><br></pre><pre style=3D"font-family: monospace,monospace; white-spac=
-e: pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/=
-28/828/3</pre><pre style=3D"font-family: monospace,monospace; white-space: =
-pre-wrap;"><span>diff --git a/Changes.rst b/Changes.rst</span><br><span>ind=
-ex 34542a5..16ae6fc 100644</span><br><span>--- a/Changes.rst</span><br><spa=
-n>+++ b/Changes.rst</span><br><span>@@ -30,6 +30,12 @@</span><br><span> </s=
-pan><br><span>     https://datatracker.ietf.org/doc/draft-irtf-cfrg-aead-li=
-mits/</span><br><span> </span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+Default ciphers in ``--data-ciphers``</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+    Ciphers in ``--data-ciphers`` can contain the str=
-ing DEFAULT that is</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-    replaced by the default ciphers used by OpenVPN, making it easier to</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+    add an allowed cip=
-her without having to spell out the default ciphers.</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+</span><br><span> Deprecated features</span><br><span> -----=
---------------</span><br><span> ``secret`` support has been removed by defa=
-ult.</span><br><span>diff --git a/doc/man-sections/protocol-options.rst b/d=
-oc/man-sections/protocol-options.rst</span><br><span>index 05f87cc..d04ace8=
- 100644</span><br><span>--- a/doc/man-sections/protocol-options.rst</span><=
-br><span>+++ b/doc/man-sections/protocol-options.rst</span><br><span>@@ -17=
-8,6 +178,12 @@</span><br><span>   Chacha20-Poly1305 if the underlying SSL l=
-ibrary (and its configuration)</span><br><span>   supports it.</span><br><s=
-pan> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+  Starting wit=
-h OpenVPN 2.7 the special keyword :code:`DEFAULT` can be used</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+  in the string and is replaced b=
-y the default ciphers.  This can be used to</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+  add an additional allowed cipher to the allowed c=
-iphers, e.g.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  :code=
-:`DEFAULT:AES-192-CBC` to use the default ciphers but also allow</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+  :code:`AES-192-CBC`.</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span>   Cipher =
-negotiation is enabled in client-server mode only. I.e. if</span><br><span>=
-   ``--mode`` is set to `server` (server-side, implied by setting</span><br=
-><span>   ``--server`` ), or if ``--pull`` is specified (client-side, impli=
-ed by</span><br><span>diff --git a/src/openvpn/multi.c b/src/openvpn/multi.=
-c</span><br><span>index 45b3cfa..279be57 100644</span><br><span>--- a/src/o=
-penvpn/multi.c</span><br><span>+++ b/src/openvpn/multi.c</span><br><span>@@=
- -1896,14 +1896,15 @@</span><br><span>     if (strlen(peer_ciphers) &gt; 0)=
-</span><br><span>     {</span><br><span>         msg(M_INFO, &quot;PUSH: No=
- common cipher between server and client. &quot;</span><br><span style=3D"c=
-olor: hsl(0, 100%, 40%);">-            &quot;Server data-ciphers: &#39;%s&#=
-39;, client supported ciphers &#39;%s&#39;&quot;,</span><br><span style=3D"=
-color: hsl(0, 100%, 40%);">-            o-&gt;ncp_ciphers, peer_ciphers);</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+            &quot;Ser=
-ver data-ciphers: &#39;%s&#39;%s, client supported ciphers &#39;%s&#39;&quo=
-t;,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            o-&g=
-t;ncp_ciphers_conf, ncp_expanded_ciphers(o, &amp;gc), peer_ciphers);</span>=
-<br><span>     }</span><br><span>     else if (tls_multi-&gt;remote_ciphern=
-ame)</span><br><span>     {</span><br><span>         msg(M_INFO, &quot;PUSH=
-: No common cipher between server and client. &quot;</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-            &quot;Server data-ciphers: &#39=
-;%s&#39;, client supports cipher &#39;%s&#39;&quot;,</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-            o-&gt;ncp_ciphers, tls_multi-&g=
-t;remote_ciphername);</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+            &quot;Server data-ciphers: &#39;%s&#39;%s, client supports ci=
-pher &#39;%s&#39;&quot;,</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+            o-&gt;ncp_ciphers_conf, ncp_expanded_ciphers(o, &amp;gc),<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+            tls_mult=
-i-&gt;remote_ciphername);</span><br><span>     }</span><br><span>     else<=
-/span><br><span>     {</span><br><span>diff --git a/src/openvpn/options.c b=
-/src/openvpn/options.c</span><br><span>index b2a3a8b..d1714fd 100644</span>=
-<br><span>--- a/src/openvpn/options.c</span><br><span>+++ b/src/openvpn/opt=
-ions.c</span><br><span>@@ -3486,40 +3486,6 @@</span><br><span>     }</span>=
-<br><span> }</span><br><span> </span><br><span style=3D"color: hsl(0, 100%,=
- 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-/**</span><b=
-r><span style=3D"color: hsl(0, 100%, 40%);">- * Checks for availibility of =
-Chacha20-Poly1305 and sets</span><br><span style=3D"color: hsl(0, 100%, 40%=
-);">- * the ncp_cipher to either AES-256-GCM:AES-128-GCM or</span><br><span=
- style=3D"color: hsl(0, 100%, 40%);">- * AES-256-GCM:AES-128-GCM:CHACHA20-P=
-OLY1305.</span><br><span style=3D"color: hsl(0, 100%, 40%);">- */</span><br=
-><span style=3D"color: hsl(0, 100%, 40%);">-static void</span><br><span sty=
-le=3D"color: hsl(0, 100%, 40%);">-options_postprocess_setdefault_ncpciphers=
-(struct options *o)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-{<=
-/span><br><span style=3D"color: hsl(0, 100%, 40%);">-    if (o-&gt;ncp_ciph=
-ers)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    {</span><br><=
-span style=3D"color: hsl(0, 100%, 40%);">-        /* custom --data-ciphers =
-set, keep list */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
-    return;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    }</spa=
-n><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"=
-color: hsl(0, 100%, 40%);">-    /* check if crypto library supports chacha =
-*/</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    bool can_do_cha=
-cha =3D cipher_valid(&quot;CHACHA20-POLY1305&quot;);</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100=
-%, 40%);">-    if (can_do_chacha &amp;&amp; dco_enabled(o))</span><br><span=
- style=3D"color: hsl(0, 100%, 40%);">-    {</span><br><span style=3D"color:=
- hsl(0, 100%, 40%);">-        /* also make sure that dco supports chacha */=
-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        can_do_chacha=
- =3D tls_item_in_cipher_list(&quot;CHACHA20-POLY1305&quot;, dco_get_support=
-ed_ciphers());</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    }</=
-span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-    if (can_do_chacha)</span><br><span styl=
-e=3D"color: hsl(0, 100%, 40%);">-    {</span><br><span style=3D"color: hsl(=
-0, 100%, 40%);">-        o-&gt;ncp_ciphers =3D &quot;AES-256-GCM:AES-128-GC=
-M:CHACHA20-POLY1305&quot;;</span><br><span style=3D"color: hsl(0, 100%, 40%=
-);">-    }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    else</s=
-pan><br><span style=3D"color: hsl(0, 100%, 40%);">-    {</span><br><span st=
-yle=3D"color: hsl(0, 100%, 40%);">-        o-&gt;ncp_ciphers =3D &quot;AES-=
-256-GCM:AES-128-GCM&quot;;</span><br><span style=3D"color: hsl(0, 100%, 40%=
-);">-    }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-}</span><br=
-><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span> static void</=
-span><br><span> options_postprocess_cipher(struct options *o)</span><br><sp=
-an> {</span><br><span>@@ -3550,7 +3516,8 @@</span><br><span>             &q=
-uot;defaulted to BF-CBC as fallback when cipher negotiation &quot;</span><b=
-r><span>             &quot;failed in this case. If you need this fallback p=
-lease add &quot;</span><br><span>             &quot;&#39;--data-ciphers-fal=
-lback BF-CBC&#39; to your configuration &quot;</span><br><span style=3D"col=
-or: hsl(0, 100%, 40%);">-            &quot;and/or add BF-CBC to --data-ciph=
-ers.&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
-     &quot;and/or add BF-CBC to --data-ciphers. E.g. &quot;</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+            &quot;--data-ciphers %s=
-:BF-CBC&quot;, o-&gt;ncp_ciphers_conf);</span><br><span>     }</span><br><s=
-pan>     else if (!o-&gt;enable_ncp_fallback</span><br><span>              =
-&amp;&amp; !tls_item_in_cipher_list(o-&gt;ciphername, o-&gt;ncp_ciphers))</=
-span><br><span>@@ -3558,7 +3525,7 @@</span><br><span>         msg(M_WARN, &=
-quot;DEPRECATED OPTION: --cipher set to &#39;%s&#39; but missing in &quot;<=
-/span><br><span>             &quot;--data-ciphers (%s). OpenVPN ignores --c=
-ipher for cipher &quot;</span><br><span>             &quot;negotiations. &q=
-uot;,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            o-&g=
-t;ciphername, o-&gt;ncp_ciphers);</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+            o-&gt;ciphername, o-&gt;ncp_ciphers_conf);</span>=
-<br><span>     }</span><br><span> }</span><br><span> </span><br><span>diff =
---git a/src/openvpn/options.h b/src/openvpn/options.h</span><br><span>index=
- 6ab92e2..55f12dd 100644</span><br><span>--- a/src/openvpn/options.h</span>=
-<br><span>+++ b/src/openvpn/options.h</span><br><span>@@ -559,6 +559,8 @@</=
-span><br><span>     const char *ciphername;</span><br><span>     bool enabl=
-e_ncp_fallback;      /**&lt; If defined fall back to</span><br><span>      =
-                              * ciphername if NCP fails */</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+    /** The original ncp_ciphers spe=
-cified by the user in the configuration*/</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+    const char *ncp_ciphers_conf;</span><br><span>   =
-  const char *ncp_ciphers;</span><br><span>     const char *authname;</span=
-><br><span>     const char *engine;</span><br><span>diff --git a/src/openvp=
-n/ssl_ncp.c b/src/openvpn/ssl_ncp.c</span><br><span>index 968858e..e403ae6 =
-100644</span><br><span>--- a/src/openvpn/ssl_ncp.c</span><br><span>+++ b/sr=
-c/openvpn/ssl_ncp.c</span><br><span>@@ -39,6 +39,8 @@</span><br><span> #inc=
-lude &quot;config.h&quot;</span><br><span> #endif</span><br><span> </span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+#include &lt;string.h&gt;</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> #in=
-clude &quot;syshead.h&quot;</span><br><span> #include &quot;win32.h&quot;</=
-span><br><span> </span><br><span>@@ -222,7 +224,6 @@</span><br><span> </spa=
-n><br><span>     return token !=3D NULL;</span><br><span> }</span><br><span=
- style=3D"color: hsl(0, 100%, 40%);">-</span><br><span> const char *</span>=
-<br><span> tls_peer_ncp_list(const char *peer_info, struct gc_arena *gc)</s=
-pan><br><span> {</span><br><span>@@ -334,15 +335,16 @@</span><br><span>    =
-     return true;</span><br><span>     }</span><br><span> </span><br><span =
-style=3D"color: hsl(0, 100%, 40%);">-    /* We failed negotiation, give app=
-ropiate error message */</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+    /* We failed negotiation, give appropriate error message */</span>=
-<br><span>     if (c-&gt;c2.tls_multi-&gt;remote_ciphername)</span><br><spa=
-n>     {</span><br><span>         msg(D_TLS_ERRORS, &quot;OPTIONS ERROR: fa=
-iled to negotiate &quot;</span><br><span>             &quot;cipher with ser=
-ver.  Add the server&#39;s &quot;</span><br><span style=3D"color: hsl(0, 10=
-0%, 40%);">-            &quot;cipher (&#39;%s&#39;) to --data-ciphers (curr=
-ently &#39;%s&#39;) if &quot;</span><br><span style=3D"color: hsl(0, 100%, =
-40%);">-            &quot;you want to connect to this server.&quot;,</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+            &quot;cipher (=
-&#39;%s&#39;) to --data-ciphers (currently &#39;%s&#39;), e.g.&quot;</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+            &quot;--data-c=
-iphers %s:%s if you want to connect to this server.&quot;,</span><br><span>=
-             c-&gt;c2.tls_multi-&gt;remote_ciphername,</span><br><span styl=
-e=3D"color: hsl(0, 100%, 40%);">-            c-&gt;options.ncp_ciphers);</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+            c-&gt;opti=
-ons.ncp_ciphers_conf, c-&gt;options.ncp_ciphers_conf,</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+            c-&gt;c2.tls_multi-&gt;remote=
-_ciphername);</span><br><span>         return false;</span><br><span> </spa=
-n><br><span>     }</span><br><span>@@ -516,10 +518,13 @@</span><br><span>  =
-   if (!session-&gt;opt-&gt;server &amp;&amp; !cipher_allowed_as_fallback</=
-span><br><span>         &amp;&amp; !tls_item_in_cipher_list(options-&gt;cip=
-hername, options-&gt;ncp_ciphers))</span><br><span>     {</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-        msg(D_TLS_ERRORS, &quot;Error: =
-negotiated cipher not allowed - %s not in %s&quot;,</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-            options-&gt;ciphername, options=
--&gt;ncp_ciphers);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-       struct gc_arena gc =3D gc_new();</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+        msg(D_TLS_ERRORS, &quot;Error: negotiated ciphe=
-r not allowed - %s not in %s%s&quot;,</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+            options-&gt;ciphername, options-&gt;ncp_ciphe=
-rs_conf,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+           =
- ncp_expanded_ciphers(options, &amp;gc));</span><br><span>         /* undo =
-cipher push, abort connection setup */</span><br><span>         options-&gt=
-;ciphername =3D session-&gt;opt-&gt;config_ciphername;</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+        gc_free(&amp;gc);</span><br><spa=
-n>         return false;</span><br><span>     }</span><br><span>     else</=
-span><br><span>@@ -527,3 +532,100 @@</span><br><span>         return true;<=
-/span><br><span>     }</span><br><span> }</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+/**</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * Replaces t=
-he string DEFAULT with the string \c replace.</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+ *</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+ * @param o         Options struct to modify and to use the gc fro=
-m</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @param replace =
-  string used to replace the DEFAULT string</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+ */</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+static void</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-replace_default_in_ncp_ciphers_option(struct options *o, const char *replac=
-e)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+    const char *search =3D &quot;DE=
-FAULT&quot;;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    con=
-st int ncp_ciphers_len =3D strlen(o-&gt;ncp_ciphers) + strlen(replace) - st=
-rlen(search) + 1;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+    uint8_t *ncp_ciph=
-ers =3D gc_malloc(ncp_ciphers_len, true, &amp;o-&gt;gc);</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+    struct buffer ncp_ciphers_buf;</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    buf_set_write(&amp;ncp_ciphers_buf, n=
-cp_ciphers, ncp_ciphers_len);</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    const=
- char *def =3D strstr(o-&gt;ncp_ciphers, search);</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+    /* Copy everything before the DEFAULT string */</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+    buf_write(&amp;ncp_ciphers_b=
-uf, o-&gt;ncp_ciphers, def - o-&gt;ncp_ciphers);</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+    /* copy the default string. */</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+    buf_write(&amp;ncp_ciphers_buf, replace, strle=
-n(replace));</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+    /* copy the rest of th=
-e ncp cipher string */</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+    const char *after_default =3D def + strlen(search);</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+    buf_write(&amp;ncp_ciphers_buf, =
-after_default, strlen(after_default));</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-    o-&gt;ncp_ciphers =3D (char *) ncp_ciphers;</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+/**</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+ * Checks for availibilit=
-y of Chacha20-Poly1305 and sets</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+ * the ncp_cipher to either AES-256-GCM:AES-128-GCM or</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+ * AES-256-GCM:AES-128-GCM:C=
-HACHA20-POLY1305.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *=
-/</span><br><span style=3D"color: hsl(120, 100%, 40%);">+void</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+options_postprocess_setdefault_nc=
-pciphers(struct options *o)</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    bool d=
-efault_in_cipher_list =3D o-&gt;ncp_ciphers</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+                                  &amp;&amp; tls_it=
-em_in_cipher_list(&quot;DEFAULT&quot;, o-&gt;ncp_ciphers);</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+    /* preserve the values that the user put into the c=
-onfiguration */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-o-&gt;ncp_ciphers_conf =3D o-&gt;ncp_ciphers;</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+    /* check if crypto library supports chacha */</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+    bool can_do_chacha =3D cipher_vali=
-d(&quot;CHACHA20-POLY1305&quot;);</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    i=
-f (can_do_chacha &amp;&amp; dco_enabled(o))</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+        /* also make sure that dco supports chacha */</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+        can_do_chacha =3D tls_i=
-tem_in_cipher_list(&quot;CHACHA20-POLY1305&quot;, dco_get_supported_ciphers=
-());</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+    const char *default_ciphers =3D &quot;AES-25=
-6-GCM:AES-128-GCM:CHACHA20-POLY1305&quot;;</span><br><span style=3D"color: =
+<p> Attention is currently required from: flichtenheld, plaisthos. </p>
+<p>plaisthos <strong>uploaded patch set #9</strong> to this change.</p><p><=
+a href=3D"http://gerrit.openvpn.net/c/openvpn/+/801?usp=3Demail">View Chang=
+e</a></p><p>The following approvals got outdated and were removed:
+Code-Review-1 by flichtenheld</p><pre style=3D"font-family: monospace,monos=
+pace; white-space: pre-wrap;">Change API of init_key_ctx to use struct key_=
+parameters<br><br>This introduces a new structure key_parameters. The reaso=
+n is that the<br>current struct serves both as an internal struct as well a=
+s an<br>on-wire/in-file format. Separate these two different usages to allo=
+w<br>extending the struct.<br><br>Change-Id: I4a981c5a70717e2276d89bf83a06c=
+7fdbe6712d7<br>Signed-off-by: Arne Schwabe &lt;arne@...1227...&gt;<br>---<b=
+r>M src/openvpn/auth_token.c<br>M src/openvpn/crypto.c<br>M src/openvpn/cry=
+pto.h<br>M src/openvpn/tls_crypt.c<br>M tests/unit_tests/openvpn/test_auth_=
+token.c<br>M tests/unit_tests/openvpn/test_tls_crypt.c<br>6 files changed, =
+94 insertions(+), 41 deletions(-)<br><br></pre><pre style=3D"font-family: m=
+onospace,monospace; white-space: pre-wrap;">git pull ssh://gerrit.openvpn.n=
+et:29418/openvpn refs/changes/01/801/9</pre><pre style=3D"font-family: mono=
+space,monospace; white-space: pre-wrap;"><span>diff --git a/src/openvpn/aut=
+h_token.c b/src/openvpn/auth_token.c</span><br><span>index 192c7c2..3cf55e8=
+ 100644</span><br><span>--- a/src/openvpn/auth_token.c</span><br><span>+++ =
+b/src/openvpn/auth_token.c</span><br><span>@@ -152,7 +152,10 @@</span><br><=
+span>     {</span><br><span>         msg(M_FATAL, &quot;ERROR: not enough d=
+ata in auth-token secret&quot;);</span><br><span>     }</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-    init_key_ctx(key_ctx, &amp;key, &amp;=
+kt, false, &quot;auth-token secret&quot;);</span><br><span style=3D"color: =
 hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+    if (!can_do_chacha)</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
-  default_ciphers =3D &quot;AES-256-GCM:AES-128-GCM&quot;;</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+    /* want to rather print DEFAULT instead of a manually set default=
- list */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (!o-=
-&gt;ncp_ciphers_conf || !strcmp(default_ciphers, o-&gt;ncp_ciphers_conf))</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+        o-&gt;ncp_ciphers =3D defau=
-lt_ciphers;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        =
-o-&gt;ncp_ciphers_conf =3D &quot;DEFAULT&quot;;</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+    else if (!default_in_cipher_list)</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+        /* custom cipher list without DEFAULT string in=
- it,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+         * noth=
-ing to replace/mutate */</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+        return;</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    else</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+        replace_default_in_ncp_ciphers=
-_option(o, default_ciphers);</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+const char *</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+ncp_expanded_ciphers(struct options *o, struct g=
-c_arena *gc)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (!strcmp(o-&gt;ncp=
-_ciphers, o-&gt;ncp_ciphers_conf))</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+        /* expanded ciphers and user set ciphers are identical, no need to=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+         * add an e=
-xpanded version */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-       return &quot;&quot;;</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+    /* two extra brackets=
-, one space, NUL byte */</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+    struct buffer expanded_ciphers_buf =3D alloc_buf_gc(strlen(o-&gt;n=
-cp_ciphers) + 4, gc);</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    buf_printf(&a=
-mp;expanded_ciphers_buf, &quot; (%s)&quot;, o-&gt;ncp_ciphers);</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+    return BSTR(&amp;expanded_c=
-iphers_buf);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span=
-><br><span>diff --git a/src/openvpn/ssl_ncp.h b/src/openvpn/ssl_ncp.h</span=
-><br><span>index afbe331..f90b19a 100644</span><br><span>--- a/src/openvpn/=
-ssl_ncp.h</span><br><span>+++ b/src/openvpn/ssl_ncp.h</span><br><span>@@ -1=
-56,4 +156,23 @@</span><br><span> bool</span><br><span> check_session_cipher=
-(struct tls_session *session, struct options *options);</span><br><span> </=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+/**</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+ * Checks for availability of Chacha2=
-0-Poly1305 and sets</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
- * the ncp_cipher to either AES-256-GCM:AES-128-GCM or</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+ * AES-256-GCM:AES-128-GCM:CHACHA20-POLY=
-1305 if not set.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * If DEFAULT is in =
-the ncp_cipher string, it will be replaced</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+ * by the default cipher string as defined above.</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+ */</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+void</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+options_postprocess_setdefault_ncpciphers(struct opti=
-ons *o);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+/** returns the o-&gt;ncp_ciph=
-ers in brackets, e.g.</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+ *  (AES-256-GCM:CHACHA20-POLY1305) if o-&gt;ncp_ciphers_conf</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+ *  and o-&gt;ncp_ciphers diffe=
-r, otherwise an empty string</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+ *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  The =
-returned string will be allocated in the passed \c gc</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+ */</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+const char *</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+ncp_expanded_ciphers(struct options *o, struct gc_arena *gc);</s=
-pan><br><span> #endif /* ifndef OPENVPN_SSL_NCP_H */</span><br><span>diff -=
--git a/tests/unit_tests/openvpn/test_ncp.c b/tests/unit_tests/openvpn/test_=
-ncp.c</span><br><span>index a8e1021..b744e96 100644</span><br><span>--- a/t=
-ests/unit_tests/openvpn/test_ncp.c</span><br><span>+++ b/tests/unit_tests/o=
-penvpn/test_ncp.c</span><br><span>@@ -54,6 +54,17 @@</span><br><span>     A=
-SSERT(0);</span><br><span> }</span><br><span> </span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+/* Define a dummy dco cipher option to avoid linking against all th=
-e DCO</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * units */</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+#if defined(ENABLE_DCO=
-)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+const char *</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+dco_get_supported_ciphers=
-(void)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+    return &quot;AES-192-GCM:AE=
-S-128-CBC:AES-256-GCM:AES-128-GCM:CHACHA20-POLY1305&quot;;</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+#endif</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+</span><br><span> static void</span><br><span> test_check_ncp_ciphe=
-rs_list(void **state)</span><br><span> {</span><br><span>@@ -260,13 +271,13=
-5 @@</span><br><span>     gc_free(&amp;gc);</span><br><span> }</span><br><s=
-pan> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+static void</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+test_ncp_default(void =
-**state)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+    bool have_chacha =3D ciph=
-er_valid(&quot;CHACHA20-POLY1305&quot;);</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+    struct options o =3D { 0 };</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    o=
-.gc =3D gc_new();</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+    /* no user specif=
-ied string */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    o.=
-ncp_ciphers =3D NULL;</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+    options_postprocess_setdefault_ncpciphers(&amp;o);</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+    if (have_chacha)</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+        assert_string_equal(o.ncp_ciphers, &quot;AES-256-GCM:AES-128-G=
-CM:CHACHA20-POLY1305&quot;);</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    e=
-lse</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+        assert_string_equal(o.=
-ncp_ciphers, &quot;AES-256-GCM:AES-128-GCM&quot;);</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+    assert_string_equal(o.ncp_ciphers_conf, &quot;DEFAULT&=
-quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+    /* check that a default str=
-ing is replaced with DEFAULT */</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+    if (have_chacha)</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-       o.ncp_ciphers =3D &quot;AES-256-GCM:AES-128-GCM:CHACHA20-POLY1305&qu=
-ot;;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+    else</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+        o.ncp_ciphers =3D &quot;AES-256-GCM:AES-128-GC=
-M&quot;;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+    options_postprocess_setdefault_ncpcipher=
-s(&amp;o);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    asser=
-t_string_equal(o.ncp_ciphers_conf, &quot;DEFAULT&quot;);</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+    /* test default in the middle of the string */</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+    o.ncp_ciphers =3D &quo=
-t;BF-CBC:DEFAULT:AES-128-CBC:AES-256-CBC&quot;;</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+    options_postprocess_setdefault_ncpciphers(&=
-amp;o);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+    if (have_chacha)</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+        assert_string_equal(o.ncp_ciphers, &=
-quot;BF-CBC:AES-256-GCM:AES-128-GCM:CHACHA20-POLY1305:AES-128-CBC:AES-256-C=
-BC&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+    else</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+        assert_string_equal(o.ncp_ciphers, &quot=
-;BF-CBC:AES-256-GCM:AES-128-GCM:AES-128-CBC:AES-256-CBC&quot;);</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+    assert_string_equal(o.ncp_ciphers_conf, &=
-quot;BF-CBC:DEFAULT:AES-128-CBC:AES-256-CBC&quot;);</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+    /* string at the beginning */</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+    o.ncp_ciphers =3D &quot;DEFAULT:AES-128-CB=
-C:AES-192-CBC&quot;;</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+    options_postprocess_setdefault_ncpciphers(&amp;o);</span><br><span sty=
+;">+    struct key_parameters key_params;</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+    key_parameters_from_key(&amp;key_params, &amp;key=
+);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    init_key_ctx(=
+key_ctx, &amp;key_params, &amp;kt, false, &quot;auth-token secret&quot;);</=
+span><br><span> </span><br><span>     free_buf(&amp;server_secret_key);</sp=
+an><br><span> }</span><br><span>diff --git a/src/openvpn/crypto.c b/src/ope=
+nvpn/crypto.c</span><br><span>index da503b3..df38cdd 100644</span><br><span=
+>--- a/src/openvpn/crypto.c</span><br><span>+++ b/src/openvpn/crypto.c</spa=
+n><br><span>@@ -892,17 +892,18 @@</span><br><span> }</span><br><span> </spa=
+n><br><span> /**</span><br><span style=3D"color: hsl(0, 100%, 40%);">- * Up=
+date the implicit IV for a key_ctx_bi based on TLS session ids and cipher</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * Update the implici=
+t IV for a key_ctx based on TLS session ids and cipher</span><br><span>  * =
+used.</span><br><span>  *</span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">- * Note that the implicit IV is based on the HMAC key, but only in AEAD=
+ modes</span><br><span style=3D"color: hsl(0, 100%, 40%);">- * where the HM=
+AC key is not used for an actual HMAC.</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+ * Note that the implicit IV is based on the HMAC key of=
+ the \c key parameter,</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+ * but only in AEAD modes where the HMAC key is not used for an actual H=
+MAC.</span><br><span>  *</span><br><span>  * @param ctx                   E=
+ncrypt/decrypt key context</span><br><span style=3D"color: hsl(0, 100%, 40%=
+);">- * @param key                   key, hmac part used to calculate impli=
+cit IV</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @param key=
+                   key parameters holding the key and hmac/</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+ *                              imp=
+licit iv used to calculate implicit IV</span><br><span>  */</span><br><span=
+> static void</span><br><span style=3D"color: hsl(0, 100%, 40%);">-key_ctx_=
+update_implicit_iv(struct key_ctx *ctx, const struct key *key)</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+key_ctx_update_implicit_iv(struc=
+t key_ctx *ctx, const struct key_parameters *key)</span><br><span> {</span>=
+<br><span>     /* Only use implicit IV in AEAD cipher mode, where HMAC key =
+is not used */</span><br><span>     if (cipher_ctx_mode_aead(ctx-&gt;cipher=
+))</span><br><span>@@ -912,6 +913,7 @@</span><br><span>         impl_iv_len=
+ =3D cipher_ctx_iv_length(ctx-&gt;cipher) - sizeof(packet_id_type);</span><=
+br><span>         ASSERT(impl_iv_len + sizeof(packet_id_type) &lt;=3D OPENV=
+PN_MAX_IV_LENGTH);</span><br><span>         ASSERT(impl_iv_len &lt;=3D MAX_=
+HMAC_KEY_LENGTH);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+      ASSERT(impl_iv_len &lt;=3D key-&gt;hmac_size);</span><br><span>      =
+   CLEAR(ctx-&gt;implicit_iv);</span><br><span>         /* The first bytes =
+of the IV are filled with the packet id */</span><br><span>         memcpy(=
+ctx-&gt;implicit_iv + sizeof(packet_id_type), key-&gt;hmac, impl_iv_len);</=
+span><br><span>@@ -920,7 +922,7 @@</span><br><span> </span><br><span> /* gi=
+ven a key and key_type, build a key_ctx */</span><br><span> void</span><br>=
+<span style=3D"color: hsl(0, 100%, 40%);">-init_key_ctx(struct key_ctx *ctx=
+, const struct key *key,</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+init_key_ctx(struct key_ctx *ctx, const struct key_parameters *key,</s=
+pan><br><span>              const struct key_type *kt, int enc,</span><br><=
+span>              const char *prefix)</span><br><span> {</span><br><span>@=
+@ -928,7 +930,7 @@</span><br><span>     CLEAR(*ctx);</span><br><span>     i=
+f (cipher_defined(kt-&gt;cipher))</span><br><span>     {</span><br><span st=
+yle=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+        ASSERT(key-&gt;cipher_size &gt;=3D cipher_kt_key_si=
+ze(kt-&gt;cipher));</span><br><span>         ctx-&gt;cipher =3D cipher_ctx_=
+new();</span><br><span>         cipher_ctx_init(ctx-&gt;cipher, key-&gt;cip=
+her, kt-&gt;cipher, enc);</span><br><span> </span><br><span>@@ -943,8 +945,=
+10 @@</span><br><span>              cipher_kt_iv_size(kt-&gt;cipher));</spa=
+n><br><span>         warn_insecure_key_type(ciphername);</span><br><span>  =
+   }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><spa=
+n>     if (md_defined(kt-&gt;digest))</span><br><span>     {</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+        ASSERT(key-&gt;hmac_size &=
+gt;=3D md_kt_size(kt-&gt;digest));</span><br><span>         ctx-&gt;hmac =
+=3D hmac_ctx_new();</span><br><span>         hmac_ctx_init(ctx-&gt;hmac, ke=
+y-&gt;hmac, kt-&gt;digest);</span><br><span> </span><br><span>@@ -965,41 +9=
+69,43 @@</span><br><span> }</span><br><span> </span><br><span> void</span><=
+br><span style=3D"color: hsl(0, 100%, 40%);">-init_key_bi_ctx_send(struct k=
+ey_ctx *ctx, const struct key2 *key2,</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-                     int key_direction, const struct key_ty=
+pe *kt, const char *name)</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+init_key_bi_ctx_send(struct key_ctx *ctx, const struct key_parameters=
+ *key_params,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
+               const struct key_type *kt, const char *name)</span><br><span=
+> {</span><br><span>     char log_prefix[128] =3D { 0 };</span><br><span st=
+yle=3D"color: hsl(0, 100%, 40%);">-    struct key_direction_state kds;</spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"=
+color: hsl(0, 100%, 40%);">-    key_direction_state_init(&amp;kds, key_dire=
+ction);</span><br><span> </span><br><span>     snprintf(log_prefix, sizeof(=
+log_prefix), &quot;Outgoing %s&quot;, name);</span><br><span style=3D"color=
+: hsl(0, 100%, 40%);">-    init_key_ctx(ctx, &amp;key2-&gt;keys[kds.out_key=
+], kt,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-               =
+  OPENVPN_OP_ENCRYPT, log_prefix);</span><br><span style=3D"color: hsl(0, 1=
+00%, 40%);">-    key_ctx_update_implicit_iv(ctx, &amp;key2-&gt;keys[kds.out=
+_key]);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    init_key=
+_ctx(ctx, key_params, kt, OPENVPN_OP_ENCRYPT, log_prefix);</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+    key_ctx_update_implicit_iv(ctx, =
+key_params);</span><br><span> }</span><br><span> </span><br><span> void</sp=
+an><br><span style=3D"color: hsl(0, 100%, 40%);">-init_key_bi_ctx_recv(stru=
+ct key_ctx *ctx, const struct key2 *key2,</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-                     int key_direction, const struct ke=
+y_type *kt, const char *name)</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+init_key_bi_ctx_recv(struct key_ctx *ctx, const struct key_parame=
+ters *key_params,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+                   const struct key_type *kt, const char *name)</span><br><=
+span> {</span><br><span>     char log_prefix[128] =3D { 0 };</span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">-    struct key_direction_state kds;<=
+/span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-    key_direction_state_init(&amp;kds, key_=
+direction);</span><br><span> </span><br><span>     snprintf(log_prefix, siz=
+eof(log_prefix), &quot;Incoming %s&quot;, name);</span><br><span style=3D"c=
+olor: hsl(0, 100%, 40%);">-    init_key_ctx(ctx, &amp;key2-&gt;keys[kds.in_=
+key], kt,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            =
+     OPENVPN_OP_DECRYPT, log_prefix);</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-    key_ctx_update_implicit_iv(ctx, &amp;key2-&gt;keys[kds.=
+in_key]);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    init_k=
+ey_ctx(ctx, key_params, kt, OPENVPN_OP_DECRYPT, log_prefix);</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+    key_ctx_update_implicit_iv(ctx=
+, key_params);</span><br><span> }</span><br><span> </span><br><span> void</=
+span><br><span> init_key_ctx_bi(struct key_ctx_bi *ctx, const struct key2 *=
+key2,</span><br><span>                 int key_direction, const struct key_=
+type *kt, const char *name)</span><br><span> {</span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-    init_key_bi_ctx_send(&amp;ctx-&gt;encrypt, key=
+2, key_direction, kt, name);</span><br><span style=3D"color: hsl(0, 100%, 4=
+0%);">-    init_key_bi_ctx_recv(&amp;ctx-&gt;decrypt, key2, key_direction, =
+kt, name);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    struc=
+t key_direction_state kds;</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    key_dire=
+ction_state_init(&amp;kds, key_direction);</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+    struct key_parameters send_key;</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+    struct key_parameters recv_key;</span><br><span sty=
 le=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+    if (have_chacha)</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+        assert_string_equal(o.ncp_ciphers, &quot;AES-256-GCM:AES-128-GC=
-M:CHACHA20-POLY1305:AES-128-CBC:AES-192-CBC&quot;);</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+    else</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
-   assert_string_equal(o.ncp_ciphers, &quot;AES-256-GCM:AES-128-GCM:AES-128=
--CBC:AES-192-CBC&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    asser=
-t_string_equal(o.ncp_ciphers_conf, &quot;DEFAULT:AES-128-CBC:AES-192-CBC&qu=
-ot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+    /* DEFAULT at the end */</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+    o.ncp_ciphers =3D &q=
-uot;AES-192-GCM:AES-128-CBC:DEFAULT&quot;;</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+    options_postprocess_setdefault_ncpciphers(&amp;o=
-);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+    if (have_chacha)</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+        assert_string_equal(o.ncp_ciphers, &quot;=
-AES-192-GCM:AES-128-CBC:AES-256-GCM:AES-128-GCM:CHACHA20-POLY1305&quot;);</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+    else</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+        assert_string_equal(o.ncp_ciphers, &quot;AES-192-GCM=
-:AES-128-CBC:AES-256-GCM:AES-128-GCM&quot;);</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+    assert_string_equal(o.ncp_ciphers_conf, &quot;AES-192-GCM:AE=
-S-128-CBC:DEFAULT&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    gc_free(&=
-amp;o.gc);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+static void</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+test_ncp_expand(void **state)</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+    bool have_chacha =3D cipher_valid(&quot;CHACHA20-POLY1305&=
-quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    struct o=
-ptions o =3D {0};</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+    o.gc =3D gc_new()=
-;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    struct gc_aren=
-a gc =3D gc_new();</span><br><span style=3D"color: hsl(120, 100%, 40%);">+<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+    /* no user speci=
-fied string */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    o=
-.ncp_ciphers =3D NULL;</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+    options_postprocess_setdefault_ncpciphers(&amp;o);</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+    const char *expanded =3D ncp_expanded_ciphers(&amp;o=
-, &amp;gc);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+    /* user specificed stri=
-ng with DEFAULT in it */</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+    o.ncp_ciphers =3D &quot;AES-192-GCM:DEFAULT&quot;;</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+    options_postprocess_setdefault_=
-ncpciphers(&amp;o);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-    const char *expanded2 =3D ncp_expanded_ciphers(&amp;o, &amp;gc);</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+    if (have_chacha)</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+        assert_string_equal(expanded, &quot; (AES-256-GCM:=
-AES-128-GCM:CHACHA20-POLY1305)&quot;);</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+        assert_string_equal(expanded2, &quot; (AES-192-G=
-CM:AES-256-GCM:AES-128-GCM:CHACHA20-POLY1305)&quot;);</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+    else</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
-   assert_string_equal(expanded, &quot; (AES-256-GCM:AES-128-GCM)&quot;);</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+        assert_string=
-_equal(expanded2, &quot; (AES-192-GCM:AES-256-GCM:AES-128-GCM)&quot;);</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+    o.ncp_ciphers =3D &quot;AES-192-GCM:BF-CBC&quot;;</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+    options_postprocess=
-_setdefault_ncpciphers(&amp;o);</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    ass=
-ert_string_equal(ncp_expanded_ciphers(&amp;o, &amp;gc), &quot;&quot;);</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    gc_free(&amp;o.gc);</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+    gc_free(&amp;gc);</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span> </span><br><span=
-> </span><br><span> const struct CMUnitTest ncp_tests[] =3D {</span><br><sp=
-an>     cmocka_unit_test(test_check_ncp_ciphers_list),</span><br><span>    =
- cmocka_unit_test(test_extract_client_ciphers),</span><br><span>     cmocka=
-_unit_test(test_poor_man),</span><br><span style=3D"color: hsl(0, 100%, 40%=
-);">-    cmocka_unit_test(test_ncp_best)</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+    cmocka_unit_test(test_ncp_best),</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+    cmocka_unit_test(test_ncp_default=
-),</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    cmocka_unit_t=
-est(test_ncp_expand),</span><br><span> };</span><br><span> </span><br><span=
-> </span><br><span></span><br></pre><p>To view, visit <a href=3D"http://ger=
-rit.openvpn.net/c/openvpn/+/828?usp=3Demail">change 828</a>. To unsubscribe=
-, or for help writing mail filters, visit <a href=3D"http://gerrit.openvpn.=
-net/settings">settings</a>.</p><div itemscope itemtype=3D"http://schema.org=
-/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://schema=
-.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c=
-/openvpn/+/828?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change=
-"/></div></div>
+0, 100%, 40%);">+    key_parameters_from_key(&amp;send_key, &amp;key2-&gt;k=
+eys[kds.out_key]);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+   key_parameters_from_key(&amp;recv_key, &amp;key2-&gt;keys[kds.in_key]);<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+    init_key_bi_ctx_send(&amp;ctx-&gt;e=
+ncrypt, &amp;send_key, kt, name);</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+    init_key_bi_ctx_recv(&amp;ctx-&gt;decrypt, &amp;recv_key,=
+ kt, name);</span><br><span>     ctx-&gt;initialized =3D true;</span><br><s=
+pan> }</span><br><span> </span><br><span>@@ -1116,6 +1122,16 @@</span><br><=
+span> }</span><br><span> </span><br><span> void</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+key_parameters_from_key(struct key_parameters *=
+key_params, const struct key *key)</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+ CLEAR(*key_params);</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++    memcpy(key_params-&gt;cipher, key-&gt;cipher, MAX_CIPHER_KEY_LENGTH);<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+    key_params-&gt;c=
+ipher_size =3D MAX_CIPHER_KEY_LENGTH;</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+    memcpy(key_params-&gt;hmac, key-&gt;hmac, MAX_HMAC_KE=
+Y_LENGTH);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    key_p=
+arams-&gt;hmac_size =3D MAX_HMAC_KEY_LENGTH;</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+void</span><=
+br><span> test_crypto(struct crypto_options *co, struct frame *frame)</span=
+><br><span> {</span><br><span>     int i, j;</span><br><span>diff --git a/s=
+rc/openvpn/crypto.h b/src/openvpn/crypto.h</span><br><span>index b3612fb..d=
+765737 100644</span><br><span>--- a/src/openvpn/crypto.h</span><br><span>++=
++ b/src/openvpn/crypto.h</span><br><span>@@ -144,7 +144,8 @@</span><br><spa=
+n> </span><br><span> /**</span><br><span>  * Container for unidirectional c=
+ipher and HMAC %key material.</span><br><span style=3D"color: hsl(0, 100%, =
+40%);">- * @ingroup control_processor</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+ * @ingroup control_processor. This is used as a wire for=
+mat/file format</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * k=
+ey, so it cannot be changed to add fields or change the length of fields</s=
+pan><br><span>  */</span><br><span> struct key</span><br><span> {</span><br=
+><span>@@ -154,6 +155,32 @@</span><br><span>     /**&lt; %Key material for =
+HMAC operations. */</span><br><span> };</span><br><span> </span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+/** internal structure similar to str=
+uct key that holds key information</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+ * but is not represented on wire and can be changed/extende=
+d</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ */</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+struct key_parameters {</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+    /** %Key material for ciph=
+er operations. */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+  uint8_t cipher[MAX_CIPHER_KEY_LENGTH];</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+    /** Number of bytes set in the cipher key material */</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+    int cipher_size;</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+    /** %Key material for HMAC operations. */</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+    uint8_t hmac[MAX_HMAC_K=
+EY_LENGTH];</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+    /** Number of bytes set=
+ in the HMac key material */</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+    int hmac_size;</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+};</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+/**</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+ * Converts a struct key representation into=
+ a struct key_parameters</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+ * representation.</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+ *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @param key=
+_params    destination for the converted struct</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+ * @param key           source of the conversio=
+n</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ */</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+void</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+key_parameters_from_key(struct key_parameters *ke=
+y_params, const struct key *key);</span><br><span> </span><br><span> /**</s=
+pan><br><span>  * Container for one set of cipher and/or HMAC contexts.</sp=
+an><br><span>@@ -347,19 +374,17 @@</span><br><span>  * Key context function=
+s</span><br><span>  */</span><br><span> </span><br><span style=3D"color: hs=
+l(0, 100%, 40%);">-void init_key_ctx(struct key_ctx *ctx, const struct key =
+*key,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+void init_key_=
+ctx(struct key_ctx *ctx, const struct key_parameters *key,</span><br><span>=
+                   const struct key_type *kt, int enc,</span><br><span>    =
+               const char *prefix);</span><br><span> </span><br><span> void=
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">-init_key_bi_ctx_send(=
+struct key_ctx *ctx, const struct key2 *key2,</span><br><span style=3D"colo=
+r: hsl(0, 100%, 40%);">-                     int key_direction, const struc=
+t key_type *kt,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-      =
+               const char *name);</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+init_key_bi_ctx_send(struct key_ctx *ctx, const struct key_pa=
+rameters *key,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
+                const struct key_type *kt, const char *name);</span><br><sp=
+an> </span><br><span> void</span><br><span style=3D"color: hsl(0, 100%, 40%=
+);">-init_key_bi_ctx_recv(struct key_ctx *ctx, const struct key2 *key2,</sp=
+an><br><span style=3D"color: hsl(0, 100%, 40%);">-                     int =
+key_direction, const struct key_type *kt,</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-                     const char *name);</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+init_key_bi_ctx_recv(struct key_ctx=
+ *ctx, const struct key_parameters *key,</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+                     const struct key_type *kt, const =
+char *name);</span><br><span> </span><br><span> void free_key_ctx(struct ke=
+y_ctx *ctx);</span><br><span> </span><br><span>diff --git a/src/openvpn/tls=
+_crypt.c b/src/openvpn/tls_crypt.c</span><br><span>index b8894db..76f06bc 1=
+00644</span><br><span>--- a/src/openvpn/tls_crypt.c</span><br><span>+++ b/s=
+rc/openvpn/tls_crypt.c</span><br><span>@@ -377,7 +377,11 @@</span><br><span=
+>     {</span><br><span>         msg(M_FATAL, &quot;ERROR: --tls-crypt-v2 n=
+ot supported&quot;);</span><br><span>     }</span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-    init_key_ctx(key_ctx, &amp;srv_key, &amp;kt, encr=
+ypt, &quot;tls-crypt-v2 server key&quot;);</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+    struct key_parameters srv_key_params;</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+    key_parameters_from_key(&amp;srv_key_params, =
+&amp;srv_key);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+    init_key_ctx(key_ctx=
+, &amp;srv_key_params, &amp;kt, encrypt, &quot;tls-crypt-v2 server key&quot=
+;);</span><br><span>     secure_memzero(&amp;srv_key, sizeof(srv_key));</sp=
+an><br><span> }</span><br><span> </span><br><span>diff --git a/tests/unit_t=
+ests/openvpn/test_auth_token.c b/tests/unit_tests/openvpn/test_auth_token.c=
+</span><br><span>index 8a0c16a..be3b2b7 100644</span><br><span>--- a/tests/=
+unit_tests/openvpn/test_auth_token.c</span><br><span>+++ b/tests/unit_tests=
+/openvpn/test_auth_token.c</span><br><span>@@ -87,7 +87,8 @@</span><br><spa=
+n>     struct test_context *ctx =3D calloc(1, sizeof(*ctx));</span><br><spa=
+n>     *state =3D ctx;</span><br><span> </span><br><span style=3D"color: hs=
+l(0, 100%, 40%);">-    struct key key =3D { 0 };</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+    struct key_parameters key =3D { 0 };</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+    key.hmac_size =3D MAX=
+_HMAC_KEY_LENGTH;     /* 64 byte of 0 */</span><br><span> </span><br><span>=
+     ctx-&gt;kt =3D auth_token_kt();</span><br><span>     if (!ctx-&gt;kt.d=
+igest)</span><br><span>@@ -148,15 +149,17 @@</span><br><span>              =
+        AUTH_TOKEN_HMAC_OK);</span><br><span> </span><br><span>     /* Chan=
+ge auth-token key */</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
+   struct key key;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
+ memset(&amp;key, &#39;1&#39;, sizeof(key));</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+    struct key_parameters key;</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+    memset(key.hmac, &#39;1&#39;, sizeo=
+f(key.hmac));</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    ke=
+y.hmac_size =3D MAX_HMAC_KEY_LENGTH;</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+</span><br><span>     free_key_ctx(&amp;ctx-&gt;multi.opt.=
+auth_token_key);</span><br><span>     init_key_ctx(&amp;ctx-&gt;multi.opt.a=
+uth_token_key, &amp;key, &amp;ctx-&gt;kt, false, &quot;TEST&quot;);</span><=
+br><span> </span><br><span>     assert_int_equal(verify_auth_token(&amp;ctx=
+-&gt;up, &amp;ctx-&gt;multi, ctx-&gt;session), 0);</span><br><span> </span>=
+<br><span>     /* Load original test key again */</span><br><span style=3D"=
+color: hsl(0, 100%, 40%);">-    memset(&amp;key, 0, sizeof(key));</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+    memset(&amp;key.hmac, 0, =
+sizeof(key.hmac));</span><br><span>     free_key_ctx(&amp;ctx-&gt;multi.opt=
+.auth_token_key);</span><br><span>     init_key_ctx(&amp;ctx-&gt;multi.opt.=
+auth_token_key, &amp;key, &amp;ctx-&gt;kt, false, &quot;TEST&quot;);</span>=
+<br><span>     assert_int_equal(verify_auth_token(&amp;ctx-&gt;up, &amp;ctx=
+-&gt;multi, ctx-&gt;session),</span><br><span>diff --git a/tests/unit_tests=
+/openvpn/test_tls_crypt.c b/tests/unit_tests/openvpn/test_tls_crypt.c</span=
+><br><span>index 4f12f88..94cd0ee 100644</span><br><span>--- a/tests/unit_t=
+ests/openvpn/test_tls_crypt.c</span><br><span>+++ b/tests/unit_tests/openvp=
+n/test_tls_crypt.c</span><br><span>@@ -157,7 +157,8 @@</span><br><span>    =
+ struct test_tls_crypt_context *ctx =3D calloc(1, sizeof(*ctx));</span><br>=
+<span>     *state =3D ctx;</span><br><span> </span><br><span style=3D"color=
+: hsl(0, 100%, 40%);">-    struct key key =3D { 0 };</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    struct key_parameters key =3D { .ciph=
+er =3D { 0 }, .hmac =3D { 0 },</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+                                  .hmac_size =3D MAX_HMAC_KEY_LE=
+NGTH, .cipher_size =3D MAX_CIPHER_KEY_LENGTH };</span><br><span> </span><br=
+><span>     ctx-&gt;kt =3D tls_crypt_kt();</span><br><span>     if (!ctx-&g=
+t;kt.cipher || !ctx-&gt;kt.digest)</span><br><span>@@ -367,7 +368,8 @@</spa=
+n><br><span>     skip_if_tls_crypt_not_supported(ctx);</span><br><span> </s=
+pan><br><span>     /* Change decrypt key */</span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-    struct key key =3D { { 1 } };</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+    struct key_parameters key =3D { .ci=
+pher =3D { 1 }, .hmac =3D { 1 },</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+                                  .cipher_size =3D MAX_CIPHER_=
+KEY_LENGTH, .hmac_size =3D MAX_HMAC_KEY_LENGTH };</span><br><span>     free=
+_key_ctx(&amp;ctx-&gt;co.key_ctx_bi.decrypt);</span><br><span>     init_key=
+_ctx(&amp;ctx-&gt;co.key_ctx_bi.decrypt, &amp;key, &amp;ctx-&gt;kt, false, =
+&quot;TEST&quot;);</span><br><span> </span><br><span></span><br></pre><p>To=
+ view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/801?usp=3Dema=
+il">change 801</a>. To unsubscribe, or for help writing mail filters, visit=
+ <a href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div items=
+cope itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D=
+"action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" h=
+ref=3D"http://gerrit.openvpn.net/c/openvpn/+/801?usp=3Demail"/><meta itempr=
+op=3D"name" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: Ia1c5209022d3ab4c0dac6438c41=
-891c7d059f812 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 828 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 3 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I4a981c5a70717e2276d89bf83a0=
+6c7fdbe6712d7 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 801 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 9 </div>
 <div style=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@...1711...=
 27...&gt; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
 1...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
 41...&gt; </div>
 <div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
 
 
---Z1sa+6C7s4c=--
+--xkawUcn2MFE=--
 
