@@ -1,15 +1,15 @@
 From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Tue, 24 Dec 2024 13:54:26 +0000
+Date: Tue, 24 Dec 2024 13:56:34 +0000
 In-Reply-To: <gerrit.1727098847000.Ie2471e6b2d6974e70423b09918ad1c2136253754@...2715...>
 References: <gerrit.1727098847000.Ie2471e6b2d6974e70423b09918ad1c2136253754@...2715...>
 Reply-To: gert@...1296..., arne-openvpn@...1227...,
  gianmarco@...2726..., openvpn-devel@lists.sourceforge.net,
  frank@...2641..., a@...2181...
-Message-ID: <375a6840bfbc8921c9a5e362d152b4a4a2044caa-EmailReviewComments-HTML@...2715...>
+Message-ID: <6ab0c3abc436fc3238817977a9b2fe88723f3034-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="r/yxFhf539U="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="NWO9iu1UjXk="; charset=UTF-8
 Subject: [Openvpn-devel] [S] Change in openvpn[master]: override ai_family
  if 'local' numeric address was specified
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -23,7 +23,7 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: its_Giaan <gianmarco@...2726...>
 Cc: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---r/yxFhf539U=
+--NWO9iu1UjXk=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
@@ -37,36 +37,21 @@ Change subject: override ai_family if 'local' numeric address was specified
 ......................................................................
 
 
-Patch Set 7: Code-Review-2
+Patch Set 7:
 
 (1 comment)
 
 Patchset:
 
 PS7:
-Hah, how annoying.
-
-The client-side behaviour is fine (changing "a mismatch of proto and litera=
-l address will fail" to "upgrade to the other proto"), but the *server* sid=
-e behaviour breaks all my dual-stack servers.
-
-So a config with
+adding `local ::` to said config makes it
 
 ```
-port 51194
-proto udp6
+udp6       0      0 :::51194                :::*
 ```
 
-(no `local` statement whatsoever, so "ANY") ends up IPv4-only
-
-```
-$ netstat -an |grep 51194
-udp        0      0 0.0.0.0:51194           0.0.0.0:*=20=20=20=20=20=20=20=
-=20=20
-```
-
-... which is inacceptable.  (This is FreeBSD output, which clearly differen=
-tiates between "udp", "udp6" and "0.0.0.0:51194" vs. ":::51194").  Meh.
+so it can be made to work, but I really prefer that we do not break the cur=
+rent behaviour for "ANY".
 
 
 
@@ -90,47 +75,36 @@ Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
 Gerrit-Attention: its_Giaan <gianmarco@...2726...>
 Gerrit-Attention: flichtenheld <frank@...2641...>
 Gerrit-Attention: ordex <a@...2181...>
-Gerrit-Comment-Date: Tue, 24 Dec 2024 13:54:26 +0000
+Gerrit-Comment-Date: Tue, 24 Dec 2024 13:56:34 +0000
 Gerrit-HasComments: Yes
-Gerrit-Has-Labels: Yes
+Gerrit-Has-Labels: No
 Gerrit-MessageType: comment
 
---r/yxFhf539U=
+--NWO9iu1UjXk=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <p> Attention is currently required from: flichtenheld, its_Giaan, ordex, p=
 laisthos. </p>
-<p>Patch set 7:<span style=3D"border-radius: 3px; display: inline-block; ma=
-rgin: 0 2px; padding: 4px;background-color: #ffd4d4;">Code-Review -2</span>=
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/762?usp=3Demail">Vi=
-ew Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0=
-;"><li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-s=
-tyle: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p s=
-tyle=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn=
-/+/762?tab=3Dcomments">Patch Set #7:</a> </p><p style=3D"white-space: pre-w=
-rap; word-wrap: break-word;">Hah, how annoying.</p><p style=3D"white-space:=
- pre-wrap; word-wrap: break-word;">The client-side behaviour is fine (chang=
-ing &quot;a mismatch of proto and literal address will fail&quot; to &quot;=
-upgrade to the other proto&quot;), but the *server* side behaviour breaks a=
-ll my dual-stack servers.</p><p style=3D"white-space: pre-wrap; word-wrap: =
-break-word;">So a config with</p><p style=3D"white-space: pre-wrap; word-wr=
-ap: break-word;">```<br>port 51194<br>proto udp6<br>```</p><p style=3D"whit=
-e-space: pre-wrap; word-wrap: break-word;">(no `local` statement whatsoever=
-, so &quot;ANY&quot;) ends up IPv4-only</p><p style=3D"white-space: pre-wra=
-p; word-wrap: break-word;">```<br>$ netstat -an |grep 51194<br>udp        0=
-      0 0.0.0.0:51194           0.0.0.0:*                          <br>```<=
-/p><p style=3D"white-space: pre-wrap; word-wrap: break-word;">... which is =
-inacceptable.  (This is FreeBSD output, which clearly differentiates betwee=
-n &quot;udp&quot;, &quot;udp6&quot; and &quot;0.0.0.0:51194&quot; vs. &quot=
-;:::51194&quot;).  Meh.</p></li></ul></li></ul><p>To view, visit <a href=3D=
-"http://gerrit.openvpn.net/c/openvpn/+/762?usp=3Demail">change 762</a>. To =
-unsubscribe, or for help writing mail filters, visit <a href=3D"http://gerr=
-it.openvpn.net/settings">settings</a>.</p><div itemscope itemtype=3D"http:/=
-/schema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"ht=
-tp://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.op=
-envpn.net/c/openvpn/+/762?usp=3Demail"/><meta itemprop=3D"name" content=3D"=
-View Change"/></div></div>
+<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/762?usp=3Demail">View C=
+hange</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0;"><=
+li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-style=
+: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p style=
+=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/7=
+62?tab=3Dcomments">Patch Set #7:</a> </p><p style=3D"white-space: pre-wrap;=
+ word-wrap: break-word;">adding `local ::` to said config makes it</p><p st=
+yle=3D"white-space: pre-wrap; word-wrap: break-word;">```<br>udp6       0  =
+    0 :::51194                :::*                               <br>```</p=
+><p style=3D"white-space: pre-wrap; word-wrap: break-word;">so it can be ma=
+de to work, but I really prefer that we do not break the current behaviour =
+for &quot;ANY&quot;.</p></li></ul></li></ul><p>To view, visit <a href=3D"ht=
+tp://gerrit.openvpn.net/c/openvpn/+/762?usp=3Demail">change 762</a>. To uns=
+ubscribe, or for help writing mail filters, visit <a href=3D"http://gerrit.=
+openvpn.net/settings">settings</a>.</p><div itemscope itemtype=3D"http://sc=
+hema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http:=
+//schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openv=
+pn.net/c/openvpn/+/762?usp=3Demail"/><meta itemprop=3D"name" content=3D"Vie=
+w Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
@@ -158,12 +132,12 @@ ts.sourceforge.net&gt; </div>
 41...&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: ordex &lt;a@...2181...&gt; <=
 /div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Tue, 24 Dec 2024 13:54:26=
+<div style=3D"display:none"> Gerrit-Comment-Date: Tue, 24 Dec 2024 13:56:34=
  +0000 </div>
 <div style=3D"display:none"> Gerrit-HasComments: Yes </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: No </div>
 <div style=3D"display:none"> Gerrit-MessageType: comment </div>
 
 
---r/yxFhf539U=--
+--NWO9iu1UjXk=--
 
