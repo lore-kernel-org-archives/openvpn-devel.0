@@ -1,15 +1,15 @@
 From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Tue, 24 Dec 2024 12:15:23 +0000
+Date: Tue, 24 Dec 2024 12:16:20 +0000
 In-Reply-To: <gerrit.1727098847000.Ie2471e6b2d6974e70423b09918ad1c2136253754@...2715...>
 References: <gerrit.1727098847000.Ie2471e6b2d6974e70423b09918ad1c2136253754@...2715...>
 Reply-To: gert@...1296..., arne-openvpn@...1227...,
  gianmarco@...2726..., openvpn-devel@lists.sourceforge.net,
  frank@...2641..., a@...2181...
-Message-ID: <6fbb423c4467a7ed77b25f795a75455657c4c0cc-EmailReviewComments-HTML@...2715...>
+Message-ID: <6e3625a2f6bb165e8ef59204fb357e80638fea19-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="zRkcuwxIjUc="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="t4qlQ35TS9Y="; charset=UTF-8
 Subject: [Openvpn-devel] [S] Change in openvpn[master]: override ai_family
  if 'local' numeric address was specified
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -23,7 +23,7 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: its_Giaan <gianmarco@...2726...>
 Cc: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---zRkcuwxIjUc=
+--t4qlQ35TS9Y=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
@@ -37,7 +37,16 @@ Change subject: override ai_family if 'local' numeric address was specified
 ......................................................................
 
 
-Patch Set 7: Code-Review+2
+Patch Set 7:
+
+(1 comment)
+
+Patchset:
+
+PS7:
+Change makes sense, the fbsd12 build fails were due to "local problems on t=
+he test machine".
+
 
 
 --
@@ -60,28 +69,32 @@ Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
 Gerrit-Attention: its_Giaan <gianmarco@...2726...>
 Gerrit-Attention: flichtenheld <frank@...2641...>
 Gerrit-Attention: ordex <a@...2181...>
-Gerrit-Comment-Date: Tue, 24 Dec 2024 12:15:23 +0000
-Gerrit-HasComments: No
-Gerrit-Has-Labels: Yes
+Gerrit-Comment-Date: Tue, 24 Dec 2024 12:16:20 +0000
+Gerrit-HasComments: Yes
+Gerrit-Has-Labels: No
 Gerrit-MessageType: comment
 
---zRkcuwxIjUc=
+--t4qlQ35TS9Y=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <p> Attention is currently required from: flichtenheld, its_Giaan, ordex, p=
 laisthos. </p>
-<p>Patch set 7:<span style=3D"border-radius: 3px; display: inline-block; ma=
-rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/762?usp=3Demail">Vi=
-ew Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To vie=
-w, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/762?usp=3Demail">=
-change 762</a>. To unsubscribe, or for help writing mail filters, visit <a =
-href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope=
- itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"act=
-ion" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=
-=3D"http://gerrit.openvpn.net/c/openvpn/+/762?usp=3Demail"/><meta itemprop=
-=3D"name" content=3D"View Change"/></div></div>
+<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/762?usp=3Demail">View C=
+hange</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0;"><=
+li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-style=
+: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p style=
+=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/7=
+62?tab=3Dcomments">Patch Set #7:</a> </p><p style=3D"white-space: pre-wrap;=
+ word-wrap: break-word;">Change makes sense, the fbsd12 build fails were du=
+e to &quot;local problems on the test machine&quot;.</p></li></ul></li></ul=
+><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/762?usp=
+=3Demail">change 762</a>. To unsubscribe, or for help writing mail filters,=
+ visit <a href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div=
+ itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemp=
+rop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"=
+url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/762?usp=3Demail"/><meta =
+itemprop=3D"name" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
@@ -109,12 +122,12 @@ ts.sourceforge.net&gt; </div>
 41...&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: ordex &lt;a@...2181...&gt; <=
 /div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Tue, 24 Dec 2024 12:15:23=
+<div style=3D"display:none"> Gerrit-Comment-Date: Tue, 24 Dec 2024 12:16:20=
  +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: No </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
+<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: No </div>
 <div style=3D"display:none"> Gerrit-MessageType: comment </div>
 
 
---zRkcuwxIjUc=--
+--t4qlQ35TS9Y=--
 
