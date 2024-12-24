@@ -1,17 +1,15 @@
-From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Tue, 24 Dec 2024 14:00:18 +0000
-In-Reply-To: <gerrit.1727098847000.Ie2471e6b2d6974e70423b09918ad1c2136253754@...2715...>
-References: <gerrit.1727098847000.Ie2471e6b2d6974e70423b09918ad1c2136253754@...2715...>
-Reply-To: gert@...1296..., arne-openvpn@...1227...,
- gianmarco@...2726..., openvpn-devel@lists.sourceforge.net,
- frank@...2641..., a@...2181...
-Message-ID: <2d7a44e6966bd4167d0c275a4fae5ea0b8ced298-EmailReviewComments-HTML@...2715...>
+From: "stipa (Code Review)" <gerrit@...515...>
+Date: Tue, 24 Dec 2024 16:06:27 +0000
+References: <gerrit.1735056384000.I87e4593e6a548bacd40b840cd241950019fa457d@...2715...>
+Reply-To: lstipakov@...277..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net, frank@...2641...
+Message-ID: <ed2fe9e4bb773ae60f69b9f30963a3083104de02-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="INTb2GNOWt8="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: override ai_family
- if 'local' numeric address was specified
+Content-Type: multipart/alternative; boundary="/pLJ22qOGvk="; charset=UTF-8
+Subject: [Openvpn-devel] [XS] Change in openvpn[master]: repair DNS address
+ option
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,121 +18,150 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: its_Giaan <gianmarco@...2726...>
-Cc: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---INTb2GNOWt8=
+--/pLJ22qOGvk=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: flichtenheld, its_Giaan, ordex, plais=
-thos.
+Attention is currently required from: flichtenheld, plaisthos.
 
-cron2 has posted comments on this change. ( http://gerrit.openvpn.net/c/ope=
-nvpn/+/762?usp=3Demail )
+Hello plaisthos, flichtenheld,
 
-Change subject: override ai_family if 'local' numeric address was specified
+I'd like you to do a code review.
+Please visit
+
+    http://gerrit.openvpn.net/c/openvpn/+/845?usp=3Demail
+
+to review the following change.
+
+
+Change subject: repair DNS address option
 ......................................................................
 
+repair DNS address option
 
-Patch Set 7:
+Commit
 
-(1 comment)
+  6f2d222 ("dns: store IPv4 addresses in network byte order")
 
-Patchset:
+changed the internal representation of IPv4 address within DNS
+settings to network byte order, however later this value is copied into
+tuntap_options, where IPv4 addresses are assumed to be in host byte
+order (see lots of occurences of "htonl(tt->" in tun.c). As a
+consequence, DNS server address is set incorrectly, like 4.4.8.8 instead
+of 8.8.4.4
 
-PS7:
-So the fix is
+Fix by converting address to host byte order when copying from DNS
+options to tuntap_options.
 
-```
-if ( hostname =3D=3D NULL )           /* bind to ANY, honour proto */
-{
-    hints.ai_family =3D ai_family;
-}
+Change-Id: I87e4593e6a548bacd40b840cd241950019fa457d
+Signed-off-by: Lev Stipakov <lev@...515...>
+---
+M src/openvpn/options.c
+1 file changed, 1 insertion(+), 1 deletion(-)
 
 
+
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/45/845/1
+
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index b2a3a8b..20e8d55 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -1390,7 +1390,7 @@
+                         overflow =3D true;
+                         continue;
+                     }
+-                    tt->dns[tt->dns_len++] =3D server->addr[i].in.a4.s_add=
+r;
++                    tt->dns[tt->dns_len++] =3D ntohl(server->addr[i].in.a4=
+.s_addr);
+                 }
+                 else
+                 {
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/762?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/845?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings
 
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: Ie2471e6b2d6974e70423b09918ad1c2136253754
-Gerrit-Change-Number: 762
-Gerrit-PatchSet: 7
-Gerrit-Owner: its_Giaan <gianmarco@...2726...>
-Gerrit-Reviewer: cron2 <gert@...1296...>
+Gerrit-Change-Id: I87e4593e6a548bacd40b840cd241950019fa457d
+Gerrit-Change-Number: 845
+Gerrit-PatchSet: 1
+Gerrit-Owner: stipa <lstipakov@...277...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: ordex <a@...2181...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: its_Giaan <gianmarco@...2726...>
 Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Attention: ordex <a@...2181...>
-Gerrit-Comment-Date: Tue, 24 Dec 2024 14:00:18 +0000
-Gerrit-HasComments: Yes
-Gerrit-Has-Labels: No
-Gerrit-MessageType: comment
+Gerrit-MessageType: newchange
 
---INTb2GNOWt8=
+--/pLJ22qOGvk=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p> Attention is currently required from: flichtenheld, its_Giaan, ordex, p=
-laisthos. </p>
-<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/762?usp=3Demail">View C=
-hange</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0;"><=
-li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-style=
-: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p style=
-=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/7=
-62?tab=3Dcomments">Patch Set #7:</a> </p><p style=3D"white-space: pre-wrap;=
- word-wrap: break-word;">So the fix is</p><pre style=3D"font-family: monosp=
-ace,monospace; white-space: pre-wrap;">```<br>if ( hostname =3D=3D NULL )  =
-         /* bind to ANY, honour proto */<br>{<br>    hints.ai_family =3D ai=
-_family;<br>}</pre></li></ul></li></ul><p>To view, visit <a href=3D"http://=
-gerrit.openvpn.net/c/openvpn/+/762?usp=3Demail">change 762</a>. To unsubscr=
-ibe, or for help writing mail filters, visit <a href=3D"http://gerrit.openv=
-pn.net/settings">settings</a>.</p><div itemscope itemtype=3D"http://schema.=
-org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://sch=
-ema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.ne=
-t/c/openvpn/+/762?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Cha=
-nge"/></div></div>
+<p> Attention is currently required from: flichtenheld, plaisthos. </p>
+<p>stipa would like plaisthos and flichtenheld to <strong>review</strong> t=
+his change.
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/845?usp=3Demail">Vi=
+ew Change</a></p><pre style=3D"font-family: monospace,monospace; white-spac=
+e: pre-wrap;">repair DNS address option<br><br>Commit<br><br>  6f2d222 (&qu=
+ot;dns: store IPv4 addresses in network byte order&quot;)<br><br>changed th=
+e internal representation of IPv4 address within DNS<br>settings to network=
+ byte order, however later this value is copied into<br>tuntap_options, whe=
+re IPv4 addresses are assumed to be in host byte<br>order (see lots of occu=
+rences of &quot;htonl(tt-&gt;&quot; in tun.c). As a<br>consequence, DNS ser=
+ver address is set incorrectly, like 4.4.8.8 instead<br>of 8.8.4.4<br><br>F=
+ix by converting address to host byte order when copying from DNS<br>option=
+s to tuntap_options.<br><br>Change-Id: I87e4593e6a548bacd40b840cd241950019f=
+a457d<br>Signed-off-by: Lev Stipakov &lt;lev@...515...&gt;<br>---<br>M src/=
+openvpn/options.c<br>1 file changed, 1 insertion(+), 1 deletion(-)<br><br><=
+/pre><pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;=
+">git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/45/845/1</pr=
+e><pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><=
+span>diff --git a/src/openvpn/options.c b/src/openvpn/options.c</span><br><=
+span>index b2a3a8b..20e8d55 100644</span><br><span>--- a/src/openvpn/option=
+s.c</span><br><span>+++ b/src/openvpn/options.c</span><br><span>@@ -1390,7 =
++1390,7 @@</span><br><span>                         overflow =3D true;</spa=
+n><br><span>                         continue;</span><br><span>            =
+         }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-           =
+         tt-&gt;dns[tt-&gt;dns_len++] =3D server-&gt;addr[i].in.a4.s_addr;<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+                    =
+tt-&gt;dns[tt-&gt;dns_len++] =3D ntohl(server-&gt;addr[i].in.a4.s_addr);</s=
+pan><br><span>                 }</span><br><span>                 else</spa=
+n><br><span>                 {</span><br><span></span><br></pre><p>To view,=
+ visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/845?usp=3Demail">ch=
+ange 845</a>. To unsubscribe, or for help writing mail filters, visit <a hr=
+ef=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope i=
+temtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"actio=
+n" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D=
+"http://gerrit.openvpn.net/c/openvpn/+/845?usp=3Demail"/><meta itemprop=3D"=
+name" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: Ie2471e6b2d6974e70423b09918a=
-d1c2136253754 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 762 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 7 </div>
-<div style=3D"display:none"> Gerrit-Owner: its_Giaan &lt;gianmarco@...2786...=
-..&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
- </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I87e4593e6a548bacd40b840cd24=
+1950019fa457d </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 845 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
+<div style=3D"display:none"> Gerrit-Owner: stipa &lt;lstipakov@...277...&gt=
+; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
 1...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: ordex &lt;a@...2181...&gt; </=
-div>
 <div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
 .1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
 ..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: its_Giaan &lt;gianmarco@...1665...=
-726...&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
 41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: ordex &lt;a@...2181...&gt; <=
-/div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Tue, 24 Dec 2024 14:00:18=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: No </div>
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
+<div style=3D"display:none"> Gerrit-MessageType: newchange </div>
 
 
---INTb2GNOWt8=--
+--/pLJ22qOGvk=--
 
