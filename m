@@ -1,15 +1,15 @@
 From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Tue, 24 Dec 2024 13:56:34 +0000
+Date: Tue, 24 Dec 2024 14:00:18 +0000
 In-Reply-To: <gerrit.1727098847000.Ie2471e6b2d6974e70423b09918ad1c2136253754@...2715...>
 References: <gerrit.1727098847000.Ie2471e6b2d6974e70423b09918ad1c2136253754@...2715...>
 Reply-To: gert@...1296..., arne-openvpn@...1227...,
  gianmarco@...2726..., openvpn-devel@lists.sourceforge.net,
  frank@...2641..., a@...2181...
-Message-ID: <6ab0c3abc436fc3238817977a9b2fe88723f3034-EmailReviewComments-HTML@...2715...>
+Message-ID: <2d7a44e6966bd4167d0c275a4fae5ea0b8ced298-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="NWO9iu1UjXk="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="INTb2GNOWt8="; charset=UTF-8
 Subject: [Openvpn-devel] [S] Change in openvpn[master]: override ai_family
  if 'local' numeric address was specified
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -23,7 +23,7 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: its_Giaan <gianmarco@...2726...>
 Cc: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---NWO9iu1UjXk=
+--INTb2GNOWt8=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
@@ -44,14 +44,13 @@ Patch Set 7:
 Patchset:
 
 PS7:
-adding `local ::` to said config makes it
+So the fix is
 
 ```
-udp6       0      0 :::51194                :::*
-```
-
-so it can be made to work, but I really prefer that we do not break the cur=
-rent behaviour for "ANY".
+if ( hostname =3D=3D NULL )           /* bind to ANY, honour proto */
+{
+    hints.ai_family =3D ai_family;
+}
 
 
 
@@ -75,12 +74,12 @@ Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
 Gerrit-Attention: its_Giaan <gianmarco@...2726...>
 Gerrit-Attention: flichtenheld <frank@...2641...>
 Gerrit-Attention: ordex <a@...2181...>
-Gerrit-Comment-Date: Tue, 24 Dec 2024 13:56:34 +0000
+Gerrit-Comment-Date: Tue, 24 Dec 2024 14:00:18 +0000
 Gerrit-HasComments: Yes
 Gerrit-Has-Labels: No
 Gerrit-MessageType: comment
 
---NWO9iu1UjXk=
+--INTb2GNOWt8=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
@@ -92,19 +91,17 @@ li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-style=
 : none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p style=
 =3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/7=
 62?tab=3Dcomments">Patch Set #7:</a> </p><p style=3D"white-space: pre-wrap;=
- word-wrap: break-word;">adding `local ::` to said config makes it</p><p st=
-yle=3D"white-space: pre-wrap; word-wrap: break-word;">```<br>udp6       0  =
-    0 :::51194                :::*                               <br>```</p=
-><p style=3D"white-space: pre-wrap; word-wrap: break-word;">so it can be ma=
-de to work, but I really prefer that we do not break the current behaviour =
-for &quot;ANY&quot;.</p></li></ul></li></ul><p>To view, visit <a href=3D"ht=
-tp://gerrit.openvpn.net/c/openvpn/+/762?usp=3Demail">change 762</a>. To uns=
-ubscribe, or for help writing mail filters, visit <a href=3D"http://gerrit.=
-openvpn.net/settings">settings</a>.</p><div itemscope itemtype=3D"http://sc=
-hema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http:=
-//schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openv=
-pn.net/c/openvpn/+/762?usp=3Demail"/><meta itemprop=3D"name" content=3D"Vie=
-w Change"/></div></div>
+ word-wrap: break-word;">So the fix is</p><pre style=3D"font-family: monosp=
+ace,monospace; white-space: pre-wrap;">```<br>if ( hostname =3D=3D NULL )  =
+         /* bind to ANY, honour proto */<br>{<br>    hints.ai_family =3D ai=
+_family;<br>}</pre></li></ul></li></ul><p>To view, visit <a href=3D"http://=
+gerrit.openvpn.net/c/openvpn/+/762?usp=3Demail">change 762</a>. To unsubscr=
+ibe, or for help writing mail filters, visit <a href=3D"http://gerrit.openv=
+pn.net/settings">settings</a>.</p><div itemscope itemtype=3D"http://schema.=
+org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://sch=
+ema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.ne=
+t/c/openvpn/+/762?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Cha=
+nge"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
@@ -132,12 +129,12 @@ ts.sourceforge.net&gt; </div>
 41...&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: ordex &lt;a@...2181...&gt; <=
 /div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Tue, 24 Dec 2024 13:56:34=
+<div style=3D"display:none"> Gerrit-Comment-Date: Tue, 24 Dec 2024 14:00:18=
  +0000 </div>
 <div style=3D"display:none"> Gerrit-HasComments: Yes </div>
 <div style=3D"display:none"> Gerrit-Has-Labels: No </div>
 <div style=3D"display:none"> Gerrit-MessageType: comment </div>
 
 
---NWO9iu1UjXk=--
+--INTb2GNOWt8=--
 
