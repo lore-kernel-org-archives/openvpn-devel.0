@@ -1,17 +1,17 @@
-Date: Thu, 26 Dec 2024 14:13:31 +0100
-From: Gert Doering <gert@...1296...>
-Message-ID: <Z21WewOcAbuPu71M@...1296...>
-References: <7e42399c-3a94-40a2-bcaa-15545c3b761c@...68...>
- <6a00da72-dc11-409e-9d47-4694e1d6f02f@...68...>
- <a986633d-69d7-4bd1-b288-2f0de53b106e@...2181...>
- <86c60a4f-685e-4157-ad10-6de03bb2eef0@...68...>
+From: "stipa (Code Review)" <gerrit@...515...>
+Date: Thu, 26 Dec 2024 15:21:35 +0000
+In-Reply-To: <gerrit.1726585476000.I43d84034f3e920a45731c4aab4f851a60921290d@...2715...>
+References: <gerrit.1726585476000.I43d84034f3e920a45731c4aab4f851a60921290d@...2715...>
+Reply-To: lstipakov@...277..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net, frank@...2641...,
+ gert@...1296...
+Message-ID: <a86348a207245115c16a714e597ee6ae59648be1-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="VoFtRuoHDufuHeNo"
+Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-In-Reply-To: <86c60a4f-685e-4157-ad10-6de03bb2eef0@...68...>
-Subject: Re: [Openvpn-devel] [PATCH v2 2/2] port-share: Add proxy protocol
- v2 support
+Content-Type: multipart/alternative; boundary="whiqVlgBOmY="; charset=UTF-8
+Subject: [Openvpn-devel] [M] Change in openvpn[master]: Add building/testing
+ with msbuild and the clang compiler
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,83 +20,127 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: corubba <corubba@...68...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: plaisthos <arne-openvpn@...1227...>
+Cc: cron2 <gert@...1296...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---VoFtRuoHDufuHeNo
-Content-Type: text/plain; charset="us-ascii"
+--whiqVlgBOmY=
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
 
-Hi,
+Attention is currently required from: cron2, flichtenheld, plaisthos.
 
-On Mon, Dec 16, 2024 at 01:22:51PM +0100, corubba via Openvpn-devel wrote:
-> In addition to the custom journal solution, also support the widely
-> used binary PROXY protocol version 2 to convey the original client
-> connection parameters to the proxy receiver. This makes the port-share
-> journal feature more accessable and easier to use, because one doesn't
-> need a custom integration.
->=20
-> While this is a spec-compliant sender implementation of the PROXY
-> protocol, it does not implement it in full. Version 1 was left out
-> entirely, in favour of the superior and easier-to-implement version 2.
-> The implementation was also kept minimal with regards to what OpenVPN
-> supports/requires: Local commands, unix sockets, UDP and TLVs are not
-> implemented.
+stipa has posted comments on this change. ( http://gerrit.openvpn.net/c/ope=
+nvpn/+/751?usp=3Demail )
 
-Are there any reference URLs for the PROXY protocol?  If yes, I think it
-would be good to include a reference into one of the comments - the next
-person to read that code would then know which document this is based on.
+Change subject: Add building/testing with msbuild and the clang compiler
+......................................................................
 
-Besides this, I'm not sure what to do with these
 
-> +            ASSERT(4 >=3D sizeof(src.addr.in4.sin_addr));
-> +            ASSERT(4 >=3D sizeof(dst.addr.in4.sin_addr));
-> +            memcpy(&header[16], &src.addr.in4.sin_addr, sizeof(src.addr.=
-in4.sin_addr));
-> +            memcpy(&header[20], &dst.addr.in4.sin_addr, sizeof(dst.addr.=
-in4.sin_addr));
+Patch Set 5:
 
-... this is all obviously correct, but it feels heavy handed, and many
-lines of code...  (especially 2x sizeof on the same structure element)
+(1 comment)
 
-I think we can fairly safely assume that an in4.sin_addr will always be
-4 bytes, an in4.sin_port will always be 2 bytes, and an IPv6 address will
-always be 16 bytes...  so I wonder if it wouln't be easier to just copy
-a well-known number of bytes (openvpn_sockaddr is also "always bigger
-than that", so no read overrun) here.
+Patchset:
 
-I know that "magic numbers" in code are considered a bad pattern, but
-these things are really constant length, and the buffer layout *requires*
-"exactly 4" and "exactly 2" bytes...
+PS5:
+> Well, that code block is testing correctness of `snprintf()`, which it ca=
+n only do by intentionally  [=E2=80=A6]
+This works:
 
-gert
---=20
-"If was one thing all people took for granted, was conviction that if you=20
- feed honest figures into a computer, honest figures come out. Never doubte=
-d=20
- it myself till I met a computer with a sense of humor."
-                             Robert A. Heinlein, The Moon is a Harsh Mistre=
-ss
+#if defined(__clang__)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunknown-warning-option"
+#pragma clang diagnostic ignored "-Wformat-truncation"
+#endif
+#if defined(__GNUC__)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wformat-truncation"
+#endif
 
-Gert Doering - Munich, Germany                             gert@...1296...
 
---VoFtRuoHDufuHeNo
-Content-Type: application/pgp-signature; name="signature.asc"
 
------BEGIN PGP SIGNATURE-----
+--
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/751?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings
 
-iQGcBAEBAgAGBQJnbVZ7AAoJEB2Cnv7KVigSdVUL/ROgnWFIvKeu+YfSSKhWCaVf
-P1OYKLVSHqaLgo2KsSv3Vx9wWHEYUFVuPDqf6jv9wOh0LtByxTd+odwDvlqvPv8k
-3WKdT1CJYxdZHOHgEzcgnANx9OBsPvCHhyuJBgQYWXQlCUahId/gL0sQljhWoyfT
-5T0bMlGrlPzm+HaGc0QxDZdcxnjN2gsVWGgtOpQ+cbEjlw+WUneYbLiq2j2Crmf9
-uPLxX8aBwOtK6EA++SRDSCGhGGTKmY5iymcKagxNgYIdDtxmrb7xQeaL4C/cylKf
-1WeHATq5qFngTKBtzMNt6cJzD+4D7mswOGrBFIaWcVx4/43SrPgEDOGAMMblBCcY
-v3xRdLxlUVre+YSMZUtpDbwqhj1nfxDc1WaY0YXhi3tyd5zLsFSstZRgbq2U7r3/
-hSYF2MT0nMQK+lahqIt9TDcqKqaipV2/hWUH34LBSszxoQHhnWmBEYzYHlO1gr7U
-Q7qFRmTxEg8issXVnXzQL2tXX6Wbqozhwi+gq4X3aw==
-=mFzZ
------END PGP SIGNATURE-----
+Gerrit-Project: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: I43d84034f3e920a45731c4aab4f851a60921290d
+Gerrit-Change-Number: 751
+Gerrit-PatchSet: 5
+Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
+Gerrit-Reviewer: flichtenheld <frank@...2641...>
+Gerrit-CC: cron2 <gert@...1296...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-CC: stipa <lstipakov@...277...>
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Attention: cron2 <gert@...1296...>
+Gerrit-Attention: flichtenheld <frank@...2641...>
+Gerrit-Comment-Date: Thu, 26 Dec 2024 15:21:35 +0000
+Gerrit-HasComments: Yes
+Gerrit-Has-Labels: No
+Comment-In-Reply-To: cron2 <gert@...1296...>
+Gerrit-MessageType: comment
 
---VoFtRuoHDufuHeNo--
+--whiqVlgBOmY=
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<p> Attention is currently required from: cron2, flichtenheld, plaisthos. <=
+/p>
+<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/751?usp=3Demail">View C=
+hange</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0;"><=
+li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-style=
+: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p style=
+=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/7=
+51?tab=3Dcomments">Patch Set #5:</a> </p><p><blockquote style=3D"border-lef=
+t: 1px solid #aaa; margin: 10px 0; padding: 0 10px;">Well, that code block =
+is testing correctness of `snprintf()`, which it can only do by intentional=
+ly  [=E2=80=A6]</blockquote></p><p style=3D"white-space: pre-wrap; word-wra=
+p: break-word;">This works:</p><p style=3D"white-space: pre-wrap; word-wrap=
+: break-word;">#if defined(__clang__)<br>#pragma clang diagnostic push<br>#=
+pragma clang diagnostic ignored &quot;-Wunknown-warning-option&quot;<br>#pr=
+agma clang diagnostic ignored &quot;-Wformat-truncation&quot;<br>#endif<br>=
+#if defined(__GNUC__)<br>#pragma GCC diagnostic push<br>#pragma GCC diagnos=
+tic ignored &quot;-Wformat-truncation&quot;<br>#endif</p></li></ul></li></u=
+l><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/751?us=
+p=3Demail">change 751</a>. To unsubscribe, or for help writing mail filters=
+, visit <a href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><di=
+v itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope item=
+prop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D=
+"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/751?usp=3Demail"/><meta=
+ itemprop=3D"name" content=3D"View Change"/></div></div>
+
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I43d84034f3e920a45731c4aab4f=
+851a60921290d </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 751 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 5 </div>
+<div style=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@...1711...=
+27...&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
+1...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: cron2 &lt;gert@...1296...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: stipa &lt;lstipakov@...277...&gt; <=
+/div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: cron2 &lt;gert@...1296...&gt=
+; </div>
+<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
+41...&gt; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Thu, 26 Dec 2024 15:21:35=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: No </div>
+<div style=3D"display:none"> Comment-In-Reply-To: cron2 &lt;gert@...1296...=
+&gt; </div>
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
+
+
+--whiqVlgBOmY=--
 
