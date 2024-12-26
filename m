@@ -1,17 +1,16 @@
-From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Thu, 26 Dec 2024 11:45:35 +0000
-In-Reply-To: <gerrit.1726585476000.I43d84034f3e920a45731c4aab4f851a60921290d@...2715...>
-References: <gerrit.1726585476000.I43d84034f3e920a45731c4aab4f851a60921290d@...2715...>
-Reply-To: gert@...1296..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...,
- lstipakov@...277...
-Message-ID: <aec0d30a10a8962253152036d8195d0cdf1d6259-EmailReviewComments-HTML@...2715...>
+From: "stipa (Code Review)" <gerrit@...515...>
+Date: Thu, 26 Dec 2024 12:54:27 +0000
+In-Reply-To: <gerrit.1733316222000.Icaffbfa6b2e8efa2bd24a05537cb74b15f4fed96@...2715...>
+References: <gerrit.1733316222000.Icaffbfa6b2e8efa2bd24a05537cb74b15f4fed96@...2715...>
+Reply-To: lstipakov@...277..., arne-openvpn@...1227..., heiko@...515...,
+ openvpn-devel@lists.sourceforge.net, frank@...2641...
+Message-ID: <b51be4eef84a22c27c819ceab9f7b7f12d61f130-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="XMMHFnItCQQ="; charset=UTF-8
-Subject: [Openvpn-devel] [M] Change in openvpn[master]: Add building/testing
- with msbuild and the clang compiler
+Content-Type: multipart/alternative; boundary="6aps14LbdA8="; charset=UTF-8
+Subject: [Openvpn-devel] [L] Change in openvpn[master]: dns: support
+ multiple domains without DHCP
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,130 +19,127 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: plaisthos <arne-openvpn@...1227...>
-Cc: stipa <lstipakov@...277...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: d12fk <heiko@...515...>
+Cc: flichtenheld <frank@...2641...>, plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---XMMHFnItCQQ=
+--6aps14LbdA8=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: flichtenheld, plaisthos.
+Attention is currently required from: d12fk, flichtenheld, plaisthos.
 
-cron2 has posted comments on this change. ( http://gerrit.openvpn.net/c/ope=
-nvpn/+/751?usp=3Demail )
+stipa has posted comments on this change. ( http://gerrit.openvpn.net/c/ope=
+nvpn/+/824?usp=3Demail )
 
-Change subject: Add building/testing with msbuild and the clang compiler
+Change subject: dns: support multiple domains without DHCP
 ......................................................................
 
 
-Patch Set 5:
+Patch Set 7:
 
 (1 comment)
 
-Patchset:
+File src/openvpnserv/interactive.c:
 
-PS5:
-Well, that code block is testing correctness of `snprintf()`, which it can =
-only do by intentionally overflowing and checking the results.  We try to t=
-ell that to the compiler, but it seems clang 18.1 needs more help
+http://gerrit.openvpn.net/c/openvpn/+/824/comment/d44ab783_f4f83bba :
+PS7, Line 1390:         if (strchr(data, '.') !=3D NULL)
+Are you sure about the dot? For instance, "xxx" appears to be a perfectly v=
+alid value for Windows. In this case (SearchList here HKEY_LOCAL_MACHINE\SY=
+STEM\CurrentControlSet\Services\Tcpip\Parameters is set to "xxx") this take=
+s precedence over adapter-specific search list. This means that VPN pushed =
+search domains do not work, because we assume that global search list is no=
+t valid and add search domains to adapter.
 
-```
-    /* Instead of trying to trick the compiler here, disable the warnings
-     * for this unit test. We know that the results will be truncated
-     * and we want to test that */
-#if defined(__GNUC__)
-/* some clang version do not understand -Wformat-truncation, so ignore the
- * warning to avoid warnings/errors (-Werror) about unknown pragma/option */
-#if defined(__clang__)
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wunknown-warning-option"
-#endif
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wformat-truncation"
-#endif
-```
+Moreover, is something like ".xxx" even valid? With SearchList like "xxx,aa=
+a,bbb" and "ping test" I see outgoing DNS requests to test.xxx, test.aaa an=
+d test.bbb. With ".xxx,.aaa,.bbb" no DNS requests are sent.
 
 
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/751?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/824?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings
 
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: I43d84034f3e920a45731c4aab4f851a60921290d
-Gerrit-Change-Number: 751
-Gerrit-PatchSet: 5
-Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
+Gerrit-Change-Id: Icaffbfa6b2e8efa2bd24a05537cb74b15f4fed96
+Gerrit-Change-Number: 824
+Gerrit-PatchSet: 7
+Gerrit-Owner: d12fk <heiko@...515...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
-Gerrit-CC: cron2 <gert@...1296...>
+Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
+Gerrit-Reviewer: stipa <lstipakov@...277...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-CC: stipa <lstipakov@...277...>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
 Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Comment-Date: Thu, 26 Dec 2024 11:45:35 +0000
+Gerrit-Attention: d12fk <heiko@...515...>
+Gerrit-Comment-Date: Thu, 26 Dec 2024 12:54:27 +0000
 Gerrit-HasComments: Yes
 Gerrit-Has-Labels: No
 Gerrit-MessageType: comment
 
---XMMHFnItCQQ=
+--6aps14LbdA8=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p> Attention is currently required from: flichtenheld, plaisthos. </p>
-<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/751?usp=3Demail">View C=
+<p> Attention is currently required from: d12fk, flichtenheld, plaisthos. <=
+/p>
+<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/824?usp=3Demail">View C=
 hange</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0;"><=
-li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-style=
-: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p style=
-=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/7=
-51?tab=3Dcomments">Patch Set #5:</a> </p><p style=3D"white-space: pre-wrap;=
- word-wrap: break-word;">Well, that code block is testing correctness of `s=
-nprintf()`, which it can only do by intentionally overflowing and checking =
-the results.  We try to tell that to the compiler, but it seems clang 18.1 =
-needs more help</p><pre style=3D"font-family: monospace,monospace; white-sp=
-ace: pre-wrap;">```<br>    /* Instead of trying to trick the compiler here,=
- disable the warnings<br>     * for this unit test. We know that the result=
-s will be truncated<br>     * and we want to test that */<br>#if defined(__=
-GNUC__)<br>/* some clang version do not understand -Wformat-truncation, so =
-ignore the<br> * warning to avoid warnings/errors (-Werror) about unknown p=
-ragma/option */<br>#if defined(__clang__)<br>#pragma clang diagnostic push<=
-br>#pragma clang diagnostic ignored &quot;-Wunknown-warning-option&quot;<br=
->#endif<br>#pragma GCC diagnostic push<br>#pragma GCC diagnostic ignored &q=
-uot;-Wformat-truncation&quot;<br>#endif<br>```</pre></li></ul></li></ul><p>=
-To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/751?usp=3De=
-mail">change 751</a>. To unsubscribe, or for help writing mail filters, vis=
-it <a href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div ite=
-mscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=
-=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url=
-" href=3D"http://gerrit.openvpn.net/c/openvpn/+/751?usp=3Demail"/><meta ite=
-mprop=3D"name" content=3D"View Change"/></div></div>
+li style=3D"margin: 0; padding: 0;"><p>File src/openvpnserv/interactive.c:<=
+/p><ul style=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; padd=
+ing: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit=
+.openvpn.net/c/openvpn/+/824/comment/d44ab783_f4f83bba">Patch Set #7, Line =
+1390:</a> <code style=3D"font-family:monospace,monospace">        if (strch=
+r(data, &#39;.&#39;) !=3D NULL)</code></p><p style=3D"white-space: pre-wrap=
+; word-wrap: break-word;">Are you sure about the dot? For instance, &quot;x=
+xx&quot; appears to be a perfectly valid value for Windows. In this case (S=
+earchList here HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Tcpip\P=
+arameters is set to &quot;xxx&quot;) this takes precedence over adapter-spe=
+cific search list. This means that VPN pushed search domains do not work, b=
+ecause we assume that global search list is not valid and add search domain=
+s to adapter.</p><p style=3D"white-space: pre-wrap; word-wrap: break-word;"=
+>Moreover, is something like &quot;.xxx&quot; even valid? With SearchList l=
+ike &quot;xxx,aaa,bbb&quot; and &quot;ping test&quot; I see outgoing DNS re=
+quests to test.xxx, test.aaa and test.bbb. With &quot;.xxx,.aaa,.bbb&quot; =
+no DNS requests are sent.</p></li></ul></li></ul><p>To view, visit <a href=
+=3D"http://gerrit.openvpn.net/c/openvpn/+/824?usp=3Demail">change 824</a>. =
+To unsubscribe, or for help writing mail filters, visit <a href=3D"http://g=
+errit.openvpn.net/settings">settings</a>.</p><div itemscope itemtype=3D"htt=
+p://schema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D=
+"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit=
+.openvpn.net/c/openvpn/+/824?usp=3Demail"/><meta itemprop=3D"name" content=
+=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I43d84034f3e920a45731c4aab4f=
-851a60921290d </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 751 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 5 </div>
-<div style=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@...1711...=
-27...&gt; </div>
+<div style=3D"display:none"> Gerrit-Change-Id: Icaffbfa6b2e8efa2bd24a05537c=
+b74b15f4fed96 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 824 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 7 </div>
+<div style=3D"display:none"> Gerrit-Owner: d12fk &lt;heiko@...515...&gt; </=
+div>
 <div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
 1...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: cron2 &lt;gert@...1296...&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
+.1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: stipa &lt;lstipakov@...277...=
+&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: stipa &lt;lstipakov@...277...&gt; <=
-/div>
 <div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
 ..1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
 41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Thu, 26 Dec 2024 11:45:35=
+<div style=3D"display:none"> Gerrit-Attention: d12fk &lt;heiko@...515...&gt=
+; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Thu, 26 Dec 2024 12:54:27=
  +0000 </div>
 <div style=3D"display:none"> Gerrit-HasComments: Yes </div>
 <div style=3D"display:none"> Gerrit-Has-Labels: No </div>
 <div style=3D"display:none"> Gerrit-MessageType: comment </div>
 
 
---XMMHFnItCQQ=--
+--6aps14LbdA8=--
 
