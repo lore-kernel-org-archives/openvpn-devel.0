@@ -1,17 +1,16 @@
-Content-Type: multipart/mixed; boundary="------------gJze5yk6JrGbeZtbAAQ6QTMG"
-Message-ID: <cddde407-8b39-4c7d-b0d0-4b4a77124aa3@...68...>
-Date: Thu, 26 Dec 2024 21:28:06 +0100
+Message-ID: <cd225944-6a29-4ad1-a2e3-e8e17ce98394@...68...>
+Date: Thu, 26 Dec 2024 23:06:47 +0100
 MIME-Version: 1.0
 References: <7e42399c-3a94-40a2-bcaa-15545c3b761c@...68...>
  <6a00da72-dc11-409e-9d47-4694e1d6f02f@...68...>
  <a986633d-69d7-4bd1-b288-2f0de53b106e@...2181...>
- <b16cab79-188f-41a3-af32-f944a387400f@...68...>
- <Z2wxD-t_CZ2uR5K9@...1296...> <Z21Tb9c5lm2P0dEt@...1296...>
+ <86c60a4f-685e-4157-ad10-6de03bb2eef0@...68...>
+ <Z21WewOcAbuPu71M@...1296...>
 Content-Language: de-CH
 From: corubba <corubba@...68...>
-In-Reply-To: <Z21Tb9c5lm2P0dEt@...1296...>
-Subject: Re: [Openvpn-devel] [PATCH v2 1/2] port-share: Normalize
- IPv4-mapped IPv6 addresses
+In-Reply-To: <Z21WewOcAbuPu71M@...1296...>
+Subject: Re: [Openvpn-devel] [PATCH v2 2/2] port-share: Add proxy protocol
+ v2 support
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,172 +19,65 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 To: Gert Doering <gert@...1296...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-This is a multi-part message in MIME format.
---------------gJze5yk6JrGbeZtbAAQ6QTMG
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
 Hi,
 
-On 26.12.24 14:00, Gert Doering wrote:
-> On Wed, Dec 25, 2024 at 05:21:35PM +0100, Gert Doering wrote:
->> I'm fine with the idea, but I do not like the implementation with
->> "yet another localized sockaddr manipulation function" - we already
->> have similar code in socket.c/setenv_sockaddr(), so maybe we need
->> to make this a more general thing.
+On 26.12.24 14:13, Gert Doering wrote:
+> On Mon, Dec 16, 2024 at 01:22:51PM +0100, corubba via Openvpn-devel wrote:
+>> In addition to the custom journal solution, also support the widely
+>> used binary PROXY protocol version 2 to convey the original client
+>> connection parameters to the proxy receiver. This makes the port-share
+>> journal feature more accessable and easier to use, because one doesn't
+>> need a custom integration.
+>>
+>> While this is a spec-compliant sender implementation of the PROXY
+>> protocol, it does not implement it in full. Version 1 was left out
+>> entirely, in favour of the superior and easier-to-implement version 2.
+>> The implementation was also kept minimal with regards to what OpenVPN
+>> supports/requires: Local commands, unix sockets, UDP and TLVs are not
+>> implemented.
 >
-> I now see that it's not *that* easy, as transform_mapped_v4_sockaddr()
-> is also used by part 2/3 of the series... so maybe we'll just take 1/3
-> as it is, and see if we can overhaul the whole handling of v4-mapped
-> addresses in a more coordinated way later.
+> Are there any reference URLs for the PROXY protocol?  If yes, I think it
+> would be good to include a reference into one of the comments - the next
+> person to read that code would then know which document this is based on.
 
-I actually had initially implemented it in socket.c, but reverted it to
-a local and simpler implementation because I was sure to otherwise break
-stuff with it. I dug it up again and refined it a bit, feel free to have
-a look at the attached patch and form an opinion. But please consider it
-still WIP, it is not intended as a v3 of the original patch.
+I had included the link to the spec I used only in the cover letter, but
+I agree putting it into the commit message is more sensible.
+
+> Besides this, I'm not sure what to do with these
+>
+>> +            ASSERT(4 >=3D sizeof(src.addr.in4.sin_addr));
+>> +            ASSERT(4 >=3D sizeof(dst.addr.in4.sin_addr));
+>> +            memcpy(&header[16], &src.addr.in4.sin_addr, sizeof(src.addr=
+.in4.sin_addr));
+>> +            memcpy(&header[20], &dst.addr.in4.sin_addr, sizeof(dst.addr=
+.in4.sin_addr));
+>
+> ... this is all obviously correct, but it feels heavy handed, and many
+> lines of code...  (especially 2x sizeof on the same structure element)
+>
+> I think we can fairly safely assume that an in4.sin_addr will always be
+> 4 bytes, an in4.sin_port will always be 2 bytes, and an IPv6 address will
+> always be 16 bytes...  so I wonder if it wouln't be easier to just copy
+> a well-known number of bytes (openvpn_sockaddr is also "always bigger
+> than that", so no read overrun) here.
+>
+> I know that "magic numbers" in code are considered a bad pattern, but
+> these things are really constant length, and the buffer layout *requires*
+> "exactly 4" and "exactly 2" bytes...
+
+I wasn't sure about that either, and in the end opted for the "better
+safe than sorry" variant. If your better-informed opinion too is that
+these are "practically constant", then I am happy to oblige.
 
 
 Best regards
 --
 Corubba
 
---------------gJze5yk6JrGbeZtbAAQ6QTMG
-Content-Type: text/x-patch; charset=UTF-8;
- name="0001-WIP-generic-v4-mapped-normalize-implementation-in-so.patch"
-Content-Disposition: attachment;
- filename*0="0001-WIP-generic-v4-mapped-normalize-implementation-in-so.pa";
- filename*1="tch"
-Content-Transfer-Encoding: base64
 
-RnJvbSBmNzQ5ZDZhYjc5OWNjNDBlMzNjMTVmZGQ5NTg0MWFiMTljOWMzOWZhIE1vbiBTZXAg
-MTcgMDA6MDA6MDAgMjAwMQpGcm9tOiBDb3J1YmJhIFNtaXRoIDxjb3J1YmJhQGdteC5kZT4K
-RGF0ZTogVGh1LCAyNiBEZWMgMjAyNCAyMToyMzozMCArMDEwMApTdWJqZWN0OiBbUEFUQ0hd
-IFdJUDogZ2VuZXJpYyB2NC1tYXBwZWQtbm9ybWFsaXplIGltcGxlbWVudGF0aW9uIGluIHNv
-Y2tldC5jCgpJbXBsZW1lbnQgdGhyZWUgZnVuY3Rpb25zIHRvIGRvIHY0LW1hcHBlZCBub3Jt
-YWxpemF0aW9uIG9mCm9wZW52cG5fc29ja2FkZHI6IGluLXBsYWNlLCBpbnRvIGFuIGV4aXN0
-aW5nIHN0cnVjdCwgYW5kIHdpdGggYQpuZXcgZ2MtYWxsb2NhdGVkIHN0cnVjdC4KCkFsc28g
-ZG8gdGhlIG5vcm1hbGl6YXRpb24gaW4gcHJpbnRfc29ja2FkZHIgYnkgZGVmYXVsdCBiZWNh
-dXNlIEkgZmVlbAp0aGF0IGlzIHdoYXQgdXNlcnMgZXhwZWN0LCBhbmQgYWRkIGEgZmxhZyBk
-byBkaXNhYmxlIGl0IChpbiBjYXNlIGl0IGlzCmV2ZXIgbmVlZGVkKS4KClNpbmNlIHByaW50
-X3NvY2thZGRyIGRvZXMgbm9ybWFsaXphdGlvbiBieSBkZWZhdWx0IGFuZCB0aGUgam91cm5h
-bApkaXJlY3RvcnkgaXMgc29sZWx5IGJhc2VkIG9uIHRoYXQsIG5vIGV4cGxpY2l0IG5vcm1h
-bGl6YXRpb24gaXMgbmVlZGVkCmFueW1vcmUuCgpIYXZlbid0IHRlc3RlZCB0aGUgZGNvIHBh
-cnQsIGJ1dCB0aGUgcmVzdCB3b3Jrcy4gbXJvdXRlIGRvZXNuJ3QgdXNlIGEKc29ja2FkZHIg
-YnV0IG9ubHkgdGhlIGFkZHIgc3RydWN0cywgcmVxdWlyZXMgbW9yZSBjb2RlIHRvIGFsc28g
-c3VwcG9ydC4KClNpZ25lZC1vZmYtYnk6IENvcnViYmEgU21pdGggPGNvcnViYmFAZ214LmRl
-PgotLS0KIHNyYy9vcGVudnBuL2Rjb19saW51eC5jIHwgMTMgKy0tLS0tLS0KIHNyYy9vcGVu
-dnBuL3NvY2tldC5jICAgIHwgNzIgKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysr
-LS0tLS0tLS0KIHNyYy9vcGVudnBuL3NvY2tldC5oICAgIHwgIDcgKysrKwogMyBmaWxlcyBj
-aGFuZ2VkLCA2NyBpbnNlcnRpb25zKCspLCAyNSBkZWxldGlvbnMoLSkKCmRpZmYgLS1naXQg
-YS9zcmMvb3BlbnZwbi9kY29fbGludXguYyBiL3NyYy9vcGVudnBuL2Rjb19saW51eC5jCmlu
-ZGV4IGIwMzgzODI4Li5hZDRiMTEwZiAxMDA2NDQKLS0tIGEvc3JjL29wZW52cG4vZGNvX2xp
-bnV4LmMKKysrIGIvc3JjL29wZW52cG4vZGNvX2xpbnV4LmMKQEAgLTIwMywxOCArMjAzLDcg
-QEAgb3Zwbl9ubF9tc2dfc2VuZChkY29fY29udGV4dF90ICpkY28sIHN0cnVjdCBubF9tc2cg
-Km5sX21zZywgb3Zwbl9ubF9jYiBjYiwKIHN0cnVjdCBzb2NrYWRkciAqCiBtYXBwZWRfdjRf
-dG9fdjYoc3RydWN0IHNvY2thZGRyICpzb2NrLCBzdHJ1Y3QgZ2NfYXJlbmEgKmdjKQogewot
-ICAgIHN0cnVjdCBzb2NrYWRkcl9pbjYgKnNvY2s2ID0gKHN0cnVjdCBzb2NrYWRkcl9pbjYg
-Kilzb2NrOwotICAgIGlmIChzb2NrLT5zYV9mYW1pbHkgPT0gQUZfSU5FVDYgJiYgSU42X0lT
-X0FERFJfVjRNQVBQRUQoJnNvY2s2LT5zaW42X2FkZHIpKQotICAgIHsKLQotICAgICAgICBz
-dHJ1Y3Qgc29ja2FkZHJfaW4gKnNvY2s0OwotICAgICAgICBBTExPQ19PQkpfQ0xFQVJfR0Mo
-c29jazQsIHN0cnVjdCBzb2NrYWRkcl9pbiwgZ2MpOwotICAgICAgICBtZW1jcHkoJnNvY2s0
-LT5zaW5fYWRkciwgc29jazYtPnNpbjZfYWRkci5zNl9hZGRyICsgMTIsIDQpOwotICAgICAg
-ICBzb2NrNC0+c2luX3BvcnQgPSBzb2NrNi0+c2luNl9wb3J0OwotICAgICAgICBzb2NrNC0+
-c2luX2ZhbWlseSA9IEFGX0lORVQ7Ci0gICAgICAgIHJldHVybiAoc3RydWN0IHNvY2thZGRy
-ICopc29jazQ7Ci0gICAgfQotICAgIHJldHVybiBzb2NrOworICAgIHJldHVybiAoc3RydWN0
-IHNvY2thZGRyICopIG5vcm1hbGl6ZWRfc29ja2FkZHIoKGNvbnN0IHN0cnVjdCBvcGVudnBu
-X3NvY2thZGRyICopIHNvY2ssIGdjKTsKIH0KIAogaW50CmRpZmYgLS1naXQgYS9zcmMvb3Bl
-bnZwbi9zb2NrZXQuYyBiL3NyYy9vcGVudnBuL3NvY2tldC5jCmluZGV4IDAxODc0ZmUyLi5j
-OTY3NzMzNSAxMDA2NDQKLS0tIGEvc3JjL29wZW52cG4vc29ja2V0LmMKKysrIGIvc3JjL29w
-ZW52cG4vc29ja2V0LmMKQEAgLTI3NTYsNiArMjc1NiwxMSBAQCBwcmludF9zb2NrYWRkcl9l
-eChjb25zdCBzdHJ1Y3Qgc29ja2FkZHIgKnNhLAogICAgIGNoYXIgc2Vydm5hbWVbTklfTUFY
-U0VSVl0gPSAiIjsKICAgICBpbnQgc3RhdHVzOwogCisgICAgaWYgKCEoZmxhZ3MgJiBQU19E
-T05UX05PUk1BTElaRSkpCisgICAgeworICAgICAgICBzYSA9ICYobm9ybWFsaXplZF9zb2Nr
-YWRkcigoc3RydWN0IG9wZW52cG5fc29ja2FkZHIgKikgc2EsIGdjKS0+YWRkci5zYSk7Cisg
-ICAgfQorCiAgICAgc29ja2xlbl90IHNhbGVuID0gMDsKICAgICBzd2l0Y2ggKHNhLT5zYV9m
-YW1pbHkpCiAgICAgewpAQCAtMjkzOSw2ICsyOTQ0LDU0IEBAIHByaW50X2luNl9hZGRyKHN0
-cnVjdCBpbjZfYWRkciBhNiwgdW5zaWduZWQgaW50IGZsYWdzLCBzdHJ1Y3QgZ2NfYXJlbmEg
-KmdjKQogICAgIHJldHVybiBvdXQ7CiB9CiAKKy8qCisgKiBJbi1wbGFjZSB0cmFuc2Zvcm1h
-dGlvbiBvZiBhbiBvcGVudnBuX3NvY2thZGRyIHdpdGggYW4gSVB2NC1tYXBwZWQKKyAqIElQ
-djYgYWRkcmVzcyB0byBvbmUgd2l0aCBhIHBsYWluIElQdjQgYWRkcmVzcy4gTm8tb3Agb3Ro
-ZXJ3aXNlLgorICovCit2b2lkCitub3JtYWxpemVfc29ja2FkZHIoc3RydWN0IG9wZW52cG5f
-c29ja2FkZHIgKnNvY2spCit7CisgICAgaWYgKHNvY2stPmFkZHIuc2Euc2FfZmFtaWx5ID09
-IEFGX0lORVQ2ICYmIElONl9JU19BRERSX1Y0TUFQUEVEKCZzb2NrLT5hZGRyLmluNi5zaW42
-X2FkZHIpKQorICAgIHsKKyAgICAgICAgc29jay0+YWRkci5pbjQuc2luX2ZhbWlseSA9IEFG
-X0lORVQ7CisgICAgICAgIGFzc2VydChzb2NrLT5hZGRyLmluNC5zaW5fcG9ydCA9PSBzb2Nr
-LT5hZGRyLmluNi5zaW42X3BvcnQpOworICAgICAgICBtZW1jcHkoJnNvY2stPmFkZHIuaW40
-LnNpbl9hZGRyLCAmc29jay0+YWRkci5pbjYuc2luNl9hZGRyLnM2X2FkZHJbMTJdLCA0KTsK
-KyAgICAgICAgbWVtc2V0KCZzb2NrLT5hZGRyLmluNCArIDEsIDAsIHNpemVvZihzb2NrLT5h
-ZGRyKSAtIHNpemVvZihzb2NrLT5hZGRyLmluNCkpOworICAgIH0KK30KKworLyoKKyAqIENv
-cHkgc3JjIHRvIGRzdC4gSWYgc3JjIGlzIGFuIElQdjQtbWFwcGVkIElQdjYgYWRkcmVzcywg
-ZHN0IHdpbGwKKyAqIGJlIGl0cyBwbGFpbiBJUHY0IGFkZHJlc3MgZXF1aXZhbGVudC4KKyAq
-Lwordm9pZAorY29weV9ub3JtYWxpemVkX3NvY2thZGRyKGNvbnN0IHN0cnVjdCBvcGVudnBu
-X3NvY2thZGRyICpzcmMsIHN0cnVjdCBvcGVudnBuX3NvY2thZGRyICpkc3QpCit7CisgICAg
-QVNTRVJUKHNyYyAhPSBkc3QpOworICAgIG1lbWNweShkc3QsIHNyYywgc2l6ZW9mKCpkc3Qp
-KTsKKyAgICBub3JtYWxpemVfc29ja2FkZHIoZHN0KTsKK30KKworLyoKKyAqIElmIHNvY2sg
-aXMgYW4gSVB2NC1tYXBwZWQgSVB2NiBhZGRyZXNzLCByZXR1cm5zIGEgcG9pbnRlciB0byBh
-IG5ldworICogZ2MtYWxsb2NhdGVkIHN0cnVjdCB3aXRoIGVxdWl2YWxlbnQgcGxhaW4gSVB2
-NCBhZGRyZXNzLiBOby1vcAorICogb3RoZXJ3aXNlLCByZXR1cm5pbmcgdGhlIHBhc3NlZC1p
-biBzdHJ1Y3QgcG9pbnRlci4KKyAqLworc3RydWN0IG9wZW52cG5fc29ja2FkZHIgKgorbm9y
-bWFsaXplZF9zb2NrYWRkcihjb25zdCBzdHJ1Y3Qgb3BlbnZwbl9zb2NrYWRkciAqc29jaywg
-c3RydWN0IGdjX2FyZW5hICpnYykKK3sKKyAgICBpZiAoc29jay0+YWRkci5zYS5zYV9mYW1p
-bHkgPT0gQUZfSU5FVDYgJiYgSU42X0lTX0FERFJfVjRNQVBQRUQoJnNvY2stPmFkZHIuaW42
-LnNpbjZfYWRkcikpCisgICAgeworICAgICAgICBzdHJ1Y3Qgb3BlbnZwbl9zb2NrYWRkciAq
-c29jazQ7CisgICAgICAgIEFMTE9DX09CSl9DTEVBUl9HQyhzb2NrNCwgc3RydWN0IG9wZW52
-cG5fc29ja2FkZHIsIGdjKTsKKyAgICAgICAgY29weV9ub3JtYWxpemVkX3NvY2thZGRyKHNv
-Y2ssIHNvY2s0KTsKKyAgICAgICAgcmV0dXJuIHNvY2s0OworICAgIH0KKworICAgIC8qIGhv
-cnJpYmxlOiByZXR1cm5pbmcgdGhlIHBhc3NlZC1pbiBjb25zdCBwb2ludGVyIGFzIG5vbi1j
-b25zdCAqLworICAgIHJldHVybiAoc3RydWN0IG9wZW52cG5fc29ja2FkZHIgKikgc29jazsK
-K30KKwogLyoKICAqIENvbnZlcnQgYW4gaW5fcG9ydF90IGluIGhvc3QgYnl0ZSBvcmRlciB0
-byBhIHN0cmluZwogICovCkBAIC0yOTg1LDYgKzMwMzgsMTAgQEAgc2V0ZW52X3NvY2thZGRy
-KHN0cnVjdCBlbnZfc2V0ICplcywgY29uc3QgY2hhciAqbmFtZV9wcmVmaXgsIGNvbnN0IHN0
-cnVjdCBvcGVudnAKIHsKICAgICBjaGFyIG5hbWVfYnVmWzI1Nl07CiAKKyAgICBzdHJ1Y3Qg
-b3BlbnZwbl9zb2NrYWRkciBhZGRyX3N0cnVjdCA9IHswfTsKKyAgICBjb3B5X25vcm1hbGl6
-ZWRfc29ja2FkZHIoYWRkciwgJmFkZHJfc3RydWN0KTsKKyAgICBhZGRyID0gJmFkZHJfc3Ry
-dWN0OworCiAgICAgY2hhciBidWZbSU5FVDZfQUREUlNUUkxFTl07CiAgICAgc3dpdGNoIChh
-ZGRyLT5hZGRyLnNhLnNhX2ZhbWlseSkKICAgICB7CkBAIC0zMDA5LDE5ICszMDY2LDggQEAg
-c2V0ZW52X3NvY2thZGRyKHN0cnVjdCBlbnZfc2V0ICplcywgY29uc3QgY2hhciAqbmFtZV9w
-cmVmaXgsIGNvbnN0IHN0cnVjdCBvcGVudnAKICAgICAgICAgICAgIGJyZWFrOwogCiAgICAg
-ICAgIGNhc2UgQUZfSU5FVDY6Ci0gICAgICAgICAgICBpZiAoSU42X0lTX0FERFJfVjRNQVBQ
-RUQoICZhZGRyLT5hZGRyLmluNi5zaW42X2FkZHIgKSkKLSAgICAgICAgICAgIHsKLSAgICAg
-ICAgICAgICAgICBzdHJ1Y3QgaW5fYWRkciBpYTsKLSAgICAgICAgICAgICAgICBtZW1jcHko
-JmlhLnNfYWRkciwgJmFkZHItPmFkZHIuaW42LnNpbjZfYWRkci5zNl9hZGRyWzEyXSwKLSAg
-ICAgICAgICAgICAgICAgICAgICAgc2l6ZW9mKGlhLnNfYWRkcikpOwotICAgICAgICAgICAg
-ICAgIHNucHJpbnRmKG5hbWVfYnVmLCBzaXplb2YobmFtZV9idWYpLCAiJXNfaXAiLCBuYW1l
-X3ByZWZpeCk7Ci0gICAgICAgICAgICAgICAgaW5ldF9udG9wKEFGX0lORVQsICZpYSwgYnVm
-LCBzaXplb2YoYnVmKSk7Ci0gICAgICAgICAgICB9Ci0gICAgICAgICAgICBlbHNlCi0gICAg
-ICAgICAgICB7Ci0gICAgICAgICAgICAgICAgc25wcmludGYobmFtZV9idWYsIHNpemVvZihu
-YW1lX2J1ZiksICIlc19pcDYiLCBuYW1lX3ByZWZpeCk7Ci0gICAgICAgICAgICAgICAgaW5l
-dF9udG9wKEFGX0lORVQ2LCAmYWRkci0+YWRkci5pbjYuc2luNl9hZGRyLCBidWYsIHNpemVv
-ZihidWYpKTsKLSAgICAgICAgICAgIH0KKyAgICAgICAgICAgIHNucHJpbnRmKG5hbWVfYnVm
-LCBzaXplb2YobmFtZV9idWYpLCAiJXNfaXA2IiwgbmFtZV9wcmVmaXgpOworICAgICAgICAg
-ICAgaW5ldF9udG9wKEFGX0lORVQ2LCAmYWRkci0+YWRkci5pbjYuc2luNl9hZGRyLCBidWYs
-IHNpemVvZihidWYpKTsKICAgICAgICAgICAgIHNldGVudl9zdHIoZXMsIG5hbWVfYnVmLCBi
-dWYpOwogCiAgICAgICAgICAgICBpZiAoKGZsYWdzICYgU0FfSVBfUE9SVCkgJiYgYWRkci0+
-YWRkci5pbjYuc2luNl9wb3J0KQpkaWZmIC0tZ2l0IGEvc3JjL29wZW52cG4vc29ja2V0Lmgg
-Yi9zcmMvb3BlbnZwbi9zb2NrZXQuaAppbmRleCA0NjVkOTJiYS4uMDdmYjdiNzMgMTAwNjQ0
-Ci0tLSBhL3NyYy9vcGVudnBuL3NvY2tldC5oCisrKyBiL3NyYy9vcGVudnBuL3NvY2tldC5o
-CkBAIC0zNTksNiArMzU5LDcgQEAgdm9pZCBzZF9jbG9zZShzb2NrZXRfZGVzY3JpcHRvcl90
-ICpzZCk7CiAjZGVmaW5lIFBTX1NIT1dfUEtUSU5GTyAgICAgICAgICgxPDwyKQogI2RlZmlu
-ZSBQU19ET05UX1NIT1dfQUREUiAgICAgICAoMTw8MykKICNkZWZpbmUgUFNfRE9OVF9TSE9X
-X0ZBTUlMWSAgICAgKDE8PDQpCisjZGVmaW5lIFBTX0RPTlRfTk9STUFMSVpFICAgICAgICgx
-PDw1KQogCiBjb25zdCBjaGFyICpwcmludF9zb2NrYWRkcl9leChjb25zdCBzdHJ1Y3Qgc29j
-a2FkZHIgKmFkZHIsCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBjb25zdCBjaGFy
-ICpzZXBhcmF0b3IsCkBAIC0zOTgsNiArMzk5LDEyIEBAIGNvbnN0IGNoYXIgKnByaW50X2lu
-X2FkZHJfdChpbl9hZGRyX3QgYWRkciwgdW5zaWduZWQgaW50IGZsYWdzLCBzdHJ1Y3QgZ2Nf
-YXJlbmEKIAogY29uc3QgY2hhciAqcHJpbnRfaW42X2FkZHIoc3RydWN0IGluNl9hZGRyIGFk
-ZHI2LCB1bnNpZ25lZCBpbnQgZmxhZ3MsIHN0cnVjdCBnY19hcmVuYSAqZ2MpOwogCit2b2lk
-IG5vcm1hbGl6ZV9zb2NrYWRkcihzdHJ1Y3Qgb3BlbnZwbl9zb2NrYWRkciAqc29jayk7CisK
-K3ZvaWQgY29weV9ub3JtYWxpemVkX3NvY2thZGRyKGNvbnN0IHN0cnVjdCBvcGVudnBuX3Nv
-Y2thZGRyICpzcmMsIHN0cnVjdCBvcGVudnBuX3NvY2thZGRyICpkc3QpOworCitzdHJ1Y3Qg
-b3BlbnZwbl9zb2NrYWRkciAqIG5vcm1hbGl6ZWRfc29ja2FkZHIoY29uc3Qgc3RydWN0IG9w
-ZW52cG5fc29ja2FkZHIgKnNvY2ssIHN0cnVjdCBnY19hcmVuYSAqZ2MpOworCiBjb25zdCBj
-aGFyICpwcmludF9pbl9wb3J0X3QoaW5fcG9ydF90IHBvcnQsIHN0cnVjdCBnY19hcmVuYSAq
-Z2MpOwogCiBzdHJ1Y3QgaW42X2FkZHIgYWRkX2luNl9hZGRyKCBzdHJ1Y3QgaW42X2FkZHIg
-YmFzZSwgdWludDMyX3QgYWRkICk7Ci0tIAoyLjQ3LjEKCg==
-
---------------gJze5yk6JrGbeZtbAAQ6QTMG--
 
