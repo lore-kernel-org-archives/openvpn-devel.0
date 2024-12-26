@@ -1,16 +1,17 @@
-From: "stipa (Code Review)" <gerrit@...515...>
-Date: Thu, 26 Dec 2024 11:04:59 +0000
-In-Reply-To: <gerrit.1735146911000.I350fd615ed8474d34392a057a5f8bded78173949@...2715...>
-References: <gerrit.1735146911000.I350fd615ed8474d34392a057a5f8bded78173949@...2715...>
-Reply-To: lstipakov@...277..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <cdae5f0e5d0b6303ee83e508662d9ad34de9043d-EmailReviewComments-HTML@...2715...>
+From: "cron2 (Code Review)" <gerrit@...515...>
+Date: Thu, 26 Dec 2024 11:45:35 +0000
+In-Reply-To: <gerrit.1726585476000.I43d84034f3e920a45731c4aab4f851a60921290d@...2715...>
+References: <gerrit.1726585476000.I43d84034f3e920a45731c4aab4f851a60921290d@...2715...>
+Reply-To: gert@...1296..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net, frank@...2641...,
+ lstipakov@...277...
+Message-ID: <aec0d30a10a8962253152036d8195d0cdf1d6259-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="WLrf4lNGk0o="; charset=UTF-8
-Subject: [Openvpn-devel] [XS] Change in openvpn[master]: Ensure that Python3
- is available
+Content-Type: multipart/alternative; boundary="XMMHFnItCQQ="; charset=UTF-8
+Subject: [Openvpn-devel] [M] Change in openvpn[master]: Add building/testing
+ with msbuild and the clang compiler
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,102 +21,129 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 To: plaisthos <arne-openvpn@...1227...>
-Cc: flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Cc: stipa <lstipakov@...277...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---WLrf4lNGk0o=
+--XMMHFnItCQQ=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 Attention is currently required from: flichtenheld, plaisthos.
 
-stipa has posted comments on this change. ( http://gerrit.openvpn.net/c/ope=
-nvpn/+/846?usp=3Demail )
+cron2 has posted comments on this change. ( http://gerrit.openvpn.net/c/ope=
+nvpn/+/751?usp=3Demail )
 
-Change subject: Ensure that Python3 is available
+Change subject: Add building/testing with msbuild and the clang compiler
 ......................................................................
 
 
-Patch Set 1: Code-Review-1
+Patch Set 5:
 
 (1 comment)
 
-File CMakeLists.txt:
+Patchset:
 
-http://gerrit.openvpn.net/c/openvpn/+/846/comment/a4c3c593_ffda4273 :
-PS1, Line 77:         /Qspectre
-Why this is removed? (also unrelated to python3)
+PS5:
+Well, that code block is testing correctness of `snprintf()`, which it can =
+only do by intentionally overflowing and checking the results.  We try to t=
+ell that to the compiler, but it seems clang 18.1 needs more help
+
+```
+    /* Instead of trying to trick the compiler here, disable the warnings
+     * for this unit test. We know that the results will be truncated
+     * and we want to test that */
+#if defined(__GNUC__)
+/* some clang version do not understand -Wformat-truncation, so ignore the
+ * warning to avoid warnings/errors (-Werror) about unknown pragma/option */
+#if defined(__clang__)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunknown-warning-option"
+#endif
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wformat-truncation"
+#endif
+```
 
 
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/846?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/751?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings
 
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: I350fd615ed8474d34392a057a5f8bded78173949
-Gerrit-Change-Number: 846
-Gerrit-PatchSet: 1
+Gerrit-Change-Id: I43d84034f3e920a45731c4aab4f851a60921290d
+Gerrit-Change-Number: 751
+Gerrit-PatchSet: 5
 Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: stipa <lstipakov@...277...>
+Gerrit-CC: cron2 <gert@...1296...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-CC: stipa <lstipakov@...277...>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
 Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Comment-Date: Thu, 26 Dec 2024 11:04:59 +0000
+Gerrit-Comment-Date: Thu, 26 Dec 2024 11:45:35 +0000
 Gerrit-HasComments: Yes
-Gerrit-Has-Labels: Yes
+Gerrit-Has-Labels: No
 Gerrit-MessageType: comment
 
---WLrf4lNGk0o=
+--XMMHFnItCQQ=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <p> Attention is currently required from: flichtenheld, plaisthos. </p>
-<p>Patch set 1:<span style=3D"border-radius: 3px; display: inline-block; ma=
-rgin: 0 2px; padding: 4px;background-color: #ffd4d4;">Code-Review -1</span>=
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/846?usp=3Demail">Vi=
-ew Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0=
-;"><li style=3D"margin: 0; padding: 0;"><p>File CMakeLists.txt:</p><ul styl=
-e=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 =
-16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.ne=
-t/c/openvpn/+/846/comment/a4c3c593_ffda4273">Patch Set #1, Line 77:</a> <co=
-de style=3D"font-family:monospace,monospace">        /Qspectre</code></p><p=
- style=3D"white-space: pre-wrap; word-wrap: break-word;">Why this is remove=
-d? (also unrelated to python3)</p></li></ul></li></ul><p>To view, visit <a =
-href=3D"http://gerrit.openvpn.net/c/openvpn/+/846?usp=3Demail">change 846</=
-a>. To unsubscribe, or for help writing mail filters, visit <a href=3D"http=
-://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope itemtype=3D=
-"http://schema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtyp=
-e=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://ge=
-rrit.openvpn.net/c/openvpn/+/846?usp=3Demail"/><meta itemprop=3D"name" cont=
-ent=3D"View Change"/></div></div>
+<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/751?usp=3Demail">View C=
+hange</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0;"><=
+li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-style=
+: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p style=
+=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/7=
+51?tab=3Dcomments">Patch Set #5:</a> </p><p style=3D"white-space: pre-wrap;=
+ word-wrap: break-word;">Well, that code block is testing correctness of `s=
+nprintf()`, which it can only do by intentionally overflowing and checking =
+the results.  We try to tell that to the compiler, but it seems clang 18.1 =
+needs more help</p><pre style=3D"font-family: monospace,monospace; white-sp=
+ace: pre-wrap;">```<br>    /* Instead of trying to trick the compiler here,=
+ disable the warnings<br>     * for this unit test. We know that the result=
+s will be truncated<br>     * and we want to test that */<br>#if defined(__=
+GNUC__)<br>/* some clang version do not understand -Wformat-truncation, so =
+ignore the<br> * warning to avoid warnings/errors (-Werror) about unknown p=
+ragma/option */<br>#if defined(__clang__)<br>#pragma clang diagnostic push<=
+br>#pragma clang diagnostic ignored &quot;-Wunknown-warning-option&quot;<br=
+>#endif<br>#pragma GCC diagnostic push<br>#pragma GCC diagnostic ignored &q=
+uot;-Wformat-truncation&quot;<br>#endif<br>```</pre></li></ul></li></ul><p>=
+To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/751?usp=3De=
+mail">change 751</a>. To unsubscribe, or for help writing mail filters, vis=
+it <a href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div ite=
+mscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=
+=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url=
+" href=3D"http://gerrit.openvpn.net/c/openvpn/+/751?usp=3Demail"/><meta ite=
+mprop=3D"name" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I350fd615ed8474d34392a057a5f=
-8bded78173949 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 846 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I43d84034f3e920a45731c4aab4f=
+851a60921290d </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 751 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 5 </div>
 <div style=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@...1711...=
 27...&gt; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
 1...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: stipa &lt;lstipakov@...277...=
-&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: cron2 &lt;gert@...1296...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: stipa &lt;lstipakov@...277...&gt; <=
+/div>
 <div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
 ..1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
 41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Thu, 26 Dec 2024 11:04:59=
+<div style=3D"display:none"> Gerrit-Comment-Date: Thu, 26 Dec 2024 11:45:35=
  +0000 </div>
 <div style=3D"display:none"> Gerrit-HasComments: Yes </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: No </div>
 <div style=3D"display:none"> Gerrit-MessageType: comment </div>
 
 
---WLrf4lNGk0o=--
+--XMMHFnItCQQ=--
 
