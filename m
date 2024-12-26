@@ -1,16 +1,18 @@
-From: "stipa (Code Review)" <gerrit@...515...>
-Date: Thu, 26 Dec 2024 12:54:27 +0000
-In-Reply-To: <gerrit.1733316222000.Icaffbfa6b2e8efa2bd24a05537cb74b15f4fed96@...2715...>
-References: <gerrit.1733316222000.Icaffbfa6b2e8efa2bd24a05537cb74b15f4fed96@...2715...>
-Reply-To: lstipakov@...277..., arne-openvpn@...1227..., heiko@...515...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <b51be4eef84a22c27c819ceab9f7b7f12d61f130-EmailReviewComments-HTML@...2715...>
+Date: Thu, 26 Dec 2024 14:00:31 +0100
+From: Gert Doering <gert@...1296...>
+Message-ID: <Z21Tb9c5lm2P0dEt@...1296...>
+References: <7e42399c-3a94-40a2-bcaa-15545c3b761c@...68...>
+ <6a00da72-dc11-409e-9d47-4694e1d6f02f@...68...>
+ <a986633d-69d7-4bd1-b288-2f0de53b106e@...2181...>
+ <b16cab79-188f-41a3-af32-f944a387400f@...68...>
+ <Z2wxD-t_CZ2uR5K9@...1296...>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ protocol="application/pgp-signature"; boundary="u2pt7bNHOnF1kKyS"
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="6aps14LbdA8="; charset=UTF-8
-Subject: [Openvpn-devel] [L] Change in openvpn[master]: dns: support
- multiple domains without DHCP
+In-Reply-To: <Z2wxD-t_CZ2uR5K9@...1296...>
+Subject: Re: [Openvpn-devel] [PATCH v2 1/2] port-share: Normalize
+ IPv4-mapped IPv6 addresses
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,127 +21,54 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: d12fk <heiko@...515...>
-Cc: flichtenheld <frank@...2641...>, plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: corubba <corubba@...68...>
+Cc: openvpn-devel@lists.sourceforge.net
 
---6aps14LbdA8=
-Content-Type: text/plain; charset="UTF-8"
+--u2pt7bNHOnF1kKyS
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-Attention is currently required from: d12fk, flichtenheld, plaisthos.
+Hi,
 
-stipa has posted comments on this change. ( http://gerrit.openvpn.net/c/ope=
-nvpn/+/824?usp=3Demail )
+On Wed, Dec 25, 2024 at 05:21:35PM +0100, Gert Doering wrote:
+> I'm fine with the idea, but I do not like the implementation with=20
+> "yet another localized sockaddr manipulation function" - we already
+> have similar code in socket.c/setenv_sockaddr(), so maybe we need
+> to make this a more general thing.
 
-Change subject: dns: support multiple domains without DHCP
-......................................................................
+I now see that it's not *that* easy, as transform_mapped_v4_sockaddr()
+is also used by part 2/3 of the series... so maybe we'll just take 1/3
+as it is, and see if we can overhaul the whole handling of v4-mapped
+addresses in a more coordinated way later.
 
+gert
+--=20
+"If was one thing all people took for granted, was conviction that if you=20
+ feed honest figures into a computer, honest figures come out. Never doubte=
+d=20
+ it myself till I met a computer with a sense of humor."
+                             Robert A. Heinlein, The Moon is a Harsh Mistre=
+ss
 
-Patch Set 7:
+Gert Doering - Munich, Germany                             gert@...1296...
 
-(1 comment)
+--u2pt7bNHOnF1kKyS
+Content-Type: application/pgp-signature; name="signature.asc"
 
-File src/openvpnserv/interactive.c:
+-----BEGIN PGP SIGNATURE-----
 
-http://gerrit.openvpn.net/c/openvpn/+/824/comment/d44ab783_f4f83bba :
-PS7, Line 1390:         if (strchr(data, '.') !=3D NULL)
-Are you sure about the dot? For instance, "xxx" appears to be a perfectly v=
-alid value for Windows. In this case (SearchList here HKEY_LOCAL_MACHINE\SY=
-STEM\CurrentControlSet\Services\Tcpip\Parameters is set to "xxx") this take=
-s precedence over adapter-specific search list. This means that VPN pushed =
-search domains do not work, because we assume that global search list is no=
-t valid and add search domains to adapter.
+iQGcBAEBAgAGBQJnbVNvAAoJEB2Cnv7KVigSm9cL/3icg7PLI/FddVOxP31RQWYx
+fciKfhaiDpZZbeAQH3KA5dpIoqQK7/L4wN090tdPGsOLIX4pgcLOf5m9BVQ0tYqA
+wp/w/gOFQcA5sJGTRd4pCOvDL7EvJKoGj2niUUFP52TIc1Knu6ckIRAZjaE9RAmm
+nfSJX/eCgm92o/7CF67MglDN7i6h9hI0IIwxXc0XzIPouZpP5fWsf8zahIFC6+Mn
+b0sXn/GJqbeDHt1okpagwq9SXF82WmCRQJXrq/EGpP0z0kyPC7SHQA6D7Fcy+zDx
+Tf8Lj+hIj7H2+YBozBfyh8VKQ+6vbafp2rhbbYtwBYYKPbkQITOcOrt2d2CYaqxM
+amWr0YKfCfzAlFAhUOX+IkCYcijU1OSZMS3jkRZquwm5UFBO01JuNUr5IdTE8tad
+/TlYtbHlseeIGFhax8etSX7spH9UTwIYC+auKB5xriiUSB1bqqHNyjxbZUWrF4H7
+CbgixCn3kzXZASUgY5/p5BMhL2AZBi/InU8Ea+QeNQ==
+=kyuJ
+-----END PGP SIGNATURE-----
 
-Moreover, is something like ".xxx" even valid? With SearchList like "xxx,aa=
-a,bbb" and "ping test" I see outgoing DNS requests to test.xxx, test.aaa an=
-d test.bbb. With ".xxx,.aaa,.bbb" no DNS requests are sent.
-
-
-
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/824?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings
-
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: Icaffbfa6b2e8efa2bd24a05537cb74b15f4fed96
-Gerrit-Change-Number: 824
-Gerrit-PatchSet: 7
-Gerrit-Owner: d12fk <heiko@...515...>
-Gerrit-Reviewer: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-Reviewer: stipa <lstipakov@...277...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Attention: d12fk <heiko@...515...>
-Gerrit-Comment-Date: Thu, 26 Dec 2024 12:54:27 +0000
-Gerrit-HasComments: Yes
-Gerrit-Has-Labels: No
-Gerrit-MessageType: comment
-
---6aps14LbdA8=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<p> Attention is currently required from: d12fk, flichtenheld, plaisthos. <=
-/p>
-<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/824?usp=3Demail">View C=
-hange</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0;"><=
-li style=3D"margin: 0; padding: 0;"><p>File src/openvpnserv/interactive.c:<=
-/p><ul style=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; padd=
-ing: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit=
-.openvpn.net/c/openvpn/+/824/comment/d44ab783_f4f83bba">Patch Set #7, Line =
-1390:</a> <code style=3D"font-family:monospace,monospace">        if (strch=
-r(data, &#39;.&#39;) !=3D NULL)</code></p><p style=3D"white-space: pre-wrap=
-; word-wrap: break-word;">Are you sure about the dot? For instance, &quot;x=
-xx&quot; appears to be a perfectly valid value for Windows. In this case (S=
-earchList here HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Tcpip\P=
-arameters is set to &quot;xxx&quot;) this takes precedence over adapter-spe=
-cific search list. This means that VPN pushed search domains do not work, b=
-ecause we assume that global search list is not valid and add search domain=
-s to adapter.</p><p style=3D"white-space: pre-wrap; word-wrap: break-word;"=
->Moreover, is something like &quot;.xxx&quot; even valid? With SearchList l=
-ike &quot;xxx,aaa,bbb&quot; and &quot;ping test&quot; I see outgoing DNS re=
-quests to test.xxx, test.aaa and test.bbb. With &quot;.xxx,.aaa,.bbb&quot; =
-no DNS requests are sent.</p></li></ul></li></ul><p>To view, visit <a href=
-=3D"http://gerrit.openvpn.net/c/openvpn/+/824?usp=3Demail">change 824</a>. =
-To unsubscribe, or for help writing mail filters, visit <a href=3D"http://g=
-errit.openvpn.net/settings">settings</a>.</p><div itemscope itemtype=3D"htt=
-p://schema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D=
-"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit=
-.openvpn.net/c/openvpn/+/824?usp=3Demail"/><meta itemprop=3D"name" content=
-=3D"View Change"/></div></div>
-
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: Icaffbfa6b2e8efa2bd24a05537c=
-b74b15f4fed96 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 824 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 7 </div>
-<div style=3D"display:none"> Gerrit-Owner: d12fk &lt;heiko@...515...&gt; </=
-div>
-<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
-1...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: stipa &lt;lstipakov@...277...=
-&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
-41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: d12fk &lt;heiko@...515...&gt=
-; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Thu, 26 Dec 2024 12:54:27=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: No </div>
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
-
-
---6aps14LbdA8=--
+--u2pt7bNHOnF1kKyS--
 
