@@ -1,15 +1,15 @@
 From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Fri, 27 Dec 2024 15:49:05 +0000
+Date: Fri, 27 Dec 2024 15:49:07 +0000
 In-Reply-To: <gerrit.1730381354000.I91f68317450c3c0d69be2c489276739211ccb422@...2715...>
 References: <gerrit.1730381354000.I91f68317450c3c0d69be2c489276739211ccb422@...2715...>
 Reply-To: gert@...1296..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net, frank@...2641...,
- lstipakov@...277...
-Message-ID: <7af2754e6f4c3a066c5344df5c90ee5b8b38d278-EmailReplacePatchSet-HTML@...2715...>
+ yura.uddr@...277..., lstipakov@...277...
+Message-ID: <7af2754e6f4c3a066c5344df5c90ee5b8b38d278-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="dwkcCpgxbjE="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="AcDzLGsYHvU="; charset=UTF-8
 Subject: [Openvpn-devel] [M] Change in openvpn[master]: GHA: General update
  December 2024
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -20,19 +20,15 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: flichtenheld <frank@...2641...>, plaisthos <arne-openvpn@...1227...>, stipa <lstipakov@...277...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: flichtenheld <frank@...2641...>
+Cc: uddr <yura.uddr@...277...>, stipa <lstipakov@...277...>, plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---dwkcCpgxbjE=
+--AcDzLGsYHvU=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-cron2 has uploaded a new patch set (#3) to the change originally created by=
- flichtenheld. ( http://gerrit.openvpn.net/c/openvpn/+/789?usp=3Demail )
-
-The following approvals got outdated and were removed:
-Code-Review+2 by stipa, Code-Review+2 by uddr
-
+cron2 has submitted this change. ( http://gerrit.openvpn.net/c/openvpn/+/78=
+9?usp=3Demail )
 
 Change subject: GHA: General update December 2024
 ......................................................................
@@ -69,7 +65,7 @@ M .github/workflows/coverity-scan.yml
 2 files changed, 27 insertions(+), 25 deletions(-)
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/89/789/3
+
 
 diff --git a/.github/workflows/build.yaml b/.github/workflows/build.yaml
 index 767de0b..90d5202 100644
@@ -182,7 +178,7 @@ ol automake autoconf
          run: |
            cat >>$GITHUB_ENV <<EOF;
 @@ -267,8 +267,8 @@
-=20
+
        runs-on: windows-latest
        steps:
 -      - uses: actions/checkout@...2813... # v4
@@ -316,117 +312,113 @@ Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-Reviewer: stipa <lstipakov@...277...>
 Gerrit-Reviewer: uddr <yura.uddr@...277...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-MessageType: newpatchset
+Gerrit-MessageType: merged
 
---dwkcCpgxbjE=
+--AcDzLGsYHvU=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p>cron2 <strong>uploaded patch set #3</strong> to the change originally cr=
-eated by flichtenheld.</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn=
-/+/789?usp=3Demail">View Change</a></p><p>The following approvals got outda=
-ted and were removed:
-Code-Review+2 by stipa, Code-Review+2 by uddr</p><pre style=3D"font-family:=
- monospace,monospace; white-space: pre-wrap;">GHA: General update December =
-2024<br><br>Contains the following renovate updates:<br><br>- Update depend=
-ency libressl/portable to v4<br>  - Requires setting LIBRESSL_GIT_OPTIONS<b=
-r>    since the default is --depth=3D8 which is<br>    unusable for checkin=
-g out tags.<br>- Update dependency Mbed-TLS/mbedtls to v3.6.2<br>- Update m=
-ingw ubuntu runner to v24<br>  - Do NOT update the uncrustify runner since =
-newer uncrustify<br>    is not usable with the current config<br>- Update v=
-cpkg digest to 80d54ff<br>- Update github actions<br><br>Additionally chang=
-e the action reference pinning<br>to consistently refer to the tags instead=
- of the branches.<br><br>Change-Id: I91f68317450c3c0d69be2c489276739211ccb4=
-22<br>Signed-off-by: Frank Lichtenheld &lt;frank@...2641...&gt;<br>Acked-by=
-: Yuriy Darnobyt &lt;yura.uddr@...277...&gt;<br>Acked-by: Lev Stipakov &lt;=
-lstipakov@...277...&gt;<br>Message-Id: &lt;20241227143652.147284-1-frank@...1186...=
-.2641...&gt;<br>URL: https://www.mail-archive.com/openvpn-devel@...1011...=
-eforge.net/msg30251.html<br>Signed-off-by: Gert Doering &lt;gert@...1296...=
-&gt;<br>---<br>M .github/workflows/build.yaml<br>M .github/workflows/coveri=
-ty-scan.yml<br>2 files changed, 27 insertions(+), 25 deletions(-)<br><br></=
-pre><pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"=
->git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/89/789/3</pre=
-><pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><s=
-pan>diff --git a/.github/workflows/build.yaml b/.github/workflows/build.yam=
-l</span><br><span>index 767de0b..90d5202 100644</span><br><span>--- a/.gith=
-ub/workflows/build.yaml</span><br><span>+++ b/.github/workflows/build.yaml<=
-/span><br><span>@@ -13,7 +13,7 @@</span><br><span>       - name: Install de=
-pendencies</span><br><span>         run: sudo apt update &amp;&amp; sudo ap=
-t install -y uncrustify</span><br><span>       - name: Checkout OpenVPN</sp=
-an><br><span style=3D"color: hsl(0, 100%, 40%);">-        uses: actions/che=
-ckout@...2813... # v4</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+        uses: actions/checkout@...2844... # v4.2.2</span><br><span>      =
-   with:</span><br><span>           path: openvpn</span><br><span>       - =
-name: Show uncrustify version</span><br><span>@@ -27,7 +27,7 @@</span><br><=
-span>       - name: Show changes on standard output</span><br><span>       =
-  run: git diff</span><br><span>         working-directory: openvpn</span><=
+<p>cron2 <strong>submitted</strong> this change.</p><p><a href=3D"http://ge=
+rrit.openvpn.net/c/openvpn/+/789?usp=3Demail">View Change</a></p><div style=
+=3D"white-space:pre-wrap"></div><pre style=3D"font-family: monospace,monosp=
+ace; white-space: pre-wrap;">GHA: General update December 2024<br><br>Conta=
+ins the following renovate updates:<br><br>- Update dependency libressl/por=
+table to v4<br>  - Requires setting LIBRESSL_GIT_OPTIONS<br>    since the d=
+efault is --depth=3D8 which is<br>    unusable for checking out tags.<br>- =
+Update dependency Mbed-TLS/mbedtls to v3.6.2<br>- Update mingw ubuntu runne=
+r to v24<br>  - Do NOT update the uncrustify runner since newer uncrustify<=
+br>    is not usable with the current config<br>- Update vcpkg digest to 80=
+d54ff<br>- Update github actions<br><br>Additionally change the action refe=
+rence pinning<br>to consistently refer to the tags instead of the branches.=
+<br><br>Change-Id: I91f68317450c3c0d69be2c489276739211ccb422<br>Signed-off-=
+by: Frank Lichtenheld &lt;frank@...2641...&gt;<br>Acked-by: Yuriy Darnobyt =
+&lt;yura.uddr@...277...&gt;<br>Acked-by: Lev Stipakov &lt;lstipakov@...1354...=
+..&gt;<br>Message-Id: &lt;20241227143652.147284-1-frank@...2641...&gt;<br>U=
+RL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg302=
+51.html<br>Signed-off-by: Gert Doering &lt;gert@...1296...&gt;<br>---<br>M =
+.github/workflows/build.yaml<br>M .github/workflows/coverity-scan.yml<br>2 =
+files changed, 27 insertions(+), 25 deletions(-)<br><br></pre>
+<pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><sp=
+an>diff --git a/.github/workflows/build.yaml b/.github/workflows/build.yaml=
+</span><br><span>index 767de0b..90d5202 100644</span><br><span>--- a/.githu=
+b/workflows/build.yaml</span><br><span>+++ b/.github/workflows/build.yaml</=
+span><br><span>@@ -13,7 +13,7 @@</span><br><span>       - name: Install dep=
+endencies</span><br><span>         run: sudo apt update &amp;&amp; sudo apt=
+ install -y uncrustify</span><br><span>       - name: Checkout OpenVPN</spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-        uses: actions/chec=
+kout@...2813... # v4</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++        uses: actions/checkout@...2844... # v4.2.2</span><br><span>       =
+  with:</span><br><span>           path: openvpn</span><br><span>       - n=
+ame: Show uncrustify version</span><br><span>@@ -27,7 +27,7 @@</span><br><s=
+pan>       - name: Show changes on standard output</span><br><span>        =
+ run: git diff</span><br><span>         working-directory: openvpn</span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-      - uses: actions/upload-a=
+rtifact@...2814... # v4</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+      - uses: actions/upload-artifact@...2845... # v4.5.0</span><br><sp=
+an>         with:</span><br><span>           name: uncrustify-changes.patch=
+</span><br><span>           path: &#39;openvpn/uncrustify-changes.patch&#39=
+;</span><br><span>@@ -42,19 +42,19 @@</span><br><span>         arch: [x86, =
+x64]</span><br><span> </span><br><span>     name: &quot;gcc-mingw - ${{ mat=
+rix.arch }} - OSSL&quot;</span><br><span style=3D"color: hsl(0, 100%, 40%);=
+">-    runs-on: ubuntu-22.04</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+    runs-on: ubuntu-24.04</span><br><span>     env:</span><br><spa=
+n>       VCPKG_ROOT: ${{ github.workspace }}/vcpkg</span><br><span>     ste=
+ps:</span><br><span>       - name: Install dependencies</span><br><span>   =
+      run: sudo apt update &amp;&amp; sudo apt install -y mingw-w64 unzip c=
+make ninja-build build-essential wget python3-docutils man2html-base</span>=
+<br><span>       - name: Checkout OpenVPN</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-        uses: actions/checkout@...2813... # v4</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+        uses: actions/checko=
+ut@...2844... # v4.2.2</span><br><span> </span><br><span>       - name: Res=
+tore from cache and install vcpkg</span><br><span>         uses: lukka/run-=
+vcpkg@...2815... # v11.5</span><br><span>         with:</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-          vcpkgGitCommitId: 8d3649ba34aab=
+36914ddd897958599aa0a91b08e</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+          vcpkgGitCommitId: 80d54ff62d528339c626a6fbc3489a7f25956ad=
+e</span><br><span>           vcpkgJsonGlob: &#39;**/mingw/vcpkg.json&#39;</=
+span><br><span> </span><br><span>       - name: Run CMake with vcpkg.json m=
+anifest</span><br><span>@@ -64,7 +64,7 @@</span><br><span>           buildP=
+reset: mingw-${{ matrix.arch }}</span><br><span>           buildPresetAddit=
+ionalArgs: &quot;[&#39;--config Debug&#39;]&quot;</span><br><span> </span><=
 br><span style=3D"color: hsl(0, 100%, 40%);">-      - uses: actions/upload-=
 artifact@...2814... # v4</span><br><span style=3D"color: hsl(120, 100%, 40%=
 );">+      - uses: actions/upload-artifact@...2845... # v4.5.0</span><br><s=
-pan>         with:</span><br><span>           name: uncrustify-changes.patc=
-h</span><br><span>           path: &#39;openvpn/uncrustify-changes.patch&#3=
-9;</span><br><span>@@ -42,19 +42,19 @@</span><br><span>         arch: [x86,=
- x64]</span><br><span> </span><br><span>     name: &quot;gcc-mingw - ${{ ma=
-trix.arch }} - OSSL&quot;</span><br><span style=3D"color: hsl(0, 100%, 40%)=
-;">-    runs-on: ubuntu-22.04</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+    runs-on: ubuntu-24.04</span><br><span>     env:</span><br><sp=
-an>       VCPKG_ROOT: ${{ github.workspace }}/vcpkg</span><br><span>     st=
-eps:</span><br><span>       - name: Install dependencies</span><br><span>  =
-       run: sudo apt update &amp;&amp; sudo apt install -y mingw-w64 unzip =
-cmake ninja-build build-essential wget python3-docutils man2html-base</span=
-><br><span>       - name: Checkout OpenVPN</span><br><span style=3D"color: =
-hsl(0, 100%, 40%);">-        uses: actions/checkout@...2813... # v4</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+        uses: actions/check=
-out@...2844... # v4.2.2</span><br><span> </span><br><span>       - name: Re=
-store from cache and install vcpkg</span><br><span>         uses: lukka/run=
--vcpkg@...2815... # v11.5</span><br><span>         with:</span><br><span st=
-yle=3D"color: hsl(0, 100%, 40%);">-          vcpkgGitCommitId: 8d3649ba34aa=
-b36914ddd897958599aa0a91b08e</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+          vcpkgGitCommitId: 80d54ff62d528339c626a6fbc3489a7f25956a=
-de</span><br><span>           vcpkgJsonGlob: &#39;**/mingw/vcpkg.json&#39;<=
-/span><br><span> </span><br><span>       - name: Run CMake with vcpkg.json =
-manifest</span><br><span>@@ -64,7 +64,7 @@</span><br><span>           build=
-Preset: mingw-${{ matrix.arch }}</span><br><span>           buildPresetAddi=
-tionalArgs: &quot;[&#39;--config Debug&#39;]&quot;</span><br><span> </span>=
-<br><span style=3D"color: hsl(0, 100%, 40%);">-      - uses: actions/upload=
--artifact@...2814... # v4</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+      - uses: actions/upload-artifact@...2845... # v4.5.0</span><br><=
-span>         with:</span><br><span>           name: openvpn-mingw-${{ matr=
-ix.arch }}</span><br><span>           path: |</span><br><span>@@ -72,7 +72,=
-7 @@</span><br><span>             ${{ github.workspace }}/out/build/mingw/$=
-{{ matrix.arch }}/Debug/*.dll</span><br><span>             !${{ github.work=
-space }}/out/build/mingw/${{ matrix.arch }}/Debug/test_*.exe</span><br><spa=
-n> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-      - uses: acti=
-ons/upload-artifact@...2814... # v4</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+      - uses: actions/upload-artifact@...2845... # v4.5.0</=
-span><br><span>         with:</span><br><span>           name: openvpn-ming=
-w-${{ matrix.arch }}-tests</span><br><span>           path: |</span><br><sp=
-an>@@ -91,9 +91,9 @@</span><br><span>     name: &quot;mingw unittest ${{ ma=
-trix.test }} - ${{ matrix.arch }} - OSSL&quot;</span><br><span>     steps:<=
-/span><br><span>       - name: Checkout OpenVPN</span><br><span style=3D"co=
-lor: hsl(0, 100%, 40%);">-        uses: actions/checkout@...2813... # v4</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+        uses: actions/=
-checkout@...2844... # v4.2.2</span><br><span>       - name: Retrieve mingw =
-unittest</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        uses:=
- actions/download-artifact@...2817... # v4</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+        uses: actions/download-artifact@...2817... #=
- v4.1.8</span><br><span>         with:</span><br><span>           name: ope=
-nvpn-mingw-${{ matrix.arch }}-tests</span><br><span>           path: unitte=
-sts</span><br><span>@@ -165,7 +165,7 @@</span><br><span>       - name: Inst=
-all dependencies</span><br><span>         run: sudo apt update &amp;&amp; s=
-udo apt install -y liblzo2-dev libpam0g-dev liblz4-dev libcap-ng-dev libnl-=
-genl-3-dev linux-libc-dev man2html libcmocka-dev python3-docutils libtool a=
-utomake autoconf ${SSLPKG} ${PKCS11PKG}</span><br><span>       - name: Chec=
-kout OpenVPN</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        u=
-ses: actions/checkout@...2813... # v4</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+        uses: actions/checkout@...2844... # v4.2.2</span>=
-<br><span>       - name: autoconf</span><br><span>         run: autoreconf =
--fvi</span><br><span>       - name: configure</span><br><span>@@ -195,7 +19=
-5,7 @@</span><br><span>       - name: Install dependencies</span><br><span>=
-         run: sudo apt update &amp;&amp; sudo apt install -y liblzo2-dev li=
-bpam0g-dev liblz4-dev libcap-ng-dev libnl-genl-3-dev linux-libc-dev man2htm=
-l clang libcmocka-dev python3-docutils libtool automake autoconf libmbedtls=
--dev</span><br><span>       - name: Checkout OpenVPN</span><br><span style=
+pan>         with:</span><br><span>           name: openvpn-mingw-${{ matri=
+x.arch }}</span><br><span>           path: |</span><br><span>@@ -72,7 +72,7=
+ @@</span><br><span>             ${{ github.workspace }}/out/build/mingw/${=
+{ matrix.arch }}/Debug/*.dll</span><br><span>             !${{ github.works=
+pace }}/out/build/mingw/${{ matrix.arch }}/Debug/test_*.exe</span><br><span=
+> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-      - uses: actio=
+ns/upload-artifact@...2814... # v4</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+      - uses: actions/upload-artifact@...2845... # v4.5.0</s=
+pan><br><span>         with:</span><br><span>           name: openvpn-mingw=
+-${{ matrix.arch }}-tests</span><br><span>           path: |</span><br><spa=
+n>@@ -91,9 +91,9 @@</span><br><span>     name: &quot;mingw unittest ${{ mat=
+rix.test }} - ${{ matrix.arch }} - OSSL&quot;</span><br><span>     steps:</=
+span><br><span>       - name: Checkout OpenVPN</span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-        uses: actions/checkout@...2813... # v4</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+        uses: actions/c=
+heckout@...2844... # v4.2.2</span><br><span>       - name: Retrieve mingw u=
+nittest</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        uses: =
+actions/download-artifact@...2817... # v4</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+        uses: actions/download-artifact@...2817... # =
+v4.1.8</span><br><span>         with:</span><br><span>           name: open=
+vpn-mingw-${{ matrix.arch }}-tests</span><br><span>           path: unittes=
+ts</span><br><span>@@ -165,7 +165,7 @@</span><br><span>       - name: Insta=
+ll dependencies</span><br><span>         run: sudo apt update &amp;&amp; su=
+do apt install -y liblzo2-dev libpam0g-dev liblz4-dev libcap-ng-dev libnl-g=
+enl-3-dev linux-libc-dev man2html libcmocka-dev python3-docutils libtool au=
+tomake autoconf ${SSLPKG} ${PKCS11PKG}</span><br><span>       - name: Check=
+out OpenVPN</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        us=
+es: actions/checkout@...2813... # v4</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+        uses: actions/checkout@...2844... # v4.2.2</span><=
+br><span>       - name: autoconf</span><br><span>         run: autoreconf -=
+fvi</span><br><span>       - name: configure</span><br><span>@@ -195,7 +195=
+,7 @@</span><br><span>       - name: Install dependencies</span><br><span> =
+        run: sudo apt update &amp;&amp; sudo apt install -y liblzo2-dev lib=
+pam0g-dev liblz4-dev libcap-ng-dev libnl-genl-3-dev linux-libc-dev man2html=
+ clang libcmocka-dev python3-docutils libtool automake autoconf libmbedtls-=
+dev</span><br><span>       - name: Checkout OpenVPN</span><br><span style=
 =3D"color: hsl(0, 100%, 40%);">-        uses: actions/checkout@...2813... #=
  v4</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        uses: ac=
 tions/checkout@...2844... # v4.2.2</span><br><span>       - name: autoconf<=
@@ -561,8 +553,8 @@ p://schema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D=
 gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
+<div style=3D"display:none"> Gerrit-MessageType: merged </div>
 
 
---dwkcCpgxbjE=--
+--AcDzLGsYHvU=--
 
