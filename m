@@ -1,16 +1,17 @@
-From: "flichtenheld (Code Review)" <gerrit@...515...>
-Date: Fri, 27 Dec 2024 11:02:22 +0000
-In-Reply-To: <gerrit.1731290343000.I4a981c5a70717e2276d89bf83a06c7fdbe6712d7@...2715...>
-References: <gerrit.1731290343000.I4a981c5a70717e2276d89bf83a06c7fdbe6712d7@...2715...>
-Reply-To: frank@...2641..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net
-Message-ID: <e353ad67d971d73be2ed340ccd3af5aea2091115-EmailReviewComments-HTML@...2715...>
+From: "its_Giaan (Code Review)" <gerrit@...515...>
+Date: Fri, 27 Dec 2024 11:02:36 +0000
+In-Reply-To: <gerrit.1727098847000.Ie2471e6b2d6974e70423b09918ad1c2136253754@...2715...>
+References: <gerrit.1727098847000.Ie2471e6b2d6974e70423b09918ad1c2136253754@...2715...>
+Reply-To: gianmarco@...2726..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net, frank@...2641...,
+ gert@...1296..., a@...2181...
+Message-ID: <fa886e10b7658e8284e89c22194064328ed4fcae-EmailReplacePatchSet-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="wEiWOeO8esc="; charset=UTF-8
-Subject: [Openvpn-devel] [M] Change in openvpn[master]: Change API of
- init_key_ctx to use struct key_parameters
+Content-Type: multipart/alternative; boundary="nXVp7BVEnWA="; charset=UTF-8
+Subject: [Openvpn-devel] [S] Change in openvpn[master]: override ai_family
+ if 'local' numeric address was specified
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,184 +20,197 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: plaisthos <arne-openvpn@...1227...>
+To: plaisthos <arne-openvpn@...1227...>, cron2 <gert@...1296...>, flichtenheld <frank@...2641...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---wEiWOeO8esc=
+--nXVp7BVEnWA=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: plaisthos.
+Attention is currently required from: flichtenheld, its_Giaan, plaisthos.
 
-flichtenheld has posted comments on this change. ( http://gerrit.openvpn.ne=
-t/c/openvpn/+/801?usp=3Demail )
+Hello cron2, flichtenheld, ordex, plaisthos,
 
-Change subject: Change API of init_key_ctx to use struct key_parameters
+I'd like you to reexamine a change. Please visit
+
+    http://gerrit.openvpn.net/c/openvpn/+/762?usp=3Demail
+
+to look at the new patch set (#8).
+
+
+Change subject: override ai_family if 'local' numeric address was specified
 ......................................................................
 
+override ai_family if 'local' numeric address was specified
 
-Patch Set 9: Code-Review+2
+This change ensures that when a numeric IP address is specified
+as argument to a 'local' directive, its ai_family overrides
+the one extracted from the 'proto' config option.
 
-(6 comments)
-
-Commit Message:
-
-http://gerrit.openvpn.net/c/openvpn/+/801/comment/b730dde1_23369276 :
-PS8, Line 7: Change API of init_key_ctx to use struct key_paramters
-> key_parameters
-Done
-
-
-http://gerrit.openvpn.net/c/openvpn/+/801/comment/38a47023_5a01c0b0 :
-PS8, Line 9: This introduces a new structure key_paramters. The reason is t=
-hat the
-> key_parameters
-Done
+Change-Id: Ie2471e6b2d6974e70423b09918ad1c2136253754
+Signed-off-by: Antonio Quartulli <a@...2181...>
+Signed-off-by: Gianmarco De Gregori <gianmarco@...2726...>
+---
+M src/openvpn/socket.c
+1 file changed, 14 insertions(+), 2 deletions(-)
 
 
-File src/openvpn/crypto.h:
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/62/762/8
 
-http://gerrit.openvpn.net/c/openvpn/+/801/comment/a8cbf2dd_988a8316 :
-PS8, Line 176:  * Converts a struct key representation into a struct key_pa=
-rams representation.
-> key_parameters
-Done
+diff --git a/src/openvpn/socket.c b/src/openvpn/socket.c
+index 7921433..0d7cd21 100644
+--- a/src/openvpn/socket.c
++++ b/src/openvpn/socket.c
+@@ -488,11 +488,15 @@
+         sig_info =3D &sigrec;
+     }
 
+-    /* try numeric ipv6 addr first */
++    /* try numeric ip addr first */
+     CLEAR(hints);
+-    hints.ai_family =3D ai_family;
+     hints.ai_flags =3D AI_NUMERICHOST;
 
-File tests/unit_tests/openvpn/test_auth_token.c:
++    if (!hostname)
++    {
++        hints.ai_family =3D ai_family;
++    }
++
+     if (flags & GETADDR_PASSIVE)
+     {
+         hints.ai_flags |=3D AI_PASSIVE;
+@@ -518,6 +522,10 @@
+         const char *fmt;
+         int level =3D 0;
 
-http://gerrit.openvpn.net/c/openvpn/+/801/comment/a13bc939_51cc0c94 :
-PS8, Line 91:     key.hmac_size =3D 64;     /* 64 byte of 0 */
-> Use `MAX_HMAC_KEY_LENGTH` instead?
-Done
++        /* this is not a numeric IP, therefore force resolution using the
++         * provided ai_family */
++        hints.ai_family =3D ai_family;
++
+         if (hostname && (flags & GETADDR_RANDOMIZE))
+         {
+             hostname =3D hostname_randomize(hostname, &gc);
+@@ -1716,6 +1724,10 @@
+                 sock->local_host, sock->local_port,
+                 gai_strerror(status));
+         }
++
++        /* the resolved 'local entry' might have a different family than w=
+hat
++         * was globally configured */
++        sock->info.af =3D sock->info.lsa->bind_local->ai_family;
+     }
 
-
-File tests/unit_tests/openvpn/test_tls_crypt.c:
-
-http://gerrit.openvpn.net/c/openvpn/+/801/comment/0f742488_2a2784c8 :
-PS8, Line 160:     struct key_parameters key =3D { .cipher =3D { 0 }, .hmac=
- =3D { 0 }, .hmac_size =3D 64, .cipher_size =3D 64 };
-> Use `MAX_HMAC_KEY_LENGTH` and `MAX_CIPHER_KEY_LENGTH` instead?
-Done
-
-
-http://gerrit.openvpn.net/c/openvpn/+/801/comment/a43379bc_85313073 :
-PS8, Line 370:     struct key_parameters key =3D { .cipher =3D { 1 }, .hmac=
- =3D { 1 }, .cipher_size =3D 64, .hmac_size =3D 64 };
-> Use `MAX_HMAC_KEY_LENGTH` and `MAX_CIPHER_KEY_LENGTH` instead?
-Done
-
-
+     gc_free(&gc);
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/801?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/762?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings
 
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: I4a981c5a70717e2276d89bf83a06c7fdbe6712d7
-Gerrit-Change-Number: 801
-Gerrit-PatchSet: 9
-Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
+Gerrit-Change-Id: Ie2471e6b2d6974e70423b09918ad1c2136253754
+Gerrit-Change-Number: 762
+Gerrit-PatchSet: 8
+Gerrit-Owner: its_Giaan <gianmarco@...2726...>
+Gerrit-Reviewer: cron2 <gert@...1296...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
+Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-CC: ordex <a@...2181...>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Comment-Date: Fri, 27 Dec 2024 11:02:22 +0000
-Gerrit-HasComments: Yes
-Gerrit-Has-Labels: Yes
-Comment-In-Reply-To: flichtenheld <frank@...2641...>
-Gerrit-MessageType: comment
+Gerrit-Attention: its_Giaan <gianmarco@...2726...>
+Gerrit-Attention: flichtenheld <frank@...2641...>
+Gerrit-MessageType: newpatchset
 
---wEiWOeO8esc=
+--nXVp7BVEnWA=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p> Attention is currently required from: plaisthos. </p>
-<p>Patch set 9:<span style=3D"border-radius: 3px; display: inline-block; ma=
-rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/801?usp=3Demail">Vi=
-ew Change</a></p><p>6 comments:</p><ul style=3D"list-style: none; padding: =
-0;"><li style=3D"margin: 0; padding: 0;"><p>Commit Message:</p><ul style=3D=
-"list-style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px=
-;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/=
-openvpn/+/801/comment/b730dde1_23369276">Patch Set #8, Line 7:</a> <code st=
-yle=3D"font-family:monospace,monospace">Change API of init_key_ctx to use s=
-truct key_paramters</code></p><p><blockquote style=3D"border-left: 1px soli=
-d #aaa; margin: 10px 0; padding: 0 10px;">key_parameters</blockquote></p><p=
- style=3D"white-space: pre-wrap; word-wrap: break-word;">Done</p></li><li s=
-tyle=3D"margin: 0; padding: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><=
-a href=3D"http://gerrit.openvpn.net/c/openvpn/+/801/comment/38a47023_5a01c0=
-b0">Patch Set #8, Line 9:</a> <code style=3D"font-family:monospace,monospac=
-e">This introduces a new structure key_paramters. The reason is that the</c=
-ode></p><p><blockquote style=3D"border-left: 1px solid #aaa; margin: 10px 0=
-; padding: 0 10px;">key_parameters</blockquote></p><p style=3D"white-space:=
- pre-wrap; word-wrap: break-word;">Done</p></li></ul></li><li style=3D"marg=
-in: 0; padding: 0;"><p>File src/openvpn/crypto.h:</p><ul style=3D"list-styl=
-e: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p styl=
-e=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/=
-801/comment/a8cbf2dd_988a8316">Patch Set #8, Line 176:</a> <code style=3D"f=
-ont-family:monospace,monospace"> * Converts a struct key representation int=
-o a struct key_params representation.</code></p><p><blockquote style=3D"bor=
-der-left: 1px solid #aaa; margin: 10px 0; padding: 0 10px;">key_parameters<=
-/blockquote></p><p style=3D"white-space: pre-wrap; word-wrap: break-word;">=
-Done</p></li></ul></li><li style=3D"margin: 0; padding: 0;"><p>File tests/u=
-nit_tests/openvpn/test_auth_token.c:</p><ul style=3D"list-style: none; padd=
-ing: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p style=3D"margin-b=
-ottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/801/comment/a=
-13bc939_51cc0c94">Patch Set #8, Line 91:</a> <code style=3D"font-family:mon=
-ospace,monospace">    key.hmac_size =3D 64;     /* 64 byte of 0 */</code></=
-p><p><blockquote style=3D"border-left: 1px solid #aaa; margin: 10px 0; padd=
-ing: 0 10px;">Use `MAX_HMAC_KEY_LENGTH` instead?</blockquote></p><p style=
-=3D"white-space: pre-wrap; word-wrap: break-word;">Done</p></li></ul></li><=
-li style=3D"margin: 0; padding: 0;"><p>File tests/unit_tests/openvpn/test_t=
-ls_crypt.c:</p><ul style=3D"list-style: none; padding: 0;"><li style=3D"mar=
-gin: 0; padding: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"h=
-ttp://gerrit.openvpn.net/c/openvpn/+/801/comment/0f742488_2a2784c8">Patch S=
-et #8, Line 160:</a> <code style=3D"font-family:monospace,monospace">    st=
-ruct key_parameters key =3D { .cipher =3D { 0 }, .hmac =3D { 0 }, .hmac_siz=
-e =3D 64, .cipher_size =3D 64 };</code></p><p><blockquote style=3D"border-l=
-eft: 1px solid #aaa; margin: 10px 0; padding: 0 10px;">Use `MAX_HMAC_KEY_LE=
-NGTH` and `MAX_CIPHER_KEY_LENGTH` instead?</blockquote></p><p style=3D"whit=
-e-space: pre-wrap; word-wrap: break-word;">Done</p></li><li style=3D"margin=
-: 0; padding: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http=
-://gerrit.openvpn.net/c/openvpn/+/801/comment/a43379bc_85313073">Patch Set =
-#8, Line 370:</a> <code style=3D"font-family:monospace,monospace">    struc=
-t key_parameters key =3D { .cipher =3D { 1 }, .hmac =3D { 1 }, .cipher_size=
- =3D 64, .hmac_size =3D 64 };</code></p><p><blockquote style=3D"border-left=
-: 1px solid #aaa; margin: 10px 0; padding: 0 10px;">Use `MAX_HMAC_KEY_LENGT=
-H` and `MAX_CIPHER_KEY_LENGTH` instead?</blockquote></p><p style=3D"white-s=
-pace: pre-wrap; word-wrap: break-word;">Done</p></li></ul></li></ul><p>To v=
-iew, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/801?usp=3Demail=
-">change 801</a>. To unsubscribe, or for help writing mail filters, visit <=
-a href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemsco=
-pe itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"a=
-ction" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" hre=
-f=3D"http://gerrit.openvpn.net/c/openvpn/+/801?usp=3Demail"/><meta itemprop=
-=3D"name" content=3D"View Change"/></div></div>
+<p> Attention is currently required from: flichtenheld, its_Giaan, plaistho=
+s. </p>
+<p>its_Giaan <strong>uploaded patch set #8</strong> to this change.</p><p><=
+a href=3D"http://gerrit.openvpn.net/c/openvpn/+/762?usp=3Demail">View Chang=
+e</a></p><pre style=3D"font-family: monospace,monospace; white-space: pre-w=
+rap;">override ai_family if &#39;local&#39; numeric address was specified<b=
+r><br>This change ensures that when a numeric IP address is specified<br>as=
+ argument to a &#39;local&#39; directive, its ai_family overrides<br>the on=
+e extracted from the &#39;proto&#39; config option.<br><br>Change-Id: Ie247=
+1e6b2d6974e70423b09918ad1c2136253754<br>Signed-off-by: Antonio Quartulli &l=
+t;a@...2181...&gt;<br>Signed-off-by: Gianmarco De Gregori &lt;gianmarco@...493...=
+2726...&gt;<br>---<br>M src/openvpn/socket.c<br>1 file changed, 14 insertio=
+ns(+), 2 deletions(-)<br><br></pre><pre style=3D"font-family: monospace,mon=
+ospace; white-space: pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/ope=
+nvpn refs/changes/62/762/8</pre><pre style=3D"font-family: monospace,monosp=
+ace; white-space: pre-wrap;"><span>diff --git a/src/openvpn/socket.c b/src/=
+openvpn/socket.c</span><br><span>index 7921433..0d7cd21 100644</span><br><s=
+pan>--- a/src/openvpn/socket.c</span><br><span>+++ b/src/openvpn/socket.c</=
+span><br><span>@@ -488,11 +488,15 @@</span><br><span>         sig_info =3D =
+&amp;sigrec;</span><br><span>     }</span><br><span> </span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-    /* try numeric ipv6 addr first */</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+    /* try numeric ip add=
+r first */</span><br><span>     CLEAR(hints);</span><br><span style=3D"colo=
+r: hsl(0, 100%, 40%);">-    hints.ai_family =3D ai_family;</span><br><span>=
+     hints.ai_flags =3D AI_NUMERICHOST;</span><br><span> </span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+    if (!hostname)</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+        hints.ai_family =3D ai_family;</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+</span><br><span>     if (flags &amp; GETADDR_P=
+ASSIVE)</span><br><span>     {</span><br><span>         hints.ai_flags |=3D=
+ AI_PASSIVE;</span><br><span>@@ -518,6 +522,10 @@</span><br><span>         =
+const char *fmt;</span><br><span>         int level =3D 0;</span><br><span>=
+ </span><br><span style=3D"color: hsl(120, 100%, 40%);">+        /* this is=
+ not a numeric IP, therefore force resolution using the</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+         * provided ai_family */</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+        hints.ai_family =
+=3D ai_family;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</spa=
+n><br><span>         if (hostname &amp;&amp; (flags &amp; GETADDR_RANDOMIZE=
+))</span><br><span>         {</span><br><span>             hostname =3D hos=
+tname_randomize(hostname, &amp;gc);</span><br><span>@@ -1716,6 +1724,10 @@<=
+/span><br><span>                 sock-&gt;local_host, sock-&gt;local_port,<=
+/span><br><span>                 gai_strerror(status));</span><br><span>   =
+      }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+        /* the resolved &#39;lo=
+cal entry&#39; might have a different family than what</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+         * was globally configured */</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+        sock-&gt;info.=
+af =3D sock-&gt;info.lsa-&gt;bind_local-&gt;ai_family;</span><br><span>    =
+ }</span><br><span> </span><br><span>     gc_free(&amp;gc);</span><br><span=
+></span><br></pre><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/=
+openvpn/+/762?usp=3Demail">change 762</a>. To unsubscribe, or for help writ=
+ing mail filters, visit <a href=3D"http://gerrit.openvpn.net/settings">sett=
+ings</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><di=
+v itemscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><=
+link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/762?usp=
+=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I4a981c5a70717e2276d89bf83a0=
-6c7fdbe6712d7 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 801 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 9 </div>
-<div style=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@...1711...=
-27...&gt; </div>
+<div style=3D"display:none"> Gerrit-Change-Id: Ie2471e6b2d6974e70423b09918a=
+d1c2136253754 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 762 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 8 </div>
+<div style=3D"display:none"> Gerrit-Owner: its_Giaan &lt;gianmarco@...2786...=
+..&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
+ </div>
 <div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
 1...&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
+.1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: ordex &lt;a@...2181...&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
 ..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Fri, 27 Dec 2024 11:02:22=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
-<div style=3D"display:none"> Comment-In-Reply-To: flichtenheld &lt;frank@...1186...=
-.2641...&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
+<div style=3D"display:none"> Gerrit-Attention: its_Giaan &lt;gianmarco@...1665...=
+726...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
+41...&gt; </div>
+<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
 
 
---wEiWOeO8esc=--
+--nXVp7BVEnWA=--
 
