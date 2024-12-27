@@ -1,17 +1,16 @@
-Message-ID: <ee646636-9dfe-4ee9-b48f-0af9ca521048@...68...>
-Date: Thu, 26 Dec 2024 23:10:14 +0100
+From: "plaisthos (Code Review)" <gerrit@...515...>
+Date: Fri, 27 Dec 2024 01:10:23 +0000
+In-Reply-To: <gerrit.1735146911000.I350fd615ed8474d34392a057a5f8bded78173949@...2715...>
+References: <gerrit.1735146911000.I350fd615ed8474d34392a057a5f8bded78173949@...2715...>
+Reply-To: arne-openvpn@...1227..., openvpn-devel@lists.sourceforge.net,
+ frank@...2641..., lstipakov@...277...
+Message-ID: <5fa7e4da0e4c02e1966a48a14bba114aea99ab5a-EmailReplacePatchSet-HTML@...2715...>
 MIME-Version: 1.0
-From: corubba <corubba@...68...>
-References: <7e42399c-3a94-40a2-bcaa-15545c3b761c@...68...>
- <6a00da72-dc11-409e-9d47-4694e1d6f02f@...68...>
- <a986633d-69d7-4bd1-b288-2f0de53b106e@...2181...>
- <86c60a4f-685e-4157-ad10-6de03bb2eef0@...68...>
- <Z21WewOcAbuPu71M@...1296...>
- <cd225944-6a29-4ad1-a2e3-e8e17ce98394@...68...>
-Content-Language: de-CH
-In-Reply-To: <cd225944-6a29-4ad1-a2e3-e8e17ce98394@...68...>
-Subject: [Openvpn-devel] [PATCH v3 2/2] port-share: Add proxy protocol v2
- support
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="GrP/UlMEXMg="; charset=UTF-8
+Subject: [Openvpn-devel] [XS] Change in openvpn[master]: Ensure that Python3
+ is available
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,181 +19,164 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
+To: flichtenheld <frank@...2641...>, stipa <lstipakov@...277...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+
+--GrP/UlMEXMg=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-To: openvpn-devel@lists.sourceforge.net
 
-In addition to the custom journal solution, also support the widely
-used binary PROXY protocol version 2 to convey the original client
-connection parameters to the proxy receiver. This makes the port-share
-journal feature more accessable and easier to use, because one doesn't
-need a custom integration.
+Attention is currently required from: flichtenheld, plaisthos, stipa.
 
-While this is a spec-compliant [0] sender implementation of the PROXY
-protocol, it does not implement it in full. Version 1 was left out
-entirely, in favour of the superior and easier-to-implement version 2.
-The implementation was also kept minimal with regards to what OpenVPN
-supports/requires: Local commands, unix sockets, UDP and TLVs are not
-implemented.
+Hello flichtenheld, stipa,
 
-[0] https://www.haproxy.org/download/1.8/doc/proxy-protocol.txt
+I'd like you to reexamine a change. Please visit
 
-Signed-off-by: Corubba Smith <corubba@...68...>
+    http://gerrit.openvpn.net/c/openvpn/+/846?usp=3Demail
+
+to look at the new patch set (#2).
+
+The following approvals got outdated and were removed:
+Code-Review-1 by stipa
+
+
+Change subject: Ensure that Python3 is available
+......................................................................
+
+Ensure that Python3 is available
+
+Use the more standard cmake find_package to search for Python3 and make it =
+required. This also provides
+a better error message than "version.cmake" not found when python3 is missi=
+ng.
+
+Change-Id: I350fd615ed8474d34392a057a5f8bded78173949
 ---
- doc/man-sections/server-options.rst |   4 ++
- src/openvpn/ps.c                    | 102 +++++++++++++++++++++++++++-
- 2 files changed, 105 insertions(+), 1 deletion(-)
+M CMakeLists.txt
+1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/doc/man-sections/server-options.rst b/doc/man-sections/server-=
-options.rst
-index 3fe9862c..5fdd4a22 100644
---- a/doc/man-sections/server-options.rst
-+++ b/doc/man-sections/server-options.rst
-@@ -435,6 +435,10 @@ fast hardware. SSL/TLS authentication must be used in =
-this mode.
-   the origin of the connection. Each generated file will be automatically
-   deleted when the proxied connection is torn down.
 
-+  ``dir`` can be set to the special value ``proxy_protocol_v2`` to make
-+  OpenVPN use the binary PROXY protocol version 2 towards the proxy receiv=
-er.
-+  No temporary files will be written in this mode.
-+
-   Not implemented on Windows.
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/46/846/2
 
- --push option
-diff --git a/src/openvpn/ps.c b/src/openvpn/ps.c
-index d12ac9e6..5cba2d64 100644
---- a/src/openvpn/ps.c
-+++ b/src/openvpn/ps.c
-@@ -375,6 +375,99 @@ journal_add(const char *journal_dir, struct proxy_conn=
-ection *pc, struct proxy_c
-     gc_free(&gc);
- }
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 61f0cc5..fc94a10 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -107,9 +107,9 @@
+     endif ()
+ endif ()
 
-+/*
-+ * Send the proxy protocol v2 binary header, so that the receiving
-+ * server knows the true client connection parameters.
-+ */
-+static void
-+send_proxy_protocol_v2_header(const struct proxy_connection *const pc, con=
-st struct proxy_connection *const cp)
-+{
-+    static const uint8_t PP2_AF_UNSPEC =3D 0x0, PP2_AF_INET =3D 0x1, PP2_A=
-F_INET6 =3D 0x2;
-+    static const uint8_t PP2_PROTO_STREAM =3D 0x1;
-+
-+    struct openvpn_sockaddr src, dst;
-+    socklen_t src_len, dst_len;
-+    unsigned char header[52] =3D {
-+        "\x0D\x0A\x0D\x0A\x00\x0D\x0A\x51\x55\x49\x54\x0A" /* signature */
-+        "\x21" /* version=3D2 + command=3Dproxy */
-+        /* initialize the rest to zero for now */
-+    };
-+    uint8_t addr_fam, header_len =3D 16;
-+    uint16_t addr_len;
-+
-+    src_len =3D sizeof(src.addr);
-+    dst_len =3D sizeof(dst.addr);
-+    if (0 !=3D getpeername(pc->sd, &src.addr.sa, &src_len)
-+        || 0 !=3D getsockname(pc->sd, &dst.addr.sa, &dst_len))
-+    {
-+        msg(M_WARN, "PORT SHARE PROXY: getting client connection parameter=
-s failed");
-+        src.addr.sa.sa_family =3D dst.addr.sa.sa_family =3D AF_UNSPEC;
-+    }
-+
-+    transform_mapped_v4_sockaddr(&src);
-+    transform_mapped_v4_sockaddr(&dst);
-+    if (src.addr.sa.sa_family !=3D dst.addr.sa.sa_family)
-+    {
-+        msg(M_WARN, "PORT SHARE PROXY: address family mismatch between pee=
-r and socket");
-+        /* src wins, because that is usually the more important info */
-+        dst.addr.sa.sa_family =3D src.addr.sa.sa_family;
-+    }
-+
-+    if (msg_test(D_PS_PROXY_DEBUG))
-+    {
-+        struct gc_arena gc =3D gc_new();
-+        dmsg(D_PS_PROXY_DEBUG, "PORT SHARE PROXY: client connection is %s =
--> %s",
-+             print_openvpn_sockaddr(&src, &gc), print_openvpn_sockaddr(&ds=
-t, &gc));
-+        gc_free(&gc);
-+    }
-+
-+    switch (src.addr.sa.sa_family)
-+    {
-+        case AF_INET:
-+            addr_fam =3D PP2_AF_INET;
-+            addr_len =3D 12;
-+            memcpy(&header[16], &src.addr.in4.sin_addr, 4);
-+            memcpy(&header[20], &dst.addr.in4.sin_addr, 4);
-+            memcpy(&header[24], &src.addr.in4.sin_port, 2);
-+            memcpy(&header[26], &dst.addr.in4.sin_port, 2);
-+            break;
-+
-+        case AF_INET6:
-+            addr_fam =3D PP2_AF_INET6;
-+            addr_len =3D 36;
-+            memcpy(&header[16], &src.addr.in6.sin6_addr, 16);
-+            memcpy(&header[32], &dst.addr.in6.sin6_addr, 16);
-+            memcpy(&header[48], &src.addr.in6.sin6_port, 2);
-+            memcpy(&header[50], &dst.addr.in6.sin6_port, 2);
-+            break;
-+
-+        /* AF_UNIX is currently not suppported by OpenVPN */
-+
-+        default:
-+            addr_fam =3D PP2_AF_UNSPEC;
-+            addr_len =3D 0;
-+            break;
-+    }
-+
-+    const uint8_t proto =3D PP2_PROTO_STREAM; /* DGRAM is currently not su=
-pported by port-share */
-+    header[13] =3D (addr_fam << 4) | proto;
-+
-+    /* TLV is currently not implemented */
-+
-+    header_len +=3D addr_len;
-+    const uint16_t addr_len_n =3D htons(addr_len);
-+    memcpy(&header[14], &addr_len_n, sizeof(addr_len_n));
-+
-+    ASSERT(header_len <=3D sizeof(header));
-+    const socket_descriptor_t sd =3D cp->sd;
-+    const int status =3D send(sd, header, header_len, MSG_NOSIGNAL);
-+    dmsg(D_PS_PROXY_DEBUG, "PORT SHARE PROXY: proxy protocol v2 wrote[%d] =
-%d", (int) sd, status);
-+    if (status < (int) header_len)
-+    {
-+        msg(M_WARN, "PORT SHARE PROXY: failed to send proxy protocol v2 he=
-ader");
-+    }
-+}
-+
- /*
-  * Cleanup function, on proxy process exit.
-  */
-@@ -470,7 +563,14 @@ proxy_entry_new(struct proxy_connection **list,
-     /* add journal entry */
-     if (journal_dir)
-     {
--        journal_add(journal_dir, pc, cp);
-+        if (0 =3D=3D strcmp("proxy_protocol_v2", journal_dir))
-+        {
-+            send_proxy_protocol_v2_header(pc, cp);
-+        }
-+        else
-+        {
-+            journal_add(journal_dir, pc, cp);
-+        }
-     }
+-find_program(PYTHON NAMES python3 python)
++find_package(Python3 REQUIRED COMPONENTS Interpreter)
+ execute_process(
+-    COMMAND ${PYTHON} ${CMAKE_CURRENT_SOURCE_DIR}/contrib/cmake/parse-vers=
+ion.m4.py ${CMAKE_CURRENT_SOURCE_DIR}/version.m4
++    COMMAND ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/contrib/cmak=
+e/parse-version.m4.py ${CMAKE_CURRENT_SOURCE_DIR}/version.m4
+     WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+     )
+ include(${CMAKE_CURRENT_BINARY_DIR}/version.cmake)
+@@ -339,7 +339,7 @@
 
-     dmsg(D_PS_PROXY_DEBUG, "PORT SHARE PROXY: NEW CONNECTION [c=3D%d s=3D%=
-d]", (int)sd_client, (int)sd_server);
+ add_custom_command(
+     OUTPUT always_rebuild config-version.h
+-    COMMAND ${PYTHON} ${CMAKE_CURRENT_SOURCE_DIR}/contrib/cmake/git-versio=
+n.py
++    COMMAND ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/contrib/cmak=
+e/git-version.py
+     )
+ set(HAVE_CONFIG_VERSION_H YES)
+
+
 --
-2.47.1
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/846?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings
 
+Gerrit-Project: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: I350fd615ed8474d34392a057a5f8bded78173949
+Gerrit-Change-Number: 846
+Gerrit-PatchSet: 2
+Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
+Gerrit-Reviewer: flichtenheld <frank@...2641...>
+Gerrit-Reviewer: stipa <lstipakov@...277...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Attention: flichtenheld <frank@...2641...>
+Gerrit-Attention: stipa <lstipakov@...277...>
+Gerrit-MessageType: newpatchset
+
+--GrP/UlMEXMg=
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<p> Attention is currently required from: flichtenheld, plaisthos, stipa. <=
+/p>
+<p>plaisthos <strong>uploaded patch set #2</strong> to this change.</p><p><=
+a href=3D"http://gerrit.openvpn.net/c/openvpn/+/846?usp=3Demail">View Chang=
+e</a></p><p>The following approvals got outdated and were removed:
+Code-Review-1 by stipa</p><pre style=3D"font-family: monospace,monospace; w=
+hite-space: pre-wrap;">Ensure that Python3 is available<br><br>Use the more=
+ standard cmake find_package to search for Python3 and make it required. Th=
+is also provides<br>a better error message than &quot;version.cmake&quot; n=
+ot found when python3 is missing.<br><br>Change-Id: I350fd615ed8474d34392a0=
+57a5f8bded78173949<br>---<br>M CMakeLists.txt<br>1 file changed, 3 insertio=
+ns(+), 3 deletions(-)<br><br></pre><pre style=3D"font-family: monospace,mon=
+ospace; white-space: pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/ope=
+nvpn refs/changes/46/846/2</pre><pre style=3D"font-family: monospace,monosp=
+ace; white-space: pre-wrap;"><span>diff --git a/CMakeLists.txt b/CMakeLists=
+.txt</span><br><span>index 61f0cc5..fc94a10 100644</span><br><span>--- a/CM=
+akeLists.txt</span><br><span>+++ b/CMakeLists.txt</span><br><span>@@ -107,9=
+ +107,9 @@</span><br><span>     endif ()</span><br><span> endif ()</span><b=
+r><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-find_program=
+(PYTHON NAMES python3 python)</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+find_package(Python3 REQUIRED COMPONENTS Interpreter)</span><br><=
+span> execute_process(</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
+-    COMMAND ${PYTHON} ${CMAKE_CURRENT_SOURCE_DIR}/contrib/cmake/parse-vers=
+ion.m4.py ${CMAKE_CURRENT_SOURCE_DIR}/version.m4</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+    COMMAND ${Python3_EXECUTABLE} ${CMAKE_CURR=
+ENT_SOURCE_DIR}/contrib/cmake/parse-version.m4.py ${CMAKE_CURRENT_SOURCE_DI=
+R}/version.m4</span><br><span>     WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY=
+_DIR}</span><br><span>     )</span><br><span> include(${CMAKE_CURRENT_BINAR=
+Y_DIR}/version.cmake)</span><br><span>@@ -339,7 +339,7 @@</span><br><span> =
+</span><br><span> add_custom_command(</span><br><span>     OUTPUT always_re=
+build config-version.h</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
+-    COMMAND ${PYTHON} ${CMAKE_CURRENT_SOURCE_DIR}/contrib/cmake/git-versio=
+n.py</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    COMMAND ${P=
+ython3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/contrib/cmake/git-version.py=
+</span><br><span>     )</span><br><span> set(HAVE_CONFIG_VERSION_H YES)</sp=
+an><br><span> </span><br><span></span><br></pre><p>To view, visit <a href=
+=3D"http://gerrit.openvpn.net/c/openvpn/+/846?usp=3Demail">change 846</a>. =
+To unsubscribe, or for help writing mail filters, visit <a href=3D"http://g=
+errit.openvpn.net/settings">settings</a>.</p><div itemscope itemtype=3D"htt=
+p://schema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D=
+"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit=
+.openvpn.net/c/openvpn/+/846?usp=3Demail"/><meta itemprop=3D"name" content=
+=3D"View Change"/></div></div>
+
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I350fd615ed8474d34392a057a5f=
+8bded78173949 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 846 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
+<div style=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@...1711...=
+27...&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
+1...&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: stipa &lt;lstipakov@...277...=
+&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
+41...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: stipa &lt;lstipakov@...1663...=
+.&gt; </div>
+<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
+
+
+--GrP/UlMEXMg=--
 
