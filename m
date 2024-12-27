@@ -1,17 +1,16 @@
-From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Fri, 27 Dec 2024 11:54:09 +0000
-In-Reply-To: <gerrit.1735146911000.I350fd615ed8474d34392a057a5f8bded78173949@...2715...>
-References: <gerrit.1735146911000.I350fd615ed8474d34392a057a5f8bded78173949@...2715...>
-Reply-To: gert@...1296..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...,
- lstipakov@...277...
-Message-ID: <064a673f542abd422959d3c2db07fdcb4bde601e-EmailReplacePatchSet-HTML@...2715...>
+From: "flichtenheld (Code Review)" <gerrit@...515...>
+Date: Fri, 27 Dec 2024 12:19:13 +0000
+In-Reply-To: <gerrit.1733833084000.Ia1c5209022d3ab4c0dac6438c41891c7d059f812@...2715...>
+References: <gerrit.1733833084000.Ia1c5209022d3ab4c0dac6438c41891c7d059f812@...2715...>
+Reply-To: frank@...2641..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net
+Message-ID: <badc5efa44017b1586b33150580dcab8e0b5770b-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="WCtMWqUjuqc="; charset=UTF-8
-Subject: [Openvpn-devel] [XS] Change in openvpn[master]: Ensure that Python3
- is available
+Content-Type: multipart/alternative; boundary="N8txGz5agcU="; charset=UTF-8
+Subject: [Openvpn-devel] [L] Change in openvpn[master]: Allow DEFAULT in
+ data-ciphers and report both expanded and user set o...
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,157 +19,99 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, stipa <lstipakov@...277...>
+To: plaisthos <arne-openvpn@...1227...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---WCtMWqUjuqc=
+--N8txGz5agcU=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-cron2 has uploaded a new patch set (#3) to the change originally created by=
- plaisthos. ( http://gerrit.openvpn.net/c/openvpn/+/846?usp=3Demail )
+Attention is currently required from: plaisthos.
 
-The following approvals got outdated and were removed:
-Code-Review+2 by stipa
+flichtenheld has posted comments on this change. ( http://gerrit.openvpn.ne=
+t/c/openvpn/+/828?usp=3Demail )
 
-
-Change subject: Ensure that Python3 is available
+Change subject: Allow DEFAULT in data-ciphers and report both expanded and =
+user set option
 ......................................................................
 
-Ensure that Python3 is available
 
-Use the more standard cmake find_package to search for Python3 and make it =
-required. This also provides
-a better error message than "version.cmake" not found when python3 is missi=
-ng.
+Patch Set 3: Code-Review+2
 
-Change-Id: I350fd615ed8474d34392a057a5f8bded78173949
-Signed-off-by: Arne Schwabe <arne-openvpn@...1227...>
-Acked-by: Lev Stipakov <lstipakov@...277...>
-Message-Id: <20241227112255.11992-1-gert@...1296...>
-URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg30=
-232.html
-Signed-off-by: Gert Doering <gert@...1296...>
----
-M CMakeLists.txt
-1 file changed, 3 insertions(+), 3 deletions(-)
+(1 comment)
 
+Patchset:
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/46/846/3
+PS3:
+I have verified most of these changes with t_server_null tests (will try to=
+ put some of these in a patch for default test set). I haven't managed to t=
+rigger the NCP client-side message.
 
-diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 5b5b7ff..9ffcc89 100644
---- a/CMakeLists.txt
-+++ b/CMakeLists.txt
-@@ -107,9 +107,9 @@
-     endif ()
- endif ()
-
--find_program(PYTHON NAMES python3 python)
-+find_package(Python3 REQUIRED COMPONENTS Interpreter)
- execute_process(
--    COMMAND ${PYTHON} ${CMAKE_CURRENT_SOURCE_DIR}/contrib/cmake/parse-vers=
-ion.m4.py ${CMAKE_CURRENT_SOURCE_DIR}/version.m4
-+    COMMAND ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/contrib/cmak=
-e/parse-version.m4.py ${CMAKE_CURRENT_SOURCE_DIR}/version.m4
-     WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-     )
- include(${CMAKE_CURRENT_BINARY_DIR}/version.cmake)
-@@ -339,7 +339,7 @@
-
- add_custom_command(
-     OUTPUT always_rebuild config-version.h
--    COMMAND ${PYTHON} ${CMAKE_CURRENT_SOURCE_DIR}/contrib/cmake/git-versio=
-n.py
-+    COMMAND ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/contrib/cmak=
-e/git-version.py
-     )
- set(HAVE_CONFIG_VERSION_H YES)
 
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/846?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/828?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings
 
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: I350fd615ed8474d34392a057a5f8bded78173949
-Gerrit-Change-Number: 846
+Gerrit-Change-Id: Ia1c5209022d3ab4c0dac6438c41891c7d059f812
+Gerrit-Change-Number: 828
 Gerrit-PatchSet: 3
 Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: stipa <lstipakov@...277...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-MessageType: newpatchset
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Comment-Date: Fri, 27 Dec 2024 12:19:13 +0000
+Gerrit-HasComments: Yes
+Gerrit-Has-Labels: Yes
+Gerrit-MessageType: comment
 
---WCtMWqUjuqc=
+--N8txGz5agcU=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p>cron2 <strong>uploaded patch set #3</strong> to the change originally cr=
-eated by plaisthos.</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/=
-846?usp=3Demail">View Change</a></p><p>The following approvals got outdated=
- and were removed:
-Code-Review+2 by stipa</p><pre style=3D"font-family: monospace,monospace; w=
-hite-space: pre-wrap;">Ensure that Python3 is available<br><br>Use the more=
- standard cmake find_package to search for Python3 and make it required. Th=
-is also provides<br>a better error message than &quot;version.cmake&quot; n=
-ot found when python3 is missing.<br><br>Change-Id: I350fd615ed8474d34392a0=
-57a5f8bded78173949<br>Signed-off-by: Arne Schwabe &lt;arne-openvpn@...2639...=
-..&gt;<br>Acked-by: Lev Stipakov &lt;lstipakov@...277...&gt;<br>Message-Id:=
- &lt;20241227112255.11992-1-gert@...1296...&gt;<br>URL: https://www.mail-ar=
-chive.com/openvpn-devel@lists.sourceforge.net/msg30232.html<br>Signed-off-b=
-y: Gert Doering &lt;gert@...1296...&gt;<br>---<br>M CMakeLists.txt<br>1 fil=
-e changed, 3 insertions(+), 3 deletions(-)<br><br></pre><pre style=3D"font-=
-family: monospace,monospace; white-space: pre-wrap;">git pull ssh://gerrit.=
-openvpn.net:29418/openvpn refs/changes/46/846/3</pre><pre style=3D"font-fam=
-ily: monospace,monospace; white-space: pre-wrap;"><span>diff --git a/CMakeL=
-ists.txt b/CMakeLists.txt</span><br><span>index 5b5b7ff..9ffcc89 100644</sp=
-an><br><span>--- a/CMakeLists.txt</span><br><span>+++ b/CMakeLists.txt</spa=
-n><br><span>@@ -107,9 +107,9 @@</span><br><span>     endif ()</span><br><sp=
-an> endif ()</span><br><span> </span><br><span style=3D"color: hsl(0, 100%,=
- 40%);">-find_program(PYTHON NAMES python3 python)</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+find_package(Python3 REQUIRED COMPONENTS Int=
-erpreter)</span><br><span> execute_process(</span><br><span style=3D"color:=
- hsl(0, 100%, 40%);">-    COMMAND ${PYTHON} ${CMAKE_CURRENT_SOURCE_DIR}/con=
-trib/cmake/parse-version.m4.py ${CMAKE_CURRENT_SOURCE_DIR}/version.m4</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+    COMMAND ${Python3_EXE=
-CUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/contrib/cmake/parse-version.m4.py ${CM=
-AKE_CURRENT_SOURCE_DIR}/version.m4</span><br><span>     WORKING_DIRECTORY $=
-{CMAKE_CURRENT_BINARY_DIR}</span><br><span>     )</span><br><span> include(=
-${CMAKE_CURRENT_BINARY_DIR}/version.cmake)</span><br><span>@@ -339,7 +339,7=
- @@</span><br><span> </span><br><span> add_custom_command(</span><br><span>=
-     OUTPUT always_rebuild config-version.h</span><br><span style=3D"color:=
- hsl(0, 100%, 40%);">-    COMMAND ${PYTHON} ${CMAKE_CURRENT_SOURCE_DIR}/con=
-trib/cmake/git-version.py</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+    COMMAND ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/contrib=
-/cmake/git-version.py</span><br><span>     )</span><br><span> set(HAVE_CONF=
-IG_VERSION_H YES)</span><br><span> </span><br><span></span><br></pre><p>To =
-view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/846?usp=3Demai=
-l">change 846</a>. To unsubscribe, or for help writing mail filters, visit =
-<a href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemsc=
-ope itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"=
-action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" hr=
-ef=3D"http://gerrit.openvpn.net/c/openvpn/+/846?usp=3Demail"/><meta itempro=
-p=3D"name" content=3D"View Change"/></div></div>
+<p> Attention is currently required from: plaisthos. </p>
+<p>Patch set 3:<span style=3D"border-radius: 3px; display: inline-block; ma=
+rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/828?usp=3Demail">Vi=
+ew Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0=
+;"><li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-s=
+tyle: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p s=
+tyle=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn=
+/+/828?tab=3Dcomments">Patch Set #3:</a> </p><p style=3D"white-space: pre-w=
+rap; word-wrap: break-word;">I have verified most of these changes with t_s=
+erver_null tests (will try to put some of these in a patch for default test=
+ set). I haven&#39;t managed to trigger the NCP client-side message.</p></l=
+i></ul></li></ul><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/o=
+penvpn/+/828?usp=3Demail">change 828</a>. To unsubscribe, or for help writi=
+ng mail filters, visit <a href=3D"http://gerrit.openvpn.net/settings">setti=
+ngs</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div=
+ itemscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><l=
+ink itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/828?usp=
+=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I350fd615ed8474d34392a057a5f=
-8bded78173949 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 846 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: Ia1c5209022d3ab4c0dac6438c41=
+891c7d059f812 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 828 </div>
 <div style=3D"display:none"> Gerrit-PatchSet: 3 </div>
 <div style=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@...1711...=
 27...&gt; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
 1...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: stipa &lt;lstipakov@...277...=
-&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Fri, 27 Dec 2024 12:19:13=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
 
 
---WCtMWqUjuqc=--
+--N8txGz5agcU=--
 
