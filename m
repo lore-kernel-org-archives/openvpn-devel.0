@@ -1,11 +1,16 @@
-From: Gert Doering <gert@...1296...>
-Date: Fri, 27 Dec 2024 17:17:55 +0100
-Message-ID: <20241227161755.4010-1-gert@...1296...>
-In-Reply-To: <gerrit.1727098847000.Ie2471e6b2d6974e70423b09918ad1c2136253754@...2715...>
-References: <gerrit.1727098847000.Ie2471e6b2d6974e70423b09918ad1c2136253754@...2715...>
+From: "flichtenheld (Code Review)" <gerrit@...515...>
+Date: Fri, 27 Dec 2024 16:25:24 +0000
+In-Reply-To: <gerrit.1731290343000.I2a104decdb1e77a460f7a6976bcd0560b67a07b5@...2715...>
+References: <gerrit.1731290343000.I2a104decdb1e77a460f7a6976bcd0560b67a07b5@...2715...>
+Reply-To: frank@...2641..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net, lstipakov@...277...
+Message-ID: <1e1a64542a7b34462ca05b52cb365d90c25e1afb-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v9] override ai_family if 'local' numeric
- address was specified
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="uJdJCApiW28="; charset=UTF-8
+Subject: [Openvpn-devel] [M] Change in openvpn[master]: Add methods to
+ read/write packet ids for epoch data
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,81 +19,133 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: plaisthos <arne-openvpn@...1227...>
+Cc: stipa <lstipakov@...277...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-From: Antonio Quartulli <a@...2181...>
+--uJdJCApiW28=
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-This change ensures that when a numeric IP address is specified
-as argument to a 'local' directive, its ai_family overrides
-the one extracted from the 'proto' config option.
+Attention is currently required from: plaisthos, stipa.
 
-Change-Id: Ie2471e6b2d6974e70423b09918ad1c2136253754
-Signed-off-by: Antonio Quartulli <a@...2181...>
-Signed-off-by: Gianmarco De Gregori <gianmarco@...2726...>
-Acked-by: Gert Doering <gert@...1296...>
----
+flichtenheld has posted comments on this change. ( http://gerrit.openvpn.ne=
+t/c/openvpn/+/803?usp=3Demail )
 
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to master.
+Change subject: Add methods to read/write packet ids for epoch data
+......................................................................
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/762
-This mail reflects revision 9 of this Change.
 
-Acked-by according to Gerrit (reflected above):
-Gert Doering <gert@...1296...>
+Patch Set 8: Code-Review-1
 
-        
-diff --git a/src/openvpn/socket.c b/src/openvpn/socket.c
-index 7921433..b84521a 100644
---- a/src/openvpn/socket.c
-+++ b/src/openvpn/socket.c
-@@ -488,9 +488,8 @@
-         sig_info = &sigrec;
-     }
- 
--    /* try numeric ipv6 addr first */
-+    /* try numeric ip addr first */
-     CLEAR(hints);
--    hints.ai_family = ai_family;
-     hints.ai_flags = AI_NUMERICHOST;
- 
-     if (flags & GETADDR_PASSIVE)
-@@ -507,6 +506,13 @@
-         hints.ai_socktype = SOCK_STREAM;
-     }
- 
-+    /* if hostname is not set, we want to bind to 'ANY', with
-+     * the correct address family - v4-only or v6/v6-dual-stack */
-+    if (!hostname)
-+    {
-+        hints.ai_family = ai_family;
-+    }
-+
-     status = getaddrinfo(hostname, servname, &hints, res);
- 
-     if (status != 0) /* parse as numeric address failed? */
-@@ -518,6 +524,10 @@
-         const char *fmt;
-         int level = 0;
- 
-+        /* this is not a numeric IP, therefore force resolution using the
-+         * provided ai_family */
-+        hints.ai_family = ai_family;
-+
-         if (hostname && (flags & GETADDR_RANDOMIZE))
-         {
-             hostname = hostname_randomize(hostname, &gc);
-@@ -1716,6 +1726,10 @@
-                 sock->local_host, sock->local_port,
-                 gai_strerror(status));
-         }
-+
-+        /* the resolved 'local entry' might have a different family than what
-+         * was globally configured */
-+        sock->info.af = sock->info.lsa->bind_local->ai_family;
-     }
- 
-     gc_free(&gc);
+(3 comments)
+
+File src/openvpn/packet_id.h:
+
+http://gerrit.openvpn.net/c/openvpn/+/803/comment/1049acea_ac1fd539 :
+PS8, Line 49: /** Maks of the bits that make out the epoch in the packet co=
+unter */
+"Maks" -> "Mask". "make out" -> "masks out"?
+
+
+http://gerrit.openvpn.net/c/openvpn/+/803/comment/8ca67c36_92924ef3 :
+PS8, Line 333:  * @param buf       buffer to write the packet id/epcoh to
+"epoch"
+
+
+File src/openvpn/packet_id.c:
+
+http://gerrit.openvpn.net/c/openvpn/+/803/comment/7a433205_650c3d7a :
+PS8, Line 684:      * integer contain our counter but the upper two bytes a=
+re always 0 */
+This is confusing. The point where we convert to network order the epoch is=
+ already joined, so the bytes aren't 0, are they?
+
+
+
+--
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/803?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings
+
+Gerrit-Project: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: I2a104decdb1e77a460f7a6976bcd0560b67a07b5
+Gerrit-Change-Number: 803
+Gerrit-PatchSet: 8
+Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
+Gerrit-Reviewer: flichtenheld <frank@...2641...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-CC: stipa <lstipakov@...277...>
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Attention: stipa <lstipakov@...277...>
+Gerrit-Comment-Date: Fri, 27 Dec 2024 16:25:24 +0000
+Gerrit-HasComments: Yes
+Gerrit-Has-Labels: Yes
+Gerrit-MessageType: comment
+
+--uJdJCApiW28=
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<p> Attention is currently required from: plaisthos, stipa. </p>
+<p>Patch set 8:<span style=3D"border-radius: 3px; display: inline-block; ma=
+rgin: 0 2px; padding: 4px;background-color: #ffd4d4;">Code-Review -1</span>=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/803?usp=3Demail">Vi=
+ew Change</a></p><p>3 comments:</p><ul style=3D"list-style: none; padding: =
+0;"><li style=3D"margin: 0; padding: 0;"><p>File src/openvpn/packet_id.h:</=
+p><ul style=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; paddi=
+ng: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.=
+openvpn.net/c/openvpn/+/803/comment/1049acea_ac1fd539">Patch Set #8, Line 4=
+9:</a> <code style=3D"font-family:monospace,monospace">/** Maks of the bits=
+ that make out the epoch in the packet counter */</code></p><p style=3D"whi=
+te-space: pre-wrap; word-wrap: break-word;">&quot;Maks&quot; -&gt; &quot;Ma=
+sk&quot;. &quot;make out&quot; -&gt; &quot;masks out&quot;?</p></li><li sty=
+le=3D"margin: 0; padding: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a =
+href=3D"http://gerrit.openvpn.net/c/openvpn/+/803/comment/8ca67c36_92924ef3=
+">Patch Set #8, Line 333:</a> <code style=3D"font-family:monospace,monospac=
+e"> * @param buf       buffer to write the packet id/epcoh to</code></p><p =
+style=3D"white-space: pre-wrap; word-wrap: break-word;">&quot;epoch&quot;</=
+p></li></ul></li><li style=3D"margin: 0; padding: 0;"><p>File src/openvpn/p=
+acket_id.c:</p><ul style=3D"list-style: none; padding: 0;"><li style=3D"mar=
+gin: 0; padding: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"h=
+ttp://gerrit.openvpn.net/c/openvpn/+/803/comment/7a433205_650c3d7a">Patch S=
+et #8, Line 684:</a> <code style=3D"font-family:monospace,monospace">     *=
+ integer contain our counter but the upper two bytes are always 0 */</code>=
+</p><p style=3D"white-space: pre-wrap; word-wrap: break-word;">This is conf=
+using. The point where we convert to network order the epoch is already joi=
+ned, so the bytes aren&#39;t 0, are they?</p></li></ul></li></ul><p>To view=
+, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/803?usp=3Demail">c=
+hange 803</a>. To unsubscribe, or for help writing mail filters, visit <a h=
+ref=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope =
+itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"acti=
+on" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=
+=3D"http://gerrit.openvpn.net/c/openvpn/+/803?usp=3Demail"/><meta itemprop=
+=3D"name" content=3D"View Change"/></div></div>
+
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I2a104decdb1e77a460f7a6976bc=
+d0560b67a07b5 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 803 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 8 </div>
+<div style=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@...1711...=
+27...&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
+1...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: stipa &lt;lstipakov@...277...&gt; <=
+/div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: stipa &lt;lstipakov@...1663...=
+.&gt; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Fri, 27 Dec 2024 16:25:24=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
+
+
+--uJdJCApiW28=--
 
