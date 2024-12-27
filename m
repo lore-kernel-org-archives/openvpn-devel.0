@@ -1,15 +1,15 @@
 From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Fri, 27 Dec 2024 11:39:22 +0000
+Date: Fri, 27 Dec 2024 11:39:25 +0000
 In-Reply-To: <gerrit.1726585476000.I43d84034f3e920a45731c4aab4f851a60921290d@...2715...>
 References: <gerrit.1726585476000.I43d84034f3e920a45731c4aab4f851a60921290d@...2715...>
 Reply-To: gert@...1296..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net, frank@...2641...,
  lstipakov@...277...
-Message-ID: <820e9273bf6422670c11884b462723a090005b0e-EmailReplacePatchSet-HTML@...2715...>
+Message-ID: <820e9273bf6422670c11884b462723a090005b0e-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="khj5adgcQCg="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="QOLr2OH36I8="; charset=UTF-8
 Subject: [Openvpn-devel] [M] Change in openvpn[master]: Add building/testing
  with msbuild and the clang compiler
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -20,19 +20,15 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, stipa <lstipakov@...277...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: plaisthos <arne-openvpn@...1227...>
+Cc: stipa <lstipakov@...277...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---khj5adgcQCg=
+--QOLr2OH36I8=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-cron2 has uploaded a new patch set (#7) to the change originally created by=
- plaisthos. ( http://gerrit.openvpn.net/c/openvpn/+/751?usp=3Demail )
-
-The following approvals got outdated and were removed:
-Code-Review+2 by stipa
-
+cron2 has submitted this change. ( http://gerrit.openvpn.net/c/openvpn/+/75=
+1?usp=3Demail )
 
 Change subject: Add building/testing with msbuild and the clang compiler
 ......................................................................
@@ -64,7 +60,7 @@ M tests/unit_tests/openvpn/test_buffer.c
 7 files changed, 81 insertions(+), 17 deletions(-)
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/51/751/7
+
 
 diff --git a/.github/workflows/build.yaml b/.github/workflows/build.yaml
 index 3958ef0..767de0b 100644
@@ -402,86 +398,83 @@ Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: stipa <lstipakov@...277...>
 Gerrit-CC: cron2 <gert@...1296...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-MessageType: newpatchset
+Gerrit-MessageType: merged
 
---khj5adgcQCg=
+--QOLr2OH36I8=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p>cron2 <strong>uploaded patch set #7</strong> to the change originally cr=
-eated by plaisthos.</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/=
-751?usp=3Demail">View Change</a></p><p>The following approvals got outdated=
- and were removed:
-Code-Review+2 by stipa</p><pre style=3D"font-family: monospace,monospace; w=
-hite-space: pre-wrap;">Add building/testing with msbuild and the clang comp=
-iler<br><br>The LLVM/clang compiler warning and error message are easier to=
-o read<br>than their MSVC cl counterparts. Also compiling/running tests on =
-Windows<br>with a different compiler has the benefit of a better coverage.<=
-br><br>This includes a few minor changes to allow clang-cl to compile the<b=
-r>project.<br><br>Change-Id: I43d84034f3e920a45731c4aab4f851a60921290d<br>S=
-igned-off-by: Arne Schwabe &lt;arne@...1227...&gt;<br>Acked-by: Lev Stipako=
-v &lt;lstipakov@...277...&gt;<br>Message-Id: &lt;20241227112209.11572-1-ger=
-t@...1296...&gt;<br>URL: https://www.mail-archive.com/openvpn-devel@...1096...=
-ourceforge.net/msg30231.html<br>Signed-off-by: Gert Doering &lt;gert@...1826...=
-6...&gt;<br>---<br>M .github/workflows/build.yaml<br>M CMakeLists.txt<br>M =
-CMakePresets.json<br>M config.h.cmake.in<br>M src/openvpnmsica/openvpnmsica=
-.c<br>M src/openvpnmsica/openvpnmsica.h<br>M tests/unit_tests/openvpn/test_=
-buffer.c<br>7 files changed, 81 insertions(+), 17 deletions(-)<br><br></pre=
-><pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;">gi=
-t pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/51/751/7</pre><p=
-re style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><span=
->diff --git a/.github/workflows/build.yaml b/.github/workflows/build.yaml</=
-span><br><span>index 3958ef0..767de0b 100644</span><br><span>--- a/.github/=
-workflows/build.yaml</span><br><span>+++ b/.github/workflows/build.yaml</sp=
-an><br><span>@@ -259,7 +259,7 @@</span><br><span>       strategy:</span><br=
-><span>         fail-fast: false</span><br><span>         matrix:</span><br=
-><span style=3D"color: hsl(0, 100%, 40%);">-          arch: [amd64, x86, ar=
-m64]</span><br><span style=3D"color: hsl(120, 100%, 40%);">+          arch:=
- [amd64, x86, arm64, amd64-clang, x86-clang]</span><br><span> </span><br><s=
-pan>       name: &quot;msbuild - ${{ matrix.arch }} - openssl&quot;</span><=
-br><span>       env:</span><br><span>diff --git a/CMakeLists.txt b/CMakeLis=
-ts.txt</span><br><span>index 61f0cc5..5b5b7ff 100644</span><br><span>--- a/=
-CMakeLists.txt</span><br><span>+++ b/CMakeLists.txt</span><br><span>@@ -627=
-,7 +627,8 @@</span><br><span>         check_linker_flag(C -Wl,--wrap=3Dpars=
-e_line LD_SUPPORTS_WRAP)</span><br><span>     endif()</span><br><span> </sp=
-an><br><span style=3D"color: hsl(0, 100%, 40%);">-    if (${LD_SUPPORTS_WRA=
-P})</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    # Clang-cl (=
-which is also MSVC) is wrongly detected to support wrap</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+    if (NOT MSVC AND &quot;${LD_SUPPORT=
-S_WRAP}&quot;)</span><br><span>         list(APPEND unit_tests</span><br><s=
-pan>             &quot;test_argv&quot;</span><br><span>             &quot;t=
-est_tls_crypt&quot;</span><br><span>diff --git a/CMakePresets.json b/CMakeP=
-resets.json</span><br><span>index 135b19d..b6ec201 100644</span><br><span>-=
--- a/CMakePresets.json</span><br><span>+++ b/CMakePresets.json</span><br><s=
-pan>@@ -122,6 +122,10 @@</span><br><span>             }</span><br><span>   =
-      },</span><br><span>         {</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+            &quot;name&quot;: &quot;clangtoolset&quot;,</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+            &quot;tools=
-et&quot;: &quot;ClangCL&quot;</span><br><span style=3D"color: hsl(120, 100%=
+<p>cron2 <strong>submitted</strong> this change.</p><p><a href=3D"http://ge=
+rrit.openvpn.net/c/openvpn/+/751?usp=3Demail">View Change</a></p><div style=
+=3D"white-space:pre-wrap"></div><pre style=3D"font-family: monospace,monosp=
+ace; white-space: pre-wrap;">Add building/testing with msbuild and the clan=
+g compiler<br><br>The LLVM/clang compiler warning and error message are eas=
+ier too read<br>than their MSVC cl counterparts. Also compiling/running tes=
+ts on Windows<br>with a different compiler has the benefit of a better cove=
+rage.<br><br>This includes a few minor changes to allow clang-cl to compile=
+ the<br>project.<br><br>Change-Id: I43d84034f3e920a45731c4aab4f851a60921290=
+d<br>Signed-off-by: Arne Schwabe &lt;arne@...1227...&gt;<br>Acked-by: Lev S=
+tipakov &lt;lstipakov@...277...&gt;<br>Message-Id: &lt;20241227112209.11572=
+-1-gert@...1296...&gt;<br>URL: https://www.mail-archive.com/openvpn-devel@...465...=
+ists.sourceforge.net/msg30231.html<br>Signed-off-by: Gert Doering &lt;gert@=
+...1296...&gt;<br>---<br>M .github/workflows/build.yaml<br>M CMakeLists.txt=
+<br>M CMakePresets.json<br>M config.h.cmake.in<br>M src/openvpnmsica/openvp=
+nmsica.c<br>M src/openvpnmsica/openvpnmsica.h<br>M tests/unit_tests/openvpn=
+/test_buffer.c<br>7 files changed, 81 insertions(+), 17 deletions(-)<br><br=
+></pre>
+<pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><sp=
+an>diff --git a/.github/workflows/build.yaml b/.github/workflows/build.yaml=
+</span><br><span>index 3958ef0..767de0b 100644</span><br><span>--- a/.githu=
+b/workflows/build.yaml</span><br><span>+++ b/.github/workflows/build.yaml</=
+span><br><span>@@ -259,7 +259,7 @@</span><br><span>       strategy:</span><=
+br><span>         fail-fast: false</span><br><span>         matrix:</span><=
+br><span style=3D"color: hsl(0, 100%, 40%);">-          arch: [amd64, x86, =
+arm64]</span><br><span style=3D"color: hsl(120, 100%, 40%);">+          arc=
+h: [amd64, x86, arm64, amd64-clang, x86-clang]</span><br><span> </span><br>=
+<span>       name: &quot;msbuild - ${{ matrix.arch }} - openssl&quot;</span=
+><br><span>       env:</span><br><span>diff --git a/CMakeLists.txt b/CMakeL=
+ists.txt</span><br><span>index 61f0cc5..5b5b7ff 100644</span><br><span>--- =
+a/CMakeLists.txt</span><br><span>+++ b/CMakeLists.txt</span><br><span>@@ -6=
+27,7 +627,8 @@</span><br><span>         check_linker_flag(C -Wl,--wrap=3Dpa=
+rse_line LD_SUPPORTS_WRAP)</span><br><span>     endif()</span><br><span> </=
+span><br><span style=3D"color: hsl(0, 100%, 40%);">-    if (${LD_SUPPORTS_W=
+RAP})</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    # Clang-cl=
+ (which is also MSVC) is wrongly detected to support wrap</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+    if (NOT MSVC AND &quot;${LD_SUPPO=
+RTS_WRAP}&quot;)</span><br><span>         list(APPEND unit_tests</span><br>=
+<span>             &quot;test_argv&quot;</span><br><span>             &quot=
+;test_tls_crypt&quot;</span><br><span>diff --git a/CMakePresets.json b/CMak=
+ePresets.json</span><br><span>index 135b19d..b6ec201 100644</span><br><span=
+>--- a/CMakePresets.json</span><br><span>+++ b/CMakePresets.json</span><br>=
+<span>@@ -122,6 +122,10 @@</span><br><span>             }</span><br><span> =
+        },</span><br><span>         {</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+            &quot;name&quot;: &quot;clangtoolset&quot;,</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+            &quot;too=
+lset&quot;: &quot;ClangCL&quot;</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+        },</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+        {</span><br><span>             &quot;name&quot;: &quot;mingw-x64=
+&quot;,</span><br><span>             &quot;inherits&quot;: [ &quot;base&quo=
+t;, &quot;base-mingw&quot;, &quot;x64-mingw&quot; ]</span><br><span>       =
+  },</span><br><span>@@ -134,6 +138,10 @@</span><br><span>             &quo=
+t;inherits&quot;: [ &quot;base&quot;, &quot;base-windows&quot;, &quot;x64&q=
+uot;, &quot;release&quot; ]</span><br><span>         },</span><br><span>   =
+      {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            =
+&quot;name&quot;: &quot;win-amd64-clang-release&quot;,</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+            &quot;inherits&quot;: [ &quo=
+t;base&quot;, &quot;base-windows&quot;, &quot;clangtoolset&quot;, &quot;x64=
+&quot;, &quot;release&quot; ]</span><br><span style=3D"color: hsl(120, 100%=
 , 40%);">+        },</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+        {</span><br><span>             &quot;name&quot;: &quot;mingw-x64&q=
-uot;,</span><br><span>             &quot;inherits&quot;: [ &quot;base&quot;=
-, &quot;base-mingw&quot;, &quot;x64-mingw&quot; ]</span><br><span>         =
-},</span><br><span>@@ -134,6 +138,10 @@</span><br><span>             &quot;=
-inherits&quot;: [ &quot;base&quot;, &quot;base-windows&quot;, &quot;x64&quo=
-t;, &quot;release&quot; ]</span><br><span>         },</span><br><span>     =
-    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            &q=
-uot;name&quot;: &quot;win-amd64-clang-release&quot;,</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+            &quot;inherits&quot;: [ &quot=
-;base&quot;, &quot;base-windows&quot;, &quot;clangtoolset&quot;, &quot;x64&=
-quot;, &quot;release&quot; ]</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+        },</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-        {</span><br><span>             &quot;name&quot;: &quot;win-arm64-re=
-lease&quot;,</span><br><span>             &quot;inherits&quot;: [ &quot;bas=
-e&quot;, &quot;base-windows&quot;, &quot;arm64&quot;, &quot;release&quot; ]=
-</span><br><span>         },</span><br><span>@@ -142,10 +150,18 @@</span><b=
-r><span>             &quot;inherits&quot;: [ &quot;base&quot;, &quot;base-w=
-indows&quot;, &quot;x86&quot;, &quot;release&quot; ]</span><br><span>      =
-   },</span><br><span>         {</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+            &quot;name&quot;: &quot;win-x86-clang-release&quot=
-;,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            &quot=
-;inherits&quot;: [ &quot;base&quot;, &quot;base-windows&quot;, &quot;clangt=
-oolset&quot;, &quot;x86&quot;, &quot;release&quot; ]</span><br><span style=
++        {</span><br><span>             &quot;name&quot;: &quot;win-arm64-r=
+elease&quot;,</span><br><span>             &quot;inherits&quot;: [ &quot;ba=
+se&quot;, &quot;base-windows&quot;, &quot;arm64&quot;, &quot;release&quot; =
+]</span><br><span>         },</span><br><span>@@ -142,10 +150,18 @@</span><=
+br><span>             &quot;inherits&quot;: [ &quot;base&quot;, &quot;base-=
+windows&quot;, &quot;x86&quot;, &quot;release&quot; ]</span><br><span>     =
+    },</span><br><span>         {</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+            &quot;name&quot;: &quot;win-x86-clang-release&quo=
+t;,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            &quo=
+t;inherits&quot;: [ &quot;base&quot;, &quot;base-windows&quot;, &quot;clang=
+toolset&quot;, &quot;x86&quot;, &quot;release&quot; ]</span><br><span style=
 =3D"color: hsl(120, 100%, 40%);">+        },</span><br><span style=3D"color=
 : hsl(120, 100%, 40%);">+        {</span><br><span>             &quot;name&=
 quot;: &quot;win-amd64-debug&quot;,</span><br><span>             &quot;inhe=
@@ -720,8 +713,8 @@ ge"/></div></div>
 <div style=3D"display:none"> Gerrit-CC: cron2 &lt;gert@...1296...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
+<div style=3D"display:none"> Gerrit-MessageType: merged </div>
 
 
---khj5adgcQCg=--
+--QOLr2OH36I8=--
 
