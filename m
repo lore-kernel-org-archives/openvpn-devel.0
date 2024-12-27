@@ -1,15 +1,11 @@
-From: "flichtenheld (Code Review)" <gerrit@...515...>
-Date: Fri, 27 Dec 2024 12:44:25 +0000
-References: <gerrit.1735303463000.I47d95eee8a00b9878331fd6cd6a7db12665f5537@...2715...>
-Reply-To: frank@...2641..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net
-Message-ID: <c4a63861308d30a80971a6d80ae168cafa3806c8-HTML@...2715...>
+From: Frank Lichtenheld <frank@...2641...>
+Date: Fri, 27 Dec 2024 13:46:32 +0100
+Message-Id: <20241227124632.110920-1-frank@...2641...>
+In-Reply-To: <gerrit.1733833084000.Ia1c5209022d3ab4c0dac6438c41891c7d059f812@...2715...>
+References: <gerrit.1733833084000.Ia1c5209022d3ab4c0dac6438c41891c7d059f812@...2715...>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="y/aqWWsKPgo="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]:
- t_server_null_default.rc: Add some tests with --data-ciphers
+Subject: [Openvpn-devel] [PATCH v3] Allow DEFAULT in data-ciphers and report
+ both expanded and user set option
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,254 +14,515 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: plaisthos <arne-openvpn@...1227...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---y/aqWWsKPgo=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+From: Arne Schwabe <arne@...1227...>
 
-Attention is currently required from: plaisthos.
+This adds support for parsing DEFAULT in data-ciphers, the idea is that people
+can modify the default without repeating the default ciphers.
 
-Hello plaisthos,
+In the past we have seem that people will use data-ciphers BF-CBC or
+data-ciphers AES-128-CBC when getting the warning that the cipher is not
+supported by the server.  This commit aims to provide a better way for
+these situation as we still want people to rely on default cipher selection
+from OpenVPN when possible.
 
-I'd like you to do a code review.
-Please visit
-
-    http://gerrit.openvpn.net/c/openvpn/+/847?usp=3Demail
-
-to review the following change.
-
-
-Change subject: t_server_null_default.rc: Add some tests with --data-ciphers
-......................................................................
-
-t_server_null_default.rc: Add some tests with --data-ciphers
-
-Trying to verify some of the negotiation parts.
-
-Change-Id: I47d95eee8a00b9878331fd6cd6a7db12665f5537
-Signed-off-by: Frank Lichtenheld <frank@...2641...>
+Change-Id: Ia1c5209022d3ab4c0dac6438c41891c7d059f812
+Signed-off-by: Arne Schwabe <arne@...1227...>
+Acked-by: Frank Lichtenheld <frank@...2641...>
 ---
-M tests/t_server_null_default.rc
-1 file changed, 30 insertions(+), 2 deletions(-)
 
+This change was reviewed on Gerrit and approved by at least one
+developer. I request to merge it to master.
 
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/828
+This mail reflects revision 3 of this Change.
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/47/847/1
+Acked-by according to Gerrit (reflected above):
+Frank Lichtenheld <frank@...2641...>
 
-diff --git a/tests/t_server_null_default.rc b/tests/t_server_null_default.rc
-index cbf4877..c05f7eb 100755
---- a/tests/t_server_null_default.rc
-+++ b/tests/t_server_null_default.rc
-@@ -1,3 +1,4 @@
-+# -*- shell-script -*-
- # Notes regarding --dev null server and client configurations:
- #
- # The t_server_null_server.sh exits when all client pid files have gone
-@@ -33,7 +34,7 @@
- SERVER_CERT_OPTS=3D"--ca ${CA} --dh ${DH} --cert ${SERVER_CERT} --key ${SE=
-RVER_KEY} --tls-auth ${TA} 0"
- SERVER_CONF_BASE=3D"${SERVER_BASE_OPTS} ${SERVER_CIPHER_OPTS} ${SERVER_CER=
-T_OPTS}"
-
--TEST_SERVER_LIST=3D"1 2"
-+TEST_SERVER_LIST=3D"1 2 3"
-
- SERVER_NAME_1=3D"t_server_null_server-1194_udp"
- SERVER_SERVER_1=3D"--server 10.29.41.0 255.255.255.0"
-@@ -47,13 +48,19 @@
- SERVER_EXEC_2=3D"${SERVER_EXEC}"
- SERVER_CONF_2=3D"${SERVER_CONF_BASE} ${SERVER_SERVER_2} --lport 1195 --pro=
-to tcp --management 127.0.0.1 ${SERVER_MGMT_PORT_2}"
-
-+SERVER_NAME_3=3D"t_server_null_server-1196_udp"
-+SERVER_SERVER_3=3D"--server 10.29.43.0 255.255.255.0"
-+SERVER_MGMT_PORT_3=3D"11196"
-+SERVER_EXEC_3=3D"${SERVER_EXEC}"
-+SERVER_CONF_3=3D"${SERVER_CONF_BASE} ${SERVER_SERVER_3} --lport 1196 --pro=
-to udp --management 127.0.0.1 ${SERVER_MGMT_PORT_3} --cipher AES-192-CBC --=
-data-ciphers DEFAULT:AES-192-CBC"
+        
+diff --git a/Changes.rst b/Changes.rst
+index 34542a5..16ae6fc 100644
+--- a/Changes.rst
++++ b/Changes.rst
+@@ -30,6 +30,12 @@
+ 
+     https://datatracker.ietf.org/doc/draft-irtf-cfrg-aead-limits/
+ 
++Default ciphers in ``--data-ciphers``
++    Ciphers in ``--data-ciphers`` can contain the string DEFAULT that is
++    replaced by the default ciphers used by OpenVPN, making it easier to
++    add an allowed cipher without having to spell out the default ciphers.
 +
- # Test client configurations
- CLIENT_EXEC=3D"${top_builddir}/src/openvpn/openvpn"
- CLIENT_BASE_OPTS=3D"--client --dev null --ifconfig-noexec --nobind --remot=
-e-cert-tls server --persist-tun --verb 3 --resolv-retry infinite --connect-=
-retry-max 3 --server-poll-timeout 5 --explicit-exit-notify 3 --script-secur=
-ity 2 --up ${srcdir}/null_client_up.sh"
- CLIENT_CIPHER_OPTS=3D""
- CLIENT_CERT_OPTS=3D"--ca ${CA} --cert ${CLIENT_CERT} --key ${CLIENT_KEY} -=
--tls-auth ${TA} 1"
-
--TEST_RUN_LIST=3D"1 2 3"
-+TEST_RUN_LIST=3D"1 2 3 4a 4b 4c"
- CLIENT_CONF_BASE=3D"${CLIENT_BASE_OPTS} ${CLIENT_CIPHER_OPTS} ${CLIENT_CER=
-T_OPTS}"
-
- TEST_NAME_1=3D"t_server_null_client.sh-openvpn_current_udp"
-@@ -70,3 +77,24 @@
- SHOULD_PASS_3=3D"no"
- CLIENT_EXEC_3=3D"${CLIENT_EXEC}"
- CLIENT_CONF_3=3D"${CLIENT_CONF_BASE} --remote 127.0.0.1 11194 udp --proto =
-udp"
 +
-+# --data-cipher list against server with defaults
-+# --cipher ignored
-+TEST_NAME_4a=3D"t_server_null_client.sh-openvpn_current_udp_dc1"
-+SHOULD_PASS_4a=3D"yes"
-+CLIENT_EXEC_4a=3D"${CLIENT_EXEC}"
-+CLIENT_CONF_4a=3D"${CLIENT_CONF_BASE} --remote 127.0.0.1 1194 udp --proto =
-udp --cipher AES-128-CBC --data-ciphers AES-192-CBC:DEFAULT"
+ Deprecated features
+ -------------------
+ ``secret`` support has been removed by default.
+diff --git a/doc/man-sections/protocol-options.rst b/doc/man-sections/protocol-options.rst
+index 05f87cc..d04ace8 100644
+--- a/doc/man-sections/protocol-options.rst
++++ b/doc/man-sections/protocol-options.rst
+@@ -178,6 +178,12 @@
+   Chacha20-Poly1305 if the underlying SSL library (and its configuration)
+   supports it.
+ 
++  Starting with OpenVPN 2.7 the special keyword :code:`DEFAULT` can be used
++  in the string and is replaced by the default ciphers.  This can be used to
++  add an additional allowed cipher to the allowed ciphers, e.g.
++  :code:`DEFAULT:AES-192-CBC` to use the default ciphers but also allow
++  :code:`AES-192-CBC`.
 +
-+# specific --data-cipher against server that supports that cipher
-+# --cipher ignored
-+TEST_NAME_4b=3D"t_server_null_client.sh-openvpn_current_udp_dc3"
-+SHOULD_PASS_4b=3D"yes"
-+CLIENT_EXEC_4b=3D"${CLIENT_EXEC}"
-+CLIENT_CONF_4b=3D"${CLIENT_CONF_BASE} --remote 127.0.0.1 1196 udp --proto =
-udp --cipher AES-128-CBC --data-ciphers AES-192-CBC"
+   Cipher negotiation is enabled in client-server mode only. I.e. if
+   ``--mode`` is set to `server` (server-side, implied by setting
+   ``--server`` ), or if ``--pull`` is specified (client-side, implied by
+diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
+index 45b3cfa..279be57 100644
+--- a/src/openvpn/multi.c
++++ b/src/openvpn/multi.c
+@@ -1896,14 +1896,15 @@
+     if (strlen(peer_ciphers) > 0)
+     {
+         msg(M_INFO, "PUSH: No common cipher between server and client. "
+-            "Server data-ciphers: '%s', client supported ciphers '%s'",
+-            o->ncp_ciphers, peer_ciphers);
++            "Server data-ciphers: '%s'%s, client supported ciphers '%s'",
++            o->ncp_ciphers_conf, ncp_expanded_ciphers(o, &gc), peer_ciphers);
+     }
+     else if (tls_multi->remote_ciphername)
+     {
+         msg(M_INFO, "PUSH: No common cipher between server and client. "
+-            "Server data-ciphers: '%s', client supports cipher '%s'",
+-            o->ncp_ciphers, tls_multi->remote_ciphername);
++            "Server data-ciphers: '%s'%s, client supports cipher '%s'",
++            o->ncp_ciphers_conf, ncp_expanded_ciphers(o, &gc),
++            tls_multi->remote_ciphername);
+     }
+     else
+     {
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index b2a3a8b..d1714fd 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -3486,40 +3486,6 @@
+     }
+ }
+ 
+-
+-/**
+- * Checks for availibility of Chacha20-Poly1305 and sets
+- * the ncp_cipher to either AES-256-GCM:AES-128-GCM or
+- * AES-256-GCM:AES-128-GCM:CHACHA20-POLY1305.
+- */
+-static void
+-options_postprocess_setdefault_ncpciphers(struct options *o)
+-{
+-    if (o->ncp_ciphers)
+-    {
+-        /* custom --data-ciphers set, keep list */
+-        return;
+-    }
+-
+-    /* check if crypto library supports chacha */
+-    bool can_do_chacha = cipher_valid("CHACHA20-POLY1305");
+-
+-    if (can_do_chacha && dco_enabled(o))
+-    {
+-        /* also make sure that dco supports chacha */
+-        can_do_chacha = tls_item_in_cipher_list("CHACHA20-POLY1305", dco_get_supported_ciphers());
+-    }
+-
+-    if (can_do_chacha)
+-    {
+-        o->ncp_ciphers = "AES-256-GCM:AES-128-GCM:CHACHA20-POLY1305";
+-    }
+-    else
+-    {
+-        o->ncp_ciphers = "AES-256-GCM:AES-128-GCM";
+-    }
+-}
+-
+ static void
+ options_postprocess_cipher(struct options *o)
+ {
+@@ -3550,7 +3516,8 @@
+             "defaulted to BF-CBC as fallback when cipher negotiation "
+             "failed in this case. If you need this fallback please add "
+             "'--data-ciphers-fallback BF-CBC' to your configuration "
+-            "and/or add BF-CBC to --data-ciphers.");
++            "and/or add BF-CBC to --data-ciphers. E.g. "
++            "--data-ciphers %s:BF-CBC", o->ncp_ciphers_conf);
+     }
+     else if (!o->enable_ncp_fallback
+              && !tls_item_in_cipher_list(o->ciphername, o->ncp_ciphers))
+@@ -3558,7 +3525,7 @@
+         msg(M_WARN, "DEPRECATED OPTION: --cipher set to '%s' but missing in "
+             "--data-ciphers (%s). OpenVPN ignores --cipher for cipher "
+             "negotiations. ",
+-            o->ciphername, o->ncp_ciphers);
++            o->ciphername, o->ncp_ciphers_conf);
+     }
+ }
+ 
+diff --git a/src/openvpn/options.h b/src/openvpn/options.h
+index 6ab92e2..55f12dd 100644
+--- a/src/openvpn/options.h
++++ b/src/openvpn/options.h
+@@ -559,6 +559,8 @@
+     const char *ciphername;
+     bool enable_ncp_fallback;      /**< If defined fall back to
+                                    * ciphername if NCP fails */
++    /** The original ncp_ciphers specified by the user in the configuration*/
++    const char *ncp_ciphers_conf;
+     const char *ncp_ciphers;
+     const char *authname;
+     const char *engine;
+diff --git a/src/openvpn/ssl_ncp.c b/src/openvpn/ssl_ncp.c
+index 968858e..e403ae6 100644
+--- a/src/openvpn/ssl_ncp.c
++++ b/src/openvpn/ssl_ncp.c
+@@ -39,6 +39,8 @@
+ #include "config.h"
+ #endif
+ 
++#include <string.h>
 +
-+# specific --data-cipher against server that doesn't support that cipher
-+# --cipher ignored
-+TEST_NAME_4c=3D"t_server_null_client.sh-openvpn_current_udp_dc3_fail"
-+SHOULD_PASS_4c=3D"no"
-+CLIENT_EXEC_4c=3D"${CLIENT_EXEC}"
-+CLIENT_CONF_4c=3D"${CLIENT_CONF_BASE} --remote 127.0.0.1 1196 udp --proto =
-udp --cipher AES-192-CBC --data-ciphers AES-128-CBC"
-
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/847?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings
-
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: I47d95eee8a00b9878331fd6cd6a7db12665f5537
-Gerrit-Change-Number: 847
-Gerrit-PatchSet: 1
-Gerrit-Owner: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-MessageType: newchange
-
---y/aqWWsKPgo=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<p> Attention is currently required from: plaisthos. </p>
-<p>flichtenheld would like plaisthos to <strong>review</strong> this change.
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/847?usp=3Demail">Vi=
-ew Change</a></p><pre style=3D"font-family: monospace,monospace; white-spac=
-e: pre-wrap;">t_server_null_default.rc: Add some tests with --data-ciphers<=
-br><br>Trying to verify some of the negotiation parts.<br><br>Change-Id: I4=
-7d95eee8a00b9878331fd6cd6a7db12665f5537<br>Signed-off-by: Frank Lichtenheld=
- &lt;frank@...2641...&gt;<br>---<br>M tests/t_server_null_default.rc<br>1 f=
-ile changed, 30 insertions(+), 2 deletions(-)<br><br></pre><pre style=3D"fo=
-nt-family: monospace,monospace; white-space: pre-wrap;">git pull ssh://gerr=
-it.openvpn.net:29418/openvpn refs/changes/47/847/1</pre><pre style=3D"font-=
-family: monospace,monospace; white-space: pre-wrap;"><span>diff --git a/tes=
-ts/t_server_null_default.rc b/tests/t_server_null_default.rc</span><br><spa=
-n>index cbf4877..c05f7eb 100755</span><br><span>--- a/tests/t_server_null_d=
-efault.rc</span><br><span>+++ b/tests/t_server_null_default.rc</span><br><s=
-pan>@@ -1,3 +1,4 @@</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-# -*- shell-script -*-</span><br><span> # Notes regarding --dev null server=
- and client configurations:</span><br><span> #</span><br><span> # The t_ser=
-ver_null_server.sh exits when all client pid files have gone</span><br><spa=
-n>@@ -33,7 +34,7 @@</span><br><span> SERVER_CERT_OPTS=3D&quot;--ca ${CA} --=
-dh ${DH} --cert ${SERVER_CERT} --key ${SERVER_KEY} --tls-auth ${TA} 0&quot;=
-</span><br><span> SERVER_CONF_BASE=3D&quot;${SERVER_BASE_OPTS} ${SERVER_CIP=
-HER_OPTS} ${SERVER_CERT_OPTS}&quot;</span><br><span> </span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-TEST_SERVER_LIST=3D&quot;1 2&quot;</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+TEST_SERVER_LIST=3D&quot;1 2=
- 3&quot;</span><br><span> </span><br><span> SERVER_NAME_1=3D&quot;t_server_=
-null_server-1194_udp&quot;</span><br><span> SERVER_SERVER_1=3D&quot;--serve=
-r 10.29.41.0 255.255.255.0&quot;</span><br><span>@@ -47,13 +48,19 @@</span>=
-<br><span> SERVER_EXEC_2=3D&quot;${SERVER_EXEC}&quot;</span><br><span> SERV=
-ER_CONF_2=3D&quot;${SERVER_CONF_BASE} ${SERVER_SERVER_2} --lport 1195 --pro=
-to tcp --management 127.0.0.1 ${SERVER_MGMT_PORT_2}&quot;</span><br><span> =
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+SERVER_NAME_3=3D&qu=
-ot;t_server_null_server-1196_udp&quot;</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+SERVER_SERVER_3=3D&quot;--server 10.29.43.0 255.255.255.=
-0&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+SERVER_MGMT_=
-PORT_3=3D&quot;11196&quot;</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+SERVER_EXEC_3=3D&quot;${SERVER_EXEC}&quot;</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+SERVER_CONF_3=3D&quot;${SERVER_CONF_BASE} ${S=
-ERVER_SERVER_3} --lport 1196 --proto udp --management 127.0.0.1 ${SERVER_MG=
-MT_PORT_3} --cipher AES-192-CBC --data-ciphers DEFAULT:AES-192-CBC&quot;</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> # Te=
-st client configurations</span><br><span> CLIENT_EXEC=3D&quot;${top_builddi=
-r}/src/openvpn/openvpn&quot;</span><br><span> CLIENT_BASE_OPTS=3D&quot;--cl=
-ient --dev null --ifconfig-noexec --nobind --remote-cert-tls server --persi=
-st-tun --verb 3 --resolv-retry infinite --connect-retry-max 3 --server-poll=
--timeout 5 --explicit-exit-notify 3 --script-security 2 --up ${srcdir}/null=
-_client_up.sh&quot;</span><br><span> CLIENT_CIPHER_OPTS=3D&quot;&quot;</spa=
-n><br><span> CLIENT_CERT_OPTS=3D&quot;--ca ${CA} --cert ${CLIENT_CERT} --ke=
-y ${CLIENT_KEY} --tls-auth ${TA} 1&quot;</span><br><span> </span><br><span =
-style=3D"color: hsl(0, 100%, 40%);">-TEST_RUN_LIST=3D&quot;1 2 3&quot;</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+TEST_RUN_LIST=3D&quot;1 =
-2 3 4a 4b 4c&quot;</span><br><span> CLIENT_CONF_BASE=3D&quot;${CLIENT_BASE_=
-OPTS} ${CLIENT_CIPHER_OPTS} ${CLIENT_CERT_OPTS}&quot;</span><br><span> </sp=
-an><br><span> TEST_NAME_1=3D&quot;t_server_null_client.sh-openvpn_current_u=
-dp&quot;</span><br><span>@@ -70,3 +77,24 @@</span><br><span> SHOULD_PASS_3=
-=3D&quot;no&quot;</span><br><span> CLIENT_EXEC_3=3D&quot;${CLIENT_EXEC}&quo=
-t;</span><br><span> CLIENT_CONF_3=3D&quot;${CLIENT_CONF_BASE} --remote 127.=
-0.0.1 11194 udp --proto udp&quot;</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+# --d=
-ata-cipher list against server with defaults</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+# --cipher ignored</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+TEST_NAME_4a=3D&quot;t_server_null_client.sh-openvp=
-n_current_udp_dc1&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+SHOULD_PASS_4a=3D&quot;yes&quot;</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+CLIENT_EXEC_4a=3D&quot;${CLIENT_EXEC}&quot;</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+CLIENT_CONF_4a=3D&quot;${CLIENT_CO=
-NF_BASE} --remote 127.0.0.1 1194 udp --proto udp --cipher AES-128-CBC --dat=
-a-ciphers AES-192-CBC:DEFAULT&quot;</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+# s=
-pecific --data-cipher against server that supports that cipher</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+# --cipher ignored</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+TEST_NAME_4b=3D&quot;t_server_nul=
-l_client.sh-openvpn_current_udp_dc3&quot;</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+SHOULD_PASS_4b=3D&quot;yes&quot;</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+CLIENT_EXEC_4b=3D&quot;${CLIENT_EXEC}&qu=
-ot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+CLIENT_CONF_4b=
-=3D&quot;${CLIENT_CONF_BASE} --remote 127.0.0.1 1196 udp --proto udp --ciph=
-er AES-128-CBC --data-ciphers AES-192-CBC&quot;</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+# specific --data-cipher against server that doesn&#39;t support t=
-hat cipher</span><br><span style=3D"color: hsl(120, 100%, 40%);">+# --ciphe=
-r ignored</span><br><span style=3D"color: hsl(120, 100%, 40%);">+TEST_NAME_=
-4c=3D&quot;t_server_null_client.sh-openvpn_current_udp_dc3_fail&quot;</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+SHOULD_PASS_4c=3D&quot;no=
-&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+CLIENT_EXEC_4=
-c=3D&quot;${CLIENT_EXEC}&quot;</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+CLIENT_CONF_4c=3D&quot;${CLIENT_CONF_BASE} --remote 127.0.0.1 11=
-96 udp --proto udp --cipher AES-192-CBC --data-ciphers AES-128-CBC&quot;</s=
-pan><br><span></span><br></pre><p>To view, visit <a href=3D"http://gerrit.o=
-penvpn.net/c/openvpn/+/847?usp=3Demail">change 847</a>. To unsubscribe, or =
-for help writing mail filters, visit <a href=3D"http://gerrit.openvpn.net/s=
-ettings">settings</a>.</p><div itemscope itemtype=3D"http://schema.org/Emai=
-lMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.org/=
-ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/open=
-vpn/+/847?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></=
-div></div>
-
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I47d95eee8a00b9878331fd6cd6a=
-7db12665f5537 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 847 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
-<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
-.&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: newchange </div>
-
-
---y/aqWWsKPgo=--
+ #include "syshead.h"
+ #include "win32.h"
+ 
+@@ -222,7 +224,6 @@
+ 
+     return token != NULL;
+ }
+-
+ const char *
+ tls_peer_ncp_list(const char *peer_info, struct gc_arena *gc)
+ {
+@@ -334,15 +335,16 @@
+         return true;
+     }
+ 
+-    /* We failed negotiation, give appropiate error message */
++    /* We failed negotiation, give appropriate error message */
+     if (c->c2.tls_multi->remote_ciphername)
+     {
+         msg(D_TLS_ERRORS, "OPTIONS ERROR: failed to negotiate "
+             "cipher with server.  Add the server's "
+-            "cipher ('%s') to --data-ciphers (currently '%s') if "
+-            "you want to connect to this server.",
++            "cipher ('%s') to --data-ciphers (currently '%s'), e.g."
++            "--data-ciphers %s:%s if you want to connect to this server.",
+             c->c2.tls_multi->remote_ciphername,
+-            c->options.ncp_ciphers);
++            c->options.ncp_ciphers_conf, c->options.ncp_ciphers_conf,
++            c->c2.tls_multi->remote_ciphername);
+         return false;
+ 
+     }
+@@ -516,10 +518,13 @@
+     if (!session->opt->server && !cipher_allowed_as_fallback
+         && !tls_item_in_cipher_list(options->ciphername, options->ncp_ciphers))
+     {
+-        msg(D_TLS_ERRORS, "Error: negotiated cipher not allowed - %s not in %s",
+-            options->ciphername, options->ncp_ciphers);
++        struct gc_arena gc = gc_new();
++        msg(D_TLS_ERRORS, "Error: negotiated cipher not allowed - %s not in %s%s",
++            options->ciphername, options->ncp_ciphers_conf,
++            ncp_expanded_ciphers(options, &gc));
+         /* undo cipher push, abort connection setup */
+         options->ciphername = session->opt->config_ciphername;
++        gc_free(&gc);
+         return false;
+     }
+     else
+@@ -527,3 +532,100 @@
+         return true;
+     }
+ }
++
++/**
++ * Replaces the string DEFAULT with the string \c replace.
++ *
++ * @param o         Options struct to modify and to use the gc from
++ * @param replace   string used to replace the DEFAULT string
++ */
++static void
++replace_default_in_ncp_ciphers_option(struct options *o, const char *replace)
++{
++    const char *search = "DEFAULT";
++    const int ncp_ciphers_len = strlen(o->ncp_ciphers) + strlen(replace) - strlen(search) + 1;
++
++    uint8_t *ncp_ciphers = gc_malloc(ncp_ciphers_len, true, &o->gc);
++
++    struct buffer ncp_ciphers_buf;
++    buf_set_write(&ncp_ciphers_buf, ncp_ciphers, ncp_ciphers_len);
++
++    const char *def = strstr(o->ncp_ciphers, search);
++
++    /* Copy everything before the DEFAULT string */
++    buf_write(&ncp_ciphers_buf, o->ncp_ciphers, def - o->ncp_ciphers);
++
++    /* copy the default string. */
++    buf_write(&ncp_ciphers_buf, replace, strlen(replace));
++
++    /* copy the rest of the ncp cipher string */
++    const char *after_default = def + strlen(search);
++    buf_write(&ncp_ciphers_buf, after_default, strlen(after_default));
++
++    o->ncp_ciphers = (char *) ncp_ciphers;
++}
++
++/**
++ * Checks for availibility of Chacha20-Poly1305 and sets
++ * the ncp_cipher to either AES-256-GCM:AES-128-GCM or
++ * AES-256-GCM:AES-128-GCM:CHACHA20-POLY1305.
++ */
++void
++options_postprocess_setdefault_ncpciphers(struct options *o)
++{
++    bool default_in_cipher_list = o->ncp_ciphers
++                                  && tls_item_in_cipher_list("DEFAULT", o->ncp_ciphers);
++
++    /* preserve the values that the user put into the configuration */
++    o->ncp_ciphers_conf = o->ncp_ciphers;
++
++    /* check if crypto library supports chacha */
++    bool can_do_chacha = cipher_valid("CHACHA20-POLY1305");
++
++    if (can_do_chacha && dco_enabled(o))
++    {
++        /* also make sure that dco supports chacha */
++        can_do_chacha = tls_item_in_cipher_list("CHACHA20-POLY1305", dco_get_supported_ciphers());
++    }
++
++    const char *default_ciphers = "AES-256-GCM:AES-128-GCM:CHACHA20-POLY1305";
++
++    if (!can_do_chacha)
++    {
++        default_ciphers = "AES-256-GCM:AES-128-GCM";
++    }
++
++    /* want to rather print DEFAULT instead of a manually set default list */
++    if (!o->ncp_ciphers_conf || !strcmp(default_ciphers, o->ncp_ciphers_conf))
++    {
++        o->ncp_ciphers = default_ciphers;
++        o->ncp_ciphers_conf = "DEFAULT";
++    }
++    else if (!default_in_cipher_list)
++    {
++        /* custom cipher list without DEFAULT string in it,
++         * nothing to replace/mutate */
++        return;
++    }
++    else
++    {
++        replace_default_in_ncp_ciphers_option(o, default_ciphers);
++    }
++}
++
++const char *
++ncp_expanded_ciphers(struct options *o, struct gc_arena *gc)
++{
++    if (!strcmp(o->ncp_ciphers, o->ncp_ciphers_conf))
++    {
++        /* expanded ciphers and user set ciphers are identical, no need to
++         * add an expanded version */
++        return "";
++    }
++
++    /* two extra brackets, one space, NUL byte */
++    struct buffer expanded_ciphers_buf = alloc_buf_gc(strlen(o->ncp_ciphers) + 4, gc);
++
++    buf_printf(&expanded_ciphers_buf, " (%s)", o->ncp_ciphers);
++    return BSTR(&expanded_ciphers_buf);
++}
+diff --git a/src/openvpn/ssl_ncp.h b/src/openvpn/ssl_ncp.h
+index afbe331..f90b19a 100644
+--- a/src/openvpn/ssl_ncp.h
++++ b/src/openvpn/ssl_ncp.h
+@@ -156,4 +156,23 @@
+ bool
+ check_session_cipher(struct tls_session *session, struct options *options);
+ 
++/**
++ * Checks for availability of Chacha20-Poly1305 and sets
++ * the ncp_cipher to either AES-256-GCM:AES-128-GCM or
++ * AES-256-GCM:AES-128-GCM:CHACHA20-POLY1305 if not set.
++ *
++ * If DEFAULT is in the ncp_cipher string, it will be replaced
++ * by the default cipher string as defined above.
++ */
++void
++options_postprocess_setdefault_ncpciphers(struct options *o);
++
++/** returns the o->ncp_ciphers in brackets, e.g.
++ *  (AES-256-GCM:CHACHA20-POLY1305) if o->ncp_ciphers_conf
++ *  and o->ncp_ciphers differ, otherwise an empty string
++ *
++ *  The returned string will be allocated in the passed \c gc
++ */
++const char *
++ncp_expanded_ciphers(struct options *o, struct gc_arena *gc);
+ #endif /* ifndef OPENVPN_SSL_NCP_H */
+diff --git a/tests/unit_tests/openvpn/test_ncp.c b/tests/unit_tests/openvpn/test_ncp.c
+index a8e1021..b744e96 100644
+--- a/tests/unit_tests/openvpn/test_ncp.c
++++ b/tests/unit_tests/openvpn/test_ncp.c
+@@ -54,6 +54,17 @@
+     ASSERT(0);
+ }
+ 
++
++/* Define a dummy dco cipher option to avoid linking against all the DCO
++ * units */
++#if defined(ENABLE_DCO)
++const char *
++dco_get_supported_ciphers(void)
++{
++    return "AES-192-GCM:AES-128-CBC:AES-256-GCM:AES-128-GCM:CHACHA20-POLY1305";
++}
++#endif
++
+ static void
+ test_check_ncp_ciphers_list(void **state)
+ {
+@@ -260,13 +271,135 @@
+     gc_free(&gc);
+ }
+ 
++static void
++test_ncp_default(void **state)
++{
++    bool have_chacha = cipher_valid("CHACHA20-POLY1305");
++
++    struct options o = { 0 };
++
++    o.gc = gc_new();
++
++    /* no user specified string */
++    o.ncp_ciphers = NULL;
++    options_postprocess_setdefault_ncpciphers(&o);
++
++    if (have_chacha)
++    {
++        assert_string_equal(o.ncp_ciphers, "AES-256-GCM:AES-128-GCM:CHACHA20-POLY1305");
++    }
++    else
++    {
++        assert_string_equal(o.ncp_ciphers, "AES-256-GCM:AES-128-GCM");
++    }
++    assert_string_equal(o.ncp_ciphers_conf, "DEFAULT");
++
++    /* check that a default string is replaced with DEFAULT */
++    if (have_chacha)
++    {
++        o.ncp_ciphers = "AES-256-GCM:AES-128-GCM:CHACHA20-POLY1305";
++    }
++    else
++    {
++        o.ncp_ciphers = "AES-256-GCM:AES-128-GCM";
++    }
++
++    options_postprocess_setdefault_ncpciphers(&o);
++    assert_string_equal(o.ncp_ciphers_conf, "DEFAULT");
++
++    /* test default in the middle of the string */
++    o.ncp_ciphers = "BF-CBC:DEFAULT:AES-128-CBC:AES-256-CBC";
++    options_postprocess_setdefault_ncpciphers(&o);
++
++    if (have_chacha)
++    {
++        assert_string_equal(o.ncp_ciphers, "BF-CBC:AES-256-GCM:AES-128-GCM:CHACHA20-POLY1305:AES-128-CBC:AES-256-CBC");
++    }
++    else
++    {
++        assert_string_equal(o.ncp_ciphers, "BF-CBC:AES-256-GCM:AES-128-GCM:AES-128-CBC:AES-256-CBC");
++    }
++    assert_string_equal(o.ncp_ciphers_conf, "BF-CBC:DEFAULT:AES-128-CBC:AES-256-CBC");
++
++    /* string at the beginning */
++    o.ncp_ciphers = "DEFAULT:AES-128-CBC:AES-192-CBC";
++    options_postprocess_setdefault_ncpciphers(&o);
++
++    if (have_chacha)
++    {
++        assert_string_equal(o.ncp_ciphers, "AES-256-GCM:AES-128-GCM:CHACHA20-POLY1305:AES-128-CBC:AES-192-CBC");
++    }
++    else
++    {
++        assert_string_equal(o.ncp_ciphers, "AES-256-GCM:AES-128-GCM:AES-128-CBC:AES-192-CBC");
++    }
++    assert_string_equal(o.ncp_ciphers_conf, "DEFAULT:AES-128-CBC:AES-192-CBC");
++
++    /* DEFAULT at the end */
++    o.ncp_ciphers = "AES-192-GCM:AES-128-CBC:DEFAULT";
++    options_postprocess_setdefault_ncpciphers(&o);
++
++    if (have_chacha)
++    {
++        assert_string_equal(o.ncp_ciphers, "AES-192-GCM:AES-128-CBC:AES-256-GCM:AES-128-GCM:CHACHA20-POLY1305");
++    }
++    else
++    {
++        assert_string_equal(o.ncp_ciphers, "AES-192-GCM:AES-128-CBC:AES-256-GCM:AES-128-GCM");
++    }
++    assert_string_equal(o.ncp_ciphers_conf, "AES-192-GCM:AES-128-CBC:DEFAULT");
++
++    gc_free(&o.gc);
++}
++
++static void
++test_ncp_expand(void **state)
++{
++    bool have_chacha = cipher_valid("CHACHA20-POLY1305");
++    struct options o = {0};
++
++    o.gc = gc_new();
++    struct gc_arena gc = gc_new();
++
++    /* no user specified string */
++    o.ncp_ciphers = NULL;
++    options_postprocess_setdefault_ncpciphers(&o);
++
++    const char *expanded = ncp_expanded_ciphers(&o, &gc);
++
++    /* user specificed string with DEFAULT in it */
++    o.ncp_ciphers = "AES-192-GCM:DEFAULT";
++    options_postprocess_setdefault_ncpciphers(&o);
++    const char *expanded2 = ncp_expanded_ciphers(&o, &gc);
++
++    if (have_chacha)
++    {
++        assert_string_equal(expanded, " (AES-256-GCM:AES-128-GCM:CHACHA20-POLY1305)");
++        assert_string_equal(expanded2, " (AES-192-GCM:AES-256-GCM:AES-128-GCM:CHACHA20-POLY1305)");
++    }
++    else
++    {
++        assert_string_equal(expanded, " (AES-256-GCM:AES-128-GCM)");
++        assert_string_equal(expanded2, " (AES-192-GCM:AES-256-GCM:AES-128-GCM)");
++    }
++
++    o.ncp_ciphers = "AES-192-GCM:BF-CBC";
++    options_postprocess_setdefault_ncpciphers(&o);
++
++    assert_string_equal(ncp_expanded_ciphers(&o, &gc), "");
++
++    gc_free(&o.gc);
++    gc_free(&gc);
++}
+ 
+ 
+ const struct CMUnitTest ncp_tests[] = {
+     cmocka_unit_test(test_check_ncp_ciphers_list),
+     cmocka_unit_test(test_extract_client_ciphers),
+     cmocka_unit_test(test_poor_man),
+-    cmocka_unit_test(test_ncp_best)
++    cmocka_unit_test(test_ncp_best),
++    cmocka_unit_test(test_ncp_default),
++    cmocka_unit_test(test_ncp_expand),
+ };
+ 
+ 
 
