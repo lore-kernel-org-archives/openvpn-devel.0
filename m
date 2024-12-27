@@ -1,15 +1,15 @@
 From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Fri, 27 Dec 2024 17:37:25 +0000
+Date: Fri, 27 Dec 2024 17:37:29 +0000
 In-Reply-To: <gerrit.1727098847000.Ie2471e6b2d6974e70423b09918ad1c2136253754@...2715...>
 References: <gerrit.1727098847000.Ie2471e6b2d6974e70423b09918ad1c2136253754@...2715...>
 Reply-To: gert@...1296..., arne-openvpn@...1227...,
  gianmarco@...2726..., openvpn-devel@lists.sourceforge.net,
  frank@...2641..., a@...2181...
-Message-ID: <496ebeccb55cdfe13d169e37ecd63e3583c67d40-EmailReplacePatchSet-HTML@...2715...>
+Message-ID: <496ebeccb55cdfe13d169e37ecd63e3583c67d40-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="hYFwmQgQwYI="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="PlCzBR4Pcqk="; charset=UTF-8
 Subject: [Openvpn-devel] [S] Change in openvpn[master]: override ai_family
  if 'local' numeric address was specified
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -20,19 +20,15 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: its_Giaan <gianmarco@...2726...>, plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: its_Giaan <gianmarco@...2726...>
+Cc: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---hYFwmQgQwYI=
+--PlCzBR4Pcqk=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-cron2 has uploaded a new patch set (#10) to the change originally created b=
-y its_Giaan. ( http://gerrit.openvpn.net/c/openvpn/+/762?usp=3Demail )
-
-The following approvals got outdated and were removed:
-Code-Review+2 by cron2
-
+cron2 has submitted this change. ( http://gerrit.openvpn.net/c/openvpn/+/76=
+2?usp=3Demail )
 
 Change subject: override ai_family if 'local' numeric address was specified
 ......................................................................
@@ -56,7 +52,7 @@ M src/openvpn/socket.c
 1 file changed, 16 insertions(+), 2 deletions(-)
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/62/762/10
+
 
 diff --git a/src/openvpn/socket.c b/src/openvpn/socket.c
 index 01874fe..b895bd4 100644
@@ -127,79 +123,76 @@ Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-CC: ordex <a@...2181...>
-Gerrit-MessageType: newpatchset
+Gerrit-MessageType: merged
 
---hYFwmQgQwYI=
+--PlCzBR4Pcqk=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p>cron2 <strong>uploaded patch set #10</strong> to the change originally c=
-reated by its_Giaan.</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+=
-/762?usp=3Demail">View Change</a></p><p>The following approvals got outdate=
-d and were removed:
-Code-Review+2 by cron2</p><pre style=3D"font-family: monospace,monospace; w=
-hite-space: pre-wrap;">override ai_family if &#39;local&#39; numeric addres=
-s was specified<br><br>This change ensures that when a numeric IP address i=
-s specified<br>as argument to a &#39;local&#39; directive, its ai_family ov=
-errides<br>the one extracted from the &#39;proto&#39; config option.<br><br=
->Change-Id: Ie2471e6b2d6974e70423b09918ad1c2136253754<br>Signed-off-by: Ant=
-onio Quartulli &lt;a@...2181...&gt;<br>Signed-off-by: Gianmarco De Gregori =
-&lt;gianmarco@...2726...&gt;<br>Acked-by: Gert Doering &lt;gert@...1296...&=
-gt;<br>Message-Id: &lt;20241227161755.4010-1-gert@...1296...&gt;<br>URL: ht=
-tps://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg30257.htm=
-l<br>Signed-off-by: Gert Doering &lt;gert@...1296...&gt;<br>---<br>M src/op=
-envpn/socket.c<br>1 file changed, 16 insertions(+), 2 deletions(-)<br><br><=
-/pre><pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;=
-">git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/62/762/10</p=
-re><pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;">=
-<span>diff --git a/src/openvpn/socket.c b/src/openvpn/socket.c</span><br><s=
-pan>index 01874fe..b895bd4 100644</span><br><span>--- a/src/openvpn/socket.=
-c</span><br><span>+++ b/src/openvpn/socket.c</span><br><span>@@ -467,9 +467=
-,8 @@</span><br><span>         sig_info =3D &amp;sigrec;</span><br><span>  =
-   }</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">=
--    /* try numeric ipv6 addr first */</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+    /* try numeric ip addr first */</span><br><span>    =
- CLEAR(hints);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    hin=
-ts.ai_family =3D ai_family;</span><br><span>     hints.ai_flags =3D AI_NUME=
-RICHOST;</span><br><span> </span><br><span>     if (flags &amp; GETADDR_PAS=
-SIVE)</span><br><span>@@ -486,6 +485,13 @@</span><br><span>         hints.a=
-i_socktype =3D SOCK_STREAM;</span><br><span>     }</span><br><span> </span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+    /* if hostname is not =
-set, we want to bind to &#39;ANY&#39;, with</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+     * the correct address family - v4-only or v6/v=
-6-dual-stack */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-if (!hostname)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        hints.ai_fa=
-mily =3D ai_family;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><sp=
-an>     status =3D getaddrinfo(hostname, servname, &amp;hints, res);</span>=
-<br><span> </span><br><span>     if (status !=3D 0) /* parse as numeric add=
-ress failed? */</span><br><span>@@ -497,6 +503,10 @@</span><br><span>      =
-   const char *fmt;</span><br><span>         int level =3D 0;</span><br><sp=
-an> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+        /* this=
- is not a numeric IP, therefore force resolution using the</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+         * provided ai_family */</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+        hints.ai_family=
- =3D ai_family;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</sp=
-an><br><span>         if (hostname &amp;&amp; (flags &amp; GETADDR_RANDOMIZ=
-E))</span><br><span>         {</span><br><span>             hostname =3D ho=
-stname_randomize(hostname, &amp;gc);</span><br><span>@@ -1690,6 +1700,10 @@=
-</span><br><span>                 sock-&gt;local_host, sock-&gt;local_port,=
-</span><br><span>                 gai_strerror(status));</span><br><span>  =
-       }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+        /* the resolved &#39;l=
-ocal entry&#39; might have a different family than what</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+         * was globally configured */</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+        sock-&gt;info=
-.af =3D sock-&gt;info.lsa-&gt;bind_local-&gt;ai_family;</span><br><span>   =
-  }</span><br><span> </span><br><span>     gc_free(&amp;gc);</span><br><spa=
-n></span><br></pre><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c=
-/openvpn/+/762?usp=3Demail">change 762</a>. To unsubscribe, or for help wri=
-ting mail filters, visit <a href=3D"http://gerrit.openvpn.net/settings">set=
-tings</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><d=
-iv itemscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction">=
-<link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/762?us=
-p=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
+<p>cron2 <strong>submitted</strong> this change.</p><p><a href=3D"http://ge=
+rrit.openvpn.net/c/openvpn/+/762?usp=3Demail">View Change</a></p><div style=
+=3D"white-space:pre-wrap"></div><pre style=3D"font-family: monospace,monosp=
+ace; white-space: pre-wrap;">override ai_family if &#39;local&#39; numeric =
+address was specified<br><br>This change ensures that when a numeric IP add=
+ress is specified<br>as argument to a &#39;local&#39; directive, its ai_fam=
+ily overrides<br>the one extracted from the &#39;proto&#39; config option.<=
+br><br>Change-Id: Ie2471e6b2d6974e70423b09918ad1c2136253754<br>Signed-off-b=
+y: Antonio Quartulli &lt;a@...2181...&gt;<br>Signed-off-by: Gianmarco De Gr=
+egori &lt;gianmarco@...2726...&gt;<br>Acked-by: Gert Doering &lt;gert@...1711...=
+96...&gt;<br>Message-Id: &lt;20241227161755.4010-1-gert@...1296...&gt;<br>U=
+RL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg302=
+57.html<br>Signed-off-by: Gert Doering &lt;gert@...1296...&gt;<br>---<br>M =
+src/openvpn/socket.c<br>1 file changed, 16 insertions(+), 2 deletions(-)<br=
+><br></pre>
+<pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><sp=
+an>diff --git a/src/openvpn/socket.c b/src/openvpn/socket.c</span><br><span=
+>index 01874fe..b895bd4 100644</span><br><span>--- a/src/openvpn/socket.c</=
+span><br><span>+++ b/src/openvpn/socket.c</span><br><span>@@ -467,9 +467,8 =
+@@</span><br><span>         sig_info =3D &amp;sigrec;</span><br><span>     =
+}</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
+  /* try numeric ipv6 addr first */</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+    /* try numeric ip addr first */</span><br><span>     CL=
+EAR(hints);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    hints.=
+ai_family =3D ai_family;</span><br><span>     hints.ai_flags =3D AI_NUMERIC=
+HOST;</span><br><span> </span><br><span>     if (flags &amp; GETADDR_PASSIV=
+E)</span><br><span>@@ -486,6 +485,13 @@</span><br><span>         hints.ai_s=
+ocktype =3D SOCK_STREAM;</span><br><span>     }</span><br><span> </span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+    /* if hostname is not set=
+, we want to bind to &#39;ANY&#39;, with</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+     * the correct address family - v4-only or v6/v6-d=
+ual-stack */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if =
+(!hostname)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+        hints.ai_famil=
+y =3D ai_family;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+ }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span>=
+     status =3D getaddrinfo(hostname, servname, &amp;hints, res);</span><br=
+><span> </span><br><span>     if (status !=3D 0) /* parse as numeric addres=
+s failed? */</span><br><span>@@ -497,6 +503,10 @@</span><br><span>         =
+const char *fmt;</span><br><span>         int level =3D 0;</span><br><span>=
+ </span><br><span style=3D"color: hsl(120, 100%, 40%);">+        /* this is=
+ not a numeric IP, therefore force resolution using the</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+         * provided ai_family */</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+        hints.ai_family =
+=3D ai_family;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</spa=
+n><br><span>         if (hostname &amp;&amp; (flags &amp; GETADDR_RANDOMIZE=
+))</span><br><span>         {</span><br><span>             hostname =3D hos=
+tname_randomize(hostname, &amp;gc);</span><br><span>@@ -1690,6 +1700,10 @@<=
+/span><br><span>                 sock-&gt;local_host, sock-&gt;local_port,<=
+/span><br><span>                 gai_strerror(status));</span><br><span>   =
+      }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+        /* the resolved &#39;lo=
+cal entry&#39; might have a different family than what</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+         * was globally configured */</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+        sock-&gt;info.=
+af =3D sock-&gt;info.lsa-&gt;bind_local-&gt;ai_family;</span><br><span>    =
+ }</span><br><span> </span><br><span>     gc_free(&amp;gc);</span><br><span=
+></span><br></pre><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/=
+openvpn/+/762?usp=3Demail">change 762</a>. To unsubscribe, or for help writ=
+ing mail filters, visit <a href=3D"http://gerrit.openvpn.net/settings">sett=
+ings</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><di=
+v itemscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><=
+link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/762?usp=
+=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
@@ -218,8 +211,8 @@ d1c2136253754 </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: ordex &lt;a@...2181...&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
+<div style=3D"display:none"> Gerrit-MessageType: merged </div>
 
 
---hYFwmQgQwYI=--
+--PlCzBR4Pcqk=--
 
