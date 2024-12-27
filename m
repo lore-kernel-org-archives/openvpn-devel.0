@@ -1,16 +1,16 @@
 From: "plaisthos (Code Review)" <gerrit@...515...>
 Date: Fri, 27 Dec 2024 18:19:18 +0000
-In-Reply-To: <gerrit.1731290343000.I2a104decdb1e77a460f7a6976bcd0560b67a07b5@...2715...>
-References: <gerrit.1731290343000.I2a104decdb1e77a460f7a6976bcd0560b67a07b5@...2715...>
+In-Reply-To: <gerrit.1731290343000.I9e9433b56dcbaa538d9bed30e50cf74948c647cc@...2715...>
+References: <gerrit.1731290343000.I9e9433b56dcbaa538d9bed30e50cf74948c647cc@...2715...>
 Reply-To: arne-openvpn@...1227..., openvpn-devel@lists.sourceforge.net,
- frank@...2641..., lstipakov@...277...
-Message-ID: <4aa5f9560ab30a675e4f4d817028677b7895e416-EmailReplacePatchSet-HTML@...2715...>
+ frank@...2641...
+Message-ID: <5a3c182f18e1da1657340e4636d608c439ad004e-EmailReplacePatchSet-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="DW5WjDaunr8="; charset=UTF-8
-Subject: [Openvpn-devel] [M] Change in openvpn[master]: Add methods to
- read/write packet ids for epoch data
+Content-Type: multipart/alternative; boundary="4zMM/J4gyAg="; charset=UTF-8
+Subject: [Openvpn-devel] [S] Change in openvpn[master]: Rename
+ aead-tag-at-end to aead-epoch
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,19 +20,19 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 To: flichtenheld <frank@...2641...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>, stipa <lstipakov@...277...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---DW5WjDaunr8=
+--4zMM/J4gyAg=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: flichtenheld, stipa.
+Attention is currently required from: flichtenheld.
 
-Hello flichtenheld,
+Hello flichtenheld,=20
 
 I'd like you to reexamine a change. Please visit
 
-    http://gerrit.openvpn.net/c/openvpn/+/803?usp=3Demail
+    http://gerrit.openvpn.net/c/openvpn/+/805?usp=3Demail
 
 to look at the new patch set (#9).
 
@@ -40,527 +40,347 @@ The following approvals got outdated and were removed:
 Code-Review-1 by flichtenheld
 
 
-Change subject: Add methods to read/write packet ids for epoch data
+Change subject: Rename aead-tag-at-end to aead-epoch
 ......................................................................
 
-Add methods to read/write packet ids for epoch data
+Rename aead-tag-at-end to aead-epoch
 
-Change-Id: I2a104decdb1e77a460f7a6976bcd0560b67a07b5
+Since we introduce aead at the end and epoch data keys together
+and only allow the aead tag at the end if epoch data keys are
+used, we can use just one flag for both of them
+
+Change-Id: I9e9433b56dcbaa538d9bed30e50cf74948c647cc
 Signed-off-by: Arne Schwabe <arne@...1227...>
 ---
-M src/openvpn/packet_id.c
-M src/openvpn/packet_id.h
-M tests/unit_tests/openvpn/test_packet_id.c
-3 files changed, 140 insertions(+), 3 deletions(-)
+M doc/man-sections/client-options.rst
+M src/openvpn/crypto.c
+M src/openvpn/crypto.h
+M src/openvpn/init.c
+M src/openvpn/options.c
+M src/openvpn/push.c
+M src/openvpn/ssl.h
+M tests/unit_tests/openvpn/test_ssl.c
+8 files changed, 19 insertions(+), 13 deletions(-)
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/03/803/9
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/05/805/9
 
-diff --git a/src/openvpn/packet_id.c b/src/openvpn/packet_id.c
-index 117c95f..0806e99 100644
---- a/src/openvpn/packet_id.c
-+++ b/src/openvpn/packet_id.c
-@@ -120,7 +120,8 @@
-         int64_t diff;
+diff --git a/doc/man-sections/client-options.rst b/doc/man-sections/client-=
+options.rst
+index 5ca85e0..0aee9e2 100644
+--- a/doc/man-sections/client-options.rst
++++ b/doc/man-sections/client-options.rst
+@@ -367,6 +367,7 @@
+     - bit 7: The client is capable of sending exit notification via contro=
+l channel using ``EXIT`` message. Also, the client is accepting the protoco=
+l-flags pushed option for the EKM capability
+     - bit 8: The client is capable of accepting ``AUTH_FAILED,TEMP`` messa=
+ges
+     - bit 9: The client is capable of dynamic tls-crypt
++    - bit 10: The client is capable of data epoch keys
 
-         /*
--         * If time value increases, start a new sequence number sequence.
-+         * If time value increases, start a new sequence list of number
-+         * sequence for the new time point.
-          */
-         if (!CIRC_LIST_SIZE(p->seq_list)
-             || pin->time > p->time
-@@ -343,6 +344,21 @@
-     return true;
- }
+   :code:`IV_NCP=3D2`
+         Negotiable ciphers, client supports ``--cipher`` pushed by
+diff --git a/src/openvpn/crypto.c b/src/openvpn/crypto.c
+index 4e93882..763d756 100644
+--- a/src/openvpn/crypto.c
++++ b/src/openvpn/crypto.c
+@@ -127,7 +127,7 @@
+     dmsg(D_PACKET_CONTENT, "ENCRYPT AD: %s",
+          format_hex(BPTR(&work), BLEN(&work), 0, &gc));
 
-+static bool
-+packet_id_send_update_epoch(struct packet_id_send *p)
-+{
-+    if (!p->time)
-+    {
-+        p->time =3D now;
-+    }
-+    if (p->id =3D=3D PACKET_ID_EPOCH_MAX)
-+    {
-+        return false;
-+    }
-+    p->id++;
-+    return true;
-+}
-+
- bool
- packet_id_write(struct packet_id_send *p, struct buffer *buf, bool long_fo=
-rm,
-                 bool prepend)
-@@ -634,4 +650,44 @@
-     gc_free(&gc);
- }
+-    if (!(opt->flags & CO_AEAD_TAG_AT_THE_END))
++    if (!(opt->flags & CO_EPOCH_DATA_KEY_FORMAT))
+     {
+         /* Reserve space for authentication tag */
+         mac_out =3D buf_write_alloc(&work, mac_len);
+@@ -148,7 +148,7 @@
+     ASSERT(buf_inc_len(&work, outlen));
 
-+uint16_t
-+packet_id_read_epoch(struct packet_id_net *pin, struct buffer *buf)
-+{
-+    uint64_t packet_id;
-+
-+
-+    if (!buf_read(buf, &packet_id, sizeof(packet_id)))
-+    {
-+        return 0;
-+    }
-+
-+    uint64_t id =3D ntohll(packet_id);
-+    /* top most 16 bits */
-+    uint16_t epoch =3D id >> 48;
-+
-+    pin->id =3D id & PACKET_ID_MASK;
-+    return epoch;
-+}
-+
-+bool
-+packet_id_write_epoch(struct packet_id_send *p, uint16_t epoch, struct buf=
-fer *buf)
-+{
-+    if (!packet_id_send_update_epoch(p))
-+    {
-+        return false;
-+    }
-+
-+    /* Highest 16 bits of packet id is the epoch.
-+     *
-+     * The lower 48 bits are the per-epoch packet id counter. */
-+    uint64_t net_id =3D ((uint64_t) epoch) << 48 | p->id;
-+
-+    /* convert to network order. This ensures that the highest bytes
-+     * also become the first ones on the wire*/
-+    net_id =3D htonll(net_id);
-+
-+    return buf_write(buf, &net_id, sizeof(net_id));
-+}
-+
-+
- #endif /* ifdef ENABLE_DEBUG */
-diff --git a/src/openvpn/packet_id.h b/src/openvpn/packet_id.h
-index d8a3e1a..4f947e8 100644
---- a/src/openvpn/packet_id.h
-+++ b/src/openvpn/packet_id.h
-@@ -44,7 +44,11 @@
-  * These are ephemeral and are never saved to a file.
-  */
- typedef uint32_t packet_id_type;
--#define PACKET_ID_MAX UINT32_MAX
-+#define PACKET_ID_MAX        UINT32_MAX
-+#define PACKET_ID_EPOCH_MAX  0x0000ffffffffffffull
-+/** Mask of the bits that contain the 48-bit of the per-epoch packet
-+  * counter in the packet id*/
-+#define PACKET_ID_MASK       0x0000ffffffffffffull
- typedef uint32_t net_time_t;
+     /* if the tag is at end the end, allocate it now */
+-    if (opt->flags & CO_AEAD_TAG_AT_THE_END)
++    if (opt->flags & CO_EPOCH_DATA_KEY_FORMAT)
+     {
+         /* Reserve space for authentication tag */
+         mac_out =3D buf_write_alloc(&work, mac_len);
+@@ -481,7 +481,7 @@
+     uint8_t *tag_ptr =3D NULL;
+     int data_len =3D 0;
 
- /*
-@@ -158,7 +162,8 @@
-  * includes a timestamp as well.
-  *
-  * An epoch packet-id is a 16 bit epoch
-- * counter plus a 48 per-epoch packet-id
-+ * counter plus a 48 per-epoch packet-id.
-+ *
-  *
-  * Long packet-ids are used as IVs for
-  * CFB/OFB ciphers and for control channel
-@@ -321,4 +326,25 @@
+-    if (opt->flags & CO_AEAD_TAG_AT_THE_END)
++    if (opt->flags & CO_EPOCH_DATA_KEY_FORMAT)
+     {
+         data_len =3D BLEN(buf) - tag_size;
+         tag_ptr =3D BPTR(buf) + data_len;
+diff --git a/src/openvpn/crypto.h b/src/openvpn/crypto.h
+index 8ad3edb..e678d98 100644
+--- a/src/openvpn/crypto.h
++++ b/src/openvpn/crypto.h
+@@ -371,9 +371,11 @@
+     /**< Bit-flag indicating that renegotiations are using tls-crypt
+      *   with a TLS-EKM derived key.
+      */
+-#define CO_AEAD_TAG_AT_THE_END  (1<<8)
+-    /**< Bit-flag indicating that the AEAD tag is at the end of the
+-     *   packet.
++#define CO_EPOCH_DATA_KEY_FORMAT  (1<<8)
++    /**< Bit-flag indicating the epoch the data format. This format
++     * has the AEAD tag is at the end of the packet and using a longer
++     * 64-bit packet id that is split into a 16 bit epoch and 48 bit
++     * epoch counter
+      */
+
+     unsigned int flags;         /**< Bit-flags determining behavior of
+diff --git a/src/openvpn/init.c b/src/openvpn/init.c
+index 7145495..ee28380 100644
+--- a/src/openvpn/init.c
++++ b/src/openvpn/init.c
+@@ -2390,9 +2390,9 @@
+         {
+             buf_printf(&out, " dyn-tls-crypt");
+         }
+-        if (o->imported_protocol_flags & CO_AEAD_TAG_AT_THE_END)
++        if (o->imported_protocol_flags & CO_EPOCH_DATA_KEY_FORMAT)
+         {
+-            buf_printf(&out, " aead-tag-end");
++            buf_printf(&out, " aead-epoch");
+         }
      }
- }
 
-+/**
-+ * Writes the packet ID containing both the epoch and the packet id to the
-+ * buffer specified by buf.
-+ * @param p         packed id send structure to use for the packet id
-+ * @param epoch     epoch to write to the packet
-+ * @param buf       buffer to write the packet id/epoch to
-+ * @return          false if the packet id space is exhausted and cannot b=
-e written
-+ */
-+bool
-+packet_id_write_epoch(struct packet_id_send *p, uint16_t epoch, struct buf=
-fer *buf);
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index 20e8d55..30fb561 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -8692,9 +8692,9 @@
+                 options->imported_protocol_flags |=3D CO_USE_DYNAMIC_TLS_C=
+RYPT;
+             }
+ #endif
+-            else if (streq(p[j], "aead-tag-end"))
++            else if (streq(p[j], "aead-epoch"))
+             {
+-                options->imported_protocol_flags |=3D CO_AEAD_TAG_AT_THE_E=
+ND;
++                options->imported_protocol_flags |=3D CO_EPOCH_DATA_KEY_FO=
+RMAT;
+             }
+             else
+             {
+diff --git a/src/openvpn/push.c b/src/openvpn/push.c
+index de44eb2..a7cd3bf 100644
+--- a/src/openvpn/push.c
++++ b/src/openvpn/push.c
+@@ -689,9 +689,9 @@
+         buf_printf(&proto_flags, " dyn-tls-crypt");
+     }
+
+-    if (o->imported_protocol_flags & CO_AEAD_TAG_AT_THE_END)
++    if (o->imported_protocol_flags & CO_EPOCH_DATA_KEY_FORMAT)
+     {
+-        buf_printf(&proto_flags, " aead-tag-end");
++        buf_printf(&proto_flags, " aead-epoch");
+     }
+
+     if (buf_len(&proto_flags) > 0)
+diff --git a/src/openvpn/ssl.h b/src/openvpn/ssl.h
+index 3561c41..c32cb6c 100644
+--- a/src/openvpn/ssl.h
++++ b/src/openvpn/ssl.h
+@@ -108,6 +108,9 @@
+ /** Support to dynamic tls-crypt (renegotiation with TLS-EKM derived tls-c=
+rypt key) */
+ #define IV_PROTO_DYN_TLS_CRYPT   (1<<9)
+
++/** Support the extended packet id and epoch format for data channel packe=
+ts */
++#define IV_PROTO_DATA_EPOCH      (1<<10)
 +
-+/**
-+ * Reads the packet ID containing both the epoch and the per-epoch counter
-+ * from the buf.  Will return 0 as epoch id if there is any error.
-+ * @param p       packet_id struct to popupulate with the on-wire counter
-+ * @param buf     buffer to read the packet id from.
-+ * @return        0 for an error/invalid id, epoch otherwise
-+ */
-+uint16_t
-+packet_id_read_epoch(struct packet_id_net *p, struct buffer *buf);
-+
- #endif /* PACKET_ID_H */
-diff --git a/tests/unit_tests/openvpn/test_packet_id.c b/tests/unit_tests/o=
-penvpn/test_packet_id.c
-index d918985..a24580b 100644
---- a/tests/unit_tests/openvpn/test_packet_id.c
-+++ b/tests/unit_tests/openvpn/test_packet_id.c
-@@ -44,6 +44,7 @@
-     } test_buf_data;
-     struct buffer test_buf;
-     struct packet_id_send pis;
-+    struct gc_arena gc;
- };
+ /** Supports the --dns option after all the incompatible changes */
+ #define IV_PROTO_DNS_OPTION_V2   (1<<11)
 
- static int
-@@ -59,6 +60,7 @@
-
-     data->test_buf.data =3D (void *) &data->test_buf_data;
-     data->test_buf.capacity =3D sizeof(data->test_buf_data);
-+    data->gc =3D gc_new();
-
-     *state =3D data;
-     return 0;
-@@ -67,6 +69,8 @@
- static int
- test_packet_id_write_teardown(void **state)
+diff --git a/tests/unit_tests/openvpn/test_ssl.c b/tests/unit_tests/openvpn=
+/test_ssl.c
+index caacd9e..845ca56 100644
+--- a/tests/unit_tests/openvpn/test_ssl.c
++++ b/tests/unit_tests/openvpn/test_ssl.c
+@@ -404,7 +404,7 @@
+ run_data_channel_with_cipher_end(const char *cipher)
  {
-+    struct test_packet_id_write_data *data =3D *state;
-+    gc_free(&data->gc);
-     free(*state);
-     return 0;
+     struct crypto_options co =3D init_crypto_options(cipher, "none");
+-    co.flags |=3D CO_AEAD_TAG_AT_THE_END;
++    co.flags |=3D CO_EPOCH_DATA_KEY_FORMAT;
+     do_data_channel_round_trip(&co);
+     uninit_crypto_options(&co);
  }
-@@ -209,6 +213,53 @@
-     reliable_free(rel);
- }
-=20
-+static void
-+test_packet_id_write_epoch(void **state)
-+{
-+    struct test_packet_id_write_data *data =3D *state;
-+
-+    struct buffer buf =3D alloc_buf_gc(128, &data->gc);
-+
-+    /* test normal writing of packet id to the buffer */
-+    assert_true(packet_id_write_epoch(&data->pis, 0x23, &buf));
-+
-+    assert_int_equal(buf.len, 8);
-+    uint8_t expected_header[8] =3D { 0x00, 0x23, 0, 0, 0, 0, 0, 1};
-+    assert_memory_equal(BPTR(&buf), expected_header, 8);
-+
-+    /* too small buffer should error out */
-+    struct buffer buf_short =3D alloc_buf_gc(5, &data->gc);
-+    assert_false(packet_id_write_epoch(&data->pis, 0xabde, &buf_short));
-+
-+    /* test a true 48 bit packet id */
-+    data->pis.id =3D 0xfa079ab9d2e8;
-+    struct buffer buf_48 =3D alloc_buf_gc(128, &data->gc);
-+    assert_true(packet_id_write_epoch(&data->pis, 0xfffe, &buf_48));
-+    uint8_t expected_header_48[8] =3D { 0xff, 0xfe, 0xfa, 0x07, 0x9a, 0xb9=
-, 0xd2, 0xe9};
-+    assert_memory_equal(BPTR(&buf_48), expected_header_48, 8);
-+
-+    /* test writing/checking the 48 bit overflow */
-+    data->pis.id =3D 0xfffffffffffe;
-+    struct buffer buf_of =3D alloc_buf_gc(128, &data->gc);
-+    assert_true(packet_id_write_epoch(&data->pis, 0xf00f, &buf_of));
-+    uint8_t expected_header_of[8] =3D { 0xf0, 0x0f, 0xff, 0xff, 0xff, 0xff=
-, 0xff, 0xff};
-+    assert_memory_equal(BPTR(&buf_of), expected_header_of, 8);
-+
-+    /* This is go over 2^48 - 1 and should error out. */
-+    assert_false(packet_id_write_epoch(&data->pis, 0xf00f, &buf_of));
-+
-+    /* Now read back the packet ids and check if they are the same as what=
- we
-+     * have written */
-+    struct packet_id_net pin;
-+    assert_int_equal(packet_id_read_epoch(&pin, &buf), 0x23);
-+    assert_int_equal(pin.id, 1);
-+
-+    assert_int_equal(packet_id_read_epoch(&pin, &buf_48), 0xfffe);
-+    assert_int_equal(pin.id, 0xfa079ab9d2e9);
-+
-+    assert_int_equal(packet_id_read_epoch(&pin, &buf_of), 0xf00f);
-+    assert_int_equal(pin.id, 0xffffffffffff);
-+}
-
- static void
- test_copy_acks_to_lru(void **state)
-@@ -296,6 +347,10 @@
-         cmocka_unit_test_setup_teardown(test_packet_id_write_long_wrap,
-                                         test_packet_id_write_setup,
-                                         test_packet_id_write_teardown),
-+        cmocka_unit_test_setup_teardown(test_packet_id_write_epoch,
-+                                        test_packet_id_write_setup,
-+                                        test_packet_id_write_teardown),
-+
-         cmocka_unit_test(test_get_num_output_sequenced_available),
-         cmocka_unit_test(test_copy_acks_to_lru)
-
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/803?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/805?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings
 
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: I2a104decdb1e77a460f7a6976bcd0560b67a07b5
-Gerrit-Change-Number: 803
+Gerrit-Change-Id: I9e9433b56dcbaa538d9bed30e50cf74948c647cc
+Gerrit-Change-Number: 805
 Gerrit-PatchSet: 9
 Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-CC: stipa <lstipakov@...277...>
 Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Attention: stipa <lstipakov@...277...>
 Gerrit-MessageType: newpatchset
 
---DW5WjDaunr8=
+--4zMM/J4gyAg=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p> Attention is currently required from: flichtenheld, stipa. </p>
+<p> Attention is currently required from: flichtenheld. </p>
 <p>plaisthos <strong>uploaded patch set #9</strong> to this change.</p><p><=
-a href=3D"http://gerrit.openvpn.net/c/openvpn/+/803?usp=3Demail">View Chang=
+a href=3D"http://gerrit.openvpn.net/c/openvpn/+/805?usp=3Demail">View Chang=
 e</a></p><p>The following approvals got outdated and were removed:
 Code-Review-1 by flichtenheld</p><pre style=3D"font-family: monospace,monos=
-pace; white-space: pre-wrap;">Add methods to read/write packet ids for epoc=
-h data<br><br>Change-Id: I2a104decdb1e77a460f7a6976bcd0560b67a07b5<br>Signe=
-d-off-by: Arne Schwabe &lt;arne@...1227...&gt;<br>---<br>M src/openvpn/pack=
-et_id.c<br>M src/openvpn/packet_id.h<br>M tests/unit_tests/openvpn/test_pac=
-ket_id.c<br>3 files changed, 140 insertions(+), 3 deletions(-)<br><br></pre=
-><pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;">gi=
-t pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/03/803/9</pre><p=
-re style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><span=
->diff --git a/src/openvpn/packet_id.c b/src/openvpn/packet_id.c</span><br><=
-span>index 117c95f..0806e99 100644</span><br><span>--- a/src/openvpn/packet=
-_id.c</span><br><span>+++ b/src/openvpn/packet_id.c</span><br><span>@@ -120=
-,7 +120,8 @@</span><br><span>         int64_t diff;</span><br><span> </span=
-><br><span>         /*</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
--         * If time value increases, start a new sequence number sequence.<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+         * If time v=
-alue increases, start a new sequence list of number</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+         * sequence for the new time poin=
-t.</span><br><span>          */</span><br><span>         if (!CIRC_LIST_SIZ=
-E(p-&gt;seq_list)</span><br><span>             || pin-&gt;time &gt; p-&gt;t=
-ime</span><br><span>@@ -343,6 +344,21 @@</span><br><span>     return true;<=
-/span><br><span> }</span><br><span> </span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+static bool</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+packet_id_send_update_epoch(struct packet_id_send *p)</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+    if (!p-&gt;time)</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+        p-&gt;time =3D now;</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+    if (p-&gt;id =3D=3D PACKET_ID_EPOCH_MAX)</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+        return false;</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+    p-&gt;id++;</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+    return true;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> bo=
-ol</span><br><span> packet_id_write(struct packet_id_send *p, struct buffer=
- *buf, bool long_form,</span><br><span>                 bool prepend)</span=
-><br><span>@@ -634,4 +650,44 @@</span><br><span>     gc_free(&amp;gc);</spa=
-n><br><span> }</span><br><span> </span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+uint16_t</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+packet_id_read_epoch(struct packet_id_net *pin, struct buffer *buf)</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    uint64_t packet_id;</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-    if (!buf_read(buf, &amp;packet_id, sizeof(packet_id)))</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+        return 0;</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    uint64=
-_t id =3D ntohll(packet_id);</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+    /* top most 16 bits */</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+    uint16_t epoch =3D id &gt;&gt; 48;</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+    pin-&gt;id =3D id &amp; PACKET_ID_MASK;</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+    return epoch;</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+bool</span><br><span style=3D"color: hsl(120, 100%, 40%);">+packet_id_writ=
-e_epoch(struct packet_id_send *p, uint16_t epoch, struct buffer *buf)</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    if (!packet_id_send_update_epoch(p))<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+        return false;</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+    /* Highest 16 bits of packet id is the epoch.</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+     *</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+     * The lower 48 bits are the per-epoch packe=
-t id counter. */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
- uint64_t net_id =3D ((uint64_t) epoch) &lt;&lt; 48 | p-&gt;id;</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+    /* convert to network order. This ensures that=
- the highest bytes</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-    * also become the first ones on the wire*/</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+    net_id =3D htonll(net_id);</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+    return buf_write(buf, &amp;net_id, sizeof(net_id));<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+</span><br><span> #endif /* ifdef ENABLE_DEBUG */</span><=
-br><span>diff --git a/src/openvpn/packet_id.h b/src/openvpn/packet_id.h</sp=
-an><br><span>index d8a3e1a..4f947e8 100644</span><br><span>--- a/src/openvp=
-n/packet_id.h</span><br><span>+++ b/src/openvpn/packet_id.h</span><br><span=
->@@ -44,7 +44,11 @@</span><br><span>  * These are ephemeral and are never s=
-aved to a file.</span><br><span>  */</span><br><span> typedef uint32_t pack=
-et_id_type;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#define PA=
-CKET_ID_MAX UINT32_MAX</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+#define PACKET_ID_MAX        UINT32_MAX</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+#define PACKET_ID_EPOCH_MAX  0x0000ffffffffffffull</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+/** Mask of the bits =
-that contain the 48-bit of the per-epoch packet</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+  * counter in the packet id*/</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+#define PACKET_ID_MASK       0x0000f=
-fffffffffffull</span><br><span> typedef uint32_t net_time_t;</span><br><spa=
-n> </span><br><span> /*</span><br><span>@@ -158,7 +162,8 @@</span><br><span=
->  * includes a timestamp as well.</span><br><span>  *</span><br><span>  * =
-An epoch packet-id is a 16 bit epoch</span><br><span style=3D"color: hsl(0,=
- 100%, 40%);">- * counter plus a 48 per-epoch packet-id</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+ * counter plus a 48 per-epoch packet-i=
-d.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *</span><br><spa=
-n>  *</span><br><span>  * Long packet-ids are used as IVs for</span><br><sp=
-an>  * CFB/OFB ciphers and for control channel</span><br><span>@@ -321,4 +3=
-26,25 @@</span><br><span>     }</span><br><span> }</span><br><span> </span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+/**</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+ * Writes the packet ID containing both t=
-he epoch and the packet id to the</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+ * buffer specified by buf.</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+ * @param p         packed id send structure to use f=
-or the packet id</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * =
-@param epoch     epoch to write to the packet</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+ * @param buf       buffer to write the packet id=
-/epoch to</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @return=
-          false if the packet id space is exhausted and cannot be written</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+ */</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+bool</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+packet_id_write_epoch(struct packet_id_send *p, uint=
-16_t epoch, struct buffer *buf);</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+/**</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+ * Reads the packet ID=
- containing both the epoch and the per-epoch counter</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+ * from the buf.  Will return 0 as epoch =
-id if there is any error.</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+ * @param p       packet_id struct to popupulate with the on-wire cou=
-nter</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @param buf  =
-   buffer to read the packet id from.</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+ * @return        0 for an error/invalid id, epoch otherw=
-ise</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ */</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+uint16_t</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+packet_id_read_epoch(struct packet_id_net=
- *p, struct buffer *buf);</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+</span><br><span> #endif /* PACKET_ID_H */</span><br><span>diff --git=
- a/tests/unit_tests/openvpn/test_packet_id.c b/tests/unit_tests/openvpn/tes=
-t_packet_id.c</span><br><span>index d918985..a24580b 100644</span><br><span=
->--- a/tests/unit_tests/openvpn/test_packet_id.c</span><br><span>+++ b/test=
-s/unit_tests/openvpn/test_packet_id.c</span><br><span>@@ -44,6 +44,7 @@</sp=
-an><br><span>     } test_buf_data;</span><br><span>     struct buffer test_=
-buf;</span><br><span>     struct packet_id_send pis;</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    struct gc_arena gc;</span><br><span> =
-};</span><br><span> </span><br><span> static int</span><br><span>@@ -59,6 +=
-60,7 @@</span><br><span> </span><br><span>     data-&gt;test_buf.data =3D (=
-void *) &amp;data-&gt;test_buf_data;</span><br><span>     data-&gt;test_buf=
-.capacity =3D sizeof(data-&gt;test_buf_data);</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+    data-&gt;gc =3D gc_new();</span><br><span> </=
-span><br><span>     *state =3D data;</span><br><span>     return 0;</span><=
-br><span>@@ -67,6 +69,8 @@</span><br><span> static int</span><br><span> tes=
-t_packet_id_write_teardown(void **state)</span><br><span> {</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+    struct test_packet_id_write_dat=
-a *data =3D *state;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-    gc_free(&amp;data-&gt;gc);</span><br><span>     free(*state);</span><br=
-><span>     return 0;</span><br><span> }</span><br><span>@@ -209,6 +213,53 =
-@@</span><br><span>     reliable_free(rel);</span><br><span> }</span><br><s=
-pan> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+static void</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+test_packet_id_write_e=
-poch(void **state)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    struct test_pac=
-ket_id_write_data *data =3D *state;</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
- struct buffer buf =3D alloc_buf_gc(128, &amp;data-&gt;gc);</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+    /* test normal writing of packet id to the buffer =
-*/</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_true(p=
-acket_id_write_epoch(&amp;data-&gt;pis, 0x23, &amp;buf));</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+    assert_int_equal(buf.len, 8);</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    uint8_t expected_header[8] =3D { 0x00=
-, 0x23, 0, 0, 0, 0, 0, 1};</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+    assert_memory_equal(BPTR(&amp;buf), expected_header, 8);</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+    /* too small buffer should error out */</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+    struct buffer buf_=
-short =3D alloc_buf_gc(5, &amp;data-&gt;gc);</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+    assert_false(packet_id_write_epoch(&amp;data-&=
-gt;pis, 0xabde, &amp;buf_short));</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    /=
-* test a true 48 bit packet id */</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+    data-&gt;pis.id =3D 0xfa079ab9d2e8;</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    struct buffer buf_48 =3D alloc_buf_gc=
-(128, &amp;data-&gt;gc);</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+    assert_true(packet_id_write_epoch(&amp;data-&gt;pis, 0xfffe, &amp;=
-buf_48));</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    uint8_=
-t expected_header_48[8] =3D { 0xff, 0xfe, 0xfa, 0x07, 0x9a, 0xb9, 0xd2, 0xe=
-9};</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_memor=
-y_equal(BPTR(&amp;buf_48), expected_header_48, 8);</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+    /* test writing/checking the 48 bit overflow */</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+    data-&gt;pis.id =3D 0xfffff=
-ffffffe;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    struct =
-buffer buf_of =3D alloc_buf_gc(128, &amp;data-&gt;gc);</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+    assert_true(packet_id_write_epoch(&a=
-mp;data-&gt;pis, 0xf00f, &amp;buf_of));</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+    uint8_t expected_header_of[8] =3D { 0xf0, 0x0f, 0xf=
-f, 0xff, 0xff, 0xff, 0xff, 0xff};</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+    assert_memory_equal(BPTR(&amp;buf_of), expected_header_of=
-, 8);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+    /* This is go over 2^48 - 1 a=
-nd should error out. */</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+    assert_false(packet_id_write_epoch(&amp;data-&gt;pis, 0xf00f, &amp;=
-buf_of));</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+    /* Now read back the pack=
-et ids and check if they are the same as what we</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+     * have written */</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    struct packet_id_net pin;</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+    assert_int_equal(packet_id_=
-read_epoch(&amp;pin, &amp;buf), 0x23);</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+    assert_int_equal(pin.id, 1);</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+    assert_int_equal(packet_id_read_epoch(&amp;pin, &amp;buf=
-_48), 0xfffe);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    a=
-ssert_int_equal(pin.id, 0xfa079ab9d2e9);</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+    assert_int_equal(packet_id_read_epoch(&amp;pin, &amp;buf_of), 0xf00f)=
-;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_int_equ=
-al(pin.id, 0xffffffffffff);</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+}</span><br><span> </span><br><span> static void</span><br><span> t=
-est_copy_acks_to_lru(void **state)</span><br><span>@@ -296,6 +347,10 @@</sp=
-an><br><span>         cmocka_unit_test_setup_teardown(test_packet_id_write_=
-long_wrap,</span><br><span>                                         test_pa=
-cket_id_write_setup,</span><br><span>                                      =
-   test_packet_id_write_teardown),</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+        cmocka_unit_test_setup_teardown(test_packet_id_write=
-_epoch,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            =
-                            test_packet_id_write_setup,</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+                                       =
- test_packet_id_write_teardown),</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+</span><br><span>         cmocka_unit_test(test_get_num_output=
-_sequenced_available),</span><br><span>         cmocka_unit_test(test_copy_=
-acks_to_lru)</span><br><span> </span><br><span></span><br></pre><p>To view,=
- visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/803?usp=3Demail">ch=
-ange 803</a>. To unsubscribe, or for help writing mail filters, visit <a hr=
-ef=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope i=
-temtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"actio=
-n" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D=
-"http://gerrit.openvpn.net/c/openvpn/+/803?usp=3Demail"/><meta itemprop=3D"=
-name" content=3D"View Change"/></div></div>
+pace; white-space: pre-wrap;">Rename aead-tag-at-end to aead-epoch<br><br>S=
+ince we introduce aead at the end and epoch data keys together<br>and only =
+allow the aead tag at the end if epoch data keys are<br>used, we can use ju=
+st one flag for both of them<br><br>Change-Id: I9e9433b56dcbaa538d9bed30e50=
+cf74948c647cc<br>Signed-off-by: Arne Schwabe &lt;arne@...1227...&gt;<br>---=
+<br>M doc/man-sections/client-options.rst<br>M src/openvpn/crypto.c<br>M sr=
+c/openvpn/crypto.h<br>M src/openvpn/init.c<br>M src/openvpn/options.c<br>M =
+src/openvpn/push.c<br>M src/openvpn/ssl.h<br>M tests/unit_tests/openvpn/tes=
+t_ssl.c<br>8 files changed, 19 insertions(+), 13 deletions(-)<br><br></pre>=
+<pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;">git=
+ pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/05/805/9</pre><pr=
+e style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><span>=
+diff --git a/doc/man-sections/client-options.rst b/doc/man-sections/client-=
+options.rst</span><br><span>index 5ca85e0..0aee9e2 100644</span><br><span>-=
+-- a/doc/man-sections/client-options.rst</span><br><span>+++ b/doc/man-sect=
+ions/client-options.rst</span><br><span>@@ -367,6 +367,7 @@</span><br><span=
+>     - bit 7: The client is capable of sending exit notification via contr=
+ol channel using ``EXIT`` message. Also, the client is accepting the protoc=
+ol-flags pushed option for the EKM capability</span><br><span>     - bit 8:=
+ The client is capable of accepting ``AUTH_FAILED,TEMP`` messages</span><br=
+><span>     - bit 9: The client is capable of dynamic tls-crypt</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+    - bit 10: The client is cap=
+able of data epoch keys</span><br><span> </span><br><span>   :code:`IV_NCP=
+=3D2`</span><br><span>         Negotiable ciphers, client supports ``--ciph=
+er`` pushed by</span><br><span>diff --git a/src/openvpn/crypto.c b/src/open=
+vpn/crypto.c</span><br><span>index 4e93882..763d756 100644</span><br><span>=
+--- a/src/openvpn/crypto.c</span><br><span>+++ b/src/openvpn/crypto.c</span=
+><br><span>@@ -127,7 +127,7 @@</span><br><span>     dmsg(D_PACKET_CONTENT, =
+&quot;ENCRYPT AD: %s&quot;,</span><br><span>          format_hex(BPTR(&amp;=
+work), BLEN(&amp;work), 0, &amp;gc));</span><br><span> </span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-    if (!(opt-&gt;flags &amp; CO_AEAD_TAG=
+_AT_THE_END))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if=
+ (!(opt-&gt;flags &amp; CO_EPOCH_DATA_KEY_FORMAT))</span><br><span>     {</=
+span><br><span>         /* Reserve space for authentication tag */</span><b=
+r><span>         mac_out =3D buf_write_alloc(&amp;work, mac_len);</span><br=
+><span>@@ -148,7 +148,7 @@</span><br><span>     ASSERT(buf_inc_len(&amp;wor=
+k, outlen));</span><br><span> </span><br><span>     /* if the tag is at end=
+ the end, allocate it now */</span><br><span style=3D"color: hsl(0, 100%, 4=
+0%);">-    if (opt-&gt;flags &amp; CO_AEAD_TAG_AT_THE_END)</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+    if (opt-&gt;flags &amp; CO_EPOCH=
+_DATA_KEY_FORMAT)</span><br><span>     {</span><br><span>         /* Reserv=
+e space for authentication tag */</span><br><span>         mac_out =3D buf_=
+write_alloc(&amp;work, mac_len);</span><br><span>@@ -481,7 +481,7 @@</span>=
+<br><span>     uint8_t *tag_ptr =3D NULL;</span><br><span>     int data_len=
+ =3D 0;</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">-    if (opt-&gt;flags &amp; CO_AEAD_TAG_AT_THE_END)</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+    if (opt-&gt;flags &amp; CO_EPOCH_DA=
+TA_KEY_FORMAT)</span><br><span>     {</span><br><span>         data_len =3D=
+ BLEN(buf) - tag_size;</span><br><span>         tag_ptr =3D BPTR(buf) + dat=
+a_len;</span><br><span>diff --git a/src/openvpn/crypto.h b/src/openvpn/cryp=
+to.h</span><br><span>index 8ad3edb..e678d98 100644</span><br><span>--- a/sr=
+c/openvpn/crypto.h</span><br><span>+++ b/src/openvpn/crypto.h</span><br><sp=
+an>@@ -371,9 +371,11 @@</span><br><span>     /**&lt; Bit-flag indicating th=
+at renegotiations are using tls-crypt</span><br><span>      *   with a TLS-=
+EKM derived key.</span><br><span>      */</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-#define CO_AEAD_TAG_AT_THE_END  (1&lt;&lt;8)</span><br>=
+<span style=3D"color: hsl(0, 100%, 40%);">-    /**&lt; Bit-flag indicating =
+that the AEAD tag is at the end of the</span><br><span style=3D"color: hsl(=
+0, 100%, 40%);">-     *   packet.</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+#define CO_EPOCH_DATA_KEY_FORMAT  (1&lt;&lt;8)</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+    /**&lt; Bit-flag indicating th=
+e epoch the data format. This format</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+     * has the AEAD tag is at the end of the packet and us=
+ing a longer</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     * =
+64-bit packet id that is split into a 16 bit epoch and 48 bit</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+     * epoch counter</span><br><s=
+pan>      */</span><br><span> </span><br><span>     unsigned int flags;    =
+     /**&lt; Bit-flags determining behavior of</span><br><span>diff --git a=
+/src/openvpn/init.c b/src/openvpn/init.c</span><br><span>index 7145495..ee2=
+8380 100644</span><br><span>--- a/src/openvpn/init.c</span><br><span>+++ b/=
+src/openvpn/init.c</span><br><span>@@ -2390,9 +2390,9 @@</span><br><span>  =
+       {</span><br><span>             buf_printf(&amp;out, &quot; dyn-tls-c=
+rypt&quot;);</span><br><span>         }</span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-        if (o-&gt;imported_protocol_flags &amp; CO_AEAD_T=
+AG_AT_THE_END)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
+   if (o-&gt;imported_protocol_flags &amp; CO_EPOCH_DATA_KEY_FORMAT)</span>=
+<br><span>         {</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
+           buf_printf(&amp;out, &quot; aead-tag-end&quot;);</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+            buf_printf(&amp;out, &q=
+uot; aead-epoch&quot;);</span><br><span>         }</span><br><span>     }</=
+span><br><span> </span><br><span>diff --git a/src/openvpn/options.c b/src/o=
+penvpn/options.c</span><br><span>index 20e8d55..30fb561 100644</span><br><s=
+pan>--- a/src/openvpn/options.c</span><br><span>+++ b/src/openvpn/options.c=
+</span><br><span>@@ -8692,9 +8692,9 @@</span><br><span>                 opt=
+ions-&gt;imported_protocol_flags |=3D CO_USE_DYNAMIC_TLS_CRYPT;</span><br><=
+span>             }</span><br><span> #endif</span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-            else if (streq(p[j], &quot;aead-tag-end&q=
+uot;))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            e=
+lse if (streq(p[j], &quot;aead-epoch&quot;))</span><br><span>             {=
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">-                optio=
+ns-&gt;imported_protocol_flags |=3D CO_AEAD_TAG_AT_THE_END;</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+                options-&gt;importe=
+d_protocol_flags |=3D CO_EPOCH_DATA_KEY_FORMAT;</span><br><span>           =
+  }</span><br><span>             else</span><br><span>             {</span>=
+<br><span>diff --git a/src/openvpn/push.c b/src/openvpn/push.c</span><br><s=
+pan>index de44eb2..a7cd3bf 100644</span><br><span>--- a/src/openvpn/push.c<=
+/span><br><span>+++ b/src/openvpn/push.c</span><br><span>@@ -689,9 +689,9 @=
+@</span><br><span>         buf_printf(&amp;proto_flags, &quot; dyn-tls-cryp=
+t&quot;);</span><br><span>     }</span><br><span> </span><br><span style=3D=
+"color: hsl(0, 100%, 40%);">-    if (o-&gt;imported_protocol_flags &amp; CO=
+_AEAD_TAG_AT_THE_END)</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+    if (o-&gt;imported_protocol_flags &amp; CO_EPOCH_DATA_KEY_FORMAT)</sp=
+an><br><span>     {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
+      buf_printf(&amp;proto_flags, &quot; aead-tag-end&quot;);</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+        buf_printf(&amp;proto_fl=
+ags, &quot; aead-epoch&quot;);</span><br><span>     }</span><br><span> </sp=
+an><br><span>     if (buf_len(&amp;proto_flags) &gt; 0)</span><br><span>dif=
+f --git a/src/openvpn/ssl.h b/src/openvpn/ssl.h</span><br><span>index 3561c=
+41..c32cb6c 100644</span><br><span>--- a/src/openvpn/ssl.h</span><br><span>=
++++ b/src/openvpn/ssl.h</span><br><span>@@ -108,6 +108,9 @@</span><br><span=
+> /** Support to dynamic tls-crypt (renegotiation with TLS-EKM derived tls-=
+crypt key) */</span><br><span> #define IV_PROTO_DYN_TLS_CRYPT   (1&lt;&lt;9=
+)</span><br><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+/** Support the extended packet id and epoch format for data channel packet=
+s */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#define IV_PROT=
+O_DATA_EPOCH      (1&lt;&lt;10)</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+</span><br><span> /** Supports the --dns option after all the i=
+ncompatible changes */</span><br><span> #define IV_PROTO_DNS_OPTION_V2   (1=
+&lt;&lt;11)</span><br><span> </span><br><span>diff --git a/tests/unit_tests=
+/openvpn/test_ssl.c b/tests/unit_tests/openvpn/test_ssl.c</span><br><span>i=
+ndex caacd9e..845ca56 100644</span><br><span>--- a/tests/unit_tests/openvpn=
+/test_ssl.c</span><br><span>+++ b/tests/unit_tests/openvpn/test_ssl.c</span=
+><br><span>@@ -404,7 +404,7 @@</span><br><span> run_data_channel_with_ciphe=
+r_end(const char *cipher)</span><br><span> {</span><br><span>     struct cr=
+ypto_options co =3D init_crypto_options(cipher, &quot;none&quot;);</span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-    co.flags |=3D CO_AEAD_TAG_=
+AT_THE_END;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    co.f=
+lags |=3D CO_EPOCH_DATA_KEY_FORMAT;</span><br><span>     do_data_channel_ro=
+und_trip(&amp;co);</span><br><span>     uninit_crypto_options(&amp;co);</sp=
+an><br><span> }</span><br><span></span><br></pre><p>To view, visit <a href=
+=3D"http://gerrit.openvpn.net/c/openvpn/+/805?usp=3Demail">change 805</a>. =
+To unsubscribe, or for help writing mail filters, visit <a href=3D"http://g=
+errit.openvpn.net/settings">settings</a>.</p><div itemscope itemtype=3D"htt=
+p://schema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D=
+"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit=
+.openvpn.net/c/openvpn/+/805?usp=3Demail"/><meta itemprop=3D"name" content=
+=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I2a104decdb1e77a460f7a6976bc=
-d0560b67a07b5 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 803 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I9e9433b56dcbaa538d9bed30e50=
+cf74948c647cc </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 805 </div>
 <div style=3D"display:none"> Gerrit-PatchSet: 9 </div>
 <div style=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@...1711...=
 27...&gt; </div>
@@ -568,14 +388,10 @@ d0560b67a07b5 </div>
 1...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: stipa &lt;lstipakov@...277...&gt; <=
-/div>
 <div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
 41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: stipa &lt;lstipakov@...1663...=
-.&gt; </div>
 <div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
 
 
---DW5WjDaunr8=--
+--4zMM/J4gyAg=--
 
