@@ -1,14 +1,14 @@
 From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Fri, 27 Dec 2024 17:30:07 +0000
+Date: Fri, 27 Dec 2024 17:30:10 +0000
 In-Reply-To: <gerrit.1731290343000.I4a981c5a70717e2276d89bf83a06c7fdbe6712d7@...2715...>
 References: <gerrit.1731290343000.I4a981c5a70717e2276d89bf83a06c7fdbe6712d7@...2715...>
 Reply-To: gert@...1296..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <e8ae8a20955987f1109a572fb3dc46f4c3965566-EmailReplacePatchSet-HTML@...2715...>
+Message-ID: <e8ae8a20955987f1109a572fb3dc46f4c3965566-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="ftPFfTT2NN0="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="pAAcTUEvuR0="; charset=UTF-8
 Subject: [Openvpn-devel] [M] Change in openvpn[master]: Change API of
  init_key_ctx to use struct key_parameters
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -19,19 +19,15 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: plaisthos <arne-openvpn@...1227...>
+Cc: flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---ftPFfTT2NN0=
+--pAAcTUEvuR0=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-cron2 has uploaded a new patch set (#10) to the change originally created b=
-y plaisthos. ( http://gerrit.openvpn.net/c/openvpn/+/801?usp=3Demail )
-
-The following approvals got outdated and were removed:
-Code-Review+2 by flichtenheld
-
+cron2 has submitted this change. ( http://gerrit.openvpn.net/c/openvpn/+/80=
+1?usp=3Demail )
 
 Change subject: Change API of init_key_ctx to use struct key_parameters
 ......................................................................
@@ -60,7 +56,7 @@ M tests/unit_tests/openvpn/test_tls_crypt.c
 6 files changed, 94 insertions(+), 41 deletions(-)
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/01/801/10
+
 
 diff --git a/src/openvpn/auth_token.c b/src/openvpn/auth_token.c
 index 192c7c2..3cf55e8 100644
@@ -256,7 +252,7 @@ ds
 @@ -154,6 +155,32 @@
      /**< %Key material for HMAC operations. */
  };
-
+=20
 +/** internal structure similar to struct key that holds key information
 + * but is not represented on wire and can be changed/extended
 + */
@@ -359,10 +355,10 @@ index 8a0c16a..be3b2b7 100644
      free_key_ctx(&ctx->multi.opt.auth_token_key);
      init_key_ctx(&ctx->multi.opt.auth_token_key, &key, &ctx->kt, false, "T=
 EST");
-
+=20
      assert_int_equal(verify_auth_token(&ctx->up, &ctx->multi, ctx->session=
 ), 0);
-=20
+
      /* Load original test key again */
 -    memset(&key, 0, sizeof(key));
 +    memset(&key.hmac, 0, sizeof(key.hmac));
@@ -413,333 +409,330 @@ Gerrit-PatchSet: 10
 Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-MessageType: newpatchset
+Gerrit-MessageType: merged
 
---ftPFfTT2NN0=
+--pAAcTUEvuR0=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p>cron2 <strong>uploaded patch set #10</strong> to the change originally c=
-reated by plaisthos.</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+=
-/801?usp=3Demail">View Change</a></p><p>The following approvals got outdate=
-d and were removed:
-Code-Review+2 by flichtenheld</p><pre style=3D"font-family: monospace,monos=
-pace; white-space: pre-wrap;">Change API of init_key_ctx to use struct key_=
-parameters<br><br>This introduces a new structure key_parameters. The reaso=
-n is that the<br>current struct serves both as an internal struct as well a=
-s an<br>on-wire/in-file format. Separate these two different usages to allo=
-w<br>extending the struct.<br><br>Change-Id: I4a981c5a70717e2276d89bf83a06c=
-7fdbe6712d7<br>Signed-off-by: Arne Schwabe &lt;arne@...1227...&gt;<br>Acked=
--by: Frank Lichtenheld &lt;frank@...2641...&gt;<br>Message-Id: &lt;20241227=
-111133.5893-1-gert@...1296...&gt;<br>URL: https://www.mail-archive.com/open=
-vpn-devel@lists.sourceforge.net/msg30228.html<br>Signed-off-by: Gert Doerin=
-g &lt;gert@...1296...&gt;<br>---<br>M src/openvpn/auth_token.c<br>M src/ope=
-nvpn/crypto.c<br>M src/openvpn/crypto.h<br>M src/openvpn/tls_crypt.c<br>M t=
-ests/unit_tests/openvpn/test_auth_token.c<br>M tests/unit_tests/openvpn/tes=
-t_tls_crypt.c<br>6 files changed, 94 insertions(+), 41 deletions(-)<br><br>=
-</pre><pre style=3D"font-family: monospace,monospace; white-space: pre-wrap=
-;">git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/01/801/10</=
-pre><pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"=
-><span>diff --git a/src/openvpn/auth_token.c b/src/openvpn/auth_token.c</sp=
-an><br><span>index 192c7c2..3cf55e8 100644</span><br><span>--- a/src/openvp=
-n/auth_token.c</span><br><span>+++ b/src/openvpn/auth_token.c</span><br><sp=
-an>@@ -152,7 +152,10 @@</span><br><span>     {</span><br><span>         msg=
-(M_FATAL, &quot;ERROR: not enough data in auth-token secret&quot;);</span><=
-br><span>     }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    in=
-it_key_ctx(key_ctx, &amp;key, &amp;kt, false, &quot;auth-token secret&quot;=
-);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+    struct key_parameters key_params=
-;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    key_parameters=
-_from_key(&amp;key_params, &amp;key);</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+    init_key_ctx(key_ctx, &amp;key_params, &amp;kt, false=
-, &quot;auth-token secret&quot;);</span><br><span> </span><br><span>     fr=
-ee_buf(&amp;server_secret_key);</span><br><span> }</span><br><span>diff --g=
-it a/src/openvpn/crypto.c b/src/openvpn/crypto.c</span><br><span>index da50=
-3b3..df38cdd 100644</span><br><span>--- a/src/openvpn/crypto.c</span><br><s=
-pan>+++ b/src/openvpn/crypto.c</span><br><span>@@ -892,17 +892,18 @@</span>=
-<br><span> }</span><br><span> </span><br><span> /**</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">- * Update the implicit IV for a key_ctx_bi =
-based on TLS session ids and cipher</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+ * Update the implicit IV for a key_ctx based on TLS sessio=
-n ids and cipher</span><br><span>  * used.</span><br><span>  *</span><br><s=
-pan style=3D"color: hsl(0, 100%, 40%);">- * Note that the implicit IV is ba=
-sed on the HMAC key, but only in AEAD modes</span><br><span style=3D"color:=
- hsl(0, 100%, 40%);">- * where the HMAC key is not used for an actual HMAC.=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * Note that the im=
-plicit IV is based on the HMAC key of the \c key parameter,</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+ * but only in AEAD modes where the=
- HMAC key is not used for an actual HMAC.</span><br><span>  *</span><br><sp=
-an>  * @param ctx                   Encrypt/decrypt key context</span><br><=
-span style=3D"color: hsl(0, 100%, 40%);">- * @param key                   k=
-ey, hmac part used to calculate implicit IV</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+ * @param key                   key parameters hold=
-ing the key and hmac/</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+ *                              implicit iv used to calculate implicit IV=
-</span><br><span>  */</span><br><span> static void</span><br><span style=3D=
-"color: hsl(0, 100%, 40%);">-key_ctx_update_implicit_iv(struct key_ctx *ctx=
-, const struct key *key)</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+key_ctx_update_implicit_iv(struct key_ctx *ctx, const struct key_param=
-eters *key)</span><br><span> {</span><br><span>     /* Only use implicit IV=
- in AEAD cipher mode, where HMAC key is not used */</span><br><span>     if=
- (cipher_ctx_mode_aead(ctx-&gt;cipher))</span><br><span>@@ -912,6 +913,7 @@=
-</span><br><span>         impl_iv_len =3D cipher_ctx_iv_length(ctx-&gt;ciph=
-er) - sizeof(packet_id_type);</span><br><span>         ASSERT(impl_iv_len +=
- sizeof(packet_id_type) &lt;=3D OPENVPN_MAX_IV_LENGTH);</span><br><span>   =
-      ASSERT(impl_iv_len &lt;=3D MAX_HMAC_KEY_LENGTH);</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+        ASSERT(impl_iv_len &lt;=3D key-&=
-gt;hmac_size);</span><br><span>         CLEAR(ctx-&gt;implicit_iv);</span><=
-br><span>         /* The first bytes of the IV are filled with the packet i=
-d */</span><br><span>         memcpy(ctx-&gt;implicit_iv + sizeof(packet_id=
-_type), key-&gt;hmac, impl_iv_len);</span><br><span>@@ -920,7 +922,7 @@</sp=
-an><br><span> </span><br><span> /* given a key and key_type, build a key_ct=
-x */</span><br><span> void</span><br><span style=3D"color: hsl(0, 100%, 40%=
-);">-init_key_ctx(struct key_ctx *ctx, const struct key *key,</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+init_key_ctx(struct key_ctx *ctx,=
- const struct key_parameters *key,</span><br><span>              const stru=
-ct key_type *kt, int enc,</span><br><span>              const char *prefix)=
-</span><br><span> {</span><br><span>@@ -928,7 +930,7 @@</span><br><span>   =
-  CLEAR(*ctx);</span><br><span>     if (cipher_defined(kt-&gt;cipher))</spa=
-n><br><span>     {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+        ASSERT(key-&gt=
-;cipher_size &gt;=3D cipher_kt_key_size(kt-&gt;cipher));</span><br><span>  =
-       ctx-&gt;cipher =3D cipher_ctx_new();</span><br><span>         cipher=
-_ctx_init(ctx-&gt;cipher, key-&gt;cipher, kt-&gt;cipher, enc);</span><br><s=
-pan> </span><br><span>@@ -943,8 +945,10 @@</span><br><span>              ci=
-pher_kt_iv_size(kt-&gt;cipher));</span><br><span>         warn_insecure_key=
-_type(ciphername);</span><br><span>     }</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+</span><br><span>     if (md_defined(kt-&gt;digest))<=
-/span><br><span>     {</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+        ASSERT(key-&gt;hmac_size &gt;=3D md_kt_size(kt-&gt;digest));</sp=
-an><br><span>         ctx-&gt;hmac =3D hmac_ctx_new();</span><br><span>    =
-     hmac_ctx_init(ctx-&gt;hmac, key-&gt;hmac, kt-&gt;digest);</span><br><s=
-pan> </span><br><span>@@ -965,41 +969,43 @@</span><br><span> }</span><br><s=
-pan> </span><br><span> void</span><br><span style=3D"color: hsl(0, 100%, 40=
-%);">-init_key_bi_ctx_send(struct key_ctx *ctx, const struct key2 *key2,</s=
-pan><br><span style=3D"color: hsl(0, 100%, 40%);">-                     int=
- key_direction, const struct key_type *kt, const char *name)</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+init_key_bi_ctx_send(struct key_ct=
-x *ctx, const struct key_parameters *key_params,</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+                     const struct key_type *kt=
-, const char *name)</span><br><span> {</span><br><span>     char log_prefix=
-[128] =3D { 0 };</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    s=
-truct key_direction_state kds;</span><br><span style=3D"color: hsl(0, 100%,=
- 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    key_dire=
-ction_state_init(&amp;kds, key_direction);</span><br><span> </span><br><spa=
-n>     snprintf(log_prefix, sizeof(log_prefix), &quot;Outgoing %s&quot;, na=
-me);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    init_key_ctx(=
-ctx, &amp;key2-&gt;keys[kds.out_key], kt,</span><br><span style=3D"color: h=
-sl(0, 100%, 40%);">-                 OPENVPN_OP_ENCRYPT, log_prefix);</span=
-><br><span style=3D"color: hsl(0, 100%, 40%);">-    key_ctx_update_implicit=
-_iv(ctx, &amp;key2-&gt;keys[kds.out_key]);</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+    init_key_ctx(ctx, key_params, kt, OPENVPN_OP_ENC=
-RYPT, log_prefix);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-   key_ctx_update_implicit_iv(ctx, key_params);</span><br><span> }</span><b=
-r><span> </span><br><span> void</span><br><span style=3D"color: hsl(0, 100%=
-, 40%);">-init_key_bi_ctx_recv(struct key_ctx *ctx, const struct key2 *key2=
-,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-                    =
- int key_direction, const struct key_type *kt, const char *name)</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+init_key_bi_ctx_recv(struct ke=
-y_ctx *ctx, const struct key_parameters *key_params,</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+                     const struct key_typ=
-e *kt, const char *name)</span><br><span> {</span><br><span>     char log_p=
-refix[128] =3D { 0 };</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
-    struct key_direction_state kds;</span><br><span style=3D"color: hsl(0, =
-100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    key=
-_direction_state_init(&amp;kds, key_direction);</span><br><span> </span><br=
-><span>     snprintf(log_prefix, sizeof(log_prefix), &quot;Incoming %s&quot=
-;, name);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    init_key=
-_ctx(ctx, &amp;key2-&gt;keys[kds.in_key], kt,</span><br><span style=3D"colo=
-r: hsl(0, 100%, 40%);">-                 OPENVPN_OP_DECRYPT, log_prefix);</=
-span><br><span style=3D"color: hsl(0, 100%, 40%);">-    key_ctx_update_impl=
-icit_iv(ctx, &amp;key2-&gt;keys[kds.in_key]);</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+    init_key_ctx(ctx, key_params, kt, OPENVPN_OP_=
-DECRYPT, log_prefix);</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+    key_ctx_update_implicit_iv(ctx, key_params);</span><br><span> }</span=
-><br><span> </span><br><span> void</span><br><span> init_key_ctx_bi(struct =
-key_ctx_bi *ctx, const struct key2 *key2,</span><br><span>                 =
-int key_direction, const struct key_type *kt, const char *name)</span><br><=
-span> {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    init_key_b=
-i_ctx_send(&amp;ctx-&gt;encrypt, key2, key_direction, kt, name);</span><br>=
-<span style=3D"color: hsl(0, 100%, 40%);">-    init_key_bi_ctx_recv(&amp;ct=
-x-&gt;decrypt, key2, key_direction, kt, name);</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+    struct key_direction_state kds;</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+    key_direction_state_init(&amp;kds, key_directio=
-n);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+    struct key_parameters send_key;=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    struct key_para=
-meters recv_key;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</s=
+<p>cron2 <strong>submitted</strong> this change.</p><p><a href=3D"http://ge=
+rrit.openvpn.net/c/openvpn/+/801?usp=3Demail">View Change</a></p><div style=
+=3D"white-space:pre-wrap"></div><pre style=3D"font-family: monospace,monosp=
+ace; white-space: pre-wrap;">Change API of init_key_ctx to use struct key_p=
+arameters<br><br>This introduces a new structure key_parameters. The reason=
+ is that the<br>current struct serves both as an internal struct as well as=
+ an<br>on-wire/in-file format. Separate these two different usages to allow=
+<br>extending the struct.<br><br>Change-Id: I4a981c5a70717e2276d89bf83a06c7=
+fdbe6712d7<br>Signed-off-by: Arne Schwabe &lt;arne@...1227...&gt;<br>Acked-=
+by: Frank Lichtenheld &lt;frank@...2641...&gt;<br>Message-Id: &lt;202412271=
+11133.5893-1-gert@...1296...&gt;<br>URL: https://www.mail-archive.com/openv=
+pn-devel@lists.sourceforge.net/msg30228.html<br>Signed-off-by: Gert Doering=
+ &lt;gert@...1296...&gt;<br>---<br>M src/openvpn/auth_token.c<br>M src/open=
+vpn/crypto.c<br>M src/openvpn/crypto.h<br>M src/openvpn/tls_crypt.c<br>M te=
+sts/unit_tests/openvpn/test_auth_token.c<br>M tests/unit_tests/openvpn/test=
+_tls_crypt.c<br>6 files changed, 94 insertions(+), 41 deletions(-)<br><br><=
+/pre>
+<pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><sp=
+an>diff --git a/src/openvpn/auth_token.c b/src/openvpn/auth_token.c</span><=
+br><span>index 192c7c2..3cf55e8 100644</span><br><span>--- a/src/openvpn/au=
+th_token.c</span><br><span>+++ b/src/openvpn/auth_token.c</span><br><span>@=
+@ -152,7 +152,10 @@</span><br><span>     {</span><br><span>         msg(M_F=
+ATAL, &quot;ERROR: not enough data in auth-token secret&quot;);</span><br><=
+span>     }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    init_k=
+ey_ctx(key_ctx, &amp;key, &amp;kt, false, &quot;auth-token secret&quot;);</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+    struct key_parameters key_params;</s=
 pan><br><span style=3D"color: hsl(120, 100%, 40%);">+    key_parameters_fro=
-m_key(&amp;send_key, &amp;key2-&gt;keys[kds.out_key]);</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+    key_parameters_from_key(&amp;recv_ke=
-y, &amp;key2-&gt;keys[kds.in_key]);</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
- init_key_bi_ctx_send(&amp;ctx-&gt;encrypt, &amp;send_key, kt, name);</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+    init_key_bi_ctx_recv(=
-&amp;ctx-&gt;decrypt, &amp;recv_key, kt, name);</span><br><span>     ctx-&g=
-t;initialized =3D true;</span><br><span> }</span><br><span> </span><br><spa=
-n>@@ -1116,6 +1122,16 @@</span><br><span> }</span><br><span> </span><br><sp=
-an> void</span><br><span style=3D"color: hsl(120, 100%, 40%);">+key_paramet=
-ers_from_key(struct key_parameters *key_params, const struct key *key)</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    CLEAR(*key_params);</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+    memcpy(key_params-&gt;cipher, key=
--&gt;cipher, MAX_CIPHER_KEY_LENGTH);</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+    key_params-&gt;cipher_size =3D MAX_CIPHER_KEY_LENGTH;<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+    memcpy(key_param=
-s-&gt;hmac, key-&gt;hmac, MAX_HMAC_KEY_LENGTH);</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+    key_params-&gt;hmac_size =3D MAX_HMAC_KEY_L=
-ENGTH;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+void</span><br><span> test_crypto(struct crypto_op=
-tions *co, struct frame *frame)</span><br><span> {</span><br><span>     int=
- i, j;</span><br><span>diff --git a/src/openvpn/crypto.h b/src/openvpn/cryp=
-to.h</span><br><span>index b3612fb..d765737 100644</span><br><span>--- a/sr=
-c/openvpn/crypto.h</span><br><span>+++ b/src/openvpn/crypto.h</span><br><sp=
-an>@@ -144,7 +144,8 @@</span><br><span> </span><br><span> /**</span><br><sp=
-an>  * Container for unidirectional cipher and HMAC %key material.</span><b=
-r><span style=3D"color: hsl(0, 100%, 40%);">- * @ingroup control_processor<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @ingroup control_=
-processor. This is used as a wire format/file format</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+ * key, so it cannot be changed to add fi=
-elds or change the length of fields</span><br><span>  */</span><br><span> s=
-truct key</span><br><span> {</span><br><span>@@ -154,6 +155,32 @@</span><br=
-><span>     /**&lt; %Key material for HMAC operations. */</span><br><span> =
-};</span><br><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+/** internal structure similar to struct key that holds key information</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+ * but is not represen=
-ted on wire and can be changed/extended</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+ */</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+struct key_parameters {</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+    /** %Key material for cipher operations. */</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+    uint8_t cipher[MAX_CIPHER_KEY_LENGT=
-H];</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+    /** Number of bytes set in the =
-cipher key material */</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+    int cipher_size;</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    /** %Key ma=
-terial for HMAC operations. */</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+    uint8_t hmac[MAX_HMAC_KEY_LENGTH];</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+    /** Number of bytes set in the HMac key material */</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+    int hmac_size;</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+};</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+/**</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * Con=
-verts a struct key representation into a struct key_parameters</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+ * representation.</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+ * @param key_params    destination for the conver=
-ted struct</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @param=
- key           source of the conversion</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+ */</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+void</span><br><span style=3D"color: hsl(120, 100%, 40%);">+key_paramet=
-ers_from_key(struct key_parameters *key_params, const struct key *key);</sp=
-an><br><span> </span><br><span> /**</span><br><span>  * Container for one s=
-et of cipher and/or HMAC contexts.</span><br><span>@@ -347,19 +374,17 @@</s=
-pan><br><span>  * Key context functions</span><br><span>  */</span><br><spa=
-n> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-void init_key_ctx(=
-struct key_ctx *ctx, const struct key *key,</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+void init_key_ctx(struct key_ctx *ctx, const struct=
- key_parameters *key,</span><br><span>                   const struct key_t=
-ype *kt, int enc,</span><br><span>                   const char *prefix);</=
-span><br><span> </span><br><span> void</span><br><span style=3D"color: hsl(=
-0, 100%, 40%);">-init_key_bi_ctx_send(struct key_ctx *ctx, const struct key=
-2 *key2,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-             =
-        int key_direction, const struct key_type *kt,</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-                     const char *name);</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+init_key_bi_ctx_send(st=
-ruct key_ctx *ctx, const struct key_parameters *key,</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+                     const struct key_typ=
-e *kt, const char *name);</span><br><span> </span><br><span> void</span><br=
-><span style=3D"color: hsl(0, 100%, 40%);">-init_key_bi_ctx_recv(struct key=
-_ctx *ctx, const struct key2 *key2,</span><br><span style=3D"color: hsl(0, =
-100%, 40%);">-                     int key_direction, const struct key_type=
- *kt,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-                =
-     const char *name);</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+init_key_bi_ctx_recv(struct key_ctx *ctx, const struct key_parameters *=
-key,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+               =
-      const struct key_type *kt, const char *name);</span><br><span> </span=
-><br><span> void free_key_ctx(struct key_ctx *ctx);</span><br><span> </span=
-><br><span>diff --git a/src/openvpn/tls_crypt.c b/src/openvpn/tls_crypt.c</=
-span><br><span>index b8894db..76f06bc 100644</span><br><span>--- a/src/open=
-vpn/tls_crypt.c</span><br><span>+++ b/src/openvpn/tls_crypt.c</span><br><sp=
-an>@@ -377,7 +377,11 @@</span><br><span>     {</span><br><span>         msg=
-(M_FATAL, &quot;ERROR: --tls-crypt-v2 not supported&quot;);</span><br><span=
->     }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    init_key_c=
-tx(key_ctx, &amp;srv_key, &amp;kt, encrypt, &quot;tls-crypt-v2 server key&q=
-uot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    struct ke=
-y_parameters srv_key_params;</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    key_pa=
-rameters_from_key(&amp;srv_key_params, &amp;srv_key);</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+    init_key_ctx(key_ctx, &amp;srv_key_params, &amp;kt, encr=
-ypt, &quot;tls-crypt-v2 server key&quot;);</span><br><span>     secure_memz=
-ero(&amp;srv_key, sizeof(srv_key));</span><br><span> }</span><br><span> </s=
-pan><br><span>diff --git a/tests/unit_tests/openvpn/test_auth_token.c b/tes=
-ts/unit_tests/openvpn/test_auth_token.c</span><br><span>index 8a0c16a..be3b=
-2b7 100644</span><br><span>--- a/tests/unit_tests/openvpn/test_auth_token.c=
-</span><br><span>+++ b/tests/unit_tests/openvpn/test_auth_token.c</span><br=
-><span>@@ -87,7 +87,8 @@</span><br><span>     struct test_context *ctx =3D =
+m_key(&amp;key_params, &amp;key);</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+    init_key_ctx(key_ctx, &amp;key_params, &amp;kt, false, &q=
+uot;auth-token secret&quot;);</span><br><span> </span><br><span>     free_b=
+uf(&amp;server_secret_key);</span><br><span> }</span><br><span>diff --git a=
+/src/openvpn/crypto.c b/src/openvpn/crypto.c</span><br><span>index da503b3.=
+.df38cdd 100644</span><br><span>--- a/src/openvpn/crypto.c</span><br><span>=
++++ b/src/openvpn/crypto.c</span><br><span>@@ -892,17 +892,18 @@</span><br>=
+<span> }</span><br><span> </span><br><span> /**</span><br><span style=3D"co=
+lor: hsl(0, 100%, 40%);">- * Update the implicit IV for a key_ctx_bi based =
+on TLS session ids and cipher</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+ * Update the implicit IV for a key_ctx based on TLS session ids =
+and cipher</span><br><span>  * used.</span><br><span>  *</span><br><span st=
+yle=3D"color: hsl(0, 100%, 40%);">- * Note that the implicit IV is based on=
+ the HMAC key, but only in AEAD modes</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">- * where the HMAC key is not used for an actual HMAC.</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+ * Note that the implicit=
+ IV is based on the HMAC key of the \c key parameter,</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+ * but only in AEAD modes where the HMAC =
+key is not used for an actual HMAC.</span><br><span>  *</span><br><span>  *=
+ @param ctx                   Encrypt/decrypt key context</span><br><span s=
+tyle=3D"color: hsl(0, 100%, 40%);">- * @param key                   key, hm=
+ac part used to calculate implicit IV</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+ * @param key                   key parameters holding th=
+e key and hmac/</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  =
+                            implicit iv used to calculate implicit IV</span=
+><br><span>  */</span><br><span> static void</span><br><span style=3D"color=
+: hsl(0, 100%, 40%);">-key_ctx_update_implicit_iv(struct key_ctx *ctx, cons=
+t struct key *key)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+k=
+ey_ctx_update_implicit_iv(struct key_ctx *ctx, const struct key_parameters =
+*key)</span><br><span> {</span><br><span>     /* Only use implicit IV in AE=
+AD cipher mode, where HMAC key is not used */</span><br><span>     if (ciph=
+er_ctx_mode_aead(ctx-&gt;cipher))</span><br><span>@@ -912,6 +913,7 @@</span=
+><br><span>         impl_iv_len =3D cipher_ctx_iv_length(ctx-&gt;cipher) - =
+sizeof(packet_id_type);</span><br><span>         ASSERT(impl_iv_len + sizeo=
+f(packet_id_type) &lt;=3D OPENVPN_MAX_IV_LENGTH);</span><br><span>         =
+ASSERT(impl_iv_len &lt;=3D MAX_HMAC_KEY_LENGTH);</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+        ASSERT(impl_iv_len &lt;=3D key-&gt;hma=
+c_size);</span><br><span>         CLEAR(ctx-&gt;implicit_iv);</span><br><sp=
+an>         /* The first bytes of the IV are filled with the packet id */</=
+span><br><span>         memcpy(ctx-&gt;implicit_iv + sizeof(packet_id_type)=
+, key-&gt;hmac, impl_iv_len);</span><br><span>@@ -920,7 +922,7 @@</span><br=
+><span> </span><br><span> /* given a key and key_type, build a key_ctx */</=
+span><br><span> void</span><br><span style=3D"color: hsl(0, 100%, 40%);">-i=
+nit_key_ctx(struct key_ctx *ctx, const struct key *key,</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+init_key_ctx(struct key_ctx *ctx, const=
+ struct key_parameters *key,</span><br><span>              const struct key=
+_type *kt, int enc,</span><br><span>              const char *prefix)</span=
+><br><span> {</span><br><span>@@ -928,7 +930,7 @@</span><br><span>     CLEA=
+R(*ctx);</span><br><span>     if (cipher_defined(kt-&gt;cipher))</span><br>=
+<span>     {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+        ASSERT(key-&gt;ciphe=
+r_size &gt;=3D cipher_kt_key_size(kt-&gt;cipher));</span><br><span>        =
+ ctx-&gt;cipher =3D cipher_ctx_new();</span><br><span>         cipher_ctx_i=
+nit(ctx-&gt;cipher, key-&gt;cipher, kt-&gt;cipher, enc);</span><br><span> <=
+/span><br><span>@@ -943,8 +945,10 @@</span><br><span>              cipher_k=
+t_iv_size(kt-&gt;cipher));</span><br><span>         warn_insecure_key_type(=
+ciphername);</span><br><span>     }</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+</span><br><span>     if (md_defined(kt-&gt;digest))</span>=
+<br><span>     {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+     ASSERT(key-&gt;hmac_size &gt;=3D md_kt_size(kt-&gt;digest));</span><br=
+><span>         ctx-&gt;hmac =3D hmac_ctx_new();</span><br><span>         h=
+mac_ctx_init(ctx-&gt;hmac, key-&gt;hmac, kt-&gt;digest);</span><br><span> <=
+/span><br><span>@@ -965,41 +969,43 @@</span><br><span> }</span><br><span> <=
+/span><br><span> void</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
+init_key_bi_ctx_send(struct key_ctx *ctx, const struct key2 *key2,</span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-                     int key_d=
+irection, const struct key_type *kt, const char *name)</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+init_key_bi_ctx_send(struct key_ctx *ctx=
+, const struct key_parameters *key_params,</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+                     const struct key_type *kt, cons=
+t char *name)</span><br><span> {</span><br><span>     char log_prefix[128] =
+=3D { 0 };</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    struct =
+key_direction_state kds;</span><br><span style=3D"color: hsl(0, 100%, 40%);=
+">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    key_direction_=
+state_init(&amp;kds, key_direction);</span><br><span> </span><br><span>    =
+ snprintf(log_prefix, sizeof(log_prefix), &quot;Outgoing %s&quot;, name);</=
+span><br><span style=3D"color: hsl(0, 100%, 40%);">-    init_key_ctx(ctx, &=
+amp;key2-&gt;keys[kds.out_key], kt,</span><br><span style=3D"color: hsl(0, =
+100%, 40%);">-                 OPENVPN_OP_ENCRYPT, log_prefix);</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-    key_ctx_update_implicit_iv(ct=
+x, &amp;key2-&gt;keys[kds.out_key]);</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+    init_key_ctx(ctx, key_params, kt, OPENVPN_OP_ENCRYPT, =
+log_prefix);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    key=
+_ctx_update_implicit_iv(ctx, key_params);</span><br><span> }</span><br><spa=
+n> </span><br><span> void</span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">-init_key_bi_ctx_recv(struct key_ctx *ctx, const struct key2 *key2,</spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-                     int k=
+ey_direction, const struct key_type *kt, const char *name)</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+init_key_bi_ctx_recv(struct key_ctx =
+*ctx, const struct key_parameters *key_params,</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+                     const struct key_type *kt, =
+const char *name)</span><br><span> {</span><br><span>     char log_prefix[1=
+28] =3D { 0 };</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    str=
+uct key_direction_state kds;</span><br><span style=3D"color: hsl(0, 100%, 4=
+0%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    key_direct=
+ion_state_init(&amp;kds, key_direction);</span><br><span> </span><br><span>=
+     snprintf(log_prefix, sizeof(log_prefix), &quot;Incoming %s&quot;, name=
+);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    init_key_ctx(ct=
+x, &amp;key2-&gt;keys[kds.in_key], kt,</span><br><span style=3D"color: hsl(=
+0, 100%, 40%);">-                 OPENVPN_OP_DECRYPT, log_prefix);</span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-    key_ctx_update_implicit_iv=
+(ctx, &amp;key2-&gt;keys[kds.in_key]);</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+    init_key_ctx(ctx, key_params, kt, OPENVPN_OP_DECRYPT=
+, log_prefix);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    k=
+ey_ctx_update_implicit_iv(ctx, key_params);</span><br><span> }</span><br><s=
+pan> </span><br><span> void</span><br><span> init_key_ctx_bi(struct key_ctx=
+_bi *ctx, const struct key2 *key2,</span><br><span>                 int key=
+_direction, const struct key_type *kt, const char *name)</span><br><span> {=
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    init_key_bi_ctx_s=
+end(&amp;ctx-&gt;encrypt, key2, key_direction, kt, name);</span><br><span s=
+tyle=3D"color: hsl(0, 100%, 40%);">-    init_key_bi_ctx_recv(&amp;ctx-&gt;d=
+ecrypt, key2, key_direction, kt, name);</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+    struct key_direction_state kds;</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+    key_direction_state_init(&amp;kds, key_direction);</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    struct key_parameters send_key;</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+    struct key_parameters=
+ recv_key;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+    key_parameters_from_key(=
+&amp;send_key, &amp;key2-&gt;keys[kds.out_key]);</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+    key_parameters_from_key(&amp;recv_key, &am=
+p;key2-&gt;keys[kds.in_key]);</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    init_=
+key_bi_ctx_send(&amp;ctx-&gt;encrypt, &amp;send_key, kt, name);</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+    init_key_bi_ctx_recv(&amp;c=
+tx-&gt;decrypt, &amp;recv_key, kt, name);</span><br><span>     ctx-&gt;init=
+ialized =3D true;</span><br><span> }</span><br><span> </span><br><span>@@ -=
+1116,6 +1122,16 @@</span><br><span> }</span><br><span> </span><br><span> vo=
+id</span><br><span style=3D"color: hsl(120, 100%, 40%);">+key_parameters_fr=
+om_key(struct key_parameters *key_params, const struct key *key)</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+    CLEAR(*key_params);</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+    memcpy(key_params-&gt;cipher, key-&gt;ci=
+pher, MAX_CIPHER_KEY_LENGTH);</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+    key_params-&gt;cipher_size =3D MAX_CIPHER_KEY_LENGTH;</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+    memcpy(key_params-&gt;h=
+mac, key-&gt;hmac, MAX_HMAC_KEY_LENGTH);</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+    key_params-&gt;hmac_size =3D MAX_HMAC_KEY_LENGTH;<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+void</span><br><span> test_crypto(struct crypto_options *=
+co, struct frame *frame)</span><br><span> {</span><br><span>     int i, j;<=
+/span><br><span>diff --git a/src/openvpn/crypto.h b/src/openvpn/crypto.h</s=
+pan><br><span>index b3612fb..d765737 100644</span><br><span>--- a/src/openv=
+pn/crypto.h</span><br><span>+++ b/src/openvpn/crypto.h</span><br><span>@@ -=
+144,7 +144,8 @@</span><br><span> </span><br><span> /**</span><br><span>  * =
+Container for unidirectional cipher and HMAC %key material.</span><br><span=
+ style=3D"color: hsl(0, 100%, 40%);">- * @ingroup control_processor</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+ * @ingroup control_process=
+or. This is used as a wire format/file format</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+ * key, so it cannot be changed to add fields or =
+change the length of fields</span><br><span>  */</span><br><span> struct ke=
+y</span><br><span> {</span><br><span>@@ -154,6 +155,32 @@</span><br><span> =
+    /**&lt; %Key material for HMAC operations. */</span><br><span> };</span=
+><br><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+/** int=
+ernal structure similar to struct key that holds key information</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+ * but is not represented on w=
+ire and can be changed/extended</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+ */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+stru=
+ct key_parameters {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+    /** %Key material for cipher operations. */</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+    uint8_t cipher[MAX_CIPHER_KEY_LENGTH];</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    /** Number of bytes set in the cipher=
+ key material */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+ int cipher_size;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+    /** %Key material=
+ for HMAC operations. */</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+    uint8_t hmac[MAX_HMAC_KEY_LENGTH];</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+    /** Number of bytes set in the HMac key material */</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+    int hmac_size;</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+};</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+/**</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * Converts =
+a struct key representation into a struct key_parameters</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+ * representation.</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+ * @param key_params    destination for the converted st=
+ruct</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @param key  =
+         source of the conversion</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+ */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+vo=
+id</span><br><span style=3D"color: hsl(120, 100%, 40%);">+key_parameters_fr=
+om_key(struct key_parameters *key_params, const struct key *key);</span><br=
+><span> </span><br><span> /**</span><br><span>  * Container for one set of =
+cipher and/or HMAC contexts.</span><br><span>@@ -347,19 +374,17 @@</span><b=
+r><span>  * Key context functions</span><br><span>  */</span><br><span> </s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-void init_key_ctx(struct=
+ key_ctx *ctx, const struct key *key,</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+void init_key_ctx(struct key_ctx *ctx, const struct key_p=
+arameters *key,</span><br><span>                   const struct key_type *k=
+t, int enc,</span><br><span>                   const char *prefix);</span><=
+br><span> </span><br><span> void</span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-init_key_bi_ctx_send(struct key_ctx *ctx, const struct key2 *key=
+2,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-                   =
+  int key_direction, const struct key_type *kt,</span><br><span style=3D"co=
+lor: hsl(0, 100%, 40%);">-                     const char *name);</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+init_key_bi_ctx_send(struct k=
+ey_ctx *ctx, const struct key_parameters *key,</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+                     const struct key_type *kt, =
+const char *name);</span><br><span> </span><br><span> void</span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">-init_key_bi_ctx_recv(struct key_ctx *c=
+tx, const struct key2 *key2,</span><br><span style=3D"color: hsl(0, 100%, 4=
+0%);">-                     int key_direction, const struct key_type *kt,</=
+span><br><span style=3D"color: hsl(0, 100%, 40%);">-                     co=
+nst char *name);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ini=
+t_key_bi_ctx_recv(struct key_ctx *ctx, const struct key_parameters *key,</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+                     c=
+onst struct key_type *kt, const char *name);</span><br><span> </span><br><s=
+pan> void free_key_ctx(struct key_ctx *ctx);</span><br><span> </span><br><s=
+pan>diff --git a/src/openvpn/tls_crypt.c b/src/openvpn/tls_crypt.c</span><b=
+r><span>index b8894db..76f06bc 100644</span><br><span>--- a/src/openvpn/tls=
+_crypt.c</span><br><span>+++ b/src/openvpn/tls_crypt.c</span><br><span>@@ -=
+377,7 +377,11 @@</span><br><span>     {</span><br><span>         msg(M_FATA=
+L, &quot;ERROR: --tls-crypt-v2 not supported&quot;);</span><br><span>     }=
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    init_key_ctx(key_=
+ctx, &amp;srv_key, &amp;kt, encrypt, &quot;tls-crypt-v2 server key&quot;);<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+    struct key_param=
+eters srv_key_params;</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    key_parameter=
+s_from_key(&amp;srv_key_params, &amp;srv_key);</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+    init_key_ctx(key_ctx, &amp;srv_key_params, &amp;kt, encrypt, &q=
+uot;tls-crypt-v2 server key&quot;);</span><br><span>     secure_memzero(&am=
+p;srv_key, sizeof(srv_key));</span><br><span> }</span><br><span> </span><br=
+><span>diff --git a/tests/unit_tests/openvpn/test_auth_token.c b/tests/unit=
+_tests/openvpn/test_auth_token.c</span><br><span>index 8a0c16a..be3b2b7 100=
+644</span><br><span>--- a/tests/unit_tests/openvpn/test_auth_token.c</span>=
+<br><span>+++ b/tests/unit_tests/openvpn/test_auth_token.c</span><br><span>=
+@@ -87,7 +87,8 @@</span><br><span>     struct test_context *ctx =3D calloc(=
+1, sizeof(*ctx));</span><br><span>     *state =3D ctx;</span><br><span> </s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-    struct key key =3D {=
+ 0 };</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    struct key=
+_parameters key =3D { 0 };</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+    key.hmac_size =3D MAX_HMAC_KEY_LENGTH;     /* 64 byte of 0 */</s=
+pan><br><span> </span><br><span>     ctx-&gt;kt =3D auth_token_kt();</span>=
+<br><span>     if (!ctx-&gt;kt.digest)</span><br><span>@@ -148,15 +149,17 @=
+@</span><br><span>                      AUTH_TOKEN_HMAC_OK);</span><br><spa=
+n> </span><br><span>     /* Change auth-token key */</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-    struct key key;</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-    memset(&amp;key, &#39;1&#39;, sizeof(ke=
+y));</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    struct key_=
+parameters key;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+memset(key.hmac, &#39;1&#39;, sizeof(key.hmac));</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+    key.hmac_size =3D MAX_HMAC_KEY_LENGTH;</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span>     f=
+ree_key_ctx(&amp;ctx-&gt;multi.opt.auth_token_key);</span><br><span>     in=
+it_key_ctx(&amp;ctx-&gt;multi.opt.auth_token_key, &amp;key, &amp;ctx-&gt;kt=
+, false, &quot;TEST&quot;);</span><br><span> </span><br><span>     assert_i=
+nt_equal(verify_auth_token(&amp;ctx-&gt;up, &amp;ctx-&gt;multi, ctx-&gt;ses=
+sion), 0);</span><br><span> </span><br><span>     /* Load original test key=
+ again */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    memset(&=
+amp;key, 0, sizeof(key));</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+    memset(&amp;key.hmac, 0, sizeof(key.hmac));</span><br><span>     =
+free_key_ctx(&amp;ctx-&gt;multi.opt.auth_token_key);</span><br><span>     i=
+nit_key_ctx(&amp;ctx-&gt;multi.opt.auth_token_key, &amp;key, &amp;ctx-&gt;k=
+t, false, &quot;TEST&quot;);</span><br><span>     assert_int_equal(verify_a=
+uth_token(&amp;ctx-&gt;up, &amp;ctx-&gt;multi, ctx-&gt;session),</span><br>=
+<span>diff --git a/tests/unit_tests/openvpn/test_tls_crypt.c b/tests/unit_t=
+ests/openvpn/test_tls_crypt.c</span><br><span>index 4f12f88..94cd0ee 100644=
+</span><br><span>--- a/tests/unit_tests/openvpn/test_tls_crypt.c</span><br>=
+<span>+++ b/tests/unit_tests/openvpn/test_tls_crypt.c</span><br><span>@@ -1=
+57,7 +157,8 @@</span><br><span>     struct test_tls_crypt_context *ctx =3D =
 calloc(1, sizeof(*ctx));</span><br><span>     *state =3D ctx;</span><br><sp=
 an> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-    struct key ke=
 y =3D { 0 };</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    str=
-uct key_parameters key =3D { 0 };</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+    key.hmac_size =3D MAX_HMAC_KEY_LENGTH;     /* 64 byte of =
-0 */</span><br><span> </span><br><span>     ctx-&gt;kt =3D auth_token_kt();=
-</span><br><span>     if (!ctx-&gt;kt.digest)</span><br><span>@@ -148,15 +1=
-49,17 @@</span><br><span>                      AUTH_TOKEN_HMAC_OK);</span><=
-br><span> </span><br><span>     /* Change auth-token key */</span><br><span=
- style=3D"color: hsl(0, 100%, 40%);">-    struct key key;</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-    memset(&amp;key, &#39;1&#39;, sizeo=
-f(key));</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    struct =
-key_parameters key;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-    memset(key.hmac, &#39;1&#39;, sizeof(key.hmac));</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    key.hmac_size =3D MAX_HMAC_KEY_LENGTH=
-;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> =
-    free_key_ctx(&amp;ctx-&gt;multi.opt.auth_token_key);</span><br><span>  =
-   init_key_ctx(&amp;ctx-&gt;multi.opt.auth_token_key, &amp;key, &amp;ctx-&=
-gt;kt, false, &quot;TEST&quot;);</span><br><span> </span><br><span>     ass=
-ert_int_equal(verify_auth_token(&amp;ctx-&gt;up, &amp;ctx-&gt;multi, ctx-&g=
-t;session), 0);</span><br><span> </span><br><span>     /* Load original tes=
-t key again */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    mem=
-set(&amp;key, 0, sizeof(key));</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+    memset(&amp;key.hmac, 0, sizeof(key.hmac));</span><br><span>=
-     free_key_ctx(&amp;ctx-&gt;multi.opt.auth_token_key);</span><br><span> =
-    init_key_ctx(&amp;ctx-&gt;multi.opt.auth_token_key, &amp;key, &amp;ctx-=
-&gt;kt, false, &quot;TEST&quot;);</span><br><span>     assert_int_equal(ver=
-ify_auth_token(&amp;ctx-&gt;up, &amp;ctx-&gt;multi, ctx-&gt;session),</span=
-><br><span>diff --git a/tests/unit_tests/openvpn/test_tls_crypt.c b/tests/u=
-nit_tests/openvpn/test_tls_crypt.c</span><br><span>index 4f12f88..94cd0ee 1=
-00644</span><br><span>--- a/tests/unit_tests/openvpn/test_tls_crypt.c</span=
-><br><span>+++ b/tests/unit_tests/openvpn/test_tls_crypt.c</span><br><span>=
-@@ -157,7 +157,8 @@</span><br><span>     struct test_tls_crypt_context *ctx=
- =3D calloc(1, sizeof(*ctx));</span><br><span>     *state =3D ctx;</span><b=
-r><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-    struct k=
-ey key =3D { 0 };</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-  struct key_parameters key =3D { .cipher =3D { 0 }, .hmac =3D { 0 },</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+                         =
-         .hmac_size =3D MAX_HMAC_KEY_LENGTH, .cipher_size =3D MAX_CIPHER_KE=
-Y_LENGTH };</span><br><span> </span><br><span>     ctx-&gt;kt =3D tls_crypt=
-_kt();</span><br><span>     if (!ctx-&gt;kt.cipher || !ctx-&gt;kt.digest)</=
-span><br><span>@@ -367,7 +368,8 @@</span><br><span>     skip_if_tls_crypt_n=
-ot_supported(ctx);</span><br><span> </span><br><span>     /* Change decrypt=
- key */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    struct key=
- key =3D { { 1 } };</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-    struct key_parameters key =3D { .cipher =3D { 1 }, .hmac =3D { 1 },</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+                       =
-           .cipher_size =3D MAX_CIPHER_KEY_LENGTH, .hmac_size =3D MAX_HMAC_=
-KEY_LENGTH };</span><br><span>     free_key_ctx(&amp;ctx-&gt;co.key_ctx_bi.=
-decrypt);</span><br><span>     init_key_ctx(&amp;ctx-&gt;co.key_ctx_bi.decr=
-ypt, &amp;key, &amp;ctx-&gt;kt, false, &quot;TEST&quot;);</span><br><span> =
-</span><br><span></span><br></pre><p>To view, visit <a href=3D"http://gerri=
-t.openvpn.net/c/openvpn/+/801?usp=3Demail">change 801</a>. To unsubscribe, =
-or for help writing mail filters, visit <a href=3D"http://gerrit.openvpn.ne=
-t/settings">settings</a>.</p><div itemscope itemtype=3D"http://schema.org/E=
-mailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.o=
-rg/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/o=
-penvpn/+/801?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/=
-></div></div>
+uct key_parameters key =3D { .cipher =3D { 0 }, .hmac =3D { 0 },</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+                              =
+    .hmac_size =3D MAX_HMAC_KEY_LENGTH, .cipher_size =3D MAX_CIPHER_KEY_LEN=
+GTH };</span><br><span> </span><br><span>     ctx-&gt;kt =3D tls_crypt_kt()=
+;</span><br><span>     if (!ctx-&gt;kt.cipher || !ctx-&gt;kt.digest)</span>=
+<br><span>@@ -367,7 +368,8 @@</span><br><span>     skip_if_tls_crypt_not_su=
+pported(ctx);</span><br><span> </span><br><span>     /* Change decrypt key =
+*/</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    struct key key =
+=3D { { 1 } };</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    s=
+truct key_parameters key =3D { .cipher =3D { 1 }, .hmac =3D { 1 },</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+                            =
+      .cipher_size =3D MAX_CIPHER_KEY_LENGTH, .hmac_size =3D MAX_HMAC_KEY_L=
+ENGTH };</span><br><span>     free_key_ctx(&amp;ctx-&gt;co.key_ctx_bi.decry=
+pt);</span><br><span>     init_key_ctx(&amp;ctx-&gt;co.key_ctx_bi.decrypt, =
+&amp;key, &amp;ctx-&gt;kt, false, &quot;TEST&quot;);</span><br><span> </spa=
+n><br><span></span><br></pre><p>To view, visit <a href=3D"http://gerrit.ope=
+nvpn.net/c/openvpn/+/801?usp=3Demail">change 801</a>. To unsubscribe, or fo=
+r help writing mail filters, visit <a href=3D"http://gerrit.openvpn.net/set=
+tings">settings</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailM=
+essage"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.org/Vi=
+ewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvp=
+n/+/801?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></di=
+v></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
@@ -753,8 +746,8 @@ penvpn/+/801?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/=
 1...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
+<div style=3D"display:none"> Gerrit-MessageType: merged </div>
 
 
---ftPFfTT2NN0=--
+--pAAcTUEvuR0=--
 
