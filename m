@@ -1,17 +1,10 @@
-From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Sun, 29 Dec 2024 14:17:40 +0000
+From: Gert Doering <gert@...1296...>
+Date: Sun, 29 Dec 2024 15:17:59 +0100
+Message-ID: <20241229141800.4734-1-gert@...1296...>
 In-Reply-To: <gerrit.1725608632000.I8e8ddd35bd3cc3334faf7f57118d1892512ae9f7@...2715...>
 References: <gerrit.1725608632000.I8e8ddd35bd3cc3334faf7f57118d1892512ae9f7@...2715...>
-Reply-To: gert@...1296..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...,
- lstipakov@...277...
-Message-ID: <7503e88fc9f7df91d18211c3666ba2783c3c51c1-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="VQu+Ls7iWnQ="; charset=UTF-8
-Subject: [Openvpn-devel] [M] Change in openvpn[master]: dco-win: factor out
- getting dco version
+Subject: [Openvpn-devel] [PATCH v5] dco-win: factor out getting dco version
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,94 +13,137 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: stipa <lstipakov@...277...>
-Cc: flichtenheld <frank@...2641...>, plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---VQu+Ls7iWnQ=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+From: Lev Stipakov <lev@...515...>
 
-Attention is currently required from: flichtenheld, plaisthos, stipa.
+As a preparation for multipeer and data_v3,
+add function which returns dco version in
+machine-readable format.
 
-cron2 has posted comments on this change. ( http://gerrit.openvpn.net/c/ope=
-nvpn/+/733?usp=3Demail )
+Change-Id: I8e8ddd35bd3cc3334faf7f57118d1892512ae9f7
+Signed-off-by: Lev Stipakov <lev@...515...>
+Acked-by: Gert Doering <gert@...1296...>
+---
 
-Change subject: dco-win: factor out getting dco version
-......................................................................
+This change was reviewed on Gerrit and approved by at least one
+developer. I request to merge it to master.
 
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/733
+This mail reflects revision 5 of this Change.
 
-Patch Set 5: Code-Review+2
+Acked-by according to Gerrit (reflected above):
+Gert Doering <gert@...1296...>
 
-
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/733?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings
-
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: I8e8ddd35bd3cc3334faf7f57118d1892512ae9f7
-Gerrit-Change-Number: 733
-Gerrit-PatchSet: 5
-Gerrit-Owner: stipa <lstipakov@...277...>
-Gerrit-Reviewer: cron2 <gert@...1296...>
-Gerrit-Reviewer: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Attention: stipa <lstipakov@...277...>
-Gerrit-Comment-Date: Sun, 29 Dec 2024 14:17:40 +0000
-Gerrit-HasComments: No
-Gerrit-Has-Labels: Yes
-Gerrit-MessageType: comment
-
---VQu+Ls7iWnQ=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<p> Attention is currently required from: flichtenheld, plaisthos, stipa. <=
-/p>
-<p>Patch set 5:<span style=3D"border-radius: 3px; display: inline-block; ma=
-rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/733?usp=3Demail">Vi=
-ew Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To vie=
-w, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/733?usp=3Demail">=
-change 733</a>. To unsubscribe, or for help writing mail filters, visit <a =
-href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope=
- itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"act=
-ion" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=
-=3D"http://gerrit.openvpn.net/c/openvpn/+/733?usp=3Demail"/><meta itemprop=
-=3D"name" content=3D"View Change"/></div></div>
-
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I8e8ddd35bd3cc3334faf7f57118=
-d1892512ae9f7 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 733 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 5 </div>
-<div style=3D"display:none"> Gerrit-Owner: stipa &lt;lstipakov@...277...&gt=
-; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
- </div>
-<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
-1...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
-41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: stipa &lt;lstipakov@...1663...=
-.&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Sun, 29 Dec 2024 14:17:40=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: No </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
-
-
---VQu+Ls7iWnQ=--
+        
+diff --git a/src/openvpn/dco_win.c b/src/openvpn/dco_win.c
+index 9224bca..f59bf8c 100644
+--- a/src/openvpn/dco_win.c
++++ b/src/openvpn/dco_win.c
+@@ -52,6 +52,57 @@
+     return tt;
+ }
+ 
++/**
++ * Gets version of dco-win driver
++ *
++ * Fills Major/Minor/Patch fields in a passed OVPN_VERSION
++ * struct. If version cannot be obtained, fields are set to 0.
++ *
++ * @param version pointer to OVPN_VERSION struct
++ * @returns true if version has been obtained, false otherwise
++ */
++static bool
++dco_get_version(OVPN_VERSION *version)
++{
++    CLEAR(*version);
++
++    bool res = false;
++
++    HANDLE h = CreateFile("\\\\.\\ovpn-dco-ver", GENERIC_READ,
++                          0, NULL, OPEN_EXISTING, 0, NULL);
++
++    if (h == INVALID_HANDLE_VALUE)
++    {
++        /* fallback to a "normal" device, this will fail if device is already in use */
++        h = CreateFile("\\\\.\\ovpn-dco", GENERIC_READ,
++                       0, NULL, OPEN_EXISTING, 0, NULL);
++    }
++
++    if (h == INVALID_HANDLE_VALUE)
++    {
++        goto done;
++    }
++
++    DWORD bytes_returned = 0;
++    if (!DeviceIoControl(h, OVPN_IOCTL_GET_VERSION, NULL, 0,
++                         version, sizeof(*version), &bytes_returned, NULL))
++    {
++        goto done;
++    }
++
++    res = true;
++
++done:
++    if (h != INVALID_HANDLE_VALUE)
++    {
++        CloseHandle(h);
++    }
++
++    msg(D_DCO_DEBUG, "dco version: %ld.%ld.%ld", version->Major, version->Minor, version->Patch);
++
++    return res;
++}
++
+ bool
+ ovpn_dco_init(int mode, dco_context_t *dco)
+ {
+@@ -386,39 +437,17 @@
+ const char *
+ dco_version_string(struct gc_arena *gc)
+ {
+-    OVPN_VERSION version;
+-    ZeroMemory(&version, sizeof(OVPN_VERSION));
+-
+-    /* first, try a non-exclusive control device, available from 1.3.0 */
+-    HANDLE h = CreateFile("\\\\.\\ovpn-dco-ver", GENERIC_READ,
+-                          0, NULL, OPEN_EXISTING, 0, NULL);
+-
+-    if (h == INVALID_HANDLE_VALUE)
++    OVPN_VERSION version = {0};
++    if (dco_get_version(&version))
+     {
+-        /* fallback to a "normal" device, this will fail if device is already in use */
+-        h = CreateFile("\\\\.\\ovpn-dco", GENERIC_READ,
+-                       0, NULL, OPEN_EXISTING, 0, NULL);
++        struct buffer out = alloc_buf_gc(256, gc);
++        buf_printf(&out, "%ld.%ld.%ld", version.Major, version.Minor, version.Patch);
++        return BSTR(&out);
+     }
+-
+-    if (h == INVALID_HANDLE_VALUE)
++    else
+     {
+         return "N/A";
+     }
+-
+-    DWORD bytes_returned = 0;
+-    if (!DeviceIoControl(h, OVPN_IOCTL_GET_VERSION, NULL, 0,
+-                         &version, sizeof(version), &bytes_returned, NULL))
+-    {
+-        CloseHandle(h);
+-        return "N/A";
+-    }
+-
+-    CloseHandle(h);
+-
+-    struct buffer out = alloc_buf_gc(256, gc);
+-    buf_printf(&out, "%ld.%ld.%ld", version.Major, version.Minor, version.Patch);
+-
+-    return BSTR(&out);
+ }
+ 
+ int
 
