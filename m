@@ -1,15 +1,15 @@
 From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Mon, 30 Dec 2024 17:32:34 +0000
+Date: Mon, 30 Dec 2024 17:32:28 +0000
 In-Reply-To: <gerrit.1700055887000.Ia0a889e800f0b36aed770ee36e31afeec5df6084@...2715...>
 References: <gerrit.1700055887000.Ia0a889e800f0b36aed770ee36e31afeec5df6084@...2715...>
 Reply-To: gert@...1296..., arne-openvpn@...1227...,
  gianmarco@...2726..., openvpn-devel@lists.sourceforge.net,
  frank@...2641..., a@...2181...
-Message-ID: <b5b149d2603ddc21677f098e6ab5674bb0bfc51d-HTML@...2715...>
+Message-ID: <b5b149d2603ddc21677f098e6ab5674bb0bfc51d-EmailReplacePatchSet-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="TAJoIA3qT5Y="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="+EAAZJ5qNw8="; charset=UTF-8
 Subject: [Openvpn-devel] [L] Change in openvpn[master]: Adapt socket
  handling to support listening on multiple sockets
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -20,14 +20,19 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Cc: its_Giaan <gianmarco@...2726...>, flichtenheld <frank@...2641...>, plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: plaisthos <arne-openvpn@...1227...>, its_Giaan <gianmarco@...2726...>, flichtenheld <frank@...2641...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---TAJoIA3qT5Y=
+--+EAAZJ5qNw8=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-cron2 has submitted this change. ( http://gerrit.openvpn.net/c/openvpn/+/43=
-4?usp=3Demail )
+cron2 has uploaded a new patch set (#12) to the change originally created b=
+y ordex. ( http://gerrit.openvpn.net/c/openvpn/+/434?usp=3Demail )
+
+The following approvals got outdated and were removed:
+Code-Review+2 by cron2
+
 
 Change subject: Adapt socket handling to support listening on multiple sock=
 ets
@@ -75,7 +80,7 @@ M src/openvpn/socket.h
 16 files changed, 326 insertions(+), 183 deletions(-)
 
 
-
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/34/434/12
 
 diff --git a/src/openvpn/dco.c b/src/openvpn/dco.c
 index dcc80d3..8f2adb5 100644
@@ -133,7 +138,7 @@ tual;
      struct sockaddr_storage local =3D { 0 };
 -    int sd =3D c->c2.link_socket->sd;
 +    int sd =3D c->c2.link_sockets[0]->sd;
-
+=20
 
      if (c->mode =3D=3D CM_CHILD_TCP)
 @@ -587,8 +587,8 @@
@@ -915,7 +920,7 @@ index a2841f0..b5bbf13 100644
 @@ -170,13 +170,16 @@
      /* buffer for queued TCP socket output packets */
      mi->tcp_link_out_deferred =3D mbuf_init(m->top.options.n_bcast_buf);
-
+=20
 -    ASSERT(mi->context.c2.link_socket);
 -    ASSERT(mi->context.c2.link_socket->info.lsa);
 -    ASSERT(mi->context.c2.link_socket->mode =3D=3D LS_MODE_TCP_ACCEPT_FROM=
@@ -1163,7 +1168,7 @@ eal,
      struct hash *hash =3D m->hash;
 @@ -3180,8 +3182,8 @@
      mi->context.c2.to_link_addr =3D &mi->context.c2.from;
-
+=20
      /* inherit parent link_socket and link_socket_info */
 -    mi->context.c2.link_socket =3D m->top.c2.link_socket;
 -    mi->context.c2.link_socket_info->lsa->actual =3D m->top.c2.from;
@@ -1500,161 +1505,164 @@ Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: its_Giaan <gianmarco@...2726...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-MessageType: merged
+Gerrit-MessageType: newpatchset
 
---TAJoIA3qT5Y=
+--+EAAZJ5qNw8=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p>cron2 <strong>submitted</strong> this change.</p><p><a href=3D"http://ge=
-rrit.openvpn.net/c/openvpn/+/434?usp=3Demail">View Change</a></p><div style=
-=3D"white-space:pre-wrap"></div><pre style=3D"font-family: monospace,monosp=
-ace; white-space: pre-wrap;">Adapt socket handling to support listening on =
-multiple sockets<br><br>    Introduce internal changes preparing the server=
- to<br>    handle multiple sockets concurrently for both<br>    TCP and UDP=
- protocols. While no user-visible<br>    features are implemented yet, thes=
-e modifications<br>    are essential for enabling future functionality<br> =
-   such as listening on multiple ports.<br><br>    Key changes are: convert=
-ing link_socket from a<br>    single pointer to an array in various context=
-s,<br>    in order to be able to store multiple sockets<br>    at once.<br>=
-<br>Change-Id: Ia0a889e800f0b36aed770ee36e31afeec5df6084<br>Signed-off-by: =
-Antonio Quartulli &lt;a@...2181...&gt;<br>Signed-off-by: Gianmarco De Grego=
-ri &lt;gianmarco@...2726...&gt;<br>Acked-by: Gert Doering &lt;gert@...1725...=
-..&gt;<br>Message-Id: &lt;20241230162338.21401-1-gert@...1296...&gt;<br>URL=
-: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg30309=
-.html<br>Signed-off-by: Gert Doering &lt;gert@...1296...&gt;<br>---<br>M sr=
-c/openvpn/dco.c<br>M src/openvpn/forward.c<br>M src/openvpn/forward.h<br>M =
-src/openvpn/init.c<br>M src/openvpn/init.h<br>M src/openvpn/mss.c<br>M src/=
-openvpn/mtcp.c<br>M src/openvpn/mudp.c<br>M src/openvpn/mudp.h<br>M src/ope=
-nvpn/multi.c<br>M src/openvpn/multi.h<br>M src/openvpn/openvpn.c<br>M src/o=
-penvpn/openvpn.h<br>M src/openvpn/ping.h<br>M src/openvpn/socket.c<br>M src=
-/openvpn/socket.h<br>16 files changed, 326 insertions(+), 183 deletions(-)<=
-br><br></pre>
-<pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><sp=
-an>diff --git a/src/openvpn/dco.c b/src/openvpn/dco.c</span><br><span>index=
- dcc80d3..8f2adb5 100644</span><br><span>--- a/src/openvpn/dco.c</span><br>=
-<span>+++ b/src/openvpn/dco.c</span><br><span>@@ -478,11 +478,11 @@</span><=
-br><span>         return 0;</span><br><span>     }</span><br><span> </span>=
-<br><span style=3D"color: hsl(0, 100%, 40%);">-    struct link_socket *ls =
-=3D c-&gt;c2.link_socket;</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+    struct link_socket *sock =3D c-&gt;c2.link_sockets[0];</span><br>=
-<span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-    ASSERT(ls-=
-&gt;info.connection_established);</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+    ASSERT(sock-&gt;info.connection_established);</span><br><=
-span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-    struct sock=
-addr *remoteaddr =3D &amp;ls-&gt;info.lsa-&gt;actual.dest.addr.sa;</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+    struct sockaddr *remotea=
-ddr =3D &amp;sock-&gt;info.lsa-&gt;actual.dest.addr.sa;</span><br><span>   =
-  struct tls_multi *multi =3D c-&gt;c2.tls_multi;</span><br><span> #ifdef T=
-ARGET_FREEBSD</span><br><span>     /* In Linux in P2P mode the kernel autom=
-atically removes an existing peer</span><br><span>@@ -494,7 +494,7 @@</span=
-><br><span>     }</span><br><span> #endif</span><br><span>     int ret =3D =
-dco_new_peer(&amp;c-&gt;c1.tuntap-&gt;dco, multi-&gt;peer_id,</span><br><sp=
-an style=3D"color: hsl(0, 100%, 40%);">-                           c-&gt;c2=
-.link_socket-&gt;sd, NULL, remoteaddr, NULL, NULL);</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+                           c-&gt;c2.link_=
-sockets[0]-&gt;sd, NULL, remoteaddr, NULL, NULL);</span><br><span>     if (=
-ret &lt; 0)</span><br><span>     {</span><br><span>         return ret;</sp=
-an><br><span>@@ -527,12 +527,12 @@</span><br><span> #if ENABLE_IP_PKTINFO</=
-span><br><span>     struct context *c =3D &amp;mi-&gt;context;</span><br><s=
-pan> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-    if (!proto_i=
-s_udp(c-&gt;c2.link_socket-&gt;info.proto) || !(c-&gt;options.sockflags &am=
-p; SF_USE_IP_PKTINFO))</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+    if (!proto_is_udp(c-&gt;c2.link_sockets[0]-&gt;info.proto) || !(c-&g=
-t;options.sockflags &amp; SF_USE_IP_PKTINFO))</span><br><span>     {</span>=
-<br><span>         return false;</span><br><span>     }</span><br><span> </=
-span><br><span style=3D"color: hsl(0, 100%, 40%);">-    struct link_socket_=
-actual *actual =3D &amp;c-&gt;c2.link_socket_info-&gt;lsa-&gt;actual;</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+    struct link_socket_ac=
-tual *actual =3D &amp;c-&gt;c2.link_socket_infos[0]-&gt;lsa-&gt;actual;</sp=
-an><br><span> </span><br><span>     switch (actual-&gt;dest.addr.sa.sa_fami=
-ly)</span><br><span>     {</span><br><span>@@ -577,7 +577,7 @@</span><br><s=
-pan>     int peer_id =3D c-&gt;c2.tls_multi-&gt;peer_id;</span><br><span>  =
-   struct sockaddr *remoteaddr, *localaddr =3D NULL;</span><br><span>     s=
-truct sockaddr_storage local =3D { 0 };</span><br><span style=3D"color: hsl=
-(0, 100%, 40%);">-    int sd =3D c-&gt;c2.link_socket-&gt;sd;</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+    int sd =3D c-&gt;c2.link_sock=
-ets[0]-&gt;sd;</span><br><span> </span><br><span> </span><br><span>     if =
-(c-&gt;mode =3D=3D CM_CHILD_TCP)</span><br><span>@@ -587,8 +587,8 @@</span>=
-<br><span>     }</span><br><span>     else</span><br><span>     {</span><br=
-><span style=3D"color: hsl(0, 100%, 40%);">-        ASSERT(c-&gt;c2.link_so=
-cket_info-&gt;connection_established);</span><br><span style=3D"color: hsl(=
-0, 100%, 40%);">-        remoteaddr =3D &amp;c-&gt;c2.link_socket_info-&gt;=
-lsa-&gt;actual.dest.addr.sa;</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+        ASSERT(c-&gt;c2.link_socket_infos[0]-&gt;connection_establ=
-ished);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        remo=
-teaddr =3D &amp;c-&gt;c2.link_socket_infos[0]-&gt;lsa-&gt;actual.dest.addr.=
-sa;</span><br><span>     }</span><br><span> </span><br><span>     /* In ser=
-ver mode we need to fetch the remote addresses from the push config */</spa=
-n><br><span>diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c</spa=
-n><br><span>index 2c72001..f3f3503 100644</span><br><span>--- a/src/openvpn=
-/forward.c</span><br><span>+++ b/src/openvpn/forward.c</span><br><span>@@ -=
-58,12 +58,17 @@</span><br><span> wait_status_string(struct context *c, stru=
-ct gc_arena *gc)</span><br><span> {</span><br><span>     struct buffer out =
-=3D alloc_buf_gc(64, gc);</span><br><span style=3D"color: hsl(0, 100%, 40%)=
-;">-    buf_printf(&amp;out, &quot;I/O WAIT %s|%s|%s|%s %s&quot;,</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+    buf_printf(&amp;out, &quot;I/O WAIT %s|%s| %=
-s&quot;,</span><br><span>                tun_stat(c-&gt;c1.tuntap, EVENT_RE=
-AD, gc),</span><br><span>                tun_stat(c-&gt;c1.tuntap, EVENT_WR=
-ITE, gc),</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            =
-   socket_stat(c-&gt;c2.link_socket, EVENT_READ, gc),</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-               socket_stat(c-&gt;c2.link_so=
-cket, EVENT_WRITE, gc),</span><br><span>                tv_string(&amp;c-&g=
-t;c2.timeval, gc));</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-    for (int i =3D 0; i &lt; c-&gt;c1.link_sockets_num; i++)</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+        buf_printf(&amp;out, &quot;\n %s|%s&quot=
-;,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+                 =
-  socket_stat(c-&gt;c2.link_sockets[i], EVENT_READ, gc),</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+                   socket_stat(c-&gt;c=
-2.link_sockets[i], EVENT_WRITE, gc));</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+    }</span><br><span>     return BSTR(&amp;out);</span><=
-br><span> }</span><br><span> </span><br><span>@@ -99,7 +104,7 @@</span><br>=
-<span> {</span><br><span>     if (c-&gt;c2.tls_multi &amp;&amp; c-&gt;c2.tl=
-s_exit_signal)</span><br><span>     {</span><br><span style=3D"color: hsl(0=
-, 100%, 40%);">-        if (link_socket_connection_oriented(c-&gt;c2.link_s=
-ocket))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        if (=
-link_socket_connection_oriented(c-&gt;c2.link_sockets[0]))</span><br><span>=
-         {</span><br><span>             if (c-&gt;c2.tls_multi-&gt;n_soft_e=
-rrors)</span><br><span>             {</span><br><span>@@ -567,6 +572,7 @@</=
-span><br><span> #ifdef ENABLE_FRAGMENT</span><br><span> /*</span><br><span>=
-  * Should we deliver a datagram fragment to remote?</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+ * c is expected to be a single-link cont=
-ext (p2p or child)</span><br><span>  */</span><br><span> static void</span>=
-<br><span> check_fragment(struct context *c)</span><br><span>@@ -1123,7 +11=
-29,9 @@</span><br><span>         decrypt_status =3D openvpn_decrypt(&amp;c-=
-&gt;c2.buf, c-&gt;c2.buffers-&gt;decrypt_buf,</span><br><span>             =
-                             co, &amp;c-&gt;c2.frame, ad_start);</span><br>=
-<span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-        if (!d=
-ecrypt_status &amp;&amp; link_socket_connection_oriented(c-&gt;c2.link_sock=
-et))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        if (!de=
-crypt_status</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
-     /* on the instance context we have only one socket, so just check the =
-first one */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
-     &amp;&amp; link_socket_connection_oriented(c-&gt;c2.link_sockets[0]))<=
-/span><br><span>         {</span><br><span>             /* decryption error=
-s are fatal in TCP mode */</span><br><span>             register_signal(c-&=
-gt;sig, SIGUSR1, &quot;decryption-error&quot;); /* SOFT-SIGUSR1 -- decrypti=
-on error in TCP mode */</span><br><span>@@ -1451,7 +1459,7 @@</span><br><sp=
-an>  */</span><br><span> </span><br><span> void</span><br><span style=3D"co=
-lor: hsl(0, 100%, 40%);">-process_incoming_tun(struct context *c)</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+process_incoming_tun(struct c=
-ontext *c, struct link_socket *out_sock)</span><br><span> {</span><br><span=
->     struct gc_arena gc =3D gc_new();</span><br><span> </span><br><span>@@=
- -1484,7 +1492,7 @@</span><br><span>          */</span><br><span>         u=
-nsigned int flags =3D PIPV4_PASSTOS | PIP_MSSFIX | PIPV4_CLIENT_NAT</span><=
-br><span>                              | PIPV6_ICMP_NOHOST_CLIENT;</span><b=
-r><span style=3D"color: hsl(0, 100%, 40%);">-        process_ip_header(c, f=
-lags, &amp;c-&gt;c2.buf);</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+        process_ip_header(c, flags, &amp;c-&gt;c2.buf, out_sock);</sp=
-an><br><span> </span><br><span> #ifdef PACKET_TRUNCATION_CHECK</span><br><s=
-pan>         /* if (c-&gt;c2.buf.len &gt; 1) --c-&gt;c2.buf.len; */</span><=
-br><span>@@ -1645,7 +1653,8 @@</span><br><span> }</span><br><span> </span><=
-br><span> void</span><br><span style=3D"color: hsl(0, 100%, 40%);">-process=
-_ip_header(struct context *c, unsigned int flags, struct buffer *buf)</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+process_ip_header(struct =
-context *c, unsigned int flags, struct buffer *buf,</span><br><span style=
+<p>cron2 <strong>uploaded patch set #12</strong> to the change originally c=
+reated by ordex.</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/434=
+?usp=3Demail">View Change</a></p><p>The following approvals got outdated an=
+d were removed:
+Code-Review+2 by cron2</p><pre style=3D"font-family: monospace,monospace; w=
+hite-space: pre-wrap;">Adapt socket handling to support listening on multip=
+le sockets<br><br>    Introduce internal changes preparing the server to<br=
+>    handle multiple sockets concurrently for both<br>    TCP and UDP proto=
+cols. While no user-visible<br>    features are implemented yet, these modi=
+fications<br>    are essential for enabling future functionality<br>    suc=
+h as listening on multiple ports.<br><br>    Key changes are: converting li=
+nk_socket from a<br>    single pointer to an array in various contexts,<br>=
+    in order to be able to store multiple sockets<br>    at once.<br><br>Ch=
+ange-Id: Ia0a889e800f0b36aed770ee36e31afeec5df6084<br>Signed-off-by: Antoni=
+o Quartulli &lt;a@...2181...&gt;<br>Signed-off-by: Gianmarco De Gregori &lt=
+;gianmarco@...2726...&gt;<br>Acked-by: Gert Doering &lt;gert@...1296...&gt;=
+<br>Message-Id: &lt;20241230162338.21401-1-gert@...1296...&gt;<br>URL: http=
+s://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg30309.html<=
+br>Signed-off-by: Gert Doering &lt;gert@...1296...&gt;<br>---<br>M src/open=
+vpn/dco.c<br>M src/openvpn/forward.c<br>M src/openvpn/forward.h<br>M src/op=
+envpn/init.c<br>M src/openvpn/init.h<br>M src/openvpn/mss.c<br>M src/openvp=
+n/mtcp.c<br>M src/openvpn/mudp.c<br>M src/openvpn/mudp.h<br>M src/openvpn/m=
+ulti.c<br>M src/openvpn/multi.h<br>M src/openvpn/openvpn.c<br>M src/openvpn=
+/openvpn.h<br>M src/openvpn/ping.h<br>M src/openvpn/socket.c<br>M src/openv=
+pn/socket.h<br>16 files changed, 326 insertions(+), 183 deletions(-)<br><br=
+></pre><pre style=3D"font-family: monospace,monospace; white-space: pre-wra=
+p;">git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/34/434/12<=
+/pre><pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;=
+"><span>diff --git a/src/openvpn/dco.c b/src/openvpn/dco.c</span><br><span>=
+index dcc80d3..8f2adb5 100644</span><br><span>--- a/src/openvpn/dco.c</span=
+><br><span>+++ b/src/openvpn/dco.c</span><br><span>@@ -478,11 +478,11 @@</s=
+pan><br><span>         return 0;</span><br><span>     }</span><br><span> </=
+span><br><span style=3D"color: hsl(0, 100%, 40%);">-    struct link_socket =
+*ls =3D c-&gt;c2.link_socket;</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+    struct link_socket *sock =3D c-&gt;c2.link_sockets[0];</span>=
+<br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-    ASSERT=
+(ls-&gt;info.connection_established);</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+    ASSERT(sock-&gt;info.connection_established);</span><=
+br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-    struct =
+sockaddr *remoteaddr =3D &amp;ls-&gt;info.lsa-&gt;actual.dest.addr.sa;</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+    struct sockaddr *rem=
+oteaddr =3D &amp;sock-&gt;info.lsa-&gt;actual.dest.addr.sa;</span><br><span=
+>     struct tls_multi *multi =3D c-&gt;c2.tls_multi;</span><br><span> #ifd=
+ef TARGET_FREEBSD</span><br><span>     /* In Linux in P2P mode the kernel a=
+utomatically removes an existing peer</span><br><span>@@ -494,7 +494,7 @@</=
+span><br><span>     }</span><br><span> #endif</span><br><span>     int ret =
+=3D dco_new_peer(&amp;c-&gt;c1.tuntap-&gt;dco, multi-&gt;peer_id,</span><br=
+><span style=3D"color: hsl(0, 100%, 40%);">-                           c-&g=
+t;c2.link_socket-&gt;sd, NULL, remoteaddr, NULL, NULL);</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+                           c-&gt;c2.lin=
+k_sockets[0]-&gt;sd, NULL, remoteaddr, NULL, NULL);</span><br><span>     if=
+ (ret &lt; 0)</span><br><span>     {</span><br><span>         return ret;</=
+span><br><span>@@ -527,12 +527,12 @@</span><br><span> #if ENABLE_IP_PKTINFO=
+</span><br><span>     struct context *c =3D &amp;mi-&gt;context;</span><br>=
+<span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-    if (!proto=
+_is_udp(c-&gt;c2.link_socket-&gt;info.proto) || !(c-&gt;options.sockflags &=
+amp; SF_USE_IP_PKTINFO))</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+    if (!proto_is_udp(c-&gt;c2.link_sockets[0]-&gt;info.proto) || !(c-=
+&gt;options.sockflags &amp; SF_USE_IP_PKTINFO))</span><br><span>     {</spa=
+n><br><span>         return false;</span><br><span>     }</span><br><span> =
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    struct link_socke=
+t_actual *actual =3D &amp;c-&gt;c2.link_socket_info-&gt;lsa-&gt;actual;</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+    struct link_socket_=
+actual *actual =3D &amp;c-&gt;c2.link_socket_infos[0]-&gt;lsa-&gt;actual;</=
+span><br><span> </span><br><span>     switch (actual-&gt;dest.addr.sa.sa_fa=
+mily)</span><br><span>     {</span><br><span>@@ -577,7 +577,7 @@</span><br>=
+<span>     int peer_id =3D c-&gt;c2.tls_multi-&gt;peer_id;</span><br><span>=
+     struct sockaddr *remoteaddr, *localaddr =3D NULL;</span><br><span>    =
+ struct sockaddr_storage local =3D { 0 };</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-    int sd =3D c-&gt;c2.link_socket-&gt;sd;</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+    int sd =3D c-&gt;c2.link_so=
+ckets[0]-&gt;sd;</span><br><span> </span><br><span> </span><br><span>     i=
+f (c-&gt;mode =3D=3D CM_CHILD_TCP)</span><br><span>@@ -587,8 +587,8 @@</spa=
+n><br><span>     }</span><br><span>     else</span><br><span>     {</span><=
+br><span style=3D"color: hsl(0, 100%, 40%);">-        ASSERT(c-&gt;c2.link_=
+socket_info-&gt;connection_established);</span><br><span style=3D"color: hs=
+l(0, 100%, 40%);">-        remoteaddr =3D &amp;c-&gt;c2.link_socket_info-&g=
+t;lsa-&gt;actual.dest.addr.sa;</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+        ASSERT(c-&gt;c2.link_socket_infos[0]-&gt;connection_esta=
+blished);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        re=
+moteaddr =3D &amp;c-&gt;c2.link_socket_infos[0]-&gt;lsa-&gt;actual.dest.add=
+r.sa;</span><br><span>     }</span><br><span> </span><br><span>     /* In s=
+erver mode we need to fetch the remote addresses from the push config */</s=
+pan><br><span>diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c</s=
+pan><br><span>index 2c72001..f3f3503 100644</span><br><span>--- a/src/openv=
+pn/forward.c</span><br><span>+++ b/src/openvpn/forward.c</span><br><span>@@=
+ -58,12 +58,17 @@</span><br><span> wait_status_string(struct context *c, st=
+ruct gc_arena *gc)</span><br><span> {</span><br><span>     struct buffer ou=
+t =3D alloc_buf_gc(64, gc);</span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">-    buf_printf(&amp;out, &quot;I/O WAIT %s|%s|%s|%s %s&quot;,</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+    buf_printf(&amp;out, &quot;I/O WAIT %s|%s|=
+ %s&quot;,</span><br><span>                tun_stat(c-&gt;c1.tuntap, EVENT_=
+READ, gc),</span><br><span>                tun_stat(c-&gt;c1.tuntap, EVENT_=
+WRITE, gc),</span><br><span style=3D"color: hsl(0, 100%, 40%);">-          =
+     socket_stat(c-&gt;c2.link_socket, EVENT_READ, gc),</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-               socket_stat(c-&gt;c2.link_=
+socket, EVENT_WRITE, gc),</span><br><span>                tv_string(&amp;c-=
+&gt;c2.timeval, gc));</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+    for (int i =3D 0; i &lt; c-&gt;c1.link_sockets_num; i++)</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+        buf_printf(&amp;out, &quot;\n %s|%s&qu=
+ot;,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+               =
+    socket_stat(c-&gt;c2.link_sockets[i], EVENT_READ, gc),</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+                   socket_stat(c-&gt=
+;c2.link_sockets[i], EVENT_WRITE, gc));</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+    }</span><br><span>     return BSTR(&amp;out);</span=
+><br><span> }</span><br><span> </span><br><span>@@ -99,7 +104,7 @@</span><b=
+r><span> {</span><br><span>     if (c-&gt;c2.tls_multi &amp;&amp; c-&gt;c2.=
+tls_exit_signal)</span><br><span>     {</span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-        if (link_socket_connection_oriented(c-&gt;c2.link=
+_socket))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        if=
+ (link_socket_connection_oriented(c-&gt;c2.link_sockets[0]))</span><br><spa=
+n>         {</span><br><span>             if (c-&gt;c2.tls_multi-&gt;n_soft=
+_errors)</span><br><span>             {</span><br><span>@@ -567,6 +572,7 @@=
+</span><br><span> #ifdef ENABLE_FRAGMENT</span><br><span> /*</span><br><spa=
+n>  * Should we deliver a datagram fragment to remote?</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+ * c is expected to be a single-link con=
+text (p2p or child)</span><br><span>  */</span><br><span> static void</span=
+><br><span> check_fragment(struct context *c)</span><br><span>@@ -1123,7 +1=
+129,9 @@</span><br><span>         decrypt_status =3D openvpn_decrypt(&amp;c=
+-&gt;c2.buf, c-&gt;c2.buffers-&gt;decrypt_buf,</span><br><span>            =
+                              co, &amp;c-&gt;c2.frame, ad_start);</span><br=
+><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-        if (!=
+decrypt_status &amp;&amp; link_socket_connection_oriented(c-&gt;c2.link_soc=
+ket))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        if (!d=
+ecrypt_status</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
+      /* on the instance context we have only one socket, so just check the=
+ first one */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
+      &amp;&amp; link_socket_connection_oriented(c-&gt;c2.link_sockets[0]))=
+</span><br><span>         {</span><br><span>             /* decryption erro=
+rs are fatal in TCP mode */</span><br><span>             register_signal(c-=
+&gt;sig, SIGUSR1, &quot;decryption-error&quot;); /* SOFT-SIGUSR1 -- decrypt=
+ion error in TCP mode */</span><br><span>@@ -1451,7 +1459,7 @@</span><br><s=
+pan>  */</span><br><span> </span><br><span> void</span><br><span style=3D"c=
+olor: hsl(0, 100%, 40%);">-process_incoming_tun(struct context *c)</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+process_incoming_tun(struct =
+context *c, struct link_socket *out_sock)</span><br><span> {</span><br><spa=
+n>     struct gc_arena gc =3D gc_new();</span><br><span> </span><br><span>@=
+@ -1484,7 +1492,7 @@</span><br><span>          */</span><br><span>         =
+unsigned int flags =3D PIPV4_PASSTOS | PIP_MSSFIX | PIPV4_CLIENT_NAT</span>=
+<br><span>                              | PIPV6_ICMP_NOHOST_CLIENT;</span><=
+br><span style=3D"color: hsl(0, 100%, 40%);">-        process_ip_header(c, =
+flags, &amp;c-&gt;c2.buf);</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+        process_ip_header(c, flags, &amp;c-&gt;c2.buf, out_sock);</s=
+pan><br><span> </span><br><span> #ifdef PACKET_TRUNCATION_CHECK</span><br><=
+span>         /* if (c-&gt;c2.buf.len &gt; 1) --c-&gt;c2.buf.len; */</span>=
+<br><span>@@ -1645,7 +1653,8 @@</span><br><span> }</span><br><span> </span>=
+<br><span> void</span><br><span style=3D"color: hsl(0, 100%, 40%);">-proces=
+s_ip_header(struct context *c, unsigned int flags, struct buffer *buf)</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+process_ip_header(struct=
+ context *c, unsigned int flags, struct buffer *buf,</span><br><span style=
 =3D"color: hsl(120, 100%, 40%);">+                  struct link_socket *soc=
 k)</span><br><span> {</span><br><span>     if (!c-&gt;options.ce.mssfix)</s=
 pan><br><span>     {</span><br><span>@@ -1679,7 +1688,7 @@</span><br><span>=
@@ -2742,8 +2750,8 @@ mprop=3D"name" content=3D"View Change"/></div></div>
 .1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: merged </div>
+<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
 
 
---TAJoIA3qT5Y=--
+--+EAAZJ5qNw8=--
 
