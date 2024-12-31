@@ -1,10 +1,10 @@
-Date: Tue, 31 Dec 2024 16:31:22 +0100 (CET)
-Message-Id: <202412311531.4BVFVMuZ006215@...2054...>
+Date: Tue, 31 Dec 2024 17:50:53 +0100 (CET)
+Message-Id: <202412311650.4BVGorKf008842@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20241231145417.12128-1-gert@...1296...>
-References: <20241231145417.12128-1-gert@...1296...>
-Subject: [Openvpn-devel] [PATCH applied] Re: dco-win: simplify
- do_close_link_socket()
+In-Reply-To: <20241227124632.110920-1-frank@...2641...>
+References: <20241227124632.110920-1-frank@...2641...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Allow DEFAULT in data-ciphers
+ and report both expanded and user set option
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,24 +15,26 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Lev Stipakov <lev@...515...>
+To: Arne Schwabe <arne@...1227...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-Looks reasonable, does the same thing with less lines of code, adjusted
-to multisocket.  Test compiled on ubuntu/mingw.
+I have only lightly reviewed this, and it all seems to make sense.
+
+The idea is good, as we have seen in all these bug reports for 2.6 related
+to `--data-ciphers`.  The test rig is happy.  Also, unit tests ;-)
 
 Your patch has been applied to the master branch.
 
-commit 1452625bc364cb5847daedaad238c7a5eb3eff5e
-Author: Lev Stipakov
-Date:   Tue Dec 31 15:54:17 2024 +0100
+commit 6a7931a4a89cb35be7b799942e7fa03fde2cdc63
+Author: Arne Schwabe
+Date:   Fri Dec 27 13:46:32 2024 +0100
 
-     dco-win: simplify do_close_link_socket()
+     Allow DEFAULT in data-ciphers and report both expanded and user set option
 
-     Signed-off-by: Lev Stipakov <lev@...515...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20241231145417.12128-1-gert@...1296...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg30328.html
+     Signed-off-by: Arne Schwabe <arne@...1227...>
+     Acked-by: Frank Lichtenheld <frank@...2641...>
+     Message-Id: <20241227124632.110920-1-frank@...2641...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg30245.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
