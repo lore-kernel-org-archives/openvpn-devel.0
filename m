@@ -1,14 +1,14 @@
 From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Tue, 31 Dec 2024 16:51:13 +0000
+Date: Tue, 31 Dec 2024 16:51:16 +0000
 In-Reply-To: <gerrit.1733833084000.Ia1c5209022d3ab4c0dac6438c41891c7d059f812@...2715...>
 References: <gerrit.1733833084000.Ia1c5209022d3ab4c0dac6438c41891c7d059f812@...2715...>
 Reply-To: gert@...1296..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <e55a247ceb2ba216072caf09febec592996db1bf-EmailReplacePatchSet-HTML@...2715...>
+Message-ID: <e55a247ceb2ba216072caf09febec592996db1bf-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="JGjh1ZVQUnY="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="QuL76yPA0WE="; charset=UTF-8
 Subject: [Openvpn-devel] [L] Change in openvpn[master]: Allow DEFAULT in
  data-ciphers and report both expanded and user set o...
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -19,19 +19,15 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: plaisthos <arne-openvpn@...1227...>
+Cc: flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---JGjh1ZVQUnY=
+--QuL76yPA0WE=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-cron2 has uploaded a new patch set (#4) to the change originally created by=
- plaisthos. ( http://gerrit.openvpn.net/c/openvpn/+/828?usp=3Demail )
-
-The following approvals got outdated and were removed:
-Code-Review+2 by flichtenheld
-
+cron2 has submitted this change. ( http://gerrit.openvpn.net/c/openvpn/+/82=
+8?usp=3Demail )
 
 Change subject: Allow DEFAULT in data-ciphers and report both expanded and =
 user set option
@@ -68,14 +64,14 @@ M tests/unit_tests/openvpn/test_ncp.c
 8 files changed, 284 insertions(+), 48 deletions(-)
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/28/828/4
+
 
 diff --git a/Changes.rst b/Changes.rst
 index 34542a5..16ae6fc 100644
 --- a/Changes.rst
 +++ b/Changes.rst
 @@ -30,6 +30,12 @@
-=20
+
      https://datatracker.ietf.org/doc/draft-irtf-cfrg-aead-limits/
 
 +Default ciphers in ``--data-ciphers``
@@ -597,36 +593,33 @@ Gerrit-PatchSet: 4
 Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-MessageType: newpatchset
+Gerrit-MessageType: merged
 
---JGjh1ZVQUnY=
+--QuL76yPA0WE=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p>cron2 <strong>uploaded patch set #4</strong> to the change originally cr=
-eated by plaisthos.</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/=
-828?usp=3Demail">View Change</a></p><p>The following approvals got outdated=
- and were removed:
-Code-Review+2 by flichtenheld</p><pre style=3D"font-family: monospace,monos=
-pace; white-space: pre-wrap;">Allow DEFAULT in data-ciphers and report both=
- expanded and user set option<br><br>This adds support for parsing DEFAULT =
-in data-ciphers, the idea is that people<br>can modify the default without =
-repeating the default ciphers.<br><br>In the past we have seem that people =
-will use data-ciphers BF-CBC or<br>data-ciphers AES-128-CBC when getting th=
-e warning that the cipher is not<br>supported by the server.  This commit a=
-ims to provide a better way for<br>these situation as we still want people =
-to rely on default cipher selection<br>from OpenVPN when possible.<br><br>C=
-hange-Id: Ia1c5209022d3ab4c0dac6438c41891c7d059f812<br>Signed-off-by: Arne =
-Schwabe &lt;arne@...1227...&gt;<br>Acked-by: Frank Lichtenheld &lt;frank@...1186...=
-.2641...&gt;<br>Message-Id: &lt;20241227124632.110920-1-frank@...2641...&gt=
-;<br>URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/=
-msg30245.html<br>Signed-off-by: Gert Doering &lt;gert@...1296...&gt;<br>---=
-<br>M Changes.rst<br>M doc/man-sections/protocol-options.rst<br>M src/openv=
-pn/multi.c<br>M src/openvpn/options.c<br>M src/openvpn/options.h<br>M src/o=
-penvpn/ssl_ncp.c<br>M src/openvpn/ssl_ncp.h<br>M tests/unit_tests/openvpn/t=
-est_ncp.c<br>8 files changed, 284 insertions(+), 48 deletions(-)<br><br></p=
-re><pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;">=
-git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/28/828/4</pre>=
+<p>cron2 <strong>submitted</strong> this change.</p><p><a href=3D"http://ge=
+rrit.openvpn.net/c/openvpn/+/828?usp=3Demail">View Change</a></p><div style=
+=3D"white-space:pre-wrap"></div><pre style=3D"font-family: monospace,monosp=
+ace; white-space: pre-wrap;">Allow DEFAULT in data-ciphers and report both =
+expanded and user set option<br><br>This adds support for parsing DEFAULT i=
+n data-ciphers, the idea is that people<br>can modify the default without r=
+epeating the default ciphers.<br><br>In the past we have seem that people w=
+ill use data-ciphers BF-CBC or<br>data-ciphers AES-128-CBC when getting the=
+ warning that the cipher is not<br>supported by the server.  This commit ai=
+ms to provide a better way for<br>these situation as we still want people t=
+o rely on default cipher selection<br>from OpenVPN when possible.<br><br>Ch=
+ange-Id: Ia1c5209022d3ab4c0dac6438c41891c7d059f812<br>Signed-off-by: Arne S=
+chwabe &lt;arne@...1227...&gt;<br>Acked-by: Frank Lichtenheld &lt;frank@...493...=
+2641...&gt;<br>Message-Id: &lt;20241227124632.110920-1-frank@...2641...&gt;=
+<br>URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/m=
+sg30245.html<br>Signed-off-by: Gert Doering &lt;gert@...1296...&gt;<br>---<=
+br>M Changes.rst<br>M doc/man-sections/protocol-options.rst<br>M src/openvp=
+n/multi.c<br>M src/openvpn/options.c<br>M src/openvpn/options.h<br>M src/op=
+envpn/ssl_ncp.c<br>M src/openvpn/ssl_ncp.h<br>M tests/unit_tests/openvpn/te=
+st_ncp.c<br>8 files changed, 284 insertions(+), 48 deletions(-)<br><br></pr=
+e>
 <pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><sp=
 an>diff --git a/Changes.rst b/Changes.rst</span><br><span>index 34542a5..16=
 ae6fc 100644</span><br><span>--- a/Changes.rst</span><br><span>+++ b/Change=
@@ -1144,8 +1137,8 @@ ink itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/828?usp=
 1...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
+<div style=3D"display:none"> Gerrit-MessageType: merged </div>
 
 
---JGjh1ZVQUnY=--
+--QuL76yPA0WE=--
 
