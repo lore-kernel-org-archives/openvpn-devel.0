@@ -1,13 +1,13 @@
 From: "plaisthos (Code Review)" <gerrit@...515...>
-Date: Sat, 4 Jan 2025 22:52:10 +0000
-References: <gerrit.1736031115000.Id1632e4e47f5a9019afecae60457634c4a3c4d31@...2715...>
+Date: Sat, 4 Jan 2025 22:52:09 +0000
+References: <gerrit.1736031115000.Ie60a0a427ca810e28ab9049a8599510423f79bc1@...2715...>
 Reply-To: arne-openvpn@...1227..., openvpn-devel@lists.sourceforge.net,
  frank@...2641...
-Message-ID: <70ededc245c6c214e5626dd879ac4297e55c3397-HTML@...2715...>
+Message-ID: <f8d8a7b91c509f42f3bb207c40c0d54808edaae4-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="UcyB++KQW6o="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="dPT02GnWBHw="; charset=UTF-8
 Subject: [Openvpn-devel] [XS] Change in openvpn[master]: fixup! Add methods
  to read/write packet ids for epoch data
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -21,7 +21,7 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: flichtenheld <frank@...2641...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---UcyB++KQW6o=
+--dPT02GnWBHw=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
@@ -32,7 +32,7 @@ Hello flichtenheld,
 I'd like you to do a code review.
 Please visit
 
-    http://gerrit.openvpn.net/c/openvpn/+/850?usp=3Demail
+    http://gerrit.openvpn.net/c/openvpn/+/849?usp=3Demail
 
 to review the following change.
 
@@ -42,48 +42,41 @@ Change subject: fixup! Add methods to read/write packet ids for epoch data
 
 fixup! Add methods to read/write packet ids for epoch data
 
-Change-Id: Id1632e4e47f5a9019afecae60457634c4a3c4d31
+Change-Id: Ie60a0a427ca810e28ab9049a8599510423f79bc1
 ---
-M src/openvpn/packet_id.h
-1 file changed, 2 insertions(+), 2 deletions(-)
+M tests/unit_tests/openvpn/test_packet_id.c
+1 file changed, 2 insertions(+), 1 deletion(-)
 
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/50/850/1
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/49/849/1
 
-diff --git a/src/openvpn/packet_id.h b/src/openvpn/packet_id.h
-index e78d912..9c0f464 100644
---- a/src/openvpn/packet_id.h
-+++ b/src/openvpn/packet_id.h
-@@ -336,7 +336,7 @@
- /**
-  * Writes the packet ID containing both the epoch and the packet id to the
-  * buffer specified by buf.
-- * @param p         packed id send structure to use for the packet id
-+ * @param p         packet id send structure to use for the packet id
-  * @param epoch     epoch to write to the packet
-  * @param buf       buffer to write the packet id/epoch to
-  * @return          false if the packet id space is exhausted and cannot b=
-e written
-@@ -347,7 +347,7 @@
- /**
-  * Reads the packet ID containing both the epoch and the per-epoch counter
-  * from the buf.  Will return 0 as epoch id if there is any error.
-- * @param p       packet_id struct to popupulate with the on-wire counter
-+ * @param p       packet_id struct to populate with the on-wire counter
-  * @param buf     buffer to read the packet id from.
-  * @return        0 for an error/invalid id, epoch otherwise
-  */
+diff --git a/tests/unit_tests/openvpn/test_packet_id.c b/tests/unit_tests/o=
+penvpn/test_packet_id.c
+index a24580b..312a6b3d 100644
+--- a/tests/unit_tests/openvpn/test_packet_id.c
++++ b/tests/unit_tests/openvpn/test_packet_id.c
+@@ -238,7 +238,8 @@
+     uint8_t expected_header_48[8] =3D { 0xff, 0xfe, 0xfa, 0x07, 0x9a, 0xb9=
+, 0xd2, 0xe9};
+     assert_memory_equal(BPTR(&buf_48), expected_header_48, 8);
+
+-    /* test writing/checking the 48 bit overflow */
++    /* test writing/checking the 48 bit per epoch packet counter
++     * overflow */
+     data->pis.id =3D 0xfffffffffffe;
+     struct buffer buf_of =3D alloc_buf_gc(128, &data->gc);
+     assert_true(packet_id_write_epoch(&data->pis, 0xf00f, &buf_of));
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/850?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/849?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings
 
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: Id1632e4e47f5a9019afecae60457634c4a3c4d31
-Gerrit-Change-Number: 850
+Gerrit-Change-Id: Ie60a0a427ca810e28ab9049a8599510423f79bc1
+Gerrit-Change-Number: 849
 Gerrit-PatchSet: 1
 Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
@@ -91,54 +84,48 @@ Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: flichtenheld <frank@...2641...>
 Gerrit-MessageType: newchange
 
---UcyB++KQW6o=
+--dPT02GnWBHw=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <p> Attention is currently required from: flichtenheld. </p>
 <p>plaisthos would like flichtenheld to <strong>review</strong> this change.
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/850?usp=3Demail">Vi=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/849?usp=3Demail">Vi=
 ew Change</a></p><pre style=3D"font-family: monospace,monospace; white-spac=
 e: pre-wrap;">fixup! Add methods to read/write packet ids for epoch data<br=
-><br>Change-Id: Id1632e4e47f5a9019afecae60457634c4a3c4d31<br>---<br>M src/o=
-penvpn/packet_id.h<br>1 file changed, 2 insertions(+), 2 deletions(-)<br><b=
-r></pre><pre style=3D"font-family: monospace,monospace; white-space: pre-wr=
-ap;">git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/50/850/1<=
-/pre><pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;=
-"><span>diff --git a/src/openvpn/packet_id.h b/src/openvpn/packet_id.h</spa=
-n><br><span>index e78d912..9c0f464 100644</span><br><span>--- a/src/openvpn=
-/packet_id.h</span><br><span>+++ b/src/openvpn/packet_id.h</span><br><span>=
-@@ -336,7 +336,7 @@</span><br><span> /**</span><br><span>  * Writes the pac=
-ket ID containing both the epoch and the packet id to the</span><br><span> =
- * buffer specified by buf.</span><br><span style=3D"color: hsl(0, 100%, 40=
-%);">- * @param p         packed id send structure to use for the packet id=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @param p        =
- packet id send structure to use for the packet id</span><br><span>  * @par=
-am epoch     epoch to write to the packet</span><br><span>  * @param buf   =
-    buffer to write the packet id/epoch to</span><br><span>  * @return     =
-     false if the packet id space is exhausted and cannot be written</span>=
-<br><span>@@ -347,7 +347,7 @@</span><br><span> /**</span><br><span>  * Read=
-s the packet ID containing both the epoch and the per-epoch counter</span><=
-br><span>  * from the buf.  Will return 0 as epoch id if there is any error=
-.</span><br><span style=3D"color: hsl(0, 100%, 40%);">- * @param p       pa=
-cket_id struct to popupulate with the on-wire counter</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+ * @param p       packet_id struct to pop=
-ulate with the on-wire counter</span><br><span>  * @param buf     buffer to=
- read the packet id from.</span><br><span>  * @return        0 for an error=
-/invalid id, epoch otherwise</span><br><span>  */</span><br><span></span><b=
-r></pre><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/=
-850?usp=3Demail">change 850</a>. To unsubscribe, or for help writing mail f=
-ilters, visit <a href=3D"http://gerrit.openvpn.net/settings">settings</a>.<=
-/p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscop=
-e itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itemp=
-rop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/850?usp=3Demail"/=
-><meta itemprop=3D"name" content=3D"View Change"/></div></div>
+><br>Change-Id: Ie60a0a427ca810e28ab9049a8599510423f79bc1<br>---<br>M tests=
+/unit_tests/openvpn/test_packet_id.c<br>1 file changed, 2 insertions(+), 1 =
+deletion(-)<br><br></pre><pre style=3D"font-family: monospace,monospace; wh=
+ite-space: pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/openvpn refs/=
+changes/49/849/1</pre><pre style=3D"font-family: monospace,monospace; white=
+-space: pre-wrap;"><span>diff --git a/tests/unit_tests/openvpn/test_packet_=
+id.c b/tests/unit_tests/openvpn/test_packet_id.c</span><br><span>index a245=
+80b..312a6b3d 100644</span><br><span>--- a/tests/unit_tests/openvpn/test_pa=
+cket_id.c</span><br><span>+++ b/tests/unit_tests/openvpn/test_packet_id.c</=
+span><br><span>@@ -238,7 +238,8 @@</span><br><span>     uint8_t expected_he=
+ader_48[8] =3D { 0xff, 0xfe, 0xfa, 0x07, 0x9a, 0xb9, 0xd2, 0xe9};</span><br=
+><span>     assert_memory_equal(BPTR(&amp;buf_48), expected_header_48, 8);<=
+/span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
+/* test writing/checking the 48 bit overflow */</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+    /* test writing/checking the 48 bit per epo=
+ch packet counter</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+   * overflow */</span><br><span>     data-&gt;pis.id =3D 0xfffffffffffe;</=
+span><br><span>     struct buffer buf_of =3D alloc_buf_gc(128, &amp;data-&g=
+t;gc);</span><br><span>     assert_true(packet_id_write_epoch(&amp;data-&gt=
+;pis, 0xf00f, &amp;buf_of));</span><br><span></span><br></pre><p>To view, v=
+isit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/849?usp=3Demail">chan=
+ge 849</a>. To unsubscribe, or for help writing mail filters, visit <a href=
+=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope ite=
+mtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"action"=
+ itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"h=
+ttp://gerrit.openvpn.net/c/openvpn/+/849?usp=3Demail"/><meta itemprop=3D"na=
+me" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: Id1632e4e47f5a9019afecae6045=
-7634c4a3c4d31 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 850 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: Ie60a0a427ca810e28ab9049a859=
+9510423f79bc1 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 849 </div>
 <div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
 <div style=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@...1711...=
 27...&gt; </div>
@@ -151,5 +138,5 @@ ts.sourceforge.net&gt; </div>
 <div style=3D"display:none"> Gerrit-MessageType: newchange </div>
 
 
---UcyB++KQW6o=--
+--dPT02GnWBHw=--
 
