@@ -1,17 +1,11 @@
-From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Wed, 8 Jan 2025 16:12:43 +0000
-In-Reply-To: <gerrit.1700055887000.I4d1c96662c5a8c750d883e3b20adde09529e2764@...2715...>
-References: <gerrit.1700055887000.I4d1c96662c5a8c750d883e3b20adde09529e2764@...2715...>
-Reply-To: gert@...1296..., arne-openvpn@...1227...,
- gianmarco@...2726..., openvpn-devel@lists.sourceforge.net,
- frank@...2641..., a@...2181...
-Message-ID: <6b983fa1738b18be8f094922f081a9b2ed49007b-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="TdrXBxwyPE8="; charset=UTF-8
-Subject: [Openvpn-devel] [M] Change in openvpn[master]: allow user to
- specify 'local' multiple times in config files
+References: <Z36ERnxqcn21Mxkb@...2685...>
+In-Reply-To: <Z36ERnxqcn21Mxkb@...2685...>
+From: Selva Nair <selva.nair@...277...>
+Date: Wed, 8 Jan 2025 15:52:12 -0500
+Message-ID: <CAKuzo_h7E_xk9bXJsXu1X179pu0f+NOzbUWo=fLtUjpZKPeQ9A@...278...>
+Content-Type: multipart/alternative; boundary="000000000000237c04062b380a4e"
+Subject: Re: [Openvpn-devel] RFC: tchar removal patch series
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,127 +14,94 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: its_Giaan <gianmarco@...2726...>
-Cc: flichtenheld <frank@...2641...>, plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: Frank Lichtenheld <frank@...2641...>
+Cc: openvpn-devel@lists.sourceforge.net, Heiko Hund <heiko@...2662...>, Lev Stipakov <lev@...515...>
 
---TdrXBxwyPE8=
+--000000000000237c04062b380a4e
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: flichtenheld, its_Giaan, ordex, plais=
-thos.
+Hi,
 
-cron2 has posted comments on this change. ( http://gerrit.openvpn.net/c/ope=
-nvpn/+/436?usp=3Demail )
+I think the use of tchar is outdated and I'm all for purging it.
 
-Change subject: allow user to specify 'local' multiple times in config files
-......................................................................
+best,
 
+Selva
 
-Patch Set 10:
+On Wed, Jan 8, 2025 at 8:57=E2=80=AFAM Frank Lichtenheld <frank@...2641...>
+wrote:
 
-(1 comment)
+> Hi.
+>
+> Today I submitted a patch series that removes all usages of
+> tchar.h from the OpenVPN 2 code base. You can see the full
+> series here: https://gerrit.openvpn.net/q/topic:%22tchar-removal%22
+>
+> This series came about when I looked into the Windows code
+> for a potential clang-format reformat and for reviewing
+> Heiko's DNS series. I learned about TEXT() and about how it
+> is basically useless in our case (since we never build
+> non-unicode builds anymore). I came to the conclusion that
+> this is somewhat inconsistently used, useless clutter, and
+> potential source for confusion.
+>
+> So I propose to remove the use of tchar.h and and associated
+> functions and just use wchar directly. The actual conversion
+> step is fully automated. See
+> https://gerrit.openvpn.net/c/openvpn/+/852 for the script.
+> So it can easily be rebased on any ongoing Windows work.
+>
+> Let me know what you guys think about it. CCing our Windows
+> experts.
+>
+> Regards,
+> --
+>   Frank Lichtenheld
+>
 
-File src/openvpn/options.h:
-
-http://gerrit.openvpn.net/c/openvpn/+/436/comment/64b2e454_7dc2ac24 :
-PS10, Line 105:     struct local_list *local_list;
-> Gianmarco dived north and south to remove this local_list container. [=E2=
-=80=A6]
-You're not supposed to have a `local_list[]` member but a `struct local_ent=
-ry *`... which can be copied around as you want.
-
-
-
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/436?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings
-
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: I4d1c96662c5a8c750d883e3b20adde09529e2764
-Gerrit-Change-Number: 436
-Gerrit-PatchSet: 10
-Gerrit-Owner: ordex <a@...2181...>
-Gerrit-Reviewer: cron2 <gert@...1296...>
-Gerrit-Reviewer: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: its_Giaan <gianmarco@...2726...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: its_Giaan <gianmarco@...2726...>
-Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Attention: ordex <a@...2181...>
-Gerrit-Comment-Date: Wed, 08 Jan 2025 16:12:43 +0000
-Gerrit-HasComments: Yes
-Gerrit-Has-Labels: No
-Comment-In-Reply-To: cron2 <gert@...1296...>
-Comment-In-Reply-To: ordex <a@...2181...>
-Gerrit-MessageType: comment
-
---TdrXBxwyPE8=
+--000000000000237c04062b380a4e
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p> Attention is currently required from: flichtenheld, its_Giaan, ordex, p=
-laisthos. </p>
-<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/436?usp=3Demail">View C=
-hange</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0;"><=
-li style=3D"margin: 0; padding: 0;"><p>File src/openvpn/options.h:</p><ul s=
-tyle=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0=
- 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn=
-.net/c/openvpn/+/436/comment/64b2e454_7dc2ac24">Patch Set #10, Line 105:</a=
-> <code style=3D"font-family:monospace,monospace">    struct local_list *lo=
-cal_list;</code></p><p><blockquote style=3D"border-left: 1px solid #aaa; ma=
-rgin: 10px 0; padding: 0 10px;">Gianmarco dived north and south to remove t=
-his local_list container. [=E2=80=A6]</blockquote></p><p style=3D"white-spa=
-ce: pre-wrap; word-wrap: break-word;">You&#39;re not supposed to have a `lo=
-cal_list[]` member but a `struct local_entry *`... which can be copied arou=
-nd as you want.</p></li></ul></li></ul><p>To view, visit <a href=3D"http://=
-gerrit.openvpn.net/c/openvpn/+/436?usp=3Demail">change 436</a>. To unsubscr=
-ibe, or for help writing mail filters, visit <a href=3D"http://gerrit.openv=
-pn.net/settings">settings</a>.</p><div itemscope itemtype=3D"http://schema.=
-org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://sch=
-ema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.ne=
-t/c/openvpn/+/436?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Cha=
-nge"/></div></div>
+<div dir=3D"ltr">Hi,<div><br></div><div>I think the use of tchar is outdate=
+d and I&#39;m all for purging it.</div><div><br></div><div>best,</div><div>=
+<br></div><div>Selva</div></div><br><div class=3D"gmail_quote"><div dir=3D"=
+ltr" class=3D"gmail_attr">On Wed, Jan 8, 2025 at 8:57=E2=80=AFAM Frank Lich=
+tenheld &lt;<a href=3D"mailto:frank@...2641..." target=3D"_blank">frank@...493...=
+2641...</a>&gt; wrote:<br></div><blockquote class=3D"gmail_quote" style=3D"=
+margin:0px 0px 0px 0.8ex;border-left:1px solid rgb(204,204,204);padding-lef=
+t:1ex">Hi.<br>
+<br>
+Today I submitted a patch series that removes all usages of<br>
+tchar.h from the OpenVPN 2 code base. You can see the full<br>
+series here: <a href=3D"https://gerrit.openvpn.net/q/topic:%22tchar-removal=
+%22" rel=3D"noreferrer" target=3D"_blank">https://gerrit.openvpn.net/q/topi=
+c:%22tchar-removal%22</a><br>
+<br>
+This series came about when I looked into the Windows code<br>
+for a potential clang-format reformat and for reviewing<br>
+Heiko&#39;s DNS series. I learned about TEXT() and about how it<br>
+is basically useless in our case (since we never build<br>
+non-unicode builds anymore). I came to the conclusion that<br>
+this is somewhat inconsistently used, useless clutter, and<br>
+potential source for confusion.<br>
+<br>
+So I propose to remove the use of tchar.h and and associated<br>
+functions and just use wchar directly. The actual conversion<br>
+step is fully automated. See<br>
+<a href=3D"https://gerrit.openvpn.net/c/openvpn/+/852" rel=3D"noreferrer" t=
+arget=3D"_blank">https://gerrit.openvpn.net/c/openvpn/+/852</a> for the scr=
+ipt.<br>
+So it can easily be rebased on any ongoing Windows work.<br>
+<br>
+Let me know what you guys think about it. CCing our Windows<br>
+experts.<br>
+<br>
+Regards,<br>
+-- <br>
+=C2=A0 Frank Lichtenheld<br>
+</blockquote></div>
 
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I4d1c96662c5a8c750d883e3b20a=
-dde09529e2764 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 436 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 10 </div>
-<div style=3D"display:none"> Gerrit-Owner: ordex &lt;a@...2181...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
- </div>
-<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
-1...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: its_Giaan &lt;gianmarco@...1664...=
-26...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: its_Giaan &lt;gianmarco@...1665...=
-726...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
-41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: ordex &lt;a@...2181...&gt; <=
-/div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Wed, 08 Jan 2025 16:12:43=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: No </div>
-<div style=3D"display:none"> Comment-In-Reply-To: cron2 &lt;gert@...1296...=
-&gt; </div>
-<div style=3D"display:none"> Comment-In-Reply-To: ordex &lt;a@...2181...&gt=
-; </div>
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
-
-
---TdrXBxwyPE8=--
+--000000000000237c04062b380a4e--
 
