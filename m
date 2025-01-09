@@ -1,10 +1,16 @@
-From: Gert Doering <gert@...1296...>
-Date: Thu,  9 Jan 2025 15:42:47 +0100
-Message-ID: <20250109144248.9133-1-gert@...1296...>
-In-Reply-To: <gerrit.1732208116000.Ie63f302402f469c3aa48ac146ca6b8c029f0d250@...2715...>
-References: <gerrit.1732208116000.Ie63f302402f469c3aa48ac146ca6b8c029f0d250@...2715...>
+From: "ralf_lici (Code Review)" <gerrit@...515...>
+Date: Thu, 9 Jan 2025 14:46:35 +0000
+In-Reply-To: <gerrit.1721982049000.I9766c68feaba71279f26c3310eee4b5ca215e6ac@...2715...>
+References: <gerrit.1721982049000.I9766c68feaba71279f26c3310eee4b5ca215e6ac@...2715...>
+Reply-To: ralf@...2726..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net, frank@...2641...
+Message-ID: <859799de0adb4f3ef7a4c1d8bf522c2dd1ddf14c-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v8] Add lwip support to t_server_null
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="AW1M3DLhq/M="; charset=UTF-8
+Subject: [Openvpn-devel] [XL] Change in openvpn[master]: Add support for
+ HAProxy's PROXY protocol
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,342 +19,155 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+Cc: flichtenheld <frank@...2641...>, plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-From: Samuli Seppänen <samuli.seppanen@...277...>
+--AW1M3DLhq/M=
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Change-Id: Ie63f302402f469c3aa48ac146ca6b8c029f0d250
-Signed-off-by: Samuli Seppänen <samuli.seppanen@...277...>
-Acked-by: Frank Lichtenheld <frank@...2641...>
----
+Attention is currently required from: flichtenheld, plaisthos.
 
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to master.
+ralf_lici has posted comments on this change. ( http://gerrit.openvpn.net/c=
+/openvpn/+/685?usp=3Demail )
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/811
-This mail reflects revision 8 of this Change.
+Change subject: Add support for HAProxy's PROXY protocol
+......................................................................
 
-Acked-by according to Gerrit (reflected above):
-Frank Lichtenheld <frank@...2641...>
 
-        
-diff --git a/doc/t_server_null.rst b/doc/t_server_null.rst
-index 5fe9080..473a7bd 100644
---- a/doc/t_server_null.rst
-+++ b/doc/t_server_null.rst
-@@ -16,7 +16,7 @@
- 
- * Parallelized for fairly high performance
- * Mostly operating-system agnostic
--* Tested on Fedora Linux 38/39/40 and FreeBSD 14
-+* Tested on Fedora Linux 38/39/40, FreeBSD 14, NetBSD 10.0 and OpenBSD 7.5
- * POSIX-compliant
- * Tested and known to work with Bash, Dash, Ksh, Yash and FreeBSD's default /bin/sh
- * Uses the sample certificates and keys
-@@ -31,6 +31,7 @@
- * Test cases (client configurations) and server setups (server configurations) are stored in a configuration file, i.e. data and code have been separated
- * Configuration file format is nearly identical to t_client.rc configuration
- * Supports a set of default tests, overriding default test settings and adding local tests
-+* Supports client ping tests if ovpnlwip is available
- 
- Prerequisites
- -------------
-@@ -60,8 +61,9 @@
- #. Server instances start
- #. Brief wait
- #. Client instances start
--#. Tests run
-+#. ovpnlwip ping tests run
- #. Client instances stop
-+#. Test results are collected
- #. Brief wait
- #. Server instances stop
- 
-@@ -77,7 +79,8 @@
- 
-     * t_server_null_client.sh
- 
--      * Waits until servers have launched. Then launch all clients, wait for them to exit and then check test results by parsing the client log files. Each client kills itself after some delay using an "--up" script.
-+      * Waits until servers have launched. Then launch all clients, run ovpnlwip ping tests (if any), wait for clients to exit and then check test results by parsing the client log files. Each client kills itself after some delay using an "--up" script.
-+
- 
- Configuration
- -------------
-@@ -116,6 +119,19 @@
- 
-   TEST_RUN_LIST="1 2 5 9"
- 
-+Client ping tests that use ovpnlwip can be added similarly:
-+
-+  TEST_NAME_9L="t_server_null_client.sh-openvpn_current_udp_custom_lwip"
-+  SHOULD_PASS_9L="yes"
-+  CLIENT_EXEC_9L="${CLIENT_EXEC}"
-+  CLIENT_CONF_9L="${CLIENT_CONF_BASE_LWIP} --remote 127.0.0.1 1194 udp --proto udp"
-+
-+Note that all ovpnlwip test names need to include a "_lwip" suffix: without it
-+ping tests won't get activated. Also note that the *tests* directory needs to
-+have the lwipovpn executable or ovpnlwip tests will get skipped. The ovpnlwip
-+ping tests get the IP addresses to ping from the \*.ips files created by the
-+lwip_client_up.sh script --up script.
-+
- Stress-testing the --dev null test suite
- ----------------------------------------
- 
-diff --git a/tests/lwip_client_up.sh b/tests/lwip_client_up.sh
-new file mode 100755
-index 0000000..307a9cb
---- /dev/null
-+++ b/tests/lwip_client_up.sh
-@@ -0,0 +1,30 @@
-+#!/bin/sh
-+#
-+# Add this client's IP to a file
-+if ! grep -q "$ifconfig_local" ./$test_name.ips; then
-+    echo -n "$ifconfig_local " >> ./$test_name.ips
-+fi
-+
-+# Determine the OpenVPN PID from its pid file. This works reliably even when
-+# the OpenVPN process is backgrounded for parallel tests.
-+MY_PPID=`cat $pid`
-+
-+# Allow OpenVPN to finish initializing while waiting in the background and then
-+# killing the process gracefully. Also wait for fping tests to finish.
-+(sleep 5
-+
-+count=0
-+maxcount=15
-+while [ $count -le $maxcount ]; do
-+    if pgrep fping > /dev/null 2>&1; then
-+        echo "Waiting for fping to exit ($count/$maxcount)"
-+        count=$(( count + 1))
-+        sleep 1
-+    else
-+        echo "fping not running anymore"
-+        break
-+    fi
-+done
-+
-+kill -15 $MY_PPID
-+) &
-diff --git a/tests/t_server_null_client.sh b/tests/t_server_null_client.sh
-index 2210e63..78050ae 100755
---- a/tests/t_server_null_client.sh
-+++ b/tests/t_server_null_client.sh
-@@ -1,5 +1,17 @@
- #!/bin/sh
- 
-+should_run_test() {
-+    test_name="$1"
-+
-+    if echo "$test_name"|grep -q _lwip; then
-+        if [ "$has_lwipovpn" = "no" ]; then
-+            return 1
-+        fi
-+    fi
-+
-+    return 0
-+}
-+
- launch_client() {
-     test_name=$1
-     log="${test_name}.log"
-@@ -13,10 +25,47 @@
-     "${client_exec}" \
-         $client_conf \
-         --writepid "${pid}" \
--        --setenv pid $pid \
-+        --setenv pid "$pid" \
-+        --setenv test_name "$test_name" \
-         --log "${t_server_null_logdir}/${log}" &
- }
- 
-+ping_lwip_clients() {
-+    if [ "$has_lwipovpn" = "yes" ]; then
-+        lwip_client_count=$(echo "$lwip_test_names"|wc -w|tr -d " ")
-+    else
-+        lwip_client_count=0
-+    fi
-+
-+    if [ $lwip_client_count -eq 0 ]; then
-+        return 0
-+    fi
-+
-+    count=0
-+    maxcount=10
-+    while [ $count -le $maxcount ]; do
-+        lwip_client_ips=$(cat ./*.ips 2>/dev/null|wc -w|tr -d " ")
-+        if [ $lwip_client_ips -lt $lwip_client_count ]; then
-+            echo "Waiting for LWIP clients to start up ($count/$maxcount)"
-+            count=$(( count + 1))
-+            sleep 1
-+        else
-+            echo "$lwip_client_ips/$lwip_client_count LWIP clients up"
-+            break
-+        fi
-+    done
-+
-+    LWIP_CLIENTS=$(cat ./*.ips 2>/dev/null)
-+    if [ "$LWIP_CLIENTS" ]; then
-+        if fping -c 5 $LWIP_CLIENTS; then
-+            echo "PASS: lwipovpn client ping tests passed"
-+        else
-+            echo "FAIL: pinging one or more lwipovpn client IP addresses failed"
-+            retval=1
-+        fi
-+    fi
-+}
-+
- wait_for_results() {
-     tests_running="yes"
- 
-@@ -77,7 +126,7 @@
- server_max_wait=15
- while [ $count -lt $server_max_wait ]; do
-     servers_up=0
--    server_count=$(echo $TEST_SERVER_LIST|wc -w)
-+    server_count=$(echo "$TEST_SERVER_LIST"|wc -w|tr -d " ")
- 
-     # We need to trim single-quotes because some shells return quoted values
-     # and some don't. Using "set -o posix" which would resolve this problem is
-@@ -85,8 +134,8 @@
-     #
-     # While inactive server configurations may get checked they won't increase
-     # the active server count as the processes won't be running.
--    for i in `set|grep 'SERVER_NAME_'|cut -d "=" -f 2|tr -d "[\']"`; do
--        server_pid=$(cat $i.pid 2> /dev/null)
-+    for i in $(set|grep 'SERVER_NAME_'|cut -d "=" -f 2|tr -d "[\']"); do
-+        server_pid=$(cat "$i.pid" 2> /dev/null)
-         if [ -z "$server_pid" ] ; then
-             continue
-         fi
-@@ -111,6 +160,18 @@
-     fi
- done
- 
-+# Check for presence of the lwipovpn executable
-+if test -r "$LWIPOVPN_PATH"; then
-+    has_lwipovpn="yes"
-+else
-+    has_lwipovpn="no"
-+    echo "WARNING: lwipovpn executable is missing: lwip tests will be skipped"
-+fi
-+
-+# Remove existing LWIP client IP files. This is to avoid pinging non-existent
-+# IP addresses when tests are disabled.
-+$RUN_SUDO rm -f ./*.ips
-+
- # Wait a while to let server processes to settle down
- sleep 1
- 
-@@ -118,6 +179,7 @@
- # is used later to determine when all OpenVPN clients have exited and it is
- # safe to check the test results.
- test_names=""
-+lwip_test_names=""
- for SUF in $TEST_RUN_LIST
- do
-     eval test_name=\"\$TEST_NAME_$SUF\"
-@@ -125,9 +187,18 @@
-     eval client_conf=\"\$CLIENT_CONF_$SUF\"
- 
-     test_names="${test_names} ${test_name}"
--    (launch_client "${test_name}" "${client_exec}" "${client_conf}")
-+
-+    if echo "$test_name"|grep -q _lwip; then
-+        lwip_test_names="${lwip_test_names} ${test_name}"
-+    fi
-+
-+    if should_run_test "$test_name"; then
-+        (launch_client "${test_name}" "${client_exec}" "${client_conf}")
-+    fi
- done
- 
-+ping_lwip_clients
-+
- # Wait until all OpenVPN clients have exited
- (wait_for_results)
- 
-@@ -137,7 +208,9 @@
-     eval test_name=\"\$TEST_NAME_$SUF\"
-     eval should_pass=\"\$SHOULD_PASS_$SUF\"
- 
--    get_client_test_result "${test_name}" "${should_pass}"
-+    if should_run_test "$test_name"; then
-+        get_client_test_result "${test_name}" "${should_pass}"
-+    fi
- done
- 
- exit $retval
-diff --git a/tests/t_server_null_default.rc b/tests/t_server_null_default.rc
-index cbf4877..e7bf5bc 100755
---- a/tests/t_server_null_default.rc
-+++ b/tests/t_server_null_default.rc
-@@ -20,6 +20,15 @@
- SERVER_KEY="${sample_keys}/server.key"
- TA="${sample_keys}/ta.key"
- 
-+# This parameter can't be overridden in t_server_null.rc because that gets
-+# loaded too late. However, you can use
-+#
-+# LWIPOVPN_PATH=/some/path/to/lwipovpn make check
-+#
-+# to run the tests using lwipovpn in a custom location
-+#
-+LWIPOVPN_PATH="${LWIPOVPN_PATH:-lwipovpn}"
-+
- # Used to detect if graceful kill of any server instance failed during the test
- # run
- SERVER_KILL_FAIL_FILE=".t_server_null_server.kill_failed"
-@@ -28,7 +37,7 @@
- MAX_CLIENTS="10"
- CLIENT_MATCH="Test-Client"
- SERVER_EXEC="${top_builddir}/src/openvpn/openvpn"
--SERVER_BASE_OPTS="--daemon --local 127.0.0.1 --dev tun --topology subnet --max-clients $MAX_CLIENTS --persist-tun --verb 3"
-+SERVER_BASE_OPTS="--daemon --local 127.0.0.1 --dev tun --topology subnet --max-clients $MAX_CLIENTS --persist-tun --verb 3 --duplicate-cn"
- SERVER_CIPHER_OPTS=""
- SERVER_CERT_OPTS="--ca ${CA} --dh ${DH} --cert ${SERVER_CERT} --key ${SERVER_KEY} --tls-auth ${TA} 0"
- SERVER_CONF_BASE="${SERVER_BASE_OPTS} ${SERVER_CIPHER_OPTS} ${SERVER_CERT_OPTS}"
-@@ -49,23 +58,37 @@
- 
- # Test client configurations
- CLIENT_EXEC="${top_builddir}/src/openvpn/openvpn"
--CLIENT_BASE_OPTS="--client --dev null --ifconfig-noexec --nobind --remote-cert-tls server --persist-tun --verb 3 --resolv-retry infinite --connect-retry-max 3 --server-poll-timeout 5 --explicit-exit-notify 3 --script-security 2 --up ${srcdir}/null_client_up.sh"
-+CLIENT_BASE_OPTS="--client --nobind --remote-cert-tls server --persist-tun --verb 3 --resolv-retry infinite --connect-retry-max 3 --server-poll-timeout 5 --explicit-exit-notify 3 --script-security 2"
-+CLIENT_NULL_OPTS="--dev null --ifconfig-noexec --up ${srcdir}/null_client_up.sh"
-+CLIENT_LWIP_OPTS="--dev null --dev-node unix:${LWIPOVPN_PATH} --up ${srcdir}/lwip_client_up.sh"
-+
- CLIENT_CIPHER_OPTS=""
- CLIENT_CERT_OPTS="--ca ${CA} --cert ${CLIENT_CERT} --key ${CLIENT_KEY} --tls-auth ${TA} 1"
- 
--TEST_RUN_LIST="1 2 3"
--CLIENT_CONF_BASE="${CLIENT_BASE_OPTS} ${CLIENT_CIPHER_OPTS} ${CLIENT_CERT_OPTS}"
-+TEST_RUN_LIST="1 1L 2 2L 3"
-+CLIENT_CONF_BASE="${CLIENT_NULL_OPTS} ${CLIENT_BASE_OPTS} ${CLIENT_CIPHER_OPTS} ${CLIENT_CERT_OPTS}"
-+CLIENT_CONF_BASE_LWIP="${CLIENT_LWIP_OPTS} ${CLIENT_BASE_OPTS} ${CLIENT_CIPHER_OPTS} ${CLIENT_CERT_OPTS}"
- 
- TEST_NAME_1="t_server_null_client.sh-openvpn_current_udp"
- SHOULD_PASS_1="yes"
- CLIENT_EXEC_1="${CLIENT_EXEC}"
- CLIENT_CONF_1="${CLIENT_CONF_BASE} --remote 127.0.0.1 1194 udp --proto udp"
- 
-+TEST_NAME_1L="t_server_null_client.sh-openvpn_current_udp_lwip"
-+SHOULD_PASS_1L="yes"
-+CLIENT_EXEC_1L="${CLIENT_EXEC}"
-+CLIENT_CONF_1L="${CLIENT_CONF_BASE_LWIP} --remote 127.0.0.1 1194 udp --proto udp"
-+
- TEST_NAME_2="t_server_null_client.sh-openvpn_current_tcp"
- SHOULD_PASS_2="yes"
- CLIENT_EXEC_2="${CLIENT_EXEC}"
- CLIENT_CONF_2="${CLIENT_CONF_BASE} --remote 127.0.0.1 1195 tcp --proto tcp"
- 
-+TEST_NAME_2L="t_server_null_client.sh-openvpn_current_tcp_lwip"
-+SHOULD_PASS_2L="yes"
-+CLIENT_EXEC_2L="${CLIENT_EXEC}"
-+CLIENT_CONF_2L="${CLIENT_CONF_BASE_LWIP} --remote 127.0.0.1 1195 tcp --proto tcp"
-+
- TEST_NAME_3="t_server_null_client.sh-openvpn_current_udp_fail"
- SHOULD_PASS_3="no"
- CLIENT_EXEC_3="${CLIENT_EXEC}"
+Patch Set 5:
+
+(4 comments)
+
+Patchset:
+
+PS4:
+> Needs uncrustify fix [=E2=80=A6]
+Done
+
+
+File doc/proxy-protocol.txt:
+
+http://gerrit.openvpn.net/c/openvpn/+/685/comment/3fa8c036_061fb696 :
+PS1, Line 11: a binary version (v2).
+> It also supports UDP but we only handle the TCP case so I will state it m=
+ore clearly in the document [=E2=80=A6]
+Done
+
+
+http://gerrit.openvpn.net/c/openvpn/+/685/comment/bdb719ac_ff4981c5 :
+PS1, Line 108:
+> Basically LOCAL commands are used when the proxy sends health-checks to t=
+he server and therefore I g [=E2=80=A6]
+Done
+
+
+http://gerrit.openvpn.net/c/openvpn/+/685/comment/1c49ef62_150309e4 :
+PS1, Line 115:     DGRAM (0x2).
+> The PROXY protocol works both with TCP and with UDP but we support only T=
+CP. [=E2=80=A6]
+Done
+
+
+
+--
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/685?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings
+
+Gerrit-Project: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: I9766c68feaba71279f26c3310eee4b5ca215e6ac
+Gerrit-Change-Number: 685
+Gerrit-PatchSet: 5
+Gerrit-Owner: ralf_lici <ralf@...2726...>
+Gerrit-Reviewer: flichtenheld <frank@...2641...>
+Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Attention: flichtenheld <frank@...2641...>
+Gerrit-Comment-Date: Thu, 09 Jan 2025 14:46:35 +0000
+Gerrit-HasComments: Yes
+Gerrit-Has-Labels: No
+Comment-In-Reply-To: plaisthos <arne-openvpn@...1227...>
+Comment-In-Reply-To: flichtenheld <frank@...2641...>
+Comment-In-Reply-To: ralf_lici <ralf@...2726...>
+Gerrit-MessageType: comment
+
+--AW1M3DLhq/M=
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<p> Attention is currently required from: flichtenheld, plaisthos. </p>
+<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/685?usp=3Demail">View C=
+hange</a></p><p>4 comments:</p><ul style=3D"list-style: none; padding: 0;">=
+<li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-styl=
+e: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p styl=
+e=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/=
+685?tab=3Dcomments">Patch Set #4:</a> </p><p><blockquote style=3D"border-le=
+ft: 1px solid #aaa; margin: 10px 0; padding: 0 10px;">Needs uncrustify fix =
+[=E2=80=A6]</blockquote></p><p style=3D"white-space: pre-wrap; word-wrap: b=
+reak-word;">Done</p></li></ul></li><li style=3D"margin: 0; padding: 0;"><p>=
+File doc/proxy-protocol.txt:</p><ul style=3D"list-style: none; padding: 0;"=
+><li style=3D"margin: 0; padding: 0 0 0 16px;"><p style=3D"margin-bottom: 4=
+px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/685/comment/3fa8c036_=
+061fb696">Patch Set #1, Line 11:</a> <code style=3D"font-family:monospace,m=
+onospace">a binary version (v2).</code></p><p><blockquote style=3D"border-l=
+eft: 1px solid #aaa; margin: 10px 0; padding: 0 10px;">It also supports UDP=
+ but we only handle the TCP case so I will state it more clearly in the doc=
+ument [=E2=80=A6]</blockquote></p><p style=3D"white-space: pre-wrap; word-w=
+rap: break-word;">Done</p></li><li style=3D"margin: 0; padding: 0 0 0 16px;=
+"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/o=
+penvpn/+/685/comment/bdb719ac_ff4981c5">Patch Set #1, Line 108:</a> <code s=
+tyle=3D"font-family:monospace,monospace"></code></p><p><blockquote style=3D=
+"border-left: 1px solid #aaa; margin: 10px 0; padding: 0 10px;">Basically L=
+OCAL commands are used when the proxy sends health-checks to the server and=
+ therefore I g [=E2=80=A6]</blockquote></p><p style=3D"white-space: pre-wra=
+p; word-wrap: break-word;">Done</p></li><li style=3D"margin: 0; padding: 0 =
+0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvp=
+n.net/c/openvpn/+/685/comment/1c49ef62_150309e4">Patch Set #1, Line 115:</a=
+> <code style=3D"font-family:monospace,monospace">    DGRAM (0x2).</code></=
+p><p><blockquote style=3D"border-left: 1px solid #aaa; margin: 10px 0; padd=
+ing: 0 10px;">The PROXY protocol works both with TCP and with UDP but we su=
+pport only TCP. [=E2=80=A6]</blockquote></p><p style=3D"white-space: pre-wr=
+ap; word-wrap: break-word;">Done</p></li></ul></li></ul><p>To view, visit <=
+a href=3D"http://gerrit.openvpn.net/c/openvpn/+/685?usp=3Demail">change 685=
+</a>. To unsubscribe, or for help writing mail filters, visit <a href=3D"ht=
+tp://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope itemtype=
+=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"action" item=
+type=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http:/=
+/gerrit.openvpn.net/c/openvpn/+/685?usp=3Demail"/><meta itemprop=3D"name" c=
+ontent=3D"View Change"/></div></div>
+
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I9766c68feaba71279f26c3310ee=
+e4b5ca215e6ac </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 685 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 5 </div>
+<div style=3D"display:none"> Gerrit-Owner: ralf_lici &lt;ralf@...2726...&gt=
+; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
+1...&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
+.1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
+41...&gt; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Thu, 09 Jan 2025 14:46:35=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: No </div>
+<div style=3D"display:none"> Comment-In-Reply-To: plaisthos &lt;arne-openvp=
+n@...1227...&gt; </div>
+<div style=3D"display:none"> Comment-In-Reply-To: flichtenheld &lt;frank@...1186...=
+.2641...&gt; </div>
+<div style=3D"display:none"> Comment-In-Reply-To: ralf_lici &lt;ralf@...2788...=
+6...&gt; </div>
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
+
+
+--AW1M3DLhq/M=--
 
