@@ -1,17 +1,10 @@
-From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Thu, 9 Jan 2025 21:26:01 +0000
-In-Reply-To: <gerrit.1734706182000.I81440ac28a1ad553652e201234e5ddfe03a8c190@...2715...>
-References: <gerrit.1734706182000.I81440ac28a1ad553652e201234e5ddfe03a8c190@...2715...>
-Reply-To: gert@...1296..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...,
- max@...2606...
-Message-ID: <8f3822baac0b4bfb5a2f3c918fc579a66a4eb410-HTML@...2715...>
+From: Gert Doering <gert@...1296...>
+Date: Thu,  9 Jan 2025 22:28:03 +0100
+Message-ID: <20250109212803.11505-1-gert@...1296...>
+In-Reply-To: <gerrit.1731290343000.I9e9433b56dcbaa538d9bed30e50cf74948c647cc@...2715...>
+References: <gerrit.1731290343000.I9e9433b56dcbaa538d9bed30e50cf74948c647cc@...2715...>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="vavCZzfjejk="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: Do not attempt to
- decrypt packets anymore after 2**36 failed decryptions
+Subject: [Openvpn-devel] [PATCH v12] Rename aead-tag-at-end to aead-epoch
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,280 +13,166 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: plaisthos <arne-openvpn@...1227...>
-Cc: MaxF <max@...2606...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---vavCZzfjejk=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+From: Arne Schwabe <arne@...1227...>
 
-cron2 has submitted this change. ( http://gerrit.openvpn.net/c/openvpn/+/84=
-3?usp=3Demail )
+Since we introduce aead at the end and epoch data keys together
+and only allow the aead tag at the end if epoch data keys are
+used, we can use just one flag for both of them
 
-Change subject: Do not attempt to decrypt packets anymore after 2**36 faile=
-d decryptions
-......................................................................
-
-Do not attempt to decrypt packets anymore after 2**36 failed decryptions
-
-To avoid attacks (especially on Chacha20-Poly1305) we do not allow
-decryption anymore after 2**36 failed verifications.
-
-After 2**35, we trigger a renegotiation (to avoid that situation).
-
-For the theoretical background, see
-
-   - https://datatracker.ietf.org/doc/draft-irtf-cfrg-aead-limits/
-   - RFC 9147 (DTLS 1.3) section 4.5.3 "AEAD limits"
-   - https://eprint.iacr.org/2024/051.pdf
-
-Change-Id: I81440ac28a1ad553652e201234e5ddfe03a8c190
+Change-Id: I9e9433b56dcbaa538d9bed30e50cf74948c647cc
 Signed-off-by: Arne Schwabe <arne@...1227...>
 Acked-by: MaxF <max@...2606...>
-Message-Id: <20250109174928.17862-1-gert@...1296...>
-URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg30=
-387.html
-Signed-off-by: Gert Doering <gert@...1296...>
 ---
-M src/openvpn/crypto.c
-M src/openvpn/crypto.h
-M src/openvpn/ssl.c
-3 files changed, 41 insertions(+), 1 deletion(-)
 
+This change was reviewed on Gerrit and approved by at least one
+developer. I request to merge it to master.
 
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/805
+This mail reflects revision 12 of this Change.
 
+Acked-by according to Gerrit (reflected above):
+MaxF <max@...2606...>
 
+        
+diff --git a/doc/man-sections/client-options.rst b/doc/man-sections/client-options.rst
+index 5ca85e0..0aee9e2 100644
+--- a/doc/man-sections/client-options.rst
++++ b/doc/man-sections/client-options.rst
+@@ -367,6 +367,7 @@
+     - bit 7: The client is capable of sending exit notification via control channel using ``EXIT`` message. Also, the client is accepting the protocol-flags pushed option for the EKM capability
+     - bit 8: The client is capable of accepting ``AUTH_FAILED,TEMP`` messages
+     - bit 9: The client is capable of dynamic tls-crypt
++    - bit 10: The client is capable of data epoch keys
+ 
+   :code:`IV_NCP=2`
+         Negotiable ciphers, client supports ``--cipher`` pushed by
 diff --git a/src/openvpn/crypto.c b/src/openvpn/crypto.c
-index df38cdd..ee9b0c6 100644
+index b107f88..84ec436 100644
 --- a/src/openvpn/crypto.c
 +++ b/src/openvpn/crypto.c
-@@ -405,7 +405,13 @@
- {
-     static const char error_prefix[] =3D "AEAD Decrypt error";
-     struct packet_id_net pin =3D { 0 };
--    const struct key_ctx *ctx =3D &opt->key_ctx_bi.decrypt;
-+    struct key_ctx *ctx =3D &opt->key_ctx_bi.decrypt;
-+
-+    if (cipher_decrypt_verify_fail_exceeded(ctx))
-+    {
-+        CRYPT_DROP("Decryption failed verification limit reached.");
-+    }
-+
-     int outlen;
-     struct gc_arena gc;
-
-@@ -511,6 +517,7 @@
-     if (!cipher_ctx_final_check_tag(ctx->cipher, BPTR(&work) + outlen,
-                                     &outlen, tag_ptr, tag_size))
+@@ -127,7 +127,7 @@
+     dmsg(D_PACKET_CONTENT, "ENCRYPT AD: %s",
+          format_hex(BPTR(&work), BLEN(&work), 0, &gc));
+ 
+-    if (!(opt->flags & CO_AEAD_TAG_AT_THE_END))
++    if (!(opt->flags & CO_EPOCH_DATA_KEY_FORMAT))
      {
-+        ctx->failed_verifications++;
-         CRYPT_DROP("packet tag authentication failed");
-     }
+         /* Reserve space for authentication tag */
+         mac_out = buf_write_alloc(&work, mac_len);
+@@ -148,7 +148,7 @@
      ASSERT(buf_inc_len(&work, outlen));
+ 
+     /* if the tag is at end the end, allocate it now */
+-    if (opt->flags & CO_AEAD_TAG_AT_THE_END)
++    if (opt->flags & CO_EPOCH_DATA_KEY_FORMAT)
+     {
+         /* Reserve space for authentication tag */
+         mac_out = buf_write_alloc(&work, mac_len);
+@@ -479,7 +479,7 @@
+     uint8_t *tag_ptr = NULL;
+     int data_len = 0;
+ 
+-    if (opt->flags & CO_AEAD_TAG_AT_THE_END)
++    if (opt->flags & CO_EPOCH_DATA_KEY_FORMAT)
+     {
+         data_len = BLEN(buf) - tag_size;
+         tag_ptr = BPTR(buf) + data_len;
 diff --git a/src/openvpn/crypto.h b/src/openvpn/crypto.h
-index 3ad31c5..fe81c7f 100644
+index a98dca0..b58e4ef 100644
 --- a/src/openvpn/crypto.h
 +++ b/src/openvpn/crypto.h
-@@ -209,6 +209,8 @@
-      * with the current key in number of 128 bit blocks (only used for
-      * AEAD ciphers) */
-     uint64_t plaintext_blocks;
-+    /** number of failed verification using this cipher */
-+    uint64_t failed_verifications;
- };
-
- #define KEY_DIRECTION_BIDIRECTIONAL 0 /* same keys for both directions */
-@@ -661,6 +663,32 @@
- cipher_get_aead_limits(const char *ciphername);
-
- /**
-+ * Check if the number of failed decryption is over the acceptable limit.
-+ */
-+static inline bool
-+cipher_decrypt_verify_fail_exceeded(const struct key_ctx *ctx)
-+{
-+    /* Use 2**36, same as DTLS 1.3. Strictly speaking this only guarantees
-+     * the security margin for packets up to 2^10 blocks (16384 bytes)
-+     * but we accept slightly lower security bound for the edge
-+     * of Chacha20-Poly1305 and packets over 16k as MTUs over 16k are
-+     * extremely rarely used */
-+    return ctx->failed_verifications >  (1ull << 36);
-+}
-+
-+/**
-+ * Check if the number of failed decryption is approaching the limit and we
-+ * should try to move to a new key
-+ */
-+static inline bool
-+cipher_decrypt_verify_fail_warn(const struct key_ctx *ctx)
-+{
-+    /* Use 2**35, half the amount after which we refuse to decrypt */
-+    return ctx->failed_verifications >  (1ull << 35);
-+}
-+
-+
-+/**
-  * Blocksize used for the AEAD limit caluclation
-  *
-  * Since cipher_ctx_block_size() is not reliable and will return 1 in many
-diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
-index cf7f34f..e4a7b57 100644
---- a/src/openvpn/ssl.c
-+++ b/src/openvpn/ssl.c
-@@ -3005,6 +3005,11 @@
-         return true;
+@@ -373,9 +373,11 @@
+     /**< Bit-flag indicating that renegotiations are using tls-crypt
+      *   with a TLS-EKM derived key.
+      */
+-#define CO_AEAD_TAG_AT_THE_END  (1<<8)
+-    /**< Bit-flag indicating that the AEAD tag is at the end of the
+-     *   packet.
++#define CO_EPOCH_DATA_KEY_FORMAT  (1<<8)
++    /**< Bit-flag indicating the epoch the data format. This format
++     * has the AEAD tag is at the end of the packet and using a longer
++     * 64-bit packet id that is split into a 16 bit epoch and 48 bit
++     * epoch counter
+      */
+ 
+     unsigned int flags;         /**< Bit-flags determining behavior of
+diff --git a/src/openvpn/init.c b/src/openvpn/init.c
+index 2bd5518..9d1048c 100644
+--- a/src/openvpn/init.c
++++ b/src/openvpn/init.c
+@@ -2407,9 +2407,9 @@
+         {
+             buf_printf(&out, " dyn-tls-crypt");
+         }
+-        if (o->imported_protocol_flags & CO_AEAD_TAG_AT_THE_END)
++        if (o->imported_protocol_flags & CO_EPOCH_DATA_KEY_FORMAT)
+         {
+-            buf_printf(&out, " aead-tag-end");
++            buf_printf(&out, " aead-epoch");
+         }
      }
-
-+    if (cipher_decrypt_verify_fail_warn(&key_ctx_bi->decrypt))
-+    {
-+        return true;
-+    }
+ 
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index 1c35d67..eb0d9b5 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -8659,9 +8659,9 @@
+                 options->imported_protocol_flags |= CO_USE_DYNAMIC_TLS_CRYPT;
+             }
+ #endif
+-            else if (streq(p[j], "aead-tag-end"))
++            else if (streq(p[j], "aead-epoch"))
+             {
+-                options->imported_protocol_flags |= CO_AEAD_TAG_AT_THE_END;
++                options->imported_protocol_flags |= CO_EPOCH_DATA_KEY_FORMAT;
+             }
+             else
+             {
+diff --git a/src/openvpn/push.c b/src/openvpn/push.c
+index de44eb2..a7cd3bf 100644
+--- a/src/openvpn/push.c
++++ b/src/openvpn/push.c
+@@ -689,9 +689,9 @@
+         buf_printf(&proto_flags, " dyn-tls-crypt");
+     }
+ 
+-    if (o->imported_protocol_flags & CO_AEAD_TAG_AT_THE_END)
++    if (o->imported_protocol_flags & CO_EPOCH_DATA_KEY_FORMAT)
+     {
+-        buf_printf(&proto_flags, " aead-tag-end");
++        buf_printf(&proto_flags, " aead-epoch");
+     }
+ 
+     if (buf_len(&proto_flags) > 0)
+diff --git a/src/openvpn/ssl.h b/src/openvpn/ssl.h
+index 3561c41..c32cb6c 100644
+--- a/src/openvpn/ssl.h
++++ b/src/openvpn/ssl.h
+@@ -108,6 +108,9 @@
+ /** Support to dynamic tls-crypt (renegotiation with TLS-EKM derived tls-crypt key) */
+ #define IV_PROTO_DYN_TLS_CRYPT   (1<<9)
+ 
++/** Support the extended packet id and epoch format for data channel packets */
++#define IV_PROTO_DATA_EPOCH      (1<<10)
 +
-     return false;
+ /** Supports the --dns option after all the incompatible changes */
+ #define IV_PROTO_DNS_OPTION_V2   (1<<11)
+ 
+diff --git a/tests/unit_tests/openvpn/test_ssl.c b/tests/unit_tests/openvpn/test_ssl.c
+index caacd9e..845ca56 100644
+--- a/tests/unit_tests/openvpn/test_ssl.c
++++ b/tests/unit_tests/openvpn/test_ssl.c
+@@ -404,7 +404,7 @@
+ run_data_channel_with_cipher_end(const char *cipher)
+ {
+     struct crypto_options co = init_crypto_options(cipher, "none");
+-    co.flags |= CO_AEAD_TAG_AT_THE_END;
++    co.flags |= CO_EPOCH_DATA_KEY_FORMAT;
+     do_data_channel_round_trip(&co);
+     uninit_crypto_options(&co);
  }
- /*
-
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/843?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings
-
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: I81440ac28a1ad553652e201234e5ddfe03a8c190
-Gerrit-Change-Number: 843
-Gerrit-PatchSet: 6
-Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
-Gerrit-Reviewer: MaxF <max@...2606...>
-Gerrit-Reviewer: flichtenheld <frank@...2641...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-MessageType: merged
-
---vavCZzfjejk=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<p>cron2 <strong>submitted</strong> this change.</p><p><a href=3D"http://ge=
-rrit.openvpn.net/c/openvpn/+/843?usp=3Demail">View Change</a></p><div style=
-=3D"white-space:pre-wrap"></div><pre style=3D"font-family: monospace,monosp=
-ace; white-space: pre-wrap;">Do not attempt to decrypt packets anymore afte=
-r 2**36 failed decryptions<br><br>To avoid attacks (especially on Chacha20-=
-Poly1305) we do not allow<br>decryption anymore after 2**36 failed verifica=
-tions.<br><br>After 2**35, we trigger a renegotiation (to avoid that situat=
-ion).<br><br>For the theoretical background, see<br><br>   - https://datatr=
-acker.ietf.org/doc/draft-irtf-cfrg-aead-limits/<br>   - RFC 9147 (DTLS 1.3)=
- section 4.5.3 &quot;AEAD limits&quot;<br>   - https://eprint.iacr.org/2024=
-/051.pdf<br><br>Change-Id: I81440ac28a1ad553652e201234e5ddfe03a8c190<br>Sig=
-ned-off-by: Arne Schwabe &lt;arne@...1227...&gt;<br>Acked-by: MaxF &lt;max@=
-...2606...&gt;<br>Message-Id: &lt;20250109174928.17862-1-gert@...1296...&gt=
-;<br>URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/=
-msg30387.html<br>Signed-off-by: Gert Doering &lt;gert@...1296...&gt;<br>---=
-<br>M src/openvpn/crypto.c<br>M src/openvpn/crypto.h<br>M src/openvpn/ssl.c=
-<br>3 files changed, 41 insertions(+), 1 deletion(-)<br><br></pre>
-<pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><sp=
-an>diff --git a/src/openvpn/crypto.c b/src/openvpn/crypto.c</span><br><span=
->index df38cdd..ee9b0c6 100644</span><br><span>--- a/src/openvpn/crypto.c</=
-span><br><span>+++ b/src/openvpn/crypto.c</span><br><span>@@ -405,7 +405,13=
- @@</span><br><span> {</span><br><span>     static const char error_prefix[=
-] =3D &quot;AEAD Decrypt error&quot;;</span><br><span>     struct packet_id=
-_net pin =3D { 0 };</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
-  const struct key_ctx *ctx =3D &amp;opt-&gt;key_ctx_bi.decrypt;</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+    struct key_ctx *ctx =3D &a=
-mp;opt-&gt;key_ctx_bi.decrypt;</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (=
-cipher_decrypt_verify_fail_exceeded(ctx))</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+        CRYPT_DROP(&quot;Decryption failed verification limit reach=
-ed.&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span>     =
-int outlen;</span><br><span>     struct gc_arena gc;</span><br><span> </spa=
-n><br><span>@@ -511,6 +517,7 @@</span><br><span>     if (!cipher_ctx_final_=
-check_tag(ctx-&gt;cipher, BPTR(&amp;work) + outlen,</span><br><span>       =
-                              &amp;outlen, tag_ptr, tag_size))</span><br><s=
-pan>     {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        c=
-tx-&gt;failed_verifications++;</span><br><span>         CRYPT_DROP(&quot;pa=
-cket tag authentication failed&quot;);</span><br><span>     }</span><br><sp=
-an>     ASSERT(buf_inc_len(&amp;work, outlen));</span><br><span>diff --git =
-a/src/openvpn/crypto.h b/src/openvpn/crypto.h</span><br><span>index 3ad31c5=
-..fe81c7f 100644</span><br><span>--- a/src/openvpn/crypto.h</span><br><span=
->+++ b/src/openvpn/crypto.h</span><br><span>@@ -209,6 +209,8 @@</span><br><=
-span>      * with the current key in number of 128 bit blocks (only used fo=
-r</span><br><span>      * AEAD ciphers) */</span><br><span>     uint64_t pl=
-aintext_blocks;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-/** number of failed verification using this cipher */</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+    uint64_t failed_verifications;</span=
-><br><span> };</span><br><span> </span><br><span> #define KEY_DIRECTION_BID=
-IRECTIONAL 0 /* same keys for both directions */</span><br><span>@@ -661,6 =
-+663,32 @@</span><br><span> cipher_get_aead_limits(const char *ciphername);=
-</span><br><span> </span><br><span> /**</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+ * Check if the number of failed decryption is over the=
- acceptable limit.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-*/</span><br><span style=3D"color: hsl(120, 100%, 40%);">+static inline boo=
-l</span><br><span style=3D"color: hsl(120, 100%, 40%);">+cipher_decrypt_ver=
-ify_fail_exceeded(const struct key_ctx *ctx)</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+    /* Use 2**36, same as DTLS 1.3. Strictly speaking this only guar=
-antees</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     * the se=
-curity margin for packets up to 2^10 blocks (16384 bytes)</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+     * but we accept slightly lower s=
-ecurity bound for the edge</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+     * of Chacha20-Poly1305 and packets over 16k as MTUs over 16k ar=
-e</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     * extremely r=
-arely used */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    re=
-turn ctx-&gt;failed_verifications &gt;  (1ull &lt;&lt; 36);</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+/**</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * Check if t=
-he number of failed decryption is approaching the limit and we</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+ * should try to move to a new k=
-ey</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ */</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+static inline bool</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+cipher_decrypt_verify_fail_warn(co=
-nst struct key_ctx *ctx)</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    /* Use 2*=
-*35, half the amount after which we refuse to decrypt */</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+    return ctx-&gt;failed_verification=
-s &gt;  (1ull &lt;&lt; 35);</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+/**</span><br><span>  * Blocksize used for the A=
-EAD limit caluclation</span><br><span>  *</span><br><span>  * Since cipher_=
-ctx_block_size() is not reliable and will return 1 in many</span><br><span>=
-diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c</span><br><span>index cf=
-7f34f..e4a7b57 100644</span><br><span>--- a/src/openvpn/ssl.c</span><br><sp=
-an>+++ b/src/openvpn/ssl.c</span><br><span>@@ -3005,6 +3005,11 @@</span><br=
-><span>         return true;</span><br><span>     }</span><br><span> </span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (cipher_decrypt_ve=
-rify_fail_warn(&amp;key_ctx_bi-&gt;decrypt))</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+        return true;</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</=
-span><br><span>     return false;</span><br><span> }</span><br><span> /*</s=
-pan><br><span></span><br></pre><p>To view, visit <a href=3D"http://gerrit.o=
-penvpn.net/c/openvpn/+/843?usp=3Demail">change 843</a>. To unsubscribe, or =
-for help writing mail filters, visit <a href=3D"http://gerrit.openvpn.net/s=
-ettings">settings</a>.</p><div itemscope itemtype=3D"http://schema.org/Emai=
-lMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.org/=
-ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/open=
-vpn/+/843?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></=
-div></div>
-
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I81440ac28a1ad553652e201234e=
-5ddfe03a8c190 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 843 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 6 </div>
-<div style=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@...1711...=
-27...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: MaxF &lt;max@...2606...&gt; <=
-/div>
-<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
-1...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: merged </div>
-
-
---vavCZzfjejk=--
 
