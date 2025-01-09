@@ -1,15 +1,10 @@
-From: "plaisthos (Code Review)" <gerrit@...515...>
-Date: Thu, 9 Jan 2025 14:42:44 +0000
-References: <gerrit.1736433762000.I81cbecd19018290d85c6c77fba7769f040d66233@...2715...>
-Reply-To: arne-openvpn@...1227..., openvpn-devel@lists.sourceforge.net,
- frank@...2641...
-Message-ID: <857ead877a63a88afb17be062d04275cc49d1a51-HTML@...2715...>
+From: Gert Doering <gert@...1296...>
+Date: Thu,  9 Jan 2025 15:42:47 +0100
+Message-ID: <20250109144248.9133-1-gert@...1296...>
+In-Reply-To: <gerrit.1732208116000.Ie63f302402f469c3aa48ac146ca6b8c029f0d250@...2715...>
+References: <gerrit.1732208116000.Ie63f302402f469c3aa48ac146ca6b8c029f0d250@...2715...>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="PowZIPkgqtc="; charset=UTF-8
-Subject: [Openvpn-devel] [M] Change in openvpn[master]: Improve error
- reporting from AF_UNIX tun/tap support
+Subject: [Openvpn-devel] [PATCH v8] Add lwip support to t_server_null
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,365 +13,342 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: flichtenheld <frank@...2641...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---PowZIPkgqtc=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+From: Samuli Seppänen <samuli.seppanen@...277...>
 
-Attention is currently required from: flichtenheld.
-
-Hello flichtenheld,
-
-I'd like you to do a code review.
-Please visit
-
-    http://gerrit.openvpn.net/c/openvpn/+/855?usp=3Demail
-
-to review the following change.
-
-
-Change subject: Improve error reporting from AF_UNIX tun/tap support
-......................................................................
-
-Improve error reporting from AF_UNIX tun/tap support
-
-When having a non-existent lwipovpn binary or similar problems, the
-error reporting would often only report read error that were harder to
-identify the real problem.  Add the openvpn_waitpid_check method
-that checks for error conditions and reports a better message in cases
-of problems.
-
-Change-Id: I81cbecd19018290d85c6c77fba7769f040d66233
-Signed-off-by: Arne Schwabe <arne@...1227...>
+Change-Id: Ie63f302402f469c3aa48ac146ca6b8c029f0d250
+Signed-off-by: Samuli Seppänen <samuli.seppanen@...277...>
+Acked-by: Frank Lichtenheld <frank@...2641...>
 ---
-M src/openvpn/run_command.c
-M src/openvpn/run_command.h
-M src/openvpn/tun_afunix.c
-3 files changed, 62 insertions(+), 8 deletions(-)
 
+This change was reviewed on Gerrit and approved by at least one
+developer. I request to merge it to master.
 
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/811
+This mail reflects revision 8 of this Change.
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/55/855/1
+Acked-by according to Gerrit (reflected above):
+Frank Lichtenheld <frank@...2641...>
 
-diff --git a/src/openvpn/run_command.c b/src/openvpn/run_command.c
-index d757823..7f2cfb3 100644
---- a/src/openvpn/run_command.c
-+++ b/src/openvpn/run_command.c
-@@ -107,6 +107,35 @@
- }
-
- bool
-+openvpn_waitpid_check(pid_t pid, const char  *error_message, int msglevel)
-+{
-+    if (pid =3D=3D 0)
-+    {
-+        return false;
-+    }
-+    int status;
-+    pid_t pidret =3D waitpid(pid, &status, WNOHANG);
-+    if (pidret !=3D pid)
-+    {
-+        return true;
-+    }
+        
+diff --git a/doc/t_server_null.rst b/doc/t_server_null.rst
+index 5fe9080..473a7bd 100644
+--- a/doc/t_server_null.rst
++++ b/doc/t_server_null.rst
+@@ -16,7 +16,7 @@
+ 
+ * Parallelized for fairly high performance
+ * Mostly operating-system agnostic
+-* Tested on Fedora Linux 38/39/40 and FreeBSD 14
++* Tested on Fedora Linux 38/39/40, FreeBSD 14, NetBSD 10.0 and OpenBSD 7.5
+ * POSIX-compliant
+ * Tested and known to work with Bash, Dash, Ksh, Yash and FreeBSD's default /bin/sh
+ * Uses the sample certificates and keys
+@@ -31,6 +31,7 @@
+ * Test cases (client configurations) and server setups (server configurations) are stored in a configuration file, i.e. data and code have been separated
+ * Configuration file format is nearly identical to t_client.rc configuration
+ * Supports a set of default tests, overriding default test settings and adding local tests
++* Supports client ping tests if ovpnlwip is available
+ 
+ Prerequisites
+ -------------
+@@ -60,8 +61,9 @@
+ #. Server instances start
+ #. Brief wait
+ #. Client instances start
+-#. Tests run
++#. ovpnlwip ping tests run
+ #. Client instances stop
++#. Test results are collected
+ #. Brief wait
+ #. Server instances stop
+ 
+@@ -77,7 +79,8 @@
+ 
+     * t_server_null_client.sh
+ 
+-      * Waits until servers have launched. Then launch all clients, wait for them to exit and then check test results by parsing the client log files. Each client kills itself after some delay using an "--up" script.
++      * Waits until servers have launched. Then launch all clients, run ovpnlwip ping tests (if any), wait for clients to exit and then check test results by parsing the client log files. Each client kills itself after some delay using an "--up" script.
 +
-+    if (WIFEXITED(status))
-+    {
-+        msg(msglevel, "%sexternal program exited with error status: %d",
-+            error_message, WEXITSTATUS(status));
+ 
+ Configuration
+ -------------
+@@ -116,6 +119,19 @@
+ 
+   TEST_RUN_LIST="1 2 5 9"
+ 
++Client ping tests that use ovpnlwip can be added similarly:
 +
-+    }
-+    else if (WIFSIGNALED(status))
-+    {
-+        msg(msglevel, "%sexternal program received signal %d",
-+            error_message, WTERMSIG(status));
-+    }
++  TEST_NAME_9L="t_server_null_client.sh-openvpn_current_udp_custom_lwip"
++  SHOULD_PASS_9L="yes"
++  CLIENT_EXEC_9L="${CLIENT_EXEC}"
++  CLIENT_CONF_9L="${CLIENT_CONF_BASE_LWIP} --remote 127.0.0.1 1194 udp --proto udp"
 +
-+    return false;
++Note that all ovpnlwip test names need to include a "_lwip" suffix: without it
++ping tests won't get activated. Also note that the *tests* directory needs to
++have the lwipovpn executable or ovpnlwip tests will get skipped. The ovpnlwip
++ping tests get the IP addresses to ping from the \*.ips files created by the
++lwip_client_up.sh script --up script.
++
+ Stress-testing the --dev null test suite
+ ----------------------------------------
+ 
+diff --git a/tests/lwip_client_up.sh b/tests/lwip_client_up.sh
+new file mode 100755
+index 0000000..307a9cb
+--- /dev/null
++++ b/tests/lwip_client_up.sh
+@@ -0,0 +1,30 @@
++#!/bin/sh
++#
++# Add this client's IP to a file
++if ! grep -q "$ifconfig_local" ./$test_name.ips; then
++    echo -n "$ifconfig_local " >> ./$test_name.ips
++fi
++
++# Determine the OpenVPN PID from its pid file. This works reliably even when
++# the OpenVPN process is backgrounded for parallel tests.
++MY_PPID=`cat $pid`
++
++# Allow OpenVPN to finish initializing while waiting in the background and then
++# killing the process gracefully. Also wait for fping tests to finish.
++(sleep 5
++
++count=0
++maxcount=15
++while [ $count -le $maxcount ]; do
++    if pgrep fping > /dev/null 2>&1; then
++        echo "Waiting for fping to exit ($count/$maxcount)"
++        count=$(( count + 1))
++        sleep 1
++    else
++        echo "fping not running anymore"
++        break
++    fi
++done
++
++kill -15 $MY_PPID
++) &
+diff --git a/tests/t_server_null_client.sh b/tests/t_server_null_client.sh
+index 2210e63..78050ae 100755
+--- a/tests/t_server_null_client.sh
++++ b/tests/t_server_null_client.sh
+@@ -1,5 +1,17 @@
+ #!/bin/sh
+ 
++should_run_test() {
++    test_name="$1"
++
++    if echo "$test_name"|grep -q _lwip; then
++        if [ "$has_lwipovpn" = "no" ]; then
++            return 1
++        fi
++    fi
++
++    return 0
 +}
 +
-+bool
- openvpn_execve_allowed(const unsigned int flags)
- {
-     if (flags & S_SCRIPT)
-diff --git a/src/openvpn/run_command.h b/src/openvpn/run_command.h
-index c92edbc..366acaa 100644
---- a/src/openvpn/run_command.h
-+++ b/src/openvpn/run_command.h
-@@ -59,6 +59,19 @@
- int openvpn_execve_check(const struct argv *a, const struct env_set *es,
-                          const unsigned int flags, const char *error_messa=
-ge);
-
-+
-+/** Checks if a running process is still running. This is mainly useful
-+ * for processes started with \c S_NOWAITPID
-+ * @param pid               pid of the process to be checked
-+ * @param error_message     prefixed of the message that be printed
-+ * @param msglevel          msglevel of the messages to be printed
-+ * @return                  true if the process is still running, false if
-+ *                          an error condition occurred
-+ */
-+bool
-+openvpn_waitpid_check(pid_t pid, const char  *error_message,
-+                      int msglevel);
-+
- /**
-  * Will run a script and return the exit code of the script if between
-  * 0 and 255, -1 otherwise
-diff --git a/src/openvpn/tun_afunix.c b/src/openvpn/tun_afunix.c
-index 6b6c159..c626993 100644
---- a/src/openvpn/tun_afunix.c
-+++ b/src/openvpn/tun_afunix.c
-@@ -47,9 +47,12 @@
- #include <signal.h>
- #include <stdlib.h>
-
-+
-+
- static void
- tun_afunix_exec_child(const char *dev_node, struct tuntap *tt, struct env_=
-set *env)
- {
-+    const char *msgprefix =3D "ERROR: failure executing process for tun:";
-     struct argv argv =3D argv_new();
-
-     /* since we know that dev-node starts with unix: we can just skip that
-@@ -58,10 +61,12 @@
-
-     argv_printf(&argv, "%s", program);
-
--    argv_msg(M_INFO, &argv);
-     tt->afunix.childprocess =3D openvpn_execve_check(&argv, env, S_NOWAITP=
-ID,
--                                                   "ERROR: failure executi=
-ng "
--                                                   "process for tun");
-+                                                   msgprefix);
-+    if (!openvpn_waitpid_check(tt->afunix.childprocess, msgprefix, M_WARN))
-+    {
-+        tt->afunix.childprocess =3D 0;
-+    }
-     argv_free(&argv);
+ launch_client() {
+     test_name=$1
+     log="${test_name}.log"
+@@ -13,10 +25,47 @@
+     "${client_exec}" \
+         $client_conf \
+         --writepid "${pid}" \
+-        --setenv pid $pid \
++        --setenv pid "$pid" \
++        --setenv test_name "$test_name" \
+         --log "${t_server_null_logdir}/${log}" &
  }
-
-@@ -138,20 +143,27 @@
- ssize_t
- write_tun_afunix(struct tuntap *tt, uint8_t *buf, int len)
- {
--    int ret;
--    pid_t pidret =3D waitpid(tt->afunix.childprocess, &ret, WNOHANG);
--    if (pidret =3D=3D tt->afunix.childprocess)
-+    const char *msg =3D "ERROR: failure during write to AF_UNIX socket: ";
-+    if (!openvpn_waitpid_check(tt->afunix.childprocess, msg, M_WARN))
-     {
--        msg(M_INFO, "Child process PID %d for afunix dead? Return code: %d=
-",
--            tt->afunix.childprocess, ret);
-+        tt->afunix.childprocess =3D 0;
-         return -ENXIO;
-     }
+ 
++ping_lwip_clients() {
++    if [ "$has_lwipovpn" = "yes" ]; then
++        lwip_client_count=$(echo "$lwip_test_names"|wc -w|tr -d " ")
++    else
++        lwip_client_count=0
++    fi
 +
-     return write(tt->fd, buf, len);
- }
-
- ssize_t
- read_tun_afunix(struct tuntap *tt, uint8_t *buf, int len)
- {
-+    const char *msg =3D "ERROR: failure during read from AF_UNIX socket: ";
-+    if (!openvpn_waitpid_check(tt->afunix.childprocess, msg, M_WARN))
-+    {
-+        tt->afunix.childprocess =3D 0;
-+    }
-+    /* do an actual read on the file descriptor even in the error case sin=
-ce
-+     * we otherwise loop on this on this from select and spam the console
-+     * with error messages */
-     return read(tt->fd, buf, len);
- }
- #else  /* ifndef WIN32 */
-
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/855?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings
-
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: I81cbecd19018290d85c6c77fba7769f040d66233
-Gerrit-Change-Number: 855
-Gerrit-PatchSet: 1
-Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
-Gerrit-Reviewer: flichtenheld <frank@...2641...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-MessageType: newchange
-
---PowZIPkgqtc=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<p> Attention is currently required from: flichtenheld. </p>
-<p>plaisthos would like flichtenheld to <strong>review</strong> this change.
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/855?usp=3Demail">Vi=
-ew Change</a></p><pre style=3D"font-family: monospace,monospace; white-spac=
-e: pre-wrap;">Improve error reporting from AF_UNIX tun/tap support<br><br>W=
-hen having a non-existent lwipovpn binary or similar problems, the<br>error=
- reporting would often only report read error that were harder to<br>identi=
-fy the real problem.  Add the openvpn_waitpid_check method<br>that checks f=
-or error conditions and reports a better message in cases<br>of problems.<b=
-r><br>Change-Id: I81cbecd19018290d85c6c77fba7769f040d66233<br>Signed-off-by=
-: Arne Schwabe &lt;arne@...1227...&gt;<br>---<br>M src/openvpn/run_command.=
-c<br>M src/openvpn/run_command.h<br>M src/openvpn/tun_afunix.c<br>3 files c=
-hanged, 62 insertions(+), 8 deletions(-)<br><br></pre><pre style=3D"font-fa=
-mily: monospace,monospace; white-space: pre-wrap;">git pull ssh://gerrit.op=
-envpn.net:29418/openvpn refs/changes/55/855/1</pre><pre style=3D"font-famil=
-y: monospace,monospace; white-space: pre-wrap;"><span>diff --git a/src/open=
-vpn/run_command.c b/src/openvpn/run_command.c</span><br><span>index d757823=
-..7f2cfb3 100644</span><br><span>--- a/src/openvpn/run_command.c</span><br>=
-<span>+++ b/src/openvpn/run_command.c</span><br><span>@@ -107,6 +107,35 @@<=
-/span><br><span> }</span><br><span> </span><br><span> bool</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+openvpn_waitpid_check(pid_t pid, con=
-st char  *error_message, int msglevel)</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+    if (pid =3D=3D 0)</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        ret=
-urn false;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+    int status;</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+    pid_t pidret =3D waitpi=
-d(pid, &amp;status, WNOHANG);</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+    if (pidret !=3D pid)</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+        return true;</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+    if (WIFEXITED(status))</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+        msg(msglevel, &quot;%sexternal=
- program exited with error status: %d&quot;,</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+            error_message, WEXITSTATUS(status));</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+    else if (WIFSIGNALED(status))</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+        msg(msglevel, &quot;%sexternal program receive=
-d signal %d&quot;,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-           error_message, WTERMSIG(status));</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    retu=
-rn false;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+bool</span><br><span> openvpn_execve_allowed(co=
-nst unsigned int flags)</span><br><span> {</span><br><span>     if (flags &=
-amp; S_SCRIPT)</span><br><span>diff --git a/src/openvpn/run_command.h b/src=
-/openvpn/run_command.h</span><br><span>index c92edbc..366acaa 100644</span>=
-<br><span>--- a/src/openvpn/run_command.h</span><br><span>+++ b/src/openvpn=
-/run_command.h</span><br><span>@@ -59,6 +59,19 @@</span><br><span> int open=
-vpn_execve_check(const struct argv *a, const struct env_set *es,</span><br>=
-<span>                          const unsigned int flags, const char *error=
-_message);</span><br><span> </span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+/** Checks=
- if a running process is still running. This is mainly useful</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+ * for processes started with \c =
-S_NOWAITPID</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @para=
-m pid               pid of the process to be checked</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+ * @param error_message     prefixed of t=
-he message that be printed</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+ * @param msglevel          msglevel of the messages to be printed</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @return           =
-       true if the process is still running, false if</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+ *                          an error cond=
-ition occurred</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ */</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+bool</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+openvpn_waitpid_check(pid_t pid, con=
-st char  *error_message,</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+                      int msglevel);</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+</span><br><span> /**</span><br><span>  * Will run a =
-script and return the exit code of the script if between</span><br><span>  =
-* 0 and 255, -1 otherwise</span><br><span>diff --git a/src/openvpn/tun_afun=
-ix.c b/src/openvpn/tun_afunix.c</span><br><span>index 6b6c159..c626993 1006=
-44</span><br><span>--- a/src/openvpn/tun_afunix.c</span><br><span>+++ b/src=
-/openvpn/tun_afunix.c</span><br><span>@@ -47,9 +47,12 @@</span><br><span> #=
-include &lt;signal.h&gt;</span><br><span> #include &lt;stdlib.h&gt;</span><=
-br><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> static voi=
-d</span><br><span> tun_afunix_exec_child(const char *dev_node, struct tunta=
-p *tt, struct env_set *env)</span><br><span> {</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+    const char *msgprefix =3D &quot;ERROR: failu=
-re executing process for tun:&quot;;</span><br><span>     struct argv argv =
-=3D argv_new();</span><br><span> </span><br><span>     /* since we know tha=
-t dev-node starts with unix: we can just skip that</span><br><span>@@ -58,1=
-0 +61,12 @@</span><br><span> </span><br><span>     argv_printf(&amp;argv, &=
-quot;%s&quot;, program);</span><br><span> </span><br><span style=3D"color: =
-hsl(0, 100%, 40%);">-    argv_msg(M_INFO, &amp;argv);</span><br><span>     =
-tt-&gt;afunix.childprocess =3D openvpn_execve_check(&amp;argv, env, S_NOWAI=
-TPID,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-                =
-                                   &quot;ERROR: failure executing &quot;</s=
-pan><br><span style=3D"color: hsl(0, 100%, 40%);">-                        =
-                           &quot;process for tun&quot;);</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+                                      =
-             msgprefix);</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+    if (!openvpn_waitpid_check(tt-&gt;afunix.childprocess, msgprefix, =
-M_WARN))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+        tt-&gt;afunix.chi=
-ldprocess =3D 0;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
- }</span><br><span>     argv_free(&amp;argv);</span><br><span> }</span><br>=
-<span> </span><br><span>@@ -138,20 +143,27 @@</span><br><span> ssize_t</spa=
-n><br><span> write_tun_afunix(struct tuntap *tt, uint8_t *buf, int len)</sp=
-an><br><span> {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    in=
-t ret;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    pid_t pidre=
-t =3D waitpid(tt-&gt;afunix.childprocess, &amp;ret, WNOHANG);</span><br><sp=
-an style=3D"color: hsl(0, 100%, 40%);">-    if (pidret =3D=3D tt-&gt;afunix=
-.childprocess)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    c=
-onst char *msg =3D &quot;ERROR: failure during write to AF_UNIX socket: &qu=
-ot;;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (!openvp=
-n_waitpid_check(tt-&gt;afunix.childprocess, msg, M_WARN))</span><br><span> =
-    {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        msg(M_IN=
-FO, &quot;Child process PID %d for afunix dead? Return code: %d&quot;,</spa=
-n><br><span style=3D"color: hsl(0, 100%, 40%);">-            tt-&gt;afunix.=
-childprocess, ret);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-        tt-&gt;afunix.childprocess =3D 0;</span><br><span>         return -=
-ENXIO;</span><br><span>     }</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+</span><br><span>     return write(tt-&gt;fd, buf, len);</span><b=
-r><span> }</span><br><span> </span><br><span> ssize_t</span><br><span> read=
-_tun_afunix(struct tuntap *tt, uint8_t *buf, int len)</span><br><span> {</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+    const char *msg =
-=3D &quot;ERROR: failure during read from AF_UNIX socket: &quot;;</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+    if (!openvpn_waitpid_chec=
-k(tt-&gt;afunix.childprocess, msg, M_WARN))</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+        tt-&gt;afunix.childprocess =3D 0;</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+    /* do an actual read on the file descriptor even in=
- the error case since</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+     * we otherwise loop on this on this from select and spam the console=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     * with error m=
-essages */</span><br><span>     return read(tt-&gt;fd, buf, len);</span><br=
-><span> }</span><br><span> #else  /* ifndef WIN32 */</span><br><span></span=
-><br></pre><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn=
-/+/855?usp=3Demail">change 855</a>. To unsubscribe, or for help writing mai=
-l filters, visit <a href=3D"http://gerrit.openvpn.net/settings">settings</a=
->.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div items=
-cope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link it=
-emprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/855?usp=3Demai=
-l"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
-
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I81cbecd19018290d85c6c77fba7=
-769f040d66233 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 855 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
-<div style=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@...1711...=
-27...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
-1...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
-41...&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: newchange </div>
-
-
---PowZIPkgqtc=--
++    if [ $lwip_client_count -eq 0 ]; then
++        return 0
++    fi
++
++    count=0
++    maxcount=10
++    while [ $count -le $maxcount ]; do
++        lwip_client_ips=$(cat ./*.ips 2>/dev/null|wc -w|tr -d " ")
++        if [ $lwip_client_ips -lt $lwip_client_count ]; then
++            echo "Waiting for LWIP clients to start up ($count/$maxcount)"
++            count=$(( count + 1))
++            sleep 1
++        else
++            echo "$lwip_client_ips/$lwip_client_count LWIP clients up"
++            break
++        fi
++    done
++
++    LWIP_CLIENTS=$(cat ./*.ips 2>/dev/null)
++    if [ "$LWIP_CLIENTS" ]; then
++        if fping -c 5 $LWIP_CLIENTS; then
++            echo "PASS: lwipovpn client ping tests passed"
++        else
++            echo "FAIL: pinging one or more lwipovpn client IP addresses failed"
++            retval=1
++        fi
++    fi
++}
++
+ wait_for_results() {
+     tests_running="yes"
+ 
+@@ -77,7 +126,7 @@
+ server_max_wait=15
+ while [ $count -lt $server_max_wait ]; do
+     servers_up=0
+-    server_count=$(echo $TEST_SERVER_LIST|wc -w)
++    server_count=$(echo "$TEST_SERVER_LIST"|wc -w|tr -d " ")
+ 
+     # We need to trim single-quotes because some shells return quoted values
+     # and some don't. Using "set -o posix" which would resolve this problem is
+@@ -85,8 +134,8 @@
+     #
+     # While inactive server configurations may get checked they won't increase
+     # the active server count as the processes won't be running.
+-    for i in `set|grep 'SERVER_NAME_'|cut -d "=" -f 2|tr -d "[\']"`; do
+-        server_pid=$(cat $i.pid 2> /dev/null)
++    for i in $(set|grep 'SERVER_NAME_'|cut -d "=" -f 2|tr -d "[\']"); do
++        server_pid=$(cat "$i.pid" 2> /dev/null)
+         if [ -z "$server_pid" ] ; then
+             continue
+         fi
+@@ -111,6 +160,18 @@
+     fi
+ done
+ 
++# Check for presence of the lwipovpn executable
++if test -r "$LWIPOVPN_PATH"; then
++    has_lwipovpn="yes"
++else
++    has_lwipovpn="no"
++    echo "WARNING: lwipovpn executable is missing: lwip tests will be skipped"
++fi
++
++# Remove existing LWIP client IP files. This is to avoid pinging non-existent
++# IP addresses when tests are disabled.
++$RUN_SUDO rm -f ./*.ips
++
+ # Wait a while to let server processes to settle down
+ sleep 1
+ 
+@@ -118,6 +179,7 @@
+ # is used later to determine when all OpenVPN clients have exited and it is
+ # safe to check the test results.
+ test_names=""
++lwip_test_names=""
+ for SUF in $TEST_RUN_LIST
+ do
+     eval test_name=\"\$TEST_NAME_$SUF\"
+@@ -125,9 +187,18 @@
+     eval client_conf=\"\$CLIENT_CONF_$SUF\"
+ 
+     test_names="${test_names} ${test_name}"
+-    (launch_client "${test_name}" "${client_exec}" "${client_conf}")
++
++    if echo "$test_name"|grep -q _lwip; then
++        lwip_test_names="${lwip_test_names} ${test_name}"
++    fi
++
++    if should_run_test "$test_name"; then
++        (launch_client "${test_name}" "${client_exec}" "${client_conf}")
++    fi
+ done
+ 
++ping_lwip_clients
++
+ # Wait until all OpenVPN clients have exited
+ (wait_for_results)
+ 
+@@ -137,7 +208,9 @@
+     eval test_name=\"\$TEST_NAME_$SUF\"
+     eval should_pass=\"\$SHOULD_PASS_$SUF\"
+ 
+-    get_client_test_result "${test_name}" "${should_pass}"
++    if should_run_test "$test_name"; then
++        get_client_test_result "${test_name}" "${should_pass}"
++    fi
+ done
+ 
+ exit $retval
+diff --git a/tests/t_server_null_default.rc b/tests/t_server_null_default.rc
+index cbf4877..e7bf5bc 100755
+--- a/tests/t_server_null_default.rc
++++ b/tests/t_server_null_default.rc
+@@ -20,6 +20,15 @@
+ SERVER_KEY="${sample_keys}/server.key"
+ TA="${sample_keys}/ta.key"
+ 
++# This parameter can't be overridden in t_server_null.rc because that gets
++# loaded too late. However, you can use
++#
++# LWIPOVPN_PATH=/some/path/to/lwipovpn make check
++#
++# to run the tests using lwipovpn in a custom location
++#
++LWIPOVPN_PATH="${LWIPOVPN_PATH:-lwipovpn}"
++
+ # Used to detect if graceful kill of any server instance failed during the test
+ # run
+ SERVER_KILL_FAIL_FILE=".t_server_null_server.kill_failed"
+@@ -28,7 +37,7 @@
+ MAX_CLIENTS="10"
+ CLIENT_MATCH="Test-Client"
+ SERVER_EXEC="${top_builddir}/src/openvpn/openvpn"
+-SERVER_BASE_OPTS="--daemon --local 127.0.0.1 --dev tun --topology subnet --max-clients $MAX_CLIENTS --persist-tun --verb 3"
++SERVER_BASE_OPTS="--daemon --local 127.0.0.1 --dev tun --topology subnet --max-clients $MAX_CLIENTS --persist-tun --verb 3 --duplicate-cn"
+ SERVER_CIPHER_OPTS=""
+ SERVER_CERT_OPTS="--ca ${CA} --dh ${DH} --cert ${SERVER_CERT} --key ${SERVER_KEY} --tls-auth ${TA} 0"
+ SERVER_CONF_BASE="${SERVER_BASE_OPTS} ${SERVER_CIPHER_OPTS} ${SERVER_CERT_OPTS}"
+@@ -49,23 +58,37 @@
+ 
+ # Test client configurations
+ CLIENT_EXEC="${top_builddir}/src/openvpn/openvpn"
+-CLIENT_BASE_OPTS="--client --dev null --ifconfig-noexec --nobind --remote-cert-tls server --persist-tun --verb 3 --resolv-retry infinite --connect-retry-max 3 --server-poll-timeout 5 --explicit-exit-notify 3 --script-security 2 --up ${srcdir}/null_client_up.sh"
++CLIENT_BASE_OPTS="--client --nobind --remote-cert-tls server --persist-tun --verb 3 --resolv-retry infinite --connect-retry-max 3 --server-poll-timeout 5 --explicit-exit-notify 3 --script-security 2"
++CLIENT_NULL_OPTS="--dev null --ifconfig-noexec --up ${srcdir}/null_client_up.sh"
++CLIENT_LWIP_OPTS="--dev null --dev-node unix:${LWIPOVPN_PATH} --up ${srcdir}/lwip_client_up.sh"
++
+ CLIENT_CIPHER_OPTS=""
+ CLIENT_CERT_OPTS="--ca ${CA} --cert ${CLIENT_CERT} --key ${CLIENT_KEY} --tls-auth ${TA} 1"
+ 
+-TEST_RUN_LIST="1 2 3"
+-CLIENT_CONF_BASE="${CLIENT_BASE_OPTS} ${CLIENT_CIPHER_OPTS} ${CLIENT_CERT_OPTS}"
++TEST_RUN_LIST="1 1L 2 2L 3"
++CLIENT_CONF_BASE="${CLIENT_NULL_OPTS} ${CLIENT_BASE_OPTS} ${CLIENT_CIPHER_OPTS} ${CLIENT_CERT_OPTS}"
++CLIENT_CONF_BASE_LWIP="${CLIENT_LWIP_OPTS} ${CLIENT_BASE_OPTS} ${CLIENT_CIPHER_OPTS} ${CLIENT_CERT_OPTS}"
+ 
+ TEST_NAME_1="t_server_null_client.sh-openvpn_current_udp"
+ SHOULD_PASS_1="yes"
+ CLIENT_EXEC_1="${CLIENT_EXEC}"
+ CLIENT_CONF_1="${CLIENT_CONF_BASE} --remote 127.0.0.1 1194 udp --proto udp"
+ 
++TEST_NAME_1L="t_server_null_client.sh-openvpn_current_udp_lwip"
++SHOULD_PASS_1L="yes"
++CLIENT_EXEC_1L="${CLIENT_EXEC}"
++CLIENT_CONF_1L="${CLIENT_CONF_BASE_LWIP} --remote 127.0.0.1 1194 udp --proto udp"
++
+ TEST_NAME_2="t_server_null_client.sh-openvpn_current_tcp"
+ SHOULD_PASS_2="yes"
+ CLIENT_EXEC_2="${CLIENT_EXEC}"
+ CLIENT_CONF_2="${CLIENT_CONF_BASE} --remote 127.0.0.1 1195 tcp --proto tcp"
+ 
++TEST_NAME_2L="t_server_null_client.sh-openvpn_current_tcp_lwip"
++SHOULD_PASS_2L="yes"
++CLIENT_EXEC_2L="${CLIENT_EXEC}"
++CLIENT_CONF_2L="${CLIENT_CONF_BASE_LWIP} --remote 127.0.0.1 1195 tcp --proto tcp"
++
+ TEST_NAME_3="t_server_null_client.sh-openvpn_current_udp_fail"
+ SHOULD_PASS_3="no"
+ CLIENT_EXEC_3="${CLIENT_EXEC}"
 
