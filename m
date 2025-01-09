@@ -1,17 +1,11 @@
-From: "MaxF (Code Review)" <gerrit@...515...>
-Date: Thu, 9 Jan 2025 17:53:41 +0000
+From: Gert Doering <gert@...1296...>
+Date: Thu,  9 Jan 2025 18:55:28 +0100
+Message-ID: <20250109175528.22033-1-gert@...1296...>
 In-Reply-To: <gerrit.1731290343000.I2a104decdb1e77a460f7a6976bcd0560b67a07b5@...2715...>
 References: <gerrit.1731290343000.I2a104decdb1e77a460f7a6976bcd0560b67a07b5@...2715...>
-Reply-To: max@...2606..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...,
- lstipakov@...277...
-Message-ID: <20b0497854286669f345a744e1e7b7bddf2a2427-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="qT8Y4GkIbkU="; charset=UTF-8
-Subject: [Openvpn-devel] [M] Change in openvpn[master]: Add methods to
- read/write packet ids for epoch data
+Subject: [Openvpn-devel] [PATCH v12] Add methods to read/write packet ids
+ for epoch data
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,94 +14,254 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: plaisthos <arne-openvpn@...1227...>
-Cc: flichtenheld <frank@...2641...>, stipa <lstipakov@...277...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---qT8Y4GkIbkU=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+From: Arne Schwabe <arne@...1227...>
 
-Attention is currently required from: flichtenheld, plaisthos, stipa.
+Change-Id: I2a104decdb1e77a460f7a6976bcd0560b67a07b5
+Signed-off-by: Arne Schwabe <arne@...1227...>
+Acked-by: MaxF <max@...2606...>
+---
 
-MaxF has posted comments on this change. ( http://gerrit.openvpn.net/c/open=
-vpn/+/803?usp=3Demail )
+This change was reviewed on Gerrit and approved by at least one
+developer. I request to merge it to master.
 
-Change subject: Add methods to read/write packet ids for epoch data
-......................................................................
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/803
+This mail reflects revision 12 of this Change.
 
+Acked-by according to Gerrit (reflected above):
+MaxF <max@...2606...>
 
-Patch Set 12: Code-Review+2
-
-
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/803?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings
-
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: I2a104decdb1e77a460f7a6976bcd0560b67a07b5
-Gerrit-Change-Number: 803
-Gerrit-PatchSet: 12
-Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
-Gerrit-Reviewer: MaxF <max@...2606...>
-Gerrit-Reviewer: flichtenheld <frank@...2641...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-CC: stipa <lstipakov@...277...>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Attention: stipa <lstipakov@...277...>
-Gerrit-Comment-Date: Thu, 09 Jan 2025 17:53:41 +0000
-Gerrit-HasComments: No
-Gerrit-Has-Labels: Yes
-Gerrit-MessageType: comment
-
---qT8Y4GkIbkU=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<p> Attention is currently required from: flichtenheld, plaisthos, stipa. <=
-/p>
-<p>Patch set 12:<span style=3D"border-radius: 3px; display: inline-block; m=
-argin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span=
-></p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/803?usp=3Demail">V=
-iew Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To vi=
-ew, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/803?usp=3Demail"=
->change 803</a>. To unsubscribe, or for help writing mail filters, visit <a=
- href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemscop=
-e itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"ac=
-tion" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=
-=3D"http://gerrit.openvpn.net/c/openvpn/+/803?usp=3Demail"/><meta itemprop=
-=3D"name" content=3D"View Change"/></div></div>
-
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I2a104decdb1e77a460f7a6976bc=
-d0560b67a07b5 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 803 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 12 </div>
-<div style=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@...1711...=
-27...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: MaxF &lt;max@...2606...&gt; <=
-/div>
-<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
-1...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: stipa &lt;lstipakov@...277...&gt; <=
-/div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
-41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: stipa &lt;lstipakov@...1663...=
-.&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Thu, 09 Jan 2025 17:53:41=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: No </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
-
-
---qT8Y4GkIbkU=--
+        
+diff --git a/src/openvpn/packet_id.c b/src/openvpn/packet_id.c
+index 117c95f..0806e99 100644
+--- a/src/openvpn/packet_id.c
++++ b/src/openvpn/packet_id.c
+@@ -120,7 +120,8 @@
+         int64_t diff;
+ 
+         /*
+-         * If time value increases, start a new sequence number sequence.
++         * If time value increases, start a new sequence list of number
++         * sequence for the new time point.
+          */
+         if (!CIRC_LIST_SIZE(p->seq_list)
+             || pin->time > p->time
+@@ -343,6 +344,21 @@
+     return true;
+ }
+ 
++static bool
++packet_id_send_update_epoch(struct packet_id_send *p)
++{
++    if (!p->time)
++    {
++        p->time = now;
++    }
++    if (p->id == PACKET_ID_EPOCH_MAX)
++    {
++        return false;
++    }
++    p->id++;
++    return true;
++}
++
+ bool
+ packet_id_write(struct packet_id_send *p, struct buffer *buf, bool long_form,
+                 bool prepend)
+@@ -634,4 +650,44 @@
+     gc_free(&gc);
+ }
+ 
++uint16_t
++packet_id_read_epoch(struct packet_id_net *pin, struct buffer *buf)
++{
++    uint64_t packet_id;
++
++
++    if (!buf_read(buf, &packet_id, sizeof(packet_id)))
++    {
++        return 0;
++    }
++
++    uint64_t id = ntohll(packet_id);
++    /* top most 16 bits */
++    uint16_t epoch = id >> 48;
++
++    pin->id = id & PACKET_ID_MASK;
++    return epoch;
++}
++
++bool
++packet_id_write_epoch(struct packet_id_send *p, uint16_t epoch, struct buffer *buf)
++{
++    if (!packet_id_send_update_epoch(p))
++    {
++        return false;
++    }
++
++    /* Highest 16 bits of packet id is the epoch.
++     *
++     * The lower 48 bits are the per-epoch packet id counter. */
++    uint64_t net_id = ((uint64_t) epoch) << 48 | p->id;
++
++    /* convert to network order. This ensures that the highest bytes
++     * also become the first ones on the wire*/
++    net_id = htonll(net_id);
++
++    return buf_write(buf, &net_id, sizeof(net_id));
++}
++
++
+ #endif /* ifdef ENABLE_DEBUG */
+diff --git a/src/openvpn/packet_id.h b/src/openvpn/packet_id.h
+index d8a3e1a..c05ac9a 100644
+--- a/src/openvpn/packet_id.h
++++ b/src/openvpn/packet_id.h
+@@ -44,7 +44,11 @@
+  * These are ephemeral and are never saved to a file.
+  */
+ typedef uint32_t packet_id_type;
+-#define PACKET_ID_MAX UINT32_MAX
++#define PACKET_ID_MAX        UINT32_MAX
++#define PACKET_ID_EPOCH_MAX  0x0000ffffffffffffull
++/** Mask of the bits that contain the 48-bit of the per-epoch packet
++ * counter in the packet id*/
++#define PACKET_ID_MASK       0x0000ffffffffffffull
+ typedef uint32_t net_time_t;
+ 
+ /*
+@@ -158,7 +162,8 @@
+  * includes a timestamp as well.
+  *
+  * An epoch packet-id is a 16 bit epoch
+- * counter plus a 48 per-epoch packet-id
++ * counter plus a 48 per-epoch packet-id.
++ *
+  *
+  * Long packet-ids are used as IVs for
+  * CFB/OFB ciphers and for control channel
+@@ -321,4 +326,25 @@
+     }
+ }
+ 
++/**
++ * Writes the packet ID containing both the epoch and the packet id to the
++ * buffer specified by buf.
++ * @param p         packet id send structure to use for the packet id
++ * @param epoch     epoch to write to the packet
++ * @param buf       buffer to write the packet id/epoch to
++ * @return          false if the packet id space is exhausted and cannot be written
++ */
++bool
++packet_id_write_epoch(struct packet_id_send *p, uint16_t epoch, struct buffer *buf);
++
++/**
++ * Reads the packet ID containing both the epoch and the per-epoch counter
++ * from the buf.  Will return 0 as epoch id if there is any error.
++ * @param p       packet_id struct to populate with the on-wire counter
++ * @param buf     buffer to read the packet id from.
++ * @return        0 for an error/invalid id, epoch otherwise
++ */
++uint16_t
++packet_id_read_epoch(struct packet_id_net *p, struct buffer *buf);
++
+ #endif /* PACKET_ID_H */
+diff --git a/tests/unit_tests/openvpn/test_packet_id.c b/tests/unit_tests/openvpn/test_packet_id.c
+index d918985..312a6b3d 100644
+--- a/tests/unit_tests/openvpn/test_packet_id.c
++++ b/tests/unit_tests/openvpn/test_packet_id.c
+@@ -44,6 +44,7 @@
+     } test_buf_data;
+     struct buffer test_buf;
+     struct packet_id_send pis;
++    struct gc_arena gc;
+ };
+ 
+ static int
+@@ -59,6 +60,7 @@
+ 
+     data->test_buf.data = (void *) &data->test_buf_data;
+     data->test_buf.capacity = sizeof(data->test_buf_data);
++    data->gc = gc_new();
+ 
+     *state = data;
+     return 0;
+@@ -67,6 +69,8 @@
+ static int
+ test_packet_id_write_teardown(void **state)
+ {
++    struct test_packet_id_write_data *data = *state;
++    gc_free(&data->gc);
+     free(*state);
+     return 0;
+ }
+@@ -209,6 +213,54 @@
+     reliable_free(rel);
+ }
+ 
++static void
++test_packet_id_write_epoch(void **state)
++{
++    struct test_packet_id_write_data *data = *state;
++
++    struct buffer buf = alloc_buf_gc(128, &data->gc);
++
++    /* test normal writing of packet id to the buffer */
++    assert_true(packet_id_write_epoch(&data->pis, 0x23, &buf));
++
++    assert_int_equal(buf.len, 8);
++    uint8_t expected_header[8] = { 0x00, 0x23, 0, 0, 0, 0, 0, 1};
++    assert_memory_equal(BPTR(&buf), expected_header, 8);
++
++    /* too small buffer should error out */
++    struct buffer buf_short = alloc_buf_gc(5, &data->gc);
++    assert_false(packet_id_write_epoch(&data->pis, 0xabde, &buf_short));
++
++    /* test a true 48 bit packet id */
++    data->pis.id = 0xfa079ab9d2e8;
++    struct buffer buf_48 = alloc_buf_gc(128, &data->gc);
++    assert_true(packet_id_write_epoch(&data->pis, 0xfffe, &buf_48));
++    uint8_t expected_header_48[8] = { 0xff, 0xfe, 0xfa, 0x07, 0x9a, 0xb9, 0xd2, 0xe9};
++    assert_memory_equal(BPTR(&buf_48), expected_header_48, 8);
++
++    /* test writing/checking the 48 bit per epoch packet counter
++     * overflow */
++    data->pis.id = 0xfffffffffffe;
++    struct buffer buf_of = alloc_buf_gc(128, &data->gc);
++    assert_true(packet_id_write_epoch(&data->pis, 0xf00f, &buf_of));
++    uint8_t expected_header_of[8] = { 0xf0, 0x0f, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff};
++    assert_memory_equal(BPTR(&buf_of), expected_header_of, 8);
++
++    /* This is go over 2^48 - 1 and should error out. */
++    assert_false(packet_id_write_epoch(&data->pis, 0xf00f, &buf_of));
++
++    /* Now read back the packet ids and check if they are the same as what we
++     * have written */
++    struct packet_id_net pin;
++    assert_int_equal(packet_id_read_epoch(&pin, &buf), 0x23);
++    assert_int_equal(pin.id, 1);
++
++    assert_int_equal(packet_id_read_epoch(&pin, &buf_48), 0xfffe);
++    assert_int_equal(pin.id, 0xfa079ab9d2e9);
++
++    assert_int_equal(packet_id_read_epoch(&pin, &buf_of), 0xf00f);
++    assert_int_equal(pin.id, 0xffffffffffff);
++}
+ 
+ static void
+ test_copy_acks_to_lru(void **state)
+@@ -296,6 +348,10 @@
+         cmocka_unit_test_setup_teardown(test_packet_id_write_long_wrap,
+                                         test_packet_id_write_setup,
+                                         test_packet_id_write_teardown),
++        cmocka_unit_test_setup_teardown(test_packet_id_write_epoch,
++                                        test_packet_id_write_setup,
++                                        test_packet_id_write_teardown),
++
+         cmocka_unit_test(test_get_num_output_sequenced_available),
+         cmocka_unit_test(test_copy_acks_to_lru)
+ 
 
