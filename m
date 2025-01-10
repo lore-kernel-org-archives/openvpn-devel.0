@@ -1,14 +1,14 @@
 From: "flichtenheld (Code Review)" <gerrit@...515...>
-Date: Fri, 10 Jan 2025 16:54:58 +0000
+Date: Fri, 10 Jan 2025 17:25:20 +0000
 In-Reply-To: <gerrit.1733989644000.Ifbe4ffb44d3bfcaa50adb38cacb3436fcdc71b10@...2715...>
 References: <gerrit.1733989644000.Ifbe4ffb44d3bfcaa50adb38cacb3436fcdc71b10@...2715...>
 Reply-To: frank@...2641..., arne-openvpn@...1227..., heiko@...515...,
  openvpn-devel@lists.sourceforge.net
-Message-ID: <b20963858017b11f3e19789a75c152f8eae02d48-EmailReviewComments-HTML@...2715...>
+Message-ID: <bf00252618f89fec747c74d264b745267a36fcba-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="zooFnLD0tms="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="VsBkiJvioBw="; charset=UTF-8
 Subject: [Openvpn-devel] [L] Change in openvpn[master]: dns: apply settings
  via script on unixoid systems
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -22,7 +22,7 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: d12fk <heiko@...515...>
 Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---zooFnLD0tms=
+--VsBkiJvioBw=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
@@ -35,23 +35,22 @@ Change subject: dns: apply settings via script on unixoid systems
 ......................................................................
 
 
-Patch Set 6: Code-Review-1
+Patch Set 6:
 
 (2 comments)
 
-Patchset:
+File distro/dns-scripts/systemd-dns-updown.sh:
 
-PS6:
-At the very least misses documentation for `--dns-script` option
+http://gerrit.openvpn.net/c/openvpn/+/838/comment/2f129ac9_1e6e34f1 :
+PS6, Line 15: # Example env from openvpn (not all are always applied):
+Example should mention dev, script-type, and dns-vars-file (comment applies=
+ to all variants of the script).
 
 
-File CMakeLists.txt:
-
-http://gerrit.openvpn.net/c/openvpn/+/838/comment/ff64760d_e60a785e :
-PS6, Line 43: set(DNS_UPDOWN_PATH "/usr/libexec/openvpn/dns-updown" CACHE S=
-TRING "Default location for the DNS up/down script")
-We should either set both of these to use /usr/local by default or none. Pr=
-obably best to just use `${CMAKE_INSTALL_PREFIX}`
+http://gerrit.openvpn.net/c/openvpn/+/838/comment/68692646_1b746e29 :
+PS6, Line 30: [ -z "${dns_vars_file}" ] || . "${dns_vars_file}"
+dns_vars_file is not actually used until the next commit, should this line =
+be moved to there? (comment applies to all variants of the script).
 
 
 
@@ -71,42 +70,41 @@ Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
 Gerrit-Attention: d12fk <heiko@...515...>
-Gerrit-Comment-Date: Fri, 10 Jan 2025 16:54:58 +0000
+Gerrit-Comment-Date: Fri, 10 Jan 2025 17:25:20 +0000
 Gerrit-HasComments: Yes
-Gerrit-Has-Labels: Yes
+Gerrit-Has-Labels: No
 Gerrit-MessageType: comment
 
---zooFnLD0tms=
+--VsBkiJvioBw=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <p> Attention is currently required from: d12fk, plaisthos. </p>
-<p>Patch set 6:<span style=3D"border-radius: 3px; display: inline-block; ma=
-rgin: 0 2px; padding: 4px;background-color: #ffd4d4;">Code-Review -1</span>=
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/838?usp=3Demail">Vi=
-ew Change</a></p><p>2 comments:</p><ul style=3D"list-style: none; padding: =
-0;"><li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-=
-style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p =
-style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvp=
-n/+/838?tab=3Dcomments">Patch Set #6:</a> </p><p style=3D"white-space: pre-=
-wrap; word-wrap: break-word;">At the very least misses documentation for `-=
--dns-script` option</p></li></ul></li><li style=3D"margin: 0; padding: 0;">=
-<p>File CMakeLists.txt:</p><ul style=3D"list-style: none; padding: 0;"><li =
-style=3D"margin: 0; padding: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;">=
-<a href=3D"http://gerrit.openvpn.net/c/openvpn/+/838/comment/ff64760d_e60a7=
-85e">Patch Set #6, Line 43:</a> <code style=3D"font-family:monospace,monosp=
-ace">set(DNS_UPDOWN_PATH &quot;/usr/libexec/openvpn/dns-updown&quot; CACHE =
-STRING &quot;Default location for the DNS up/down script&quot;)</code></p><=
-p style=3D"white-space: pre-wrap; word-wrap: break-word;">We should either =
-set both of these to use /usr/local by default or none. Probably best to ju=
-st use `${CMAKE_INSTALL_PREFIX}`</p></li></ul></li></ul><p>To view, visit <=
-a href=3D"http://gerrit.openvpn.net/c/openvpn/+/838?usp=3Demail">change 838=
-</a>. To unsubscribe, or for help writing mail filters, visit <a href=3D"ht=
-tp://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope itemtype=
-=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"action" item=
-type=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http:/=
-/gerrit.openvpn.net/c/openvpn/+/838?usp=3Demail"/><meta itemprop=3D"name" c=
-ontent=3D"View Change"/></div></div>
+<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/838?usp=3Demail">View C=
+hange</a></p><p>2 comments:</p><ul style=3D"list-style: none; padding: 0;">=
+<li style=3D"margin: 0; padding: 0;"><p>File distro/dns-scripts/systemd-dns=
+-updown.sh:</p><ul style=3D"list-style: none; padding: 0;"><li style=3D"mar=
+gin: 0; padding: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"h=
+ttp://gerrit.openvpn.net/c/openvpn/+/838/comment/2f129ac9_1e6e34f1">Patch S=
+et #6, Line 15:</a> <code style=3D"font-family:monospace,monospace"># Examp=
+le env from openvpn (not all are always applied):</code></p><p style=3D"whi=
+te-space: pre-wrap; word-wrap: break-word;">Example should mention dev, scr=
+ipt-type, and dns-vars-file (comment applies to all variants of the script)=
+.</p></li><li style=3D"margin: 0; padding: 0 0 0 16px;"><p style=3D"margin-=
+bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/838/comment/=
+68692646_1b746e29">Patch Set #6, Line 30:</a> <code style=3D"font-family:mo=
+nospace,monospace">[ -z &quot;${dns_vars_file}&quot; ] || . &quot;${dns_var=
+s_file}&quot;</code></p><p style=3D"white-space: pre-wrap; word-wrap: break=
+-word;">dns_vars_file is not actually used until the next commit, should th=
+is line be moved to there? (comment applies to all variants of the script).=
+</p></li></ul></li></ul><p>To view, visit <a href=3D"http://gerrit.openvpn.=
+net/c/openvpn/+/838?usp=3Demail">change 838</a>. To unsubscribe, or for hel=
+p writing mail filters, visit <a href=3D"http://gerrit.openvpn.net/settings=
+">settings</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessag=
+e"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAct=
+ion"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/8=
+38?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div></d=
+iv>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
@@ -126,12 +124,12 @@ ts.sourceforge.net&gt; </div>
 ..1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: d12fk &lt;heiko@...515...&gt=
 ; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Fri, 10 Jan 2025 16:54:58=
+<div style=3D"display:none"> Gerrit-Comment-Date: Fri, 10 Jan 2025 17:25:20=
  +0000 </div>
 <div style=3D"display:none"> Gerrit-HasComments: Yes </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: No </div>
 <div style=3D"display:none"> Gerrit-MessageType: comment </div>
 
 
---zooFnLD0tms=--
+--VsBkiJvioBw=--
 
