@@ -1,15 +1,15 @@
 From: "flichtenheld (Code Review)" <gerrit@...515...>
-Date: Tue, 14 Jan 2025 13:14:17 +0000
-References: <gerrit.1736860439000.I1918c43202b87f0c987bfd9155c739da7dd02632@...2715...>
+Date: Tue, 14 Jan 2025 13:43:23 +0000
+References: <gerrit.1736862200000.I2791d09ab698d89dc7e0183151f77b84024ad6d1@...2715...>
 Reply-To: frank@...2641..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net
-Message-ID: <e708ea5de292eede6ec49bef5edf41f10178b645-HTML@...2715...>
+Message-ID: <d87c0c72c3c6dd06d7f978da27f368425f2f45f7-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="B+2PlXg0qe8="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: Fix some trivial
- sign-compare compiler warnings
+Content-Type: multipart/alternative; boundary="PoCy5bl2yJY="; charset=UTF-8
+Subject: [Openvpn-devel] [XS] Change in openvpn[master]: console_systemd:
+ remove the timeout when using `systemd-ask-password`
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -21,7 +21,7 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: plaisthos <arne-openvpn@...1227...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---B+2PlXg0qe8=
+--PoCy5bl2yJY=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
@@ -32,110 +32,56 @@ Hello plaisthos,
 I'd like you to do a code review.
 Please visit
 
-    http://gerrit.openvpn.net/c/openvpn/+/865?usp=3Demail
+    http://gerrit.openvpn.net/c/openvpn/+/866?usp=3Demail
 
 to review the following change.
 
 
-Change subject: Fix some trivial sign-compare compiler warnings
+Change subject: console_systemd: remove the timeout when using `systemd-ask=
+-password`
 ......................................................................
 
-Fix some trivial sign-compare compiler warnings
+console_systemd: remove the timeout when using `systemd-ask-password`
 
-Change-Id: I1918c43202b87f0c987bfd9155c739da7dd02632
-Signed-off-by: Frank Lichtenheld <frank@...2641...>
+Without this, the password request will expire after 90 seconds leaving
+no way to provide the password without OpenVPN asking for it again.
+Given that interactive use will wait for input without a timeout, it
+makes sense to have non-interactive usage also wait until the user is
+ready instead of forcing users to race against the timeout.
+
+Change-Id: I2791d09ab698d89dc7e0183151f77b84024ad6d1
+Signed-off-by: Ben Boeckel <ben.boeckel@...2851...>
+Acked-By: David Sommerseth <davids@...515...>
 ---
-M src/openvpn/options.c
-M src/openvpn/socket.c
-M src/openvpn/tun.c
-3 files changed, 6 insertions(+), 10 deletions(-)
+M src/openvpn/console_systemd.c
+1 file changed, 1 insertion(+), 0 deletions(-)
 
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/65/865/1
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/66/866/1
 
-diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index 1113663..b594b09 100644
---- a/src/openvpn/options.c
-+++ b/src/openvpn/options.c
-@@ -1448,7 +1448,7 @@
+diff --git a/src/openvpn/console_systemd.c b/src/openvpn/console_systemd.c
+index 858504d..91ebb35 100644
+--- a/src/openvpn/console_systemd.c
++++ b/src/openvpn/console_systemd.c
+@@ -72,6 +72,7 @@
+     }
+ #endif
+     argv_printf_cat(&argv, "--icon network-vpn");
++    argv_printf_cat(&argv, "--timeout=3D0");
+     argv_printf_cat(&argv, "%s", prompt);
 
-     while (server)
-     {
--        for (int i =3D 0; i < server->addr_count; ++i)
-+        for (size_t i =3D 0; i < server->addr_count; ++i)
-         {
-             if (server->addr[i].family =3D=3D AF_INET)
-             {
-diff --git a/src/openvpn/socket.c b/src/openvpn/socket.c
-index 234d590..4aeb613 100644
---- a/src/openvpn/socket.c
-+++ b/src/openvpn/socket.c
-@@ -3131,8 +3131,7 @@
- int
- ascii2proto(const char *proto_name)
- {
--    int i;
--    for (i =3D 0; i < SIZE(proto_names); ++i)
-+    for (size_t i =3D 0; i < SIZE(proto_names); ++i)
-     {
-         if (!strcmp(proto_name, proto_names[i].short_form))
-         {
-@@ -3145,8 +3144,7 @@
- sa_family_t
- ascii2af(const char *proto_name)
- {
--    int i;
--    for (i =3D 0; i < SIZE(proto_names); ++i)
-+    for (size_t i =3D 0; i < SIZE(proto_names); ++i)
-     {
-         if (!strcmp(proto_name, proto_names[i].short_form))
-         {
-@@ -3159,8 +3157,7 @@
- const char *
- proto2ascii(int proto, sa_family_t af, bool display_form)
- {
--    unsigned int i;
--    for (i =3D 0; i < SIZE(proto_names); ++i)
-+    for (size_t i =3D 0; i < SIZE(proto_names); ++i)
-     {
-         if (proto_names[i].proto_af =3D=3D af && proto_names[i].proto =3D=
-=3D proto)
-         {
-@@ -3182,9 +3179,8 @@
- proto2ascii_all(struct gc_arena *gc)
- {
-     struct buffer out =3D alloc_buf_gc(256, gc);
--    int i;
-
--    for (i =3D 0; i < SIZE(proto_names); ++i)
-+    for (size_t i =3D 0; i < SIZE(proto_names); ++i)
-     {
-         if (i)
-         {
-diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
-index 3f2ec4a..22706f3 100644
---- a/src/openvpn/tun.c
-+++ b/src/openvpn/tun.c
-@@ -631,7 +631,7 @@
- {
-     struct gc_arena gc =3D gc_new();
-     struct route_gateway_info rgi;
--    const int needed =3D (RGI_ADDR_DEFINED|RGI_NETMASK_DEFINED);
-+    const unsigned int needed =3D (RGI_ADDR_DEFINED|RGI_NETMASK_DEFINED);
-
-     get_default_gateway(&rgi, ctx);
-     if ((rgi.flags & needed) =3D=3D needed)
+     if ((std_out =3D openvpn_popen(&argv, NULL)) < 0)
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/865?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/866?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings
 
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: I1918c43202b87f0c987bfd9155c739da7dd02632
-Gerrit-Change-Number: 865
+Gerrit-Change-Id: I2791d09ab698d89dc7e0183151f77b84024ad6d1
+Gerrit-Change-Number: 866
 Gerrit-PatchSet: 1
 Gerrit-Owner: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
@@ -143,86 +89,49 @@ Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
 Gerrit-MessageType: newchange
 
---B+2PlXg0qe8=
+--PoCy5bl2yJY=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <p> Attention is currently required from: plaisthos. </p>
 <p>flichtenheld would like plaisthos to <strong>review</strong> this change.
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/865?usp=3Demail">Vi=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/866?usp=3Demail">Vi=
 ew Change</a></p><pre style=3D"font-family: monospace,monospace; white-spac=
-e: pre-wrap;">Fix some trivial sign-compare compiler warnings<br><br>Change=
--Id: I1918c43202b87f0c987bfd9155c739da7dd02632<br>Signed-off-by: Frank Lich=
-tenheld &lt;frank@...2641...&gt;<br>---<br>M src/openvpn/options.c<br>M src=
-/openvpn/socket.c<br>M src/openvpn/tun.c<br>3 files changed, 6 insertions(+=
-), 10 deletions(-)<br><br></pre><pre style=3D"font-family: monospace,monosp=
-ace; white-space: pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/openvp=
-n refs/changes/65/865/1</pre><pre style=3D"font-family: monospace,monospace=
-; white-space: pre-wrap;"><span>diff --git a/src/openvpn/options.c b/src/op=
-envpn/options.c</span><br><span>index 1113663..b594b09 100644</span><br><sp=
-an>--- a/src/openvpn/options.c</span><br><span>+++ b/src/openvpn/options.c<=
-/span><br><span>@@ -1448,7 +1448,7 @@</span><br><span> </span><br><span>   =
-  while (server)</span><br><span>     {</span><br><span style=3D"color: hsl=
-(0, 100%, 40%);">-        for (int i =3D 0; i &lt; server-&gt;addr_count; +=
-+i)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        for (siz=
-e_t i =3D 0; i &lt; server-&gt;addr_count; ++i)</span><br><span>         {<=
-/span><br><span>             if (server-&gt;addr[i].family =3D=3D AF_INET)<=
-/span><br><span>             {</span><br><span>diff --git a/src/openvpn/soc=
-ket.c b/src/openvpn/socket.c</span><br><span>index 234d590..4aeb613 100644<=
-/span><br><span>--- a/src/openvpn/socket.c</span><br><span>+++ b/src/openvp=
-n/socket.c</span><br><span>@@ -3131,8 +3131,7 @@</span><br><span> int</span=
-><br><span> ascii2proto(const char *proto_name)</span><br><span> {</span><b=
-r><span style=3D"color: hsl(0, 100%, 40%);">-    int i;</span><br><span sty=
-le=3D"color: hsl(0, 100%, 40%);">-    for (i =3D 0; i &lt; SIZE(proto_names=
-); ++i)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    for (siz=
-e_t i =3D 0; i &lt; SIZE(proto_names); ++i)</span><br><span>     {</span><b=
-r><span>         if (!strcmp(proto_name, proto_names[i].short_form))</span>=
-<br><span>         {</span><br><span>@@ -3145,8 +3144,7 @@</span><br><span>=
- sa_family_t</span><br><span> ascii2af(const char *proto_name)</span><br><s=
-pan> {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    int i;</spa=
-n><br><span style=3D"color: hsl(0, 100%, 40%);">-    for (i =3D 0; i &lt; S=
-IZE(proto_names); ++i)</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+    for (size_t i =3D 0; i &lt; SIZE(proto_names); ++i)</span><br><span>=
-     {</span><br><span>         if (!strcmp(proto_name, proto_names[i].shor=
-t_form))</span><br><span>         {</span><br><span>@@ -3159,8 +3157,7 @@</=
-span><br><span> const char *</span><br><span> proto2ascii(int proto, sa_fam=
-ily_t af, bool display_form)</span><br><span> {</span><br><span style=3D"co=
-lor: hsl(0, 100%, 40%);">-    unsigned int i;</span><br><span style=3D"colo=
-r: hsl(0, 100%, 40%);">-    for (i =3D 0; i &lt; SIZE(proto_names); ++i)</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+    for (size_t i =3D =
-0; i &lt; SIZE(proto_names); ++i)</span><br><span>     {</span><br><span>  =
-       if (proto_names[i].proto_af =3D=3D af &amp;&amp; proto_names[i].prot=
-o =3D=3D proto)</span><br><span>         {</span><br><span>@@ -3182,9 +3179=
-,8 @@</span><br><span> proto2ascii_all(struct gc_arena *gc)</span><br><span=
-> {</span><br><span>     struct buffer out =3D alloc_buf_gc(256, gc);</span=
-><br><span style=3D"color: hsl(0, 100%, 40%);">-    int i;</span><br><span>=
- </span><br><span style=3D"color: hsl(0, 100%, 40%);">-    for (i =3D 0; i =
-&lt; SIZE(proto_names); ++i)</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+    for (size_t i =3D 0; i &lt; SIZE(proto_names); ++i)</span><br>=
-<span>     {</span><br><span>         if (i)</span><br><span>         {</sp=
-an><br><span>diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c</span><br><=
-span>index 3f2ec4a..22706f3 100644</span><br><span>--- a/src/openvpn/tun.c<=
-/span><br><span>+++ b/src/openvpn/tun.c</span><br><span>@@ -631,7 +631,7 @@=
-</span><br><span> {</span><br><span>     struct gc_arena gc =3D gc_new();</=
-span><br><span>     struct route_gateway_info rgi;</span><br><span style=3D=
-"color: hsl(0, 100%, 40%);">-    const int needed =3D (RGI_ADDR_DEFINED|RGI=
-_NETMASK_DEFINED);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-   const unsigned int needed =3D (RGI_ADDR_DEFINED|RGI_NETMASK_DEFINED);</s=
-pan><br><span> </span><br><span>     get_default_gateway(&amp;rgi, ctx);</s=
-pan><br><span>     if ((rgi.flags &amp; needed) =3D=3D needed)</span><br><s=
-pan></span><br></pre><p>To view, visit <a href=3D"http://gerrit.openvpn.net=
-/c/openvpn/+/865?usp=3Demail">change 865</a>. To unsubscribe, or for help w=
-riting mail filters, visit <a href=3D"http://gerrit.openvpn.net/settings">s=
-ettings</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage">=
-<div itemscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction=
-"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/865?=
-usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
+e: pre-wrap;">console_systemd: remove the timeout when using `systemd-ask-p=
+assword`<br><br>Without this, the password request will expire after 90 sec=
+onds leaving<br>no way to provide the password without OpenVPN asking for i=
+t again.<br>Given that interactive use will wait for input without a timeou=
+t, it<br>makes sense to have non-interactive usage also wait until the user=
+ is<br>ready instead of forcing users to race against the timeout.<br><br>C=
+hange-Id: I2791d09ab698d89dc7e0183151f77b84024ad6d1<br>Signed-off-by: Ben B=
+oeckel &lt;ben.boeckel@...2851...&gt;<br>Acked-By: David Sommerseth &lt;dav=
+ids@...515...&gt;<br>---<br>M src/openvpn/console_systemd.c<br>1 file chang=
+ed, 1 insertion(+), 0 deletions(-)<br><br></pre><pre style=3D"font-family: =
+monospace,monospace; white-space: pre-wrap;">git pull ssh://gerrit.openvpn.=
+net:29418/openvpn refs/changes/66/866/1</pre><pre style=3D"font-family: mon=
+ospace,monospace; white-space: pre-wrap;"><span>diff --git a/src/openvpn/co=
+nsole_systemd.c b/src/openvpn/console_systemd.c</span><br><span>index 85850=
+4d..91ebb35 100644</span><br><span>--- a/src/openvpn/console_systemd.c</spa=
+n><br><span>+++ b/src/openvpn/console_systemd.c</span><br><span>@@ -72,6 +7=
+2,7 @@</span><br><span>     }</span><br><span> #endif</span><br><span>     =
+argv_printf_cat(&amp;argv, &quot;--icon network-vpn&quot;);</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+    argv_printf_cat(&amp;argv, &quo=
+t;--timeout=3D0&quot;);</span><br><span>     argv_printf_cat(&amp;argv, &qu=
+ot;%s&quot;, prompt);</span><br><span> </span><br><span>     if ((std_out =
+=3D openvpn_popen(&amp;argv, NULL)) &lt; 0)</span><br><span></span><br></pr=
+e><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/866?us=
+p=3Demail">change 866</a>. To unsubscribe, or for help writing mail filters=
+, visit <a href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><di=
+v itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope item=
+prop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D=
+"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/866?usp=3Demail"/><meta=
+ itemprop=3D"name" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I1918c43202b87f0c987bfd9155c=
-739da7dd02632 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 865 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I2791d09ab698d89dc7e0183151f=
+77b84024ad6d1 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 866 </div>
 <div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
 <div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
 .&gt; </div>
@@ -235,5 +144,5 @@ ts.sourceforge.net&gt; </div>
 <div style=3D"display:none"> Gerrit-MessageType: newchange </div>
 
 
---B+2PlXg0qe8=--
+--PoCy5bl2yJY=--
 
