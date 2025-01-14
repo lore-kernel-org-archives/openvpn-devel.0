@@ -1,15 +1,15 @@
 From: "flichtenheld (Code Review)" <gerrit@...515...>
-Date: Tue, 14 Jan 2025 13:14:14 +0000
-References: <gerrit.1736860439000.If570253e57371e4126b0e8aa4c349e2051cb8b00@...2715...>
+Date: Tue, 14 Jan 2025 13:14:17 +0000
+References: <gerrit.1736860439000.I1918c43202b87f0c987bfd9155c739da7dd02632@...2715...>
 Reply-To: frank@...2641..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net
-Message-ID: <f5a051ea167dd8807a30f978b250ffd3a8d48cd4-HTML@...2715...>
+Message-ID: <e708ea5de292eede6ec49bef5edf41f10178b645-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="3D0QBMjEMts="; charset=UTF-8
-Subject: [Openvpn-devel] [M] Change in openvpn[master]: Remove unused
- function check_subnet_conflict
+Content-Type: multipart/alternative; boundary="B+2PlXg0qe8="; charset=UTF-8
+Subject: [Openvpn-devel] [S] Change in openvpn[master]: Fix some trivial
+ sign-compare compiler warnings
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -21,7 +21,7 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: plaisthos <arne-openvpn@...1227...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---3D0QBMjEMts=
+--B+2PlXg0qe8=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
@@ -32,138 +32,110 @@ Hello plaisthos,
 I'd like you to do a code review.
 Please visit
 
-    http://gerrit.openvpn.net/c/openvpn/+/863?usp=3Demail
+    http://gerrit.openvpn.net/c/openvpn/+/865?usp=3Demail
 
 to review the following change.
 
 
-Change subject: Remove unused function check_subnet_conflict
+Change subject: Fix some trivial sign-compare compiler warnings
 ......................................................................
 
-Remove unused function check_subnet_conflict
+Fix some trivial sign-compare compiler warnings
 
-This has been #if 0 for over a decade. Let's just
-remove this.
-
-Change-Id: If570253e57371e4126b0e8aa4c349e2051cb8b00
+Change-Id: I1918c43202b87f0c987bfd9155c739da7dd02632
 Signed-off-by: Frank Lichtenheld <frank@...2641...>
 ---
-M src/openvpn/route.c
+M src/openvpn/options.c
+M src/openvpn/socket.c
 M src/openvpn/tun.c
-M src/openvpn/tun.h
-3 files changed, 0 insertions(+), 52 deletions(-)
+3 files changed, 6 insertions(+), 10 deletions(-)
 
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/63/863/1
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/65/865/1
 
-diff --git a/src/openvpn/route.c b/src/openvpn/route.c
-index 278233f..b8ede01 100644
---- a/src/openvpn/route.c
-+++ b/src/openvpn/route.c
-@@ -1218,7 +1218,6 @@
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index 1113663..b594b09 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -1448,7 +1448,7 @@
 
-         for (r =3D rl->routes; r; r =3D r->next)
+     while (server)
+     {
+-        for (int i =3D 0; i < server->addr_count; ++i)
++        for (size_t i =3D 0; i < server->addr_count; ++i)
          {
--            check_subnet_conflict(r->network, r->netmask, "route");
-             if (flags & ROUTE_DELETE_FIRST)
+             if (server->addr[i].family =3D=3D AF_INET)
              {
-                 delete_route(r, tt, flags, &rl->rgi, es, ctx);
+diff --git a/src/openvpn/socket.c b/src/openvpn/socket.c
+index 234d590..4aeb613 100644
+--- a/src/openvpn/socket.c
++++ b/src/openvpn/socket.c
+@@ -3131,8 +3131,7 @@
+ int
+ ascii2proto(const char *proto_name)
+ {
+-    int i;
+-    for (i =3D 0; i < SIZE(proto_names); ++i)
++    for (size_t i =3D 0; i < SIZE(proto_names); ++i)
+     {
+         if (!strcmp(proto_name, proto_names[i].short_form))
+         {
+@@ -3145,8 +3144,7 @@
+ sa_family_t
+ ascii2af(const char *proto_name)
+ {
+-    int i;
+-    for (i =3D 0; i < SIZE(proto_names); ++i)
++    for (size_t i =3D 0; i < SIZE(proto_names); ++i)
+     {
+         if (!strcmp(proto_name, proto_names[i].short_form))
+         {
+@@ -3159,8 +3157,7 @@
+ const char *
+ proto2ascii(int proto, sa_family_t af, bool display_form)
+ {
+-    unsigned int i;
+-    for (i =3D 0; i < SIZE(proto_names); ++i)
++    for (size_t i =3D 0; i < SIZE(proto_names); ++i)
+     {
+         if (proto_names[i].proto_af =3D=3D af && proto_names[i].proto =3D=
+=3D proto)
+         {
+@@ -3182,9 +3179,8 @@
+ proto2ascii_all(struct gc_arena *gc)
+ {
+     struct buffer out =3D alloc_buf_gc(256, gc);
+-    int i;
+
+-    for (i =3D 0; i < SIZE(proto_names); ++i)
++    for (size_t i =3D 0; i < SIZE(proto_names); ++i)
+     {
+         if (i)
+         {
 diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
-index 9dce8da..3f2ec4a 100644
+index 3f2ec4a..22706f3 100644
 --- a/src/openvpn/tun.c
 +++ b/src/openvpn/tun.c
-@@ -626,44 +626,6 @@
-     gc_free(&gc);
- }
-
--/*
-- * Issue a warning if ip/netmask (on the virtual IP network) conflicts with
-- * the settings on the local LAN.  This is designed to flag issues where
-- * (for example) the OpenVPN server LAN is running on 192.168.1.x, but then
-- * an OpenVPN client tries to connect from a public location that is also =
-running
-- * off of a router set to 192.168.1.x.
-- */
--void
--check_subnet_conflict(const in_addr_t ip,
--                      const in_addr_t netmask,
--                      const char *prefix)
--{
--#if 0 /* too many false positives */
--    struct gc_arena gc =3D gc_new();
--    in_addr_t lan_gw =3D 0;
--    in_addr_t lan_netmask =3D 0;
--
--    if (get_default_gateway(&lan_gw, &lan_netmask) && lan_netmask)
--    {
--        const in_addr_t lan_network =3D lan_gw & lan_netmask;
--        const in_addr_t network =3D ip & netmask;
--
--        /* do the two subnets defined by network/netmask and lan_network/l=
-an_netmask intersect? */
--        if ((network & lan_netmask) =3D=3D lan_network
--            || (lan_network & netmask) =3D=3D network)
--        {
--            msg(M_WARN, "WARNING: potential %s subnet conflict between loc=
-al LAN [%s/%s] and remote VPN [%s/%s]",
--                prefix,
--                print_in_addr_t(lan_network, 0, &gc),
--                print_in_addr_t(lan_netmask, 0, &gc),
--                print_in_addr_t(network, 0, &gc),
--                print_in_addr_t(netmask, 0, &gc));
--        }
--    }
--    gc_free(&gc);
--#endif /* if 0 */
--}
--
- void
- warn_on_use_of_common_subnets(openvpn_net_ctx_t *ctx)
+@@ -631,7 +631,7 @@
  {
-@@ -922,15 +884,6 @@
-                                      tt->remote_netmask);
-                 }
-             }
--
--            if (!tun_p2p)
--            {
--                check_subnet_conflict(tt->local, tt->remote_netmask, "TUN/=
-TAP adapter");
--            }
--            else
--            {
--                check_subnet_conflict(tt->local, IPV4_NETMASK_HOST, "TUN/T=
-AP adapter");
--            }
-         }
+     struct gc_arena gc =3D gc_new();
+     struct route_gateway_info rgi;
+-    const int needed =3D (RGI_ADDR_DEFINED|RGI_NETMASK_DEFINED);
++    const unsigned int needed =3D (RGI_ADDR_DEFINED|RGI_NETMASK_DEFINED);
 
- #ifdef _WIN32
-diff --git a/src/openvpn/tun.h b/src/openvpn/tun.h
-index a5b9a48..911e58b 100644
---- a/src/openvpn/tun.h
-+++ b/src/openvpn/tun.h
-@@ -355,10 +355,6 @@
-
- bool is_tun_p2p(const struct tuntap *tt);
-
--void check_subnet_conflict(const in_addr_t ip,
--                           const in_addr_t netmask,
--                           const char *prefix);
--
- void warn_on_use_of_common_subnets(openvpn_net_ctx_t *ctx);
-
- /**
+     get_default_gateway(&rgi, ctx);
+     if ((rgi.flags & needed) =3D=3D needed)
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/863?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/865?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings
 
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: If570253e57371e4126b0e8aa4c349e2051cb8b00
-Gerrit-Change-Number: 863
+Gerrit-Change-Id: I1918c43202b87f0c987bfd9155c739da7dd02632
+Gerrit-Change-Number: 865
 Gerrit-PatchSet: 1
 Gerrit-Owner: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
@@ -171,122 +143,86 @@ Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
 Gerrit-MessageType: newchange
 
---3D0QBMjEMts=
+--B+2PlXg0qe8=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <p> Attention is currently required from: plaisthos. </p>
 <p>flichtenheld would like plaisthos to <strong>review</strong> this change.
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/863?usp=3Demail">Vi=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/865?usp=3Demail">Vi=
 ew Change</a></p><pre style=3D"font-family: monospace,monospace; white-spac=
-e: pre-wrap;">Remove unused function check_subnet_conflict<br><br>This has =
-been #if 0 for over a decade. Let&#39;s just<br>remove this.<br><br>Change-=
-Id: If570253e57371e4126b0e8aa4c349e2051cb8b00<br>Signed-off-by: Frank Licht=
-enheld &lt;frank@...2641...&gt;<br>---<br>M src/openvpn/route.c<br>M src/op=
-envpn/tun.c<br>M src/openvpn/tun.h<br>3 files changed, 0 insertions(+), 52 =
-deletions(-)<br><br></pre><pre style=3D"font-family: monospace,monospace; w=
-hite-space: pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/openvpn refs=
-/changes/63/863/1</pre><pre style=3D"font-family: monospace,monospace; whit=
-e-space: pre-wrap;"><span>diff --git a/src/openvpn/route.c b/src/openvpn/ro=
-ute.c</span><br><span>index 278233f..b8ede01 100644</span><br><span>--- a/s=
-rc/openvpn/route.c</span><br><span>+++ b/src/openvpn/route.c</span><br><spa=
-n>@@ -1218,7 +1218,6 @@</span><br><span> </span><br><span>         for (r =
-=3D rl-&gt;routes; r; r =3D r-&gt;next)</span><br><span>         {</span><b=
-r><span style=3D"color: hsl(0, 100%, 40%);">-            check_subnet_confl=
-ict(r-&gt;network, r-&gt;netmask, &quot;route&quot;);</span><br><span>     =
-        if (flags &amp; ROUTE_DELETE_FIRST)</span><br><span>             {<=
-/span><br><span>                 delete_route(r, tt, flags, &amp;rl-&gt;rgi=
-, es, ctx);</span><br><span>diff --git a/src/openvpn/tun.c b/src/openvpn/tu=
-n.c</span><br><span>index 9dce8da..3f2ec4a 100644</span><br><span>--- a/src=
-/openvpn/tun.c</span><br><span>+++ b/src/openvpn/tun.c</span><br><span>@@ -=
-626,44 +626,6 @@</span><br><span>     gc_free(&amp;gc);</span><br><span> }<=
-/span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-/*</=
-span><br><span style=3D"color: hsl(0, 100%, 40%);">- * Issue a warning if i=
-p/netmask (on the virtual IP network) conflicts with</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">- * the settings on the local LAN.  This is =
-designed to flag issues where</span><br><span style=3D"color: hsl(0, 100%, =
-40%);">- * (for example) the OpenVPN server LAN is running on 192.168.1.x, =
-but then</span><br><span style=3D"color: hsl(0, 100%, 40%);">- * an OpenVPN=
- client tries to connect from a public location that is also running</span>=
-<br><span style=3D"color: hsl(0, 100%, 40%);">- * off of a router set to 19=
-2.168.1.x.</span><br><span style=3D"color: hsl(0, 100%, 40%);">- */</span><=
-br><span style=3D"color: hsl(0, 100%, 40%);">-void</span><br><span style=3D=
-"color: hsl(0, 100%, 40%);">-check_subnet_conflict(const in_addr_t ip,</spa=
-n><br><span style=3D"color: hsl(0, 100%, 40%);">-                      cons=
-t in_addr_t netmask,</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
-                     const char *prefix)</span><br><span style=3D"color: hs=
-l(0, 100%, 40%);">-{</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#=
-if 0 /* too many false positives */</span><br><span style=3D"color: hsl(0, =
-100%, 40%);">-    struct gc_arena gc =3D gc_new();</span><br><span style=3D=
-"color: hsl(0, 100%, 40%);">-    in_addr_t lan_gw =3D 0;</span><br><span st=
-yle=3D"color: hsl(0, 100%, 40%);">-    in_addr_t lan_netmask =3D 0;</span><=
-br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"col=
-or: hsl(0, 100%, 40%);">-    if (get_default_gateway(&amp;lan_gw, &amp;lan_=
-netmask) &amp;&amp; lan_netmask)</span><br><span style=3D"color: hsl(0, 100=
-%, 40%);">-    {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-     =
-   const in_addr_t lan_network =3D lan_gw &amp; lan_netmask;</span><br><spa=
-n style=3D"color: hsl(0, 100%, 40%);">-        const in_addr_t network =3D =
-ip &amp; netmask;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</sp=
-an><br><span style=3D"color: hsl(0, 100%, 40%);">-        /* do the two sub=
-nets defined by network/netmask and lan_network/lan_netmask intersect? */</=
-span><br><span style=3D"color: hsl(0, 100%, 40%);">-        if ((network &a=
-mp; lan_netmask) =3D=3D lan_network</span><br><span style=3D"color: hsl(0, =
-100%, 40%);">-            || (lan_network &amp; netmask) =3D=3D network)</s=
-pan><br><span style=3D"color: hsl(0, 100%, 40%);">-        {</span><br><spa=
-n style=3D"color: hsl(0, 100%, 40%);">-            msg(M_WARN, &quot;WARNIN=
-G: potential %s subnet conflict between local LAN [%s/%s] and remote VPN [%=
-s/%s]&quot;,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-         =
-       prefix,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-       =
-         print_in_addr_t(lan_network, 0, &amp;gc),</span><br><span style=3D=
-"color: hsl(0, 100%, 40%);">-                print_in_addr_t(lan_netmask, 0=
-, &amp;gc),</span><br><span style=3D"color: hsl(0, 100%, 40%);">-          =
-      print_in_addr_t(network, 0, &amp;gc),</span><br><span style=3D"color:=
- hsl(0, 100%, 40%);">-                print_in_addr_t(netmask, 0, &amp;gc))=
-;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        }</span><br>=
-<span style=3D"color: hsl(0, 100%, 40%);">-    }</span><br><span style=3D"c=
-olor: hsl(0, 100%, 40%);">-    gc_free(&amp;gc);</span><br><span style=3D"c=
-olor: hsl(0, 100%, 40%);">-#endif /* if 0 */</span><br><span style=3D"color=
-: hsl(0, 100%, 40%);">-}</span><br><span style=3D"color: hsl(0, 100%, 40%);=
-">-</span><br><span> void</span><br><span> warn_on_use_of_common_subnets(op=
-envpn_net_ctx_t *ctx)</span><br><span> {</span><br><span>@@ -922,15 +884,6 =
-@@</span><br><span>                                      tt-&gt;remote_netm=
-ask);</span><br><span>                 }</span><br><span>             }</sp=
-an><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D=
-"color: hsl(0, 100%, 40%);">-            if (!tun_p2p)</span><br><span styl=
-e=3D"color: hsl(0, 100%, 40%);">-            {</span><br><span style=3D"col=
-or: hsl(0, 100%, 40%);">-                check_subnet_conflict(tt-&gt;local=
-, tt-&gt;remote_netmask, &quot;TUN/TAP adapter&quot;);</span><br><span styl=
-e=3D"color: hsl(0, 100%, 40%);">-            }</span><br><span style=3D"col=
-or: hsl(0, 100%, 40%);">-            else</span><br><span style=3D"color: h=
-sl(0, 100%, 40%);">-            {</span><br><span style=3D"color: hsl(0, 10=
-0%, 40%);">-                check_subnet_conflict(tt-&gt;local, IPV4_NETMAS=
-K_HOST, &quot;TUN/TAP adapter&quot;);</span><br><span style=3D"color: hsl(0=
-, 100%, 40%);">-            }</span><br><span>         }</span><br><span> <=
-/span><br><span> #ifdef _WIN32</span><br><span>diff --git a/src/openvpn/tun=
-.h b/src/openvpn/tun.h</span><br><span>index a5b9a48..911e58b 100644</span>=
-<br><span>--- a/src/openvpn/tun.h</span><br><span>+++ b/src/openvpn/tun.h</=
-span><br><span>@@ -355,10 +355,6 @@</span><br><span> </span><br><span> bool=
- is_tun_p2p(const struct tuntap *tt);</span><br><span> </span><br><span sty=
-le=3D"color: hsl(0, 100%, 40%);">-void check_subnet_conflict(const in_addr_=
-t ip,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-                =
-           const in_addr_t netmask,</span><br><span style=3D"color: hsl(0, =
-100%, 40%);">-                           const char *prefix);</span><br><sp=
-an style=3D"color: hsl(0, 100%, 40%);">-</span><br><span> void warn_on_use_=
-of_common_subnets(openvpn_net_ctx_t *ctx);</span><br><span> </span><br><spa=
-n> /**</span><br><span></span><br></pre><p>To view, visit <a href=3D"http:/=
-/gerrit.openvpn.net/c/openvpn/+/863?usp=3Demail">change 863</a>. To unsubsc=
-ribe, or for help writing mail filters, visit <a href=3D"http://gerrit.open=
-vpn.net/settings">settings</a>.</p><div itemscope itemtype=3D"http://schema=
-.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://sc=
-hema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.n=
-et/c/openvpn/+/863?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Ch=
-ange"/></div></div>
+e: pre-wrap;">Fix some trivial sign-compare compiler warnings<br><br>Change=
+-Id: I1918c43202b87f0c987bfd9155c739da7dd02632<br>Signed-off-by: Frank Lich=
+tenheld &lt;frank@...2641...&gt;<br>---<br>M src/openvpn/options.c<br>M src=
+/openvpn/socket.c<br>M src/openvpn/tun.c<br>3 files changed, 6 insertions(+=
+), 10 deletions(-)<br><br></pre><pre style=3D"font-family: monospace,monosp=
+ace; white-space: pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/openvp=
+n refs/changes/65/865/1</pre><pre style=3D"font-family: monospace,monospace=
+; white-space: pre-wrap;"><span>diff --git a/src/openvpn/options.c b/src/op=
+envpn/options.c</span><br><span>index 1113663..b594b09 100644</span><br><sp=
+an>--- a/src/openvpn/options.c</span><br><span>+++ b/src/openvpn/options.c<=
+/span><br><span>@@ -1448,7 +1448,7 @@</span><br><span> </span><br><span>   =
+  while (server)</span><br><span>     {</span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-        for (int i =3D 0; i &lt; server-&gt;addr_count; +=
++i)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        for (siz=
+e_t i =3D 0; i &lt; server-&gt;addr_count; ++i)</span><br><span>         {<=
+/span><br><span>             if (server-&gt;addr[i].family =3D=3D AF_INET)<=
+/span><br><span>             {</span><br><span>diff --git a/src/openvpn/soc=
+ket.c b/src/openvpn/socket.c</span><br><span>index 234d590..4aeb613 100644<=
+/span><br><span>--- a/src/openvpn/socket.c</span><br><span>+++ b/src/openvp=
+n/socket.c</span><br><span>@@ -3131,8 +3131,7 @@</span><br><span> int</span=
+><br><span> ascii2proto(const char *proto_name)</span><br><span> {</span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-    int i;</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-    for (i =3D 0; i &lt; SIZE(proto_names=
+); ++i)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    for (siz=
+e_t i =3D 0; i &lt; SIZE(proto_names); ++i)</span><br><span>     {</span><b=
+r><span>         if (!strcmp(proto_name, proto_names[i].short_form))</span>=
+<br><span>         {</span><br><span>@@ -3145,8 +3144,7 @@</span><br><span>=
+ sa_family_t</span><br><span> ascii2af(const char *proto_name)</span><br><s=
+pan> {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    int i;</spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-    for (i =3D 0; i &lt; S=
+IZE(proto_names); ++i)</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+    for (size_t i =3D 0; i &lt; SIZE(proto_names); ++i)</span><br><span>=
+     {</span><br><span>         if (!strcmp(proto_name, proto_names[i].shor=
+t_form))</span><br><span>         {</span><br><span>@@ -3159,8 +3157,7 @@</=
+span><br><span> const char *</span><br><span> proto2ascii(int proto, sa_fam=
+ily_t af, bool display_form)</span><br><span> {</span><br><span style=3D"co=
+lor: hsl(0, 100%, 40%);">-    unsigned int i;</span><br><span style=3D"colo=
+r: hsl(0, 100%, 40%);">-    for (i =3D 0; i &lt; SIZE(proto_names); ++i)</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+    for (size_t i =3D =
+0; i &lt; SIZE(proto_names); ++i)</span><br><span>     {</span><br><span>  =
+       if (proto_names[i].proto_af =3D=3D af &amp;&amp; proto_names[i].prot=
+o =3D=3D proto)</span><br><span>         {</span><br><span>@@ -3182,9 +3179=
+,8 @@</span><br><span> proto2ascii_all(struct gc_arena *gc)</span><br><span=
+> {</span><br><span>     struct buffer out =3D alloc_buf_gc(256, gc);</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-    int i;</span><br><span>=
+ </span><br><span style=3D"color: hsl(0, 100%, 40%);">-    for (i =3D 0; i =
+&lt; SIZE(proto_names); ++i)</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+    for (size_t i =3D 0; i &lt; SIZE(proto_names); ++i)</span><br>=
+<span>     {</span><br><span>         if (i)</span><br><span>         {</sp=
+an><br><span>diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c</span><br><=
+span>index 3f2ec4a..22706f3 100644</span><br><span>--- a/src/openvpn/tun.c<=
+/span><br><span>+++ b/src/openvpn/tun.c</span><br><span>@@ -631,7 +631,7 @@=
+</span><br><span> {</span><br><span>     struct gc_arena gc =3D gc_new();</=
+span><br><span>     struct route_gateway_info rgi;</span><br><span style=3D=
+"color: hsl(0, 100%, 40%);">-    const int needed =3D (RGI_ADDR_DEFINED|RGI=
+_NETMASK_DEFINED);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+   const unsigned int needed =3D (RGI_ADDR_DEFINED|RGI_NETMASK_DEFINED);</s=
+pan><br><span> </span><br><span>     get_default_gateway(&amp;rgi, ctx);</s=
+pan><br><span>     if ((rgi.flags &amp; needed) =3D=3D needed)</span><br><s=
+pan></span><br></pre><p>To view, visit <a href=3D"http://gerrit.openvpn.net=
+/c/openvpn/+/865?usp=3Demail">change 865</a>. To unsubscribe, or for help w=
+riting mail filters, visit <a href=3D"http://gerrit.openvpn.net/settings">s=
+ettings</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage">=
+<div itemscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction=
+"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/865?=
+usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: If570253e57371e4126b0e8aa4c3=
-49e2051cb8b00 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 863 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I1918c43202b87f0c987bfd9155c=
+739da7dd02632 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 865 </div>
 <div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
 <div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
 .&gt; </div>
@@ -299,5 +235,5 @@ ts.sourceforge.net&gt; </div>
 <div style=3D"display:none"> Gerrit-MessageType: newchange </div>
 
 
---3D0QBMjEMts=--
+--B+2PlXg0qe8=--
 
