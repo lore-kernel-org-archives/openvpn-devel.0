@@ -1,16 +1,15 @@
 From: "flichtenheld (Code Review)" <gerrit@...515...>
-Date: Tue, 14 Jan 2025 14:44:08 +0000
-In-Reply-To: <gerrit.1736860439000.I925accd8267f94ecfd9ccea85bae965dc2a10208@...2715...>
-References: <gerrit.1736860439000.I925accd8267f94ecfd9ccea85bae965dc2a10208@...2715...>
+Date: Tue, 14 Jan 2025 14:44:19 +0000
+References: <gerrit.1736865848000.Iaaf80c688ddff79ac9472d7237003713637c140b@...2715...>
 Reply-To: frank@...2641..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net
-Message-ID: <d5983605856361111ef814e007953e7fd27c6c20-EmailReplacePatchSet-HTML@...2715...>
+Message-ID: <e134b37d6a19e861d14d95e462c11e5b0f25c43b-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="pjW3/OHXZik="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: Add more
- "intentional fallthrough" comments
+Content-Type: multipart/alternative; boundary="i/+6ejObgfA="; charset=UTF-8
+Subject: [Openvpn-devel] [XS] Change in openvpn[master]:
+ tls_crypt_v2_write_client_key_file: Fix missing-field-initializers co...
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -22,7 +21,7 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: plaisthos <arne-openvpn@...1227...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---pjW3/OHXZik=
+--i/+6ejObgfA=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
@@ -30,185 +29,104 @@ Attention is currently required from: plaisthos.
 
 Hello plaisthos,
 
-I'd like you to reexamine a change. Please visit
+I'd like you to do a code review.
+Please visit
 
-    http://gerrit.openvpn.net/c/openvpn/+/864?usp=3Demail
+    http://gerrit.openvpn.net/c/openvpn/+/867?usp=3Demail
 
-to look at the new patch set (#2).
+to review the following change.
 
 
-Change subject: Add more "intentional fallthrough" comments
+Change subject: tls_crypt_v2_write_client_key_file: Fix missing-field-initi=
+alizers compiler warning
 ......................................................................
 
-Add more "intentional fallthrough" comments
+tls_crypt_v2_write_client_key_file: Fix missing-field-initializers compiler=
+ warning
 
-To make it easier to exclude them from compiler
-warnings.
+GCC wants us to be more explicit here.
 
-Based on the existing comment in init.c
-
-Change-Id: I925accd8267f94ecfd9ccea85bae965dc2a10208
+Change-Id: Iaaf80c688ddff79ac9472d7237003713637c140b
 Signed-off-by: Frank Lichtenheld <frank@...2641...>
 ---
-M src/openvpn/list.c
-M src/openvpn/push.c
-2 files changed, 11 insertions(+), 0 deletions(-)
+M src/openvpn/tls_crypt.c
+1 file changed, 1 insertion(+), 1 deletion(-)
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/64/864/2
 
-diff --git a/src/openvpn/list.c b/src/openvpn/list.c
-index 69f1510..b339c7b 100644
---- a/src/openvpn/list.c
-+++ b/src/openvpn/list.c
-@@ -437,34 +437,44 @@
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/67/867/1
+
+diff --git a/src/openvpn/tls_crypt.c b/src/openvpn/tls_crypt.c
+index 24df930..4c421aa 100644
+--- a/src/openvpn/tls_crypt.c
++++ b/src/openvpn/tls_crypt.c
+@@ -691,7 +691,7 @@
+     struct buffer client_key_pem =3D { 0 };
+     struct buffer dst =3D alloc_buf_gc(TLS_CRYPT_V2_CLIENT_KEY_LEN
+                                      + TLS_CRYPT_V2_MAX_WKC_LEN, &gc);
+-    struct key2 client_key =3D { 2 };
++    struct key2 client_key =3D { .n =3D 2 };
+
+     if (!rand_bytes((void *)client_key.keys, sizeof(client_key.keys)))
      {
-         case 11:
-             c +=3D ((uint32_t) k[10] << 24);
-+            /* Intentional [[fallthrough]]; */
-
-         case 10:
-             c +=3D ((uint32_t) k[9] << 16);
-+            /* Intentional [[fallthrough]]; */
-
-         case 9:
-             c +=3D ((uint32_t) k[8] << 8);
-+            /* Intentional [[fallthrough]]; */
-
-         /* the first byte of c is reserved for the length */
-         case 8:
-             b +=3D ((uint32_t) k[7] << 24);
-+            /* Intentional [[fallthrough]]; */
-
-         case 7:
-             b +=3D ((uint32_t) k[6] << 16);
-+            /* Intentional [[fallthrough]]; */
-
-         case 6:
-             b +=3D ((uint32_t) k[5] << 8);
-+            /* Intentional [[fallthrough]]; */
-
-         case 5:
-             b +=3D k[4];
-+            /* Intentional [[fallthrough]]; */
-
-         case 4:
-             a +=3D ((uint32_t) k[3] << 24);
-+            /* Intentional [[fallthrough]]; */
-
-         case 3:
-             a +=3D ((uint32_t) k[2] << 16);
-+            /* Intentional [[fallthrough]]; */
-
-         case 2:
-             a +=3D ((uint32_t) k[1] << 8);
-+            /* Intentional [[fallthrough]]; */
-
-         case 1:
-             a +=3D k[0];
-diff --git a/src/openvpn/push.c b/src/openvpn/push.c
-index ddad109..06e421c 100644
---- a/src/openvpn/push.c
-+++ b/src/openvpn/push.c
-@@ -98,6 +98,7 @@
-
-             case AR_INTERACT:
-                 ssl_purge_auth(false);
-+                /* Intentional [[fallthrough]]; */
-
-             case AR_NOINTERACT:
-                 /* SOFT-SIGTUSR1 -- Auth failure error */
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/864?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/867?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings
 
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: I925accd8267f94ecfd9ccea85bae965dc2a10208
-Gerrit-Change-Number: 864
-Gerrit-PatchSet: 2
+Gerrit-Change-Id: Iaaf80c688ddff79ac9472d7237003713637c140b
+Gerrit-Change-Number: 867
+Gerrit-PatchSet: 1
 Gerrit-Owner: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-MessageType: newpatchset
+Gerrit-MessageType: newchange
 
---pjW3/OHXZik=
+--i/+6ejObgfA=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <p> Attention is currently required from: plaisthos. </p>
-<p>flichtenheld <strong>uploaded patch set #2</strong> to this change.</p><=
-p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/864?usp=3Demail">View Ch=
-ange</a></p><pre style=3D"font-family: monospace,monospace; white-space: pr=
-e-wrap;">Add more &quot;intentional fallthrough&quot; comments<br><br>To ma=
-ke it easier to exclude them from compiler<br>warnings.<br><br>Based on the=
- existing comment in init.c<br><br>Change-Id: I925accd8267f94ecfd9ccea85bae=
-965dc2a10208<br>Signed-off-by: Frank Lichtenheld &lt;frank@...2641...&gt;<b=
-r>---<br>M src/openvpn/list.c<br>M src/openvpn/push.c<br>2 files changed, 1=
-1 insertions(+), 0 deletions(-)<br><br></pre><pre style=3D"font-family: mon=
-ospace,monospace; white-space: pre-wrap;">git pull ssh://gerrit.openvpn.net=
-:29418/openvpn refs/changes/64/864/2</pre><pre style=3D"font-family: monosp=
-ace,monospace; white-space: pre-wrap;"><span>diff --git a/src/openvpn/list.=
-c b/src/openvpn/list.c</span><br><span>index 69f1510..b339c7b 100644</span>=
-<br><span>--- a/src/openvpn/list.c</span><br><span>+++ b/src/openvpn/list.c=
-</span><br><span>@@ -437,34 +437,44 @@</span><br><span>     {</span><br><sp=
-an>         case 11:</span><br><span>             c +=3D ((uint32_t) k[10] =
-&lt;&lt; 24);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
-      /* Intentional [[fallthrough]]; */</span><br><span> </span><br><span>=
-         case 10:</span><br><span>             c +=3D ((uint32_t) k[9] &lt;=
-&lt; 16);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+          =
-  /* Intentional [[fallthrough]]; */</span><br><span> </span><br><span>    =
-     case 9:</span><br><span>             c +=3D ((uint32_t) k[8] &lt;&lt; =
-8);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            /* I=
-ntentional [[fallthrough]]; */</span><br><span> </span><br><span>         /=
-* the first byte of c is reserved for the length */</span><br><span>       =
-  case 8:</span><br><span>             b +=3D ((uint32_t) k[7] &lt;&lt; 24)=
-;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            /* Int=
-entional [[fallthrough]]; */</span><br><span> </span><br><span>         cas=
-e 7:</span><br><span>             b +=3D ((uint32_t) k[6] &lt;&lt; 16);</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+            /* Intentio=
-nal [[fallthrough]]; */</span><br><span> </span><br><span>         case 6:<=
-/span><br><span>             b +=3D ((uint32_t) k[5] &lt;&lt; 8);</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+            /* Intentional [[=
-fallthrough]]; */</span><br><span> </span><br><span>         case 5:</span>=
-<br><span>             b +=3D k[4];</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+            /* Intentional [[fallthrough]]; */</span><br><s=
-pan> </span><br><span>         case 4:</span><br><span>             a +=3D =
-((uint32_t) k[3] &lt;&lt; 24);</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+            /* Intentional [[fallthrough]]; */</span><br><span> =
-</span><br><span>         case 3:</span><br><span>             a +=3D ((uin=
-t32_t) k[2] &lt;&lt; 16);</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+            /* Intentional [[fallthrough]]; */</span><br><span> </spa=
-n><br><span>         case 2:</span><br><span>             a +=3D ((uint32_t=
-) k[1] &lt;&lt; 8);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-            /* Intentional [[fallthrough]]; */</span><br><span> </span><br>=
-<span>         case 1:</span><br><span>             a +=3D k[0];</span><br>=
-<span>diff --git a/src/openvpn/push.c b/src/openvpn/push.c</span><br><span>=
-index ddad109..06e421c 100644</span><br><span>--- a/src/openvpn/push.c</spa=
-n><br><span>+++ b/src/openvpn/push.c</span><br><span>@@ -98,6 +98,7 @@</spa=
-n><br><span> </span><br><span>             case AR_INTERACT:</span><br><spa=
-n>                 ssl_purge_auth(false);</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+                /* Intentional [[fallthrough]]; */</s=
-pan><br><span> </span><br><span>             case AR_NOINTERACT:</span><br>=
-<span>                 /* SOFT-SIGTUSR1 -- Auth failure error */</span><br>=
-<span></span><br></pre><p>To view, visit <a href=3D"http://gerrit.openvpn.n=
-et/c/openvpn/+/864?usp=3Demail">change 864</a>. To unsubscribe, or for help=
- writing mail filters, visit <a href=3D"http://gerrit.openvpn.net/settings"=
->settings</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage=
-"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewActi=
-on"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/86=
-4?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div></di=
-v>
+<p>flichtenheld would like plaisthos to <strong>review</strong> this change.
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/867?usp=3Demail">Vi=
+ew Change</a></p><pre style=3D"font-family: monospace,monospace; white-spac=
+e: pre-wrap;">tls_crypt_v2_write_client_key_file: Fix missing-field-initial=
+izers compiler warning<br><br>GCC wants us to be more explicit here.<br><br=
+>Change-Id: Iaaf80c688ddff79ac9472d7237003713637c140b<br>Signed-off-by: Fra=
+nk Lichtenheld &lt;frank@...2641...&gt;<br>---<br>M src/openvpn/tls_crypt.c=
+<br>1 file changed, 1 insertion(+), 1 deletion(-)<br><br></pre><pre style=
+=3D"font-family: monospace,monospace; white-space: pre-wrap;">git pull ssh:=
+//gerrit.openvpn.net:29418/openvpn refs/changes/67/867/1</pre><pre style=3D=
+"font-family: monospace,monospace; white-space: pre-wrap;"><span>diff --git=
+ a/src/openvpn/tls_crypt.c b/src/openvpn/tls_crypt.c</span><br><span>index =
+24df930..4c421aa 100644</span><br><span>--- a/src/openvpn/tls_crypt.c</span=
+><br><span>+++ b/src/openvpn/tls_crypt.c</span><br><span>@@ -691,7 +691,7 @=
+@</span><br><span>     struct buffer client_key_pem =3D { 0 };</span><br><s=
+pan>     struct buffer dst =3D alloc_buf_gc(TLS_CRYPT_V2_CLIENT_KEY_LEN</sp=
+an><br><span>                                      + TLS_CRYPT_V2_MAX_WKC_L=
+EN, &amp;gc);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    stru=
+ct key2 client_key =3D { 2 };</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+    struct key2 client_key =3D { .n =3D 2 };</span><br><span> </s=
+pan><br><span>     if (!rand_bytes((void *)client_key.keys, sizeof(client_k=
+ey.keys)))</span><br><span>     {</span><br><span></span><br></pre><p>To vi=
+ew, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/867?usp=3Demail"=
+>change 867</a>. To unsubscribe, or for help writing mail filters, visit <a=
+ href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemscop=
+e itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"ac=
+tion" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=
+=3D"http://gerrit.openvpn.net/c/openvpn/+/867?usp=3Demail"/><meta itemprop=
+=3D"name" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I925accd8267f94ecfd9ccea85ba=
-e965dc2a10208 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 864 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: Iaaf80c688ddff79ac9472d72370=
+03713637c140b </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 867 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
 <div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
 .&gt; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
@@ -217,8 +135,8 @@ e965dc2a10208 </div>
 ts.sourceforge.net&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
 ..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
+<div style=3D"display:none"> Gerrit-MessageType: newchange </div>
 
 
---pjW3/OHXZik=--
+--i/+6ejObgfA=--
 
