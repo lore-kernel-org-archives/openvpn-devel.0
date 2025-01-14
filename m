@@ -1,16 +1,17 @@
-From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Tue, 14 Jan 2025 16:57:47 +0000
-In-Reply-To: <gerrit.1736860439000.Ia3b0f22b0049a111ce52b3c87dd08a843ea9a919@...2715...>
-References: <gerrit.1736860439000.Ia3b0f22b0049a111ce52b3c87dd08a843ea9a919@...2715...>
-Reply-To: gert@...1296..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <90c67cc1cdca7feb99bcc826b12497c73c449e6f-EmailReviewComments-HTML@...2715...>
+Date: Tue, 14 Jan 2025 18:04:58 +0100
+From: Gert Doering <gert@...1296...>
+Message-ID: <Z4aZOlD4IrBsIZYL@...1296...>
+References: <20241231204629.1210040-1-ben.boeckel@...2851...>
+ <20241231204629.1210040-2-ben.boeckel@...2851...>
+ <5c9cf8c6-be56-4202-bbbc-c9f33daa6527@...2108...>
+ <Z4ZrDm6lW3Fo4wOo@...2685...>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ protocol="application/pgp-signature"; boundary="uDXixxnz/fISrFOy"
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="TWYPqko3F3c="; charset=UTF-8
-Subject: [Openvpn-devel] [M] Change in openvpn[master]: Remove various
- unused function parameters
+In-Reply-To: <Z4ZrDm6lW3Fo4wOo@...2685...>
+Subject: Re: [Openvpn-devel] [PATCH 1/1] console_systemd: remove the timeout
+ when using `systemd-ask-password`
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,103 +20,49 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: flichtenheld <frank@...2641...>
-Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: Frank Lichtenheld <frank@...2641...>
+Cc: David Sommerseth <dazo+openvpn@...2108...>, openvpn-devel@lists.sourceforge.net
 
---TWYPqko3F3c=
-Content-Type: text/plain; charset="UTF-8"
+--uDXixxnz/fISrFOy
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-Attention is currently required from: flichtenheld, plaisthos.
+Hi,
 
-cron2 has posted comments on this change. ( http://gerrit.openvpn.net/c/ope=
-nvpn/+/862?usp=3Demail )
+On Tue, Jan 14, 2025 at 02:47:58PM +0100, Frank Lichtenheld wrote:
+> Doing this as part of an experiment to add mail-submitted patches
+> to Gerrit.
 
-Change subject: Remove various unused function parameters
-......................................................................
+I *was* wondering since we had an ACK on the list already :-)
 
+gert
+--=20
+"If was one thing all people took for granted, was conviction that if you=20
+ feed honest figures into a computer, honest figures come out. Never doubte=
+d=20
+ it myself till I met a computer with a sense of humor."
+                             Robert A. Heinlein, The Moon is a Harsh Mistre=
+ss
 
-Patch Set 2: Code-Review-1
+Gert Doering - Munich, Germany                             gert@...1296...
 
-(1 comment)
+--uDXixxnz/fISrFOy
+Content-Type: application/pgp-signature; name="signature.asc"
 
-Patchset:
+-----BEGIN PGP SIGNATURE-----
 
-PS2:
-I have the suspicion that some of the `multi` stuff will conflict with the =
-multisocket work, so I'd postpone this for a bit.
+iQGcBAEBAgAGBQJnhpk5AAoJEB2Cnv7KVigS0jAL/jSYiOiG5ZeQ1hkhzUm8UzFF
+AZYYwpSyw1wV5lhOUZGgyTCHgYpo7z7inXEoMHstEtRylXydjD3pnuZM/cW5IOrs
+vmYXr8z0ZsCuEudMQ3go8TanA/DCN9xJZDQLD96gFDalKxFUHRuuQgSKfQZMqy5c
+F3aA3MhNcAt/sphqRDtL/wzVBcRrPr7bgxFQFjsnO8SAGNOcnzxLk0sYzHT/qSh2
+4CGZgYsBUNonDM+0A6YeIsuWH3w2frnqlhKV9yX9S8s7X1fEr3d1osb+dzO3M4kK
+erCt5MMehBfLxoByG7Kjglf/tsbCyqvDaRWtkBAFEYgx/uf4k3BnomJnOYANMmfD
+RJYTkVXR81E7cnL6qmZLawyO9Z6GFMvMX+vKDBUIW4DqvC1yx/z8xymhZN4pOdol
+5iu6ki8odHNDL7nWH6i/WfjBPBzS9iqPWlEtJy2YjSk/OjkRv65pbTJrd8h0rsE9
+vKuY2EG8ykfkKRr7cQcYu97uyVaQZAHnDZpZ8D64Og==
+=3V34
+-----END PGP SIGNATURE-----
 
-
-
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/862?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings
-
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: Ia3b0f22b0049a111ce52b3c87dd08a843ea9a919
-Gerrit-Change-Number: 862
-Gerrit-PatchSet: 2
-Gerrit-Owner: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: cron2 <gert@...1296...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Comment-Date: Tue, 14 Jan 2025 16:57:47 +0000
-Gerrit-HasComments: Yes
-Gerrit-Has-Labels: Yes
-Gerrit-MessageType: comment
-
---TWYPqko3F3c=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<p> Attention is currently required from: flichtenheld, plaisthos. </p>
-<p>Patch set 2:<span style=3D"border-radius: 3px; display: inline-block; ma=
-rgin: 0 2px; padding: 4px;background-color: #ffd4d4;">Code-Review -1</span>=
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/862?usp=3Demail">Vi=
-ew Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0=
-;"><li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-s=
-tyle: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p s=
-tyle=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn=
-/+/862?tab=3Dcomments">Patch Set #2:</a> </p><p style=3D"white-space: pre-w=
-rap; word-wrap: break-word;">I have the suspicion that some of the `multi` =
-stuff will conflict with the multisocket work, so I&#39;d postpone this for=
- a bit.</p></li></ul></li></ul><p>To view, visit <a href=3D"http://gerrit.o=
-penvpn.net/c/openvpn/+/862?usp=3Demail">change 862</a>. To unsubscribe, or =
-for help writing mail filters, visit <a href=3D"http://gerrit.openvpn.net/s=
-ettings">settings</a>.</p><div itemscope itemtype=3D"http://schema.org/Emai=
-lMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.org/=
-ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/open=
-vpn/+/862?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></=
-div></div>
-
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: Ia3b0f22b0049a111ce52b3c87dd=
-08a843ea9a919 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 862 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
-<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
-.&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
- </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
-41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Tue, 14 Jan 2025 16:57:47=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
-
-
---TWYPqko3F3c=--
+--uDXixxnz/fISrFOy--
 
