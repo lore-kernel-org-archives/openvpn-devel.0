@@ -1,10 +1,16 @@
-From: Frank Lichtenheld <frank@...2641...>
-Date: Tue, 14 Jan 2025 14:49:09 +0100
-Message-Id: <20250114134909.31334-1-frank@...2641...>
-In-Reply-To: <gerrit.1736847832000.I9a12a0c127908af9f09d88fb3a493df3763d0cc5@...2715...>
-References: <gerrit.1736847832000.I9a12a0c127908af9f09d88fb3a493df3763d0cc5@...2715...>
+From: "flichtenheld (Code Review)" <gerrit@...515...>
+Date: Tue, 14 Jan 2025 14:44:08 +0000
+In-Reply-To: <gerrit.1736860439000.I925accd8267f94ecfd9ccea85bae965dc2a10208@...2715...>
+References: <gerrit.1736860439000.I925accd8267f94ecfd9ccea85bae965dc2a10208@...2715...>
+Reply-To: frank@...2641..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net
+Message-ID: <d5983605856361111ef814e007953e7fd27c6c20-EmailReplacePatchSet-HTML@...2715...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v1] Improve peer fingerpint documentation
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="pjW3/OHXZik="; charset=UTF-8
+Subject: [Openvpn-devel] [S] Change in openvpn[master]: Add more
+ "intentional fallthrough" comments
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,85 +19,206 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: plaisthos <arne-openvpn@...1227...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-From: Arne Schwabe <arne@...1227...>
+--pjW3/OHXZik=
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-- fix typo in peer-fingerprint
-- use ec_paramgen_curve instead of requiring a subshell
+Attention is currently required from: plaisthos.
 
-Note: we still use -nodes instead of -noenc as it is more compatible.
+Hello plaisthos,
 
-closes: issue #666
+I'd like you to reexamine a change. Please visit
 
-Change-Id: I9a12a0c127908af9f09d88fb3a493df3763d0cc5
-Signed-off-by: Arne Schwabe <arne@...1227...>
-Acked-by: Frank Lichtenheld <frank@...2641...>
+    http://gerrit.openvpn.net/c/openvpn/+/864?usp=3Demail
+
+to look at the new patch set (#2).
+
+
+Change subject: Add more "intentional fallthrough" comments
+......................................................................
+
+Add more "intentional fallthrough" comments
+
+To make it easier to exclude them from compiler
+warnings.
+
+Based on the existing comment in init.c
+
+Change-Id: I925accd8267f94ecfd9ccea85bae965dc2a10208
+Signed-off-by: Frank Lichtenheld <frank@...2641...>
 ---
+M src/openvpn/list.c
+M src/openvpn/push.c
+2 files changed, 11 insertions(+), 0 deletions(-)
 
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to master.
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/859
-This mail reflects revision 1 of this Change.
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/64/864/2
 
-Acked-by according to Gerrit (reflected above):
-Frank Lichtenheld <frank@...2641...>
+diff --git a/src/openvpn/list.c b/src/openvpn/list.c
+index 69f1510..b339c7b 100644
+--- a/src/openvpn/list.c
++++ b/src/openvpn/list.c
+@@ -437,34 +437,44 @@
+     {
+         case 11:
+             c +=3D ((uint32_t) k[10] << 24);
++            /* Intentional [[fallthrough]]; */
 
-        
-diff --git a/doc/man-sections/example-fingerprint.rst b/doc/man-sections/example-fingerprint.rst
-index 7cdda19..31ca0c1 100644
---- a/doc/man-sections/example-fingerprint.rst
-+++ b/doc/man-sections/example-fingerprint.rst
-@@ -18,7 +18,7 @@
- 2. Generate a self-signed certificate for the server:
-    ::
- 
--    openssl req -x509 -newkey ec:<(openssl ecparam -name secp384r1) -keyout server.key -out server.crt -nodes -sha256 -days 3650 -subj '/CN=server'
-+    openssl req -x509 -newkey ec -pkeyopt ec_paramgen_curve:secp384r1 -keyout server.key -out server.crt -nodes -sha256 -days 3650 -subj '/CN=server'
- 
- 3. Generate SHA256 fingerprint of the server certificate
- 
-@@ -28,7 +28,7 @@
- 
-     openssl x509 -fingerprint -sha256 -in server.crt -noout
- 
--   This output something similar to:
-+   This outputs something similar to:
-    ::
- 
-      SHA256 Fingerprint=00:11:22:33:44:55:66:77:88:99:aa:bb:cc:dd:ee:ff:00:11:22:33:44:55:66:77:88:99:aa:bb:cc:dd:ee:ff
-@@ -64,6 +64,12 @@
-     # Ping every 60s, restart if no data received for 5 minutes
-     keepalive 60 300
- 
-+    # Uncomment the line below if you want to have persistent IP addresses
-+    # ifconfig-pool-persist  /etc/openvpn/server/ipp.txt
-+
-+    # Uncomment the line below to push a DNS server to clients
-+    # push "dhcp-option DNS 1.1.1.1"
-+
- 5. Add at least one client as described in the client section.
- 
- 6. Start the server.
-@@ -85,7 +91,7 @@
-    different name for each client.
-    ::
- 
--      openssl req -x509 -newkey ec:<(openssl ecparam -name secp384r1) -nodes -sha256 -days 3650 -subj '/CN=alice'
-+      openssl req -x509 -newkey ec -pkeyopt ec_paramgen_curve:secp384r1 -keyout - -nodes -sha256 -days 3650 -subj '/CN=alice'
- 
-    This generate a certificate and a key for the client. The output of the command will look
-    something like this:
-@@ -162,7 +168,7 @@
-       <peer-fingerprint>
-       ff:ee:dd:cc:bb:aa:99:88:77:66:55:44:33:22:11:00:ff:ee:dd:cc:bb:aa:99:88:77:66:55:44:33:22:11:00
-       99:88:77:66:55:44:33:22:11:00:ff:ee:dd:cc:bb:aa:99:88:77:66:55:44:33:22:11:00:88:77:66:55:44:33
--      </peer-fingperint>
-+      </peer-fingerprint>
- 
- 6. (optional) if the client is an older client that does not support the
-    :code:`peer-fingerprint` (e.g. OpenVPN 2.5 and older, OpenVPN Connect 3.3
+         case 10:
+             c +=3D ((uint32_t) k[9] << 16);
++            /* Intentional [[fallthrough]]; */
+
+         case 9:
+             c +=3D ((uint32_t) k[8] << 8);
++            /* Intentional [[fallthrough]]; */
+
+         /* the first byte of c is reserved for the length */
+         case 8:
+             b +=3D ((uint32_t) k[7] << 24);
++            /* Intentional [[fallthrough]]; */
+
+         case 7:
+             b +=3D ((uint32_t) k[6] << 16);
++            /* Intentional [[fallthrough]]; */
+
+         case 6:
+             b +=3D ((uint32_t) k[5] << 8);
++            /* Intentional [[fallthrough]]; */
+
+         case 5:
+             b +=3D k[4];
++            /* Intentional [[fallthrough]]; */
+
+         case 4:
+             a +=3D ((uint32_t) k[3] << 24);
++            /* Intentional [[fallthrough]]; */
+
+         case 3:
+             a +=3D ((uint32_t) k[2] << 16);
++            /* Intentional [[fallthrough]]; */
+
+         case 2:
+             a +=3D ((uint32_t) k[1] << 8);
++            /* Intentional [[fallthrough]]; */
+
+         case 1:
+             a +=3D k[0];
+diff --git a/src/openvpn/push.c b/src/openvpn/push.c
+index ddad109..06e421c 100644
+--- a/src/openvpn/push.c
++++ b/src/openvpn/push.c
+@@ -98,6 +98,7 @@
+
+             case AR_INTERACT:
+                 ssl_purge_auth(false);
++                /* Intentional [[fallthrough]]; */
+
+             case AR_NOINTERACT:
+                 /* SOFT-SIGTUSR1 -- Auth failure error */
+
+--
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/864?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings
+
+Gerrit-Project: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: I925accd8267f94ecfd9ccea85bae965dc2a10208
+Gerrit-Change-Number: 864
+Gerrit-PatchSet: 2
+Gerrit-Owner: flichtenheld <frank@...2641...>
+Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-MessageType: newpatchset
+
+--pjW3/OHXZik=
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<p> Attention is currently required from: plaisthos. </p>
+<p>flichtenheld <strong>uploaded patch set #2</strong> to this change.</p><=
+p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/864?usp=3Demail">View Ch=
+ange</a></p><pre style=3D"font-family: monospace,monospace; white-space: pr=
+e-wrap;">Add more &quot;intentional fallthrough&quot; comments<br><br>To ma=
+ke it easier to exclude them from compiler<br>warnings.<br><br>Based on the=
+ existing comment in init.c<br><br>Change-Id: I925accd8267f94ecfd9ccea85bae=
+965dc2a10208<br>Signed-off-by: Frank Lichtenheld &lt;frank@...2641...&gt;<b=
+r>---<br>M src/openvpn/list.c<br>M src/openvpn/push.c<br>2 files changed, 1=
+1 insertions(+), 0 deletions(-)<br><br></pre><pre style=3D"font-family: mon=
+ospace,monospace; white-space: pre-wrap;">git pull ssh://gerrit.openvpn.net=
+:29418/openvpn refs/changes/64/864/2</pre><pre style=3D"font-family: monosp=
+ace,monospace; white-space: pre-wrap;"><span>diff --git a/src/openvpn/list.=
+c b/src/openvpn/list.c</span><br><span>index 69f1510..b339c7b 100644</span>=
+<br><span>--- a/src/openvpn/list.c</span><br><span>+++ b/src/openvpn/list.c=
+</span><br><span>@@ -437,34 +437,44 @@</span><br><span>     {</span><br><sp=
+an>         case 11:</span><br><span>             c +=3D ((uint32_t) k[10] =
+&lt;&lt; 24);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
+      /* Intentional [[fallthrough]]; */</span><br><span> </span><br><span>=
+         case 10:</span><br><span>             c +=3D ((uint32_t) k[9] &lt;=
+&lt; 16);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+          =
+  /* Intentional [[fallthrough]]; */</span><br><span> </span><br><span>    =
+     case 9:</span><br><span>             c +=3D ((uint32_t) k[8] &lt;&lt; =
+8);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            /* I=
+ntentional [[fallthrough]]; */</span><br><span> </span><br><span>         /=
+* the first byte of c is reserved for the length */</span><br><span>       =
+  case 8:</span><br><span>             b +=3D ((uint32_t) k[7] &lt;&lt; 24)=
+;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            /* Int=
+entional [[fallthrough]]; */</span><br><span> </span><br><span>         cas=
+e 7:</span><br><span>             b +=3D ((uint32_t) k[6] &lt;&lt; 16);</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+            /* Intentio=
+nal [[fallthrough]]; */</span><br><span> </span><br><span>         case 6:<=
+/span><br><span>             b +=3D ((uint32_t) k[5] &lt;&lt; 8);</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+            /* Intentional [[=
+fallthrough]]; */</span><br><span> </span><br><span>         case 5:</span>=
+<br><span>             b +=3D k[4];</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+            /* Intentional [[fallthrough]]; */</span><br><s=
+pan> </span><br><span>         case 4:</span><br><span>             a +=3D =
+((uint32_t) k[3] &lt;&lt; 24);</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+            /* Intentional [[fallthrough]]; */</span><br><span> =
+</span><br><span>         case 3:</span><br><span>             a +=3D ((uin=
+t32_t) k[2] &lt;&lt; 16);</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+            /* Intentional [[fallthrough]]; */</span><br><span> </spa=
+n><br><span>         case 2:</span><br><span>             a +=3D ((uint32_t=
+) k[1] &lt;&lt; 8);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+            /* Intentional [[fallthrough]]; */</span><br><span> </span><br>=
+<span>         case 1:</span><br><span>             a +=3D k[0];</span><br>=
+<span>diff --git a/src/openvpn/push.c b/src/openvpn/push.c</span><br><span>=
+index ddad109..06e421c 100644</span><br><span>--- a/src/openvpn/push.c</spa=
+n><br><span>+++ b/src/openvpn/push.c</span><br><span>@@ -98,6 +98,7 @@</spa=
+n><br><span> </span><br><span>             case AR_INTERACT:</span><br><spa=
+n>                 ssl_purge_auth(false);</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+                /* Intentional [[fallthrough]]; */</s=
+pan><br><span> </span><br><span>             case AR_NOINTERACT:</span><br>=
+<span>                 /* SOFT-SIGTUSR1 -- Auth failure error */</span><br>=
+<span></span><br></pre><p>To view, visit <a href=3D"http://gerrit.openvpn.n=
+et/c/openvpn/+/864?usp=3Demail">change 864</a>. To unsubscribe, or for help=
+ writing mail filters, visit <a href=3D"http://gerrit.openvpn.net/settings"=
+>settings</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage=
+"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewActi=
+on"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/86=
+4?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div></di=
+v>
+
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I925accd8267f94ecfd9ccea85ba=
+e965dc2a10208 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 864 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
+<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
+.&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
+.1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
+
+
+--pjW3/OHXZik=--
 
