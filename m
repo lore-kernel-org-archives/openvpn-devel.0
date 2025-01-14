@@ -1,16 +1,11 @@
-From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Tue, 14 Jan 2025 16:51:44 +0000
+From: Gert Doering <gert@...1296...>
+Date: Tue, 14 Jan 2025 17:52:06 +0100
+Message-ID: <20250114165206.13187-1-gert@...1296...>
 In-Reply-To: <gerrit.1736860439000.I1918c43202b87f0c987bfd9155c739da7dd02632@...2715...>
 References: <gerrit.1736860439000.I1918c43202b87f0c987bfd9155c739da7dd02632@...2715...>
-Reply-To: gert@...1296..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <27b039b99ddc2bcebd781d99de4d58b58756bd4c-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="Rf3/QNSlwUg="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: Fix some trivial
- sign-compare compiler warnings
+Subject: [Openvpn-devel] [PATCH v2] Fix some trivial sign-compare compiler
+ warnings
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,101 +14,96 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: flichtenheld <frank@...2641...>
-Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---Rf3/QNSlwUg=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+From: Frank Lichtenheld <frank@...2641...>
 
-Attention is currently required from: flichtenheld, plaisthos.
+Change-Id: I1918c43202b87f0c987bfd9155c739da7dd02632
+Signed-off-by: Frank Lichtenheld <frank@...2641...>
+Acked-by: Gert Doering <gert@...1296...>
+---
 
-cron2 has posted comments on this change. ( http://gerrit.openvpn.net/c/ope=
-nvpn/+/865?usp=3Demail )
+This change was reviewed on Gerrit and approved by at least one
+developer. I request to merge it to master.
 
-Change subject: Fix some trivial sign-compare compiler warnings
-......................................................................
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/865
+This mail reflects revision 2 of this Change.
 
+Acked-by according to Gerrit (reflected above):
+Gert Doering <gert@...1296...>
 
-Patch Set 2: Code-Review+2
-
-(1 comment)
-
-Patchset:
-
-PS2:
-looks good, +2 unless one of the "non smoketest" builders fails later on
-
-
-
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/865?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings
-
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: I1918c43202b87f0c987bfd9155c739da7dd02632
-Gerrit-Change-Number: 865
-Gerrit-PatchSet: 2
-Gerrit-Owner: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: cron2 <gert@...1296...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Comment-Date: Tue, 14 Jan 2025 16:51:44 +0000
-Gerrit-HasComments: Yes
-Gerrit-Has-Labels: Yes
-Gerrit-MessageType: comment
-
---Rf3/QNSlwUg=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<p> Attention is currently required from: flichtenheld, plaisthos. </p>
-<p>Patch set 2:<span style=3D"border-radius: 3px; display: inline-block; ma=
-rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/865?usp=3Demail">Vi=
-ew Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0=
-;"><li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-s=
-tyle: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p s=
-tyle=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn=
-/+/865?tab=3Dcomments">Patch Set #2:</a> </p><p style=3D"white-space: pre-w=
-rap; word-wrap: break-word;">looks good, +2 unless one of the &quot;non smo=
-ketest&quot; builders fails later on</p></li></ul></li></ul><p>To view, vis=
-it <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/865?usp=3Demail">change=
- 865</a>. To unsubscribe, or for help writing mail filters, visit <a href=
-=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope ite=
-mtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"action"=
- itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"h=
-ttp://gerrit.openvpn.net/c/openvpn/+/865?usp=3Demail"/><meta itemprop=3D"na=
-me" content=3D"View Change"/></div></div>
-
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I1918c43202b87f0c987bfd9155c=
-739da7dd02632 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 865 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
-<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
-.&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
- </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
-41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Tue, 14 Jan 2025 16:51:44=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
-
-
---Rf3/QNSlwUg=--
+        
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index 1113663..b594b09 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -1448,7 +1448,7 @@
+ 
+     while (server)
+     {
+-        for (int i = 0; i < server->addr_count; ++i)
++        for (size_t i = 0; i < server->addr_count; ++i)
+         {
+             if (server->addr[i].family == AF_INET)
+             {
+diff --git a/src/openvpn/socket.c b/src/openvpn/socket.c
+index 234d590..4aeb613 100644
+--- a/src/openvpn/socket.c
++++ b/src/openvpn/socket.c
+@@ -3131,8 +3131,7 @@
+ int
+ ascii2proto(const char *proto_name)
+ {
+-    int i;
+-    for (i = 0; i < SIZE(proto_names); ++i)
++    for (size_t i = 0; i < SIZE(proto_names); ++i)
+     {
+         if (!strcmp(proto_name, proto_names[i].short_form))
+         {
+@@ -3145,8 +3144,7 @@
+ sa_family_t
+ ascii2af(const char *proto_name)
+ {
+-    int i;
+-    for (i = 0; i < SIZE(proto_names); ++i)
++    for (size_t i = 0; i < SIZE(proto_names); ++i)
+     {
+         if (!strcmp(proto_name, proto_names[i].short_form))
+         {
+@@ -3159,8 +3157,7 @@
+ const char *
+ proto2ascii(int proto, sa_family_t af, bool display_form)
+ {
+-    unsigned int i;
+-    for (i = 0; i < SIZE(proto_names); ++i)
++    for (size_t i = 0; i < SIZE(proto_names); ++i)
+     {
+         if (proto_names[i].proto_af == af && proto_names[i].proto == proto)
+         {
+@@ -3182,9 +3179,8 @@
+ proto2ascii_all(struct gc_arena *gc)
+ {
+     struct buffer out = alloc_buf_gc(256, gc);
+-    int i;
+ 
+-    for (i = 0; i < SIZE(proto_names); ++i)
++    for (size_t i = 0; i < SIZE(proto_names); ++i)
+     {
+         if (i)
+         {
+diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
+index 3f2ec4a..22706f3 100644
+--- a/src/openvpn/tun.c
++++ b/src/openvpn/tun.c
+@@ -631,7 +631,7 @@
+ {
+     struct gc_arena gc = gc_new();
+     struct route_gateway_info rgi;
+-    const int needed = (RGI_ADDR_DEFINED|RGI_NETMASK_DEFINED);
++    const unsigned int needed = (RGI_ADDR_DEFINED|RGI_NETMASK_DEFINED);
+ 
+     get_default_gateway(&rgi, ctx);
+     if ((rgi.flags & needed) == needed)
 
