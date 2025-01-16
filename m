@@ -1,15 +1,8 @@
-From: "mrbff (Code Review)" <gerrit@...515...>
-Date: Thu, 16 Jan 2025 17:11:40 +0000
-References: <gerrit.1737047498000.Ia58cff107d14e29e51df0a988e8337cbb70ebfbb@...2715...>
-Reply-To: marco@...2726..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <2ad97b27f1fcdee2b4cd87d14bf41e7aa1dd2a53-HTML@...2715...>
+Date: Thu, 16 Jan 2025 18:20:01 +0100
+From: Frank Lichtenheld <frank@...2641...>
+Message-ID: <Z4k/wXXplJhXsJoZ@...2685...>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="HGtfKR7TDC0="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: IPv6 MADDR LOG: Wrap
- IPv6 addresses in square brackets and include po...
+Subject: [Openvpn-devel] OpenVPN 2.6.13 released
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,173 +11,71 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+To: openvpn-announce@lists.sourceforge.net, openvpn-devel@lists.sourceforge.net, openvpn-users@lists.sourceforge.net
 
---HGtfKR7TDC0=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+The OpenVPN community project team is proud to release OpenVPN 2.6.13.
 
-Attention is currently required from: flichtenheld, plaisthos.
+This is a bugfix release.
 
-Hello plaisthos, flichtenheld,
+Feature changes:
 
-I'd like you to do a code review.
-Please visit
+* on non-windows clients (MacOS, Linux, Unix) send "release" string from uname()
+  call as IV_PLAT_VER to server - while highly OS specific this is still helpful
+  to keep track of OS versions used on the client side (github ​#637)
+* Windows: protect cached username, password and token in client memory (using
+  the CryptProtectMemory() windows API)
+* Windows: use new API to get dco-win driver version from driver (newly introduced
+  non-exclusive control device) (github ​ovpn-dco-win#76)
+* Linux: pass --timeout=0 argument to systemd-ask-password, to avoid default timeout
+  of 90 seconds ("console prompting also has no timeout") (github ​#649) 
 
-    http://gerrit.openvpn.net/c/openvpn/+/870?usp=3Demail
+Security fixes:
 
-to review the following change.
+* improve server-side handling of clients sending usernames or passwords longer than
+  USER_PASS_LEN - this would not result in a crash, buffer overflow or other security
+  issues, but the server would then misparse incoming IV variables and produce
+  misleading error messages. 
 
+Notable bug fixes:
 
-Change subject: IPv6 MADDR LOG: Wrap IPv6 addresses in square brackets and =
-include port when specified
-......................................................................
+* FreeBSD DCO: fix memory leaks in nvlist handling (github ​#636)
+* purge proxy authentication credentials from memory after use
+  (if --auth-nocache is in use) 
 
-IPv6 MADDR LOG: Wrap IPv6 addresses in square brackets and include port whe=
-n specified
+Windows MSI changes since 2.6.12:
 
-- Updated the mroute_addr_print_ex() function to always wrap IPv6 addresses=
- in square brackets for proper formatting.
-- Added port printing for IPv6 addresses when specified, e.g., [2001:db8::1=
-]:8080.
+* Built against OpenSSL 3.4.0
+* Included openvpn-gui updated to 11.51.0.0
+  * Higher resolution eye icons (github ​openvpn-gui#697)
+  * Support for concatenating OTP with password
+  * Optionally always prompt for OTP
+  * Fix tooltip positioning when the taskbar is at top (github ​openvpn-gui#710) 
 
-Change-Id: Ia58cff107d14e29e51df0a988e8337cbb70ebfbb
-Signed-off-by: Marco Baffo <marco@...2726...>
----
-M src/openvpn/mroute.c
-1 file changed, 5 insertions(+), 8 deletions(-)
+Debian/Ubuntu community packages are now available for Ubuntu 24.10 (oracular). 
 
+More details can be found in the Changes document:
 
+<https://github.com/OpenVPN/openvpn/blob/release/2.6/Changes.rst>
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/70/870/1
+(The Changes document also contains a section with work-arounds for
+common problems encountered when using OpenVPN with OpenSSL 3)
 
-diff --git a/src/openvpn/mroute.c b/src/openvpn/mroute.c
-index f4539dc..91419ed 100644
---- a/src/openvpn/mroute.c
-+++ b/src/openvpn/mroute.c
-@@ -430,17 +430,14 @@
-                 {
-                     buf_printf(&out, "%s", print_in_addr_t(maddr.v4mappedv=
-6.addr,
-                                                            IA_NET_ORDER, g=
-c));
--                    /* we only print port numbers for v4mapped v6 as of
--                     * today, because "v6addr:port" is too ambiguous
--                     */
--                    if (maddr.type & MR_WITH_PORT)
--                    {
--                        buf_printf(&out, ":%d", ntohs(maddr.v6.port));
--                    }
-                 }
-                 else
-                 {
--                    buf_printf(&out, "%s", print_in6_addr(maddr.v6.addr, 0=
-, gc));
-+                    buf_printf(&out, "[%s]", print_in6_addr(maddr.v6.addr,=
- 0, gc));
-+                }
-+                if (maddr.type & MR_WITH_PORT)
-+                {
-+                    buf_printf(&out, ":%d", ntohs(maddr.v6.port));
-                 }
-                 if (maddr.type & MR_WITH_NETBITS)
-                 {
+Source code and Windows installers can be downloaded from our download page:
 
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/870?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings
+<https://openvpn.net/community-downloads/>
 
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: Ia58cff107d14e29e51df0a988e8337cbb70ebfbb
-Gerrit-Change-Number: 870
-Gerrit-PatchSet: 1
-Gerrit-Owner: mrbff <marco@...2726...>
-Gerrit-Reviewer: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-MessageType: newchange
+Debian and Ubuntu packages are available in the official apt repositories:
 
---HGtfKR7TDC0=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+<https://community.openvpn.net/openvpn/wiki/OpenvpnSoftwareRepos#DebianUbuntu:UsingOpenVPNaptrepositories>
 
-<p> Attention is currently required from: flichtenheld, plaisthos. </p>
-<p>mrbff would like plaisthos and flichtenheld to <strong>review</strong> t=
-his change.
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/870?usp=3Demail">Vi=
-ew Change</a></p><pre style=3D"font-family: monospace,monospace; white-spac=
-e: pre-wrap;">IPv6 MADDR LOG: Wrap IPv6 addresses in square brackets and in=
-clude port when specified<br><br>- Updated the mroute_addr_print_ex() funct=
-ion to always wrap IPv6 addresses in square brackets for proper formatting.=
-<br>- Added port printing for IPv6 addresses when specified, e.g., [2001:db=
-8::1]:8080.<br><br>Change-Id: Ia58cff107d14e29e51df0a988e8337cbb70ebfbb<br>=
-Signed-off-by: Marco Baffo &lt;marco@...2726...&gt;<br>---<br>M src/openvpn=
-/mroute.c<br>1 file changed, 5 insertions(+), 8 deletions(-)<br><br></pre><=
-pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;">git =
-pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/70/870/1</pre><pre=
- style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><span>d=
-iff --git a/src/openvpn/mroute.c b/src/openvpn/mroute.c</span><br><span>ind=
-ex f4539dc..91419ed 100644</span><br><span>--- a/src/openvpn/mroute.c</span=
-><br><span>+++ b/src/openvpn/mroute.c</span><br><span>@@ -430,17 +430,14 @@=
-</span><br><span>                 {</span><br><span>                     bu=
-f_printf(&amp;out, &quot;%s&quot;, print_in_addr_t(maddr.v4mappedv6.addr,</=
-span><br><span>                                                            =
-IA_NET_ORDER, gc));</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
-                  /* we only print port numbers for v4mapped v6 as of</span=
-><br><span style=3D"color: hsl(0, 100%, 40%);">-                     * toda=
-y, because &quot;v6addr:port&quot; is too ambiguous</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-                     */</span><br><span sty=
-le=3D"color: hsl(0, 100%, 40%);">-                    if (maddr.type &amp; =
-MR_WITH_PORT)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        =
-            {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        =
-                buf_printf(&amp;out, &quot;:%d&quot;, ntohs(maddr.v6.port))=
-;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-                    =
-}</span><br><span>                 }</span><br><span>                 else<=
-/span><br><span>                 {</span><br><span style=3D"color: hsl(0, 1=
-00%, 40%);">-                    buf_printf(&amp;out, &quot;%s&quot;, print=
-_in6_addr(maddr.v6.addr, 0, gc));</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+                    buf_printf(&amp;out, &quot;[%s]&quot;, pr=
-int_in6_addr(maddr.v6.addr, 0, gc));</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+                }</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+                if (maddr.type &amp; MR_WITH_PORT)</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+                {</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+                    buf_printf(=
-&amp;out, &quot;:%d&quot;, ntohs(maddr.v6.port));</span><br><span>         =
-        }</span><br><span>                 if (maddr.type &amp; MR_WITH_NET=
-BITS)</span><br><span>                 {</span><br><span></span><br></pre><=
-p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/870?usp=
-=3Demail">change 870</a>. To unsubscribe, or for help writing mail filters,=
- visit <a href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div=
- itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemp=
-rop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"=
-url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/870?usp=3Demail"/><meta =
-itemprop=3D"name" content=3D"View Change"/></div></div>
+On Red Hat derivatives we recommend using the Fedora Copr repository.
 
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: Ia58cff107d14e29e51df0a988e8=
-337cbb70ebfbb </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 870 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
-<div style=3D"display:none"> Gerrit-Owner: mrbff &lt;marco@...2726...&gt; <=
-/div>
-<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
-1...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
-41...&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: newchange </div>
+<https://copr.fedorainfracloud.org/coprs/dsommers/openvpn-release-2.6/>
 
-
---HGtfKR7TDC0=--
+Kind regards,
+-- 
+  Frank Lichtenheld
 
