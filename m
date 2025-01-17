@@ -1,16 +1,17 @@
-From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Fri, 17 Jan 2025 10:38:37 +0000
+From: "mrbff (Code Review)" <gerrit@...515...>
+Date: Fri, 17 Jan 2025 10:57:03 +0000
 In-Reply-To: <gerrit.1737047498000.Ia58cff107d14e29e51df0a988e8337cbb70ebfbb@...2715...>
 References: <gerrit.1737047498000.Ia58cff107d14e29e51df0a988e8337cbb70ebfbb@...2715...>
-Reply-To: gert@...1296..., arne-openvpn@...1227..., marco@...2726...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <2cff79b3a5145fc178ba4cdfb243069f2bdd308e-EmailReviewComments-HTML@...2715...>
+Reply-To: marco@...2726..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net, frank@...2641...,
+ gert@...1296...
+Message-ID: <52a4eb376d6ff84ac8ae40d19f3095b278d1ea3e-EmailReplacePatchSet-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="IRV+g6FyLzo="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="wcW90KQJ2KU="; charset=UTF-8
 Subject: [Openvpn-devel] [S] Change in openvpn[master]: IPv6 MADDR LOG: Wrap
- IPv6 addresses in square brackets and include po...
+ IPv6 addresses in square brackets and print port...
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,41 +20,82 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: mrbff <marco@...2726...>
-Cc: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>
+Cc: cron2 <gert@...1296...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---IRV+g6FyLzo=
+--wcW90KQJ2KU=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 Attention is currently required from: flichtenheld, mrbff, plaisthos.
 
-cron2 has posted comments on this change. ( http://gerrit.openvpn.net/c/ope=
-nvpn/+/870?usp=3Demail )
+Hello flichtenheld, plaisthos,
+
+I'd like you to reexamine a change. Please visit
+
+    http://gerrit.openvpn.net/c/openvpn/+/870?usp=3Demail
+
+to look at the new patch set (#2).
+
 
 Change subject: IPv6 MADDR LOG: Wrap IPv6 addresses in square brackets and =
-include port when specified
+print port when the port is specified
 ......................................................................
 
+IPv6 MADDR LOG: Wrap IPv6 addresses in square brackets and print port when =
+the port is specified
 
-Patch Set 1:
+  Updated the mroute_addr_print_ex() function to wrap IPv6 addresses in squ=
+are
+  brackets and printing the port when the port is specified, e.g., [2001:db=
+8::1]:8080 .
+  When the port is not specified the IPv6 address formatting remain the sam=
+e, e.g., 2001:db8::1 .
 
-(1 comment)
-
-Patchset:
-
-PS1:
-I think the patch is fine, technically, but I've spent a bit of thought on =
-it, and want to suggest something else
-
- - in the MR_WITH_PORT case, use `"[%s]:%d"`
- - in the "naked IPv6 address" case, use `"%s"` only
-
- yes this is yet another extra `if()`, but my gut feeling is that it would =
-help readability - and for parsers, it should not matter much.  If the pars=
-er expects to see a port, it will always be `[]`, so no variations.
+Change-Id: Ia58cff107d14e29e51df0a988e8337cbb70ebfbb
+Signed-off-by: Marco Baffo <marco@...2726...>
+---
+M src/openvpn/mroute.c
+1 file changed, 8 insertions(+), 7 deletions(-)
 
 
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/70/870/2
+
+diff --git a/src/openvpn/mroute.c b/src/openvpn/mroute.c
+index f4539dc..80e18b7 100644
+--- a/src/openvpn/mroute.c
++++ b/src/openvpn/mroute.c
+@@ -430,18 +430,19 @@
+                 {
+                     buf_printf(&out, "%s", print_in_addr_t(maddr.v4mappedv=
+6.addr,
+                                                            IA_NET_ORDER, g=
+c));
+-                    /* we only print port numbers for v4mapped v6 as of
+-                     * today, because "v6addr:port" is too ambiguous
+-                     */
+-                    if (maddr.type & MR_WITH_PORT)
+-                    {
+-                        buf_printf(&out, ":%d", ntohs(maddr.v6.port));
+-                    }
++                }
++                else if (maddr.type & MR_WITH_PORT)
++                {
++                    buf_printf(&out, "[%s]", print_in6_addr(maddr.v6.addr,=
+ 0, gc));
+                 }
+                 else
+                 {
+                     buf_printf(&out, "%s", print_in6_addr(maddr.v6.addr, 0=
+, gc));
+                 }
++                if (maddr.type & MR_WITH_PORT)
++                {
++                    buf_printf(&out, ":%d", ntohs(maddr.v6.port));
++                }
+                 if (maddr.type & MR_WITH_NETBITS)
+                 {
+                     buf_printf(&out, "/%d", maddr.netbits);
 
 --
 To view, visit http://gerrit.openvpn.net/c/openvpn/+/870?usp=3Demail
@@ -64,7 +106,7 @@ Gerrit-Project: openvpn
 Gerrit-Branch: master
 Gerrit-Change-Id: Ia58cff107d14e29e51df0a988e8337cbb70ebfbb
 Gerrit-Change-Number: 870
-Gerrit-PatchSet: 1
+Gerrit-PatchSet: 2
 Gerrit-Owner: mrbff <marco@...2726...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
@@ -73,31 +115,61 @@ Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
 Gerrit-Attention: flichtenheld <frank@...2641...>
 Gerrit-Attention: mrbff <marco@...2726...>
-Gerrit-Comment-Date: Fri, 17 Jan 2025 10:38:37 +0000
-Gerrit-HasComments: Yes
-Gerrit-Has-Labels: No
-Gerrit-MessageType: comment
+Gerrit-MessageType: newpatchset
 
---IRV+g6FyLzo=
+--wcW90KQJ2KU=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <p> Attention is currently required from: flichtenheld, mrbff, plaisthos. <=
 /p>
-<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/870?usp=3Demail">View C=
-hange</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0;"><=
-li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-style=
-: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p style=
-=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/8=
-70?tab=3Dcomments">Patch Set #1:</a> </p><p style=3D"white-space: pre-wrap;=
- word-wrap: break-word;">I think the patch is fine, technically, but I&#39;=
-ve spent a bit of thought on it, and want to suggest something else</p><pre=
- style=3D"font-family: monospace,monospace; white-space: pre-wrap;"> - in t=
-he MR_WITH_PORT case, use `&quot;[%s]:%d&quot;`<br> - in the &quot;naked IP=
-v6 address&quot; case, use `&quot;%s&quot;` only<br> <br> yes this is yet a=
-nother extra `if()`, but my gut feeling is that it would help readability -=
- and for parsers, it should not matter much.  If the parser expects to see =
-a port, it will always be `[]`, so no variations.</pre></li></ul></li></ul>=
+<p>mrbff <strong>uploaded patch set #2</strong> to this change.</p><p><a hr=
+ef=3D"http://gerrit.openvpn.net/c/openvpn/+/870?usp=3Demail">View Change</a=
+></p><pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;=
+">IPv6 MADDR LOG: Wrap IPv6 addresses in square brackets and print port whe=
+n the port is specified<br><br>  Updated the mroute_addr_print_ex() functio=
+n to wrap IPv6 addresses in square<br>  brackets and printing the port when=
+ the port is specified, e.g., [2001:db8::1]:8080 .<br>  When the port is no=
+t specified the IPv6 address formatting remain the same, e.g., 2001:db8::1 =
+.<br><br>Change-Id: Ia58cff107d14e29e51df0a988e8337cbb70ebfbb<br>Signed-off=
+-by: Marco Baffo &lt;marco@...2726...&gt;<br>---<br>M src/openvpn/mroute.c<=
+br>1 file changed, 8 insertions(+), 7 deletions(-)<br><br></pre><pre style=
+=3D"font-family: monospace,monospace; white-space: pre-wrap;">git pull ssh:=
+//gerrit.openvpn.net:29418/openvpn refs/changes/70/870/2</pre><pre style=3D=
+"font-family: monospace,monospace; white-space: pre-wrap;"><span>diff --git=
+ a/src/openvpn/mroute.c b/src/openvpn/mroute.c</span><br><span>index f4539d=
+c..80e18b7 100644</span><br><span>--- a/src/openvpn/mroute.c</span><br><spa=
+n>+++ b/src/openvpn/mroute.c</span><br><span>@@ -430,18 +430,19 @@</span><b=
+r><span>                 {</span><br><span>                     buf_printf(=
+&amp;out, &quot;%s&quot;, print_in_addr_t(maddr.v4mappedv6.addr,</span><br>=
+<span>                                                            IA_NET_OR=
+DER, gc));</span><br><span style=3D"color: hsl(0, 100%, 40%);">-           =
+         /* we only print port numbers for v4mapped v6 as of</span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">-                     * today, becaus=
+e &quot;v6addr:port&quot; is too ambiguous</span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">-                     */</span><br><span style=3D"color=
+: hsl(0, 100%, 40%);">-                    if (maddr.type &amp; MR_WITH_POR=
+T)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-                   =
+ {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-                   =
+     buf_printf(&amp;out, &quot;:%d&quot;, ntohs(maddr.v6.port));</span><br=
+><span style=3D"color: hsl(0, 100%, 40%);">-                    }</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+                }</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+                else if (maddr.=
+type &amp; MR_WITH_PORT)</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+                {</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+                    buf_printf(&amp;out, &quot;[%s]&quot;, print_in6_add=
+r(maddr.v6.addr, 0, gc));</span><br><span>                 }</span><br><spa=
+n>                 else</span><br><span>                 {</span><br><span>=
+                     buf_printf(&amp;out, &quot;%s&quot;, print_in6_addr(ma=
+ddr.v6.addr, 0, gc));</span><br><span>                 }</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+                if (maddr.type &amp; M=
+R_WITH_PORT)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
+         {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+         =
+           buf_printf(&amp;out, &quot;:%d&quot;, ntohs(maddr.v6.port));</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+                }</span=
+><br><span>                 if (maddr.type &amp; MR_WITH_NETBITS)</span><br=
+><span>                 {</span><br><span>                     buf_printf(&=
+amp;out, &quot;/%d&quot;, maddr.netbits);</span><br><span></span><br></pre>=
 <p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/870?usp=
 =3Demail">change 870</a>. To unsubscribe, or for help writing mail filters,=
  visit <a href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div=
@@ -111,7 +183,7 @@ itemprop=3D"name" content=3D"View Change"/></div></div>
 <div style=3D"display:none"> Gerrit-Change-Id: Ia58cff107d14e29e51df0a988e8=
 337cbb70ebfbb </div>
 <div style=3D"display:none"> Gerrit-Change-Number: 870 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
 <div style=3D"display:none"> Gerrit-Owner: mrbff &lt;marco@...2726...&gt; <=
 /div>
 <div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
@@ -127,12 +199,8 @@ ts.sourceforge.net&gt; </div>
 41...&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: mrbff &lt;marco@...2726...&g=
 t; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Fri, 17 Jan 2025 10:38:37=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: No </div>
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
+<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
 
 
---IRV+g6FyLzo=--
+--wcW90KQJ2KU=--
 
