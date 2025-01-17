@@ -1,16 +1,16 @@
 From: "flichtenheld (Code Review)" <gerrit@...515...>
-Date: Fri, 17 Jan 2025 13:53:32 +0000
-In-Reply-To: <gerrit.1733989644000.I6b67e3a00dd84bf348b6af28115ee11138c3a111@...2715...>
-References: <gerrit.1733989644000.I6b67e3a00dd84bf348b6af28115ee11138c3a111@...2715...>
+Date: Fri, 17 Jan 2025 13:57:45 +0000
+In-Reply-To: <gerrit.1733989644000.I3fb01ab76cf3df0874ba92e08f371d17607a8369@...2715...>
+References: <gerrit.1733989644000.I3fb01ab76cf3df0874ba92e08f371d17607a8369@...2715...>
 Reply-To: frank@...2641..., arne-openvpn@...1227..., heiko@...515...,
  openvpn-devel@lists.sourceforge.net
-Message-ID: <2e8fb13466f2a703f66e7a6b4b5104eb269349e3-EmailReviewComments-HTML@...2715...>
+Message-ID: <7c377eddfaee2d48b524c71552b408cfc0c7e9f7-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="koDNs/Ha0MU="; charset=UTF-8
-Subject: [Openvpn-devel] [L] Change in openvpn[master]: dns: support running
- up/down script with privsep
+Content-Type: multipart/alternative; boundary="QeGLfWloKvM="; charset=UTF-8
+Subject: [Openvpn-devel] [L] Change in openvpn[master]: dns: don't publish
+ env vars to non-dns scripts
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -22,41 +22,42 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: d12fk <heiko@...515...>
 Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---koDNs/Ha0MU=
+--QeGLfWloKvM=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 Attention is currently required from: d12fk, plaisthos.
 
 flichtenheld has posted comments on this change. ( http://gerrit.openvpn.ne=
-t/c/openvpn/+/839?usp=3Demail )
+t/c/openvpn/+/840?usp=3Demail )
 
-Change subject: dns: support running up/down script with privsep
+Change subject: dns: don't publish env vars to non-dns scripts
 ......................................................................
 
 
-Patch Set 7:
+Patch Set 7: Code-Review-1
 
 (1 comment)
 
-File src/openvpn/dns.c:
+Patchset:
 
-http://gerrit.openvpn.net/c/openvpn/+/839/comment/fa5e5bc1_2b2282cf :
-PS7, Line 709:             ssize_t len =3D read(rfd, &status, sizeof(status=
-));
-Do we need some kind of timeout handling here?
+PS7:
+Change seems relatively straight-forward. But obviously this will potential=
+ly confuse existing scripts out there. Maybe you could add a change for Cha=
+nges.rst, that describes the behavioral changes. So that we do not forget t=
+o communicate this.
 
 
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/839?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/840?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings
 
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: I6b67e3a00dd84bf348b6af28115ee11138c3a111
-Gerrit-Change-Number: 839
+Gerrit-Change-Id: I3fb01ab76cf3df0874ba92e08f371d17607a8369
+Gerrit-Change-Number: 840
 Gerrit-PatchSet: 7
 Gerrit-Owner: d12fk <heiko@...515...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
@@ -64,39 +65,41 @@ Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
 Gerrit-Attention: d12fk <heiko@...515...>
-Gerrit-Comment-Date: Fri, 17 Jan 2025 13:53:32 +0000
+Gerrit-Comment-Date: Fri, 17 Jan 2025 13:57:45 +0000
 Gerrit-HasComments: Yes
-Gerrit-Has-Labels: No
+Gerrit-Has-Labels: Yes
 Gerrit-MessageType: comment
 
---koDNs/Ha0MU=
+--QeGLfWloKvM=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <p> Attention is currently required from: d12fk, plaisthos. </p>
-<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/839?usp=3Demail">View C=
-hange</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0;"><=
-li style=3D"margin: 0; padding: 0;"><p>File src/openvpn/dns.c:</p><ul style=
-=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 1=
-6px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net=
-/c/openvpn/+/839/comment/fa5e5bc1_2b2282cf">Patch Set #7, Line 709:</a> <co=
-de style=3D"font-family:monospace,monospace">            ssize_t len =3D re=
-ad(rfd, &amp;status, sizeof(status));</code></p><p style=3D"white-space: pr=
-e-wrap; word-wrap: break-word;">Do we need some kind of timeout handling he=
-re?</p></li></ul></li></ul><p>To view, visit <a href=3D"http://gerrit.openv=
-pn.net/c/openvpn/+/839?usp=3Demail">change 839</a>. To unsubscribe, or for =
-help writing mail filters, visit <a href=3D"http://gerrit.openvpn.net/setti=
-ngs">settings</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMes=
-sage"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.org/View=
-Action"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/=
-+/839?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div>=
-</div>
+<p>Patch set 7:<span style=3D"border-radius: 3px; display: inline-block; ma=
+rgin: 0 2px; padding: 4px;background-color: #ffd4d4;">Code-Review -1</span>=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/840?usp=3Demail">Vi=
+ew Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0=
+;"><li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-s=
+tyle: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p s=
+tyle=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn=
+/+/840?tab=3Dcomments">Patch Set #7:</a> </p><p style=3D"white-space: pre-w=
+rap; word-wrap: break-word;">Change seems relatively straight-forward. But =
+obviously this will potentially confuse existing scripts out there. Maybe y=
+ou could add a change for Changes.rst, that describes the behavioral change=
+s. So that we do not forget to communicate this.</p></li></ul></li></ul><p>=
+To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/840?usp=3De=
+mail">change 840</a>. To unsubscribe, or for help writing mail filters, vis=
+it <a href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div ite=
+mscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=
+=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url=
+" href=3D"http://gerrit.openvpn.net/c/openvpn/+/840?usp=3Demail"/><meta ite=
+mprop=3D"name" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I6b67e3a00dd84bf348b6af28115=
-ee11138c3a111 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 839 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I3fb01ab76cf3df0874ba92e08f3=
+71d17607a8369 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 840 </div>
 <div style=3D"display:none"> Gerrit-PatchSet: 7 </div>
 <div style=3D"display:none"> Gerrit-Owner: d12fk &lt;heiko@...515...&gt; </=
 div>
@@ -110,12 +113,12 @@ ts.sourceforge.net&gt; </div>
 ..1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: d12fk &lt;heiko@...515...&gt=
 ; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Fri, 17 Jan 2025 13:53:32=
+<div style=3D"display:none"> Gerrit-Comment-Date: Fri, 17 Jan 2025 13:57:45=
  +0000 </div>
 <div style=3D"display:none"> Gerrit-HasComments: Yes </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: No </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
 <div style=3D"display:none"> Gerrit-MessageType: comment </div>
 
 
---koDNs/Ha0MU=--
+--QeGLfWloKvM=--
 
