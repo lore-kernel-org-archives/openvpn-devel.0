@@ -1,16 +1,15 @@
 From: "plaisthos (Code Review)" <gerrit@...515...>
-Date: Tue, 21 Jan 2025 10:08:58 +0000
-In-Reply-To: <gerrit.1737375148000.Ia4095518d5e4447992a2974e0d7a159d79ba6b6f@...2715...>
-References: <gerrit.1737375148000.Ia4095518d5e4447992a2974e0d7a159d79ba6b6f@...2715...>
+Date: Tue, 21 Jan 2025 12:03:06 +0000
+References: <gerrit.1737460984000.Ie1e2eb54d516b3ae87c5ca56fe8edd77ee2be4de@...2715...>
 Reply-To: arne-openvpn@...1227..., openvpn-devel@lists.sourceforge.net,
  frank@...2641...
-Message-ID: <54ca4b3ada74fbe97420a7dfda2a5780efbd0888-EmailReplacePatchSet-HTML@...2715...>
+Message-ID: <3d5210d7256fd4be6341d896ac7e972a62fd6455-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="LlkLiu/eKao="; charset=UTF-8
-Subject: [Openvpn-devel] [M] Change in openvpn[master]: Implement
- override-username
+Content-Type: multipart/alternative; boundary="ias9IyC0Ql8="; charset=UTF-8
+Subject: [Openvpn-devel] [M] Change in openvpn[master]: Print
+ warnings/errors when numerical parameters cannot be parsed
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -22,814 +21,1340 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: flichtenheld <frank@...2641...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---LlkLiu/eKao=
+--ias9IyC0Ql8=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 Attention is currently required from: flichtenheld.
 
-Hello flichtenheld,=20
+Hello flichtenheld,
 
-I'd like you to reexamine a change. Please visit
+I'd like you to do a code review.
+Please visit
 
-    http://gerrit.openvpn.net/c/openvpn/+/872?usp=3Demail
+    http://gerrit.openvpn.net/c/openvpn/+/873?usp=3Demail
 
-to look at the new patch set (#4).
+to review the following change.
 
 
-Change subject: Implement override-username
+Change subject: Print warnings/errors when numerical parameters cannot be p=
+arsed
 ......................................................................
 
-Implement override-username
+Print warnings/errors when numerical parameters cannot be parsed
 
-This is intended to allow using auth-gen-token in scenarios where the
-client use certificates and multi-factor authentication.
+Using the atoi method is a best effort method that parses as much of the
+input string as possible as integer and ignores the rest or return 0
+if the string cannot be parsed. This is lead to unexpected results.
 
-It allows a client to successfully roam to a different server and have
-a correct username and auth-token that can be accepted by that server as
-fully authenticated user without requiring MFA again.
+Change the behaviour by printing a warning in these cases instead. When
+parsing a configuration, these warnings will error out since the msglevel
+is M_USAGE in this case. Example:
 
-The scenario that this feature is probably most useful
-when --management-client-auth is in use as in this mode the OpenVPN
-server can accept clients without username/password but still use
---auth-gen-token with username and password to accept auth-token as
-alternative authentication.
+    ./src/openvpn/openvpn --resolv-retry 198jj
+    Options error: Cannot parse argument '198jj' as non-negative integer
 
-Change-Id: Ia4095518d5e4447992a2974e0d7a159d79ba6b6f
-Signed-off-by: Arne Schwabe <arne@...1227...>
+Reported-By: Anqi Chen <chen.anqi3@...2855...>
+Reported-By: Cristina Nita-Rotaru <c.nitarotaru@...2855...>
+Change-Id: Ie1e2eb54d516b3ae87c5ca56fe8edd77ee2be4de
 ---
-M Changes.rst
-M doc/man-sections/server-options.rst
-M src/openvpn/auth_token.c
-M src/openvpn/multi.c
 M src/openvpn/options.c
-M src/openvpn/options.h
-M src/openvpn/push.c
-M src/openvpn/ssl.c
-M src/openvpn/ssl_common.h
-M src/openvpn/ssl_verify.c
-M src/openvpn/ssl_verify.h
-11 files changed, 159 insertions(+), 10 deletions(-)
+1 file changed, 109 insertions(+), 77 deletions(-)
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/72/872/4
 
-diff --git a/Changes.rst b/Changes.rst
-index 16ae6fc..8543113 100644
---- a/Changes.rst
-+++ b/Changes.rst
-@@ -36,6 +36,10 @@
-     add an allowed cipher without having to spell out the default ciphers.
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/73/873/1
 
-
-+Allow overriding username with ``--override-username``
-+    This is intended to allow using auth-gen-token in scenarios where the
-+    clients use certificates and multi-factor authentication.
-+
- Deprecated features
- -------------------
- ``secret`` support has been removed by default.
-diff --git a/doc/man-sections/server-options.rst b/doc/man-sections/server-=
-options.rst
-index 3fe9862..a76de67 100644
---- a/doc/man-sections/server-options.rst
-+++ b/doc/man-sections/server-options.rst
-@@ -89,6 +89,12 @@
-   will lead to authentication bypass (as does returning success on a wrong
-   password from a script).
-
-+  **Note:** the username for ``--auth-gen-token`` can be overridden by
-+  ``--override-user``. In this case the client will be pushed also the
-+  ``--auth-token-user`` option and and an auth token that is valid for
-+  that username instead of the original username that the client
-+  authenticated with.
-+
- --auth-gen-token-secret file
-   Specifies a file that holds a secret for the HMAC used in
-   ``--auth-gen-token`` If ``file`` is not present OpenVPN will generate a
-@@ -412,6 +418,32 @@
-
-   This option requires that ``--disable-occ`` NOT be used.
-
-+--override-username
-+  Sets the username of a connection to the specified username.  This usern=
-ame
-+  will also be used by ``--auth-gen-token``. However, the overridden
-+  username comes only into effect *after* the ``--client-config-dir`` has =
-been
-+  read and the ``--auth-user-pass-verify`` and ``--client-connect`` scripts
-+  have been run.
-+
-+  Also ``username-as-common-name`` will use the client provided username
-+  as common-name. It is recommended to avoid the use of the
-+  ``--override-username`` option if the option ``--username-as-common-name=
-``
-+  is being used.
-+
-+  The changed username will be picked up by the status output and also by
-+  the ``--auth-gen-token`` option. It will also be pushed to the client
-+  using ``--auth-token-user``.
-+
-+  Special care has to be taken both the initial username of the client and=
- the
-+  overridden username are  correctly handled when using ``--override-usern=
-ame``
-+  and the related options to avoid authentication/authorisation
-+  bypasses.
-+
-+  This option is mainly intended for use cases that use certificates and
-+  multi factor authentication and therefore do not provide a username that
-+  can be used for ``--auth-gen-token`` to allow providing a username in
-+  these scenarios.
-+
- --port-share args
-   Share OpenVPN TCP with another service
-
-diff --git a/src/openvpn/auth_token.c b/src/openvpn/auth_token.c
-index 3cf55e8..f51c42e 100644
---- a/src/openvpn/auth_token.c
-+++ b/src/openvpn/auth_token.c
-@@ -330,6 +330,7 @@
-     timestamp_initial =3D ntohll(timestamp_initial);
-
-     hmac_ctx_t *ctx =3D multi->opt.auth_token_key.hmac;
-+
-     if (check_hmac_token(ctx, b64decoded, up->username))
-     {
-         ret |=3D AUTH_TOKEN_HMAC_OK;
-diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
-index f426b46..b710ae2 100644
---- a/src/openvpn/multi.c
-+++ b/src/openvpn/multi.c
-@@ -42,7 +42,9 @@
- #include "ssl_verify.h"
- #include "ssl_ncp.h"
- #include "vlan.h"
-+#include "auth_token.h"
- #include <inttypes.h>
-+#include <string.h>
-
- #include "memdbg.h"
-
-@@ -2663,6 +2665,50 @@
-     NULL,
- };
-
-+/**
-+ * Overrides the locked username with the username of --override-username
-+ * @param mi the multi instance that should be modified.
-+ */
-+static void
-+override_locked_username(struct multi_instance *mi)
-+{
-+    struct tls_multi *multi =3D mi->context.c2.tls_multi;
-+    struct options *options =3D &mi->context.options;
-+    struct tls_session *session =3D &multi->session[TM_ACTIVE];
-+
-+    if (!multi->locked_original_username
-+        && strcmp(multi->locked_username, options->override_username) !=3D=
- 0)
-+    {
-+        multi->locked_original_username =3D multi->locked_username;
-+        multi->locked_username =3D strdup(options->override_username);
-+
-+        /* Override also the common name if username should be set as comm=
-on
-+         * name */
-+        if ((session->opt->ssl_flags & SSLF_USERNAME_AS_COMMON_NAME))
-+        {
-+            set_common_name(session, multi->locked_username);
-+            free(multi->locked_cn);
-+            multi->locked_cn =3D NULL;
-+            tls_lock_common_name(multi);
-+        }
-+
-+        /* Regenerate the auth-token if enabled */
-+        if (multi->auth_token_initial)
-+        {
-+            struct user_pass up;
-+            CLEAR(up);
-+            strncpynt(up.username, multi->locked_username,
-+                      sizeof(up.username));
-+
-+            generate_auth_token(&up, multi);
-+        }
-+
-+        msg(D_MULTI_LOW, "MULTI: Note, override-username changes username "
-+            "from '%s' to '%s'",
-+            multi->locked_original_username,
-+            multi->locked_username);
-+    }
-+}
- /*
-  * Called as soon as the SSL/TLS connection is authenticated.
-  *
-@@ -2766,6 +2812,11 @@
-         (*cur_handler_index)++;
-     }
-
-+    if (mi->context.options.override_username)
-+    {
-+        override_locked_username(mi);
-+    }
-+
-     /* Check if we have forbidding options in the current mode */
-     if (dco_enabled(&mi->context.options)
-         && !dco_check_option(D_MULTI_ERRORS, &mi->context.options))
 diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index 3ef4d78..93b8417 100644
+index 93b8417..6b9f204 100644
 --- a/src/openvpn/options.c
 +++ b/src/openvpn/options.c
-@@ -440,6 +440,8 @@
-     "                  Only valid in a client-specific config file.\n"
-     "--disable       : Client is disabled.\n"
-     "                  Only valid in a client-specific config file.\n"
-+    "--override-username: Overrides the client-specific username to be use=
-d.\n"
-+    "                  Only valid in a client-specific config file.\n"
-     "--verify-client-cert [none|optional|require] : perform no, optional o=
-r\n"
-     "                  mandatory client certificate verification.\n"
-     "                  Default is to require the client to supply a certif=
-icate.\n"
-@@ -7847,6 +7849,23 @@
-         VERIFY_PERMISSION(OPT_P_INSTANCE);
-         options->disable =3D true;
-     }
-+    else if (streq(p[0], "override-username") && p[1] && !p[2])
-+    {
-+        VERIFY_PERMISSION(OPT_P_INSTANCE);
-+        if (strlen(p[1]) > TLS_USERNAME_LEN)
-+        {
-+            msg(msglevel, "override-username exceeds the maximum length of=
- %d "
-+                "characters", TLS_USERNAME_LEN);
-+
-+            /* disable the connection since ignoring the request to
-+             * set another username might cause serious problems */
-+            options->disable =3D true;
-+        }
-+        else
-+        {
-+            options->override_username =3D p[1];
-+        }
-+    }
-     else if (streq(p[0], "tcp-nodelay") && !p[1])
-     {
-         VERIFY_PERMISSION(OPT_P_GENERAL);
-diff --git a/src/openvpn/options.h b/src/openvpn/options.h
-index 55f12dd..274f282 100644
---- a/src/openvpn/options.h
-+++ b/src/openvpn/options.h
-@@ -492,6 +492,7 @@
-     const char *client_config_dir;
-     bool ccd_exclusive;
-     bool disable;
-+    const char *override_username;
-     int n_bcast_buf;
-     int tcp_queue_limit;
-     struct iroute *iroutes;
-diff --git a/src/openvpn/push.c b/src/openvpn/push.c
-index a7cd3bf..5ccd7d8 100644
---- a/src/openvpn/push.c
-+++ b/src/openvpn/push.c
-@@ -595,9 +595,19 @@
-      */
-     if (tls_multi->auth_token)
-     {
--        push_option_fmt(gc, push_list, M_USAGE,
--                        "auth-token %s",
-+        push_option_fmt(gc, push_list, M_USAGE, "auth-token %s",
-                         tls_multi->auth_token);
-+
-+        char *base64user;
-+        int ret =3D openvpn_base64_encode(tls_multi->locked_username,
-+                                        (int)strlen(tls_multi->locked_user=
-name),
-+                                        &base64user);
-+        if (ret < USER_PASS_LEN && ret > 0)
-+        {
-+            push_option_fmt(gc, push_list, M_USAGE, "auth-token-user %s",
-+                            base64user);
-+        }
-+        free(base64user);
-     }
+@@ -4926,11 +4926,43 @@
  }
+ #endif
 
-diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
-index e4a7b57..e548299 100644
---- a/src/openvpn/ssl.c
-+++ b/src/openvpn/ssl.c
-@@ -1260,6 +1260,7 @@
-     free(multi->peer_info);
-     free(multi->locked_cn);
-     free(multi->locked_username);
-+    free(multi->locked_original_username);
-
-     cert_hash_free(multi->locked_cert_hash_set);
-
-diff --git a/src/openvpn/ssl_common.h b/src/openvpn/ssl_common.h
-index e092472..2efeb6a 100644
---- a/src/openvpn/ssl_common.h
-+++ b/src/openvpn/ssl_common.h
-@@ -625,7 +625,16 @@
-      * Our locked common name, username, and cert hashes (cannot change du=
-ring the life of this tls_multi object)
-      */
-     char *locked_cn;
-+
-+    /** The locked username is the username we assume the client is using.
-+     * Normally the username used for initial authentication unless
-+     * overridden by --override-username */
-     char *locked_username;
-+
-+    /** The username that client initially used before being overridden
-+     * by --override-user */
-+    char *locked_original_username;
-+
-     struct cert_hash_set *locked_cert_hash_set;
-
-     /** Time of last when we updated the cached state of
-diff --git a/src/openvpn/ssl_verify.c b/src/openvpn/ssl_verify.c
-index e7d7ed6..cb81510 100644
---- a/src/openvpn/ssl_verify.c
-+++ b/src/openvpn/ssl_verify.c
-@@ -48,9 +48,6 @@
- #include "push.h"
- #include "ssl_util.h"
-
--/** Maximum length of common name */
--#define TLS_USERNAME_LEN 64
--
- static void
- string_mod_remap_name(char *str)
++/**
++ * Converts a str to a positive number if the string represents a postive
++ * integer number. Otherwise print a warning with msglevel and return 0
++ */
+ static int
+-positive_atoi(const char *str)
++positive_atoi(const char *str, int msglevel)
  {
-@@ -85,10 +82,7 @@
-     }
- }
-
--/*
-- * Set the given session's common_name
-- */
--static void
-+void
- set_common_name(struct tls_session *session, const char *common_name)
- {
-     if (session->common_name)
-@@ -153,7 +147,10 @@
- {
-     if (multi->locked_username)
-     {
--        if (strcmp(username, multi->locked_username) !=3D 0)
-+        /* If the username has been overridden, we accept both the original
-+         * username and the changed username */
-+        if (strcmp(username, multi->locked_username) !=3D 0
-+            &&  (!multi->locked_original_username || strcmp(username, mult=
-i->locked_original_username) !=3D 0))
-         {
-             msg(D_TLS_ERRORS, "TLS Auth Error: username attempted to chang=
-e from '%s' to '%s' -- tunnel disabled",
-                 multi->locked_username,
-@@ -1613,6 +1610,17 @@
-      */
-     bool skip_auth =3D false;
-
-+    /* Replace username early if override-username is in effect but only
-+     * if client is sending the original username */
-+    if (multi->locked_original_username
-+        && strncmp(up->username, multi->locked_original_username, sizeof(u=
-p->username)) !=3D 0)
+-    const int i =3D atoi(str);
+-    return i < 0 ? 0 : i;
++    char *endptr;
++    long long i =3D strtoll(str, &endptr, 10);
++
++    if (i < 0 || endptr || i > INT_MAX)
 +    {
-+        strncpy(up->username, multi->locked_username, sizeof(up->username)=
-);
-+        msg(D_MULTI_LOW, "TLS: Replacing client provided username '%s' wit=
-h "
-+            "username from override-user '%s'", up->username,
-+            multi->locked_username);
++        msg(msglevel, "Cannot parse argument '%s' as non-negative integer",
++            str);
++        i =3D 0;
 +    }
 +
-     /*
-      * If server is configured with --auth-gen-token and the client sends
-      * something that looks like an authentication token, this
-diff --git a/src/openvpn/ssl_verify.h b/src/openvpn/ssl_verify.h
-index cd2ec24..eba3832 100644
---- a/src/openvpn/ssl_verify.h
-+++ b/src/openvpn/ssl_verify.h
-@@ -51,6 +51,9 @@
- /** Maximum certificate depth we will allow */
- #define MAX_CERT_DEPTH 16
-
-+/** Maximum length of common name */
-+#define TLS_USERNAME_LEN 64
-+
- /** Structure containing the hash for a single certificate */
- struct cert_hash {
-     unsigned char sha256_hash[256/8];
-@@ -146,6 +149,16 @@
-  */
- const char *tls_common_name(const struct tls_multi *multi, const bool null=
-);
-
++    return (int) i;
++}
 +
 +/**
-+ * Sets the common name field for the given tunnel
-+ *
-+ * @param multi         The tunnel to set the common name for
-+ * @param common_name   The name to set the common name to
++ * Converts a str to an integer if the string can be represented as an
++ * integer number. Otherwise print a warning with msglevel and return 0
 + */
-+void
-+set_common_name(struct tls_session *session, const char *common_name);
++static int
++atoi_warn(const char *str, int msglevel)
++{
++    char *endptr;
++    long long i =3D strtoll(str, &endptr, 10);
 +
- /**
-  * Returns the username field for the given tunnel
-  *
++    if (i < INT_MIN || endptr || i > INT_MAX)
++    {
++        msg(msglevel, "Cannot parse argument '%s' as integer", str);
++        i =3D 0;
++    }
++
++    return (int) i;
+ }
+
+ #ifdef _WIN32  /* This function is only used when compiling on Windows */
+@@ -5955,7 +5987,7 @@
+         int cache;
+
+         VERIFY_PERMISSION(OPT_P_GENERAL);
+-        cache =3D atoi(p[1]);
++        cache =3D atoi_warn(p[1], msglevel);
+         if (cache < 1)
+         {
+             msg(msglevel, "--management-log-cache parameter is out of rang=
+e");
+@@ -6250,7 +6282,7 @@
+         }
+         else
+         {
+-            options->resolve_retry_seconds =3D positive_atoi(p[1]);
++            options->resolve_retry_seconds =3D positive_atoi(p[1], msgleve=
+l);
+         }
+     }
+     else if ((streq(p[0], "preresolve") || streq(p[0], "ip-remote-hint")) =
+&& !p[2])
+@@ -6267,7 +6299,7 @@
+     else if (streq(p[0], "connect-retry") && p[1] && !p[3])
+     {
+         VERIFY_PERMISSION(OPT_P_GENERAL|OPT_P_CONNECTION);
+-        options->ce.connect_retry_seconds =3D positive_atoi(p[1]);
++        options->ce.connect_retry_seconds =3D positive_atoi(p[1], msglevel=
+);
+         /*
+          * Limit the base value of retry wait interval to 16 bits to avoid
+          * overflow when scaled up for exponential backoff
+@@ -6282,19 +6314,19 @@
+         if (p[2])
+         {
+             options->ce.connect_retry_seconds_max =3D
+-                max_int(positive_atoi(p[2]), options->ce.connect_retry_sec=
+onds);
++                max_int(positive_atoi(p[2], msglevel), options->ce.connect=
+_retry_seconds);
+         }
+     }
+     else if ((streq(p[0], "connect-timeout") || streq(p[0], "server-poll-t=
+imeout"))
+              && p[1] && !p[2])
+     {
+         VERIFY_PERMISSION(OPT_P_GENERAL|OPT_P_CONNECTION);
+-        options->ce.connect_timeout =3D positive_atoi(p[1]);
++        options->ce.connect_timeout =3D positive_atoi(p[1], msglevel);
+     }
+     else if (streq(p[0], "connect-retry-max") && p[1] && !p[2])
+     {
+         VERIFY_PERMISSION(OPT_P_GENERAL|OPT_P_CONNECTION);
+-        options->connect_retry_max =3D positive_atoi(p[1]);
++        options->connect_retry_max =3D positive_atoi(p[1], msglevel);
+     }
+     else if (streq(p[0], "ipchange") && p[1])
+     {
+@@ -6317,7 +6349,7 @@
+     else if (streq(p[0], "gremlin") && p[1] && !p[2])
+     {
+         VERIFY_PERMISSION(OPT_P_GENERAL);
+-        options->gremlin =3D positive_atoi(p[1]);
++        options->gremlin =3D positive_atoi(p[1], msglevel);
+     }
+ #endif
+     else if (streq(p[0], "chroot") && p[1] && !p[2])
+@@ -6449,7 +6481,7 @@
+     else if (streq(p[0], "verb") && p[1] && !p[2])
+     {
+         VERIFY_PERMISSION(OPT_P_MESSAGES);
+-        options->verbosity =3D positive_atoi(p[1]);
++        options->verbosity =3D positive_atoi(p[1], msglevel);
+         if (options->verbosity >=3D (D_TLS_DEBUG_MED & M_DEBUG_LEVEL))
+         {
+             /* We pass this flag to the SSL library to avoid
+@@ -6468,7 +6500,7 @@
+     else if (streq(p[0], "mute") && p[1] && !p[2])
+     {
+         VERIFY_PERMISSION(OPT_P_MESSAGES);
+-        options->mute =3D positive_atoi(p[1]);
++        options->mute =3D positive_atoi(p[1], msglevel);
+     }
+     else if (streq(p[0], "errors-to-stderr") && !p[1])
+     {
+@@ -6481,7 +6513,7 @@
+         options->status_file =3D p[1];
+         if (p[2])
+         {
+-            options->status_file_update_freq =3D positive_atoi(p[2]);
++            options->status_file_update_freq =3D positive_atoi(p[2], msgle=
+vel);
+         }
+     }
+     else if (streq(p[0], "status-version") && p[1] && !p[2])
+@@ -6489,7 +6521,7 @@
+         int version;
+
+         VERIFY_PERMISSION(OPT_P_GENERAL);
+-        version =3D atoi(p[1]);
++        version =3D atoi_warn(p[1], msglevel);
+         if (version < 1 || version > 3)
+         {
+             msg(msglevel, "--status-version must be 1 to 3");
+@@ -6517,17 +6549,17 @@
+     else if ((streq(p[0], "link-mtu") || streq(p[0], "udp-mtu")) && p[1] &=
+& !p[2])
+     {
+         VERIFY_PERMISSION(OPT_P_MTU|OPT_P_CONNECTION);
+-        options->ce.link_mtu =3D positive_atoi(p[1]);
++        options->ce.link_mtu =3D positive_atoi(p[1], msglevel);
+         options->ce.link_mtu_defined =3D true;
+     }
+     else if (streq(p[0], "tun-mtu") && p[1] && !p[3])
+     {
+         VERIFY_PERMISSION(OPT_P_PUSH_MTU|OPT_P_CONNECTION);
+-        options->ce.tun_mtu =3D positive_atoi(p[1]);
++        options->ce.tun_mtu =3D positive_atoi(p[1], msglevel);
+         options->ce.tun_mtu_defined =3D true;
+         if (p[2])
+         {
+-            options->ce.occ_mtu =3D positive_atoi(p[2]);
++            options->ce.occ_mtu =3D positive_atoi(p[2], msglevel);
+         }
+         else
+         {
+@@ -6537,7 +6569,7 @@
+     else if (streq(p[0], "tun-mtu-max") && p[1] && !p[3])
+     {
+         VERIFY_PERMISSION(OPT_P_MTU|OPT_P_CONNECTION);
+-        int max_mtu =3D positive_atoi(p[1]);
++        int max_mtu =3D positive_atoi(p[1], msglevel);
+         if (max_mtu < 68 || max_mtu > 65536)
+         {
+             msg(msglevel, "--tun-mtu-max value '%s' is invalid", p[1]);
+@@ -6550,13 +6582,13 @@
+     else if (streq(p[0], "tun-mtu-extra") && p[1] && !p[2])
+     {
+         VERIFY_PERMISSION(OPT_P_MTU|OPT_P_CONNECTION);
+-        options->ce.tun_mtu_extra =3D positive_atoi(p[1]);
++        options->ce.tun_mtu_extra =3D positive_atoi(p[1], msglevel);
+         options->ce.tun_mtu_extra_defined =3D true;
+     }
+     else if (streq(p[0], "max-packet-size") && p[1] && !p[2])
+     {
+         VERIFY_PERMISSION(OPT_P_MTU|OPT_P_CONNECTION);
+-        int maxmtu =3D positive_atoi(p[1]);
++        int maxmtu =3D positive_atoi(p[1], msglevel);
+         options->ce.tls_mtu =3D constrain_int(maxmtu, TLS_CHANNEL_MTU_MIN,=
+ TLS_CHANNEL_BUF_SIZE);
+=20
+         if (maxmtu < TLS_CHANNEL_MTU_MIN || maxmtu > TLS_CHANNEL_BUF_SIZE)
+@@ -6582,7 +6614,7 @@
+     else if (streq(p[0], "fragment") && p[1] && !p[3])
+     {
+         VERIFY_PERMISSION(OPT_P_MTU|OPT_P_CONNECTION);
+-        options->ce.fragment =3D positive_atoi(p[1]);
++        options->ce.fragment =3D positive_atoi(p[1], msglevel);
+
+         if (options->ce.fragment < 68)
+         {
+@@ -6613,23 +6645,23 @@
+     else if (streq(p[0], "nice") && p[1] && !p[2])
+     {
+         VERIFY_PERMISSION(OPT_P_NICE);
+-        options->nice =3D atoi(p[1]);
++        options->nice =3D atoi_warn(p[1], msglevel);
+     }
+     else if (streq(p[0], "rcvbuf") && p[1] && !p[2])
+     {
+         VERIFY_PERMISSION(OPT_P_SOCKBUF);
+-        options->rcvbuf =3D positive_atoi(p[1]);
++        options->rcvbuf =3D positive_atoi(p[1], msglevel);
+     }
+     else if (streq(p[0], "sndbuf") && p[1] && !p[2])
+     {
+         VERIFY_PERMISSION(OPT_P_SOCKBUF);
+-        options->sndbuf =3D positive_atoi(p[1]);
++        options->sndbuf =3D positive_atoi(p[1], msglevel);
+     }
+     else if (streq(p[0], "mark") && p[1] && !p[2])
+     {
+ #if defined(TARGET_LINUX) && HAVE_DECL_SO_MARK
+         VERIFY_PERMISSION(OPT_P_GENERAL);
+-        options->mark =3D atoi(p[1]);
++        options->mark =3D atoi_warn(p[1], msglevel);
+ #endif
+     }
+     else if (streq(p[0], "socket-flags"))
+@@ -6659,7 +6691,7 @@
+     {
+         VERIFY_PERMISSION(OPT_P_GENERAL);
+ #ifdef TARGET_LINUX
+-        options->tuntap_options.txqueuelen =3D positive_atoi(p[1]);
++        options->tuntap_options.txqueuelen =3D positive_atoi(p[1], msgleve=
+l);
+ #else
+         msg(msglevel, "--txqueuelen not supported on this OS");
+         goto err;
+@@ -6670,7 +6702,7 @@
+         int shaper;
+
+         VERIFY_PERMISSION(OPT_P_SHAPER);
+-        shaper =3D atoi(p[1]);
++        shaper =3D atoi_warn(p[1], msglevel);
+         if (shaper < SHAPER_MIN || shaper > SHAPER_MAX)
+         {
+             msg(msglevel, "Bad shaper value, must be between %d and %d",
+@@ -6718,7 +6750,7 @@
+     else if (streq(p[0], "inactive") && p[1] && !p[3])
+     {
+         VERIFY_PERMISSION(OPT_P_TIMER);
+-        options->inactivity_timeout =3D positive_atoi(p[1]);
++        options->inactivity_timeout =3D positive_atoi(p[1], msglevel);
+         if (p[2])
+         {
+             int64_t val =3D atoll(p[2]);
+@@ -6736,7 +6768,7 @@
+     else if (streq(p[0], "session-timeout") && p[1] && !p[2])
+     {
+         VERIFY_PERMISSION(OPT_P_TIMER);
+-        options->session_timeout =3D positive_atoi(p[1]);
++        options->session_timeout =3D positive_atoi(p[1], msglevel);
+     }
+     else if (streq(p[0], "proto") && p[1] && !p[2])
+     {
+@@ -6903,24 +6935,24 @@
+     else if (streq(p[0], "keepalive") && p[1] && p[2] && !p[3])
+     {
+         VERIFY_PERMISSION(OPT_P_GENERAL);
+-        options->keepalive_ping =3D atoi(p[1]);
+-        options->keepalive_timeout =3D atoi(p[2]);
++        options->keepalive_ping =3D atoi_warn(p[1], msglevel);
++        options->keepalive_timeout =3D atoi_warn(p[1], msglevel);
+     }
+     else if (streq(p[0], "ping") && p[1] && !p[2])
+     {
+         VERIFY_PERMISSION(OPT_P_TIMER);
+-        options->ping_send_timeout =3D positive_atoi(p[1]);
++        options->ping_send_timeout =3D positive_atoi(p[1], msglevel);
+     }
+     else if (streq(p[0], "ping-exit") && p[1] && !p[2])
+     {
+         VERIFY_PERMISSION(OPT_P_TIMER);
+-        options->ping_rec_timeout =3D positive_atoi(p[1]);
++        options->ping_rec_timeout =3D positive_atoi(p[1], msglevel);
+         options->ping_rec_timeout_action =3D PING_EXIT;
+     }
+     else if (streq(p[0], "ping-restart") && p[1] && !p[2])
+     {
+         VERIFY_PERMISSION(OPT_P_TIMER);
+-        options->ping_rec_timeout =3D positive_atoi(p[1]);
++        options->ping_rec_timeout =3D positive_atoi(p[1], msglevel);
+         options->ping_rec_timeout_action =3D PING_RESTART;
+     }
+     else if (streq(p[0], "ping-timer-rem") && !p[1])
+@@ -6933,7 +6965,7 @@
+         VERIFY_PERMISSION(OPT_P_GENERAL|OPT_P_CONNECTION|OPT_P_EXPLICIT_NO=
+TIFY);
+         if (p[1])
+         {
+-            options->ce.explicit_exit_notification =3D positive_atoi(p[1]);
++            options->ce.explicit_exit_notification =3D positive_atoi(p[1],=
+ msglevel);
+         }
+         else
+         {
+@@ -7053,7 +7085,7 @@
+     else if (streq(p[0], "route-metric") && p[1] && !p[2])
+     {
+         VERIFY_PERMISSION(OPT_P_ROUTE);
+-        options->route_default_metric =3D positive_atoi(p[1]);
++        options->route_default_metric =3D positive_atoi(p[1], msglevel);
+     }
+     else if (streq(p[0], "route-delay") && !p[3])
+     {
+@@ -7061,10 +7093,10 @@
+         options->route_delay_defined =3D true;
+         if (p[1])
+         {
+-            options->route_delay =3D positive_atoi(p[1]);
++            options->route_delay =3D positive_atoi(p[1], msglevel);
+             if (p[2])
+             {
+-                options->route_delay_window =3D positive_atoi(p[2]);
++                options->route_delay_window =3D positive_atoi(p[2], msglev=
+el);
+             }
+         }
+         else
+@@ -7229,7 +7261,7 @@
+         }
+         else if (streq(p[1], "SERVER_POLL_TIMEOUT") && p[2])
+         {
+-            options->ce.connect_timeout =3D positive_atoi(p[2]);
++            options->ce.connect_timeout =3D positive_atoi(p[2], msglevel);
+         }
+         else
+         {
+@@ -7261,14 +7293,14 @@
+     else if (streq(p[0], "script-security") && p[1] && !p[2])
+     {
+         VERIFY_PERMISSION(OPT_P_GENERAL);
+-        script_security_set(atoi(p[1]));
++        script_security_set(atoi_warn(p[1], msglevel));
+     }
+     else if (streq(p[0], "mssfix") && !p[3])
+     {
+         VERIFY_PERMISSION(OPT_P_GENERAL|OPT_P_CONNECTION);
+         if (p[1])
+         {
+-            int mssfix =3D positive_atoi(p[1]);
++            int mssfix =3D positive_atoi(p[1], msglevel);
+             /* can be 0, but otherwise it needs to be high enough so we can
+              * substract room for headers. */
+             if (mssfix !=3D 0
+@@ -7451,7 +7483,7 @@
+         options->ifconfig_pool_persist_filename =3D p[1];
+         if (p[2])
+         {
+-            options->ifconfig_pool_persist_refresh_freq =3D positive_atoi(=
+p[2]);
++            options->ifconfig_pool_persist_refresh_freq =3D positive_atoi(=
+p[2], msglevel);
+         }
+     }
+     else if (streq(p[0], "ifconfig-ipv6-pool") && p[1] && !p[2])
+@@ -7483,8 +7515,8 @@
+         int real, virtual;
+
+         VERIFY_PERMISSION(OPT_P_GENERAL);
+-        real =3D atoi(p[1]);
+-        virtual =3D atoi(p[2]);
++        real =3D atoi_warn(p[1], msglevel);
++        virtual =3D atoi_warn(p[1], msglevel);
+         if (real < 1 || virtual < 1)
+         {
+             msg(msglevel, "--hash-size sizes must be >=3D 1 (preferably a =
+power of 2)");
+@@ -7498,8 +7530,8 @@
+         int cf_max, cf_per;
+=20
+         VERIFY_PERMISSION(OPT_P_GENERAL);
+-        cf_max =3D atoi(p[1]);
+-        cf_per =3D atoi(p[2]);
++        cf_max =3D atoi_warn(p[1], msglevel);
++        cf_per =3D atoi_warn(p[1], msglevel);
+         if (cf_max < 0 || cf_per < 0)
+         {
+             msg(msglevel, "--connect-freq parms must be > 0");
+@@ -7529,7 +7561,7 @@
+         int max_clients;
+
+         VERIFY_PERMISSION(OPT_P_GENERAL);
+-        max_clients =3D atoi(p[1]);
++        max_clients =3D atoi_warn(p[1], msglevel);
+         if (max_clients < 0)
+         {
+             msg(msglevel, "--max-clients must be at least 1");
+@@ -7545,7 +7577,7 @@
+     else if (streq(p[0], "max-routes-per-client") && p[1] && !p[2])
+     {
+         VERIFY_PERMISSION(OPT_P_INHERIT);
+-        options->max_routes_per_client =3D max_int(atoi(p[1]), 1);
++        options->max_routes_per_client =3D max_int(positive_atoi(p[1], msg=
+level), 1);
+     }
+     else if (streq(p[0], "client-cert-not-required") && !p[1])
+     {
+@@ -7629,14 +7661,14 @@
+     {
+         VERIFY_PERMISSION(OPT_P_GENERAL);
+         options->auth_token_generate =3D true;
+-        options->auth_token_lifetime =3D p[1] ? positive_atoi(p[1]) : 0;
++        options->auth_token_lifetime =3D p[1] ? positive_atoi(p[1], msglev=
+el) : 0;
+
+         for (int i =3D 2; i < MAX_PARMS && p[i] !=3D NULL; i++)
+         {
+             /* the second parameter can be the renewal time */
+-            if (i =3D=3D 2 && positive_atoi(p[i]))
++            if (i =3D=3D 2 && positive_atoi(p[i], msglevel))
+             {
+-                options->auth_token_renewal =3D positive_atoi(p[i]);
++                options->auth_token_renewal =3D positive_atoi(p[i], msglev=
+el);
+             }
+             else if (streq(p[i], "external-auth"))
+             {
+@@ -7716,7 +7748,7 @@
+         int n_bcast_buf;
+
+         VERIFY_PERMISSION(OPT_P_GENERAL);
+-        n_bcast_buf =3D atoi(p[1]);
++        n_bcast_buf =3D atoi_warn(p[1], msglevel);
+         if (n_bcast_buf < 1)
+         {
+             msg(msglevel, "--bcast-buffers parameter must be > 0");
+@@ -7728,7 +7760,7 @@
+         int tcp_queue_limit;
+
+         VERIFY_PERMISSION(OPT_P_GENERAL);
+-        tcp_queue_limit =3D atoi(p[1]);
++        tcp_queue_limit =3D atoi_warn(p[1], msglevel);
+         if (tcp_queue_limit < 1)
+         {
+             msg(msglevel, "--tcp-queue-limit parameter must be > 0");
+@@ -7876,10 +7908,10 @@
+         int ageing_time, check_interval;
+
+         VERIFY_PERMISSION(OPT_P_GENERAL);
+-        ageing_time =3D atoi(p[1]);
++        ageing_time =3D atoi_warn(p[1], msglevel);
+         if (p[2])
+         {
+-            check_interval =3D atoi(p[2]);
++            check_interval =3D atoi_warn(p[1], msglevel);
+         }
+         else
+         {
+@@ -7908,7 +7940,7 @@
+     else if (streq(p[0], "push-continuation") && p[1] && !p[2])
+     {
+         VERIFY_PERMISSION(OPT_P_PULL_MODE);
+-        options->push_continuation =3D atoi(p[1]);
++        options->push_continuation =3D atoi_warn(p[1], msglevel);
+     }
+     else if (streq(p[0], "auth-user-pass") && !p[2])
+     {
+@@ -7933,7 +7965,7 @@
+     {
+         VERIFY_PERMISSION(OPT_P_GENERAL);
+         options->sc_info.challenge_text =3D p[1];
+-        if (atoi(p[2]))
++        if (atoi_warn(p[1], msglevel))
+         {
+             options->sc_info.flags |=3D SC_ECHO;
+         }
+@@ -8029,7 +8061,7 @@
+             {
+                 if (!streq(p[2], "default"))
+                 {
+-                    int offset =3D atoi(p[2]);
++                    int offset =3D options_atoi(p[1], msglevel);
+
+                     if (!(offset > -256 && offset < 256))
+                     {
+@@ -8045,7 +8077,7 @@
+                 {
+                     const int min_lease =3D 30;
+                     int lease_time;
+-                    lease_time =3D atoi(p[3]);
++                    lease_time =3D options_atoi(p[1], msglevel);
+                     if (lease_time < min_lease)
+                     {
+                         msg(msglevel, "--ip-win32 dynamic [offset] [lease-=
+time]: lease time parameter (%d) must be at least %d seconds", lease_time, =
+min_lease);
+@@ -8169,7 +8201,7 @@
+         else if (streq(p[1], "NBT") && p[2] && !p[3])
+         {
+             int t;
+-            t =3D atoi(p[2]);
++            t =3D options_atoi(p[1], msglevel);
+             if (!(t =3D=3D 1 || t =3D=3D 2 || t =3D=3D 4 || t =3D=3D 8))
+             {
+                 msg(msglevel, "--dhcp-option NBT: parameter (%d) must be 1=
+, 2, 4, or 8", t);
+@@ -8227,7 +8259,7 @@
+ #if defined(TARGET_ANDROID)
+         else if (streq(p[1], "PROXY_HTTP") && p[3] && !p[4])
+         {
+-            o->http_proxy_port =3D atoi(p[3]);
++            o->http_proxy_port =3D options_atoi(p[1], msglevel);
+             o->http_proxy =3D p[2];
+         }
+ #endif
+@@ -8261,7 +8293,7 @@
+     {
+         int s;
+         VERIFY_PERMISSION(OPT_P_DHCPDNS);
+-        s =3D atoi(p[1]);
++        s =3D options_atoi(p[1], msglevel);
+         if (s < 0 || s >=3D 256)
+         {
+             msg(msglevel, "--tap-sleep parameter must be between 0 and 255=
+");
+@@ -8344,7 +8376,7 @@
+         options->exit_event_name =3D p[1];
+         if (p[2])
+         {
+-            options->exit_event_initial_state =3D (atoi(p[2]) !=3D 0);
++            options->exit_event_initial_state =3D (options_atoi(p[1], msgl=
+evel) !=3D 0);
+         }
+     }
+     else if (streq(p[0], "allow-nonadmin") && !p[2])
+@@ -8711,7 +8743,7 @@
+         {
+             int replay_window;
+
+-            replay_window =3D atoi(p[1]);
++            replay_window =3D atoi_warn(p[1], msglevel);
+             if (!(MIN_SEQ_BACKTRACK <=3D replay_window && replay_window <=
+=3D MAX_SEQ_BACKTRACK))
+             {
+                 msg(msglevel, "replay-window window size parameter (%d) mu=
+st be between %d and %d",
+@@ -8726,7 +8758,7 @@
+             {
+                 int replay_time;
+
+-                replay_time =3D atoi(p[2]);
++                replay_time =3D atoi_warn(p[1], msglevel);
+                 if (!(MIN_TIME_BACKTRACK <=3D replay_time && replay_time <=
+=3D MAX_TIME_BACKTRACK))
+                 {
+                     msg(msglevel, "replay-window time window parameter (%d=
+) must be between %d and %d",
+@@ -9168,7 +9200,7 @@
+     else if (streq(p[0], "tls-timeout") && p[1] && !p[2])
+     {
+         VERIFY_PERMISSION(OPT_P_TLS_PARMS);
+-        options->tls_timeout =3D positive_atoi(p[1]);
++        options->tls_timeout =3D positive_atoi(p[1], msglevel);
+     }
+     else if (streq(p[0], "reneg-bytes") && p[1] && !p[2])
+     {
+@@ -9197,21 +9229,21 @@
+     else if (streq(p[0], "reneg-sec") && p[1] && !p[3])
+     {
+         VERIFY_PERMISSION(OPT_P_TLS_PARMS);
+-        options->renegotiate_seconds =3D positive_atoi(p[1]);
++        options->renegotiate_seconds =3D positive_atoi(p[1], msglevel);
+         if (p[2])
+         {
+-            options->renegotiate_seconds_min =3D positive_atoi(p[2]);
++            options->renegotiate_seconds_min =3D positive_atoi(p[2], msgle=
+vel);
+         }
+     }
+     else if (streq(p[0], "hand-window") && p[1] && !p[2])
+     {
+         VERIFY_PERMISSION(OPT_P_TLS_PARMS);
+-        options->handshake_window =3D positive_atoi(p[1]);
++        options->handshake_window =3D positive_atoi(p[1], msglevel);
+     }
+     else if (streq(p[0], "tran-window") && p[1] && !p[2])
+     {
+         VERIFY_PERMISSION(OPT_P_TLS_PARMS);
+-        options->transition_window =3D positive_atoi(p[1]);
++        options->transition_window =3D positive_atoi(p[1], msglevel);
+     }
+     else if (streq(p[0], "tls-auth") && p[1] && !p[3])
+     {
+@@ -9348,7 +9380,7 @@
+     else if (streq(p[0], "show-pkcs11-ids") && !p[3])
+     {
+         char *provider =3D  p[1];
+-        bool cert_private =3D (p[2] =3D=3D NULL ? false : ( atoi(p[2]) !=
+=3D 0 ));
++        bool cert_private =3D (p[2] =3D=3D NULL ? false : (atoi_warn(p[1],=
+ msglevel) !=3D 0 ));
+
+ #ifdef DEFAULT_PKCS11_MODULE
+         if (!provider)
+@@ -9400,7 +9432,7 @@
+
+         for (j =3D 1; j < MAX_PARMS && p[j] !=3D NULL; ++j)
+         {
+-            options->pkcs11_protected_authentication[j-1] =3D atoi(p[j]) !=
+=3D 0 ? 1 : 0;
++            options->pkcs11_protected_authentication[j-1] =3D atoi_warn(p[=
+j], msglevel) !=3D 0 ? 1 : 0;
+         }
+     }
+     else if (streq(p[0], "pkcs11-private-mode") && p[1])
+@@ -9422,13 +9454,13 @@
+
+         for (j =3D 1; j < MAX_PARMS && p[j] !=3D NULL; ++j)
+         {
+-            options->pkcs11_cert_private[j-1] =3D atoi(p[j]) !=3D 0 ? 1 : =
+0;
++            options->pkcs11_cert_private[j-1] =3D atoi_warn(p[j], msglevel=
+) !=3D 0 ? 1 : 0;
+         }
+     }
+     else if (streq(p[0], "pkcs11-pin-cache") && p[1] && !p[2])
+     {
+         VERIFY_PERMISSION(OPT_P_GENERAL);
+-        options->pkcs11_pin_cache_period =3D atoi(p[1]);
++        options->pkcs11_pin_cache_period =3D atoi_warn(p[1], msglevel);
+     }
+     else if (streq(p[0], "pkcs11-id") && p[1] && !p[2])
+     {
+@@ -9457,12 +9489,12 @@
+     {
+         VERIFY_PERMISSION(OPT_P_PEER_ID);
+         options->use_peer_id =3D true;
+-        options->peer_id =3D atoi(p[1]);
++        options->peer_id =3D atoi_warn(p[1], msglevel);
+     }
+ #ifdef HAVE_EXPORT_KEYING_MATERIAL
+     else if (streq(p[0], "keying-material-exporter") && p[1] && p[2])
+     {
+-        int ekm_length =3D positive_atoi(p[2]);
++        int ekm_length =3D positive_atoi(p[2], msglevel);
+
+         VERIFY_PERMISSION(OPT_P_GENERAL);
+
+@@ -9521,7 +9553,7 @@
+     else if (streq(p[0], "vlan-pvid") && p[1] && !p[2])
+     {
+         VERIFY_PERMISSION(OPT_P_GENERAL|OPT_P_INSTANCE);
+-        options->vlan_pvid =3D positive_atoi(p[1]);
++        options->vlan_pvid =3D positive_atoi(p[1], msglevel);
+         if (options->vlan_pvid < OPENVPN_8021Q_MIN_VID
+             || options->vlan_pvid > OPENVPN_8021Q_MAX_VID)
+         {
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/872?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/873?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings
 
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: Ia4095518d5e4447992a2974e0d7a159d79ba6b6f
-Gerrit-Change-Number: 872
-Gerrit-PatchSet: 4
+Gerrit-Change-Id: Ie1e2eb54d516b3ae87c5ca56fe8edd77ee2be4de
+Gerrit-Change-Number: 873
+Gerrit-PatchSet: 1
 Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-MessageType: newpatchset
+Gerrit-MessageType: newchange
 
---LlkLiu/eKao=
+--ias9IyC0Ql8=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <p> Attention is currently required from: flichtenheld. </p>
-<p>plaisthos <strong>uploaded patch set #4</strong> to this change.</p><p><=
-a href=3D"http://gerrit.openvpn.net/c/openvpn/+/872?usp=3Demail">View Chang=
-e</a></p><pre style=3D"font-family: monospace,monospace; white-space: pre-w=
-rap;">Implement override-username<br><br>This is intended to allow using au=
-th-gen-token in scenarios where the<br>client use certificates and multi-fa=
-ctor authentication.<br><br>It allows a client to successfully roam to a di=
-fferent server and have<br>a correct username and auth-token that can be ac=
-cepted by that server as<br>fully authenticated user without requiring MFA =
-again.<br><br>The scenario that this feature is probably most useful<br>whe=
-n --management-client-auth is in use as in this mode the OpenVPN<br>server =
-can accept clients without username/password but still use<br>--auth-gen-to=
-ken with username and password to accept auth-token as<br>alternative authe=
-ntication.<br><br>Change-Id: Ia4095518d5e4447992a2974e0d7a159d79ba6b6f<br>S=
-igned-off-by: Arne Schwabe &lt;arne@...1227...&gt;<br>---<br>M Changes.rst<=
-br>M doc/man-sections/server-options.rst<br>M src/openvpn/auth_token.c<br>M=
- src/openvpn/multi.c<br>M src/openvpn/options.c<br>M src/openvpn/options.h<=
-br>M src/openvpn/push.c<br>M src/openvpn/ssl.c<br>M src/openvpn/ssl_common.=
-h<br>M src/openvpn/ssl_verify.c<br>M src/openvpn/ssl_verify.h<br>11 files c=
-hanged, 159 insertions(+), 10 deletions(-)<br><br></pre><pre style=3D"font-=
-family: monospace,monospace; white-space: pre-wrap;">git pull ssh://gerrit.=
-openvpn.net:29418/openvpn refs/changes/72/872/4</pre><pre style=3D"font-fam=
-ily: monospace,monospace; white-space: pre-wrap;"><span>diff --git a/Change=
-s.rst b/Changes.rst</span><br><span>index 16ae6fc..8543113 100644</span><br=
-><span>--- a/Changes.rst</span><br><span>+++ b/Changes.rst</span><br><span>=
-@@ -36,6 +36,10 @@</span><br><span>     add an allowed cipher without havin=
-g to spell out the default ciphers.</span><br><span> </span><br><span> </sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+Allow overriding userna=
-me with ``--override-username``</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+    This is intended to allow using auth-gen-token in scenarios=
- where the</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    clien=
-ts use certificates and multi-factor authentication.</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+</span><br><span> Deprecated features</sp=
-an><br><span> -------------------</span><br><span> ``secret`` support has b=
-een removed by default.</span><br><span>diff --git a/doc/man-sections/serve=
-r-options.rst b/doc/man-sections/server-options.rst</span><br><span>index 3=
-fe9862..a76de67 100644</span><br><span>--- a/doc/man-sections/server-option=
-s.rst</span><br><span>+++ b/doc/man-sections/server-options.rst</span><br><=
-span>@@ -89,6 +89,12 @@</span><br><span>   will lead to authentication bypa=
-ss (as does returning success on a wrong</span><br><span>   password from a=
- script).</span><br><span> </span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+  **Note:** the username for ``--auth-gen-token`` can be overridden=
- by</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  ``--override-u=
-ser``. In this case the client will be pushed also the</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+  ``--auth-token-user`` option and and a=
-n auth token that is valid for</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+  that username instead of the original username that the client=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  authenticated wit=
-h.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span>=
- --auth-gen-token-secret file</span><br><span>   Specifies a file that hold=
-s a secret for the HMAC used in</span><br><span>   ``--auth-gen-token`` If =
-``file`` is not present OpenVPN will generate a</span><br><span>@@ -412,6 +=
-418,32 @@</span><br><span> </span><br><span>   This option requires that ``=
---disable-occ`` NOT be used.</span><br><span> </span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+--override-username</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+  Sets the username of a connection to the speci=
-fied username.  This username</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+  will also be used by ``--auth-gen-token``. However, the overrid=
-den</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  username comes=
- only into effect *after* the ``--client-config-dir`` has been</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+  read and the ``--auth-user-pas=
-s-verify`` and ``--client-connect`` scripts</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+  have been run.</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+  Also ``username-as-common-name`` will use the client provided username<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+  as common-name. It=
- is recommended to avoid the use of the</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+  ``--override-username`` option if the option ``--user=
-name-as-common-name``</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+  is being used.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+  The changed userna=
-me will be picked up by the status output and also by</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+  the ``--auth-gen-token`` option. It wil=
-l also be pushed to the client</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+  using ``--auth-token-user``.</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+  Special care has to be taken both the initial username of the client a=
-nd the</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  overridden =
-username are  correctly handled when using ``--override-username``</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+  and the related options to=
- avoid authentication/authorisation</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+  bypasses.</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  This opti=
-on is mainly intended for use cases that use certificates and</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+  multi factor authentication and=
- therefore do not provide a username that</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+  can be used for ``--auth-gen-token`` to allow provi=
-ding a username in</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
- these scenarios.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</=
-span><br><span> --port-share args</span><br><span>   Share OpenVPN TCP with=
- another service</span><br><span> </span><br><span>diff --git a/src/openvpn=
-/auth_token.c b/src/openvpn/auth_token.c</span><br><span>index 3cf55e8..f51=
-c42e 100644</span><br><span>--- a/src/openvpn/auth_token.c</span><br><span>=
-+++ b/src/openvpn/auth_token.c</span><br><span>@@ -330,6 +330,7 @@</span><b=
-r><span>     timestamp_initial =3D ntohll(timestamp_initial);</span><br><sp=
-an> </span><br><span>     hmac_ctx_t *ctx =3D multi-&gt;opt.auth_token_key.=
-hmac;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><sp=
-an>     if (check_hmac_token(ctx, b64decoded, up-&gt;username))</span><br><=
-span>     {</span><br><span>         ret |=3D AUTH_TOKEN_HMAC_OK;</span><br=
-><span>diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c</span><br><sp=
-an>index f426b46..b710ae2 100644</span><br><span>--- a/src/openvpn/multi.c<=
-/span><br><span>+++ b/src/openvpn/multi.c</span><br><span>@@ -42,7 +42,9 @@=
-</span><br><span> #include &quot;ssl_verify.h&quot;</span><br><span> #inclu=
-de &quot;ssl_ncp.h&quot;</span><br><span> #include &quot;vlan.h&quot;</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+#include &quot;auth_token=
-.h&quot;</span><br><span> #include &lt;inttypes.h&gt;</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+#include &lt;string.h&gt;</span><br><span=
-> </span><br><span> #include &quot;memdbg.h&quot;</span><br><span> </span><=
-br><span>@@ -2663,6 +2665,50 @@</span><br><span>     NULL,</span><br><span>=
- };</span><br><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+/**</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * Overrides t=
-he locked username with the username of --override-username</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+ * @param mi the multi instance tha=
-t should be modified.</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+ */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+static void</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+override_locked_userna=
-me(struct multi_instance *mi)</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    stru=
-ct tls_multi *multi =3D mi-&gt;context.c2.tls_multi;</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    struct options *options =3D &amp;mi-&=
-gt;context.options;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-    struct tls_session *session =3D &amp;multi-&gt;session[TM_ACTIVE];</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    if (!multi-&gt;locked_original_userna=
-me</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        &amp;&amp=
-; strcmp(multi-&gt;locked_username, options-&gt;override_username) !=3D 0)<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+        multi-&gt;locked_original_=
-username =3D multi-&gt;locked_username;</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+        multi-&gt;locked_username =3D strdup(options-&g=
-t;override_username);</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        /* Overri=
-de also the common name if username should be set as common</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+         * name */</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+        if ((session-&gt;opt-&gt;ssl=
-_flags &amp; SSLF_USERNAME_AS_COMMON_NAME))</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+        {</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+            set_common_name(session, multi-&gt;locked_usernam=
-e);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            free=
-(multi-&gt;locked_cn);</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+            multi-&gt;locked_cn =3D NULL;</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+            tls_lock_common_name(multi);</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+        }</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+        /* Regenerate the auth-token if enabled */</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+        if (multi-&gt;auth_=
-token_initial)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
-   {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            str=
-uct user_pass up;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-          CLEAR(up);</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+            strncpynt(up.username, multi-&gt;locked_username,</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+                      sizeof(up.=
-username));</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+            generate_auth_t=
-oken(&amp;up, multi);</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+        }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+        msg(D_MULTI_LOW, &q=
-uot;MULTI: Note, override-username changes username &quot;</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+            &quot;from &#39;%s&#39; =
-to &#39;%s&#39;&quot;,</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+            multi-&gt;locked_original_username,</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+            multi-&gt;locked_username);</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+}</span><br><span> /*</span><br><span>=
-  * Called as soon as the SSL/TLS connection is authenticated.</span><br><s=
-pan>  *</span><br><span>@@ -2766,6 +2812,11 @@</span><br><span>         (*c=
-ur_handler_index)++;</span><br><span>     }</span><br><span> </span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+    if (mi-&gt;context.options.ov=
-erride_username)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
- {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        override_=
-locked_username(mi);</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><s=
-pan>     /* Check if we have forbidding options in the current mode */</spa=
-n><br><span>     if (dco_enabled(&amp;mi-&gt;context.options)</span><br><sp=
-an>         &amp;&amp; !dco_check_option(D_MULTI_ERRORS, &amp;mi-&gt;contex=
-t.options))</span><br><span>diff --git a/src/openvpn/options.c b/src/openvp=
-n/options.c</span><br><span>index 3ef4d78..93b8417 100644</span><br><span>-=
--- a/src/openvpn/options.c</span><br><span>+++ b/src/openvpn/options.c</spa=
-n><br><span>@@ -440,6 +440,8 @@</span><br><span>     &quot;                =
-  Only valid in a client-specific config file.\n&quot;</span><br><span>    =
- &quot;--disable       : Client is disabled.\n&quot;</span><br><span>     &=
-quot;                  Only valid in a client-specific config file.\n&quot;=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    &quot;--overrid=
-e-username: Overrides the client-specific username to be used.\n&quot;</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+    &quot;              =
-    Only valid in a client-specific config file.\n&quot;</span><br><span>  =
-   &quot;--verify-client-cert [none|optional|require] : perform no, optiona=
-l or\n&quot;</span><br><span>     &quot;                  mandatory client =
-certificate verification.\n&quot;</span><br><span>     &quot;              =
-    Default is to require the client to supply a certificate.\n&quot;</span=
-><br><span>@@ -7847,6 +7849,23 @@</span><br><span>         VERIFY_PERMISSIO=
-N(OPT_P_INSTANCE);</span><br><span>         options-&gt;disable =3D true;</=
-span><br><span>     }</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+    else if (streq(p[0], &quot;override-username&quot;) &amp;&amp; p[1] &=
-amp;&amp; !p[2])</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
- {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        VERIFY_PE=
-RMISSION(OPT_P_INSTANCE);</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+        if (strlen(p[1]) &gt; TLS_USERNAME_LEN)</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+        {</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+            msg(msglevel, &quot;override-username e=
-xceeds the maximum length of %d &quot;</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+                &quot;characters&quot;, TLS_USERNAME_LEN=
-);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+            /* disable the connectio=
-n since ignoring the request to</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+             * set another username might cause serious problem=
-s */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            opt=
-ions-&gt;disable =3D true;</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+        }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
-     else</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        {<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+            options-=
-&gt;override_username =3D p[1];</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+        }</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+    }</span><br><span>     else if (streq(p[0], &quot;tcp-nodelay&quot;) =
-&amp;&amp; !p[1])</span><br><span>     {</span><br><span>         VERIFY_PE=
-RMISSION(OPT_P_GENERAL);</span><br><span>diff --git a/src/openvpn/options.h=
- b/src/openvpn/options.h</span><br><span>index 55f12dd..274f282 100644</spa=
-n><br><span>--- a/src/openvpn/options.h</span><br><span>+++ b/src/openvpn/o=
-ptions.h</span><br><span>@@ -492,6 +492,7 @@</span><br><span>     const cha=
-r *client_config_dir;</span><br><span>     bool ccd_exclusive;</span><br><s=
-pan>     bool disable;</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+    const char *override_username;</span><br><span>     int n_bcast_buf;=
-</span><br><span>     int tcp_queue_limit;</span><br><span>     struct irou=
-te *iroutes;</span><br><span>diff --git a/src/openvpn/push.c b/src/openvpn/=
-push.c</span><br><span>index a7cd3bf..5ccd7d8 100644</span><br><span>--- a/=
-src/openvpn/push.c</span><br><span>+++ b/src/openvpn/push.c</span><br><span=
->@@ -595,9 +595,19 @@</span><br><span>      */</span><br><span>     if (tls=
-_multi-&gt;auth_token)</span><br><span>     {</span><br><span style=3D"colo=
-r: hsl(0, 100%, 40%);">-        push_option_fmt(gc, push_list, M_USAGE,</sp=
-an><br><span style=3D"color: hsl(0, 100%, 40%);">-                        &=
-quot;auth-token %s&quot;,</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+        push_option_fmt(gc, push_list, M_USAGE, &quot;auth-token %s&q=
-uot;,</span><br><span>                         tls_multi-&gt;auth_token);</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+        char *base64user;</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+        int ret =3D openvpn_base64=
-_encode(tls_multi-&gt;locked_username,</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+                                        (int)strlen(tls_=
-multi-&gt;locked_username),</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+                                        &amp;base64user);</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+        if (ret &lt; USER_PAS=
-S_LEN &amp;&amp; ret &gt; 0)</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+        {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-           push_option_fmt(gc, push_list, M_USAGE, &quot;auth-token-user %s=
-&quot;,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            =
-                base64user);</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+        }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-       free(base64user);</span><br><span>     }</span><br><span> }</span><b=
-r><span> </span><br><span>diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.=
-c</span><br><span>index e4a7b57..e548299 100644</span><br><span>--- a/src/o=
-penvpn/ssl.c</span><br><span>+++ b/src/openvpn/ssl.c</span><br><span>@@ -12=
-60,6 +1260,7 @@</span><br><span>     free(multi-&gt;peer_info);</span><br><=
-span>     free(multi-&gt;locked_cn);</span><br><span>     free(multi-&gt;lo=
-cked_username);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-free(multi-&gt;locked_original_username);</span><br><span> </span><br><span=
->     cert_hash_free(multi-&gt;locked_cert_hash_set);</span><br><span> </sp=
-an><br><span>diff --git a/src/openvpn/ssl_common.h b/src/openvpn/ssl_common=
-.h</span><br><span>index e092472..2efeb6a 100644</span><br><span>--- a/src/=
-openvpn/ssl_common.h</span><br><span>+++ b/src/openvpn/ssl_common.h</span><=
-br><span>@@ -625,7 +625,16 @@</span><br><span>      * Our locked common nam=
-e, username, and cert hashes (cannot change during the life of this tls_mul=
-ti object)</span><br><span>      */</span><br><span>     char *locked_cn;</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+    /** The locked username is the usern=
-ame we assume the client is using.</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+     * Normally the username used for initial authentication=
- unless</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     * overr=
-idden by --override-username */</span><br><span>     char *locked_username;=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+    /** The username that client initi=
-ally used before being overridden</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+     * by --override-user */</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+    char *locked_original_username;</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+</span><br><span>     struct cert_ha=
-sh_set *locked_cert_hash_set;</span><br><span> </span><br><span>     /** Ti=
-me of last when we updated the cached state of</span><br><span>diff --git a=
-/src/openvpn/ssl_verify.c b/src/openvpn/ssl_verify.c</span><br><span>index =
-e7d7ed6..cb81510 100644</span><br><span>--- a/src/openvpn/ssl_verify.c</spa=
-n><br><span>+++ b/src/openvpn/ssl_verify.c</span><br><span>@@ -48,9 +48,6 @=
-@</span><br><span> #include &quot;push.h&quot;</span><br><span> #include &q=
-uot;ssl_util.h&quot;</span><br><span> </span><br><span style=3D"color: hsl(=
-0, 100%, 40%);">-/** Maximum length of common name */</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-#define TLS_USERNAME_LEN 64</span><br><span=
- style=3D"color: hsl(0, 100%, 40%);">-</span><br><span> static void</span><=
-br><span> string_mod_remap_name(char *str)</span><br><span> {</span><br><sp=
-an>@@ -85,10 +82,7 @@</span><br><span>     }</span><br><span> }</span><br><=
-span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-/*</span><br><s=
-pan style=3D"color: hsl(0, 100%, 40%);">- * Set the given session&#39;s com=
-mon_name</span><br><span style=3D"color: hsl(0, 100%, 40%);">- */</span><br=
-><span style=3D"color: hsl(0, 100%, 40%);">-static void</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+void</span><br><span> set_common_name(s=
-truct tls_session *session, const char *common_name)</span><br><span> {</sp=
-an><br><span>     if (session-&gt;common_name)</span><br><span>@@ -153,7 +1=
-47,10 @@</span><br><span> {</span><br><span>     if (multi-&gt;locked_usern=
-ame)</span><br><span>     {</span><br><span style=3D"color: hsl(0, 100%, 40=
-%);">-        if (strcmp(username, multi-&gt;locked_username) !=3D 0)</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+        /* If the usernam=
-e has been overridden, we accept both the original</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+         * username and the changed username=
- */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        if (strc=
-mp(username, multi-&gt;locked_username) !=3D 0</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+            &amp;&amp;  (!multi-&gt;locked_origi=
-nal_username || strcmp(username, multi-&gt;locked_original_username) !=3D 0=
-))</span><br><span>         {</span><br><span>             msg(D_TLS_ERRORS=
-, &quot;TLS Auth Error: username attempted to change from &#39;%s&#39; to &=
-#39;%s&#39; -- tunnel disabled&quot;,</span><br><span>                 mult=
-i-&gt;locked_username,</span><br><span>@@ -1613,6 +1610,17 @@</span><br><sp=
-an>      */</span><br><span>     bool skip_auth =3D false;</span><br><span>=
- </span><br><span style=3D"color: hsl(120, 100%, 40%);">+    /* Replace use=
-rname early if override-username is in effect but only</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+     * if client is sending the original=
- username */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if =
-(multi-&gt;locked_original_username</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+        &amp;&amp; strncmp(up-&gt;username, multi-&gt;locke=
-d_original_username, sizeof(up-&gt;username)) !=3D 0)</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+        strncpy(up-&gt;username, multi-&gt;locked_usern=
-ame, sizeof(up-&gt;username));</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+        msg(D_MULTI_LOW, &quot;TLS: Replacing client provided us=
-ername &#39;%s&#39; with &quot;</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+            &quot;username from override-user &#39;%s&#39;&quot=
-;, up-&gt;username,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-            multi-&gt;locked_username);</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+</span><br><span>     /*</span><br><span>      * If server is configu=
-red with --auth-gen-token and the client sends</span><br><span>      * some=
-thing that looks like an authentication token, this</span><br><span>diff --=
-git a/src/openvpn/ssl_verify.h b/src/openvpn/ssl_verify.h</span><br><span>i=
-ndex cd2ec24..eba3832 100644</span><br><span>--- a/src/openvpn/ssl_verify.h=
-</span><br><span>+++ b/src/openvpn/ssl_verify.h</span><br><span>@@ -51,6 +5=
-1,9 @@</span><br><span> /** Maximum certificate depth we will allow */</spa=
-n><br><span> #define MAX_CERT_DEPTH 16</span><br><span> </span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+/** Maximum length of common name */</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+#define TLS_USERNAME_=
-LEN 64</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><s=
-pan> /** Structure containing the hash for a single certificate */</span><b=
-r><span> struct cert_hash {</span><br><span>     unsigned char sha256_hash[=
-256/8];</span><br><span>@@ -146,6 +149,16 @@</span><br><span>  */</span><br=
-><span> const char *tls_common_name(const struct tls_multi *multi, const bo=
-ol null);</span><br><span> </span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+/**</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+ * Sets the common name fie=
-ld for the given tunnel</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+ *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @param mul=
-ti         The tunnel to set the common name for</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+ * @param common_name   The name to set the co=
-mmon name to</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ */</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+void</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+set_common_name(struct tls_session *se=
-ssion, const char *common_name);</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+</span><br><span> /**</span><br><span>  * Returns the username=
- field for the given tunnel</span><br><span>  *</span><br><span></span><br>=
-</pre><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/87=
-2?usp=3Demail">change 872</a>. To unsubscribe, or for help writing mail fil=
-ters, visit <a href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p=
-><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope =
-itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itempro=
-p=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/872?usp=3Demail"/><=
-meta itemprop=3D"name" content=3D"View Change"/></div></div>
+<p>plaisthos would like flichtenheld to <strong>review</strong> this change.
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/873?usp=3Demail">Vi=
+ew Change</a></p><pre style=3D"font-family: monospace,monospace; white-spac=
+e: pre-wrap;">Print warnings/errors when numerical parameters cannot be par=
+sed<br><br>Using the atoi method is a best effort method that parses as muc=
+h of the<br>input string as possible as integer and ignores the rest or ret=
+urn 0<br>if the string cannot be parsed. This is lead to unexpected results=
+.<br><br>Change the behaviour by printing a warning in these cases instead.=
+ When<br>parsing a configuration, these warnings will error out since the m=
+sglevel<br>is M_USAGE in this case. Example:<br><br>    ./src/openvpn/openv=
+pn --resolv-retry 198jj<br>    Options error: Cannot parse argument &#39;19=
+8jj&#39; as non-negative integer<br><br>Reported-By: Anqi Chen &lt;chen.anq=
+i3@...2855...&gt;<br>Reported-By: Cristina Nita-Rotaru &lt;c.nitarotaru@...493...=
+2855...&gt;<br>Change-Id: Ie1e2eb54d516b3ae87c5ca56fe8edd77ee2be4de<br>---<=
+br>M src/openvpn/options.c<br>1 file changed, 109 insertions(+), 77 deletio=
+ns(-)<br><br></pre><pre style=3D"font-family: monospace,monospace; white-sp=
+ace: pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/openvpn refs/change=
+s/73/873/1</pre><pre style=3D"font-family: monospace,monospace; white-space=
+: pre-wrap;"><span>diff --git a/src/openvpn/options.c b/src/openvpn/options=
+.c</span><br><span>index 93b8417..6b9f204 100644</span><br><span>--- a/src/=
+openvpn/options.c</span><br><span>+++ b/src/openvpn/options.c</span><br><sp=
+an>@@ -4926,11 +4926,43 @@</span><br><span> }</span><br><span> #endif</span=
+><br><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+/**</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+ * Converts a str to a =
+positive number if the string represents a postive</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+ * integer number. Otherwise print a warning=
+ with msglevel and return 0</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+ */</span><br><span> static int</span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-positive_atoi(const char *str)</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+positive_atoi(const char *str, int msglevel)</=
+span><br><span> {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
+const int i =3D atoi(str);</span><br><span style=3D"color: hsl(0, 100%, 40%=
+);">-    return i &lt; 0 ? 0 : i;</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+    char *endptr;</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+    long long i =3D strtoll(str, &amp;endptr, 10);</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+    if (i &lt; 0 || endptr || i &gt; INT_MAX)</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+        msg(msglevel, &quot;Cannot pars=
+e argument &#39;%s&#39; as non-negative integer&quot;,</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+            str);</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+        i =3D 0;</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+  return (int) i;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+/**</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+ * Converts a str to an integer if the string can be re=
+presented as an</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * i=
+nteger number. Otherwise print a warning with msglevel and return 0</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+ */</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+static int</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+atoi_warn(const char *str, int msglevel)</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+    char *endptr;</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+    long long i =3D strtoll(str, &amp;endptr, 10)=
+;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+    if (i &lt; INT_MIN || endptr || i=
+ &gt; INT_MAX)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        msg(msgleve=
+l, &quot;Cannot parse argument &#39;%s&#39; as integer&quot;, str);</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+        i =3D 0;</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+    return (int) i;</span><br><span> }</span><br><span> </span>=
+<br><span> #ifdef _WIN32  /* This function is only used when compiling on W=
+indows */</span><br><span>@@ -5955,7 +5987,7 @@</span><br><span>         in=
+t cache;</span><br><span> </span><br><span>         VERIFY_PERMISSION(OPT_P=
+_GENERAL);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        cac=
+he =3D atoi(p[1]);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+       cache =3D atoi_warn(p[1], msglevel);</span><br><span>         if (ca=
+che &lt; 1)</span><br><span>         {</span><br><span>             msg(msg=
+level, &quot;--management-log-cache parameter is out of range&quot;);</span=
+><br><span>@@ -6250,7 +6282,7 @@</span><br><span>         }</span><br><span=
+>         else</span><br><span>         {</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-            options-&gt;resolve_retry_seconds =3D posit=
+ive_atoi(p[1]);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+        options-&gt;resolve_retry_seconds =3D positive_atoi(p[1], msglevel)=
+;</span><br><span>         }</span><br><span>     }</span><br><span>     el=
+se if ((streq(p[0], &quot;preresolve&quot;) || streq(p[0], &quot;ip-remote-=
+hint&quot;)) &amp;&amp; !p[2])</span><br><span>@@ -6267,7 +6299,7 @@</span>=
+<br><span>     else if (streq(p[0], &quot;connect-retry&quot;) &amp;&amp; p=
+[1] &amp;&amp; !p[3])</span><br><span>     {</span><br><span>         VERIF=
+Y_PERMISSION(OPT_P_GENERAL|OPT_P_CONNECTION);</span><br><span style=3D"colo=
+r: hsl(0, 100%, 40%);">-        options-&gt;ce.connect_retry_seconds =3D po=
+sitive_atoi(p[1]);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+       options-&gt;ce.connect_retry_seconds =3D positive_atoi(p[1], msgleve=
+l);</span><br><span>         /*</span><br><span>          * Limit the base =
+value of retry wait interval to 16 bits to avoid</span><br><span>          =
+* overflow when scaled up for exponential backoff</span><br><span>@@ -6282,=
+19 +6314,19 @@</span><br><span>         if (p[2])</span><br><span>         =
+{</span><br><span>             options-&gt;ce.connect_retry_seconds_max =3D=
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">-                max_i=
+nt(positive_atoi(p[2]), options-&gt;ce.connect_retry_seconds);</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+                max_int(positive=
+_atoi(p[2], msglevel), options-&gt;ce.connect_retry_seconds);</span><br><sp=
+an>         }</span><br><span>     }</span><br><span>     else if ((streq(p=
+[0], &quot;connect-timeout&quot;) || streq(p[0], &quot;server-poll-timeout&=
+quot;))</span><br><span>              &amp;&amp; p[1] &amp;&amp; !p[2])</sp=
+an><br><span>     {</span><br><span>         VERIFY_PERMISSION(OPT_P_GENERA=
+L|OPT_P_CONNECTION);</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
+       options-&gt;ce.connect_timeout =3D positive_atoi(p[1]);</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+        options-&gt;ce.connect_t=
+imeout =3D positive_atoi(p[1], msglevel);</span><br><span>     }</span><br>=
+<span>     else if (streq(p[0], &quot;connect-retry-max&quot;) &amp;&amp; p=
+[1] &amp;&amp; !p[2])</span><br><span>     {</span><br><span>         VERIF=
+Y_PERMISSION(OPT_P_GENERAL|OPT_P_CONNECTION);</span><br><span style=3D"colo=
+r: hsl(0, 100%, 40%);">-        options-&gt;connect_retry_max =3D positive_=
+atoi(p[1]);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        =
+options-&gt;connect_retry_max =3D positive_atoi(p[1], msglevel);</span><br>=
+<span>     }</span><br><span>     else if (streq(p[0], &quot;ipchange&quot;=
+) &amp;&amp; p[1])</span><br><span>     {</span><br><span>@@ -6317,7 +6349,=
+7 @@</span><br><span>     else if (streq(p[0], &quot;gremlin&quot;) &amp;&a=
+mp; p[1] &amp;&amp; !p[2])</span><br><span>     {</span><br><span>         =
+VERIFY_PERMISSION(OPT_P_GENERAL);</span><br><span style=3D"color: hsl(0, 10=
+0%, 40%);">-        options-&gt;gremlin =3D positive_atoi(p[1]);</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+        options-&gt;gremlin =
+=3D positive_atoi(p[1], msglevel);</span><br><span>     }</span><br><span> =
+#endif</span><br><span>     else if (streq(p[0], &quot;chroot&quot;) &amp;&=
+amp; p[1] &amp;&amp; !p[2])</span><br><span>@@ -6449,7 +6481,7 @@</span><br=
+><span>     else if (streq(p[0], &quot;verb&quot;) &amp;&amp; p[1] &amp;&am=
+p; !p[2])</span><br><span>     {</span><br><span>         VERIFY_PERMISSION=
+(OPT_P_MESSAGES);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
+    options-&gt;verbosity =3D positive_atoi(p[1]);</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+        options-&gt;verbosity =3D positive_a=
+toi(p[1], msglevel);</span><br><span>         if (options-&gt;verbosity &gt=
+;=3D (D_TLS_DEBUG_MED &amp; M_DEBUG_LEVEL))</span><br><span>         {</spa=
+n><br><span>             /* We pass this flag to the SSL library to avoid</=
+span><br><span>@@ -6468,7 +6500,7 @@</span><br><span>     else if (streq(p[=
+0], &quot;mute&quot;) &amp;&amp; p[1] &amp;&amp; !p[2])</span><br><span>   =
+  {</span><br><span>         VERIFY_PERMISSION(OPT_P_MESSAGES);</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-        options-&gt;mute =3D posi=
+tive_atoi(p[1]);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+     options-&gt;mute =3D positive_atoi(p[1], msglevel);</span><br><span>  =
+   }</span><br><span>     else if (streq(p[0], &quot;errors-to-stderr&quot;=
+) &amp;&amp; !p[1])</span><br><span>     {</span><br><span>@@ -6481,7 +6513=
+,7 @@</span><br><span>         options-&gt;status_file =3D p[1];</span><br>=
+<span>         if (p[2])</span><br><span>         {</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-            options-&gt;status_file_update_=
+freq =3D positive_atoi(p[2]);</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+            options-&gt;status_file_update_freq =3D positive_atoi=
+(p[2], msglevel);</span><br><span>         }</span><br><span>     }</span><=
+br><span>     else if (streq(p[0], &quot;status-version&quot;) &amp;&amp; p=
+[1] &amp;&amp; !p[2])</span><br><span>@@ -6489,7 +6521,7 @@</span><br><span=
+>         int version;</span><br><span> </span><br><span>         VERIFY_PE=
+RMISSION(OPT_P_GENERAL);</span><br><span style=3D"color: hsl(0, 100%, 40%);=
+">-        version =3D atoi(p[1]);</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+        version =3D atoi_warn(p[1], msglevel);</span><br><sp=
+an>         if (version &lt; 1 || version &gt; 3)</span><br><span>         =
+{</span><br><span>             msg(msglevel, &quot;--status-version must be=
+ 1 to 3&quot;);</span><br><span>@@ -6517,17 +6549,17 @@</span><br><span>   =
+  else if ((streq(p[0], &quot;link-mtu&quot;) || streq(p[0], &quot;udp-mtu&=
+quot;)) &amp;&amp; p[1] &amp;&amp; !p[2])</span><br><span>     {</span><br>=
+<span>         VERIFY_PERMISSION(OPT_P_MTU|OPT_P_CONNECTION);</span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-        options-&gt;ce.link_mtu =3D=
+ positive_atoi(p[1]);</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+        options-&gt;ce.link_mtu =3D positive_atoi(p[1], msglevel);</span>=
+<br><span>         options-&gt;ce.link_mtu_defined =3D true;</span><br><spa=
+n>     }</span><br><span>     else if (streq(p[0], &quot;tun-mtu&quot;) &am=
+p;&amp; p[1] &amp;&amp; !p[3])</span><br><span>     {</span><br><span>     =
+    VERIFY_PERMISSION(OPT_P_PUSH_MTU|OPT_P_CONNECTION);</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-        options-&gt;ce.tun_mtu =3D positi=
+ve_atoi(p[1]);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
+   options-&gt;ce.tun_mtu =3D positive_atoi(p[1], msglevel);</span><br><spa=
+n>         options-&gt;ce.tun_mtu_defined =3D true;</span><br><span>       =
+  if (p[2])</span><br><span>         {</span><br><span style=3D"color: hsl(=
+0, 100%, 40%);">-            options-&gt;ce.occ_mtu =3D positive_atoi(p[2])=
+;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            option=
+s-&gt;ce.occ_mtu =3D positive_atoi(p[2], msglevel);</span><br><span>       =
+  }</span><br><span>         else</span><br><span>         {</span><br><spa=
+n>@@ -6537,7 +6569,7 @@</span><br><span>     else if (streq(p[0], &quot;tun=
+-mtu-max&quot;) &amp;&amp; p[1] &amp;&amp; !p[3])</span><br><span>     {</s=
+pan><br><span>         VERIFY_PERMISSION(OPT_P_MTU|OPT_P_CONNECTION);</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-        int max_mtu =3D pos=
+itive_atoi(p[1]);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+      int max_mtu =3D positive_atoi(p[1], msglevel);</span><br><span>      =
+   if (max_mtu &lt; 68 || max_mtu &gt; 65536)</span><br><span>         {</s=
+pan><br><span>             msg(msglevel, &quot;--tun-mtu-max value &#39;%s&=
+#39; is invalid&quot;, p[1]);</span><br><span>@@ -6550,13 +6582,13 @@</span=
+><br><span>     else if (streq(p[0], &quot;tun-mtu-extra&quot;) &amp;&amp; =
+p[1] &amp;&amp; !p[2])</span><br><span>     {</span><br><span>         VERI=
+FY_PERMISSION(OPT_P_MTU|OPT_P_CONNECTION);</span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">-        options-&gt;ce.tun_mtu_extra =3D positive_atoi=
+(p[1]);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        opti=
+ons-&gt;ce.tun_mtu_extra =3D positive_atoi(p[1], msglevel);</span><br><span=
+>         options-&gt;ce.tun_mtu_extra_defined =3D true;</span><br><span>  =
+   }</span><br><span>     else if (streq(p[0], &quot;max-packet-size&quot;)=
+ &amp;&amp; p[1] &amp;&amp; !p[2])</span><br><span>     {</span><br><span> =
+        VERIFY_PERMISSION(OPT_P_MTU|OPT_P_CONNECTION);</span><br><span styl=
+e=3D"color: hsl(0, 100%, 40%);">-        int maxmtu =3D positive_atoi(p[1])=
+;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        int maxmtu=
+ =3D positive_atoi(p[1], msglevel);</span><br><span>         options-&gt;ce=
+.tls_mtu =3D constrain_int(maxmtu, TLS_CHANNEL_MTU_MIN, TLS_CHANNEL_BUF_SIZ=
+E);</span><br><span> </span><br><span>         if (maxmtu &lt; TLS_CHANNEL_=
+MTU_MIN || maxmtu &gt; TLS_CHANNEL_BUF_SIZE)</span><br><span>@@ -6582,7 +66=
+14,7 @@</span><br><span>     else if (streq(p[0], &quot;fragment&quot;) &am=
+p;&amp; p[1] &amp;&amp; !p[3])</span><br><span>     {</span><br><span>     =
+    VERIFY_PERMISSION(OPT_P_MTU|OPT_P_CONNECTION);</span><br><span style=3D=
+"color: hsl(0, 100%, 40%);">-        options-&gt;ce.fragment =3D positive_a=
+toi(p[1]);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        o=
+ptions-&gt;ce.fragment =3D positive_atoi(p[1], msglevel);</span><br><span> =
+</span><br><span>         if (options-&gt;ce.fragment &lt; 68)</span><br><s=
+pan>         {</span><br><span>@@ -6613,23 +6645,23 @@</span><br><span>    =
+ else if (streq(p[0], &quot;nice&quot;) &amp;&amp; p[1] &amp;&amp; !p[2])</=
+span><br><span>     {</span><br><span>         VERIFY_PERMISSION(OPT_P_NICE=
+);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        options-&gt=
+;nice =3D atoi(p[1]);</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+        options-&gt;nice =3D atoi_warn(p[1], msglevel);</span><br><span> =
+    }</span><br><span>     else if (streq(p[0], &quot;rcvbuf&quot;) &amp;&a=
+mp; p[1] &amp;&amp; !p[2])</span><br><span>     {</span><br><span>         =
+VERIFY_PERMISSION(OPT_P_SOCKBUF);</span><br><span style=3D"color: hsl(0, 10=
+0%, 40%);">-        options-&gt;rcvbuf =3D positive_atoi(p[1]);</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+        options-&gt;rcvbuf =3D =
+positive_atoi(p[1], msglevel);</span><br><span>     }</span><br><span>     =
+else if (streq(p[0], &quot;sndbuf&quot;) &amp;&amp; p[1] &amp;&amp; !p[2])<=
+/span><br><span>     {</span><br><span>         VERIFY_PERMISSION(OPT_P_SOC=
+KBUF);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        options=
+-&gt;sndbuf =3D positive_atoi(p[1]);</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+        options-&gt;sndbuf =3D positive_atoi(p[1], msgleve=
+l);</span><br><span>     }</span><br><span>     else if (streq(p[0], &quot;=
+mark&quot;) &amp;&amp; p[1] &amp;&amp; !p[2])</span><br><span>     {</span>=
+<br><span> #if defined(TARGET_LINUX) &amp;&amp; HAVE_DECL_SO_MARK</span><br=
+><span>         VERIFY_PERMISSION(OPT_P_GENERAL);</span><br><span style=3D"=
+color: hsl(0, 100%, 40%);">-        options-&gt;mark =3D atoi(p[1]);</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+        options-&gt;mark =
+=3D atoi_warn(p[1], msglevel);</span><br><span> #endif</span><br><span>    =
+ }</span><br><span>     else if (streq(p[0], &quot;socket-flags&quot;))</sp=
+an><br><span>@@ -6659,7 +6691,7 @@</span><br><span>     {</span><br><span> =
+        VERIFY_PERMISSION(OPT_P_GENERAL);</span><br><span> #ifdef TARGET_LI=
+NUX</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        options-&g=
+t;tuntap_options.txqueuelen =3D positive_atoi(p[1]);</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+        options-&gt;tuntap_options.txqueu=
+elen =3D positive_atoi(p[1], msglevel);</span><br><span> #else</span><br><s=
+pan>         msg(msglevel, &quot;--txqueuelen not supported on this OS&quot=
+;);</span><br><span>         goto err;</span><br><span>@@ -6670,7 +6702,7 @=
+@</span><br><span>         int shaper;</span><br><span> </span><br><span>  =
+       VERIFY_PERMISSION(OPT_P_SHAPER);</span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-        shaper =3D atoi(p[1]);</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+        shaper =3D atoi_warn(p[1], msglevel);<=
+/span><br><span>         if (shaper &lt; SHAPER_MIN || shaper &gt; SHAPER_M=
+AX)</span><br><span>         {</span><br><span>             msg(msglevel, &=
+quot;Bad shaper value, must be between %d and %d&quot;,</span><br><span>@@ =
+-6718,7 +6750,7 @@</span><br><span>     else if (streq(p[0], &quot;inactive=
+&quot;) &amp;&amp; p[1] &amp;&amp; !p[3])</span><br><span>     {</span><br>=
+<span>         VERIFY_PERMISSION(OPT_P_TIMER);</span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-        options-&gt;inactivity_timeout =3D positiv=
+e_atoi(p[1]);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
+  options-&gt;inactivity_timeout =3D positive_atoi(p[1], msglevel);</span><=
+br><span>         if (p[2])</span><br><span>         {</span><br><span>    =
+         int64_t val =3D atoll(p[2]);</span><br><span>@@ -6736,7 +6768,7 @@=
+</span><br><span>     else if (streq(p[0], &quot;session-timeout&quot;) &am=
+p;&amp; p[1] &amp;&amp; !p[2])</span><br><span>     {</span><br><span>     =
+    VERIFY_PERMISSION(OPT_P_TIMER);</span><br><span style=3D"color: hsl(0, =
+100%, 40%);">-        options-&gt;session_timeout =3D positive_atoi(p[1]);<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+        options-&gt;=
+session_timeout =3D positive_atoi(p[1], msglevel);</span><br><span>     }</=
+span><br><span>     else if (streq(p[0], &quot;proto&quot;) &amp;&amp; p[1]=
+ &amp;&amp; !p[2])</span><br><span>     {</span><br><span>@@ -6903,24 +6935=
+,24 @@</span><br><span>     else if (streq(p[0], &quot;keepalive&quot;) &am=
+p;&amp; p[1] &amp;&amp; p[2] &amp;&amp; !p[3])</span><br><span>     {</span=
+><br><span>         VERIFY_PERMISSION(OPT_P_GENERAL);</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-        options-&gt;keepalive_ping =3D atoi=
+(p[1]);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        option=
+s-&gt;keepalive_timeout =3D atoi(p[2]);</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+        options-&gt;keepalive_ping =3D atoi_warn(p[1], =
+msglevel);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        o=
+ptions-&gt;keepalive_timeout =3D atoi_warn(p[1], msglevel);</span><br><span=
+>     }</span><br><span>     else if (streq(p[0], &quot;ping&quot;) &amp;&a=
+mp; p[1] &amp;&amp; !p[2])</span><br><span>     {</span><br><span>         =
+VERIFY_PERMISSION(OPT_P_TIMER);</span><br><span style=3D"color: hsl(0, 100%=
+, 40%);">-        options-&gt;ping_send_timeout =3D positive_atoi(p[1]);</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+        options-&gt;pi=
+ng_send_timeout =3D positive_atoi(p[1], msglevel);</span><br><span>     }</=
+span><br><span>     else if (streq(p[0], &quot;ping-exit&quot;) &amp;&amp; =
+p[1] &amp;&amp; !p[2])</span><br><span>     {</span><br><span>         VERI=
+FY_PERMISSION(OPT_P_TIMER);</span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">-        options-&gt;ping_rec_timeout =3D positive_atoi(p[1]);</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+        options-&gt;ping_re=
+c_timeout =3D positive_atoi(p[1], msglevel);</span><br><span>         optio=
+ns-&gt;ping_rec_timeout_action =3D PING_EXIT;</span><br><span>     }</span>=
+<br><span>     else if (streq(p[0], &quot;ping-restart&quot;) &amp;&amp; p[=
+1] &amp;&amp; !p[2])</span><br><span>     {</span><br><span>         VERIFY=
+_PERMISSION(OPT_P_TIMER);</span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">-        options-&gt;ping_rec_timeout =3D positive_atoi(p[1]);</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+        options-&gt;ping_rec_=
+timeout =3D positive_atoi(p[1], msglevel);</span><br><span>         options=
+-&gt;ping_rec_timeout_action =3D PING_RESTART;</span><br><span>     }</span=
+><br><span>     else if (streq(p[0], &quot;ping-timer-rem&quot;) &amp;&amp;=
+ !p[1])</span><br><span>@@ -6933,7 +6965,7 @@</span><br><span>         VERI=
+FY_PERMISSION(OPT_P_GENERAL|OPT_P_CONNECTION|OPT_P_EXPLICIT_NOTIFY);</span>=
+<br><span>         if (p[1])</span><br><span>         {</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-            options-&gt;ce.explicit_exit_=
+notification =3D positive_atoi(p[1]);</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+            options-&gt;ce.explicit_exit_notification =3D=
+ positive_atoi(p[1], msglevel);</span><br><span>         }</span><br><span>=
+         else</span><br><span>         {</span><br><span>@@ -7053,7 +7085,7=
+ @@</span><br><span>     else if (streq(p[0], &quot;route-metric&quot;) &am=
+p;&amp; p[1] &amp;&amp; !p[2])</span><br><span>     {</span><br><span>     =
+    VERIFY_PERMISSION(OPT_P_ROUTE);</span><br><span style=3D"color: hsl(0, =
+100%, 40%);">-        options-&gt;route_default_metric =3D positive_atoi(p[=
+1]);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        options=
+-&gt;route_default_metric =3D positive_atoi(p[1], msglevel);</span><br><spa=
+n>     }</span><br><span>     else if (streq(p[0], &quot;route-delay&quot;)=
+ &amp;&amp; !p[3])</span><br><span>     {</span><br><span>@@ -7061,10 +7093=
+,10 @@</span><br><span>         options-&gt;route_delay_defined =3D true;</=
+span><br><span>         if (p[1])</span><br><span>         {</span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">-            options-&gt;route_delay =
+=3D positive_atoi(p[1]);</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+            options-&gt;route_delay =3D positive_atoi(p[1], msglevel);=
+</span><br><span>             if (p[2])</span><br><span>             {</spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-                options-&g=
+t;route_delay_window =3D positive_atoi(p[2]);</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+                options-&gt;route_delay_window =
+=3D positive_atoi(p[2], msglevel);</span><br><span>             }</span><br=
+><span>         }</span><br><span>         else</span><br><span>@@ -7229,7 =
++7261,7 @@</span><br><span>         }</span><br><span>         else if (str=
+eq(p[1], &quot;SERVER_POLL_TIMEOUT&quot;) &amp;&amp; p[2])</span><br><span>=
+         {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-           =
+ options-&gt;ce.connect_timeout =3D positive_atoi(p[2]);</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+            options-&gt;ce.connect_tim=
+eout =3D positive_atoi(p[2], msglevel);</span><br><span>         }</span><b=
+r><span>         else</span><br><span>         {</span><br><span>@@ -7261,1=
+4 +7293,14 @@</span><br><span>     else if (streq(p[0], &quot;script-securi=
+ty&quot;) &amp;&amp; p[1] &amp;&amp; !p[2])</span><br><span>     {</span><b=
+r><span>         VERIFY_PERMISSION(OPT_P_GENERAL);</span><br><span style=3D=
+"color: hsl(0, 100%, 40%);">-        script_security_set(atoi(p[1]));</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+        script_security_s=
+et(atoi_warn(p[1], msglevel));</span><br><span>     }</span><br><span>     =
+else if (streq(p[0], &quot;mssfix&quot;) &amp;&amp; !p[3])</span><br><span>=
+     {</span><br><span>         VERIFY_PERMISSION(OPT_P_GENERAL|OPT_P_CONNE=
+CTION);</span><br><span>         if (p[1])</span><br><span>         {</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-            int mssfix =3D =
+positive_atoi(p[1]);</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++            int mssfix =3D positive_atoi(p[1], msglevel);</span><br><span>=
+             /* can be 0, but otherwise it needs to be high enough so we ca=
+n</span><br><span>              * substract room for headers. */</span><br>=
+<span>             if (mssfix !=3D 0</span><br><span>@@ -7451,7 +7483,7 @@<=
+/span><br><span>         options-&gt;ifconfig_pool_persist_filename =3D p[1=
+];</span><br><span>         if (p[2])</span><br><span>         {</span><br>=
+<span style=3D"color: hsl(0, 100%, 40%);">-            options-&gt;ifconfig=
+_pool_persist_refresh_freq =3D positive_atoi(p[2]);</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+            options-&gt;ifconfig_pool_per=
+sist_refresh_freq =3D positive_atoi(p[2], msglevel);</span><br><span>      =
+   }</span><br><span>     }</span><br><span>     else if (streq(p[0], &quot=
+;ifconfig-ipv6-pool&quot;) &amp;&amp; p[1] &amp;&amp; !p[2])</span><br><spa=
+n>@@ -7483,8 +7515,8 @@</span><br><span>         int real, virtual;</span><=
+br><span> </span><br><span>         VERIFY_PERMISSION(OPT_P_GENERAL);</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-        real =3D atoi(p[1])=
+;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        virtual =3D =
+atoi(p[2]);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        =
+real =3D atoi_warn(p[1], msglevel);</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+        virtual =3D atoi_warn(p[1], msglevel);</span><br><s=
+pan>         if (real &lt; 1 || virtual &lt; 1)</span><br><span>         {<=
+/span><br><span>             msg(msglevel, &quot;--hash-size sizes must be =
+&gt;=3D 1 (preferably a power of 2)&quot;);</span><br><span>@@ -7498,8 +753=
+0,8 @@</span><br><span>         int cf_max, cf_per;</span><br><span> </span=
+><br><span>         VERIFY_PERMISSION(OPT_P_GENERAL);</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-        cf_max =3D atoi(p[1]);</span><br><s=
+pan style=3D"color: hsl(0, 100%, 40%);">-        cf_per =3D atoi(p[2]);</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+        cf_max =3D atoi=
+_warn(p[1], msglevel);</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+        cf_per =3D atoi_warn(p[1], msglevel);</span><br><span>         i=
+f (cf_max &lt; 0 || cf_per &lt; 0)</span><br><span>         {</span><br><sp=
+an>             msg(msglevel, &quot;--connect-freq parms must be &gt; 0&quo=
+t;);</span><br><span>@@ -7529,7 +7561,7 @@</span><br><span>         int max=
+_clients;</span><br><span> </span><br><span>         VERIFY_PERMISSION(OPT_=
+P_GENERAL);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        ma=
+x_clients =3D atoi(p[1]);</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+        max_clients =3D atoi_warn(p[1], msglevel);</span><br><span>  =
+       if (max_clients &lt; 0)</span><br><span>         {</span><br><span> =
+            msg(msglevel, &quot;--max-clients must be at least 1&quot;);</s=
+pan><br><span>@@ -7545,7 +7577,7 @@</span><br><span>     else if (streq(p[0=
+], &quot;max-routes-per-client&quot;) &amp;&amp; p[1] &amp;&amp; !p[2])</sp=
+an><br><span>     {</span><br><span>         VERIFY_PERMISSION(OPT_P_INHERI=
+T);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        options-&g=
+t;max_routes_per_client =3D max_int(atoi(p[1]), 1);</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+        options-&gt;max_routes_per_client=
+ =3D max_int(positive_atoi(p[1], msglevel), 1);</span><br><span>     }</spa=
+n><br><span>     else if (streq(p[0], &quot;client-cert-not-required&quot;)=
+ &amp;&amp; !p[1])</span><br><span>     {</span><br><span>@@ -7629,14 +7661=
+,14 @@</span><br><span>     {</span><br><span>         VERIFY_PERMISSION(OP=
+T_P_GENERAL);</span><br><span>         options-&gt;auth_token_generate =3D =
+true;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        options-=
+&gt;auth_token_lifetime =3D p[1] ? positive_atoi(p[1]) : 0;</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+        options-&gt;auth_token_life=
+time =3D p[1] ? positive_atoi(p[1], msglevel) : 0;</span><br><span> </span>=
+<br><span>         for (int i =3D 2; i &lt; MAX_PARMS &amp;&amp; p[i] !=3D =
+NULL; i++)</span><br><span>         {</span><br><span>             /* the s=
+econd parameter can be the renewal time */</span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">-            if (i =3D=3D 2 &amp;&amp; positive_atoi(p[=
+i]))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            if =
+(i =3D=3D 2 &amp;&amp; positive_atoi(p[i], msglevel))</span><br><span>     =
+        {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            =
+    options-&gt;auth_token_renewal =3D positive_atoi(p[i]);</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+                options-&gt;auth_to=
+ken_renewal =3D positive_atoi(p[i], msglevel);</span><br><span>            =
+ }</span><br><span>             else if (streq(p[i], &quot;external-auth&qu=
+ot;))</span><br><span>             {</span><br><span>@@ -7716,7 +7748,7 @@<=
+/span><br><span>         int n_bcast_buf;</span><br><span> </span><br><span=
+>         VERIFY_PERMISSION(OPT_P_GENERAL);</span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-        n_bcast_buf =3D atoi(p[1]);</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+        n_bcast_buf =3D atoi_warn(p[1=
+], msglevel);</span><br><span>         if (n_bcast_buf &lt; 1)</span><br><s=
+pan>         {</span><br><span>             msg(msglevel, &quot;--bcast-buf=
+fers parameter must be &gt; 0&quot;);</span><br><span>@@ -7728,7 +7760,7 @@=
+</span><br><span>         int tcp_queue_limit;</span><br><span> </span><br>=
+<span>         VERIFY_PERMISSION(OPT_P_GENERAL);</span><br><span style=3D"c=
+olor: hsl(0, 100%, 40%);">-        tcp_queue_limit =3D atoi(p[1]);</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+        tcp_queue_limit =3D =
+atoi_warn(p[1], msglevel);</span><br><span>         if (tcp_queue_limit &lt=
+; 1)</span><br><span>         {</span><br><span>             msg(msglevel, =
+&quot;--tcp-queue-limit parameter must be &gt; 0&quot;);</span><br><span>@@=
+ -7876,10 +7908,10 @@</span><br><span>         int ageing_time, check_inter=
+val;</span><br><span> </span><br><span>         VERIFY_PERMISSION(OPT_P_GEN=
+ERAL);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        ageing_=
+time =3D atoi(p[1]);</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++        ageing_time =3D atoi_warn(p[1], msglevel);</span><br><span>       =
+  if (p[2])</span><br><span>         {</span><br><span style=3D"color: hsl(=
+0, 100%, 40%);">-            check_interval =3D atoi(p[2]);</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+            check_interval =3D atoi=
+_warn(p[1], msglevel);</span><br><span>         }</span><br><span>         =
+else</span><br><span>         {</span><br><span>@@ -7908,7 +7940,7 @@</span=
+><br><span>     else if (streq(p[0], &quot;push-continuation&quot;) &amp;&a=
+mp; p[1] &amp;&amp; !p[2])</span><br><span>     {</span><br><span>         =
+VERIFY_PERMISSION(OPT_P_PULL_MODE);</span><br><span style=3D"color: hsl(0, =
+100%, 40%);">-        options-&gt;push_continuation =3D atoi(p[1]);</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+        options-&gt;push_co=
+ntinuation =3D atoi_warn(p[1], msglevel);</span><br><span>     }</span><br>=
+<span>     else if (streq(p[0], &quot;auth-user-pass&quot;) &amp;&amp; !p[2=
+])</span><br><span>     {</span><br><span>@@ -7933,7 +7965,7 @@</span><br><=
+span>     {</span><br><span>         VERIFY_PERMISSION(OPT_P_GENERAL);</spa=
+n><br><span>         options-&gt;sc_info.challenge_text =3D p[1];</span><br=
+><span style=3D"color: hsl(0, 100%, 40%);">-        if (atoi(p[2]))</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+        if (atoi_warn(p[1],=
+ msglevel))</span><br><span>         {</span><br><span>             options=
+-&gt;sc_info.flags |=3D SC_ECHO;</span><br><span>         }</span><br><span=
+>@@ -8029,7 +8061,7 @@</span><br><span>             {</span><br><span>     =
+            if (!streq(p[2], &quot;default&quot;))</span><br><span>        =
+         {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-           =
+         int offset =3D atoi(p[2]);</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+                    int offset =3D options_atoi(p[1], msgle=
+vel);</span><br><span> </span><br><span>                     if (!(offset &=
+gt; -256 &amp;&amp; offset &lt; 256))</span><br><span>                     =
+{</span><br><span>@@ -8045,7 +8077,7 @@</span><br><span>                 {<=
+/span><br><span>                     const int min_lease =3D 30;</span><br>=
+<span>                     int lease_time;</span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">-                    lease_time =3D atoi(p[3]);</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+                    lease_t=
+ime =3D options_atoi(p[1], msglevel);</span><br><span>                     =
+if (lease_time &lt; min_lease)</span><br><span>                     {</span=
+><br><span>                         msg(msglevel, &quot;--ip-win32 dynamic =
+[offset] [lease-time]: lease time parameter (%d) must be at least %d second=
+s&quot;, lease_time, min_lease);</span><br><span>@@ -8169,7 +8201,7 @@</spa=
+n><br><span>         else if (streq(p[1], &quot;NBT&quot;) &amp;&amp; p[2] =
+&amp;&amp; !p[3])</span><br><span>         {</span><br><span>             i=
+nt t;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            t =
+=3D atoi(p[2]);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+        t =3D options_atoi(p[1], msglevel);</span><br><span>             if=
+ (!(t =3D=3D 1 || t =3D=3D 2 || t =3D=3D 4 || t =3D=3D 8))</span><br><span>=
+             {</span><br><span>                 msg(msglevel, &quot;--dhcp-=
+option NBT: parameter (%d) must be 1, 2, 4, or 8&quot;, t);</span><br><span=
+>@@ -8227,7 +8259,7 @@</span><br><span> #if defined(TARGET_ANDROID)</span><=
+br><span>         else if (streq(p[1], &quot;PROXY_HTTP&quot;) &amp;&amp; p=
+[3] &amp;&amp; !p[4])</span><br><span>         {</span><br><span style=3D"c=
+olor: hsl(0, 100%, 40%);">-            o-&gt;http_proxy_port =3D atoi(p[3])=
+;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            o-&gt;=
+http_proxy_port =3D options_atoi(p[1], msglevel);</span><br><span>         =
+    o-&gt;http_proxy =3D p[2];</span><br><span>         }</span><br><span> =
+#endif</span><br><span>@@ -8261,7 +8293,7 @@</span><br><span>     {</span><=
+br><span>         int s;</span><br><span>         VERIFY_PERMISSION(OPT_P_D=
+HCPDNS);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        s =3D=
+ atoi(p[1]);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
+ s =3D options_atoi(p[1], msglevel);</span><br><span>         if (s &lt; 0 =
+|| s &gt;=3D 256)</span><br><span>         {</span><br><span>             m=
+sg(msglevel, &quot;--tap-sleep parameter must be between 0 and 255&quot;);<=
+/span><br><span>@@ -8344,7 +8376,7 @@</span><br><span>         options-&gt;=
+exit_event_name =3D p[1];</span><br><span>         if (p[2])</span><br><spa=
+n>         {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-         =
+   options-&gt;exit_event_initial_state =3D (atoi(p[2]) !=3D 0);</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+            options-&gt;exit_e=
+vent_initial_state =3D (options_atoi(p[1], msglevel) !=3D 0);</span><br><sp=
+an>         }</span><br><span>     }</span><br><span>     else if (streq(p[=
+0], &quot;allow-nonadmin&quot;) &amp;&amp; !p[2])</span><br><span>@@ -8711,=
+7 +8743,7 @@</span><br><span>         {</span><br><span>             int re=
+play_window;</span><br><span> </span><br><span style=3D"color: hsl(0, 100%,=
+ 40%);">-            replay_window =3D atoi(p[1]);</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+            replay_window =3D atoi_warn(p[1]=
+, msglevel);</span><br><span>             if (!(MIN_SEQ_BACKTRACK &lt;=3D r=
+eplay_window &amp;&amp; replay_window &lt;=3D MAX_SEQ_BACKTRACK))</span><br=
+><span>             {</span><br><span>                 msg(msglevel, &quot;=
+replay-window window size parameter (%d) must be between %d and %d&quot;,</=
+span><br><span>@@ -8726,7 +8758,7 @@</span><br><span>             {</span><=
+br><span>                 int replay_time;</span><br><span> </span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">-                replay_time =3D atoi=
+(p[2]);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            =
+    replay_time =3D atoi_warn(p[1], msglevel);</span><br><span>            =
+     if (!(MIN_TIME_BACKTRACK &lt;=3D replay_time &amp;&amp; replay_time &l=
+t;=3D MAX_TIME_BACKTRACK))</span><br><span>                 {</span><br><sp=
+an>                     msg(msglevel, &quot;replay-window time window param=
+eter (%d) must be between %d and %d&quot;,</span><br><span>@@ -9168,7 +9200=
+,7 @@</span><br><span>     else if (streq(p[0], &quot;tls-timeout&quot;) &a=
+mp;&amp; p[1] &amp;&amp; !p[2])</span><br><span>     {</span><br><span>    =
+     VERIFY_PERMISSION(OPT_P_TLS_PARMS);</span><br><span style=3D"color: hs=
+l(0, 100%, 40%);">-        options-&gt;tls_timeout =3D positive_atoi(p[1]);=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        options-&gt=
+;tls_timeout =3D positive_atoi(p[1], msglevel);</span><br><span>     }</spa=
+n><br><span>     else if (streq(p[0], &quot;reneg-bytes&quot;) &amp;&amp; p=
+[1] &amp;&amp; !p[2])</span><br><span>     {</span><br><span>@@ -9197,21 +9=
+229,21 @@</span><br><span>     else if (streq(p[0], &quot;reneg-sec&quot;) =
+&amp;&amp; p[1] &amp;&amp; !p[3])</span><br><span>     {</span><br><span>  =
+       VERIFY_PERMISSION(OPT_P_TLS_PARMS);</span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">-        options-&gt;renegotiate_seconds =3D positive_a=
+toi(p[1]);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        o=
+ptions-&gt;renegotiate_seconds =3D positive_atoi(p[1], msglevel);</span><br=
+><span>         if (p[2])</span><br><span>         {</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-            options-&gt;renegotiate_seconds=
+_min =3D positive_atoi(p[2]);</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+            options-&gt;renegotiate_seconds_min =3D positive_atoi=
+(p[2], msglevel);</span><br><span>         }</span><br><span>     }</span><=
+br><span>     else if (streq(p[0], &quot;hand-window&quot;) &amp;&amp; p[1]=
+ &amp;&amp; !p[2])</span><br><span>     {</span><br><span>         VERIFY_P=
+ERMISSION(OPT_P_TLS_PARMS);</span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">-        options-&gt;handshake_window =3D positive_atoi(p[1]);</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+        options-&gt;handsha=
+ke_window =3D positive_atoi(p[1], msglevel);</span><br><span>     }</span><=
+br><span>     else if (streq(p[0], &quot;tran-window&quot;) &amp;&amp; p[1]=
+ &amp;&amp; !p[2])</span><br><span>     {</span><br><span>         VERIFY_P=
+ERMISSION(OPT_P_TLS_PARMS);</span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">-        options-&gt;transition_window =3D positive_atoi(p[1]);</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+        options-&gt;transi=
+tion_window =3D positive_atoi(p[1], msglevel);</span><br><span>     }</span=
+><br><span>     else if (streq(p[0], &quot;tls-auth&quot;) &amp;&amp; p[1] =
+&amp;&amp; !p[3])</span><br><span>     {</span><br><span>@@ -9348,7 +9380,7=
+ @@</span><br><span>     else if (streq(p[0], &quot;show-pkcs11-ids&quot;) =
+&amp;&amp; !p[3])</span><br><span>     {</span><br><span>         char *pro=
+vider =3D  p[1];</span><br><span style=3D"color: hsl(0, 100%, 40%);">-     =
+   bool cert_private =3D (p[2] =3D=3D NULL ? false : ( atoi(p[2]) !=3D 0 ))=
+;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        bool cert_=
+private =3D (p[2] =3D=3D NULL ? false : (atoi_warn(p[1], msglevel) !=3D 0 )=
+);</span><br><span> </span><br><span> #ifdef DEFAULT_PKCS11_MODULE</span><b=
+r><span>         if (!provider)</span><br><span>@@ -9400,7 +9432,7 @@</span=
+><br><span> </span><br><span>         for (j =3D 1; j &lt; MAX_PARMS &amp;&=
+amp; p[j] !=3D NULL; ++j)</span><br><span>         {</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-            options-&gt;pkcs11_protected_au=
+thentication[j-1] =3D atoi(p[j]) !=3D 0 ? 1 : 0;</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+            options-&gt;pkcs11_protected_authe=
+ntication[j-1] =3D atoi_warn(p[j], msglevel) !=3D 0 ? 1 : 0;</span><br><spa=
+n>         }</span><br><span>     }</span><br><span>     else if (streq(p[0=
+], &quot;pkcs11-private-mode&quot;) &amp;&amp; p[1])</span><br><span>@@ -94=
+22,13 +9454,13 @@</span><br><span> </span><br><span>         for (j =3D 1; =
+j &lt; MAX_PARMS &amp;&amp; p[j] !=3D NULL; ++j)</span><br><span>         {=
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            options-&=
+gt;pkcs11_cert_private[j-1] =3D atoi(p[j]) !=3D 0 ? 1 : 0;</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+            options-&gt;pkcs11_cert_=
+private[j-1] =3D atoi_warn(p[j], msglevel) !=3D 0 ? 1 : 0;</span><br><span>=
+         }</span><br><span>     }</span><br><span>     else if (streq(p[0],=
+ &quot;pkcs11-pin-cache&quot;) &amp;&amp; p[1] &amp;&amp; !p[2])</span><br>=
+<span>     {</span><br><span>         VERIFY_PERMISSION(OPT_P_GENERAL);</sp=
+an><br><span style=3D"color: hsl(0, 100%, 40%);">-        options-&gt;pkcs1=
+1_pin_cache_period =3D atoi(p[1]);</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+        options-&gt;pkcs11_pin_cache_period =3D atoi_warn(p[=
+1], msglevel);</span><br><span>     }</span><br><span>     else if (streq(p=
+[0], &quot;pkcs11-id&quot;) &amp;&amp; p[1] &amp;&amp; !p[2])</span><br><sp=
+an>     {</span><br><span>@@ -9457,12 +9489,12 @@</span><br><span>     {</s=
+pan><br><span>         VERIFY_PERMISSION(OPT_P_PEER_ID);</span><br><span>  =
+       options-&gt;use_peer_id =3D true;</span><br><span style=3D"color: hs=
+l(0, 100%, 40%);">-        options-&gt;peer_id =3D atoi(p[1]);</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+        options-&gt;peer_id =3D =
+atoi_warn(p[1], msglevel);</span><br><span>     }</span><br><span> #ifdef H=
+AVE_EXPORT_KEYING_MATERIAL</span><br><span>     else if (streq(p[0], &quot;=
+keying-material-exporter&quot;) &amp;&amp; p[1] &amp;&amp; p[2])</span><br>=
+<span>     {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        i=
+nt ekm_length =3D positive_atoi(p[2]);</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+        int ekm_length =3D positive_atoi(p[2], msglevel)=
+;</span><br><span> </span><br><span>         VERIFY_PERMISSION(OPT_P_GENERA=
+L);</span><br><span> </span><br><span>@@ -9521,7 +9553,7 @@</span><br><span=
+>     else if (streq(p[0], &quot;vlan-pvid&quot;) &amp;&amp; p[1] &amp;&amp=
+; !p[2])</span><br><span>     {</span><br><span>         VERIFY_PERMISSION(=
+OPT_P_GENERAL|OPT_P_INSTANCE);</span><br><span style=3D"color: hsl(0, 100%,=
+ 40%);">-        options-&gt;vlan_pvid =3D positive_atoi(p[1]);</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+        options-&gt;vlan_pvid =
+=3D positive_atoi(p[1], msglevel);</span><br><span>         if (options-&gt=
+;vlan_pvid &lt; OPENVPN_8021Q_MIN_VID</span><br><span>             || optio=
+ns-&gt;vlan_pvid &gt; OPENVPN_8021Q_MAX_VID)</span><br><span>         {</sp=
+an><br><span></span><br></pre><p>To view, visit <a href=3D"http://gerrit.op=
+envpn.net/c/openvpn/+/873?usp=3Demail">change 873</a>. To unsubscribe, or f=
+or help writing mail filters, visit <a href=3D"http://gerrit.openvpn.net/se=
+ttings">settings</a>.</p><div itemscope itemtype=3D"http://schema.org/Email=
+Message"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.org/V=
+iewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openv=
+pn/+/873?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></d=
+iv></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: Ia4095518d5e4447992a2974e0d7=
-a159d79ba6b6f </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 872 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 4 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: Ie1e2eb54d516b3ae87c5ca56fe8=
+edd77ee2be4de </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 873 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
 <div style=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@...1711...=
 27...&gt; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
@@ -838,8 +1363,8 @@ a159d79ba6b6f </div>
 ts.sourceforge.net&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
 41...&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
+<div style=3D"display:none"> Gerrit-MessageType: newchange </div>
 
 
---LlkLiu/eKao=--
+--ias9IyC0Ql8=--
 
