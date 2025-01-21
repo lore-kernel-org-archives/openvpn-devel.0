@@ -1,14 +1,14 @@
 From: "flichtenheld (Code Review)" <gerrit@...515...>
-Date: Tue, 21 Jan 2025 14:40:43 +0000
+Date: Tue, 21 Jan 2025 14:53:17 +0000
 In-Reply-To: <gerrit.1737460984000.Ie1e2eb54d516b3ae87c5ca56fe8edd77ee2be4de@...2715...>
 References: <gerrit.1737460984000.Ie1e2eb54d516b3ae87c5ca56fe8edd77ee2be4de@...2715...>
 Reply-To: frank@...2641..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net
-Message-ID: <ad9ed0b89a14b994c63bff0a6db02b0f043e9822-EmailReviewComments-HTML@...2715...>
+Message-ID: <2e552775d2fd1b6c07bd90a3d4dd765fee2e810e-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="cvbuTuPWBdU="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="TnWVor3DcE4="; charset=UTF-8
 Subject: [Openvpn-devel] [M] Change in openvpn[master]: Print
  warnings/errors when numerical parameters cannot be parsed
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -22,7 +22,7 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: plaisthos <arne-openvpn@...1227...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---cvbuTuPWBdU=
+--TnWVor3DcE4=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
@@ -36,7 +36,25 @@ arsed
 ......................................................................
 
 
-Patch Set 2: -Code-Review
+Patch Set 2: Code-Review-1
+
+(2 comments)
+
+Patchset:
+
+PS2:
+LGTM, but would be a good opportunity to move the code to options_util.c an=
+d add unittests?
+
+
+File src/openvpn/options.c:
+
+http://gerrit.openvpn.net/c/openvpn/+/873/comment/299b83cd_d792bac7 :
+PS1, Line 4939:     if (i < 0 || endptr || i > INT_MAX)
+> Should probably be *endptr? Basically we want to check that it is \0, rig=
+ht? [=E2=80=A6]
+Done
+
 
 
 --
@@ -53,27 +71,43 @@ Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Comment-Date: Tue, 21 Jan 2025 14:40:43 +0000
-Gerrit-HasComments: No
+Gerrit-Comment-Date: Tue, 21 Jan 2025 14:53:17 +0000
+Gerrit-HasComments: Yes
 Gerrit-Has-Labels: Yes
+Comment-In-Reply-To: flichtenheld <frank@...2641...>
 Gerrit-MessageType: comment
 
---cvbuTuPWBdU=
+--TnWVor3DcE4=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <p> Attention is currently required from: plaisthos. </p>
 <p>Patch set 2:<span style=3D"border-radius: 3px; display: inline-block; ma=
-rgin: 0 2px; padding: 4px;background-color: #ddd;">-Code-Review</span></p><=
-p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/873?usp=3Demail">View Ch=
-ange</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To view, vi=
-sit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/873?usp=3Demail">chang=
-e 873</a>. To unsubscribe, or for help writing mail filters, visit <a href=
-=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope ite=
-mtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"action"=
- itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"h=
-ttp://gerrit.openvpn.net/c/openvpn/+/873?usp=3Demail"/><meta itemprop=3D"na=
-me" content=3D"View Change"/></div></div>
+rgin: 0 2px; padding: 4px;background-color: #ffd4d4;">Code-Review -1</span>=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/873?usp=3Demail">Vi=
+ew Change</a></p><p>2 comments:</p><ul style=3D"list-style: none; padding: =
+0;"><li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-=
+style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p =
+style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvp=
+n/+/873?tab=3Dcomments">Patch Set #2:</a> </p><p style=3D"white-space: pre-=
+wrap; word-wrap: break-word;">LGTM, but would be a good opportunity to move=
+ the code to options_util.c and add unittests?</p></li></ul></li><li style=
+=3D"margin: 0; padding: 0;"><p>File src/openvpn/options.c:</p><ul style=3D"=
+list-style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;=
+"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/o=
+penvpn/+/873/comment/299b83cd_d792bac7">Patch Set #1, Line 4939:</a> <code =
+style=3D"font-family:monospace,monospace">    if (i &lt; 0 || endptr || i &=
+gt; INT_MAX)</code></p><p><blockquote style=3D"border-left: 1px solid #aaa;=
+ margin: 10px 0; padding: 0 10px;">Should probably be *endptr? Basically we=
+ want to check that it is \0, right? [=E2=80=A6]</blockquote></p><p style=
+=3D"white-space: pre-wrap; word-wrap: break-word;">Done</p></li></ul></li><=
+/ul><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/873?=
+usp=3Demail">change 873</a>. To unsubscribe, or for help writing mail filte=
+rs, visit <a href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><=
+div itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope it=
+emprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=
+=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/873?usp=3Demail"/><m=
+eta itemprop=3D"name" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
@@ -89,12 +123,14 @@ edd77ee2be4de </div>
 ts.sourceforge.net&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
 ..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Tue, 21 Jan 2025 14:40:43=
+<div style=3D"display:none"> Gerrit-Comment-Date: Tue, 21 Jan 2025 14:53:17=
  +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: No </div>
+<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
 <div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
+<div style=3D"display:none"> Comment-In-Reply-To: flichtenheld &lt;frank@...1186...=
+.2641...&gt; </div>
 <div style=3D"display:none"> Gerrit-MessageType: comment </div>
 
 
---cvbuTuPWBdU=--
+--TnWVor3DcE4=--
 
