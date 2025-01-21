@@ -1,11 +1,11 @@
 From: Frank Lichtenheld <frank@...2641...>
-Date: Tue, 21 Jan 2025 17:10:25 +0100
-Message-Id: <20250121161025.37545-1-frank@...2641...>
-In-Reply-To: <gerrit.1732212459000.I145573555aaace5e94774b5f977d032d3747ed72@...2715...>
-References: <gerrit.1732212459000.I145573555aaace5e94774b5f977d032d3747ed72@...2715...>
+Date: Tue, 21 Jan 2025 17:12:47 +0100
+Message-Id: <20250121161247.37883-1-frank@...2641...>
+In-Reply-To: <gerrit.1737375148000.Ib8adf7b31cae02e2de3d45da23b76a2d79f13e20@...2715...>
+References: <gerrit.1737375148000.Ib8adf7b31cae02e2de3d45da23b76a2d79f13e20@...2715...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v10] mudp.c: keep offset value when
- resetting buffer
+Subject: [Openvpn-devel] [PATCH v1] Remove comparing username to NULL in
+ tls_lock_username
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,44 +17,55 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
-Cc: Lev Stipakov <lev@...515...>
 
-From: Lev Stipakov <lev@...515...>
+From: Arne Schwabe <arne@...1227...>
 
-dco-win requires control packets to be prepended
-with sockaddr. For that, an offset value in buffer
-must be kept. Doing it always doesn't harm and makes
-code cleaner compared to adding "if (dco_win_server)"
-condition.
+tls_lock_username is only called in a single place and that place
+calls this is function with up->username, which is always defined.
 
-Change-Id: I145573555aaace5e94774b5f977d032d3747ed72
-Signed-off-by: Lev Stipakov <lev@...515...>
+Change-Id: Ib8adf7b31cae02e2de3d45da23b76a2d79f13e20
+Signed-off-by: Arne Schwabe <arne@...1227...>
 Acked-by: Frank Lichtenheld <frank@...2641...>
 ---
 
 This change was reviewed on Gerrit and approved by at least one
 developer. I request to merge it to master.
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/814
-This mail reflects revision 10 of this Change.
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/871
+This mail reflects revision 1 of this Change.
 
 Acked-by according to Gerrit (reflected above):
 Frank Lichtenheld <frank@...2641...>
 
         
-diff --git a/src/openvpn/mudp.c b/src/openvpn/mudp.c
-index 6137578..1a3a4c7 100644
---- a/src/openvpn/mudp.c
-+++ b/src/openvpn/mudp.c
-@@ -54,7 +54,9 @@
+diff --git a/src/openvpn/ssl_verify.c b/src/openvpn/ssl_verify.c
+index 4c4b58d..e7d7ed6 100644
+--- a/src/openvpn/ssl_verify.c
++++ b/src/openvpn/ssl_verify.c
+@@ -153,11 +153,11 @@
+ {
+     if (multi->locked_username)
+     {
+-        if (!username || strcmp(username, multi->locked_username))
++        if (strcmp(username, multi->locked_username) != 0)
+         {
+             msg(D_TLS_ERRORS, "TLS Auth Error: username attempted to change from '%s' to '%s' -- tunnel disabled",
+                 multi->locked_username,
+-                np(username));
++                username);
  
-     struct context *c = &m->top;
- 
--    buf_reset_len(&c->c2.buffers->aux_buf);
-+    /* dco-win server requires prepend with sockaddr, so preserve offset */
-+    ASSERT(buf_init(&c->c2.buffers->aux_buf, buf.offset));
-+
-     buf_copy(&c->c2.buffers->aux_buf, &buf);
-     m->hmac_reply = c->c2.buffers->aux_buf;
-     m->hmac_reply_dest = &m->top.c2.from;
+             /* disable the tunnel */
+             tls_deauthenticate(multi);
+@@ -166,10 +166,7 @@
+     }
+     else
+     {
+-        if (username)
+-        {
+-            multi->locked_username = string_alloc(username, NULL);
+-        }
++        multi->locked_username = string_alloc(username, NULL);
+     }
+     return true;
+ }
 
