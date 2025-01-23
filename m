@@ -1,16 +1,16 @@
-From: "stipa (Code Review)" <gerrit@...515...>
-Date: Thu, 23 Jan 2025 10:22:53 +0000
-In-Reply-To: <gerrit.1725622029000.Ifec08fea26ff6fd9e22f18cab0ac71c1dda8fe8e@...2715...>
-References: <gerrit.1725622029000.Ifec08fea26ff6fd9e22f18cab0ac71c1dda8fe8e@...2715...>
-Reply-To: lstipakov@...277..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <4196836262090e79500c89cddb2241e2811ad0e1-HTML@...2715...>
+From: "plaisthos (Code Review)" <gerrit@...515...>
+Date: Thu, 23 Jan 2025 12:59:15 +0000
+In-Reply-To: <gerrit.1733849609000.Ib118426c5a69256894040c69856a4003d9f4637c@...2715...>
+References: <gerrit.1733849609000.Ib118426c5a69256894040c69856a4003d9f4637c@...2715...>
+Reply-To: arne-openvpn@...1227..., openvpn-devel@lists.sourceforge.net,
+ ralf@...2726..., frank@...2641...
+Message-ID: <93a076e9818b8337bcb5ab700f345ea5d065c6b6-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="ftvXtEYf2Eg="; charset=UTF-8
-Subject: [Openvpn-devel] [M] Change in openvpn[master]: dco-win: add
- SET_MODE ioctl call
+Content-Type: multipart/alternative; boundary="Q90wV+Ayqh8="; charset=UTF-8
+Subject: [Openvpn-devel] [M] Change in openvpn[master]: Handle missing DCO
+ peer by restarting the session
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,58 +19,90 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Cc: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: ralf_lici <ralf@...2726...>
+Cc: flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---ftvXtEYf2Eg=
+--Q90wV+Ayqh8=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-stipa has abandoned this change. ( http://gerrit.openvpn.net/c/openvpn/+/73=
-4?usp=3Demail )
+Attention is currently required from: flichtenheld, ralf_lici.
 
-Change subject: dco-win: add SET_MODE ioctl call
+plaisthos has posted comments on this change. ( http://gerrit.openvpn.net/c=
+/openvpn/+/831?usp=3Demail )
+
+Change subject: Handle missing DCO peer by restarting the session
 ......................................................................
 
 
-Abandoned
+Patch Set 1:
+
+(1 comment)
+
+File src/openvpn/sig.c:
+
+http://gerrit.openvpn.net/c/openvpn/+/831/comment/2680885b_1241b5c7 :
+PS1, Line 495:             msg(M_WARN, "Error requesting peer %d DCO stats =
+(%s). Restarting the session",
+Might to give some user understandable reason/guidance. I would not know wh=
+at to expect here. Is this normal? Is this a problem? Do I have to worry an=
+d look to debug some deeper underlying problem?
+
+
+
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/734?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/831?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings
 
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: Ifec08fea26ff6fd9e22f18cab0ac71c1dda8fe8e
-Gerrit-Change-Number: 734
-Gerrit-PatchSet: 2
-Gerrit-Owner: stipa <lstipakov@...277...>
+Gerrit-Change-Id: Ib118426c5a69256894040c69856a4003d9f4637c
+Gerrit-Change-Number: 831
+Gerrit-PatchSet: 1
+Gerrit-Owner: ralf_lici <ralf@...2726...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-MessageType: abandon
+Gerrit-Attention: flichtenheld <frank@...2641...>
+Gerrit-Attention: ralf_lici <ralf@...2726...>
+Gerrit-Comment-Date: Thu, 23 Jan 2025 12:59:15 +0000
+Gerrit-HasComments: Yes
+Gerrit-Has-Labels: No
+Gerrit-MessageType: comment
 
---ftvXtEYf2Eg=
+--Q90wV+Ayqh8=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p>stipa <strong>abandoned</strong> this change.</p><p><a href=3D"http://ge=
-rrit.openvpn.net/c/openvpn/+/734?usp=3Demail">View Change</a></p><div style=
-=3D"white-space:pre-wrap">Abandoned</div><p>To view, visit <a href=3D"http:=
-//gerrit.openvpn.net/c/openvpn/+/734?usp=3Demail">change 734</a>. To unsubs=
-cribe, or for help writing mail filters, visit <a href=3D"http://gerrit.ope=
-nvpn.net/settings">settings</a>.</p><div itemscope itemtype=3D"http://schem=
-a.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://s=
-chema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.=
-net/c/openvpn/+/734?usp=3Demail"/><meta itemprop=3D"name" content=3D"View C=
-hange"/></div></div>
+<p> Attention is currently required from: flichtenheld, ralf_lici. </p>
+<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/831?usp=3Demail">View C=
+hange</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0;"><=
+li style=3D"margin: 0; padding: 0;"><p>File src/openvpn/sig.c:</p><ul style=
+=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 1=
+6px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net=
+/c/openvpn/+/831/comment/2680885b_1241b5c7">Patch Set #1, Line 495:</a> <co=
+de style=3D"font-family:monospace,monospace">            msg(M_WARN, &quot;=
+Error requesting peer %d DCO stats (%s). Restarting the session&quot;,</cod=
+e></p><p style=3D"white-space: pre-wrap; word-wrap: break-word;">Might to g=
+ive some user understandable reason/guidance. I would not know what to expe=
+ct here. Is this normal? Is this a problem? Do I have to worry and look to =
+debug some deeper underlying problem?</p></li></ul></li></ul><p>To view, vi=
+sit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/831?usp=3Demail">chang=
+e 831</a>. To unsubscribe, or for help writing mail filters, visit <a href=
+=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope ite=
+mtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"action"=
+ itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"h=
+ttp://gerrit.openvpn.net/c/openvpn/+/831?usp=3Demail"/><meta itemprop=3D"na=
+me" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: Ifec08fea26ff6fd9e22f18cab0a=
-c71c1dda8fe8e </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 734 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
-<div style=3D"display:none"> Gerrit-Owner: stipa &lt;lstipakov@...277...&gt=
+<div style=3D"display:none"> Gerrit-Change-Id: Ib118426c5a69256894040c69856=
+a4003d9f4637c </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 831 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
+<div style=3D"display:none"> Gerrit-Owner: ralf_lici &lt;ralf@...2726...&gt=
 ; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
 1...&gt; </div>
@@ -78,8 +110,16 @@ c71c1dda8fe8e </div>
 .1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: abandon </div>
+<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
+41...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: ralf_lici &lt;ralf@...2804...=
+.&gt; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Thu, 23 Jan 2025 12:59:15=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: No </div>
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
 
 
---ftvXtEYf2Eg=--
+--Q90wV+Ayqh8=--
 
