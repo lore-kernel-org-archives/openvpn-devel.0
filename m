@@ -1,17 +1,11 @@
-From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Thu, 23 Jan 2025 15:50:49 +0000
+From: Gert Doering <gert@...1296...>
+Date: Thu, 23 Jan 2025 16:51:11 +0100
+Message-ID: <20250123155111.23371-1-gert@...1296...>
 In-Reply-To: <gerrit.1700055887000.I4d1c96662c5a8c750d883e3b20adde09529e2764@...2715...>
 References: <gerrit.1700055887000.I4d1c96662c5a8c750d883e3b20adde09529e2764@...2715...>
-Reply-To: gert@...1296..., arne-openvpn@...1227...,
- gianmarco@...2726..., openvpn-devel@lists.sourceforge.net,
- frank@...2641..., a@...2181...
-Message-ID: <74aa36bfe25d2d0b48698e377e77571f97ff7875-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="VcZYGeiCi0o="; charset=UTF-8
-Subject: [Openvpn-devel] [M] Change in openvpn[master]: allow user to
- specify 'local' multiple times in config files
+Subject: [Openvpn-devel] [PATCH v12] allow user to specify 'local' multiple
+ times in config files
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,137 +14,451 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: its_Giaan <gianmarco@...2726...>
-Cc: flichtenheld <frank@...2641...>, plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---VcZYGeiCi0o=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+From: Antonio Quartulli <a@...2181...>
 
-Attention is currently required from: flichtenheld, its_Giaan, ordex, plais=
-thos.
+It is now possible to specify 'local' multiple times in a server
+config to let it listen on multiple sockets (address:port) of
+the same protocol.
 
-cron2 has posted comments on this change. ( http://gerrit.openvpn.net/c/ope=
-nvpn/+/436?usp=3Demail )
+Change-Id: I4d1c96662c5a8c750d883e3b20adde09529e2764
+Signed-off-by: Antonio Quartulli <a@...2181...>
+Signed-off-by: Gianmarco De Gregori <gianmarco@...2726...>
+Acked-by: Gert Doering <gert@...1296...>
+---
 
-Change subject: allow user to specify 'local' multiple times in config files
-......................................................................
+This change was reviewed on Gerrit and approved by at least one
+developer. I request to merge it to master.
 
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/436
+This mail reflects revision 12 of this Change.
 
-Patch Set 12: Code-Review+2
+Acked-by according to Gerrit (reflected above):
+Gert Doering <gert@...1296...>
 
-(2 comments)
-
-Patchset:
-
-PS12:
-I think we need to do some more wordsmithing (possibly find a native speake=
-r that understands OpenVPN...) here, but for now, this should go on.
-
-
-File doc/man-sections/link-options.rst:
-
-http://gerrit.openvpn.net/c/openvpn/+/436/comment/7c571c01_7328cf09 :
-PS11, Line 124:   open a socket.
-> As discussed on IRC, this is still a bit unclear / a leftover from earlie=
-r versions.
-Done
-
-
-
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/436?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings
-
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: I4d1c96662c5a8c750d883e3b20adde09529e2764
-Gerrit-Change-Number: 436
-Gerrit-PatchSet: 12
-Gerrit-Owner: ordex <a@...2181...>
-Gerrit-Reviewer: cron2 <gert@...1296...>
-Gerrit-Reviewer: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: its_Giaan <gianmarco@...2726...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: its_Giaan <gianmarco@...2726...>
-Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Attention: ordex <a@...2181...>
-Gerrit-Comment-Date: Thu, 23 Jan 2025 15:50:49 +0000
-Gerrit-HasComments: Yes
-Gerrit-Has-Labels: Yes
-Comment-In-Reply-To: cron2 <gert@...1296...>
-Gerrit-MessageType: comment
-
---VcZYGeiCi0o=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<p> Attention is currently required from: flichtenheld, its_Giaan, ordex, p=
-laisthos. </p>
-<p>Patch set 12:<span style=3D"border-radius: 3px; display: inline-block; m=
-argin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span=
-></p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/436?usp=3Demail">V=
-iew Change</a></p><p>2 comments:</p><ul style=3D"list-style: none; padding:=
- 0;"><li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list=
--style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p=
- style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openv=
-pn/+/436?tab=3Dcomments">Patch Set #12:</a> </p><p style=3D"white-space: pr=
-e-wrap; word-wrap: break-word;">I think we need to do some more wordsmithin=
-g (possibly find a native speaker that understands OpenVPN...) here, but fo=
-r now, this should go on.</p></li></ul></li><li style=3D"margin: 0; padding=
-: 0;"><p>File doc/man-sections/link-options.rst:</p><ul style=3D"list-style=
-: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p style=
-=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/4=
-36/comment/7c571c01_7328cf09">Patch Set #11, Line 124:</a> <code style=3D"f=
-ont-family:monospace,monospace">  open a socket.</code></p><p><blockquote s=
-tyle=3D"border-left: 1px solid #aaa; margin: 10px 0; padding: 0 10px;">As d=
-iscussed on IRC, this is still a bit unclear / a leftover from earlier vers=
-ions.</blockquote></p><p style=3D"white-space: pre-wrap; word-wrap: break-w=
-ord;">Done</p></li></ul></li></ul><p>To view, visit <a href=3D"http://gerri=
-t.openvpn.net/c/openvpn/+/436?usp=3Demail">change 436</a>. To unsubscribe, =
-or for help writing mail filters, visit <a href=3D"http://gerrit.openvpn.ne=
-t/settings">settings</a>.</p><div itemscope itemtype=3D"http://schema.org/E=
-mailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.o=
-rg/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/o=
-penvpn/+/436?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/=
-></div></div>
-
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I4d1c96662c5a8c750d883e3b20a=
-dde09529e2764 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 436 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 12 </div>
-<div style=3D"display:none"> Gerrit-Owner: ordex &lt;a@...2181...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
- </div>
-<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
-1...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: its_Giaan &lt;gianmarco@...1664...=
-26...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: its_Giaan &lt;gianmarco@...1665...=
-726...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
-41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: ordex &lt;a@...2181...&gt; <=
-/div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Thu, 23 Jan 2025 15:50:49=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
-<div style=3D"display:none"> Comment-In-Reply-To: cron2 &lt;gert@...1296...=
-&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
-
-
---VcZYGeiCi0o=--
+        
+diff --git a/doc/man-sections/link-options.rst b/doc/man-sections/link-options.rst
+index ca192c3..2667b93 100644
+--- a/doc/man-sections/link-options.rst
++++ b/doc/man-sections/link-options.rst
+@@ -106,13 +106,22 @@
+   is not reliable. It is recommended to set tun-mtu with enough headroom
+   instead.
+ 
+---local host
+-  Local host name or IP address for bind. If specified, OpenVPN will bind
+-  to this address only. If unspecified, OpenVPN will bind to all
+-  interfaces.
++--local host|* [port]
++  Local host name or IP address and port for bind. If specified, OpenVPN will bind
++  to this address. If unspecified, OpenVPN will bind to all interfaces.
++  '*' can be used as hostname and means 'any host' (OpenVPN will listen on what
++  is returned by the OS). 
++  On a client, or in point-to-point mode, this can only be specified once (1 socket).
++  
++  On an OpenVPN setup running as ``--server``, this can be specified multiple times
++  to open multiple listening sockets on different addresses and/or different ports.
++  In order to specify multiple listen ports without specifying an address, use '*'
++  to signal "use what the operating system gives you as default", for
++  "all IPv4 addresses" use "0.0.0.0", for "all IPv6 addresses" use '::'.
++  ``--local`` implies ``--bind``.
+ 
+ --lport port
+-  Set local TCP/UDP port number or name. Cannot be used together with
++  Set default TCP/UDP port number. Cannot be used together with
+   ``--nobind`` option.
+ 
+ --mark value
+diff --git a/src/openvpn/init.c b/src/openvpn/init.c
+index 9d1048c..4014517 100644
+--- a/src/openvpn/init.c
++++ b/src/openvpn/init.c
+@@ -751,7 +751,7 @@
+ 
+     init_connection_list(c);
+ 
+-    c->c1.link_sockets_num = 1;
++    c->c1.link_sockets_num = c->options.ce.local_list->len;
+ 
+     do_link_socket_addr_new(c);
+ 
+@@ -4978,6 +4978,7 @@
+     if (dest->mode == CM_CHILD_UDP)
+     {
+         ASSERT(!dest->c2.link_sockets);
++        ASSERT(dest->options.ce.local_list);
+ 
+         /* inherit buffers */
+         dest->c2.buffers = src->c2.buffers;
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index 3ef4d78..c938999 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -124,7 +124,17 @@
+     "--version       : Show copyright and version information.\n"
+     "\n"
+     "Tunnel Options:\n"
+-    "--local host    : Local host name or ip address. Implies --bind.\n"
++    "--local host|* [port]: Local host name or IP address and port for bind.\n"
++    "                        If specified, OpenVPN will bindto this address. If unspecified,\n"
++    "                        OpenVPN will bind to all interfaces. '*' can be used as hostname\n"
++    "                        and means 'any host' (OpenVPN will listen on what is returned by the OS).\n"
++    "                        On a client, or in point-to-point mode, this can only be specified once (1 socket).\n"
++    "                        On an OpenVPN setup running as ``--server``, this can be specified multiple times\n"
++    "                        to open multiple listening sockets on different addresses and/or different ports.\n"
++    "                        In order to specify multiple listen ports without specifying an address, use '*'\n"
++    "                        to signal 'use what the operating system gives you as default', for\n"
++    "                        'all IPv4 addresses' use '0.0.0.0', for 'all IPv6 addresses' use '::'.\n"
++    "                        ``--local`` implies ``--bind``.\n"
+     "--remote host [port] : Remote host name or ip address.\n"
+     "--remote-random : If multiple --remote options specified, choose one randomly.\n"
+     "--remote-random-hostname : Add a random string to remote DNS name.\n"
+@@ -988,8 +998,9 @@
+                         const int i)
+ {
+     setenv_str_i(es, "proto", proto2ascii(e->proto, e->af, false), i);
+-    setenv_str_i(es, "local", e->local, i);
+-    setenv_str_i(es, "local_port", e->local_port, i);
++    /* expected to be for single socket contexts only */
++    setenv_str_i(es, "local", e->local_list->array[0]->local, i);
++    setenv_str_i(es, "local_port", e->local_list->array[0]->port, i);
+     setenv_str_i(es, "remote", e->remote, i);
+     setenv_str_i(es, "remote_port", e->remote_port, i);
+ 
+@@ -1713,8 +1724,12 @@
+ show_connection_entry(const struct connection_entry *o)
+ {
+     msg(D_SHOW_PARMS, "  proto = %s", proto2ascii(o->proto, o->af, false));
+-    SHOW_STR(local);
+-    SHOW_STR(local_port);
++    msg(D_SHOW_PARMS, "  Local Sockets:");
++    for (int i = 0; i < o->local_list->len; i++)
++    {
++        msg(D_SHOW_PARMS, "    [%s]:%s", o->local_list->array[i]->local,
++            o->local_list->array[i]->port);
++    }
+     SHOW_STR(remote);
+     SHOW_STR(remote_port);
+     SHOW_BOOL(remote_float);
+@@ -2162,6 +2177,37 @@
+ 
+ #endif /* ifdef ENABLE_MANAGEMENT */
+ 
++static struct local_list *
++alloc_local_list_if_undef(struct connection_entry *ce, struct gc_arena *gc)
++{
++    if (!ce->local_list)
++    {
++        ALLOC_OBJ_CLEAR_GC(ce->local_list, struct local_list, gc);
++    }
++    return ce->local_list;
++}
++
++static struct local_entry *
++alloc_local_entry(struct connection_entry *ce, const int msglevel,
++                  struct gc_arena *gc)
++{
++    struct local_list *l = alloc_local_list_if_undef(ce, gc);
++    struct local_entry *e;
++
++    if (l->len >= CONNECTION_LIST_SIZE)
++    {
++        msg(msglevel, "Maximum number of 'local' options (%d) exceeded",
++            CONNECTION_LIST_SIZE);
++
++        return NULL;
++    }
++
++    ALLOC_OBJ_CLEAR_GC(e, struct local_entry, gc);
++    l->array[l->len++] = e;
++
++    return e;
++}
++
+ static struct connection_list *
+ alloc_connection_list_if_undef(struct options *options)
+ {
+@@ -2354,6 +2400,15 @@
+             "--proto tcp-server or --proto tcp-client");
+     }
+ 
++    /*
++     * Sanity check on Client mode
++     */
++
++    if (options->mode != MODE_SERVER && ce->local_list->len > 1)
++    {
++        msg(M_USAGE, "multiple --local statements only allowed in --server mode");
++    }
++
+     if (options->lladdr && dev != DEV_TYPE_TAP)
+     {
+         msg(M_USAGE, "--lladdr can only be used in --dev tap mode");
+@@ -2379,13 +2434,6 @@
+      * Sanity check on --local, --remote, and --ifconfig
+      */
+ 
+-    if (proto_is_net(ce->proto)
+-        && string_defined_equal(ce->local, ce->remote)
+-        && string_defined_equal(ce->local_port, ce->remote_port))
+-    {
+-        msg(M_USAGE, "--remote and --local addresses are the same");
+-    }
+-
+     if (string_defined_equal(ce->remote, options->ifconfig_local)
+         || string_defined_equal(ce->remote, options->ifconfig_remote_netmask))
+     {
+@@ -2394,13 +2442,6 @@
+             "addresses");
+     }
+ 
+-    if (string_defined_equal(ce->local, options->ifconfig_local)
+-        || string_defined_equal(ce->local, options->ifconfig_remote_netmask))
+-    {
+-        msg(M_USAGE,
+-            "--local addresses must be distinct from --ifconfig addresses");
+-    }
+-
+     if (string_defined_equal(options->ifconfig_local,
+                              options->ifconfig_remote_netmask))
+     {
+@@ -2413,12 +2454,6 @@
+         msg(M_USAGE, "--bind and --nobind can't be used together");
+     }
+ 
+-    if (ce->local && !ce->bind_local)
+-    {
+-        msg(M_USAGE,
+-            "--local and --nobind don't make sense when used together");
+-    }
+-
+     if (ce->local_port_defined && !ce->bind_local)
+     {
+         msg(M_USAGE,
+@@ -2430,6 +2465,29 @@
+         msg(M_USAGE, "--nobind doesn't make sense unless used with --remote");
+     }
+ 
++    for (int i = 0; i < ce->local_list->len; i++)
++    {
++        struct local_entry *le = ce->local_list->array[i];
++
++        if (proto_is_net(ce->proto)
++            && string_defined_equal(le->local, ce->remote)
++            && string_defined_equal(le->port, ce->remote_port))
++        {
++            msg(M_USAGE, "--remote and one of the --local addresses are the same");
++        }
++
++        if (string_defined_equal(le->local, options->ifconfig_local)
++            || string_defined_equal(le->local, options->ifconfig_remote_netmask))
++        {
++            msg(M_USAGE, "--local addresses must be distinct from --ifconfig addresses");
++        }
++
++        if (le->local && !ce->bind_local)
++        {
++            msg(M_USAGE, "--local and --nobind don't make sense when used together");
++        }
++    }
++
+     /*
+      * Check for consistency of management options
+      */
+@@ -3128,7 +3186,7 @@
+     }
+ 
+     /* an option is present that requires local bind to enabled */
+-    bool need_bind = ce->local || ce->local_port_defined || ce->bind_defined;
++    bool need_bind = ce->local_port_defined || ce->bind_defined || ce->local_list;
+ 
+     /* socks proxy is enabled */
+     bool uses_socks = ce->proto == PROTO_UDP && ce->socks_proxy_server;
+@@ -3264,6 +3322,16 @@
+     }
+ }
+ 
++static void
++options_postprocess_mutate_le(struct connection_entry ce, struct local_entry *le)
++{
++    /* use the global port if none is specified */
++    if (!le->port)
++    {
++        le->port = ce.local_port;
++    }
++}
++
+ #ifdef _WIN32
+ /* If iservice is in use, we need def1 method for redirect-gateway */
+ static void
+@@ -3705,6 +3773,28 @@
+         options_postprocess_mutate_ce(o, o->connection_list->array[i]);
+     }
+ 
++    if (o->ce.local_list)
++    {
++        for (i = 0; i < o->ce.local_list->len; i++)
++        {
++            options_postprocess_mutate_le(o->ce, o->ce.local_list->array[i]);
++        }
++    }
++    else
++    {
++        /* if no 'local' directive was specified, convert the global port
++         * setting to a listen entry */
++        struct local_entry *e = alloc_local_entry(&o->ce, M_USAGE, &o->gc);
++        ASSERT(e);
++        e->port = o->ce.local_port;
++    }
++
++    /* use the same listen list for every outgoing connection */
++    for (i = 0; i < o->connection_list->len; ++i)
++    {
++        o->connection_list->array[i]->local_list = o->ce.local_list;
++    }
++
+     if (o->tls_server)
+     {
+         /* Check that DH file is specified, or explicitly disabled */
+@@ -6100,10 +6190,27 @@
+         VERIFY_PERMISSION(OPT_P_UP);
+         options->ifconfig_nowarn = true;
+     }
+-    else if (streq(p[0], "local") && p[1] && !p[2])
++    else if (streq(p[0], "local") && p[1] && !p[3])
+     {
++        struct local_entry *e;
++
+         VERIFY_PERMISSION(OPT_P_GENERAL|OPT_P_CONNECTION);
+-        options->ce.local = p[1];
++
++        e = alloc_local_entry(&options->ce, M_USAGE, &options->gc);
++        ASSERT(e);
++
++        /* '*' is treated as 'ask the system to get some socket',
++         * therefore force binding on a particular address only when
++         * actually specified. */
++        if (strcmp(p[1], "*") != 0)
++        {
++            e->local = p[1];
++        }
++
++        if (p[2])
++        {
++            e->port = p[2];
++        }
+     }
+     else if (streq(p[0], "remote-random") && !p[1])
+     {
+diff --git a/src/openvpn/options.h b/src/openvpn/options.h
+index 55f12dd..3f4cb90 100644
+--- a/src/openvpn/options.h
++++ b/src/openvpn/options.h
+@@ -94,14 +94,20 @@
+ #error "At least one of OpenSSL or mbed TLS needs to be defined."
+ #endif
+ 
++struct local_entry
++{
++    const char *local;
++    const char *port;
++};
++
+ struct connection_entry
+ {
++    struct local_list *local_list;
+     int proto;
+     sa_family_t af;
+     const char *local_port;
+     bool local_port_defined;
+     const char *remote_port;
+-    const char *local;
+     const char *remote;
+     bool remote_float;
+     bool bind_defined;
+@@ -179,6 +185,12 @@
+ 
+ #define CONNECTION_LIST_SIZE 64
+ 
++struct local_list
++{
++    int len;
++    struct local_entry *array[CONNECTION_LIST_SIZE];
++};
++
+ struct connection_list
+ {
+     int capacity;
+diff --git a/src/openvpn/socket.c b/src/openvpn/socket.c
+index 0c4a7bc..97dce02 100644
+--- a/src/openvpn/socket.c
++++ b/src/openvpn/socket.c
+@@ -342,7 +342,6 @@
+ void
+ do_preresolve(struct context *c)
+ {
+-    int i;
+     struct connection_list *l = c->options.connection_list;
+     const unsigned int preresolve_flags = GETADDR_RESOLVE
+                                           |GETADDR_UPDATE_MANAGEMENT_STATE
+@@ -350,13 +349,13 @@
+                                           |GETADDR_FATAL;
+ 
+ 
+-    for (i = 0; i < l->len; ++i)
++    for (int i = 0; i < l->len; ++i)
+     {
+         int status;
+         const char *remote;
+         int flags = preresolve_flags;
+ 
+-        struct connection_entry *ce = c->options.connection_list->array[i];
++        struct connection_entry *ce = l->array[i];
+ 
+         if (proto_is_dgram(ce->proto))
+         {
+@@ -420,13 +419,23 @@
+         {
+             flags |= GETADDR_PASSIVE;
+             flags &= ~GETADDR_RANDOMIZE;
+-            status = do_preresolve_host(c, ce->local, ce->local_port,
+-                                        ce->af, flags);
+-            if (status != 0)
+-            {
+-                goto err;
+-            }
+ 
++            for (int j = 0; j < ce->local_list->len; j++)
++            {
++                struct local_entry *le = ce->local_list->array[j];
++
++                if (!le->local)
++                {
++                    continue;
++                }
++
++                status = do_preresolve_host(c, le->local, le->port, ce->af, flags);
++                if (status != 0)
++                {
++                    goto err;
++                }
++
++            }
+         }
+ 
+     }
+@@ -1882,8 +1891,8 @@
+     const char *remote_host = o->ce.remote;
+     const char *remote_port = o->ce.remote_port;
+ 
+-    sock->local_host = o->ce.local;
+-    sock->local_port = o->ce.local_port;
++    sock->local_host = o->ce.local_list->array[sock_index]->local;
++    sock->local_port = o->ce.local_list->array[sock_index]->port;
+     sock->remote_host = remote_host;
+     sock->remote_port = remote_port;
+     sock->dns_cache = c->c1.dns_cache;
 
