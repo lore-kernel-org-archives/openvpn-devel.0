@@ -1,15 +1,15 @@
 From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Thu, 23 Jan 2025 17:20:03 +0000
+Date: Thu, 23 Jan 2025 17:20:08 +0000
 In-Reply-To: <gerrit.1700055887000.I4d1c96662c5a8c750d883e3b20adde09529e2764@...2715...>
 References: <gerrit.1700055887000.I4d1c96662c5a8c750d883e3b20adde09529e2764@...2715...>
 Reply-To: gert@...1296..., arne-openvpn@...1227...,
  gianmarco@...2726..., openvpn-devel@lists.sourceforge.net,
  frank@...2641..., a@...2181...
-Message-ID: <816d3e4e8447a8d26f795c5fd5847da89664a1b4-EmailReplacePatchSet-HTML@...2715...>
+Message-ID: <816d3e4e8447a8d26f795c5fd5847da89664a1b4-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="sR9BGu98EBk="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="HMjtKO2uhqk="; charset=UTF-8
 Subject: [Openvpn-devel] [M] Change in openvpn[master]: allow user to
  specify 'local' multiple times in config files
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -20,19 +20,14 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: plaisthos <arne-openvpn@...1227...>, its_Giaan <gianmarco@...2726...>, flichtenheld <frank@...2641...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Cc: its_Giaan <gianmarco@...2726...>, flichtenheld <frank@...2641...>, plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---sR9BGu98EBk=
+--HMjtKO2uhqk=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-cron2 has uploaded a new patch set (#13) to the change originally created b=
-y ordex. ( http://gerrit.openvpn.net/c/openvpn/+/436?usp=3Demail )
-
-The following approvals got outdated and were removed:
-Code-Review+2 by cron2
-
+cron2 has submitted this change. ( http://gerrit.openvpn.net/c/openvpn/+/43=
+6?usp=3Demail )
 
 Change subject: allow user to specify 'local' multiple times in config files
 ......................................................................
@@ -60,7 +55,7 @@ M src/openvpn/socket.c
 5 files changed, 184 insertions(+), 46 deletions(-)
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/36/436/13
+
 
 diff --git a/doc/man-sections/link-options.rst b/doc/man-sections/link-opti=
 ons.rst
@@ -113,7 +108,7 @@ index 9d1048c..4014517 100644
 +    c->c1.link_sockets_num =3D c->options.ce.local_list->len;
 
      do_link_socket_addr_new(c);
-=20
+
 @@ -4978,6 +4978,7 @@
      if (dest->mode =3D=3D CM_CHILD_UDP)
      {
@@ -326,14 +321,14 @@ together");
 ined;
 +    bool need_bind =3D ce->local_port_defined || ce->bind_defined || ce->l=
 ocal_list;
-
+=20
      /* socks proxy is enabled */
      bool uses_socks =3D ce->proto =3D=3D PROTO_UDP && ce->socks_proxy_serv=
 er;
 @@ -3264,6 +3322,16 @@
      }
  }
-
+=20
 +static void
 +options_postprocess_mutate_le(struct connection_entry ce, struct local_ent=
 ry *le)
@@ -536,446 +531,443 @@ Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: its_Giaan <gianmarco@...2726...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-MessageType: newpatchset
+Gerrit-MessageType: merged
 
---sR9BGu98EBk=
+--HMjtKO2uhqk=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p>cron2 <strong>uploaded patch set #13</strong> to the change originally c=
-reated by ordex.</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/436=
-?usp=3Demail">View Change</a></p><p>The following approvals got outdated an=
-d were removed:
-Code-Review+2 by cron2</p><pre style=3D"font-family: monospace,monospace; w=
-hite-space: pre-wrap;">allow user to specify &#39;local&#39; multiple times=
- in config files<br><br>It is now possible to specify &#39;local&#39; multi=
-ple times in a server<br>config to let it listen on multiple sockets (addre=
-ss:port) of<br>the same protocol.<br><br>Change-Id: I4d1c96662c5a8c750d883e=
-3b20adde09529e2764<br>Signed-off-by: Antonio Quartulli &lt;a@...2181...&gt;=
-<br>Signed-off-by: Gianmarco De Gregori &lt;gianmarco@...2726...&gt;<br>Ack=
-ed-by: Gert Doering &lt;gert@...1296...&gt;<br>Message-Id: &lt;202501231551=
-11.23371-1-gert@...1296...&gt;<br>URL: https://www.mail-archive.com/openvpn=
--devel@lists.sourceforge.net/msg30544.html<br>Signed-off-by: Gert Doering &=
-lt;gert@...1296...&gt;<br>---<br>M doc/man-sections/link-options.rst<br>M s=
-rc/openvpn/init.c<br>M src/openvpn/options.c<br>M src/openvpn/options.h<br>=
-M src/openvpn/socket.c<br>5 files changed, 184 insertions(+), 46 deletions(=
--)<br><br></pre><pre style=3D"font-family: monospace,monospace; white-space=
-: pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/3=
-6/436/13</pre><pre style=3D"font-family: monospace,monospace; white-space: =
-pre-wrap;"><span>diff --git a/doc/man-sections/link-options.rst b/doc/man-s=
-ections/link-options.rst</span><br><span>index ca192c3..4496da2 100644</spa=
-n><br><span>--- a/doc/man-sections/link-options.rst</span><br><span>+++ b/d=
-oc/man-sections/link-options.rst</span><br><span>@@ -106,13 +106,22 @@</spa=
-n><br><span>   is not reliable. It is recommended to set tun-mtu with enoug=
-h headroom</span><br><span>   instead.</span><br><span> </span><br><span>--=
--local host</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  Local ho=
-st name or IP address for bind. If specified, OpenVPN will bind</span><br><=
-span style=3D"color: hsl(0, 100%, 40%);">-  to this address only. If unspec=
-ified, OpenVPN will bind to all</span><br><span style=3D"color: hsl(0, 100%=
-, 40%);">-  interfaces.</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+--local host|* [port]</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+  Local host name or IP address and port for bind. If specified, Open=
-VPN will bind</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  to t=
-his address. If unspecified, OpenVPN will bind to all interfaces.</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+  &#39;*&#39; can be used as =
-hostname and means &#39;any host&#39; (OpenVPN will listen on what</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+  is returned by the OS).</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+  On a client, or in p=
-oint-to-point mode, this can only be specified once (1 socket).</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+  On an OpenVPN setup running as ``--server``, thi=
-s can be specified multiple times</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+  to open multiple listening sockets on different addresses a=
-nd/or different ports.</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+  In order to specify multiple listen ports without specifying an addres=
-s, use &#39;*&#39;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
- to signal &quot;use what the operating system gives you as default&quot;, =
-for</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  &quot;all IPv4=
- addresses&quot; use &quot;0.0.0.0&quot;, for &quot;all IPv6 addresses&quot=
-; use &#39;::&#39;.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-  ``--local`` implies ``--bind``.</span><br><span> </span><br><span> --lpor=
-t port</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  Set local TCP=
-/UDP port number or name. Cannot be used together with</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+  Set default TCP/UDP port number. Canno=
-t be used together with</span><br><span>   ``--nobind`` option.</span><br><=
-span> </span><br><span> --mark value</span><br><span>diff --git a/src/openv=
-pn/init.c b/src/openvpn/init.c</span><br><span>index 9d1048c..4014517 10064=
-4</span><br><span>--- a/src/openvpn/init.c</span><br><span>+++ b/src/openvp=
-n/init.c</span><br><span>@@ -751,7 +751,7 @@</span><br><span> </span><br><s=
-pan>     init_connection_list(c);</span><br><span> </span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-    c-&gt;c1.link_sockets_num =3D 1;</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+    c-&gt;c1.link_sockets_=
-num =3D c-&gt;options.ce.local_list-&gt;len;</span><br><span> </span><br><s=
-pan>     do_link_socket_addr_new(c);</span><br><span> </span><br><span>@@ -=
-4978,6 +4978,7 @@</span><br><span>     if (dest-&gt;mode =3D=3D CM_CHILD_UD=
-P)</span><br><span>     {</span><br><span>         ASSERT(!dest-&gt;c2.link=
-_sockets);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        A=
-SSERT(dest-&gt;options.ce.local_list);</span><br><span> </span><br><span>  =
-       /* inherit buffers */</span><br><span>         dest-&gt;c2.buffers =
-=3D src-&gt;c2.buffers;</span><br><span>diff --git a/src/openvpn/options.c =
-b/src/openvpn/options.c</span><br><span>index 3ef4d78..c938999 100644</span=
-><br><span>--- a/src/openvpn/options.c</span><br><span>+++ b/src/openvpn/op=
-tions.c</span><br><span>@@ -124,7 +124,17 @@</span><br><span>     &quot;--v=
-ersion       : Show copyright and version information.\n&quot;</span><br><s=
-pan>     &quot;\n&quot;</span><br><span>     &quot;Tunnel Options:\n&quot;<=
-/span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &quot;--local host=
-    : Local host name or ip address. Implies --bind.\n&quot;</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+    &quot;--local host|* [port]: L=
-ocal host name or IP address and port for bind.\n&quot;</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+    &quot;                        If sp=
-ecified, OpenVPN will bindto this address. If unspecified,\n&quot;</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+    &quot;                  =
-      OpenVPN will bind to all interfaces. &#39;*&#39; can be used as hostn=
-ame\n&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    &quo=
-t;                        and means &#39;any host&#39; (OpenVPN will listen=
- on what is returned by the OS).\n&quot;</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+    &quot;                        On a client, or in p=
-oint-to-point mode, this can only be specified once (1 socket).\n&quot;</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+    &quot;             =
-           On an OpenVPN setup running as ``--server``, this can be specifi=
-ed multiple times\n&quot;</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+    &quot;                        to open multiple listening sockets =
-on different addresses and/or different ports.\n&quot;</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+    &quot;                        In ord=
-er to specify multiple listen ports without specifying an address, use &#39=
-;*&#39;\n&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-&quot;                        to signal &#39;use what the operating system =
-gives you as default&#39;, for\n&quot;</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+    &quot;                        &#39;all IPv4 addresse=
-s&#39; use &#39;0.0.0.0&#39;, for &#39;all IPv6 addresses&#39; use &#39;::&=
-#39;.\n&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    &q=
-uot;                        ``--local`` implies ``--bind``.\n&quot;</span><=
-br><span>     &quot;--remote host [port] : Remote host name or ip address.\=
-n&quot;</span><br><span>     &quot;--remote-random : If multiple --remote o=
-ptions specified, choose one randomly.\n&quot;</span><br><span>     &quot;-=
--remote-random-hostname : Add a random string to remote DNS name.\n&quot;</=
-span><br><span>@@ -988,8 +998,9 @@</span><br><span>                        =
- const int i)</span><br><span> {</span><br><span>     setenv_str_i(es, &quo=
-t;proto&quot;, proto2ascii(e-&gt;proto, e-&gt;af, false), i);</span><br><sp=
-an style=3D"color: hsl(0, 100%, 40%);">-    setenv_str_i(es, &quot;local&qu=
-ot;, e-&gt;local, i);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
-    setenv_str_i(es, &quot;local_port&quot;, e-&gt;local_port, i);</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+    /* expected to be for si=
-ngle socket contexts only */</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+    setenv_str_i(es, &quot;local&quot;, e-&gt;local_list-&gt;array=
-[0]-&gt;local, i);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-   setenv_str_i(es, &quot;local_port&quot;, e-&gt;local_list-&gt;array[0]-&=
-gt;port, i);</span><br><span>     setenv_str_i(es, &quot;remote&quot;, e-&g=
-t;remote, i);</span><br><span>     setenv_str_i(es, &quot;remote_port&quot;=
-, e-&gt;remote_port, i);</span><br><span> </span><br><span>@@ -1713,8 +1724=
-,12 @@</span><br><span> show_connection_entry(const struct connection_entry=
- *o)</span><br><span> {</span><br><span>     msg(D_SHOW_PARMS, &quot;  prot=
-o =3D %s&quot;, proto2ascii(o-&gt;proto, o-&gt;af, false));</span><br><span=
- style=3D"color: hsl(0, 100%, 40%);">-    SHOW_STR(local);</span><br><span =
-style=3D"color: hsl(0, 100%, 40%);">-    SHOW_STR(local_port);</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+    msg(D_SHOW_PARMS, &quot;  Lo=
-cal Sockets:&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+    for (int i =3D 0; i &lt; o-&gt;local_list-&gt;len; i++)</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+        msg(D_SHOW_PARMS, &quot;    [%s]:%s&quot=
-;, o-&gt;local_list-&gt;array[i]-&gt;local,</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+            o-&gt;local_list-&gt;array[i]-&gt;port)=
+<p>cron2 <strong>submitted</strong> this change.</p><p><a href=3D"http://ge=
+rrit.openvpn.net/c/openvpn/+/436?usp=3Demail">View Change</a></p><div style=
+=3D"white-space:pre-wrap"></div><pre style=3D"font-family: monospace,monosp=
+ace; white-space: pre-wrap;">allow user to specify &#39;local&#39; multiple=
+ times in config files<br><br>It is now possible to specify &#39;local&#39;=
+ multiple times in a server<br>config to let it listen on multiple sockets =
+(address:port) of<br>the same protocol.<br><br>Change-Id: I4d1c96662c5a8c75=
+0d883e3b20adde09529e2764<br>Signed-off-by: Antonio Quartulli &lt;a@...2586...=
+..&gt;<br>Signed-off-by: Gianmarco De Gregori &lt;gianmarco@...2726...&gt;<=
+br>Acked-by: Gert Doering &lt;gert@...1296...&gt;<br>Message-Id: &lt;202501=
+23155111.23371-1-gert@...1296...&gt;<br>URL: https://www.mail-archive.com/o=
+penvpn-devel@lists.sourceforge.net/msg30544.html<br>Signed-off-by: Gert Doe=
+ring &lt;gert@...1296...&gt;<br>---<br>M doc/man-sections/link-options.rst<=
+br>M src/openvpn/init.c<br>M src/openvpn/options.c<br>M src/openvpn/options=
+.h<br>M src/openvpn/socket.c<br>5 files changed, 184 insertions(+), 46 dele=
+tions(-)<br><br></pre>
+<pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><sp=
+an>diff --git a/doc/man-sections/link-options.rst b/doc/man-sections/link-o=
+ptions.rst</span><br><span>index ca192c3..4496da2 100644</span><br><span>--=
+- a/doc/man-sections/link-options.rst</span><br><span>+++ b/doc/man-section=
+s/link-options.rst</span><br><span>@@ -106,13 +106,22 @@</span><br><span>  =
+ is not reliable. It is recommended to set tun-mtu with enough headroom</sp=
+an><br><span>   instead.</span><br><span> </span><br><span>---local host</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-  Local host name or IP =
+address for bind. If specified, OpenVPN will bind</span><br><span style=3D"=
+color: hsl(0, 100%, 40%);">-  to this address only. If unspecified, OpenVPN=
+ will bind to all</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  in=
+terfaces.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+--local ho=
+st|* [port]</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  Local =
+host name or IP address and port for bind. If specified, OpenVPN will bind<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+  to this address. I=
+f unspecified, OpenVPN will bind to all interfaces.</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+  &#39;*&#39; can be used as hostname and=
+ means &#39;any host&#39; (OpenVPN will listen on what</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+  is returned by the OS).</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+  On a client, or in point-to-poin=
+t mode, this can only be specified once (1 socket).</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+  On an OpenVPN setup running as ``--server``, this can be s=
+pecified multiple times</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+  to open multiple listening sockets on different addresses and/or diff=
+erent ports.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  In or=
+der to specify multiple listen ports without specifying an address, use &#3=
+9;*&#39;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  to signal=
+ &quot;use what the operating system gives you as default&quot;, for</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+  &quot;all IPv4 addresses=
+&quot; use &quot;0.0.0.0&quot;, for &quot;all IPv6 addresses&quot; use &#39=
+;::&#39;.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  ``--loca=
+l`` implies ``--bind``.</span><br><span> </span><br><span> --lport port</sp=
+an><br><span style=3D"color: hsl(0, 100%, 40%);">-  Set local TCP/UDP port =
+number or name. Cannot be used together with</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+  Set default TCP/UDP port number. Cannot be used =
+together with</span><br><span>   ``--nobind`` option.</span><br><span> </sp=
+an><br><span> --mark value</span><br><span>diff --git a/src/openvpn/init.c =
+b/src/openvpn/init.c</span><br><span>index 9d1048c..4014517 100644</span><b=
+r><span>--- a/src/openvpn/init.c</span><br><span>+++ b/src/openvpn/init.c</=
+span><br><span>@@ -751,7 +751,7 @@</span><br><span> </span><br><span>     i=
+nit_connection_list(c);</span><br><span> </span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-    c-&gt;c1.link_sockets_num =3D 1;</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+    c-&gt;c1.link_sockets_num =3D c-&g=
+t;options.ce.local_list-&gt;len;</span><br><span> </span><br><span>     do_=
+link_socket_addr_new(c);</span><br><span> </span><br><span>@@ -4978,6 +4978=
+,7 @@</span><br><span>     if (dest-&gt;mode =3D=3D CM_CHILD_UDP)</span><br=
+><span>     {</span><br><span>         ASSERT(!dest-&gt;c2.link_sockets);</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+        ASSERT(dest-&=
+gt;options.ce.local_list);</span><br><span> </span><br><span>         /* in=
+herit buffers */</span><br><span>         dest-&gt;c2.buffers =3D src-&gt;c=
+2.buffers;</span><br><span>diff --git a/src/openvpn/options.c b/src/openvpn=
+/options.c</span><br><span>index 3ef4d78..c938999 100644</span><br><span>--=
+- a/src/openvpn/options.c</span><br><span>+++ b/src/openvpn/options.c</span=
+><br><span>@@ -124,7 +124,17 @@</span><br><span>     &quot;--version       =
+: Show copyright and version information.\n&quot;</span><br><span>     &quo=
+t;\n&quot;</span><br><span>     &quot;Tunnel Options:\n&quot;</span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-    &quot;--local host    : Local h=
+ost name or ip address. Implies --bind.\n&quot;</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+    &quot;--local host|* [port]: Local host nam=
+e or IP address and port for bind.\n&quot;</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+    &quot;                        If specified, Open=
+VPN will bindto this address. If unspecified,\n&quot;</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    &quot;                        OpenVPN=
+ will bind to all interfaces. &#39;*&#39; can be used as hostname\n&quot;</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+    &quot;           =
+             and means &#39;any host&#39; (OpenVPN will listen on what is r=
+eturned by the OS).\n&quot;</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+    &quot;                        On a client, or in point-to-point=
+ mode, this can only be specified once (1 socket).\n&quot;</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+    &quot;                        On=
+ an OpenVPN setup running as ``--server``, this can be specified multiple t=
+imes\n&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    &qu=
+ot;                        to open multiple listening sockets on different =
+addresses and/or different ports.\n&quot;</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+    &quot;                        In order to specify=
+ multiple listen ports without specifying an address, use &#39;*&#39;\n&quo=
+t;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    &quot;       =
+                 to signal &#39;use what the operating system gives you as =
+default&#39;, for\n&quot;</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+    &quot;                        &#39;all IPv4 addresses&#39; use &#=
+39;0.0.0.0&#39;, for &#39;all IPv6 addresses&#39; use &#39;::&#39;.\n&quot;=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    &quot;         =
+               ``--local`` implies ``--bind``.\n&quot;</span><br><span>    =
+ &quot;--remote host [port] : Remote host name or ip address.\n&quot;</span=
+><br><span>     &quot;--remote-random : If multiple --remote options specif=
+ied, choose one randomly.\n&quot;</span><br><span>     &quot;--remote-rando=
+m-hostname : Add a random string to remote DNS name.\n&quot;</span><br><spa=
+n>@@ -988,8 +998,9 @@</span><br><span>                         const int i)=
+</span><br><span> {</span><br><span>     setenv_str_i(es, &quot;proto&quot;=
+, proto2ascii(e-&gt;proto, e-&gt;af, false), i);</span><br><span style=3D"c=
+olor: hsl(0, 100%, 40%);">-    setenv_str_i(es, &quot;local&quot;, e-&gt;lo=
+cal, i);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    setenv_st=
+r_i(es, &quot;local_port&quot;, e-&gt;local_port, i);</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    /* expected to be for single socket c=
+ontexts only */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+setenv_str_i(es, &quot;local&quot;, e-&gt;local_list-&gt;array[0]-&gt;local=
+, i);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    setenv_str=
+_i(es, &quot;local_port&quot;, e-&gt;local_list-&gt;array[0]-&gt;port, i);<=
+/span><br><span>     setenv_str_i(es, &quot;remote&quot;, e-&gt;remote, i);=
+</span><br><span>     setenv_str_i(es, &quot;remote_port&quot;, e-&gt;remot=
+e_port, i);</span><br><span> </span><br><span>@@ -1713,8 +1724,12 @@</span>=
+<br><span> show_connection_entry(const struct connection_entry *o)</span><b=
+r><span> {</span><br><span>     msg(D_SHOW_PARMS, &quot;  proto =3D %s&quot=
+;, proto2ascii(o-&gt;proto, o-&gt;af, false));</span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-    SHOW_STR(local);</span><br><span style=3D"colo=
+r: hsl(0, 100%, 40%);">-    SHOW_STR(local_port);</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+    msg(D_SHOW_PARMS, &quot;  Local Sockets:&=
+quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    for (int=
+ i =3D 0; i &lt; o-&gt;local_list-&gt;len; i++)</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+        msg(D_SHOW_PARMS, &quot;    [%s]:%s&quot;, o-&gt;loca=
+l_list-&gt;array[i]-&gt;local,</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+            o-&gt;local_list-&gt;array[i]-&gt;port);</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span>     SHOW=
+_STR(remote);</span><br><span>     SHOW_STR(remote_port);</span><br><span> =
+    SHOW_BOOL(remote_float);</span><br><span>@@ -2162,6 +2177,37 @@</span><=
+br><span> </span><br><span> #endif /* ifdef ENABLE_MANAGEMENT */</span><br>=
+<span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+static struc=
+t local_list *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+alloc=
+_local_list_if_undef(struct connection_entry *ce, struct gc_arena *gc)</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    if (!ce-&gt;local_list)</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+        ALLOC_OBJ_CLEAR_GC(ce-&gt;local_list, s=
+truct local_list, gc);</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    return =
+ce-&gt;local_list;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+static struct local_entry *</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+alloc_local_entry(struct conne=
+ction_entry *ce, const int msglevel,</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+                  struct gc_arena *gc)</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+    struct local_list *l =3D alloc_local_list_if_undef(ce=
+, gc);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    struct lo=
+cal_entry *e;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (l-&gt;len &gt;=3D=
+ CONNECTION_LIST_SIZE)</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        msg=
+(msglevel, &quot;Maximum number of &#39;local&#39; options (%d) exceeded&qu=
+ot;,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            CON=
+NECTION_LIST_SIZE);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        return NULL=
 ;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><s=
-pan>     SHOW_STR(remote);</span><br><span>     SHOW_STR(remote_port);</spa=
-n><br><span>     SHOW_BOOL(remote_float);</span><br><span>@@ -2162,6 +2177,=
-37 @@</span><br><span> </span><br><span> #endif /* ifdef ENABLE_MANAGEMENT =
-*/</span><br><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+static struct local_list *</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+alloc_local_list_if_undef(struct connection_entry *ce, struct gc_ar=
-ena *gc)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+    if (!ce-&gt;local_list)</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+        ALLOC_OBJ_CLEAR_GC(ce-&gt;l=
-ocal_list, struct local_list, gc);</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+    return ce-&gt;local_list;</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+static struct local_entry =
-*</span><br><span style=3D"color: hsl(120, 100%, 40%);">+alloc_local_entry(=
-struct connection_entry *ce, const int msglevel,</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+                  struct gc_arena *gc)</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+    struct local_list *l =3D alloc_local_list=
-_if_undef(ce, gc);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-   struct local_entry *e;</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (l-&gt=
-;len &gt;=3D CONNECTION_LIST_SIZE)</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+        msg(msglevel, &quot;Maximum number of &#39;local&#39; options (%d)=
- exceeded&quot;,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
-         CONNECTION_LIST_SIZE);</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
- return NULL;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+    ALLOC_OBJ_CLEAR_GC(e, struct local_=
-entry, gc);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    l-&g=
-t;array[l-&gt;len++] =3D e;</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    return =
-e;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> static struct con=
-nection_list *</span><br><span> alloc_connection_list_if_undef(struct optio=
-ns *options)</span><br><span> {</span><br><span>@@ -2354,6 +2400,15 @@</spa=
-n><br><span>             &quot;--proto tcp-server or --proto tcp-client&quo=
-t;);</span><br><span>     }</span><br><span> </span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+    /*</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+     * Sanity check on Client mode</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+     */</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
- if (options-&gt;mode !=3D MODE_SERVER &amp;&amp; ce-&gt;local_list-&gt;len=
- &gt; 1)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+        msg(M_USAGE, &quo=
-t;multiple --local statements only allowed in --server mode&quot;);</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+</span><br><span>     if (options-&gt;lla=
-ddr &amp;&amp; dev !=3D DEV_TYPE_TAP)</span><br><span>     {</span><br><spa=
-n>         msg(M_USAGE, &quot;--lladdr can only be used in --dev tap mode&q=
-uot;);</span><br><span>@@ -2379,13 +2434,6 @@</span><br><span>      * Sanit=
-y check on --local, --remote, and --ifconfig</span><br><span>      */</span=
-><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-    if (p=
-roto_is_net(ce-&gt;proto)</span><br><span style=3D"color: hsl(0, 100%, 40%)=
-;">-        &amp;&amp; string_defined_equal(ce-&gt;local, ce-&gt;remote)</s=
-pan><br><span style=3D"color: hsl(0, 100%, 40%);">-        &amp;&amp; strin=
-g_defined_equal(ce-&gt;local_port, ce-&gt;remote_port))</span><br><span sty=
+pan style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+    ALLOC_OBJ_CLEAR_GC(e, struct local_entry, gc);<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+    l-&gt;array[l-&g=
+t;len++] =3D e;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+    return e;</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+</span><br><span> static struct connection_list=
+ *</span><br><span> alloc_connection_list_if_undef(struct options *options)=
+</span><br><span> {</span><br><span>@@ -2354,6 +2400,15 @@</span><br><span>=
+             &quot;--proto tcp-server or --proto tcp-client&quot;);</span><=
+br><span>     }</span><br><span> </span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+    /*</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++     * Sanity check on Client mode</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+     */</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (options=
+-&gt;mode !=3D MODE_SERVER &amp;&amp; ce-&gt;local_list-&gt;len &gt; 1)</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+        msg(M_USAGE, &quot;multiple -=
+-local statements only allowed in --server mode&quot;);</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+</span><br><span>     if (options-&gt;lladdr &amp;&am=
+p; dev !=3D DEV_TYPE_TAP)</span><br><span>     {</span><br><span>         m=
+sg(M_USAGE, &quot;--lladdr can only be used in --dev tap mode&quot;);</span=
+><br><span>@@ -2379,13 +2434,6 @@</span><br><span>      * Sanity check on -=
+-local, --remote, and --ifconfig</span><br><span>      */</span><br><span> =
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    if (proto_is_net(=
+ce-&gt;proto)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        =
+&amp;&amp; string_defined_equal(ce-&gt;local, ce-&gt;remote)</span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">-        &amp;&amp; string_defined_eq=
+ual(ce-&gt;local_port, ce-&gt;remote_port))</span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-    {</span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">-        msg(M_USAGE, &quot;--remote and --local addresses are the sam=
+e&quot;);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    }</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span>     if (st=
+ring_defined_equal(ce-&gt;remote, options-&gt;ifconfig_local)</span><br><sp=
+an>         || string_defined_equal(ce-&gt;remote, options-&gt;ifconfig_rem=
+ote_netmask))</span><br><span>     {</span><br><span>@@ -2394,13 +2442,6 @@=
+</span><br><span>             &quot;addresses&quot;);</span><br><span>     =
+}</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
+  if (string_defined_equal(ce-&gt;local, options-&gt;ifconfig_local)</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-        || string_defined_eq=
+ual(ce-&gt;local, options-&gt;ifconfig_remote_netmask))</span><br><span sty=
 le=3D"color: hsl(0, 100%, 40%);">-    {</span><br><span style=3D"color: hsl=
-(0, 100%, 40%);">-        msg(M_USAGE, &quot;--remote and --local addresses=
- are the same&quot;);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
-    }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span=
->     if (string_defined_equal(ce-&gt;remote, options-&gt;ifconfig_local)</=
-span><br><span>         || string_defined_equal(ce-&gt;remote, options-&gt;=
-ifconfig_remote_netmask))</span><br><span>     {</span><br><span>@@ -2394,1=
-3 +2442,6 @@</span><br><span>             &quot;addresses&quot;);</span><br=
-><span>     }</span><br><span> </span><br><span style=3D"color: hsl(0, 100%=
-, 40%);">-    if (string_defined_equal(ce-&gt;local, options-&gt;ifconfig_l=
-ocal)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        || strin=
-g_defined_equal(ce-&gt;local, options-&gt;ifconfig_remote_netmask))</span><=
-br><span style=3D"color: hsl(0, 100%, 40%);">-    {</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-        msg(M_USAGE,</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-            &quot;--local addresses must be=
- distinct from --ifconfig addresses&quot;);</span><br><span style=3D"color:=
- hsl(0, 100%, 40%);">-    }</span><br><span style=3D"color: hsl(0, 100%, 40=
-%);">-</span><br><span>     if (string_defined_equal(options-&gt;ifconfig_l=
-ocal,</span><br><span>                              options-&gt;ifconfig_re=
-mote_netmask))</span><br><span>     {</span><br><span>@@ -2413,12 +2454,6 @=
-@</span><br><span>         msg(M_USAGE, &quot;--bind and --nobind can&#39;t=
- be used together&quot;);</span><br><span>     }</span><br><span> </span><b=
-r><span style=3D"color: hsl(0, 100%, 40%);">-    if (ce-&gt;local &amp;&amp=
-; !ce-&gt;bind_local)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
-    {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        msg(M_US=
-AGE,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            &quot=
-;--local and --nobind don&#39;t make sense when used together&quot;);</span=
-><br><span style=3D"color: hsl(0, 100%, 40%);">-    }</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-</span><br><span>     if (ce-&gt;local_port=
-_defined &amp;&amp; !ce-&gt;bind_local)</span><br><span>     {</span><br><s=
-pan>         msg(M_USAGE,</span><br><span>@@ -2430,6 +2465,29 @@</span><br>=
-<span>         msg(M_USAGE, &quot;--nobind doesn&#39;t make sense unless us=
-ed with --remote&quot;);</span><br><span>     }</span><br><span> </span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+    for (int i =3D 0; i &lt; =
-ce-&gt;local_list-&gt;len; i++)</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-      struct local_entry *le =3D ce-&gt;local_list-&gt;array[i];</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+        if (proto_is_net(ce-&gt;proto)</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+            &amp;&amp; string_=
-defined_equal(le-&gt;local, ce-&gt;remote)</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+            &amp;&amp; string_defined_equal(le-&gt;p=
-ort, ce-&gt;remote_port))</span><br><span style=3D"color: hsl(120, 100%, 40=
+(0, 100%, 40%);">-        msg(M_USAGE,</span><br><span style=3D"color: hsl(=
+0, 100%, 40%);">-            &quot;--local addresses must be distinct from =
+--ifconfig addresses&quot;);</span><br><span style=3D"color: hsl(0, 100%, 4=
+0%);">-    }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><b=
+r><span>     if (string_defined_equal(options-&gt;ifconfig_local,</span><br=
+><span>                              options-&gt;ifconfig_remote_netmask))<=
+/span><br><span>     {</span><br><span>@@ -2413,12 +2454,6 @@</span><br><sp=
+an>         msg(M_USAGE, &quot;--bind and --nobind can&#39;t be used togeth=
+er&quot;);</span><br><span>     }</span><br><span> </span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-    if (ce-&gt;local &amp;&amp; !ce-&gt;bin=
+d_local)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    {</span><=
+br><span style=3D"color: hsl(0, 100%, 40%);">-        msg(M_USAGE,</span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-            &quot;--local and =
+--nobind don&#39;t make sense when used together&quot;);</span><br><span st=
+yle=3D"color: hsl(0, 100%, 40%);">-    }</span><br><span style=3D"color: hs=
+l(0, 100%, 40%);">-</span><br><span>     if (ce-&gt;local_port_defined &amp=
+;&amp; !ce-&gt;bind_local)</span><br><span>     {</span><br><span>         =
+msg(M_USAGE,</span><br><span>@@ -2430,6 +2465,29 @@</span><br><span>       =
+  msg(M_USAGE, &quot;--nobind doesn&#39;t make sense unless used with --rem=
+ote&quot;);</span><br><span>     }</span><br><span> </span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    for (int i =3D 0; i &lt; ce-&gt;local=
+_list-&gt;len; i++)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        struct=
+ local_entry *le =3D ce-&gt;local_list-&gt;array[i];</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+        if (proto_is_net(ce-&gt;proto)</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+            &amp;&amp; string_defined_equ=
+al(le-&gt;local, ce-&gt;remote)</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+            &amp;&amp; string_defined_equal(le-&gt;port, ce-&gt=
+;remote_port))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
+   {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            msg=
+(M_USAGE, &quot;--remote and one of the --local addresses are the same&quot=
+;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        }</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+        if (string_defined_equal(le-&gt;local=
+, options-&gt;ifconfig_local)</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+            || string_defined_equal(le-&gt;local, options-&gt;ifc=
+onfig_remote_netmask))</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+        {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
+     msg(M_USAGE, &quot;--local addresses must be distinct from --ifconfig =
+addresses&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+      }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+        if (le-&gt;local &amp;&=
+amp; !ce-&gt;bind_local)</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+        {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
+       msg(M_USAGE, &quot;--local and --nobind don&#39;t make sense when us=
+ed together&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+        }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span>     /*=
+</span><br><span>      * Check for consistency of management options</span>=
+<br><span>      */</span><br><span>@@ -3128,7 +3186,7 @@</span><br><span>  =
+   }</span><br><span> </span><br><span>     /* an option is present that re=
+quires local bind to enabled */</span><br><span style=3D"color: hsl(0, 100%=
+, 40%);">-    bool need_bind =3D ce-&gt;local || ce-&gt;local_port_defined =
+|| ce-&gt;bind_defined;</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+    bool need_bind =3D ce-&gt;local_port_defined || ce-&gt;bind_defined=
+ || ce-&gt;local_list;</span><br><span> </span><br><span>     /* socks prox=
+y is enabled */</span><br><span>     bool uses_socks =3D ce-&gt;proto =3D=
+=3D PROTO_UDP &amp;&amp; ce-&gt;socks_proxy_server;</span><br><span>@@ -326=
+4,6 +3322,16 @@</span><br><span>     }</span><br><span> }</span><br><span> =
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+static void</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+options_postprocess_mutate_=
+le(struct connection_entry ce, struct local_entry *le)</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+    /* use the global port if none is specified */</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+    if (!le-&gt;port)</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+        le-&gt;port =3D ce.local_port;<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+</span><br><span> #ifdef _WIN32</span><br><span> /* =
+If iservice is in use, we need def1 method for redirect-gateway */</span><b=
+r><span> static void</span><br><span>@@ -3705,6 +3773,28 @@</span><br><span=
+>         options_postprocess_mutate_ce(o, o-&gt;connection_list-&gt;array[=
+i]);</span><br><span>     }</span><br><span> </span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+    if (o-&gt;ce.local_list)</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+        for (i =3D 0; i &lt; o-&gt;ce.local_list-&gt;l=
+en; i++)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        {</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+            options_p=
+ostprocess_mutate_le(o-&gt;ce, o-&gt;ce.local_list-&gt;array[i]);</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+        }</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+    else</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+     /* if no &#39;local&#39; directive was specified, convert the global p=
+ort</span><br><span style=3D"color: hsl(120, 100%, 40%);">+         * setti=
+ng to a listen entry */</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+        struct local_entry *e =3D alloc_local_entry(&amp;o-&gt;ce, M_US=
+AGE, &amp;o-&gt;gc);</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++        ASSERT(e);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+        e-&gt;port =3D o-&gt;ce.local_port;</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    /* us=
+e the same listen list for every outgoing connection */</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+    for (i =3D 0; i &lt; o-&gt;connecti=
+on_list-&gt;len; ++i)</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        o-&g=
+t;connection_list-&gt;array[i]-&gt;local_list =3D o-&gt;ce.local_list;</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+</span><br><span>     if (o-&gt;tls_se=
+rver)</span><br><span>     {</span><br><span>         /* Check that DH file=
+ is specified, or explicitly disabled */</span><br><span>@@ -6100,10 +6190,=
+27 @@</span><br><span>         VERIFY_PERMISSION(OPT_P_UP);</span><br><span=
+>         options-&gt;ifconfig_nowarn =3D true;</span><br><span>     }</spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-    else if (streq(p[0], &=
+quot;local&quot;) &amp;&amp; p[1] &amp;&amp; !p[2])</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    else if (streq(p[0], &quot;local&quot=
+;) &amp;&amp; p[1] &amp;&amp; !p[3])</span><br><span>     {</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+        struct local_entry *e;</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span>       =
+  VERIFY_PERMISSION(OPT_P_GENERAL|OPT_P_CONNECTION);</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-        options-&gt;ce.local =3D p[1];</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+        e =3D alloc_local_entry(&amp;opti=
+ons-&gt;ce, M_USAGE, &amp;options-&gt;gc);</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+        ASSERT(e);</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+        /* &#39;*&#39; is treated as &#39;ask the system to get some soc=
+ket&#39;,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+         *=
+ therefore force binding on a particular address only when</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+         * actually specified. */</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+        if (strcmp(p[1=
+], &quot;*&quot;) !=3D 0)</span><br><span style=3D"color: hsl(120, 100%, 40=
 %);">+        {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-        msg(M_USAGE, &quot;--remote and one of the --local addresses are th=
-e same&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
-   }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+        if (string_defined_equal(l=
-e-&gt;local, options-&gt;ifconfig_local)</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+            || string_defined_equal(le-&gt;local, opti=
-ons-&gt;ifconfig_remote_netmask))</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+        {</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+            msg(M_USAGE, &quot;--local addresses must be distinct from =
---ifconfig addresses&quot;);</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+        }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+        if (le-&gt;l=
-ocal &amp;&amp; !ce-&gt;bind_local)</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+        {</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+            msg(M_USAGE, &quot;--local and --nobind don&#39;t make se=
-nse when used together&quot;);</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+        }</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><s=
-pan>     /*</span><br><span>      * Check for consistency of management opt=
-ions</span><br><span>      */</span><br><span>@@ -3128,7 +3186,7 @@</span><=
-br><span>     }</span><br><span> </span><br><span>     /* an option is pres=
-ent that requires local bind to enabled */</span><br><span style=3D"color: =
-hsl(0, 100%, 40%);">-    bool need_bind =3D ce-&gt;local || ce-&gt;local_po=
-rt_defined || ce-&gt;bind_defined;</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+    bool need_bind =3D ce-&gt;local_port_defined || ce-&gt;b=
-ind_defined || ce-&gt;local_list;</span><br><span> </span><br><span>     /*=
- socks proxy is enabled */</span><br><span>     bool uses_socks =3D ce-&gt;=
-proto =3D=3D PROTO_UDP &amp;&amp; ce-&gt;socks_proxy_server;</span><br><spa=
-n>@@ -3264,6 +3322,16 @@</span><br><span>     }</span><br><span> }</span><b=
-r><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+static voi=
-d</span><br><span style=3D"color: hsl(120, 100%, 40%);">+options_postproces=
-s_mutate_le(struct connection_entry ce, struct local_entry *le)</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+    /* use the global port if none is specified *=
-/</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (!le-&gt;po=
-rt)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+        le-&gt;port =3D ce.loc=
-al_port;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+</span><br><span> #ifdef _WIN32</span><br=
-><span> /* If iservice is in use, we need def1 method for redirect-gateway =
-*/</span><br><span> static void</span><br><span>@@ -3705,6 +3773,28 @@</spa=
-n><br><span>         options_postprocess_mutate_ce(o, o-&gt;connection_list=
--&gt;array[i]);</span><br><span>     }</span><br><span> </span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+    if (o-&gt;ce.local_list)</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+        for (i =3D 0; i &lt; o-&gt;ce.loc=
-al_list-&gt;len; i++)</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+        {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        =
-    options_postprocess_mutate_le(o-&gt;ce, o-&gt;ce.local_list-&gt;array[i=
-]);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        }</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+    else</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+        /* if no &#39;local&#39; directive was specified, convert=
- the global port</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
-      * setting to a listen entry */</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+        struct local_entry *e =3D alloc_local_entry(&amp;o=
--&gt;ce, M_USAGE, &amp;o-&gt;gc);</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+        ASSERT(e);</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+        e-&gt;port =3D o-&gt;ce.local_port;</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+    /* use the same listen list for every outgoing connection */</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+    for (i =3D 0; i &lt; o=
--&gt;connection_list-&gt;len; ++i)</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+        o-&gt;connection_list-&gt;array[i]-&gt;local_list =3D o-&gt;ce.loc=
-al_list;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span>     if =
-(o-&gt;tls_server)</span><br><span>     {</span><br><span>         /* Check=
- that DH file is specified, or explicitly disabled */</span><br><span>@@ -6=
-100,10 +6190,27 @@</span><br><span>         VERIFY_PERMISSION(OPT_P_UP);</s=
-pan><br><span>         options-&gt;ifconfig_nowarn =3D true;</span><br><spa=
-n>     }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    else if (=
-streq(p[0], &quot;local&quot;) &amp;&amp; p[1] &amp;&amp; !p[2])</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+    else if (streq(p[0], &quot=
-;local&quot;) &amp;&amp; p[1] &amp;&amp; !p[3])</span><br><span>     {</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+        struct local_ent=
-ry *e;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><s=
-pan>         VERIFY_PERMISSION(OPT_P_GENERAL|OPT_P_CONNECTION);</span><br><=
-span style=3D"color: hsl(0, 100%, 40%);">-        options-&gt;ce.local =3D =
-p[1];</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+        e =3D alloc_local_entry(&=
-amp;options-&gt;ce, M_USAGE, &amp;options-&gt;gc);</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+        ASSERT(e);</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+        /* &#39;*&#39; is treated as &#39;ask the system to get =
-some socket&#39;,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-       * therefore force binding on a particular address only when</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+         * actually specifie=
-d. */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        if (st=
-rcmp(p[1], &quot;*&quot;) !=3D 0)</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+        {</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+            e-&gt;local =3D p[1];</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+        }</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        if =
-(p[2])</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        {</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+            e-&gt;port =
-=3D p[2];</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        }<=
-/span><br><span>     }</span><br><span>     else if (streq(p[0], &quot;remo=
-te-random&quot;) &amp;&amp; !p[1])</span><br><span>     {</span><br><span>d=
-iff --git a/src/openvpn/options.h b/src/openvpn/options.h</span><br><span>i=
-ndex 55f12dd..3f4cb90 100644</span><br><span>--- a/src/openvpn/options.h</s=
-pan><br><span>+++ b/src/openvpn/options.h</span><br><span>@@ -94,14 +94,20 =
-@@</span><br><span> #error &quot;At least one of OpenSSL or mbed TLS needs =
-to be defined.&quot;</span><br><span> #endif</span><br><span> </span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+struct local_entry</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+    const char *local;</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+    const char *port;</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+};</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+</span><br><span> struct connection_entry</span><br><span> {</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+    struct local_list =
-*local_list;</span><br><span>     int proto;</span><br><span>     sa_family=
-_t af;</span><br><span>     const char *local_port;</span><br><span>     bo=
-ol local_port_defined;</span><br><span>     const char *remote_port;</span>=
-<br><span style=3D"color: hsl(0, 100%, 40%);">-    const char *local;</span=
-><br><span>     const char *remote;</span><br><span>     bool remote_float;=
-</span><br><span>     bool bind_defined;</span><br><span>@@ -179,6 +185,12 =
-@@</span><br><span> </span><br><span> #define CONNECTION_LIST_SIZE 64</span=
-><br><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+struct =
-local_list</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+    int len;</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+    struct local_entry *array[CONN=
-ECTION_LIST_SIZE];</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}=
-;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> =
-struct connection_list</span><br><span> {</span><br><span>     int capacity=
-;</span><br><span>diff --git a/src/openvpn/socket.c b/src/openvpn/socket.c<=
-/span><br><span>index 7765372..d01b995 100644</span><br><span>--- a/src/ope=
-nvpn/socket.c</span><br><span>+++ b/src/openvpn/socket.c</span><br><span>@@=
- -342,7 +342,6 @@</span><br><span> void</span><br><span> do_preresolve(stru=
-ct context *c)</span><br><span> {</span><br><span style=3D"color: hsl(0, 10=
-0%, 40%);">-    int i;</span><br><span>     struct connection_list *l =3D c=
--&gt;options.connection_list;</span><br><span>     const unsigned int prere=
-solve_flags =3D GETADDR_RESOLVE</span><br><span>                           =
-                |GETADDR_UPDATE_MANAGEMENT_STATE</span><br><span>@@ -350,13=
- +349,13 @@</span><br><span>                                           |GET=
-ADDR_FATAL;</span><br><span> </span><br><span> </span><br><span style=3D"co=
-lor: hsl(0, 100%, 40%);">-    for (i =3D 0; i &lt; l-&gt;len; ++i)</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+    for (int i =3D 0; i &lt;=
- l-&gt;len; ++i)</span><br><span>     {</span><br><span>         int status=
-;</span><br><span>         const char *remote;</span><br><span>         int=
- flags =3D preresolve_flags;</span><br><span> </span><br><span style=3D"col=
-or: hsl(0, 100%, 40%);">-        struct connection_entry *ce =3D c-&gt;opti=
-ons.connection_list-&gt;array[i];</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+        struct connection_entry *ce =3D l-&gt;array[i];</span=
-><br><span> </span><br><span>         if (proto_is_dgram(ce-&gt;proto))</sp=
-an><br><span>         {</span><br><span>@@ -420,13 +419,23 @@</span><br><sp=
-an>         {</span><br><span>             flags |=3D GETADDR_PASSIVE;</spa=
-n><br><span>             flags &amp;=3D ~GETADDR_RANDOMIZE;</span><br><span=
- style=3D"color: hsl(0, 100%, 40%);">-            status =3D do_preresolve_=
-host(c, ce-&gt;local, ce-&gt;local_port,</span><br><span style=3D"color: hs=
-l(0, 100%, 40%);">-                                        ce-&gt;af, flags=
-);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            if (sta=
-tus !=3D 0)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-          =
-  {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-                go=
-to err;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            }<=
-/span><br><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-          for (int j =3D 0; j &lt; ce-&gt;local_list-&gt;len; j++)</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+            {</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+                struct local_entry=
- *le =3D ce-&gt;local_list-&gt;array[j];</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+                if (!le-&gt;local)</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+                {</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+                    continue;</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+                }</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+                status =3D do_preresolve_host(c, le-&gt;local, le-&gt;p=
-ort, ce-&gt;af, flags);</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+                if (status !=3D 0)</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+                {</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+                    goto err;</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+                }</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+            }</span><br><span>         }</span><br><span> </span><br>=
-<span>     }</span><br><span>@@ -1874,8 +1883,8 @@</span><br><span>     con=
-st char *remote_host =3D o-&gt;ce.remote;</span><br><span>     const char *=
-remote_port =3D o-&gt;ce.remote_port;</span><br><span> </span><br><span sty=
-le=3D"color: hsl(0, 100%, 40%);">-    sock-&gt;local_host =3D o-&gt;ce.loca=
-l;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    sock-&gt;local_=
-port =3D o-&gt;ce.local_port;</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+    sock-&gt;local_host =3D o-&gt;ce.local_list-&gt;array[sock_in=
-dex]-&gt;local;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-sock-&gt;local_port =3D o-&gt;ce.local_list-&gt;array[sock_index]-&gt;port;=
-</span><br><span>     sock-&gt;remote_host =3D remote_host;</span><br><span=
->     sock-&gt;remote_port =3D remote_port;</span><br><span>     sock-&gt;d=
-ns_cache =3D c-&gt;c1.dns_cache;</span><br><span></span><br></pre><p>To vie=
-w, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/436?usp=3Demail">=
-change 436</a>. To unsubscribe, or for help writing mail filters, visit <a =
-href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope=
- itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"act=
-ion" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=
-=3D"http://gerrit.openvpn.net/c/openvpn/+/436?usp=3Demail"/><meta itemprop=
-=3D"name" content=3D"View Change"/></div></div>
+        e-&gt;local =3D p[1];</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+        }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        if (p[2])</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+        {</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+            e-&gt;port =3D p[2]=
+;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        }</span><b=
+r><span>     }</span><br><span>     else if (streq(p[0], &quot;remote-rando=
+m&quot;) &amp;&amp; !p[1])</span><br><span>     {</span><br><span>diff --gi=
+t a/src/openvpn/options.h b/src/openvpn/options.h</span><br><span>index 55f=
+12dd..3f4cb90 100644</span><br><span>--- a/src/openvpn/options.h</span><br>=
+<span>+++ b/src/openvpn/options.h</span><br><span>@@ -94,14 +94,20 @@</span=
+><br><span> #error &quot;At least one of OpenSSL or mbed TLS needs to be de=
+fined.&quot;</span><br><span> #endif</span><br><span> </span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+struct local_entry</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+    const char *local;</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+    const char *port;</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+};</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+</span><br><span> struct connection_entry</span><br><span> {</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+    struct local_list *local_l=
+ist;</span><br><span>     int proto;</span><br><span>     sa_family_t af;</=
+span><br><span>     const char *local_port;</span><br><span>     bool local=
+_port_defined;</span><br><span>     const char *remote_port;</span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">-    const char *local;</span><br><sp=
+an>     const char *remote;</span><br><span>     bool remote_float;</span><=
+br><span>     bool bind_defined;</span><br><span>@@ -179,6 +185,12 @@</span=
+><br><span> </span><br><span> #define CONNECTION_LIST_SIZE 64</span><br><sp=
+an> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+struct local_li=
+st</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+    int len;</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    struct local_entry *array[CONNECTION_=
+LIST_SIZE];</span><br><span style=3D"color: hsl(120, 100%, 40%);">+};</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> struct =
+connection_list</span><br><span> {</span><br><span>     int capacity;</span=
+><br><span>diff --git a/src/openvpn/socket.c b/src/openvpn/socket.c</span><=
+br><span>index 7765372..d01b995 100644</span><br><span>--- a/src/openvpn/so=
+cket.c</span><br><span>+++ b/src/openvpn/socket.c</span><br><span>@@ -342,7=
+ +342,6 @@</span><br><span> void</span><br><span> do_preresolve(struct cont=
+ext *c)</span><br><span> {</span><br><span style=3D"color: hsl(0, 100%, 40%=
+);">-    int i;</span><br><span>     struct connection_list *l =3D c-&gt;op=
+tions.connection_list;</span><br><span>     const unsigned int preresolve_f=
+lags =3D GETADDR_RESOLVE</span><br><span>                                  =
+         |GETADDR_UPDATE_MANAGEMENT_STATE</span><br><span>@@ -350,13 +349,1=
+3 @@</span><br><span>                                           |GETADDR_FA=
+TAL;</span><br><span> </span><br><span> </span><br><span style=3D"color: hs=
+l(0, 100%, 40%);">-    for (i =3D 0; i &lt; l-&gt;len; ++i)</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+    for (int i =3D 0; i &lt; l-&gt;=
+len; ++i)</span><br><span>     {</span><br><span>         int status;</span=
+><br><span>         const char *remote;</span><br><span>         int flags =
+=3D preresolve_flags;</span><br><span> </span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-        struct connection_entry *ce =3D c-&gt;options.con=
+nection_list-&gt;array[i];</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+        struct connection_entry *ce =3D l-&gt;array[i];</span><br><s=
+pan> </span><br><span>         if (proto_is_dgram(ce-&gt;proto))</span><br>=
+<span>         {</span><br><span>@@ -420,13 +419,23 @@</span><br><span>    =
+     {</span><br><span>             flags |=3D GETADDR_PASSIVE;</span><br><=
+span>             flags &amp;=3D ~GETADDR_RANDOMIZE;</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-            status =3D do_preresolve_host(c=
+, ce-&gt;local, ce-&gt;local_port,</span><br><span style=3D"color: hsl(0, 1=
+00%, 40%);">-                                        ce-&gt;af, flags);</sp=
+an><br><span style=3D"color: hsl(0, 100%, 40%);">-            if (status !=
+=3D 0)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            {</=
+span><br><span style=3D"color: hsl(0, 100%, 40%);">-                goto er=
+r;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            }</span=
+><br><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
+     for (int j =3D 0; j &lt; ce-&gt;local_list-&gt;len; j++)</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+            {</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+                struct local_entry *le =
+=3D ce-&gt;local_list-&gt;array[j];</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+             if (!le-&gt;local)</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+                {</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+                    continue;</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+                }</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+               status =3D do_preresolve_host(c, le-&gt;local, le-&gt;port, =
+ce-&gt;af, flags);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+               if (status !=3D 0)</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+                {</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+                    goto err;</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+                }</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++            }</span><br><span>         }</span><br><span> </span><br><span=
+>     }</span><br><span>@@ -1874,8 +1883,8 @@</span><br><span>     const ch=
+ar *remote_host =3D o-&gt;ce.remote;</span><br><span>     const char *remot=
+e_port =3D o-&gt;ce.remote_port;</span><br><span> </span><br><span style=3D=
+"color: hsl(0, 100%, 40%);">-    sock-&gt;local_host =3D o-&gt;ce.local;</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-    sock-&gt;local_port =
+=3D o-&gt;ce.local_port;</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+    sock-&gt;local_host =3D o-&gt;ce.local_list-&gt;array[sock_index]-=
+&gt;local;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    sock-=
+&gt;local_port =3D o-&gt;ce.local_list-&gt;array[sock_index]-&gt;port;</spa=
+n><br><span>     sock-&gt;remote_host =3D remote_host;</span><br><span>    =
+ sock-&gt;remote_port =3D remote_port;</span><br><span>     sock-&gt;dns_ca=
+che =3D c-&gt;c1.dns_cache;</span><br><span></span><br></pre><p>To view, vi=
+sit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/436?usp=3Demail">chang=
+e 436</a>. To unsubscribe, or for help writing mail filters, visit <a href=
+=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope ite=
+mtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"action"=
+ itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"h=
+ttp://gerrit.openvpn.net/c/openvpn/+/436?usp=3Demail"/><meta itemprop=3D"na=
+me" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
@@ -994,8 +986,8 @@ dde09529e2764 </div>
 .1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
+<div style=3D"display:none"> Gerrit-MessageType: merged </div>
 
 
---sR9BGu98EBk=--
+--HMjtKO2uhqk=--
 
