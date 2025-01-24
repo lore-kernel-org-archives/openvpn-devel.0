@@ -1,15 +1,17 @@
-From: "its_Giaan (Code Review)" <gerrit@...515...>
-Date: Fri, 24 Jan 2025 12:43:06 +0000
-References: <gerrit.1737722584000.I0542df021ae0ba9c982335fed7bbd10ed326dd0f@...2715...>
-Reply-To: gianmarco@...2726..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <11aa8b9c09fc615599857e7019fed07294bf914a-HTML@...2715...>
+From: "cron2 (Code Review)" <gerrit@...515...>
+Date: Fri, 24 Jan 2025 12:47:14 +0000
+In-Reply-To: <gerrit.1727098847000.Ic66eccb5058fe9c0fae64d8e2ca88728068a92ab@...2715...>
+References: <gerrit.1727098847000.Ic66eccb5058fe9c0fae64d8e2ca88728068a92ab@...2715...>
+Reply-To: gert@...1296..., arne-openvpn@...1227...,
+ gianmarco@...2726..., openvpn-devel@lists.sourceforge.net,
+ frank@...2641..., a@...2181...
+Message-ID: <69aa11844bea7648682fb8b1377b09dbc9fb2a9c-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="dwe3qv+v7k4="; charset=UTF-8
-Subject: [Openvpn-devel] [XS] Change in openvpn[master]: Fix PASS_BY_VALUE
- issue in options_postprocess_mutate_le()
+Content-Type: multipart/alternative; boundary="TK4d6rES0Yw="; charset=UTF-8
+Subject: [Openvpn-devel] [S] Change in openvpn[master]: mroute: adapt to new
+ protocol handling and hashing improvements
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,173 +20,142 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: its_Giaan <gianmarco@...2726...>
+Cc: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---dwe3qv+v7k4=
+--TK4d6rES0Yw=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: flichtenheld, plaisthos.
+Attention is currently required from: flichtenheld, its_Giaan, ordex, plais=
+thos.
 
-Hello plaisthos, flichtenheld,
+cron2 has posted comments on this change. ( http://gerrit.openvpn.net/c/ope=
+nvpn/+/765?usp=3Demail )
 
-I'd like you to do a code review.
-Please visit
-
-    http://gerrit.openvpn.net/c/openvpn/+/875?usp=3Demail
-
-to review the following change.
-
-
-Change subject: Fix PASS_BY_VALUE issue in options_postprocess_mutate_le()
+Change subject: mroute: adapt to new protocol handling and hashing improvem=
+ents
 ......................................................................
 
-Fix PASS_BY_VALUE issue in options_postprocess_mutate_le()
 
-Fix issue reported by Coverity:
-CID 1641424: Performance inefficiencies (PASS_BY_VALUE)
-    Passing parameter ce of type "struct connection_entry"
-    (size 208 bytes) by value, which exceeds the low
-    threshold of 128 bytes.
+Patch Set 15: Code-Review-1
 
-Commit 8466c2ca unintentionally introduced a performance
-penalty due to passing struct connection_entry 'ce'
-by value to options_postprocess_mutate_le().
-fix this by passing 'ce' by address.
+(3 comments)
 
-Change-Id: I0542df021ae0ba9c982335fed7bbd10ed326dd0f
-Signed-off-by: Gianmarco De Gregori <gianmarco@...2726...>
----
-M src/openvpn/options.c
-1 file changed, 3 insertions(+), 3 deletions(-)
+Patchset:
+
+PS15:
+Upgrade to -1 ;-) - mostly this is fine, but we still lost a "const" argume=
+nt, and there is a spurious blank line removal
 
 
+File src/openvpn/multi.c:
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/75/875/1
+http://gerrit.openvpn.net/c/openvpn/+/765/comment/6724d969_5ff543ed :
+PS15, Line 3413:
+spurious deletion of this blank line?  don't :-)
 
-diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index c938999..bd5c056 100644
---- a/src/openvpn/options.c
-+++ b/src/openvpn/options.c
-@@ -3323,12 +3323,12 @@
- }
 
- static void
--options_postprocess_mutate_le(struct connection_entry ce, struct local_ent=
-ry *le)
-+options_postprocess_mutate_le(struct connection_entry *ce, struct local_en=
-try *le)
- {
-     /* use the global port if none is specified */
-     if (!le->port)
-     {
--        le->port =3D ce.local_port;
-+        le->port =3D ce->local_port;
-     }
- }
+http://gerrit.openvpn.net/c/openvpn/+/765/comment/ee36f236_30cdf224 :
+PS15, Line 1156:                                    struct mroute_addr *add=
+r,
+please bring the "const" back...
 
-@@ -3777,7 +3777,7 @@
-     {
-         for (i =3D 0; i < o->ce.local_list->len; i++)
-         {
--            options_postprocess_mutate_le(o->ce, o->ce.local_list->array[i=
-]);
-+            options_postprocess_mutate_le(&o->ce, o->ce.local_list->array[=
-i]);
-         }
-     }
-     else
+
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/875?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/765?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings
 
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: I0542df021ae0ba9c982335fed7bbd10ed326dd0f
-Gerrit-Change-Number: 875
-Gerrit-PatchSet: 1
+Gerrit-Change-Id: Ic66eccb5058fe9c0fae64d8e2ca88728068a92ab
+Gerrit-Change-Number: 765
+Gerrit-PatchSet: 15
 Gerrit-Owner: its_Giaan <gianmarco@...2726...>
+Gerrit-Reviewer: cron2 <gert@...1296...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-CC: ordex <a@...2181...>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Attention: its_Giaan <gianmarco@...2726...>
 Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-MessageType: newchange
+Gerrit-Attention: ordex <a@...2181...>
+Gerrit-Comment-Date: Fri, 24 Jan 2025 12:47:14 +0000
+Gerrit-HasComments: Yes
+Gerrit-Has-Labels: Yes
+Gerrit-MessageType: comment
 
---dwe3qv+v7k4=
+--TK4d6rES0Yw=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p> Attention is currently required from: flichtenheld, plaisthos. </p>
-<p>its_Giaan would like plaisthos and flichtenheld to <strong>review</stron=
-g> this change.
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/875?usp=3Demail">Vi=
-ew Change</a></p><pre style=3D"font-family: monospace,monospace; white-spac=
-e: pre-wrap;">Fix PASS_BY_VALUE issue in options_postprocess_mutate_le()<br=
-><br>Fix issue reported by Coverity:<br>CID 1641424: Performance inefficien=
-cies (PASS_BY_VALUE)<br>    Passing parameter ce of type &quot;struct conne=
-ction_entry&quot;<br>    (size 208 bytes) by value, which exceeds the low<b=
-r>    threshold of 128 bytes.<br><br>Commit 8466c2ca unintentionally introd=
-uced a performance<br>penalty due to passing struct connection_entry &#39;c=
-e&#39;<br>by value to options_postprocess_mutate_le().<br>fix this by passi=
-ng &#39;ce&#39; by address.<br><br>Change-Id: I0542df021ae0ba9c982335fed7bb=
-d10ed326dd0f<br>Signed-off-by: Gianmarco De Gregori &lt;gianmarco@...2804...=
-.&gt;<br>---<br>M src/openvpn/options.c<br>1 file changed, 3 insertions(+),=
- 3 deletions(-)<br><br></pre><pre style=3D"font-family: monospace,monospace=
-; white-space: pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/openvpn r=
-efs/changes/75/875/1</pre><pre style=3D"font-family: monospace,monospace; w=
-hite-space: pre-wrap;"><span>diff --git a/src/openvpn/options.c b/src/openv=
-pn/options.c</span><br><span>index c938999..bd5c056 100644</span><br><span>=
---- a/src/openvpn/options.c</span><br><span>+++ b/src/openvpn/options.c</sp=
-an><br><span>@@ -3323,12 +3323,12 @@</span><br><span> }</span><br><span> </=
-span><br><span> static void</span><br><span style=3D"color: hsl(0, 100%, 40=
-%);">-options_postprocess_mutate_le(struct connection_entry ce, struct loca=
-l_entry *le)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+options=
-_postprocess_mutate_le(struct connection_entry *ce, struct local_entry *le)=
-</span><br><span> {</span><br><span>     /* use the global port if none is =
-specified */</span><br><span>     if (!le-&gt;port)</span><br><span>     {<=
-/span><br><span style=3D"color: hsl(0, 100%, 40%);">-        le-&gt;port =
-=3D ce.local_port;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-       le-&gt;port =3D ce-&gt;local_port;</span><br><span>     }</span><br>=
-<span> }</span><br><span> </span><br><span>@@ -3777,7 +3777,7 @@</span><br>=
-<span>     {</span><br><span>         for (i =3D 0; i &lt; o-&gt;ce.local_l=
-ist-&gt;len; i++)</span><br><span>         {</span><br><span style=3D"color=
-: hsl(0, 100%, 40%);">-            options_postprocess_mutate_le(o-&gt;ce, =
-o-&gt;ce.local_list-&gt;array[i]);</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+            options_postprocess_mutate_le(&amp;o-&gt;ce, o-&=
-gt;ce.local_list-&gt;array[i]);</span><br><span>         }</span><br><span>=
-     }</span><br><span>     else</span><br><span></span><br></pre><p>To vie=
-w, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/875?usp=3Demail">=
-change 875</a>. To unsubscribe, or for help writing mail filters, visit <a =
-href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope=
- itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"act=
-ion" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=
-=3D"http://gerrit.openvpn.net/c/openvpn/+/875?usp=3Demail"/><meta itemprop=
-=3D"name" content=3D"View Change"/></div></div>
+<p> Attention is currently required from: flichtenheld, its_Giaan, ordex, p=
+laisthos. </p>
+<p>Patch set 15:<span style=3D"border-radius: 3px; display: inline-block; m=
+argin: 0 2px; padding: 4px;background-color: #ffd4d4;">Code-Review -1</span=
+></p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/765?usp=3Demail">V=
+iew Change</a></p><p>3 comments:</p><ul style=3D"list-style: none; padding:=
+ 0;"><li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list=
+-style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p=
+ style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openv=
+pn/+/765?tab=3Dcomments">Patch Set #15:</a> </p><p style=3D"white-space: pr=
+e-wrap; word-wrap: break-word;">Upgrade to -1 ;-) - mostly this is fine, bu=
+t we still lost a &quot;const&quot; argument, and there is a spurious blank=
+ line removal</p></li></ul></li><li style=3D"margin: 0; padding: 0;"><p>Fil=
+e src/openvpn/multi.c:</p><ul style=3D"list-style: none; padding: 0;"><li s=
+tyle=3D"margin: 0; padding: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><=
+a href=3D"http://gerrit.openvpn.net/c/openvpn/+/765/comment/6724d969_5ff543=
+ed">Patch Set #15, Line 3413:</a> <code style=3D"font-family:monospace,mono=
+space"></code></p><p style=3D"white-space: pre-wrap; word-wrap: break-word;=
+">spurious deletion of this blank line?  don&#39;t :-)</p></li><li style=3D=
+"margin: 0; padding: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=
+=3D"http://gerrit.openvpn.net/c/openvpn/+/765/comment/ee36f236_30cdf224">Pa=
+tch Set #15, Line 1156:</a> <code style=3D"font-family:monospace,monospace"=
+>                                   struct mroute_addr *addr,</code></p><p =
+style=3D"white-space: pre-wrap; word-wrap: break-word;">please bring the &q=
+uot;const&quot; back...</p></li></ul></li></ul><p>To view, visit <a href=3D=
+"http://gerrit.openvpn.net/c/openvpn/+/765?usp=3Demail">change 765</a>. To =
+unsubscribe, or for help writing mail filters, visit <a href=3D"http://gerr=
+it.openvpn.net/settings">settings</a>.</p><div itemscope itemtype=3D"http:/=
+/schema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"ht=
+tp://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.op=
+envpn.net/c/openvpn/+/765?usp=3Demail"/><meta itemprop=3D"name" content=3D"=
+View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I0542df021ae0ba9c982335fed7b=
-bd10ed326dd0f </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 875 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: Ic66eccb5058fe9c0fae64d8e2ca=
+88728068a92ab </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 765 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 15 </div>
 <div style=3D"display:none"> Gerrit-Owner: its_Giaan &lt;gianmarco@...2786...=
 ..&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
+ </div>
 <div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
 1...&gt; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
 .1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: ordex &lt;a@...2181...&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
 ..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: its_Giaan &lt;gianmarco@...1665...=
+726...&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
 41...&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: newchange </div>
+<div style=3D"display:none"> Gerrit-Attention: ordex &lt;a@...2181...&gt; <=
+/div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Fri, 24 Jan 2025 12:47:14=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
 
 
---dwe3qv+v7k4=--
+--TK4d6rES0Yw=--
 
