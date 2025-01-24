@@ -1,17 +1,11 @@
-From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Fri, 24 Jan 2025 14:10:17 +0000
+From: Gert Doering <gert@...1296...>
+Date: Fri, 24 Jan 2025 15:18:20 +0100
+Message-ID: <20250124141820.5084-1-gert@...1296...>
 In-Reply-To: <gerrit.1727098847000.Ic66eccb5058fe9c0fae64d8e2ca88728068a92ab@...2715...>
 References: <gerrit.1727098847000.Ic66eccb5058fe9c0fae64d8e2ca88728068a92ab@...2715...>
-Reply-To: gert@...1296..., arne-openvpn@...1227...,
- gianmarco@...2726..., openvpn-devel@lists.sourceforge.net,
- frank@...2641..., a@...2181...
-Message-ID: <d4220bf7d1f63a2e0352c95572c7fb8157e8deea-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="3Ii/9ZHIMWY="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: mroute: adapt to new
- protocol handling and hashing improvements
+Subject: [Openvpn-devel] [PATCH v16] mroute: adapt to new protocol handling
+ and hashing improvements
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,101 +14,133 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: its_Giaan <gianmarco@...2726...>
-Cc: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---3Ii/9ZHIMWY=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+From: Gianmarco De Gregori <gianmarco@...2726...>
 
-Attention is currently required from: flichtenheld, its_Giaan, ordex, plais=
-thos.
+Repurposing an unused field and renaming it to 'proto'
+instead of introducing a new field. The hashing now
+begins at the 'proto' field rather than the 'type'
+field. Additionally, the changes ensure that the
+correct protocol is consistently used with virtual
+addresses ensuring alignment.
 
-cron2 has posted comments on this change. ( http://gerrit.openvpn.net/c/ope=
-nvpn/+/765?usp=3Demail )
+Change-Id: Ic66eccb5058fe9c0fae64d8e2ca88728068a92ab
+Signed-off-by: Gianmarco De Gregori <gianmarco@...2726...>
+Acked-by: Gert Doering <gert@...1296...>
+---
 
-Change subject: mroute: adapt to new protocol handling and hashing improvem=
-ents
-......................................................................
+This change was reviewed on Gerrit and approved by at least one
+developer. I request to merge it to master.
 
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/765
+This mail reflects revision 16 of this Change.
 
-Patch Set 16: Code-Review+2
+Acked-by according to Gerrit (reflected above):
+Gert Doering <gert@...1296...>
 
-
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/765?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings
-
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: Ic66eccb5058fe9c0fae64d8e2ca88728068a92ab
-Gerrit-Change-Number: 765
-Gerrit-PatchSet: 16
-Gerrit-Owner: its_Giaan <gianmarco@...2726...>
-Gerrit-Reviewer: cron2 <gert@...1296...>
-Gerrit-Reviewer: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-CC: ordex <a@...2181...>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: its_Giaan <gianmarco@...2726...>
-Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Attention: ordex <a@...2181...>
-Gerrit-Comment-Date: Fri, 24 Jan 2025 14:10:17 +0000
-Gerrit-HasComments: No
-Gerrit-Has-Labels: Yes
-Gerrit-MessageType: comment
-
---3Ii/9ZHIMWY=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<p> Attention is currently required from: flichtenheld, its_Giaan, ordex, p=
-laisthos. </p>
-<p>Patch set 16:<span style=3D"border-radius: 3px; display: inline-block; m=
-argin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span=
-></p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/765?usp=3Demail">V=
-iew Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To vi=
-ew, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/765?usp=3Demail"=
->change 765</a>. To unsubscribe, or for help writing mail filters, visit <a=
- href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemscop=
-e itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"ac=
-tion" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=
-=3D"http://gerrit.openvpn.net/c/openvpn/+/765?usp=3Demail"/><meta itemprop=
-=3D"name" content=3D"View Change"/></div></div>
-
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: Ic66eccb5058fe9c0fae64d8e2ca=
-88728068a92ab </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 765 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 16 </div>
-<div style=3D"display:none"> Gerrit-Owner: its_Giaan &lt;gianmarco@...2786...=
-..&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
- </div>
-<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
-1...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: ordex &lt;a@...2181...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: its_Giaan &lt;gianmarco@...1665...=
-726...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
-41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: ordex &lt;a@...2181...&gt; <=
-/div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Fri, 24 Jan 2025 14:10:17=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: No </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
-
-
---3Ii/9ZHIMWY=--
+        
+diff --git a/src/openvpn/mroute.c b/src/openvpn/mroute.c
+index 80e18b7..74923cf 100644
+--- a/src/openvpn/mroute.c
++++ b/src/openvpn/mroute.c
+@@ -454,6 +454,7 @@
+                 buf_printf(&out, "UNKNOWN");
+                 break;
+         }
++        buf_printf(&out, "|%d", maddr.proto);
+         return BSTR(&out);
+     }
+     else
+diff --git a/src/openvpn/mroute.h b/src/openvpn/mroute.h
+index 8b457d4..1c44b35 100644
+--- a/src/openvpn/mroute.h
++++ b/src/openvpn/mroute.h
+@@ -74,7 +74,7 @@
+ 
+ struct mroute_addr {
+     uint8_t len;    /* length of address */
+-    uint8_t unused;
++    uint8_t proto;
+     uint8_t type;   /* MR_ADDR/MR_WITH flags */
+     uint8_t netbits; /* number of bits in network part of address,
+                       * valid if MR_WITH_NETBITS is set */
+@@ -183,6 +183,15 @@
+ {
+     unsigned int ret = 0;
+     verify_align_4(buf);
++
++    /*
++     * Since we don't really need the protocol on vaddresses for internal VPN
++     * payload packets, make sure we have the same value to avoid hashing insert
++     * and search issues.
++     */
++    src->proto = 0;
++    dest->proto = src->proto;
++
+     if (tunnel_type == DEV_TYPE_TUN)
+     {
+         ret = mroute_extract_addr_ip(src, dest, buf);
+@@ -216,13 +225,13 @@
+ mroute_addr_hash_ptr(const struct mroute_addr *a)
+ {
+     /* NOTE: depends on ordering of struct mroute_addr */
+-    return (uint8_t *) &a->type;
++    return (uint8_t *) &a->proto;
+ }
+ 
+ static inline uint32_t
+ mroute_addr_hash_len(const struct mroute_addr *a)
+ {
+-    return (uint32_t) a->len + 2;
++    return (uint32_t) a->len + 3;
+ }
+ 
+ static inline void
+diff --git a/src/openvpn/mtcp.c b/src/openvpn/mtcp.c
+index 6d1d5a0..62ed044 100644
+--- a/src/openvpn/mtcp.c
++++ b/src/openvpn/mtcp.c
+@@ -56,6 +56,7 @@
+     mi = multi_create_instance(m, NULL, ls);
+     if (mi)
+     {
++        mi->real.proto = ls->info.proto;
+         struct hash_element *he;
+         const uint32_t hv = hash_value(hash, &mi->real);
+         struct hash_bucket *bucket = hash_bucket(hash, hv);
+diff --git a/src/openvpn/mudp.c b/src/openvpn/mudp.c
+index 6137578..4f2bbd7 100644
+--- a/src/openvpn/mudp.c
++++ b/src/openvpn/mudp.c
+@@ -192,6 +192,7 @@
+     struct mroute_addr real = {0};
+     struct multi_instance *mi = NULL;
+     struct hash *hash = m->hash;
++    real.proto = ls->info.proto;
+ 
+     if (mroute_extract_openvpn_sockaddr(&real, &m->top.c2.from.dest, true)
+         && m->top.c2.buf.len > 0)
+diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
+index 3f55dd7..273aa05 100644
+--- a/src/openvpn/multi.c
++++ b/src/openvpn/multi.c
+@@ -1243,6 +1243,7 @@
+     CLEAR(remote_si);
+     remote_si.addr.in4.sin_family = AF_INET;
+     remote_si.addr.in4.sin_addr.s_addr = htonl(a);
++    addr.proto = 0;
+     ASSERT(mroute_extract_openvpn_sockaddr(&addr, &remote_si, false));
+ 
+     if (netbits >= 0)
+@@ -3548,7 +3549,6 @@
+         const int dev_type = TUNNEL_TYPE(m->top.c1.tuntap);
+         int16_t vid = 0;
+ 
+-
+ #ifdef MULTI_DEBUG_EVENT_LOOP
+         printf("TUN -> TCP/UDP [%d]\n", BLEN(&m->top.c2.buf));
+ #endif
 
