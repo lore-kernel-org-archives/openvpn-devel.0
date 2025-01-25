@@ -1,11 +1,11 @@
+Date: Sat, 25 Jan 2025 11:17:01 +0100 (CET)
+Message-Id: <202501251017.50PAH1T3062172@...2054...>
 From: Gert Doering <gert@...1296...>
-Date: Sat, 25 Jan 2025 11:08:38 +0100
-Message-ID: <20250125100838.20796-1-gert@...1296...>
-In-Reply-To: <gerrit.1736865848000.Iaaf80c688ddff79ac9472d7237003713637c140b@...2715...>
-References: <gerrit.1736865848000.Iaaf80c688ddff79ac9472d7237003713637c140b@...2715...>
-MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v2] tls_crypt_v2_write_client_key_file: Fix
- missing-field-initializers compiler warning
+In-Reply-To: <20250125100838.20796-1-gert@...1296...>
+References: <20250125100838.20796-1-gert@...1296...>
+Subject: [Openvpn-devel] [PATCH applied] Re:
+ tls_crypt_v2_write_client_key_file: Fix missing-field-initializers compiler
+ warning
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,38 +16,33 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Frank Lichtenheld <frank@...2641...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-From: Frank Lichtenheld <frank@...2641...>
+Not sure why the compiler is more picky here than on other inits, but
+maybe it's "... = {2}" vs "... = {0}" (which means "all is 0", so the
+actual element first in the struct does not matter).  Anyway, ".n = 2"
+is what we want so there is no harm in writing that done :-) - and
+the buildbots agree that all platform compilers are fine with it.
 
-GCC wants us to be more explicit here.
+Your patch has been applied to the master branch.
 
-Change-Id: Iaaf80c688ddff79ac9472d7237003713637c140b
-Signed-off-by: Frank Lichtenheld <frank@...2641...>
-Acked-by: Gert Doering <gert@...1296...>
----
+commit 2a50daf5fe6c924c8d945b3d0455c9e282cd769f
+Author: Frank Lichtenheld
+Date:   Sat Jan 25 11:08:38 2025 +0100
 
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to master.
+     tls_crypt_v2_write_client_key_file: Fix missing-field-initializers compiler warning
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/867
-This mail reflects revision 2 of this Change.
+     Signed-off-by: Frank Lichtenheld <frank@...2641...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <20250125100838.20796-1-gert@...1296...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg30588.html
+     Signed-off-by: Gert Doering <gert@...1296...>
 
-Acked-by according to Gerrit (reflected above):
-Gert Doering <gert@...1296...>
 
-        
-diff --git a/src/openvpn/tls_crypt.c b/src/openvpn/tls_crypt.c
-index 24df930..4c421aa 100644
---- a/src/openvpn/tls_crypt.c
-+++ b/src/openvpn/tls_crypt.c
-@@ -691,7 +691,7 @@
-     struct buffer client_key_pem = { 0 };
-     struct buffer dst = alloc_buf_gc(TLS_CRYPT_V2_CLIENT_KEY_LEN
-                                      + TLS_CRYPT_V2_MAX_WKC_LEN, &gc);
--    struct key2 client_key = { 2 };
-+    struct key2 client_key = { .n = 2 };
- 
-     if (!rand_bytes((void *)client_key.keys, sizeof(client_key.keys)))
-     {
+--
+kind regards,
+
+Gert Doering
+
 
