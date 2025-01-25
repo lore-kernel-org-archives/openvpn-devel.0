@@ -1,17 +1,11 @@
-From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Sat, 25 Jan 2025 09:57:53 +0000
-In-Reply-To: <gerrit.1727098847000.Ic66eccb5058fe9c0fae64d8e2ca88728068a92ab@...2715...>
-References: <gerrit.1727098847000.Ic66eccb5058fe9c0fae64d8e2ca88728068a92ab@...2715...>
-Reply-To: gert@...1296..., arne-openvpn@...1227...,
- gianmarco@...2726..., openvpn-devel@lists.sourceforge.net,
- frank@...2641..., a@...2181...
-Message-ID: <73ed50f640fb4448ca0b80c29b6b6bc6c9110417-HTML@...2715...>
+From: Gert Doering <gert@...1296...>
+Date: Sat, 25 Jan 2025 10:59:09 +0100
+Message-ID: <20250125095909.14688-1-gert@...1296...>
+In-Reply-To: <gerrit.1737719138000.Iff12c4dbac84a814612aa8b5b89224be08bb9058@...2715...>
+References: <gerrit.1737719138000.Iff12c4dbac84a814612aa8b5b89224be08bb9058@...2715...>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="K7UGAwgczDw="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: mroute: adapt to new
- protocol handling and hashing improvements
+Subject: [Openvpn-devel] [PATCH v3] Rename occurences of 'struct
+ link_socket' from 'ls' to 'sock'
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,323 +14,327 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: its_Giaan <gianmarco@...2726...>
-Cc: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---K7UGAwgczDw=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+From: Gianmarco De Gregori <gianmarco@...2726...>
 
-cron2 has submitted this change. ( http://gerrit.openvpn.net/c/openvpn/+/76=
-5?usp=3Demail )
+This commit renames all instances of 'struct link_socket'
+from the abbreviation 'ls' to the more descriptive 'sock'
+making it clearer that the variables represent
+socket-related structures.
 
-Change subject: mroute: adapt to new protocol handling and hashing improvem=
-ents
-......................................................................
+No functional changes have been introduced.
 
-mroute: adapt to new protocol handling and hashing improvements
-
-Repurposing an unused field and renaming it to 'proto'
-instead of introducing a new field. The hashing now
-begins at the 'proto' field rather than the 'type'
-field. Additionally, the changes ensure that the
-correct protocol is consistently used with virtual
-addresses ensuring alignment.
-
-Change-Id: Ic66eccb5058fe9c0fae64d8e2ca88728068a92ab
+Change-Id: Iff12c4dbac84a814612aa8b5b89224be08bb9058
 Signed-off-by: Gianmarco De Gregori <gianmarco@...2726...>
 Acked-by: Gert Doering <gert@...1296...>
-Message-Id: <20250124205135.18765-1-gert@...1296...>
-URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg30=
-579.html
-Signed-off-by: Gert Doering <gert@...1296...>
 ---
-M src/openvpn/mroute.c
-M src/openvpn/mroute.h
-M src/openvpn/mtcp.c
-M src/openvpn/mudp.c
-M src/openvpn/multi.c
-5 files changed, 21 insertions(+), 4 deletions(-)
 
+This change was reviewed on Gerrit and approved by at least one
+developer. I request to merge it to master.
 
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/874
+This mail reflects revision 3 of this Change.
 
+Acked-by according to Gerrit (reflected above):
+Gert Doering <gert@...1296...>
 
-diff --git a/src/openvpn/mroute.c b/src/openvpn/mroute.c
-index 80e18b7..74923cf 100644
---- a/src/openvpn/mroute.c
-+++ b/src/openvpn/mroute.c
-@@ -454,6 +454,7 @@
-                 buf_printf(&out, "UNKNOWN");
-                 break;
-         }
-+        buf_printf(&out, "|%d", maddr.proto);
-         return BSTR(&out);
+        
+diff --git a/src/openvpn/init.c b/src/openvpn/init.c
+index d84f826..2ae3726 100644
+--- a/src/openvpn/init.c
++++ b/src/openvpn/init.c
+@@ -4935,12 +4935,12 @@
+ void
+ inherit_context_child(struct context *dest,
+                       const struct context *src,
+-                      struct link_socket *ls)
++                      struct link_socket *sock)
+ {
+     CLEAR(*dest);
+ 
+     /* proto_is_dgram will ASSERT(0) if proto is invalid */
+-    dest->mode = proto_is_dgram(ls->info.proto) ? CM_CHILD_UDP : CM_CHILD_TCP;
++    dest->mode = proto_is_dgram(sock->info.proto) ? CM_CHILD_UDP : CM_CHILD_TCP;
+ 
+     dest->gc = gc_new();
+ 
+@@ -4966,7 +4966,7 @@
+ 
+     /* options */
+     dest->options = src->options;
+-    dest->options.ce.proto = ls->info.proto;
++    dest->options.ce.proto = sock->info.proto;
+     options_detach(&dest->options);
+ 
+     dest->c2.event_set = src->c2.event_set;
+@@ -4977,7 +4977,7 @@
+          * The CM_TOP context does the socket listen(),
+          * and the CM_CHILD_TCP context does the accept().
+          */
+-        dest->c2.accept_from = ls;
++        dest->c2.accept_from = sock;
      }
-     else
-diff --git a/src/openvpn/mroute.h b/src/openvpn/mroute.h
-index 8b457d4..2659695 100644
---- a/src/openvpn/mroute.h
-+++ b/src/openvpn/mroute.h
-@@ -74,7 +74,7 @@
-
- struct mroute_addr {
-     uint8_t len;    /* length of address */
--    uint8_t unused;
-+    uint8_t proto;
-     uint8_t type;   /* MR_ADDR/MR_WITH flags */
-     uint8_t netbits; /* number of bits in network part of address,
-                       * valid if MR_WITH_NETBITS is set */
-@@ -183,6 +183,15 @@
- {
-     unsigned int ret =3D 0;
-     verify_align_4(buf);
-+
-+    /*
-+     * Since we don't really need the protocol on vaddresses for internal =
-VPN
-+     * payload packets, make sure we have the same value to avoid hashing =
-insert
-+     * and search issues.
-+     */
-+    src->proto =3D 0;
-+    dest->proto =3D src->proto;
-+
-     if (tunnel_type =3D=3D DEV_TYPE_TUN)
-     {
-         ret =3D mroute_extract_addr_ip(src, dest, buf);
-@@ -201,6 +210,10 @@
-     {
-         return false;
-     }
-+    if (a1->proto !=3D a2->proto)
-+    {
-+        return false;
-+    }
-     if (a1->netbits !=3D a2->netbits)
-     {
-         return false;
-@@ -216,13 +229,13 @@
- mroute_addr_hash_ptr(const struct mroute_addr *a)
- {
-     /* NOTE: depends on ordering of struct mroute_addr */
--    return (uint8_t *) &a->type;
-+    return (uint8_t *) &a->proto;
- }
-
- static inline uint32_t
- mroute_addr_hash_len(const struct mroute_addr *a)
- {
--    return (uint32_t) a->len + 2;
-+    return (uint32_t) a->len + 3;
- }
-
- static inline void
+ 
+ #ifdef ENABLE_PLUGIN
+@@ -5004,11 +5004,11 @@
+         ALLOC_ARRAY_GC(dest->c2.link_sockets, struct link_socket *, 1, &dest->gc);
+ 
+         /* inherit parent link_socket and tuntap */
+-        dest->c2.link_sockets[0] = ls;
++        dest->c2.link_sockets[0] = sock;
+ 
+         ALLOC_ARRAY_GC(dest->c2.link_socket_infos, struct link_socket_info *, 1, &dest->gc);
+         ALLOC_OBJ_GC(dest->c2.link_socket_infos[0], struct link_socket_info, &dest->gc);
+-        *dest->c2.link_socket_infos[0] = ls->info;
++        *dest->c2.link_socket_infos[0] = sock->info;
+ 
+         /* locally override some link_socket_info fields */
+         dest->c2.link_socket_infos[0]->lsa = &dest->c1.link_socket_addrs[0];
+diff --git a/src/openvpn/init.h b/src/openvpn/init.h
+index 11c32ac..50b38e3 100644
+--- a/src/openvpn/init.h
++++ b/src/openvpn/init.h
+@@ -96,7 +96,7 @@
+ 
+ void inherit_context_child(struct context *dest,
+                            const struct context *src,
+-                           struct link_socket *ls);
++                           struct link_socket *sock);
+ 
+ void inherit_context_top(struct context *dest,
+                          const struct context *src);
 diff --git a/src/openvpn/mtcp.c b/src/openvpn/mtcp.c
-index 6d1d5a0..62ed044 100644
+index 582e9b3..38dd9f0 100644
 --- a/src/openvpn/mtcp.c
 +++ b/src/openvpn/mtcp.c
-@@ -56,6 +56,7 @@
-     mi =3D multi_create_instance(m, NULL, ls);
-     if (mi)
+@@ -47,16 +47,16 @@
+ };
+ 
+ struct multi_instance *
+-multi_create_instance_tcp(struct multi_context *m, struct link_socket *ls)
++multi_create_instance_tcp(struct multi_context *m, struct link_socket *sock)
+ {
+     struct gc_arena gc = gc_new();
+     struct multi_instance *mi = NULL;
+     struct hash *hash = m->hash;
+ 
+-    mi = multi_create_instance(m, NULL, ls);
+-    if (mi && !proto_is_dgram(ls->info.proto))
++    mi = multi_create_instance(m, NULL, sock);
++    if (mi && !proto_is_dgram(sock->info.proto))
      {
-+        mi->real.proto =3D ls->info.proto;
+-        mi->real.proto = ls->info.proto;
++        mi->real.proto = sock->info.proto;
          struct hash_element *he;
-         const uint32_t hv =3D hash_value(hash, &mi->real);
-         struct hash_bucket *bucket =3D hash_bucket(hash, hv);
+         const uint32_t hv = hash_value(hash, &mi->real);
+         struct hash_bucket *bucket = hash_bucket(hash, hv);
+@@ -139,10 +139,10 @@
+ void
+ multi_tcp_dereference_instance(struct multi_io *multi_io, struct multi_instance *mi)
+ {
+-    struct link_socket *ls = mi->context.c2.link_sockets[0];
+-    if (ls && mi->socket_set_called)
++    struct link_socket *sock = mi->context.c2.link_sockets[0];
++    if (sock && mi->socket_set_called)
+     {
+-        event_del(multi_io->es, socket_event_handle(ls));
++        event_del(multi_io->es, socket_event_handle(sock));
+         mi->socket_set_called = false;
+     }
+     multi_io->n_esr = 0;
+diff --git a/src/openvpn/mtcp.h b/src/openvpn/mtcp.h
+index 0a5b045..a0ef6a4 100644
+--- a/src/openvpn/mtcp.h
++++ b/src/openvpn/mtcp.h
+@@ -46,7 +46,7 @@
+ 
+ bool multi_tcp_process_outgoing_link_ready(struct multi_context *m, struct multi_instance *mi, const unsigned int mpp_flags);
+ 
+-struct multi_instance *multi_create_instance_tcp(struct multi_context *m, struct link_socket *ls);
++struct multi_instance *multi_create_instance_tcp(struct multi_context *m, struct link_socket *sock);
+ 
+ void multi_tcp_link_out_deferred(struct multi_context *m, struct multi_instance *mi);
+ 
 diff --git a/src/openvpn/mudp.c b/src/openvpn/mudp.c
-index 6137578..4f2bbd7 100644
+index 86e1713..8496400 100644
 --- a/src/openvpn/mudp.c
 +++ b/src/openvpn/mudp.c
-@@ -192,6 +192,7 @@
-     struct mroute_addr real =3D {0};
-     struct multi_instance *mi =3D NULL;
-     struct hash *hash =3D m->hash;
-+    real.proto =3D ls->info.proto;
-
+@@ -186,14 +186,14 @@
+ 
+ struct multi_instance *
+ multi_get_create_instance_udp(struct multi_context *m, bool *floated,
+-                              struct link_socket *ls)
++                              struct link_socket *sock)
+ {
+     struct gc_arena gc = gc_new();
+     struct mroute_addr real = {0};
+     struct multi_instance *mi = NULL;
+     struct hash *hash = m->hash;
+-    real.proto = ls->info.proto;
+-    m->hmac_reply_ls = ls;
++    real.proto = sock->info.proto;
++    m->hmac_reply_ls = sock;
+ 
      if (mroute_extract_openvpn_sockaddr(&real, &m->top.c2.from.dest, true)
          && m->top.c2.buf.len > 0)
+@@ -259,7 +259,7 @@
+                      * connect-freq but not against connect-freq-initial */
+                     reflect_filter_rate_limit_decrease(m->initial_rate_limiter);
+ 
+-                    mi = multi_create_instance(m, &real, ls);
++                    mi = multi_create_instance(m, &real, sock);
+                     if (mi)
+                     {
+                         hash_add_fast(hash, bucket, &mi->real, hv, mi);
+diff --git a/src/openvpn/mudp.h b/src/openvpn/mudp.h
+index 357b684..37752e1 100644
+--- a/src/openvpn/mudp.h
++++ b/src/openvpn/mudp.h
+@@ -33,7 +33,7 @@
+ 
+ unsigned int p2mp_iow_flags(const struct multi_context *m);
+ 
+-void multi_process_io_udp(struct multi_context *m, struct link_socket *ls);
++void multi_process_io_udp(struct multi_context *m, struct link_socket *sock);
+ /**************************************************************************/
+ /**
+  * Get, and if necessary create, the multi_instance associated with a
+@@ -47,13 +47,13 @@
+  * successful, returns the newly created instance.
+  *
+  * @param m           - The single multi_context structure.
+- * @param ls          - Listening socket where this instance is connecting to
++ * @param sock        - Listening socket where this instance is connecting to
+  *
+  * @return A pointer to a multi_instance if one already existed for the
+  *     packet's source address or if one was a newly created successfully.
+  *      NULL if one did not yet exist and a new one was not created.
+  */
+ struct multi_instance *multi_get_create_instance_udp(struct multi_context *m, bool *floated,
+-                                                     struct link_socket *ls);
++                                                     struct link_socket *sock);
+ 
+ #endif /* ifndef MUDP_H */
 diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
-index 3f55dd7..9c8c014 100644
+index b83425c..4d690d6 100644
 --- a/src/openvpn/multi.c
 +++ b/src/openvpn/multi.c
-@@ -794,6 +794,7 @@
+@@ -751,7 +751,7 @@
+  */
+ struct multi_instance *
+ multi_create_instance(struct multi_context *m, const struct mroute_addr *real,
+-                      struct link_socket *ls)
++                      struct link_socket *sock)
+ {
+     struct gc_arena gc = gc_new();
+     struct multi_instance *mi;
+@@ -774,7 +774,7 @@
+         generate_prefix(mi);
+     }
+ 
+-    inherit_context_child(&mi->context, &m->top, ls);
++    inherit_context_child(&mi->context, &m->top, sock);
+     if (IS_SIG(&mi->context))
+     {
+         goto err;
+@@ -794,7 +794,7 @@
          {
              goto err;
          }
-+        mi->real.proto =3D ls->info.proto;
+-        mi->real.proto = ls->info.proto;
++        mi->real.proto = sock->info.proto;
          generate_prefix(mi);
      }
-
-@@ -1243,6 +1244,7 @@
-     CLEAR(remote_si);
-     remote_si.addr.in4.sin_family =3D AF_INET;
-     remote_si.addr.in4.sin_addr.s_addr =3D htonl(a);
-+    addr.proto =3D 0;
-     ASSERT(mroute_extract_openvpn_sockaddr(&addr, &remote_si, false));
-
-     if (netbits >=3D 0)
-@@ -3548,7 +3550,6 @@
-         const int dev_type =3D TUNNEL_TYPE(m->top.c1.tuntap);
-         int16_t vid =3D 0;
-
--
+ 
+@@ -3129,7 +3129,7 @@
+ 
+ void
+ multi_process_float(struct multi_context *m, struct multi_instance *mi,
+-                    struct link_socket *ls)
++                    struct link_socket *sock)
+ {
+     struct mroute_addr real = {0};
+     struct hash *hash = m->hash;
+@@ -3185,7 +3185,7 @@
+     mi->context.c2.to_link_addr = &mi->context.c2.from;
+ 
+     /* inherit parent link_socket and link_socket_info */
+-    mi->context.c2.link_sockets[0] = ls;
++    mi->context.c2.link_sockets[0] = sock;
+     mi->context.c2.link_socket_infos[0]->lsa->actual = m->top.c2.from;
+ 
+     tls_update_remote_addr(mi->context.c2.tls_multi, &mi->context.c2.from);
+@@ -3335,7 +3335,7 @@
+  */
+ bool
+ multi_process_incoming_link(struct multi_context *m, struct multi_instance *instance,
+-                            const unsigned int mpp_flags, struct link_socket *ls)
++                            const unsigned int mpp_flags, struct link_socket *sock)
+ {
+     struct gc_arena gc = gc_new();
+ 
+@@ -3356,7 +3356,7 @@
  #ifdef MULTI_DEBUG_EVENT_LOOP
-         printf("TUN -> TCP/UDP [%d]\n", BLEN(&m->top.c2.buf));
+         printf("TCP/UDP -> TUN [%d]\n", BLEN(&m->top.c2.buf));
  #endif
-
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/765?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings
-
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: Ic66eccb5058fe9c0fae64d8e2ca88728068a92ab
-Gerrit-Change-Number: 765
-Gerrit-PatchSet: 18
-Gerrit-Owner: its_Giaan <gianmarco@...2726...>
-Gerrit-Reviewer: cron2 <gert@...1296...>
-Gerrit-Reviewer: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-CC: ordex <a@...2181...>
-Gerrit-MessageType: merged
-
---K7UGAwgczDw=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<p>cron2 <strong>submitted</strong> this change.</p><p><a href=3D"http://ge=
-rrit.openvpn.net/c/openvpn/+/765?usp=3Demail">View Change</a></p><div style=
-=3D"white-space:pre-wrap"></div><pre style=3D"font-family: monospace,monosp=
-ace; white-space: pre-wrap;">mroute: adapt to new protocol handling and has=
-hing improvements<br><br>Repurposing an unused field and renaming it to &#3=
-9;proto&#39;<br>instead of introducing a new field. The hashing now<br>begi=
-ns at the &#39;proto&#39; field rather than the &#39;type&#39;<br>field. Ad=
-ditionally, the changes ensure that the<br>correct protocol is consistently=
- used with virtual<br>addresses ensuring alignment.<br><br>Change-Id: Ic66e=
-ccb5058fe9c0fae64d8e2ca88728068a92ab<br>Signed-off-by: Gianmarco De Gregori=
- &lt;gianmarco@...2726...&gt;<br>Acked-by: Gert Doering &lt;gert@...1296...=
-&gt;<br>Message-Id: &lt;20250124205135.18765-1-gert@...1296...&gt;<br>URL: =
-https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg30579.h=
-tml<br>Signed-off-by: Gert Doering &lt;gert@...1296...&gt;<br>---<br>M src/=
-openvpn/mroute.c<br>M src/openvpn/mroute.h<br>M src/openvpn/mtcp.c<br>M src=
-/openvpn/mudp.c<br>M src/openvpn/multi.c<br>5 files changed, 21 insertions(=
-+), 4 deletions(-)<br><br></pre>
-<pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><sp=
-an>diff --git a/src/openvpn/mroute.c b/src/openvpn/mroute.c</span><br><span=
->index 80e18b7..74923cf 100644</span><br><span>--- a/src/openvpn/mroute.c</=
-span><br><span>+++ b/src/openvpn/mroute.c</span><br><span>@@ -454,6 +454,7 =
-@@</span><br><span>                 buf_printf(&amp;out, &quot;UNKNOWN&quot=
-;);</span><br><span>                 break;</span><br><span>         }</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+        buf_printf(&amp;=
-out, &quot;|%d&quot;, maddr.proto);</span><br><span>         return BSTR(&a=
-mp;out);</span><br><span>     }</span><br><span>     else</span><br><span>d=
-iff --git a/src/openvpn/mroute.h b/src/openvpn/mroute.h</span><br><span>ind=
-ex 8b457d4..2659695 100644</span><br><span>--- a/src/openvpn/mroute.h</span=
-><br><span>+++ b/src/openvpn/mroute.h</span><br><span>@@ -74,7 +74,7 @@</sp=
-an><br><span> </span><br><span> struct mroute_addr {</span><br><span>     u=
-int8_t len;    /* length of address */</span><br><span style=3D"color: hsl(=
-0, 100%, 40%);">-    uint8_t unused;</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+    uint8_t proto;</span><br><span>     uint8_t type;   /*=
- MR_ADDR/MR_WITH flags */</span><br><span>     uint8_t netbits; /* number o=
-f bits in network part of address,</span><br><span>                       *=
- valid if MR_WITH_NETBITS is set */</span><br><span>@@ -183,6 +183,15 @@</s=
-pan><br><span> {</span><br><span>     unsigned int ret =3D 0;</span><br><sp=
-an>     verify_align_4(buf);</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    /*</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+     * Since we don&#39=
-;t really need the protocol on vaddresses for internal VPN</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+     * payload packets, make sure we=
- have the same value to avoid hashing insert</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+     * and search issues.</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+     */</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+    src-&gt;proto =3D 0;</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+    dest-&gt;proto =3D src-&gt;proto;</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+</span><br><span>     if (tunnel_=
-type =3D=3D DEV_TYPE_TUN)</span><br><span>     {</span><br><span>         r=
-et =3D mroute_extract_addr_ip(src, dest, buf);</span><br><span>@@ -201,6 +2=
-10,10 @@</span><br><span>     {</span><br><span>         return false;</spa=
-n><br><span>     }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-   if (a1-&gt;proto !=3D a2-&gt;proto)</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+        return false;</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+    }</span><br><span>     if (a1-&gt;netbits !=3D a2-&gt;netbits)</=
-span><br><span>     {</span><br><span>         return false;</span><br><spa=
-n>@@ -216,13 +229,13 @@</span><br><span> mroute_addr_hash_ptr(const struct =
-mroute_addr *a)</span><br><span> {</span><br><span>     /* NOTE: depends on=
- ordering of struct mroute_addr */</span><br><span style=3D"color: hsl(0, 1=
-00%, 40%);">-    return (uint8_t *) &amp;a-&gt;type;</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    return (uint8_t *) &amp;a-&gt;proto;<=
-/span><br><span> }</span><br><span> </span><br><span> static inline uint32_=
-t</span><br><span> mroute_addr_hash_len(const struct mroute_addr *a)</span>=
-<br><span> {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    retur=
-n (uint32_t) a-&gt;len + 2;</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+    return (uint32_t) a-&gt;len + 3;</span><br><span> }</span><br><=
-span> </span><br><span> static inline void</span><br><span>diff --git a/src=
-/openvpn/mtcp.c b/src/openvpn/mtcp.c</span><br><span>index 6d1d5a0..62ed044=
- 100644</span><br><span>--- a/src/openvpn/mtcp.c</span><br><span>+++ b/src/=
-openvpn/mtcp.c</span><br><span>@@ -56,6 +56,7 @@</span><br><span>     mi =
-=3D multi_create_instance(m, NULL, ls);</span><br><span>     if (mi)</span>=
-<br><span>     {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
-     mi-&gt;real.proto =3D ls-&gt;info.proto;</span><br><span>         stru=
-ct hash_element *he;</span><br><span>         const uint32_t hv =3D hash_va=
-lue(hash, &amp;mi-&gt;real);</span><br><span>         struct hash_bucket *b=
-ucket =3D hash_bucket(hash, hv);</span><br><span>diff --git a/src/openvpn/m=
-udp.c b/src/openvpn/mudp.c</span><br><span>index 6137578..4f2bbd7 100644</s=
-pan><br><span>--- a/src/openvpn/mudp.c</span><br><span>+++ b/src/openvpn/mu=
-dp.c</span><br><span>@@ -192,6 +192,7 @@</span><br><span>     struct mroute=
-_addr real =3D {0};</span><br><span>     struct multi_instance *mi =3D NULL=
-;</span><br><span>     struct hash *hash =3D m-&gt;hash;</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+    real.proto =3D ls-&gt;info.proto;<=
-/span><br><span> </span><br><span>     if (mroute_extract_openvpn_sockaddr(=
-&amp;real, &amp;m-&gt;top.c2.from.dest, true)</span><br><span>         &amp=
-;&amp; m-&gt;top.c2.buf.len &gt; 0)</span><br><span>diff --git a/src/openvp=
-n/multi.c b/src/openvpn/multi.c</span><br><span>index 3f55dd7..9c8c014 1006=
-44</span><br><span>--- a/src/openvpn/multi.c</span><br><span>+++ b/src/open=
-vpn/multi.c</span><br><span>@@ -794,6 +794,7 @@</span><br><span>         {<=
-/span><br><span>             goto err;</span><br><span>         }</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+        mi-&gt;real.proto =3D=
- ls-&gt;info.proto;</span><br><span>         generate_prefix(mi);</span><br=
-><span>     }</span><br><span> </span><br><span>@@ -1243,6 +1244,7 @@</span=
-><br><span>     CLEAR(remote_si);</span><br><span>     remote_si.addr.in4.s=
-in_family =3D AF_INET;</span><br><span>     remote_si.addr.in4.sin_addr.s_a=
-ddr =3D htonl(a);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-  addr.proto =3D 0;</span><br><span>     ASSERT(mroute_extract_openvpn_sock=
-addr(&amp;addr, &amp;remote_si, false));</span><br><span> </span><br><span>=
-     if (netbits &gt;=3D 0)</span><br><span>@@ -3548,7 +3550,6 @@</span><br=
-><span>         const int dev_type =3D TUNNEL_TYPE(m-&gt;top.c1.tuntap);</s=
-pan><br><span>         int16_t vid =3D 0;</span><br><span> </span><br><span=
- style=3D"color: hsl(0, 100%, 40%);">-</span><br><span> #ifdef MULTI_DEBUG_=
-EVENT_LOOP</span><br><span>         printf(&quot;TUN -&gt; TCP/UDP [%d]\n&q=
-uot;, BLEN(&amp;m-&gt;top.c2.buf));</span><br><span> #endif</span><br><span=
-></span><br></pre><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/=
-openvpn/+/765?usp=3Demail">change 765</a>. To unsubscribe, or for help writ=
-ing mail filters, visit <a href=3D"http://gerrit.openvpn.net/settings">sett=
-ings</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><di=
-v itemscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><=
-link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/765?usp=
-=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
-
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: Ic66eccb5058fe9c0fae64d8e2ca=
-88728068a92ab </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 765 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 18 </div>
-<div style=3D"display:none"> Gerrit-Owner: its_Giaan &lt;gianmarco@...2786...=
-..&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
- </div>
-<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
-1...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: ordex &lt;a@...2181...&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: merged </div>
-
-
---K7UGAwgczDw=--
+-        multi_set_pending(m, multi_get_create_instance_udp(m, &floated, ls));
++        multi_set_pending(m, multi_get_create_instance_udp(m, &floated, sock));
+     }
+     else
+     {
+@@ -3390,14 +3390,14 @@
+             /* decrypt in instance context */
+ 
+             perf_push(PERF_PROC_IN_LINK);
+-            lsi = &ls->info;
++            lsi = &sock->info;
+             orig_buf = c->c2.buf.data;
+             if (process_incoming_link_part1(c, lsi, floated))
+             {
+                 /* nonzero length means that we have a valid, decrypted packed */
+                 if (floated && c->c2.buf.len > 0)
+                 {
+-                    multi_process_float(m, m->pending, ls);
++                    multi_process_float(m, m->pending, sock);
+                 }
+ 
+                 process_incoming_link_part2(c, lsi, orig_buf);
+diff --git a/src/openvpn/multi.h b/src/openvpn/multi.h
+index 092aed6..229f500 100644
+--- a/src/openvpn/multi.h
++++ b/src/openvpn/multi.h
+@@ -275,7 +275,7 @@
+ void multi_top_free(struct multi_context *m);
+ 
+ struct multi_instance *multi_create_instance(struct multi_context *m, const struct mroute_addr *real,
+-                                             struct link_socket *ls);
++                                             struct link_socket *sock);
+ 
+ void multi_close_instance(struct multi_context *m, struct multi_instance *mi, bool shutdown);
+ 
+@@ -290,7 +290,7 @@
+  * updates hashtables in multi_context.
+  */
+ void multi_process_float(struct multi_context *m, struct multi_instance *mi,
+-                         struct link_socket *ls);
++                         struct link_socket *sock);
+ 
+ #define MPP_PRE_SELECT             (1<<0)
+ #define MPP_CONDITIONAL_PRE_SELECT (1<<1)
+@@ -355,10 +355,10 @@
+  *                       when using TCP transport. Otherwise NULL, as is
+  *                       the case when using UDP transport.
+  * @param mpp_flags    - Fast I/O optimization flags.
+- * @param ls           - Socket where the packet was received.
++ * @param sock         - Socket where the packet was received.
+  */
+ bool multi_process_incoming_link(struct multi_context *m, struct multi_instance *instance, const unsigned int mpp_flags,
+-                                 struct link_socket *ls);
++                                 struct link_socket *sock);
+ 
+ 
+ /**
 
