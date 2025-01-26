@@ -1,14 +1,14 @@
 From: "plaisthos (Code Review)" <gerrit@...515...>
-Date: Sun, 26 Jan 2025 15:18:49 +0000
+Date: Sun, 26 Jan 2025 17:11:13 +0000
 In-Reply-To: <gerrit.1737460984000.Ie1e2eb54d516b3ae87c5ca56fe8edd77ee2be4de@...2715...>
 References: <gerrit.1737460984000.Ie1e2eb54d516b3ae87c5ca56fe8edd77ee2be4de@...2715...>
 Reply-To: arne-openvpn@...1227..., openvpn-devel@lists.sourceforge.net,
  frank@...2641...
-Message-ID: <27f67244524f6a9ea76ad27a30ec2363ad44835a-EmailReplacePatchSet-HTML@...2715...>
+Message-ID: <659508123caf40373a2893a8b0edeb2fda417adb-EmailReplacePatchSet-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="uf7qQAjlaBg="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="JUOqrID2/cA="; charset=UTF-8
 Subject: [Openvpn-devel] [M] Change in openvpn[master]: Print
  warnings/errors when numerical parameters cannot be parsed
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -22,7 +22,7 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: flichtenheld <frank@...2641...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---uf7qQAjlaBg=
+--JUOqrID2/cA=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
@@ -32,7 +32,7 @@ I'd like you to reexamine a change. Please visit
 
     http://gerrit.openvpn.net/c/openvpn/+/873?usp=3Demail
 
-to look at the new patch set (#4).
+to look at the new patch set (#5).
 
 
 Change subject: Print warnings/errors when numerical parameters cannot be p=
@@ -61,10 +61,10 @@ M src/openvpn/options.c
 1 file changed, 129 insertions(+), 78 deletions(-)
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/73/873/4
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/73/873/5
 
 diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index bd5c056..69b0148 100644
+index bd5c056..b0600af 100644
 --- a/src/openvpn/options.c
 +++ b/src/openvpn/options.c
 @@ -5014,11 +5014,62 @@
@@ -86,7 +86,7 @@ index bd5c056..69b0148 100644
 +    if (i < INT_MIN || (positive && i < 0) || *endptr !=3D '\0' || i > INT=
 _MAX)
 +    {
-+        return false
++        return false;
 +    }
 +    else
 +    {
@@ -763,18 +763,18 @@ Gerrit-Project: openvpn
 Gerrit-Branch: master
 Gerrit-Change-Id: Ie1e2eb54d516b3ae87c5ca56fe8edd77ee2be4de
 Gerrit-Change-Number: 873
-Gerrit-PatchSet: 4
+Gerrit-PatchSet: 5
 Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-MessageType: newpatchset
 
---uf7qQAjlaBg=
+--JUOqrID2/cA=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p>plaisthos <strong>uploaded patch set #4</strong> to this change.</p><p><=
+<p>plaisthos <strong>uploaded patch set #5</strong> to this change.</p><p><=
 a href=3D"http://gerrit.openvpn.net/c/openvpn/+/873?usp=3Demail">View Chang=
 e</a></p><pre style=3D"font-family: monospace,monospace; white-space: pre-w=
 rap;">Print warnings/errors when numerical parameters cannot be parsed<br><=
@@ -791,10 +791,10 @@ gt;<br>Change-Id: Ie1e2eb54d516b3ae87c5ca56fe8edd77ee2be4de<br>Signed-off-b=
 y: Arne Schwabe &lt;arne@...1227...&gt;<br>---<br>M src/openvpn/options.c<b=
 r>1 file changed, 129 insertions(+), 78 deletions(-)<br><br></pre><pre styl=
 e=3D"font-family: monospace,monospace; white-space: pre-wrap;">git pull ssh=
-://gerrit.openvpn.net:29418/openvpn refs/changes/73/873/4</pre><pre style=
+://gerrit.openvpn.net:29418/openvpn refs/changes/73/873/5</pre><pre style=
 =3D"font-family: monospace,monospace; white-space: pre-wrap;"><span>diff --=
 git a/src/openvpn/options.c b/src/openvpn/options.c</span><br><span>index b=
-d5c056..69b0148 100644</span><br><span>--- a/src/openvpn/options.c</span><b=
+d5c056..b0600af 100644</span><br><span>--- a/src/openvpn/options.c</span><b=
 r><span>+++ b/src/openvpn/options.c</span><br><span>@@ -5014,11 +5014,62 @@=
 </span><br><span> }</span><br><span> #endif</span><br><span> </span><br><sp=
 an style=3D"color: hsl(0, 100%, 40%);">-static int</span><br><span style=3D=
@@ -813,390 +813,390 @@ turn i &lt; 0 ? 0 : i;</span><br><span style=3D"color: hsl(120, 100%, 40%);=
  100%, 40%);">+    if (i &lt; INT_MIN || (positive &amp;&amp; i &lt; 0) || =
 *endptr !=3D &#39;\0&#39; || i &gt; INT_MAX)</span><br><span style=3D"color=
 : hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+        return false</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-  else</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+        return true;</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+/**</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+ * Converts a str to a positive numbe=
-r if the string represents a postive</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+ * integer number. Otherwise print a warning with msglevel=
- and return 0</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ */</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+static int</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+positive_atoi(const char *str, =
-int msglevel)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+    char *endptr;</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+    long long i =3D strtol=
-l(str, &amp;endptr, 10);</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (i &lt;=
- 0 || *endptr !=3D &#39;\0&#39; || i &gt; INT_MAX)</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+        msg(msglevel, &quot;Cannot parse argument &#39;%s&=
-#39; as non-negative integer&quot;,</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+            str);</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+        i =3D 0;</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+    return (int) i;</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+/**</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
- * Converts a str to an integer if the string can be represented as an</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+ * integer number. Other=
-wise print a warning with msglevel and return 0</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+ */</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+static int</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+atoi_warn(const char *str, int msglevel)</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+    char *endptr;</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+    long long i =3D strtoll(str, &amp;endptr, 10);</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+    if (i &lt; INT_MIN || *endptr !=3D &#39;\0&#39; || i &g=
-t; INT_MAX)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+        msg(msglevel, =
-&quot;Cannot parse argument &#39;%s&#39; as integer&quot;, str);</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+        i =3D 0;</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+    return (int) i;</span><br><span> }</span><br><span> </span><br=
-><span> #ifdef _WIN32  /* This function is only used when compiling on Wind=
-ows */</span><br><span>@@ -6043,7 +6094,7 @@</span><br><span>         int c=
-ache;</span><br><span> </span><br><span>         VERIFY_PERMISSION(OPT_P_GE=
-NERAL);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        cache =
-=3D atoi(p[1]);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-    cache =3D atoi_warn(p[1], msglevel);</span><br><span>         if (cache=
- &lt; 1)</span><br><span>         {</span><br><span>             msg(msglev=
-el, &quot;--management-log-cache parameter is out of range&quot;);</span><b=
-r><span>@@ -6355,7 +6406,7 @@</span><br><span>         }</span><br><span>  =
-       else</span><br><span>         {</span><br><span style=3D"color: hsl(=
-0, 100%, 40%);">-            options-&gt;resolve_retry_seconds =3D positive=
-_atoi(p[1]);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
-     options-&gt;resolve_retry_seconds =3D positive_atoi(p[1], msglevel);</=
-span><br><span>         }</span><br><span>     }</span><br><span>     else =
-if ((streq(p[0], &quot;preresolve&quot;) || streq(p[0], &quot;ip-remote-hin=
-t&quot;)) &amp;&amp; !p[2])</span><br><span>@@ -6372,7 +6423,7 @@</span><br=
-><span>     else if (streq(p[0], &quot;connect-retry&quot;) &amp;&amp; p[1]=
- &amp;&amp; !p[3])</span><br><span>     {</span><br><span>         VERIFY_P=
-ERMISSION(OPT_P_GENERAL|OPT_P_CONNECTION);</span><br><span style=3D"color: =
-hsl(0, 100%, 40%);">-        options-&gt;ce.connect_retry_seconds =3D posit=
+%, 40%);">+        return false;</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+   else</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+        return true;</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+/**</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+ * Converts a str to a positive numb=
+er if the string represents a postive</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+ * integer number. Otherwise print a warning with msgleve=
+l and return 0</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ */</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+static int</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+positive_atoi(const char *str,=
+ int msglevel)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+    char *endptr;</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+    long long i =3D strto=
+ll(str, &amp;endptr, 10);</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (i &lt=
+; 0 || *endptr !=3D &#39;\0&#39; || i &gt; INT_MAX)</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+        msg(msglevel, &quot;Cannot parse argument &#39;=
+%s&#39; as non-negative integer&quot;,</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+            str);</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+        i =3D 0;</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    return (int) i;=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+/**</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+ * Converts a str to an integer if the string can be represented as an</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * integer number. Ot=
+herwise print a warning with msglevel and return 0</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+ */</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+static int</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+atoi_warn(const char *str, int msglevel)</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+    char *endptr;</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+    long long i =3D strtoll(str, &amp;endptr, 10);</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+    if (i &lt; INT_MIN || *endptr !=3D &#39;\0&#39; || i=
+ &gt; INT_MAX)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        msg(msgleve=
+l, &quot;Cannot parse argument &#39;%s&#39; as integer&quot;, str);</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+        i =3D 0;</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+    return (int) i;</span><br><span> }</span><br><span> </span>=
+<br><span> #ifdef _WIN32  /* This function is only used when compiling on W=
+indows */</span><br><span>@@ -6043,7 +6094,7 @@</span><br><span>         in=
+t cache;</span><br><span> </span><br><span>         VERIFY_PERMISSION(OPT_P=
+_GENERAL);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        cac=
+he =3D atoi(p[1]);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+       cache =3D atoi_warn(p[1], msglevel);</span><br><span>         if (ca=
+che &lt; 1)</span><br><span>         {</span><br><span>             msg(msg=
+level, &quot;--management-log-cache parameter is out of range&quot;);</span=
+><br><span>@@ -6355,7 +6406,7 @@</span><br><span>         }</span><br><span=
+>         else</span><br><span>         {</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-            options-&gt;resolve_retry_seconds =3D posit=
 ive_atoi(p[1]);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-    options-&gt;ce.connect_retry_seconds =3D positive_atoi(p[1], msglevel);=
-</span><br><span>         /*</span><br><span>          * Limit the base val=
-ue of retry wait interval to 16 bits to avoid</span><br><span>          * o=
-verflow when scaled up for exponential backoff</span><br><span>@@ -6387,19 =
-+6438,19 @@</span><br><span>         if (p[2])</span><br><span>         {</=
-span><br><span>             options-&gt;ce.connect_retry_seconds_max =3D</s=
-pan><br><span style=3D"color: hsl(0, 100%, 40%);">-                max_int(=
-positive_atoi(p[2]), options-&gt;ce.connect_retry_seconds);</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+                max_int(positive_at=
-oi(p[2], msglevel), options-&gt;ce.connect_retry_seconds);</span><br><span>=
-         }</span><br><span>     }</span><br><span>     else if ((streq(p[0]=
-, &quot;connect-timeout&quot;) || streq(p[0], &quot;server-poll-timeout&quo=
-t;))</span><br><span>              &amp;&amp; p[1] &amp;&amp; !p[2])</span>=
-<br><span>     {</span><br><span>         VERIFY_PERMISSION(OPT_P_GENERAL|O=
-PT_P_CONNECTION);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
-    options-&gt;ce.connect_timeout =3D positive_atoi(p[1]);</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+        options-&gt;ce.connect_time=
-out =3D positive_atoi(p[1], msglevel);</span><br><span>     }</span><br><sp=
-an>     else if (streq(p[0], &quot;connect-retry-max&quot;) &amp;&amp; p[1]=
- &amp;&amp; !p[2])</span><br><span>     {</span><br><span>         VERIFY_P=
-ERMISSION(OPT_P_GENERAL|OPT_P_CONNECTION);</span><br><span style=3D"color: =
-hsl(0, 100%, 40%);">-        options-&gt;connect_retry_max =3D positive_ato=
-i(p[1]);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        opt=
-ions-&gt;connect_retry_max =3D positive_atoi(p[1], msglevel);</span><br><sp=
-an>     }</span><br><span>     else if (streq(p[0], &quot;ipchange&quot;) &=
-amp;&amp; p[1])</span><br><span>     {</span><br><span>@@ -6422,7 +6473,7 @=
-@</span><br><span>     else if (streq(p[0], &quot;gremlin&quot;) &amp;&amp;=
- p[1] &amp;&amp; !p[2])</span><br><span>     {</span><br><span>         VER=
-IFY_PERMISSION(OPT_P_GENERAL);</span><br><span style=3D"color: hsl(0, 100%,=
- 40%);">-        options-&gt;gremlin =3D positive_atoi(p[1]);</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+        options-&gt;gremlin =3D p=
-ositive_atoi(p[1], msglevel);</span><br><span>     }</span><br><span> #endi=
-f</span><br><span>     else if (streq(p[0], &quot;chroot&quot;) &amp;&amp; =
-p[1] &amp;&amp; !p[2])</span><br><span>@@ -6554,7 +6605,7 @@</span><br><spa=
-n>     else if (streq(p[0], &quot;verb&quot;) &amp;&amp; p[1] &amp;&amp; !p=
-[2])</span><br><span>     {</span><br><span>         VERIFY_PERMISSION(OPT_=
-P_MESSAGES);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        o=
-ptions-&gt;verbosity =3D positive_atoi(p[1]);</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+        options-&gt;verbosity =3D positive_atoi(p=
-[1], msglevel);</span><br><span>         if (options-&gt;verbosity &gt;=3D =
-(D_TLS_DEBUG_MED &amp; M_DEBUG_LEVEL))</span><br><span>         {</span><br=
-><span>             /* We pass this flag to the SSL library to avoid</span>=
-<br><span>@@ -6573,7 +6624,7 @@</span><br><span>     else if (streq(p[0], &=
-quot;mute&quot;) &amp;&amp; p[1] &amp;&amp; !p[2])</span><br><span>     {</=
-span><br><span>         VERIFY_PERMISSION(OPT_P_MESSAGES);</span><br><span =
-style=3D"color: hsl(0, 100%, 40%);">-        options-&gt;mute =3D positive_=
+        options-&gt;resolve_retry_seconds =3D positive_atoi(p[1], msglevel)=
+;</span><br><span>         }</span><br><span>     }</span><br><span>     el=
+se if ((streq(p[0], &quot;preresolve&quot;) || streq(p[0], &quot;ip-remote-=
+hint&quot;)) &amp;&amp; !p[2])</span><br><span>@@ -6372,7 +6423,7 @@</span>=
+<br><span>     else if (streq(p[0], &quot;connect-retry&quot;) &amp;&amp; p=
+[1] &amp;&amp; !p[3])</span><br><span>     {</span><br><span>         VERIF=
+Y_PERMISSION(OPT_P_GENERAL|OPT_P_CONNECTION);</span><br><span style=3D"colo=
+r: hsl(0, 100%, 40%);">-        options-&gt;ce.connect_retry_seconds =3D po=
+sitive_atoi(p[1]);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+       options-&gt;ce.connect_retry_seconds =3D positive_atoi(p[1], msgleve=
+l);</span><br><span>         /*</span><br><span>          * Limit the base =
+value of retry wait interval to 16 bits to avoid</span><br><span>          =
+* overflow when scaled up for exponential backoff</span><br><span>@@ -6387,=
+19 +6438,19 @@</span><br><span>         if (p[2])</span><br><span>         =
+{</span><br><span>             options-&gt;ce.connect_retry_seconds_max =3D=
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">-                max_i=
+nt(positive_atoi(p[2]), options-&gt;ce.connect_retry_seconds);</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+                max_int(positive=
+_atoi(p[2], msglevel), options-&gt;ce.connect_retry_seconds);</span><br><sp=
+an>         }</span><br><span>     }</span><br><span>     else if ((streq(p=
+[0], &quot;connect-timeout&quot;) || streq(p[0], &quot;server-poll-timeout&=
+quot;))</span><br><span>              &amp;&amp; p[1] &amp;&amp; !p[2])</sp=
+an><br><span>     {</span><br><span>         VERIFY_PERMISSION(OPT_P_GENERA=
+L|OPT_P_CONNECTION);</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
+       options-&gt;ce.connect_timeout =3D positive_atoi(p[1]);</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+        options-&gt;ce.connect_t=
+imeout =3D positive_atoi(p[1], msglevel);</span><br><span>     }</span><br>=
+<span>     else if (streq(p[0], &quot;connect-retry-max&quot;) &amp;&amp; p=
+[1] &amp;&amp; !p[2])</span><br><span>     {</span><br><span>         VERIF=
+Y_PERMISSION(OPT_P_GENERAL|OPT_P_CONNECTION);</span><br><span style=3D"colo=
+r: hsl(0, 100%, 40%);">-        options-&gt;connect_retry_max =3D positive_=
 atoi(p[1]);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        =
-options-&gt;mute =3D positive_atoi(p[1], msglevel);</span><br><span>     }<=
-/span><br><span>     else if (streq(p[0], &quot;errors-to-stderr&quot;) &am=
-p;&amp; !p[1])</span><br><span>     {</span><br><span>@@ -6586,7 +6637,7 @@=
-</span><br><span>         options-&gt;status_file =3D p[1];</span><br><span=
->         if (p[2])</span><br><span>         {</span><br><span style=3D"col=
-or: hsl(0, 100%, 40%);">-            options-&gt;status_file_update_freq =
-=3D positive_atoi(p[2]);</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+            options-&gt;status_file_update_freq =3D positive_atoi(p[2]=
-, msglevel);</span><br><span>         }</span><br><span>     }</span><br><s=
-pan>     else if (streq(p[0], &quot;status-version&quot;) &amp;&amp; p[1] &=
-amp;&amp; !p[2])</span><br><span>@@ -6594,7 +6645,7 @@</span><br><span>    =
-     int version;</span><br><span> </span><br><span>         VERIFY_PERMISS=
-ION(OPT_P_GENERAL);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
-      version =3D atoi(p[1]);</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+        version =3D atoi_warn(p[1], msglevel);</span><br><span>  =
-       if (version &lt; 1 || version &gt; 3)</span><br><span>         {</sp=
-an><br><span>             msg(msglevel, &quot;--status-version must be 1 to=
- 3&quot;);</span><br><span>@@ -6622,17 +6673,17 @@</span><br><span>     els=
-e if ((streq(p[0], &quot;link-mtu&quot;) || streq(p[0], &quot;udp-mtu&quot;=
-)) &amp;&amp; p[1] &amp;&amp; !p[2])</span><br><span>     {</span><br><span=
->         VERIFY_PERMISSION(OPT_P_MTU|OPT_P_CONNECTION);</span><br><span st=
-yle=3D"color: hsl(0, 100%, 40%);">-        options-&gt;ce.link_mtu =3D posi=
+options-&gt;connect_retry_max =3D positive_atoi(p[1], msglevel);</span><br>=
+<span>     }</span><br><span>     else if (streq(p[0], &quot;ipchange&quot;=
+) &amp;&amp; p[1])</span><br><span>     {</span><br><span>@@ -6422,7 +6473,=
+7 @@</span><br><span>     else if (streq(p[0], &quot;gremlin&quot;) &amp;&a=
+mp; p[1] &amp;&amp; !p[2])</span><br><span>     {</span><br><span>         =
+VERIFY_PERMISSION(OPT_P_GENERAL);</span><br><span style=3D"color: hsl(0, 10=
+0%, 40%);">-        options-&gt;gremlin =3D positive_atoi(p[1]);</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+        options-&gt;gremlin =
+=3D positive_atoi(p[1], msglevel);</span><br><span>     }</span><br><span> =
+#endif</span><br><span>     else if (streq(p[0], &quot;chroot&quot;) &amp;&=
+amp; p[1] &amp;&amp; !p[2])</span><br><span>@@ -6554,7 +6605,7 @@</span><br=
+><span>     else if (streq(p[0], &quot;verb&quot;) &amp;&amp; p[1] &amp;&am=
+p; !p[2])</span><br><span>     {</span><br><span>         VERIFY_PERMISSION=
+(OPT_P_MESSAGES);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
+    options-&gt;verbosity =3D positive_atoi(p[1]);</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+        options-&gt;verbosity =3D positive_a=
+toi(p[1], msglevel);</span><br><span>         if (options-&gt;verbosity &gt=
+;=3D (D_TLS_DEBUG_MED &amp; M_DEBUG_LEVEL))</span><br><span>         {</spa=
+n><br><span>             /* We pass this flag to the SSL library to avoid</=
+span><br><span>@@ -6573,7 +6624,7 @@</span><br><span>     else if (streq(p[=
+0], &quot;mute&quot;) &amp;&amp; p[1] &amp;&amp; !p[2])</span><br><span>   =
+  {</span><br><span>         VERIFY_PERMISSION(OPT_P_MESSAGES);</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-        options-&gt;mute =3D posi=
 tive_atoi(p[1]);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
-     options-&gt;ce.link_mtu =3D positive_atoi(p[1], msglevel);</span><br><=
-span>         options-&gt;ce.link_mtu_defined =3D true;</span><br><span>   =
-  }</span><br><span>     else if (streq(p[0], &quot;tun-mtu&quot;) &amp;&am=
-p; p[1] &amp;&amp; !p[3])</span><br><span>     {</span><br><span>         V=
-ERIFY_PERMISSION(OPT_P_PUSH_MTU|OPT_P_CONNECTION);</span><br><span style=3D=
-"color: hsl(0, 100%, 40%);">-        options-&gt;ce.tun_mtu =3D positive_at=
-oi(p[1]);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        op=
-tions-&gt;ce.tun_mtu =3D positive_atoi(p[1], msglevel);</span><br><span>   =
-      options-&gt;ce.tun_mtu_defined =3D true;</span><br><span>         if =
-(p[2])</span><br><span>         {</span><br><span style=3D"color: hsl(0, 10=
-0%, 40%);">-            options-&gt;ce.occ_mtu =3D positive_atoi(p[2]);</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+            options-&gt=
-;ce.occ_mtu =3D positive_atoi(p[2], msglevel);</span><br><span>         }</=
-span><br><span>         else</span><br><span>         {</span><br><span>@@ =
--6642,7 +6693,7 @@</span><br><span>     else if (streq(p[0], &quot;tun-mtu-=
-max&quot;) &amp;&amp; p[1] &amp;&amp; !p[3])</span><br><span>     {</span><=
-br><span>         VERIFY_PERMISSION(OPT_P_MTU|OPT_P_CONNECTION);</span><br>=
-<span style=3D"color: hsl(0, 100%, 40%);">-        int max_mtu =3D positive=
-_atoi(p[1]);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
- int max_mtu =3D positive_atoi(p[1], msglevel);</span><br><span>         if=
- (max_mtu &lt; 68 || max_mtu &gt; 65536)</span><br><span>         {</span><=
-br><span>             msg(msglevel, &quot;--tun-mtu-max value &#39;%s&#39; =
-is invalid&quot;, p[1]);</span><br><span>@@ -6655,13 +6706,13 @@</span><br>=
-<span>     else if (streq(p[0], &quot;tun-mtu-extra&quot;) &amp;&amp; p[1] =
-&amp;&amp; !p[2])</span><br><span>     {</span><br><span>         VERIFY_PE=
-RMISSION(OPT_P_MTU|OPT_P_CONNECTION);</span><br><span style=3D"color: hsl(0=
-, 100%, 40%);">-        options-&gt;ce.tun_mtu_extra =3D positive_atoi(p[1]=
-);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        options-&=
-gt;ce.tun_mtu_extra =3D positive_atoi(p[1], msglevel);</span><br><span>    =
-     options-&gt;ce.tun_mtu_extra_defined =3D true;</span><br><span>     }<=
-/span><br><span>     else if (streq(p[0], &quot;max-packet-size&quot;) &amp=
-;&amp; p[1] &amp;&amp; !p[2])</span><br><span>     {</span><br><span>      =
-   VERIFY_PERMISSION(OPT_P_MTU|OPT_P_CONNECTION);</span><br><span style=3D"=
-color: hsl(0, 100%, 40%);">-        int maxmtu =3D positive_atoi(p[1]);</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+        int maxmtu =3D =
-positive_atoi(p[1], msglevel);</span><br><span>         options-&gt;ce.tls_=
-mtu =3D constrain_int(maxmtu, TLS_CHANNEL_MTU_MIN, TLS_CHANNEL_BUF_SIZE);</=
-span><br><span> </span><br><span>         if (maxmtu &lt; TLS_CHANNEL_MTU_M=
-IN || maxmtu &gt; TLS_CHANNEL_BUF_SIZE)</span><br><span>@@ -6687,7 +6738,7 =
-@@</span><br><span>     else if (streq(p[0], &quot;fragment&quot;) &amp;&am=
-p; p[1] &amp;&amp; !p[3])</span><br><span>     {</span><br><span>         V=
-ERIFY_PERMISSION(OPT_P_MTU|OPT_P_CONNECTION);</span><br><span style=3D"colo=
-r: hsl(0, 100%, 40%);">-        options-&gt;ce.fragment =3D positive_atoi(p=
-[1]);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        option=
-s-&gt;ce.fragment =3D positive_atoi(p[1], msglevel);</span><br><span> </spa=
-n><br><span>         if (options-&gt;ce.fragment &lt; 68)</span><br><span> =
-        {</span><br><span>@@ -6718,23 +6769,23 @@</span><br><span>     else=
- if (streq(p[0], &quot;nice&quot;) &amp;&amp; p[1] &amp;&amp; !p[2])</span>=
-<br><span>     {</span><br><span>         VERIFY_PERMISSION(OPT_P_NICE);</s=
-pan><br><span style=3D"color: hsl(0, 100%, 40%);">-        options-&gt;nice=
- =3D atoi(p[1]);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
-     options-&gt;nice =3D atoi_warn(p[1], msglevel);</span><br><span>     }=
-</span><br><span>     else if (streq(p[0], &quot;rcvbuf&quot;) &amp;&amp; p=
-[1] &amp;&amp; !p[2])</span><br><span>     {</span><br><span>         VERIF=
-Y_PERMISSION(OPT_P_SOCKBUF);</span><br><span style=3D"color: hsl(0, 100%, 4=
-0%);">-        options-&gt;rcvbuf =3D positive_atoi(p[1]);</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+        options-&gt;rcvbuf =3D posit=
-ive_atoi(p[1], msglevel);</span><br><span>     }</span><br><span>     else =
-if (streq(p[0], &quot;sndbuf&quot;) &amp;&amp; p[1] &amp;&amp; !p[2])</span=
-><br><span>     {</span><br><span>         VERIFY_PERMISSION(OPT_P_SOCKBUF)=
-;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        options-&gt;=
-sndbuf =3D positive_atoi(p[1]);</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+        options-&gt;sndbuf =3D positive_atoi(p[1], msglevel);</=
-span><br><span>     }</span><br><span>     else if (streq(p[0], &quot;mark&=
-quot;) &amp;&amp; p[1] &amp;&amp; !p[2])</span><br><span>     {</span><br><=
-span> #if defined(TARGET_LINUX) &amp;&amp; HAVE_DECL_SO_MARK</span><br><spa=
-n>         VERIFY_PERMISSION(OPT_P_GENERAL);</span><br><span style=3D"color=
-: hsl(0, 100%, 40%);">-        options-&gt;mark =3D atoi(p[1]);</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+        options-&gt;mark =3D at=
-oi_warn(p[1], msglevel);</span><br><span> #endif</span><br><span>     }</sp=
-an><br><span>     else if (streq(p[0], &quot;socket-flags&quot;))</span><br=
-><span>@@ -6764,7 +6815,7 @@</span><br><span>     {</span><br><span>       =
-  VERIFY_PERMISSION(OPT_P_GENERAL);</span><br><span> #ifdef TARGET_LINUX</s=
-pan><br><span style=3D"color: hsl(0, 100%, 40%);">-        options-&gt;tunt=
-ap_options.txqueuelen =3D positive_atoi(p[1]);</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+        options-&gt;tuntap_options.txqueuelen =
-=3D positive_atoi(p[1], msglevel);</span><br><span> #else</span><br><span> =
-        msg(msglevel, &quot;--txqueuelen not supported on this OS&quot;);</=
-span><br><span>         goto err;</span><br><span>@@ -6775,7 +6826,7 @@</sp=
-an><br><span>         int shaper;</span><br><span> </span><br><span>       =
-  VERIFY_PERMISSION(OPT_P_SHAPER);</span><br><span style=3D"color: hsl(0, 1=
-00%, 40%);">-        shaper =3D atoi(p[1]);</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+        shaper =3D atoi_warn(p[1], msglevel);</span=
-><br><span>         if (shaper &lt; SHAPER_MIN || shaper &gt; SHAPER_MAX)</=
-span><br><span>         {</span><br><span>             msg(msglevel, &quot;=
-Bad shaper value, must be between %d and %d&quot;,</span><br><span>@@ -6823=
-,7 +6874,7 @@</span><br><span>     else if (streq(p[0], &quot;inactive&quot=
-;) &amp;&amp; p[1] &amp;&amp; !p[3])</span><br><span>     {</span><br><span=
->         VERIFY_PERMISSION(OPT_P_TIMER);</span><br><span style=3D"color: h=
-sl(0, 100%, 40%);">-        options-&gt;inactivity_timeout =3D positive_ato=
-i(p[1]);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        opt=
-ions-&gt;inactivity_timeout =3D positive_atoi(p[1], msglevel);</span><br><s=
-pan>         if (p[2])</span><br><span>         {</span><br><span>         =
-    int64_t val =3D atoll(p[2]);</span><br><span>@@ -6841,7 +6892,7 @@</spa=
-n><br><span>     else if (streq(p[0], &quot;session-timeout&quot;) &amp;&am=
-p; p[1] &amp;&amp; !p[2])</span><br><span>     {</span><br><span>         V=
-ERIFY_PERMISSION(OPT_P_TIMER);</span><br><span style=3D"color: hsl(0, 100%,=
- 40%);">-        options-&gt;session_timeout =3D positive_atoi(p[1]);</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+        options-&gt;sessi=
-on_timeout =3D positive_atoi(p[1], msglevel);</span><br><span>     }</span>=
-<br><span>     else if (streq(p[0], &quot;proto&quot;) &amp;&amp; p[1] &amp=
-;&amp; !p[2])</span><br><span>     {</span><br><span>@@ -7008,24 +7059,24 @=
-@</span><br><span>     else if (streq(p[0], &quot;keepalive&quot;) &amp;&am=
-p; p[1] &amp;&amp; p[2] &amp;&amp; !p[3])</span><br><span>     {</span><br>=
-<span>         VERIFY_PERMISSION(OPT_P_GENERAL);</span><br><span style=3D"c=
-olor: hsl(0, 100%, 40%);">-        options-&gt;keepalive_ping =3D atoi(p[1]=
+     options-&gt;mute =3D positive_atoi(p[1], msglevel);</span><br><span>  =
+   }</span><br><span>     else if (streq(p[0], &quot;errors-to-stderr&quot;=
+) &amp;&amp; !p[1])</span><br><span>     {</span><br><span>@@ -6586,7 +6637=
+,7 @@</span><br><span>         options-&gt;status_file =3D p[1];</span><br>=
+<span>         if (p[2])</span><br><span>         {</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-            options-&gt;status_file_update_=
+freq =3D positive_atoi(p[2]);</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+            options-&gt;status_file_update_freq =3D positive_atoi=
+(p[2], msglevel);</span><br><span>         }</span><br><span>     }</span><=
+br><span>     else if (streq(p[0], &quot;status-version&quot;) &amp;&amp; p=
+[1] &amp;&amp; !p[2])</span><br><span>@@ -6594,7 +6645,7 @@</span><br><span=
+>         int version;</span><br><span> </span><br><span>         VERIFY_PE=
+RMISSION(OPT_P_GENERAL);</span><br><span style=3D"color: hsl(0, 100%, 40%);=
+">-        version =3D atoi(p[1]);</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+        version =3D atoi_warn(p[1], msglevel);</span><br><sp=
+an>         if (version &lt; 1 || version &gt; 3)</span><br><span>         =
+{</span><br><span>             msg(msglevel, &quot;--status-version must be=
+ 1 to 3&quot;);</span><br><span>@@ -6622,17 +6673,17 @@</span><br><span>   =
+  else if ((streq(p[0], &quot;link-mtu&quot;) || streq(p[0], &quot;udp-mtu&=
+quot;)) &amp;&amp; p[1] &amp;&amp; !p[2])</span><br><span>     {</span><br>=
+<span>         VERIFY_PERMISSION(OPT_P_MTU|OPT_P_CONNECTION);</span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-        options-&gt;ce.link_mtu =3D=
+ positive_atoi(p[1]);</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+        options-&gt;ce.link_mtu =3D positive_atoi(p[1], msglevel);</span>=
+<br><span>         options-&gt;ce.link_mtu_defined =3D true;</span><br><spa=
+n>     }</span><br><span>     else if (streq(p[0], &quot;tun-mtu&quot;) &am=
+p;&amp; p[1] &amp;&amp; !p[3])</span><br><span>     {</span><br><span>     =
+    VERIFY_PERMISSION(OPT_P_PUSH_MTU|OPT_P_CONNECTION);</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-        options-&gt;ce.tun_mtu =3D positi=
+ve_atoi(p[1]);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
+   options-&gt;ce.tun_mtu =3D positive_atoi(p[1], msglevel);</span><br><spa=
+n>         options-&gt;ce.tun_mtu_defined =3D true;</span><br><span>       =
+  if (p[2])</span><br><span>         {</span><br><span style=3D"color: hsl(=
+0, 100%, 40%);">-            options-&gt;ce.occ_mtu =3D positive_atoi(p[2])=
+;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            option=
+s-&gt;ce.occ_mtu =3D positive_atoi(p[2], msglevel);</span><br><span>       =
+  }</span><br><span>         else</span><br><span>         {</span><br><spa=
+n>@@ -6642,7 +6693,7 @@</span><br><span>     else if (streq(p[0], &quot;tun=
+-mtu-max&quot;) &amp;&amp; p[1] &amp;&amp; !p[3])</span><br><span>     {</s=
+pan><br><span>         VERIFY_PERMISSION(OPT_P_MTU|OPT_P_CONNECTION);</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-        int max_mtu =3D pos=
+itive_atoi(p[1]);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+      int max_mtu =3D positive_atoi(p[1], msglevel);</span><br><span>      =
+   if (max_mtu &lt; 68 || max_mtu &gt; 65536)</span><br><span>         {</s=
+pan><br><span>             msg(msglevel, &quot;--tun-mtu-max value &#39;%s&=
+#39; is invalid&quot;, p[1]);</span><br><span>@@ -6655,13 +6706,13 @@</span=
+><br><span>     else if (streq(p[0], &quot;tun-mtu-extra&quot;) &amp;&amp; =
+p[1] &amp;&amp; !p[2])</span><br><span>     {</span><br><span>         VERI=
+FY_PERMISSION(OPT_P_MTU|OPT_P_CONNECTION);</span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">-        options-&gt;ce.tun_mtu_extra =3D positive_atoi=
+(p[1]);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        opti=
+ons-&gt;ce.tun_mtu_extra =3D positive_atoi(p[1], msglevel);</span><br><span=
+>         options-&gt;ce.tun_mtu_extra_defined =3D true;</span><br><span>  =
+   }</span><br><span>     else if (streq(p[0], &quot;max-packet-size&quot;)=
+ &amp;&amp; p[1] &amp;&amp; !p[2])</span><br><span>     {</span><br><span> =
+        VERIFY_PERMISSION(OPT_P_MTU|OPT_P_CONNECTION);</span><br><span styl=
+e=3D"color: hsl(0, 100%, 40%);">-        int maxmtu =3D positive_atoi(p[1])=
+;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        int maxmtu=
+ =3D positive_atoi(p[1], msglevel);</span><br><span>         options-&gt;ce=
+.tls_mtu =3D constrain_int(maxmtu, TLS_CHANNEL_MTU_MIN, TLS_CHANNEL_BUF_SIZ=
+E);</span><br><span> </span><br><span>         if (maxmtu &lt; TLS_CHANNEL_=
+MTU_MIN || maxmtu &gt; TLS_CHANNEL_BUF_SIZE)</span><br><span>@@ -6687,7 +67=
+38,7 @@</span><br><span>     else if (streq(p[0], &quot;fragment&quot;) &am=
+p;&amp; p[1] &amp;&amp; !p[3])</span><br><span>     {</span><br><span>     =
+    VERIFY_PERMISSION(OPT_P_MTU|OPT_P_CONNECTION);</span><br><span style=3D=
+"color: hsl(0, 100%, 40%);">-        options-&gt;ce.fragment =3D positive_a=
+toi(p[1]);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        o=
+ptions-&gt;ce.fragment =3D positive_atoi(p[1], msglevel);</span><br><span> =
+</span><br><span>         if (options-&gt;ce.fragment &lt; 68)</span><br><s=
+pan>         {</span><br><span>@@ -6718,23 +6769,23 @@</span><br><span>    =
+ else if (streq(p[0], &quot;nice&quot;) &amp;&amp; p[1] &amp;&amp; !p[2])</=
+span><br><span>     {</span><br><span>         VERIFY_PERMISSION(OPT_P_NICE=
 );</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        options-&gt=
-;keepalive_timeout =3D atoi(p[2]);</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+        options-&gt;keepalive_ping =3D atoi_warn(p[1], msgle=
-vel);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        option=
-s-&gt;keepalive_timeout =3D atoi_warn(p[2], msglevel);</span><br><span>    =
- }</span><br><span>     else if (streq(p[0], &quot;ping&quot;) &amp;&amp; p=
-[1] &amp;&amp; !p[2])</span><br><span>     {</span><br><span>         VERIF=
-Y_PERMISSION(OPT_P_TIMER);</span><br><span style=3D"color: hsl(0, 100%, 40%=
-);">-        options-&gt;ping_send_timeout =3D positive_atoi(p[1]);</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+        options-&gt;ping_se=
-nd_timeout =3D positive_atoi(p[1], msglevel);</span><br><span>     }</span>=
-<br><span>     else if (streq(p[0], &quot;ping-exit&quot;) &amp;&amp; p[1] =
-&amp;&amp; !p[2])</span><br><span>     {</span><br><span>         VERIFY_PE=
-RMISSION(OPT_P_TIMER);</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
--        options-&gt;ping_rec_timeout =3D positive_atoi(p[1]);</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+        options-&gt;ping_rec_tim=
-eout =3D positive_atoi(p[1], msglevel);</span><br><span>         options-&g=
-t;ping_rec_timeout_action =3D PING_EXIT;</span><br><span>     }</span><br><=
-span>     else if (streq(p[0], &quot;ping-restart&quot;) &amp;&amp; p[1] &a=
-mp;&amp; !p[2])</span><br><span>     {</span><br><span>         VERIFY_PERM=
-ISSION(OPT_P_TIMER);</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
-       options-&gt;ping_rec_timeout =3D positive_atoi(p[1]);</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+        options-&gt;ping_rec_timeo=
-ut =3D positive_atoi(p[1], msglevel);</span><br><span>         options-&gt;=
-ping_rec_timeout_action =3D PING_RESTART;</span><br><span>     }</span><br>=
-<span>     else if (streq(p[0], &quot;ping-timer-rem&quot;) &amp;&amp; !p[1=
-])</span><br><span>@@ -7038,7 +7089,7 @@</span><br><span>         VERIFY_PE=
-RMISSION(OPT_P_GENERAL|OPT_P_CONNECTION|OPT_P_EXPLICIT_NOTIFY);</span><br><=
-span>         if (p[1])</span><br><span>         {</span><br><span style=3D=
-"color: hsl(0, 100%, 40%);">-            options-&gt;ce.explicit_exit_notif=
-ication =3D positive_atoi(p[1]);</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+            options-&gt;ce.explicit_exit_notification =3D posi=
-tive_atoi(p[1], msglevel);</span><br><span>         }</span><br><span>     =
-    else</span><br><span>         {</span><br><span>@@ -7158,7 +7209,7 @@</=
-span><br><span>     else if (streq(p[0], &quot;route-metric&quot;) &amp;&am=
-p; p[1] &amp;&amp; !p[2])</span><br><span>     {</span><br><span>         V=
-ERIFY_PERMISSION(OPT_P_ROUTE);</span><br><span style=3D"color: hsl(0, 100%,=
- 40%);">-        options-&gt;route_default_metric =3D positive_atoi(p[1]);<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+        options-&gt;=
-route_default_metric =3D positive_atoi(p[1], msglevel);</span><br><span>   =
-  }</span><br><span>     else if (streq(p[0], &quot;route-delay&quot;) &amp=
-;&amp; !p[3])</span><br><span>     {</span><br><span>@@ -7166,10 +7217,10 @=
-@</span><br><span>         options-&gt;route_delay_defined =3D true;</span>=
-<br><span>         if (p[1])</span><br><span>         {</span><br><span sty=
-le=3D"color: hsl(0, 100%, 40%);">-            options-&gt;route_delay =3D p=
-ositive_atoi(p[1]);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-            options-&gt;route_delay =3D positive_atoi(p[1], msglevel);</spa=
-n><br><span>             if (p[2])</span><br><span>             {</span><br=
-><span style=3D"color: hsl(0, 100%, 40%);">-                options-&gt;rou=
-te_delay_window =3D positive_atoi(p[2]);</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+                options-&gt;route_delay_window =3D pos=
-itive_atoi(p[2], msglevel);</span><br><span>             }</span><br><span>=
-         }</span><br><span>         else</span><br><span>@@ -7334,7 +7385,7=
- @@</span><br><span>         }</span><br><span>         else if (streq(p[1]=
-, &quot;SERVER_POLL_TIMEOUT&quot;) &amp;&amp; p[2])</span><br><span>       =
-  {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            option=
-s-&gt;ce.connect_timeout =3D positive_atoi(p[2]);</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+            options-&gt;ce.connect_timeout =
-=3D positive_atoi(p[2], msglevel);</span><br><span>         }</span><br><sp=
-an>         else</span><br><span>         {</span><br><span>@@ -7366,14 +74=
-17,14 @@</span><br><span>     else if (streq(p[0], &quot;script-security&qu=
-ot;) &amp;&amp; p[1] &amp;&amp; !p[2])</span><br><span>     {</span><br><sp=
-an>         VERIFY_PERMISSION(OPT_P_GENERAL);</span><br><span style=3D"colo=
-r: hsl(0, 100%, 40%);">-        script_security_set(atoi(p[1]));</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+        script_security_set(at=
-oi_warn(p[1], msglevel));</span><br><span>     }</span><br><span>     else =
-if (streq(p[0], &quot;mssfix&quot;) &amp;&amp; !p[3])</span><br><span>     =
-{</span><br><span>         VERIFY_PERMISSION(OPT_P_GENERAL|OPT_P_CONNECTION=
-);</span><br><span>         if (p[1])</span><br><span>         {</span><br>=
-<span style=3D"color: hsl(0, 100%, 40%);">-            int mssfix =3D posit=
-ive_atoi(p[1]);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-        int mssfix =3D positive_atoi(p[1], msglevel);</span><br><span>     =
-        /* can be 0, but otherwise it needs to be high enough so we can</sp=
-an><br><span>              * substract room for headers. */</span><br><span=
->             if (mssfix !=3D 0</span><br><span>@@ -7556,7 +7607,7 @@</span=
-><br><span>         options-&gt;ifconfig_pool_persist_filename =3D p[1];</s=
-pan><br><span>         if (p[2])</span><br><span>         {</span><br><span=
- style=3D"color: hsl(0, 100%, 40%);">-            options-&gt;ifconfig_pool=
-_persist_refresh_freq =3D positive_atoi(p[2]);</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+            options-&gt;ifconfig_pool_persist_re=
-fresh_freq =3D positive_atoi(p[2], msglevel);</span><br><span>         }</s=
-pan><br><span>     }</span><br><span>     else if (streq(p[0], &quot;ifconf=
-ig-ipv6-pool&quot;) &amp;&amp; p[1] &amp;&amp; !p[2])</span><br><span>@@ -7=
-588,8 +7639,8 @@</span><br><span>         int real, virtual;</span><br><spa=
-n> </span><br><span>         VERIFY_PERMISSION(OPT_P_GENERAL);</span><br><s=
-pan style=3D"color: hsl(0, 100%, 40%);">-        real =3D atoi(p[1]);</span=
-><br><span style=3D"color: hsl(0, 100%, 40%);">-        virtual =3D atoi(p[=
-2]);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        real =
-=3D atoi_warn(p[1], msglevel);</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+        virtual =3D atoi_warn(p[1], msglevel);</span><br><span> =
-        if (real &lt; 1 || virtual &lt; 1)</span><br><span>         {</span=
-><br><span>             msg(msglevel, &quot;--hash-size sizes must be &gt;=
-=3D 1 (preferably a power of 2)&quot;);</span><br><span>@@ -7603,8 +7654,8 =
-@@</span><br><span>         int cf_max, cf_per;</span><br><span> </span><br=
+;nice =3D atoi(p[1]);</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+        options-&gt;nice =3D atoi_warn(p[1], msglevel);</span><br><span> =
+    }</span><br><span>     else if (streq(p[0], &quot;rcvbuf&quot;) &amp;&a=
+mp; p[1] &amp;&amp; !p[2])</span><br><span>     {</span><br><span>         =
+VERIFY_PERMISSION(OPT_P_SOCKBUF);</span><br><span style=3D"color: hsl(0, 10=
+0%, 40%);">-        options-&gt;rcvbuf =3D positive_atoi(p[1]);</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+        options-&gt;rcvbuf =3D =
+positive_atoi(p[1], msglevel);</span><br><span>     }</span><br><span>     =
+else if (streq(p[0], &quot;sndbuf&quot;) &amp;&amp; p[1] &amp;&amp; !p[2])<=
+/span><br><span>     {</span><br><span>         VERIFY_PERMISSION(OPT_P_SOC=
+KBUF);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        options=
+-&gt;sndbuf =3D positive_atoi(p[1]);</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+        options-&gt;sndbuf =3D positive_atoi(p[1], msgleve=
+l);</span><br><span>     }</span><br><span>     else if (streq(p[0], &quot;=
+mark&quot;) &amp;&amp; p[1] &amp;&amp; !p[2])</span><br><span>     {</span>=
+<br><span> #if defined(TARGET_LINUX) &amp;&amp; HAVE_DECL_SO_MARK</span><br=
 ><span>         VERIFY_PERMISSION(OPT_P_GENERAL);</span><br><span style=3D"=
-color: hsl(0, 100%, 40%);">-        cf_max =3D atoi(p[1]);</span><br><span =
-style=3D"color: hsl(0, 100%, 40%);">-        cf_per =3D atoi(p[2]);</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+        cf_max =3D atoi_war=
-n(p[1], msglevel);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-       cf_per =3D atoi_warn(p[2], msglevel);</span><br><span>         if (c=
-f_max &lt; 0 || cf_per &lt; 0)</span><br><span>         {</span><br><span> =
-            msg(msglevel, &quot;--connect-freq parms must be &gt; 0&quot;);=
-</span><br><span>@@ -7634,7 +7685,7 @@</span><br><span>         int max_cli=
-ents;</span><br><span> </span><br><span>         VERIFY_PERMISSION(OPT_P_GE=
-NERAL);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        max_cl=
-ients =3D atoi(p[1]);</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+        max_clients =3D atoi_warn(p[1], msglevel);</span><br><span>      =
-   if (max_clients &lt; 0)</span><br><span>         {</span><br><span>     =
-        msg(msglevel, &quot;--max-clients must be at least 1&quot;);</span>=
-<br><span>@@ -7650,7 +7701,7 @@</span><br><span>     else if (streq(p[0], &=
-quot;max-routes-per-client&quot;) &amp;&amp; p[1] &amp;&amp; !p[2])</span><=
-br><span>     {</span><br><span>         VERIFY_PERMISSION(OPT_P_INHERIT);<=
-/span><br><span style=3D"color: hsl(0, 100%, 40%);">-        options-&gt;ma=
-x_routes_per_client =3D max_int(atoi(p[1]), 1);</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+        options-&gt;max_routes_per_client =3D m=
-ax_int(positive_atoi(p[1], msglevel), 1);</span><br><span>     }</span><br>=
-<span>     else if (streq(p[0], &quot;client-cert-not-required&quot;) &amp;=
-&amp; !p[1])</span><br><span>     {</span><br><span>@@ -7734,14 +7785,14 @@=
-</span><br><span>     {</span><br><span>         VERIFY_PERMISSION(OPT_P_GE=
-NERAL);</span><br><span>         options-&gt;auth_token_generate =3D true;<=
-/span><br><span style=3D"color: hsl(0, 100%, 40%);">-        options-&gt;au=
-th_token_lifetime =3D p[1] ? positive_atoi(p[1]) : 0;</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+        options-&gt;auth_token_lifetime =
-=3D p[1] ? positive_atoi(p[1], msglevel) : 0;</span><br><span> </span><br><=
-span>         for (int i =3D 2; i &lt; MAX_PARMS &amp;&amp; p[i] !=3D NULL;=
- i++)</span><br><span>         {</span><br><span>             /* the second=
- parameter can be the renewal time */</span><br><span style=3D"color: hsl(0=
-, 100%, 40%);">-            if (i =3D=3D 2 &amp;&amp; positive_atoi(p[i]))<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+            if (i =
-=3D=3D 2 &amp;&amp; valid_integer(p[i], true))</span><br><span>            =
- {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-                opt=
-ions-&gt;auth_token_renewal =3D positive_atoi(p[i]);</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+                options-&gt;auth_token_re=
-newal =3D positive_atoi(p[i], msglevel);</span><br><span>             }</sp=
-an><br><span>             else if (streq(p[i], &quot;external-auth&quot;))<=
-/span><br><span>             {</span><br><span>@@ -7821,7 +7872,7 @@</span>=
-<br><span>         int n_bcast_buf;</span><br><span> </span><br><span>     =
-    VERIFY_PERMISSION(OPT_P_GENERAL);</span><br><span style=3D"color: hsl(0=
-, 100%, 40%);">-        n_bcast_buf =3D atoi(p[1]);</span><br><span style=
+color: hsl(0, 100%, 40%);">-        options-&gt;mark =3D atoi(p[1]);</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+        options-&gt;mark =
+=3D atoi_warn(p[1], msglevel);</span><br><span> #endif</span><br><span>    =
+ }</span><br><span>     else if (streq(p[0], &quot;socket-flags&quot;))</sp=
+an><br><span>@@ -6764,7 +6815,7 @@</span><br><span>     {</span><br><span> =
+        VERIFY_PERMISSION(OPT_P_GENERAL);</span><br><span> #ifdef TARGET_LI=
+NUX</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        options-&g=
+t;tuntap_options.txqueuelen =3D positive_atoi(p[1]);</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+        options-&gt;tuntap_options.txqueu=
+elen =3D positive_atoi(p[1], msglevel);</span><br><span> #else</span><br><s=
+pan>         msg(msglevel, &quot;--txqueuelen not supported on this OS&quot=
+;);</span><br><span>         goto err;</span><br><span>@@ -6775,7 +6826,7 @=
+@</span><br><span>         int shaper;</span><br><span> </span><br><span>  =
+       VERIFY_PERMISSION(OPT_P_SHAPER);</span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-        shaper =3D atoi(p[1]);</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+        shaper =3D atoi_warn(p[1], msglevel);<=
+/span><br><span>         if (shaper &lt; SHAPER_MIN || shaper &gt; SHAPER_M=
+AX)</span><br><span>         {</span><br><span>             msg(msglevel, &=
+quot;Bad shaper value, must be between %d and %d&quot;,</span><br><span>@@ =
+-6823,7 +6874,7 @@</span><br><span>     else if (streq(p[0], &quot;inactive=
+&quot;) &amp;&amp; p[1] &amp;&amp; !p[3])</span><br><span>     {</span><br>=
+<span>         VERIFY_PERMISSION(OPT_P_TIMER);</span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-        options-&gt;inactivity_timeout =3D positiv=
+e_atoi(p[1]);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
+  options-&gt;inactivity_timeout =3D positive_atoi(p[1], msglevel);</span><=
+br><span>         if (p[2])</span><br><span>         {</span><br><span>    =
+         int64_t val =3D atoll(p[2]);</span><br><span>@@ -6841,7 +6892,7 @@=
+</span><br><span>     else if (streq(p[0], &quot;session-timeout&quot;) &am=
+p;&amp; p[1] &amp;&amp; !p[2])</span><br><span>     {</span><br><span>     =
+    VERIFY_PERMISSION(OPT_P_TIMER);</span><br><span style=3D"color: hsl(0, =
+100%, 40%);">-        options-&gt;session_timeout =3D positive_atoi(p[1]);<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+        options-&gt;=
+session_timeout =3D positive_atoi(p[1], msglevel);</span><br><span>     }</=
+span><br><span>     else if (streq(p[0], &quot;proto&quot;) &amp;&amp; p[1]=
+ &amp;&amp; !p[2])</span><br><span>     {</span><br><span>@@ -7008,24 +7059=
+,24 @@</span><br><span>     else if (streq(p[0], &quot;keepalive&quot;) &am=
+p;&amp; p[1] &amp;&amp; p[2] &amp;&amp; !p[3])</span><br><span>     {</span=
+><br><span>         VERIFY_PERMISSION(OPT_P_GENERAL);</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-        options-&gt;keepalive_ping =3D atoi=
+(p[1]);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        option=
+s-&gt;keepalive_timeout =3D atoi(p[2]);</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+        options-&gt;keepalive_ping =3D atoi_warn(p[1], =
+msglevel);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        o=
+ptions-&gt;keepalive_timeout =3D atoi_warn(p[2], msglevel);</span><br><span=
+>     }</span><br><span>     else if (streq(p[0], &quot;ping&quot;) &amp;&a=
+mp; p[1] &amp;&amp; !p[2])</span><br><span>     {</span><br><span>         =
+VERIFY_PERMISSION(OPT_P_TIMER);</span><br><span style=3D"color: hsl(0, 100%=
+, 40%);">-        options-&gt;ping_send_timeout =3D positive_atoi(p[1]);</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+        options-&gt;pi=
+ng_send_timeout =3D positive_atoi(p[1], msglevel);</span><br><span>     }</=
+span><br><span>     else if (streq(p[0], &quot;ping-exit&quot;) &amp;&amp; =
+p[1] &amp;&amp; !p[2])</span><br><span>     {</span><br><span>         VERI=
+FY_PERMISSION(OPT_P_TIMER);</span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">-        options-&gt;ping_rec_timeout =3D positive_atoi(p[1]);</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+        options-&gt;ping_re=
+c_timeout =3D positive_atoi(p[1], msglevel);</span><br><span>         optio=
+ns-&gt;ping_rec_timeout_action =3D PING_EXIT;</span><br><span>     }</span>=
+<br><span>     else if (streq(p[0], &quot;ping-restart&quot;) &amp;&amp; p[=
+1] &amp;&amp; !p[2])</span><br><span>     {</span><br><span>         VERIFY=
+_PERMISSION(OPT_P_TIMER);</span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">-        options-&gt;ping_rec_timeout =3D positive_atoi(p[1]);</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+        options-&gt;ping_rec_=
+timeout =3D positive_atoi(p[1], msglevel);</span><br><span>         options=
+-&gt;ping_rec_timeout_action =3D PING_RESTART;</span><br><span>     }</span=
+><br><span>     else if (streq(p[0], &quot;ping-timer-rem&quot;) &amp;&amp;=
+ !p[1])</span><br><span>@@ -7038,7 +7089,7 @@</span><br><span>         VERI=
+FY_PERMISSION(OPT_P_GENERAL|OPT_P_CONNECTION|OPT_P_EXPLICIT_NOTIFY);</span>=
+<br><span>         if (p[1])</span><br><span>         {</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-            options-&gt;ce.explicit_exit_=
+notification =3D positive_atoi(p[1]);</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+            options-&gt;ce.explicit_exit_notification =3D=
+ positive_atoi(p[1], msglevel);</span><br><span>         }</span><br><span>=
+         else</span><br><span>         {</span><br><span>@@ -7158,7 +7209,7=
+ @@</span><br><span>     else if (streq(p[0], &quot;route-metric&quot;) &am=
+p;&amp; p[1] &amp;&amp; !p[2])</span><br><span>     {</span><br><span>     =
+    VERIFY_PERMISSION(OPT_P_ROUTE);</span><br><span style=3D"color: hsl(0, =
+100%, 40%);">-        options-&gt;route_default_metric =3D positive_atoi(p[=
+1]);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        options=
+-&gt;route_default_metric =3D positive_atoi(p[1], msglevel);</span><br><spa=
+n>     }</span><br><span>     else if (streq(p[0], &quot;route-delay&quot;)=
+ &amp;&amp; !p[3])</span><br><span>     {</span><br><span>@@ -7166,10 +7217=
+,10 @@</span><br><span>         options-&gt;route_delay_defined =3D true;</=
+span><br><span>         if (p[1])</span><br><span>         {</span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">-            options-&gt;route_delay =
+=3D positive_atoi(p[1]);</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+            options-&gt;route_delay =3D positive_atoi(p[1], msglevel);=
+</span><br><span>             if (p[2])</span><br><span>             {</spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-                options-&g=
+t;route_delay_window =3D positive_atoi(p[2]);</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+                options-&gt;route_delay_window =
+=3D positive_atoi(p[2], msglevel);</span><br><span>             }</span><br=
+><span>         }</span><br><span>         else</span><br><span>@@ -7334,7 =
++7385,7 @@</span><br><span>         }</span><br><span>         else if (str=
+eq(p[1], &quot;SERVER_POLL_TIMEOUT&quot;) &amp;&amp; p[2])</span><br><span>=
+         {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-           =
+ options-&gt;ce.connect_timeout =3D positive_atoi(p[2]);</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+            options-&gt;ce.connect_tim=
+eout =3D positive_atoi(p[2], msglevel);</span><br><span>         }</span><b=
+r><span>         else</span><br><span>         {</span><br><span>@@ -7366,1=
+4 +7417,14 @@</span><br><span>     else if (streq(p[0], &quot;script-securi=
+ty&quot;) &amp;&amp; p[1] &amp;&amp; !p[2])</span><br><span>     {</span><b=
+r><span>         VERIFY_PERMISSION(OPT_P_GENERAL);</span><br><span style=3D=
+"color: hsl(0, 100%, 40%);">-        script_security_set(atoi(p[1]));</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+        script_security_s=
+et(atoi_warn(p[1], msglevel));</span><br><span>     }</span><br><span>     =
+else if (streq(p[0], &quot;mssfix&quot;) &amp;&amp; !p[3])</span><br><span>=
+     {</span><br><span>         VERIFY_PERMISSION(OPT_P_GENERAL|OPT_P_CONNE=
+CTION);</span><br><span>         if (p[1])</span><br><span>         {</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-            int mssfix =3D =
+positive_atoi(p[1]);</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++            int mssfix =3D positive_atoi(p[1], msglevel);</span><br><span>=
+             /* can be 0, but otherwise it needs to be high enough so we ca=
+n</span><br><span>              * substract room for headers. */</span><br>=
+<span>             if (mssfix !=3D 0</span><br><span>@@ -7556,7 +7607,7 @@<=
+/span><br><span>         options-&gt;ifconfig_pool_persist_filename =3D p[1=
+];</span><br><span>         if (p[2])</span><br><span>         {</span><br>=
+<span style=3D"color: hsl(0, 100%, 40%);">-            options-&gt;ifconfig=
+_pool_persist_refresh_freq =3D positive_atoi(p[2]);</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+            options-&gt;ifconfig_pool_per=
+sist_refresh_freq =3D positive_atoi(p[2], msglevel);</span><br><span>      =
+   }</span><br><span>     }</span><br><span>     else if (streq(p[0], &quot=
+;ifconfig-ipv6-pool&quot;) &amp;&amp; p[1] &amp;&amp; !p[2])</span><br><spa=
+n>@@ -7588,8 +7639,8 @@</span><br><span>         int real, virtual;</span><=
+br><span> </span><br><span>         VERIFY_PERMISSION(OPT_P_GENERAL);</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-        real =3D atoi(p[1])=
+;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        virtual =3D =
+atoi(p[2]);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        =
+real =3D atoi_warn(p[1], msglevel);</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+        virtual =3D atoi_warn(p[1], msglevel);</span><br><s=
+pan>         if (real &lt; 1 || virtual &lt; 1)</span><br><span>         {<=
+/span><br><span>             msg(msglevel, &quot;--hash-size sizes must be =
+&gt;=3D 1 (preferably a power of 2)&quot;);</span><br><span>@@ -7603,8 +765=
+4,8 @@</span><br><span>         int cf_max, cf_per;</span><br><span> </span=
+><br><span>         VERIFY_PERMISSION(OPT_P_GENERAL);</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-        cf_max =3D atoi(p[1]);</span><br><s=
+pan style=3D"color: hsl(0, 100%, 40%);">-        cf_per =3D atoi(p[2]);</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+        cf_max =3D atoi=
+_warn(p[1], msglevel);</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+        cf_per =3D atoi_warn(p[2], msglevel);</span><br><span>         i=
+f (cf_max &lt; 0 || cf_per &lt; 0)</span><br><span>         {</span><br><sp=
+an>             msg(msglevel, &quot;--connect-freq parms must be &gt; 0&quo=
+t;);</span><br><span>@@ -7634,7 +7685,7 @@</span><br><span>         int max=
+_clients;</span><br><span> </span><br><span>         VERIFY_PERMISSION(OPT_=
+P_GENERAL);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        ma=
+x_clients =3D atoi(p[1]);</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+        max_clients =3D atoi_warn(p[1], msglevel);</span><br><span>  =
+       if (max_clients &lt; 0)</span><br><span>         {</span><br><span> =
+            msg(msglevel, &quot;--max-clients must be at least 1&quot;);</s=
+pan><br><span>@@ -7650,7 +7701,7 @@</span><br><span>     else if (streq(p[0=
+], &quot;max-routes-per-client&quot;) &amp;&amp; p[1] &amp;&amp; !p[2])</sp=
+an><br><span>     {</span><br><span>         VERIFY_PERMISSION(OPT_P_INHERI=
+T);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        options-&g=
+t;max_routes_per_client =3D max_int(atoi(p[1]), 1);</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+        options-&gt;max_routes_per_client=
+ =3D max_int(positive_atoi(p[1], msglevel), 1);</span><br><span>     }</spa=
+n><br><span>     else if (streq(p[0], &quot;client-cert-not-required&quot;)=
+ &amp;&amp; !p[1])</span><br><span>     {</span><br><span>@@ -7734,14 +7785=
+,14 @@</span><br><span>     {</span><br><span>         VERIFY_PERMISSION(OP=
+T_P_GENERAL);</span><br><span>         options-&gt;auth_token_generate =3D =
+true;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        options-=
+&gt;auth_token_lifetime =3D p[1] ? positive_atoi(p[1]) : 0;</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+        options-&gt;auth_token_life=
+time =3D p[1] ? positive_atoi(p[1], msglevel) : 0;</span><br><span> </span>=
+<br><span>         for (int i =3D 2; i &lt; MAX_PARMS &amp;&amp; p[i] !=3D =
+NULL; i++)</span><br><span>         {</span><br><span>             /* the s=
+econd parameter can be the renewal time */</span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">-            if (i =3D=3D 2 &amp;&amp; positive_atoi(p[=
+i]))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            if =
+(i =3D=3D 2 &amp;&amp; valid_integer(p[i], true))</span><br><span>         =
+    {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-                =
+options-&gt;auth_token_renewal =3D positive_atoi(p[i]);</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+                options-&gt;auth_token_=
+renewal =3D positive_atoi(p[i], msglevel);</span><br><span>             }</=
+span><br><span>             else if (streq(p[i], &quot;external-auth&quot;)=
+)</span><br><span>             {</span><br><span>@@ -7821,7 +7872,7 @@</spa=
+n><br><span>         int n_bcast_buf;</span><br><span> </span><br><span>   =
+      VERIFY_PERMISSION(OPT_P_GENERAL);</span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-        n_bcast_buf =3D atoi(p[1]);</span><br><span style=
 =3D"color: hsl(120, 100%, 40%);">+        n_bcast_buf =3D atoi_warn(p[1], m=
 sglevel);</span><br><span>         if (n_bcast_buf &lt; 1)</span><br><span>=
          {</span><br><span>             msg(msglevel, &quot;--bcast-buffers=
@@ -1393,7 +1393,7 @@ nk itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/873?usp=
 <div style=3D"display:none"> Gerrit-Change-Id: Ie1e2eb54d516b3ae87c5ca56fe8=
 edd77ee2be4de </div>
 <div style=3D"display:none"> Gerrit-Change-Number: 873 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 4 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 5 </div>
 <div style=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@...1711...=
 27...&gt; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
@@ -1405,5 +1405,5 @@ ts.sourceforge.net&gt; </div>
 <div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
 
 
---uf7qQAjlaBg=--
+--JUOqrID2/cA=--
 
