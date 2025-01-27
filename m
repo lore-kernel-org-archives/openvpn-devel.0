@@ -1,16 +1,11 @@
-From: "stipa (Code Review)" <gerrit@...515...>
-Date: Mon, 27 Jan 2025 09:08:30 +0000
+From: Gert Doering <gert@...1296...>
+Date: Mon, 27 Jan 2025 10:11:02 +0100
+Message-ID: <20250127091102.26983-1-gert@...1296...>
 In-Reply-To: <gerrit.1736341120000.Iea477ac96b0dbaee24ca8d097a2e1958f70c5dd3@...2715...>
 References: <gerrit.1736341120000.Iea477ac96b0dbaee24ca8d097a2e1958f70c5dd3@...2715...>
-Reply-To: lstipakov@...277..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <498382b545ef9ce33a9571925bc5ad04468d3ba0-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="qjGfY1F2lTM="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: openvpnserv: Fix
- some inconsistent usages of TEXT()
+Subject: [Openvpn-devel] [PATCH v1] openvpnserv: Fix some inconsistent
+ usages of TEXT()
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,100 +14,140 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: flichtenheld <frank@...2641...>
-Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---qjGfY1F2lTM=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+From: Frank Lichtenheld <frank@...2641...>
 
-Attention is currently required from: flichtenheld, plaisthos.
+In general you can't use multiple strings as argument
+to TEXT() since it just adds a L in front of the argument.
+So if you specifiy multiple arguments the later argument
+strings do not get the L.
 
-stipa has posted comments on this change. ( http://gerrit.openvpn.net/c/ope=
-nvpn/+/851?usp=3Demail )
+This does not seem to directly cause problems with our
+ASCII strings, but make the usage consistent with all
+the other code. That will help in case we remove the
+usage of TEXT().
 
-Change subject: openvpnserv: Fix some inconsistent usages of TEXT()
-......................................................................
+Also include tapctl/basic.h in openvpnserv to make
+the macro environment consistent with tapctl and
+openvpnmsica.
 
+Change-Id: Iea477ac96b0dbaee24ca8d097a2e1958f70c5dd3
+Signed-off-by: Frank Lichtenheld <frank@...2641...>
+Acked-by: Lev Stipakov <lstipakov@...277...>
+---
 
-Patch Set 1: Code-Review+2
+This change was reviewed on Gerrit and approved by at least one
+developer. I request to merge it to master.
 
-(1 comment)
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/851
+This mail reflects revision 1 of this Change.
 
-Patchset:
+Acked-by according to Gerrit (reflected above):
+Lev Stipakov <lstipakov@...277...>
 
-PS1:
-LGTM
-
-
-
---=20
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/851?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings
-
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: Iea477ac96b0dbaee24ca8d097a2e1958f70c5dd3
-Gerrit-Change-Number: 851
-Gerrit-PatchSet: 1
-Gerrit-Owner: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-Reviewer: stipa <lstipakov@...277...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Comment-Date: Mon, 27 Jan 2025 09:08:30 +0000
-Gerrit-HasComments: Yes
-Gerrit-Has-Labels: Yes
-Gerrit-MessageType: comment
-
---qjGfY1F2lTM=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<p> Attention is currently required from: flichtenheld, plaisthos. </p>
-<p>Patch set 1:<span style=3D"border-radius: 3px; display: inline-block; ma=
-rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/851?usp=3Demail">Vi=
-ew Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0=
-;"><li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-s=
-tyle: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p s=
-tyle=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn=
-/+/851?tab=3Dcomments">Patch Set #1:</a> </p><p style=3D"white-space: pre-w=
-rap; word-wrap: break-word;">LGTM</p></li></ul></li></ul><p>To view, visit =
-<a href=3D"http://gerrit.openvpn.net/c/openvpn/+/851?usp=3Demail">change 85=
-1</a>. To unsubscribe, or for help writing mail filters, visit <a href=3D"h=
-ttp://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope itemtype=
-=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"action" item=
-type=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http:/=
-/gerrit.openvpn.net/c/openvpn/+/851?usp=3Demail"/><meta itemprop=3D"name" c=
-ontent=3D"View Change"/></div></div>
-
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: Iea477ac96b0dbaee24ca8d097a2=
-e1958f70c5dd3 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 851 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
-<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
-.&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: stipa &lt;lstipakov@...277...=
-&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
-41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Mon, 27 Jan 2025 09:08:30=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
-
-
---qjGfY1F2lTM=--
+        
+diff --git a/src/openvpnserv/CMakeLists.txt b/src/openvpnserv/CMakeLists.txt
+index 154e17c..ff03867 100644
+--- a/src/openvpnserv/CMakeLists.txt
++++ b/src/openvpnserv/CMakeLists.txt
+@@ -17,6 +17,7 @@
+     interactive.c
+     service.c service.h
+     validate.c validate.h
++    ../tapctl/basic.h
+     ../openvpn/wfp_block.c ../openvpn/wfp_block.h
+     openvpnserv_resources.rc
+     ../openvpn/ring_buffer.h
+diff --git a/src/openvpnserv/common.c b/src/openvpnserv/common.c
+index 61a7296..a88a724 100644
+--- a/src/openvpnserv/common.c
++++ b/src/openvpnserv/common.c
+@@ -45,7 +45,7 @@
+     if (status != ERROR_SUCCESS)
+     {
+         SetLastError(status);
+-        return MsgToEventLog(M_SYSERR, TEXT("Error querying registry value: HKLM\\SOFTWARE\\" PACKAGE_NAME "%ls\\%ls"), service_instance, value);
++        return MsgToEventLog(M_SYSERR, TEXT("Error querying registry value: HKLM\\SOFTWARE\\") TEXT(PACKAGE_NAME) TEXT("%ls\\%ls"), service_instance, value);
+     }
+ 
+     return ERROR_SUCCESS;
+@@ -63,7 +63,7 @@
+     TCHAR install_path[MAX_PATH];
+     TCHAR default_value[MAX_PATH];
+ 
+-    swprintf(reg_path, _countof(reg_path), TEXT("SOFTWARE\\" PACKAGE_NAME "%ls"), service_instance);
++    swprintf(reg_path, _countof(reg_path), TEXT("SOFTWARE\\") TEXT(PACKAGE_NAME) TEXT("%ls"), service_instance);
+ 
+     LONG status = RegOpenKeyEx(HKEY_LOCAL_MACHINE, reg_path, 0, KEY_READ, &key);
+     if (status != ERROR_SUCCESS)
+diff --git a/src/openvpnserv/interactive.c b/src/openvpnserv/interactive.c
+index 67f5bbc..35753b7 100644
+--- a/src/openvpnserv/interactive.c
++++ b/src/openvpnserv/interactive.c
+@@ -60,9 +60,9 @@
+ 
+ openvpn_service_t interactive_service = {
+     interactive,
+-    TEXT(PACKAGE_NAME "ServiceInteractive"),
+-    TEXT(PACKAGE_NAME " Interactive Service"),
+-    TEXT(SERVICE_DEPENDENCIES),
++    TEXT(PACKAGE_NAME) TEXT("ServiceInteractive"),
++    TEXT(PACKAGE_NAME) TEXT(" Interactive Service"),
++    SERVICE_DEPENDENCIES,
+     SERVICE_AUTO_START
+ };
+ 
+@@ -1973,7 +1973,7 @@
+     }
+ 
+     swprintf(ovpn_pipe_name, _countof(ovpn_pipe_name),
+-             TEXT("\\\\.\\pipe\\" PACKAGE "%ls\\service_%lu"), service_instance, GetCurrentThreadId());
++             TEXT("\\\\.\\pipe\\") TEXT(PACKAGE) TEXT("%ls\\service_%lu"), service_instance, GetCurrentThreadId());
+     ovpn_pipe = CreateNamedPipe(ovpn_pipe_name,
+                                 PIPE_ACCESS_DUPLEX | FILE_FLAG_FIRST_PIPE_INSTANCE | FILE_FLAG_OVERLAPPED,
+                                 PIPE_TYPE_MESSAGE | PIPE_READMODE_MESSAGE | PIPE_WAIT, 1, 128, 128, 0, NULL);
+@@ -2173,7 +2173,7 @@
+     }
+ 
+     TCHAR pipe_name[256]; /* The entire pipe name string can be up to 256 characters long according to MSDN. */
+-    swprintf(pipe_name, _countof(pipe_name), TEXT("\\\\.\\pipe\\" PACKAGE "%ls\\service"), service_instance);
++    swprintf(pipe_name, _countof(pipe_name), TEXT("\\\\.\\pipe\\") TEXT(PACKAGE) TEXT("%ls\\service"), service_instance);
+     HANDLE pipe = CreateNamedPipe(pipe_name, flags,
+                                   PIPE_TYPE_MESSAGE | PIPE_READMODE_MESSAGE | PIPE_REJECT_REMOTE_CLIENTS,
+                                   PIPE_UNLIMITED_INSTANCES, 1024, 1024, 0, &sa);
+diff --git a/src/openvpnserv/service.c b/src/openvpnserv/service.c
+index a71f5c6..054fc5f 100644
+--- a/src/openvpnserv/service.c
++++ b/src/openvpnserv/service.c
+@@ -282,8 +282,8 @@
+                 wprintf(TEXT("-instance interactive <id>\n")
+                         TEXT("   Runs the service as an alternate instance.\n")
+                         TEXT("   The service settings will be loaded from\n")
+-                        TEXT("   HKLM\\Software\\" PACKAGE_NAME "<id> registry key, and the service will accept\n")
+-                        TEXT("   requests on \\\\.\\pipe\\" PACKAGE "<id>\\service named pipe.\n"));
++                        TEXT("   HKLM\\Software\\") TEXT(PACKAGE_NAME) TEXT("<id> registry key, and the service will accept\n")
++                        TEXT("   requests on \\\\.\\pipe\\") TEXT(PACKAGE) TEXT("<id>\\service named pipe.\n"));
+ 
+                 return 0;
+             }
+diff --git a/src/openvpnserv/service.h b/src/openvpnserv/service.h
+index 6b559a5..da20433 100644
+--- a/src/openvpnserv/service.h
++++ b/src/openvpnserv/service.h
+@@ -37,9 +37,10 @@
+ #include <windows.h>
+ #include <stdlib.h>
+ #include <tchar.h>
++#include "../tapctl/basic.h"
+ 
+-#define APPNAME  TEXT(PACKAGE "serv")
+-#define SERVICE_DEPENDENCIES  TAP_WIN_COMPONENT_ID "\0Dhcp\0\0"
++#define APPNAME  TEXT(PACKAGE) TEXT("serv")
++#define SERVICE_DEPENDENCIES  TEXT(TAP_WIN_COMPONENT_ID) TEXT("\0Dhcp\0\0")
+ 
+ /*
+  * Message handling
 
