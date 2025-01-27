@@ -1,14 +1,14 @@
 From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Mon, 27 Jan 2025 15:46:20 +0000
+Date: Mon, 27 Jan 2025 15:47:16 +0000
 In-Reply-To: <gerrit.1734087083000.I9e27ff335d892429334137d028f8503da4e4ca5b@...2715...>
 References: <gerrit.1734087083000.I9e27ff335d892429334137d028f8503da4e4ca5b@...2715...>
 Reply-To: gert@...1296..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net, frank@...2641..., a@...2181...
-Message-ID: <e29d68ef3cc739b329d4838e9a37e38339e6fed0-HTML@...2715...>
+Message-ID: <d7d5e83e1329915ac7785a2a80e181a8a02ab9e8-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="XXKTAPYzijY="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="3cTgs6882w8="; charset=UTF-8
 Subject: [Openvpn-devel] [S] Change in openvpn[master]: dco_linux: extend
  netlink error cb with extra info
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -21,21 +21,30 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Cc: flichtenheld <frank@...2641...>, plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---XXKTAPYzijY=
+--3cTgs6882w8=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 Attention is currently required from: flichtenheld, ordex, plaisthos.
 
-cron2 has removed a vote from this change. ( http://gerrit.openvpn.net/c/op=
-envpn/+/841?usp=3Demail )
-
+cron2 has posted comments on this change. ( http://gerrit.openvpn.net/c/ope=
+nvpn/+/841?usp=3Demail )
 
 Change subject: dco_linux: extend netlink error cb with extra info
 ......................................................................
 
 
-Removed Code-Review-1 by flichtenheld <frank@...2641...>
+Patch Set 8: Code-Review-2
+
+(1 comment)
+
+Patchset:
+
+PS8:
+fails ubuntu
+
+
+
 --
 To view, visit http://gerrit.openvpn.net/c/openvpn/+/841?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
@@ -47,31 +56,40 @@ Gerrit-Change-Id: I9e27ff335d892429334137d028f8503da4e4ca5b
 Gerrit-Change-Number: 841
 Gerrit-PatchSet: 8
 Gerrit-Owner: ordex <a@...2181...>
+Gerrit-Reviewer: cron2 <gert@...1296...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
 Gerrit-Attention: flichtenheld <frank@...2641...>
 Gerrit-Attention: ordex <a@...2181...>
-Gerrit-MessageType: deleteVote
+Gerrit-Comment-Date: Mon, 27 Jan 2025 15:47:16 +0000
+Gerrit-HasComments: Yes
+Gerrit-Has-Labels: Yes
+Gerrit-MessageType: comment
 
---XXKTAPYzijY=
+--3cTgs6882w8=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <p> Attention is currently required from: flichtenheld, ordex, plaisthos. <=
 /p>
-<p>cron2 <strong>removed a vote</strong> from this change.</p><p><a href=3D=
-"http://gerrit.openvpn.net/c/openvpn/+/841?usp=3Demail">View Change</a></p>=
-<div style=3D"white-space:pre-wrap">Removed Code-Review-1 by flichtenheld &=
-lt;frank@...2641...&gt;</div><p>To view, visit <a href=3D"http://gerrit.ope=
-nvpn.net/c/openvpn/+/841?usp=3Demail">change 841</a>. To unsubscribe, or fo=
-r help writing mail filters, visit <a href=3D"http://gerrit.openvpn.net/set=
-tings">settings</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailM=
-essage"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.org/Vi=
-ewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvp=
-n/+/841?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></di=
-v></div>
+<p>Patch set 8:<span style=3D"border-radius: 3px; display: inline-block; ma=
+rgin: 0 2px; padding: 4px;background-color: #ffd4d4;">Code-Review -2</span>=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/841?usp=3Demail">Vi=
+ew Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0=
+;"><li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-s=
+tyle: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p s=
+tyle=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn=
+/+/841?tab=3Dcomments">Patch Set #8:</a> </p><p style=3D"white-space: pre-w=
+rap; word-wrap: break-word;">fails ubuntu</p></li></ul></li></ul><p>To view=
+, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/841?usp=3Demail">c=
+hange 841</a>. To unsubscribe, or for help writing mail filters, visit <a h=
+ref=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope =
+itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"acti=
+on" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=
+=3D"http://gerrit.openvpn.net/c/openvpn/+/841?usp=3Demail"/><meta itemprop=
+=3D"name" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
@@ -80,6 +98,8 @@ v></div>
 <div style=3D"display:none"> Gerrit-Change-Number: 841 </div>
 <div style=3D"display:none"> Gerrit-PatchSet: 8 </div>
 <div style=3D"display:none"> Gerrit-Owner: ordex &lt;a@...2181...&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
+ </div>
 <div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
 1...&gt; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
@@ -92,8 +112,12 @@ ts.sourceforge.net&gt; </div>
 41...&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: ordex &lt;a@...2181...&gt; <=
 /div>
-<div style=3D"display:none"> Gerrit-MessageType: deleteVote </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Mon, 27 Jan 2025 15:47:16=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
 
 
---XXKTAPYzijY=--
+--3cTgs6882w8=--
 
