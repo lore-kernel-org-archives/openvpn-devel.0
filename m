@@ -1,15 +1,11 @@
-From: "flichtenheld (Code Review)" <gerrit@...515...>
-Date: Mon, 27 Jan 2025 12:27:43 +0000
-References: <gerrit.1737980858000.I0133085ac68f7b0db574b88276f6d5e1d3ad62d5@...2715...>
-Reply-To: frank@...2641..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net
-Message-ID: <efcefeae049fc452931e2d920dea3170be0d0856-HTML@...2715...>
+From: Gert Doering <gert@...1296...>
+Date: Mon, 27 Jan 2025 13:30:58 +0100
+Message-ID: <20250127123058.16503-1-gert@...1296...>
+In-Reply-To: <gerrit.1737979301000.Ieee368e325d7f9c367fd91fee0fd3e281ee0855d@...2715...>
+References: <gerrit.1737979301000.Ieee368e325d7f9c367fd91fee0fd3e281ee0855d@...2715...>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="j6UYCkV3jLk="; charset=UTF-8
-Subject: [Openvpn-devel] [XS] Change in openvpn[master]: Fix doxygen
- warnings in crypto_epoch.h
+Subject: [Openvpn-devel] [PATCH v1] Add unit tests for atoi parsing options
+ helper
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,139 +14,200 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: plaisthos <arne-openvpn@...1227...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---j6UYCkV3jLk=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+From: Arne Schwabe <arne@...1227...>
 
-Attention is currently required from: plaisthos.
-
-Hello plaisthos,
-
-I'd like you to do a code review.
-Please visit
-
-    http://gerrit.openvpn.net/c/openvpn/+/877?usp=3Demail
-
-to review the following change.
-
-
-Change subject: Fix doxygen warnings in crypto_epoch.h
-......................................................................
-
-Fix doxygen warnings in crypto_epoch.h
-
-Introduced by commit 92adbc88b1b37095cebde2a1c5b6ae242f382678.
-
-Change-Id: I0133085ac68f7b0db574b88276f6d5e1d3ad62d5
-Signed-off-by: Frank Lichtenheld <frank@...2641...>
+Change-Id: Ieee368e325d7f9c367fd91fee0fd3e281ee0855d
+Signed-off-by: Arne Schwabe <arne-openvpn@...1227...>
+Acked-by: Frank Lichtenheld <frank@...2641...>
 ---
-M src/openvpn/crypto_epoch.h
-1 file changed, 2 insertions(+), 1 deletion(-)
 
+This change was reviewed on Gerrit and approved by at least one
+developer. I request to merge it to master.
 
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/876
+This mail reflects revision 1 of this Change.
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/77/877/1
+Signed-off-by line for the author was added as per our policy.
 
-diff --git a/src/openvpn/crypto_epoch.h b/src/openvpn/crypto_epoch.h
-index b2f3d86..9290482 100644
---- a/src/openvpn/crypto_epoch.h
-+++ b/src/openvpn/crypto_epoch.h
-@@ -71,7 +71,7 @@
-  * Generate a data channel key pair from the epoch key
-  * @param key           Destination for the generated data key
-  * @param epoch_key     Epoch key to be used
-- * @parm kt             Cipher information to generate the data channel ke=
-y for
-+ * @param kt            Cipher information to generate the data channel ke=
-y for
-  */
+Acked-by according to Gerrit (reflected above):
+Frank Lichtenheld <frank@...2641...>
+
+        
+diff --git a/tests/unit_tests/openvpn/mock_msg.c b/tests/unit_tests/openvpn/mock_msg.c
+index a291f8f..99224f8 100644
+--- a/tests/unit_tests/openvpn/mock_msg.c
++++ b/tests/unit_tests/openvpn/mock_msg.c
+@@ -37,10 +37,16 @@
+ 
+ #include "errlevel.h"
+ #include "error.h"
++#include "mock_msg.h"
+ 
+ unsigned int x_debug_level = 0; /* Default to (almost) no debugging output */
++unsigned int print_x_debug_level = 0;
++
+ bool fatal_error_triggered = false;
+ 
++char mock_msg_buf[MOCK_MSG_BUF];
++
++
  void
- epoch_data_key_derive(struct key_parameters *key,
-@@ -100,6 +100,7 @@
-  * - recv key matches the epoch index provided
-  * - send key epoch is equal or higher than recv_key epoch
-  *
-+ * @param co        crypto_options to update
-  * @param new_epoch the new epoch to use for the receive key
-  */
+ mock_set_debug_level(int level)
+ {
+@@ -48,6 +54,18 @@
+ }
+ 
+ int
++mock_get_debug_level(void)
++{
++    return x_debug_level;
++}
++
++void
++mock_set_print_debug_level(int level)
++{
++    print_x_debug_level = level;
++}
++
++int
+ get_debug_level(void)
+ {
+     return x_debug_level;
+@@ -62,8 +80,13 @@
+         fatal_error_triggered = true;
+         printf("FATAL ERROR:");
+     }
+-    vprintf(format, arglist);
+-    printf("\n");
++    CLEAR(mock_msg_buf);
++    if ((flags & M_DEBUG_LEVEL) <= print_x_debug_level)
++    {
++        vprintf(format, arglist);
++        printf("\n");
++    }
++    vsnprintf(mock_msg_buf, sizeof(mock_msg_buf), format, arglist);
+ }
+ 
  void
-
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/877?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings
-
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: I0133085ac68f7b0db574b88276f6d5e1d3ad62d5
-Gerrit-Change-Number: 877
-Gerrit-PatchSet: 1
-Gerrit-Owner: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-MessageType: newchange
-
---j6UYCkV3jLk=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<p> Attention is currently required from: plaisthos. </p>
-<p>flichtenheld would like plaisthos to <strong>review</strong> this change.
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/877?usp=3Demail">Vi=
-ew Change</a></p><pre style=3D"font-family: monospace,monospace; white-spac=
-e: pre-wrap;">Fix doxygen warnings in crypto_epoch.h<br><br>Introduced by c=
-ommit 92adbc88b1b37095cebde2a1c5b6ae242f382678.<br><br>Change-Id: I0133085a=
-c68f7b0db574b88276f6d5e1d3ad62d5<br>Signed-off-by: Frank Lichtenheld &lt;fr=
-ank@...2641...&gt;<br>---<br>M src/openvpn/crypto_epoch.h<br>1 file changed=
-, 2 insertions(+), 1 deletion(-)<br><br></pre><pre style=3D"font-family: mo=
-nospace,monospace; white-space: pre-wrap;">git pull ssh://gerrit.openvpn.ne=
-t:29418/openvpn refs/changes/77/877/1</pre><pre style=3D"font-family: monos=
-pace,monospace; white-space: pre-wrap;"><span>diff --git a/src/openvpn/cryp=
-to_epoch.h b/src/openvpn/crypto_epoch.h</span><br><span>index b2f3d86..9290=
-482 100644</span><br><span>--- a/src/openvpn/crypto_epoch.h</span><br><span=
->+++ b/src/openvpn/crypto_epoch.h</span><br><span>@@ -71,7 +71,7 @@</span><=
-br><span>  * Generate a data channel key pair from the epoch key</span><br>=
-<span>  * @param key           Destination for the generated data key</span=
-><br><span>  * @param epoch_key     Epoch key to be used</span><br><span st=
-yle=3D"color: hsl(0, 100%, 40%);">- * @parm kt             Cipher informati=
-on to generate the data channel key for</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+ * @param kt            Cipher information to generate =
-the data channel key for</span><br><span>  */</span><br><span> void</span><=
-br><span> epoch_data_key_derive(struct key_parameters *key,</span><br><span=
->@@ -100,6 +100,7 @@</span><br><span>  * - recv key matches the epoch index=
- provided</span><br><span>  * - send key epoch is equal or higher than recv=
-_key epoch</span><br><span>  *</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+ * @param co        crypto_options to update</span><br><span>  *=
- @param new_epoch the new epoch to use for the receive key</span><br><span>=
-  */</span><br><span> void</span><br><span></span><br></pre><p>To view, vis=
-it <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/877?usp=3Demail">change=
- 877</a>. To unsubscribe, or for help writing mail filters, visit <a href=
-=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope ite=
-mtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"action"=
- itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"h=
-ttp://gerrit.openvpn.net/c/openvpn/+/877?usp=3Demail"/><meta itemprop=3D"na=
-me" content=3D"View Change"/></div></div>
-
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I0133085ac68f7b0db574b88276f=
-6d5e1d3ad62d5 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 877 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
-<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
-.&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: newchange </div>
-
-
---j6UYCkV3jLk=--
+diff --git a/tests/unit_tests/openvpn/mock_msg.h b/tests/unit_tests/openvpn/mock_msg.h
+index be5f2e5..25b7aa2 100644
+--- a/tests/unit_tests/openvpn/mock_msg.h
++++ b/tests/unit_tests/openvpn/mock_msg.h
+@@ -31,4 +31,18 @@
+  */
+ void mock_set_debug_level(int level);
+ 
++#define MOCK_MSG_BUF 1024
++
++extern bool fatal_error_triggered;
++extern char mock_msg_buf[MOCK_MSG_BUF];
++
++void
++mock_set_debug_level(int level);
++
++int
++mock_get_debug_level(void);
++
++void
++mock_set_print_debug_level(int level);
++
+ #endif /* MOCK_MSG */
+diff --git a/tests/unit_tests/openvpn/test_misc.c b/tests/unit_tests/openvpn/test_misc.c
+index 563d4ae..56e9d98 100644
+--- a/tests/unit_tests/openvpn/test_misc.c
++++ b/tests/unit_tests/openvpn/test_misc.c
+@@ -38,6 +38,7 @@
+ #include "options_util.h"
+ #include "test_common.h"
+ #include "list.h"
++#include "mock_msg.h"
+ 
+ static void
+ test_compat_lzo_string(void **state)
+@@ -311,13 +312,80 @@
+     gc_free(&gc);
+ }
+ 
++static void
++test_atoi_variants(void **state)
++{
++    assert_true(valid_integer("1234", true));
++    assert_true(valid_integer("1234", false));
++    assert_true(valid_integer("0", false));
++    assert_true(valid_integer("0", true));
++    assert_true(valid_integer("-777", false));
++    assert_false(valid_integer("-777", true));
++
++    assert_false(valid_integer("-777foo", false));
++    assert_false(valid_integer("-777foo", true));
++
++    assert_false(valid_integer("foo777", true));
++    assert_false(valid_integer("foo777", false));
++
++    /* 2**31 + 5 , just outside of signed int range */
++    assert_false(valid_integer("2147483653", true));
++    assert_false(valid_integer("2147483653", false));
++    assert_false(valid_integer("-2147483653", true));
++    assert_false(valid_integer("-2147483653", false));
++
++
++    int msglevel = D_LOW;
++    int saved_log_level = mock_get_debug_level();
++    mock_set_debug_level(D_LOW);
++
++    /* check happy path */
++    assert_int_equal(positive_atoi("1234", msglevel), 1234);
++    assert_int_equal(positive_atoi("0", msglevel), 0);
++
++    assert_int_equal(atoi_warn("1234", msglevel), 1234);
++    assert_int_equal(atoi_warn("0", msglevel), 0);
++    assert_int_equal(atoi_warn("-1194", msglevel), -1194);
++
++    CLEAR(mock_msg_buf);
++    assert_int_equal(positive_atoi("-1234", msglevel), 0);
++    assert_string_equal(mock_msg_buf, "Cannot parse argument '-1234' as non-negative integer");
++
++    /* 2**31 + 5 , just outside of signed int range */
++    CLEAR(mock_msg_buf);
++    assert_int_equal(positive_atoi("2147483653", msglevel), 0);
++    assert_string_equal(mock_msg_buf, "Cannot parse argument '2147483653' as non-negative integer");
++
++    CLEAR(mock_msg_buf);
++    assert_int_equal(atoi_warn("2147483653", msglevel), 0);
++    assert_string_equal(mock_msg_buf, "Cannot parse argument '2147483653' as integer");
++
++    CLEAR(mock_msg_buf);
++    assert_int_equal(positive_atoi("foo77", msglevel), 0);
++    assert_string_equal(mock_msg_buf, "Cannot parse argument 'foo77' as non-negative integer");
++
++    CLEAR(mock_msg_buf);
++    assert_int_equal(positive_atoi("77foo", msglevel), 0);
++    assert_string_equal(mock_msg_buf, "Cannot parse argument '77foo' as non-negative integer");
++
++    CLEAR(mock_msg_buf);
++    assert_int_equal(atoi_warn("foo77", msglevel), 0);
++    assert_string_equal(mock_msg_buf, "Cannot parse argument 'foo77' as integer");
++
++    CLEAR(mock_msg_buf);
++    assert_int_equal(atoi_warn("77foo", msglevel), 0);
++    assert_string_equal(mock_msg_buf, "Cannot parse argument '77foo' as integer");
++
++    mock_set_debug_level(saved_log_level);
++}
+ 
+ const struct CMUnitTest misc_tests[] = {
+     cmocka_unit_test(test_compat_lzo_string),
+     cmocka_unit_test(test_auth_fail_temp_no_flags),
+     cmocka_unit_test(test_auth_fail_temp_flags),
+     cmocka_unit_test(test_auth_fail_temp_flags_msg),
+-    cmocka_unit_test(test_list)
++    cmocka_unit_test(test_list),
++    cmocka_unit_test(test_atoi_variants)
+ };
+ 
+ int
 
