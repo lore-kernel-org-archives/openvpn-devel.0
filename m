@@ -1,11 +1,17 @@
-From: Gert Doering <gert@...1296...>
-Date: Tue, 28 Jan 2025 14:44:54 +0100
-Message-ID: <20250128134454.2888-1-gert@...1296...>
-In-Reply-To: <gerrit.1734087083000.I9e27ff335d892429334137d028f8503da4e4ca5b@...2715...>
-References: <gerrit.1734087083000.I9e27ff335d892429334137d028f8503da4e4ca5b@...2715...>
+From: "cron2 (Code Review)" <gerrit@...515...>
+Date: Tue, 28 Jan 2025 13:55:23 +0000
+In-Reply-To: <gerrit.1738070271000.I58735fb24bc4a94c803b7dfcd6de87af0f75522a@...2715...>
+References: <gerrit.1738070271000.I58735fb24bc4a94c803b7dfcd6de87af0f75522a@...2715...>
+Reply-To: gert@...1296..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net, frank@...2641...,
+ lstipakov@...277...
+Message-ID: <0004de981ca597e1cbc2c85e028be168dc2906df-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v9] dco_linux: extend netlink error cb with
- extra info
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="i+54DkVSRiY="; charset=UTF-8
+Subject: [Openvpn-devel] [S] Change in openvpn[master]: route.c: change the
+ signature of get_default_gateway()
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,103 +20,94 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: stipa <lstipakov@...277...>
+Cc: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-From: Antonio Quartulli <antonio@...2726...>
+--i+54DkVSRiY=
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-A netlink error may contain more specific attributes: i.e.
-missing attributes or missing neted objects.
+Attention is currently required from: flichtenheld, plaisthos, stipa.
 
-Parse and print this information too.
+cron2 has posted comments on this change. ( http://gerrit.openvpn.net/c/ope=
+nvpn/+/878?usp=3Demail )
 
-Note that we are re-defining some enum entries that exist
-in netlink.h starting with linux-6.1.
-Since we do support distros not shipping an up-to-date
-netlink.h, we had to re-define the entries we need for
-this patch.
+Change subject: route.c: change the signature of get_default_gateway()
+......................................................................
 
-Change-Id: I9e27ff335d892429334137d028f8503da4e4ca5b
-Signed-off-by: Antonio Quartulli <antonio@...2726...>
-Acked-by: Frank Lichtenheld <frank@...2641...>
----
 
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to master.
+Patch Set 1: Code-Review+2
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/841
-This mail reflects revision 9 of this Change.
 
-Acked-by according to Gerrit (reflected above):
-Frank Lichtenheld <frank@...2641...>
+--
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/878?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings
 
-        
-diff --git a/src/openvpn/dco_linux.c b/src/openvpn/dco_linux.c
-index b038382..fa7abd3 100644
---- a/src/openvpn/dco_linux.c
-+++ b/src/openvpn/dco_linux.c
-@@ -291,6 +291,25 @@
-     return NL_SKIP;
- }
- 
-+/* The following enum members exist in netlink.h since linux-6.1.
-+ * However, some distro we support still ship an old header, thus
-+ * failing the OpenVPN compilation.
-+ *
-+ * For the time being we add the needed defines manually.
-+ * We will drop this definition once we stop supporting those old
-+ * distros.
-+ *
-+ * @NLMSGERR_ATTR_MISS_TYPE: type of a missing required attribute,
-+ *  %NLMSGERR_ATTR_MISS_NEST will not be present if the attribute was
-+ *  missing at the message level
-+ * @NLMSGERR_ATTR_MISS_NEST: offset of the nest where attribute was missing
-+ */
-+enum ovpn_nlmsgerr_attrs {
-+    OVPN_NLMSGERR_ATTR_MISS_TYPE = 5,
-+    OVPN_NLMSGERR_ATTR_MISS_NEST = 6,
-+    OVPN_NLMSGERR_ATTR_MAX = 6,
-+};
-+
- /* This function is used as error callback on the netlink socket.
-  * When something goes wrong and the kernel returns an error, this function is
-  * invoked.
-@@ -304,7 +323,7 @@
-                  struct nlmsgerr *err, void *arg)
- {
-     struct nlmsghdr *nlh = (struct nlmsghdr *)err - 1;
--    struct nlattr *tb_msg[NLMSGERR_ATTR_MAX + 1];
-+    struct nlattr *tb_msg[OVPN_NLMSGERR_ATTR_MAX + 1];
-     int len = nlh->nlmsg_len;
-     struct nlattr *attrs;
-     int *ret = arg;
-@@ -330,7 +349,7 @@
-     attrs = (void *)((unsigned char *)nlh + ack_len);
-     len -= ack_len;
- 
--    nla_parse(tb_msg, NLMSGERR_ATTR_MAX, attrs, len, NULL);
-+    nla_parse(tb_msg, OVPN_NLMSGERR_ATTR_MAX, attrs, len, NULL);
-     if (tb_msg[NLMSGERR_ATTR_MSG])
-     {
-         len = strnlen((char *)nla_data(tb_msg[NLMSGERR_ATTR_MSG]),
-@@ -339,6 +358,18 @@
-             (char *)nla_data(tb_msg[NLMSGERR_ATTR_MSG]));
-     }
- 
-+    if (tb_msg[OVPN_NLMSGERR_ATTR_MISS_NEST])
-+    {
-+        msg(M_WARN, "kernel error: missing required nesting type %u\n",
-+            nla_get_u32(tb_msg[OVPN_NLMSGERR_ATTR_MISS_NEST]));
-+    }
-+
-+    if (tb_msg[OVPN_NLMSGERR_ATTR_MISS_TYPE])
-+    {
-+        msg(M_WARN, "kernel error: missing required attribute type %u\n",
-+            nla_get_u32(tb_msg[OVPN_NLMSGERR_ATTR_MISS_TYPE]));
-+    }
-+
-     return NL_STOP;
- }
- 
+Gerrit-Project: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: I58735fb24bc4a94c803b7dfcd6de87af0f75522a
+Gerrit-Change-Number: 878
+Gerrit-PatchSet: 1
+Gerrit-Owner: stipa <lstipakov@...277...>
+Gerrit-Reviewer: cron2 <gert@...1296...>
+Gerrit-Reviewer: flichtenheld <frank@...2641...>
+Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Attention: flichtenheld <frank@...2641...>
+Gerrit-Attention: stipa <lstipakov@...277...>
+Gerrit-Comment-Date: Tue, 28 Jan 2025 13:55:23 +0000
+Gerrit-HasComments: No
+Gerrit-Has-Labels: Yes
+Gerrit-MessageType: comment
+
+--i+54DkVSRiY=
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<p> Attention is currently required from: flichtenheld, plaisthos, stipa. <=
+/p>
+<p>Patch set 1:<span style=3D"border-radius: 3px; display: inline-block; ma=
+rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/878?usp=3Demail">Vi=
+ew Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To vie=
+w, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/878?usp=3Demail">=
+change 878</a>. To unsubscribe, or for help writing mail filters, visit <a =
+href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope=
+ itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"act=
+ion" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=
+=3D"http://gerrit.openvpn.net/c/openvpn/+/878?usp=3Demail"/><meta itemprop=
+=3D"name" content=3D"View Change"/></div></div>
+
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I58735fb24bc4a94c803b7dfcd6d=
+e87af0f75522a </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 878 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
+<div style=3D"display:none"> Gerrit-Owner: stipa &lt;lstipakov@...277...&gt=
+; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
+ </div>
+<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
+1...&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
+.1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
+41...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: stipa &lt;lstipakov@...1663...=
+.&gt; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Tue, 28 Jan 2025 13:55:23=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: No </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
+
+
+--i+54DkVSRiY=--
 
