@@ -1,10 +1,11 @@
 From: Frank Lichtenheld <frank@...2641...>
-Date: Tue, 28 Jan 2025 13:40:26 +0100
-Message-Id: <20250128124026.108992-1-frank@...2641...>
-In-Reply-To: <gerrit.1738029022000.I6de60ed5c03ea45e1d7a3f7777bfc8ed5075e84d@...2715...>
-References: <gerrit.1738029022000.I6de60ed5c03ea45e1d7a3f7777bfc8ed5075e84d@...2715...>
+Date: Tue, 28 Jan 2025 13:41:29 +0100
+Message-Id: <20250128124129.109647-1-frank@...2641...>
+In-Reply-To: <gerrit.1738029022000.Ieca0f8aa07413682d39e73dd3ed21a0038d41f49@...2715...>
+References: <gerrit.1738029022000.Ieca0f8aa07413682d39e73dd3ed21a0038d41f49@...2715...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v1] Haiku: Fix short interface path length
+Subject: [Openvpn-devel] [PATCH v1] Haiku: change del to delete in route
+ command. del is undocumented
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,10 +20,7 @@ To: openvpn-devel@lists.sourceforge.net
 
 From: Alexander von Gluck <alex@...2837...>
 
-* Haiku uses full paths for interface names, 16 characters
-  isn't enough.
-
-Change-Id: I6de60ed5c03ea45e1d7a3f7777bfc8ed5075e84d
+Change-Id: Ieca0f8aa07413682d39e73dd3ed21a0038d41f49
 Signed-off-by: Alexander von Gluck <alex@...2837...>
 Acked-by: Frank Lichtenheld <frank@...2641...>
 ---
@@ -30,7 +28,7 @@ Acked-by: Frank Lichtenheld <frank@...2641...>
 This change was reviewed on Gerrit and approved by at least one
 developer. I request to merge it to master.
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/689
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/690
 This mail reflects revision 1 of this Change.
 
 Signed-off-by line for the author was added as per our policy.
@@ -39,31 +37,30 @@ Acked-by according to Gerrit (reflected above):
 Frank Lichtenheld <frank@...2641...>
 
         
-diff --git a/src/openvpn/route.h b/src/openvpn/route.h
-index 421e7d2..69b06b8 100644
---- a/src/openvpn/route.h
-+++ b/src/openvpn/route.h
-@@ -155,6 +155,8 @@
-     /* gateway interface */
- #ifdef _WIN32
-     DWORD adapter_index; /* interface or ~0 if undefined */
-+#elif defined(TARGET_HAIKU)
-+    char iface[PATH_MAX]; /* iface names are full /dev path with driver name */
- #else
-     char iface[16]; /* interface name (null terminated), may be empty */
- #endif
-@@ -186,8 +188,13 @@
- #else
-     /* non linux platform don't have this constant defined */
- #ifndef IFNAMSIZ
-+#if defined(TARGET_HAIKU)
-+/* iface names are full /dev path with driver name */
-+#define IFNAMSIZ PATH_MAX
-+#else
- #define IFNAMSIZ 16
- #endif
-+#endif
-     char iface[IFNAMSIZ]; /* interface name (null terminated), may be empty */
- #endif
+diff --git a/src/openvpn/route.c b/src/openvpn/route.c
+index d17b285..12d6c07 100644
+--- a/src/openvpn/route.c
++++ b/src/openvpn/route.c
+@@ -2359,8 +2359,8 @@
  
+ #elif defined(TARGET_HAIKU)
+ 
+-    /* ex: route del /dev/net/ipro1000/0 inet 192.168.0.0 gw 192.168.1.1 netmask 255.255.0.0 */
+-    argv_printf(&argv, "%s del %s inet %s gw %s netmask %s",
++    /* ex: route delete /dev/net/ipro1000/0 inet 192.168.0.0 gw 192.168.1.1 netmask 255.255.0.0 */
++    argv_printf(&argv, "%s delete %s inet %s gw %s netmask %s",
+                 ROUTE_PATH,
+                 rgi->iface,
+                 network,
+@@ -2551,8 +2551,8 @@
+         "on connect only and will clean up automatically.");
+ #elif defined(TARGET_HAIKU)
+ 
+-    /* ex: route del /dev/net/ipro1000/0 inet6 :: gw beef::cafe prefixlen 64 */
+-    argv_printf(&argv, "%s del %s inet6 %s gw %s prefixlen %d",
++    /* ex: route delete /dev/net/ipro1000/0 inet6 :: gw beef::cafe prefixlen 64 */
++    argv_printf(&argv, "%s delete %s inet6 %s gw %s prefixlen %d",
+                 ROUTE_PATH,
+                 r6->iface,
+                 network,
 
