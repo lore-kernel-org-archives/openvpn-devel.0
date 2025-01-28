@@ -1,14 +1,14 @@
 From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Tue, 28 Jan 2025 18:58:40 +0000
+Date: Tue, 28 Jan 2025 18:58:42 +0000
 In-Reply-To: <gerrit.1737979301000.Ieee368e325d7f9c367fd91fee0fd3e281ee0855d@...2715...>
 References: <gerrit.1737979301000.Ieee368e325d7f9c367fd91fee0fd3e281ee0855d@...2715...>
 Reply-To: gert@...1296..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <925fab951611e9898cce85e07e7817a6c61e6dea-EmailReplacePatchSet-HTML@...2715...>
+Message-ID: <925fab951611e9898cce85e07e7817a6c61e6dea-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="vQBitHy8ny4="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="T4OIf7QGr+k="; charset=UTF-8
 Subject: [Openvpn-devel] [M] Change in openvpn[master]: Add unit tests for
  atoi parsing options helper
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -19,19 +19,15 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: plaisthos <arne-openvpn@...1227...>
+Cc: flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---vQBitHy8ny4=
+--T4OIf7QGr+k=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-cron2 has uploaded a new patch set (#3) to the change originally created by=
- plaisthos. ( http://gerrit.openvpn.net/c/openvpn/+/876?usp=3Demail )
-
-The following approvals got outdated and were removed:
-Code-Review+2 by flichtenheld
-
+cron2 has submitted this change. ( http://gerrit.openvpn.net/c/openvpn/+/87=
+6?usp=3Demail )
 
 Change subject: Add unit tests for atoi parsing options helper
 ......................................................................
@@ -52,7 +48,7 @@ M tests/unit_tests/openvpn/test_misc.c
 3 files changed, 109 insertions(+), 3 deletions(-)
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/76/876/3
+
 
 diff --git a/tests/unit_tests/openvpn/mock_msg.c b/tests/unit_tests/openvpn=
 /mock_msg.c
@@ -254,205 +250,201 @@ Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
 Gerrit-Reviewer: cron2 <gert@...1296...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-MessageType: newpatchset
+Gerrit-MessageType: merged
 
---vQBitHy8ny4=
+--T4OIf7QGr+k=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p>cron2 <strong>uploaded patch set #3</strong> to the change originally cr=
-eated by plaisthos.</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/=
-876?usp=3Demail">View Change</a></p><p>The following approvals got outdated=
- and were removed:
-Code-Review+2 by flichtenheld</p><pre style=3D"font-family: monospace,monos=
-pace; white-space: pre-wrap;">Add unit tests for atoi parsing options helpe=
-r<br><br>Change-Id: Ieee368e325d7f9c367fd91fee0fd3e281ee0855d<br>Signed-off=
--by: Arne Schwabe &lt;arne@...1227...&gt;<br>Acked-by: Frank Lichtenheld &l=
-t;frank@...2641...&gt;<br>Message-Id: &lt;20250128175855.12289-1-gert@...1711...=
-96...&gt;<br>URL: https://www.mail-archive.com/openvpn-devel@...1357...=
-rge.net/msg30671.html<br>Signed-off-by: Gert Doering &lt;gert@...1296...&gt=
-;<br>---<br>M tests/unit_tests/openvpn/mock_msg.c<br>M tests/unit_tests/ope=
-nvpn/mock_msg.h<br>M tests/unit_tests/openvpn/test_misc.c<br>3 files change=
-d, 109 insertions(+), 3 deletions(-)<br><br></pre><pre style=3D"font-family=
-: monospace,monospace; white-space: pre-wrap;">git pull ssh://gerrit.openvp=
-n.net:29418/openvpn refs/changes/76/876/3</pre><pre style=3D"font-family: m=
-onospace,monospace; white-space: pre-wrap;"><span>diff --git a/tests/unit_t=
-ests/openvpn/mock_msg.c b/tests/unit_tests/openvpn/mock_msg.c</span><br><sp=
-an>index a291f8f..b6ec744 100644</span><br><span>--- a/tests/unit_tests/ope=
-nvpn/mock_msg.c</span><br><span>+++ b/tests/unit_tests/openvpn/mock_msg.c</=
-span><br><span>@@ -37,10 +37,16 @@</span><br><span> </span><br><span> #incl=
-ude &quot;errlevel.h&quot;</span><br><span> #include &quot;error.h&quot;</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+#include &quot;mock_ms=
-g.h&quot;</span><br><span> </span><br><span> unsigned int x_debug_level =3D=
- 0; /* Default to (almost) no debugging output */</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+unsigned int print_x_debug_level =3D 0;</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> bool fa=
-tal_error_triggered =3D false;</span><br><span> </span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+char mock_msg_buf[MOCK_MSG_BUF];</span><br><sp=
+<p>cron2 <strong>submitted</strong> this change.</p><p><a href=3D"http://ge=
+rrit.openvpn.net/c/openvpn/+/876?usp=3Demail">View Change</a></p><div style=
+=3D"white-space:pre-wrap"></div><pre style=3D"font-family: monospace,monosp=
+ace; white-space: pre-wrap;">Add unit tests for atoi parsing options helper=
+<br><br>Change-Id: Ieee368e325d7f9c367fd91fee0fd3e281ee0855d<br>Signed-off-=
+by: Arne Schwabe &lt;arne@...1227...&gt;<br>Acked-by: Frank Lichtenheld &lt=
+;frank@...2641...&gt;<br>Message-Id: &lt;20250128175855.12289-1-gert@...1826...=
+6...&gt;<br>URL: https://www.mail-archive.com/openvpn-devel@...1768...=
+ge.net/msg30671.html<br>Signed-off-by: Gert Doering &lt;gert@...1296...&gt;=
+<br>---<br>M tests/unit_tests/openvpn/mock_msg.c<br>M tests/unit_tests/open=
+vpn/mock_msg.h<br>M tests/unit_tests/openvpn/test_misc.c<br>3 files changed=
+, 109 insertions(+), 3 deletions(-)<br><br></pre>
+<pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><sp=
+an>diff --git a/tests/unit_tests/openvpn/mock_msg.c b/tests/unit_tests/open=
+vpn/mock_msg.c</span><br><span>index a291f8f..b6ec744 100644</span><br><spa=
+n>--- a/tests/unit_tests/openvpn/mock_msg.c</span><br><span>+++ b/tests/uni=
+t_tests/openvpn/mock_msg.c</span><br><span>@@ -37,10 +37,16 @@</span><br><s=
+pan> </span><br><span> #include &quot;errlevel.h&quot;</span><br><span> #in=
+clude &quot;error.h&quot;</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+#include &quot;mock_msg.h&quot;</span><br><span> </span><br><span> un=
+signed int x_debug_level =3D 0; /* Default to (almost) no debugging output =
+*/</span><br><span style=3D"color: hsl(120, 100%, 40%);">+unsigned int prin=
+t_x_debug_level =3D 0;</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+</span><br><span> bool fatal_error_triggered =3D false;</span><br><span>=
+ </span><br><span style=3D"color: hsl(120, 100%, 40%);">+char mock_msg_buf[=
+MOCK_MSG_BUF];</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> void</=
+span><br><span> mock_set_debug_level(int level)</span><br><span> {</span><b=
+r><span>@@ -48,6 +54,18 @@</span><br><span> }</span><br><span> </span><br><=
+span> int</span><br><span style=3D"color: hsl(120, 100%, 40%);">+mock_get_d=
+ebug_level(void)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+    return x_debug_le=
+vel;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><sp=
 an style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+</span><br><span> void</span><br><span> mock_set_deb=
-ug_level(int level)</span><br><span> {</span><br><span>@@ -48,6 +54,18 @@</=
-span><br><span> }</span><br><span> </span><br><span> int</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+mock_get_debug_level(void)</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+    return x_debug_level;</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+voi=
-d</span><br><span style=3D"color: hsl(120, 100%, 40%);">+mock_set_print_deb=
-ug_level(int level)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    print_x_debug_=
-level =3D level;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+int</span><br><span> get_debug_level(voi=
-d)</span><br><span> {</span><br><span>     return x_debug_level;</span><br>=
-<span>@@ -62,8 +80,14 @@</span><br><span>         fatal_error_triggered =3D=
- true;</span><br><span>         printf(&quot;FATAL ERROR:&quot;);</span><br=
-><span>     }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    vpri=
-ntf(format, arglist);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
-    printf(&quot;\n&quot;);</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+    CLEAR(mock_msg_buf);</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+    vsnprintf(mock_msg_buf, sizeof(mock_msg_buf), format, argl=
-ist);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+    if ((flags &amp; M_DEBUG_LEVE=
-L) &lt;=3D print_x_debug_level)</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-      printf(&quot;%s&quot;, mock_msg_buf);</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+        printf(&quot;\n&quot;);</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span> }</span><br><spa=
-n> </span><br><span> void</span><br><span>diff --git a/tests/unit_tests/ope=
-nvpn/mock_msg.h b/tests/unit_tests/openvpn/mock_msg.h</span><br><span>index=
- be5f2e5..bc2ee5d 100644</span><br><span>--- a/tests/unit_tests/openvpn/moc=
-k_msg.h</span><br><span>+++ b/tests/unit_tests/openvpn/mock_msg.h</span><br=
-><span>@@ -31,4 +31,18 @@</span><br><span>  */</span><br><span> void mock_s=
-et_debug_level(int level);</span><br><span> </span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+#define MOCK_MSG_BUF 2048</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+extern bool fatal_error_triggered;</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+extern char mock_msg_buf[MOCK_MSG_BUF];</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+void</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+mock_set_debug_level(int level);</span><br><span style=3D"colo=
+hsl(120, 100%, 40%);">+void</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+mock_set_print_debug_level(int level)</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+    print_x_debug_level =3D level;</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+int</span><br>=
+<span> get_debug_level(void)</span><br><span> {</span><br><span>     return=
+ x_debug_level;</span><br><span>@@ -62,8 +80,14 @@</span><br><span>        =
+ fatal_error_triggered =3D true;</span><br><span>         printf(&quot;FATA=
+L ERROR:&quot;);</span><br><span>     }</span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-    vprintf(format, arglist);</span><br><span style=3D"co=
+lor: hsl(0, 100%, 40%);">-    printf(&quot;\n&quot;);</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    CLEAR(mock_msg_buf);</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+    vsnprintf(mock_msg_buf, sizeof(m=
+ock_msg_buf), format, arglist);</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if =
+((flags &amp; M_DEBUG_LEVEL) &lt;=3D print_x_debug_level)</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+        printf(&quot;%s&quot;, mock_msg_buf);</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+        printf(&quot;\n&q=
+uot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><=
+br><span> }</span><br><span> </span><br><span> void</span><br><span>diff --=
+git a/tests/unit_tests/openvpn/mock_msg.h b/tests/unit_tests/openvpn/mock_m=
+sg.h</span><br><span>index be5f2e5..bc2ee5d 100644</span><br><span>--- a/te=
+sts/unit_tests/openvpn/mock_msg.h</span><br><span>+++ b/tests/unit_tests/op=
+envpn/mock_msg.h</span><br><span>@@ -31,4 +31,18 @@</span><br><span>  */</s=
+pan><br><span> void mock_set_debug_level(int level);</span><br><span> </spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+#define MOCK_MSG_BUF 204=
+8</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+extern bool fatal_error_triggered;</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+extern char mock_msg_b=
+uf[MOCK_MSG_BUF];</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+void</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+mock_set_debug_level(int level);</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+int</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+mock_get_debug_level(void);</span><br><span style=3D"colo=
 r: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+int</span><br><span style=3D"color: hsl(120, 100%, 40%);">+mock_get_=
-debug_level(void);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+void</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+mock_set_print_debug_level(int leve=
-l);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span=
-> #endif /* MOCK_MSG */</span><br><span>diff --git a/tests/unit_tests/openv=
-pn/test_misc.c b/tests/unit_tests/openvpn/test_misc.c</span><br><span>index=
- 563d4ae..56e9d98 100644</span><br><span>--- a/tests/unit_tests/openvpn/tes=
-t_misc.c</span><br><span>+++ b/tests/unit_tests/openvpn/test_misc.c</span><=
-br><span>@@ -38,6 +38,7 @@</span><br><span> #include &quot;options_util.h&q=
-uot;</span><br><span> #include &quot;test_common.h&quot;</span><br><span> #=
-include &quot;list.h&quot;</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+#include &quot;mock_msg.h&quot;</span><br><span> </span><br><span> s=
-tatic void</span><br><span> test_compat_lzo_string(void **state)</span><br>=
-<span>@@ -311,13 +312,80 @@</span><br><span>     gc_free(&amp;gc);</span><b=
-r><span> }</span><br><span> </span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+static void</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+test_atoi_variants(void **state)</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-assert_true(valid_integer(&quot;1234&quot;, true));</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    assert_true(valid_integer(&quot;1234&=
-quot;, false));</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-assert_true(valid_integer(&quot;0&quot;, false));</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+    assert_true(valid_integer(&quot;0&quot;, =
-true));</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_t=
-rue(valid_integer(&quot;-777&quot;, false));</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+    assert_false(valid_integer(&quot;-777&quot;, t=
-rue));</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+    assert_false(valid_integer(&=
-quot;-777foo&quot;, false));</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+    assert_false(valid_integer(&quot;-777foo&quot;, true));</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+    assert_false(valid_integer(&quot;foo777&q=
-uot;, true));</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    as=
-sert_false(valid_integer(&quot;foo777&quot;, false));</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+    /* 2**31 + 5 , just outside of signed int range */</span=
+0%);">+void</span><br><span style=3D"color: hsl(120, 100%, 40%);">+mock_set=
+_print_debug_level(int level);</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+</span><br><span> #endif /* MOCK_MSG */</span><br><span>diff --g=
+it a/tests/unit_tests/openvpn/test_misc.c b/tests/unit_tests/openvpn/test_m=
+isc.c</span><br><span>index 563d4ae..56e9d98 100644</span><br><span>--- a/t=
+ests/unit_tests/openvpn/test_misc.c</span><br><span>+++ b/tests/unit_tests/=
+openvpn/test_misc.c</span><br><span>@@ -38,6 +38,7 @@</span><br><span> #inc=
+lude &quot;options_util.h&quot;</span><br><span> #include &quot;test_common=
+.h&quot;</span><br><span> #include &quot;list.h&quot;</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+#include &quot;mock_msg.h&quot;</span><br=
+><span> </span><br><span> static void</span><br><span> test_compat_lzo_stri=
+ng(void **state)</span><br><span>@@ -311,13 +312,80 @@</span><br><span>    =
+ gc_free(&amp;gc);</span><br><span> }</span><br><span> </span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+static void</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+test_atoi_variants(void **state)</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+    assert_true(valid_integer(&quot;1234&quot;, true=
+));</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_true(=
+valid_integer(&quot;1234&quot;, false));</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+    assert_true(valid_integer(&quot;0&quot;, false));<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_true(vali=
+d_integer(&quot;0&quot;, true));</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+    assert_true(valid_integer(&quot;-777&quot;, false));</span=
 ><br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_false(valid_in=
-teger(&quot;2147483653&quot;, true));</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+    assert_false(valid_integer(&quot;2147483653&quot;, fa=
-lse));</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_fa=
-lse(valid_integer(&quot;-2147483653&quot;, true));</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+    assert_false(valid_integer(&quot;-214748=
-3653&quot;, false));</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+    int msglevel =3D D_LOW;</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+    int saved_log_level =3D m=
-ock_get_debug_level();</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+    mock_set_debug_level(D_LOW);</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
- /* check happy path */</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+    assert_int_equal(positive_atoi(&quot;1234&quot;, msglevel), 1234);<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_int_equal=
-(positive_atoi(&quot;0&quot;, msglevel), 0);</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+    assert_int_equal(atoi_warn(&quot;1234&quot;, msglevel), 1234);</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_int_equal(a=
-toi_warn(&quot;0&quot;, msglevel), 0);</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+    assert_int_equal(atoi_warn(&quot;-1194&quot;, msglev=
-el), -1194);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span>=
+teger(&quot;-777&quot;, true));</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    ass=
+ert_false(valid_integer(&quot;-777foo&quot;, false));</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    assert_false(valid_integer(&quot;-777=
+foo&quot;, true));</span><br><span style=3D"color: hsl(120, 100%, 40%);">+<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_false(val=
+id_integer(&quot;foo777&quot;, true));</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+    assert_false(valid_integer(&quot;foo777&quot;, false=
+));</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+    /* 2**31 + 5 , just outside of =
+signed int range */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+    assert_false(valid_integer(&quot;2147483653&quot;, true));</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+    assert_false(valid_integer(&=
+quot;2147483653&quot;, false));</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+    assert_false(valid_integer(&quot;-2147483653&quot;, true));=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_false(va=
+lid_integer(&quot;-2147483653&quot;, false));</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    int msgl=
+evel =3D D_LOW;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+int saved_log_level =3D mock_get_debug_level();</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+    mock_set_debug_level(D_LOW);</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+    /* check happy path */</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+    assert_int_equal(positive_atoi(&quot;1234&=
+quot;, msglevel), 1234);</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+    assert_int_equal(positive_atoi(&quot;0&quot;, msglevel), 0);</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+    assert_int_equal(atoi_warn(&quot;1234&qu=
+ot;, msglevel), 1234);</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+    assert_int_equal(atoi_warn(&quot;0&quot;, msglevel), 0);</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+    assert_int_equal(atoi_warn(=
+&quot;-1194&quot;, msglevel), -1194);</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+   CLEAR(mock_msg_buf);</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+    assert_int_equal(positive_atoi(&quot;-1234&quot;, msglevel), 0);</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_string_equa=
+l(mock_msg_buf, &quot;Cannot parse argument &#39;-1234&#39; as non-negative=
+ integer&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+    /* 2**31 + 5 , jus=
+t outside of signed int range */</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+    CLEAR(mock_msg_buf);</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+    assert_int_equal(positive_atoi(&quot;2147483653&quot;=
+, msglevel), 0);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+ assert_string_equal(mock_msg_buf, &quot;Cannot parse argument &#39;2147483=
+653&#39; as non-negative integer&quot;);</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+    CLEAR(mock_msg_buf);</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+    assert_int_equal(atoi_warn(&quot;2147483653&quot;, msglevel), 0)=
+;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_string_=
+equal(mock_msg_buf, &quot;Cannot parse argument &#39;2147483653&#39; as int=
+eger&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span>=
 <br><span style=3D"color: hsl(120, 100%, 40%);">+    CLEAR(mock_msg_buf);</=
 span><br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_int_equal(=
-positive_atoi(&quot;-1234&quot;, msglevel), 0);</span><br><span style=3D"co=
+positive_atoi(&quot;foo77&quot;, msglevel), 0);</span><br><span style=3D"co=
 lor: hsl(120, 100%, 40%);">+    assert_string_equal(mock_msg_buf, &quot;Can=
-not parse argument &#39;-1234&#39; as non-negative integer&quot;);</span><b=
+not parse argument &#39;foo77&#39; as non-negative integer&quot;);</span><b=
 r><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+    /* 2**31 + 5 , just outside of signed int r=
-ange */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    CLEAR(mo=
-ck_msg_buf);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    ass=
-ert_int_equal(positive_atoi(&quot;2147483653&quot;, msglevel), 0);</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+    assert_string_equal(mock=
-_msg_buf, &quot;Cannot parse argument &#39;2147483653&#39; as non-negative =
-integer&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+    CLEAR(mock_msg_buf)=
-;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_int_equ=
-al(atoi_warn(&quot;2147483653&quot;, msglevel), 0);</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    assert_string_equal(mock_msg_buf, &qu=
-ot;Cannot parse argument &#39;2147483653&#39; as integer&quot;);</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+    CLEAR(mock_msg_buf);</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+    assert_int_equal(positive_atoi(&quot;foo=
-77&quot;, msglevel), 0);</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+    assert_string_equal(mock_msg_buf, &quot;Cannot parse argument &#39=
-;foo77&#39; as non-negative integer&quot;);</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+    CLEAR(mock_msg_buf);</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+    assert_int_equal(positive_atoi(&quot;77foo&quot;, msglevel), =
-0);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_strin=
-g_equal(mock_msg_buf, &quot;Cannot parse argument &#39;77foo&#39; as non-ne=
-gative integer&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    CLEAR(mock_m=
-sg_buf);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_=
-int_equal(atoi_warn(&quot;foo77&quot;, msglevel), 0);</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    assert_string_equal(mock_msg_buf, &qu=
-ot;Cannot parse argument &#39;foo77&#39; as integer&quot;);</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+    CLEAR(mock_msg_buf);</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+    assert_int_equal(atoi_warn(&quot;77foo&quot;,=
- msglevel), 0);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-assert_string_equal(mock_msg_buf, &quot;Cannot parse argument &#39;77foo&#3=
-9; as integer&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    mock_set_debu=
-g_level(saved_log_level);</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+}</span><br><span> </span><br><span> const struct CMUnitTest misc_tes=
-ts[] =3D {</span><br><span>     cmocka_unit_test(test_compat_lzo_string),</=
-span><br><span>     cmocka_unit_test(test_auth_fail_temp_no_flags),</span><=
-br><span>     cmocka_unit_test(test_auth_fail_temp_flags),</span><br><span>=
-     cmocka_unit_test(test_auth_fail_temp_flags_msg),</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-    cmocka_unit_test(test_list)</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+    cmocka_unit_test(test_list)=
-,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    cmocka_unit_te=
-st(test_atoi_variants)</span><br><span> };</span><br><span> </span><br><spa=
-n> int</span><br><span></span><br></pre><p>To view, visit <a href=3D"http:/=
-/gerrit.openvpn.net/c/openvpn/+/876?usp=3Demail">change 876</a>. To unsubsc=
-ribe, or for help writing mail filters, visit <a href=3D"http://gerrit.open=
-vpn.net/settings">settings</a>.</p><div itemscope itemtype=3D"http://schema=
-.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://sc=
-hema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.n=
-et/c/openvpn/+/876?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Ch=
-ange"/></div></div>
+lor: hsl(120, 100%, 40%);">+    CLEAR(mock_msg_buf);</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    assert_int_equal(positive_atoi(&quot;=
+77foo&quot;, msglevel), 0);</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+    assert_string_equal(mock_msg_buf, &quot;Cannot parse argument &=
+#39;77foo&#39; as non-negative integer&quot;);</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+    CLEAR(mock_msg_buf);</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+    assert_int_equal(atoi_warn(&quot;foo77&quot;, msglevel), 0=
+);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_string=
+_equal(mock_msg_buf, &quot;Cannot parse argument &#39;foo77&#39; as integer=
+&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+    CLEAR(mock_msg_buf);</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_int_equal(atoi=
+_warn(&quot;77foo&quot;, msglevel), 0);</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+    assert_string_equal(mock_msg_buf, &quot;Cannot pars=
+e argument &#39;77foo&#39; as integer&quot;);</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+    mock_set_debug_level(saved_log_level);</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+}</span><br><span> </span><br><span> const st=
+ruct CMUnitTest misc_tests[] =3D {</span><br><span>     cmocka_unit_test(te=
+st_compat_lzo_string),</span><br><span>     cmocka_unit_test(test_auth_fail=
+_temp_no_flags),</span><br><span>     cmocka_unit_test(test_auth_fail_temp_=
+flags),</span><br><span>     cmocka_unit_test(test_auth_fail_temp_flags_msg=
+),</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    cmocka_unit_tes=
+t(test_list)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    cmo=
+cka_unit_test(test_list),</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+    cmocka_unit_test(test_atoi_variants)</span><br><span> };</span><b=
+r><span> </span><br><span> int</span><br><span></span><br></pre><p>To view,=
+ visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/876?usp=3Demail">ch=
+ange 876</a>. To unsubscribe, or for help writing mail filters, visit <a hr=
+ef=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope i=
+temtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"actio=
+n" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D=
+"http://gerrit.openvpn.net/c/openvpn/+/876?usp=3Demail"/><meta itemprop=3D"=
+name" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
@@ -468,8 +460,8 @@ d3e281ee0855d </div>
 1...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
+<div style=3D"display:none"> Gerrit-MessageType: merged </div>
 
 
---vQBitHy8ny4=--
+--T4OIf7QGr+k=--
 
