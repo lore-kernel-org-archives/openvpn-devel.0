@@ -1,16 +1,17 @@
-From: "flichtenheld (Code Review)" <gerrit@...515...>
-Date: Tue, 28 Jan 2025 14:12:18 +0000
-In-Reply-To: <gerrit.1732545464000.I6816f61b308ca9f6d1f9f687a6dc8e0aa2d044e0@...2715...>
-References: <gerrit.1732545464000.I6816f61b308ca9f6d1f9f687a6dc8e0aa2d044e0@...2715...>
-Reply-To: frank@...2641..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, a@...2181...
-Message-ID: <a57b8632c2bb3cccae83d83db4c0daefb0b3c6da-EmailReviewComments-HTML@...2715...>
+From: "cron2 (Code Review)" <gerrit@...515...>
+Date: Tue, 28 Jan 2025 14:15:14 +0000
+In-Reply-To: <gerrit.1738072669000.I4be0ff4d308213d2ef8ba66bd3178eee1f60fff1@...2715...>
+References: <gerrit.1738072669000.I4be0ff4d308213d2ef8ba66bd3178eee1f60fff1@...2715...>
+Reply-To: gert@...1296..., arne-openvpn@...1227...,
+ gianmarco@...2726..., openvpn-devel@lists.sourceforge.net,
+ frank@...2641...
+Message-ID: <09f404c85aba63e77660d51e458d719241a3f1cf-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="+IsiEG3YKtI="; charset=UTF-8
-Subject: [Openvpn-devel] [XS] Change in openvpn[master]: man: extend
- --persist-tun section
+Content-Type: multipart/alternative; boundary="R5y3zcv2NC4="; charset=UTF-8
+Subject: [Openvpn-devel] [S] Change in openvpn[master]: mroute/management:
+ fix unitialized variable (UNINIT)
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,69 +20,124 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: its_Giaan <gianmarco@...2726...>
+Cc: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---+IsiEG3YKtI=
+--R5y3zcv2NC4=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: ordex, plaisthos.
+Attention is currently required from: flichtenheld, its_Giaan, plaisthos.
 
-flichtenheld has posted comments on this change. ( http://gerrit.openvpn.ne=
-t/c/openvpn/+/819?usp=3Demail )
+cron2 has posted comments on this change. ( http://gerrit.openvpn.net/c/ope=
+nvpn/+/880?usp=3Demail )
 
-Change subject: man: extend --persist-tun section
+Change subject: mroute/management: fix unitialized variable (UNINIT)
 ......................................................................
 
 
-Patch Set 2: Code-Review+2
+Patch Set 1: Code-Review-1
+
+(3 comments)
+
+Patchset:
+
+PS1:
+close.  Please extend doc/management-notes.txt with the new syntax as well.
+
+
+File src/openvpn/manage.c:
+
+http://gerrit.openvpn.net/c/openvpn/+/880/comment/89921c64_ce4843fe :
+PS1, Line 573:                             port, p3);
+not sure we should use `p3` here (what if a user sends 'foo'?).
+
+Also, proto traditionall gets printed in front ("tcp:10.0.0.3:1194") so we =
+shouldn't start printing it at the end here...
+
+
+File src/openvpn/mroute.c:
+
+http://gerrit.openvpn.net/c/openvpn/+/880/comment/75d367d4_1b83c9e4 :
+PS1, Line 441:                 if ((maddr.type & MR_WITH_PROTO))
+double `(())` braces...
+
 
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/819?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/880?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings
 
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: I6816f61b308ca9f6d1f9f687a6dc8e0aa2d044e0
-Gerrit-Change-Number: 819
-Gerrit-PatchSet: 2
-Gerrit-Owner: ordex <a@...2181...>
+Gerrit-Change-Id: I4be0ff4d308213d2ef8ba66bd3178eee1f60fff1
+Gerrit-Change-Number: 880
+Gerrit-PatchSet: 1
+Gerrit-Owner: its_Giaan <gianmarco@...2726...>
+Gerrit-Reviewer: cron2 <gert@...1296...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: ordex <a@...2181...>
-Gerrit-Comment-Date: Tue, 28 Jan 2025 14:12:18 +0000
-Gerrit-HasComments: No
+Gerrit-Attention: its_Giaan <gianmarco@...2726...>
+Gerrit-Attention: flichtenheld <frank@...2641...>
+Gerrit-Comment-Date: Tue, 28 Jan 2025 14:15:14 +0000
+Gerrit-HasComments: Yes
 Gerrit-Has-Labels: Yes
 Gerrit-MessageType: comment
 
---+IsiEG3YKtI=
+--R5y3zcv2NC4=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p> Attention is currently required from: ordex, plaisthos. </p>
-<p>Patch set 2:<span style=3D"border-radius: 3px; display: inline-block; ma=
-rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/819?usp=3Demail">Vi=
-ew Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To vie=
-w, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/819?usp=3Demail">=
-change 819</a>. To unsubscribe, or for help writing mail filters, visit <a =
-href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope=
- itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"act=
-ion" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=
-=3D"http://gerrit.openvpn.net/c/openvpn/+/819?usp=3Demail"/><meta itemprop=
-=3D"name" content=3D"View Change"/></div></div>
+<p> Attention is currently required from: flichtenheld, its_Giaan, plaistho=
+s. </p>
+<p>Patch set 1:<span style=3D"border-radius: 3px; display: inline-block; ma=
+rgin: 0 2px; padding: 4px;background-color: #ffd4d4;">Code-Review -1</span>=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/880?usp=3Demail">Vi=
+ew Change</a></p><p>3 comments:</p><ul style=3D"list-style: none; padding: =
+0;"><li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-=
+style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p =
+style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvp=
+n/+/880?tab=3Dcomments">Patch Set #1:</a> </p><p style=3D"white-space: pre-=
+wrap; word-wrap: break-word;">close.  Please extend doc/management-notes.tx=
+t with the new syntax as well.</p></li></ul></li><li style=3D"margin: 0; pa=
+dding: 0;"><p>File src/openvpn/manage.c:</p><ul style=3D"list-style: none; =
+padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p style=3D"marg=
+in-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/880/comme=
+nt/89921c64_ce4843fe">Patch Set #1, Line 573:</a> <code style=3D"font-famil=
+y:monospace,monospace">                            port, p3);</code></p><p =
+style=3D"white-space: pre-wrap; word-wrap: break-word;">not sure we should =
+use `p3` here (what if a user sends &#39;foo&#39;?).</p><p style=3D"white-s=
+pace: pre-wrap; word-wrap: break-word;">Also, proto traditionall gets print=
+ed in front (&quot;tcp:10.0.0.3:1194&quot;) so we shouldn&#39;t start print=
+ing it at the end here...</p></li></ul></li><li style=3D"margin: 0; padding=
+: 0;"><p>File src/openvpn/mroute.c:</p><ul style=3D"list-style: none; paddi=
+ng: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p style=3D"margin-bo=
+ttom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/880/comment/75=
+d367d4_1b83c9e4">Patch Set #1, Line 441:</a> <code style=3D"font-family:mon=
+ospace,monospace">                if ((maddr.type &amp; MR_WITH_PROTO))</co=
+de></p><p style=3D"white-space: pre-wrap; word-wrap: break-word;">double `(=
+())` braces...</p></li></ul></li></ul><p>To view, visit <a href=3D"http://g=
+errit.openvpn.net/c/openvpn/+/880?usp=3Demail">change 880</a>. To unsubscri=
+be, or for help writing mail filters, visit <a href=3D"http://gerrit.openvp=
+n.net/settings">settings</a>.</p><div itemscope itemtype=3D"http://schema.o=
+rg/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://sche=
+ma.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net=
+/c/openvpn/+/880?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Chan=
+ge"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I6816f61b308ca9f6d1f9f687a6d=
-c8e0aa2d044e0 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 819 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
-<div style=3D"display:none"> Gerrit-Owner: ordex &lt;a@...2181...&gt; </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I4be0ff4d308213d2ef8ba66bd31=
+78eee1f60fff1 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 880 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
+<div style=3D"display:none"> Gerrit-Owner: its_Giaan &lt;gianmarco@...2786...=
+..&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
+ </div>
 <div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
 1...&gt; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
@@ -90,14 +146,16 @@ c8e0aa2d044e0 </div>
 ts.sourceforge.net&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
 ..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: ordex &lt;a@...2181...&gt; <=
-/div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Tue, 28 Jan 2025 14:12:18=
+<div style=3D"display:none"> Gerrit-Attention: its_Giaan &lt;gianmarco@...1665...=
+726...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
+41...&gt; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Tue, 28 Jan 2025 14:15:14=
  +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: No </div>
+<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
 <div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
 <div style=3D"display:none"> Gerrit-MessageType: comment </div>
 
 
---+IsiEG3YKtI=--
+--R5y3zcv2NC4=--
 
