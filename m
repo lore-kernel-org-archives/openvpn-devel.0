@@ -1,15 +1,15 @@
 From: "stipa (Code Review)" <gerrit@...515...>
-Date: Wed, 29 Jan 2025 12:16:30 +0000
+Date: Wed, 29 Jan 2025 12:17:19 +0000
 In-Reply-To: <gerrit.1738150255000.Ic438c583a782035ecb9b5ea65702a768ae2585f5@...2715...>
 References: <gerrit.1738150255000.Ic438c583a782035ecb9b5ea65702a768ae2585f5@...2715...>
 Reply-To: lstipakov@...277..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net, frank@...2641...,
  gert@...1296...
-Message-ID: <45f3dd0fd86ba461c01a5860030d3cc234c41706-EmailReviewComments-HTML@...2715...>
+Message-ID: <e3b5261cee12f44d881dcc79bf8b769c7ef163c4-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="fXV1zgyg3Yw="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="vT5/PdpUpFQ="; charset=UTF-8
 Subject: [Openvpn-devel] [S] Change in openvpn[master]: options: add IPv4
  support to '--show-gateway <arg>'
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -23,11 +23,11 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: cron2 <gert@...1296...>
 Cc: flichtenheld <frank@...2641...>, plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---fXV1zgyg3Yw=
+--vT5/PdpUpFQ=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: cron2, plaisthos.
+Attention is currently required from: cron2, flichtenheld, plaisthos.
 
 stipa has posted comments on this change. ( http://gerrit.openvpn.net/c/ope=
 nvpn/+/881?usp=3Demail )
@@ -36,16 +36,16 @@ Change subject: options: add IPv4 support to '--show-gateway <arg>'
 ......................................................................
 
 
-Patch Set 1: Code-Review-2
+Patch Set 1:
 
 (1 comment)
 
-Patchset:
+File src/openvpn/options.c:
 
-PS1:
-Looks good and with "route.c: improve get_default_gateway() logic on Window=
-s" I see the correct gateway, but get_default_gateway() expects dest in hos=
-t byte order, and get_ip_addr() returns address in network byte order.
+http://gerrit.openvpn.net/c/openvpn/+/881/comment/563e3fd7_cdc2b930 :
+PS1, Line 5875:         get_default_gateway(&rgi, remote_ipv4, &net_ctx);
+> Does not seem to work for me. [=E2=80=A6]
+To make it actually work you need https://gerrit.openvpn.net/c/openvpn/+/879
 
 
 
@@ -66,35 +66,38 @@ Gerrit-Reviewer: stipa <lstipakov@...277...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
 Gerrit-Attention: cron2 <gert@...1296...>
-Gerrit-Comment-Date: Wed, 29 Jan 2025 12:16:30 +0000
+Gerrit-Attention: flichtenheld <frank@...2641...>
+Gerrit-Comment-Date: Wed, 29 Jan 2025 12:17:19 +0000
 Gerrit-HasComments: Yes
-Gerrit-Has-Labels: Yes
+Gerrit-Has-Labels: No
+Comment-In-Reply-To: flichtenheld <frank@...2641...>
 Gerrit-MessageType: comment
 
---fXV1zgyg3Yw=
+--vT5/PdpUpFQ=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p> Attention is currently required from: cron2, plaisthos. </p>
-<p>Patch set 1:<span style=3D"border-radius: 3px; display: inline-block; ma=
-rgin: 0 2px; padding: 4px;background-color: #ffd4d4;">Code-Review -2</span>=
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/881?usp=3Demail">Vi=
-ew Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0=
-;"><li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-s=
-tyle: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p s=
-tyle=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn=
-/+/881?tab=3Dcomments">Patch Set #1:</a> </p><p style=3D"white-space: pre-w=
-rap; word-wrap: break-word;">Looks good and with &quot;route.c: improve get=
-_default_gateway() logic on Windows&quot; I see the correct gateway, but ge=
-t_default_gateway() expects dest in host byte order, and get_ip_addr() retu=
-rns address in network byte order.</p></li></ul></li></ul><p>To view, visit=
- <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/881?usp=3Demail">change 8=
-81</a>. To unsubscribe, or for help writing mail filters, visit <a href=3D"=
-http://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope itemtyp=
-e=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"action" ite=
-mtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http:=
-//gerrit.openvpn.net/c/openvpn/+/881?usp=3Demail"/><meta itemprop=3D"name" =
-content=3D"View Change"/></div></div>
+<p> Attention is currently required from: cron2, flichtenheld, plaisthos. <=
+/p>
+<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/881?usp=3Demail">View C=
+hange</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0;"><=
+li style=3D"margin: 0; padding: 0;"><p>File src/openvpn/options.c:</p><ul s=
+tyle=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0=
+ 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn=
+.net/c/openvpn/+/881/comment/563e3fd7_cdc2b930">Patch Set #1, Line 5875:</a=
+> <code style=3D"font-family:monospace,monospace">        get_default_gatew=
+ay(&amp;rgi, remote_ipv4, &amp;net_ctx);</code></p><p><blockquote style=3D"=
+border-left: 1px solid #aaa; margin: 10px 0; padding: 0 10px;">Does not see=
+m to work for me. [=E2=80=A6]</blockquote></p><p style=3D"white-space: pre-=
+wrap; word-wrap: break-word;">To make it actually work you need https://ger=
+rit.openvpn.net/c/openvpn/+/879</p></li></ul></li></ul><p>To view, visit <a=
+ href=3D"http://gerrit.openvpn.net/c/openvpn/+/881?usp=3Demail">change 881<=
+/a>. To unsubscribe, or for help writing mail filters, visit <a href=3D"htt=
+p://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope itemtype=
+=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"action" item=
+type=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http:/=
+/gerrit.openvpn.net/c/openvpn/+/881?usp=3Demail"/><meta itemprop=3D"name" c=
+ontent=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
@@ -116,12 +119,16 @@ ts.sourceforge.net&gt; </div>
 ..1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: cron2 &lt;gert@...1296...&gt=
 ; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Wed, 29 Jan 2025 12:16:30=
+<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
+41...&gt; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Wed, 29 Jan 2025 12:17:19=
  +0000 </div>
 <div style=3D"display:none"> Gerrit-HasComments: Yes </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: No </div>
+<div style=3D"display:none"> Comment-In-Reply-To: flichtenheld &lt;frank@...1186...=
+.2641...&gt; </div>
 <div style=3D"display:none"> Gerrit-MessageType: comment </div>
 
 
---fXV1zgyg3Yw=--
+--vT5/PdpUpFQ=--
 
