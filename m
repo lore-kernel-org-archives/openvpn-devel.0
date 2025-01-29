@@ -1,10 +1,17 @@
-Date: Wed, 29 Jan 2025 10:56:39 +0100 (CET)
-Message-Id: <202501290956.50T9udx3052116@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <20250129095038.19056-1-gert@...1296...>
-References: <20250129095038.19056-1-gert@...1296...>
-Subject: [Openvpn-devel] [PATCH applied] Re: route.c: change the signature
- of get_default_gateway()
+From: "cron2 (Code Review)" <gerrit@...515...>
+Date: Wed, 29 Jan 2025 09:57:06 +0000
+In-Reply-To: <gerrit.1738070271000.I58735fb24bc4a94c803b7dfcd6de87af0f75522a@...2715...>
+References: <gerrit.1738070271000.I58735fb24bc4a94c803b7dfcd6de87af0f75522a@...2715...>
+Reply-To: gert@...1296..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net, frank@...2641...,
+ lstipakov@...277...
+Message-ID: <e54ad649c0c8e0c4e1f784a9ed3dc61e7eebe7f2-HTML@...2715...>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="+ramKNQq6IQ="; charset=UTF-8
+Subject: [Openvpn-devel] [S] Change in openvpn[master]: route.c: change the
+ signature of get_default_gateway()
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,45 +20,326 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: Lev Stipakov <lev@...515...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: stipa <lstipakov@...277...>
+Cc: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-As discusssed on IRC, this is the first patch of a series to improve
-the IPv4 gateway lookup, aka, "make it as good as the IPv6 implementation".
+--+ramKNQq6IQ=
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-The problem today is that the IPv4 code only looks for "the default route",
-which is not the right answer for "which route and interface is used to
-reach the VPN server?" in case of more-specific routes - arguably not the
-most common case, but if we can get it right, we should.
+cron2 has submitted this change. ( http://gerrit.openvpn.net/c/openvpn/+/87=
+8?usp=3Demail )
 
-This patch does not change anything but add an (unused) "in_addr_t host"
-argument to all the get_default_gateway() calls & implementations.  Further
-patches will enhance the per-platform implementations to use this info
-(if possible).
+Change subject: route.c: change the signature of get_default_gateway()
+......................................................................
 
-So the thing to test here is "was any of our platforms overlooked, and
-compilation fails" - and the anwswer is "it compiles, ship it!" ;-)
+route.c: change the signature of get_default_gateway()
 
-Your patch has been applied to the master branch.
+As a preparation of an upcoming refactoring of
+get_default_gateway(), add `dest` parameter to
+specify destination address to which we are looking
+the best route.
 
-commit 0fcfc8381f60d9f7b4a53afaea223dfee5e18835
-Author: Lev Stipakov
-Date:   Wed Jan 29 10:50:38 2025 +0100
+Change-Id: I58735fb24bc4a94c803b7dfcd6de87af0f75522a
+Signed-off-by: Lev Stipakov <lev@...515...>
+Acked-by: Gert Doering <gert@...1296...>
+Message-Id: <20250129095038.19056-1-gert@...1296...>
+URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg30=
+685.html
+Signed-off-by: Gert Doering <gert@...1296...>
+---
+M src/openvpn/options.c
+M src/openvpn/route.c
+M src/openvpn/route.h
+M src/openvpn/ssl.c
+M src/openvpn/tun.c
+5 files changed, 11 insertions(+), 10 deletions(-)
 
-     route.c: change the signature of get_default_gateway()
 
-     Signed-off-by: Lev Stipakov <lev@...515...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20250129095038.19056-1-gert@...1296...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg30685.html
-     Signed-off-by: Gert Doering <gert@...1296...>
 
+
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index 4510bea..5a80e6b 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -5866,7 +5866,7 @@
+             get_ipv6_addr(p[1], &remote, NULL, M_WARN);
+         }
+         net_ctx_init(NULL, &net_ctx);
+-        get_default_gateway(&rgi, &net_ctx);
++        get_default_gateway(&rgi, 0, &net_ctx);
+         get_default_gateway_ipv6(&rgi6, &remote, &net_ctx);
+         print_default_gateway(M_INFO, &rgi, &rgi6);
+         openvpn_exit(OPENVPN_EXIT_STATUS_GOOD); /* exit point */
+diff --git a/src/openvpn/route.c b/src/openvpn/route.c
+index 12d6c07..3501e35 100644
+--- a/src/openvpn/route.c
++++ b/src/openvpn/route.c
+@@ -655,7 +655,7 @@
+         rl->spec.flags |=3D RTSA_DEFAULT_METRIC;
+     }
+
+-    get_default_gateway(&rl->rgi, ctx);
++    get_default_gateway(&rl->rgi, remote_host, ctx);
+     if (rl->rgi.flags & RGI_ADDR_DEFINED)
+     {
+         setenv_route_addr(es, "net_gateway", rl->rgi.gateway.addr, -1);
+@@ -2733,7 +2733,7 @@
+ }
+
+ void
+-get_default_gateway(struct route_gateway_info *rgi, openvpn_net_ctx_t *ctx)
++get_default_gateway(struct route_gateway_info *rgi, in_addr_t dest, openvp=
+n_net_ctx_t *ctx)
+ {
+     struct gc_arena gc =3D gc_new();
+
+@@ -3282,7 +3282,7 @@
+ #elif defined(TARGET_ANDROID)
+
+ void
+-get_default_gateway(struct route_gateway_info *rgi, openvpn_net_ctx_t *ctx)
++get_default_gateway(struct route_gateway_info *rgi, in_addr_t dest, openvp=
+n_net_ctx_t *ctx)
+ {
+     /* Android, set some pseudo GW, addr is in host byte order,
+      * Determining the default GW on Android 5.0+ is non trivial
+@@ -3323,7 +3323,7 @@
+ #elif defined(TARGET_LINUX)
+
+ void
+-get_default_gateway(struct route_gateway_info *rgi, openvpn_net_ctx_t *ctx)
++get_default_gateway(struct route_gateway_info *rgi, in_addr_t dest, openvp=
+n_net_ctx_t *ctx)
+ {
+     struct gc_arena gc =3D gc_new();
+     int sd =3D -1;
+@@ -3561,7 +3561,7 @@
+ #define max(a, b) ((a) > (b) ? (a) : (b))
+
+ void
+-get_default_gateway(struct route_gateway_info *rgi, openvpn_net_ctx_t *ctx)
++get_default_gateway(struct route_gateway_info *rgi, in_addr_t dest, openvp=
+n_net_ctx_t *ctx)
+ {
+     struct gc_arena gc =3D gc_new();
+     struct rtmsg m_rtmsg;
+@@ -3943,7 +3943,7 @@
+ #elif defined(TARGET_HAIKU)
+
+ void
+-get_default_gateway(struct route_gateway_info *rgi, openvpn_net_ctx_t *ctx)
++get_default_gateway(struct route_gateway_info *rgi, in_addr_t dest, openvp=
+n_net_ctx_t *ctx)
+ {
+     CLEAR(*rgi);
+
+@@ -4047,7 +4047,7 @@
+  * may be disabled by missing items.
+  */
+ void
+-get_default_gateway(struct route_gateway_info *rgi, openvpn_net_ctx_t *ctx)
++get_default_gateway(struct route_gateway_info *rgi, in_addr_t dest, openvp=
+n_net_ctx_t *ctx)
+ {
+     CLEAR(*rgi);
+ }
+diff --git a/src/openvpn/route.h b/src/openvpn/route.h
+index 69b06b8..0bbedbb 100644
+--- a/src/openvpn/route.h
++++ b/src/openvpn/route.h
+@@ -335,6 +335,7 @@
+ bool is_special_addr(const char *addr_str);
+
+ void get_default_gateway(struct route_gateway_info *rgi,
++                         in_addr_t dest,
+                          openvpn_net_ctx_t *ctx);
+
+ void get_default_gateway_ipv6(struct route_ipv6_gateway_info *rgi,
+diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
+index e4a7b57..6f78a76 100644
+--- a/src/openvpn/ssl.c
++++ b/src/openvpn/ssl.c
+@@ -1990,7 +1990,7 @@
+         {
+             /* push mac addr */
+             struct route_gateway_info rgi;
+-            get_default_gateway(&rgi, session->opt->net_ctx);
++            get_default_gateway(&rgi, 0, session->opt->net_ctx);
+             if (rgi.flags & RGI_HWADDR_DEFINED)
+             {
+                 buf_printf(&out, "IV_HWADDR=3D%s\n", format_hex_ex(rgi.hwa=
+ddr, 6, 0, 1, ":", &gc));
+diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
+index 33830fc..80f5dff 100644
+--- a/src/openvpn/tun.c
++++ b/src/openvpn/tun.c
+@@ -671,7 +671,7 @@
+     struct route_gateway_info rgi;
+     const unsigned int needed =3D (RGI_ADDR_DEFINED|RGI_NETMASK_DEFINED);
+
+-    get_default_gateway(&rgi, ctx);
++    get_default_gateway(&rgi, 0, ctx);
+     if ((rgi.flags & needed) =3D=3D needed)
+     {
+         const in_addr_t lan_network =3D rgi.gateway.addr & rgi.gateway.net=
+mask;
 
 --
-kind regards,
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/878?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings
 
-Gert Doering
+Gerrit-Project: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: I58735fb24bc4a94c803b7dfcd6de87af0f75522a
+Gerrit-Change-Number: 878
+Gerrit-PatchSet: 2
+Gerrit-Owner: stipa <lstipakov@...277...>
+Gerrit-Reviewer: cron2 <gert@...1296...>
+Gerrit-Reviewer: flichtenheld <frank@...2641...>
+Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-MessageType: merged
 
+--+ramKNQq6IQ=
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<p>cron2 <strong>submitted</strong> this change.</p><p><a href=3D"http://ge=
+rrit.openvpn.net/c/openvpn/+/878?usp=3Demail">View Change</a></p><div style=
+=3D"white-space:pre-wrap"></div><pre style=3D"font-family: monospace,monosp=
+ace; white-space: pre-wrap;">route.c: change the signature of get_default_g=
+ateway()<br><br>As a preparation of an upcoming refactoring of<br>get_defau=
+lt_gateway(), add `dest` parameter to<br>specify destination address to whi=
+ch we are looking<br>the best route.<br><br>Change-Id: I58735fb24bc4a94c803=
+b7dfcd6de87af0f75522a<br>Signed-off-by: Lev Stipakov &lt;lev@...515...&gt;<=
+br>Acked-by: Gert Doering &lt;gert@...1296...&gt;<br>Message-Id: &lt;202501=
+29095038.19056-1-gert@...1296...&gt;<br>URL: https://www.mail-archive.com/o=
+penvpn-devel@lists.sourceforge.net/msg30685.html<br>Signed-off-by: Gert Doe=
+ring &lt;gert@...1296...&gt;<br>---<br>M src/openvpn/options.c<br>M src/ope=
+nvpn/route.c<br>M src/openvpn/route.h<br>M src/openvpn/ssl.c<br>M src/openv=
+pn/tun.c<br>5 files changed, 11 insertions(+), 10 deletions(-)<br><br></pre>
+<pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><sp=
+an>diff --git a/src/openvpn/options.c b/src/openvpn/options.c</span><br><sp=
+an>index 4510bea..5a80e6b 100644</span><br><span>--- a/src/openvpn/options.=
+c</span><br><span>+++ b/src/openvpn/options.c</span><br><span>@@ -5866,7 +5=
+866,7 @@</span><br><span>             get_ipv6_addr(p[1], &amp;remote, NULL=
+, M_WARN);</span><br><span>         }</span><br><span>         net_ctx_init=
+(NULL, &amp;net_ctx);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
+        get_default_gateway(&amp;rgi, &amp;net_ctx);</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+        get_default_gateway(&amp;rgi, 0, =
+&amp;net_ctx);</span><br><span>         get_default_gateway_ipv6(&amp;rgi6,=
+ &amp;remote, &amp;net_ctx);</span><br><span>         print_default_gateway=
+(M_INFO, &amp;rgi, &amp;rgi6);</span><br><span>         openvpn_exit(OPENVP=
+N_EXIT_STATUS_GOOD); /* exit point */</span><br><span>diff --git a/src/open=
+vpn/route.c b/src/openvpn/route.c</span><br><span>index 12d6c07..3501e35 10=
+0644</span><br><span>--- a/src/openvpn/route.c</span><br><span>+++ b/src/op=
+envpn/route.c</span><br><span>@@ -655,7 +655,7 @@</span><br><span>         =
+rl-&gt;spec.flags |=3D RTSA_DEFAULT_METRIC;</span><br><span>     }</span><b=
+r><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-    get_defa=
+ult_gateway(&amp;rl-&gt;rgi, ctx);</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+    get_default_gateway(&amp;rl-&gt;rgi, remote_host, ctx);<=
+/span><br><span>     if (rl-&gt;rgi.flags &amp; RGI_ADDR_DEFINED)</span><br=
+><span>     {</span><br><span>         setenv_route_addr(es, &quot;net_gate=
+way&quot;, rl-&gt;rgi.gateway.addr, -1);</span><br><span>@@ -2733,7 +2733,7=
+ @@</span><br><span> }</span><br><span> </span><br><span> void</span><br><s=
+pan style=3D"color: hsl(0, 100%, 40%);">-get_default_gateway(struct route_g=
+ateway_info *rgi, openvpn_net_ctx_t *ctx)</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+get_default_gateway(struct route_gateway_info *rgi, i=
+n_addr_t dest, openvpn_net_ctx_t *ctx)</span><br><span> {</span><br><span> =
+    struct gc_arena gc =3D gc_new();</span><br><span> </span><br><span>@@ -=
+3282,7 +3282,7 @@</span><br><span> #elif defined(TARGET_ANDROID)</span><br>=
+<span> </span><br><span> void</span><br><span style=3D"color: hsl(0, 100%, =
+40%);">-get_default_gateway(struct route_gateway_info *rgi, openvpn_net_ctx=
+_t *ctx)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+get_default=
+_gateway(struct route_gateway_info *rgi, in_addr_t dest, openvpn_net_ctx_t =
+*ctx)</span><br><span> {</span><br><span>     /* Android, set some pseudo G=
+W, addr is in host byte order,</span><br><span>      * Determining the defa=
+ult GW on Android 5.0+ is non trivial</span><br><span>@@ -3323,7 +3323,7 @@=
+</span><br><span> #elif defined(TARGET_LINUX)</span><br><span> </span><br><=
+span> void</span><br><span style=3D"color: hsl(0, 100%, 40%);">-get_default=
+_gateway(struct route_gateway_info *rgi, openvpn_net_ctx_t *ctx)</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+get_default_gateway(struct rou=
+te_gateway_info *rgi, in_addr_t dest, openvpn_net_ctx_t *ctx)</span><br><sp=
+an> {</span><br><span>     struct gc_arena gc =3D gc_new();</span><br><span=
+>     int sd =3D -1;</span><br><span>@@ -3561,7 +3561,7 @@</span><br><span>=
+ #define max(a, b) ((a) &gt; (b) ? (a) : (b))</span><br><span> </span><br><=
+span> void</span><br><span style=3D"color: hsl(0, 100%, 40%);">-get_default=
+_gateway(struct route_gateway_info *rgi, openvpn_net_ctx_t *ctx)</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+get_default_gateway(struct rou=
+te_gateway_info *rgi, in_addr_t dest, openvpn_net_ctx_t *ctx)</span><br><sp=
+an> {</span><br><span>     struct gc_arena gc =3D gc_new();</span><br><span=
+>     struct rtmsg m_rtmsg;</span><br><span>@@ -3943,7 +3943,7 @@</span><br=
+><span> #elif defined(TARGET_HAIKU)</span><br><span> </span><br><span> void=
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">-get_default_gateway(s=
+truct route_gateway_info *rgi, openvpn_net_ctx_t *ctx)</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+get_default_gateway(struct route_gateway=
+_info *rgi, in_addr_t dest, openvpn_net_ctx_t *ctx)</span><br><span> {</spa=
+n><br><span>     CLEAR(*rgi);</span><br><span> </span><br><span>@@ -4047,7 =
++4047,7 @@</span><br><span>  * may be disabled by missing items.</span><br>=
+<span>  */</span><br><span> void</span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-get_default_gateway(struct route_gateway_info *rgi, openvpn_net_=
+ctx_t *ctx)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+get_defa=
+ult_gateway(struct route_gateway_info *rgi, in_addr_t dest, openvpn_net_ctx=
+_t *ctx)</span><br><span> {</span><br><span>     CLEAR(*rgi);</span><br><sp=
+an> }</span><br><span>diff --git a/src/openvpn/route.h b/src/openvpn/route.=
+h</span><br><span>index 69b06b8..0bbedbb 100644</span><br><span>--- a/src/o=
+penvpn/route.h</span><br><span>+++ b/src/openvpn/route.h</span><br><span>@@=
+ -335,6 +335,7 @@</span><br><span> bool is_special_addr(const char *addr_st=
+r);</span><br><span> </span><br><span> void get_default_gateway(struct rout=
+e_gateway_info *rgi,</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++                         in_addr_t dest,</span><br><span>                 =
+         openvpn_net_ctx_t *ctx);</span><br><span> </span><br><span> void g=
+et_default_gateway_ipv6(struct route_ipv6_gateway_info *rgi,</span><br><spa=
+n>diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c</span><br><span>index =
+e4a7b57..6f78a76 100644</span><br><span>--- a/src/openvpn/ssl.c</span><br><=
+span>+++ b/src/openvpn/ssl.c</span><br><span>@@ -1990,7 +1990,7 @@</span><b=
+r><span>         {</span><br><span>             /* push mac addr */</span><=
+br><span>             struct route_gateway_info rgi;</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-            get_default_gateway(&amp;rgi, s=
+ession-&gt;opt-&gt;net_ctx);</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+            get_default_gateway(&amp;rgi, 0, session-&gt;opt-&gt;n=
+et_ctx);</span><br><span>             if (rgi.flags &amp; RGI_HWADDR_DEFINE=
+D)</span><br><span>             {</span><br><span>                 buf_prin=
+tf(&amp;out, &quot;IV_HWADDR=3D%s\n&quot;, format_hex_ex(rgi.hwaddr, 6, 0, =
+1, &quot;:&quot;, &amp;gc));</span><br><span>diff --git a/src/openvpn/tun.c=
+ b/src/openvpn/tun.c</span><br><span>index 33830fc..80f5dff 100644</span><b=
+r><span>--- a/src/openvpn/tun.c</span><br><span>+++ b/src/openvpn/tun.c</sp=
+an><br><span>@@ -671,7 +671,7 @@</span><br><span>     struct route_gateway_=
+info rgi;</span><br><span>     const unsigned int needed =3D (RGI_ADDR_DEFI=
+NED|RGI_NETMASK_DEFINED);</span><br><span> </span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-    get_default_gateway(&amp;rgi, ctx);</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+    get_default_gateway(&amp;rgi,=
+ 0, ctx);</span><br><span>     if ((rgi.flags &amp; needed) =3D=3D needed)<=
+/span><br><span>     {</span><br><span>         const in_addr_t lan_network=
+ =3D rgi.gateway.addr &amp; rgi.gateway.netmask;</span><br><span></span><br=
+></pre><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/8=
+78?usp=3Demail">change 878</a>. To unsubscribe, or for help writing mail fi=
+lters, visit <a href=3D"http://gerrit.openvpn.net/settings">settings</a>.</=
+p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope=
+ itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itempr=
+op=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/878?usp=3Demail"/>=
+<meta itemprop=3D"name" content=3D"View Change"/></div></div>
+
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I58735fb24bc4a94c803b7dfcd6d=
+e87af0f75522a </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 878 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
+<div style=3D"display:none"> Gerrit-Owner: stipa &lt;lstipakov@...277...&gt=
+; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
+ </div>
+<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
+1...&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
+.1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-MessageType: merged </div>
+
+
+--+ramKNQq6IQ=--
 
