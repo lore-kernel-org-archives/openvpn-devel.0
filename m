@@ -1,15 +1,15 @@
-From: "its_Giaan (Code Review)" <gerrit@...515...>
-Date: Wed, 29 Jan 2025 10:01:40 +0000
+From: "cron2 (Code Review)" <gerrit@...515...>
+Date: Wed, 29 Jan 2025 10:07:39 +0000
 In-Reply-To: <gerrit.1738072669000.I4be0ff4d308213d2ef8ba66bd3178eee1f60fff1@...2715...>
 References: <gerrit.1738072669000.I4be0ff4d308213d2ef8ba66bd3178eee1f60fff1@...2715...>
-Reply-To: gianmarco@...2726..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...,
- gert@...1296..., a@...2181...
-Message-ID: <8da3d7a943d46e3923018b46a8b68abffb0caa19-EmailReviewComments-HTML@...2715...>
+Reply-To: gert@...1296..., arne-openvpn@...1227...,
+ gianmarco@...2726..., openvpn-devel@lists.sourceforge.net,
+ frank@...2641..., a@...2181...
+Message-ID: <1e05ab2f17f45586bcee62f12370cb2cfd781ece-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="haeIp6Zlyro="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="xIZeh9KLR+k="; charset=UTF-8
 Subject: [Openvpn-devel] [M] Change in openvpn[master]: mroute/management:
  fix uninitialized variable (UNINIT)
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -20,39 +20,51 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Cc: cron2 <gert@...1296...>, plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: its_Giaan <gianmarco@...2726...>
+Cc: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---haeIp6Zlyro=
+--xIZeh9KLR+k=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: cron2, flichtenheld, ordex, plaisthos.
+Attention is currently required from: flichtenheld, its_Giaan, ordex, plais=
+thos.
 
-its_Giaan has posted comments on this change. ( http://gerrit.openvpn.net/c=
-/openvpn/+/880?usp=3Demail )
+cron2 has posted comments on this change. ( http://gerrit.openvpn.net/c/ope=
+nvpn/+/880?usp=3Demail )
 
 Change subject: mroute/management: fix uninitialized variable (UNINIT)
 ......................................................................
 
 
-Patch Set 3:
+Patch Set 3: Code-Review-1
 
-(2 comments)
+(4 comments)
 
-File doc/management-notes.txt:
+Patchset:
 
-http://gerrit.openvpn.net/c/openvpn/+/880/comment/57449c07_d0fa58b7 :
-PS2, Line 211:
-> Thanks for this. [=E2=80=A6]
-Done
+PS3:
+too much enthusiasm
 
 
 File src/openvpn/manage.c:
 
-http://gerrit.openvpn.net/c/openvpn/+/880/comment/22c82121_32db8a43 :
-PS2, Line 564:
-> As discussed in the management-notes. [=E2=80=A6]
-Done
+http://gerrit.openvpn.net/c/openvpn/+/880/comment/a30bd653_c1d4c73d :
+PS3, Line 597:             n_killed =3D (*man->persist.callback.kill_by_cn)=
+(man->persist.callback.arg, p2);
+Ah, no, not that one :-) for CN we only have p1
+
+
+http://gerrit.openvpn.net/c/openvpn/+/880/comment/47dd9eb5_409a4c6d :
+PS3, Line 600:                 msg(M_CLIENT, "SUCCESS: common name '%s' fou=
+nd, %d client(s) killed", p2, n_killed);
+too enthusiastic
+
+
+http://gerrit.openvpn.net/c/openvpn/+/880/comment/986c2548_b64f20f8 :
+PS3, Line 604:                 msg(M_CLIENT, "ERROR: common name '%s' not f=
+ound", p2);
+and here
 
 
 
@@ -73,46 +85,55 @@ Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-CC: ordex <a@...2181...>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: cron2 <gert@...1296...>
+Gerrit-Attention: its_Giaan <gianmarco@...2726...>
 Gerrit-Attention: flichtenheld <frank@...2641...>
 Gerrit-Attention: ordex <a@...2181...>
-Gerrit-Comment-Date: Wed, 29 Jan 2025 10:01:40 +0000
+Gerrit-Comment-Date: Wed, 29 Jan 2025 10:07:39 +0000
 Gerrit-HasComments: Yes
-Gerrit-Has-Labels: No
-Comment-In-Reply-To: cron2 <gert@...1296...>
+Gerrit-Has-Labels: Yes
 Gerrit-MessageType: comment
 
---haeIp6Zlyro=
+--xIZeh9KLR+k=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p> Attention is currently required from: cron2, flichtenheld, ordex, plais=
-thos. </p>
-<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/880?usp=3Demail">View C=
-hange</a></p><p>2 comments:</p><ul style=3D"list-style: none; padding: 0;">=
-<li style=3D"margin: 0; padding: 0;"><p>File doc/management-notes.txt:</p><=
-ul style=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; padding:=
- 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.ope=
-nvpn.net/c/openvpn/+/880/comment/57449c07_d0fa58b7">Patch Set #2, Line 211:=
-</a> <code style=3D"font-family:monospace,monospace"></code></p><p><blockqu=
-ote style=3D"border-left: 1px solid #aaa; margin: 10px 0; padding: 0 10px;"=
->Thanks for this. [=E2=80=A6]</blockquote></p><p style=3D"white-space: pre-=
-wrap; word-wrap: break-word;">Done</p></li></ul></li><li style=3D"margin: 0=
-; padding: 0;"><p>File src/openvpn/manage.c:</p><ul style=3D"list-style: no=
-ne; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p style=3D"=
-margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/880/c=
-omment/22c82121_32db8a43">Patch Set #2, Line 564:</a> <code style=3D"font-f=
-amily:monospace,monospace"></code></p><p><blockquote style=3D"border-left: =
-1px solid #aaa; margin: 10px 0; padding: 0 10px;">As discussed in the manag=
-ement-notes. [=E2=80=A6]</blockquote></p><p style=3D"white-space: pre-wrap;=
- word-wrap: break-word;">Done</p></li></ul></li></ul><p>To view, visit <a h=
-ref=3D"http://gerrit.openvpn.net/c/openvpn/+/880?usp=3Demail">change 880</a=
->. To unsubscribe, or for help writing mail filters, visit <a href=3D"http:=
-//gerrit.openvpn.net/settings">settings</a>.</p><div itemscope itemtype=3D"=
-http://schema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=
-=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://ger=
-rit.openvpn.net/c/openvpn/+/880?usp=3Demail"/><meta itemprop=3D"name" conte=
-nt=3D"View Change"/></div></div>
+<p> Attention is currently required from: flichtenheld, its_Giaan, ordex, p=
+laisthos. </p>
+<p>Patch set 3:<span style=3D"border-radius: 3px; display: inline-block; ma=
+rgin: 0 2px; padding: 4px;background-color: #ffd4d4;">Code-Review -1</span>=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/880?usp=3Demail">Vi=
+ew Change</a></p><p>4 comments:</p><ul style=3D"list-style: none; padding: =
+0;"><li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-=
+style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p =
+style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvp=
+n/+/880?tab=3Dcomments">Patch Set #3:</a> </p><p style=3D"white-space: pre-=
+wrap; word-wrap: break-word;">too much enthusiasm</p></li></ul></li><li sty=
+le=3D"margin: 0; padding: 0;"><p>File src/openvpn/manage.c:</p><ul style=3D=
+"list-style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px=
+;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/=
+openvpn/+/880/comment/a30bd653_c1d4c73d">Patch Set #3, Line 597:</a> <code =
+style=3D"font-family:monospace,monospace">            n_killed =3D (*man-&g=
+t;persist.callback.kill_by_cn)(man-&gt;persist.callback.arg, p2);</code></p=
+><p style=3D"white-space: pre-wrap; word-wrap: break-word;">Ah, no, not tha=
+t one :-) for CN we only have p1</p></li><li style=3D"margin: 0; padding: 0=
+ 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openv=
+pn.net/c/openvpn/+/880/comment/47dd9eb5_409a4c6d">Patch Set #3, Line 600:</=
+a> <code style=3D"font-family:monospace,monospace">                msg(M_CL=
+IENT, &quot;SUCCESS: common name &#39;%s&#39; found, %d client(s) killed&qu=
+ot;, p2, n_killed);</code></p><p style=3D"white-space: pre-wrap; word-wrap:=
+ break-word;">too enthusiastic</p></li><li style=3D"margin: 0; padding: 0 0=
+ 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn=
+.net/c/openvpn/+/880/comment/986c2548_b64f20f8">Patch Set #3, Line 604:</a>=
+ <code style=3D"font-family:monospace,monospace">                msg(M_CLIE=
+NT, &quot;ERROR: common name &#39;%s&#39; not found&quot;, p2);</code></p><=
+p style=3D"white-space: pre-wrap; word-wrap: break-word;">and here</p></li>=
+</ul></li></ul><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/ope=
+nvpn/+/880?usp=3Demail">change 880</a>. To unsubscribe, or for help writing=
+ mail filters, visit <a href=3D"http://gerrit.openvpn.net/settings">setting=
+s</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div i=
+temscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><lin=
+k itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/880?usp=3D=
+email"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
@@ -133,20 +154,18 @@ ts.sourceforge.net&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: ordex &lt;a@...2181...&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
 ..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: cron2 &lt;gert@...1296...&gt=
-; </div>
+<div style=3D"display:none"> Gerrit-Attention: its_Giaan &lt;gianmarco@...1665...=
+726...&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
 41...&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: ordex &lt;a@...2181...&gt; <=
 /div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Wed, 29 Jan 2025 10:01:40=
+<div style=3D"display:none"> Gerrit-Comment-Date: Wed, 29 Jan 2025 10:07:39=
  +0000 </div>
 <div style=3D"display:none"> Gerrit-HasComments: Yes </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: No </div>
-<div style=3D"display:none"> Comment-In-Reply-To: cron2 &lt;gert@...1296...=
-&gt; </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
 <div style=3D"display:none"> Gerrit-MessageType: comment </div>
 
 
---haeIp6Zlyro=--
+--xIZeh9KLR+k=--
 
