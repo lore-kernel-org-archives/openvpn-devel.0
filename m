@@ -1,11 +1,15 @@
-From: Gert Doering <gert@...1296...>
-Date: Wed, 29 Jan 2025 12:16:05 +0100
-Message-ID: <20250129111605.9538-1-gert@...1296...>
-In-Reply-To: <gerrit.1738072669000.I4be0ff4d308213d2ef8ba66bd3178eee1f60fff1@...2715...>
-References: <gerrit.1738072669000.I4be0ff4d308213d2ef8ba66bd3178eee1f60fff1@...2715...>
+From: "cron2 (Code Review)" <gerrit@...515...>
+Date: Wed, 29 Jan 2025 11:30:58 +0000
+References: <gerrit.1738150255000.Ic438c583a782035ecb9b5ea65702a768ae2585f5@...2715...>
+Reply-To: gert@...1296..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net, frank@...2641...
+Message-ID: <d2c88065fbe966e93f5c1752fa4eb9f438d9b227-HTML@...2715...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v4] mroute/management: fix uninitialized
- variable (UNINIT)
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="Yo1HMs8AFXw="; charset=UTF-8
+Subject: [Openvpn-devel] [S] Change in openvpn[master]: options: add IPv4
+ support to '--show-gateway <arg>'
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,263 +18,241 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-From: Gianmarco De Gregori <gianmarco@...2726...>
+--Yo1HMs8AFXw=
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Fix issue reported by Coverity:
-CID 1641564: Uninitialized variables (UNINIT)
-Using unitialized value "maddr.proto" when
-calling "mroute_addr_equal()".
+Attention is currently required from: flichtenheld, plaisthos.
 
-Fix this by passing the proto along with
-IP:port.
+Hello plaisthos, flichtenheld,
 
-While at it, changed the
-mroute_addr_print_ex() format to display
-the protocol only in case of MR_WITH_PROTO
-avoid doing it on virtual addresses when
-MR_WITH_PORT is not specified.
+I'd like you to do a code review.
+Please visit
 
-Change-Id: I4be0ff4d308213d2ef8ba66bd3178eee1f60fff1
-Signed-off-by: Gianmarco De Gregori <gianmarco@...2726...>
-Acked-by: Gert Doering <gert@...1296...>
+    http://gerrit.openvpn.net/c/openvpn/+/881?usp=3Demail
+
+to review the following change.
+
+
+Change subject: options: add IPv4 support to '--show-gateway <arg>'
+......................................................................
+
+options: add IPv4 support to '--show-gateway <arg>'
+
+This is an old debug option, which used to print "the default routes found"
+for IPv4 and IPv6, and optionally "a route to a particular IPv6 target"
+if passed an argument.
+
+With the work started in commit 0fcfc8381f60d we want this to handle
+IPv4 as well, mostly to be able to easily test per-platform
+get_default_gateway() implementations.
+
+The implementation is simplistic - if <arg> can be parsed as an IPv4 or
+IPv6 address, that particular protocol lookup will do "the host route"
+and the other one will stick to "the default route".
+
+Change-Id: Ic438c583a782035ecb9b5ea65702a768ae2585f5
+Signed-off-by: Gert Doering <gert@...1296...>
 ---
+M doc/man-sections/advanced-options.rst
+M src/openvpn/options.c
+2 files changed, 18 insertions(+), 8 deletions(-)
 
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to master.
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/880
-This mail reflects revision 4 of this Change.
 
-Acked-by according to Gerrit (reflected above):
-Gert Doering <gert@...1296...>
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/81/881/1
 
-        
-diff --git a/Changes.rst b/Changes.rst
-index 16ae6fc..d01816b 100644
---- a/Changes.rst
-+++ b/Changes.rst
-@@ -317,6 +317,9 @@
-   settings will contradict the setting of allow-compression as this almost
-   always results in a non-working connection.
- 
-+- The "kill" by addr management command now requires also the protocol
-+  as string e.g. "udp", "tcp".
+diff --git a/doc/man-sections/advanced-options.rst b/doc/man-sections/advan=
+ced-options.rst
+index d5a6b4f..e1115e4 100644
+--- a/doc/man-sections/advanced-options.rst
++++ b/doc/man-sections/advanced-options.rst
+@@ -9,13 +9,17 @@
+   ::
+
+      --show-gateway
++     --show-gateway IPv4-target
+      --show-gateway IPv6-target
+
++  For IPv4 it looks for a 0.0.0.0/0 route, or the specified IPv4 address
++  if the target can be parsed as an IPv4 address.
+   For IPv6 this queries the route towards ::/128, or the specified IPv6
+-  target address if passed as argument.
+-  For IPv4 on Linux, Windows, MacOS and BSD it looks for a 0.0.0.0/0 route.
+-  If there are more specific routes, the result will not always be matching
+-  the route of the IPv4 packets to the VPN gateway.
++  target address if the argument is an IPv6 address.
 +
- Common errors with OpenSSL 3.0 and OpenVPN 2.6
- ----------------------------------------------
- Both OpenVPN 2.6 and OpenSSL 3.0 tighten the security considerable, so some
-diff --git a/doc/management-notes.txt b/doc/management-notes.txt
-index b55135a..f1d2930 100644
---- a/doc/management-notes.txt
-+++ b/doc/management-notes.txt
-@@ -205,8 +205,12 @@
- 
-   kill Test-Client -- kill the client instance having a
-                       common name of "Test-Client".
--  kill 1.2.3.4:4000 -- kill the client instance having a
--                       source address and port of 1.2.3.4:4000
-+  kill tcp:1.2.3.4:4000 -- kill the client instance having a
-+                           source address, port and proto of
-+                           tcp:1.2.3.4:4000
-+
-+  Note that kill by address won't work for IPv6-connected
-+  clients yet, so rely on kill by CN or CID instead.
- 
- Use the "status" command to see which clients are connected.
- 
-diff --git a/src/openvpn/manage.c b/src/openvpn/manage.c
-index 0c77f85..a796dbe 100644
---- a/src/openvpn/manage.c
-+++ b/src/openvpn/manage.c
-@@ -544,45 +544,52 @@
-         struct buffer buf;
-         char p1[128];
-         char p2[128];
-+        char p3[128];
-         int n_killed;
- 
-         buf_set_read(&buf, (uint8_t *) victim, strlen(victim) + 1);
-         buf_parse(&buf, ':', p1, sizeof(p1));
-         buf_parse(&buf, ':', p2, sizeof(p2));
-+        buf_parse(&buf, ':', p3, sizeof(p3));
- 
--        if (strlen(p1) && strlen(p2))
-+        if (strlen(p1) && strlen(p2) && strlen(p3))
-         {
-             /* IP:port specified */
-             bool status;
--            const in_addr_t addr = getaddr(GETADDR_HOST_ORDER|GETADDR_MSG_VIRT_OUT, p1, 0, &status, NULL);
-+            const in_addr_t addr = getaddr(GETADDR_HOST_ORDER|GETADDR_MSG_VIRT_OUT, p2, 0, &status, NULL);
-             if (status)
-             {
--                const int port = atoi(p2);
--                if (port > 0 && port < 65536)
-+                const int port = atoi(p3);
-+                const int proto = (streq(p1, "tcp")) ? PROTO_TCP_SERVER :
-+                                  (streq(p1, "udp")) ? PROTO_UDP : PROTO_NONE;
-+
-+                if ((port > 0 && port < 65536) && (proto != PROTO_NONE))
-                 {
--                    n_killed = (*man->persist.callback.kill_by_addr)(man->persist.callback.arg, addr, port);
-+                    n_killed = (*man->persist.callback.kill_by_addr)(man->persist.callback.arg, addr, port, proto);
-                     if (n_killed > 0)
-                     {
--                        msg(M_CLIENT, "SUCCESS: %d client(s) at address %s:%d killed",
-+                        msg(M_CLIENT, "SUCCESS: %d client(s) at address %s:%s:%d killed",
-                             n_killed,
-+                            proto2ascii(proto, AF_INET, true),
-                             print_in_addr_t(addr, 0, &gc),
-                             port);
-                     }
-                     else
-                     {
--                        msg(M_CLIENT, "ERROR: client at address %s:%d not found",
-+                        msg(M_CLIENT, "ERROR: client at address %s:%s:%d not found",
-+                            proto2ascii(proto, AF_INET, true),
-                             print_in_addr_t(addr, 0, &gc),
-                             port);
-                     }
-                 }
-                 else
-                 {
--                    msg(M_CLIENT, "ERROR: port number is out of range: %s", p2);
-+                    msg(M_CLIENT, "ERROR: port number or protocol out of range: %s %s", p3, p1);
-                 }
-             }
-             else
-             {
--                msg(M_CLIENT, "ERROR: error parsing IP address: %s", p1);
-+                msg(M_CLIENT, "ERROR: error parsing IP address: %s", p2);
-             }
-         }
-         else if (strlen(p1))
-diff --git a/src/openvpn/manage.h b/src/openvpn/manage.h
-index f501543..02ceb82 100644
---- a/src/openvpn/manage.h
-+++ b/src/openvpn/manage.h
-@@ -180,7 +180,7 @@
-     void (*status) (void *arg, const int version, struct status_output *so);
-     void (*show_net) (void *arg, const int msglevel);
-     int (*kill_by_cn) (void *arg, const char *common_name);
--    int (*kill_by_addr) (void *arg, const in_addr_t addr, const int port);
-+    int (*kill_by_addr) (void *arg, const in_addr_t addr, const int port, const int proto);
-     void (*delete_event) (void *arg, event_t event);
-     int (*n_clients) (void *arg);
-     bool (*send_cc_message) (void *arg, const char *message, const char *parameter);
-diff --git a/src/openvpn/mroute.c b/src/openvpn/mroute.c
-index 74923cf..24b9543 100644
---- a/src/openvpn/mroute.c
-+++ b/src/openvpn/mroute.c
-@@ -276,6 +276,10 @@
-                 addr->len = 6;
-                 addr->v4.addr = osaddr->addr.in4.sin_addr.s_addr;
-                 addr->v4.port = osaddr->addr.in4.sin_port;
-+                if (addr->proto != PROTO_NONE)
-+                {
-+                    addr->type |= MR_WITH_PROTO;
-+                }
-             }
-             else
-             {
-@@ -295,6 +299,10 @@
-                 addr->len = 18;
-                 addr->v6.addr = osaddr->addr.in6.sin6_addr;
-                 addr->v6.port = osaddr->addr.in6.sin6_port;
-+                if (addr->proto != PROTO_NONE)
-+                {
-+                    addr->type |= MR_WITH_PROTO;
-+                }
-             }
-             else
-             {
-@@ -403,6 +411,10 @@
-                 {
-                     buf_printf(&out, "ARP/");
-                 }
-+                if (maddr.type & MR_WITH_PROTO)
-+                {
-+                    buf_printf(&out, "%s:", proto2ascii(maddr.proto, AF_INET, false));
-+                }
-                 buf_printf(&out, "%s", print_in_addr_t(ntohl(maddr.v4.addr),
-                                                        (flags & MAPF_IA_EMPTY_IF_UNDEF) ? IA_EMPTY_IF_UNDEF : 0, gc));
-                 if (maddr.type & MR_WITH_NETBITS)
-@@ -426,6 +438,10 @@
- 
-             case MR_ADDR_IPV6:
-             {
-+                if (maddr.type & MR_WITH_PROTO)
-+                {
-+                    buf_printf(&out, "%s:", proto2ascii(maddr.proto, AF_INET6, false));
-+                }
-                 if (IN6_IS_ADDR_V4MAPPED( &maddr.v6.addr ) )
-                 {
-                     buf_printf(&out, "%s", print_in_addr_t(maddr.v4mappedv6.addr,
-@@ -454,7 +470,6 @@
-                 buf_printf(&out, "UNKNOWN");
-                 break;
-         }
--        buf_printf(&out, "|%d", maddr.proto);
-         return BSTR(&out);
-     }
-     else
-diff --git a/src/openvpn/mroute.h b/src/openvpn/mroute.h
-index 2659695..fbe102a 100644
---- a/src/openvpn/mroute.h
-+++ b/src/openvpn/mroute.h
-@@ -72,6 +72,9 @@
- /* Indicates than IPv4 addr was extracted from ARP packet */
- #define MR_ARP                   16
- 
-+/* Address type mask indicating that proto # is part of address */
-+#define MR_WITH_PROTO            32
-+
- struct mroute_addr {
-     uint8_t len;    /* length of address */
-     uint8_t proto;
-diff --git a/src/openvpn/mtcp.c b/src/openvpn/mtcp.c
-index 62ed044..9a8b1cb 100644
---- a/src/openvpn/mtcp.c
-+++ b/src/openvpn/mtcp.c
-@@ -111,6 +111,7 @@
-     ASSERT(mi->context.c2.link_sockets[0]->info.lsa->actual.dest.addr.sa.sa_family == AF_INET
-            || mi->context.c2.link_sockets[0]->info.lsa->actual.dest.addr.sa.sa_family == AF_INET6
-            );
-+    mi->real.proto = mi->context.c2.link_sockets[0]->info.proto;
-     if (!mroute_extract_openvpn_sockaddr(&mi->real,
-                                          &mi->context.c2.link_sockets[0]->info.lsa->actual.dest,
-                                          true))
-diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
-index 9c8c014..b0e1941 100644
---- a/src/openvpn/multi.c
-+++ b/src/openvpn/multi.c
-@@ -794,7 +794,6 @@
-         {
-             goto err;
-         }
--        mi->real.proto = ls->info.proto;
-         generate_prefix(mi);
-     }
- 
-@@ -3942,7 +3941,8 @@
- }
- 
- static int
--management_callback_kill_by_addr(void *arg, const in_addr_t addr, const int port)
-+management_callback_kill_by_addr(void *arg, const in_addr_t addr,
-+                                 const int port, const int proto)
- {
-     struct multi_context *m = (struct multi_context *) arg;
-     struct hash_iterator hi;
-@@ -3957,6 +3957,7 @@
-     saddr.addr.in4.sin_port = htons(port);
-     if (mroute_extract_openvpn_sockaddr(&maddr, &saddr, true))
++  Adding a target is helpful for diagnostics to see if OpenVPN will do
++  the right thing if there are more specific IPv4/IPv6 routes to a
++  VPN server.
+
+
+ Advanced Expert Options
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index 5a80e6b..2897961 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -5858,16 +5858,22 @@
      {
-+        maddr.proto = proto;
-         hash_iterator_init(m->iter, &hi);
-         while ((he = hash_iterator_next(&hi)))
+         struct route_gateway_info rgi;
+         struct route_ipv6_gateway_info rgi6;
+-        struct in6_addr remote =3D IN6ADDR_ANY_INIT;
++        in_addr_t remote_ipv4 =3D 0;
++        struct in6_addr remote_ipv6 =3D IN6ADDR_ANY_INIT;
+         openvpn_net_ctx_t net_ctx;
+         VERIFY_PERMISSION(OPT_P_GENERAL);
+         if (p[1])
          {
+-            get_ipv6_addr(p[1], &remote, NULL, M_WARN);
++            /* try parsing the argument as a v4 or v6 address - if
++             * possible, the output will show the exact route there, and
++             * "the default route" for the other protocol
++             */
++            remote_ipv4 =3D get_ip_addr(p[1], M_WARN, NULL);
++            get_ipv6_addr(p[1], &remote_ipv6, NULL, M_WARN);
+         }
+         net_ctx_init(NULL, &net_ctx);
+-        get_default_gateway(&rgi, 0, &net_ctx);
+-        get_default_gateway_ipv6(&rgi6, &remote, &net_ctx);
++        get_default_gateway(&rgi, remote_ipv4, &net_ctx);
++        get_default_gateway_ipv6(&rgi6, &remote_ipv6, &net_ctx);
+         print_default_gateway(M_INFO, &rgi, &rgi6);
+         openvpn_exit(OPENVPN_EXIT_STATUS_GOOD); /* exit point */
+     }
+
+--
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/881?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings
+
+Gerrit-Project: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: Ic438c583a782035ecb9b5ea65702a768ae2585f5
+Gerrit-Change-Number: 881
+Gerrit-PatchSet: 1
+Gerrit-Owner: cron2 <gert@...1296...>
+Gerrit-Reviewer: flichtenheld <frank@...2641...>
+Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Attention: flichtenheld <frank@...2641...>
+Gerrit-MessageType: newchange
+
+--Yo1HMs8AFXw=
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<p> Attention is currently required from: flichtenheld, plaisthos. </p>
+<p>cron2 would like plaisthos and flichtenheld to <strong>review</strong> t=
+his change.
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/881?usp=3Demail">Vi=
+ew Change</a></p><pre style=3D"font-family: monospace,monospace; white-spac=
+e: pre-wrap;">options: add IPv4 support to &#39;--show-gateway &lt;arg&gt;&=
+#39;<br><br>This is an old debug option, which used to print &quot;the defa=
+ult routes found&quot;<br>for IPv4 and IPv6, and optionally &quot;a route t=
+o a particular IPv6 target&quot;<br>if passed an argument.<br><br>With the =
+work started in commit 0fcfc8381f60d we want this to handle<br>IPv4 as well=
+, mostly to be able to easily test per-platform<br>get_default_gateway() im=
+plementations.<br><br>The implementation is simplistic - if &lt;arg&gt; can=
+ be parsed as an IPv4 or<br>IPv6 address, that particular protocol lookup w=
+ill do &quot;the host route&quot;<br>and the other one will stick to &quot;=
+the default route&quot;.<br><br>Change-Id: Ic438c583a782035ecb9b5ea65702a76=
+8ae2585f5<br>Signed-off-by: Gert Doering &lt;gert@...1296...&gt;<br>---<br>=
+M doc/man-sections/advanced-options.rst<br>M src/openvpn/options.c<br>2 fil=
+es changed, 18 insertions(+), 8 deletions(-)<br><br></pre><pre style=3D"fon=
+t-family: monospace,monospace; white-space: pre-wrap;">git pull ssh://gerri=
+t.openvpn.net:29418/openvpn refs/changes/81/881/1</pre><pre style=3D"font-f=
+amily: monospace,monospace; white-space: pre-wrap;"><span>diff --git a/doc/=
+man-sections/advanced-options.rst b/doc/man-sections/advanced-options.rst</=
+span><br><span>index d5a6b4f..e1115e4 100644</span><br><span>--- a/doc/man-=
+sections/advanced-options.rst</span><br><span>+++ b/doc/man-sections/advanc=
+ed-options.rst</span><br><span>@@ -9,13 +9,17 @@</span><br><span>   ::</spa=
+n><br><span> </span><br><span>      --show-gateway</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+     --show-gateway IPv4-target</span><br><s=
+pan>      --show-gateway IPv6-target</span><br><span> </span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+  For IPv4 it looks for a 0.0.0.0/0 rout=
+e, or the specified IPv4 address</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+  if the target can be parsed as an IPv4 address.</span><br><s=
+pan>   For IPv6 this queries the route towards ::/128, or the specified IPv=
+6</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  target address if =
+passed as argument.</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
+For IPv4 on Linux, Windows, MacOS and BSD it looks for a 0.0.0.0/0 route.</=
+span><br><span style=3D"color: hsl(0, 100%, 40%);">-  If there are more spe=
+cific routes, the result will not always be matching</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-  the route of the IPv4 packets to the VPN =
+gateway.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  target ad=
+dress if the argument is an IPv6 address.</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+  Adding a target is helpful for diagnostics to see if OpenVPN will do</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+  the right thing if =
+there are more specific IPv4/IPv6 routes to a</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+  VPN server.</span><br><span> </span><br><span> =
+</span><br><span> Advanced Expert Options</span><br><span>diff --git a/src/=
+openvpn/options.c b/src/openvpn/options.c</span><br><span>index 5a80e6b..28=
+97961 100644</span><br><span>--- a/src/openvpn/options.c</span><br><span>++=
++ b/src/openvpn/options.c</span><br><span>@@ -5858,16 +5858,22 @@</span><br=
+><span>     {</span><br><span>         struct route_gateway_info rgi;</span=
+><br><span>         struct route_ipv6_gateway_info rgi6;</span><br><span st=
+yle=3D"color: hsl(0, 100%, 40%);">-        struct in6_addr remote =3D IN6AD=
+DR_ANY_INIT;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
+ in_addr_t remote_ipv4 =3D 0;</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+        struct in6_addr remote_ipv6 =3D IN6ADDR_ANY_INIT;</span><=
+br><span>         openvpn_net_ctx_t net_ctx;</span><br><span>         VERIF=
+Y_PERMISSION(OPT_P_GENERAL);</span><br><span>         if (p[1])</span><br><=
+span>         {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-      =
+      get_ipv6_addr(p[1], &amp;remote, NULL, M_WARN);</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+            /* try parsing the argument a=
+s a v4 or v6 address - if</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+             * possible, the output will show the exact route there, =
+and</span><br><span style=3D"color: hsl(120, 100%, 40%);">+             * &=
+quot;the default route&quot; for the other protocol</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+             */</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+            remote_ipv4 =3D get_ip_addr(p[1],=
+ M_WARN, NULL);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+        get_ipv6_addr(p[1], &amp;remote_ipv6, NULL, M_WARN);</span><br><spa=
+n>         }</span><br><span>         net_ctx_init(NULL, &amp;net_ctx);</sp=
+an><br><span style=3D"color: hsl(0, 100%, 40%);">-        get_default_gatew=
+ay(&amp;rgi, 0, &amp;net_ctx);</span><br><span style=3D"color: hsl(0, 100%,=
+ 40%);">-        get_default_gateway_ipv6(&amp;rgi6, &amp;remote, &amp;net_=
+ctx);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        get_de=
+fault_gateway(&amp;rgi, remote_ipv4, &amp;net_ctx);</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+        get_default_gateway_ipv6(&amp;rgi=
+6, &amp;remote_ipv6, &amp;net_ctx);</span><br><span>         print_default_=
+gateway(M_INFO, &amp;rgi, &amp;rgi6);</span><br><span>         openvpn_exit=
+(OPENVPN_EXIT_STATUS_GOOD); /* exit point */</span><br><span>     }</span><=
+br><span></span><br></pre><p>To view, visit <a href=3D"http://gerrit.openvp=
+n.net/c/openvpn/+/881?usp=3Demail">change 881</a>. To unsubscribe, or for h=
+elp writing mail filters, visit <a href=3D"http://gerrit.openvpn.net/settin=
+gs">settings</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMess=
+age"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewA=
+ction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+=
+/881?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div><=
+/div>
+
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: Ic438c583a782035ecb9b5ea6570=
+2a768ae2585f5 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 881 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
+<div style=3D"display:none"> Gerrit-Owner: cron2 &lt;gert@...1296...&gt; </=
+div>
+<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
+1...&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
+.1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
+41...&gt; </div>
+<div style=3D"display:none"> Gerrit-MessageType: newchange </div>
+
+
+--Yo1HMs8AFXw=--
 
