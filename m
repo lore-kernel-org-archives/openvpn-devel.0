@@ -1,14 +1,14 @@
 From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Wed, 29 Jan 2025 16:52:08 +0000
+Date: Wed, 29 Jan 2025 16:52:04 +0000
 In-Reply-To: <gerrit.1732545464000.I6816f61b308ca9f6d1f9f687a6dc8e0aa2d044e0@...2715...>
 References: <gerrit.1732545464000.I6816f61b308ca9f6d1f9f687a6dc8e0aa2d044e0@...2715...>
 Reply-To: gert@...1296..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net, frank@...2641..., a@...2181...
-Message-ID: <a5a5d8be64162f6b37bf9797f1b5ff5288df308d-HTML@...2715...>
+Message-ID: <a5a5d8be64162f6b37bf9797f1b5ff5288df308d-EmailReplacePatchSet-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="+zT0X/M6Odg="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="bpOzOokxiMk="; charset=UTF-8
 Subject: [Openvpn-devel] [XS] Change in openvpn[master]: man: extend
  --persist-tun section
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -19,14 +19,19 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Cc: flichtenheld <frank@...2641...>, plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---+zT0X/M6Odg=
+--bpOzOokxiMk=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-cron2 has submitted this change. ( http://gerrit.openvpn.net/c/openvpn/+/81=
-9?usp=3Demail )
+cron2 has uploaded a new patch set (#3) to the change originally created by=
+ ordex. ( http://gerrit.openvpn.net/c/openvpn/+/819?usp=3Demail )
+
+The following approvals got outdated and were removed:
+Code-Review+2 by flichtenheld
+
 
 Change subject: man: extend --persist-tun section
 ......................................................................
@@ -52,7 +57,7 @@ M doc/man-sections/vpn-network-options.rst
 1 file changed, 9 insertions(+), 0 deletions(-)
 
 
-
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/19/819/3
 
 diff --git a/doc/man-sections/vpn-network-options.rst b/doc/man-sections/vp=
 n-network-options.rst
@@ -90,57 +95,61 @@ Gerrit-Owner: ordex <a@...2181...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-MessageType: merged
+Gerrit-MessageType: newpatchset
 
---+zT0X/M6Odg=
+--bpOzOokxiMk=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p>cron2 <strong>submitted</strong> this change.</p><p><a href=3D"http://ge=
-rrit.openvpn.net/c/openvpn/+/819?usp=3Demail">View Change</a></p><div style=
-=3D"white-space:pre-wrap"></div><pre style=3D"font-family: monospace,monosp=
-ace; white-space: pre-wrap;">man: extend --persist-tun section<br><br>The c=
-urrent persist-tun section has no mention of<br>retaining IP/routes and its=
- potential usage in traffic<br>leaking protection.<br><br>Spell this out to=
- allow the user to better understand<br>when this option can play an import=
-ant role.<br><br>Change-Id: I6816f61b308ca9f6d1f9f687a6dc8e0aa2d044e0<br>Si=
-gned-off-by: Antonio Quartulli &lt;antonio@...2726...&gt;<br>Acked-by: Fran=
-k Lichtenheld &lt;frank@...2641...&gt;<br>Message-Id: &lt;20250129094125.13=
-420-1-gert@...1296...&gt;<br>URL: https://www.mail-archive.com/openvpn-deve=
-l@lists.sourceforge.net/msg30684.html<br>Signed-off-by: Gert Doering &lt;ge=
-rt@...1296...&gt;<br>---<br>M doc/man-sections/vpn-network-options.rst<br>1=
- file changed, 9 insertions(+), 0 deletions(-)<br><br></pre>
-<pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><sp=
-an>diff --git a/doc/man-sections/vpn-network-options.rst b/doc/man-sections=
-/vpn-network-options.rst</span><br><span>index fc76939..67f7e1f 100644</spa=
-n><br><span>--- a/doc/man-sections/vpn-network-options.rst</span><br><span>=
-+++ b/doc/man-sections/vpn-network-options.rst</span><br><span>@@ -312,6 +3=
-12,15 @@</span><br><span>   :code:`SIGUSR1` is a restart signal similar to =
-:code:`SIGHUP`, but which</span><br><span>   offers finer-grained control o=
-ver reset options.</span><br><span> </span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+  On Linux, this option can be useful when OpenVPN is not =
-executed as</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  root a=
-nd the CAP_NET_ADMIN has not been granted, because the process</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+  would otherwise not be allowed=
- to bring the interface down and back up.</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+  Alongside the above, using ``--persist-tun`` allows the tunnel interfa=
-ce</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  to retain all I=
-P/route settings, thus allowing the user to implement</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+  any advanced traffic leaking protection=
- (please note that for full</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+  protection, extra route/firewall rules must be in place).</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> --redirec=
-t-gateway flags</span><br><span>   Automatically execute routing commands t=
-o cause all outgoing IP traffic</span><br><span>   to be redirected over th=
-e VPN. This is a client-side option.</span><br><span></span><br></pre><p>To=
- view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/819?usp=3Dema=
-il">change 819</a>. To unsubscribe, or for help writing mail filters, visit=
- <a href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div items=
-cope itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D=
-"action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" h=
-ref=3D"http://gerrit.openvpn.net/c/openvpn/+/819?usp=3Demail"/><meta itempr=
-op=3D"name" content=3D"View Change"/></div></div>
+<p>cron2 <strong>uploaded patch set #3</strong> to the change originally cr=
+eated by ordex.</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/819?=
+usp=3Demail">View Change</a></p><p>The following approvals got outdated and=
+ were removed:
+Code-Review+2 by flichtenheld</p><pre style=3D"font-family: monospace,monos=
+pace; white-space: pre-wrap;">man: extend --persist-tun section<br><br>The =
+current persist-tun section has no mention of<br>retaining IP/routes and it=
+s potential usage in traffic<br>leaking protection.<br><br>Spell this out t=
+o allow the user to better understand<br>when this option can play an impor=
+tant role.<br><br>Change-Id: I6816f61b308ca9f6d1f9f687a6dc8e0aa2d044e0<br>S=
+igned-off-by: Antonio Quartulli &lt;antonio@...2726...&gt;<br>Acked-by: Fra=
+nk Lichtenheld &lt;frank@...2641...&gt;<br>Message-Id: &lt;20250129094125.1=
+3420-1-gert@...1296...&gt;<br>URL: https://www.mail-archive.com/openvpn-dev=
+el@lists.sourceforge.net/msg30684.html<br>Signed-off-by: Gert Doering &lt;g=
+ert@...1296...&gt;<br>---<br>M doc/man-sections/vpn-network-options.rst<br>=
+1 file changed, 9 insertions(+), 0 deletions(-)<br><br></pre><pre style=3D"=
+font-family: monospace,monospace; white-space: pre-wrap;">git pull ssh://ge=
+rrit.openvpn.net:29418/openvpn refs/changes/19/819/3</pre><pre style=3D"fon=
+t-family: monospace,monospace; white-space: pre-wrap;"><span>diff --git a/d=
+oc/man-sections/vpn-network-options.rst b/doc/man-sections/vpn-network-opti=
+ons.rst</span><br><span>index fc76939..67f7e1f 100644</span><br><span>--- a=
+/doc/man-sections/vpn-network-options.rst</span><br><span>+++ b/doc/man-sec=
+tions/vpn-network-options.rst</span><br><span>@@ -312,6 +312,15 @@</span><b=
+r><span>   :code:`SIGUSR1` is a restart signal similar to :code:`SIGHUP`, b=
+ut which</span><br><span>   offers finer-grained control over reset options=
+.</span><br><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+  On Linux, this option can be useful when OpenVPN is not executed as</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+  root and the CAP_NET_AD=
+MIN has not been granted, because the process</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+  would otherwise not be allowed to bring the int=
+erface down and back up.</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  Alongside th=
+e above, using ``--persist-tun`` allows the tunnel interface</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+  to retain all IP/route settings,=
+ thus allowing the user to implement</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+  any advanced traffic leaking protection (please note tha=
+t for full</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  protect=
+ion, extra route/firewall rules must be in place).</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+</span><br><span> --redirect-gateway flags</=
+span><br><span>   Automatically execute routing commands to cause all outgo=
+ing IP traffic</span><br><span>   to be redirected over the VPN. This is a =
+client-side option.</span><br><span></span><br></pre><p>To view, visit <a h=
+ref=3D"http://gerrit.openvpn.net/c/openvpn/+/819?usp=3Demail">change 819</a=
+>. To unsubscribe, or for help writing mail filters, visit <a href=3D"http:=
+//gerrit.openvpn.net/settings">settings</a>.</p><div itemscope itemtype=3D"=
+http://schema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=
+=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://ger=
+rit.openvpn.net/c/openvpn/+/819?usp=3Demail"/><meta itemprop=3D"name" conte=
+nt=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
@@ -155,8 +164,8 @@ c8e0aa2d044e0 </div>
 .1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: merged </div>
+<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
 
 
---+zT0X/M6Odg=--
+--bpOzOokxiMk=--
 
