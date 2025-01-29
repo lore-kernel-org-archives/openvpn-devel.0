@@ -1,17 +1,11 @@
-From: "mattock (Code Review)" <gerrit@...515...>
-Date: Wed, 29 Jan 2025 13:08:18 +0000
-In-Reply-To: <gerrit.1732208116000.Ie63f302402f469c3aa48ac146ca6b8c029f0d250@...2715...>
-References: <gerrit.1732208116000.Ie63f302402f469c3aa48ac146ca6b8c029f0d250@...2715...>
-Reply-To: samuli@...515..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...,
- gert@...1296...
-Message-ID: <3bcc2272c82718a40c27f51c7b24295c4302f047-HTML@...2715...>
+Content-Type: multipart/alternative;
+ boundary="------------gFgQCdhveoniBHoc8A8jc3cC"
+Message-ID: <4adc772f-24a6-4741-a786-5d20250ba626@...2722...>
+Date: Wed, 29 Jan 2025 14:44:35 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="dF7HMqCj7UU="; charset=UTF-8
-Subject: [Openvpn-devel] [M] Change in openvpn[master]: Add lwip support to
- t_server_null
+From: Johan Draaisma <johan@...2722...>
+Content-Language: en-US
+Subject: [Openvpn-devel]  IRC community meeting summary
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,88 +14,127 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Cc: cron2 <gert@...1296...>, flichtenheld <frank@...2641...>, plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: openvpn-devel@lists.sourceforge.net
 
---dF7HMqCj7UU=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+This is a multi-part message in MIME format.
+--------------gFgQCdhveoniBHoc8A8jc3cC
+Content-Type: text/plain; charset="utf-8"; format="flowed"
+Content-Transfer-Encoding: 8bit
 
-Attention is currently required from: cron2, flichtenheld, plaisthos.
+Meeting summary for 29 January 2025:
 
-mattock has removed a vote from this change. ( http://gerrit.openvpn.net/c/=
-openvpn/+/811?usp=3Demail )
+  * *Updated: Release 2.7*
+    /We want to get our release done before the next major Debian release./
+    /This means tentatively getting stuff for 2.7 done before March 1 or
+    so, and release early April./
 
+  * *Updated: DCO Linux upstreaming*
+    /Upstreaming DCO to Linux is proceeding, it is in review stage at
+    the moment./
+    /Patchset v19 will be sent in on Feb 3rd when the netdev mailing
+    list is open again./
 
-Change subject: Add lwip support to t_server_null
-......................................................................
+  * *Updated: data format v3 / epoch data keys*
+    /RFC is here: ​https://github.com/OpenVPN/openvpn-rfc/pull/5
+    <https://github.com/OpenVPN/openvpn-rfc/pull/5>./
+    /Implementation in OpenVPN3 is done./
+    /Implementation in OpenvPN2 is almost fully merged, just one patch
+    to go. MaxF will review./
 
+  * *Updated: multi-socket support*
+    /​https://gerrit.openvpn.net/q/topic:%22multisocket%22
+    <https://gerrit.openvpn.net/q/topic:%22multisocket%22>/
+    /ordex and giaan continuing their work on this./.
 
-Removed Code-Review+2 by mattock <samuli@...515...>
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/811?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings
+  * *Updated: new --dns option support*
+    /​https://gerrit.openvpn.net/q/topic:%22dns+option%22
+    <https://gerrit.openvpn.net/q/topic:%22dns+option%22>/
+    /Waiting d12fk to respond to feedback - will do this soon./
 
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: Ie63f302402f469c3aa48ac146ca6b8c029f0d250
-Gerrit-Change-Number: 811
-Gerrit-PatchSet: 10
-Gerrit-Owner: mattock <samuli@...515...>
-Gerrit-Reviewer: cron2 <gert@...1296...>
-Gerrit-Reviewer: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: mattock <samuli@...515...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: cron2 <gert@...1296...>
-Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-MessageType: deleteVote
+  * *Updated: community.openvpn.net wiki*/*
+    *Some content has been copied over, perhaps not ideally but there's
+    something.
+    djpig and novaflash have access now and we can start to work on this
+    wiki replacement by adding content./
 
---dF7HMqCj7UU=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+As always you're welcome to join at #openvpn-meeting on Libera IRC 
+network every Wednesday at 14:00 Central European Time.
 
-<p> Attention is currently required from: cron2, flichtenheld, plaisthos. <=
-/p>
-<p>mattock <strong>removed a vote</strong> from this change.</p><p><a href=
-=3D"http://gerrit.openvpn.net/c/openvpn/+/811?usp=3Demail">View Change</a><=
-/p><div style=3D"white-space:pre-wrap">Removed Code-Review+2 by mattock &lt=
-;samuli@...515...&gt;</div><p>To view, visit <a href=3D"http://gerrit.openv=
-pn.net/c/openvpn/+/811?usp=3Demail">change 811</a>. To unsubscribe, or for =
-help writing mail filters, visit <a href=3D"http://gerrit.openvpn.net/setti=
-ngs">settings</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMes=
-sage"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.org/View=
-Action"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/=
-+/811?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div>=
-</div>
+Kind regards,
+Johan Draaisma
 
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: Ie63f302402f469c3aa48ac146ca=
-6b8c029f0d250 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 811 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 10 </div>
-<div style=3D"display:none"> Gerrit-Owner: mattock &lt;samuli@...515...&gt;=
- </div>
-<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
- </div>
-<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
-1...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: mattock &lt;samuli@...515...&=
-gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: cron2 &lt;gert@...1296...&gt=
-; </div>
-<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
-41...&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: deleteVote </div>
+--------------gFgQCdhveoniBHoc8A8jc3cC
+Content-Type: text/html; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  </head>
+  <body>
+    <p> Meeting summary for 29 January 2025:</p>
+    <ul
+style="color: rgb(0, 0, 0); font-family: Verdana, Arial, &quot;Bitstream Vera Sans&quot;, Helvetica, sans-serif; font-size: 13px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;">
+      <li><strong>Updated: Release 2.7</strong><br>
+        <em>We want to get our release done before the next major Debian
+          release.</em><br>
+        <em>This means tentatively getting stuff for 2.7 done before
+          March 1 or so, and release early April.</em></li>
+    </ul>
+    <ul
+style="color: rgb(0, 0, 0); font-family: Verdana, Arial, &quot;Bitstream Vera Sans&quot;, Helvetica, sans-serif; font-size: 13px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;">
+      <li><strong>Updated: DCO Linux upstreaming</strong><br>
+        <em>Upstreaming DCO to Linux is proceeding, it is in review
+          stage at the moment.</em><br>
+        <em>Patchset v19 will be sent in on Feb 3rd when the netdev
+          mailing list is open again.</em></li>
+    </ul>
+    <ul
+style="color: rgb(0, 0, 0); font-family: Verdana, Arial, &quot;Bitstream Vera Sans&quot;, Helvetica, sans-serif; font-size: 13px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;">
+      <li><strong>Updated: data format v3 / epoch data keys</strong><br>
+        <em>RFC is here: <a class="ext-link"
+            href="https://github.com/OpenVPN/openvpn-rfc/pull/5"><span
+              class="icon">​</span>https://github.com/OpenVPN/openvpn-rfc/pull/5</a>.</em><br>
+        <em>Implementation in OpenVPN3 is done.</em><br>
+        <em>Implementation in OpenvPN2 is almost fully merged, just one
+          patch to go. MaxF will review.</em></li>
+    </ul>
+    <ul
+style="color: rgb(0, 0, 0); font-family: Verdana, Arial, &quot;Bitstream Vera Sans&quot;, Helvetica, sans-serif; font-size: 13px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;">
+      <li><strong>Updated: multi-socket support</strong><br>
+        <em><a class="ext-link"
+            href="https://gerrit.openvpn.net/q/topic:%22multisocket%22"><span
+              class="icon">​</span>https://gerrit.openvpn.net/q/topic:%22multisocket%22</a></em>
+        <br>
+        <em>ordex and giaan continuing their work on this.</em>.
+      </li>
+    </ul>
+    <ul
+style="color: rgb(0, 0, 0); font-family: Verdana, Arial, &quot;Bitstream Vera Sans&quot;, Helvetica, sans-serif; font-size: 13px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;">
+      <li><strong>Updated: new --dns option support</strong><br>
+        <em><a class="ext-link"
+            href="https://gerrit.openvpn.net/q/topic:%22dns+option%22"><span
+              class="icon">​</span>https://gerrit.openvpn.net/q/topic:%22dns+option%22</a></em><br>
+        <em>Waiting d12fk to respond to feedback - will do this soon.</em><br>
+      </li>
+    </ul>
+    <ul
+style="color: rgb(0, 0, 0); font-family: Verdana, Arial, &quot;Bitstream Vera Sans&quot;, Helvetica, sans-serif; font-size: 13px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;">
+      <li><strong>Updated: community.openvpn.net wiki</strong><em><strong><br>
+          </strong>Some content has been copied over, perhaps not
+          ideally but there's something.<br>
+          djpig and novaflash have access now and we can start to work
+          on this wiki replacement by adding content.</em><br>
+      </li>
+    </ul>
+    As always you're welcome to join at #openvpn-meeting on Libera IRC
+    network every Wednesday at 14:00 Central European Time.
+    <p>Kind regards,<br>
+      Johan Draaisma<br>
+    </p>
+  </body>
+</html>
 
---dF7HMqCj7UU=--
+--------------gFgQCdhveoniBHoc8A8jc3cC--
 
