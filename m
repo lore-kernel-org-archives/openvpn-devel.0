@@ -1,11 +1,16 @@
-From: Gert Doering <gert@...1296...>
-Date: Wed, 29 Jan 2025 18:30:07 +0100
-Message-ID: <20250129173007.3280-1-gert@...1296...>
-In-Reply-To: <gerrit.1738150255000.Ic438c583a782035ecb9b5ea65702a768ae2585f5@...2715...>
-References: <gerrit.1738150255000.Ic438c583a782035ecb9b5ea65702a768ae2585f5@...2715...>
+From: "MaxF (Code Review)" <gerrit@...515...>
+Date: Wed, 29 Jan 2025 18:22:58 +0000
+In-Reply-To: <gerrit.1737027245000.I15c7cfdddb06d4530d669b222a3c65db5169b29a@...2715...>
+References: <gerrit.1737027245000.I15c7cfdddb06d4530d669b222a3c65db5169b29a@...2715...>
+Reply-To: max@...2606..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net, frank@...2641...
+Message-ID: <419bf9d5ded494a7ec8814bd34eadf3e65b61af3-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v3] options: add IPv4 support to
- '--show-gateway <arg>'
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="atFw4MPmcz4="; charset=UTF-8
+Subject: [Openvpn-devel] [M] Change in openvpn[master]: Extend the unit test
+ for data channel packets with aead limit tests
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,113 +19,141 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: plaisthos <arne-openvpn@...1227...>
+Cc: flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-This is an old debug option, which used to print "the default routes found"
-for IPv4 and IPv6, and optionally "a route to a particular IPv6 target"
-if passed an argument.
+--atFw4MPmcz4=
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-With the work started in commit 0fcfc8381f60d we want this to handle
-IPv4 as well, mostly to be able to easily test per-platform
-get_default_gateway() implementations.
+Attention is currently required from: flichtenheld, plaisthos.
 
-The implementation is simplistic - if <arg> can be parsed as an IPv4 or
-IPv6 address, that particular protocol lookup will do "the host route"
-and the other one will stick to "the default route".
+MaxF has posted comments on this change. ( http://gerrit.openvpn.net/c/open=
+vpn/+/868?usp=3Demail )
 
-NOTE: as of this commit, there is no backend functionality for IPv4, so
-it will not actually print anything interesting.  This will be added in
-further platform dependent commits.
+Change subject: Extend the unit test for data channel packets with aead lim=
+it tests
+......................................................................
 
-v2: amend --help output
-v3: uncrustify (#ifdef block too long, comments at #endif required now)
 
-Change-Id: Ic438c583a782035ecb9b5ea65702a768ae2585f5
-Signed-off-by: Gert Doering <gert@...1296...>
-Acked-by: Lev Stipakov <lstipakov@...277...>
----
+Patch Set 2:
 
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to master.
+(4 comments)
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/881
-This mail reflects revision 3 of this Change.
+Patchset:
 
-Acked-by according to Gerrit (reflected above):
-Lev Stipakov <lstipakov@...277...>
+PS2:
+Looks good!
 
-        
-diff --git a/doc/man-sections/advanced-options.rst b/doc/man-sections/advanced-options.rst
-index d5a6b4f..e1115e4 100644
---- a/doc/man-sections/advanced-options.rst
-+++ b/doc/man-sections/advanced-options.rst
-@@ -9,13 +9,17 @@
-   ::
- 
-      --show-gateway
-+     --show-gateway IPv4-target
-      --show-gateway IPv6-target
- 
-+  For IPv4 it looks for a 0.0.0.0/0 route, or the specified IPv4 address
-+  if the target can be parsed as an IPv4 address.
-   For IPv6 this queries the route towards ::/128, or the specified IPv6
--  target address if passed as argument.
--  For IPv4 on Linux, Windows, MacOS and BSD it looks for a 0.0.0.0/0 route.
--  If there are more specific routes, the result will not always be matching
--  the route of the IPv4 packets to the VPN gateway.
-+  target address if the argument is an IPv6 address.
-+
-+  Adding a target is helpful for diagnostics to see if OpenVPN will do
-+  the right thing if there are more specific IPv4/IPv6 routes to a
-+  VPN server.
- 
- 
- Advanced Expert Options
-diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index 5a80e6b..218d8a6 100644
---- a/src/openvpn/options.c
-+++ b/src/openvpn/options.c
-@@ -788,7 +788,7 @@
-     "\n"
-     "General Standalone Options:\n"
- #ifdef ENABLE_DEBUG
--    "--show-gateway : Show info about default gateway.\n"
-+    "--show-gateway [address]: Show info about gateway [to v4/v6 address].\n"
- #endif
- ;
- 
-@@ -5858,20 +5858,26 @@
-     {
-         struct route_gateway_info rgi;
-         struct route_ipv6_gateway_info rgi6;
--        struct in6_addr remote = IN6ADDR_ANY_INIT;
-+        in_addr_t remote_ipv4 = 0;
-+        struct in6_addr remote_ipv6 = IN6ADDR_ANY_INIT;
-         openvpn_net_ctx_t net_ctx;
-         VERIFY_PERMISSION(OPT_P_GENERAL);
-         if (p[1])
-         {
--            get_ipv6_addr(p[1], &remote, NULL, M_WARN);
-+            /* try parsing the argument as a v4 or v6 address - if
-+             * possible, the output will show the exact route there, and
-+             * "the default route" for the other protocol
-+             */
-+            remote_ipv4 = get_ip_addr(p[1], M_WARN, NULL);
-+            get_ipv6_addr(p[1], &remote_ipv6, NULL, M_WARN);
-         }
-         net_ctx_init(NULL, &net_ctx);
--        get_default_gateway(&rgi, 0, &net_ctx);
--        get_default_gateway_ipv6(&rgi6, &remote, &net_ctx);
-+        get_default_gateway(&rgi, remote_ipv4, &net_ctx);
-+        get_default_gateway_ipv6(&rgi6, &remote_ipv6, &net_ctx);
-         print_default_gateway(M_INFO, &rgi, &rgi6);
-         openvpn_exit(OPENVPN_EXIT_STATUS_GOOD); /* exit point */
-     }
--#endif
-+#endif /* if defined(ENABLE_DEBUG) && !defined(ENABLE_SMALL) */
-     else if (streq(p[0], "echo") || streq(p[0], "parameter"))
-     {
-         struct buffer string = alloc_buf_gc(OPTION_PARM_SIZE, &gc);
+
+File tests/unit_tests/openvpn/test_ssl.c:
+
+http://gerrit.openvpn.net/c/openvpn/+/868/comment/aaf1046f_c7682d5e :
+PS2, Line 369:
+Nitpick: Did you mean to put 2 blank lines here?
+
+
+http://gerrit.openvpn.net/c/openvpn/+/868/comment/90415ab6_73c373e1 :
+PS2, Line 403: \
+Why a line continuation?
+
+
+http://gerrit.openvpn.net/c/openvpn/+/868/comment/a772ba34_52699165 :
+PS2, Line 432:    /* Ensure that we are still on the initial key (unit test=
+ uses 4)
+             :      * or that it is 0 when epoch is not in use */
+             :     assert_int_equal(co->key_ctx_bi.encrypt.epoch, expected_=
+epoch);
+I was confused where the 4 comes from. I guess the previous test sets it th=
+at way?
+
+
+
+--
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/868?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings
+
+Gerrit-Project: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: I15c7cfdddb06d4530d669b222a3c65db5169b29a
+Gerrit-Change-Number: 868
+Gerrit-PatchSet: 2
+Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
+Gerrit-Reviewer: flichtenheld <frank@...2641...>
+Gerrit-CC: MaxF <max@...2606...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Attention: flichtenheld <frank@...2641...>
+Gerrit-Comment-Date: Wed, 29 Jan 2025 18:22:58 +0000
+Gerrit-HasComments: Yes
+Gerrit-Has-Labels: No
+Gerrit-MessageType: comment
+
+--atFw4MPmcz4=
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<p> Attention is currently required from: flichtenheld, plaisthos. </p>
+<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/868?usp=3Demail">View C=
+hange</a></p><p>4 comments:</p><ul style=3D"list-style: none; padding: 0;">=
+<li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-styl=
+e: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p styl=
+e=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/=
+868?tab=3Dcomments">Patch Set #2:</a> </p><p style=3D"white-space: pre-wrap=
+; word-wrap: break-word;">Looks good!</p></li></ul></li><li style=3D"margin=
+: 0; padding: 0;"><p>File tests/unit_tests/openvpn/test_ssl.c:</p><ul style=
+=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 1=
+6px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net=
+/c/openvpn/+/868/comment/aaf1046f_c7682d5e">Patch Set #2, Line 369:</a> <co=
+de style=3D"font-family:monospace,monospace"></code></p><p style=3D"white-s=
+pace: pre-wrap; word-wrap: break-word;">Nitpick: Did you mean to put 2 blan=
+k lines here?</p></li><li style=3D"margin: 0; padding: 0 0 0 16px;"><p styl=
+e=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/=
+868/comment/90415ab6_73c373e1">Patch Set #2, Line 403:</a> <code style=3D"f=
+ont-family:monospace,monospace">\</code></p><p style=3D"white-space: pre-wr=
+ap; word-wrap: break-word;">Why a line continuation?</p></li><li style=3D"m=
+argin: 0; padding: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D=
+"http://gerrit.openvpn.net/c/openvpn/+/868/comment/a772ba34_52699165">Patch=
+ Set #2, Line 432:</a> </p><p><blockquote style=3D"border-left: 1px solid #=
+aaa; margin: 10px 0; padding: 0 10px;"><pre style=3D"font-family: monospace=
+,monospace; white-space: pre-wrap;">   /* Ensure that we are still on the i=
+nitial key (unit test uses 4)<br>     * or that it is 0 when epoch is not i=
+n use */<br>    assert_int_equal(co-&gt;key_ctx_bi.encrypt.epoch, expected_=
+epoch);<br></pre></blockquote></p><p style=3D"white-space: pre-wrap; word-w=
+rap: break-word;">I was confused where the 4 comes from. I guess the previo=
+us test sets it that way?</p></li></ul></li></ul><p>To view, visit <a href=
+=3D"http://gerrit.openvpn.net/c/openvpn/+/868?usp=3Demail">change 868</a>. =
+To unsubscribe, or for help writing mail filters, visit <a href=3D"http://g=
+errit.openvpn.net/settings">settings</a>.</p><div itemscope itemtype=3D"htt=
+p://schema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D=
+"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit=
+.openvpn.net/c/openvpn/+/868?usp=3Demail"/><meta itemprop=3D"name" content=
+=3D"View Change"/></div></div>
+
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I15c7cfdddb06d4530d669b222a3=
+c65db5169b29a </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 868 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
+<div style=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@...1711...=
+27...&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
+1...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: MaxF &lt;max@...2606...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
+41...&gt; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Wed, 29 Jan 2025 18:22:58=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: No </div>
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
+
+
+--atFw4MPmcz4=--
 
