@@ -1,17 +1,15 @@
-From: "ordex (Code Review)" <gerrit@...515...>
-Date: Thu, 30 Jan 2025 09:14:26 +0000
-In-Reply-To: <gerrit.1732212459000.I145573555aaace5e94774b5f977d032d3747ed72@...2715...>
-References: <gerrit.1732212459000.I145573555aaace5e94774b5f977d032d3747ed72@...2715...>
-Reply-To: a@...2181..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...,
- lstipakov@...277...
-Message-ID: <68f16ebabbc12166fd246fbe84b70fb2d7650f5d-EmailReviewComments-HTML@...2715...>
+From: "cron2 (Code Review)" <gerrit@...515...>
+Date: Thu, 30 Jan 2025 18:13:20 +0000
+References: <gerrit.1738260795000.I1db72d7dca648a8ea4ec65d173290a819971305c@...2715...>
+Reply-To: gert@...1296..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net, frank@...2641...
+Message-ID: <b6d77eb7a6a30c52e59dd86b0e7c23528728b186-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="3XrTr+QAcUk="; charset=UTF-8
-Subject: [Openvpn-devel] [XS] Change in openvpn[master]: mudp.c: keep offset
- value when resetting buffer
+Content-Type: multipart/alternative; boundary="OcxkluBt6mU="; charset=UTF-8
+Subject: [Openvpn-devel] [XS] Change in openvpn[master]:
+ get_default_gateway(): implement platform support for Linux/SITNL
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,117 +18,135 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: stipa <lstipakov@...277...>
-Cc: flichtenheld <frank@...2641...>, plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---3XrTr+QAcUk=
+--OcxkluBt6mU=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: plaisthos, stipa.
+Attention is currently required from: flichtenheld, plaisthos.
 
-ordex has posted comments on this change. ( http://gerrit.openvpn.net/c/ope=
-nvpn/+/814?usp=3Demail )
+Hello plaisthos, flichtenheld,
 
-Change subject: mudp.c: keep offset value when resetting buffer
+I'd like you to do a code review.
+Please visit
+
+    http://gerrit.openvpn.net/c/openvpn/+/883?usp=3Demail
+
+to review the following change.
+
+
+Change subject: get_default_gateway(): implement platform support for Linux=
+/SITNL
 ......................................................................
 
+get_default_gateway(): implement platform support for Linux/SITNL
 
-Patch Set 12: Code-Review+2
+This adds Linux/SITNL platform functionality to the framework started by
+commit 9df51cf56 and commit 0fcfc8381f.
 
-(1 comment)
-
-File src/openvpn/mudp.c:
-
-http://gerrit.openvpn.net/c/openvpn/+/814/comment/7a94e11c_e3978f10 :
-PS12, Line 58:     ASSERT(buf_init(&c->c2.buffers->aux_buf, buf.offset));
-> buf_init() can in fail if there is not enough capacity, but it should not=
- be the case. [=E2=80=A6]
-Acknowledged
+Change-Id: I1db72d7dca648a8ea4ec65d173290a819971305c
+Signed-off-by: Gert Doering <gert@...1296...>
+---
+M src/openvpn/route.c
+1 file changed, 1 insertion(+), 1 deletion(-)
 
 
+
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/83/883/1
+
+diff --git a/src/openvpn/route.c b/src/openvpn/route.c
+index 3501e35..3605671 100644
+--- a/src/openvpn/route.c
++++ b/src/openvpn/route.c
+@@ -3333,7 +3333,7 @@
+     CLEAR(best_name);
+
+     /* get default gateway IP addr */
+-    if (net_route_v4_best_gw(ctx, NULL, &rgi->gateway.addr, best_name) =3D=
+=3D 0)
++    if (net_route_v4_best_gw(ctx, &dest, &rgi->gateway.addr, best_name) =
+=3D=3D 0)
+     {
+         rgi->flags |=3D RGI_ADDR_DEFINED;
+         if (!rgi->gateway.addr && best_name[0])
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/814?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/883?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings
 
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: I145573555aaace5e94774b5f977d032d3747ed72
-Gerrit-Change-Number: 814
-Gerrit-PatchSet: 12
-Gerrit-Owner: stipa <lstipakov@...277...>
+Gerrit-Change-Id: I1db72d7dca648a8ea4ec65d173290a819971305c
+Gerrit-Change-Number: 883
+Gerrit-PatchSet: 1
+Gerrit-Owner: cron2 <gert@...1296...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: ordex <a@...2181...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: stipa <lstipakov@...277...>
-Gerrit-Comment-Date: Thu, 30 Jan 2025 09:14:26 +0000
-Gerrit-HasComments: Yes
-Gerrit-Has-Labels: Yes
-Comment-In-Reply-To: ordex <a@...2181...>
-Comment-In-Reply-To: stipa <lstipakov@...277...>
-Gerrit-MessageType: comment
+Gerrit-Attention: flichtenheld <frank@...2641...>
+Gerrit-MessageType: newchange
 
---3XrTr+QAcUk=
+--OcxkluBt6mU=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p> Attention is currently required from: plaisthos, stipa. </p>
-<p>Patch set 12:<span style=3D"border-radius: 3px; display: inline-block; m=
-argin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span=
-></p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/814?usp=3Demail">V=
-iew Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: =
-0;"><li style=3D"margin: 0; padding: 0;"><p>File src/openvpn/mudp.c:</p><ul=
- style=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; padding: 0=
- 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openv=
-pn.net/c/openvpn/+/814/comment/7a94e11c_e3978f10">Patch Set #12, Line 58:</=
-a> <code style=3D"font-family:monospace,monospace">    ASSERT(buf_init(&amp=
-;c-&gt;c2.buffers-&gt;aux_buf, buf.offset));</code></p><p><blockquote style=
-=3D"border-left: 1px solid #aaa; margin: 10px 0; padding: 0 10px;">buf_init=
-() can in fail if there is not enough capacity, but it should not be the ca=
-se. [=E2=80=A6]</blockquote></p><p style=3D"white-space: pre-wrap; word-wra=
-p: break-word;">Acknowledged</p></li></ul></li></ul><p>To view, visit <a hr=
-ef=3D"http://gerrit.openvpn.net/c/openvpn/+/814?usp=3Demail">change 814</a>=
-. To unsubscribe, or for help writing mail filters, visit <a href=3D"http:/=
-/gerrit.openvpn.net/settings">settings</a>.</p><div itemscope itemtype=3D"h=
-ttp://schema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=
-=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://ger=
-rit.openvpn.net/c/openvpn/+/814?usp=3Demail"/><meta itemprop=3D"name" conte=
-nt=3D"View Change"/></div></div>
+<p> Attention is currently required from: flichtenheld, plaisthos. </p>
+<p>cron2 would like plaisthos and flichtenheld to <strong>review</strong> t=
+his change.
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/883?usp=3Demail">Vi=
+ew Change</a></p><pre style=3D"font-family: monospace,monospace; white-spac=
+e: pre-wrap;">get_default_gateway(): implement platform support for Linux/S=
+ITNL<br><br>This adds Linux/SITNL platform functionality to the framework s=
+tarted by<br>commit 9df51cf56 and commit 0fcfc8381f.<br><br>Change-Id: I1db=
+72d7dca648a8ea4ec65d173290a819971305c<br>Signed-off-by: Gert Doering &lt;ge=
+rt@...1296...&gt;<br>---<br>M src/openvpn/route.c<br>1 file changed, 1 inse=
+rtion(+), 1 deletion(-)<br><br></pre><pre style=3D"font-family: monospace,m=
+onospace; white-space: pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/o=
+penvpn refs/changes/83/883/1</pre><pre style=3D"font-family: monospace,mono=
+space; white-space: pre-wrap;"><span>diff --git a/src/openvpn/route.c b/src=
+/openvpn/route.c</span><br><span>index 3501e35..3605671 100644</span><br><s=
+pan>--- a/src/openvpn/route.c</span><br><span>+++ b/src/openvpn/route.c</sp=
+an><br><span>@@ -3333,7 +3333,7 @@</span><br><span>     CLEAR(best_name);</=
+span><br><span> </span><br><span>     /* get default gateway IP addr */</sp=
+an><br><span style=3D"color: hsl(0, 100%, 40%);">-    if (net_route_v4_best=
+_gw(ctx, NULL, &amp;rgi-&gt;gateway.addr, best_name) =3D=3D 0)</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+    if (net_route_v4_best_gw(ctx=
+, &amp;dest, &amp;rgi-&gt;gateway.addr, best_name) =3D=3D 0)</span><br><spa=
+n>     {</span><br><span>         rgi-&gt;flags |=3D RGI_ADDR_DEFINED;</spa=
+n><br><span>         if (!rgi-&gt;gateway.addr &amp;&amp; best_name[0])</sp=
+an><br><span></span><br></pre><p>To view, visit <a href=3D"http://gerrit.op=
+envpn.net/c/openvpn/+/883?usp=3Demail">change 883</a>. To unsubscribe, or f=
+or help writing mail filters, visit <a href=3D"http://gerrit.openvpn.net/se=
+ttings">settings</a>.</p><div itemscope itemtype=3D"http://schema.org/Email=
+Message"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.org/V=
+iewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openv=
+pn/+/883?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></d=
+iv></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I145573555aaace5e94774b5f977=
-d032d3747ed72 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 814 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 12 </div>
-<div style=3D"display:none"> Gerrit-Owner: stipa &lt;lstipakov@...277...&gt=
-; </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I1db72d7dca648a8ea4ec65d1732=
+90a819971305c </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 883 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
+<div style=3D"display:none"> Gerrit-Owner: cron2 &lt;gert@...1296...&gt; </=
+div>
 <div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
 1...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: ordex &lt;a@...2181...&gt; </=
-div>
 <div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
 .1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
 ..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: stipa &lt;lstipakov@...1663...=
-.&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Thu, 30 Jan 2025 09:14:26=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
-<div style=3D"display:none"> Comment-In-Reply-To: ordex &lt;a@...2181...&gt=
-; </div>
-<div style=3D"display:none"> Comment-In-Reply-To: stipa &lt;lstipakov@...1664...=
-7...&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
+<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
+41...&gt; </div>
+<div style=3D"display:none"> Gerrit-MessageType: newchange </div>
 
 
---3XrTr+QAcUk=--
+--OcxkluBt6mU=--
 
