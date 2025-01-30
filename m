@@ -1,10 +1,16 @@
-From: Shubham Mittal <smittals@...2857...>
-Date: Wed, 29 Jan 2025 14:16:19 -0800
-Message-ID: <20250129221619.97113-1-smittals@...2857...>
-In-Reply-To: <20250127235413.1925-1-smittals@...2857...>
-References: <20250127235413.1925-1-smittals@...2857...>
+From: "stipa (Code Review)" <gerrit@...515...>
+Date: Thu, 30 Jan 2025 08:38:40 +0000
+In-Reply-To: <gerrit.1732212459000.I145573555aaace5e94774b5f977d032d3747ed72@...2715...>
+References: <gerrit.1732212459000.I145573555aaace5e94774b5f977d032d3747ed72@...2715...>
+Reply-To: lstipakov@...277..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net, frank@...2641...
+Message-ID: <ceaa1f2104083bcd83a5703df988e1d5ef590276-EmailReplacePatchSet-HTML@...2715...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] Adding AWS-LC to the OpenVPN CI
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="9ph/Ygv+qQc="; charset=UTF-8
+Subject: [Openvpn-devel] [XS] Change in openvpn[master]: mudp.c: keep offset
+ value when resetting buffer
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,89 +19,141 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-URL: https://github.com/OpenVPN/openvpn/pull/673
-Acked-by: Arne Schwabe <arne@...1227...>
-Signed-off-by: Shubham Mittal <smittals@...2857...>
+--9ph/Ygv+qQc=
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+Attention is currently required from: plaisthos, stipa.
+
+Hello flichtenheld, plaisthos,
+
+I'd like you to reexamine a change. Please visit
+
+    http://gerrit.openvpn.net/c/openvpn/+/814?usp=3Demail
+
+to look at the new patch set (#12).
+
+The change is no longer submittable: checks~ChecksSubmitRule is unsatisfied=
+ now.
+
+
+Change subject: mudp.c: keep offset value when resetting buffer
+......................................................................
+
+mudp.c: keep offset value when resetting buffer
+
+dco-win requires control packets to be prepended
+with sockaddr. For that, an offset value in buffer
+must be kept. Doing it always doesn't harm and makes
+code cleaner compared to adding "if (dco_win_server)"
+condition.
+
+Change-Id: I145573555aaace5e94774b5f977d032d3747ed72
+Signed-off-by: Lev Stipakov <lev@...515...>
 ---
- .github/workflows/build.yaml | 62 ++++++++++++++++++++++++++++++++++++
- 1 file changed, 62 insertions(+)
+M src/openvpn/mudp.c
+1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/.github/workflows/build.yaml b/.github/workflows/build.yaml
-index 90d52023..2c77004d 100644
---- a/.github/workflows/build.yaml
-+++ b/.github/workflows/build.yaml
-@@ -424,3 +424,65 @@ jobs:
-         run: echo 'RUN_SUDO="sudo -E"' >tests/t_server_null.rc
-       - name: make check
-         run: make -j3 check VERBOSE=1
-+
-+  aws-lc:
-+    strategy:
-+      fail-fast: false
-+      matrix:
-+        os: [ubuntu-24.04]
-+        ssllib: [ awslc ]
-+        build: [ normal, asan ]
-+        include:
-+          - build: asan
-+            cflags: "-fsanitize=address -fno-sanitize-recover=all  -fno-optimize-sibling-calls -fsanitize-address-use-after-scope -fno-omit-frame-pointer -g -O1"
-+            ldflags: -fsanitize=address -fno-sanitize-recover=all
-+            cc: clang
-+            cxx: clang++
-+          - build: normal
-+            cflags: "-O2 -g"
-+            ldflags: ""
-+            cc: gcc
-+            cxx: c++
-+
-+    name: "${{matrix.cc}} ${{matrix.build}} - ${{matrix.os}} - ${{matrix.ssllib}}"
-+    runs-on: ${{matrix.os}}
-+    env:
-+      CFLAGS: ${{ matrix.cflags }}
-+      LDFLAGS: ${{ matrix.ldflags }}
-+      CC: ${{matrix.cc}}
-+      CXX: ${{matrix.cxx}}
-+      UBSAN_OPTIONS: print_stacktrace=1
-+      AWS_LC_INSTALL: ${{ github.workspace }}/aws-lc/aws-lc-install
-+
-+    steps:
-+      - name: Install dependencies
-+        run: sudo apt update && sudo apt install -y cmake gcc ninja-build golang make liblzo2-dev libpam0g-dev liblz4-dev linux-libc-dev man2html clang libcmocka-dev python3-docutils python3-jinja2 python3-jsonschema libtool automake autoconf pkg-config libcap-ng-dev libnl-genl-3-dev
-+      - name: "AWS-LC: checkout"
-+        uses: actions/checkout@...2844... # v4.2.2
-+        with:
-+          path: aws-lc
-+          repository: aws/aws-lc
-+          ref: v1.42.0
-+      - name: "AWS-LC: build"
-+        run: |
-+          mkdir build
-+          cd build
-+          cmake -GNinja -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX="${{ env.AWS_LC_INSTALL }}" -DBUILD_SHARED_LIBS=1 ../
-+          ninja install
-+        working-directory: aws-lc
-+      - name: Checkout OpenVPN
-+        uses: actions/checkout@...2844... # v4.2.2
-+      - name: autoconf
-+        run: autoreconf -fvi
-+      - name: configure with AWS-LC
-+        run: |
-+          OPENSSL_CFLAGS="-I/${{ env.AWS_LC_INSTALL }}/include" \
-+          OPENSSL_LIBS="-L/${{ env.AWS_LC_INSTALL }}/lib -lssl -lcrypto" \
-+          LDFLAGS="-Wl, -rpath=/${{ env.AWS_LC_INSTALL }}/lib" \
-+          ./configure --with-crypto-library=openssl
-+      - name: make all
-+        run: make -j3
-+      - name: configure checks
-+        run: echo 'RUN_SUDO="sudo -E"' >tests/t_server_null.rc
-+      - name: make check
-+        run: make -j3 check VERBOSE=1
-\ No newline at end of file
--- 
-2.39.5 (Apple Git-154)
 
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/14/814/12
+
+diff --git a/src/openvpn/mudp.c b/src/openvpn/mudp.c
+index 4f2bbd7..5f43db9 100644
+--- a/src/openvpn/mudp.c
++++ b/src/openvpn/mudp.c
+@@ -54,7 +54,9 @@
+
+     struct context *c =3D &m->top;
+
+-    buf_reset_len(&c->c2.buffers->aux_buf);
++    /* dco-win server requires prepend with sockaddr, so preserve offset */
++    ASSERT(buf_init(&c->c2.buffers->aux_buf, buf.offset));
++
+     buf_copy(&c->c2.buffers->aux_buf, &buf);
+     m->hmac_reply =3D c->c2.buffers->aux_buf;
+     m->hmac_reply_dest =3D &m->top.c2.from;
+
+--
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/814?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings
+
+Gerrit-Project: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: I145573555aaace5e94774b5f977d032d3747ed72
+Gerrit-Change-Number: 814
+Gerrit-PatchSet: 12
+Gerrit-Owner: stipa <lstipakov@...277...>
+Gerrit-Reviewer: flichtenheld <frank@...2641...>
+Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Attention: stipa <lstipakov@...277...>
+Gerrit-MessageType: newpatchset
+
+--9ph/Ygv+qQc=
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<p> Attention is currently required from: plaisthos, stipa. </p>
+<p>stipa <strong>uploaded patch set #12</strong> to this change.</p><p><a h=
+ref=3D"http://gerrit.openvpn.net/c/openvpn/+/814?usp=3Demail">View Change</=
+a></p><p>The change is no longer submittable: checks~ChecksSubmitRule is un=
+satisfied now.</p><pre style=3D"font-family: monospace,monospace; white-spa=
+ce: pre-wrap;">mudp.c: keep offset value when resetting buffer<br><br>dco-w=
+in requires control packets to be prepended<br>with sockaddr. For that, an =
+offset value in buffer<br>must be kept. Doing it always doesn&#39;t harm an=
+d makes<br>code cleaner compared to adding &quot;if (dco_win_server)&quot;<=
+br>condition.<br><br>Change-Id: I145573555aaace5e94774b5f977d032d3747ed72<b=
+r>Signed-off-by: Lev Stipakov &lt;lev@...515...&gt;<br>---<br>M src/openvpn=
+/mudp.c<br>1 file changed, 3 insertions(+), 1 deletion(-)<br><br></pre><pre=
+ style=3D"font-family: monospace,monospace; white-space: pre-wrap;">git pul=
+l ssh://gerrit.openvpn.net:29418/openvpn refs/changes/14/814/12</pre><pre s=
+tyle=3D"font-family: monospace,monospace; white-space: pre-wrap;"><span>dif=
+f --git a/src/openvpn/mudp.c b/src/openvpn/mudp.c</span><br><span>index 4f2=
+bbd7..5f43db9 100644</span><br><span>--- a/src/openvpn/mudp.c</span><br><sp=
+an>+++ b/src/openvpn/mudp.c</span><br><span>@@ -54,7 +54,9 @@</span><br><sp=
+an> </span><br><span>     struct context *c =3D &amp;m-&gt;top;</span><br><=
+span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-    buf_reset_l=
+en(&amp;c-&gt;c2.buffers-&gt;aux_buf);</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+    /* dco-win server requires prepend with sockaddr, so=
+ preserve offset */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+    ASSERT(buf_init(&amp;c-&gt;c2.buffers-&gt;aux_buf, buf.offset));</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span>     buf_=
+copy(&amp;c-&gt;c2.buffers-&gt;aux_buf, &amp;buf);</span><br><span>     m-&=
+gt;hmac_reply =3D c-&gt;c2.buffers-&gt;aux_buf;</span><br><span>     m-&gt;=
+hmac_reply_dest =3D &amp;m-&gt;top.c2.from;</span><br><span></span><br></pr=
+e><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/814?us=
+p=3Demail">change 814</a>. To unsubscribe, or for help writing mail filters=
+, visit <a href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><di=
+v itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope item=
+prop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D=
+"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/814?usp=3Demail"/><meta=
+ itemprop=3D"name" content=3D"View Change"/></div></div>
+
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I145573555aaace5e94774b5f977=
+d032d3747ed72 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 814 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 12 </div>
+<div style=3D"display:none"> Gerrit-Owner: stipa &lt;lstipakov@...277...&gt=
+; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
+1...&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
+.1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: stipa &lt;lstipakov@...1663...=
+.&gt; </div>
+<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
+
+
+--9ph/Ygv+qQc=--
 
