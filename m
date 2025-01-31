@@ -1,15 +1,15 @@
 From: "stipa (Code Review)" <gerrit@...515...>
-Date: Fri, 31 Jan 2025 15:08:23 +0000
+Date: Fri, 31 Jan 2025 15:26:36 +0000
 In-Reply-To: <gerrit.1738070271000.I6c7e1cef637fe9fb3f3bc6ff4fb2c65599cd86fb@...2715...>
 References: <gerrit.1738070271000.I6c7e1cef637fe9fb3f3bc6ff4fb2c65599cd86fb@...2715...>
 Reply-To: lstipakov@...277..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net, frank@...2641...,
  gert@...1296...
-Message-ID: <136c14c4948f09d14ec88be69cc544c3387f1d6a-EmailReplacePatchSet-HTML@...2715...>
+Message-ID: <67724270f32f48ce768b8eedc9bb128b67bb34a7-EmailReplacePatchSet-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="s5Gn+lhdmc8="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="bFrFZKSqzyA="; charset=UTF-8
 Subject: [Openvpn-devel] [M] Change in openvpn[master]: route.c: improve
  get_default_gateway() logic on Windows
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -23,7 +23,7 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: plaisthos <arne-openvpn@...1227...>, cron2 <gert@...1296...>, flichtenheld <frank@...2641...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---s5Gn+lhdmc8=
+--bFrFZKSqzyA=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
@@ -35,7 +35,7 @@ I'd like you to reexamine a change. Please visit
 
     http://gerrit.openvpn.net/c/openvpn/+/879?usp=3Demail
 
-to look at the new patch set (#4).
+to look at the new patch set (#5).
 
 
 Change subject: route.c: improve get_default_gateway() logic on Windows
@@ -55,16 +55,16 @@ Signed-off-by: Lev Stipakov <lev@...515...>
 ---
 M src/openvpn/route.c
 M src/openvpn/route.h
-2 files changed, 101 insertions(+), 48 deletions(-)
+2 files changed, 101 insertions(+), 50 deletions(-)
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/79/879/4
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/79/879/5
 
 diff --git a/src/openvpn/route.c b/src/openvpn/route.c
-index dd37fb9..812b4be 100644
+index dd37fb9..d895e1c 100644
 --- a/src/openvpn/route.c
 +++ b/src/openvpn/route.c
-@@ -2732,40 +2732,107 @@
+@@ -2732,40 +2732,105 @@
      return ret;
  }
 =20
@@ -164,29 +164,29 @@ n_net_ctx_t *ctx)
 dr);
 +    rgi->adapter_index =3D best_route.InterfaceIndex;
 +
-+    if (rgi->gateway.addr =3D=3D 0)
++    if (rgi->gateway.addr =3D=3D INADDR_ANY)
 +    {
 +        rgi->flags |=3D RGI_ON_LINK;
 +    }
-+    else
++
++    /* get netmask and MAC address */
++    const IP_ADAPTER_INFO *adapters =3D get_adapter_info_list(&gc);
++    const IP_ADAPTER_INFO *ai =3D get_adapter(adapters, rgi->adapter_index=
+);
++    if (ai)
 +    {
-+        /* get netmask and MAC address */
-+        const IP_ADAPTER_INFO *adapters =3D get_adapter_info_list(&gc);
-+        const IP_ADAPTER_INFO *ai =3D get_adapter(adapters, rgi->adapter_i=
-ndex);
-+        if (ai)
++        memcpy(rgi->hwaddr, ai->Address, 6);
++        rgi->flags |=3D RGI_HWADDR_DEFINED;
++
++        /* get netmask for non-onlink routes */
++        in_addr_t nm =3D inet_addr(ai->IpAddressList.IpMask.String);
++        if (!(rgi->flags & RGI_ON_LINK) && (nm !=3D INADDR_NONE))
          {
 -            rgi->flags |=3D RGI_ADDR_DEFINED;
 -            a_index =3D adapter_index_of_ip(adapters, rgi->gateway.addr, N=
 ULL, &rgi->gateway.netmask);
 -            if (a_index !=3D TUN_ADAPTER_INDEX_INVALID)
-+            memcpy(rgi->hwaddr, ai->Address, 6);
-+            rgi->flags |=3D RGI_HWADDR_DEFINED;
-+
-+            /* get netmask */
-+            in_addr_t nm =3D inet_addr(ai->IpAddressList.IpMask.String);
-+            if (nm !=3D INADDR_NONE)
-             {
+-            {
 -                rgi->adapter_index =3D a_index;
 -                rgi->flags |=3D (RGI_IFACE_DEFINED|RGI_NETMASK_DEFINED);
 -                ai =3D get_adapter(adapters, a_index);
@@ -195,9 +195,9 @@ ULL, &rgi->gateway.netmask);
 -                    memcpy(rgi->hwaddr, ai->Address, 6);
 -                    rgi->flags |=3D RGI_HWADDR_DEFINED;
 -                }
-+                rgi->gateway.netmask =3D ntohl(nm);
-+                rgi->flags |=3D RGI_NETMASK_DEFINED;
-             }
+-            }
++            rgi->gateway.netmask =3D ntohl(nm);
++            rgi->flags |=3D RGI_NETMASK_DEFINED;
          }
      }
 
@@ -205,7 +205,7 @@ ULL, &rgi->gateway.netmask);
      gc_free(&gc);
  }
 
-@@ -2823,43 +2890,22 @@
+@@ -2823,43 +2888,22 @@
                           const struct in6_addr *dest, openvpn_net_ctx_t *c=
 tx)
  {
@@ -289,7 +289,7 @@ Gerrit-Project: openvpn
 Gerrit-Branch: master
 Gerrit-Change-Id: I6c7e1cef637fe9fb3f3bc6ff4fb2c65599cd86fb
 Gerrit-Change-Number: 879
-Gerrit-PatchSet: 4
+Gerrit-PatchSet: 5
 Gerrit-Owner: stipa <lstipakov@...277...>
 Gerrit-Reviewer: cron2 <gert@...1296...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
@@ -300,13 +300,13 @@ Gerrit-Attention: cron2 <gert@...1296...>
 Gerrit-Attention: flichtenheld <frank@...2641...>
 Gerrit-MessageType: newpatchset
 
---s5Gn+lhdmc8=
+--bFrFZKSqzyA=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <p> Attention is currently required from: cron2, flichtenheld, plaisthos. <=
 /p>
-<p>stipa <strong>uploaded patch set #4</strong> to this change.</p><p><a hr=
+<p>stipa <strong>uploaded patch set #5</strong> to this change.</p><p><a hr=
 ef=3D"http://gerrit.openvpn.net/c/openvpn/+/879?usp=3Demail">View Change</a=
 ></p><pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;=
 ">route.c: improve get_default_gateway() logic on Windows<br><br>When addin=
@@ -317,13 +317,13 @@ k for the best gateway to reach the host from<br>get_default_gateway_ipv6()=
  and generalize is for IPv4/6.<br><br>Change-Id: I6c7e1cef637fe9fb3f3bc6ff4=
 fb2c65599cd86fb<br>Signed-off-by: Lev Stipakov &lt;lev@...515...&gt;<br>---=
 <br>M src/openvpn/route.c<br>M src/openvpn/route.h<br>2 files changed, 101 =
-insertions(+), 48 deletions(-)<br><br></pre><pre style=3D"font-family: mono=
+insertions(+), 50 deletions(-)<br><br></pre><pre style=3D"font-family: mono=
 space,monospace; white-space: pre-wrap;">git pull ssh://gerrit.openvpn.net:=
-29418/openvpn refs/changes/79/879/4</pre><pre style=3D"font-family: monospa=
+29418/openvpn refs/changes/79/879/5</pre><pre style=3D"font-family: monospa=
 ce,monospace; white-space: pre-wrap;"><span>diff --git a/src/openvpn/route.=
-c b/src/openvpn/route.c</span><br><span>index dd37fb9..812b4be 100644</span=
+c b/src/openvpn/route.c</span><br><span>index dd37fb9..d895e1c 100644</span=
 ><br><span>--- a/src/openvpn/route.c</span><br><span>+++ b/src/openvpn/rout=
-e.c</span><br><span>@@ -2732,40 +2732,107 @@</span><br><span>     return re=
+e.c</span><br><span>@@ -2732,40 +2732,105 @@</span><br><span>     return re=
 t;</span><br><span> }</span><br><span> </span><br><span style=3D"color: hsl=
 (120, 100%, 40%);">+/**</span><br><span style=3D"color: hsl(120, 100%, 40%)=
 ;">+ * @brief Determines the best route to a destination for both IPv4 and =
@@ -424,126 +424,127 @@ rgi-&gt;gateway.addr =3D ntohl(best_route.NextHop.Ipv4.sin_addr.S_un.S_addr=
 );</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    rgi-&gt;adapt=
 er_index =3D best_route.InterfaceIndex;</span><br><span style=3D"color: hsl=
 (120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+    if (rgi-&gt;gateway.addr =3D=3D 0)</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+        rgi-&gt;flags |=3D RGI_ON_LINK;</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+    else</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        /* ge=
-t netmask and MAC address */</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+        const IP_ADAPTER_INFO *adapters =3D get_adapter_info_list(=
-&amp;gc);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        co=
-nst IP_ADAPTER_INFO *ai =3D get_adapter(adapters, rgi-&gt;adapter_index);</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+        if (ai)</span=
-><br><span>         {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
-            rgi-&gt;flags |=3D RGI_ADDR_DEFINED;</span><br><span style=3D"c=
-olor: hsl(0, 100%, 40%);">-            a_index =3D adapter_index_of_ip(adap=
-ters, rgi-&gt;gateway.addr, NULL, &amp;rgi-&gt;gateway.netmask);</span><br>=
-<span style=3D"color: hsl(0, 100%, 40%);">-            if (a_index !=3D TUN=
-_ADAPTER_INDEX_INVALID)</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+            memcpy(rgi-&gt;hwaddr, ai-&gt;Address, 6);</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+            rgi-&gt;flags |=3D RGI_H=
-WADDR_DEFINED;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+            /* get netma=
-sk */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            in=
-_addr_t nm =3D inet_addr(ai-&gt;IpAddressList.IpMask.String);</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+            if (nm !=3D INADDR_NO=
-NE)</span><br><span>             {</span><br><span style=3D"color: hsl(0, 1=
-00%, 40%);">-                rgi-&gt;adapter_index =3D a_index;</span><br><=
-span style=3D"color: hsl(0, 100%, 40%);">-                rgi-&gt;flags |=
-=3D (RGI_IFACE_DEFINED|RGI_NETMASK_DEFINED);</span><br><span style=3D"color=
-: hsl(0, 100%, 40%);">-                ai =3D get_adapter(adapters, a_index=
-);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-                if =
-(ai)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-                {=
-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-                    m=
-emcpy(rgi-&gt;hwaddr, ai-&gt;Address, 6);</span><br><span style=3D"color: h=
-sl(0, 100%, 40%);">-                    rgi-&gt;flags |=3D RGI_HWADDR_DEFIN=
-ED;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-                }<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+                rgi-=
-&gt;gateway.netmask =3D ntohl(nm);</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+                rgi-&gt;flags |=3D RGI_NETMASK_DEFINED;</spa=
-n><br><span>             }</span><br><span>         }</span><br><span>     =
-}</span><br><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-done:</span><br><span>     gc_free(&amp;gc);</span><br><span> }</span><br><=
-span> </span><br><span>@@ -2823,43 +2890,22 @@</span><br><span>            =
-              const struct in6_addr *dest, openvpn_net_ctx_t *ctx)</span><b=
-r><span> {</span><br><span>     struct gc_arena gc =3D gc_new();</span><br>=
-<span style=3D"color: hsl(0, 100%, 40%);">-    MIB_IPFORWARD_ROW2 BestRoute=
-;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    SOCKADDR_INET De=
-stinationAddress, BestSourceAddress;</span><br><span style=3D"color: hsl(0,=
- 100%, 40%);">-    DWORD BestIfIndex;</span><br><span style=3D"color: hsl(0=
-, 100%, 40%);">-    DWORD status;</span><br><span style=3D"color: hsl(0, 10=
-0%, 40%);">-    NET_LUID InterfaceLuid;</span><br><span style=3D"color: hsl=
-(0, 100%, 40%);">-</span><br><span>     CLEAR(*rgi6);</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-    CLEAR(InterfaceLuid);               /* =
-cleared =3D not used for lookup */</span><br><span style=3D"color: hsl(0, 1=
-00%, 40%);">-    CLEAR(DestinationAddress);</span><br><span> </span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+    SOCKADDR_INET DestinationAddr=
-ess;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    CLEAR(Desti=
-nationAddress);</span><br><span>     DestinationAddress.si_family =3D AF_IN=
-ET6;</span><br><span>     if (dest)</span><br><span>     {</span><br><span>=
-         DestinationAddress.Ipv6.sin6_addr =3D *dest;</span><br><span>     =
-}</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
-  status =3D GetBestInterfaceEx( (struct sockaddr *)&amp;DestinationAddress=
-, &amp;BestIfIndex );</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+    MIB_IPFORWARD_ROW2 BestRoute;</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+    CLEAR(BestRoute);</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+    DWORD status =3D get_best_route(&amp;gc, &amp;Destina=
-tionAddress, &amp;BestRoute);</span><br><span> </span><br><span>     if (st=
-atus !=3D NO_ERROR)</span><br><span>     {</span><br><span style=3D"color: =
-hsl(0, 100%, 40%);">-        msg(D_ROUTE, &quot;NOTE: GetBestInterfaceEx re=
-turned error: %s (code=3D%u)&quot;,</span><br><span style=3D"color: hsl(0, =
-100%, 40%);">-            strerror_win32(status, &amp;gc),</span><br><span =
-style=3D"color: hsl(0, 100%, 40%);">-            (unsigned int)status);</sp=
-an><br><span style=3D"color: hsl(0, 100%, 40%);">-        goto done;</span>=
-<br><span style=3D"color: hsl(0, 100%, 40%);">-    }</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100=
-%, 40%);">-    msg( D_ROUTE, &quot;GetBestInterfaceEx() returned if=3D%d&qu=
-ot;, (int) BestIfIndex );</span><br><span style=3D"color: hsl(0, 100%, 40%)=
-;">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    status =3D Ge=
-tBestRoute2( &amp;InterfaceLuid, BestIfIndex, NULL,</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-                            &amp;Destinatio=
-nAddress, 0,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-         =
-                   &amp;BestRoute, &amp;BestSourceAddress );</span><br><spa=
-n style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl=
-(0, 100%, 40%);">-    if (status !=3D NO_ERROR)</span><br><span style=3D"co=
-lor: hsl(0, 100%, 40%);">-    {</span><br><span style=3D"color: hsl(0, 100%=
-, 40%);">-        msg(D_ROUTE, &quot;NOTE: GetIpForwardEntry2 returned erro=
-r: %s (code=3D%u)&quot;,</span><br><span style=3D"color: hsl(0, 100%, 40%);=
-">-            strerror_win32(status, &amp;gc),</span><br><span style=3D"co=
-lor: hsl(0, 100%, 40%);">-            (unsigned int)status);</span><br><spa=
-n>         goto done;</span><br><span>     }</span><br><span> </span><br><s=
-pan>diff --git a/src/openvpn/route.h b/src/openvpn/route.h</span><br><span>=
-index 0bbedbb..98ea79e 100644</span><br><span>--- a/src/openvpn/route.h</sp=
-an><br><span>+++ b/src/openvpn/route.h</span><br><span>@@ -334,6 +334,13 @@=
-</span><br><span> </span><br><span> bool is_special_addr(const char *addr_s=
-tr);</span><br><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+/**</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @brief Ret=
-rieves the best gateway for a given destination based on the routing table.=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+ * @param rgi  Pointer to a struct t=
-o store the gateway information.</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+ * @param dest Destination IP address in host byte order.</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @param ctx  Pointer t=
-o a platform-specific network context struct.</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+ */</span><br><span> void get_default_gateway(str=
-uct route_gateway_info *rgi,</span><br><span>                          in_a=
-ddr_t dest,</span><br><span>                          openvpn_net_ctx_t *ct=
-x);</span><br><span></span><br></pre><p>To view, visit <a href=3D"http://ge=
-rrit.openvpn.net/c/openvpn/+/879?usp=3Demail">change 879</a>. To unsubscrib=
-e, or for help writing mail filters, visit <a href=3D"http://gerrit.openvpn=
-.net/settings">settings</a>.</p><div itemscope itemtype=3D"http://schema.or=
-g/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://schem=
-a.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/=
-c/openvpn/+/879?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Chang=
-e"/></div></div>
++    if (rgi-&gt;gateway.addr =3D=3D INADDR_ANY)</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+        rgi-&gt;flags |=3D RGI_ON_LINK;</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+    /* get netmask and MAC address */</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+    const IP_ADAPTER_INFO *adapters =3D get_adapter_inf=
+o_list(&amp;gc);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+ const IP_ADAPTER_INFO *ai =3D get_adapter(adapters, rgi-&gt;adapter_index)=
+;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (ai)</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+        memcpy(rgi-&gt;hwaddr, ai-&gt;Ad=
+dress, 6);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        r=
+gi-&gt;flags |=3D RGI_HWADDR_DEFINED;</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+       /* get netmask for non-onlink routes */</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+        in_addr_t nm =3D inet_addr(ai-&gt;IpAddr=
+essList.IpMask.String);</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+        if (!(rgi-&gt;flags &amp; RGI_ON_LINK) &amp;&amp; (nm !=3D INAD=
+DR_NONE))</span><br><span>         {</span><br><span style=3D"color: hsl(0,=
+ 100%, 40%);">-            rgi-&gt;flags |=3D RGI_ADDR_DEFINED;</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-            a_index =3D adapter_i=
+ndex_of_ip(adapters, rgi-&gt;gateway.addr, NULL, &amp;rgi-&gt;gateway.netma=
+sk);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            if (a=
+_index !=3D TUN_ADAPTER_INDEX_INVALID)</span><br><span style=3D"color: hsl(=
+0, 100%, 40%);">-            {</span><br><span style=3D"color: hsl(0, 100%,=
+ 40%);">-                rgi-&gt;adapter_index =3D a_index;</span><br><span=
+ style=3D"color: hsl(0, 100%, 40%);">-                rgi-&gt;flags |=3D (R=
+GI_IFACE_DEFINED|RGI_NETMASK_DEFINED);</span><br><span style=3D"color: hsl(=
+0, 100%, 40%);">-                ai =3D get_adapter(adapters, a_index);</sp=
+an><br><span style=3D"color: hsl(0, 100%, 40%);">-                if (ai)</=
+span><br><span style=3D"color: hsl(0, 100%, 40%);">-                {</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-                    memcpy(=
+rgi-&gt;hwaddr, ai-&gt;Address, 6);</span><br><span style=3D"color: hsl(0, =
+100%, 40%);">-                    rgi-&gt;flags |=3D RGI_HWADDR_DEFINED;</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-                }</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-            }</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+            rgi-&gt;gateway.netmas=
+k =3D ntohl(nm);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+         rgi-&gt;flags |=3D RGI_NETMASK_DEFINED;</span><br><span>         }=
+</span><br><span>     }</span><br><span> </span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+done:</span><br><span>     gc_free(&amp;gc);</span><b=
+r><span> }</span><br><span> </span><br><span>@@ -2823,43 +2888,22 @@</span>=
+<br><span>                          const struct in6_addr *dest, openvpn_ne=
+t_ctx_t *ctx)</span><br><span> {</span><br><span>     struct gc_arena gc =
+=3D gc_new();</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    MIB_=
+IPFORWARD_ROW2 BestRoute;</span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">-    SOCKADDR_INET DestinationAddress, BestSourceAddress;</span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">-    DWORD BestIfIndex;</span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-    DWORD status;</span><br><span s=
+tyle=3D"color: hsl(0, 100%, 40%);">-    NET_LUID InterfaceLuid;</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span>     CLEAR(*rgi6=
+);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    CLEAR(Interface=
+Luid);               /* cleared =3D not used for lookup */</span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">-    CLEAR(DestinationAddress);</span><=
+br><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+    SOCKA=
+DDR_INET DestinationAddress;</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+    CLEAR(DestinationAddress);</span><br><span>     DestinationAdd=
+ress.si_family =3D AF_INET6;</span><br><span>     if (dest)</span><br><span=
+>     {</span><br><span>         DestinationAddress.Ipv6.sin6_addr =3D *des=
+t;</span><br><span>     }</span><br><span> </span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-    status =3D GetBestInterfaceEx( (struct sockaddr *=
+)&amp;DestinationAddress, &amp;BestIfIndex );</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+    MIB_IPFORWARD_ROW2 BestRoute;</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+    CLEAR(BestRoute);</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+    DWORD status =3D get_best_rou=
+te(&amp;gc, &amp;DestinationAddress, &amp;BestRoute);</span><br><span> </sp=
+an><br><span>     if (status !=3D NO_ERROR)</span><br><span>     {</span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-        msg(D_ROUTE, &quot;NOT=
+E: GetBestInterfaceEx returned error: %s (code=3D%u)&quot;,</span><br><span=
+ style=3D"color: hsl(0, 100%, 40%);">-            strerror_win32(status, &a=
+mp;gc),</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            (u=
+nsigned int)status);</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
+       goto done;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
+}</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-    msg( D_ROUTE, &quot;GetBestInterfaceE=
+x() returned if=3D%d&quot;, (int) BestIfIndex );</span><br><span style=3D"c=
+olor: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">-    status =3D GetBestRoute2( &amp;InterfaceLuid, BestIfIndex, NULL,<=
+/span><br><span style=3D"color: hsl(0, 100%, 40%);">-                      =
+      &amp;DestinationAddress, 0,</span><br><span style=3D"color: hsl(0, 10=
+0%, 40%);">-                            &amp;BestRoute, &amp;BestSourceAddr=
+ess );</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">-    if (status !=3D NO_ERROR)</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-    {</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-        msg(D_ROUTE, &quot;NOTE: GetIpForwa=
+rdEntry2 returned error: %s (code=3D%u)&quot;,</span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-            strerror_win32(status, &amp;gc),</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-            (unsigned int)s=
+tatus);</span><br><span>         goto done;</span><br><span>     }</span><b=
+r><span> </span><br><span>diff --git a/src/openvpn/route.h b/src/openvpn/ro=
+ute.h</span><br><span>index 0bbedbb..98ea79e 100644</span><br><span>--- a/s=
+rc/openvpn/route.h</span><br><span>+++ b/src/openvpn/route.h</span><br><spa=
+n>@@ -334,6 +334,13 @@</span><br><span> </span><br><span> bool is_special_a=
+ddr(const char *addr_str);</span><br><span> </span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+/**</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+ * @brief Retrieves the best gateway for a given destination based=
+ on the routing table.</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+ *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @param rgi =
+ Pointer to a struct to store the gateway information.</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+ * @param dest Destination IP address in=
+ host byte order.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *=
+ @param ctx  Pointer to a platform-specific network context struct.</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+ */</span><br><span> void g=
+et_default_gateway(struct route_gateway_info *rgi,</span><br><span>        =
+                  in_addr_t dest,</span><br><span>                         =
+ openvpn_net_ctx_t *ctx);</span><br><span></span><br></pre><p>To view, visi=
+t <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/879?usp=3Demail">change =
+879</a>. To unsubscribe, or for help writing mail filters, visit <a href=3D=
+"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope itemty=
+pe=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"action" it=
+emtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http=
+://gerrit.openvpn.net/c/openvpn/+/879?usp=3Demail"/><meta itemprop=3D"name"=
+ content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
 <div style=3D"display:none"> Gerrit-Change-Id: I6c7e1cef637fe9fb3f3bc6ff4fb=
 2c65599cd86fb </div>
 <div style=3D"display:none"> Gerrit-Change-Number: 879 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 4 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 5 </div>
 <div style=3D"display:none"> Gerrit-Owner: stipa &lt;lstipakov@...277...&gt=
 ; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
@@ -563,5 +564,5 @@ ts.sourceforge.net&gt; </div>
 <div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
 
 
---s5Gn+lhdmc8=--
+--bFrFZKSqzyA=--
 
