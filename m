@@ -1,10 +1,8 @@
-From: Shubham Mittal <smittals@...2857...>
-Date: Fri, 31 Jan 2025 12:57:27 -0800
-Message-ID: <20250131205727.60957-1-smittals@...2857...>
-In-Reply-To: <20250127235413.1925-1-smittals@...2857...>
-References: <20250127235413.1925-1-smittals@...2857...>
+From: Qingfang Deng <dqfext@...277...>
+Date: Sat,  1 Feb 2025 14:24:37 +0800
+Message-ID: <20250201062437.4059652-1-dqfext@...277...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] Adding AWS-LC to the OpenVPN CI
+Subject: [Openvpn-devel] [PATCH v2] dco: fix source IP selection
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,85 +15,72 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-URL: https://github.com/OpenVPN/openvpn/pull/673
-Acked-by: Arne Schwabe <arne@...1227...>
-Signed-off-by: Shubham Mittal <smittals@...2857...>
----
- .github/workflows/build.yaml | 62 ++++++++++++++++++++++++++++++++++++
- 1 file changed, 62 insertions(+)
+When multihome option is enabled, OpenVPN passes ipi_addr to DCO, which
+is always 0.0.0.0. It should use ipi_spec_dst instead.
+When local option is present, OpenVPN does not pass it to DCO.
+As a result, Linux may pick a different IP as the source IP, breaking
+the connection.
 
-diff --git a/.github/workflows/build.yaml b/.github/workflows/build.yaml
-index 90d52023..88ec513b 100644
---- a/.github/workflows/build.yaml
-+++ b/.github/workflows/build.yaml
-@@ -424,3 +424,65 @@ jobs:
-         run: echo 'RUN_SUDO="sudo -E"' >tests/t_server_null.rc
-       - name: make check
-         run: make -j3 check VERBOSE=1
+Signed-off-by: Qingfang Deng <dqfext@...277...>
+---
+v2: fix code style reported by CI
+Discussions: https://github.com/OpenVPN/openvpn/pull/668
+
+ src/openvpn/dco.c | 14 ++++++++++++--
+ 1 file changed, 12 insertions(+), 2 deletions(-)
+
+diff --git a/src/openvpn/dco.c b/src/openvpn/dco.c
+index b5a21369..eef49ade 100644
+--- a/src/openvpn/dco.c
++++ b/src/openvpn/dco.c
+@@ -493,6 +493,7 @@ dco_p2p_add_new_peer(struct context *c)
+     ASSERT(sock->info.connection_established);
+ 
+     struct sockaddr *remoteaddr = &sock->info.lsa->actual.dest.addr.sa;
++    struct sockaddr *localaddr = NULL;
+     struct tls_multi *multi = c->c2.tls_multi;
+ #ifdef TARGET_FREEBSD
+     /* In Linux in P2P mode the kernel automatically removes an existing peer
+@@ -503,8 +504,12 @@ dco_p2p_add_new_peer(struct context *c)
+         c->c2.tls_multi->dco_peer_id = -1;
+     }
+ #endif
++    if (sock->bind_local && sock->info.lsa->bind_local) {
++        localaddr = sock->info.lsa->bind_local->ai_addr;
++    }
 +
-+  aws-lc:
-+    strategy:
-+      fail-fast: false
-+      matrix:
-+        os: [ubuntu-24.04]
-+        ssllib: [ awslc ]
-+        build: [ normal, asan ]
-+        include:
-+          - build: asan
-+            cflags: "-fsanitize=address -fno-sanitize-recover=all  -fno-optimize-sibling-calls -fsanitize-address-use-after-scope -fno-omit-frame-pointer -g -O1"
-+            ldflags: -fsanitize=address -fno-sanitize-recover=all
-+            cc: clang
-+            cxx: clang++
-+          - build: normal
-+            cflags: "-O2 -g"
-+            ldflags: ""
-+            cc: gcc
-+            cxx: c++
-+
-+    name: "${{matrix.cc}} ${{matrix.build}} - ${{matrix.os}} - ${{matrix.ssllib}}"
-+    runs-on: ${{matrix.os}}
-+    env:
-+      CFLAGS: ${{ matrix.cflags }}
-+      LDFLAGS: ${{ matrix.ldflags }}
-+      CC: ${{matrix.cc}}
-+      CXX: ${{matrix.cxx}}
-+      UBSAN_OPTIONS: print_stacktrace=1
-+      AWS_LC_INSTALL: ${{ github.workspace }}/aws-lc/aws-lc-install
-+
-+    steps:
-+      - name: Install dependencies
-+        run: sudo apt update && sudo apt install -y cmake gcc ninja-build golang make liblzo2-dev libpam0g-dev liblz4-dev linux-libc-dev man2html clang libcmocka-dev python3-docutils python3-jinja2 python3-jsonschema libtool automake autoconf pkg-config libcap-ng-dev libnl-genl-3-dev
-+      - name: "AWS-LC: checkout"
-+        uses: actions/checkout@...2844... # v4.2.2
-+        with:
-+          path: aws-lc
-+          repository: aws/aws-lc
-+          ref: v1.42.0
-+      - name: "AWS-LC: build"
-+        run: |
-+          mkdir build
-+          cd build
-+          cmake -GNinja -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX="${{ env.AWS_LC_INSTALL }}" -DBUILD_SHARED_LIBS=1 ../
-+          ninja install
-+        working-directory: aws-lc
-+      - name: Checkout OpenVPN
-+        uses: actions/checkout@...2844... # v4.2.2
-+      - name: autoconf
-+        run: autoreconf -fvi
-+      - name: configure with AWS-LC
-+        run: |
-+          OPENSSL_CFLAGS="-I/${{ env.AWS_LC_INSTALL }}/include" \
-+          OPENSSL_LIBS="-L/${{ env.AWS_LC_INSTALL }}/lib -lssl -lcrypto" \
-+          LDFLAGS="-Wl,-rpath=/${{ env.AWS_LC_INSTALL }}/lib" \
-+          ./configure --with-crypto-library=openssl
-+      - name: make all
-+        run: make -j3
-+      - name: configure checks
-+        run: echo 'RUN_SUDO="sudo -E"' >tests/t_server_null.rc
-+      - name: make check
-+        run: make -j3 check VERBOSE=1
-\ No newline at end of file
+     int ret = dco_new_peer(&c->c1.tuntap->dco, multi->peer_id,
+-                           c->c2.link_sockets[0]->sd, NULL, remoteaddr, NULL, NULL);
++                           c->c2.link_sockets[0]->sd, localaddr, remoteaddr, NULL, NULL);
+     if (ret < 0)
+     {
+         return ret;
+@@ -550,7 +555,7 @@ dco_multi_get_localaddr(struct multi_context *m, struct multi_instance *mi,
+         {
+             struct sockaddr_in *sock_in4 = (struct sockaddr_in *)local;
+ #if defined(HAVE_IN_PKTINFO) && defined(HAVE_IPI_SPEC_DST)
+-            sock_in4->sin_addr = actual->pi.in4.ipi_addr;
++            sock_in4->sin_addr = actual->pi.in4.ipi_spec_dst;
+ #elif defined(IP_RECVDSTADDR)
+             sock_in4->sin_addr = actual->pi.in4;
+ #else
+@@ -616,10 +621,15 @@ dco_multi_add_new_peer(struct multi_context *m, struct multi_instance *mi)
+         vpn_addr6 = &c->c2.push_ifconfig_ipv6_local;
+     }
+ 
++    struct link_socket *ls = c->c2.link_sockets[0];
+     if (dco_multi_get_localaddr(m, mi, &local))
+     {
+         localaddr = (struct sockaddr *)&local;
+     }
++    else if (ls->bind_local && ls->info.lsa->bind_local)
++    {
++        localaddr = ls->info.lsa->bind_local->ai_addr;
++    }
+ 
+     int ret = dco_new_peer(&c->c1.tuntap->dco, peer_id, sd, localaddr,
+                            remoteaddr, vpn_addr4, vpn_addr6);
 -- 
-2.39.5 (Apple Git-154)
+2.43.0
 
 
