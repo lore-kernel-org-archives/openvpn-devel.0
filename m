@@ -1,13 +1,17 @@
-Date: Sat, 1 Feb 2025 08:54:39 +0100
-From: Gert Doering <gert@...1296...>
-Message-ID: <Z53TP7qTBJSc8tca@...1296...>
-References: <20250201062437.4059652-1-dqfext@...277...>
+From: "cron2 (Code Review)" <gerrit@...515...>
+Date: Sat, 1 Feb 2025 12:10:21 +0000
+In-Reply-To: <gerrit.1736759998000.I1cac0f036504c87205a3c97589a94a662cf79b99@...2715...>
+References: <gerrit.1736759998000.I1cac0f036504c87205a3c97589a94a662cf79b99@...2715...>
+Reply-To: gert@...1296..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net, frank@...2641...,
+ lstipakov@...277..., a@...2181...
+Message-ID: <6b2a06a95b6c3492d515229f9bb235025fe91ade-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="9FhD9zER+AlqRpT/"
+Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-In-Reply-To: <20250201062437.4059652-1-dqfext@...277...>
-Subject: Re: [Openvpn-devel] [PATCH v2] dco: fix source IP selection
+Content-Type: multipart/alternative; boundary="wDzEyD2eH0Y="; charset=UTF-8
+Subject: [Openvpn-devel] [M] Change in openvpn[master]: multi.c: add iroutes
+ after dco peer is added
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,93 +20,100 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Qingfang Deng <dqfext@...277...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: stipa <lstipakov@...277...>
+Cc: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---9FhD9zER+AlqRpT/
-Content-Type: text/plain; charset="us-ascii"
+--wDzEyD2eH0Y=
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
 
-Hi,
+Attention is currently required from: flichtenheld, ordex, plaisthos, stipa.
 
-On Sat, Feb 01, 2025 at 02:24:37PM +0800, Qingfang Deng wrote:
->  #endif
-> +    if (sock->bind_local && sock->info.lsa->bind_local) {
-> +        localaddr =3D sock->info.lsa->bind_local->ai_addr;
-> +    }
-> +
+cron2 has posted comments on this change. ( http://gerrit.openvpn.net/c/ope=
+nvpn/+/856?usp=3Demail )
 
-This is still not correct style - the opening "{" needs to go on its own
-line.  Also see below on whether this is necessary at all.
+Change subject: multi.c: add iroutes after dco peer is added
+......................................................................
 
->      int ret =3D dco_new_peer(&c->c1.tuntap->dco, multi->peer_id,
-> -                           c->c2.link_sockets[0]->sd, NULL, remoteaddr, =
-NULL, NULL);
-> +                           c->c2.link_sockets[0]->sd, localaddr, remotea=
-ddr, NULL, NULL);
->      if (ret < 0)
->      {
->          return ret;
-> @@ -550,7 +555,7 @@ dco_multi_get_localaddr(struct multi_context *m, stru=
-ct multi_instance *mi,
->          {
->              struct sockaddr_in *sock_in4 =3D (struct sockaddr_in *)local;
->  #if defined(HAVE_IN_PKTINFO) && defined(HAVE_IPI_SPEC_DST)
-> -            sock_in4->sin_addr =3D actual->pi.in4.ipi_addr;
-> +            sock_in4->sin_addr =3D actual->pi.in4.ipi_spec_dst;
->  #elif defined(IP_RECVDSTADDR)
->              sock_in4->sin_addr =3D actual->pi.in4;
 
-Well spotted.
+Patch Set 7: Code-Review+2
 
->  #else
-> @@ -616,10 +621,15 @@ dco_multi_add_new_peer(struct multi_context *m, str=
-uct multi_instance *mi)
->          vpn_addr6 =3D &c->c2.push_ifconfig_ipv6_local;
->      }
->=20=20
-> +    struct link_socket *ls =3D c->c2.link_sockets[0];
->      if (dco_multi_get_localaddr(m, mi, &local))
->      {
->          localaddr =3D (struct sockaddr *)&local;
->      }
-> +    else if (ls->bind_local && ls->info.lsa->bind_local)
-> +    {
-> +        localaddr =3D ls->info.lsa->bind_local->ai_addr;
-> +    }
 
-Not sure about that.  If the socket is bound, the kernel knows about
-the binding (because we pass the socket to the kernel).  You're sure this
-is needed?
+--
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/856?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings
 
-gert
---=20
-"If was one thing all people took for granted, was conviction that if you=20
- feed honest figures into a computer, honest figures come out. Never doubte=
-d=20
- it myself till I met a computer with a sense of humor."
-                             Robert A. Heinlein, The Moon is a Harsh Mistre=
-ss
+Gerrit-Project: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: I1cac0f036504c87205a3c97589a94a662cf79b99
+Gerrit-Change-Number: 856
+Gerrit-PatchSet: 7
+Gerrit-Owner: stipa <lstipakov@...277...>
+Gerrit-Reviewer: cron2 <gert@...1296...>
+Gerrit-Reviewer: flichtenheld <frank@...2641...>
+Gerrit-Reviewer: ordex <a@...2181...>
+Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Attention: flichtenheld <frank@...2641...>
+Gerrit-Attention: ordex <a@...2181...>
+Gerrit-Attention: stipa <lstipakov@...277...>
+Gerrit-Comment-Date: Sat, 01 Feb 2025 12:10:21 +0000
+Gerrit-HasComments: No
+Gerrit-Has-Labels: Yes
+Gerrit-MessageType: comment
 
-Gert Doering - Munich, Germany                             gert@...1296...
+--wDzEyD2eH0Y=
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
---9FhD9zER+AlqRpT/
-Content-Type: application/pgp-signature; name="signature.asc"
+<p> Attention is currently required from: flichtenheld, ordex, plaisthos, s=
+tipa. </p>
+<p>Patch set 7:<span style=3D"border-radius: 3px; display: inline-block; ma=
+rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/856?usp=3Demail">Vi=
+ew Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To vie=
+w, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/856?usp=3Demail">=
+change 856</a>. To unsubscribe, or for help writing mail filters, visit <a =
+href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope=
+ itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"act=
+ion" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=
+=3D"http://gerrit.openvpn.net/c/openvpn/+/856?usp=3Demail"/><meta itemprop=
+=3D"name" content=3D"View Change"/></div></div>
 
------BEGIN PGP SIGNATURE-----
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I1cac0f036504c87205a3c97589a=
+94a662cf79b99 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 856 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 7 </div>
+<div style=3D"display:none"> Gerrit-Owner: stipa &lt;lstipakov@...277...&gt=
+; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
+ </div>
+<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
+1...&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: ordex &lt;a@...2181...&gt; </=
+div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
+.1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
+41...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: ordex &lt;a@...2181...&gt; <=
+/div>
+<div style=3D"display:none"> Gerrit-Attention: stipa &lt;lstipakov@...1663...=
+.&gt; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Sat, 01 Feb 2025 12:10:21=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: No </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
 
-iQGcBAEBAgAGBQJnndM/AAoJEB2Cnv7KVigS0uQL/A+Gv7DENGlh5pxUObWQPNI0
-61KfhlHmIjnWUNsD7pm4KQLm9JZTp3MTvghS+2VYt9Jl/97qEbdqnnL71brPiilU
-VUYaAO/c5XlamxrgXTrV+oIJ0YqN53fR4Yhr7/DOZbkYvQ5Rs1HGYjtn/hOW8m1q
-6gHATLx9t4/IyTqkIzx41QS7DurPP0g1HMyIh+r88gnWSmxUhYJ0fY7n/YGnIus4
-r6CrQIoTkA/onM75bENT2OWKgB/K7ctaHx9uGnIdpYfNX7SoeJB40aqf0SXrdS9q
-TSjMcrlEuhouGthIVArLrJgH7wdtnveuyXjtPVijs47S//EmPPNAN1sxwT+CUbb2
-R5Lh0E6V+pEgPhXDIC/4E0A5cWA1/bbCDZx4zfOTo7xVLJRhSKBp129AaTL7XuV3
-y+G4x522gOwXN6D93PXVpNMjBVJdVw+9HQSiuKl3fyGxUfEhVjW0Jjl7eOr+ijrD
-TOvyMnq8600qXmoL79jTbp4dDKO/Ej/lJRmVVtgqIA==
-=1SBR
------END PGP SIGNATURE-----
 
---9FhD9zER+AlqRpT/--
+--wDzEyD2eH0Y=--
 
