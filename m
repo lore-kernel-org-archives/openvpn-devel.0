@@ -1,9 +1,16 @@
-Date: Mon, 3 Feb 2025 13:48:42 +0100 (CET)
-Message-Id: <202502031248.513CmgJg088015@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <20250131205727.60957-1-smittals@...2857...>
-References: <20250131205727.60957-1-smittals@...2857...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Adding AWS-LC to the OpenVPN CI
+From: "cron2 (Code Review)" <gerrit@...515...>
+Date: Mon, 3 Feb 2025 15:40:48 +0000
+In-Reply-To: <gerrit.1731290343000.I00751c42cb04e30205ba8e6584530831e0d143c5@...2715...>
+References: <gerrit.1731290343000.I00751c42cb04e30205ba8e6584530831e0d143c5@...2715...>
+Reply-To: gert@...1296..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net, frank@...2641...
+Message-ID: <313dbfac16e96bcdf856bb820872ece5b775bc6f-EmailReviewComments-HTML@...2715...>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="yKE8KUF9XEo="; charset=UTF-8
+Subject: [Openvpn-devel] [L] Change in openvpn[master]: Implement epoch key
+ data format
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,44 +19,117 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: Shubham Mittal <smittals@...2857...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: plaisthos <arne-openvpn@...1227...>
+Cc: flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-Your patch has been applied to the master branch.
+--yKE8KUF9XEo=
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-For future submissions, please take a few things into account to make
-our lives easier
+Attention is currently required from: flichtenheld, plaisthos.
 
-  - please do not include the "Acked-By:" lines - this is added by me,
-    after seeing a formal ACK on the mailing list or in Gerrit.
-    Github PR reviews are not considered "formal ACK" for OpenVPN main
-    (transparency and archiving requirements), as of today.
+cron2 has posted comments on this change. ( http://gerrit.openvpn.net/c/ope=
+nvpn/+/806?usp=3Demail )
 
-  - if you send a new version of the patch, please include "-v2", "-v3"
-    etc. in the git-send-email (or git-format-patch) command, so it's
-    clear which e-mail is which patch version, and also to which version
-    a comment on the list applies.
+Change subject: Implement epoch key data format
+......................................................................
 
-thanks :-)
 
-commit 060ead650450553214dad3e9856c500deb672bba
-Author: Shubham Mittal
-Date:   Fri Jan 31 12:57:27 2025 -0800
+Patch Set 16: Code-Review-2
 
-     Adding AWS-LC to the OpenVPN CI
+(1 comment)
 
-     Signed-off-by: Shubham Mittal <smittals@...2857...>
-     Acked-by: Arne Schwabe <arne@...1227...>
-     Message-Id: <20250131205727.60957-1-smittals@...2857...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg30776.html
-     Signed-off-by: Gert Doering <gert@...1296...>
+Patchset:
+
+PS16:
+This ASSERT()s when an epoch-enabled client connects to an epoch-enabled se=
+rver, but presents non-AEAD ciphers
+
+```
+peer info: IV_CIPHERS=3Dnone
+peer info: IV_PROTO=3D3998
+...
+AEAD cipher (currently [null-cipher]) required for epoch data format.
+Exiting due to fatal error
+```
+
+(BF-CBC works just as well)
+
 
 
 --
-kind regards,
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/806?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings
 
-Gert Doering
+Gerrit-Project: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: I00751c42cb04e30205ba8e6584530831e0d143c5
+Gerrit-Change-Number: 806
+Gerrit-PatchSet: 16
+Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
+Gerrit-Reviewer: cron2 <gert@...1296...>
+Gerrit-Reviewer: flichtenheld <frank@...2641...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Attention: flichtenheld <frank@...2641...>
+Gerrit-Comment-Date: Mon, 03 Feb 2025 15:40:48 +0000
+Gerrit-HasComments: Yes
+Gerrit-Has-Labels: Yes
+Gerrit-MessageType: comment
 
+--yKE8KUF9XEo=
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<p> Attention is currently required from: flichtenheld, plaisthos. </p>
+<p>Patch set 16:<span style=3D"border-radius: 3px; display: inline-block; m=
+argin: 0 2px; padding: 4px;background-color: #ffd4d4;">Code-Review -2</span=
+></p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/806?usp=3Demail">V=
+iew Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: =
+0;"><li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-=
+style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p =
+style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvp=
+n/+/806?tab=3Dcomments">Patch Set #16:</a> </p><p style=3D"white-space: pre=
+-wrap; word-wrap: break-word;">This ASSERT()s when an epoch-enabled client =
+connects to an epoch-enabled server, but presents non-AEAD ciphers</p><p st=
+yle=3D"white-space: pre-wrap; word-wrap: break-word;">```<br>peer info: IV_=
+CIPHERS=3Dnone<br>peer info: IV_PROTO=3D3998<br>...<br>AEAD cipher (current=
+ly [null-cipher]) required for epoch data format.<br>Exiting due to fatal e=
+rror<br>```</p><p style=3D"white-space: pre-wrap; word-wrap: break-word;">(=
+BF-CBC works just as well)</p></li></ul></li></ul><p>To view, visit <a href=
+=3D"http://gerrit.openvpn.net/c/openvpn/+/806?usp=3Demail">change 806</a>. =
+To unsubscribe, or for help writing mail filters, visit <a href=3D"http://g=
+errit.openvpn.net/settings">settings</a>.</p><div itemscope itemtype=3D"htt=
+p://schema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D=
+"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit=
+.openvpn.net/c/openvpn/+/806?usp=3Demail"/><meta itemprop=3D"name" content=
+=3D"View Change"/></div></div>
+
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I00751c42cb04e30205ba8e65845=
+30831e0d143c5 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 806 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 16 </div>
+<div style=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@...1711...=
+27...&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
+ </div>
+<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
+1...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
+41...&gt; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Mon, 03 Feb 2025 15:40:48=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
+
+
+--yKE8KUF9XEo=--
 
