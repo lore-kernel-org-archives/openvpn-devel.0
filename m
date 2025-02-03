@@ -1,12 +1,9 @@
-Message-ID: <ebdd1f4b-17fc-4a3e-aabf-4ecd661fb749@...1227...>
-Date: Mon, 3 Feb 2025 13:03:45 +0100
-MIME-Version: 1.0
-References: <20250127235413.1925-1-smittals@...2857...>
- <20250131205727.60957-1-smittals@...2857...>
-Content-Language: en-GB
-From: Arne Schwabe <arne@...1227...>
+Date: Mon, 3 Feb 2025 13:48:42 +0100 (CET)
+Message-Id: <202502031248.513CmgJg088015@...2054...>
+From: Gert Doering <gert@...1296...>
 In-Reply-To: <20250131205727.60957-1-smittals@...2857...>
-Subject: Re: [Openvpn-devel] [PATCH] Adding AWS-LC to the OpenVPN CI
+References: <20250131205727.60957-1-smittals@...2857...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Adding AWS-LC to the OpenVPN CI
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,16 +12,44 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-To: Shubham Mittal <smittals@...2857...>, openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: Shubham Mittal <smittals@...2857...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-Am 31.01.25 um 21:57 schrieb Shubham Mittal:
-> URL: https://github.com/OpenVPN/openvpn/pull/673
-> Acked-by: Arne Schwabe <arne@...1227...>
-> Signed-off-by: Shubham Mittal <smittals@...2857...>
+Your patch has been applied to the master branch.
 
-Looks good now.
+For future submissions, please take a few things into account to make
+our lives easier
 
-Acked-by: Arne Schwabe <arne@...1227...>
+  - please do not include the "Acked-By:" lines - this is added by me,
+    after seeing a formal ACK on the mailing list or in Gerrit.
+    Github PR reviews are not considered "formal ACK" for OpenVPN main
+    (transparency and archiving requirements), as of today.
+
+  - if you send a new version of the patch, please include "-v2", "-v3"
+    etc. in the git-send-email (or git-format-patch) command, so it's
+    clear which e-mail is which patch version, and also to which version
+    a comment on the list applies.
+
+thanks :-)
+
+commit 060ead650450553214dad3e9856c500deb672bba
+Author: Shubham Mittal
+Date:   Fri Jan 31 12:57:27 2025 -0800
+
+     Adding AWS-LC to the OpenVPN CI
+
+     Signed-off-by: Shubham Mittal <smittals@...2857...>
+     Acked-by: Arne Schwabe <arne@...1227...>
+     Message-Id: <20250131205727.60957-1-smittals@...2857...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg30776.html
+     Signed-off-by: Gert Doering <gert@...1296...>
+
+
+--
+kind regards,
+
+Gert Doering
+
 
