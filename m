@@ -1,16 +1,17 @@
 From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Tue, 4 Feb 2025 10:57:01 +0000
-In-Reply-To: <gerrit.1731290343000.I00751c42cb04e30205ba8e6584530831e0d143c5@...2715...>
-References: <gerrit.1731290343000.I00751c42cb04e30205ba8e6584530831e0d143c5@...2715...>
+Date: Tue, 4 Feb 2025 20:11:19 +0000
+In-Reply-To: <gerrit.1732212459000.Ia267276d61fa1425ba205f54ba6eb89021f32dba@...2715...>
+References: <gerrit.1732212459000.Ia267276d61fa1425ba205f54ba6eb89021f32dba@...2715...>
 Reply-To: gert@...1296..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <113338a4918fca394476f87b368ac42693244df4-EmailReviewComments-HTML@...2715...>
+ openvpn-devel@lists.sourceforge.net, frank@...2641...,
+ lstipakov@...277...
+Message-ID: <5d6cd3937ff01e52987661ccd8b90f061435c3ca-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="GPxccAUfdqc="; charset=UTF-8
-Subject: [Openvpn-devel] [L] Change in openvpn[master]: Implement epoch key
- data format
+Content-Type: multipart/alternative; boundary="iZnzErv1+i8="; charset=UTF-8
+Subject: [Openvpn-devel] [L] Change in openvpn[master]: dco-win: multipeer
+ support
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,87 +20,123 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: plaisthos <arne-openvpn@...1227...>
-Cc: flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: stipa <lstipakov@...277...>
+Cc: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---GPxccAUfdqc=
+--iZnzErv1+i8=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: flichtenheld, plaisthos.
+Attention is currently required from: flichtenheld, plaisthos, stipa.
 
 cron2 has posted comments on this change. ( http://gerrit.openvpn.net/c/ope=
-nvpn/+/806?usp=3Demail )
+nvpn/+/815?usp=3Demail )
 
-Change subject: Implement epoch key data format
+Change subject: dco-win: multipeer support
 ......................................................................
 
 
-Patch Set 18: Code-Review+1
+Patch Set 14: Code-Review+1
+
+(1 comment)
+
+Patchset:
+
+PS14:
+This looks all reasonable from what I have seen.  It needs to be rebased to=
+ the current state of "multisocket" (just use today's master) because too m=
+uch has changed in the "local socket" handling - mostly "everything is an a=
+rray now".
+
+I would suggest to have an extra check `if (number of --local statements > =
+1) { disable_dco(); }` and then just use `link_socket[0]` - as long as the =
+kernel driver doesn't support multi sockets, we do not need to bother with =
+that in the userland side (and multisocket isn't done yet anyway).
+
 
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/806?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/815?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings
 
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: I00751c42cb04e30205ba8e6584530831e0d143c5
-Gerrit-Change-Number: 806
-Gerrit-PatchSet: 18
-Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
+Gerrit-Change-Id: Ia267276d61fa1425ba205f54ba6eb89021f32dba
+Gerrit-Change-Number: 815
+Gerrit-PatchSet: 14
+Gerrit-Owner: stipa <lstipakov@...277...>
 Gerrit-Reviewer: cron2 <gert@...1296...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
+Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
 Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Comment-Date: Tue, 04 Feb 2025 10:57:01 +0000
-Gerrit-HasComments: No
+Gerrit-Attention: stipa <lstipakov@...277...>
+Gerrit-Comment-Date: Tue, 04 Feb 2025 20:11:19 +0000
+Gerrit-HasComments: Yes
 Gerrit-Has-Labels: Yes
 Gerrit-MessageType: comment
 
---GPxccAUfdqc=
+--iZnzErv1+i8=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p> Attention is currently required from: flichtenheld, plaisthos. </p>
-<p>Patch set 18:<span style=3D"border-radius: 3px; display: inline-block; m=
+<p> Attention is currently required from: flichtenheld, plaisthos, stipa. <=
+/p>
+<p>Patch set 14:<span style=3D"border-radius: 3px; display: inline-block; m=
 argin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +1</span=
-></p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/806?usp=3Demail">V=
-iew Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To vi=
-ew, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/806?usp=3Demail"=
->change 806</a>. To unsubscribe, or for help writing mail filters, visit <a=
- href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemscop=
-e itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"ac=
-tion" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=
-=3D"http://gerrit.openvpn.net/c/openvpn/+/806?usp=3Demail"/><meta itemprop=
-=3D"name" content=3D"View Change"/></div></div>
+></p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/815?usp=3Demail">V=
+iew Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: =
+0;"><li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-=
+style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p =
+style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvp=
+n/+/815?tab=3Dcomments">Patch Set #14:</a> </p><p style=3D"white-space: pre=
+-wrap; word-wrap: break-word;">This looks all reasonable from what I have s=
+een.  It needs to be rebased to the current state of &quot;multisocket&quot=
+; (just use today&#39;s master) because too much has changed in the &quot;l=
+ocal socket&quot; handling - mostly &quot;everything is an array now&quot;.=
+</p><p style=3D"white-space: pre-wrap; word-wrap: break-word;">I would sugg=
+est to have an extra check `if (number of --local statements &gt; 1) { disa=
+ble_dco(); }` and then just use `link_socket[0]` - as long as the kernel dr=
+iver doesn&#39;t support multi sockets, we do not need to bother with that =
+in the userland side (and multisocket isn&#39;t done yet anyway).</p></li><=
+/ul></li></ul><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/open=
+vpn/+/815?usp=3Demail">change 815</a>. To unsubscribe, or for help writing =
+mail filters, visit <a href=3D"http://gerrit.openvpn.net/settings">settings=
+</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div it=
+emscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link=
+ itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/815?usp=3De=
+mail"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I00751c42cb04e30205ba8e65845=
-30831e0d143c5 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 806 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 18 </div>
-<div style=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@...1711...=
-27...&gt; </div>
+<div style=3D"display:none"> Gerrit-Change-Id: Ia267276d61fa1425ba205f54ba6=
+eb89021f32dba </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 815 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 14 </div>
+<div style=3D"display:none"> Gerrit-Owner: stipa &lt;lstipakov@...277...&gt=
+; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
  </div>
 <div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
 1...&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
+.1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
 ..1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
 41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Tue, 04 Feb 2025 10:57:01=
+<div style=3D"display:none"> Gerrit-Attention: stipa &lt;lstipakov@...1663...=
+.&gt; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Tue, 04 Feb 2025 20:11:19=
  +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: No </div>
+<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
 <div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
 <div style=3D"display:none"> Gerrit-MessageType: comment </div>
 
 
---GPxccAUfdqc=--
+--iZnzErv1+i8=--
 
