@@ -1,17 +1,11 @@
-From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Wed, 5 Feb 2025 12:40:05 +0000
-In-Reply-To: <gerrit.1738750933000.I8724eda269b816dd2cfd0833d467e6d24054e96f@...2715...>
-References: <gerrit.1738750933000.I8724eda269b816dd2cfd0833d467e6d24054e96f@...2715...>
-Reply-To: gert@...1296..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...,
- lstipakov@...277...
-Message-ID: <9eda70cd2216fa1f7b9e77dbacd57953f9595103-EmailReplacePatchSet-HTML@...2715...>
+Content-Type: multipart/alternative;
+ boundary="------------gAA2VlIRZLOjfhUOVbTFi2Qz"
+Message-ID: <1f99d4f7-c665-4acc-8779-f0b13ef695a9@...2722...>
+Date: Wed, 5 Feb 2025 14:56:45 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="E/QttM64NYM="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: dco-win: disable dco
- in server mode if multiple --local options defined
+From: Johan Draaisma <johan@...2722...>
+Content-Language: en-US
+Subject: [Openvpn-devel]  IRC community meeting summary
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,170 +14,212 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: stipa <lstipakov@...277...>, plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: openvpn-devel@lists.sourceforge.net
 
---E/QttM64NYM=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+This is a multi-part message in MIME format.
+--------------gAA2VlIRZLOjfhUOVbTFi2Qz
+Content-Type: text/plain; charset="utf-8"; format="flowed"
+Content-Transfer-Encoding: 8bit
 
-cron2 has uploaded a new patch set (#3) to the change originally created by=
- stipa. ( http://gerrit.openvpn.net/c/openvpn/+/885?usp=3Demail )
+Meeting summary for 5 February 2025:
 
-The following approvals got outdated and were removed:
-Code-Review+2 by cron2
+  * *New: OpenSSL update with vulnerability severity "HIGH" is dropping
+    next week.*
+    /This might not really affect us but we will likely have to do a
+    2.6.13 I002 binary for Windows./
 
+  * *New: Windows MSI snapshots not updating*
+    /lev asks if this can be looked at. will look into it./
 
-Change subject: dco-win: disable dco in server mode if multiple --local opt=
-ions defined
-......................................................................
+  * *Updated: Release 2.7*
+    /We want to get our release done before the next major Debian release./
+    /This means tentatively getting stuff for 2.7 done before March 1 or
+    so, and release early April./
+    /Looking into a weird failure to deliver properly working openssl
+    binary on amd64 on master./
 
-dco-win: disable dco in server mode if multiple --local options defined
+  * *Updated: DCO Linux upstreaming*
+    /Upstreaming DCO to Linux is proceeding, it is in review stage at
+    the moment./
+    /Patchset v19 will be sent in after addressing some more comments,
+    hopefully end of week./
 
-dco-win doesn't yet support multisocket, so for the time
-being we have to fallback to tap-windows6.
+  * *Updated: data format v3 / epoch data keys*
+    /RFC is here: ​https://github.com/OpenVPN/openvpn-rfc/pull/5
+    <https://github.com/OpenVPN/openvpn-rfc/pull/5>./
+    /PR: ​https://gerrit.openvpn.net/c/openvpn/+/806
+    <https://gerrit.openvpn.net/c/openvpn/+/806> /
+    /Implementation in OpenVPN3 is done./
+    /Implementation in OpenvPN2 is almost fully merged, has been tested,
+    and has just one patch and ack to go. MaxF will review for final acks./
 
-Change-Id: I8724eda269b816dd2cfd0833d467e6d24054e96f
-Signed-off-by: Lev Stipakov <lev@...515...>
-Acked-by: Gert Doering <gert@...1296...>
-Message-Id: <20250205122341.4944-1-gert@...1296...>
-URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg30=
-805.html
-Signed-off-by: Gert Doering <gert@...1296...>
----
-M src/openvpn/dco.c
-1 file changed, 12 insertions(+), 0 deletions(-)
+  * *Updated: multi-socket support*
+    /​https://gerrit.openvpn.net/q/topic:%22multisocket%22
+    <https://gerrit.openvpn.net/q/topic:%22multisocket%22>/
+    /ordex and giaan continuing the work on this./ /Found a new
+    problematic area that has to be dug into, this will take some time./
+  * *Updated: DCO windows multi-peer*
+    /lev is continuing his work on this, looks like it's nearing
+    completion./
 
+  * *Updated: new --dns option support*
+    /​https://gerrit.openvpn.net/q/topic:%22dns+option%22
+    <https://gerrit.openvpn.net/q/topic:%22dns+option%22>/
+    /Certain issues were found during testing, these are being addressed./
+    /There's also a small bugfix coming for a case reported by an
+    OpenVPN Inc. customer related to search domains./
+    /And after discussions between d12fk and plaisthos some adjustments
+    will be made to how DNS config is applied./
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/85/885/3
+  * *Updated: push_update / live route updates*
+    /mrbff and ordex are implementing the openvpn2 server and client
+    support for push_update./
+    /PR has approves, waiting review from cron2./
 
-diff --git a/src/openvpn/dco.c b/src/openvpn/dco.c
-index b5a2136..c65aece 100644
---- a/src/openvpn/dco.c
-+++ b/src/openvpn/dco.c
-@@ -279,6 +279,12 @@
-         msg(msglevel, "NOTE: --remote is not defined. This DCO version doe=
-sn't support multipeer. Disabling Data Channel Offload");
-         return false;
-     }
-+
-+    if ((mode =3D=3D MODE_SERVER) && (ce->local_list->len > 1))
-+    {
-+        msg(msglevel, "NOTE: multiple --local options defined, disabling d=
-ata channel offload");
-+        return false;
-+    }
- #endif
+  * *Updated: community.openvpn.net wiki*
+    /Some content has been copied over, perhaps not ideally but there's
+    something./
+    /A couple of community folks have access now and we can start to
+    work on this wiki replacement by adding content./
+    /A 404 page was added that explains that we are moving to a new wiki
+    so in case people hit something that was removed or not moved over
+    yet, people at least will know why./
+    /action item for novaflash; To continue migrating pages we want a
+    list of hits over last 6 months or so./
+    /action item for novaflash; To do outgoing SMTP we need an account
+    for an SMTP servce./
 
-     return true;
-@@ -355,6 +361,12 @@
-         return false;
-     }
+  * //*Updated: t_server_null improvements
+    */ovpnlwip seems to work fine on all linux platforms, based on
+    buildbot tests.///
+    /This is in cron2's backlog to review./
 
-+    if ((o->mode =3D=3D MODE_SERVER) && o->ce.local_list->len > 1)
-+    {
-+        msg(msglevel, "multiple --local options defined, disabling data ch=
-annel offload");
-+        return false;
-+    }
-+
- #elif defined(TARGET_LINUX)
-     /* if the device name is fixed, we need to check if an interface with =
-this
-      * name already exists. IF it does, it must be a DCO interface, otherw=
-ise
+As always you're welcome to join at #openvpn-meeting on Libera IRC 
+network every Wednesday at 14:00 Central European Time.
 
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/885?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings
+Kind regards,
+Johan Draaisma
 
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: I8724eda269b816dd2cfd0833d467e6d24054e96f
-Gerrit-Change-Number: 885
-Gerrit-PatchSet: 3
-Gerrit-Owner: stipa <lstipakov@...277...>
-Gerrit-Reviewer: cron2 <gert@...1296...>
-Gerrit-Reviewer: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-MessageType: newpatchset
+--------------gAA2VlIRZLOjfhUOVbTFi2Qz
+Content-Type: text/html; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 
---E/QttM64NYM=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  </head>
+  <body>
+    <p> Meeting summary for 5 February 2025:</p>
+    <ul
+style="color: rgb(0, 0, 0); font-family: Verdana, Arial, &quot;Bitstream Vera Sans&quot;, Helvetica, sans-serif; font-size: 13px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;">
+      <li><strong>New: OpenSSL update with vulnerability severity "HIGH"
+          is dropping next week.</strong><br>
+        <em>This might not really affect us but we will likely have to
+          do a 2.6.13 I002 binary for Windows.</em></li>
+    </ul>
+    <ul
+style="color: rgb(0, 0, 0); font-family: Verdana, Arial, &quot;Bitstream Vera Sans&quot;, Helvetica, sans-serif; font-size: 13px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;">
+      <li><strong>New: Windows MSI snapshots not updating</strong><br>
+        <em>lev asks if this can be looked at. will look into it.</em></li>
+    </ul>
+    <ul
+style="color: rgb(0, 0, 0); font-family: Verdana, Arial, &quot;Bitstream Vera Sans&quot;, Helvetica, sans-serif; font-size: 13px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;">
+      <li><strong>Updated: Release 2.7</strong><br>
+        <em>We want to get our release done before the next major Debian
+          release.</em><br>
+        <em>This means tentatively getting stuff for 2.7 done before
+          March 1 or so, and release early April.</em><br>
+        <em>Looking into a weird failure to deliver properly working
+          openssl binary on amd64 on master.</em></li>
+    </ul>
+    <ul
+style="color: rgb(0, 0, 0); font-family: Verdana, Arial, &quot;Bitstream Vera Sans&quot;, Helvetica, sans-serif; font-size: 13px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;">
+      <li><strong>Updated: DCO Linux upstreaming</strong><br>
+        <em>Upstreaming DCO to Linux is proceeding, it is in review
+          stage at the moment.</em><br>
+        <em>Patchset v19 will be sent in after addressing some more
+          comments, hopefully end of week.</em></li>
+    </ul>
+    <ul
+style="color: rgb(0, 0, 0); font-family: Verdana, Arial, &quot;Bitstream Vera Sans&quot;, Helvetica, sans-serif; font-size: 13px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;">
+      <li><strong>Updated: data format v3 / epoch data keys</strong><br>
+        <em>RFC is here: <a class="ext-link"
+            href="https://github.com/OpenVPN/openvpn-rfc/pull/5"><span
+              class="icon">​</span>https://github.com/OpenVPN/openvpn-rfc/pull/5</a>.</em><br>
+        <em>PR: <a class="ext-link"
+            href="https://gerrit.openvpn.net/c/openvpn/+/806"><span
+              class="icon">​</span>https://gerrit.openvpn.net/c/openvpn/+/806</a>
+        </em><br>
+        <em>Implementation in OpenVPN3 is done.</em><br>
+        <em>Implementation in OpenvPN2 is almost fully merged, has been
+          tested, and has just one patch and ack to go. MaxF will review
+          for final acks.</em></li>
+    </ul>
+    <ul
+style="color: rgb(0, 0, 0); font-family: Verdana, Arial, &quot;Bitstream Vera Sans&quot;, Helvetica, sans-serif; font-size: 13px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;">
+      <li><strong>Updated: multi-socket support</strong><br>
+        <em><a class="ext-link"
+            href="https://gerrit.openvpn.net/q/topic:%22multisocket%22"><span
+              class="icon">​</span>https://gerrit.openvpn.net/q/topic:%22multisocket%22</a></em>
+        <br>
+        <em>ordex and giaan continuing the work on this.</em>
+        <em>Found a new problematic area that has to be dug into, this
+          will take some time.</em><br>
+      </li>
+      <li><strong>Updated: DCO windows multi-peer</strong><br>
+        <em>lev is continuing his work on this, looks like it's nearing
+          completion.</em></li>
+    </ul>
+    <ul
+style="color: rgb(0, 0, 0); font-family: Verdana, Arial, &quot;Bitstream Vera Sans&quot;, Helvetica, sans-serif; font-size: 13px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;">
+      <li><strong>Updated: new --dns option support</strong><br>
+        <em><a class="ext-link"
+            href="https://gerrit.openvpn.net/q/topic:%22dns+option%22"><span
+              class="icon">​</span>https://gerrit.openvpn.net/q/topic:%22dns+option%22</a></em><br>
+        <em>Certain issues were found during testing, these are being
+          addressed.</em><br>
+        <em>There's also a small bugfix coming for a case reported by an
+          OpenVPN Inc. customer related to search domains.</em><br>
+        <em>And after discussions between d12fk and plaisthos some
+          adjustments will be made to how DNS config is applied.</em></li>
+    </ul>
+    <ul
+style="color: rgb(0, 0, 0); font-family: Verdana, Arial, &quot;Bitstream Vera Sans&quot;, Helvetica, sans-serif; font-size: 13px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;">
+      <li><strong>Updated: push_update / live route updates</strong><br>
+        <em>mrbff and ordex are implementing the openvpn2 server and
+          client support for push_update.</em><br>
+        <em>PR has approves, waiting review from cron2.</em></li>
+    </ul>
+    <ul
+style="color: rgb(0, 0, 0); font-family: Verdana, Arial, &quot;Bitstream Vera Sans&quot;, Helvetica, sans-serif; font-size: 13px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;">
+      <li><strong>Updated: community.openvpn.net wiki</strong><br>
+        <em>Some content has been copied over, perhaps not ideally but
+          there's something.</em><br>
+        <em>A couple of community folks have access now and we can start
+          to work on this wiki replacement by adding content.</em><br>
+        <em>A 404 page was added that explains that we are moving to a
+          new wiki so in case people hit something that was removed or
+          not moved over yet, people at least will know why.</em><br>
+        <em>action item for novaflash; To continue migrating pages we
+          want a list of hits over last 6 months or so.</em><br>
+        <em>action item for novaflash; To do outgoing SMTP we need an
+          account for an SMTP servce.</em></li>
+    </ul>
+    <ul
+style="color: rgb(0, 0, 0); font-family: Verdana, Arial, &quot;Bitstream Vera Sans&quot;, Helvetica, sans-serif; font-size: 13px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;">
+      <li><em></em><strong>Updated: t_server_null improvements<br>
+        </strong><em>ovpnlwip seems to work fine on all linux platforms,
+          based on buildbot tests.</em><em></em><br>
+        <em>This is in cron2's backlog to review.</em></li>
+    </ul>
+    <p>As always you're welcome to join at #openvpn-meeting on Libera
+      IRC network every Wednesday at 14:00 Central European Time. </p>
+    <p>Kind regards,<br>
+      Johan Draaisma<br>
+    </p>
+  </body>
+</html>
 
-<p>cron2 <strong>uploaded patch set #3</strong> to the change originally cr=
-eated by stipa.</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/885?=
-usp=3Demail">View Change</a></p><p>The following approvals got outdated and=
- were removed:
-Code-Review+2 by cron2</p><pre style=3D"font-family: monospace,monospace; w=
-hite-space: pre-wrap;">dco-win: disable dco in server mode if multiple --lo=
-cal options defined<br><br>dco-win doesn&#39;t yet support multisocket, so =
-for the time<br>being we have to fallback to tap-windows6.<br><br>Change-Id=
-: I8724eda269b816dd2cfd0833d467e6d24054e96f<br>Signed-off-by: Lev Stipakov =
-&lt;lev@...515...&gt;<br>Acked-by: Gert Doering &lt;gert@...1296...&gt;<br>=
-Message-Id: &lt;20250205122341.4944-1-gert@...1296...&gt;<br>URL: https://w=
-ww.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg30805.html<br>Si=
-gned-off-by: Gert Doering &lt;gert@...1296...&gt;<br>---<br>M src/openvpn/d=
-co.c<br>1 file changed, 12 insertions(+), 0 deletions(-)<br><br></pre><pre =
-style=3D"font-family: monospace,monospace; white-space: pre-wrap;">git pull=
- ssh://gerrit.openvpn.net:29418/openvpn refs/changes/85/885/3</pre><pre sty=
-le=3D"font-family: monospace,monospace; white-space: pre-wrap;"><span>diff =
---git a/src/openvpn/dco.c b/src/openvpn/dco.c</span><br><span>index b5a2136=
-..c65aece 100644</span><br><span>--- a/src/openvpn/dco.c</span><br><span>++=
-+ b/src/openvpn/dco.c</span><br><span>@@ -279,6 +279,12 @@</span><br><span>=
-         msg(msglevel, &quot;NOTE: --remote is not defined. This DCO versio=
-n doesn&#39;t support multipeer. Disabling Data Channel Offload&quot;);</sp=
-an><br><span>         return false;</span><br><span>     }</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+    if ((mode =3D=3D MODE_SERVER) &amp;&amp; (ce-&gt;lo=
-cal_list-&gt;len &gt; 1))</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        =
-msg(msglevel, &quot;NOTE: multiple --local options defined, disabling data =
-channel offload&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+        return false;</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+    }</span><br><span> #endif</span><br><span> </span><br><span>     =
-return true;</span><br><span>@@ -355,6 +361,12 @@</span><br><span>         =
-return false;</span><br><span>     }</span><br><span> </span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+    if ((o-&gt;mode =3D=3D MODE_SERVER) =
-&amp;&amp; o-&gt;ce.local_list-&gt;len &gt; 1)</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+        msg(msglevel, &quot;multiple --local options defined, =
-disabling data channel offload&quot;);</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+        return false;</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+</span><br><span> #elif defined(TARGET_LINUX)</span><br><span>     /=
-* if the device name is fixed, we need to check if an interface with this</=
-span><br><span>      * name already exists. IF it does, it must be a DCO in=
-terface, otherwise</span><br><span></span><br></pre><p>To view, visit <a hr=
-ef=3D"http://gerrit.openvpn.net/c/openvpn/+/885?usp=3Demail">change 885</a>=
-. To unsubscribe, or for help writing mail filters, visit <a href=3D"http:/=
-/gerrit.openvpn.net/settings">settings</a>.</p><div itemscope itemtype=3D"h=
-ttp://schema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=
-=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://ger=
-rit.openvpn.net/c/openvpn/+/885?usp=3Demail"/><meta itemprop=3D"name" conte=
-nt=3D"View Change"/></div></div>
-
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I8724eda269b816dd2cfd0833d46=
-7e6d24054e96f </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 885 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 3 </div>
-<div style=3D"display:none"> Gerrit-Owner: stipa &lt;lstipakov@...277...&gt=
-; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
- </div>
-<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
-1...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
-
-
---E/QttM64NYM=--
+--------------gAA2VlIRZLOjfhUOVbTFi2Qz--
 
