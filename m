@@ -1,17 +1,15 @@
-From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Tue, 4 Feb 2025 20:11:19 +0000
-In-Reply-To: <gerrit.1732212459000.Ia267276d61fa1425ba205f54ba6eb89021f32dba@...2715...>
-References: <gerrit.1732212459000.Ia267276d61fa1425ba205f54ba6eb89021f32dba@...2715...>
-Reply-To: gert@...1296..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...,
- lstipakov@...277...
-Message-ID: <5d6cd3937ff01e52987661ccd8b90f061435c3ca-EmailReviewComments-HTML@...2715...>
+From: "stipa (Code Review)" <gerrit@...515...>
+Date: Wed, 5 Feb 2025 10:22:20 +0000
+References: <gerrit.1738750933000.I8724eda269b816dd2cfd0833d467e6d24054e96f@...2715...>
+Reply-To: lstipakov@...277..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net, frank@...2641...
+Message-ID: <81c32319238aa478129db7cd3d88f7293e6ff81f-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="iZnzErv1+i8="; charset=UTF-8
-Subject: [Openvpn-devel] [L] Change in openvpn[master]: dco-win: multipeer
- support
+Content-Type: multipart/alternative; boundary="kMmc7gtdW2Y="; charset=UTF-8
+Subject: [Openvpn-devel] [S] Change in openvpn[master]: dco-win: disable dco
+ in server mode if multiple --local options defined
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,105 +18,158 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: stipa <lstipakov@...277...>
-Cc: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---iZnzErv1+i8=
+--kMmc7gtdW2Y=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: flichtenheld, plaisthos, stipa.
+Attention is currently required from: flichtenheld, plaisthos.
 
-cron2 has posted comments on this change. ( http://gerrit.openvpn.net/c/ope=
-nvpn/+/815?usp=3Demail )
+Hello plaisthos, flichtenheld,
 
-Change subject: dco-win: multipeer support
+I'd like you to do a code review.
+Please visit
+
+    http://gerrit.openvpn.net/c/openvpn/+/885?usp=3Demail
+
+to review the following change.
+
+
+Change subject: dco-win: disable dco in server mode if multiple --local opt=
+ions defined
 ......................................................................
 
+dco-win: disable dco in server mode if multiple --local options defined
 
-Patch Set 14: Code-Review+1
+dco-win doesn't yet support multisocket, so for the time
+being we have to fallback to tap-windows6.
 
-(1 comment)
-
-Patchset:
-
-PS14:
-This looks all reasonable from what I have seen.  It needs to be rebased to=
- the current state of "multisocket" (just use today's master) because too m=
-uch has changed in the "local socket" handling - mostly "everything is an a=
-rray now".
-
-I would suggest to have an extra check `if (number of --local statements > =
-1) { disable_dco(); }` and then just use `link_socket[0]` - as long as the =
-kernel driver doesn't support multi sockets, we do not need to bother with =
-that in the userland side (and multisocket isn't done yet anyway).
+Change-Id: I8724eda269b816dd2cfd0833d467e6d24054e96f
+Signed-off-by: Lev Stipakov <lev@...515...>
+---
+M src/openvpn/dco.c
+1 file changed, 12 insertions(+), 0 deletions(-)
 
 
+
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/85/885/1
+
+diff --git a/src/openvpn/dco.c b/src/openvpn/dco.c
+index b5a2136..3f0b1cd 100644
+--- a/src/openvpn/dco.c
++++ b/src/openvpn/dco.c
+@@ -279,6 +279,12 @@
+         msg(msglevel, "NOTE: --remote is not defined. This DCO version doe=
+sn't support multipeer. Disabling Data Channel Offload");
+         return false;
+     }
++
++    if ((mode =3D=3D MODE_SERVER) && (ce->local_list->len > 1))
++    {
++        msg(msglevel, "multiple --local options defined, disabling data ch=
+annel offload");
++        return false;
++    }
+ #endif
+
+     return true;
+@@ -355,6 +361,12 @@
+         return false;
+     }
+
++    if ((o->mode =3D=3D MODE_SERVER) && o->ce.local_list->len > 1)
++    {
++        msg(msglevel, "multiple --local options defined, disabling data ch=
+annel offload");
++        return false;
++    }
++
+ #elif defined(TARGET_LINUX)
+     /* if the device name is fixed, we need to check if an interface with =
+this
+      * name already exists. IF it does, it must be a DCO interface, otherw=
+ise
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/815?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/885?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings
 
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: Ia267276d61fa1425ba205f54ba6eb89021f32dba
-Gerrit-Change-Number: 815
-Gerrit-PatchSet: 14
+Gerrit-Change-Id: I8724eda269b816dd2cfd0833d467e6d24054e96f
+Gerrit-Change-Number: 885
+Gerrit-PatchSet: 1
 Gerrit-Owner: stipa <lstipakov@...277...>
-Gerrit-Reviewer: cron2 <gert@...1296...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
 Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Attention: stipa <lstipakov@...277...>
-Gerrit-Comment-Date: Tue, 04 Feb 2025 20:11:19 +0000
-Gerrit-HasComments: Yes
-Gerrit-Has-Labels: Yes
-Gerrit-MessageType: comment
+Gerrit-MessageType: newchange
 
---iZnzErv1+i8=
+--kMmc7gtdW2Y=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p> Attention is currently required from: flichtenheld, plaisthos, stipa. <=
-/p>
-<p>Patch set 14:<span style=3D"border-radius: 3px; display: inline-block; m=
-argin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +1</span=
-></p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/815?usp=3Demail">V=
-iew Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: =
-0;"><li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-=
-style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p =
-style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvp=
-n/+/815?tab=3Dcomments">Patch Set #14:</a> </p><p style=3D"white-space: pre=
--wrap; word-wrap: break-word;">This looks all reasonable from what I have s=
-een.  It needs to be rebased to the current state of &quot;multisocket&quot=
-; (just use today&#39;s master) because too much has changed in the &quot;l=
-ocal socket&quot; handling - mostly &quot;everything is an array now&quot;.=
-</p><p style=3D"white-space: pre-wrap; word-wrap: break-word;">I would sugg=
-est to have an extra check `if (number of --local statements &gt; 1) { disa=
-ble_dco(); }` and then just use `link_socket[0]` - as long as the kernel dr=
-iver doesn&#39;t support multi sockets, we do not need to bother with that =
-in the userland side (and multisocket isn&#39;t done yet anyway).</p></li><=
-/ul></li></ul><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/open=
-vpn/+/815?usp=3Demail">change 815</a>. To unsubscribe, or for help writing =
-mail filters, visit <a href=3D"http://gerrit.openvpn.net/settings">settings=
-</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div it=
-emscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link=
- itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/815?usp=3De=
-mail"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
+<p> Attention is currently required from: flichtenheld, plaisthos. </p>
+<p>stipa would like plaisthos and flichtenheld to <strong>review</strong> t=
+his change.
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/885?usp=3Demail">Vi=
+ew Change</a></p><pre style=3D"font-family: monospace,monospace; white-spac=
+e: pre-wrap;">dco-win: disable dco in server mode if multiple --local optio=
+ns defined<br><br>dco-win doesn&#39;t yet support multisocket, so for the t=
+ime<br>being we have to fallback to tap-windows6.<br><br>Change-Id: I8724ed=
+a269b816dd2cfd0833d467e6d24054e96f<br>Signed-off-by: Lev Stipakov &lt;lev@...220...=
+..515...&gt;<br>---<br>M src/openvpn/dco.c<br>1 file changed, 12 insertions=
+(+), 0 deletions(-)<br><br></pre><pre style=3D"font-family: monospace,monos=
+pace; white-space: pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/openv=
+pn refs/changes/85/885/1</pre><pre style=3D"font-family: monospace,monospac=
+e; white-space: pre-wrap;"><span>diff --git a/src/openvpn/dco.c b/src/openv=
+pn/dco.c</span><br><span>index b5a2136..3f0b1cd 100644</span><br><span>--- =
+a/src/openvpn/dco.c</span><br><span>+++ b/src/openvpn/dco.c</span><br><span=
+>@@ -279,6 +279,12 @@</span><br><span>         msg(msglevel, &quot;NOTE: --=
+remote is not defined. This DCO version doesn&#39;t support multipeer. Disa=
+bling Data Channel Offload&quot;);</span><br><span>         return false;</=
+span><br><span>     }</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if ((mode =3D=
+=3D MODE_SERVER) &amp;&amp; (ce-&gt;local_list-&gt;len &gt; 1))</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+        msg(msglevel, &quot;multiple --local =
+options defined, disabling data channel offload&quot;);</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+        return false;</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span> #endif</span><=
+br><span> </span><br><span>     return true;</span><br><span>@@ -355,6 +361=
+,12 @@</span><br><span>         return false;</span><br><span>     }</span>=
+<br><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (=
+(o-&gt;mode =3D=3D MODE_SERVER) &amp;&amp; o-&gt;ce.local_list-&gt;len &gt;=
+ 1)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+        msg(msglevel, &quot;mu=
+ltiple --local options defined, disabling data channel offload&quot;);</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+        return false;</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> #elif defined(TARG=
+ET_LINUX)</span><br><span>     /* if the device name is fixed, we need to c=
+heck if an interface with this</span><br><span>      * name already exists.=
+ IF it does, it must be a DCO interface, otherwise</span><br><span></span><=
+br></pre><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+=
+/885?usp=3Demail">change 885</a>. To unsubscribe, or for help writing mail =
+filters, visit <a href=3D"http://gerrit.openvpn.net/settings">settings</a>.=
+</p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemsco=
+pe itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link item=
+prop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/885?usp=3Demail"=
+/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: Ia267276d61fa1425ba205f54ba6=
-eb89021f32dba </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 815 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 14 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I8724eda269b816dd2cfd0833d46=
+7e6d24054e96f </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 885 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
 <div style=3D"display:none"> Gerrit-Owner: stipa &lt;lstipakov@...277...&gt=
 ; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
- </div>
 <div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
 1...&gt; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
@@ -129,14 +180,8 @@ ts.sourceforge.net&gt; </div>
 ..1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
 41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: stipa &lt;lstipakov@...1663...=
-.&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Tue, 04 Feb 2025 20:11:19=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
+<div style=3D"display:none"> Gerrit-MessageType: newchange </div>
 
 
---iZnzErv1+i8=--
+--kMmc7gtdW2Y=--
 
