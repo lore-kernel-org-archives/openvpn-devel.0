@@ -1,11 +1,10 @@
+Date: Wed, 5 Feb 2025 13:39:35 +0100 (CET)
+Message-Id: <202502051239.515CdZhM085635@...2054...>
 From: Gert Doering <gert@...1296...>
-Date: Wed,  5 Feb 2025 13:23:41 +0100
-Message-ID: <20250205122341.4944-1-gert@...1296...>
-In-Reply-To: <gerrit.1738750933000.I8724eda269b816dd2cfd0833d467e6d24054e96f@...2715...>
-References: <gerrit.1738750933000.I8724eda269b816dd2cfd0833d467e6d24054e96f@...2715...>
-MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v2] dco-win: disable dco in server mode if
- multiple --local options defined
+In-Reply-To: <20250205122341.4944-1-gert@...1296...>
+References: <20250205122341.4944-1-gert@...1296...>
+Subject: [Openvpn-devel] [PATCH applied] Re: dco-win: disable dco in server
+ mode if multiple --local options defined
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,56 +15,36 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Lev Stipakov <lev@...515...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-From: Lev Stipakov <lev@...515...>
+As discussed on IRC - this is a preliminary patch for making sure the
+windows "multi-peer support in DCO" patchset and the "multi-socket patchset"
+can cooperate peacefully, while win-dco has no multi-socket capability yet
+(due to the way win-dco socket handling differs from linux-dco/freebsd-dco,
+the challenges are different).
 
-dco-win doesn't yet support multisocket, so for the time
-being we have to fallback to tap-windows6.
+There is also a GH issue to clean up the confusing code around --local
+and <connection> later... so we'll see more code changes here.
 
-Change-Id: I8724eda269b816dd2cfd0833d467e6d24054e96f
-Signed-off-by: Lev Stipakov <lev@...515...>
-Acked-by: Gert Doering <gert@...1296...>
----
+Your patch has been applied to the master branch.
 
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to master.
+commit 4719687ef3ec8acefcdde584df0e7fa86ddcf333
+Author: Lev Stipakov
+Date:   Wed Feb 5 13:23:41 2025 +0100
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/885
-This mail reflects revision 2 of this Change.
+     dco-win: disable dco in server mode if multiple --local options defined
 
-Acked-by according to Gerrit (reflected above):
-Gert Doering <gert@...1296...>
+     Signed-off-by: Lev Stipakov <lev@...515...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <20250205122341.4944-1-gert@...1296...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg30805.html
+     Signed-off-by: Gert Doering <gert@...1296...>
 
-        
-diff --git a/src/openvpn/dco.c b/src/openvpn/dco.c
-index b5a2136..c65aece 100644
---- a/src/openvpn/dco.c
-+++ b/src/openvpn/dco.c
-@@ -279,6 +279,12 @@
-         msg(msglevel, "NOTE: --remote is not defined. This DCO version doesn't support multipeer. Disabling Data Channel Offload");
-         return false;
-     }
-+
-+    if ((mode == MODE_SERVER) && (ce->local_list->len > 1))
-+    {
-+        msg(msglevel, "NOTE: multiple --local options defined, disabling data channel offload");
-+        return false;
-+    }
- #endif
- 
-     return true;
-@@ -355,6 +361,12 @@
-         return false;
-     }
- 
-+    if ((o->mode == MODE_SERVER) && o->ce.local_list->len > 1)
-+    {
-+        msg(msglevel, "multiple --local options defined, disabling data channel offload");
-+        return false;
-+    }
-+
- #elif defined(TARGET_LINUX)
-     /* if the device name is fixed, we need to check if an interface with this
-      * name already exists. IF it does, it must be a DCO interface, otherwise
+
+--
+kind regards,
+
+Gert Doering
+
 
