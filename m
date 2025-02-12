@@ -1,16 +1,16 @@
 From: "uddr (Code Review)" <gerrit@...515...>
-Date: Wed, 12 Feb 2025 19:54:53 +0000
-In-Reply-To: <gerrit.1739368444000.I29b68675143988c3304395d9d5ec62289cf519a7@...2715...>
-References: <gerrit.1739368444000.I29b68675143988c3304395d9d5ec62289cf519a7@...2715...>
+Date: Wed, 12 Feb 2025 19:56:15 +0000
+In-Reply-To: <gerrit.1739368474000.I29b68675143988c3304395d9d5ec62289cf519a7@...2715...>
+References: <gerrit.1739368474000.I29b68675143988c3304395d9d5ec62289cf519a7@...2715...>
 Reply-To: yura.uddr@...277..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <5107d0ff29b19b0caa79b1d01ecbb02f322e73d6-EmailReviewComments-HTML@...2715...>
+Message-ID: <b1286a0cd27003c8ae6f4da041ee5068ee685252-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="GXZ/A1zD6ho="; charset=UTF-8
-Subject: [Openvpn-devel] [M] Change in openvpn[master]: GHA: Drop Ubuntu
- 20.04 and other maintenance
+Content-Type: multipart/alternative; boundary="p/k6loeQDVo="; charset=UTF-8
+Subject: [Openvpn-devel] [M] Change in openvpn[release/2.6]: GHA: Drop
+ Ubuntu 20.04 and other maintenance (2.6)
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -22,16 +22,16 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: flichtenheld <frank@...2641...>
 Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---GXZ/A1zD6ho=
+--p/k6loeQDVo=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 Attention is currently required from: flichtenheld, plaisthos.
 
 uddr has posted comments on this change. ( http://gerrit.openvpn.net/c/open=
-vpn/+/892?usp=3Demail )
+vpn/+/893?usp=3Demail )
 
-Change subject: GHA: Drop Ubuntu 20.04 and other maintenance
+Change subject: GHA: Drop Ubuntu 20.04 and other maintenance (2.6)
 ......................................................................
 
 
@@ -39,14 +39,14 @@ Patch Set 1: Code-Review+2
 
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/892?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/893?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings
 
 Gerrit-Project: openvpn
-Gerrit-Branch: master
+Gerrit-Branch: release/2.6
 Gerrit-Change-Id: I29b68675143988c3304395d9d5ec62289cf519a7
-Gerrit-Change-Number: 892
+Gerrit-Change-Number: 893
 Gerrit-PatchSet: 1
 Gerrit-Owner: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
@@ -54,33 +54,33 @@ Gerrit-Reviewer: uddr <yura.uddr@...277...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
 Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Comment-Date: Wed, 12 Feb 2025 19:54:53 +0000
+Gerrit-Comment-Date: Wed, 12 Feb 2025 19:56:15 +0000
 Gerrit-HasComments: No
 Gerrit-Has-Labels: Yes
 Gerrit-MessageType: comment
 
---GXZ/A1zD6ho=
+--p/k6loeQDVo=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <p> Attention is currently required from: flichtenheld, plaisthos. </p>
 <p>Patch set 1:<span style=3D"border-radius: 3px; display: inline-block; ma=
 rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/892?usp=3Demail">Vi=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/893?usp=3Demail">Vi=
 ew Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To vie=
-w, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/892?usp=3Demail">=
-change 892</a>. To unsubscribe, or for help writing mail filters, visit <a =
+w, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/893?usp=3Demail">=
+change 893</a>. To unsubscribe, or for help writing mail filters, visit <a =
 href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope=
  itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"act=
 ion" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=
-=3D"http://gerrit.openvpn.net/c/openvpn/+/892?usp=3Demail"/><meta itemprop=
+=3D"http://gerrit.openvpn.net/c/openvpn/+/893?usp=3Demail"/><meta itemprop=
 =3D"name" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Branch: release/2.6 </div>
 <div style=3D"display:none"> Gerrit-Change-Id: I29b68675143988c3304395d9d5e=
 c62289cf519a7 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 892 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 893 </div>
 <div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
 <div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
 .&gt; </div>
@@ -94,12 +94,12 @@ ts.sourceforge.net&gt; </div>
 ..1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
 41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Wed, 12 Feb 2025 19:54:53=
+<div style=3D"display:none"> Gerrit-Comment-Date: Wed, 12 Feb 2025 19:56:15=
  +0000 </div>
 <div style=3D"display:none"> Gerrit-HasComments: No </div>
 <div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
 <div style=3D"display:none"> Gerrit-MessageType: comment </div>
 
 
---GXZ/A1zD6ho=--
+--p/k6loeQDVo=--
 
