@@ -1,15 +1,15 @@
 From: "plaisthos (Code Review)" <gerrit@...515...>
-Date: Wed, 12 Feb 2025 11:53:31 +0000
-References: <gerrit.1739361204000.If6a636b2099d948e249cf92ed2ba91d1698ee42f@...2715...>
+Date: Wed, 12 Feb 2025 11:53:32 +0000
+References: <gerrit.1739361204000.I22e4b73e744c765a43bdb29f6e18813d103ea757@...2715...>
 Reply-To: arne-openvpn@...1227..., openvpn-devel@lists.sourceforge.net,
  frank@...2641...
-Message-ID: <3a6e6ed3a581bffe449839f6954a7a0c0494b23b-HTML@...2715...>
+Message-ID: <7339e232f9d6a9dbd94473d7f647f51061a188b6-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="Iff+z9BM+0w="; charset=UTF-8
-Subject: [Openvpn-devel] [XS] Change in openvpn[master]: Fix oversight of
- link socket code change in Android code path
+Content-Type: multipart/alternative; boundary="M2YB4PnhSQo="; charset=UTF-8
+Subject: [Openvpn-devel] [S] Change in openvpn[master]: Always use a
+ 0.0.0.0/0 default on Android instead of def1
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -21,7 +21,7 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: flichtenheld <frank@...2641...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---Iff+z9BM+0w=
+--M2YB4PnhSQo=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
@@ -32,64 +32,70 @@ Hello flichtenheld,
 I'd like you to do a code review.
 Please visit
 
-    http://gerrit.openvpn.net/c/openvpn/+/888?usp=3Demail
+    http://gerrit.openvpn.net/c/openvpn/+/890?usp=3Demail
 
 to review the following change.
 
 
-Change subject: Fix oversight of link socket code change in Android code pa=
-th
+Change subject: Always use a 0.0.0.0/0 default on Android instead of def1
 ......................................................................
 
-Fix oversight of link socket code change in Android code path
+Always use a 0.0.0.0/0 default on Android instead of def1
 
-Commit 94b391d7ef5 changed context->link_socket to context->link_sockets
-but did not change the Android code path.
+Certain handset manufactures (like Samsung iirc)  are handling
+0.0.0.0/0 different from the split /1 routes, so push the 0.0.0.0/0
+route to the OS.
 
-Change-Id: If6a636b2099d948e249cf92ed2ba91d1698ee42f
+Change-Id: I22e4b73e744c765a43bdb29f6e18813d103ea757
 Signed-off-by: Arne Schwabe <arne@...1227...>
 ---
-M src/openvpn/init.c
-1 file changed, 3 insertions(+), 3 deletions(-)
+M src/openvpn/route.c
+1 file changed, 12 insertions(+), 0 deletions(-)
 
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/88/888/1
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/90/890/1
 
-diff --git a/src/openvpn/init.c b/src/openvpn/init.c
-index 4014517..a7f7db4 100644
---- a/src/openvpn/init.c
-+++ b/src/openvpn/init.c
-@@ -4381,16 +4381,16 @@
+diff --git a/src/openvpn/route.c b/src/openvpn/route.c
+index d895e1c..71a0bbc9 100644
+--- a/src/openvpn/route.c
++++ b/src/openvpn/route.c
+@@ -1078,6 +1078,17 @@
 
-     int socketfd =3D -1;
-     struct context *c =3D (struct context *) arg;
--    if (!c->c2.link_socket)
-+    if (!c->c2.link_sockets || !c->c2.link_sockets[0])
-     {
-         return -1;
-     }
--    if (c->c2.link_socket->sd =3D=3D SOCKET_UNDEFINED)
-+    if (c->c2.link_sockets[0]->sd =3D=3D SOCKET_UNDEFINED)
-     {
-         return -1;
-     }
+             if (rl->flags & RG_REROUTE_GW)
+             {
++#ifdef TARGET_ANDROID
++                add_route3(0,
++                           0,
++                           rl->spec.remote_endpoint,
++                           tt,
++                           flags,
++                           &rl->rgi,
++                           es,
++                           ctx);
++
++#else  /* ifdef TARGET_ANDROID */
+                 if (rl->flags & RG_DEF1)
+                 {
+                     /* add new default route (1st component) */
+@@ -1102,6 +1113,7 @@
+                     ret =3D add_route3(0, 0, rl->spec.remote_endpoint, tt,
+                                      flags, &rl->rgi, es, ctx) && ret;
+                 }
++#endif /* ifdef TARGET_ANDROID */
+             }
 
--    socketfd =3D c->c2.link_socket->sd;
-+    socketfd =3D c->c2.link_sockets[0]->sd;
-     if (!c->options.pull || c->c2.tls_multi->use_peer_id || samenetwork)
-     {
-         return socketfd;
+             /* set a flag so we can undo later */
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/888?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/890?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings
 
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: If6a636b2099d948e249cf92ed2ba91d1698ee42f
-Gerrit-Change-Number: 888
+Gerrit-Change-Id: I22e4b73e744c765a43bdb29f6e18813d103ea757
+Gerrit-Change-Number: 890
 Gerrit-PatchSet: 1
 Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
@@ -97,54 +103,63 @@ Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: flichtenheld <frank@...2641...>
 Gerrit-MessageType: newchange
 
---Iff+z9BM+0w=
+--M2YB4PnhSQo=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <p> Attention is currently required from: flichtenheld. </p>
 <p>plaisthos would like flichtenheld to <strong>review</strong> this change.
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/888?usp=3Demail">Vi=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/890?usp=3Demail">Vi=
 ew Change</a></p><pre style=3D"font-family: monospace,monospace; white-spac=
-e: pre-wrap;">Fix oversight of link socket code change in Android code path=
-<br><br>Commit 94b391d7ef5 changed context-&gt;link_socket to context-&gt;l=
-ink_sockets<br>but did not change the Android code path.<br><br>Change-Id: =
-If6a636b2099d948e249cf92ed2ba91d1698ee42f<br>Signed-off-by: Arne Schwabe &l=
-t;arne@...1227...&gt;<br>---<br>M src/openvpn/init.c<br>1 file changed, 3 i=
-nsertions(+), 3 deletions(-)<br><br></pre><pre style=3D"font-family: monosp=
-ace,monospace; white-space: pre-wrap;">git pull ssh://gerrit.openvpn.net:29=
-418/openvpn refs/changes/88/888/1</pre><pre style=3D"font-family: monospace=
-,monospace; white-space: pre-wrap;"><span>diff --git a/src/openvpn/init.c b=
-/src/openvpn/init.c</span><br><span>index 4014517..a7f7db4 100644</span><br=
-><span>--- a/src/openvpn/init.c</span><br><span>+++ b/src/openvpn/init.c</s=
-pan><br><span>@@ -4381,16 +4381,16 @@</span><br><span> </span><br><span>   =
-  int socketfd =3D -1;</span><br><span>     struct context *c =3D (struct c=
-ontext *) arg;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    if =
-(!c-&gt;c2.link_socket)</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+    if (!c-&gt;c2.link_sockets || !c-&gt;c2.link_sockets[0])</span><br>=
-<span>     {</span><br><span>         return -1;</span><br><span>     }</sp=
-an><br><span style=3D"color: hsl(0, 100%, 40%);">-    if (c-&gt;c2.link_soc=
-ket-&gt;sd =3D=3D SOCKET_UNDEFINED)</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+    if (c-&gt;c2.link_sockets[0]-&gt;sd =3D=3D SOCKET_UNDEF=
-INED)</span><br><span>     {</span><br><span>         return -1;</span><br>=
-<span>     }</span><br><span> </span><br><span style=3D"color: hsl(0, 100%,=
- 40%);">-    socketfd =3D c-&gt;c2.link_socket-&gt;sd;</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+    socketfd =3D c-&gt;c2.link_sockets[0=
-]-&gt;sd;</span><br><span>     if (!c-&gt;options.pull || c-&gt;c2.tls_mult=
-i-&gt;use_peer_id || samenetwork)</span><br><span>     {</span><br><span>  =
-       return socketfd;</span><br><span></span><br></pre><p>To view, visit =
-<a href=3D"http://gerrit.openvpn.net/c/openvpn/+/888?usp=3Demail">change 88=
-8</a>. To unsubscribe, or for help writing mail filters, visit <a href=3D"h=
-ttp://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope itemtype=
-=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"action" item=
-type=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http:/=
-/gerrit.openvpn.net/c/openvpn/+/888?usp=3Demail"/><meta itemprop=3D"name" c=
-ontent=3D"View Change"/></div></div>
+e: pre-wrap;">Always use a 0.0.0.0/0 default on Android instead of def1<br>=
+<br>Certain handset manufactures (like Samsung iirc)  are handling<br>0.0.0=
+.0/0 different from the split /1 routes, so push the 0.0.0.0/0<br>route to =
+the OS.<br><br>Change-Id: I22e4b73e744c765a43bdb29f6e18813d103ea757<br>Sign=
+ed-off-by: Arne Schwabe &lt;arne@...1227...&gt;<br>---<br>M src/openvpn/rou=
+te.c<br>1 file changed, 12 insertions(+), 0 deletions(-)<br><br></pre><pre =
+style=3D"font-family: monospace,monospace; white-space: pre-wrap;">git pull=
+ ssh://gerrit.openvpn.net:29418/openvpn refs/changes/90/890/1</pre><pre sty=
+le=3D"font-family: monospace,monospace; white-space: pre-wrap;"><span>diff =
+--git a/src/openvpn/route.c b/src/openvpn/route.c</span><br><span>index d89=
+5e1c..71a0bbc9 100644</span><br><span>--- a/src/openvpn/route.c</span><br><=
+span>+++ b/src/openvpn/route.c</span><br><span>@@ -1078,6 +1078,17 @@</span=
+><br><span> </span><br><span>             if (rl-&gt;flags &amp; RG_REROUTE=
+_GW)</span><br><span>             {</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+#ifdef TARGET_ANDROID</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+                add_route3(0,</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+                           0,</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+                           rl-&gt;spe=
+c.remote_endpoint,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+                          tt,</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+                           flags,</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+                           &amp;rl-&gt;rgi,</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+                           =
+es,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+                =
+           ctx);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+#else  /* ifdef TARGET=
+_ANDROID */</span><br><span>                 if (rl-&gt;flags &amp; RG_DEF1=
+)</span><br><span>                 {</span><br><span>                     /=
+* add new default route (1st component) */</span><br><span>@@ -1102,6 +1113=
+,7 @@</span><br><span>                     ret =3D add_route3(0, 0, rl-&gt;=
+spec.remote_endpoint, tt,</span><br><span>                                 =
+     flags, &amp;rl-&gt;rgi, es, ctx) &amp;&amp; ret;</span><br><span>     =
+            }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#endif=
+ /* ifdef TARGET_ANDROID */</span><br><span>             }</span><br><span>=
+ </span><br><span>             /* set a flag so we can undo later */</span>=
+<br><span></span><br></pre><p>To view, visit <a href=3D"http://gerrit.openv=
+pn.net/c/openvpn/+/890?usp=3Demail">change 890</a>. To unsubscribe, or for =
+help writing mail filters, visit <a href=3D"http://gerrit.openvpn.net/setti=
+ngs">settings</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMes=
+sage"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.org/View=
+Action"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/=
++/890?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div>=
+</div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: If6a636b2099d948e249cf92ed2b=
-a91d1698ee42f </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 888 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I22e4b73e744c765a43bdb29f6e1=
+8813d103ea757 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 890 </div>
 <div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
 <div style=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@...1711...=
 27...&gt; </div>
@@ -157,5 +172,5 @@ ts.sourceforge.net&gt; </div>
 <div style=3D"display:none"> Gerrit-MessageType: newchange </div>
 
 
---Iff+z9BM+0w=--
+--M2YB4PnhSQo=--
 
