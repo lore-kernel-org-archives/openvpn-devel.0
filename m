@@ -1,14 +1,14 @@
 From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Wed, 12 Feb 2025 13:02:03 +0000
+Date: Wed, 12 Feb 2025 13:02:07 +0000
 In-Reply-To: <gerrit.1739361204000.I3f05318fb6f8d9e32d07532a4f0c6ccf8fb757ce@...2715...>
 References: <gerrit.1739361204000.I3f05318fb6f8d9e32d07532a4f0c6ccf8fb757ce@...2715...>
 Reply-To: gert@...1296..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <920d645a5cb1d5a66ca8212bd24dc1faf5f53a46-EmailReplacePatchSet-HTML@...2715...>
+Message-ID: <920d645a5cb1d5a66ca8212bd24dc1faf5f53a46-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="abtOf0bkYww="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="qQOHL3cQFeE="; charset=UTF-8
 Subject: [Openvpn-devel] [XS] Change in openvpn[master]: Fix typo in
  positive_atoi
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -19,19 +19,15 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: plaisthos <arne-openvpn@...1227...>
+Cc: flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---abtOf0bkYww=
+--qQOHL3cQFeE=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-cron2 has uploaded a new patch set (#2) to the change originally created by=
- plaisthos. ( http://gerrit.openvpn.net/c/openvpn/+/889?usp=3Demail )
-
-The following approvals got outdated and were removed:
-Code-Review+2 by cron2
-
+cron2 has submitted this change. ( http://gerrit.openvpn.net/c/openvpn/+/88=
+9?usp=3Demail )
 
 Change subject: Fix typo in positive_atoi
 ......................................................................
@@ -52,7 +48,7 @@ M src/openvpn/options.c
 1 file changed, 1 insertion(+), 1 deletion(-)
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/89/889/2
+
 
 diff --git a/src/openvpn/options.c b/src/openvpn/options.c
 index 218d8a6..3ae44db 100644
@@ -82,45 +78,42 @@ Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
 Gerrit-Reviewer: cron2 <gert@...1296...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-MessageType: newpatchset
+Gerrit-MessageType: merged
 
---abtOf0bkYww=
+--qQOHL3cQFeE=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p>cron2 <strong>uploaded patch set #2</strong> to the change originally cr=
-eated by plaisthos.</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/=
-889?usp=3Demail">View Change</a></p><p>The following approvals got outdated=
- and were removed:
-Code-Review+2 by cron2</p><pre style=3D"font-family: monospace,monospace; w=
-hite-space: pre-wrap;">Fix typo in positive_atoi<br><br>This is a code path=
- that only affects Android<br><br>Change-Id: I3f05318fb6f8d9e32d07532a4f0c6=
-ccf8fb757ce<br>Signed-off-by: Arne Schwabe &lt;arne@...1227...&gt;<br>Acked=
--by: Gert Doering &lt;gert@...1296...&gt;<br>Message-Id: &lt;20250212123652=
-.18183-1-gert@...1296...&gt;<br>URL: https://www.mail-archive.com/openvpn-d=
-evel@lists.sourceforge.net/msg30832.html<br>Signed-off-by: Gert Doering &lt=
-;gert@...1296...&gt;<br>---<br>M src/openvpn/options.c<br>1 file changed, 1=
- insertion(+), 1 deletion(-)<br><br></pre><pre style=3D"font-family: monosp=
-ace,monospace; white-space: pre-wrap;">git pull ssh://gerrit.openvpn.net:29=
-418/openvpn refs/changes/89/889/2</pre><pre style=3D"font-family: monospace=
-,monospace; white-space: pre-wrap;"><span>diff --git a/src/openvpn/options.=
-c b/src/openvpn/options.c</span><br><span>index 218d8a6..3ae44db 100644</sp=
-an><br><span>--- a/src/openvpn/options.c</span><br><span>+++ b/src/openvpn/=
-options.c</span><br><span>@@ -8316,7 +8316,7 @@</span><br><span> #if define=
-d(TARGET_ANDROID)</span><br><span>         else if (streq(p[1], &quot;PROXY=
-_HTTP&quot;) &amp;&amp; p[3] &amp;&amp; !p[4])</span><br><span>         {</=
-span><br><span style=3D"color: hsl(0, 100%, 40%);">-            o-&gt;http_=
-proxy_port =3D positiove_atoi(p[3], msglevel);</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+            o-&gt;http_proxy_port =3D positive_a=
-toi(p[3], msglevel);</span><br><span>             o-&gt;http_proxy =3D p[2]=
-;</span><br><span>         }</span><br><span> #endif</span><br><span></span=
-><br></pre><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn=
-/+/889?usp=3Demail">change 889</a>. To unsubscribe, or for help writing mai=
-l filters, visit <a href=3D"http://gerrit.openvpn.net/settings">settings</a=
->.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div items=
-cope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link it=
-emprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/889?usp=3Demai=
-l"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
+<p>cron2 <strong>submitted</strong> this change.</p><p><a href=3D"http://ge=
+rrit.openvpn.net/c/openvpn/+/889?usp=3Demail">View Change</a></p><div style=
+=3D"white-space:pre-wrap"></div><pre style=3D"font-family: monospace,monosp=
+ace; white-space: pre-wrap;">Fix typo in positive_atoi<br><br>This is a cod=
+e path that only affects Android<br><br>Change-Id: I3f05318fb6f8d9e32d07532=
+a4f0c6ccf8fb757ce<br>Signed-off-by: Arne Schwabe &lt;arne@...1227...&gt;<br=
+>Acked-by: Gert Doering &lt;gert@...1296...&gt;<br>Message-Id: &lt;20250212=
+123652.18183-1-gert@...1296...&gt;<br>URL: https://www.mail-archive.com/ope=
+nvpn-devel@lists.sourceforge.net/msg30832.html<br>Signed-off-by: Gert Doeri=
+ng &lt;gert@...1296...&gt;<br>---<br>M src/openvpn/options.c<br>1 file chan=
+ged, 1 insertion(+), 1 deletion(-)<br><br></pre>
+<pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><sp=
+an>diff --git a/src/openvpn/options.c b/src/openvpn/options.c</span><br><sp=
+an>index 218d8a6..3ae44db 100644</span><br><span>--- a/src/openvpn/options.=
+c</span><br><span>+++ b/src/openvpn/options.c</span><br><span>@@ -8316,7 +8=
+316,7 @@</span><br><span> #if defined(TARGET_ANDROID)</span><br><span>     =
+    else if (streq(p[1], &quot;PROXY_HTTP&quot;) &amp;&amp; p[3] &amp;&amp;=
+ !p[4])</span><br><span>         {</span><br><span style=3D"color: hsl(0, 1=
+00%, 40%);">-            o-&gt;http_proxy_port =3D positiove_atoi(p[3], msg=
+level);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            =
+o-&gt;http_proxy_port =3D positive_atoi(p[3], msglevel);</span><br><span>  =
+           o-&gt;http_proxy =3D p[2];</span><br><span>         }</span><br>=
+<span> #endif</span><br><span></span><br></pre><p>To view, visit <a href=3D=
+"http://gerrit.openvpn.net/c/openvpn/+/889?usp=3Demail">change 889</a>. To =
+unsubscribe, or for help writing mail filters, visit <a href=3D"http://gerr=
+it.openvpn.net/settings">settings</a>.</p><div itemscope itemtype=3D"http:/=
+/schema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"ht=
+tp://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.op=
+envpn.net/c/openvpn/+/889?usp=3Demail"/><meta itemprop=3D"name" content=3D"=
+View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
@@ -136,8 +129,8 @@ c6ccf8fb757ce </div>
 1...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
+<div style=3D"display:none"> Gerrit-MessageType: merged </div>
 
 
---abtOf0bkYww=--
+--qQOHL3cQFeE=--
 
