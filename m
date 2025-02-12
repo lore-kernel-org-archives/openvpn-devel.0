@@ -1,16 +1,11 @@
-From: "uddr (Code Review)" <gerrit@...515...>
-Date: Wed, 12 Feb 2025 19:56:15 +0000
-In-Reply-To: <gerrit.1739368474000.I29b68675143988c3304395d9d5ec62289cf519a7@...2715...>
-References: <gerrit.1739368474000.I29b68675143988c3304395d9d5ec62289cf519a7@...2715...>
-Reply-To: yura.uddr@...277..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <b1286a0cd27003c8ae6f4da041ee5068ee685252-EmailReviewComments-HTML@...2715...>
+From: Gert Doering <gert@...1296...>
+Date: Wed, 12 Feb 2025 22:51:51 +0100
+Message-ID: <20250212215151.619-1-gert@...1296...>
+In-Reply-To: <gerrit.1739368444000.I29b68675143988c3304395d9d5ec62289cf519a7@...2715...>
+References: <gerrit.1739368444000.I29b68675143988c3304395d9d5ec62289cf519a7@...2715...>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="p/k6loeQDVo="; charset=UTF-8
-Subject: [Openvpn-devel] [M] Change in openvpn[release/2.6]: GHA: Drop
- Ubuntu 20.04 and other maintenance (2.6)
+Subject: [Openvpn-devel] [PATCH v1] GHA: Drop Ubuntu 20.04 and other
+ maintenance
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,87 +14,173 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: flichtenheld <frank@...2641...>
-Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---p/k6loeQDVo=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+From: Frank Lichtenheld <frank@...2641...>
 
-Attention is currently required from: flichtenheld, plaisthos.
+- Drop Ubuntu 20.04
+  GHA runners will go away in April 2025
+- Change ubuntu-latest to ubuntu-24.04
+  to make sure we are not surprised by
+  future changes.
+- Update vcpkg digest to latest 33e9c99
+- Update github actions to latest
 
-uddr has posted comments on this change. ( http://gerrit.openvpn.net/c/open=
-vpn/+/893?usp=3Demail )
+Change-Id: I29b68675143988c3304395d9d5ec62289cf519a7
+Signed-off-by: Frank Lichtenheld <frank@...2641...>
+Acked-by: Yuriy Darnobyt <yura.uddr@...277...>
+---
 
-Change subject: GHA: Drop Ubuntu 20.04 and other maintenance (2.6)
-......................................................................
+This change was reviewed on Gerrit and approved by at least one
+developer. I request to merge it to master.
 
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/892
+This mail reflects revision 1 of this Change.
 
-Patch Set 1: Code-Review+2
+Acked-by according to Gerrit (reflected above):
+Yuriy Darnobyt <yura.uddr@...277...>
 
-
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/893?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings
-
-Gerrit-Project: openvpn
-Gerrit-Branch: release/2.6
-Gerrit-Change-Id: I29b68675143988c3304395d9d5ec62289cf519a7
-Gerrit-Change-Number: 893
-Gerrit-PatchSet: 1
-Gerrit-Owner: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-Reviewer: uddr <yura.uddr@...277...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Comment-Date: Wed, 12 Feb 2025 19:56:15 +0000
-Gerrit-HasComments: No
-Gerrit-Has-Labels: Yes
-Gerrit-MessageType: comment
-
---p/k6loeQDVo=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<p> Attention is currently required from: flichtenheld, plaisthos. </p>
-<p>Patch set 1:<span style=3D"border-radius: 3px; display: inline-block; ma=
-rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/893?usp=3Demail">Vi=
-ew Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To vie=
-w, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/893?usp=3Demail">=
-change 893</a>. To unsubscribe, or for help writing mail filters, visit <a =
-href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope=
- itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"act=
-ion" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=
-=3D"http://gerrit.openvpn.net/c/openvpn/+/893?usp=3Demail"/><meta itemprop=
-=3D"name" content=3D"View Change"/></div></div>
-
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: release/2.6 </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I29b68675143988c3304395d9d5e=
-c62289cf519a7 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 893 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
-<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
-.&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: uddr &lt;yura.uddr@...277...&=
-gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
-41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Wed, 12 Feb 2025 19:56:15=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: No </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
-
-
---p/k6loeQDVo=--
+        
+diff --git a/.github/workflows/build.yaml b/.github/workflows/build.yaml
+index 3ebea79..8fd1325 100644
+--- a/.github/workflows/build.yaml
++++ b/.github/workflows/build.yaml
+@@ -27,7 +27,7 @@
+       - name: Show changes on standard output
+         run: git diff
+         working-directory: openvpn
+-      - uses: actions/upload-artifact@...2845... # v4.5.0
++      - uses: actions/upload-artifact@...2860... # v4.6.0
+         with:
+           name: uncrustify-changes.patch
+           path: 'openvpn/uncrustify-changes.patch'
+@@ -54,7 +54,7 @@
+       - name: Restore from cache and install vcpkg
+         uses: lukka/run-vcpkg@...2815... # v11.5
+         with:
+-          vcpkgGitCommitId: 80d54ff62d528339c626a6fbc3489a7f25956ade
++          vcpkgGitCommitId: 33e9c99208736b713cabe4490e15235f62f893d4
+           vcpkgJsonGlob: '**/mingw/vcpkg.json'
+ 
+       - name: Run CMake with vcpkg.json manifest
+@@ -64,7 +64,7 @@
+           buildPreset: mingw-${{ matrix.arch }}
+           buildPresetAdditionalArgs: "['--config Debug']"
+ 
+-      - uses: actions/upload-artifact@...2845... # v4.5.0
++      - uses: actions/upload-artifact@...2860... # v4.6.0
+         with:
+           name: openvpn-mingw-${{ matrix.arch }}
+           path: |
+@@ -72,7 +72,7 @@
+             ${{ github.workspace }}/out/build/mingw/${{ matrix.arch }}/Debug/*.dll
+             !${{ github.workspace }}/out/build/mingw/${{ matrix.arch }}/Debug/test_*.exe
+ 
+-      - uses: actions/upload-artifact@...2845... # v4.5.0
++      - uses: actions/upload-artifact@...2860... # v4.6.0
+         with:
+           name: openvpn-mingw-${{ matrix.arch }}-tests
+           path: |
+@@ -106,16 +106,12 @@
+     strategy:
+       fail-fast: false
+       matrix:
+-        os: [ubuntu-20.04, ubuntu-22.04, ubuntu-24.04]
++        os: [ubuntu-22.04, ubuntu-24.04]
+         sslpkg: [libmbedtls-dev]
+         ssllib: [mbedtls]
+         libname: [mbed TLS]
+ 
+         include:
+-          - os: ubuntu-20.04
+-            sslpkg: "libssl-dev"
+-            libname: OpenSSL 1.1.1
+-            ssllib: openssl
+           - os: ubuntu-22.04
+             sslpkg: "libssl-dev"
+             libname: OpenSSL 3.0.2
+@@ -128,32 +124,6 @@
+             ssllib: openssl
+             pkcs11pkg: "libpkcs11-helper1-dev softhsm2 gnutls-bin"
+             extraconf: --enable-pkcs11
+-          - os: ubuntu-20.04
+-            sslpkg: "libssl-dev"
+-            libname: OpenSSL 1.1.1
+-            ssllib: openssl
+-            pkcs11pkg: "libpkcs11-helper1-dev softhsm2 gnutls-bin"
+-            extraconf: "--enable-iproute2 --enable-pkcs11"
+-          - os: ubuntu-20.04
+-            sslpkg: "libssl-dev"
+-            libname: OpenSSL 1.1.1
+-            ssllib: openssl
+-            extraconf: "--enable-async-push"
+-          - os: ubuntu-20.04
+-            sslpkg: "libssl-dev"
+-            libname: OpenSSL 1.1.1
+-            ssllib: openssl
+-            extraconf: "--disable-management"
+-          - os: ubuntu-20.04
+-            sslpkg: "libssl-dev"
+-            libname: OpenSSL 1.1.1
+-            ssllib: openssl
+-            extraconf: "--enable-small"
+-          - os: ubuntu-20.04
+-            sslpkg: "libssl-dev"
+-            libname: OpenSSL 1.1.1
+-            ssllib: openssl
+-            extraconf: "--disable-lzo --disable-lz4"
+ 
+     name: "gcc - ${{matrix.os}} - ${{matrix.libname}} ${{matrix.extraconf}}"
+     env:
+@@ -182,7 +152,7 @@
+     strategy:
+       fail-fast: false
+       matrix:
+-        os: [ubuntu-20.04, ubuntu-22.04, ubuntu-24.04]
++        os: [ubuntu-22.04, ubuntu-24.04]
+         ssllib: [mbedtls, openssl]
+ 
+     name: "clang-asan - ${{matrix.os}} - ${{matrix.ssllib}}"
+@@ -268,7 +238,7 @@
+       runs-on: windows-latest
+       steps:
+       - uses: actions/checkout@...2844... # v4.2.2
+-      - uses: lukka/get-cmake@...2846... # v3.31.3
++      - uses: lukka/get-cmake@...2861... # v3.31.5
+ 
+       - name: Install rst2html
+         run: python -m pip install --upgrade pip docutils
+@@ -276,7 +246,7 @@
+       - name: Restore artifacts, or setup vcpkg (do not install any package)
+         uses: lukka/run-vcpkg@...2815... # v11.5
+         with:
+-          vcpkgGitCommitId: 80d54ff62d528339c626a6fbc3489a7f25956ade
++          vcpkgGitCommitId: 33e9c99208736b713cabe4490e15235f62f893d4
+           vcpkgJsonGlob: '**/windows/vcpkg.json'
+ 
+       - name: Run CMake with vcpkg.json manifest (NO TESTS)
+@@ -295,7 +265,7 @@
+           testPreset: win-${{ matrix.arch }}-release
+           testPresetAdditionalArgs: "['--output-on-failure']"
+ 
+-      - uses: actions/upload-artifact@...2845... # v4.5.0
++      - uses: actions/upload-artifact@...2860... # v4.6.0
+         with:
+           name: openvpn-msvc-${{ matrix.arch }}
+           path: |
+diff --git a/.github/workflows/coverity-scan.yml b/.github/workflows/coverity-scan.yml
+index cb70022..3381d8f 100644
+--- a/.github/workflows/coverity-scan.yml
++++ b/.github/workflows/coverity-scan.yml
+@@ -9,7 +9,7 @@
+     # Running coverity requires the secrets.COVERITY_SCAN_TOKEN token
+     # which is only available on the main repository
+     if: github.repository_owner == 'OpenVPN'
+-    runs-on: ubuntu-latest
++    runs-on: ubuntu-24.04
+     steps:
+       - name: Check submission cache
+         id: check_submit
 
