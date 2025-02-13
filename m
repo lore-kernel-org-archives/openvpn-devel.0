@@ -1,16 +1,15 @@
 From: "plaisthos (Code Review)" <gerrit@...515...>
-Date: Thu, 13 Feb 2025 13:49:06 +0000
-In-Reply-To: <gerrit.1737027245000.I15c7cfdddb06d4530d669b222a3c65db5169b29a@...2715...>
-References: <gerrit.1737027245000.I15c7cfdddb06d4530d669b222a3c65db5169b29a@...2715...>
+Date: Thu, 13 Feb 2025 15:25:06 +0000
+References: <gerrit.1739460301000.If6afa1108f9234f98afdbe0de7b7320403871772@...2715...>
 Reply-To: arne-openvpn@...1227..., openvpn-devel@lists.sourceforge.net,
- frank@...2641..., max@...2606...
-Message-ID: <a52811b52c4f1d8e0637d7f1e4d103167962c026-EmailReviewComments-HTML@...2715...>
+ frank@...2641...
+Message-ID: <89c07c397eff1a4b0b151034e86cd9b861f5a773-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="PlZ1nuZOk9E="; charset=UTF-8
-Subject: [Openvpn-devel] [M] Change in openvpn[master]: Extend the unit test
- for data channel packets with aead limit tests
+Content-Type: multipart/alternative; boundary="tnyQfKdEWWY="; charset=UTF-8
+Subject: [Openvpn-devel] [S] Change in openvpn[master]: Add Android cmake
+ building
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,138 +18,191 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Cc: MaxF <max@...2606...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: flichtenheld <frank@...2641...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---PlZ1nuZOk9E=
+--tnyQfKdEWWY=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: MaxF, flichtenheld.
+Attention is currently required from: flichtenheld.
 
-plaisthos has posted comments on this change. ( http://gerrit.openvpn.net/c=
-/openvpn/+/868?usp=3Demail )
+Hello flichtenheld,
 
-Change subject: Extend the unit test for data channel packets with aead lim=
-it tests
+I'd like you to do a code review.
+Please visit
+
+    http://gerrit.openvpn.net/c/openvpn/+/895?usp=3Demail
+
+to review the following change.
+
+
+Change subject: Add Android cmake building
 ......................................................................
 
+Add Android cmake building
 
-Patch Set 4:
+There is a mode to build with a real Android NDK that requires setting up c=
+make to build with the NDK and so.
+For quick&dirty compile tests that do not actually use the Android NDK on L=
+inux, -DFAKE_ANDROID on Linux can be
+used to compile a binary using TARGET_ANDROID.
 
-(3 comments)
-
-File tests/unit_tests/openvpn/test_ssl.c:
-
-http://gerrit.openvpn.net/c/openvpn/+/868/comment/e66a4309_4a9d386f :
-PS2, Line 369:
-> Nitpick: Did you mean to put 2 blank lines here?
-Acknowledged
-
-
-http://gerrit.openvpn.net/c/openvpn/+/868/comment/4e2068e4_57e78179 :
-PS2, Line 403: \
-> Why a line continuation?
-Acknowledged
+Change-Id: If6afa1108f9234f98afdbe0de7b7320403871772
+Signed-off-by: Arne Schwabe <arne@...1227...>
+---
+M CMakeLists.txt
+M config.h.cmake.in
+2 files changed, 12 insertions(+), 1 deletion(-)
 
 
-http://gerrit.openvpn.net/c/openvpn/+/868/comment/cc1a1597_b1c4bf02 :
-PS2, Line 432:    /* Ensure that we are still on the initial key (unit test=
- uses 4)
-             :      * or that it is 0 when epoch is not in use */
-             :     assert_int_equal(co->key_ctx_bi.encrypt.epoch, expected_=
-epoch);
-> I was confused where the 4 comes from. [=E2=80=A6]
-Acknowledged
 
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/95/895/1
 
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 5081e81..b04adce 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -39,6 +39,7 @@
+ option(ENABLE_LZO "BUILD with lzo" ON)
+ option(ENABLE_PKCS11 "BUILD with pkcs11-helper" ON)
+ option(USE_WERROR "Treat compiler warnings as errors (-Werror)" ON)
++option(FAKE_ANDROID "Target Android but do not use actual cross compile/An=
+droid cmake to build for simple compile checks on Linux")
+
+ set(PLUGIN_DIR /usr/local/lib/openvpn/plugins CACHE FILEPATH "Location of =
+the plugin directory")
+
+@@ -122,7 +123,14 @@
+ set(CMAKE_C_STANDARD 11)
+
+ # Set the various defines for config.h.cmake.in
+-if (${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
++if (${CMAKE_SYSTEM_NAME} STREQUAL "Android" OR ${FAKE_ANDROID})
++    set(TARGET_ANDROID YES)
++    set(ENABLE_ASYNC_PUSH YES)
++    set(ENABLE_SITNL YES)
++    set(HAVE_LINUX_TYPES_H 1)
++    # Wacky workaround as OpenSSL package detection is otherwise broken (h=
+ttps://stackoverflow.com/questions/45958214/android-cmake-could-not-find-op=
+enssl)
++    list(APPEND CMAKE_FIND_ROOT_PATH ${OPENSSL_ROOT_DIR})
++elseif (${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
+     set(TARGET_LINUX YES)
+     set(ENABLE_ASYNC_PUSH YES)
+     set(ENABLE_LINUXDCO YES)
+diff --git a/config.h.cmake.in b/config.h.cmake.in
+index 74a53a6..2f7b43d 100644
+--- a/config.h.cmake.in
++++ b/config.h.cmake.in
+@@ -432,6 +432,9 @@
+ /* Are we running WIN32? */
+ #cmakedefine TARGET_WIN32
+
++/* Are we targeting Android? */
++#cmakedefine TARGET_ANDROID
++
+ #define TARGET_ALIAS "@CMAKE_SYSTEM_NAME@"
+
+ /* Enable GNU extensions on systems that have them.  */
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/868?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/895?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings
 
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: I15c7cfdddb06d4530d669b222a3c65db5169b29a
-Gerrit-Change-Number: 868
-Gerrit-PatchSet: 4
+Gerrit-Change-Id: If6afa1108f9234f98afdbe0de7b7320403871772
+Gerrit-Change-Number: 895
+Gerrit-PatchSet: 1
 Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
-Gerrit-CC: MaxF <max@...2606...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Attention: MaxF <max@...2606...>
-Gerrit-Comment-Date: Thu, 13 Feb 2025 13:49:06 +0000
-Gerrit-HasComments: Yes
-Gerrit-Has-Labels: No
-Comment-In-Reply-To: MaxF <max@...2606...>
-Gerrit-MessageType: comment
+Gerrit-MessageType: newchange
 
---PlZ1nuZOk9E=
+--tnyQfKdEWWY=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p> Attention is currently required from: MaxF, flichtenheld. </p>
-<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/868?usp=3Demail">View C=
-hange</a></p><p>3 comments:</p><ul style=3D"list-style: none; padding: 0;">=
-<li style=3D"margin: 0; padding: 0;"><p>File tests/unit_tests/openvpn/test_=
-ssl.c:</p><ul style=3D"list-style: none; padding: 0;"><li style=3D"margin: =
-0; padding: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http:/=
-/gerrit.openvpn.net/c/openvpn/+/868/comment/e66a4309_4a9d386f">Patch Set #2=
-, Line 369:</a> <code style=3D"font-family:monospace,monospace"></code></p>=
-<p><blockquote style=3D"border-left: 1px solid #aaa; margin: 10px 0; paddin=
-g: 0 10px;">Nitpick: Did you mean to put 2 blank lines here?</blockquote></=
-p><p style=3D"white-space: pre-wrap; word-wrap: break-word;">Acknowledged</=
-p></li><li style=3D"margin: 0; padding: 0 0 0 16px;"><p style=3D"margin-bot=
-tom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/868/comment/4e2=
-068e4_57e78179">Patch Set #2, Line 403:</a> <code style=3D"font-family:mono=
-space,monospace">\</code></p><p><blockquote style=3D"border-left: 1px solid=
- #aaa; margin: 10px 0; padding: 0 10px;">Why a line continuation?</blockquo=
-te></p><p style=3D"white-space: pre-wrap; word-wrap: break-word;">Acknowled=
-ged</p></li><li style=3D"margin: 0; padding: 0 0 0 16px;"><p style=3D"margi=
-n-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/868/commen=
-t/cc1a1597_b1c4bf02">Patch Set #2, Line 432:</a> </p><p><blockquote style=
-=3D"border-left: 1px solid #aaa; margin: 10px 0; padding: 0 10px;"><pre sty=
-le=3D"font-family: monospace,monospace; white-space: pre-wrap;">   /* Ensur=
-e that we are still on the initial key (unit test uses 4)<br>     * or that=
- it is 0 when epoch is not in use */<br>    assert_int_equal(co-&gt;key_ctx=
-_bi.encrypt.epoch, expected_epoch);<br></pre></blockquote></p><p><blockquot=
-e style=3D"border-left: 1px solid #aaa; margin: 10px 0; padding: 0 10px;">I=
- was confused where the 4 comes from. [=E2=80=A6]</blockquote></p><p style=
-=3D"white-space: pre-wrap; word-wrap: break-word;">Acknowledged</p></li></u=
-l></li></ul><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvp=
-n/+/868?usp=3Demail">change 868</a>. To unsubscribe, or for help writing ma=
-il filters, visit <a href=3D"http://gerrit.openvpn.net/settings">settings</=
-a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div item=
-scope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link i=
-temprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/868?usp=3Dema=
-il"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
+<p> Attention is currently required from: flichtenheld. </p>
+<p>plaisthos would like flichtenheld to <strong>review</strong> this change.
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/895?usp=3Demail">Vi=
+ew Change</a></p><pre style=3D"font-family: monospace,monospace; white-spac=
+e: pre-wrap;">Add Android cmake building<br><br>There is a mode to build wi=
+th a real Android NDK that requires setting up cmake to build with the NDK =
+and so.<br>For quick&amp;dirty compile tests that do not actually use the A=
+ndroid NDK on Linux, -DFAKE_ANDROID on Linux can be<br>used to compile a bi=
+nary using TARGET_ANDROID.<br><br>Change-Id: If6afa1108f9234f98afdbe0de7b73=
+20403871772<br>Signed-off-by: Arne Schwabe &lt;arne@...1227...&gt;<br>---<b=
+r>M CMakeLists.txt<br>M config.h.cmake.in<br>2 files changed, 12 insertions=
+(+), 1 deletion(-)<br><br></pre><pre style=3D"font-family: monospace,monosp=
+ace; white-space: pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/openvp=
+n refs/changes/95/895/1</pre><pre style=3D"font-family: monospace,monospace=
+; white-space: pre-wrap;"><span>diff --git a/CMakeLists.txt b/CMakeLists.tx=
+t</span><br><span>index 5081e81..b04adce 100644</span><br><span>--- a/CMake=
+Lists.txt</span><br><span>+++ b/CMakeLists.txt</span><br><span>@@ -39,6 +39=
+,7 @@</span><br><span> option(ENABLE_LZO &quot;BUILD with lzo&quot; ON)</sp=
+an><br><span> option(ENABLE_PKCS11 &quot;BUILD with pkcs11-helper&quot; ON)=
+</span><br><span> option(USE_WERROR &quot;Treat compiler warnings as errors=
+ (-Werror)&quot; ON)</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++option(FAKE_ANDROID &quot;Target Android but do not use actual cross compi=
+le/Android cmake to build for simple compile checks on Linux&quot;)</span><=
+br><span> </span><br><span> set(PLUGIN_DIR /usr/local/lib/openvpn/plugins C=
+ACHE FILEPATH &quot;Location of the plugin directory&quot;)</span><br><span=
+> </span><br><span>@@ -122,7 +123,14 @@</span><br><span> set(CMAKE_C_STANDA=
+RD 11)</span><br><span> </span><br><span> # Set the various defines for con=
+fig.h.cmake.in</span><br><span style=3D"color: hsl(0, 100%, 40%);">-if (${C=
+MAKE_SYSTEM_NAME} STREQUAL &quot;Linux&quot;)</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+if (${CMAKE_SYSTEM_NAME} STREQUAL &quot;Android&q=
+uot; OR ${FAKE_ANDROID})</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+    set(TARGET_ANDROID YES)</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+    set(ENABLE_ASYNC_PUSH YES)</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+    set(ENABLE_SITNL YES)</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+    set(HAVE_LINUX_TYPES_H 1)</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+    # Wacky workaround as OpenSSL p=
+ackage detection is otherwise broken (https://stackoverflow.com/questions/4=
+5958214/android-cmake-could-not-find-openssl)</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+    list(APPEND CMAKE_FIND_ROOT_PATH ${OPENSSL_RO=
+OT_DIR})</span><br><span style=3D"color: hsl(120, 100%, 40%);">+elseif (${C=
+MAKE_SYSTEM_NAME} STREQUAL &quot;Linux&quot;)</span><br><span>     set(TARG=
+ET_LINUX YES)</span><br><span>     set(ENABLE_ASYNC_PUSH YES)</span><br><sp=
+an>     set(ENABLE_LINUXDCO YES)</span><br><span>diff --git a/config.h.cmak=
+e.in b/config.h.cmake.in</span><br><span>index 74a53a6..2f7b43d 100644</spa=
+n><br><span>--- a/config.h.cmake.in</span><br><span>+++ b/config.h.cmake.in=
+</span><br><span>@@ -432,6 +432,9 @@</span><br><span> /* Are we running WIN=
+32? */</span><br><span> #cmakedefine TARGET_WIN32</span><br><span> </span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+/* Are we targeting Android=
+? */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#cmakedefine TA=
+RGET_ANDROID</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span>=
+<br><span> #define TARGET_ALIAS &quot;@CMAKE_SYSTEM_NAME@&quot;</span><br><=
+span> </span><br><span> /* Enable GNU extensions on systems that have them.=
+  */</span><br><span></span><br></pre><p>To view, visit <a href=3D"http://g=
+errit.openvpn.net/c/openvpn/+/895?usp=3Demail">change 895</a>. To unsubscri=
+be, or for help writing mail filters, visit <a href=3D"http://gerrit.openvp=
+n.net/settings">settings</a>.</p><div itemscope itemtype=3D"http://schema.o=
+rg/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://sche=
+ma.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net=
+/c/openvpn/+/895?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Chan=
+ge"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I15c7cfdddb06d4530d669b222a3=
-c65db5169b29a </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 868 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 4 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: If6afa1108f9234f98afdbe0de7b=
+7320403871772 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 895 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
 <div style=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@...1711...=
 27...&gt; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
 1...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: MaxF &lt;max@...2606...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
 41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: MaxF &lt;max@...2606...&gt; =
-</div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Thu, 13 Feb 2025 13:49:06=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: No </div>
-<div style=3D"display:none"> Comment-In-Reply-To: MaxF &lt;max@...2606...&g=
-t; </div>
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
+<div style=3D"display:none"> Gerrit-MessageType: newchange </div>
 
 
---PlZ1nuZOk9E=--
+--tnyQfKdEWWY=--
 
