@@ -1,16 +1,10 @@
-From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Fri, 14 Feb 2025 16:03:55 +0000
-In-Reply-To: <gerrit.1739527719000.I02afe6817433ca21aae76671c35151ec6a066933@...2715...>
-References: <gerrit.1739527719000.I02afe6817433ca21aae76671c35151ec6a066933@...2715...>
-Reply-To: gert@...1296..., arne-openvpn@...1227..., marco@...2726...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <c2b8d21c7052caabd1c723c3c528fbe34a0b3728-HTML@...2715...>
+From: Gert Doering <gert@...1296...>
+Date: Fri, 14 Feb 2025 17:06:34 +0100
+Message-ID: <20250214160634.6670-1-gert@...1296...>
+In-Reply-To: <gerrit.1739460301000.Ieb787a040f9eaf34d9d16996af1d63d7eae94944@...2715...>
+References: <gerrit.1739460301000.Ieb787a040f9eaf34d9d16996af1d63d7eae94944@...2715...>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="TVf+xDMHRxw="; charset=UTF-8
-Subject: [Openvpn-devel] [XS] Change in openvpn[master]:
- get_default_gateway(): Prevent passing IPV4_INVALID_ADDR as a destina...
+Subject: [Openvpn-devel] [PATCH v4] Add android build to Github Actions
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,141 +13,67 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: mrbff <marco@...2726...>
-Cc: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---TVf+xDMHRxw=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+From: Arne Schwabe <arne@...1227...>
 
-cron2 has submitted this change. ( http://gerrit.openvpn.net/c/openvpn/+/89=
-8?usp=3Demail )
-
-Change subject: get_default_gateway(): Prevent passing IPV4_INVALID_ADDR as=
- a destination
-......................................................................
-
-get_default_gateway(): Prevent passing IPV4_INVALID_ADDR as a destination
-
-When using --redirect-gateway (IPv4) while connected to an IPv6 remote,
-OpenVPN still attempts to determine the IPv4 default gateway,
-so link_socket_current_remote() returns IPV4_INVALID_ADDR (0xffffffff)
-as the destination, leading to unintended behavior:
-
-- the IPv4 default gateway (rl->rgi.gateway.addr) gets wiped.
-- this prevents proper restoration of the original route when needed.
-
-To fix this, if link_socket_current_remote() returns IPV4_INVALID_ADDR,
-we now pass INADDR_ANY (0x00000000) to get_default_gateway(),
-ensuring the function behaves correctly.
-
-Change-Id: I02afe6817433ca21aae76671c35151ec6a066933
-Signed-off-by: Marco Baffo <marco@...2726...>
-Acked-by: Gert Doering <gert@...1296...>
-Message-Id: <20250214153434.18539-1-gert@...1296...>
-URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg30=
-895.html
-Signed-off-by: Gert Doering <gert@...1296...>
+Change-Id: Ieb787a040f9eaf34d9d16996af1d63d7eae94944
+Signed-off-by: Arne Schwabe <arne@...1227...>
+Acked-by: Frank Lichtenheld <frank@...2641...>
 ---
-M src/openvpn/route.c
-1 file changed, 1 insertion(+), 1 deletion(-)
 
+This change was reviewed on Gerrit and approved by at least one
+developer. I request to merge it to master.
 
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/896
+This mail reflects revision 4 of this Change.
 
+Acked-by according to Gerrit (reflected above):
+Frank Lichtenheld <frank@...2641...>
 
-diff --git a/src/openvpn/route.c b/src/openvpn/route.c
-index d895e1c..bc41492 100644
---- a/src/openvpn/route.c
-+++ b/src/openvpn/route.c
-@@ -655,7 +655,7 @@
-         rl->spec.flags |=3D RTSA_DEFAULT_METRIC;
-     }
-
--    get_default_gateway(&rl->rgi, remote_host, ctx);
-+    get_default_gateway(&rl->rgi, remote_host !=3D IPV4_INVALID_ADDR ? rem=
-ote_host : INADDR_ANY, ctx);
-     if (rl->rgi.flags & RGI_ADDR_DEFINED)
-     {
-         setenv_route_addr(es, "net_gateway", rl->rgi.gateway.addr, -1);
-
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/898?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings
-
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: I02afe6817433ca21aae76671c35151ec6a066933
-Gerrit-Change-Number: 898
-Gerrit-PatchSet: 4
-Gerrit-Owner: mrbff <marco@...2726...>
-Gerrit-Reviewer: cron2 <gert@...1296...>
-Gerrit-Reviewer: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-MessageType: merged
-
---TVf+xDMHRxw=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<p>cron2 <strong>submitted</strong> this change.</p><p><a href=3D"http://ge=
-rrit.openvpn.net/c/openvpn/+/898?usp=3Demail">View Change</a></p><div style=
-=3D"white-space:pre-wrap"></div><pre style=3D"font-family: monospace,monosp=
-ace; white-space: pre-wrap;">get_default_gateway(): Prevent passing IPV4_IN=
-VALID_ADDR as a destination<br><br>When using --redirect-gateway (IPv4) whi=
-le connected to an IPv6 remote,<br>OpenVPN still attempts to determine the =
-IPv4 default gateway,<br>so link_socket_current_remote() returns IPV4_INVAL=
-ID_ADDR (0xffffffff)<br>as the destination, leading to unintended behavior:=
-<br><br>- the IPv4 default gateway (rl-&gt;rgi.gateway.addr) gets wiped.<br=
->- this prevents proper restoration of the original route when needed.<br><=
-br>To fix this, if link_socket_current_remote() returns IPV4_INVALID_ADDR,<=
-br>we now pass INADDR_ANY (0x00000000) to get_default_gateway(),<br>ensurin=
-g the function behaves correctly.<br><br>Change-Id: I02afe6817433ca21aae766=
-71c35151ec6a066933<br>Signed-off-by: Marco Baffo &lt;marco@...2726...&gt;<b=
-r>Acked-by: Gert Doering &lt;gert@...1296...&gt;<br>Message-Id: &lt;2025021=
-4153434.18539-1-gert@...1296...&gt;<br>URL: https://www.mail-archive.com/op=
-envpn-devel@lists.sourceforge.net/msg30895.html<br>Signed-off-by: Gert Doer=
-ing &lt;gert@...1296...&gt;<br>---<br>M src/openvpn/route.c<br>1 file chang=
-ed, 1 insertion(+), 1 deletion(-)<br><br></pre>
-<pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><sp=
-an>diff --git a/src/openvpn/route.c b/src/openvpn/route.c</span><br><span>i=
-ndex d895e1c..bc41492 100644</span><br><span>--- a/src/openvpn/route.c</spa=
-n><br><span>+++ b/src/openvpn/route.c</span><br><span>@@ -655,7 +655,7 @@</=
-span><br><span>         rl-&gt;spec.flags |=3D RTSA_DEFAULT_METRIC;</span><=
-br><span>     }</span><br><span> </span><br><span style=3D"color: hsl(0, 10=
-0%, 40%);">-    get_default_gateway(&amp;rl-&gt;rgi, remote_host, ctx);</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+    get_default_gateway=
-(&amp;rl-&gt;rgi, remote_host !=3D IPV4_INVALID_ADDR ? remote_host : INADDR=
-_ANY, ctx);</span><br><span>     if (rl-&gt;rgi.flags &amp; RGI_ADDR_DEFINE=
-D)</span><br><span>     {</span><br><span>         setenv_route_addr(es, &q=
-uot;net_gateway&quot;, rl-&gt;rgi.gateway.addr, -1);</span><br><span></span=
-><br></pre><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn=
-/+/898?usp=3Demail">change 898</a>. To unsubscribe, or for help writing mai=
-l filters, visit <a href=3D"http://gerrit.openvpn.net/settings">settings</a=
->.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div items=
-cope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link it=
-emprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/898?usp=3Demai=
-l"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
-
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I02afe6817433ca21aae76671c35=
-151ec6a066933 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 898 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 4 </div>
-<div style=3D"display:none"> Gerrit-Owner: mrbff &lt;marco@...2726...&gt; <=
-/div>
-<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
- </div>
-<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
-1...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: merged </div>
-
-
---TVf+xDMHRxw=--
+        
+diff --git a/.github/workflows/build.yaml b/.github/workflows/build.yaml
+index 8fd1325..b1af7ec 100644
+--- a/.github/workflows/build.yaml
++++ b/.github/workflows/build.yaml
+@@ -35,6 +35,37 @@
+         run: test ! -s uncrustify-changes.patch
+         working-directory: openvpn
+ 
++  android:
++    strategy:
++      fail-fast: false
++      matrix:
++        abi: [ arm64-v8a ]
++        include:
++          - abi: arm64-v8a
++            vcpkg_triplet: arm64-android
++    runs-on: ubuntu-24.04
++    name: "Android - ${{ matrix.abi }}"
++    # Github images already setup NDK with ANDROID_NDK_ROOT pointing to the root
++    # of the SDK
++    env:
++      VCPKG_DEFAULT_TRIPLET: ${{ matrix.vcpkg_triplet }}
++      VCPKG_ROOT: ${{ github.workspace }}/vcpkg
++      VCPKG_INSTALLED_DIR: ${{ github.workspace }}/vcpkg/installed
++    steps:
++      - name: Checkout OpenVPN
++        uses: actions/checkout@...2844... # v4.2.2
++      - name: Install vcpkg
++        uses: lukka/run-vcpkg@...2815... # v11.5
++        with:
++          vcpkgGitCommitId: 33e9c99208736b713cabe4490e15235f62f893d4
++      - name: Install dependencies
++        run: ${VCPKG_ROOT}/vcpkg install openssl lz4 cmocka
++      - name: configure OpenVPN with cmake
++        run: cmake -S . -B openvpn-build -DUNSUPPORTED_BUILDS=yes -DCMAKE_SYSTEM_NAME=Android -DOPENSSL_ROOT_DIR=${VCPKG_INSTALLED_DIR}/${{ matrix.vcpkg_triplet }} -DENABLE_PKCS11=false -DBUILD_TESTING=true -DCMAKE_ANDROID_ARCH_ABI=${{ matrix.abi }} -DENABLE_LZO=false -DUSE_WERROR=no
++      - name: Build OpenVPN Android binary with cmake
++        run: cmake --build openvpn-build
++
++
+   mingw:
+     strategy:
+       fail-fast: false
 
