@@ -1,17 +1,16 @@
-From: "mrbff (Code Review)" <gerrit@...515...>
-Date: Fri, 14 Feb 2025 15:04:13 +0000
-In-Reply-To: <gerrit.1739527719000.I02afe6817433ca21aae76671c35151ec6a066933@...2715...>
-References: <gerrit.1739527719000.I02afe6817433ca21aae76671c35151ec6a066933@...2715...>
-Reply-To: marco@...2726..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...,
- gert@...1296...
-Message-ID: <93dd934e69ce858c3135e93295b3abc8843ae21f-EmailReplacePatchSet-HTML@...2715...>
+From: "plaisthos (Code Review)" <gerrit@...515...>
+Date: Fri, 14 Feb 2025 15:32:47 +0000
+In-Reply-To: <gerrit.1739460301000.Ieb787a040f9eaf34d9d16996af1d63d7eae94944@...2715...>
+References: <gerrit.1739460301000.Ieb787a040f9eaf34d9d16996af1d63d7eae94944@...2715...>
+Reply-To: arne-openvpn@...1227..., openvpn-devel@lists.sourceforge.net,
+ frank@...2641...
+Message-ID: <bb4aa203676207fe8ce5a9d6577ebfdb67fba1b2-EmailReplacePatchSet-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="Be9hSDoc4/U="; charset=UTF-8
-Subject: [Openvpn-devel] [XS] Change in openvpn[master]:
- get_default_gateway(): Prevent passing IPV4_INVALID_ADDR as a destina...
+Content-Type: multipart/alternative; boundary="ZjJTx3uc8UU="; charset=UTF-8
+Subject: [Openvpn-devel] [S] Change in openvpn[master]: Add android build to
+ Github Actions
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,165 +19,199 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: plaisthos <arne-openvpn@...1227...>, cron2 <gert@...1296...>, flichtenheld <frank@...2641...>
+To: flichtenheld <frank@...2641...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---Be9hSDoc4/U=
+--ZjJTx3uc8UU=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: cron2, flichtenheld, mrbff, plaisthos.
+Attention is currently required from: flichtenheld, plaisthos.
 
-Hello cron2, flichtenheld, plaisthos,
+Hello flichtenheld,
 
 I'd like you to reexamine a change. Please visit
 
-    http://gerrit.openvpn.net/c/openvpn/+/898?usp=3Demail
+    http://gerrit.openvpn.net/c/openvpn/+/896?usp=3Demail
 
-to look at the new patch set (#3).
+to look at the new patch set (#4).
 
 The following approvals got outdated and were removed:
-Code-Review+2 by cron2
+Code-Review+2 by flichtenheld
 
 The change is no longer submittable: Code-Review and checks~ChecksSubmitRul=
 e are unsatisfied now.
 
 
-Change subject: get_default_gateway(): Prevent passing IPV4_INVALID_ADDR as=
- a destination
+Change subject: Add android build to Github Actions
 ......................................................................
 
-get_default_gateway(): Prevent passing IPV4_INVALID_ADDR as a destination
+Add android build to Github Actions
 
-When using --redirect-gateway (IPv4) while connected to an IPv6 remote,
-OpenVPN still attempts to determine the IPv4 default gateway,
-so link_socket_current_remote() returns IPV4_INVALID_ADDR (0xffffffff)
-as the destination, leading to unintended behavior:
-
-- the IPv4 default gateway (rl->rgi.gateway.addr) gets wiped.
-- this prevents proper restoration of the original route when needed.
-
-To fix this, if link_socket_current_remote() returns IPV4_INVALID_ADDR,
-we now pass INADDR_ANY (0x00000000) to get_default_gateway(),
-ensuring the function behaves correctly.
-
-Change-Id: I02afe6817433ca21aae76671c35151ec6a066933
-Signed-off-by: Marco Baffo <marco@...2726...>
+Change-Id: Ieb787a040f9eaf34d9d16996af1d63d7eae94944
+Signed-off-by: Arne Schwabe <arne@...1227...>
 ---
-M src/openvpn/route.c
-1 file changed, 1 insertion(+), 1 deletion(-)
+M .github/workflows/build.yaml
+1 file changed, 31 insertions(+), 0 deletions(-)
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/98/898/3
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/96/896/4
 
-diff --git a/src/openvpn/route.c b/src/openvpn/route.c
-index d895e1c..bc41492 100644
---- a/src/openvpn/route.c
-+++ b/src/openvpn/route.c
-@@ -655,7 +655,7 @@
-         rl->spec.flags |=3D RTSA_DEFAULT_METRIC;
-     }
+diff --git a/.github/workflows/build.yaml b/.github/workflows/build.yaml
+index 8fd1325..b1af7ec 100644
+--- a/.github/workflows/build.yaml
++++ b/.github/workflows/build.yaml
+@@ -35,6 +35,37 @@
+         run: test ! -s uncrustify-changes.patch
+         working-directory: openvpn
 
--    get_default_gateway(&rl->rgi, remote_host, ctx);
-+    get_default_gateway(&rl->rgi, remote_host !=3D IPV4_INVALID_ADDR ? rem=
-ote_host : INADDR_ANY, ctx);
-     if (rl->rgi.flags & RGI_ADDR_DEFINED)
-     {
-         setenv_route_addr(es, "net_gateway", rl->rgi.gateway.addr, -1);
++  android:
++    strategy:
++      fail-fast: false
++      matrix:
++        abi: [ arm64-v8a ]
++        include:
++          - abi: arm64-v8a
++            vcpkg_triplet: arm64-android
++    runs-on: ubuntu-24.04
++    name: "Android - ${{ matrix.abi }}"
++    # Github images already setup NDK with ANDROID_NDK_ROOT pointing to th=
+e root
++    # of the SDK
++    env:
++      VCPKG_DEFAULT_TRIPLET: ${{ matrix.vcpkg_triplet }}
++      VCPKG_ROOT: ${{ github.workspace }}/vcpkg
++      VCPKG_INSTALLED_DIR: ${{ github.workspace }}/vcpkg/installed
++    steps:
++      - name: Checkout OpenVPN
++        uses: actions/checkout@...2844... # v4.2.2
++      - name: Install vcpkg
++        uses: lukka/run-vcpkg@...2815... # v11.5
++        with:
++          vcpkgGitCommitId: 33e9c99208736b713cabe4490e15235f62f893d4
++      - name: Install dependencies
++        run: ${VCPKG_ROOT}/vcpkg install openssl lz4 cmocka
++      - name: configure OpenVPN with cmake
++        run: cmake -S . -B openvpn-build -DUNSUPPORTED_BUILDS=3Dyes -DCMAK=
+E_SYSTEM_NAME=3DAndroid -DOPENSSL_ROOT_DIR=3D${VCPKG_INSTALLED_DIR}/${{ mat=
+rix.vcpkg_triplet }} -DENABLE_PKCS11=3Dfalse -DBUILD_TESTING=3Dtrue -DCMAKE=
+_ANDROID_ARCH_ABI=3D${{ matrix.abi }} -DENABLE_LZO=3Dfalse -DUSE_WERROR=3Dno
++      - name: Build OpenVPN Android binary with cmake
++        run: cmake --build openvpn-build
++
++
+   mingw:
+     strategy:
+       fail-fast: false
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/898?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/896?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings
 
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: I02afe6817433ca21aae76671c35151ec6a066933
-Gerrit-Change-Number: 898
-Gerrit-PatchSet: 3
-Gerrit-Owner: mrbff <marco@...2726...>
-Gerrit-Reviewer: cron2 <gert@...1296...>
+Gerrit-Change-Id: Ieb787a040f9eaf34d9d16996af1d63d7eae94944
+Gerrit-Change-Number: 896
+Gerrit-PatchSet: 4
+Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: cron2 <gert@...1296...>
 Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Attention: mrbff <marco@...2726...>
 Gerrit-MessageType: newpatchset
 
---Be9hSDoc4/U=
+--ZjJTx3uc8UU=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p> Attention is currently required from: cron2, flichtenheld, mrbff, plais=
-thos. </p>
-<p>mrbff <strong>uploaded patch set #3</strong> to this change.</p><p><a hr=
-ef=3D"http://gerrit.openvpn.net/c/openvpn/+/898?usp=3Demail">View Change</a=
-></p><p>The following approvals got outdated and were removed:
-Code-Review+2 by cron2</p><p>The change is no longer submittable: Code-Revi=
-ew and checks~ChecksSubmitRule are unsatisfied now.</p><pre style=3D"font-f=
-amily: monospace,monospace; white-space: pre-wrap;">get_default_gateway(): =
-Prevent passing IPV4_INVALID_ADDR as a destination<br><br>When using --redi=
-rect-gateway (IPv4) while connected to an IPv6 remote,<br>OpenVPN still att=
-empts to determine the IPv4 default gateway,<br>so link_socket_current_remo=
-te() returns IPV4_INVALID_ADDR (0xffffffff)<br>as the destination, leading =
-to unintended behavior:<br><br>- the IPv4 default gateway (rl-&gt;rgi.gatew=
-ay.addr) gets wiped.<br>- this prevents proper restoration of the original =
-route when needed.<br><br>To fix this, if link_socket_current_remote() retu=
-rns IPV4_INVALID_ADDR,<br>we now pass INADDR_ANY (0x00000000) to get_defaul=
-t_gateway(),<br>ensuring the function behaves correctly.<br><br>Change-Id: =
-I02afe6817433ca21aae76671c35151ec6a066933<br>Signed-off-by: Marco Baffo &lt=
-;marco@...2726...&gt;<br>---<br>M src/openvpn/route.c<br>1 file changed, 1 =
-insertion(+), 1 deletion(-)<br><br></pre><pre style=3D"font-family: monospa=
-ce,monospace; white-space: pre-wrap;">git pull ssh://gerrit.openvpn.net:294=
-18/openvpn refs/changes/98/898/3</pre><pre style=3D"font-family: monospace,=
-monospace; white-space: pre-wrap;"><span>diff --git a/src/openvpn/route.c b=
-/src/openvpn/route.c</span><br><span>index d895e1c..bc41492 100644</span><b=
-r><span>--- a/src/openvpn/route.c</span><br><span>+++ b/src/openvpn/route.c=
-</span><br><span>@@ -655,7 +655,7 @@</span><br><span>         rl-&gt;spec.f=
-lags |=3D RTSA_DEFAULT_METRIC;</span><br><span>     }</span><br><span> </sp=
-an><br><span style=3D"color: hsl(0, 100%, 40%);">-    get_default_gateway(&=
-amp;rl-&gt;rgi, remote_host, ctx);</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+    get_default_gateway(&amp;rl-&gt;rgi, remote_host !=3D IP=
-V4_INVALID_ADDR ? remote_host : INADDR_ANY, ctx);</span><br><span>     if (=
-rl-&gt;rgi.flags &amp; RGI_ADDR_DEFINED)</span><br><span>     {</span><br><=
-span>         setenv_route_addr(es, &quot;net_gateway&quot;, rl-&gt;rgi.gat=
-eway.addr, -1);</span><br><span></span><br></pre><p>To view, visit <a href=
-=3D"http://gerrit.openvpn.net/c/openvpn/+/898?usp=3Demail">change 898</a>. =
-To unsubscribe, or for help writing mail filters, visit <a href=3D"http://g=
-errit.openvpn.net/settings">settings</a>.</p><div itemscope itemtype=3D"htt=
-p://schema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D=
-"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit=
-.openvpn.net/c/openvpn/+/898?usp=3Demail"/><meta itemprop=3D"name" content=
-=3D"View Change"/></div></div>
+<p> Attention is currently required from: flichtenheld, plaisthos. </p>
+<p>plaisthos <strong>uploaded patch set #4</strong> to this change.</p><p><=
+a href=3D"http://gerrit.openvpn.net/c/openvpn/+/896?usp=3Demail">View Chang=
+e</a></p><p>The following approvals got outdated and were removed:
+Code-Review+2 by flichtenheld</p><p>The change is no longer submittable: Co=
+de-Review and checks~ChecksSubmitRule are unsatisfied now.</p><pre style=3D=
+"font-family: monospace,monospace; white-space: pre-wrap;">Add android buil=
+d to Github Actions<br><br>Change-Id: Ieb787a040f9eaf34d9d16996af1d63d7eae9=
+4944<br>Signed-off-by: Arne Schwabe &lt;arne@...1227...&gt;<br>---<br>M .gi=
+thub/workflows/build.yaml<br>1 file changed, 31 insertions(+), 0 deletions(=
+-)<br><br></pre><pre style=3D"font-family: monospace,monospace; white-space=
+: pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/9=
+6/896/4</pre><pre style=3D"font-family: monospace,monospace; white-space: p=
+re-wrap;"><span>diff --git a/.github/workflows/build.yaml b/.github/workflo=
+ws/build.yaml</span><br><span>index 8fd1325..b1af7ec 100644</span><br><span=
+>--- a/.github/workflows/build.yaml</span><br><span>+++ b/.github/workflows=
+/build.yaml</span><br><span>@@ -35,6 +35,37 @@</span><br><span>         run=
+: test ! -s uncrustify-changes.patch</span><br><span>         working-direc=
+tory: openvpn</span><br><span> </span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+  android:</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+    strategy:</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+   fail-fast: false</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+      matrix:</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
+  abi: [ arm64-v8a ]</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++        include:</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+        - abi: arm64-v8a</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+            vcpkg_triplet: arm64-android</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+    runs-on: ubuntu-24.04</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    name: &quot;Android - ${{ matrix.abi =
+}}&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    # Githu=
+b images already setup NDK with ANDROID_NDK_ROOT pointing to the root</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+    # of the SDK</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+    env:</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+      VCPKG_DEFAULT_TRIPLET: ${{ matrix=
+.vcpkg_triplet }}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+    VCPKG_ROOT: ${{ github.workspace }}/vcpkg</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+      VCPKG_INSTALLED_DIR: ${{ github.workspace }=
+}/vcpkg/installed</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+  steps:</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      - nam=
+e: Checkout OpenVPN</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+        uses: actions/checkout@...2844... # v4.2.2</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+      - name: Install vcpkg</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+        uses: lukka/run-vcpkg@...2829...=
+5... # v11.5</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
+ with:</span><br><span style=3D"color: hsl(120, 100%, 40%);">+          vcp=
+kgGitCommitId: 33e9c99208736b713cabe4490e15235f62f893d4</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+      - name: Install dependencies</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+        run: ${VCPKG_ROO=
+T}/vcpkg install openssl lz4 cmocka</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+      - name: configure OpenVPN with cmake</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+        run: cmake -S . -B openvpn-b=
+uild -DUNSUPPORTED_BUILDS=3Dyes -DCMAKE_SYSTEM_NAME=3DAndroid -DOPENSSL_ROO=
+T_DIR=3D${VCPKG_INSTALLED_DIR}/${{ matrix.vcpkg_triplet }} -DENABLE_PKCS11=
+=3Dfalse -DBUILD_TESTING=3Dtrue -DCMAKE_ANDROID_ARCH_ABI=3D${{ matrix.abi }=
+} -DENABLE_LZO=3Dfalse -DUSE_WERROR=3Dno</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+      - name: Build OpenVPN Android binary with cmake<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+        run: cmake -=
+-build openvpn-build</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> =
+  mingw:</span><br><span>     strategy:</span><br><span>       fail-fast: f=
+alse</span><br><span></span><br></pre><p>To view, visit <a href=3D"http://g=
+errit.openvpn.net/c/openvpn/+/896?usp=3Demail">change 896</a>. To unsubscri=
+be, or for help writing mail filters, visit <a href=3D"http://gerrit.openvp=
+n.net/settings">settings</a>.</p><div itemscope itemtype=3D"http://schema.o=
+rg/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://sche=
+ma.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net=
+/c/openvpn/+/896?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Chan=
+ge"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I02afe6817433ca21aae76671c35=
-151ec6a066933 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 898 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 3 </div>
-<div style=3D"display:none"> Gerrit-Owner: mrbff &lt;marco@...2726...&gt; <=
-/div>
-<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
- </div>
+<div style=3D"display:none"> Gerrit-Change-Id: Ieb787a040f9eaf34d9d16996af1=
+d63d7eae94944 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 896 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 4 </div>
+<div style=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@...1711...=
+27...&gt; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
 1...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
 ..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: cron2 &lt;gert@...1296...&gt=
-; </div>
 <div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
 41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: mrbff &lt;marco@...2726...&g=
-t; </div>
 <div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
 
 
---Be9hSDoc4/U=--
+--ZjJTx3uc8UU=--
 
