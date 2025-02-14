@@ -1,16 +1,16 @@
 From: "plaisthos (Code Review)" <gerrit@...515...>
 Date: Fri, 14 Feb 2025 11:19:09 +0000
-In-Reply-To: <gerrit.1739460301000.Ieb787a040f9eaf34d9d16996af1d63d7eae94944@...2715...>
-References: <gerrit.1739460301000.Ieb787a040f9eaf34d9d16996af1d63d7eae94944@...2715...>
+In-Reply-To: <gerrit.1739460301000.If6afa1108f9234f98afdbe0de7b7320403871772@...2715...>
+References: <gerrit.1739460301000.If6afa1108f9234f98afdbe0de7b7320403871772@...2715...>
 Reply-To: arne-openvpn@...1227..., openvpn-devel@lists.sourceforge.net,
  frank@...2641...
-Message-ID: <a1c78637e4f95c5fd980308f8c90aa7f72cc7dc6-EmailReplacePatchSet-HTML@...2715...>
+Message-ID: <488d4e0cbcec8680035b5f83d8b65061762f5fcd-EmailReplacePatchSet-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="DLimgZ34sAA="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: Add android build to
- Github Actions
+Content-Type: multipart/alternative; boundary="k/LC30Ewpos="; charset=UTF-8
+Subject: [Openvpn-devel] [S] Change in openvpn[master]: Add Android cmake
+ building
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -22,178 +22,179 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: flichtenheld <frank@...2641...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---DLimgZ34sAA=
+--k/LC30Ewpos=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: flichtenheld, plaisthos.
+Attention is currently required from: plaisthos.
 
 Hello flichtenheld,
 
 I'd like you to reexamine a change. Please visit
 
-    http://gerrit.openvpn.net/c/openvpn/+/896?usp=3Demail
+    http://gerrit.openvpn.net/c/openvpn/+/895?usp=3Demail
 
 to look at the new patch set (#3).
 
-The following approvals got outdated and were removed:
-Code-Review-1 by flichtenheld
+The change is no longer submittable: checks~ChecksSubmitRule is unsatisfied=
+ now.
 
 
-Change subject: Add android build to Github Actions
+Change subject: Add Android cmake building
 ......................................................................
 
-Add android build to Github Actions
+Add Android cmake building
 
-Change-Id: Ieb787a040f9eaf34d9d16996af1d63d7eae94944
+There is a mode to build with a real Android NDK that requires setting up c=
+make to build with the NDK and so.
+For quick&dirty compile tests that do not actually use the Android NDK on L=
+inux, -DFAKE_ANDROID on Linux can be
+used to compile a binary using TARGET_ANDROID.
+
+Change-Id: If6afa1108f9234f98afdbe0de7b7320403871772
 Signed-off-by: Arne Schwabe <arne@...1227...>
 ---
-M .github/workflows/build.yaml
-1 file changed, 31 insertions(+), 0 deletions(-)
+M CMakeLists.txt
+M config.h.cmake.in
+2 files changed, 12 insertions(+), 1 deletion(-)
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/96/896/3
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/95/895/3
 
-diff --git a/.github/workflows/build.yaml b/.github/workflows/build.yaml
-index 8fd1325..ce0fb74 100644
---- a/.github/workflows/build.yaml
-+++ b/.github/workflows/build.yaml
-@@ -35,6 +35,37 @@
-         run: test ! -s uncrustify-changes.patch
-         working-directory: openvpn
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 5081e81..b04adce 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -39,6 +39,7 @@
+ option(ENABLE_LZO "BUILD with lzo" ON)
+ option(ENABLE_PKCS11 "BUILD with pkcs11-helper" ON)
+ option(USE_WERROR "Treat compiler warnings as errors (-Werror)" ON)
++option(FAKE_ANDROID "Target Android but do not use actual cross compile/An=
+droid cmake to build for simple compile checks on Linux")
 
-+  android:
-+    strategy:
-+      fail-fast: false
-+      matrix:
-+        abi: [ arm64-v8a ]
-+        include:
-+          - abi: arm64-v8a
-+            vcpkg_triplet: arm64-android
-+    runs-on: ubuntu-24.04
-+    name: "Android - ${{ matrix.abi }}"
-+    # Github images already setup NDK with ANDROID_NDK_ROOT pointing to th=
-e root
-+    # of the SDK
-+    env:
-+      VCPKG_DEFAULT_TRIPLET: ${{ matrix.vcpkg_triplet }}
-+      VCPKG_ROOT: ${{ github.workspace }}/vcpkg
-+      VCPKG_INSTALLED_DIR: ${{ github.workspace }}/vcpkg/installed
-+    steps:
-+      - name: Checkout OpenVPN
-+        uses: actions/checkout@...2844... # v4.2.2
-+      - name: Install vcpkg
-+        uses: lukka/run-vcpkg@...2815... # v11.5
-+        with:
-+          vcpkgGitCommitId: 33e9c99208736b713cabe4490e15235f62f893d4
-+      - name: Install dependencies
-+        run: ${VCPKG_ROOT}/vcpkg install openssl lz4 cmocka
-+      - name: configure OpenVPN with cmake
-+        run: cmake -S . -B openvpn-build -DUNSUPPORTED_BUILDS=3Dyes -DCMAK=
-E_SYSTEM_NAME=3DAndroid -DOPENSSL_ROOT_DIR=3D${VCPKG_INSTALLED_DIR}/${{ mat=
-rix.vcpkg_triplet }} -DENABLE_PKCS11=3Dfalse -DBUILD_TESTING=3Dtrue -DCMAKE=
-_ANDROID_ARCH_ABI=3D${{ matrix.abi }} -DENABLE_LZO=3Dfalse
-+      - name: Build OpenVPN Android binary with cmake
-+        run: cmake --build openvpn-build
+ set(PLUGIN_DIR /usr/local/lib/openvpn/plugins CACHE FILEPATH "Location of =
+the plugin directory")
+
+@@ -122,7 +123,14 @@
+ set(CMAKE_C_STANDARD 11)
+
+ # Set the various defines for config.h.cmake.in
+-if (${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
++if (${CMAKE_SYSTEM_NAME} STREQUAL "Android" OR ${FAKE_ANDROID})
++    set(TARGET_ANDROID YES)
++    set(ENABLE_ASYNC_PUSH YES)
++    set(ENABLE_SITNL YES)
++    set(HAVE_LINUX_TYPES_H 1)
++    # Wacky workaround as OpenSSL package detection is otherwise broken (h=
+ttps://stackoverflow.com/questions/45958214/android-cmake-could-not-find-op=
+enssl)
++    list(APPEND CMAKE_FIND_ROOT_PATH ${OPENSSL_ROOT_DIR})
++elseif (${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
+     set(TARGET_LINUX YES)
+     set(ENABLE_ASYNC_PUSH YES)
+     set(ENABLE_LINUXDCO YES)
+diff --git a/config.h.cmake.in b/config.h.cmake.in
+index 74a53a6..2f7b43d 100644
+--- a/config.h.cmake.in
++++ b/config.h.cmake.in
+@@ -432,6 +432,9 @@
+ /* Are we running WIN32? */
+ #cmakedefine TARGET_WIN32
+
++/* Are we targeting Android? */
++#cmakedefine TARGET_ANDROID
 +
-+
-   mingw:
-     strategy:
-       fail-fast: false
+ #define TARGET_ALIAS "@CMAKE_SYSTEM_NAME@"
+
+ /* Enable GNU extensions on systems that have them.  */
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/896?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/895?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings
 
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: Ieb787a040f9eaf34d9d16996af1d63d7eae94944
-Gerrit-Change-Number: 896
+Gerrit-Change-Id: If6afa1108f9234f98afdbe0de7b7320403871772
+Gerrit-Change-Number: 895
 Gerrit-PatchSet: 3
 Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: flichtenheld <frank@...2641...>
 Gerrit-MessageType: newpatchset
 
---DLimgZ34sAA=
+--k/LC30Ewpos=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p> Attention is currently required from: flichtenheld, plaisthos. </p>
+<p> Attention is currently required from: plaisthos. </p>
 <p>plaisthos <strong>uploaded patch set #3</strong> to this change.</p><p><=
-a href=3D"http://gerrit.openvpn.net/c/openvpn/+/896?usp=3Demail">View Chang=
-e</a></p><p>The following approvals got outdated and were removed:
-Code-Review-1 by flichtenheld</p><pre style=3D"font-family: monospace,monos=
-pace; white-space: pre-wrap;">Add android build to Github Actions<br><br>Ch=
-ange-Id: Ieb787a040f9eaf34d9d16996af1d63d7eae94944<br>Signed-off-by: Arne S=
-chwabe &lt;arne@...1227...&gt;<br>---<br>M .github/workflows/build.yaml<br>=
-1 file changed, 31 insertions(+), 0 deletions(-)<br><br></pre><pre style=3D=
-"font-family: monospace,monospace; white-space: pre-wrap;">git pull ssh://g=
-errit.openvpn.net:29418/openvpn refs/changes/96/896/3</pre><pre style=3D"fo=
-nt-family: monospace,monospace; white-space: pre-wrap;"><span>diff --git a/=
-.github/workflows/build.yaml b/.github/workflows/build.yaml</span><br><span=
->index 8fd1325..ce0fb74 100644</span><br><span>--- a/.github/workflows/buil=
-d.yaml</span><br><span>+++ b/.github/workflows/build.yaml</span><br><span>@=
-@ -35,6 +35,37 @@</span><br><span>         run: test ! -s uncrustify-change=
-s.patch</span><br><span>         working-directory: openvpn</span><br><span=
-> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+  android:</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+    strategy:</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+      fail-fast: false</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+      matrix:</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+        abi: [ arm64-v8a ]</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+        include:</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+          - abi: arm64-v8a</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+            vcpkg_triple=
-t: arm64-android</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
- runs-on: ubuntu-24.04</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+    name: &quot;Android - ${{ matrix.abi }}&quot;</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    # Github images already setup NDK wit=
-h ANDROID_NDK_ROOT pointing to the root</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+    # of the SDK</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+    env:</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+      VCPKG_DEFAULT_TRIPLET: ${{ matrix.vcpkg_triplet }}</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+      VCPKG_ROOT: ${{ github.wor=
-kspace }}/vcpkg</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-  VCPKG_INSTALLED_DIR: ${{ github.workspace }}/vcpkg/installed</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+    steps:</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+      - name: Checkout OpenVPN</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+        uses: actions/checkout=
-@...2844... # v4.2.2</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+      - name: Install vcpkg</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+        uses: lukka/run-vcpkg@...2815... # v11.5</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+        with:</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+          vcpkgGitCommitId: 33e9c99208736=
-b713cabe4490e15235f62f893d4</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+      - name: Install dependencies</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+        run: ${VCPKG_ROOT}/vcpkg install openssl lz4=
- cmocka</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      - name=
-: configure OpenVPN with cmake</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+        run: cmake -S . -B openvpn-build -DUNSUPPORTED_BUILDS=3D=
-yes -DCMAKE_SYSTEM_NAME=3DAndroid -DOPENSSL_ROOT_DIR=3D${VCPKG_INSTALLED_DI=
-R}/${{ matrix.vcpkg_triplet }} -DENABLE_PKCS11=3Dfalse -DBUILD_TESTING=3Dtr=
-ue -DCMAKE_ANDROID_ARCH_ABI=3D${{ matrix.abi }} -DENABLE_LZO=3Dfalse</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+      - name: Build OpenVP=
-N Android binary with cmake</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+        run: cmake --build openvpn-build</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+</span><br><span>   mingw:</span><br><span>     strategy:</span><=
-br><span>       fail-fast: false</span><br><span></span><br></pre><p>To vie=
-w, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/896?usp=3Demail">=
-change 896</a>. To unsubscribe, or for help writing mail filters, visit <a =
-href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope=
- itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"act=
-ion" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=
-=3D"http://gerrit.openvpn.net/c/openvpn/+/896?usp=3Demail"/><meta itemprop=
-=3D"name" content=3D"View Change"/></div></div>
+a href=3D"http://gerrit.openvpn.net/c/openvpn/+/895?usp=3Demail">View Chang=
+e</a></p><p>The change is no longer submittable: checks~ChecksSubmitRule is=
+ unsatisfied now.</p><pre style=3D"font-family: monospace,monospace; white-=
+space: pre-wrap;">Add Android cmake building<br><br>There is a mode to buil=
+d with a real Android NDK that requires setting up cmake to build with the =
+NDK and so.<br>For quick&amp;dirty compile tests that do not actually use t=
+he Android NDK on Linux, -DFAKE_ANDROID on Linux can be<br>used to compile =
+a binary using TARGET_ANDROID.<br><br>Change-Id: If6afa1108f9234f98afdbe0de=
+7b7320403871772<br>Signed-off-by: Arne Schwabe &lt;arne@...1227...&gt;<br>-=
+--<br>M CMakeLists.txt<br>M config.h.cmake.in<br>2 files changed, 12 insert=
+ions(+), 1 deletion(-)<br><br></pre><pre style=3D"font-family: monospace,mo=
+nospace; white-space: pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/op=
+envpn refs/changes/95/895/3</pre><pre style=3D"font-family: monospace,monos=
+pace; white-space: pre-wrap;"><span>diff --git a/CMakeLists.txt b/CMakeList=
+s.txt</span><br><span>index 5081e81..b04adce 100644</span><br><span>--- a/C=
+MakeLists.txt</span><br><span>+++ b/CMakeLists.txt</span><br><span>@@ -39,6=
+ +39,7 @@</span><br><span> option(ENABLE_LZO &quot;BUILD with lzo&quot; ON)=
+</span><br><span> option(ENABLE_PKCS11 &quot;BUILD with pkcs11-helper&quot;=
+ ON)</span><br><span> option(USE_WERROR &quot;Treat compiler warnings as er=
+rors (-Werror)&quot; ON)</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+option(FAKE_ANDROID &quot;Target Android but do not use actual cross c=
+ompile/Android cmake to build for simple compile checks on Linux&quot;)</sp=
+an><br><span> </span><br><span> set(PLUGIN_DIR /usr/local/lib/openvpn/plugi=
+ns CACHE FILEPATH &quot;Location of the plugin directory&quot;)</span><br><=
+span> </span><br><span>@@ -122,7 +123,14 @@</span><br><span> set(CMAKE_C_ST=
+ANDARD 11)</span><br><span> </span><br><span> # Set the various defines for=
+ config.h.cmake.in</span><br><span style=3D"color: hsl(0, 100%, 40%);">-if =
+(${CMAKE_SYSTEM_NAME} STREQUAL &quot;Linux&quot;)</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+if (${CMAKE_SYSTEM_NAME} STREQUAL &quot;Andro=
+id&quot; OR ${FAKE_ANDROID})</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+    set(TARGET_ANDROID YES)</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+    set(ENABLE_ASYNC_PUSH YES)</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+    set(ENABLE_SITNL YES)</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    set(HAVE_LINUX_TYPES_H 1)</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+    # Wacky workaround as OpenS=
+SL package detection is otherwise broken (https://stackoverflow.com/questio=
+ns/45958214/android-cmake-could-not-find-openssl)</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+    list(APPEND CMAKE_FIND_ROOT_PATH ${OPENSS=
+L_ROOT_DIR})</span><br><span style=3D"color: hsl(120, 100%, 40%);">+elseif =
+(${CMAKE_SYSTEM_NAME} STREQUAL &quot;Linux&quot;)</span><br><span>     set(=
+TARGET_LINUX YES)</span><br><span>     set(ENABLE_ASYNC_PUSH YES)</span><br=
+><span>     set(ENABLE_LINUXDCO YES)</span><br><span>diff --git a/config.h.=
+cmake.in b/config.h.cmake.in</span><br><span>index 74a53a6..2f7b43d 100644<=
+/span><br><span>--- a/config.h.cmake.in</span><br><span>+++ b/config.h.cmak=
+e.in</span><br><span>@@ -432,6 +432,9 @@</span><br><span> /* Are we running=
+ WIN32? */</span><br><span> #cmakedefine TARGET_WIN32</span><br><span> </sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+/* Are we targeting And=
+roid? */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#cmakedefin=
+e TARGET_ANDROID</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</s=
+pan><br><span> #define TARGET_ALIAS &quot;@CMAKE_SYSTEM_NAME@&quot;</span><=
+br><span> </span><br><span> /* Enable GNU extensions on systems that have t=
+hem.  */</span><br><span></span><br></pre><p>To view, visit <a href=3D"http=
+://gerrit.openvpn.net/c/openvpn/+/895?usp=3Demail">change 895</a>. To unsub=
+scribe, or for help writing mail filters, visit <a href=3D"http://gerrit.op=
+envpn.net/settings">settings</a>.</p><div itemscope itemtype=3D"http://sche=
+ma.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://=
+schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn=
+.net/c/openvpn/+/895?usp=3Demail"/><meta itemprop=3D"name" content=3D"View =
+Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: Ieb787a040f9eaf34d9d16996af1=
-d63d7eae94944 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 896 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: If6afa1108f9234f98afdbe0de7b=
+7320403871772 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 895 </div>
 <div style=3D"display:none"> Gerrit-PatchSet: 3 </div>
 <div style=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@...1711...=
 27...&gt; </div>
@@ -203,10 +204,8 @@ d63d7eae94944 </div>
 ts.sourceforge.net&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
 ..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
-41...&gt; </div>
 <div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
 
 
---DLimgZ34sAA=--
+--k/LC30Ewpos=--
 
