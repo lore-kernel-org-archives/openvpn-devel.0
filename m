@@ -1,17 +1,16 @@
-From: "mrbff (Code Review)" <gerrit@...515...>
-Date: Fri, 14 Feb 2025 10:33:51 +0000
-In-Reply-To: <gerrit.1739527719000.I02afe6817433ca21aae76671c35151ec6a066933@...2715...>
-References: <gerrit.1739527719000.I02afe6817433ca21aae76671c35151ec6a066933@...2715...>
-Reply-To: marco@...2726..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...,
- gert@...1296...
-Message-ID: <3649c368f0fc7dd3e6091bc94d554415b66e1354-EmailReviewComments-HTML@...2715...>
+From: "flichtenheld (Code Review)" <gerrit@...515...>
+Date: Fri, 14 Feb 2025 10:36:37 +0000
+In-Reply-To: <gerrit.1739460301000.Ieb787a040f9eaf34d9d16996af1d63d7eae94944@...2715...>
+References: <gerrit.1739460301000.Ieb787a040f9eaf34d9d16996af1d63d7eae94944@...2715...>
+Reply-To: frank@...2641..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net
+Message-ID: <a908bb08afe11de106f9cca75624ab035b467fc7-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="chaZHJUTFH8="; charset=UTF-8
-Subject: [Openvpn-devel] [XS] Change in openvpn[master]:
- get_default_gateway(): Make sure the get_default_gateway() function n...
+Content-Type: multipart/alternative; boundary="3CjAG9tDJjg="; charset=UTF-8
+Subject: [Openvpn-devel] [S] Change in openvpn[master]: Add android build to
+ Github Actions
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,115 +19,99 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Cc: cron2 <gert@...1296...>, plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: plaisthos <arne-openvpn@...1227...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---chaZHJUTFH8=
+--3CjAG9tDJjg=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: cron2, flichtenheld, plaisthos.
+Attention is currently required from: plaisthos.
 
-mrbff has posted comments on this change. ( http://gerrit.openvpn.net/c/ope=
-nvpn/+/898?usp=3Demail )
+flichtenheld has posted comments on this change. ( http://gerrit.openvpn.ne=
+t/c/openvpn/+/896?usp=3Demail )
 
-Change subject: get_default_gateway(): Make sure the get_default_gateway() =
-function never receives IPV4_INVALID_ADDR as a destination.
+Change subject: Add android build to Github Actions
 ......................................................................
 
 
-Patch Set 2:
+Patch Set 2: Code-Review-1
 
 (1 comment)
 
-File src/openvpn/options.c:
+File .github/workflows/build.yaml:
 
-http://gerrit.openvpn.net/c/openvpn/+/898/comment/55b5d053_1d2e65aa :
-PS1, Line 5876:         get_default_gateway_ipv6(&rgi6, &remote_ipv6, &net_=
-ctx);
-> this change is not needed. [=E2=80=A6]
-Done
+http://gerrit.openvpn.net/c/openvpn/+/896/comment/dcdadbd3_48411720 :
+PS2, Line 60:           vcpkgGitCommitId: 80d54ff62d528339c626a6fbc3489a7f2=
+5956ade
+Please sync vcpkgGitCommitId with other references (see current master)
 
 
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/898?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/896?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings
 
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: I02afe6817433ca21aae76671c35151ec6a066933
-Gerrit-Change-Number: 898
+Gerrit-Change-Id: Ieb787a040f9eaf34d9d16996af1d63d7eae94944
+Gerrit-Change-Number: 896
 Gerrit-PatchSet: 2
-Gerrit-Owner: mrbff <marco@...2726...>
-Gerrit-Reviewer: cron2 <gert@...1296...>
+Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: cron2 <gert@...1296...>
-Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Comment-Date: Fri, 14 Feb 2025 10:33:51 +0000
+Gerrit-Comment-Date: Fri, 14 Feb 2025 10:36:37 +0000
 Gerrit-HasComments: Yes
-Gerrit-Has-Labels: No
-Comment-In-Reply-To: cron2 <gert@...1296...>
+Gerrit-Has-Labels: Yes
 Gerrit-MessageType: comment
 
---chaZHJUTFH8=
+--3CjAG9tDJjg=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p> Attention is currently required from: cron2, flichtenheld, plaisthos. <=
-/p>
-<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/898?usp=3Demail">View C=
-hange</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0;"><=
-li style=3D"margin: 0; padding: 0;"><p>File src/openvpn/options.c:</p><ul s=
-tyle=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0=
- 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn=
-.net/c/openvpn/+/898/comment/55b5d053_1d2e65aa">Patch Set #1, Line 5876:</a=
-> <code style=3D"font-family:monospace,monospace">        get_default_gatew=
-ay_ipv6(&amp;rgi6, &amp;remote_ipv6, &amp;net_ctx);</code></p><p><blockquot=
-e style=3D"border-left: 1px solid #aaa; margin: 10px 0; padding: 0 10px;">t=
-his change is not needed. [=E2=80=A6]</blockquote></p><p style=3D"white-spa=
-ce: pre-wrap; word-wrap: break-word;">Done</p></li></ul></li></ul><p>To vie=
-w, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/898?usp=3Demail">=
-change 898</a>. To unsubscribe, or for help writing mail filters, visit <a =
-href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope=
- itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"act=
-ion" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=
-=3D"http://gerrit.openvpn.net/c/openvpn/+/898?usp=3Demail"/><meta itemprop=
+<p> Attention is currently required from: plaisthos. </p>
+<p>Patch set 2:<span style=3D"border-radius: 3px; display: inline-block; ma=
+rgin: 0 2px; padding: 4px;background-color: #ffd4d4;">Code-Review -1</span>=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/896?usp=3Demail">Vi=
+ew Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0=
+;"><li style=3D"margin: 0; padding: 0;"><p>File .github/workflows/build.yam=
+l:</p><ul style=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; p=
+adding: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://ger=
+rit.openvpn.net/c/openvpn/+/896/comment/dcdadbd3_48411720">Patch Set #2, Li=
+ne 60:</a> <code style=3D"font-family:monospace,monospace">          vcpkgG=
+itCommitId: 80d54ff62d528339c626a6fbc3489a7f25956ade</code></p><p style=3D"=
+white-space: pre-wrap; word-wrap: break-word;">Please sync vcpkgGitCommitId=
+ with other references (see current master)</p></li></ul></li></ul><p>To vi=
+ew, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/896?usp=3Demail"=
+>change 896</a>. To unsubscribe, or for help writing mail filters, visit <a=
+ href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemscop=
+e itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"ac=
+tion" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=
+=3D"http://gerrit.openvpn.net/c/openvpn/+/896?usp=3Demail"/><meta itemprop=
 =3D"name" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I02afe6817433ca21aae76671c35=
-151ec6a066933 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 898 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: Ieb787a040f9eaf34d9d16996af1=
+d63d7eae94944 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 896 </div>
 <div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
-<div style=3D"display:none"> Gerrit-Owner: mrbff &lt;marco@...2726...&gt; <=
-/div>
-<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
- </div>
+<div style=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@...1711...=
+27...&gt; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
 1...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
 ..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: cron2 &lt;gert@...1296...&gt=
-; </div>
-<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
-41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Fri, 14 Feb 2025 10:33:51=
+<div style=3D"display:none"> Gerrit-Comment-Date: Fri, 14 Feb 2025 10:36:37=
  +0000 </div>
 <div style=3D"display:none"> Gerrit-HasComments: Yes </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: No </div>
-<div style=3D"display:none"> Comment-In-Reply-To: cron2 &lt;gert@...1296...=
-&gt; </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
 <div style=3D"display:none"> Gerrit-MessageType: comment </div>
 
 
---chaZHJUTFH8=--
+--3CjAG9tDJjg=--
 
