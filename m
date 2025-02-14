@@ -1,16 +1,11 @@
-From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Fri, 14 Feb 2025 15:34:18 +0000
+From: Gert Doering <gert@...1296...>
+Date: Fri, 14 Feb 2025 16:34:34 +0100
+Message-ID: <20250214153434.18539-1-gert@...1296...>
 In-Reply-To: <gerrit.1739527719000.I02afe6817433ca21aae76671c35151ec6a066933@...2715...>
 References: <gerrit.1739527719000.I02afe6817433ca21aae76671c35151ec6a066933@...2715...>
-Reply-To: gert@...1296..., arne-openvpn@...1227..., marco@...2726...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <df7649ab20594520086cb28a4cea37041f49d8fc-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="CfBZlTkExXY="; charset=UTF-8
-Subject: [Openvpn-devel] [XS] Change in openvpn[master]:
- get_default_gateway(): Prevent passing IPV4_INVALID_ADDR as a destina...
+Subject: [Openvpn-devel] [PATCH v3] get_default_gateway(): Prevent passing
+ IPV4_INVALID_ADDR as a destination
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,95 +14,50 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: mrbff <marco@...2726...>
-Cc: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---CfBZlTkExXY=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+From: Marco Baffo <marco@...2726...>
 
-Attention is currently required from: flichtenheld, mrbff, plaisthos.
+When using --redirect-gateway (IPv4) while connected to an IPv6 remote,
+OpenVPN still attempts to determine the IPv4 default gateway,
+so link_socket_current_remote() returns IPV4_INVALID_ADDR (0xffffffff)
+as the destination, leading to unintended behavior:
 
-cron2 has posted comments on this change. ( http://gerrit.openvpn.net/c/ope=
-nvpn/+/898?usp=3Demail )
+- the IPv4 default gateway (rl->rgi.gateway.addr) gets wiped.
+- this prevents proper restoration of the original route when needed.
 
-Change subject: get_default_gateway(): Prevent passing IPV4_INVALID_ADDR as=
- a destination
-......................................................................
+To fix this, if link_socket_current_remote() returns IPV4_INVALID_ADDR,
+we now pass INADDR_ANY (0x00000000) to get_default_gateway(),
+ensuring the function behaves correctly.
 
+Change-Id: I02afe6817433ca21aae76671c35151ec6a066933
+Signed-off-by: Marco Baffo <marco@...2726...>
+Acked-by: Gert Doering <gert@...1296...>
+---
 
-Patch Set 3: Code-Review+2
+This change was reviewed on Gerrit and approved by at least one
+developer. I request to merge it to master.
 
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/898
+This mail reflects revision 3 of this Change.
 
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/898?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings
+Acked-by according to Gerrit (reflected above):
+Gert Doering <gert@...1296...>
 
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: I02afe6817433ca21aae76671c35151ec6a066933
-Gerrit-Change-Number: 898
-Gerrit-PatchSet: 3
-Gerrit-Owner: mrbff <marco@...2726...>
-Gerrit-Reviewer: cron2 <gert@...1296...>
-Gerrit-Reviewer: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Attention: mrbff <marco@...2726...>
-Gerrit-Comment-Date: Fri, 14 Feb 2025 15:34:18 +0000
-Gerrit-HasComments: No
-Gerrit-Has-Labels: Yes
-Gerrit-MessageType: comment
-
---CfBZlTkExXY=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<p> Attention is currently required from: flichtenheld, mrbff, plaisthos. <=
-/p>
-<p>Patch set 3:<span style=3D"border-radius: 3px; display: inline-block; ma=
-rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/898?usp=3Demail">Vi=
-ew Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To vie=
-w, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/898?usp=3Demail">=
-change 898</a>. To unsubscribe, or for help writing mail filters, visit <a =
-href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope=
- itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"act=
-ion" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=
-=3D"http://gerrit.openvpn.net/c/openvpn/+/898?usp=3Demail"/><meta itemprop=
-=3D"name" content=3D"View Change"/></div></div>
-
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I02afe6817433ca21aae76671c35=
-151ec6a066933 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 898 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 3 </div>
-<div style=3D"display:none"> Gerrit-Owner: mrbff &lt;marco@...2726...&gt; <=
-/div>
-<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
- </div>
-<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
-1...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
-41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: mrbff &lt;marco@...2726...&g=
-t; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Fri, 14 Feb 2025 15:34:18=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: No </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
-
-
---CfBZlTkExXY=--
+        
+diff --git a/src/openvpn/route.c b/src/openvpn/route.c
+index d895e1c..bc41492 100644
+--- a/src/openvpn/route.c
++++ b/src/openvpn/route.c
+@@ -655,7 +655,7 @@
+         rl->spec.flags |= RTSA_DEFAULT_METRIC;
+     }
+ 
+-    get_default_gateway(&rl->rgi, remote_host, ctx);
++    get_default_gateway(&rl->rgi, remote_host != IPV4_INVALID_ADDR ? remote_host : INADDR_ANY, ctx);
+     if (rl->rgi.flags & RGI_ADDR_DEFINED)
+     {
+         setenv_route_addr(es, "net_gateway", rl->rgi.gateway.addr, -1);
 
