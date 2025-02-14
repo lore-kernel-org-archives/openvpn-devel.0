@@ -1,12 +1,9 @@
+Date: Fri, 14 Feb 2025 14:01:07 +0100 (CET)
+Message-Id: <202502141301.51ED179V006174@...2054...>
 From: Gert Doering <gert@...1296...>
-Date: Fri, 14 Feb 2025 13:56:19 +0100
-Message-ID: <20250214125619.19935-1-gert@...1296...>
-In-Reply-To: <gerrit.1739527719000.I02afe6817433ca21aae76671c35151ec6a066933@...2715...>
-References: <gerrit.1739527719000.I02afe6817433ca21aae76671c35151ec6a066933@...2715...>
-MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v2] get_default_gateway(): Make sure the
- get_default_gateway() function never receives IPV4_INVALID_ADDR as a
- destination.
+In-Reply-To: <20250214125238.17558-1-gert@...1296...>
+References: <20250214125238.17558-1-gert@...1296...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Add Android cmake building
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,36 +14,30 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Arne Schwabe <arne@...1227...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-From: Marco Baffo <marco@...2726...>
+Since I do not use cmake, I haven't tested this myself - but it looks
+good and has an ACK from Frank.
 
-Change-Id: I02afe6817433ca21aae76671c35151ec6a066933
-Signed-off-by: Marco Baffo <marco@...2726...>
-Acked-by: Gert Doering <gert@...1296...>
----
+Your patch has been applied to the master branch.
 
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to master.
+commit 6e16dc6216a9ce5a03292d64420d88582829c533
+Author: Arne Schwabe
+Date:   Fri Feb 14 13:52:38 2025 +0100
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/898
-This mail reflects revision 2 of this Change.
+     Add Android cmake building
 
-Acked-by according to Gerrit (reflected above):
-Gert Doering <gert@...1296...>
+     Signed-off-by: Arne Schwabe <arne@...1227...>
+     Acked-by: Frank Lichtenheld <frank@...2641...>
+     Message-Id: <20250214125238.17558-1-gert@...1296...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg30885.html
+     Signed-off-by: Gert Doering <gert@...1296...>
 
-        
-diff --git a/src/openvpn/route.c b/src/openvpn/route.c
-index d895e1c..bc41492 100644
---- a/src/openvpn/route.c
-+++ b/src/openvpn/route.c
-@@ -655,7 +655,7 @@
-         rl->spec.flags |= RTSA_DEFAULT_METRIC;
-     }
- 
--    get_default_gateway(&rl->rgi, remote_host, ctx);
-+    get_default_gateway(&rl->rgi, remote_host != IPV4_INVALID_ADDR ? remote_host : INADDR_ANY, ctx);
-     if (rl->rgi.flags & RGI_ADDR_DEFINED)
-     {
-         setenv_route_addr(es, "net_gateway", rl->rgi.gateway.addr, -1);
+
+--
+kind regards,
+
+Gert Doering
+
 
