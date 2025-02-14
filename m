@@ -1,14 +1,14 @@
 From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Fri, 14 Feb 2025 16:03:51 +0000
+Date: Fri, 14 Feb 2025 16:03:55 +0000
 In-Reply-To: <gerrit.1739527719000.I02afe6817433ca21aae76671c35151ec6a066933@...2715...>
 References: <gerrit.1739527719000.I02afe6817433ca21aae76671c35151ec6a066933@...2715...>
 Reply-To: gert@...1296..., arne-openvpn@...1227..., marco@...2726...,
  openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <c2b8d21c7052caabd1c723c3c528fbe34a0b3728-EmailReplacePatchSet-HTML@...2715...>
+Message-ID: <c2b8d21c7052caabd1c723c3c528fbe34a0b3728-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="oGNpTLRX7Sk="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="TVf+xDMHRxw="; charset=UTF-8
 Subject: [Openvpn-devel] [XS] Change in openvpn[master]:
  get_default_gateway(): Prevent passing IPV4_INVALID_ADDR as a destina...
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -19,19 +19,15 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: mrbff <marco@...2726...>, plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: mrbff <marco@...2726...>
+Cc: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---oGNpTLRX7Sk=
+--TVf+xDMHRxw=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-cron2 has uploaded a new patch set (#4) to the change originally created by=
- mrbff. ( http://gerrit.openvpn.net/c/openvpn/+/898?usp=3Demail )
-
-The following approvals got outdated and were removed:
-Code-Review+2 by cron2
-
+cron2 has submitted this change. ( http://gerrit.openvpn.net/c/openvpn/+/89=
+8?usp=3Demail )
 
 Change subject: get_default_gateway(): Prevent passing IPV4_INVALID_ADDR as=
  a destination
@@ -63,7 +59,7 @@ M src/openvpn/route.c
 1 file changed, 1 insertion(+), 1 deletion(-)
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/98/898/4
+
 
 diff --git a/src/openvpn/route.c b/src/openvpn/route.c
 index d895e1c..bc41492 100644
@@ -95,54 +91,50 @@ Gerrit-Reviewer: cron2 <gert@...1296...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-MessageType: newpatchset
+Gerrit-MessageType: merged
 
---oGNpTLRX7Sk=
+--TVf+xDMHRxw=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p>cron2 <strong>uploaded patch set #4</strong> to the change originally cr=
-eated by mrbff.</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/898?=
-usp=3Demail">View Change</a></p><p>The following approvals got outdated and=
- were removed:
-Code-Review+2 by cron2</p><pre style=3D"font-family: monospace,monospace; w=
-hite-space: pre-wrap;">get_default_gateway(): Prevent passing IPV4_INVALID_=
-ADDR as a destination<br><br>When using --redirect-gateway (IPv4) while con=
-nected to an IPv6 remote,<br>OpenVPN still attempts to determine the IPv4 d=
-efault gateway,<br>so link_socket_current_remote() returns IPV4_INVALID_ADD=
-R (0xffffffff)<br>as the destination, leading to unintended behavior:<br><b=
-r>- the IPv4 default gateway (rl-&gt;rgi.gateway.addr) gets wiped.<br>- thi=
-s prevents proper restoration of the original route when needed.<br><br>To =
-fix this, if link_socket_current_remote() returns IPV4_INVALID_ADDR,<br>we =
-now pass INADDR_ANY (0x00000000) to get_default_gateway(),<br>ensuring the =
-function behaves correctly.<br><br>Change-Id: I02afe6817433ca21aae76671c351=
-51ec6a066933<br>Signed-off-by: Marco Baffo &lt;marco@...2726...&gt;<br>Acke=
-d-by: Gert Doering &lt;gert@...1296...&gt;<br>Message-Id: &lt;2025021415343=
-4.18539-1-gert@...1296...&gt;<br>URL: https://www.mail-archive.com/openvpn-=
-devel@lists.sourceforge.net/msg30895.html<br>Signed-off-by: Gert Doering &l=
-t;gert@...1296...&gt;<br>---<br>M src/openvpn/route.c<br>1 file changed, 1 =
-insertion(+), 1 deletion(-)<br><br></pre><pre style=3D"font-family: monospa=
-ce,monospace; white-space: pre-wrap;">git pull ssh://gerrit.openvpn.net:294=
-18/openvpn refs/changes/98/898/4</pre><pre style=3D"font-family: monospace,=
-monospace; white-space: pre-wrap;"><span>diff --git a/src/openvpn/route.c b=
-/src/openvpn/route.c</span><br><span>index d895e1c..bc41492 100644</span><b=
-r><span>--- a/src/openvpn/route.c</span><br><span>+++ b/src/openvpn/route.c=
-</span><br><span>@@ -655,7 +655,7 @@</span><br><span>         rl-&gt;spec.f=
-lags |=3D RTSA_DEFAULT_METRIC;</span><br><span>     }</span><br><span> </sp=
-an><br><span style=3D"color: hsl(0, 100%, 40%);">-    get_default_gateway(&=
-amp;rl-&gt;rgi, remote_host, ctx);</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+    get_default_gateway(&amp;rl-&gt;rgi, remote_host !=3D IP=
-V4_INVALID_ADDR ? remote_host : INADDR_ANY, ctx);</span><br><span>     if (=
-rl-&gt;rgi.flags &amp; RGI_ADDR_DEFINED)</span><br><span>     {</span><br><=
-span>         setenv_route_addr(es, &quot;net_gateway&quot;, rl-&gt;rgi.gat=
-eway.addr, -1);</span><br><span></span><br></pre><p>To view, visit <a href=
-=3D"http://gerrit.openvpn.net/c/openvpn/+/898?usp=3Demail">change 898</a>. =
-To unsubscribe, or for help writing mail filters, visit <a href=3D"http://g=
-errit.openvpn.net/settings">settings</a>.</p><div itemscope itemtype=3D"htt=
-p://schema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D=
-"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit=
-.openvpn.net/c/openvpn/+/898?usp=3Demail"/><meta itemprop=3D"name" content=
-=3D"View Change"/></div></div>
+<p>cron2 <strong>submitted</strong> this change.</p><p><a href=3D"http://ge=
+rrit.openvpn.net/c/openvpn/+/898?usp=3Demail">View Change</a></p><div style=
+=3D"white-space:pre-wrap"></div><pre style=3D"font-family: monospace,monosp=
+ace; white-space: pre-wrap;">get_default_gateway(): Prevent passing IPV4_IN=
+VALID_ADDR as a destination<br><br>When using --redirect-gateway (IPv4) whi=
+le connected to an IPv6 remote,<br>OpenVPN still attempts to determine the =
+IPv4 default gateway,<br>so link_socket_current_remote() returns IPV4_INVAL=
+ID_ADDR (0xffffffff)<br>as the destination, leading to unintended behavior:=
+<br><br>- the IPv4 default gateway (rl-&gt;rgi.gateway.addr) gets wiped.<br=
+>- this prevents proper restoration of the original route when needed.<br><=
+br>To fix this, if link_socket_current_remote() returns IPV4_INVALID_ADDR,<=
+br>we now pass INADDR_ANY (0x00000000) to get_default_gateway(),<br>ensurin=
+g the function behaves correctly.<br><br>Change-Id: I02afe6817433ca21aae766=
+71c35151ec6a066933<br>Signed-off-by: Marco Baffo &lt;marco@...2726...&gt;<b=
+r>Acked-by: Gert Doering &lt;gert@...1296...&gt;<br>Message-Id: &lt;2025021=
+4153434.18539-1-gert@...1296...&gt;<br>URL: https://www.mail-archive.com/op=
+envpn-devel@lists.sourceforge.net/msg30895.html<br>Signed-off-by: Gert Doer=
+ing &lt;gert@...1296...&gt;<br>---<br>M src/openvpn/route.c<br>1 file chang=
+ed, 1 insertion(+), 1 deletion(-)<br><br></pre>
+<pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><sp=
+an>diff --git a/src/openvpn/route.c b/src/openvpn/route.c</span><br><span>i=
+ndex d895e1c..bc41492 100644</span><br><span>--- a/src/openvpn/route.c</spa=
+n><br><span>+++ b/src/openvpn/route.c</span><br><span>@@ -655,7 +655,7 @@</=
+span><br><span>         rl-&gt;spec.flags |=3D RTSA_DEFAULT_METRIC;</span><=
+br><span>     }</span><br><span> </span><br><span style=3D"color: hsl(0, 10=
+0%, 40%);">-    get_default_gateway(&amp;rl-&gt;rgi, remote_host, ctx);</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+    get_default_gateway=
+(&amp;rl-&gt;rgi, remote_host !=3D IPV4_INVALID_ADDR ? remote_host : INADDR=
+_ANY, ctx);</span><br><span>     if (rl-&gt;rgi.flags &amp; RGI_ADDR_DEFINE=
+D)</span><br><span>     {</span><br><span>         setenv_route_addr(es, &q=
+uot;net_gateway&quot;, rl-&gt;rgi.gateway.addr, -1);</span><br><span></span=
+><br></pre><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn=
+/+/898?usp=3Demail">change 898</a>. To unsubscribe, or for help writing mai=
+l filters, visit <a href=3D"http://gerrit.openvpn.net/settings">settings</a=
+>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div items=
+cope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link it=
+emprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/898?usp=3Demai=
+l"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
@@ -160,8 +152,8 @@ p://schema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D=
 .1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
+<div style=3D"display:none"> Gerrit-MessageType: merged </div>
 
 
---oGNpTLRX7Sk=--
+--TVf+xDMHRxw=--
 
