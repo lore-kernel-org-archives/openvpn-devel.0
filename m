@@ -1,16 +1,17 @@
-From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Fri, 14 Feb 2025 13:06:52 +0000
-In-Reply-To: <gerrit.1739460301000.If6afa1108f9234f98afdbe0de7b7320403871772@...2715...>
-References: <gerrit.1739460301000.If6afa1108f9234f98afdbe0de7b7320403871772@...2715...>
-Reply-To: gert@...1296..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <60dbd6d239dda9933fcfa6080ea455a0a158b727-EmailReplacePatchSet-HTML@...2715...>
+From: "mrbff (Code Review)" <gerrit@...515...>
+Date: Fri, 14 Feb 2025 15:04:13 +0000
+In-Reply-To: <gerrit.1739527719000.I02afe6817433ca21aae76671c35151ec6a066933@...2715...>
+References: <gerrit.1739527719000.I02afe6817433ca21aae76671c35151ec6a066933@...2715...>
+Reply-To: marco@...2726..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net, frank@...2641...,
+ gert@...1296...
+Message-ID: <93dd934e69ce858c3135e93295b3abc8843ae21f-EmailReplacePatchSet-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="V3qIrCCc+eg="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: Add (fake) Android
- cmake building
+Content-Type: multipart/alternative; boundary="Be9hSDoc4/U="; charset=UTF-8
+Subject: [Openvpn-devel] [XS] Change in openvpn[master]:
+ get_default_gateway(): Prevent passing IPV4_INVALID_ADDR as a destina...
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,192 +20,165 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>
+To: plaisthos <arne-openvpn@...1227...>, cron2 <gert@...1296...>, flichtenheld <frank@...2641...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---V3qIrCCc+eg=
+--Be9hSDoc4/U=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-cron2 has uploaded a new patch set (#4) to the change originally created by=
- plaisthos. ( http://gerrit.openvpn.net/c/openvpn/+/895?usp=3Demail )
+Attention is currently required from: cron2, flichtenheld, mrbff, plaisthos.
+
+Hello cron2, flichtenheld, plaisthos,
+
+I'd like you to reexamine a change. Please visit
+
+    http://gerrit.openvpn.net/c/openvpn/+/898?usp=3Demail
+
+to look at the new patch set (#3).
 
 The following approvals got outdated and were removed:
-Code-Review+2 by flichtenheld
+Code-Review+2 by cron2
+
+The change is no longer submittable: Code-Review and checks~ChecksSubmitRul=
+e are unsatisfied now.
 
 
-Change subject: Add (fake) Android cmake building
+Change subject: get_default_gateway(): Prevent passing IPV4_INVALID_ADDR as=
+ a destination
 ......................................................................
 
-Add (fake) Android cmake building
+get_default_gateway(): Prevent passing IPV4_INVALID_ADDR as a destination
 
-There is a mode to build with a real Android NDK that requires setting
-up cmake to build with the NDK and so.
-For quick&dirty compile tests that do not actually use the Android NDK
-on Linux, -DFAKE_ANDROID on Linux can be used to compile a binary using
-TARGET_ANDROID.
+When using --redirect-gateway (IPv4) while connected to an IPv6 remote,
+OpenVPN still attempts to determine the IPv4 default gateway,
+so link_socket_current_remote() returns IPV4_INVALID_ADDR (0xffffffff)
+as the destination, leading to unintended behavior:
 
-Change-Id: If6afa1108f9234f98afdbe0de7b7320403871772
-Signed-off-by: Arne Schwabe <arne@...1227...>
-Acked-by: Frank Lichtenheld <frank@...2641...>
-Message-Id: <20250214125238.17558-1-gert@...1296...>
-URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg30=
-885.html
-Signed-off-by: Gert Doering <gert@...1296...>
+- the IPv4 default gateway (rl->rgi.gateway.addr) gets wiped.
+- this prevents proper restoration of the original route when needed.
+
+To fix this, if link_socket_current_remote() returns IPV4_INVALID_ADDR,
+we now pass INADDR_ANY (0x00000000) to get_default_gateway(),
+ensuring the function behaves correctly.
+
+Change-Id: I02afe6817433ca21aae76671c35151ec6a066933
+Signed-off-by: Marco Baffo <marco@...2726...>
 ---
-M CMakeLists.txt
-M config.h.cmake.in
-2 files changed, 12 insertions(+), 1 deletion(-)
+M src/openvpn/route.c
+1 file changed, 1 insertion(+), 1 deletion(-)
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/95/895/4
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/98/898/3
 
-diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 5081e81..b04adce 100644
---- a/CMakeLists.txt
-+++ b/CMakeLists.txt
-@@ -39,6 +39,7 @@
- option(ENABLE_LZO "BUILD with lzo" ON)
- option(ENABLE_PKCS11 "BUILD with pkcs11-helper" ON)
- option(USE_WERROR "Treat compiler warnings as errors (-Werror)" ON)
-+option(FAKE_ANDROID "Target Android but do not use actual cross compile/An=
-droid cmake to build for simple compile checks on Linux")
+diff --git a/src/openvpn/route.c b/src/openvpn/route.c
+index d895e1c..bc41492 100644
+--- a/src/openvpn/route.c
++++ b/src/openvpn/route.c
+@@ -655,7 +655,7 @@
+         rl->spec.flags |=3D RTSA_DEFAULT_METRIC;
+     }
 
- set(PLUGIN_DIR /usr/local/lib/openvpn/plugins CACHE FILEPATH "Location of =
-the plugin directory")
-
-@@ -122,7 +123,14 @@
- set(CMAKE_C_STANDARD 11)
-
- # Set the various defines for config.h.cmake.in
--if (${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
-+if (${CMAKE_SYSTEM_NAME} STREQUAL "Android" OR ${FAKE_ANDROID})
-+    set(TARGET_ANDROID YES)
-+    set(ENABLE_ASYNC_PUSH YES)
-+    set(ENABLE_SITNL YES)
-+    set(HAVE_LINUX_TYPES_H 1)
-+    # Wacky workaround as OpenSSL package detection is otherwise broken (h=
-ttps://stackoverflow.com/questions/45958214/android-cmake-could-not-find-op=
-enssl)
-+    list(APPEND CMAKE_FIND_ROOT_PATH ${OPENSSL_ROOT_DIR})
-+elseif (${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
-     set(TARGET_LINUX YES)
-     set(ENABLE_ASYNC_PUSH YES)
-     set(ENABLE_LINUXDCO YES)
-diff --git a/config.h.cmake.in b/config.h.cmake.in
-index 74a53a6..2f7b43d 100644
---- a/config.h.cmake.in
-+++ b/config.h.cmake.in
-@@ -432,6 +432,9 @@
- /* Are we running WIN32? */
- #cmakedefine TARGET_WIN32
-
-+/* Are we targeting Android? */
-+#cmakedefine TARGET_ANDROID
-+
- #define TARGET_ALIAS "@CMAKE_SYSTEM_NAME@"
-
- /* Enable GNU extensions on systems that have them.  */
+-    get_default_gateway(&rl->rgi, remote_host, ctx);
++    get_default_gateway(&rl->rgi, remote_host !=3D IPV4_INVALID_ADDR ? rem=
+ote_host : INADDR_ANY, ctx);
+     if (rl->rgi.flags & RGI_ADDR_DEFINED)
+     {
+         setenv_route_addr(es, "net_gateway", rl->rgi.gateway.addr, -1);
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/895?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/898?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings
 
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: If6afa1108f9234f98afdbe0de7b7320403871772
-Gerrit-Change-Number: 895
-Gerrit-PatchSet: 4
-Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
+Gerrit-Change-Id: I02afe6817433ca21aae76671c35151ec6a066933
+Gerrit-Change-Number: 898
+Gerrit-PatchSet: 3
+Gerrit-Owner: mrbff <marco@...2726...>
+Gerrit-Reviewer: cron2 <gert@...1296...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
+Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Attention: cron2 <gert@...1296...>
+Gerrit-Attention: flichtenheld <frank@...2641...>
+Gerrit-Attention: mrbff <marco@...2726...>
 Gerrit-MessageType: newpatchset
 
---V3qIrCCc+eg=
+--Be9hSDoc4/U=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p>cron2 <strong>uploaded patch set #4</strong> to the change originally cr=
-eated by plaisthos.</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/=
-895?usp=3Demail">View Change</a></p><p>The following approvals got outdated=
- and were removed:
-Code-Review+2 by flichtenheld</p><pre style=3D"font-family: monospace,monos=
-pace; white-space: pre-wrap;">Add (fake) Android cmake building<br><br>Ther=
-e is a mode to build with a real Android NDK that requires setting<br>up cm=
-ake to build with the NDK and so.<br>For quick&amp;dirty compile tests that=
- do not actually use the Android NDK<br>on Linux, -DFAKE_ANDROID on Linux c=
-an be used to compile a binary using<br>TARGET_ANDROID.<br><br>Change-Id: I=
-f6afa1108f9234f98afdbe0de7b7320403871772<br>Signed-off-by: Arne Schwabe &lt=
-;arne@...1227...&gt;<br>Acked-by: Frank Lichtenheld &lt;frank@...2641...&gt=
-;<br>Message-Id: &lt;20250214125238.17558-1-gert@...1296...&gt;<br>URL: htt=
-ps://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg30885.html=
-<br>Signed-off-by: Gert Doering &lt;gert@...1296...&gt;<br>---<br>M CMakeLi=
-sts.txt<br>M config.h.cmake.in<br>2 files changed, 12 insertions(+), 1 dele=
-tion(-)<br><br></pre><pre style=3D"font-family: monospace,monospace; white-=
-space: pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/openvpn refs/chan=
-ges/95/895/4</pre><pre style=3D"font-family: monospace,monospace; white-spa=
-ce: pre-wrap;"><span>diff --git a/CMakeLists.txt b/CMakeLists.txt</span><br=
-><span>index 5081e81..b04adce 100644</span><br><span>--- a/CMakeLists.txt</=
-span><br><span>+++ b/CMakeLists.txt</span><br><span>@@ -39,6 +39,7 @@</span=
-><br><span> option(ENABLE_LZO &quot;BUILD with lzo&quot; ON)</span><br><spa=
-n> option(ENABLE_PKCS11 &quot;BUILD with pkcs11-helper&quot; ON)</span><br>=
-<span> option(USE_WERROR &quot;Treat compiler warnings as errors (-Werror)&=
-quot; ON)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+option(FAK=
-E_ANDROID &quot;Target Android but do not use actual cross compile/Android =
-cmake to build for simple compile checks on Linux&quot;)</span><br><span> <=
-/span><br><span> set(PLUGIN_DIR /usr/local/lib/openvpn/plugins CACHE FILEPA=
-TH &quot;Location of the plugin directory&quot;)</span><br><span> </span><b=
-r><span>@@ -122,7 +123,14 @@</span><br><span> set(CMAKE_C_STANDARD 11)</spa=
-n><br><span> </span><br><span> # Set the various defines for config.h.cmake=
-.in</span><br><span style=3D"color: hsl(0, 100%, 40%);">-if (${CMAKE_SYSTEM=
-_NAME} STREQUAL &quot;Linux&quot;)</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+if (${CMAKE_SYSTEM_NAME} STREQUAL &quot;Android&quot; OR ${F=
-AKE_ANDROID})</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    se=
-t(TARGET_ANDROID YES)</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+    set(ENABLE_ASYNC_PUSH YES)</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+    set(ENABLE_SITNL YES)</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+    set(HAVE_LINUX_TYPES_H 1)</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+    # Wacky workaround as OpenSSL package dete=
-ction is otherwise broken (https://stackoverflow.com/questions/45958214/and=
-roid-cmake-could-not-find-openssl)</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+    list(APPEND CMAKE_FIND_ROOT_PATH ${OPENSSL_ROOT_DIR})</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+elseif (${CMAKE_SYSTEM=
-_NAME} STREQUAL &quot;Linux&quot;)</span><br><span>     set(TARGET_LINUX YE=
-S)</span><br><span>     set(ENABLE_ASYNC_PUSH YES)</span><br><span>     set=
-(ENABLE_LINUXDCO YES)</span><br><span>diff --git a/config.h.cmake.in b/conf=
-ig.h.cmake.in</span><br><span>index 74a53a6..2f7b43d 100644</span><br><span=
->--- a/config.h.cmake.in</span><br><span>+++ b/config.h.cmake.in</span><br>=
-<span>@@ -432,6 +432,9 @@</span><br><span> /* Are we running WIN32? */</spa=
-n><br><span> #cmakedefine TARGET_WIN32</span><br><span> </span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+/* Are we targeting Android? */</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+#cmakedefine TARGET_ANDROI=
-D</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> =
-#define TARGET_ALIAS &quot;@CMAKE_SYSTEM_NAME@&quot;</span><br><span> </spa=
-n><br><span> /* Enable GNU extensions on systems that have them.  */</span>=
-<br><span></span><br></pre><p>To view, visit <a href=3D"http://gerrit.openv=
-pn.net/c/openvpn/+/895?usp=3Demail">change 895</a>. To unsubscribe, or for =
-help writing mail filters, visit <a href=3D"http://gerrit.openvpn.net/setti=
-ngs">settings</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMes=
-sage"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.org/View=
-Action"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/=
-+/895?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div>=
-</div>
+<p> Attention is currently required from: cron2, flichtenheld, mrbff, plais=
+thos. </p>
+<p>mrbff <strong>uploaded patch set #3</strong> to this change.</p><p><a hr=
+ef=3D"http://gerrit.openvpn.net/c/openvpn/+/898?usp=3Demail">View Change</a=
+></p><p>The following approvals got outdated and were removed:
+Code-Review+2 by cron2</p><p>The change is no longer submittable: Code-Revi=
+ew and checks~ChecksSubmitRule are unsatisfied now.</p><pre style=3D"font-f=
+amily: monospace,monospace; white-space: pre-wrap;">get_default_gateway(): =
+Prevent passing IPV4_INVALID_ADDR as a destination<br><br>When using --redi=
+rect-gateway (IPv4) while connected to an IPv6 remote,<br>OpenVPN still att=
+empts to determine the IPv4 default gateway,<br>so link_socket_current_remo=
+te() returns IPV4_INVALID_ADDR (0xffffffff)<br>as the destination, leading =
+to unintended behavior:<br><br>- the IPv4 default gateway (rl-&gt;rgi.gatew=
+ay.addr) gets wiped.<br>- this prevents proper restoration of the original =
+route when needed.<br><br>To fix this, if link_socket_current_remote() retu=
+rns IPV4_INVALID_ADDR,<br>we now pass INADDR_ANY (0x00000000) to get_defaul=
+t_gateway(),<br>ensuring the function behaves correctly.<br><br>Change-Id: =
+I02afe6817433ca21aae76671c35151ec6a066933<br>Signed-off-by: Marco Baffo &lt=
+;marco@...2726...&gt;<br>---<br>M src/openvpn/route.c<br>1 file changed, 1 =
+insertion(+), 1 deletion(-)<br><br></pre><pre style=3D"font-family: monospa=
+ce,monospace; white-space: pre-wrap;">git pull ssh://gerrit.openvpn.net:294=
+18/openvpn refs/changes/98/898/3</pre><pre style=3D"font-family: monospace,=
+monospace; white-space: pre-wrap;"><span>diff --git a/src/openvpn/route.c b=
+/src/openvpn/route.c</span><br><span>index d895e1c..bc41492 100644</span><b=
+r><span>--- a/src/openvpn/route.c</span><br><span>+++ b/src/openvpn/route.c=
+</span><br><span>@@ -655,7 +655,7 @@</span><br><span>         rl-&gt;spec.f=
+lags |=3D RTSA_DEFAULT_METRIC;</span><br><span>     }</span><br><span> </sp=
+an><br><span style=3D"color: hsl(0, 100%, 40%);">-    get_default_gateway(&=
+amp;rl-&gt;rgi, remote_host, ctx);</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+    get_default_gateway(&amp;rl-&gt;rgi, remote_host !=3D IP=
+V4_INVALID_ADDR ? remote_host : INADDR_ANY, ctx);</span><br><span>     if (=
+rl-&gt;rgi.flags &amp; RGI_ADDR_DEFINED)</span><br><span>     {</span><br><=
+span>         setenv_route_addr(es, &quot;net_gateway&quot;, rl-&gt;rgi.gat=
+eway.addr, -1);</span><br><span></span><br></pre><p>To view, visit <a href=
+=3D"http://gerrit.openvpn.net/c/openvpn/+/898?usp=3Demail">change 898</a>. =
+To unsubscribe, or for help writing mail filters, visit <a href=3D"http://g=
+errit.openvpn.net/settings">settings</a>.</p><div itemscope itemtype=3D"htt=
+p://schema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D=
+"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit=
+.openvpn.net/c/openvpn/+/898?usp=3Demail"/><meta itemprop=3D"name" content=
+=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: If6afa1108f9234f98afdbe0de7b=
-7320403871772 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 895 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 4 </div>
-<div style=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@...1711...=
-27...&gt; </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I02afe6817433ca21aae76671c35=
+151ec6a066933 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 898 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 3 </div>
+<div style=3D"display:none"> Gerrit-Owner: mrbff &lt;marco@...2726...&gt; <=
+/div>
+<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
+ </div>
 <div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
 1...&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
+.1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: cron2 &lt;gert@...1296...&gt=
+; </div>
+<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
+41...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: mrbff &lt;marco@...2726...&g=
+t; </div>
 <div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
 
 
---V3qIrCCc+eg=--
+--Be9hSDoc4/U=--
 
