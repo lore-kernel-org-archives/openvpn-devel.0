@@ -1,11 +1,16 @@
-Message-ID: <eac80c73-e702-4d5c-b90a-fdaf4edd74f1@...68...>
-Date: Sat, 15 Feb 2025 20:01:44 +0100
+From: "plaisthos (Code Review)" <gerrit@...515...>
+Date: Sun, 16 Feb 2025 15:04:25 +0000
+In-Reply-To: <gerrit.1736860439000.I925accd8267f94ecfd9ccea85bae965dc2a10208@...2715...>
+References: <gerrit.1736860439000.I925accd8267f94ecfd9ccea85bae965dc2a10208@...2715...>
+Reply-To: arne-openvpn@...1227..., openvpn-devel@lists.sourceforge.net,
+ frank@...2641...
+Message-ID: <c47c72f8992c61c6b630e5bb4dcc83d4a172a8bd-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-From: corubba <corubba@...68...>
-References: <951b0ff7-9fb7-405b-bf6e-ef4ebf12afaf@...68...>
-Content-Language: de-CH
-In-Reply-To: <951b0ff7-9fb7-405b-bf6e-ef4ebf12afaf@...68...>
-Subject: [Openvpn-devel] [PATCH 2/2] Document x509-username-fields oid usage
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="SkSfGlQWHvw="; charset=UTF-8
+Subject: [Openvpn-devel] [S] Change in openvpn[master]: Add more
+ "intentional fallthrough" comments
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,52 +19,81 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
+To: flichtenheld <frank@...2641...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+
+--SkSfGlQWHvw=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-To: openvpn-devel@lists.sourceforge.net
 
-When built against OpenSSL, the parameters of the x509-username-fields
-option are in extract_x509_field_ssl() fed through OBJ_txt2obj() [0]
-which accepts "long names and short names [...] as well as numerical
-forms." Because of this, you can for example use `x509-username-field
-2.5.4.41` to make OpenVPN read the `name` field [1].
+Attention is currently required from: flichtenheld.
 
-x509-username-fields is currently not implemented for mbed TLS, so that
-can be ignored.
+plaisthos has posted comments on this change. ( http://gerrit.openvpn.net/c=
+/openvpn/+/864?usp=3Demail )
 
-[0] https://docs.openssl.org/1.1.1/man3/OBJ_nid2obj/
-[1] https://oidref.com/2.5.4.41
+Change subject: Add more "intentional fallthrough" comments
+......................................................................
 
-Signed-off-by: Corubba Smith <corubba@...68...>
----
- doc/man-sections/tls-options.rst | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/doc/man-sections/tls-options.rst b/doc/man-sections/tls-option=
-s.rst
-index 7882e924..0638d095 100644
---- a/doc/man-sections/tls-options.rst
-+++ b/doc/man-sections/tls-options.rst
-@@ -744,11 +744,13 @@ If the option is inlined, ``algo`` is always :code:`S=
-HA256`.
-   ::
+Patch Set 3: Code-Review+2
 
-      x509-username-field emailAddress
-+     x509-username-field 1.2.840.113549.1.9.1
-      x509-username-field ext:subjectAltName
-      x509-username-field CN serialNumber
 
--  The first example uses the value of the :code:`emailAddress` attribute
--  in the certificate's Subject field as the username. The second example
-+  The first two examples use the value of the :code:`emailAddress` attribu=
-te
-+  in the certificate's Subject field as the username, where the first exam=
-ple
-+  uses the name while the second example uses the oid. The third example
-   uses the :code:`ext:` prefix to signify that the X.509 extension
-   ``fieldname`` :code:`subjectAltName` be searched for an rfc822Name
-   (email) field to be used as the username. In cases where there are
 --
-2.48.1
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/864?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings
 
+Gerrit-Project: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: I925accd8267f94ecfd9ccea85bae965dc2a10208
+Gerrit-Change-Number: 864
+Gerrit-PatchSet: 3
+Gerrit-Owner: flichtenheld <frank@...2641...>
+Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-Attention: flichtenheld <frank@...2641...>
+Gerrit-Comment-Date: Sun, 16 Feb 2025 15:04:25 +0000
+Gerrit-HasComments: No
+Gerrit-Has-Labels: Yes
+Gerrit-MessageType: comment
+
+--SkSfGlQWHvw=
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<p> Attention is currently required from: flichtenheld. </p>
+<p>Patch set 3:<span style=3D"border-radius: 3px; display: inline-block; ma=
+rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/864?usp=3Demail">Vi=
+ew Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To vie=
+w, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/864?usp=3Demail">=
+change 864</a>. To unsubscribe, or for help writing mail filters, visit <a =
+href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope=
+ itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"act=
+ion" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=
+=3D"http://gerrit.openvpn.net/c/openvpn/+/864?usp=3Demail"/><meta itemprop=
+=3D"name" content=3D"View Change"/></div></div>
+
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I925accd8267f94ecfd9ccea85ba=
+e965dc2a10208 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 864 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 3 </div>
+<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
+.&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
+.1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
+41...&gt; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Sun, 16 Feb 2025 15:04:25=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: No </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
+
+
+--SkSfGlQWHvw=--
 
