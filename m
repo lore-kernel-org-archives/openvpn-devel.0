@@ -1,14 +1,14 @@
 From: "plaisthos (Code Review)" <gerrit@...515...>
-Date: Mon, 17 Feb 2025 12:05:27 +0000
+Date: Mon, 17 Feb 2025 12:08:47 +0000
 In-Reply-To: <gerrit.1737375148000.Ia4095518d5e4447992a2974e0d7a159d79ba6b6f@...2715...>
 References: <gerrit.1737375148000.Ia4095518d5e4447992a2974e0d7a159d79ba6b6f@...2715...>
 Reply-To: arne-openvpn@...1227..., openvpn-devel@lists.sourceforge.net,
  frank@...2641..., lstipakov@...277..., a@...2181...
-Message-ID: <93df19ba15aa5961abb37f68e48c3827569f8507-EmailReplacePatchSet-HTML@...2715...>
+Message-ID: <978d48925c77c81a0510d0d5c6dcc88c5aa78f00-EmailReplacePatchSet-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="7xG0MeYNogs="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="WT5kpS6a3k4="; charset=UTF-8
 Subject: [Openvpn-devel] [M] Change in openvpn[master]: Implement
  override-username
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -22,7 +22,7 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: flichtenheld <frank@...2641...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>, stipa <lstipakov@...277...>
 
---7xG0MeYNogs=
+--WT5kpS6a3k4=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
@@ -34,7 +34,7 @@ I'd like you to reexamine a change. Please visit
 
     http://gerrit.openvpn.net/c/openvpn/+/872?usp=3Demail
 
-to look at the new patch set (#6).
+to look at the new patch set (#7).
 
 
 Change subject: Implement override-username
@@ -77,7 +77,7 @@ M src/openvpn/ssl_verify.h
 10 files changed, 160 insertions(+), 10 deletions(-)
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/72/872/6
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/72/872/7
 
 diff --git a/Changes.rst b/Changes.rst
 index e011811..d6a0ba6 100644
@@ -286,7 +286,7 @@ index 3f4cb90..0b2a9f3 100644
      int tcp_queue_limit;
      struct iroute *iroutes;
 diff --git a/src/openvpn/push.c b/src/openvpn/push.c
-index a7cd3bf..5ccd7d8 100644
+index a7cd3bf..894d85b 100644
 --- a/src/openvpn/push.c
 +++ b/src/openvpn/push.c
 @@ -595,9 +595,19 @@
@@ -298,7 +298,7 @@ index a7cd3bf..5ccd7d8 100644
 +        push_option_fmt(gc, push_list, M_USAGE, "auth-token %s",
                          tls_multi->auth_token);
 +
-+        char *base64user;
++        char *base64user =3D NULL;
 +        int ret =3D openvpn_base64_encode(tls_multi->locked_username,
 +                                        (int)strlen(tls_multi->locked_user=
 name),
@@ -440,7 +440,7 @@ index cd2ec24..eba3832 100644
   * Returns the username field for the given tunnel
   *
 
---=20
+--
 To view, visit http://gerrit.openvpn.net/c/openvpn/+/872?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings
@@ -449,7 +449,7 @@ Gerrit-Project: openvpn
 Gerrit-Branch: master
 Gerrit-Change-Id: Ia4095518d5e4447992a2974e0d7a159d79ba6b6f
 Gerrit-Change-Number: 872
-Gerrit-PatchSet: 6
+Gerrit-PatchSet: 7
 Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
@@ -459,12 +459,12 @@ Gerrit-Attention: flichtenheld <frank@...2641...>
 Gerrit-Attention: stipa <lstipakov@...277...>
 Gerrit-MessageType: newpatchset
 
---7xG0MeYNogs=
+--WT5kpS6a3k4=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <p> Attention is currently required from: flichtenheld, stipa. </p>
-<p>plaisthos <strong>uploaded patch set #6</strong> to this change.</p><p><=
+<p>plaisthos <strong>uploaded patch set #7</strong> to this change.</p><p><=
 a href=3D"http://gerrit.openvpn.net/c/openvpn/+/872?usp=3Demail">View Chang=
 e</a></p><pre style=3D"font-family: monospace,monospace; white-space: pre-w=
 rap;">Implement override-username<br><br>This allow the server to set and o=
@@ -488,7 +488,7 @@ M src/openvpn/multi.c<br>M src/openvpn/options.c<br>M src/openvpn/options.h=
 .h<br>M src/openvpn/ssl_verify.c<br>M src/openvpn/ssl_verify.h<br>10 files =
 changed, 160 insertions(+), 10 deletions(-)<br><br></pre><pre style=3D"font=
 -family: monospace,monospace; white-space: pre-wrap;">git pull ssh://gerrit=
-.openvpn.net:29418/openvpn refs/changes/72/872/6</pre><pre style=3D"font-fa=
+.openvpn.net:29418/openvpn refs/changes/72/872/7</pre><pre style=3D"font-fa=
 mily: monospace,monospace; white-space: pre-wrap;"><span>diff --git a/Chang=
 es.rst b/Changes.rst</span><br><span>index e011811..d6a0ba6 100644</span><b=
 r><span>--- a/Changes.rst</span><br><span>+++ b/Changes.rst</span><br><span=
@@ -686,7 +686,7 @@ char *client_config_dir;</span><br><span>     bool ccd_exclusive;</span><br=
 %);">+    const char *override_username;</span><br><span>     int n_bcast_b=
 uf;</span><br><span>     int tcp_queue_limit;</span><br><span>     struct i=
 route *iroutes;</span><br><span>diff --git a/src/openvpn/push.c b/src/openv=
-pn/push.c</span><br><span>index a7cd3bf..5ccd7d8 100644</span><br><span>---=
+pn/push.c</span><br><span>index a7cd3bf..894d85b 100644</span><br><span>---=
  a/src/openvpn/push.c</span><br><span>+++ b/src/openvpn/push.c</span><br><s=
 pan>@@ -595,9 +595,19 @@</span><br><span>      */</span><br><span>     if (=
 tls_multi-&gt;auth_token)</span><br><span>     {</span><br><span style=3D"c=
@@ -696,138 +696,138 @@ olor: hsl(0, 100%, 40%);">-        push_option_fmt(gc, push_list, M_USAGE,<=
  40%);">+        push_option_fmt(gc, push_list, M_USAGE, &quot;auth-token %=
 s&quot;,</span><br><span>                         tls_multi-&gt;auth_token)=
 ;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+        char *base64user;</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+        int ret =3D openvpn_bas=
-e64_encode(tls_multi-&gt;locked_username,</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+                                        (int)strlen(t=
-ls_multi-&gt;locked_username),</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+                                        &amp;base64user);</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+        if (ret &lt; USER_=
-PASS_LEN &amp;&amp; ret &gt; 0)</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+        {</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+            push_option_fmt(gc, push_list, M_USAGE, &quot;auth-token-user=
- %s&quot;,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+         =
-                   base64user);</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+        }</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+        free(base64user);</span><br><span>     }</span><br><span> }</span=
-><br><span> </span><br><span>diff --git a/src/openvpn/ssl.c b/src/openvpn/s=
-sl.c</span><br><span>index 439ce79..16fa4cd 100644</span><br><span>--- a/sr=
-c/openvpn/ssl.c</span><br><span>+++ b/src/openvpn/ssl.c</span><br><span>@@ =
--1262,6 +1262,7 @@</span><br><span>     free(multi-&gt;peer_info);</span><b=
-r><span>     free(multi-&gt;locked_cn);</span><br><span>     free(multi-&gt=
-;locked_username);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-   free(multi-&gt;locked_original_username);</span><br><span> </span><br><s=
-pan>     cert_hash_free(multi-&gt;locked_cert_hash_set);</span><br><span> <=
-/span><br><span>diff --git a/src/openvpn/ssl_common.h b/src/openvpn/ssl_com=
-mon.h</span><br><span>index 9625a99..411b64f 100644</span><br><span>--- a/s=
-rc/openvpn/ssl_common.h</span><br><span>+++ b/src/openvpn/ssl_common.h</spa=
-n><br><span>@@ -628,7 +628,16 @@</span><br><span>      * Our locked common =
-name, username, and cert hashes (cannot change during the life of this tls_=
-multi object)</span><br><span>      */</span><br><span>     char *locked_cn=
-;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+    /** The locked username is the us=
-ername we assume the client is using.</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+     * Normally the username used for initial authenticat=
-ion unless</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     * ov=
-erridden by --override-username */</span><br><span>     char *locked_userna=
-me;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+    /** The username that client in=
-itially used before being overridden</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+     * by --override-user */</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+    char *locked_original_username;</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+</span><br><span>     struct cert=
-_hash_set *locked_cert_hash_set;</span><br><span> </span><br><span>     /**=
- Time of last when we updated the cached state of</span><br><span>diff --gi=
-t a/src/openvpn/ssl_verify.c b/src/openvpn/ssl_verify.c</span><br><span>ind=
-ex e7d7ed6..dd230e8 100644</span><br><span>--- a/src/openvpn/ssl_verify.c</=
-span><br><span>+++ b/src/openvpn/ssl_verify.c</span><br><span>@@ -48,9 +48,=
-6 @@</span><br><span> #include &quot;push.h&quot;</span><br><span> #include=
- &quot;ssl_util.h&quot;</span><br><span> </span><br><span style=3D"color: h=
-sl(0, 100%, 40%);">-/** Maximum length of common name */</span><br><span st=
-yle=3D"color: hsl(0, 100%, 40%);">-#define TLS_USERNAME_LEN 64</span><br><s=
-pan style=3D"color: hsl(0, 100%, 40%);">-</span><br><span> static void</spa=
-n><br><span> string_mod_remap_name(char *str)</span><br><span> {</span><br>=
-<span>@@ -85,10 +82,7 @@</span><br><span>     }</span><br><span> }</span><b=
-r><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-/*</span><br=
-><span style=3D"color: hsl(0, 100%, 40%);">- * Set the given session&#39;s =
-common_name</span><br><span style=3D"color: hsl(0, 100%, 40%);">- */</span>=
-<br><span style=3D"color: hsl(0, 100%, 40%);">-static void</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+void</span><br><span> set_common_nam=
-e(struct tls_session *session, const char *common_name)</span><br><span> {<=
-/span><br><span>     if (session-&gt;common_name)</span><br><span>@@ -153,7=
- +147,10 @@</span><br><span> {</span><br><span>     if (multi-&gt;locked_us=
-ername)</span><br><span>     {</span><br><span style=3D"color: hsl(0, 100%,=
- 40%);">-        if (strcmp(username, multi-&gt;locked_username) !=3D 0)</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+        /* If the user=
-name has been overridden, we accept both the original</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+         * username and the changed usern=
-ame */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        if (s=
-trcmp(username, multi-&gt;locked_username) !=3D 0</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+            &amp;&amp;  (!multi-&gt;locked_or=
-iginal_username || strcmp(username, multi-&gt;locked_original_username) !=
-=3D 0))</span><br><span>         {</span><br><span>             msg(D_TLS_E=
-RRORS, &quot;TLS Auth Error: username attempted to change from &#39;%s&#39;=
- to &#39;%s&#39; -- tunnel disabled&quot;,</span><br><span>                =
- multi-&gt;locked_username,</span><br><span>@@ -1613,6 +1610,17 @@</span><b=
-r><span>      */</span><br><span>     bool skip_auth =3D false;</span><br><=
-span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+    /* Replac=
-e username early if override-username is in effect but only</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+     * if client is sending the ori=
-ginal username */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-  if (multi-&gt;locked_original_username</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+        &amp;&amp; strncmp(up-&gt;username, multi-&gt;=
-locked_original_username, sizeof(up-&gt;username)) =3D=3D 0)</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+        msg(D_MULTI_LOW, &quot;TLS: Replacing cl=
-ient provided username &#39;%s&#39; with &quot;</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+            &quot;username from override-user &=
-#39;%s&#39;&quot;, up-&gt;username,</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+            multi-&gt;locked_username);</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+        strncpy(up-&gt;username, multi-=
-&gt;locked_username, sizeof(up-&gt;username));</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+</span><br><span>     /*</span><br><span>      * If server is =
-configured with --auth-gen-token and the client sends</span><br><span>     =
- * something that looks like an authentication token, this</span><br><span>=
-diff --git a/src/openvpn/ssl_verify.h b/src/openvpn/ssl_verify.h</span><br>=
-<span>index cd2ec24..eba3832 100644</span><br><span>--- a/src/openvpn/ssl_v=
-erify.h</span><br><span>+++ b/src/openvpn/ssl_verify.h</span><br><span>@@ -=
-51,6 +51,9 @@</span><br><span> /** Maximum certificate depth we will allow =
-*/</span><br><span> #define MAX_CERT_DEPTH 16</span><br><span> </span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+/** Maximum length of common na=
-me */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#define TLS_US=
-ERNAME_LEN 64</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span=
-><br><span> /** Structure containing the hash for a single certificate */</=
-span><br><span> struct cert_hash {</span><br><span>     unsigned char sha25=
-6_hash[256/8];</span><br><span>@@ -146,6 +149,16 @@</span><br><span>  */</s=
-pan><br><span> const char *tls_common_name(const struct tls_multi *multi, c=
-onst bool null);</span><br><span> </span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+/**<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * Sets the common n=
-ame field for the given tunnel</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+ *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @pa=
-ram multi         The tunnel to set the common name for</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+ * @param common_name   The name to set=
- the common name to</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
- */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+void</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+set_common_name(struct tls_sess=
-ion *session, const char *common_name);</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+</span><br><span> /**</span><br><span>  * Returns the u=
-sername field for the given tunnel</span><br><span>  *</span><br><span></sp=
-an><br></pre><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openv=
-pn/+/872?usp=3Demail">change 872</a>. To unsubscribe, or for help writing m=
-ail filters, visit <a href=3D"http://gerrit.openvpn.net/settings">settings<=
-/a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div ite=
-mscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link =
-itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/872?usp=3Dem=
-ail"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
+tyle=3D"color: hsl(120, 100%, 40%);">+        char *base64user =3D NULL;</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+        int ret =3D op=
+envpn_base64_encode(tls_multi-&gt;locked_username,</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+                                        (int=
+)strlen(tls_multi-&gt;locked_username),</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+                                        &amp;base64user=
+);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        if (ret &=
+lt; USER_PASS_LEN &amp;&amp; ret &gt; 0)</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+        {</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+            push_option_fmt(gc, push_list, M_USAGE, &quot;auth-t=
+oken-user %s&quot;,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+                            base64user);</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+        }</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+        free(base64user);</span><br><span>     }</span><br><span=
+> }</span><br><span> </span><br><span>diff --git a/src/openvpn/ssl.c b/src/=
+openvpn/ssl.c</span><br><span>index 439ce79..16fa4cd 100644</span><br><span=
+>--- a/src/openvpn/ssl.c</span><br><span>+++ b/src/openvpn/ssl.c</span><br>=
+<span>@@ -1262,6 +1262,7 @@</span><br><span>     free(multi-&gt;peer_info);=
+</span><br><span>     free(multi-&gt;locked_cn);</span><br><span>     free(=
+multi-&gt;locked_username);</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+    free(multi-&gt;locked_original_username);</span><br><span> </sp=
+an><br><span>     cert_hash_free(multi-&gt;locked_cert_hash_set);</span><br=
+><span> </span><br><span>diff --git a/src/openvpn/ssl_common.h b/src/openvp=
+n/ssl_common.h</span><br><span>index 9625a99..411b64f 100644</span><br><spa=
+n>--- a/src/openvpn/ssl_common.h</span><br><span>+++ b/src/openvpn/ssl_comm=
+on.h</span><br><span>@@ -628,7 +628,16 @@</span><br><span>      * Our locke=
+d common name, username, and cert hashes (cannot change during the life of =
+this tls_multi object)</span><br><span>      */</span><br><span>     char *=
+locked_cn;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+    /** The locked username =
+is the username we assume the client is using.</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+     * Normally the username used for initial au=
+thentication unless</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+     * overridden by --override-username */</span><br><span>     char *lock=
+ed_username;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+    /** The username that =
+client initially used before being overridden</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+     * by --override-user */</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+    char *locked_original_username;</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span>     st=
+ruct cert_hash_set *locked_cert_hash_set;</span><br><span> </span><br><span=
+>     /** Time of last when we updated the cached state of</span><br><span>=
+diff --git a/src/openvpn/ssl_verify.c b/src/openvpn/ssl_verify.c</span><br>=
+<span>index e7d7ed6..dd230e8 100644</span><br><span>--- a/src/openvpn/ssl_v=
+erify.c</span><br><span>+++ b/src/openvpn/ssl_verify.c</span><br><span>@@ -=
+48,9 +48,6 @@</span><br><span> #include &quot;push.h&quot;</span><br><span>=
+ #include &quot;ssl_util.h&quot;</span><br><span> </span><br><span style=3D=
+"color: hsl(0, 100%, 40%);">-/** Maximum length of common name */</span><br=
+><span style=3D"color: hsl(0, 100%, 40%);">-#define TLS_USERNAME_LEN 64</sp=
+an><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span> static =
+void</span><br><span> string_mod_remap_name(char *str)</span><br><span> {</=
+span><br><span>@@ -85,10 +82,7 @@</span><br><span>     }</span><br><span> }=
+</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-/*<=
+/span><br><span style=3D"color: hsl(0, 100%, 40%);">- * Set the given sessi=
+on&#39;s common_name</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
+*/</span><br><span style=3D"color: hsl(0, 100%, 40%);">-static void</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+void</span><br><span> set_c=
+ommon_name(struct tls_session *session, const char *common_name)</span><br>=
+<span> {</span><br><span>     if (session-&gt;common_name)</span><br><span>=
+@@ -153,7 +147,10 @@</span><br><span> {</span><br><span>     if (multi-&gt;=
+locked_username)</span><br><span>     {</span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-        if (strcmp(username, multi-&gt;locked_username) !=
+=3D 0)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        /* If=
+ the username has been overridden, we accept both the original</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+         * username and the chan=
+ged username */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+    if (strcmp(username, multi-&gt;locked_username) !=3D 0</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+            &amp;&amp;  (!multi-&gt;=
+locked_original_username || strcmp(username, multi-&gt;locked_original_user=
+name) !=3D 0))</span><br><span>         {</span><br><span>             msg(=
+D_TLS_ERRORS, &quot;TLS Auth Error: username attempted to change from &#39;=
+%s&#39; to &#39;%s&#39; -- tunnel disabled&quot;,</span><br><span>         =
+        multi-&gt;locked_username,</span><br><span>@@ -1613,6 +1610,17 @@</=
+span><br><span>      */</span><br><span>     bool skip_auth =3D false;</spa=
+n><br><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+    /*=
+ Replace username early if override-username is in effect but only</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+     * if client is sending =
+the original username */</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+    if (multi-&gt;locked_original_username</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+        &amp;&amp; strncmp(up-&gt;username, mul=
+ti-&gt;locked_original_username, sizeof(up-&gt;username)) =3D=3D 0)</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+        msg(D_MULTI_LOW, &quot;TLS: Repla=
+cing client provided username &#39;%s&#39; with &quot;</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+            &quot;username from override=
+-user &#39;%s&#39;&quot;, up-&gt;username,</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+            multi-&gt;locked_username);</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+        strncpy(up-&gt;username,=
+ multi-&gt;locked_username, sizeof(up-&gt;username));</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+</span><br><span>     /*</span><br><span>      * If ser=
+ver is configured with --auth-gen-token and the client sends</span><br><spa=
+n>      * something that looks like an authentication token, this</span><br=
+><span>diff --git a/src/openvpn/ssl_verify.h b/src/openvpn/ssl_verify.h</sp=
+an><br><span>index cd2ec24..eba3832 100644</span><br><span>--- a/src/openvp=
+n/ssl_verify.h</span><br><span>+++ b/src/openvpn/ssl_verify.h</span><br><sp=
+an>@@ -51,6 +51,9 @@</span><br><span> /** Maximum certificate depth we will=
+ allow */</span><br><span> #define MAX_CERT_DEPTH 16</span><br><span> </spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+/** Maximum length of co=
+mmon name */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#define=
+ TLS_USERNAME_LEN 64</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++</span><br><span> /** Structure containing the hash for a single certifica=
+te */</span><br><span> struct cert_hash {</span><br><span>     unsigned cha=
+r sha256_hash[256/8];</span><br><span>@@ -146,6 +149,16 @@</span><br><span>=
+  */</span><br><span> const char *tls_common_name(const struct tls_multi *m=
+ulti, const bool null);</span><br><span> </span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+/**</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * Sets the c=
+ommon name field for the given tunnel</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+ *</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++ * @param multi         The tunnel to set the common name for</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+ * @param common_name   The name=
+ to set the common name to</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+ */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+void</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+set_common_name(struct t=
+ls_session *session, const char *common_name);</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+</span><br><span> /**</span><br><span>  * Return=
+s the username field for the given tunnel</span><br><span>  *</span><br><sp=
+an></span><br></pre><p>To view, visit <a href=3D"http://gerrit.openvpn.net/=
+c/openvpn/+/872?usp=3Demail">change 872</a>. To unsubscribe, or for help wr=
+iting mail filters, visit <a href=3D"http://gerrit.openvpn.net/settings">se=
+ttings</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><=
+div itemscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"=
+><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/872?u=
+sp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
 <div style=3D"display:none"> Gerrit-Change-Id: Ia4095518d5e4447992a2974e0d7=
 a159d79ba6b6f </div>
 <div style=3D"display:none"> Gerrit-Change-Number: 872 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 6 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 7 </div>
 <div style=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@...1711...=
 27...&gt; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
@@ -844,5 +844,5 @@ ts.sourceforge.net&gt; </div>
 <div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
 
 
---7xG0MeYNogs=--
+--WT5kpS6a3k4=--
 
