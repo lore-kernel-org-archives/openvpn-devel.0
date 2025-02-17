@@ -1,16 +1,17 @@
-From: "plaisthos (Code Review)" <gerrit@...515...>
-Date: Sun, 16 Feb 2025 15:04:40 +0000
-In-Reply-To: <gerrit.1732292955000.I7cdf992eb6031315c4978c6a1fbbecfa723fca91@...2715...>
-References: <gerrit.1732292955000.I7cdf992eb6031315c4978c6a1fbbecfa723fca91@...2715...>
-Reply-To: arne-openvpn@...1227..., openvpn-devel@lists.sourceforge.net,
- frank@...2641..., gert@...1296...
-Message-ID: <fa5113e2431a8229313e6a63d18b33e1cad37635-HTML@...2715...>
+From: "ordex (Code Review)" <gerrit@...515...>
+Date: Mon, 17 Feb 2025 08:57:43 +0000
+In-Reply-To: <gerrit.1737375148000.Ia4095518d5e4447992a2974e0d7a159d79ba6b6f@...2715...>
+References: <gerrit.1737375148000.Ia4095518d5e4447992a2974e0d7a159d79ba6b6f@...2715...>
+Reply-To: a@...2181..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net, frank@...2641...,
+ lstipakov@...277...
+Message-ID: <1edc66494670117a92fe1cc54f08784fdec47d3b-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="lxHyC67I7/s="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: [TEST-ONLY] Mess
- with internal logic to test epoch data
+Content-Type: multipart/alternative; boundary="jGM9bwqV7Jo="; charset=UTF-8
+Subject: [Openvpn-devel] [M] Change in openvpn[master]: Implement
+ override-username
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,67 +20,104 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Cc: cron2 <gert@...1296...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: plaisthos <arne-openvpn@...1227...>
+Cc: stipa <lstipakov@...277...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---lxHyC67I7/s=
+--jGM9bwqV7Jo=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-plaisthos has abandoned this change. ( http://gerrit.openvpn.net/c/openvpn/=
-+/818?usp=3Demail )
+Attention is currently required from: flichtenheld, plaisthos.
 
-Change subject: [TEST-ONLY] Mess with internal logic to test epoch data
+ordex has posted comments on this change. ( http://gerrit.openvpn.net/c/ope=
+nvpn/+/872?usp=3Demail )
+
+Change subject: Implement override-username
 ......................................................................
 
 
-Abandoned
+Patch Set 5:
+
+(1 comment)
+
+Patchset:
+
+PS5:
+is this a server option? or a client options being pushed by the server?
+Is this intended to be used only when connecting to the second server (afte=
+r roaming)?
+
+
+
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/818?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/872?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings
 
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: I7cdf992eb6031315c4978c6a1fbbecfa723fca91
-Gerrit-Change-Number: 818
-Gerrit-PatchSet: 8
+Gerrit-Change-Id: Ia4095518d5e4447992a2974e0d7a159d79ba6b6f
+Gerrit-Change-Number: 872
+Gerrit-PatchSet: 5
 Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
-Gerrit-Reviewer: cron2 <gert@...1296...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-MessageType: abandon
+Gerrit-CC: ordex <a@...2181...>
+Gerrit-CC: stipa <lstipakov@...277...>
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Attention: flichtenheld <frank@...2641...>
+Gerrit-Comment-Date: Mon, 17 Feb 2025 08:57:43 +0000
+Gerrit-HasComments: Yes
+Gerrit-Has-Labels: No
+Gerrit-MessageType: comment
 
---lxHyC67I7/s=
+--jGM9bwqV7Jo=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p>plaisthos <strong>abandoned</strong> this change.</p><p><a href=3D"http:=
-//gerrit.openvpn.net/c/openvpn/+/818?usp=3Demail">View Change</a></p><div s=
-tyle=3D"white-space:pre-wrap">Abandoned</div><p>To view, visit <a href=3D"h=
-ttp://gerrit.openvpn.net/c/openvpn/+/818?usp=3Demail">change 818</a>. To un=
-subscribe, or for help writing mail filters, visit <a href=3D"http://gerrit=
-.openvpn.net/settings">settings</a>.</p><div itemscope itemtype=3D"http://s=
-chema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http=
-://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.open=
-vpn.net/c/openvpn/+/818?usp=3Demail"/><meta itemprop=3D"name" content=3D"Vi=
-ew Change"/></div></div>
+<p> Attention is currently required from: flichtenheld, plaisthos. </p>
+<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/872?usp=3Demail">View C=
+hange</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0;"><=
+li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-style=
+: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p style=
+=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/8=
+72?tab=3Dcomments">Patch Set #5:</a> </p><p style=3D"white-space: pre-wrap;=
+ word-wrap: break-word;">is this a server option? or a client options being=
+ pushed by the server?<br>Is this intended to be used only when connecting =
+to the second server (after roaming)?</p></li></ul></li></ul><p>To view, vi=
+sit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/872?usp=3Demail">chang=
+e 872</a>. To unsubscribe, or for help writing mail filters, visit <a href=
+=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope ite=
+mtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"action"=
+ itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"h=
+ttp://gerrit.openvpn.net/c/openvpn/+/872?usp=3Demail"/><meta itemprop=3D"na=
+me" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I7cdf992eb6031315c4978c6a1fb=
-becfa723fca91 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 818 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 8 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: Ia4095518d5e4447992a2974e0d7=
+a159d79ba6b6f </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 872 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 5 </div>
 <div style=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@...1711...=
 27...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
- </div>
 <div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
 1...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: abandon </div>
+<div style=3D"display:none"> Gerrit-CC: ordex &lt;a@...2181...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: stipa &lt;lstipakov@...277...&gt; <=
+/div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
+41...&gt; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Mon, 17 Feb 2025 08:57:43=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: No </div>
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
 
 
---lxHyC67I7/s=--
+--jGM9bwqV7Jo=--
 
