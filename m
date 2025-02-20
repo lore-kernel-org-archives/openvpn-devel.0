@@ -1,10 +1,17 @@
-Date: Thu, 20 Feb 2025 09:04:10 +0100 (CET)
-Message-Id: <202502200804.51K84AxT098569@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <20250220074327.24922-1-gert@...1296...>
-References: <20250220074327.24922-1-gert@...1296...>
-Subject: [Openvpn-devel] [PATCH applied] Re: dco-win: simplify control
- packets prepend code
+From: "cron2 (Code Review)" <gerrit@...515...>
+Date: Thu, 20 Feb 2025 08:04:51 +0000
+In-Reply-To: <gerrit.1740037224000.Ie57f7b11157ab5ca8ff01e1c4f03a308117ff937@...2715...>
+References: <gerrit.1740037224000.Ie57f7b11157ab5ca8ff01e1c4f03a308117ff937@...2715...>
+Reply-To: gert@...1296..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net, frank@...2641...,
+ lstipakov@...277...
+Message-ID: <b132fa6bb4b5891df194c0fbdfdaaf86065bb6b9-EmailReplacePatchSet-HTML@...2715...>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="pkOFRcrkP7s="; charset=UTF-8
+Subject: [Openvpn-devel] [XS] Change in openvpn[master]: dco-win: simplify
+ control packets prepend code
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,35 +20,149 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: Lev Stipakov <lev@...515...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: stipa <lstipakov@...277...>, plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-Straightforward, so I have not actually tested the resulting openvpn.exe
-- but stared very hard at the change & asked MinGW for an opinion (no
-errors or warnings).
+--pkOFRcrkP7s=
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Fixed one whitespace gotcha on the fly.
+cron2 has uploaded a new patch set (#2) to the change originally created by=
+ stipa. ( http://gerrit.openvpn.net/c/openvpn/+/900?usp=3Demail )
 
-Your patch has been applied to the master branch.
+The following approvals got outdated and were removed:
+Code-Review+2 by cron2
 
-commit a8e67c7d0642f6b7e12ffc98af8495e66664d895
-Author: Lev Stipakov
-Date:   Thu Feb 20 08:43:27 2025 +0100
 
-     dco-win: simplify control packets prepend code
+Change subject: dco-win: simplify control packets prepend code
+......................................................................
 
-     Signed-off-by: Lev Stipakov <lev@...515...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20250220074327.24922-1-gert@...1296...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg30942.html
-     Signed-off-by: Gert Doering <gert@...1296...>
+dco-win: simplify control packets prepend code
+
+Eliminate unneeded temporary struct sockaddr_in buffer.
+
+Change-Id: Ie57f7b11157ab5ca8ff01e1c4f03a308117ff937
+Signed-off-by: Lev Stipakov <lev@...515...>
+Acked-by: Gert Doering <gert@...1296...>
+Message-Id: <20250220074327.24922-1-gert@...1296...>
+URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg30=
+942.html
+Signed-off-by: Gert Doering <gert@...1296...>
+---
+M src/openvpn/socket.h
+1 file changed, 2 insertions(+), 6 deletions(-)
+
+
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/00/900/2
+
+diff --git a/src/openvpn/socket.h b/src/openvpn/socket.h
+index c370f2c..2c33319 100644
+--- a/src/openvpn/socket.h
++++ b/src/openvpn/socket.h
+@@ -1125,15 +1125,11 @@
+     {
+         if (to->dest.addr.sa.sa_family =3D=3D AF_INET)
+         {
+-            struct sockaddr_in sa;
+-            memcpy(&sa, &to->dest.addr.in4, sizeof(sa));
+-            buf_write_prepend(buf, &sa, sizeof(sa));
++            buf_write_prepend(buf, &to->dest.addr.in4, sizeof(struct socka=
+ddr_in));
+         }
+         else
+         {
+-            struct sockaddr_in6 sa;
+-            memcpy(&sa, &to->dest.addr.in6, sizeof(sa));
+-            buf_write_prepend(buf, &sa, sizeof(sa));
++            buf_write_prepend(buf, &to->dest.addr.in6, sizeof(struct socka=
+ddr_in6));
+         }
+     }
 
 
 --
-kind regards,
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/900?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings
 
-Gert Doering
+Gerrit-Project: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: Ie57f7b11157ab5ca8ff01e1c4f03a308117ff937
+Gerrit-Change-Number: 900
+Gerrit-PatchSet: 2
+Gerrit-Owner: stipa <lstipakov@...277...>
+Gerrit-Reviewer: cron2 <gert@...1296...>
+Gerrit-Reviewer: flichtenheld <frank@...2641...>
+Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-MessageType: newpatchset
 
+--pkOFRcrkP7s=
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<p>cron2 <strong>uploaded patch set #2</strong> to the change originally cr=
+eated by stipa.</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/900?=
+usp=3Demail">View Change</a></p><p>The following approvals got outdated and=
+ were removed:
+Code-Review+2 by cron2</p><pre style=3D"font-family: monospace,monospace; w=
+hite-space: pre-wrap;">dco-win: simplify control packets prepend code<br><b=
+r>Eliminate unneeded temporary struct sockaddr_in buffer.<br><br>Change-Id:=
+ Ie57f7b11157ab5ca8ff01e1c4f03a308117ff937<br>Signed-off-by: Lev Stipakov &=
+lt;lev@...515...&gt;<br>Acked-by: Gert Doering &lt;gert@...1296...&gt;<br>M=
+essage-Id: &lt;20250220074327.24922-1-gert@...1296...&gt;<br>URL: https://w=
+ww.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg30942.html<br>Si=
+gned-off-by: Gert Doering &lt;gert@...1296...&gt;<br>---<br>M src/openvpn/s=
+ocket.h<br>1 file changed, 2 insertions(+), 6 deletions(-)<br><br></pre><pr=
+e style=3D"font-family: monospace,monospace; white-space: pre-wrap;">git pu=
+ll ssh://gerrit.openvpn.net:29418/openvpn refs/changes/00/900/2</pre><pre s=
+tyle=3D"font-family: monospace,monospace; white-space: pre-wrap;"><span>dif=
+f --git a/src/openvpn/socket.h b/src/openvpn/socket.h</span><br><span>index=
+ c370f2c..2c33319 100644</span><br><span>--- a/src/openvpn/socket.h</span><=
+br><span>+++ b/src/openvpn/socket.h</span><br><span>@@ -1125,15 +1125,11 @@=
+</span><br><span>     {</span><br><span>         if (to-&gt;dest.addr.sa.sa=
+_family =3D=3D AF_INET)</span><br><span>         {</span><br><span style=3D=
+"color: hsl(0, 100%, 40%);">-            struct sockaddr_in sa;</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-            memcpy(&amp;sa, &amp;=
+to-&gt;dest.addr.in4, sizeof(sa));</span><br><span style=3D"color: hsl(0, 1=
+00%, 40%);">-            buf_write_prepend(buf, &amp;sa, sizeof(sa));</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+            buf_write_pre=
+pend(buf, &amp;to-&gt;dest.addr.in4, sizeof(struct sockaddr_in));</span><br=
+><span>         }</span><br><span>         else</span><br><span>         {<=
+/span><br><span style=3D"color: hsl(0, 100%, 40%);">-            struct soc=
+kaddr_in6 sa;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        =
+    memcpy(&amp;sa, &amp;to-&gt;dest.addr.in6, sizeof(sa));</span><br><span=
+ style=3D"color: hsl(0, 100%, 40%);">-            buf_write_prepend(buf, &a=
+mp;sa, sizeof(sa));</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+            buf_write_prepend(buf, &amp;to-&gt;dest.addr.in6, sizeof(struct=
+ sockaddr_in6));</span><br><span>         }</span><br><span>     }</span><b=
+r><span> </span><br><span></span><br></pre><p>To view, visit <a href=3D"htt=
+p://gerrit.openvpn.net/c/openvpn/+/900?usp=3Demail">change 900</a>. To unsu=
+bscribe, or for help writing mail filters, visit <a href=3D"http://gerrit.o=
+penvpn.net/settings">settings</a>.</p><div itemscope itemtype=3D"http://sch=
+ema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http:/=
+/schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvp=
+n.net/c/openvpn/+/900?usp=3Demail"/><meta itemprop=3D"name" content=3D"View=
+ Change"/></div></div>
+
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: Ie57f7b11157ab5ca8ff01e1c4f0=
+3a308117ff937 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 900 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
+<div style=3D"display:none"> Gerrit-Owner: stipa &lt;lstipakov@...277...&gt=
+; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
+ </div>
+<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
+1...&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
+.1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
+
+
+--pkOFRcrkP7s=--
 
