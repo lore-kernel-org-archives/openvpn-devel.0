@@ -1,17 +1,10 @@
-From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Thu, 20 Feb 2025 08:08:42 +0000
+From: Gert Doering <gert@...1296...>
+Date: Thu, 20 Feb 2025 09:09:07 +0100
+Message-ID: <20250220080907.9298-1-gert@...1296...>
 In-Reply-To: <gerrit.1732212459000.Iedc10616225f6769c66d3c29d4a462b622ebbc6e@...2715...>
 References: <gerrit.1732212459000.Iedc10616225f6769c66d3c29d4a462b622ebbc6e@...2715...>
-Reply-To: gert@...1296..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...,
- lstipakov@...277...
-Message-ID: <a444498c02d2e81a25c020788af2f0b0bdcfe06c-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="osboIxB9Dio="; charset=UTF-8
-Subject: [Openvpn-devel] [M] Change in openvpn[master]: dco-win: kernel
- notifications
+Subject: [Openvpn-devel] [PATCH v21] dco-win: kernel notifications
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,120 +13,264 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: stipa <lstipakov@...277...>
-Cc: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---osboIxB9Dio=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+From: Lev Stipakov <lev@...515...>
 
-Attention is currently required from: flichtenheld, plaisthos, stipa.
+The driver supports notifications mechanism, which
+is used to notify userspace about various events,
+such as peer keepalive timeout, key expire and so on.
 
-cron2 has posted comments on this change. ( http://gerrit.openvpn.net/c/ope=
-nvpn/+/816?usp=3Demail )
+This uses existing framework of subscribing and
+receiving dco notifications, used by FreeBSD and Linux
+implementations. On Windows we use overlapped IO,
+which state we keep in DCO context. We create an event,
+which is associated with overlapped operation,
+and inject it into openvpn event loop. When event is
+signalled, we read overlapped result into DCO context,
+which is later used by already existing code which
+handles peer deletion.
 
-Change subject: dco-win: kernel notifications
-......................................................................
+Change-Id: Iedc10616225f6769c66d3c29d4a462b622ebbc6e
+Signed-off-by: Lev Stipakov <lev@...515...>
+Acked-by: Gert Doering <gert@...1296...>
+---
 
+This change was reviewed on Gerrit and approved by at least one
+developer. I request to merge it to master.
 
-Patch Set 21: Code-Review+2
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/816
+This mail reflects revision 21 of this Change.
 
-(1 comment)
+Acked-by according to Gerrit (reflected above):
+Gert Doering <gert@...1296...>
 
-File src/openvpn/dco_win.c:
-
-http://gerrit.openvpn.net/c/openvpn/+/816/comment/e3d1fe13_65c90d31 :
-PS20, Line 644: dco_handle_overlapped_success(dco_context_t *dco, bool queu=
-ed)
-> Will do.
-Done
-
-
-
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/816?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings
-
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: Iedc10616225f6769c66d3c29d4a462b622ebbc6e
-Gerrit-Change-Number: 816
-Gerrit-PatchSet: 21
-Gerrit-Owner: stipa <lstipakov@...277...>
-Gerrit-Reviewer: cron2 <gert@...1296...>
-Gerrit-Reviewer: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Attention: stipa <lstipakov@...277...>
-Gerrit-Comment-Date: Thu, 20 Feb 2025 08:08:42 +0000
-Gerrit-HasComments: Yes
-Gerrit-Has-Labels: Yes
-Comment-In-Reply-To: cron2 <gert@...1296...>
-Comment-In-Reply-To: stipa <lstipakov@...277...>
-Gerrit-MessageType: comment
-
---osboIxB9Dio=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<p> Attention is currently required from: flichtenheld, plaisthos, stipa. <=
-/p>
-<p>Patch set 21:<span style=3D"border-radius: 3px; display: inline-block; m=
-argin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span=
-></p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/816?usp=3Demail">V=
-iew Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: =
-0;"><li style=3D"margin: 0; padding: 0;"><p>File src/openvpn/dco_win.c:</p>=
-<ul style=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; padding=
-: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.op=
-envpn.net/c/openvpn/+/816/comment/e3d1fe13_65c90d31">Patch Set #20, Line 64=
-4:</a> <code style=3D"font-family:monospace,monospace">dco_handle_overlappe=
-d_success(dco_context_t *dco, bool queued)</code></p><p><blockquote style=
-=3D"border-left: 1px solid #aaa; margin: 10px 0; padding: 0 10px;">Will do.=
-</blockquote></p><p style=3D"white-space: pre-wrap; word-wrap: break-word;"=
->Done</p></li></ul></li></ul><p>To view, visit <a href=3D"http://gerrit.ope=
-nvpn.net/c/openvpn/+/816?usp=3Demail">change 816</a>. To unsubscribe, or fo=
-r help writing mail filters, visit <a href=3D"http://gerrit.openvpn.net/set=
-tings">settings</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailM=
-essage"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.org/Vi=
-ewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvp=
-n/+/816?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></di=
-v></div>
-
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: Iedc10616225f6769c66d3c29d4a=
-462b622ebbc6e </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 816 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 21 </div>
-<div style=3D"display:none"> Gerrit-Owner: stipa &lt;lstipakov@...277...&gt=
-; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
- </div>
-<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
-1...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
-41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: stipa &lt;lstipakov@...1663...=
-.&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Thu, 20 Feb 2025 08:08:42=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
-<div style=3D"display:none"> Comment-In-Reply-To: cron2 &lt;gert@...1296...=
-&gt; </div>
-<div style=3D"display:none"> Comment-In-Reply-To: stipa &lt;lstipakov@...1664...=
-7...&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
-
-
---osboIxB9Dio=--
+        
+diff --git a/src/openvpn/dco_win.c b/src/openvpn/dco_win.c
+index a3c7b63..f46c93d 100644
+--- a/src/openvpn/dco_win.c
++++ b/src/openvpn/dco_win.c
+@@ -126,6 +126,17 @@
+     ASSERT(dco->ifmode == DCO_MODE_UNINIT);
+     dco->ifmode = DCO_MODE_MP;
+ 
++    /* Use manual reset event so it remains signalled until
++     * explicitly reset. This way we won't lose notifications
++     */
++    dco->ov.hEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
++    if (dco->ov.hEvent == NULL)
++    {
++        msg(M_ERR, "Error: ovpn_dco_init: CreateEvent failed");
++    }
++
++    dco->rwhandle.read = dco->ov.hEvent;
++
+     /* open DCO device */
+     struct gc_arena gc = gc_new();
+     const char *device_guid;
+@@ -629,11 +640,74 @@
+     }
+ }
+ 
++/**
++ * @brief Handles successful completion of overlapped operation.
++ *
++ * We use overlapped I/O (Windows term for asynchronous I/O) to get
++ * notifications from kernel to userspace. This gets the result of overlapped
++ * operation and, in case of success, copies data from kernel-filled buffer
++ * into userspace-provided dco context.
++ *
++ * @param dco Pointer to the dco context
++ * @param queued true if operation was queued, false if it has completed immediately
++ */
++static void
++dco_handle_overlapped_success(dco_context_t *dco, bool queued)
++{
++    DWORD bytes_read = 0;
++    BOOL res = GetOverlappedResult(dco->tt->hand, &dco->ov, &bytes_read, FALSE);
++    if (res)
++    {
++        msg(D_DCO_DEBUG, "%s: completion%s success [%ld]", __func__, queued ? "" : " non-queued", bytes_read);
++
++        dco->dco_message_peer_id = dco->notif_buf.PeerId;
++        dco->dco_message_type = dco->notif_buf.Cmd;
++        dco->dco_del_peer_reason = dco->notif_buf.DelPeerReason;
++    }
++    else
++    {
++        msg(D_DCO_DEBUG | M_ERRNO, "%s: completion%s error", __func__, queued ? "" : " non-queued");
++    }
++}
++
+ int
+ dco_do_read(dco_context_t *dco)
+ {
+-    /* no-op on windows */
+-    ASSERT(0);
++    if (dco->ifmode != DCO_MODE_MP)
++    {
++        ASSERT(false);
++    }
++
++    dco->dco_message_peer_id = -1;
++    dco->dco_message_type = 0;
++
++    switch (dco->iostate)
++    {
++        case IOSTATE_QUEUED:
++            dco_handle_overlapped_success(dco, true);
++
++            ASSERT(ResetEvent(dco->ov.hEvent));
++            dco->iostate = IOSTATE_INITIAL;
++
++            break;
++
++        case IOSTATE_IMMEDIATE_RETURN:
++            dco->iostate = IOSTATE_INITIAL;
++            ASSERT(ResetEvent(dco->ov.hEvent));
++
++            if (dco->ov_ret == ERROR_SUCCESS)
++            {
++                dco_handle_overlapped_success(dco, false);
++            }
++            else
++            {
++                SetLastError(dco->ov_ret);
++                msg(D_DCO_DEBUG | M_ERRNO, "%s: completion non-queued error", __func__);
++            }
++
++            break;
++    }
++
+     return 0;
+ }
+ 
+@@ -676,8 +750,48 @@
+ void
+ dco_event_set(dco_context_t *dco, struct event_set *es, void *arg)
+ {
+-    /* no-op on windows */
+-    ASSERT(0);
++    if (dco->ifmode != DCO_MODE_MP)
++    {
++        /* mp only */
++        return;
++    }
++
++    event_ctl(es, &dco->rwhandle, EVENT_READ, arg);
++
++    if (dco->iostate == IOSTATE_INITIAL)
++    {
++        /* the overlapped IOCTL will signal this event on I/O completion */
++        ASSERT(ResetEvent(dco->ov.hEvent));
++
++        if (!DeviceIoControl(dco->tt->hand, OVPN_IOCTL_NOTIFY_EVENT, NULL, 0, &dco->notif_buf, sizeof(dco->notif_buf), NULL, &dco->ov))
++        {
++            DWORD err = GetLastError();
++            if (err == ERROR_IO_PENDING) /* operation queued? */
++            {
++                dco->iostate = IOSTATE_QUEUED;
++                dco->ov_ret = ERROR_SUCCESS;
++
++                msg(D_DCO_DEBUG, "%s: notify ioctl queued", __func__);
++            }
++            else
++            {
++                /* error occured */
++                ASSERT(SetEvent(dco->ov.hEvent));
++                dco->iostate = IOSTATE_IMMEDIATE_RETURN;
++                dco->ov_ret = err;
++
++                msg(D_DCO_DEBUG | M_ERRNO, "%s: notify ioctl error", __func__);
++            }
++        }
++        else
++        {
++            ASSERT(SetEvent(dco->ov.hEvent));
++            dco->iostate = IOSTATE_IMMEDIATE_RETURN;
++            dco->ov_ret = ERROR_SUCCESS;
++
++            msg(D_DCO_DEBUG, "%s: notify ioctl immediate return", __func__);
++        }
++    }
+ }
+ 
+ const char *
+diff --git a/src/openvpn/dco_win.h b/src/openvpn/dco_win.h
+index dc7fbc1..309badf 100644
+--- a/src/openvpn/dco_win.h
++++ b/src/openvpn/dco_win.h
+@@ -41,6 +41,18 @@
+     struct tuntap *tt;
+     dco_mode_type ifmode;
+ 
++    OVPN_NOTIFY_EVENT notif_buf; /**< Buffer for incoming notifications. */
++    OVERLAPPED ov; /**< Used by overlapped I/O for async IOCTL. */
++    int iostate; /**< State of overlapped I/O; see definitions in win32.h. */
++    struct rw_handle rwhandle; /**< Used to hook async I/O to the OpenVPN event loop. */
++    int ov_ret; /**< Win32 error code for overlapped operation, 0 for success */
++
++    int dco_message_peer_id;
++    int dco_message_type;
++    int dco_del_peer_reason;
++
++    uint64_t dco_read_bytes;
++    uint64_t dco_write_bytes;
+ };
+ 
+ typedef struct dco_context dco_context_t;
+diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c
+index 82c54c2..8b94469 100644
+--- a/src/openvpn/forward.c
++++ b/src/openvpn/forward.c
+@@ -2083,8 +2083,8 @@
+ #ifdef ENABLE_ASYNC_PUSH
+     static uintptr_t file_shift = FILE_SHIFT;
+ #endif
+-#if defined(TARGET_LINUX) || defined(TARGET_FREEBSD)
+-    static uintptr_t dco_shift = DCO_SHIFT;    /* Event from DCO linux kernel module */
++#if defined(TARGET_LINUX) || defined(TARGET_FREEBSD) || defined(TARGET_WIN32)
++    static uintptr_t dco_shift = DCO_SHIFT;    /* Event from DCO kernel module */
+ #endif
+ 
+     /*
+@@ -2197,7 +2197,7 @@
+                    &c->c2.link_sockets[i]->ev_arg, NULL);
+     }
+     tun_set(c->c1.tuntap, c->c2.event_set, tuntap, (void *)tun_shift, NULL);
+-#if defined(TARGET_LINUX) || defined(TARGET_FREEBSD)
++#if defined(TARGET_LINUX) || defined(TARGET_FREEBSD) || defined(TARGET_WIN32)
+     if (socket & EVENT_READ && c->c2.did_open_tun)
+     {
+         dco_event_set(&c->c1.tuntap->dco, c->c2.event_set, (void *)dco_shift);
+diff --git a/src/openvpn/mudp.c b/src/openvpn/mudp.c
+index 5f43db9..e0b27af 100644
+--- a/src/openvpn/mudp.c
++++ b/src/openvpn/mudp.c
+@@ -406,7 +406,8 @@
+         multi_process_file_closed(m, mpp_flags);
+     }
+ #endif
+-#if defined(ENABLE_DCO) && (defined(TARGET_LINUX) || defined(TARGET_FREEBSD))
++#if defined(ENABLE_DCO) \
++    && (defined(TARGET_LINUX) || defined(TARGET_FREEBSD) || defined(TARGET_WIN32))
+     else if (status & DCO_READ)
+     {
+         if (!IS_SIG(&m->top))
+diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
+index f76dad8..7ab9289 100644
+--- a/src/openvpn/multi.c
++++ b/src/openvpn/multi.c
+@@ -3234,7 +3234,8 @@
+ }
+ #endif
+ 
+-#if defined(ENABLE_DCO) && (defined(TARGET_LINUX) || defined(TARGET_FREEBSD))
++#if defined(ENABLE_DCO) \
++    && (defined(TARGET_LINUX) || defined(TARGET_FREEBSD) || defined(TARGET_WIN32))
+ static void
+ process_incoming_del_peer(struct multi_context *m, struct multi_instance *mi,
+                           dco_context_t *dco)
 
