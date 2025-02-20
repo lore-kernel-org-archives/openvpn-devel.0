@@ -1,15 +1,15 @@
 From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Thu, 20 Feb 2025 07:12:22 +0000
+Date: Thu, 20 Feb 2025 07:12:17 +0000
 In-Reply-To: <gerrit.1732212459000.Ia267276d61fa1425ba205f54ba6eb89021f32dba@...2715...>
 References: <gerrit.1732212459000.Ia267276d61fa1425ba205f54ba6eb89021f32dba@...2715...>
 Reply-To: gert@...1296..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net, frank@...2641...,
  lstipakov@...277...
-Message-ID: <1909539636712158ea9aa77ab8f60375dc304aed-HTML@...2715...>
+Message-ID: <1909539636712158ea9aa77ab8f60375dc304aed-EmailReplacePatchSet-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="GrmjNBbYhoQ="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="r0VvxEfqLHQ="; charset=UTF-8
 Subject: [Openvpn-devel] [L] Change in openvpn[master]: dco-win: multipeer
  support
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -20,17 +20,21 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: stipa <lstipakov@...277...>
-Cc: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: stipa <lstipakov@...277...>, plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---GrmjNBbYhoQ=
+--r0VvxEfqLHQ=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 Attention is currently required from: cron2.
 
-cron2 has submitted this change. ( http://gerrit.openvpn.net/c/openvpn/+/81=
-5?usp=3Demail )
+cron2 has uploaded a new patch set (#21) to the change originally created b=
+y stipa. ( http://gerrit.openvpn.net/c/openvpn/+/815?usp=3Demail )
+
+The following approvals got outdated and were removed:
+Code-Review+2 by cron2
+
 
 Change subject: dco-win: multipeer support
 ......................................................................
@@ -84,7 +88,7 @@ M src/openvpn/tun.c
 11 files changed, 484 insertions(+), 132 deletions(-)
 
 
-
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/15/815/21
 
 diff --git a/src/openvpn/dco.h b/src/openvpn/dco.h
 index c3e05a8..35ceace 100644
@@ -100,7 +104,7 @@ apter
   */
 -bool ovpn_dco_init(int mode, dco_context_t *dco);
 +bool ovpn_dco_init(int mode, dco_context_t *dco, const char *dev_node);
-=20
+
  /**
   * Open/create a DCO interface
 @@ -293,7 +294,7 @@
@@ -185,7 +189,7 @@ index 62d7109..a3c7b63 100644
 @@ -103,47 +111,51 @@
      return res;
  }
-
+=20
 -bool
 -ovpn_dco_init(int mode, dco_context_t *dco)
 -{
@@ -603,7 +607,7 @@ index 7688516..dc7fbc1 100644
 +    dco_mode_type ifmode;
 +
  };
-=20
+
  typedef struct dco_context dco_context_t;
 
 -struct tuntap
@@ -966,7 +970,7 @@ ress family %d.", sa->sa_family);
 @@ -3860,45 +3954,14 @@
              ASSERT(0);
      }
-
+=20
 -    /* return from address if requested */
 +    if (from && ret > 0 && sh.is_handle && sh.prepend_sa)
 +    {
@@ -1102,370 +1106,373 @@ Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: cron2 <gert@...1296...>
-Gerrit-MessageType: merged
+Gerrit-MessageType: newpatchset
 
---GrmjNBbYhoQ=
+--r0VvxEfqLHQ=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <p> Attention is currently required from: cron2. </p>
-<p>cron2 <strong>submitted</strong> this change.</p><p><a href=3D"http://ge=
-rrit.openvpn.net/c/openvpn/+/815?usp=3Demail">View Change</a></p><div style=
-=3D"white-space:pre-wrap"></div><pre style=3D"font-family: monospace,monosp=
-ace; white-space: pre-wrap;">dco-win: multipeer support<br><br>This is the =
-main commit for dco-win multipeer<br>implementation.<br><br>This adds conce=
-pt of &quot;mode&quot; to DCO implementation,<br>which is peer-to-peer or m=
-ultipeer. Depending on mode,<br>some functions use MP-specific IOCTL comman=
-ds, which<br>include peer-id as a part of input.<br><br>The driver initiali=
-zation accomodates server mode,<br>in which tun device is created before tr=
-ansport.<br><br>Since on Windows the socket is visible to the kernel only,<=
-br>control channel packets have to be prepended with remote<br>sockaddr of =
-the peer - this allows userspace to distinguish<br>among peers. Sadly there=
- is no reliable way to get peer local<br>address, such as on Linux/FreeBSD,=
- so we have to do a bit of<br>guesswork to figure out IP address based on r=
-emote IP and local<br>routing table, which may backfire if there are multip=
-le IPs<br>assigned to the same network adapter. However, as for now<br>peer=
--specific local IP is not used by the driver. We use<br>instead the result =
-of bind() to the listening address.<br><br>Existing sockethandle_finalize()=
- function has been refactored<br>to accomodate packets with possibly prepen=
-ded sockaddr.<br><br>Change-Id: Ia267276d61fa1425ba205f54ba6eb89021f32dba<b=
-r>Signed-off-by: Lev Stipakov &lt;lev@...515...&gt;<br>Acked-by: Gert Doeri=
-ng &lt;gert@...1296...&gt;<br>Message-Id: &lt;20250219215417.18260-1-gert@...220...=
-..1296...&gt;<br>URL: https://www.mail-archive.com/openvpn-devel@...1439...=
-ceforge.net/msg30935.html<br>Signed-off-by: Gert Doering &lt;gert@...2132...=
-.&gt;<br>---<br>M src/openvpn/dco.h<br>M src/openvpn/dco_freebsd.c<br>M src=
-/openvpn/dco_linux.c<br>M src/openvpn/dco_win.c<br>M src/openvpn/dco_win.h<=
-br>M src/openvpn/forward.c<br>M src/openvpn/init.c<br>M src/openvpn/ovpn_dc=
-o_win.h<br>M src/openvpn/socket.c<br>M src/openvpn/socket.h<br>M src/openvp=
-n/tun.c<br>11 files changed, 484 insertions(+), 132 deletions(-)<br><br></p=
-re>
-<pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><sp=
-an>diff --git a/src/openvpn/dco.h b/src/openvpn/dco.h</span><br><span>index=
- c3e05a8..35ceace 100644</span><br><span>--- a/src/openvpn/dco.h</span><br>=
-<span>+++ b/src/openvpn/dco.h</span><br><span>@@ -106,9 +106,10 @@</span><b=
-r><span>  *</span><br><span>  * @param mode      the instance operating mod=
-e (P2P or multi-peer)</span><br><span>  * @param dco       the context to i=
-nitialize</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @param =
-dev_node  device node, used on Windows to specify certain DCO adapter</span=
-><br><span>  * @return          true on success, false otherwise</span><br>=
-<span>  */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-bool ovpn_d=
-co_init(int mode, dco_context_t *dco);</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+bool ovpn_dco_init(int mode, dco_context_t *dco, const c=
-har *dev_node);</span><br><span> </span><br><span> /**</span><br><span>  * =
-Open/create a DCO interface</span><br><span>@@ -293,7 +294,7 @@</span><br><=
-span> }</span><br><span> </span><br><span> static inline bool</span><br><sp=
-an style=3D"color: hsl(0, 100%, 40%);">-ovpn_dco_init(int mode, dco_context=
-_t *dco)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ovpn_dco_in=
-it(int mode, dco_context_t *dco, const char *dev_node)</span><br><span> {</=
-span><br><span>     return true;</span><br><span> }</span><br><span>diff --=
-git a/src/openvpn/dco_freebsd.c b/src/openvpn/dco_freebsd.c</span><br><span=
->index f4c3b02..0e536de 100644</span><br><span>--- a/src/openvpn/dco_freebs=
-d.c</span><br><span>+++ b/src/openvpn/dco_freebsd.c</span><br><span>@@ -165=
-,7 +165,7 @@</span><br><span> }</span><br><span> </span><br><span> bool</sp=
-an><br><span style=3D"color: hsl(0, 100%, 40%);">-ovpn_dco_init(int mode, d=
-co_context_t *dco)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+o=
-vpn_dco_init(int mode, dco_context_t *dco, const char *dev_node)</span><br>=
-<span> {</span><br><span>     if (open_fd(dco) &lt; 0)</span><br><span>    =
- {</span><br><span>diff --git a/src/openvpn/dco_linux.c b/src/openvpn/dco_l=
-inux.c</span><br><span>index fa7abd3..68c1a8d 100644</span><br><span>--- a/=
-src/openvpn/dco_linux.c</span><br><span>+++ b/src/openvpn/dco_linux.c</span=
-><br><span>@@ -422,7 +422,7 @@</span><br><span> }</span><br><span> </span><=
-br><span> bool</span><br><span style=3D"color: hsl(0, 100%, 40%);">-ovpn_dc=
-o_init(int mode, dco_context_t *dco)</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+ovpn_dco_init(int mode, dco_context_t *dco, const char *de=
-v_node)</span><br><span> {</span><br><span>     switch (mode)</span><br><sp=
-an>     {</span><br><span>diff --git a/src/openvpn/dco_win.c b/src/openvpn/=
-dco_win.c</span><br><span>index 62d7109..a3c7b63 100644</span><br><span>---=
- a/src/openvpn/dco_win.c</span><br><span>+++ b/src/openvpn/dco_win.c</span>=
-<br><span>@@ -28,6 +28,7 @@</span><br><span> #include &quot;syshead.h&quot;=
-</span><br><span> </span><br><span> #include &quot;dco.h&quot;</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+#include &quot;forward.h&quot;</=
-span><br><span> #include &quot;tun.h&quot;</span><br><span> #include &quot;=
-crypto.h&quot;</span><br><span> #include &quot;ssl_common.h&quot;</span><br=
-><span>@@ -41,15 +42,22 @@</span><br><span> const IN_ADDR in4addr_any =3D {=
- 0 };</span><br><span> #endif</span><br><span> </span><br><span style=3D"co=
-lor: hsl(0, 100%, 40%);">-struct tuntap</span><br><span style=3D"color: hsl=
-(0, 100%, 40%);">-create_dco_handle(const char *devname, struct gc_arena *g=
-c)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+/* Sometimes IP H=
-elper API, which we use for setting IP address etc,</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+ * complains that interface is not found.=
- Give it some time to settle</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+ */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+static =
-void</span><br><span style=3D"color: hsl(120, 100%, 40%);">+dco_wait_ready(=
-DWORD idx)</span><br><span> {</span><br><span style=3D"color: hsl(0, 100%, =
-40%);">-    struct tuntap tt =3D { .backend_driver =3D DRIVER_DCO };</span>=
-<br><span style=3D"color: hsl(0, 100%, 40%);">-    const char *device_guid;=
-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span styl=
-e=3D"color: hsl(0, 100%, 40%);">-    tun_open_device(&amp;tt, devname, &amp=
-;device_guid, gc);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</s=
-pan><br><span style=3D"color: hsl(0, 100%, 40%);">-    return tt;</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+    for (int i =3D 0; i &lt; =
-20; ++i)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+        MIB_IPINTERFACE_R=
-OW row =3D { .InterfaceIndex =3D idx, .Family =3D AF_INET };</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+        if (GetIpInterfaceEntry(&a=
-mp;row) !=3D ERROR_NOT_FOUND)</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+        {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-            break;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-       }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        msg=
-(D_DCO_DEBUG, &quot;interface %ld not yet ready, retrying&quot;, idx);</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+        Sleep(50);</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span> }<=
-/span><br><span> </span><br><span> /**</span><br><span>@@ -103,47 +111,51 @=
-@</span><br><span>     return res;</span><br><span> }</span><br><span> </sp=
-an><br><span style=3D"color: hsl(0, 100%, 40%);">-bool</span><br><span styl=
-e=3D"color: hsl(0, 100%, 40%);">-ovpn_dco_init(int mode, dco_context_t *dco=
-)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-{</span><br><span st=
-yle=3D"color: hsl(0, 100%, 40%);">-    return true;</span><br><span style=
+<p>cron2 <strong>uploaded patch set #21</strong> to the change originally c=
+reated by stipa.</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/815=
+?usp=3Demail">View Change</a></p><p>The following approvals got outdated an=
+d were removed:
+Code-Review+2 by cron2</p><pre style=3D"font-family: monospace,monospace; w=
+hite-space: pre-wrap;">dco-win: multipeer support<br><br>This is the main c=
+ommit for dco-win multipeer<br>implementation.<br><br>This adds concept of =
+&quot;mode&quot; to DCO implementation,<br>which is peer-to-peer or multipe=
+er. Depending on mode,<br>some functions use MP-specific IOCTL commands, wh=
+ich<br>include peer-id as a part of input.<br><br>The driver initialization=
+ accomodates server mode,<br>in which tun device is created before transpor=
+t.<br><br>Since on Windows the socket is visible to the kernel only,<br>con=
+trol channel packets have to be prepended with remote<br>sockaddr of the pe=
+er - this allows userspace to distinguish<br>among peers. Sadly there is no=
+ reliable way to get peer local<br>address, such as on Linux/FreeBSD, so we=
+ have to do a bit of<br>guesswork to figure out IP address based on remote =
+IP and local<br>routing table, which may backfire if there are multiple IPs=
+<br>assigned to the same network adapter. However, as for now<br>peer-speci=
+fic local IP is not used by the driver. We use<br>instead the result of bin=
+d() to the listening address.<br><br>Existing sockethandle_finalize() funct=
+ion has been refactored<br>to accomodate packets with possibly prepended so=
+ckaddr.<br><br>Change-Id: Ia267276d61fa1425ba205f54ba6eb89021f32dba<br>Sign=
+ed-off-by: Lev Stipakov &lt;lev@...515...&gt;<br>Acked-by: Gert Doering &lt=
+;gert@...1296...&gt;<br>Message-Id: &lt;20250219215417.18260-1-gert@...1726...=
+...&gt;<br>URL: https://www.mail-archive.com/openvpn-devel@...1483...=
+e.net/msg30935.html<br>Signed-off-by: Gert Doering &lt;gert@...1296...&gt;<=
+br>---<br>M src/openvpn/dco.h<br>M src/openvpn/dco_freebsd.c<br>M src/openv=
+pn/dco_linux.c<br>M src/openvpn/dco_win.c<br>M src/openvpn/dco_win.h<br>M s=
+rc/openvpn/forward.c<br>M src/openvpn/init.c<br>M src/openvpn/ovpn_dco_win.=
+h<br>M src/openvpn/socket.c<br>M src/openvpn/socket.h<br>M src/openvpn/tun.=
+c<br>11 files changed, 484 insertions(+), 132 deletions(-)<br><br></pre><pr=
+e style=3D"font-family: monospace,monospace; white-space: pre-wrap;">git pu=
+ll ssh://gerrit.openvpn.net:29418/openvpn refs/changes/15/815/21</pre><pre =
+style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><span>di=
+ff --git a/src/openvpn/dco.h b/src/openvpn/dco.h</span><br><span>index c3e0=
+5a8..35ceace 100644</span><br><span>--- a/src/openvpn/dco.h</span><br><span=
+>+++ b/src/openvpn/dco.h</span><br><span>@@ -106,9 +106,10 @@</span><br><sp=
+an>  *</span><br><span>  * @param mode      the instance operating mode (P2=
+P or multi-peer)</span><br><span>  * @param dco       the context to initia=
+lize</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @param dev_n=
+ode  device node, used on Windows to specify certain DCO adapter</span><br>=
+<span>  * @return          true on success, false otherwise</span><br><span=
+>  */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-bool ovpn_dco_in=
+it(int mode, dco_context_t *dco);</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+bool ovpn_dco_init(int mode, dco_context_t *dco, const char *=
+dev_node);</span><br><span> </span><br><span> /**</span><br><span>  * Open/=
+create a DCO interface</span><br><span>@@ -293,7 +294,7 @@</span><br><span>=
+ }</span><br><span> </span><br><span> static inline bool</span><br><span st=
+yle=3D"color: hsl(0, 100%, 40%);">-ovpn_dco_init(int mode, dco_context_t *d=
+co)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ovpn_dco_init(in=
+t mode, dco_context_t *dco, const char *dev_node)</span><br><span> {</span>=
+<br><span>     return true;</span><br><span> }</span><br><span>diff --git a=
+/src/openvpn/dco_freebsd.c b/src/openvpn/dco_freebsd.c</span><br><span>inde=
+x f4c3b02..0e536de 100644</span><br><span>--- a/src/openvpn/dco_freebsd.c</=
+span><br><span>+++ b/src/openvpn/dco_freebsd.c</span><br><span>@@ -165,7 +1=
+65,7 @@</span><br><span> }</span><br><span> </span><br><span> bool</span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-ovpn_dco_init(int mode, dco_co=
+ntext_t *dco)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ovpn_d=
+co_init(int mode, dco_context_t *dco, const char *dev_node)</span><br><span=
+> {</span><br><span>     if (open_fd(dco) &lt; 0)</span><br><span>     {</s=
+pan><br><span>diff --git a/src/openvpn/dco_linux.c b/src/openvpn/dco_linux.=
+c</span><br><span>index fa7abd3..68c1a8d 100644</span><br><span>--- a/src/o=
+penvpn/dco_linux.c</span><br><span>+++ b/src/openvpn/dco_linux.c</span><br>=
+<span>@@ -422,7 +422,7 @@</span><br><span> }</span><br><span> </span><br><s=
+pan> bool</span><br><span style=3D"color: hsl(0, 100%, 40%);">-ovpn_dco_ini=
+t(int mode, dco_context_t *dco)</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+ovpn_dco_init(int mode, dco_context_t *dco, const char *dev_nod=
+e)</span><br><span> {</span><br><span>     switch (mode)</span><br><span>  =
+   {</span><br><span>diff --git a/src/openvpn/dco_win.c b/src/openvpn/dco_w=
+in.c</span><br><span>index 62d7109..a3c7b63 100644</span><br><span>--- a/sr=
+c/openvpn/dco_win.c</span><br><span>+++ b/src/openvpn/dco_win.c</span><br><=
+span>@@ -28,6 +28,7 @@</span><br><span> #include &quot;syshead.h&quot;</spa=
+n><br><span> </span><br><span> #include &quot;dco.h&quot;</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+#include &quot;forward.h&quot;</span>=
+<br><span> #include &quot;tun.h&quot;</span><br><span> #include &quot;crypt=
+o.h&quot;</span><br><span> #include &quot;ssl_common.h&quot;</span><br><spa=
+n>@@ -41,15 +42,22 @@</span><br><span> const IN_ADDR in4addr_any =3D { 0 };=
+</span><br><span> #endif</span><br><span> </span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">-struct tuntap</span><br><span style=3D"color: hsl(0, 1=
+00%, 40%);">-create_dco_handle(const char *devname, struct gc_arena *gc)</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+/* Sometimes IP Helper=
+ API, which we use for setting IP address etc,</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+ * complains that interface is not found. Give i=
+t some time to settle</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+ */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+static void</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+dco_wait_ready(DWORD i=
+dx)</span><br><span> {</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
+-    struct tuntap tt =3D { .backend_driver =3D DRIVER_DCO };</span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-    const char *device_guid;</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"co=
+lor: hsl(0, 100%, 40%);">-    tun_open_device(&amp;tt, devname, &amp;device=
+_guid, gc);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br=
+><span style=3D"color: hsl(0, 100%, 40%);">-    return tt;</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+    for (int i =3D 0; i &lt; 20; ++i=
+)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+        MIB_IPINTERFACE_ROW row =
+=3D { .InterfaceIndex =3D idx, .Family =3D AF_INET };</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+        if (GetIpInterfaceEntry(&amp;row)=
+ !=3D ERROR_NOT_FOUND)</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+        {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
+     break;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        =
+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        msg(D_DCO_=
+DEBUG, &quot;interface %ld not yet ready, retrying&quot;, idx);</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+        Sleep(50);</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span> }</span><=
+br><span> </span><br><span> /**</span><br><span>@@ -103,47 +111,51 @@</span=
+><br><span>     return res;</span><br><span> }</span><br><span> </span><br>=
+<span style=3D"color: hsl(0, 100%, 40%);">-bool</span><br><span style=3D"co=
+lor: hsl(0, 100%, 40%);">-ovpn_dco_init(int mode, dco_context_t *dco)</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-{</span><br><span style=3D"=
+color: hsl(0, 100%, 40%);">-    return true;</span><br><span style=3D"color=
+: hsl(0, 100%, 40%);">-}</span><br><span style=3D"color: hsl(0, 100%, 40%);=
+">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-int</span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">-open_tun_dco(struct tuntap *tt, open=
+vpn_net_ctx_t *ctx, const char *dev)</span><br><span style=3D"color: hsl(0,=
+ 100%, 40%);">-{</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    A=
+SSERT(0);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    return 0=
+;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-}</span><br><span st=
+yle=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, =
+100%, 40%);">-static void</span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">-dco_wait_ready(DWORD idx)</span><br><span style=3D"color: hsl(0, 100%, =
+40%);">-{</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    for (int=
+ i =3D 0; i &lt; 20; ++i)</span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">-    {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        MIB_=
+IPINTERFACE_ROW row =3D {.InterfaceIndex =3D idx, .Family =3D AF_INET};</sp=
+an><br><span style=3D"color: hsl(0, 100%, 40%);">-        if (GetIpInterfac=
+eEntry(&amp;row) !=3D ERROR_NOT_FOUND)</span><br><span style=3D"color: hsl(=
+0, 100%, 40%);">-        {</span><br><span style=3D"color: hsl(0, 100%, 40%=
+);">-            break;</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>-        }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        ms=
+g(D_DCO_DEBUG, &quot;interface %ld not yet ready, retrying&quot;, idx);</sp=
+an><br><span style=3D"color: hsl(0, 100%, 40%);">-        Sleep(50);</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-    }</span><br><span style=
 =3D"color: hsl(0, 100%, 40%);">-}</span><br><span style=3D"color: hsl(0, 10=
-0%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-int</span=
-><br><span style=3D"color: hsl(0, 100%, 40%);">-open_tun_dco(struct tuntap =
-*tt, openvpn_net_ctx_t *ctx, const char *dev)</span><br><span style=3D"colo=
-r: hsl(0, 100%, 40%);">-{</span><br><span style=3D"color: hsl(0, 100%, 40%)=
-;">-    ASSERT(0);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
- return 0;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-}</span><br=
-><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color=
-: hsl(0, 100%, 40%);">-static void</span><br><span style=3D"color: hsl(0, 1=
-00%, 40%);">-dco_wait_ready(DWORD idx)</span><br><span style=3D"color: hsl(=
-0, 100%, 40%);">-{</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
- for (int i =3D 0; i &lt; 20; ++i)</span><br><span style=3D"color: hsl(0, 1=
-00%, 40%);">-    {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
-     MIB_IPINTERFACE_ROW row =3D {.InterfaceIndex =3D idx, .Family =3D AF_I=
-NET};</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        if (GetI=
-pInterfaceEntry(&amp;row) !=3D ERROR_NOT_FOUND)</span><br><span style=3D"co=
-lor: hsl(0, 100%, 40%);">-        {</span><br><span style=3D"color: hsl(0, =
-100%, 40%);">-            break;</span><br><span style=3D"color: hsl(0, 100=
-%, 40%);">-        }</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
-       msg(D_DCO_DEBUG, &quot;interface %ld not yet ready, retrying&quot;, =
-idx);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        Sleep(50=
-);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    }</span><br><sp=
-an style=3D"color: hsl(0, 100%, 40%);">-}</span><br><span style=3D"color: h=
-sl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+/**</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @brief Initi=
-alizes the DCO adapter in multipeer mode and sets it to &quot;connected&quo=
-t; state.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+ * Opens the DCO device, se=
-ts the adapter mode using `OVPN_IOCTL_SET_MODE`,</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+ * which transitions the adapter to the &quot;=
-connected&quot; state, and waits for it to become ready.</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+ * @param dco Pointer to the `dco_context_t` structure =
-representing the DCO context.</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+ * @param dev_node Device node string for the DCO adapter.</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+ */</span><br><span> void<=
-/span><br><span style=3D"color: hsl(0, 100%, 40%);">-dco_start_tun(struct t=
-untap *tt)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ovpn_dco_=
-init_mp(dco_context_t *dco, const char *dev_node)</span><br><span> {</span>=
-<br><span style=3D"color: hsl(0, 100%, 40%);">-    msg(D_DCO_DEBUG, &quot;%=
-s&quot;, __func__);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-    ASSERT(dco-&gt;ifmode =3D=3D DCO_MODE_UNINIT);</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+    dco-&gt;ifmode =3D DCO_MODE_MP;</span><b=
-r><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-    /* refer=
-ence the tt object inside the DCO context, because the latter will</span><b=
-r><span style=3D"color: hsl(0, 100%, 40%);">-     * be passed around</span>=
-<br><span style=3D"color: hsl(0, 100%, 40%);">-     */</span><br><span styl=
-e=3D"color: hsl(0, 100%, 40%);">-    tt-&gt;dco.tt =3D tt;</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+    /* open DCO device */</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+    struct gc_arena gc =3D gc_=
-new();</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    const cha=
-r *device_guid;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-tun_open_device(dco-&gt;tt, dev_node, &amp;device_guid, &amp;gc);</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+    gc_free(&amp;gc);</span><=
-br><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+    /* se=
-t mp mode */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    OVP=
-N_MODE m =3D OVPN_MODE_MP;</span><br><span>     DWORD bytes_returned =3D 0;=
-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    if (!DeviceIoCont=
-rol(tt-&gt;hand, OVPN_IOCTL_START_VPN, NULL, 0, NULL, 0,</span><br><span st=
-yle=3D"color: hsl(0, 100%, 40%);">-                         &amp;bytes_retu=
-rned, NULL))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if =
-(!DeviceIoControl(dco-&gt;tt-&gt;hand, OVPN_IOCTL_SET_MODE, &amp;m, sizeof(=
-m), NULL, 0, &amp;bytes_returned, NULL))</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+        msg(M_ERR, &quot;DeviceIoControl(OVPN_IOCTL_SET_MODE) failed=
-&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+    dco_wait_ready(dco-&gt;tt-&gt;adapter_in=
-dex);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+/**</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+ * @brief Transitions the DCO adapter to the connected state in P2P=
- mode.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+ * Sends `OVPN_IOCTL_START_VPN=
-` to start the VPN and waits for the adapter</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+ * to become ready.</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+ *</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+ * @param tt Pointer to the `tuntap` structure representing the ada=
-pter.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ */</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+void</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+dco_p2p_start_vpn(struct tuntap *tt)</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+    DWORD bytes_returned =3D 0;</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+    if (!DeviceIoControl(tt-&gt;ha=
-nd, OVPN_IOCTL_START_VPN, NULL, 0, NULL, 0, &amp;bytes_returned, NULL))</sp=
-an><br><span>     {</span><br><span>         msg(M_ERR, &quot;DeviceIoContr=
-ol(OVPN_IOCTL_START_VPN) failed&quot;);</span><br><span>     }</span><br><s=
-pan>@@ -154,6 +166,44 @@</span><br><span>     dco_wait_ready(tt-&gt;adapter=
-_index);</span><br><span> }</span><br><span> </span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+/**</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @brief=
- Initializes DCO depends on `mode`</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+ *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *=
-  - for P2P it puts adapter in &quot;connected&quot; state. The peer should=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * be already added=
- by dco_p2p_new_peer().</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+ *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  - for mul=
-tipeer it opens DCO adapter and puts it into &quot;connected&quot;</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+ * state. The server socket =
-should be initialized later by dco_mp_start_vpn().</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+ */</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+bool</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-ovpn_dco_init(int mode, dco_context_t *dco, const char *dev_node)</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+    switch (mode)</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+        case MODE_POINT_TO_POINT:</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+            dco-&gt;ifmode =3D DCO_MODE_P2P;</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+            dco_p2p_star=
-t_vpn(dco-&gt;tt);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-           break;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+        case MODE_SER=
-VER:</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            ovp=
-n_dco_init_mp(dco, dev_node);</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+            break;</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        de=
-fault:</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            A=
-SSERT(false);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+    return true;</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+int=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+open_tun_dco(struct=
- tuntap *tt, openvpn_net_ctx_t *ctx, const char *dev)</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+    ASSERT(0);</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+    return 0;</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><s=
-pan> static void</span><br><span> dco_connect_wait(HANDLE handle, OVERLAPPE=
-D *ov, int timeout, struct signal_info *sig_info)</span><br><span> {</span>=
-<br><span>@@ -206,15 +256,68 @@</span><br><span>     register_signal(sig_in=
-fo, SIGUSR1, &quot;dco-connect-timeout&quot;);</span><br><span> }</span><br=
-><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+/**</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+ * @brief Initializes and b=
-inds the kernel UDP transport socket for multipeer mode.</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+ * Sends `OVPN_IOCTL_MP_START_VPN` to create a kernel-m=
-ode UDP socket, binds it to</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+ * the specified address, ready for incoming connections.</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+ * @param handle Device handle for the DCO ada=
-pter.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @param sock=
- Pointer to the `link_socket` structure containing socket information.</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+ */</span><br><span> voi=
-d</span><br><span style=3D"color: hsl(0, 100%, 40%);">-dco_create_socket(HA=
-NDLE handle, struct addrinfo *remoteaddr, bool bind_local,</span><br><span =
-style=3D"color: hsl(0, 100%, 40%);">-                  struct addrinfo *bin=
-d, int timeout,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-      =
-            struct signal_info *sig_info)</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+dco_mp_start_vpn(HANDLE handle, struct link_socket *s=
-ock)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+    msg(D_DCO_DEBUG, &quot;%s&quo=
-t;, __func__);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+    int ai_family =3D so=
-ck-&gt;info.lsa-&gt;bind_local-&gt;ai_family;</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+    struct addrinfo *local =3D sock-&gt;info.lsa-=
-&gt;bind_local;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-struct addrinfo *cur =3D NULL;</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    for =
-(cur =3D local; cur; cur =3D cur-&gt;ai_next)</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+        if (cur-&gt;ai_family =3D=3D ai_family)</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+        {</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+            break;</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+        }</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+    if (!cur)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-   {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        msg(M_F=
-ATAL, &quot;%s: Socket bind failed: Addr to bind has no %s record&quot;,</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+            __func__, =
-addr_family_name(ai_family));</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+    OVPN_MP_START_VPN i=
-n, out;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    in.IPv6O=
-nly =3D sock-&gt;info.bind_ipv6_only ? 1 : 0;</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+    if (ai_family =3D=3D AF_INET)</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+        memcpy(&amp;in.ListenAddress.Addr4, cur-&=
-gt;ai_addr, sizeof(struct sockaddr_in));</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+    else</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        memcpy(&am=
-p;in.ListenAddress.Addr6, cur-&gt;ai_addr, sizeof(struct sockaddr_in6));</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+    /* in multipeer mode control channel packets are pr=
-epended with remote peer&#39;s sockaddr */</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+    sock-&gt;sockflags |=3D SF_PREPEND_SA;</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+    DWORD bytes_returned =3D 0;</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+    if (!DeviceIoControl(handle, OVP=
-N_IOCTL_MP_START_VPN, &amp;in, sizeof(in), &amp;out, sizeof(out),</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+                         &amp=
-;bytes_returned, NULL))</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        ms=
-g(M_ERR, &quot;DeviceIoControl(OVPN_IOCTL_MP_START_VPN) failed&quot;);</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-void</span><br><span style=3D"color: hsl(120, 100%, 40%);">+dco_p2p_new_pee=
-r(HANDLE handle, struct link_socket *sock, struct signal_info *sig_info)</s=
-pan><br><span> {</span><br><span>     msg(D_DCO_DEBUG, &quot;%s&quot;, __fu=
-nc__);</span><br><span> </span><br><span>     OVPN_NEW_PEER peer =3D { 0 };=
-</span><br><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-   struct addrinfo *remoteaddr =3D sock-&gt;info.lsa-&gt;current_remote;</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span>     =
-struct sockaddr *local =3D NULL;</span><br><span>     struct sockaddr *remo=
-te =3D remoteaddr-&gt;ai_addr;</span><br><span> </span><br><span>@@ -228,9 =
-+331,10 @@</span><br><span>         peer.Proto =3D OVPN_PROTO_UDP;</span><b=
-r><span>     }</span><br><span> </span><br><span style=3D"color: hsl(0, 100=
-%, 40%);">-    if (bind_local)</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+    if (sock-&gt;bind_local)</span><br><span>     {</span><br><s=
-pan>         /* Use first local address with correct address family */</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+        struct addrinfo =
-*bind =3D sock-&gt;info.lsa-&gt;bind_local;</span><br><span>         while =
-(bind &amp;&amp; !local)</span><br><span>         {</span><br><span>       =
-      if (bind-&gt;ai_family =3D=3D remote-&gt;sa_family)</span><br><span>@=
-@ -241,7 +345,7 @@</span><br><span>         }</span><br><span>     }</span>=
-<br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-    if (bi=
-nd_local &amp;&amp; !local)</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+    if (sock-&gt;bind_local &amp;&amp; !local)</span><br><span>    =
- {</span><br><span>         msg(M_FATAL, &quot;DCO: Socket bind failed: Add=
-ress to bind lacks %s record&quot;,</span><br><span>             addr_famil=
-y_name(remote-&gt;sa_family));</span><br><span>@@ -290,7 +394,7 @@</span><b=
-r><span>         }</span><br><span>         else</span><br><span>         {=
-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            dco_conne=
-ct_wait(handle, &amp;ov, timeout, sig_info);</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+            dco_connect_wait(handle, &amp;ov, get_=
-server_poll_remaining_time(sock-&gt;server_poll_timeout), sig_info);</span>=
-<br><span>         }</span><br><span>     }</span><br><span> }</span><br><s=
-pan>@@ -301,6 +405,48 @@</span><br><span>              struct in_addr *vpn_=
-ipv4, struct in6_addr *vpn_ipv6)</span><br><span> {</span><br><span>     ms=
-g(D_DCO_DEBUG, &quot;%s: peer-id %d, fd %d&quot;, __func__, peerid, sd);</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    if (dco-&gt;ifmode =3D=3D DCO_MODE_P2=
-P)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+        /* no-op for p2p */</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+        return 0;</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+    OVPN_MP_NEW_PEER newPeer =3D {0};</span><br><span styl=
+0%, 40%);">-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+/**</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @brief Initializes t=
+he DCO adapter in multipeer mode and sets it to &quot;connected&quot; state=
+.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+ * Opens the DCO device, sets the a=
+dapter mode using `OVPN_IOCTL_SET_MODE`,</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+ * which transitions the adapter to the &quot;connecte=
+d&quot; state, and waits for it to become ready.</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+ *</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+ * @param dco Pointer to the `dco_context_t` structure represen=
+ting the DCO context.</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+ * @param dev_node Device node string for the DCO adapter.</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+ */</span><br><span> void</span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-dco_start_tun(struct tuntap *t=
+t)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ovpn_dco_init_mp(=
+dco_context_t *dco, const char *dev_node)</span><br><span> {</span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">-    msg(D_DCO_DEBUG, &quot;%s&quot;,=
+ __func__);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    ASSE=
+RT(dco-&gt;ifmode =3D=3D DCO_MODE_UNINIT);</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+    dco-&gt;ifmode =3D DCO_MODE_MP;</span><br><span>=
+ </span><br><span style=3D"color: hsl(0, 100%, 40%);">-    /* reference the=
+ tt object inside the DCO context, because the latter will</span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">-     * be passed around</span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">-     */</span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-    tt-&gt;dco.tt =3D tt;</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+    /* open DCO device */</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+    struct gc_arena gc =3D gc_new();</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+    const char *devic=
+e_guid;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    tun_open=
+_device(dco-&gt;tt, dev_node, &amp;device_guid, &amp;gc);</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+    gc_free(&amp;gc);</span><br><span=
+> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+    /* set mp mod=
+e */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    OVPN_MODE m=
+ =3D OVPN_MODE_MP;</span><br><span>     DWORD bytes_returned =3D 0;</span><=
+br><span style=3D"color: hsl(0, 100%, 40%);">-    if (!DeviceIoControl(tt-&=
+gt;hand, OVPN_IOCTL_START_VPN, NULL, 0, NULL, 0,</span><br><span style=3D"c=
+olor: hsl(0, 100%, 40%);">-                         &amp;bytes_returned, NU=
+LL))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (!Device=
+IoControl(dco-&gt;tt-&gt;hand, OVPN_IOCTL_SET_MODE, &amp;m, sizeof(m), NULL=
+, 0, &amp;bytes_returned, NULL))</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+       msg(M_ERR, &quot;DeviceIoControl(OVPN_IOCTL_SET_MODE) failed&quot;);=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+    dco_wait_ready(dco-&gt;tt-&gt;adapter_index);</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span styl=
 e=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+    if (remoteaddr)</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+        /* while the driver doesn&#39;t use the local address yet it requ=
-ires its AF to be valid */</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+        newPeer.Local.Addr4.sin_family =3D remoteaddr-&gt;sa_family;=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+        if (remoteaddr-&gt;sa_family =
+, 100%, 40%);">+/**</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+ * @brief Transitions the DCO adapter to the connected state in P2P mode.</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+ * Sends `OVPN_IOCTL_START_VPN` to sta=
+rt the VPN and waits for the adapter</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+ * to become ready.</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+ *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+ * @param tt Pointer to the `tuntap` structure representing the adapter.</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+ */</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+void</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+dco_p2p_start_vpn(struct tuntap *tt)</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+    DWORD bytes_returned =3D 0;</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    if (!DeviceIoControl(tt-&gt;hand, OVP=
+N_IOCTL_START_VPN, NULL, 0, NULL, 0, &amp;bytes_returned, NULL))</span><br>=
+<span>     {</span><br><span>         msg(M_ERR, &quot;DeviceIoControl(OVPN=
+_IOCTL_START_VPN) failed&quot;);</span><br><span>     }</span><br><span>@@ =
+-154,6 +166,44 @@</span><br><span>     dco_wait_ready(tt-&gt;adapter_index)=
+;</span><br><span> }</span><br><span> </span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+/**</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @brief Initia=
+lizes DCO depends on `mode`</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+ *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  - for=
+ P2P it puts adapter in &quot;connected&quot; state. The peer should</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+ * be already added by dco=
+_p2p_new_peer().</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  - for multipeer =
+it opens DCO adapter and puts it into &quot;connected&quot;</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+ * state. The server socket should =
+be initialized later by dco_mp_start_vpn().</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+ */</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+bool</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ovpn_dc=
+o_init(int mode, dco_context_t *dco, const char *dev_node)</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+    switch (mode)</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+        case MODE_POINT_TO_POINT:</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+            dco-&gt;ifmode =3D DCO_MODE_P2P;</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+            dco_p2p_start_vpn(d=
+co-&gt;tt);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        =
+    break;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+        case MODE_SERVER:</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+            ovpn_dco_i=
+nit_mp(dco, dev_node);</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+            break;</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        default:<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+            ASSERT(f=
+alse);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+    return true;</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+int</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+open_tun_dco(struct tuntap =
+*tt, openvpn_net_ctx_t *ctx, const char *dev)</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+    ASSERT(0);</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+    return 0;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> sta=
+tic void</span><br><span> dco_connect_wait(HANDLE handle, OVERLAPPED *ov, i=
+nt timeout, struct signal_info *sig_info)</span><br><span> {</span><br><spa=
+n>@@ -206,15 +256,68 @@</span><br><span>     register_signal(sig_info, SIGU=
+SR1, &quot;dco-connect-timeout&quot;);</span><br><span> }</span><br><span> =
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+/**</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+ * @brief Initializes and binds the=
+ kernel UDP transport socket for multipeer mode.</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+ *</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+ * Sends `OVPN_IOCTL_MP_START_VPN` to create a kernel-mode UDP =
+socket, binds it to</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+ * the specified address, ready for incoming connections.</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+ * @param handle Device handle for the DCO adapter.</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @param sock Pointer=
+ to the `link_socket` structure containing socket information.</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+ */</span><br><span> void</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-dco_create_socket(HANDLE han=
+dle, struct addrinfo *remoteaddr, bool bind_local,</span><br><span style=3D=
+"color: hsl(0, 100%, 40%);">-                  struct addrinfo *bind, int t=
+imeout,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-              =
+    struct signal_info *sig_info)</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+dco_mp_start_vpn(HANDLE handle, struct link_socket *sock)</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    msg(D_DCO_DEBUG, &quot;%s&quot;, __fu=
+nc__);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+    int ai_family =3D sock-&gt;i=
+nfo.lsa-&gt;bind_local-&gt;ai_family;</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+    struct addrinfo *local =3D sock-&gt;info.lsa-&gt;bind=
+_local;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    struct a=
+ddrinfo *cur =3D NULL;</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    for (cur =3D=
+ local; cur; cur =3D cur-&gt;ai_next)</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+        if (cur-&gt;ai_family =3D=3D ai_family)</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+        {</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+            break;</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+        }</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+   if (!cur)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+        msg(M_FATAL, =
+&quot;%s: Socket bind failed: Addr to bind has no %s record&quot;,</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+            __func__, addr_f=
+amily_name(ai_family));</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+    OVPN_MP_START_VPN in, out=
+;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    in.IPv6Only =
+=3D sock-&gt;info.bind_ipv6_only ? 1 : 0;</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+    if (ai_family =3D=3D AF_INET)</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+        memcpy(&amp;in.ListenAddress.Addr4, cur-&gt;a=
+i_addr, sizeof(struct sockaddr_in));</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+    else</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+        memcpy(&amp;in=
+.ListenAddress.Addr6, cur-&gt;ai_addr, sizeof(struct sockaddr_in6));</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+    /* in multipeer mode control channel packets are prepen=
+ded with remote peer&#39;s sockaddr */</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+    sock-&gt;sockflags |=3D SF_PREPEND_SA;</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+    DWORD bytes_returned =3D 0;</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+    if (!DeviceIoControl(handle, OVPN_IO=
+CTL_MP_START_VPN, &amp;in, sizeof(in), &amp;out, sizeof(out),</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+                         &amp;byt=
+es_returned, NULL))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        msg(M_=
+ERR, &quot;DeviceIoControl(OVPN_IOCTL_MP_START_VPN) failed&quot;);</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+voi=
+d</span><br><span style=3D"color: hsl(120, 100%, 40%);">+dco_p2p_new_peer(H=
+ANDLE handle, struct link_socket *sock, struct signal_info *sig_info)</span=
+><br><span> {</span><br><span>     msg(D_DCO_DEBUG, &quot;%s&quot;, __func_=
+_);</span><br><span> </span><br><span>     OVPN_NEW_PEER peer =3D { 0 };</s=
+pan><br><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+struct addrinfo *remoteaddr =3D sock-&gt;info.lsa-&gt;current_remote;</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span>     str=
+uct sockaddr *local =3D NULL;</span><br><span>     struct sockaddr *remote =
+=3D remoteaddr-&gt;ai_addr;</span><br><span> </span><br><span>@@ -228,9 +33=
+1,10 @@</span><br><span>         peer.Proto =3D OVPN_PROTO_UDP;</span><br><=
+span>     }</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, =
+40%);">-    if (bind_local)</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+    if (sock-&gt;bind_local)</span><br><span>     {</span><br><span=
+>         /* Use first local address with correct address family */</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+        struct addrinfo *bi=
+nd =3D sock-&gt;info.lsa-&gt;bind_local;</span><br><span>         while (bi=
+nd &amp;&amp; !local)</span><br><span>         {</span><br><span>          =
+   if (bind-&gt;ai_family =3D=3D remote-&gt;sa_family)</span><br><span>@@ -=
+241,7 +345,7 @@</span><br><span>         }</span><br><span>     }</span><br=
+><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-    if (bind_=
+local &amp;&amp; !local)</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+    if (sock-&gt;bind_local &amp;&amp; !local)</span><br><span>     {<=
+/span><br><span>         msg(M_FATAL, &quot;DCO: Socket bind failed: Addres=
+s to bind lacks %s record&quot;,</span><br><span>             addr_family_n=
+ame(remote-&gt;sa_family));</span><br><span>@@ -290,7 +394,7 @@</span><br><=
+span>         }</span><br><span>         else</span><br><span>         {</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-            dco_connect_=
+wait(handle, &amp;ov, timeout, sig_info);</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+            dco_connect_wait(handle, &amp;ov, get_ser=
+ver_poll_remaining_time(sock-&gt;server_poll_timeout), sig_info);</span><br=
+><span>         }</span><br><span>     }</span><br><span> }</span><br><span=
+>@@ -301,6 +405,48 @@</span><br><span>              struct in_addr *vpn_ipv=
+4, struct in6_addr *vpn_ipv6)</span><br><span> {</span><br><span>     msg(D=
+_DCO_DEBUG, &quot;%s: peer-id %d, fd %d&quot;, __func__, peerid, sd);</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+    if (dco-&gt;ifmode =3D=3D DCO_MODE_P2P)<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+        /* no-op for p2p */</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+        return 0;</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+    OVPN_MP_NEW_PEER newPeer =3D {0};</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+    if (remoteaddr)</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++        /* while the driver doesn&#39;t use the local address yet it requi=
+res its AF to be valid */</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+        newPeer.Local.Addr4.sin_family =3D remoteaddr-&gt;sa_family;<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+        if (remoteaddr-&gt;sa_family =
 =3D=3D AF_INET)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
     {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            me=
 mcpy(&amp;newPeer.Remote.Addr4, remoteaddr, sizeof(struct sockaddr_in));</s=
@@ -2059,8 +2066,8 @@ eb89021f32dba </div>
 ts.sourceforge.net&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: cron2 &lt;gert@...1296...&gt=
 ; </div>
-<div style=3D"display:none"> Gerrit-MessageType: merged </div>
+<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
 
 
---GrmjNBbYhoQ=--
+--r0VvxEfqLHQ=--
 
