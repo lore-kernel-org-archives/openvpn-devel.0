@@ -1,11 +1,11 @@
 MIME-Version: 1.0
 References: <CAAWBBYOr-ZKmr3754DqzkssCr04C=n75C4bOihN04nx-4-xVvw@...278...>
- <Z7hqbzqBZG1EC6jR@...2685...>
-In-Reply-To: <Z7hqbzqBZG1EC6jR@...2685...>
+ <baac3422-1f0b-4587-bef6-0e23f8b6a296@...1227...>
+In-Reply-To: <baac3422-1f0b-4587-bef6-0e23f8b6a296@...1227...>
 From: Rafael Gava <gava100@...277...>
-Date: Sun, 23 Feb 2025 15:26:36 -0300
-Message-ID: <CAAWBBYOgTGFmfpX11FBBG08Z7RWL8qNFV--PgUv++Tpnz_VauQ@...278...>
-Content-Type: multipart/alternative; boundary="000000000000924c06062ed35d14"
+Date: Sun, 23 Feb 2025 16:05:19 -0300
+Message-ID: <CAAWBBYPh5gUvLrdkSXyzGcwn7FP-VUVQXg1pHpPbjemdknzY=w@...278...>
+Content-Type: multipart/alternative; boundary="000000000000092733062ed3e805"
 Subject: Re: [Openvpn-devel] [PATCH] Add 'localhost' token to client-nat
  network option
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -16,113 +16,91 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Frank Lichtenheld <frank@...2641...>
+To: Arne Schwabe <arne@...1227...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---000000000000924c06062ed35d14
+--000000000000092733062ed3e805
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Hi Frank,
+Hi Arne,
 
-Thank you for your feedback. I'll make the changes as per your suggestions
-and resubmit the patch later. My apologies for not realizing that you were
-using a formatting check tool. I installed Uncrustify, and it worked
-perfectly. :-)
+Thank you for your feedback.
 
-I also wanted to ask about the automated tests on GitHub. Should I fork the
-project and submit the patch there, or should I submit it directly to the
-main project? What is the recommended approach?
+I agree with your suggestion and will replace the localhost token with
+'assigned-ip' before resubmitting the patch.
 
-Looking forward to your guidance.
+Regarding your question about testing P2P, I haven't tested it yet. Do you
+happen to have a configuration I could use for this scenario?
 
 Best regards,
 Rafael
 
+On Fri, Feb 21, 2025 at 9:05=E2=80=AFAM Arne Schwabe <arne@...1227...> wrot=
+e:
 
-On Fri, Feb 21, 2025 at 8:58=E2=80=AFAM Frank Lichtenheld <frank@...2641...>
-wrote:
-
-> On Thu, Feb 20, 2025 at 04:48:27PM -0300, Rafael Gava wrote:
-> > I believe this feature will be beneficial for many OpenVPN users,
-> improving
-> > automation and simplifying VPN gateway configurations. Please find the
-> > patch inline for review and feedback.
+> Am 20.02.25 um 20:48 schrieb Rafael Gava:
+> > Dear OpenVPN Community,
 > >
->
-> Thanks for your submission. Some general notes about the patch.
-> (Not a review of the actual change but more about the format of
-> submission)
->
-> > ----
-> > From fbc7045d652b5f11e2aa043aa2af9ca14f36b604 Mon Sep 17 00:00:00 2001
-> > From: Rafael Gava <gava100@...277...>
-> > Date: Thu, 20 Feb 2025 19:19:39 +0000
-> > Subject: [PATCH] Added the localhost token to the client-nat network
-> option,
-> >  enabling the application to dynamically use the client IP provided by
-> the
-> >  server.
->
-> The subject line should be concise and make sense on its own. The rest
-> of the commit message should be the longer description. You can achieve
-> this
-> by adding an empty line after the first one.
->
-> > Signed-off-by: Rafael Gava <gava100@...277...>
-> > ---
-> >  src/openvpn/clinat.c  | 47 +++++++++++++++++++++++++++++++++++++++----
-> >  src/openvpn/clinat.h  |  3 +++
-> >  src/openvpn/init.c    |  2 ++
-> >  src/openvpn/options.c |  1 +
-> >  4 files changed, 49 insertions(+), 4 deletions(-)
+> > I am submitting this patch to introduce a 'localhost' token to the
+> > `client-nat` network option, allowing OpenVPN clients to dynamically use
+> > the IP address provided by the server. This enhancement is particularly
+> > useful in scenarios where OpenVPN is deployed as a VPN gateway bridging
+> > a local network and a VPN tunnel.
 > >
+> > Currently, the `client-nat` option requires a static client IP, which
+> > limits its flexibility when dealing with dynamically assigned IP
+> > addresses. By introducing a 'localhost' token, OpenVPN can automatically
+> > substitute it with the current client-assigned IP address, streamlining
+> > network configurations in dynamic environments.
+> >
+> > Example:
+> >
+> > client-nat snat localhost 255.255.255.255 172.19.80.17
+>
+> I would assume that localhost here matches only 127.0.0.1. I would
+> prefer something like assigned-ip or something that actually matches the
+> real behaviour instead of reusing something that already has a pretty
+> established meaning.
+>
+> >=3D
 > > diff --git a/src/openvpn/clinat.c b/src/openvpn/clinat.c
 > > index 2d3b359f..1c79b20d 100644
 > > --- a/src/openvpn/clinat.c
 > > +++ b/src/openvpn/clinat.c
 > > @@ -127,12 +127,19 @@ add_client_nat_to_option_list(struct
 > > client_nat_option_list *dest,
-> >          return;
-> >      }
+> >           return;
+> >       }
 > >
 > > -    e.network =3D getaddr(0, network, 0, &ok, NULL);
 > > -    if (!ok)
 > > +    if (network && !strcmp(network, "localhost"))
-> >      {
+> >       {
 > > -        msg(msglevel, "client-nat: bad network: %s", network);
 > > -        return;
 > > +        msg (M_INFO, "*** client-nat localhost detected...");
+>
+> This looks like a left over debug message.
+>
 > > +        e.network =3D 0xFFFFFFFF;
 > > +    } else {
->
-> This is not in line with our usual formatting. We always format
-> like this
->
-> }
-> else
-> {
->
-> There is an uncrustify config in dev-tools/uncrustify.conf that can
-> help to check the formatting. Or you submit the patch in Github or
-> Gerrit which can do automated checks of the formatting.
->
 > > +        e.network =3D getaddr(0, network, 0, &ok, NULL);
 > > +        if (!ok)
 > > +        {
 > > +            msg(msglevel, "client-nat: bad network: %s", network);
 > > +            return;
 > > +        }
-> >      }
+> >       }
 > > +
-> >      e.netmask =3D getaddr(0, netmask, 0, &ok, NULL);
-> >      if (!ok)
-> >      {
+> >       e.netmask =3D getaddr(0, netmask, 0, &ok, NULL);
+> >       if (!ok)
+> >       {
 > > @@ -274,3 +281,35 @@ client_nat_transform(const struct
 > > client_nat_option_list *list,
-> >          }
-> >      }
-> >  }
+> >           }
+> >       }
+> >   }
 > > +
 > > +/*
 > > +* Replaces the localhost token with the IP received from OpenVPN
@@ -163,282 +141,256 @@ wrote:
 > > +++ b/src/openvpn/clinat.h
 > > @@ -64,4 +64,7 @@ void client_nat_transform(const struct
 > > client_nat_option_list *list,
-> >                            struct buffer *ipbuf,
-> >                            const int direction);
+> >                             struct buffer *ipbuf,
+> >                             const int direction);
 > >
-> > +bool update_localhost_nat(struct client_nat_option_list *dest, in_addr=
-_t
-> > local_ip);
+> > +bool update_localhost_nat(struct client_nat_option_list *dest,
+> > in_addr_t local_ip);
 > > +
 > > +
-> >  #endif /* if !defined(CLINAT_H) */
+> >   #endif /* if !defined(CLINAT_H) */
 > > diff --git a/src/openvpn/init.c b/src/openvpn/init.c
 > > index b57e5f8a..dadc10dc 100644
 > > --- a/src/openvpn/init.c
 > > +++ b/src/openvpn/init.c
 > > @@ -2052,6 +2052,8 @@ do_open_tun(struct context *c, int *error_flags)
-> >              *error_flags |=3D (status ? 0 : ISC_ROUTE_ERRORS);
-> >          }
+> >               *error_flags |=3D (status ? 0 : ISC_ROUTE_ERRORS);
+> >           }
 > >
 > > +        update_localhost_nat(c->options.client_nat,
 > c->c1.tuntap->local);
 > > +
-> >          ret =3D true;
-> >          static_context =3D c;
-> >      }
+> >           ret =3D true;
+> >           static_context =3D c;
+> >       }
 > > diff --git a/src/openvpn/options.c b/src/openvpn/options.c
 > > index 6b2dfa58..f7161931 100644
 > > --- a/src/openvpn/options.c
 > > +++ b/src/openvpn/options.c
 > > @@ -254,6 +254,7 @@ static const char usage_message[] =3D
-> >      "                   (Server) Instead of forwarding IPv6 packets
-> send\n"
-> >      "                   ICMPv6 host unreachable packets to the
+> >       "                   (Server) Instead of forwarding IPv6 packets
+> > send\n"
+> >       "                   ICMPv6 host unreachable packets to the
 > client.\n"
-> >      "--client-nat snat|dnat network netmask alias : on client add 1-to=
--1
-> > NAT rule.\n"
+> >       "--client-nat snat|dnat network netmask alias : on client add 1-
+> > to-1 NAT rule.\n"
 > > +    "                  set the network to 'localhost' to use the client
-> ip
-> > received from the server.\n"
+> > ip received from the server.\n"
+> >       "--push-peer-info : (client only) push client info to server.\n"
+> >       "--setenv name value : Set a custom environmental variable to pass
+> > to script.\n"
+> >       "--setenv FORWARD_COMPATIBLE 1 : Relax config file syntax checking
+> > to allow\n"
 >
-> Please also include an update to the documentation in
-> doc/man-sections/client-options.rst
 >
-> >      "--push-peer-info : (client only) push client info to server.\n"
-> >      "--setenv name value : Set a custom environmental variable to pass
-> to
-> > script.\n"
-> >      "--setenv FORWARD_COMPATIBLE 1 : Relax config file syntax checking
-> to
-> > allow\n"
-> > --
-> > 2.39.5
+> OpenVPN also needs to work in configuration that are pure p2p without
+> --pull (or --client with is --tls-client +  --pull). Have you tested
+> that it works in that configuration as well?
 >
-> Regards,
-> --
->   Frank Lichtenheld
+> Arne
+>
+>
 >
 
---000000000000924c06062ed35d14
+--000000000000092733062ed3e805
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<div dir=3D"ltr"><div dir=3D"ltr"><div></div>Hi Frank,<br><br>Thank you for=
- your feedback. I&#39;ll make the changes as per your suggestions and resub=
-mit the patch later. My apologies for not realizing that you were using a f=
-ormatting check tool. I installed Uncrustify, and it worked perfectly. :-)<=
-br><br>I also wanted to ask about the automated tests on GitHub. Should I f=
-ork the project and submit the patch there, or should I submit it directly =
-to the main project? What is the recommended approach?<br><br>Looking forwa=
-rd to your guidance.<br><br>Best regards,<br>Rafael<div><br></div></div><br=
-><div class=3D"gmail_quote gmail_quote_container"><div dir=3D"ltr" class=3D=
-"gmail_attr">On Fri, Feb 21, 2025 at 8:58=E2=80=AFAM Frank Lichtenheld &lt;=
-<a href=3D"mailto:frank@...2641...">frank@...2641...</a>&gt; wrote:<br></di=
-v><blockquote class=3D"gmail_quote" style=3D"margin:0px 0px 0px 0.8ex;borde=
-r-left:1px solid rgb(204,204,204);padding-left:1ex">On Thu, Feb 20, 2025 at=
- 04:48:27PM -0300, Rafael Gava wrote:<br>
-&gt; I believe this feature will be beneficial for many OpenVPN users, impr=
-oving<br>
-&gt; automation and simplifying VPN gateway configurations. Please find the=
-<br>
-&gt; patch inline for review and feedback.<br>
+<div dir=3D"ltr">Hi Arne,<br><br>Thank you for your feedback.<br><br>I agre=
+e with your suggestion and will replace the localhost token with &#39;assig=
+ned-ip&#39; before resubmitting the patch.<br><br>Regarding your question a=
+bout testing P2P, I haven&#39;t tested it yet. Do you happen to have a conf=
+iguration I could use for this scenario?<br><br>Best regards,<br><div>Rafae=
+l</div><div><br></div><div class=3D"gmail_quote gmail_quote_container"><div=
+ dir=3D"ltr" class=3D"gmail_attr">On Fri, Feb 21, 2025 at 9:05=E2=80=AFAM A=
+rne Schwabe &lt;<a href=3D"mailto:arne@...1227...">arne@...1227...</a>&gt; =
+wrote:<br></div><blockquote class=3D"gmail_quote" style=3D"margin:0px 0px 0=
+px 0.8ex;border-left:1px solid rgb(204,204,204);padding-left:1ex">Am 20.02.=
+25 um 20:48 schrieb Rafael Gava:<br>
+&gt; Dear OpenVPN Community,<br>
 &gt; <br>
-<br>
-Thanks for your submission. Some general notes about the patch.<br>
-(Not a review of the actual change but more about the format of<br>
-submission)<br>
-<br>
-&gt; ----<br>
-&gt; From fbc7045d652b5f11e2aa043aa2af9ca14f36b604 Mon Sep 17 00:00:00 2001=
-<br>
-&gt; From: Rafael Gava &lt;<a href=3D"mailto:gava100@...277..." target=3D"_=
-blank">gava100@...277...</a>&gt;<br>
-&gt; Date: Thu, 20 Feb 2025 19:19:39 +0000<br>
-&gt; Subject: [PATCH] Added the localhost token to the client-nat network o=
-ption,<br>
-&gt;=C2=A0 enabling the application to dynamically use the client IP provid=
-ed by the<br>
-&gt;=C2=A0 server.<br>
-<br>
-The subject line should be concise and make sense on its own. The rest<br>
-of the commit message should be the longer description. You can achieve thi=
-s<br>
-by adding an empty line after the first one.<br>
-<br>
-&gt; Signed-off-by: Rafael Gava &lt;<a href=3D"mailto:gava100@...277..." ta=
-rget=3D"_blank">gava100@...277...</a>&gt;<br>
-&gt; ---<br>
-&gt;=C2=A0 src/openvpn/clinat.c=C2=A0 | 47 ++++++++++++++++++++++++++++++++=
-+++++++----<br>
-&gt;=C2=A0 src/openvpn/clinat.h=C2=A0 |=C2=A0 3 +++<br>
-&gt;=C2=A0 src/openvpn/init.c=C2=A0 =C2=A0 |=C2=A0 2 ++<br>
-&gt;=C2=A0 src/openvpn/options.c |=C2=A0 1 +<br>
-&gt;=C2=A0 4 files changed, 49 insertions(+), 4 deletions(-)<br>
+&gt; I am submitting this patch to introduce a &#39;localhost&#39; token to=
+ the <br>
+&gt; `client-nat` network option, allowing OpenVPN clients to dynamically u=
+se <br>
+&gt; the IP address provided by the server. This enhancement is particularl=
+y <br>
+&gt; useful in scenarios where OpenVPN is deployed as a VPN gateway bridgin=
+g <br>
+&gt; a local network and a VPN tunnel.<br>
 &gt; <br>
+&gt; Currently, the `client-nat` option requires a static client IP, which =
+<br>
+&gt; limits its flexibility when dealing with dynamically assigned IP <br>
+&gt; addresses. By introducing a &#39;localhost&#39; token, OpenVPN can aut=
+omatically <br>
+&gt; substitute it with the current client-assigned IP address, streamlinin=
+g <br>
+&gt; network configurations in dynamic environments.<br>
+&gt; <br>
+&gt; Example:<br>
+&gt; <br>
+&gt; client-nat snat localhost 255.255.255.255 172.19.80.17<br>
+<br>
+I would assume that localhost here matches only 127.0.0.1. I would <br>
+prefer something like assigned-ip or something that actually matches the <b=
+r>
+real behaviour instead of reusing something that already has a pretty <br>
+established meaning.<br>
+<br>
+&gt;=3D<br>
 &gt; diff --git a/src/openvpn/clinat.c b/src/openvpn/clinat.c<br>
 &gt; index 2d3b359f..1c79b20d 100644<br>
 &gt; --- a/src/openvpn/clinat.c<br>
 &gt; +++ b/src/openvpn/clinat.c<br>
-&gt; @@ -127,12 +127,19 @@ add_client_nat_to_option_list(struct<br>
+&gt; @@ -127,12 +127,19 @@ add_client_nat_to_option_list(struct <br>
 &gt; client_nat_option_list *dest,<br>
-&gt;=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 return;<br>
-&gt;=C2=A0 =C2=A0 =C2=A0 }<br>
+&gt;=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0return;<br>
+&gt;=C2=A0 =C2=A0 =C2=A0 =C2=A0}<br>
 &gt; <br>
-&gt; -=C2=A0 =C2=A0 e.network =3D getaddr(0, network, 0, &amp;ok, NULL);<br>
-&gt; -=C2=A0 =C2=A0 if (!ok)<br>
-&gt; +=C2=A0 =C2=A0 if (network &amp;&amp; !strcmp(network, &quot;localhost=
+&gt; - =C2=A0 =C2=A0e.network =3D getaddr(0, network, 0, &amp;ok, NULL);<br>
+&gt; - =C2=A0 =C2=A0if (!ok)<br>
+&gt; + =C2=A0 =C2=A0if (network &amp;&amp; !strcmp(network, &quot;localhost=
 &quot;))<br>
-&gt;=C2=A0 =C2=A0 =C2=A0 {<br>
-&gt; -=C2=A0 =C2=A0 =C2=A0 =C2=A0 msg(msglevel, &quot;client-nat: bad netwo=
+&gt;=C2=A0 =C2=A0 =C2=A0 =C2=A0{<br>
+&gt; - =C2=A0 =C2=A0 =C2=A0 =C2=A0msg(msglevel, &quot;client-nat: bad netwo=
 rk: %s&quot;, network);<br>
-&gt; -=C2=A0 =C2=A0 =C2=A0 =C2=A0 return;<br>
-&gt; +=C2=A0 =C2=A0 =C2=A0 =C2=A0 msg (M_INFO, &quot;*** client-nat localho=
+&gt; - =C2=A0 =C2=A0 =C2=A0 =C2=A0return;<br>
+&gt; + =C2=A0 =C2=A0 =C2=A0 =C2=A0msg (M_INFO, &quot;*** client-nat localho=
 st detected...&quot;);<br>
-&gt; +=C2=A0 =C2=A0 =C2=A0 =C2=A0 e.network =3D 0xFFFFFFFF;<br>
-&gt; +=C2=A0 =C2=A0 } else {<br>
 <br>
-This is not in line with our usual formatting. We always format<br>
-like this<br>
+This looks like a left over debug message.<br>
 <br>
-}<br>
-else<br>
-{<br>
-<br>
-There is an uncrustify config in dev-tools/uncrustify.conf that can<br>
-help to check the formatting. Or you submit the patch in Github or<br>
-Gerrit which can do automated checks of the formatting.<br>
-<br>
-&gt; +=C2=A0 =C2=A0 =C2=A0 =C2=A0 e.network =3D getaddr(0, network, 0, &amp=
+&gt; + =C2=A0 =C2=A0 =C2=A0 =C2=A0e.network =3D 0xFFFFFFFF;<br>
+&gt; + =C2=A0 =C2=A0} else {<br>
+&gt; + =C2=A0 =C2=A0 =C2=A0 =C2=A0e.network =3D getaddr(0, network, 0, &amp=
 ;ok, NULL);<br>
-&gt; +=C2=A0 =C2=A0 =C2=A0 =C2=A0 if (!ok)<br>
-&gt; +=C2=A0 =C2=A0 =C2=A0 =C2=A0 {<br>
-&gt; +=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 msg(msglevel, &quot;client-=
+&gt; + =C2=A0 =C2=A0 =C2=A0 =C2=A0if (!ok)<br>
+&gt; + =C2=A0 =C2=A0 =C2=A0 =C2=A0{<br>
+&gt; + =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0msg(msglevel, &quot;client-=
 nat: bad network: %s&quot;, network);<br>
-&gt; +=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 return;<br>
-&gt; +=C2=A0 =C2=A0 =C2=A0 =C2=A0 }<br>
-&gt;=C2=A0 =C2=A0 =C2=A0 }<br>
+&gt; + =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0return;<br>
+&gt; + =C2=A0 =C2=A0 =C2=A0 =C2=A0}<br>
+&gt;=C2=A0 =C2=A0 =C2=A0 =C2=A0}<br>
 &gt; +<br>
-&gt;=C2=A0 =C2=A0 =C2=A0 e.netmask =3D getaddr(0, netmask, 0, &amp;ok, NULL=
-);<br>
-&gt;=C2=A0 =C2=A0 =C2=A0 if (!ok)<br>
-&gt;=C2=A0 =C2=A0 =C2=A0 {<br>
-&gt; @@ -274,3 +281,35 @@ client_nat_transform(const struct<br>
+&gt;=C2=A0 =C2=A0 =C2=A0 =C2=A0e.netmask =3D getaddr(0, netmask, 0, &amp;ok=
+, NULL);<br>
+&gt;=C2=A0 =C2=A0 =C2=A0 =C2=A0if (!ok)<br>
+&gt;=C2=A0 =C2=A0 =C2=A0 =C2=A0{<br>
+&gt; @@ -274,3 +281,35 @@ client_nat_transform(const struct <br>
 &gt; client_nat_option_list *list,<br>
-&gt;=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 }<br>
-&gt;=C2=A0 =C2=A0 =C2=A0 }<br>
-&gt;=C2=A0 }<br>
+&gt;=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0}<br>
+&gt;=C2=A0 =C2=A0 =C2=A0 =C2=A0}<br>
+&gt;=C2=A0 =C2=A0}<br>
 &gt; +<br>
 &gt; +/*<br>
 &gt; +* Replaces the localhost token with the IP received from OpenVPN<br>
 &gt; +*/<br>
 &gt; +bool<br>
-&gt; +update_localhost_nat(struct client_nat_option_list *dest, in_addr_t<b=
-r>
+&gt; +update_localhost_nat(struct client_nat_option_list *dest, in_addr_t <=
+br>
 &gt; local_ip)<br>
 &gt; +{<br>
-&gt; +=C2=A0 =C2=A0 int i;<br>
-&gt; +=C2=A0 =C2=A0 bool ret =3D false;<br>
+&gt; + =C2=A0 =C2=A0int i;<br>
+&gt; + =C2=A0 =C2=A0bool ret =3D false;<br>
 &gt; +<br>
-&gt; +=C2=A0 =C2=A0 if (!dest) {<br>
-&gt; +=C2=A0 =C2=A0 =C2=A0 =C2=A0 return ret;<br>
-&gt; +=C2=A0 =C2=A0 }<br>
+&gt; + =C2=A0 =C2=A0if (!dest) {<br>
+&gt; + =C2=A0 =C2=A0 =C2=A0 =C2=A0return ret;<br>
+&gt; + =C2=A0 =C2=A0}<br>
 &gt; +<br>
-&gt; +=C2=A0 =C2=A0 for (i=3D0; i &lt;=3D dest-&gt;n; i++)<br>
-&gt; +=C2=A0 =C2=A0 {<br>
-&gt; +=C2=A0 =C2=A0 =C2=A0 =C2=A0 struct client_nat_entry *nat_entry =3D &a=
+&gt; + =C2=A0 =C2=A0for (i=3D0; i &lt;=3D dest-&gt;n; i++)<br>
+&gt; + =C2=A0 =C2=A0{<br>
+&gt; + =C2=A0 =C2=A0 =C2=A0 =C2=A0struct client_nat_entry *nat_entry =3D &a=
 mp;dest-&gt;entries[i];<br>
-&gt; +=C2=A0 =C2=A0 =C2=A0 =C2=A0 if (nat_entry &amp;&amp; nat_entry-&gt;ne=
+&gt; + =C2=A0 =C2=A0 =C2=A0 =C2=A0if (nat_entry &amp;&amp; nat_entry-&gt;ne=
 twork =3D=3D 0xFFFFFFFF)<br>
-&gt; +=C2=A0 =C2=A0 =C2=A0 =C2=A0 {<br>
-&gt; +=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 struct in_addr addr;<br>
+&gt; + =C2=A0 =C2=A0 =C2=A0 =C2=A0{<br>
+&gt; + =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0struct in_addr addr;<br>
 &gt; +<br>
-&gt; +=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 nat_entry-&gt;network =3D n=
+&gt; + =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0nat_entry-&gt;network =3D n=
 tohl(local_ip);<br>
-&gt; +=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 addr.s_addr =3D nat_entry-&=
+&gt; + =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0addr.s_addr =3D nat_entry-&=
 gt;network;<br>
-&gt; +=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 char *dot_ip =3D inet_ntoa(=
+&gt; + =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0char *dot_ip =3D inet_ntoa(=
 addr);<br>
 &gt; +<br>
-&gt; +=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 msg (M_INFO, &quot;CNAT - U=
-pdating NAT table from localhost to:<br>
+&gt; + =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0msg (M_INFO, &quot;CNAT - U=
+pdating NAT table from localhost to: <br>
 &gt; %s&quot;, dot_ip);<br>
-&gt; +=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 ret =3D true;<br>
-&gt; +=C2=A0 =C2=A0 =C2=A0 =C2=A0 }<br>
-&gt; +=C2=A0 =C2=A0 }<br>
+&gt; + =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0ret =3D true;<br>
+&gt; + =C2=A0 =C2=A0 =C2=A0 =C2=A0}<br>
+&gt; + =C2=A0 =C2=A0}<br>
 &gt; +<br>
-&gt; +=C2=A0 =C2=A0 return ret;<br>
+&gt; + =C2=A0 =C2=A0return ret;<br>
 &gt; +}<br>
 &gt; diff --git a/src/openvpn/clinat.h b/src/openvpn/clinat.h<br>
 &gt; index 94141f51..06afa3b4 100644<br>
 &gt; --- a/src/openvpn/clinat.h<br>
 &gt; +++ b/src/openvpn/clinat.h<br>
-&gt; @@ -64,4 +64,7 @@ void client_nat_transform(const struct<br>
+&gt; @@ -64,4 +64,7 @@ void client_nat_transform(const struct <br>
 &gt; client_nat_option_list *list,<br>
 &gt;=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 struct buffer *ipbuf,<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0struct buffer *ipbuf,<br>
 &gt;=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 const int direction);<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0const int direction);<br>
 &gt; <br>
-&gt; +bool update_localhost_nat(struct client_nat_option_list *dest, in_add=
-r_t<br>
-&gt; local_ip);<br>
+&gt; +bool update_localhost_nat(struct client_nat_option_list *dest, <br>
+&gt; in_addr_t local_ip);<br>
 &gt; +<br>
 &gt; +<br>
-&gt;=C2=A0 #endif /* if !defined(CLINAT_H) */<br>
+&gt;=C2=A0 =C2=A0#endif /* if !defined(CLINAT_H) */<br>
 &gt; diff --git a/src/openvpn/init.c b/src/openvpn/init.c<br>
 &gt; index b57e5f8a..dadc10dc 100644<br>
 &gt; --- a/src/openvpn/init.c<br>
 &gt; +++ b/src/openvpn/init.c<br>
 &gt; @@ -2052,6 +2052,8 @@ do_open_tun(struct context *c, int *error_flags)=
 <br>
-&gt;=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 *error_flags |=3D (sta=
-tus ? 0 : ISC_ROUTE_ERRORS);<br>
-&gt;=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 }<br>
+&gt;=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0*error_flags |=
+=3D (status ? 0 : ISC_ROUTE_ERRORS);<br>
+&gt;=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0}<br>
 &gt; <br>
-&gt; +=C2=A0 =C2=A0 =C2=A0 =C2=A0 update_localhost_nat(c-&gt;options.client=
+&gt; + =C2=A0 =C2=A0 =C2=A0 =C2=A0update_localhost_nat(c-&gt;options.client=
 _nat, c-&gt;c1.tuntap-&gt;local);<br>
 &gt; +<br>
-&gt;=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 ret =3D true;<br>
-&gt;=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 static_context =3D c;<br>
-&gt;=C2=A0 =C2=A0 =C2=A0 }<br>
+&gt;=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0ret =3D true;<br>
+&gt;=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0static_context =3D c;<br>
+&gt;=C2=A0 =C2=A0 =C2=A0 =C2=A0}<br>
 &gt; diff --git a/src/openvpn/options.c b/src/openvpn/options.c<br>
 &gt; index 6b2dfa58..f7161931 100644<br>
 &gt; --- a/src/openvpn/options.c<br>
 &gt; +++ b/src/openvpn/options.c<br>
 &gt; @@ -254,6 +254,7 @@ static const char usage_message[] =3D<br>
-&gt;=C2=A0 =C2=A0 =C2=A0 &quot;=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =
-=C2=A0 =C2=A0 =C2=A0 =C2=A0(Server) Instead of forwarding IPv6 packets send=
-\n&quot;<br>
-&gt;=C2=A0 =C2=A0 =C2=A0 &quot;=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =
-=C2=A0 =C2=A0 =C2=A0 =C2=A0ICMPv6 host unreachable packets to the client.\n=
-&quot;<br>
-&gt;=C2=A0 =C2=A0 =C2=A0 &quot;--client-nat snat|dnat network netmask alias=
- : on client add 1-to-1<br>
-&gt; NAT rule.\n&quot;<br>
-&gt; +=C2=A0 =C2=A0 &quot;=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =
-=C2=A0 =C2=A0 set the network to &#39;localhost&#39; to use the client ip<b=
-r>
-&gt; received from the server.\n&quot;<br>
+&gt;=C2=A0 =C2=A0 =C2=A0 =C2=A0&quot; =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 (Server) Instead of forwarding IPv6 packets <br>
+&gt; send\n&quot;<br>
+&gt;=C2=A0 =C2=A0 =C2=A0 =C2=A0&quot; =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 ICMPv6 host unreachable packets to the client.\=
+n&quot;<br>
+&gt;=C2=A0 =C2=A0 =C2=A0 =C2=A0&quot;--client-nat snat|dnat network netmask=
+ alias : on client add 1- <br>
+&gt; to-1 NAT rule.\n&quot;<br>
+&gt; + =C2=A0 =C2=A0&quot; =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0=
+ =C2=A0 =C2=A0set the network to &#39;localhost&#39; to use the client <br>
+&gt; ip received from the server.\n&quot;<br>
+&gt;=C2=A0 =C2=A0 =C2=A0 =C2=A0&quot;--push-peer-info : (client only) push =
+client info to server.\n&quot;<br>
+&gt;=C2=A0 =C2=A0 =C2=A0 =C2=A0&quot;--setenv name value : Set a custom env=
+ironmental variable to pass <br>
+&gt; to script.\n&quot;<br>
+&gt;=C2=A0 =C2=A0 =C2=A0 =C2=A0&quot;--setenv FORWARD_COMPATIBLE 1 : Relax =
+config file syntax checking <br>
+&gt; to allow\n&quot;<br>
 <br>
-Please also include an update to the documentation in<br>
-doc/man-sections/client-options.rst<br>
 <br>
-&gt;=C2=A0 =C2=A0 =C2=A0 &quot;--push-peer-info : (client only) push client=
- info to server.\n&quot;<br>
-&gt;=C2=A0 =C2=A0 =C2=A0 &quot;--setenv name value : Set a custom environme=
-ntal variable to pass to<br>
-&gt; script.\n&quot;<br>
-&gt;=C2=A0 =C2=A0 =C2=A0 &quot;--setenv FORWARD_COMPATIBLE 1 : Relax config=
- file syntax checking to<br>
-&gt; allow\n&quot;<br>
-&gt; -- <br>
-&gt; 2.39.5<br>
+OpenVPN also needs to work in configuration that are pure p2p without <br>
+--pull (or --client with is --tls-client +=C2=A0 --pull). Have you tested <=
+br>
+that it works in that configuration as well?<br>
 <br>
-Regards,<br>
--- <br>
-=C2=A0 Frank Lichtenheld<br>
+Arne<br>
+<br>
+<br>
 </blockquote></div></div>
 
---000000000000924c06062ed35d14--
+--000000000000092733062ed3e805--
 
