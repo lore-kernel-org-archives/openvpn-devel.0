@@ -1,9 +1,16 @@
-Date: Fri, 28 Feb 2025 21:40:38 +0100 (CET)
-Message-Id: <202502282040.51SKecd3010406@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <20250228170045.321832-1-frank@...2641...>
-References: <20250228170045.321832-1-frank@...2641...>
-Subject: [Openvpn-devel] [PATCH applied] Re: GHA: Publish Doxygen
+From: "cron2 (Code Review)" <gerrit@...515...>
+Date: Fri, 28 Feb 2025 20:41:19 +0000
+In-Reply-To: <gerrit.1739196465000.I3922714972fffb3d7b1592f882d09c1fe1137241@...2715...>
+References: <gerrit.1739196465000.I3922714972fffb3d7b1592f882d09c1fe1137241@...2715...>
+Reply-To: gert@...1296..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net, frank@...2641...,
+ yura.uddr@...277...
+Message-ID: <9161736c24bc68293a6890b84e4384885e97cb4c-HTML@...2715...>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="FUM5uBnozgo="; charset=UTF-8
+Subject: [Openvpn-devel] [M] Change in openvpn[master]: GHA: Publish Doxygen
  documentation to Github Pages
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
@@ -13,32 +20,221 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: Frank Lichtenheld <frank@...2641...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: flichtenheld <frank@...2641...>
+Cc: uddr <yura.uddr@...277...>, plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-I haven't tested this, but since this is not affecting code, and Yuriy
-says this works, fine with me.
+--FUM5uBnozgo=
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Your patch has been applied to the master branch.
+cron2 has submitted this change. ( http://gerrit.openvpn.net/c/openvpn/+/88=
+7?usp=3Demail )
 
-commit 30a66f72a98d7a583c524f826a94c4d3e5081688
-Author: Frank Lichtenheld
-Date:   Fri Feb 28 18:00:45 2025 +0100
+Change subject: GHA: Publish Doxygen documentation to Github Pages
+......................................................................
 
-     GHA: Publish Doxygen documentation to Github Pages
+GHA: Publish Doxygen documentation to Github Pages
 
-     Signed-off-by: Frank Lichtenheld <frank@...2641...>
-     Acked-by: Yuriy Darnobyt <yura.uddr@...277...>
-     Message-Id: <20250228170045.321832-1-frank@...2641...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg30989.html
-     Signed-off-by: Gert Doering <gert@...1296...>
+To make it more easily available to everyone.
 
+Change-Id: I3922714972fffb3d7b1592f882d09c1fe1137241
+Signed-off-by: Frank Lichtenheld <frank@...2641...>
+Acked-by: Yuriy Darnobyt <yura.uddr@...277...>
+Message-Id: <20250228170045.321832-1-frank@...2641...>
+URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg30=
+989.html
+Signed-off-by: Gert Doering <gert@...1296...>
+---
+A .github/workflows/doxygen.yml
+1 file changed, 53 insertions(+), 0 deletions(-)
+
+
+
+
+diff --git a/.github/workflows/doxygen.yml b/.github/workflows/doxygen.yml
+new file mode 100644
+index 0000000..f1ece70
+--- /dev/null
++++ b/.github/workflows/doxygen.yml
+@@ -0,0 +1,53 @@
++name: Deploy Doxygen documentation to Pages
++on:
++  push:
++    branches: ["master"]
++  workflow_dispatch:
++concurrency:
++  group: "pages"
++  cancel-in-progress: false
++jobs:
++  build:
++    runs-on: ubuntu-24.04
++    steps:
++      - uses: actions/checkout@...2844... # v4.2.2
++        with:
++          path: openvpn
++
++      - name: Install dependencies
++        run: |
++          sudo apt update
++          sudo apt install -y --no-install-recommends \
++            build-essential doxygen graphviz \
++            liblzo2-dev libpam0g-dev liblz4-dev libcap-ng-dev libnl-genl-3=
+-dev linux-libc-dev man2html libcmocka-dev python3-docutils libtool automak=
+e autoconf libssl-dev
++
++      - name: Build Doxygen documentation
++        id: build
++        run: |
++          cd openvpn
++          autoreconf -f -i
++          cd ..
++          mkdir doxygen
++          cd doxygen
++          ../openvpn/configure
++          make doxygen
++          touch doc/doxygen/html/.nojekyll
++      - name: Upload static files as artifact
++        id: deployment
++        uses: actions/upload-pages-artifact@...2858...
++        with:
++          path: doxygen/doc/doxygen/html/
++
++  deploy:
++    needs: build
++    permissions:
++      pages: write      # to deploy to Pages
++      id-token: write   # to verify the deployment originates from an appr=
+opriate source
++    environment:
++      name: github-pages
++      url: ${{ steps.deployment.outputs.page_url }}
++    runs-on: ubuntu-24.04
++    steps:
++      - name: Deploy to GitHub Pages
++        id: deployment
++        uses: actions/deploy-pages@...2859...
 
 --
-kind regards,
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/887?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings
 
-Gert Doering
+Gerrit-Project: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: I3922714972fffb3d7b1592f882d09c1fe1137241
+Gerrit-Change-Number: 887
+Gerrit-PatchSet: 2
+Gerrit-Owner: flichtenheld <frank@...2641...>
+Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
+Gerrit-Reviewer: uddr <yura.uddr@...277...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-MessageType: merged
 
+--FUM5uBnozgo=
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<p>cron2 <strong>submitted</strong> this change.</p><p><a href=3D"http://ge=
+rrit.openvpn.net/c/openvpn/+/887?usp=3Demail">View Change</a></p><div style=
+=3D"white-space:pre-wrap"></div><pre style=3D"font-family: monospace,monosp=
+ace; white-space: pre-wrap;">GHA: Publish Doxygen documentation to Github P=
+ages<br><br>To make it more easily available to everyone.<br><br>Change-Id:=
+ I3922714972fffb3d7b1592f882d09c1fe1137241<br>Signed-off-by: Frank Lichtenh=
+eld &lt;frank@...2641...&gt;<br>Acked-by: Yuriy Darnobyt &lt;yura.uddr@...1665...=
+77...&gt;<br>Message-Id: &lt;20250228170045.321832-1-frank@...2641...&gt;<b=
+r>URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg=
+30989.html<br>Signed-off-by: Gert Doering &lt;gert@...1296...&gt;<br>---<br=
+>A .github/workflows/doxygen.yml<br>1 file changed, 53 insertions(+), 0 del=
+etions(-)<br><br></pre>
+<pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><sp=
+an>diff --git a/.github/workflows/doxygen.yml b/.github/workflows/doxygen.y=
+ml</span><br><span>new file mode 100644</span><br><span>index 0000000..f1ec=
+e70</span><br><span>--- /dev/null</span><br><span>+++ b/.github/workflows/d=
+oxygen.yml</span><br><span>@@ -0,0 +1,53 @@</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+name: Deploy Doxygen documentation to Pages</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+on:</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+  push:</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+    branches: [&quot;master&quot;]</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+  workflow_dispatch:</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+concurrency:</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+  group: &quot;pages&quot;</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+  cancel-in-progress: false</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+jobs:</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+  build:</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+    runs-on: ubuntu-24.04</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+    steps:</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+      - uses: actions/checkout@...2844... # v4.2.2</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+        with:</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+          path: openvpn</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+      - name: Install dependencies</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+        run: |</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+          sudo apt update</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+          sudo apt install -y=
+ --no-install-recommends \</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+            build-essential doxygen graphviz \</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+            liblzo2-dev libpam0g-dev libl=
+z4-dev libcap-ng-dev libnl-genl-3-dev linux-libc-dev man2html libcmocka-dev=
+ python3-docutils libtool automake autoconf libssl-dev</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+      - name: Build Doxygen documentation</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+        id: build</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+        run: |</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+          cd openvpn</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+          autoreconf -f -i</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+          cd ..</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+          mkdir doxygen</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+          cd doxygen</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+          ../openvpn/configure</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+          make doxygen=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+          touch doc=
+/doxygen/html/.nojekyll</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+      - name: Upload static files as artifact</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+        id: deployment</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+        uses: actions/upload-pages-artifa=
+ct@...2858...</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
+  with:</span><br><span style=3D"color: hsl(120, 100%, 40%);">+          pa=
+th: doxygen/doc/doxygen/html/</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  deploy:=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    needs: build</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+    permissions:</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+      pages: write      #=
+ to deploy to Pages</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+      id-token: write   # to verify the deployment originates from an appro=
+priate source</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    en=
+vironment:</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      nam=
+e: github-pages</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+  url: ${{ steps.deployment.outputs.page_url }}</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+    runs-on: ubuntu-24.04</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    steps:</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+      - name: Deploy to GitHub Pages</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+        id: deployment</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+        uses: actions/deploy-p=
+ages@...2859...</span><br><span></span><br></pre><p>To view, visit <a href=
+=3D"http://gerrit.openvpn.net/c/openvpn/+/887?usp=3Demail">change 887</a>. =
+To unsubscribe, or for help writing mail filters, visit <a href=3D"http://g=
+errit.openvpn.net/settings">settings</a>.</p><div itemscope itemtype=3D"htt=
+p://schema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D=
+"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit=
+.openvpn.net/c/openvpn/+/887?usp=3Demail"/><meta itemprop=3D"name" content=
+=3D"View Change"/></div></div>
+
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I3922714972fffb3d7b1592f882d=
+09c1fe1137241 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 887 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
+<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
+.&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
+.1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: uddr &lt;yura.uddr@...277...&=
+gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-MessageType: merged </div>
+
+
+--FUM5uBnozgo=--
 
