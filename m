@@ -1,9 +1,16 @@
-From: Qingfang Deng <dqfext@...277...>
-Date: Thu, 27 Feb 2025 11:25:22 +0800
-Message-ID: <20250227032522.3734947-1-dqfext@...277...>
+From: "uddr (Code Review)" <gerrit@...515...>
+Date: Fri, 28 Feb 2025 16:25:49 +0000
+In-Reply-To: <gerrit.1739196465000.I3922714972fffb3d7b1592f882d09c1fe1137241@...2715...>
+References: <gerrit.1739196465000.I3922714972fffb3d7b1592f882d09c1fe1137241@...2715...>
+Reply-To: yura.uddr@...277..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net, frank@...2641...
+Message-ID: <dd022090394b50b8ea60cea451000e96ff2e78fc-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v3] dco: fix source IP selection when
- multihome
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="L9i0Zo+nL9I="; charset=UTF-8
+Subject: [Openvpn-devel] [M] Change in openvpn[master]: GHA: Publish Doxygen
+ documentation to Github Pages
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,32 +19,87 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: flichtenheld <frank@...2641...>
+Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-When multihome option is enabled, OpenVPN passes ipi_addr to DCO, which
-is always 0.0.0.0. It should use ipi_spec_dst instead.
+--L9i0Zo+nL9I=
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Signed-off-by: Qingfang Deng <dqfext@...277...>
----
- src/openvpn/dco.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Attention is currently required from: flichtenheld, plaisthos.
 
-diff --git a/src/openvpn/dco.c b/src/openvpn/dco.c
-index 02fae816..d6e8ec5f 100644
---- a/src/openvpn/dco.c
-+++ b/src/openvpn/dco.c
-@@ -562,7 +562,7 @@ dco_multi_get_localaddr(struct multi_context *m, struct multi_instance *mi,
-         {
-             struct sockaddr_in *sock_in4 = (struct sockaddr_in *)local;
- #if defined(HAVE_IN_PKTINFO) && defined(HAVE_IPI_SPEC_DST)
--            sock_in4->sin_addr = actual->pi.in4.ipi_addr;
-+            sock_in4->sin_addr = actual->pi.in4.ipi_spec_dst;
- #elif defined(IP_RECVDSTADDR)
-             sock_in4->sin_addr = actual->pi.in4;
- #else
--- 
-2.43.0
+uddr has posted comments on this change. ( http://gerrit.openvpn.net/c/open=
+vpn/+/887?usp=3Demail )
 
+Change subject: GHA: Publish Doxygen documentation to Github Pages
+......................................................................
+
+
+Patch Set 1: Code-Review+2
+
+
+--
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/887?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings
+
+Gerrit-Project: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: I3922714972fffb3d7b1592f882d09c1fe1137241
+Gerrit-Change-Number: 887
+Gerrit-PatchSet: 1
+Gerrit-Owner: flichtenheld <frank@...2641...>
+Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
+Gerrit-Reviewer: uddr <yura.uddr@...277...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Attention: flichtenheld <frank@...2641...>
+Gerrit-Comment-Date: Fri, 28 Feb 2025 16:25:49 +0000
+Gerrit-HasComments: No
+Gerrit-Has-Labels: Yes
+Gerrit-MessageType: comment
+
+--L9i0Zo+nL9I=
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<p> Attention is currently required from: flichtenheld, plaisthos. </p>
+<p>Patch set 1:<span style=3D"border-radius: 3px; display: inline-block; ma=
+rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/887?usp=3Demail">Vi=
+ew Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To vie=
+w, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/887?usp=3Demail">=
+change 887</a>. To unsubscribe, or for help writing mail filters, visit <a =
+href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope=
+ itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"act=
+ion" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=
+=3D"http://gerrit.openvpn.net/c/openvpn/+/887?usp=3Demail"/><meta itemprop=
+=3D"name" content=3D"View Change"/></div></div>
+
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I3922714972fffb3d7b1592f882d=
+09c1fe1137241 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 887 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
+<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
+.&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
+.1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: uddr &lt;yura.uddr@...277...&=
+gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
+41...&gt; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Fri, 28 Feb 2025 16:25:49=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: No </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
+
+
+--L9i0Zo+nL9I=--
 
