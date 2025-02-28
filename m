@@ -1,11 +1,11 @@
 From: Frank Lichtenheld <frank@...2641...>
-Date: Fri, 28 Feb 2025 18:00:45 +0100
-Message-Id: <20250228170045.321832-1-frank@...2641...>
-In-Reply-To: <gerrit.1739196465000.I3922714972fffb3d7b1592f882d09c1fe1137241@...2715...>
-References: <gerrit.1739196465000.I3922714972fffb3d7b1592f882d09c1fe1137241@...2715...>
+Date: Fri, 28 Feb 2025 18:02:32 +0100
+Message-Id: <20250228170232.322186-1-frank@...2641...>
+In-Reply-To: <gerrit.1736860439000.I925accd8267f94ecfd9ccea85bae965dc2a10208@...2715...>
+References: <gerrit.1736860439000.I925accd8267f94ecfd9ccea85bae965dc2a10208@...2715...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v1] GHA: Publish Doxygen documentation to
- Github Pages
+Subject: [Openvpn-devel] [PATCH v3] Add more "intentional fallthrough"
+ comments
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,82 +17,87 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
-Cc: Yuriy Darnobyt <yura.uddr@...277...>
+Cc: Arne Schwabe <arne-openvpn@...1227...>
 
-To make it more easily available to everyone.
+To make it easier to exclude them from compiler
+warnings.
 
-Change-Id: I3922714972fffb3d7b1592f882d09c1fe1137241
+Based on the existing comment in init.c
+
+Change-Id: I925accd8267f94ecfd9ccea85bae965dc2a10208
 Signed-off-by: Frank Lichtenheld <frank@...2641...>
-Acked-by: Yuriy Darnobyt <yura.uddr@...277...>
+Acked-by: Arne Schwabe <arne-openvpn@...1227...>
 ---
 
 This change was reviewed on Gerrit and approved by at least one
 developer. I request to merge it to master.
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/887
-This mail reflects revision 1 of this Change.
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/864
+This mail reflects revision 3 of this Change.
 
 Acked-by according to Gerrit (reflected above):
-Yuriy Darnobyt <yura.uddr@...277...>
+Arne Schwabe <arne-openvpn@...1227...>
 
         
-diff --git a/.github/workflows/doxygen.yml b/.github/workflows/doxygen.yml
-new file mode 100644
-index 0000000..f1ece70
---- /dev/null
-+++ b/.github/workflows/doxygen.yml
-@@ -0,0 +1,53 @@
-+name: Deploy Doxygen documentation to Pages
-+on:
-+  push:
-+    branches: ["master"]
-+  workflow_dispatch:
-+concurrency:
-+  group: "pages"
-+  cancel-in-progress: false
-+jobs:
-+  build:
-+    runs-on: ubuntu-24.04
-+    steps:
-+      - uses: actions/checkout@...2844... # v4.2.2
-+        with:
-+          path: openvpn
-+
-+      - name: Install dependencies
-+        run: |
-+          sudo apt update
-+          sudo apt install -y --no-install-recommends \
-+            build-essential doxygen graphviz \
-+            liblzo2-dev libpam0g-dev liblz4-dev libcap-ng-dev libnl-genl-3-dev linux-libc-dev man2html libcmocka-dev python3-docutils libtool automake autoconf libssl-dev
-+
-+      - name: Build Doxygen documentation
-+        id: build
-+        run: |
-+          cd openvpn
-+          autoreconf -f -i
-+          cd ..
-+          mkdir doxygen
-+          cd doxygen
-+          ../openvpn/configure
-+          make doxygen
-+          touch doc/doxygen/html/.nojekyll
-+      - name: Upload static files as artifact
-+        id: deployment
-+        uses: actions/upload-pages-artifact@...2858...
-+        with:
-+          path: doxygen/doc/doxygen/html/
-+
-+  deploy:
-+    needs: build
-+    permissions:
-+      pages: write      # to deploy to Pages
-+      id-token: write   # to verify the deployment originates from an appropriate source
-+    environment:
-+      name: github-pages
-+      url: ${{ steps.deployment.outputs.page_url }}
-+    runs-on: ubuntu-24.04
-+    steps:
-+      - name: Deploy to GitHub Pages
-+        id: deployment
-+        uses: actions/deploy-pages@...2859...
+diff --git a/src/openvpn/list.c b/src/openvpn/list.c
+index 69f1510..6987def 100644
+--- a/src/openvpn/list.c
++++ b/src/openvpn/list.c
+@@ -437,34 +437,44 @@
+     {
+         case 11:
+             c += ((uint32_t) k[10] << 24);
++        /* Intentional [[fallthrough]]; */
+ 
+         case 10:
+             c += ((uint32_t) k[9] << 16);
++        /* Intentional [[fallthrough]]; */
+ 
+         case 9:
+             c += ((uint32_t) k[8] << 8);
++        /* Intentional [[fallthrough]]; */
+ 
+         /* the first byte of c is reserved for the length */
+         case 8:
+             b += ((uint32_t) k[7] << 24);
++        /* Intentional [[fallthrough]]; */
+ 
+         case 7:
+             b += ((uint32_t) k[6] << 16);
++        /* Intentional [[fallthrough]]; */
+ 
+         case 6:
+             b += ((uint32_t) k[5] << 8);
++        /* Intentional [[fallthrough]]; */
+ 
+         case 5:
+             b += k[4];
++        /* Intentional [[fallthrough]]; */
+ 
+         case 4:
+             a += ((uint32_t) k[3] << 24);
++        /* Intentional [[fallthrough]]; */
+ 
+         case 3:
+             a += ((uint32_t) k[2] << 16);
++        /* Intentional [[fallthrough]]; */
+ 
+         case 2:
+             a += ((uint32_t) k[1] << 8);
++        /* Intentional [[fallthrough]]; */
+ 
+         case 1:
+             a += k[0];
+diff --git a/src/openvpn/push.c b/src/openvpn/push.c
+index ddad109..914f520 100644
+--- a/src/openvpn/push.c
++++ b/src/openvpn/push.c
+@@ -98,6 +98,7 @@
+ 
+             case AR_INTERACT:
+                 ssl_purge_auth(false);
++            /* Intentional [[fallthrough]]; */
+ 
+             case AR_NOINTERACT:
+                 /* SOFT-SIGTUSR1 -- Auth failure error */
 
