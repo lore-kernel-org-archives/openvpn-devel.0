@@ -1,14 +1,14 @@
 From: "flichtenheld (Code Review)" <gerrit@...515...>
-Date: Wed, 5 Mar 2025 12:45:49 +0000
+Date: Wed, 5 Mar 2025 12:58:03 +0000
 In-Reply-To: <gerrit.1736860439000.Ia3b0f22b0049a111ce52b3c87dd08a843ea9a919@...2715...>
 References: <gerrit.1736860439000.Ia3b0f22b0049a111ce52b3c87dd08a843ea9a919@...2715...>
 Reply-To: frank@...2641..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net, gert@...1296...
-Message-ID: <be8ba3f91d3852ff8953cf3953181c576c6b83e0-EmailReviewComments-HTML@...2715...>
+Message-ID: <17bc2d02570825d20a7ae13ffa158f33283839d0-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="Q0hj2wea3i4="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="JUTfi0nEIDM="; charset=UTF-8
 Subject: [Openvpn-devel] [M] Change in openvpn[master]: Remove various
  unused function parameters
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -21,7 +21,7 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Cc: cron2 <gert@...1296...>, plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---Q0hj2wea3i4=
+--JUTfi0nEIDM=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
@@ -34,7 +34,18 @@ Change subject: Remove various unused function parameters
 ......................................................................
 
 
-Set Ready For Review
+Patch Set 4:
+
+(1 comment)
+
+Patchset:
+
+PS2:
+> I have the suspicion that some of the `multi` stuff will conflict with th=
+e multisocket work, so I'd  [=E2=80=A6]
+Since multisocket is merged now can be re-review this one, please? Seems no=
+t to have caused any conflicts.
+
 
 
 --
@@ -46,40 +57,49 @@ Gerrit-Project: openvpn
 Gerrit-Branch: master
 Gerrit-Change-Id: Ia3b0f22b0049a111ce52b3c87dd08a843ea9a919
 Gerrit-Change-Number: 862
-Gerrit-PatchSet: 3
+Gerrit-PatchSet: 4
 Gerrit-Owner: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: cron2 <gert@...1296...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
 Gerrit-Attention: cron2 <gert@...1296...>
-Gerrit-Comment-Date: Wed, 05 Mar 2025 12:45:49 +0000
-Gerrit-HasComments: No
+Gerrit-Comment-Date: Wed, 05 Mar 2025 12:58:03 +0000
+Gerrit-HasComments: Yes
 Gerrit-Has-Labels: No
+Comment-In-Reply-To: cron2 <gert@...1296...>
 Gerrit-MessageType: comment
 
---Q0hj2wea3i4=
+--JUTfi0nEIDM=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <p> Attention is currently required from: cron2, plaisthos. </p>
-<p style=3D"white-space: pre-wrap; word-wrap: break-word;">Set Ready For Re=
-view</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/862?usp=3Demail=
-">View Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To=
- view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/862?usp=3Dema=
-il">change 862</a>. To unsubscribe, or for help writing mail filters, visit=
- <a href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div items=
-cope itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D=
-"action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" h=
-ref=3D"http://gerrit.openvpn.net/c/openvpn/+/862?usp=3Demail"/><meta itempr=
-op=3D"name" content=3D"View Change"/></div></div>
+<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/862?usp=3Demail">View C=
+hange</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0;"><=
+li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-style=
+: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p style=
+=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/8=
+62?tab=3Dcomments">Patch Set #2:</a> </p><p><blockquote style=3D"border-lef=
+t: 1px solid #aaa; margin: 10px 0; padding: 0 10px;">I have the suspicion t=
+hat some of the `multi` stuff will conflict with the multisocket work, so I=
+&#39;d  [=E2=80=A6]</blockquote></p><p style=3D"white-space: pre-wrap; word=
+-wrap: break-word;">Since multisocket is merged now can be re-review this o=
+ne, please? Seems not to have caused any conflicts.</p></li></ul></li></ul>=
+<p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/862?usp=
+=3Demail">change 862</a>. To unsubscribe, or for help writing mail filters,=
+ visit <a href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div=
+ itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemp=
+rop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"=
+url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/862?usp=3Demail"/><meta =
+itemprop=3D"name" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
 <div style=3D"display:none"> Gerrit-Change-Id: Ia3b0f22b0049a111ce52b3c87dd=
 08a843ea9a919 </div>
 <div style=3D"display:none"> Gerrit-Change-Number: 862 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 3 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 4 </div>
 <div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
 .&gt; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
@@ -92,12 +112,14 @@ ts.sourceforge.net&gt; </div>
 ..1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: cron2 &lt;gert@...1296...&gt=
 ; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Wed, 05 Mar 2025 12:45:49=
+<div style=3D"display:none"> Gerrit-Comment-Date: Wed, 05 Mar 2025 12:58:03=
  +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: No </div>
+<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
 <div style=3D"display:none"> Gerrit-Has-Labels: No </div>
+<div style=3D"display:none"> Comment-In-Reply-To: cron2 &lt;gert@...1296...=
+&gt; </div>
 <div style=3D"display:none"> Gerrit-MessageType: comment </div>
 
 
---Q0hj2wea3i4=--
+--JUTfi0nEIDM=--
 
