@@ -1,14 +1,15 @@
-From: "MaxF (Code Review)" <gerrit@...515...>
-Date: Tue, 4 Mar 2025 17:46:07 +0000
+From: "d12fk (Code Review)" <gerrit@...515...>
+Date: Wed, 5 Mar 2025 03:34:28 +0000
 In-Reply-To: <gerrit.1733989644000.I6b67e3a00dd84bf348b6af28115ee11138c3a111@...2715...>
 References: <gerrit.1733989644000.I6b67e3a00dd84bf348b6af28115ee11138c3a111@...2715...>
-Reply-To: max@...2606..., arne-openvpn@...1227..., heiko@...515...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <4e3049543772718a343219beb52a97c36719e964-EmailReviewComments-HTML@...2715...>
+Reply-To: heiko@...515..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net, frank@...2641...,
+ max@...2606...
+Message-ID: <7878b188b8d617a05538e541d3c662a70886328f-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="lADKVQI/vSI="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="KHWu5FSdOrM="; charset=UTF-8
 Subject: [Openvpn-devel] [L] Change in openvpn[master]: dns: support running
  up/down script with privsep
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -19,32 +20,32 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: d12fk <heiko@...515...>
-Cc: flichtenheld <frank@...2641...>, plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Cc: MaxF <max@...2606...>, flichtenheld <frank@...2641...>, plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---lADKVQI/vSI=
+--KHWu5FSdOrM=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: d12fk, plaisthos.
+Attention is currently required from: MaxF, plaisthos.
 
-MaxF has posted comments on this change. ( http://gerrit.openvpn.net/c/open=
-vpn/+/839?usp=3Demail )
+d12fk has posted comments on this change. ( http://gerrit.openvpn.net/c/ope=
+nvpn/+/839?usp=3Demail )
 
 Change subject: dns: support running up/down script with privsep
 ......................................................................
 
 
-Patch Set 8: Code-Review-1
+Patch Set 8:
 
 (1 comment)
 
 File src/openvpn/dns.c:
 
-http://gerrit.openvpn.net/c/openvpn/+/839/comment/633578a0_e70336df :
+http://gerrit.openvpn.net/c/openvpn/+/839/comment/5ffe9b89_603f7b8b :
 PS8, Line 625:                 if (rlen =3D=3D -1 && errno !=3D EINTR)
-Isn't this the wrong way around? If the error is EINTR, we want to continue=
-, if it's a real error we want to exit?
+> Isn't this the wrong way around? If the error is EINTR, we want to contin=
+ue, if it's a real error we [=E2=80=A6]
+You are right, good catch.
 
 
 
@@ -64,37 +65,37 @@ Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: d12fk <heiko@...515...>
-Gerrit-Comment-Date: Tue, 04 Mar 2025 17:46:07 +0000
+Gerrit-Attention: MaxF <max@...2606...>
+Gerrit-Comment-Date: Wed, 05 Mar 2025 03:34:28 +0000
 Gerrit-HasComments: Yes
-Gerrit-Has-Labels: Yes
+Gerrit-Has-Labels: No
+Comment-In-Reply-To: MaxF <max@...2606...>
 Gerrit-MessageType: comment
 
---lADKVQI/vSI=
+--KHWu5FSdOrM=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p> Attention is currently required from: d12fk, plaisthos. </p>
-<p>Patch set 8:<span style=3D"border-radius: 3px; display: inline-block; ma=
-rgin: 0 2px; padding: 4px;background-color: #ffd4d4;">Code-Review -1</span>=
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/839?usp=3Demail">Vi=
-ew Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0=
-;"><li style=3D"margin: 0; padding: 0;"><p>File src/openvpn/dns.c:</p><ul s=
-tyle=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0=
- 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn=
-.net/c/openvpn/+/839/comment/633578a0_e70336df">Patch Set #8, Line 625:</a>=
- <code style=3D"font-family:monospace,monospace">                if (rlen =
-=3D=3D -1 &amp;&amp; errno !=3D EINTR)</code></p><p style=3D"white-space: p=
-re-wrap; word-wrap: break-word;">Isn&#39;t this the wrong way around? If th=
-e error is EINTR, we want to continue, if it&#39;s a real error we want to =
-exit?</p></li></ul></li></ul><p>To view, visit <a href=3D"http://gerrit.ope=
-nvpn.net/c/openvpn/+/839?usp=3Demail">change 839</a>. To unsubscribe, or fo=
-r help writing mail filters, visit <a href=3D"http://gerrit.openvpn.net/set=
-tings">settings</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailM=
-essage"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.org/Vi=
-ewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvp=
-n/+/839?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></di=
-v></div>
+<p> Attention is currently required from: MaxF, plaisthos. </p>
+<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/839?usp=3Demail">View C=
+hange</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0;"><=
+li style=3D"margin: 0; padding: 0;"><p>File src/openvpn/dns.c:</p><ul style=
+=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 1=
+6px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net=
+/c/openvpn/+/839/comment/5ffe9b89_603f7b8b">Patch Set #8, Line 625:</a> <co=
+de style=3D"font-family:monospace,monospace">                if (rlen =3D=
+=3D -1 &amp;&amp; errno !=3D EINTR)</code></p><p><blockquote style=3D"borde=
+r-left: 1px solid #aaa; margin: 10px 0; padding: 0 10px;">Isn&#39;t this th=
+e wrong way around? If the error is EINTR, we want to continue, if it&#39;s=
+ a real error we [=E2=80=A6]</blockquote></p><p style=3D"white-space: pre-w=
+rap; word-wrap: break-word;">You are right, good catch.</p></li></ul></li><=
+/ul><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/839?=
+usp=3Demail">change 839</a>. To unsubscribe, or for help writing mail filte=
+rs, visit <a href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><=
+div itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope it=
+emprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=
+=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/839?usp=3Demail"/><m=
+eta itemprop=3D"name" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
@@ -114,14 +115,16 @@ div>
 ts.sourceforge.net&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
 ..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: d12fk &lt;heiko@...515...&gt=
-; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Tue, 04 Mar 2025 17:46:07=
+<div style=3D"display:none"> Gerrit-Attention: MaxF &lt;max@...2606...&gt; =
+</div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Wed, 05 Mar 2025 03:34:28=
  +0000 </div>
 <div style=3D"display:none"> Gerrit-HasComments: Yes </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: No </div>
+<div style=3D"display:none"> Comment-In-Reply-To: MaxF &lt;max@...2606...&g=
+t; </div>
 <div style=3D"display:none"> Gerrit-MessageType: comment </div>
 
 
---lADKVQI/vSI=--
+--KHWu5FSdOrM=--
 
