@@ -1,17 +1,16 @@
-From: "d12fk (Code Review)" <gerrit@...515...>
-Date: Thu, 6 Mar 2025 13:12:02 +0000
-In-Reply-To: <gerrit.1733316222000.Icaffbfa6b2e8efa2bd24a05537cb74b15f4fed96@...2715...>
-References: <gerrit.1733316222000.Icaffbfa6b2e8efa2bd24a05537cb74b15f4fed96@...2715...>
-Reply-To: heiko@...515..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...,
- gert@...1296..., lstipakov@...277...
-Message-ID: <fca4f51e634fe88456e79b1baaa5d41fd203794f-EmailReviewComments-HTML@...2715...>
+From: "flichtenheld (Code Review)" <gerrit@...515...>
+Date: Thu, 6 Mar 2025 13:22:05 +0000
+In-Reply-To: <gerrit.1733989644000.Ifbe4ffb44d3bfcaa50adb38cacb3436fcdc71b10@...2715...>
+References: <gerrit.1733989644000.Ifbe4ffb44d3bfcaa50adb38cacb3436fcdc71b10@...2715...>
+Reply-To: frank@...2641..., arne-openvpn@...1227..., heiko@...515...,
+ openvpn-devel@lists.sourceforge.net
+Message-ID: <b36e94b68e419fdd8642b675cb47ee117d05d22b-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="oPM3DOTsUnY="; charset=UTF-8
-Subject: [Openvpn-devel] [L] Change in openvpn[master]: dns: support
- multiple domains without DHCP
+Content-Type: multipart/alternative; boundary="Jz/RZOOtFro="; charset=UTF-8
+Subject: [Openvpn-devel] [L] Change in openvpn[master]: dns: apply settings
+ via script on unixoid systems
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,116 +19,134 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Cc: cron2 <gert@...1296...>, stipa <lstipakov@...277...>, flichtenheld <frank@...2641...>, plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: d12fk <heiko@...515...>
+Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---oPM3DOTsUnY=
+--Jz/RZOOtFro=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: flichtenheld, plaisthos, stipa.
+Attention is currently required from: d12fk, plaisthos.
 
-d12fk has posted comments on this change. ( http://gerrit.openvpn.net/c/ope=
-nvpn/+/824?usp=3Demail )
+flichtenheld has posted comments on this change. ( http://gerrit.openvpn.ne=
+t/c/openvpn/+/838?usp=3Demail )
 
-Change subject: dns: support multiple domains without DHCP
+Change subject: dns: apply settings via script on unixoid systems
 ......................................................................
 
 
-Patch Set 11:
+Patch Set 10:
 
 (1 comment)
 
-Patchset:
+File doc/man-sections/script-options.rst:
 
-PS10:
-> The warning is gone after #240, where the code copying --dns values is re=
-moved
-sorry #840 ;-)
+http://gerrit.openvpn.net/c/openvpn/+/838/comment/4e38da14_521dd7d8 :
+PS9, Line 258:   environment values will be passed to ``--up`` and ``--down=
+`` if no ``--dns``
+> Hm, what exactly needs clarification?
+Okay, first of all start a new paragraph after "service there." The Windows=
+ topic should have its own paragraph.
+
+Reformulate the rest to something like:
+Note that DNS-related `--dhcp-option` options will not be handled by this h=
+ook. If any `--dns' option is present then DNS-related `--dhcp-option` will=
+ be ignored. Otherwise it will be given as `foreign_option` environment var=
+iable to `--up` and `--down` as in previous versions of OpenVPN.
+
+Not 100% sure this describes the correct behavior, but you can adapt it to =
+do so. But the structure is much better to understand what is going on, IMH=
+O. The "if no `--dns` option causes the old behavior to be overridden" is v=
+ery cryptic, I think.
 
 
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/824?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/838?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings
 
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: Icaffbfa6b2e8efa2bd24a05537cb74b15f4fed96
-Gerrit-Change-Number: 824
-Gerrit-PatchSet: 11
+Gerrit-Change-Id: Ifbe4ffb44d3bfcaa50adb38cacb3436fcdc71b10
+Gerrit-Change-Number: 838
+Gerrit-PatchSet: 10
 Gerrit-Owner: d12fk <heiko@...515...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-Reviewer: stipa <lstipakov@...277...>
-Gerrit-CC: cron2 <gert@...1296...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Attention: stipa <lstipakov@...277...>
-Gerrit-Comment-Date: Thu, 06 Mar 2025 13:12:02 +0000
+Gerrit-Attention: d12fk <heiko@...515...>
+Gerrit-Comment-Date: Thu, 06 Mar 2025 13:22:05 +0000
 Gerrit-HasComments: Yes
 Gerrit-Has-Labels: No
+Comment-In-Reply-To: flichtenheld <frank@...2641...>
 Comment-In-Reply-To: d12fk <heiko@...515...>
-Comment-In-Reply-To: stipa <lstipakov@...277...>
 Gerrit-MessageType: comment
 
---oPM3DOTsUnY=
+--Jz/RZOOtFro=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p> Attention is currently required from: flichtenheld, plaisthos, stipa. <=
-/p>
-<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/824?usp=3Demail">View C=
+<p> Attention is currently required from: d12fk, plaisthos. </p>
+<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/838?usp=3Demail">View C=
 hange</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0;"><=
-li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-style=
-: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p style=
-=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/8=
-24?tab=3Dcomments">Patch Set #10:</a> </p><p><blockquote style=3D"border-le=
-ft: 1px solid #aaa; margin: 10px 0; padding: 0 10px;">The warning is gone a=
-fter #240, where the code copying --dns values is removed</blockquote></p><=
-p style=3D"white-space: pre-wrap; word-wrap: break-word;">sorry #840 ;-)</p=
-></li></ul></li></ul><p>To view, visit <a href=3D"http://gerrit.openvpn.net=
-/c/openvpn/+/824?usp=3Demail">change 824</a>. To unsubscribe, or for help w=
-riting mail filters, visit <a href=3D"http://gerrit.openvpn.net/settings">s=
-ettings</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage">=
-<div itemscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction=
-"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/824?=
-usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
+li style=3D"margin: 0; padding: 0;"><p>File doc/man-sections/script-options=
+.rst:</p><ul style=3D"list-style: none; padding: 0;"><li style=3D"margin: 0=
+; padding: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://=
+gerrit.openvpn.net/c/openvpn/+/838/comment/4e38da14_521dd7d8">Patch Set #9,=
+ Line 258:</a> <code style=3D"font-family:monospace,monospace">  environmen=
+t values will be passed to ``--up`` and ``--down`` if no ``--dns``</code></=
+p><p><blockquote style=3D"border-left: 1px solid #aaa; margin: 10px 0; padd=
+ing: 0 10px;">Hm, what exactly needs clarification?</blockquote></p><p styl=
+e=3D"white-space: pre-wrap; word-wrap: break-word;">Okay, first of all star=
+t a new paragraph after &quot;service there.&quot; The Windows topic should=
+ have its own paragraph.</p><p style=3D"white-space: pre-wrap; word-wrap: b=
+reak-word;">Reformulate the rest to something like:<br>Note that DNS-relate=
+d `--dhcp-option` options will not be handled by this hook. If any `--dns&#=
+39; option is present then DNS-related `--dhcp-option` will be ignored. Oth=
+erwise it will be given as `foreign_option` environment variable to `--up` =
+and `--down` as in previous versions of OpenVPN.</p><p style=3D"white-space=
+: pre-wrap; word-wrap: break-word;">Not 100% sure this describes the correc=
+t behavior, but you can adapt it to do so. But the structure is much better=
+ to understand what is going on, IMHO. The &quot;if no `--dns` option cause=
+s the old behavior to be overridden&quot; is very cryptic, I think.</p></li=
+></ul></li></ul><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/op=
+envpn/+/838?usp=3Demail">change 838</a>. To unsubscribe, or for help writin=
+g mail filters, visit <a href=3D"http://gerrit.openvpn.net/settings">settin=
+gs</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div =
+itemscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><li=
+nk itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/838?usp=
+=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: Icaffbfa6b2e8efa2bd24a05537c=
-b74b15f4fed96 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 824 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 11 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: Ifbe4ffb44d3bfcaa50adb38cacb=
+3436fcdc71b10 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 838 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 10 </div>
 <div style=3D"display:none"> Gerrit-Owner: d12fk &lt;heiko@...515...&gt; </=
 div>
 <div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
 1...&gt; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
 .1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: stipa &lt;lstipakov@...277...=
-&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: cron2 &lt;gert@...1296...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
 ..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
-41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: stipa &lt;lstipakov@...1663...=
-.&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Thu, 06 Mar 2025 13:12:02=
+<div style=3D"display:none"> Gerrit-Attention: d12fk &lt;heiko@...515...&gt=
+; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Thu, 06 Mar 2025 13:22:05=
  +0000 </div>
 <div style=3D"display:none"> Gerrit-HasComments: Yes </div>
 <div style=3D"display:none"> Gerrit-Has-Labels: No </div>
+<div style=3D"display:none"> Comment-In-Reply-To: flichtenheld &lt;frank@...1186...=
+.2641...&gt; </div>
 <div style=3D"display:none"> Comment-In-Reply-To: d12fk &lt;heiko@...515...=
 &gt; </div>
-<div style=3D"display:none"> Comment-In-Reply-To: stipa &lt;lstipakov@...1664...=
-7...&gt; </div>
 <div style=3D"display:none"> Gerrit-MessageType: comment </div>
 
 
---oPM3DOTsUnY=--
+--Jz/RZOOtFro=--
 
