@@ -1,15 +1,15 @@
 From: "d12fk (Code Review)" <gerrit@...515...>
-Date: Thu, 6 Mar 2025 13:11:18 +0000
+Date: Thu, 6 Mar 2025 13:12:02 +0000
 In-Reply-To: <gerrit.1733316222000.Icaffbfa6b2e8efa2bd24a05537cb74b15f4fed96@...2715...>
 References: <gerrit.1733316222000.Icaffbfa6b2e8efa2bd24a05537cb74b15f4fed96@...2715...>
 Reply-To: heiko@...515..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net, frank@...2641...,
  gert@...1296..., lstipakov@...277...
-Message-ID: <332a3a8ed16a0a7a850a31623e15646a4f23a571-EmailReviewComments-HTML@...2715...>
+Message-ID: <fca4f51e634fe88456e79b1baaa5d41fd203794f-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="QR4RtlMJ+bs="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="oPM3DOTsUnY="; charset=UTF-8
 Subject: [Openvpn-devel] [L] Change in openvpn[master]: dns: support
  multiple domains without DHCP
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -22,7 +22,7 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Cc: cron2 <gert@...1296...>, stipa <lstipakov@...277...>, flichtenheld <frank@...2641...>, plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---QR4RtlMJ+bs=
+--oPM3DOTsUnY=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
@@ -42,9 +42,9 @@ Patch Set 11:
 Patchset:
 
 PS10:
-> Looks good, but DHCP warning is still there.
-The warning is gone after #240, where the code copying --dns values is remo=
-ved
+> The warning is gone after #240, where the code copying --dns values is re=
+moved
+sorry #840 ;-)
 
 
 
@@ -67,13 +67,14 @@ Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
 Gerrit-Attention: flichtenheld <frank@...2641...>
 Gerrit-Attention: stipa <lstipakov@...277...>
-Gerrit-Comment-Date: Thu, 06 Mar 2025 13:11:18 +0000
+Gerrit-Comment-Date: Thu, 06 Mar 2025 13:12:02 +0000
 Gerrit-HasComments: Yes
 Gerrit-Has-Labels: No
+Comment-In-Reply-To: d12fk <heiko@...515...>
 Comment-In-Reply-To: stipa <lstipakov@...277...>
 Gerrit-MessageType: comment
 
---QR4RtlMJ+bs=
+--oPM3DOTsUnY=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
@@ -85,17 +86,16 @@ li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-style=
 : none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p style=
 =3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/8=
 24?tab=3Dcomments">Patch Set #10:</a> </p><p><blockquote style=3D"border-le=
-ft: 1px solid #aaa; margin: 10px 0; padding: 0 10px;">Looks good, but DHCP =
-warning is still there.</blockquote></p><p style=3D"white-space: pre-wrap; =
-word-wrap: break-word;">The warning is gone after #240, where the code copy=
-ing --dns values is removed</p></li></ul></li></ul><p>To view, visit <a hre=
-f=3D"http://gerrit.openvpn.net/c/openvpn/+/824?usp=3Demail">change 824</a>.=
- To unsubscribe, or for help writing mail filters, visit <a href=3D"http://=
-gerrit.openvpn.net/settings">settings</a>.</p><div itemscope itemtype=3D"ht=
-tp://schema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=
-=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://ger=
-rit.openvpn.net/c/openvpn/+/824?usp=3Demail"/><meta itemprop=3D"name" conte=
-nt=3D"View Change"/></div></div>
+ft: 1px solid #aaa; margin: 10px 0; padding: 0 10px;">The warning is gone a=
+fter #240, where the code copying --dns values is removed</blockquote></p><=
+p style=3D"white-space: pre-wrap; word-wrap: break-word;">sorry #840 ;-)</p=
+></li></ul></li></ul><p>To view, visit <a href=3D"http://gerrit.openvpn.net=
+/c/openvpn/+/824?usp=3Demail">change 824</a>. To unsubscribe, or for help w=
+riting mail filters, visit <a href=3D"http://gerrit.openvpn.net/settings">s=
+ettings</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage">=
+<div itemscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction=
+"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/824?=
+usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
@@ -120,14 +120,16 @@ ts.sourceforge.net&gt; </div>
 41...&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: stipa &lt;lstipakov@...1663...=
 .&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Thu, 06 Mar 2025 13:11:18=
+<div style=3D"display:none"> Gerrit-Comment-Date: Thu, 06 Mar 2025 13:12:02=
  +0000 </div>
 <div style=3D"display:none"> Gerrit-HasComments: Yes </div>
 <div style=3D"display:none"> Gerrit-Has-Labels: No </div>
+<div style=3D"display:none"> Comment-In-Reply-To: d12fk &lt;heiko@...515...=
+&gt; </div>
 <div style=3D"display:none"> Comment-In-Reply-To: stipa &lt;lstipakov@...1664...=
 7...&gt; </div>
 <div style=3D"display:none"> Gerrit-MessageType: comment </div>
 
 
---QR4RtlMJ+bs=--
+--oPM3DOTsUnY=--
 
