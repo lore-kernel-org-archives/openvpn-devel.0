@@ -1,16 +1,16 @@
-From: "d12fk (Code Review)" <gerrit@...515...>
-Date: Thu, 6 Mar 2025 12:59:38 +0000
-In-Reply-To: <gerrit.1733989644000.Ifbe4ffb44d3bfcaa50adb38cacb3436fcdc71b10@...2715...>
-References: <gerrit.1733989644000.Ifbe4ffb44d3bfcaa50adb38cacb3436fcdc71b10@...2715...>
-Reply-To: heiko@...515..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <5c75a39d1bc67ece13ce9786f03fc2a9421b2f16-EmailReviewComments-HTML@...2715...>
+From: "flichtenheld (Code Review)" <gerrit@...515...>
+Date: Thu, 6 Mar 2025 13:09:42 +0000
+In-Reply-To: <gerrit.1733989644000.I6b67e3a00dd84bf348b6af28115ee11138c3a111@...2715...>
+References: <gerrit.1733989644000.I6b67e3a00dd84bf348b6af28115ee11138c3a111@...2715...>
+Reply-To: frank@...2641..., arne-openvpn@...1227..., heiko@...515...,
+ openvpn-devel@lists.sourceforge.net, max@...2606...
+Message-ID: <7a7987e127ad92e5848b01fe91fa9a39ab98d812-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="dq0/en29VZE="; charset=UTF-8
-Subject: [Openvpn-devel] [L] Change in openvpn[master]: dns: apply settings
- via script on unixoid systems
+Content-Type: multipart/alternative; boundary="J748PZFkGWI="; charset=UTF-8
+Subject: [Openvpn-devel] [L] Change in openvpn[master]: dns: support running
+ up/down script with privsep
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,108 +19,88 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Cc: flichtenheld <frank@...2641...>, plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: d12fk <heiko@...515...>
+Cc: MaxF <max@...2606...>, plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---dq0/en29VZE=
+--J748PZFkGWI=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: flichtenheld, plaisthos.
+Attention is currently required from: d12fk, plaisthos.
 
-d12fk has posted comments on this change. ( http://gerrit.openvpn.net/c/ope=
-nvpn/+/838?usp=3Demail )
+flichtenheld has posted comments on this change. ( http://gerrit.openvpn.ne=
+t/c/openvpn/+/839?usp=3Demail )
 
-Change subject: dns: apply settings via script on unixoid systems
+Change subject: dns: support running up/down script with privsep
 ......................................................................
 
 
-Patch Set 10:
+Patch Set 10: Code-Review-2
 
-(2 comments)
+(1 comment)
 
-File doc/man-sections/script-options.rst:
+Patchset:
 
-http://gerrit.openvpn.net/c/openvpn/+/838/comment/846a7522_b67378b2 :
-PS9, Line 258:   environment values will be passed to ``--up`` and ``--down=
-`` if no ``--dns``
-> This sentence is too complicated. [=E2=80=A6]
-Hm, what exactly needs clarification?
-
-
-File src/openvpn/options.c:
-
-http://gerrit.openvpn.net/c/openvpn/+/838/comment/0d724591_b54e593c :
-PS9, Line 531:     "--dns-script cmd : Run cmd as user defined dns configur=
-ation script\n"
-> Would change this to `--dns-script disable|cmd`
-Acknowledged
+PS10:
+Doesn't seem to work right now. Script runner is never used.
 
 
 
---=20
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/838?usp=3Demail
+--
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/839?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings
 
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: Ifbe4ffb44d3bfcaa50adb38cacb3436fcdc71b10
-Gerrit-Change-Number: 838
+Gerrit-Change-Id: I6b67e3a00dd84bf348b6af28115ee11138c3a111
+Gerrit-Change-Number: 839
 Gerrit-PatchSet: 10
 Gerrit-Owner: d12fk <heiko@...515...>
+Gerrit-Reviewer: MaxF <max@...2606...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Comment-Date: Thu, 06 Mar 2025 12:59:38 +0000
+Gerrit-Attention: d12fk <heiko@...515...>
+Gerrit-Comment-Date: Thu, 06 Mar 2025 13:09:42 +0000
 Gerrit-HasComments: Yes
-Gerrit-Has-Labels: No
-Comment-In-Reply-To: flichtenheld <frank@...2641...>
+Gerrit-Has-Labels: Yes
 Gerrit-MessageType: comment
 
---dq0/en29VZE=
+--J748PZFkGWI=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p> Attention is currently required from: flichtenheld, plaisthos. </p>
-<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/838?usp=3Demail">View C=
-hange</a></p><p>2 comments:</p><ul style=3D"list-style: none; padding: 0;">=
-<li style=3D"margin: 0; padding: 0;"><p>File doc/man-sections/script-option=
-s.rst:</p><ul style=3D"list-style: none; padding: 0;"><li style=3D"margin: =
-0; padding: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http:/=
-/gerrit.openvpn.net/c/openvpn/+/838/comment/846a7522_b67378b2">Patch Set #9=
-, Line 258:</a> <code style=3D"font-family:monospace,monospace">  environme=
-nt values will be passed to ``--up`` and ``--down`` if no ``--dns``</code><=
-/p><p><blockquote style=3D"border-left: 1px solid #aaa; margin: 10px 0; pad=
-ding: 0 10px;">This sentence is too complicated. [=E2=80=A6]</blockquote></=
-p><p style=3D"white-space: pre-wrap; word-wrap: break-word;">Hm, what exact=
-ly needs clarification?</p></li></ul></li><li style=3D"margin: 0; padding: =
-0;"><p>File src/openvpn/options.c:</p><ul style=3D"list-style: none; paddin=
-g: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p style=3D"margin-bot=
-tom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/838/comment/0d7=
-24591_b54e593c">Patch Set #9, Line 531:</a> <code style=3D"font-family:mono=
-space,monospace">    &quot;--dns-script cmd : Run cmd as user defined dns c=
-onfiguration script\n&quot;</code></p><p><blockquote style=3D"border-left: =
-1px solid #aaa; margin: 10px 0; padding: 0 10px;">Would change this to `--d=
-ns-script disable|cmd`</blockquote></p><p style=3D"white-space: pre-wrap; w=
-ord-wrap: break-word;">Acknowledged</p></li></ul></li></ul><p>To view, visi=
-t <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/838?usp=3Demail">change =
-838</a>. To unsubscribe, or for help writing mail filters, visit <a href=3D=
-"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope itemty=
-pe=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"action" it=
-emtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http=
-://gerrit.openvpn.net/c/openvpn/+/838?usp=3Demail"/><meta itemprop=3D"name"=
- content=3D"View Change"/></div></div>
+<p> Attention is currently required from: d12fk, plaisthos. </p>
+<p>Patch set 10:<span style=3D"border-radius: 3px; display: inline-block; m=
+argin: 0 2px; padding: 4px;background-color: #ffd4d4;">Code-Review -2</span=
+></p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/839?usp=3Demail">V=
+iew Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: =
+0;"><li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-=
+style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p =
+style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvp=
+n/+/839?tab=3Dcomments">Patch Set #10:</a> </p><p style=3D"white-space: pre=
+-wrap; word-wrap: break-word;">Doesn&#39;t seem to work right now. Script r=
+unner is never used.</p></li></ul></li></ul><p>To view, visit <a href=3D"ht=
+tp://gerrit.openvpn.net/c/openvpn/+/839?usp=3Demail">change 839</a>. To uns=
+ubscribe, or for help writing mail filters, visit <a href=3D"http://gerrit.=
+openvpn.net/settings">settings</a>.</p><div itemscope itemtype=3D"http://sc=
+hema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http:=
+//schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openv=
+pn.net/c/openvpn/+/839?usp=3Demail"/><meta itemprop=3D"name" content=3D"Vie=
+w Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: Ifbe4ffb44d3bfcaa50adb38cacb=
-3436fcdc71b10 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 838 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I6b67e3a00dd84bf348b6af28115=
+ee11138c3a111 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 839 </div>
 <div style=3D"display:none"> Gerrit-PatchSet: 10 </div>
 <div style=3D"display:none"> Gerrit-Owner: d12fk &lt;heiko@...515...&gt; </=
 div>
+<div style=3D"display:none"> Gerrit-Reviewer: MaxF &lt;max@...2606...&gt; <=
+/div>
 <div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
 1...&gt; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
@@ -129,16 +109,14 @@ div>
 ts.sourceforge.net&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
 ..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
-41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Thu, 06 Mar 2025 12:59:38=
+<div style=3D"display:none"> Gerrit-Attention: d12fk &lt;heiko@...515...&gt=
+; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Thu, 06 Mar 2025 13:09:42=
  +0000 </div>
 <div style=3D"display:none"> Gerrit-HasComments: Yes </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: No </div>
-<div style=3D"display:none"> Comment-In-Reply-To: flichtenheld &lt;frank@...1186...=
-.2641...&gt; </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
 <div style=3D"display:none"> Gerrit-MessageType: comment </div>
 
 
---dq0/en29VZE=--
+--J748PZFkGWI=--
 
