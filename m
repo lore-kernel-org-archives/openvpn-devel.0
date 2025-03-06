@@ -1,15 +1,15 @@
-From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Thu, 6 Mar 2025 14:42:34 +0000
+From: "stipa (Code Review)" <gerrit@...515...>
+Date: Thu, 6 Mar 2025 14:55:04 +0000
 In-Reply-To: <gerrit.1741271846000.I6841e2f2a85275254a04e2d8ae3defe4420db8f6@...2715...>
 References: <gerrit.1741271846000.I6841e2f2a85275254a04e2d8ae3defe4420db8f6@...2715...>
-Reply-To: gert@...1296..., arne-openvpn@...1227...,
+Reply-To: lstipakov@...277..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net, frank@...2641...,
- lstipakov@...277...
-Message-ID: <1e20a91c760215b67aa3fbbb9f65a6d29b1afc07-EmailReviewComments-HTML@...2715...>
+ gert@...1296...
+Message-ID: <3d201f97af438aa3f915fd5e73177a37426b956f-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="VMpb1pXkwVo="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="6w+0c/zapMI="; charset=UTF-8
 Subject: [Openvpn-devel] [M] Change in openvpn[master]: Make recursive
  routing check more fine-grained
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -20,40 +20,32 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: stipa <lstipakov@...277...>
-Cc: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Cc: cron2 <gert@...1296...>, plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---VMpb1pXkwVo=
+--6w+0c/zapMI=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: flichtenheld, plaisthos, stipa.
+Attention is currently required from: cron2, flichtenheld, plaisthos.
 
-cron2 has posted comments on this change. ( http://gerrit.openvpn.net/c/ope=
+stipa has posted comments on this change. ( http://gerrit.openvpn.net/c/ope=
 nvpn/+/903?usp=3Demail )
 
 Change subject: Make recursive routing check more fine-grained
 ......................................................................
 
 
-Patch Set 1: Code-Review-2
+Patch Set 1:
 
-(2 comments)
-
-Patchset:
-
-PS1:
-only looked very briefly, but we must avoid doing extra mallocs (gc_arena) =
-for every single packet
-
+(1 comment)
 
 File src/openvpn/forward.c:
 
-http://gerrit.openvpn.net/c/openvpn/+/903/comment/507ab496_f0c079fb :
+http://gerrit.openvpn.net/c/openvpn/+/903/comment/729d6076_8f9866f2 :
 PS1, Line 1389:     struct gc_arena gc =3D gc_new();
-this is in the "for every packet" path, so we should not allocate gc_arenas=
- if we do not need them (which is why it was only in the "print" part so fa=
-r)
+> this is in the "for every packet" path, so we should not allocate gc_aren=
+as if we do not need them ( [=E2=80=A6]
+Oh yes, indeed.
 
 
 
@@ -73,38 +65,32 @@ Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Attention: cron2 <gert@...1296...>
 Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Attention: stipa <lstipakov@...277...>
-Gerrit-Comment-Date: Thu, 06 Mar 2025 14:42:34 +0000
+Gerrit-Comment-Date: Thu, 06 Mar 2025 14:55:04 +0000
 Gerrit-HasComments: Yes
-Gerrit-Has-Labels: Yes
+Gerrit-Has-Labels: No
+Comment-In-Reply-To: cron2 <gert@...1296...>
 Gerrit-MessageType: comment
 
---VMpb1pXkwVo=
+--6w+0c/zapMI=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p> Attention is currently required from: flichtenheld, plaisthos, stipa. <=
+<p> Attention is currently required from: cron2, flichtenheld, plaisthos. <=
 /p>
-<p>Patch set 1:<span style=3D"border-radius: 3px; display: inline-block; ma=
-rgin: 0 2px; padding: 4px;background-color: #ffd4d4;">Code-Review -2</span>=
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/903?usp=3Demail">Vi=
-ew Change</a></p><p>2 comments:</p><ul style=3D"list-style: none; padding: =
-0;"><li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-=
-style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p =
-style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvp=
-n/+/903?tab=3Dcomments">Patch Set #1:</a> </p><p style=3D"white-space: pre-=
-wrap; word-wrap: break-word;">only looked very briefly, but we must avoid d=
-oing extra mallocs (gc_arena) for every single packet</p></li></ul></li><li=
- style=3D"margin: 0; padding: 0;"><p>File src/openvpn/forward.c:</p><ul sty=
-le=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0=
- 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.n=
-et/c/openvpn/+/903/comment/507ab496_f0c079fb">Patch Set #1, Line 1389:</a> =
-<code style=3D"font-family:monospace,monospace">    struct gc_arena gc =3D =
-gc_new();</code></p><p style=3D"white-space: pre-wrap; word-wrap: break-wor=
-d;">this is in the &quot;for every packet&quot; path, so we should not allo=
-cate gc_arenas if we do not need them (which is why it was only in the &quo=
-t;print&quot; part so far)</p></li></ul></li></ul><p>To view, visit <a href=
+<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/903?usp=3Demail">View C=
+hange</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0;"><=
+li style=3D"margin: 0; padding: 0;"><p>File src/openvpn/forward.c:</p><ul s=
+tyle=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0=
+ 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn=
+.net/c/openvpn/+/903/comment/729d6076_8f9866f2">Patch Set #1, Line 1389:</a=
+> <code style=3D"font-family:monospace,monospace">    struct gc_arena gc =
+=3D gc_new();</code></p><p><blockquote style=3D"border-left: 1px solid #aaa=
+; margin: 10px 0; padding: 0 10px;">this is in the &quot;for every packet&q=
+uot; path, so we should not allocate gc_arenas if we do not need them ( [=
+=E2=80=A6]</blockquote></p><p style=3D"white-space: pre-wrap; word-wrap: br=
+eak-word;">Oh yes, indeed.</p></li></ul></li></ul><p>To view, visit <a href=
 =3D"http://gerrit.openvpn.net/c/openvpn/+/903?usp=3Demail">change 903</a>. =
 To unsubscribe, or for help writing mail filters, visit <a href=3D"http://g=
 errit.openvpn.net/settings">settings</a>.</p><div itemscope itemtype=3D"htt=
@@ -131,16 +117,18 @@ defe4420db8f6 </div>
 ts.sourceforge.net&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
 ..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: cron2 &lt;gert@...1296...&gt=
+; </div>
 <div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
 41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: stipa &lt;lstipakov@...1663...=
-.&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Thu, 06 Mar 2025 14:42:34=
+<div style=3D"display:none"> Gerrit-Comment-Date: Thu, 06 Mar 2025 14:55:04=
  +0000 </div>
 <div style=3D"display:none"> Gerrit-HasComments: Yes </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: No </div>
+<div style=3D"display:none"> Comment-In-Reply-To: cron2 &lt;gert@...1296...=
+&gt; </div>
 <div style=3D"display:none"> Gerrit-MessageType: comment </div>
 
 
---VMpb1pXkwVo=--
+--6w+0c/zapMI=--
 
