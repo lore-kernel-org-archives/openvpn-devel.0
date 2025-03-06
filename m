@@ -1,17 +1,16 @@
 From: "d12fk (Code Review)" <gerrit@...515...>
 Date: Thu, 6 Mar 2025 22:15:08 +0000
-In-Reply-To: <gerrit.1733328040000.Id2bed0908e84c19b8fb6fe806376316793e550b4@...2715...>
-References: <gerrit.1733328040000.Id2bed0908e84c19b8fb6fe806376316793e550b4@...2715...>
+In-Reply-To: <gerrit.1733989644000.Ifbe4ffb44d3bfcaa50adb38cacb3436fcdc71b10@...2715...>
+References: <gerrit.1733989644000.Ifbe4ffb44d3bfcaa50adb38cacb3436fcdc71b10@...2715...>
 Reply-To: heiko@...515..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...,
- lstipakov@...277...
-Message-ID: <19f8b1099fe91ff26770d794b93b6b5238cc368a-EmailReplacePatchSet-HTML@...2715...>
+ openvpn-devel@lists.sourceforge.net, frank@...2641...
+Message-ID: <52df75b86a219b2797bb025b07758febf257c76a-EmailReplacePatchSet-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="QrVMnOZj8gM="; charset=UTF-8
-Subject: [Openvpn-devel] [L] Change in openvpn[master]: dns: do not use
- netsh to set name server addresses
+Content-Type: multipart/alternative; boundary="84cSgnFGRNE="; charset=UTF-8
+Subject: [Openvpn-devel] [L] Change in openvpn[master]: dns: apply settings
+ via script on unixoid systems
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,819 +19,2000 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, stipa <lstipakov@...277...>
+To: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---QrVMnOZj8gM=
+--84cSgnFGRNE=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: d12fk, flichtenheld, plaisthos.
+Attention is currently required from: flichtenheld, plaisthos.
 
-Hello flichtenheld, plaisthos, stipa,
+Hello flichtenheld, plaisthos,
 
 I'd like you to reexamine a change. Please visit
 
-    http://gerrit.openvpn.net/c/openvpn/+/825?usp=3Demail
+    http://gerrit.openvpn.net/c/openvpn/+/838?usp=3Demail
 
-to look at the new patch set (#12).
+to look at the new patch set (#11).
 
-The change is no longer submittable: checks~ChecksSubmitRule is unsatisfied=
- now.
+The following approvals got outdated and were removed:
+Code-Review-1 by flichtenheld
 
 
-Change subject: dns: do not use netsh to set name server addresses
+Change subject: dns: apply settings via script on unixoid systems
 ......................................................................
 
-dns: do not use netsh to set name server addresses
+dns: apply settings via script on unixoid systems
 
-Instead of spawning a netsh process, set the name server addresses
-directly in the registry hive of the VPN interface.
+This introduces a new script hook, the dns-script and implements such a
+script for a few popular systems (and a default for the not so popular
+ones). Like the name suggests this script is soleley for dealing with
+modifying how names are resolved when the VPN pushes some --dns
+settings.
 
-This is a first step to get rid of the use of command line tools in the
-service and move to a more API driven style of modifying the VPN adapter
-configuration.
+The default dns script is part of the distribution and is installed with
+openvpn. You can change the path the script is located at as a compile
+time option, defaults to libexecdir. There's also a new runtime option
+--dns-script, which can run a custom script.
 
-Change-Id: Id2bed0908e84c19b8fb6fe806376316793e550b4
+Change-Id: Ifbe4ffb44d3bfcaa50adb38cacb3436fcdc71b10
 Signed-off-by: Heiko Hund <heiko@...2662...>
 ---
-M src/openvpnserv/interactive.c
-1 file changed, 146 insertions(+), 115 deletions(-)
+M .gitignore
+M CMakeLists.txt
+M configure.ac
+M distro/Makefile.am
+A distro/dns-scripts/Makefile.am
+A distro/dns-scripts/haikuos_file-dns-updown.sh
+A distro/dns-scripts/openresolv-dns-updown.sh
+A distro/dns-scripts/resolvconf_file-dns-updown.sh
+A distro/dns-scripts/systemd-dns-updown.sh
+M doc/man-sections/script-options.rst
+M src/openvpn/Makefile.am
+M src/openvpn/dns.c
+M src/openvpn/dns.h
+M src/openvpn/options.c
+14 files changed, 622 insertions(+), 8 deletions(-)
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/25/825/12
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/38/838/11
 
-diff --git a/src/openvpnserv/interactive.c b/src/openvpnserv/interactive.c
-index a76d908..13a6091 100644
---- a/src/openvpnserv/interactive.c
-+++ b/src/openvpnserv/interactive.c
-@@ -1024,65 +1024,6 @@
+diff --git a/.gitignore b/.gitignore
+index db8bb73..04523af 100644
+--- a/.gitignore
++++ b/.gitignore
+@@ -49,6 +49,7 @@
+ /doc/doxygen/latex/
+ /doc/doxygen/openvpn.doxyfile
+ distro/systemd/*.service
++distro/dns-scripts/dns-updown
+ sample/sample-keys/sample-ca/
+ vendor/cmocka_build
+ vendor/dist
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index b04adce..2696691 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -41,7 +41,8 @@
+ option(USE_WERROR "Treat compiler warnings as errors (-Werror)" ON)
+ option(FAKE_ANDROID "Target Android but do not use actual cross compile/An=
+droid cmake to build for simple compile checks on Linux")
+
+-set(PLUGIN_DIR /usr/local/lib/openvpn/plugins CACHE FILEPATH "Location of =
+the plugin directory")
++set(DNS_UPDOWN_PATH "${CMAKE_INSTALL_PREFIX}/libexec/openvpn/dns-updown" C=
+ACHE STRING "Default location for the DNS up/down script")
++set(PLUGIN_DIR "${CMAKE_INSTALL_PREFIX}/lib/openvpn/plugins" CACHE FILEPAT=
+H "Location of the plugin directory")
+
+ # Create machine readable compile commands
+ option(ENABLE_COMPILE_COMMANDS "Generate compile_commands.json and a symli=
+nk for clangd to find it" OFF)
+@@ -577,6 +578,8 @@
+
+ add_library_deps(openvpn)
+
++target_compile_options(openvpn PRIVATE -DDNS_UPDOWN_PATH=3D\"${DNS_UPDOWN_=
+PATH}\")
++
+ if(MINGW)
+     target_compile_options(openvpn PRIVATE -municode -UUNICODE)
+     target_link_options(openvpn PRIVATE -municode)
+diff --git a/configure.ac b/configure.ac
+index 9777e36..45d3ac1 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -315,37 +315,50 @@
+ 	plugindir=3D"\${libdir}/openvpn/plugins"
+ fi
+
++AC_ARG_VAR([SCRIPTDIR], [Path of script directory @<:@default=3DPKGLIBEXEC=
+DIR@:>@])
++if test -n "${SCRIPTDIR}"; then
++	scriptdir=3D"${SCRIPTDIR}"
++else
++	scriptdir=3D"\${pkglibexecdir}"
++fi
++
+ AC_DEFINE_UNQUOTED([TARGET_ALIAS], ["${host}"], [A string representing our=
+ host])
+-AM_CONDITIONAL([TARGET_LINUX], [false])
++AM_CONDITIONAL([ENABLE_DNS_SCRIPT],[true])
+ case "$host" in
+ 	*-*-linux*)
+ 		AC_DEFINE([TARGET_LINUX], [1], [Are we running on Linux?])
+-		AM_CONDITIONAL([TARGET_LINUX], [true])
+ 		AC_DEFINE_UNQUOTED([TARGET_PREFIX], ["L"], [Target prefix])
++		AC_SUBST([DNS_UPDOWN_TYPE], ["systemd"])
+ 		have_sitnl=3D"yes"
+ 		pkg_config_required=3D"yes"
+ 		;;
+ 	*-*-solaris*)
+ 		AC_DEFINE([TARGET_SOLARIS], [1], [Are we running on Solaris?])
+ 		AC_DEFINE_UNQUOTED([TARGET_PREFIX], ["S"], [Target prefix])
++		AC_SUBST([DNS_UPDOWN_TYPE], ["resolvconf_file"])
+ 		CPPFLAGS=3D"$CPPFLAGS -D_XPG4_2"
+ 		test -x /bin/bash && SHELL=3D"/bin/bash"
+ 		;;
+ 	*-*-openbsd*)
+ 		AC_DEFINE([TARGET_OPENBSD], [1], [Are we running on OpenBSD?])
+ 		AC_DEFINE_UNQUOTED([TARGET_PREFIX], ["O"], [Target prefix])
++		AC_SUBST([DNS_UPDOWN_TYPE], ["resolvconf_file"])
+ 		;;
+ 	*-*-freebsd*)
+ 		AC_DEFINE([TARGET_FREEBSD], [1], [Are we running on FreeBSD?])
+ 		AC_DEFINE_UNQUOTED([TARGET_PREFIX], ["F"], [Target prefix])
++		AC_SUBST([DNS_UPDOWN_TYPE], ["openresolv"])
+ 		;;
+ 	*-*-netbsd*)
+ 		AC_DEFINE([TARGET_NETBSD], [1], [Are we running NetBSD?])
+ 		AC_DEFINE_UNQUOTED([TARGET_PREFIX], ["N"], [Target prefix])
++		AC_SUBST([DNS_UPDOWN_TYPE], ["openresolv"])
+ 		;;
+ 	*-*-darwin*)
+ 		AC_DEFINE([TARGET_DARWIN], [1], [Are we running on Mac OS X?])
+ 		AC_DEFINE_UNQUOTED([TARGET_PREFIX], ["M"], [Target prefix])
++		AM_CONDITIONAL([ENABLE_DNS_SCRIPT],[false])
++		AC_SUBST([DNS_UPDOWN_TYPE], ["resolvconf_file"])
+ 		have_tap_header=3D"yes"
+ 		ac_cv_type_struct_in_pktinfo=3Dno
+ 		;;
+@@ -353,6 +366,8 @@
+ 		AC_DEFINE([TARGET_WIN32], [1], [Are we running WIN32?])
+ 		AC_DEFINE([ENABLE_DCO], [1], [DCO is always enabled on Windows])
+ 		AC_DEFINE_UNQUOTED([TARGET_PREFIX], ["W"], [Target prefix])
++		AM_CONDITIONAL([ENABLE_DNS_SCRIPT],[false])
++		AC_SUBST([DNS_UPDOWN_TYPE], ["windows"])
+ 		CPPFLAGS=3D"${CPPFLAGS} -DWIN32_LEAN_AND_MEAN"
+ 		CPPFLAGS=3D"${CPPFLAGS} -DNTDDI_VERSION=3DNTDDI_VISTA -D_WIN32_WINNT=3D_=
+WIN32_WINNT_VISTA"
+ 		WIN32=3Dyes
+@@ -360,10 +375,12 @@
+ 	*-*-dragonfly*)
+ 		AC_DEFINE([TARGET_DRAGONFLY], [1], [Are we running on DragonFlyBSD?])
+ 		AC_DEFINE_UNQUOTED([TARGET_PREFIX], ["D"], [Target prefix])
++		AC_SUBST([DNS_UPDOWN_TYPE], ["openresolv"])
+ 		;;
+ 	*-aix*)
+ 		AC_DEFINE([TARGET_AIX], [1], [Are we running AIX?])
+ 		AC_DEFINE_UNQUOTED([TARGET_PREFIX], ["A"], [Target prefix])
++		AC_SUBST([DNS_UPDOWN_TYPE], ["resolvconf_file"])
+ 		ROUTE=3D"/usr/sbin/route"
+ 		have_tap_header=3D"yes"
+ 		ac_cv_header_net_if_h=3D"no"	# exists, but breaks things
+@@ -371,10 +388,12 @@
+ 	*-*-haiku*)
+ 		AC_DEFINE([TARGET_HAIKU], [1], [Are we running Haiku?])
+ 		AC_DEFINE_UNQUOTED([TARGET_PREFIX], ["H"], [Target prefix])
++		AC_SUBST([DNS_UPDOWN_TYPE], ["haikuos_file"])
+ 		LIBS=3D"${LIBS} -lnetwork"
+ 		;;
+ 	*)
+ 		AC_DEFINE_UNQUOTED([TARGET_PREFIX], ["X"], [Target prefix])
++		AC_SUBST([DNS_UPDOWN_TYPE], ["resolvconf_file"])
+ 		have_tap_header=3D"yes"
+ 		;;
+ esac
+@@ -1505,6 +1524,7 @@
+
+ sampledir=3D"\$(docdir)/sample"
+ AC_SUBST([plugindir])
++AC_SUBST([scriptdir])
+ AC_SUBST([sampledir])
+
+ AC_SUBST([systemdunitdir])
+@@ -1541,6 +1561,7 @@
+ 	Makefile
+ 	distro/Makefile
+ 	distro/systemd/Makefile
++	distro/dns-scripts/Makefile
+ 	doc/Makefile
+ 	doc/doxygen/Makefile
+ 	doc/doxygen/openvpn.doxyfile
+diff --git a/distro/Makefile.am b/distro/Makefile.am
+index 7a588da..b8fb85b 100644
+--- a/distro/Makefile.am
++++ b/distro/Makefile.am
+@@ -13,3 +13,7 @@
+ 	$(srcdir)/Makefile.in
+
+ SUBDIRS =3D systemd
++
++if ENABLE_DNS_SCRIPT
++SUBDIRS +=3D dns-scripts
++endif
+diff --git a/distro/dns-scripts/Makefile.am b/distro/dns-scripts/Makefile.am
+new file mode 100644
+index 0000000..ec7bfde
+--- /dev/null
++++ b/distro/dns-scripts/Makefile.am
+@@ -0,0 +1,28 @@
++#
++#  OpenVPN -- An application to securely tunnel IP networks
++#             over a single UDP port, with support for SSL/TLS-based
++#             session authentication and key exchange,
++#             packet encryption, packet authentication, and
++#             packet compression.
++#
++#  Copyright (C) 2002-2024 OpenVPN Inc <sales@...515...>
++#
++
++MAINTAINERCLEANFILES =3D \
++	$(srcdir)/Makefile.in
++
++EXTRA_DIST =3D \
++	systemd-dns-updown.sh \
++	openresolv-dns-updown.sh \
++	haikuos_file-dns-updown.sh \
++	resolvconf_file-dns-updown.sh
++
++script_SCRIPTS =3D \
++	dns-updown
++
++CLEANFILES =3D $(script_SCRIPTS)
++
++dns-updown: @DNS_UPDOWN_TYPE@...2841...
++	cp ${srcdir}/@DNS_UPDOWN_TYPE@...2841... $@
++
++all: $(script_SCRIPTS)
+diff --git a/distro/dns-scripts/haikuos_file-dns-updown.sh b/distro/dns-scr=
+ipts/haikuos_file-dns-updown.sh
+new file mode 100644
+index 0000000..1b03e9c
+--- /dev/null
++++ b/distro/dns-scripts/haikuos_file-dns-updown.sh
+@@ -0,0 +1,84 @@
++#!/bin/sh
++#
++# Simple OpenVPN up/down script for modifying Haiku OS resolv.conf
++# (C) Copyright 2024 OpenVPN Inc <sales@...515...>
++#
++# SPDX-License-Identifier: BSD-2-Clause
++#
++# Example env from openvpn (most are not applied):
++#
++#   dev tun0
++#   script-type dns-up
++#   dns_search_domain_1 mycorp.in
++#   dns_search_domain_2 eu.mycorp.com
++#   dns_server_1_address_1 192.168.99.254
++#   dns_server_1_address_2 fd00::99:53
++#   dns_server_1_port_1 53
++#   dns_server_1_port_2 53
++#   dns_server_1_resolve_domain_1 mycorp.in
++#   dns_server_1_resolve_domain_2 eu.mycorp.com
++#   dns_server_1_dnssec true
++#   dns_server_1_transport DoH
++#   dns_server_1_sni dns.mycorp.in
++#
++
++set -e +u
++
++conly_standard_server_ports() {
++    i=3D1
++    while true; do
++        eval addr=3D\"\$dns_server_${n}_address_${i}\"
++        [ -n "$addr" ] || return 0
++
++        eval port=3D\"\$dns_server_${n}_port_${i}\"
++        [ -z "$port" -o "$port" =3D "53" ] || return 1
++
++        i=3D$(expr $i + 1)
++    done
++}
++
++onf=3D/boot/system/settings/network/resolv.conf
++test -e "$conf" || exit 1
++case "${script_type}" in
++dns-up)
++    n=3D1
++    while :; do
++        eval addr=3D\"\$dns_server_${n}_address_1\"
++        [ -n "$addr" ] || {
++            echo "setting DNS failed, no compatible server profile"
++            exit 1
++        }
++
++        # Skip server profiles which require DNSSEC,
++        # secure transport or use a custom port
++        eval dnssec=3D\"\$dns_server_${n}_dnssec\"
++        eval transport=3D\"\$dns_server_${n}_transport\"
++        [ -z "$transport" -o "$transport" =3D "plain" ] \
++            && [ -z "$dnssec" -o "$dnssec" =3D "no" ] \
++            && only_standard_server_ports && break
++
++        n=3D$(expr $n + 1)
++    done
++
++    eval addr1=3D\"\$dns_server_${n}_address_1\"
++    eval addr2=3D\"\$dns_server_${n}_address_2\"
++    eval addr3=3D\"\$dns_server_${n}_address_3\"
++    text=3D"### openvpn ${dev} begin ###\n"
++    text=3D"${text}nameserver $addr1\n"
++    test -z "$addr2" || text=3D"${text}nameserver $addr2\n"
++    test -z "$addr3" || text=3D"${text}nameserver $addr3\n"
++
++    test -z "$dns_search_domain_1" || {
++        for i in $(seq 1 6); do
++            eval domains=3D\"$domains\$dns_search_domain_${i} \" || break
++        done
++        text=3D"${text}search $domains\n"
++    }
++    text=3D"${text}### openvpn ${dev} end ###"
++
++    sed -i "1i${text}" "$conf"
++    ;;
++dns-down)
++    sed -i "/### openvpn ${dev} begin ###/,/### openvpn ${dev} end ###/d" =
+"$conf"
++    ;;
++esac
+diff --git a/distro/dns-scripts/openresolv-dns-updown.sh b/distro/dns-scrip=
+ts/openresolv-dns-updown.sh
+new file mode 100644
+index 0000000..1b218f5
+--- /dev/null
++++ b/distro/dns-scripts/openresolv-dns-updown.sh
+@@ -0,0 +1,89 @@
++#!/bin/sh
++#
++# Simple OpenVPN up/down script for openresolv integration
++# (C) Copyright 2016 Baptiste Daroussin
++#               2024 OpenVPN Inc <sales@...515...>
++#
++# SPDX-License-Identifier: BSD-2-Clause
++#
++# Example env from openvpn (most are not applied):
++#
++#   dev tun0
++#   script-type dns-up
++#   dns_search_domain_1 mycorp.in
++#   dns_search_domain_2 eu.mycorp.com
++#   dns_server_1_address_1 192.168.99.254
++#   dns_server_1_address_2 fd00::99:53
++#   dns_server_1_port_1 53
++#   dns_server_1_port_2 53
++#   dns_server_1_resolve_domain_1 mycorp.in
++#   dns_server_1_resolve_domain_2 eu.mycorp.com
++#   dns_server_1_dnssec true
++#   dns_server_1_transport DoH
++#   dns_server_1_sni dns.mycorp.in
++#
++
++set -e +u
++
++only_standard_server_ports() {
++    i=3D1
++    while true; do
++        eval addr=3D\"\$dns_server_${n}_address_${i}\"
++        [ -n "$addr" ] || return 0
++
++        eval port=3D\"\$dns_server_${n}_port_${i}\"
++        [ -z "$port" -o "$port" =3D "53" ] || return 1
++
++        i=3D$(expr $i + 1)
++    done
++}
++
++: ${script_type:=3Ddns-down}
++case "${script_type}" in
++dns-up)
++    n=3D1
++    while :; do
++        eval addr=3D\"\$dns_server_${n}_address_1\"
++        [ -n "$addr" ] || {
++            echo "setting DNS failed, no compatible server profile"
++            exit 1
++        }
++
++        # Skip server profiles which require DNSSEC,
++        # secure transport or use a custom port
++        eval dnssec=3D\"\$dns_server_${n}_dnssec\"
++        eval transport=3D\"\$dns_server_${n}_transport\"
++        [ -z "$transport" -o "$transport" =3D "plain" ] \
++            && [ -z "$dnssec" -o "$dnssec" =3D "no" ] \
++            && only_standard_server_ports && break
++
++        n=3D$(expr $n + 1)
++    done
++
++    {
++        i=3D1
++        maxns=3D3
++        while :; do
++            maxns=3D$((maxns - 1))
++            [ $maxns -gt 0 ] || break
++            eval option=3D\"\$dns_server_${n}_address_${i}\" || break
++            [ "${option}" ] || break
++            i=3D$((i + 1))
++            echo "nameserver ${option}"
++        done
++        i=3D1
++        maxdom=3D6
++        while :; do
++            maxdom=3D$((maxdom - 1))
++            [ $maxdom -gt 0 ] || break
++            eval option=3D\"\$dns_search_domain_${i}\" || break
++            [ "${option}" ] || break
++            i=3D$((i + 1))
++            echo "search ${option}"
++        done
++    } | /sbin/resolvconf -a "${dev}"
++    ;;
++dns-down)
++    /sbin/resolvconf -d "${dev}" -f
++    ;;
++esac
+diff --git a/distro/dns-scripts/resolvconf_file-dns-updown.sh b/distro/dns-=
+scripts/resolvconf_file-dns-updown.sh
+new file mode 100644
+index 0000000..c469490
+--- /dev/null
++++ b/distro/dns-scripts/resolvconf_file-dns-updown.sh
+@@ -0,0 +1,84 @@
++#!/bin/sh
++#
++# Simple OpenVPN up/down script for modifying /etc/resolv.conf
++# (C) Copyright 2024 OpenVPN Inc <sales@...515...>
++#
++# SPDX-License-Identifier: BSD-2-Clause
++#
++# Example env from openvpn (most are not applied):
++#
++#   dev tun0
++#   script-type dns-up
++#   dns_search_domain_1 mycorp.in
++#   dns_search_domain_2 eu.mycorp.com
++#   dns_server_1_address_1 192.168.99.254
++#   dns_server_1_address_2 fd00::99:53
++#   dns_server_1_port_1 53
++#   dns_server_1_port_2 53
++#   dns_server_1_resolve_domain_1 mycorp.in
++#   dns_server_1_resolve_domain_2 eu.mycorp.com
++#   dns_server_1_dnssec true
++#   dns_server_1_transport DoH
++#   dns_server_1_sni dns.mycorp.in
++#
++
++set -e +u
++
++only_standard_server_ports() {
++    i=3D1
++    while true; do
++        eval addr=3D\"\$dns_server_${n}_address_${i}\"
++        [ -n "$addr" ] || return 0
++
++        eval port=3D\"\$dns_server_${n}_port_${i}\"
++        [ -z "$port" -o "$port" =3D "53" ] || return 1
++
++        i=3D$(expr $i + 1)
++    done
++}
++
++conf=3D/etc/resolv.conf
++test -e "$conf" || exit 1
++case "${script_type}" in
++dns-up)
++    n=3D1
++    while :; do
++        eval addr=3D\"\$dns_server_${n}_address_1\"
++        [ -n "$addr" ] || {
++            echo "setting DNS failed, no compatible server profile"
++            exit 1
++        }
++
++        # Skip server profiles which require DNSSEC,
++        # secure transport or use a custom port
++        eval dnssec=3D\"\$dns_server_${n}_dnssec\"
++        eval transport=3D\"\$dns_server_${n}_transport\"
++        [ -z "$transport" -o "$transport" =3D "plain" ] \
++            && [ -z "$dnssec" -o "$dnssec" =3D "no" ] \
++            && only_standard_server_ports && break
++
++        n=3D$(expr $n + 1)
++    done
++
++    eval addr1=3D\"\$dns_server_${n}_address_1\"
++    eval addr2=3D\"\$dns_server_${n}_address_2\"
++    eval addr3=3D\"\$dns_server_${n}_address_3\"
++    text=3D"### openvpn ${dev} begin ###\n"
++    text=3D"${text}nameserver $addr1\n"
++    test -z "$addr2" || text=3D"${text}nameserver $addr2\n"
++    test -z "$addr3" || text=3D"${text}nameserver $addr3\n"
++
++    test -z "$dns_search_domain_1" || {
++        for i in $(seq 1 6); do
++            eval domains=3D\"$domains\$dns_search_domain_${i} \" || break
++        done
++        text=3D"${text}search $domains\n"
++    }
++    text=3D"${text}### openvpn ${dev} end ###"
++
++    sed -i "1i${text}" "$conf"
++    ;;
++dns-down)
++    sed -i "/### openvpn ${dev} begin ###/,/### openvpn ${dev} end ###/d" =
+"$conf"
++    ;;
++esac
+diff --git a/distro/dns-scripts/systemd-dns-updown.sh b/distro/dns-scripts/=
+systemd-dns-updown.sh
+new file mode 100644
+index 0000000..69bbebf
+--- /dev/null
++++ b/distro/dns-scripts/systemd-dns-updown.sh
+@@ -0,0 +1,194 @@
++#!/bin/bash
++#
++# dns-updown - add/remove openvpn provided DNS information
++#
++# Copyright (C) 2024 OpenVPN Inc <sales@...515...>
++#
++# SPDX-License-Identifier: GPL-2.0
++#
++# Add/remove openvpn DNS settings from the env into/from
++# the system. Supported backends in this order:
++#
++#   * systemd-resolved
++#   * resolvconf
++#
++# Example env from openvpn (not all are always applied):
++#
++#   dev tun0
++#   script-type dns-up
++#   dns_search_domain_1 mycorp.in
++#   dns_search_domain_2 eu.mycorp.com
++#   dns_server_1_address_1 192.168.99.254
++#   dns_server_1_address_2 fd00::99:53
++#   dns_server_1_port_1 53
++#   dns_server_1_port_2 53
++#   dns_server_1_resolve_domain_1 mycorp.in
++#   dns_server_1_resolve_domain_2 eu.mycorp.com
++#   dns_server_1_dnssec true
++#   dns_server_1_transport DoH
++#   dns_server_1_sni dns.mycorp.in
++#
++
++function do_resolved_servers {
++    local sni=3D""
++    local transport_var=3Ddns_server_${n}_transport
++    local sni_var=3Ddns_server_${n}_sni
++    [ "${!transport_var}" =3D "DoT" ] && sni=3D"#${!sni_var}"
++
++    local i=3D1
++    local addrs=3D""
++    while :; do
++        local addr_var=3Ddns_server_${n}_address_${i}
++        local addr=3D"${!addr_var}"
++        [ -n "$addr" ] || break
++
++        local port_var=3Ddns_server_${n}_port_${i}
++        if [ -n "${!port_var}" ]; then
++            if [[ "$addr" =3D~ : ]]; then
++                addr=3D"[$addr]"
++            fi
++            addrs+=3D"${addr}:${!port_var}${sni} "
++        else
++            addrs+=3D"${addr}${sni} "
++        fi
++        i=3D$((i+1))
++    done
++
++    resolvectl dns "$dev" $addrs
++}
++
++function do_resolved_domains {
++    local list=3D""
++    for domain_var in ${!dns_search_domain_*}; do
++        list+=3D"${!domain_var} "
++    done
++    local domain_var=3Ddns_server_${n}_resolve_domain_1
++    if [ -z "${!domain_var}" ]; then
++        resolvectl default-route "$dev" true
++        list+=3D"~."
++    else
++        resolvectl default-route "$dev" false
++        local i=3D1
++        while :; do
++            domain_var=3Ddns_server_${n}_resolve_domain_${i}
++            [ -n "${!domain_var}" ] || break
++            # Add as split domain (~ prefix), if it doesn't already exist
++            [[ "$list" =3D~ (^| )"${!domain_var}"( |$) ]] \
++                || list+=3D"~${!domain_var} "
++            i=3D$((i+1))
++        done
++    fi
++
++    resolvectl domain "$dev" $list
++}
++
++function do_resolved_dnssec {
++    local dnssec_var=3Ddns_server_${n}_dnssec
++    if [ "${!dnssec_var}" =3D "optional" ]; then
++        resolvectl dnssec "$dev" allow-downgrade
++    elif [ "${!dnssec_var}" =3D "yes" ]; then
++        resolvectl dnssec "$dev" true
++    else
++        resolvectl dnssec "$dev" false
++    fi
++}
++
++function do_resolved_dnsovertls {
++    local transport_var=3Ddns_server_${n}_transport
++    if [ "${!transport_var}" =3D "DoT" ]; then
++        resolvectl dnsovertls "$dev" true
++    else
++        resolvectl dnsovertls "$dev" false
++    fi
++}
++
++function do_resolved {
++    [[ "$(readlink /etc/resolv.conf)" =3D~ systemd ]] || return 1
++
++    n=3D1
++    while :; do
++        local addr_var=3Ddns_server_${n}_address_1
++        [ -n "${!addr_var}" ] || {
++            echo "setting DNS failed, no compatible server profile"
++            return 1
++        }
++
++        # Skip server profiles which require DNS-over-HTTPS
++        local transport_var=3Ddns_server_${n}_transport
++        [ -n "${!transport_var}" -a "${!transport_var}" =3D "DoH" ] || bre=
+ak
++
++        n=3D$((n+1))
++    done
++
++    if [ "$script_type" =3D "dns-up" ]; then
++        echo "setting DNS using resolvectl"
++        do_resolved_servers
++        do_resolved_domains
++        do_resolved_dnssec
++        do_resolved_dnsovertls
++    else
++        echo "unsetting DNS using resolvectl"
++        resolvectl revert "$dev"
++    fi
++
++    return 0
++}
++
++function only_standard_server_ports {
++    local i=3D1
++    while :; do
++        local addr_var=3Ddns_server_${n}_address_${i}
++        [ -n "${!addr_var}" ] || return 0
++
++        local port_var=3Ddns_server_${n}_port_${i}
++        [ -z "${!port_var}" -o "${!port_var}" =3D "53" ] || return 1
++
++        i=3D$((i+1))
++    done
++}
++
++function do_resolvconf {
++    [ -x /sbin/resolvconf ] || return 1
++
++    n=3D1
++    while :; do
++        local server_addr_var=3Ddns_server_${n}_address_1
++        [ -n "${!server_addr_var}" ] || {
++            echo "setting DNS failed, no compatible server profile"
++            return 1
++        }
++
++        # Skip server profiles which require DNSSEC,
++        # secure transport or use a custom port
++        local dnssec_var=3Ddns_server_${n}_dnssec
++        local transport_var=3Ddns_server_${n}_transport
++        [ -z "${!transport_var}" -o "${!transport_var}" =3D "plain" ] \
++            && [ -z "${!dnssec_var}" -o "${!dnssec_var}" =3D "no" ] \
++            && only_standard_server_ports && break
++
++        n=3D$((n+1))
++    done
++
++    if [ "$script_type" =3D "dns-up" ]; then
++        echo "setting DNS using resolvconf"
++        local domains=3D""
++        for domain_var in ${!dns_search_domain_*}; do
++            domains+=3D"${!domain_var} "
++        done
++        {
++            local maxns=3D3
++            for addr_var in ${!dns_server_1_address_*}; do
++                [ $((maxns--)) -gt 0 ] || break
++                echo "nameserver ${!addr_var}"
++            done
++            [ -z "$domains" ] || echo "search $domains"
++        } | /sbin/resolvconf -a "$dev"
++    else
++        echo "unsetting DNS using resolvconf"
++        /sbin/resolvconf -d "$dev"
++    fi
++
++    return 0
++}
++
++do_resolved || do_resolvconf
+diff --git a/doc/man-sections/script-options.rst b/doc/man-sections/script-=
+options.rst
+index 0d1f9ae..b758da4 100644
+--- a/doc/man-sections/script-options.rst
++++ b/doc/man-sections/script-options.rst
+@@ -8,9 +8,13 @@
+ Script Order of Execution
+ -------------------------
+
++#. ``--dns-script``
++
++   Executed after TCP/UDP socket bind and TUN/TAP open, before ``--up``.
++
+ #. ``--up``
+
+-   Executed after TCP/UDP socket bind and TUN/TAP open.
++   Executed after TCP/UDP socket bind and TUN/TAP open, after ``--dns-scri=
+pt``.
+
+ #. ``--tls-verify``
+
+@@ -38,9 +42,13 @@
+
+    Executed in ``--mode server`` mode on client instance shutdown.
+
++#. ``--dns-script``
++
++   Executed before TCP/UDP and TUN/TAP close, before ``--down``.
++
+ #. ``--down``
+
+-   Executed after TCP/UDP and TUN/TAP close.
++   Executed after TCP/UDP and TUN/TAP close, after ``--dns-script``.
+
+ #. ``--learn-address``
+
+@@ -173,7 +181,7 @@
+         client-crresponse cmd
+
+   OpenVPN will write the response of the client into a temporary file.
+-  The filename will be passed as an argument to ``cmd``, and the file will=
+ be
++  The filename will be passed as an argument to ``cmd``, and the file will
+   automatically deleted by OpenVPN after the script returns.
+
+   The response is passed as is from the client. The script needs to check
+@@ -235,6 +243,23 @@
+   The ``--client-disconnect`` command is not passed any extra arguments
+   (only those arguments specified in cmd, if any).
+
++--dns-script cmd | disable
++  Run command ``cmd``, instead of the default DNS command that comes with
++  openvpn. If ``cmd`` is ``disable`` no command is executed to set ``--dns=
+``
++  options. If you write your own command, please make sure to ignore ``--d=
+ns``
++  server profiles that cannot be applied. Port, DNSSEC and secure transport
++  settings need to be adhered to. If split DNS is not possible a full redi=
+rect
++  can be used as a fallback. If not all of the server addresses or search =
+domains
++  can be configured, apply them on the order they are listed in.
++
++  Note that ``--dns-script`` is not supported on Windows. DNS will
++  always be set by the service there.
++
++  Note that DNS-related ``--dhcp-option``s will not be handled by this hoo=
+k.
++  If any ``--dns server`` option is present, DNS-related ``--dhcp-option``=
+s will
++  be ignored. Otherwise foreign_option environment variables will be passe=
+d to
++   ``--up`` and ``--down`` hooks for backward compatibility.
++
+ --down cmd
+   Run command ``cmd`` after TUN/TAP device close (post ``--user`` UID
+   change and/or ``--chroot`` ). ``cmd`` consists of a path to script (or
+@@ -661,7 +686,7 @@
+     names). Set prior to ``--up`` or ``--down`` script execution.
+
+ :code:`dns_*`
+-    The ``--dns`` configuration options will be made available to script
++    The ``--dns`` configuration options will be made available to ``--dns-=
+script``
+     execution through this set of environment variables. Variables appear
+     only if the corresponding option has a value assigned. For the semanti=
+cs
+     of each individual variable, please refer to the documentation for ``-=
+-dns``.
+diff --git a/src/openvpn/Makefile.am b/src/openvpn/Makefile.am
+index 37af683..6664aae 100644
+--- a/src/openvpn/Makefile.am
++++ b/src/openvpn/Makefile.am
+@@ -30,7 +30,8 @@
+ 	$(OPTIONAL_LZ4_CFLAGS) \
+ 	$(OPTIONAL_PKCS11_HELPER_CFLAGS) \
+ 	$(OPTIONAL_INOTIFY_CFLAGS) \
+-	-DPLUGIN_LIBDIR=3D\"${plugindir}\"
++	-DPLUGIN_LIBDIR=3D\"${plugindir}\" \
++	-DDNS_UPDOWN_PATH=3D\"${scriptdir}/dns-updown\"
+
+ if WIN32
+ # we want unicode entry point but not the macro
+diff --git a/src/openvpn/dns.c b/src/openvpn/dns.c
+index b6e524f..6a4669f 100644
+--- a/src/openvpn/dns.c
++++ b/src/openvpn/dns.c
+@@ -30,6 +30,7 @@
+ #include "dns.h"
+ #include "socket.h"
+ #include "options.h"
++#include "run_command.h"
+
+ #ifdef _WIN32
+ #include "win32.h"
+@@ -262,6 +263,8 @@
+     clone.search_domains =3D clone_dns_domains(o->search_domains, gc);
+     clone.servers =3D clone_dns_servers(o->servers, gc);
+     clone.servers_prepull =3D clone_dns_servers(o->servers_prepull, gc);
++    clone.script =3D o->script;
++    clone.user_defined_script =3D o->user_defined_script;
+
+     return clone;
  }
+@@ -548,6 +551,54 @@
+     send_msg_iservice(o->msg_channel, &nrpt, sizeof(nrpt), &ack, "DNS");
+ }
+
++#else /* ifdef _WIN32 */
++
++static void
++script_env_set(bool up, const struct dns_options *o, const struct tuntap *=
+tt, struct env_set *es)
++{
++    setenv_str(es, "dev", tt->actual_name);
++    setenv_str(es, "script_type", up ? "dns-up" : "dns-down");
++    setenv_dns_options(o, es);
++}
++
++static int
++do_run_up_down_script(bool up, const struct dns_options *o, const struct t=
+untap *tt)
++{
++    struct gc_arena gc =3D gc_new();
++    struct argv argv =3D argv_new();
++    struct env_set *es =3D env_set_create(&gc);
++
++    script_env_set(up, o, tt, es);
++
++    argv_printf(&argv, "%s", o->script);
++    argv_msg(M_INFO, &argv);
++    int res;
++    if (o->user_defined_script)
++    {
++        res =3D openvpn_run_script(&argv, es, S_EXITCODE, "dns script");
++    }
++    else
++    {
++        res =3D openvpn_execve_check(&argv, es, S_EXITCODE, "WARNING: Fail=
+ed running dns script");
++    }
++    argv_free(&argv);
++    gc_free(&gc);
++    return res;
++}
++
++static void
++run_up_down_script(bool up, struct options *o, const struct tuntap *tt)
++{
++    if (!o->dns_options.script)
++    {
++        return;
++    }
++
++    int status;
++    status =3D do_run_up_down_script(up, &o->dns_options, tt);
++    msg(M_INFO, "dns script exited with status %d", status);
++}
++
+ #endif /* _WIN32 */
+
+ void
+@@ -666,5 +717,7 @@
+
+ #ifdef _WIN32
+     run_up_down_service(up, o, tt);
++#else
++    run_up_down_script(up, o, tt);
+ #endif /* ifdef _WIN32 */
+ }
+diff --git a/src/openvpn/dns.h b/src/openvpn/dns.h
+index f24e30b..38ced79 100644
+--- a/src/openvpn/dns.h
++++ b/src/openvpn/dns.h
+@@ -73,6 +73,8 @@
+     struct dns_server *servers_prepull;
+     struct dns_server *servers;
+     struct gc_arena gc;
++    const char *script;
++    bool user_defined_script;
+ };
 
  /**
-- * Run the command: netsh interface $proto $action dns $if_name $addr [val=
-idate=3Dno]
-- * @param  action      "delete" or "add"
-- * @param  proto       "ipv6" or "ip"
-- * @param  if_name     "name_of_interface"
-- * @param  addr         IPv4 (for proto =3D ip) or IPv6 address as a string
-- *
-- * If addr is null and action =3D "delete" all addresses are deleted.
-- */
--static DWORD
--netsh_dns_cmd(const wchar_t *action, const wchar_t *proto, const wchar_t *=
-if_name, const wchar_t *addr)
--{
--    DWORD err =3D 0;
--    int timeout =3D 30000; /* in msec */
--    wchar_t argv0[MAX_PATH];
--    wchar_t *cmdline =3D NULL;
--
--    if (!addr)
--    {
--        if (wcscmp(action, L"delete") =3D=3D 0)
--        {
--            addr =3D L"all";
--        }
--        else /* nothing to do -- return success*/
--        {
--            goto out;
--        }
--    }
--
--    /* Path of netsh */
--    swprintf(argv0, _countof(argv0), L"%ls\\%ls", get_win_sys_path(), L"ne=
-tsh.exe");
--
--    /* cmd template:
--     * netsh interface $proto $action dns $if_name $addr [validate=3Dno]
--     */
--    const wchar_t *fmt =3D L"netsh interface %ls %ls dns \"%ls\" %ls";
--
--    /* max cmdline length in wchars -- include room for worst case and som=
-e */
--    size_t ncmdline =3D wcslen(fmt) + wcslen(if_name) + wcslen(addr) + 32 =
-+ 1;
--    cmdline =3D malloc(ncmdline*sizeof(wchar_t));
--    if (!cmdline)
--    {
--        err =3D ERROR_OUTOFMEMORY;
--        goto out;
--    }
--
--    swprintf(cmdline, ncmdline, fmt, proto, action, if_name, addr);
--
--    if (IsWindows7OrGreater())
--    {
--        wcscat_s(cmdline, ncmdline, L" validate=3Dno");
--    }
--    err =3D ExecCommand(argv0, cmdline, timeout);
--
--out:
--    free(cmdline);
--    return err;
--}
--
--/**
-  * Run the command: netsh interface ip $action wins $if_name [static] $addr
-  * @param  action      "delete", "add" or "set"
-  * @param  if_name     "name_of_interface"
-@@ -1139,22 +1080,6 @@
-     return err;
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index 11a19bb..48fefb2 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -528,6 +528,7 @@
+     "                  sni <domain> : DNS server name indication\n"
+     "--dns search-domains <domain> [domain ...]:\n"
+     "                  Add domains to DNS domain search list\n"
++    "--dns-script cmd : Run cmd as user defined dns configuration script\n"
+     "--auth-retry t  : How to handle auth failures.  Set t to\n"
+     "                  none (default), interact, or nointeract.\n"
+     "--static-challenge t e [<scrv1|concat>]: Enable static challenge/resp=
+onse protocol using\n"
+@@ -919,6 +920,8 @@
+ #ifndef ENABLE_DCO
+     o->disable_dco =3D true;
+ #endif /* ENABLE_DCO */
++
++    o->dns_options.script =3D DNS_UPDOWN_PATH;
  }
 
--/* Delete all IPv4 or IPv6 dns servers for an interface */
--static DWORD
--DeleteDNS(short family, wchar_t *if_name)
--{
--    wchar_t *proto =3D (family =3D=3D AF_INET6) ? L"ipv6" : L"ip";
--    return netsh_dns_cmd(L"delete", proto, if_name, NULL);
--}
--
--/* Add an IPv4 or IPv6 dns server to an interface */
--static DWORD
--AddDNS(short family, wchar_t *if_name, wchar_t *addr)
--{
--    wchar_t *proto =3D (family =3D=3D AF_INET6) ? L"ipv6" : L"ip";
--    return netsh_dns_cmd(L"add", proto, if_name, addr);
--}
--
- static BOOL
- CmpWString(LPVOID item, LPVOID str)
- {
-@@ -1818,11 +1743,115 @@
-     return err;
- }
-
-+/**
-+ * Return the interfaces registry key for the specified address family
-+ *
-+ * @param family    the internet address family to open the key for
-+ * @param key       PHKEY to return the key in
-+ * @return BOOL to indicate success or failure
-+ */
-+static BOOL
-+GetInterfacesKey(short family, PHKEY key)
-+{
-+    PCSTR itfs_key =3D family =3D=3D AF_INET6
-+        ? "SYSTEM\\CurrentControlSet\\Services\\Tcpip6\\Parameters\\Interf=
-aces"
-+        : "SYSTEM\\CurrentControlSet\\Services\\Tcpip\\Parameters\\Interfa=
-ces";
-+
-+    LSTATUS err =3D RegOpenKeyExA(HKEY_LOCAL_MACHINE, itfs_key, 0, KEY_ALL=
-_ACCESS, key);
-+    if (err)
-+    {
-+        *key =3D INVALID_HANDLE_VALUE;
-+        MsgToEventLog(M_SYSERR, TEXT("GetInterfacesKey: "
-+                                     "could not open interfaces registry k=
-ey for family %d (%lu)"),
-+                      family, err);
-+    }
-+
-+    return err ? FALSE : TRUE;
-+}
-+
-+/**
-+ * Set the DNS name servers in a registry interface configuration
-+ *
-+ * @param itf_id    the interface id to set the servers for
-+ * @param family    internet address family to set the servers for
-+ * @param value     the value to set the name servers to
-+ *
-+ * @return DWORD NO_ERROR on success, a Windows error code otherwise
-+ */
-+static DWORD
-+SetNameServersValue(PCWSTR itf_id, short family, PCSTR value)
-+{
-+    DWORD err;
-+
-+    HKEY itfs;
-+    if (!GetInterfacesKey(family, &itfs))
-+    {
-+        return ERROR_FILE_NOT_FOUND;
-+    }
-+
-+    HKEY itf =3D INVALID_HANDLE_VALUE;
-+    err =3D RegOpenKeyExW(itfs, itf_id, 0, KEY_ALL_ACCESS, &itf);
-+    if (err)
-+    {
-+        MsgToEventLog(M_SYSERR, TEXT("SetNameServersValue: "
-+                                     "could not open interface key for %s =
-family %d (%lu)"),
-+                      itf_id, family, err);
-+        goto out;
-+    }
-+
-+    err =3D RegSetValueExA(itf, "NameServer", 0, REG_SZ, (PBYTE)value, str=
-len(value) + 1);
-+    if (err)
-+    {
-+        MsgToEventLog(M_SYSERR, TEXT("SetNameServersValue: "
-+                                     "could not set name servers '%S' for =
-%s family %d (%lu)"),
-+                      value, itf_id, family, err);
-+    }
-+
-+out:
-+    if (itf !=3D INVALID_HANDLE_VALUE)
-+    {
-+        RegCloseKey(itf);
-+    }
-+    if (itfs !=3D INVALID_HANDLE_VALUE)
-+    {
-+        RegCloseKey(itfs);
-+    }
-+    return err;
-+}
-+
-+/**
-+ * Set the DNS name servers in a registry interface configuration
-+ *
-+ * @param itf_id    the interface id to set the servers for
-+ * @param family    internet address family to set the servers for
-+ * @param addrs     comma separated list of name server addresses
-+ *
-+ * @return DWORD NO_ERROR on success, a Windows error code otherwise
-+ */
-+static DWORD
-+SetNameServers(PCWSTR itf_id, short family, PCSTR addrs)
-+{
-+    return SetNameServersValue(itf_id, family, addrs);
-+}
-+
-+/**
-+ * Delete all DNS name servers from a registry interface configuration
-+ *
-+ * @param itf_id    the interface id to clear the servers for
-+ * @param family    internet address family to clear the servers for
-+ *
-+ * @return DWORD NO_ERROR on success, a Windows error code otherwise
-+ */
-+static DWORD
-+ResetNameServers(PCWSTR itf_id, short family)
-+{
-+    return SetNameServersValue(itf_id, family, "");
-+}
-+
- static DWORD
- HandleDNSConfigMessage(const dns_cfg_message_t *msg, undo_lists_t *lists)
- {
-     DWORD err =3D 0;
--    wchar_t addr[46]; /* large enough to hold string representation of an =
-ipv4 / ipv6 address */
-     undo_type_t undo_type =3D (msg->family =3D=3D AF_INET6) ? undo_dns4 : =
-undo_dns6;
-     int addr_len =3D msg->addr_len;
-
-@@ -1844,10 +1873,11 @@
-         msgptr->domains[_countof(msg->domains)-1] =3D '\0';
+ void
+@@ -8194,6 +8197,28 @@
+         to->ip_win32_defined =3D true;
      }
-
--    wchar_t *wide_name =3D utf8to16(msg->iface.name); /* utf8 to wide-char=
- */
--    if (!wide_name)
-+    WCHAR iid[64];
-+    err =3D InterfaceIdString(msg->iface.name, iid, _countof(iid));
-+    if (err)
-     {
--        return ERROR_OUTOFMEMORY;
-+        return err;
-     }
-
-     /* We delete all current addresses before adding any
-@@ -1855,12 +1885,12 @@
-      */
-     if (addr_len > 0 || msg->header.type =3D=3D msg_del_dns_cfg)
-     {
--        err =3D DeleteDNS(msg->family, wide_name);
-+        err =3D ResetNameServers(iid, msg->family);
-         if (err)
-         {
--            goto out;
-+            return err;
-         }
--        free(RemoveListItem(&(*lists)[undo_type], CmpWString, wide_name));
-+        free(RemoveListItem(&(*lists)[undo_type], CmpAny, iid));
-     }
-
-     if (msg->header.type =3D=3D msg_del_dns_cfg)
-@@ -1872,40 +1902,43 @@
-             err =3D SetDnsSearchDomains(msg->iface.name, NULL, &gpol, list=
-s);
-         }
-         ApplyDnsSettings(gpol);
--        goto out;  /* job done */
-+        return err;  /* job done */
-     }
-
--    for (int i =3D 0; i < addr_len; ++i)
--    {
--        if (msg->family =3D=3D AF_INET6)
--        {
--            RtlIpv6AddressToStringW(&msg->addr[i].ipv6, addr);
--        }
--        else
--        {
--            RtlIpv4AddressToStringW(&msg->addr[i].ipv4, addr);
--        }
--        err =3D AddDNS(msg->family, wide_name, addr);
--        if (i =3D=3D 0 && err)
--        {
--            goto out;
--        }
--        /* We do not check for duplicate addresses, so any error in adding
--         * additional addresses is ignored.
--         */
--    }
--
--    err =3D 0;
--
-     if (msg->addr_len > 0)
-     {
--        wchar_t *tmp_name =3D _wcsdup(wide_name);
--        if (!tmp_name || AddListItem(&(*lists)[undo_type], tmp_name))
-+        /* prepare the comma separated address list */
-+        CHAR addrs[256]; /* large enough to hold four IPv4 / IPv6 address =
-strings */
-+        size_t offset =3D 0;
-+        for (int i =3D 0; i < addr_len; ++i)
-         {
--            free(tmp_name);
--            DeleteDNS(msg->family, wide_name);
--            err =3D ERROR_OUTOFMEMORY;
--            goto out;
-+            if (i !=3D 0)
-+            {
-+                addrs[offset++] =3D ',';
-+            }
-+            if (msg->family =3D=3D AF_INET6)
-+            {
-+                RtlIpv6AddressToStringA(&msg->addr[i].ipv6, addrs + offset=
-);
-+            }
-+            else
-+            {
-+                RtlIpv4AddressToStringA(&msg->addr[i].ipv4, addrs + offset=
-);
-+            }
-+            offset +=3D strlen(addrs);
-+        }
-+
-+        err =3D SetNameServers(iid, msg->family, addrs);
-+        if (err)
+ #endif /* ifdef _WIN32 */
++    else if (streq(p[0], "dns-script") && p[1])
++    {
++        VERIFY_PERMISSION(OPT_P_SCRIPT);
++        if (!no_more_than_n_args(msglevel, p, 2, NM_QUOTE_HINT))
 +        {
-+            return err;
++            goto err;
 +        }
-+
-+        wchar_t *tmp_iid =3D _wcsdup(iid);
-+        if (!tmp_iid || AddListItem(&(*lists)[undo_type], tmp_iid))
++        if (streq(p[1], "disable"))
 +        {
-+            free(tmp_iid);
-+            ResetNameServers(iid, msg->family);
-+            return ERROR_OUTOFMEMORY;
-         }
-     }
-
-@@ -1916,8 +1949,6 @@
-     }
-     ApplyDnsSettings(gpol);
-
--out:
--    free(wide_name);
-     return err;
- }
-
-@@ -2298,11 +2329,11 @@
-                     break;
-
-                 case undo_dns4:
--                    DeleteDNS(AF_INET, item->data);
-+                    ResetNameServers(item->data, AF_INET);
-                     break;
-
-                 case undo_dns6:
--                    DeleteDNS(AF_INET6, item->data);
-+                    ResetNameServers(item->data, AF_INET6);
-                     break;
-
-                 case undo_domains:
++            options->dns_options.script =3D NULL;
++        }
++        else
++        {
++            if (options->dns_options.user_defined_script =3D=3D false)
++            {
++                /* Unset the default script to prevent warnings */
++                options->dns_options.script =3D NULL;
++            }
++            set_user_script(options, &options->dns_options.script, p[1], p=
+[0], false);
++            options->dns_options.user_defined_script =3D true;
++        }
++    }
+     else if (streq(p[0], "dns") && p[1])
+     {
+         VERIFY_PERMISSION(OPT_P_DHCPDNS);
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/825?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/838?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings
 
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: Id2bed0908e84c19b8fb6fe806376316793e550b4
-Gerrit-Change-Number: 825
-Gerrit-PatchSet: 12
+Gerrit-Change-Id: Ifbe4ffb44d3bfcaa50adb38cacb3436fcdc71b10
+Gerrit-Change-Number: 838
+Gerrit-PatchSet: 11
 Gerrit-Owner: d12fk <heiko@...515...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-Reviewer: stipa <lstipakov@...277...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
 Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Attention: d12fk <heiko@...515...>
 Gerrit-MessageType: newpatchset
 
---QrVMnOZj8gM=
+--84cSgnFGRNE=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p> Attention is currently required from: d12fk, flichtenheld, plaisthos. <=
-/p>
-<p>d12fk <strong>uploaded patch set #12</strong> to this change.</p><p><a h=
-ref=3D"http://gerrit.openvpn.net/c/openvpn/+/825?usp=3Demail">View Change</=
-a></p><p>The change is no longer submittable: checks~ChecksSubmitRule is un=
-satisfied now.</p><pre style=3D"font-family: monospace,monospace; white-spa=
-ce: pre-wrap;">dns: do not use netsh to set name server addresses<br><br>In=
-stead of spawning a netsh process, set the name server addresses<br>directl=
-y in the registry hive of the VPN interface.<br><br>This is a first step to=
- get rid of the use of command line tools in the<br>service and move to a m=
-ore API driven style of modifying the VPN adapter<br>configuration.<br><br>=
-Change-Id: Id2bed0908e84c19b8fb6fe806376316793e550b4<br>Signed-off-by: Heik=
-o Hund &lt;heiko@...2662...&gt;<br>---<br>M src/openvpnserv/interactive.c<b=
-r>1 file changed, 146 insertions(+), 115 deletions(-)<br><br></pre><pre sty=
-le=3D"font-family: monospace,monospace; white-space: pre-wrap;">git pull ss=
-h://gerrit.openvpn.net:29418/openvpn refs/changes/25/825/12</pre><pre style=
-=3D"font-family: monospace,monospace; white-space: pre-wrap;"><span>diff --=
-git a/src/openvpnserv/interactive.c b/src/openvpnserv/interactive.c</span><=
-br><span>index a76d908..13a6091 100644</span><br><span>--- a/src/openvpnser=
-v/interactive.c</span><br><span>+++ b/src/openvpnserv/interactive.c</span><=
-br><span>@@ -1024,65 +1024,6 @@</span><br><span> }</span><br><span> </span>=
-<br><span> /**</span><br><span style=3D"color: hsl(0, 100%, 40%);">- * Run =
-the command: netsh interface $proto $action dns $if_name $addr [validate=3D=
-no]</span><br><span style=3D"color: hsl(0, 100%, 40%);">- * @param  action =
-     &quot;delete&quot; or &quot;add&quot;</span><br><span style=3D"color: =
-hsl(0, 100%, 40%);">- * @param  proto       &quot;ipv6&quot; or &quot;ip&qu=
-ot;</span><br><span style=3D"color: hsl(0, 100%, 40%);">- * @param  if_name=
-     &quot;name_of_interface&quot;</span><br><span style=3D"color: hsl(0, 1=
-00%, 40%);">- * @param  addr         IPv4 (for proto =3D ip) or IPv6 addres=
-s as a string</span><br><span style=3D"color: hsl(0, 100%, 40%);">- *</span=
-><br><span style=3D"color: hsl(0, 100%, 40%);">- * If addr is null and acti=
-on =3D &quot;delete&quot; all addresses are deleted.</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">- */</span><br><span style=3D"color: hsl(0, =
-100%, 40%);">-static DWORD</span><br><span style=3D"color: hsl(0, 100%, 40%=
-);">-netsh_dns_cmd(const wchar_t *action, const wchar_t *proto, const wchar=
-_t *if_name, const wchar_t *addr)</span><br><span style=3D"color: hsl(0, 10=
-0%, 40%);">-{</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    DWOR=
-D err =3D 0;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    int t=
-imeout =3D 30000; /* in msec */</span><br><span style=3D"color: hsl(0, 100%=
-, 40%);">-    wchar_t argv0[MAX_PATH];</span><br><span style=3D"color: hsl(=
-0, 100%, 40%);">-    wchar_t *cmdline =3D NULL;</span><br><span style=3D"co=
-lor: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%=
-);">-    if (!addr)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
-  {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        if (wcscmp=
-(action, L&quot;delete&quot;) =3D=3D 0)</span><br><span style=3D"color: hsl=
-(0, 100%, 40%);">-        {</span><br><span style=3D"color: hsl(0, 100%, 40=
-%);">-            addr =3D L&quot;all&quot;;</span><br><span style=3D"color=
-: hsl(0, 100%, 40%);">-        }</span><br><span style=3D"color: hsl(0, 100=
-%, 40%);">-        else /* nothing to do -- return success*/</span><br><spa=
-n style=3D"color: hsl(0, 100%, 40%);">-        {</span><br><span style=3D"c=
-olor: hsl(0, 100%, 40%);">-            goto out;</span><br><span style=3D"c=
-olor: hsl(0, 100%, 40%);">-        }</span><br><span style=3D"color: hsl(0,=
- 100%, 40%);">-    }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-<=
-/span><br><span style=3D"color: hsl(0, 100%, 40%);">-    /* Path of netsh *=
-/</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    swprintf(argv0, =
-_countof(argv0), L&quot;%ls\\%ls&quot;, get_win_sys_path(), L&quot;netsh.ex=
-e&quot;);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><=
-span style=3D"color: hsl(0, 100%, 40%);">-    /* cmd template:</span><br><s=
-pan style=3D"color: hsl(0, 100%, 40%);">-     * netsh interface $proto $act=
-ion dns $if_name $addr [validate=3Dno]</span><br><span style=3D"color: hsl(=
-0, 100%, 40%);">-     */</span><br><span style=3D"color: hsl(0, 100%, 40%);=
-">-    const wchar_t *fmt =3D L&quot;netsh interface %ls %ls dns \&quot;%ls=
-\&quot; %ls&quot;;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</s=
-pan><br><span style=3D"color: hsl(0, 100%, 40%);">-    /* max cmdline lengt=
-h in wchars -- include room for worst case and some */</span><br><span styl=
-e=3D"color: hsl(0, 100%, 40%);">-    size_t ncmdline =3D wcslen(fmt) + wcsl=
-en(if_name) + wcslen(addr) + 32 + 1;</span><br><span style=3D"color: hsl(0,=
- 100%, 40%);">-    cmdline =3D malloc(ncmdline*sizeof(wchar_t));</span><br>=
-<span style=3D"color: hsl(0, 100%, 40%);">-    if (!cmdline)</span><br><spa=
-n style=3D"color: hsl(0, 100%, 40%);">-    {</span><br><span style=3D"color=
-: hsl(0, 100%, 40%);">-        err =3D ERROR_OUTOFMEMORY;</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-        goto out;</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-    }</span><br><span style=3D"color: hsl(0=
-, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    s=
-wprintf(cmdline, ncmdline, fmt, proto, action, if_name, addr);</span><br><s=
-pan style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: h=
-sl(0, 100%, 40%);">-    if (IsWindows7OrGreater())</span><br><span style=3D=
-"color: hsl(0, 100%, 40%);">-    {</span><br><span style=3D"color: hsl(0, 1=
-00%, 40%);">-        wcscat_s(cmdline, ncmdline, L&quot; validate=3Dno&quot=
-;);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    }</span><br><s=
-pan style=3D"color: hsl(0, 100%, 40%);">-    err =3D ExecCommand(argv0, cmd=
-line, timeout);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span=
-><br><span style=3D"color: hsl(0, 100%, 40%);">-out:</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-    free(cmdline);</span><br><span style=3D=
-"color: hsl(0, 100%, 40%);">-    return err;</span><br><span style=3D"color=
-: hsl(0, 100%, 40%);">-}</span><br><span style=3D"color: hsl(0, 100%, 40%);=
-">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-/**</span><br><spa=
-n>  * Run the command: netsh interface ip $action wins $if_name [static] $a=
-ddr</span><br><span>  * @param  action      &quot;delete&quot;, &quot;add&q=
-uot; or &quot;set&quot;</span><br><span>  * @param  if_name     &quot;name_=
-of_interface&quot;</span><br><span>@@ -1139,22 +1080,6 @@</span><br><span> =
-    return err;</span><br><span> }</span><br><span> </span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-/* Delete all IPv4 or IPv6 dns servers for =
-an interface */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-static=
- DWORD</span><br><span style=3D"color: hsl(0, 100%, 40%);">-DeleteDNS(short=
- family, wchar_t *if_name)</span><br><span style=3D"color: hsl(0, 100%, 40%=
-);">-{</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    wchar_t *pr=
-oto =3D (family =3D=3D AF_INET6) ? L&quot;ipv6&quot; : L&quot;ip&quot;;</sp=
-an><br><span style=3D"color: hsl(0, 100%, 40%);">-    return netsh_dns_cmd(=
-L&quot;delete&quot;, proto, if_name, NULL);</span><br><span style=3D"color:=
- hsl(0, 100%, 40%);">-}</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
->-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-/* Add an IPv4 or I=
-Pv6 dns server to an interface */</span><br><span style=3D"color: hsl(0, 10=
-0%, 40%);">-static DWORD</span><br><span style=3D"color: hsl(0, 100%, 40%);=
-">-AddDNS(short family, wchar_t *if_name, wchar_t *addr)</span><br><span st=
-yle=3D"color: hsl(0, 100%, 40%);">-{</span><br><span style=3D"color: hsl(0,=
- 100%, 40%);">-    wchar_t *proto =3D (family =3D=3D AF_INET6) ? L&quot;ipv=
-6&quot; : L&quot;ip&quot;;</span><br><span style=3D"color: hsl(0, 100%, 40%=
-);">-    return netsh_dns_cmd(L&quot;add&quot;, proto, if_name, addr);</spa=
-n><br><span style=3D"color: hsl(0, 100%, 40%);">-}</span><br><span style=3D=
-"color: hsl(0, 100%, 40%);">-</span><br><span> static BOOL</span><br><span>=
- CmpWString(LPVOID item, LPVOID str)</span><br><span> {</span><br><span>@@ =
--1818,11 +1743,115 @@</span><br><span>     return err;</span><br><span> }</=
-span><br><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+/**=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * Return the inter=
-faces registry key for the specified address family</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+ * @param family    the internet address family to open th=
-e key for</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @param =
-key       PHKEY to return the key in</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+ * @return BOOL to indicate success or failure</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+ */</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+static BOOL</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+GetInterfacesKey(short family, PHKEY key)</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+    PCSTR itfs_key =3D family =3D=3D AF_INET6</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+        ? &quot;SYSTEM\\C=
-urrentControlSet\\Services\\Tcpip6\\Parameters\\Interfaces&quot;</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+        : &quot;SYSTEM\\Curren=
-tControlSet\\Services\\Tcpip\\Parameters\\Interfaces&quot;;</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+    LSTATUS err =3D RegOpenKeyExA(HKEY_LOCAL_MACHINE, =
-itfs_key, 0, KEY_ALL_ACCESS, key);</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+    if (err)</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
-  *key =3D INVALID_HANDLE_VALUE;</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+        MsgToEventLog(M_SYSERR, TEXT(&quot;GetInterfacesKey: &=
-quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+              =
-                       &quot;could not open interfaces registry key for fam=
-ily %d (%lu)&quot;),</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+                      family, err);</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    return err ?=
- FALSE : TRUE;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+/**</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+ * Set the DNS name servers in a registry interface confi=
-guration</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+ * @param itf_id    the inte=
-rface id to set the servers for</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+ * @param family    internet address family to set the servers =
-for</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @param value =
-    the value to set the name servers to</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+ *</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+ * @return DWORD NO_ERROR on success, a Windows error code otherwise</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+ */</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+static DWORD</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+SetNameServersValue(PCWSTR itf_id, short fami=
-ly, PCSTR value)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+    DWORD err;</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+    HKEY itfs;</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+    if (!GetInterfacesKey(family, &amp;itfs))</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+        return ERROR_FILE_NOT_FOUND;</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+    HKEY itf =3D INVALID_HANDLE_VALUE;</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+    err =3D RegOpenKeyExW(itfs, itf=
-_id, 0, KEY_ALL_ACCESS, &amp;itf);</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+    if (err)</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
-  MsgToEventLog(M_SYSERR, TEXT(&quot;SetNameServersValue: &quot;</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+                              =
-       &quot;could not open interface key for %s family %d (%lu)&quot;),</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+                      =
-itf_id, family, err);</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+        goto out;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+    err =3D RegSetValueExA(itf, &=
-quot;NameServer&quot;, 0, REG_SZ, (PBYTE)value, strlen(value) + 1);</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+    if (err)</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+        MsgToEventLog(M_SYSERR, TEXT(&quot;SetNa=
-meServersValue: &quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+                                     &quot;could not set name servers &#=
-39;%S&#39; for %s family %d (%lu)&quot;),</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+                      value, itf_id, family, err);</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span =
+<p> Attention is currently required from: flichtenheld, plaisthos. </p>
+<p>d12fk <strong>uploaded patch set #11</strong> to this change.</p><p><a h=
+ref=3D"http://gerrit.openvpn.net/c/openvpn/+/838?usp=3Demail">View Change</=
+a></p><p>The following approvals got outdated and were removed:
+Code-Review-1 by flichtenheld</p><pre style=3D"font-family: monospace,monos=
+pace; white-space: pre-wrap;">dns: apply settings via script on unixoid sys=
+tems<br><br>This introduces a new script hook, the dns-script and implement=
+s such a<br>script for a few popular systems (and a default for the not so =
+popular<br>ones). Like the name suggests this script is soleley for dealing=
+ with<br>modifying how names are resolved when the VPN pushes some --dns<br=
+>settings.<br><br>The default dns script is part of the distribution and is=
+ installed with<br>openvpn. You can change the path the script is located a=
+t as a compile<br>time option, defaults to libexecdir. There&#39;s also a n=
+ew runtime option<br>--dns-script, which can run a custom script.<br><br>Ch=
+ange-Id: Ifbe4ffb44d3bfcaa50adb38cacb3436fcdc71b10<br>Signed-off-by: Heiko =
+Hund &lt;heiko@...2662...&gt;<br>---<br>M .gitignore<br>M CMakeLists.txt<br=
+>M configure.ac<br>M distro/Makefile.am<br>A distro/dns-scripts/Makefile.am=
+<br>A distro/dns-scripts/haikuos_file-dns-updown.sh<br>A distro/dns-scripts=
+/openresolv-dns-updown.sh<br>A distro/dns-scripts/resolvconf_file-dns-updow=
+n.sh<br>A distro/dns-scripts/systemd-dns-updown.sh<br>M doc/man-sections/sc=
+ript-options.rst<br>M src/openvpn/Makefile.am<br>M src/openvpn/dns.c<br>M s=
+rc/openvpn/dns.h<br>M src/openvpn/options.c<br>14 files changed, 622 insert=
+ions(+), 8 deletions(-)<br><br></pre><pre style=3D"font-family: monospace,m=
+onospace; white-space: pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/o=
+penvpn refs/changes/38/838/11</pre><pre style=3D"font-family: monospace,mon=
+ospace; white-space: pre-wrap;"><span>diff --git a/.gitignore b/.gitignore<=
+/span><br><span>index db8bb73..04523af 100644</span><br><span>--- a/.gitign=
+ore</span><br><span>+++ b/.gitignore</span><br><span>@@ -49,6 +49,7 @@</spa=
+n><br><span> /doc/doxygen/latex/</span><br><span> /doc/doxygen/openvpn.doxy=
+file</span><br><span> distro/systemd/*.service</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+distro/dns-scripts/dns-updown</span><br><span> s=
+ample/sample-keys/sample-ca/</span><br><span> vendor/cmocka_build</span><br=
+><span> vendor/dist</span><br><span>diff --git a/CMakeLists.txt b/CMakeList=
+s.txt</span><br><span>index b04adce..2696691 100644</span><br><span>--- a/C=
+MakeLists.txt</span><br><span>+++ b/CMakeLists.txt</span><br><span>@@ -41,7=
+ +41,8 @@</span><br><span> option(USE_WERROR &quot;Treat compiler warnings =
+as errors (-Werror)&quot; ON)</span><br><span> option(FAKE_ANDROID &quot;Ta=
+rget Android but do not use actual cross compile/Android cmake to build for=
+ simple compile checks on Linux&quot;)</span><br><span> </span><br><span st=
+yle=3D"color: hsl(0, 100%, 40%);">-set(PLUGIN_DIR /usr/local/lib/openvpn/pl=
+ugins CACHE FILEPATH &quot;Location of the plugin directory&quot;)</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+set(DNS_UPDOWN_PATH &quot;${=
+CMAKE_INSTALL_PREFIX}/libexec/openvpn/dns-updown&quot; CACHE STRING &quot;D=
+efault location for the DNS up/down script&quot;)</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+set(PLUGIN_DIR &quot;${CMAKE_INSTALL_PREFIX}/=
+lib/openvpn/plugins&quot; CACHE FILEPATH &quot;Location of the plugin direc=
+tory&quot;)</span><br><span> </span><br><span> # Create machine readable co=
+mpile commands</span><br><span> option(ENABLE_COMPILE_COMMANDS &quot;Genera=
+te compile_commands.json and a symlink for clangd to find it&quot; OFF)</sp=
+an><br><span>@@ -577,6 +578,8 @@</span><br><span> </span><br><span> add_lib=
+rary_deps(openvpn)</span><br><span> </span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+target_compile_options(openvpn PRIVATE -DDNS_UPDOWN_PATH=
+=3D\&quot;${DNS_UPDOWN_PATH}\&quot;)</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+</span><br><span> if(MINGW)</span><br><span>     target_co=
+mpile_options(openvpn PRIVATE -municode -UUNICODE)</span><br><span>     tar=
+get_link_options(openvpn PRIVATE -municode)</span><br><span>diff --git a/co=
+nfigure.ac b/configure.ac</span><br><span>index 9777e36..45d3ac1 100644</sp=
+an><br><span>--- a/configure.ac</span><br><span>+++ b/configure.ac</span><b=
+r><span>@@ -315,37 +315,50 @@</span><br><span> 	plugindir=3D&quot;\${libdir=
+}/openvpn/plugins&quot;</span><br><span> fi</span><br><span> </span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+AC_ARG_VAR([SCRIPTDIR], [Path of =
+script directory @&lt;:@default=3DPKGLIBEXECDIR@:&gt;@])</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+if test -n &quot;${SCRIPTDIR}&quot;; t=
+hen</span><br><span style=3D"color: hsl(120, 100%, 40%);">+	scriptdir=3D&qu=
+ot;${SCRIPTDIR}&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+else</span><br><span style=3D"color: hsl(120, 100%, 40%);">+	scriptdir=3D=
+&quot;\${pkglibexecdir}&quot;</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+fi</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span>=
+<br><span> AC_DEFINE_UNQUOTED([TARGET_ALIAS], [&quot;${host}&quot;], [A str=
+ing representing our host])</span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">-AM_CONDITIONAL([TARGET_LINUX], [false])</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+AM_CONDITIONAL([ENABLE_DNS_SCRIPT],[true])</span>=
+<br><span> case &quot;$host&quot; in</span><br><span> 	*-*-linux*)</span><b=
+r><span> 		AC_DEFINE([TARGET_LINUX], [1], [Are we running on Linux?])</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-		AM_CONDITIONAL([TARGET_LI=
+NUX], [true])</span><br><span> 		AC_DEFINE_UNQUOTED([TARGET_PREFIX], [&quot=
+;L&quot;], [Target prefix])</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+		AC_SUBST([DNS_UPDOWN_TYPE], [&quot;systemd&quot;])</span><br><spa=
+n> 		have_sitnl=3D&quot;yes&quot;</span><br><span> 		pkg_config_required=3D=
+&quot;yes&quot;</span><br><span> 		;;</span><br><span> 	*-*-solaris*)</span=
+><br><span> 		AC_DEFINE([TARGET_SOLARIS], [1], [Are we running on Solaris?]=
+)</span><br><span> 		AC_DEFINE_UNQUOTED([TARGET_PREFIX], [&quot;S&quot;], [=
+Target prefix])</span><br><span style=3D"color: hsl(120, 100%, 40%);">+		AC=
+_SUBST([DNS_UPDOWN_TYPE], [&quot;resolvconf_file&quot;])</span><br><span> 	=
+	CPPFLAGS=3D&quot;$CPPFLAGS -D_XPG4_2&quot;</span><br><span> 		test -x /bin=
+/bash &amp;&amp; SHELL=3D&quot;/bin/bash&quot;</span><br><span> 		;;</span>=
+<br><span> 	*-*-openbsd*)</span><br><span> 		AC_DEFINE([TARGET_OPENBSD], [1=
+], [Are we running on OpenBSD?])</span><br><span> 		AC_DEFINE_UNQUOTED([TAR=
+GET_PREFIX], [&quot;O&quot;], [Target prefix])</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+		AC_SUBST([DNS_UPDOWN_TYPE], [&quot;resolvconf_=
+file&quot;])</span><br><span> 		;;</span><br><span> 	*-*-freebsd*)</span><b=
+r><span> 		AC_DEFINE([TARGET_FREEBSD], [1], [Are we running on FreeBSD?])</=
+span><br><span> 		AC_DEFINE_UNQUOTED([TARGET_PREFIX], [&quot;F&quot;], [Tar=
+get prefix])</span><br><span style=3D"color: hsl(120, 100%, 40%);">+		AC_SU=
+BST([DNS_UPDOWN_TYPE], [&quot;openresolv&quot;])</span><br><span> 		;;</spa=
+n><br><span> 	*-*-netbsd*)</span><br><span> 		AC_DEFINE([TARGET_NETBSD], [1=
+], [Are we running NetBSD?])</span><br><span> 		AC_DEFINE_UNQUOTED([TARGET_=
+PREFIX], [&quot;N&quot;], [Target prefix])</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+		AC_SUBST([DNS_UPDOWN_TYPE], [&quot;openresolv&quot=
+;])</span><br><span> 		;;</span><br><span> 	*-*-darwin*)</span><br><span> 	=
+	AC_DEFINE([TARGET_DARWIN], [1], [Are we running on Mac OS X?])</span><br><=
+span> 		AC_DEFINE_UNQUOTED([TARGET_PREFIX], [&quot;M&quot;], [Target prefix=
+])</span><br><span style=3D"color: hsl(120, 100%, 40%);">+		AM_CONDITIONAL(=
+[ENABLE_DNS_SCRIPT],[false])</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+		AC_SUBST([DNS_UPDOWN_TYPE], [&quot;resolvconf_file&quot;])</span=
+><br><span> 		have_tap_header=3D&quot;yes&quot;</span><br><span> 		ac_cv_ty=
+pe_struct_in_pktinfo=3Dno</span><br><span> 		;;</span><br><span>@@ -353,6 +=
+366,8 @@</span><br><span> 		AC_DEFINE([TARGET_WIN32], [1], [Are we running =
+WIN32?])</span><br><span> 		AC_DEFINE([ENABLE_DCO], [1], [DCO is always ena=
+bled on Windows])</span><br><span> 		AC_DEFINE_UNQUOTED([TARGET_PREFIX], [&=
+quot;W&quot;], [Target prefix])</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+		AM_CONDITIONAL([ENABLE_DNS_SCRIPT],[false])</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+		AC_SUBST([DNS_UPDOWN_TYPE], [&quot;=
+windows&quot;])</span><br><span> 		CPPFLAGS=3D&quot;${CPPFLAGS} -DWIN32_LEA=
+N_AND_MEAN&quot;</span><br><span> 		CPPFLAGS=3D&quot;${CPPFLAGS} -DNTDDI_VE=
+RSION=3DNTDDI_VISTA -D_WIN32_WINNT=3D_WIN32_WINNT_VISTA&quot;</span><br><sp=
+an> 		WIN32=3Dyes</span><br><span>@@ -360,10 +375,12 @@</span><br><span> 	*=
+-*-dragonfly*)</span><br><span> 		AC_DEFINE([TARGET_DRAGONFLY], [1], [Are w=
+e running on DragonFlyBSD?])</span><br><span> 		AC_DEFINE_UNQUOTED([TARGET_=
+PREFIX], [&quot;D&quot;], [Target prefix])</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+		AC_SUBST([DNS_UPDOWN_TYPE], [&quot;openresolv&quot=
+;])</span><br><span> 		;;</span><br><span> 	*-aix*)</span><br><span> 		AC_D=
+EFINE([TARGET_AIX], [1], [Are we running AIX?])</span><br><span> 		AC_DEFIN=
+E_UNQUOTED([TARGET_PREFIX], [&quot;A&quot;], [Target prefix])</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+		AC_SUBST([DNS_UPDOWN_TYPE], [&q=
+uot;resolvconf_file&quot;])</span><br><span> 		ROUTE=3D&quot;/usr/sbin/rout=
+e&quot;</span><br><span> 		have_tap_header=3D&quot;yes&quot;</span><br><spa=
+n> 		ac_cv_header_net_if_h=3D&quot;no&quot;	# exists, but breaks things</sp=
+an><br><span>@@ -371,10 +388,12 @@</span><br><span> 	*-*-haiku*)</span><br>=
+<span> 		AC_DEFINE([TARGET_HAIKU], [1], [Are we running Haiku?])</span><br>=
+<span> 		AC_DEFINE_UNQUOTED([TARGET_PREFIX], [&quot;H&quot;], [Target prefi=
+x])</span><br><span style=3D"color: hsl(120, 100%, 40%);">+		AC_SUBST([DNS_=
+UPDOWN_TYPE], [&quot;haikuos_file&quot;])</span><br><span> 		LIBS=3D&quot;$=
+{LIBS} -lnetwork&quot;</span><br><span> 		;;</span><br><span> 	*)</span><br=
+><span> 		AC_DEFINE_UNQUOTED([TARGET_PREFIX], [&quot;X&quot;], [Target pref=
+ix])</span><br><span style=3D"color: hsl(120, 100%, 40%);">+		AC_SUBST([DNS=
+_UPDOWN_TYPE], [&quot;resolvconf_file&quot;])</span><br><span> 		have_tap_h=
+eader=3D&quot;yes&quot;</span><br><span> 		;;</span><br><span> esac</span><=
+br><span>@@ -1505,6 +1524,7 @@</span><br><span> </span><br><span> sampledir=
+=3D&quot;\$(docdir)/sample&quot;</span><br><span> AC_SUBST([plugindir])</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+AC_SUBST([scriptdir])</=
+span><br><span> AC_SUBST([sampledir])</span><br><span> </span><br><span> AC=
+_SUBST([systemdunitdir])</span><br><span>@@ -1541,6 +1561,7 @@</span><br><s=
+pan> 	Makefile</span><br><span> 	distro/Makefile</span><br><span> 	distro/s=
+ystemd/Makefile</span><br><span style=3D"color: hsl(120, 100%, 40%);">+	dis=
+tro/dns-scripts/Makefile</span><br><span> 	doc/Makefile</span><br><span> 	d=
+oc/doxygen/Makefile</span><br><span> 	doc/doxygen/openvpn.doxyfile</span><b=
+r><span>diff --git a/distro/Makefile.am b/distro/Makefile.am</span><br><spa=
+n>index 7a588da..b8fb85b 100644</span><br><span>--- a/distro/Makefile.am</s=
+pan><br><span>+++ b/distro/Makefile.am</span><br><span>@@ -13,3 +13,7 @@</s=
+pan><br><span> 	$(srcdir)/Makefile.in</span><br><span> </span><br><span> SU=
+BDIRS =3D systemd</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+if ENABLE_DNS_SCRIPT<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+SUBDIRS +=3D dns-scr=
+ipts</span><br><span style=3D"color: hsl(120, 100%, 40%);">+endif</span><br=
+><span>diff --git a/distro/dns-scripts/Makefile.am b/distro/dns-scripts/Mak=
+efile.am</span><br><span>new file mode 100644</span><br><span>index 0000000=
+..ec7bfde</span><br><span>--- /dev/null</span><br><span>+++ b/distro/dns-sc=
+ripts/Makefile.am</span><br><span>@@ -0,0 +1,28 @@</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+#</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+#  OpenVPN -- An application to securely tunnel IP networks</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+#             over a s=
+ingle UDP port, with support for SSL/TLS-based</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+#             session authentication and key exc=
+hange,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#            =
+ packet encryption, packet authentication, and</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+#             packet compression.</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+#</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+#  Copyright (C) 2002-2024 OpenVPN Inc &lt;sales@...493...=
+515...&gt;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+MAINTAINERCLEANFILES =3D \</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+	$(srcdir)/Makefile.in</span><br><span =
 style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+out:</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+    if (itf !=3D INVALID_HANDLE_VALUE)</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+        RegCloseKey(itf);</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+    if (itfs !=3D INVALID_HANDLE_VALUE)</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+        RegCloseKey(itfs);</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+    return err;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+/**</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+ * Set the DNS name servers in a registry interface conf=
-iguration</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+ * @param itf_id    the int=
-erface id to set the servers for</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+ * @param family    internet address family to set the servers=
- for</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @param addrs=
-     comma separated list of name server addresses</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+ *</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+ * @return DWORD NO_ERROR on success, a Windows error code ot=
-herwise</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ */</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+static DWORD</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+SetNameServers(PCWSTR itf_id, short=
- family, PCSTR addrs)</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    return SetNa=
-meServersValue(itf_id, family, addrs);</span><br><span style=3D"color: hsl(=
+(120, 100%, 40%);">+EXTRA_DIST =3D \</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+	systemd-dns-updown.sh \</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+	openresolv-dns-updown.sh \</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+	haikuos_file-dns-updown.sh \</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+	resolvconf_file-dns-updown.sh</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+script_SCRIPTS =3D \</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+	dns-updown</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+CLEANFILES =3D $(script_SCRIPTS)</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+dns-updown: @DNS_UPDOWN_TYPE@...2841...</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+	cp ${srcdir}/@DNS_UPDOWN_TYPE@...2841... $@</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+all: $(script_SCRIPTS)</span><br><span>diff --g=
+it a/distro/dns-scripts/haikuos_file-dns-updown.sh b/distro/dns-scripts/hai=
+kuos_file-dns-updown.sh</span><br><span>new file mode 100644</span><br><spa=
+n>index 0000000..1b03e9c</span><br><span>--- /dev/null</span><br><span>+++ =
+b/distro/dns-scripts/haikuos_file-dns-updown.sh</span><br><span>@@ -0,0 +1,=
+84 @@</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#!/bin/sh</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+#</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+# Simple OpenVPN up/down script for modif=
+ying Haiku OS resolv.conf</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+# (C) Copyright 2024 OpenVPN Inc &lt;sales@...515...&gt;</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+#</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+# SPDX-License-Identifier: BSD-2-Clause</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+#</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+# Example env from openvpn (most are not applied=
+):</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+#   dev tun0</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+#   script-type dns-up</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+#   dns_search_domain_1 mycorp.in</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+#   dns_search_domain_2 =
+eu.mycorp.com</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#   dn=
+s_server_1_address_1 192.168.99.254</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+#   dns_server_1_address_2 fd00::99:53</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+#   dns_server_1_port_1 53</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+#   dns_server_1_port_2 53</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+#   dns_server_1_resolve_d=
+omain_1 mycorp.in</span><br><span style=3D"color: hsl(120, 100%, 40%);">+# =
+  dns_server_1_resolve_domain_2 eu.mycorp.com</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+#   dns_server_1_dnssec true</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+#   dns_server_1_transport DoH</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+#   dns_server_1_sni dns.myco=
+rp.in</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+set -e +u</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+conly=
+_standard_server_ports() {</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+    i=3D1</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+ while true; do</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+    eval addr=3D\&quot;\$dns_server_${n}_address_${i}\&quot;</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+        [ -n &quot;$addr&quot; ] |=
+| return 0</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+        eval port=3D\&quot;\=
+$dns_server_${n}_port_${i}\&quot;</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+        [ -z &quot;$port&quot; -o &quot;$port&quot; =3D &quot=
+;53&quot; ] || return 1</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        i=3D$(e=
+xpr $i + 1)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    done=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+onf=3D/boot/system/settings/network/resolv.conf</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+test -e &quot;$conf&quot; ||=
+ exit 1</span><br><span style=3D"color: hsl(120, 100%, 40%);">+case &quot;$=
+{script_type}&quot; in</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+dns-up)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    n=3D1=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    while :; do</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+        eval addr=3D\&q=
+uot;\$dns_server_${n}_address_1\&quot;</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+        [ -n &quot;$addr&quot; ] || {</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+            echo &quot;setting DNS fai=
+led, no compatible server profile&quot;</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+            exit 1</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+        }</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        # =
+Skip server profiles which require DNSSEC,</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+        # secure transport or use a custom port</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+        eval dnssec=3D\&=
+quot;\$dns_server_${n}_dnssec\&quot;</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+        eval transport=3D\&quot;\$dns_server_${n}_transpor=
+t\&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        [ -=
+z &quot;$transport&quot; -o &quot;$transport&quot; =3D &quot;plain&quot; ] =
+\</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            &amp;&=
+amp; [ -z &quot;$dnssec&quot; -o &quot;$dnssec&quot; =3D &quot;no&quot; ] \=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            &amp;&a=
+mp; only_standard_server_ports &amp;&amp; break</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+        n=3D$(expr $n + 1)</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+    done</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    eval addr1=
+=3D\&quot;\$dns_server_${n}_address_1\&quot;</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+    eval addr2=3D\&quot;\$dns_server_${n}_address_=
+2\&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    eval ad=
+dr3=3D\&quot;\$dns_server_${n}_address_3\&quot;</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+    text=3D&quot;### openvpn ${dev} begin ###\n=
+&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    text=3D&q=
+uot;${text}nameserver $addr1\n&quot;</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+    test -z &quot;$addr2&quot; || text=3D&quot;${text}name=
+server $addr2\n&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+    test -z &quot;$addr3&quot; || text=3D&quot;${text}nameserver $addr3\n=
+&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+    test -z &quot;$dns_search_do=
+main_1&quot; || {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+      for i in $(seq 1 6); do</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+            eval domains=3D\&quot;$domains\$dns_search_domain_${i=
+} \&quot; || break</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+       done</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        =
+text=3D&quot;${text}search $domains\n&quot;</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+    text=3D&quot;${text}### openvpn ${dev} end ###&quot;</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+    sed -i &quot;1i${text}&quot; &quot;$conf&qu=
+ot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    ;;</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+dns-down)</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+    sed -i &quot;/### openvpn ${dev} be=
+gin ###/,/### openvpn ${dev} end ###/d&quot; &quot;$conf&quot;</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+    ;;</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+esac</span><br><span>diff --git a/distro/dns-=
+scripts/openresolv-dns-updown.sh b/distro/dns-scripts/openresolv-dns-updown=
+.sh</span><br><span>new file mode 100644</span><br><span>index 0000000..1b2=
+18f5</span><br><span>--- /dev/null</span><br><span>+++ b/distro/dns-scripts=
+/openresolv-dns-updown.sh</span><br><span>@@ -0,0 +1,89 @@</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+#!/bin/sh</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+#</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+# Simple OpenVPN up/down script for openresolv integration</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+# (C) Copyright 2016 Bapt=
+iste Daroussin</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#    =
+           2024 OpenVPN Inc &lt;sales@...515...&gt;</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+#</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+# SPDX-License-Identifier: BSD-2-Clause</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+#</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+# Example env from openvpn (most are not applied):</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+#</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+#   dev tun0</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+#   script-type dns-up</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+#   dns_search_domain_1 mycorp.in</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+#   dns_search_domain_2 eu.mycorp.=
+com</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#   dns_server_1=
+_address_1 192.168.99.254</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+#   dns_server_1_address_2 fd00::99:53</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+#   dns_server_1_port_1 53</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+#   dns_server_1_port_2 53</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+#   dns_server_1_resolve_domain_1 =
+mycorp.in</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#   dns_se=
+rver_1_resolve_domain_2 eu.mycorp.com</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+#   dns_server_1_dnssec true</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+#   dns_server_1_transport DoH</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+#   dns_server_1_sni dns.mycorp.in</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+#</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+set -e +u</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+only_standard=
+_server_ports() {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+  i=3D1</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    while tr=
+ue; do</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        eval =
+addr=3D\&quot;\$dns_server_${n}_address_${i}\&quot;</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+        [ -n &quot;$addr&quot; ] || retur=
+n 0</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+        eval port=3D\&quot;\$dns_se=
+rver_${n}_port_${i}\&quot;</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+        [ -z &quot;$port&quot; -o &quot;$port&quot; =3D &quot;53&quo=
+t; ] || return 1</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+        i=3D$(expr $i =
++ 1)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    done</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+: ${script_type:=3Ddns-down}</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+case &quot;${script_type}&quot; in</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+dns-up)</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+    n=3D1</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+    while :; do</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+        eval addr=3D\&quot;\$dns_server_${n}_address_1\&quot;</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+        [ -n &quot;$add=
+r&quot; ] || {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
+       echo &quot;setting DNS failed, no compatible server profile&quot;</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+            exit 1</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+        }</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+        # Skip server profiles which require DNSSEC,=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        # secure tr=
+ansport or use a custom port</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+        eval dnssec=3D\&quot;\$dns_server_${n}_dnssec\&quot;</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+        eval transport=3D=
+\&quot;\$dns_server_${n}_transport\&quot;</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+        [ -z &quot;$transport&quot; -o &quot;$transpo=
+rt&quot; =3D &quot;plain&quot; ] \</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+            &amp;&amp; [ -z &quot;$dnssec&quot; -o &quot;$dn=
+ssec&quot; =3D &quot;no&quot; ] \</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+            &amp;&amp; only_standard_server_ports &amp;&amp; =
+break</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+        n=3D$(expr $n + 1)</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+    done</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+        i=3D1</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+       maxns=3D3</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+     while :; do</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+         maxns=3D$((maxns - 1))</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+            [ $maxns -gt 0 ] || break</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+            eval option=3D\&quot;\$dns_server=
+_${n}_address_${i}\&quot; || break</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+            [ &quot;${option}&quot; ] || break</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+            i=3D$((i + 1))</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+            echo &quot;nam=
+eserver ${option}&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+        done</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+     i=3D1</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        m=
+axdom=3D6</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        wh=
+ile :; do</span><br><span style=3D"color: hsl(120, 100%, 40%);">+          =
+  maxdom=3D$((maxdom - 1))</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+            [ $maxdom -gt 0 ] || break</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+            eval option=3D\&quot;\$dns_search_dom=
+ain_${i}\&quot; || break</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+            [ &quot;${option}&quot; ] || break</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+            i=3D$((i + 1))</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+            echo &quot;search ${op=
+tion}&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        =
+done</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    } | /sbin/r=
+esolvconf -a &quot;${dev}&quot;</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+    ;;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+d=
+ns-down)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    /sbin/r=
+esolvconf -d &quot;${dev}&quot; -f</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+    ;;</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+esac</span><br><span>diff --git a/distro/dns-scripts/resolvconf_file-dns-=
+updown.sh b/distro/dns-scripts/resolvconf_file-dns-updown.sh</span><br><spa=
+n>new file mode 100644</span><br><span>index 0000000..c469490</span><br><sp=
+an>--- /dev/null</span><br><span>+++ b/distro/dns-scripts/resolvconf_file-d=
+ns-updown.sh</span><br><span>@@ -0,0 +1,84 @@</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+#!/bin/sh</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+#</span><br><span style=3D"color: hsl(120, 100%, 40%);">+# =
+Simple OpenVPN up/down script for modifying /etc/resolv.conf</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+# (C) Copyright 2024 OpenVPN Inc &=
+lt;sales@...515...&gt;</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+#</span><br><span style=3D"color: hsl(120, 100%, 40%);">+# SPDX-License-=
+Identifier: BSD-2-Clause</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+#</span><br><span style=3D"color: hsl(120, 100%, 40%);">+# Example env=
+ from openvpn (most are not applied):</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+#</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+#   dev tun0</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#   scr=
+ipt-type dns-up</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#   =
+dns_search_domain_1 mycorp.in</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+#   dns_search_domain_2 eu.mycorp.com</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+#   dns_server_1_address_1 192.168.99.254</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+#   dns_server_1_address_=
+2 fd00::99:53</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#   dn=
+s_server_1_port_1 53</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++#   dns_server_1_port_2 53</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+#   dns_server_1_resolve_domain_1 mycorp.in</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+#   dns_server_1_resolve_domain_2 eu.myco=
+rp.com</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#   dns_serve=
+r_1_dnssec true</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#   =
+dns_server_1_transport DoH</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+#   dns_server_1_sni dns.mycorp.in</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+#</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+set -e +u</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+only_standard_server_ports() {</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+    i=3D1</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    while true; do</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+        eval addr=3D\&quot;\$dns_server_$=
+{n}_address_${i}\&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+        [ -n &quot;$addr&quot; ] || return 0</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+        eval port=3D\&quot;\$dns_server_${n}_port_${i}\&quot;</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+        [ -z &quot;$por=
+t&quot; -o &quot;$port&quot; =3D &quot;53&quot; ] || return 1</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+        i=3D$(expr $i + 1)</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+    done</span><br><span style=3D"color: hsl(=
 120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+/**</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+ * Delete all DNS name servers fro=
-m a registry interface configuration</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+ *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
- * @param itf_id    the interface id to clear the servers for</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+ * @param family    internet addr=
-ess family to clear the servers for</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+ *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-* @return DWORD NO_ERROR on success, a Windows error code otherwise</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+ */</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+static DWORD</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+ResetNameServers(PCWSTR itf_id, short family)</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+    return SetNameServersValue(itf_id, f=
-amily, &quot;&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span=
-> static DWORD</span><br><span> HandleDNSConfigMessage(const dns_cfg_messag=
-e_t *msg, undo_lists_t *lists)</span><br><span> {</span><br><span>     DWOR=
-D err =3D 0;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    wchar=
-_t addr[46]; /* large enough to hold string representation of an ipv4 / ipv=
-6 address */</span><br><span>     undo_type_t undo_type =3D (msg-&gt;family=
- =3D=3D AF_INET6) ? undo_dns4 : undo_dns6;</span><br><span>     int addr_le=
-n =3D msg-&gt;addr_len;</span><br><span> </span><br><span>@@ -1844,10 +1873=
-,11 @@</span><br><span>         msgptr-&gt;domains[_countof(msg-&gt;domains=
-)-1] =3D &#39;\0&#39;;</span><br><span>     }</span><br><span> </span><br><=
-span style=3D"color: hsl(0, 100%, 40%);">-    wchar_t *wide_name =3D utf8to=
-16(msg-&gt;iface.name); /* utf8 to wide-char */</span><br><span style=3D"co=
-lor: hsl(0, 100%, 40%);">-    if (!wide_name)</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+    WCHAR iid[64];</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+    err =3D InterfaceIdString(msg-&gt;iface.name, =
-iid, _countof(iid));</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+    if (err)</span><br><span>     {</span><br><span style=3D"color: hsl(0,=
- 100%, 40%);">-        return ERROR_OUTOFMEMORY;</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+        return err;</span><br><span>     }</sp=
-an><br><span> </span><br><span>     /* We delete all current addresses befo=
-re adding any</span><br><span>@@ -1855,12 +1885,12 @@</span><br><span>     =
- */</span><br><span>     if (addr_len &gt; 0 || msg-&gt;header.type =3D=3D =
-msg_del_dns_cfg)</span><br><span>     {</span><br><span style=3D"color: hsl=
-(0, 100%, 40%);">-        err =3D DeleteDNS(msg-&gt;family, wide_name);</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+        err =3D ResetNa=
-meServers(iid, msg-&gt;family);</span><br><span>         if (err)</span><br=
-><span>         {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
-        goto out;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-          return err;</span><br><span>         }</span><br><span style=3D"c=
-olor: hsl(0, 100%, 40%);">-        free(RemoveListItem(&amp;(*lists)[undo_t=
-ype], CmpWString, wide_name));</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+        free(RemoveListItem(&amp;(*lists)[undo_type], CmpAny, ii=
-d));</span><br><span>     }</span><br><span> </span><br><span>     if (msg-=
-&gt;header.type =3D=3D msg_del_dns_cfg)</span><br><span>@@ -1872,40 +1902,4=
-3 @@</span><br><span>             err =3D SetDnsSearchDomains(msg-&gt;iface=
-.name, NULL, &amp;gpol, lists);</span><br><span>         }</span><br><span>=
-         ApplyDnsSettings(gpol);</span><br><span style=3D"color: hsl(0, 100=
-%, 40%);">-        goto out;  /* job done */</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+        return err;  /* job done */</span><br><spa=
-n>     }</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%=
-);">-    for (int i =3D 0; i &lt; addr_len; ++i)</span><br><span style=3D"c=
-olor: hsl(0, 100%, 40%);">-    {</span><br><span style=3D"color: hsl(0, 100=
-%, 40%);">-        if (msg-&gt;family =3D=3D AF_INET6)</span><br><span styl=
-e=3D"color: hsl(0, 100%, 40%);">-        {</span><br><span style=3D"color: =
-hsl(0, 100%, 40%);">-            RtlIpv6AddressToStringW(&amp;msg-&gt;addr[=
-i].ipv6, addr);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-      =
-  }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        else</span=
-><br><span style=3D"color: hsl(0, 100%, 40%);">-        {</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-            RtlIpv4AddressToStringW(&am=
-p;msg-&gt;addr[i].ipv4, addr);</span><br><span style=3D"color: hsl(0, 100%,=
- 40%);">-        }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
-     err =3D AddDNS(msg-&gt;family, wide_name, addr);</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-        if (i =3D=3D 0 &amp;&amp; err)</spa=
-n><br><span style=3D"color: hsl(0, 100%, 40%);">-        {</span><br><span =
-style=3D"color: hsl(0, 100%, 40%);">-            goto out;</span><br><span =
-style=3D"color: hsl(0, 100%, 40%);">-        }</span><br><span style=3D"col=
-or: hsl(0, 100%, 40%);">-        /* We do not check for duplicate addresses=
-, so any error in adding</span><br><span style=3D"color: hsl(0, 100%, 40%);=
-">-         * additional addresses is ignored.</span><br><span style=3D"col=
-or: hsl(0, 100%, 40%);">-         */</span><br><span style=3D"color: hsl(0,=
- 100%, 40%);">-    }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-<=
-/span><br><span style=3D"color: hsl(0, 100%, 40%);">-    err =3D 0;</span><=
-br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span>     if (msg=
--&gt;addr_len &gt; 0)</span><br><span>     {</span><br><span style=3D"color=
-: hsl(0, 100%, 40%);">-        wchar_t *tmp_name =3D _wcsdup(wide_name);</s=
-pan><br><span style=3D"color: hsl(0, 100%, 40%);">-        if (!tmp_name ||=
- AddListItem(&amp;(*lists)[undo_type], tmp_name))</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+        /* prepare the comma separated addres=
-s list */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        CH=
-AR addrs[256]; /* large enough to hold four IPv4 / IPv6 address strings */<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+        size_t offse=
-t =3D 0;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        for=
- (int i =3D 0; i &lt; addr_len; ++i)</span><br><span>         {</span><br><=
-span style=3D"color: hsl(0, 100%, 40%);">-            free(tmp_name);</span=
-><br><span style=3D"color: hsl(0, 100%, 40%);">-            DeleteDNS(msg-&=
-gt;family, wide_name);</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
--            err =3D ERROR_OUTOFMEMORY;</span><br><span style=3D"color: hsl=
-(0, 100%, 40%);">-            goto out;</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+            if (i !=3D 0)</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+            {</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+                addrs[offset++] =3D &#39;,&#39;;</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+            }</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+            if (msg-&gt;family =
-=3D=3D AF_INET6)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
-         {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+         =
-       RtlIpv6AddressToStringA(&amp;msg-&gt;addr[i].ipv6, addrs + offset);<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+            }</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+            else</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+            {</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+                RtlIpv4AddressToStr=
-ingA(&amp;msg-&gt;addr[i].ipv4, addrs + offset);</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+            }</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+            offset +=3D strlen(addrs);</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+        }</span><br><span style=
++</span><br><span style=3D"color: hsl(120, 100%, 40%);">+conf=3D/etc/resolv=
+.conf</span><br><span style=3D"color: hsl(120, 100%, 40%);">+test -e &quot;=
+$conf&quot; || exit 1</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+case &quot;${script_type}&quot; in</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+dns-up)</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+    n=3D1</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    w=
+hile :; do</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        e=
+val addr=3D\&quot;\$dns_server_${n}_address_1\&quot;</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+        [ -n &quot;$addr&quot; ] || {</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+            echo &quot;=
+setting DNS failed, no compatible server profile&quot;</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+            exit 1</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+        }</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+        # Skip server profiles which require DNSSEC,</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+        # secure transport or use a c=
+ustom port</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        e=
+val dnssec=3D\&quot;\$dns_server_${n}_dnssec\&quot;</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+        eval transport=3D\&quot;\$dns_ser=
+ver_${n}_transport\&quot;</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+        [ -z &quot;$transport&quot; -o &quot;$transport&quot; =3D &qu=
+ot;plain&quot; ] \</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+           &amp;&amp; [ -z &quot;$dnssec&quot; -o &quot;$dnssec&quot; =3D &=
+quot;no&quot; ] \</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+          &amp;&amp; only_standard_server_ports &amp;&amp; break</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+        n=3D$(expr $n + 1)</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    done</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+    eval addr1=3D\&quot;\$dns_server_${n}_address_1\&quot;</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+    eval addr2=3D\&quot;\$dns_se=
+rver_${n}_address_2\&quot;</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+    eval addr3=3D\&quot;\$dns_server_${n}_address_3\&quot;</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+    text=3D&quot;### openvpn =
+${dev} begin ###\n&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+    text=3D&quot;${text}nameserver $addr1\n&quot;</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+    test -z &quot;$addr2&quot; || text=
+=3D&quot;${text}nameserver $addr2\n&quot;</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+    test -z &quot;$addr3&quot; || text=3D&quot;${text=
+}nameserver $addr3\n&quot;</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    test -z =
+&quot;$dns_search_domain_1&quot; || {</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+        for i in $(seq 1 6); do</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+            eval domains=3D\&quot;$domains\$d=
+ns_search_domain_${i} \&quot; || break</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+        done</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+        text=3D&quot;${text}search $domains\n&quot;</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+    text=3D&quot;${text}### openvpn ${dev} en=
+d ###&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+    sed -i &quot;1i${text}&=
+quot; &quot;$conf&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+    ;;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+dns-down)=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    sed -i &quot;/#=
+## openvpn ${dev} begin ###/,/### openvpn ${dev} end ###/d&quot; &quot;$con=
+f&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    ;;</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+esac</span><br><span>diff=
+ --git a/distro/dns-scripts/systemd-dns-updown.sh b/distro/dns-scripts/syst=
+emd-dns-updown.sh</span><br><span>new file mode 100644</span><br><span>inde=
+x 0000000..69bbebf</span><br><span>--- /dev/null</span><br><span>+++ b/dist=
+ro/dns-scripts/systemd-dns-updown.sh</span><br><span>@@ -0,0 +1,194 @@</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+#!/bin/bash</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+#</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+# dns-updown - add/remove openvpn provided DNS inf=
+ormation</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+# Copyright (C) 2024 OpenVPN =
+Inc &lt;sales@...515...&gt;</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+#</span><br><span style=3D"color: hsl(120, 100%, 40%);">+# SPDX-Lic=
+ense-Identifier: GPL-2.0</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+#</span><br><span style=3D"color: hsl(120, 100%, 40%);">+# Add/remove =
+openvpn DNS settings from the env into/from</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+# the system. Supported backends in this order:</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+#</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+#   * systemd-resolved</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+#   * resolvconf</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+#</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+# Example env from openvpn (not all are always applied):</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+#</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+#   dev tun0</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+#   script-type dns-up</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+#   dns_search_domain_1 mycorp.in</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+#   dns_search_domain_2 eu.myc=
+orp.com</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#   dns_serv=
+er_1_address_1 192.168.99.254</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+#   dns_server_1_address_2 fd00::99:53</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+#   dns_server_1_port_1 53</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+#   dns_server_1_port_2 53</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+#   dns_server_1_resolve_domain_=
+1 mycorp.in</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#   dns_=
+server_1_resolve_domain_2 eu.mycorp.com</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+#   dns_server_1_dnssec true</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+#   dns_server_1_transport DoH</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+#   dns_server_1_sni dns.mycorp.in<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+#</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+function do_resolved_servers {</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+    local sni=3D&quot;&quot;</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+    local transport_var=3Ddns_server_=
+${n}_transport</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    l=
+ocal sni_var=3Ddns_server_${n}_sni</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+    [ &quot;${!transport_var}&quot; =3D &quot;DoT&quot; ] &a=
+mp;&amp; sni=3D&quot;#${!sni_var}&quot;</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++    local i=3D1</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+ local addrs=3D&quot;&quot;</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+    while :; do</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+        local addr_var=3Ddns_server_${n}_address_${i}</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+        local addr=3D&quot;${!addr_va=
+r}&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        [ -=
+n &quot;$addr&quot; ] || break</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        =
+local port_var=3Ddns_server_${n}_port_${i}</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+        if [ -n &quot;${!port_var}&quot; ]; then</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+            if [[ &quot=
+;$addr&quot; =3D~ : ]]; then</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+                addr=3D&quot;[$addr]&quot;</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+            fi</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+            addrs+=3D&quot;${addr}:${!port_var=
+}${sni} &quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
+   else</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            =
+addrs+=3D&quot;${addr}${sni} &quot;</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+        fi</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+        i=3D$((i+1))</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+    done</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+    resolvectl dns &qu=
+ot;$dev&quot; $addrs</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+function do_resolved_domains {</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+    local list=3D&quot;&q=
+uot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    for domain_=
+var in ${!dns_search_domain_*}; do</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+        list+=3D&quot;${!domain_var} &quot;</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+    done</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+    local domain_var=3Ddns_server_${n}_resolve_=
+domain_1</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if [ -z=
+ &quot;${!domain_var}&quot; ]; then</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+        resolvectl default-route &quot;$dev&quot; true</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+        list+=3D&quot;~.=
+&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    else</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+        resolvectl defau=
+lt-route &quot;$dev&quot; false</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+        local i=3D1</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+        while :; do</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+            domain_var=3Ddns_server_${n}_resolve_domain_${i}</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+            [ -n &quot=
+;${!domain_var}&quot; ] || break</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+            # Add as split domain (~ prefix), if it doesn&#39;=
+t already exist</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+        [[ &quot;$list&quot; =3D~ (^| )&quot;${!domain_var}&quot;( |$) ]] \=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+                || =
+list+=3D&quot;~${!domain_var} &quot;</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+            i=3D$((i+1))</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+        done</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+    fi</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    resolvectl do=
+main &quot;$dev&quot; $list</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+function do_resolved_dnssec {=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    local dnssec_va=
+r=3Ddns_server_${n}_dnssec</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+    if [ &quot;${!dnssec_var}&quot; =3D &quot;optional&quot; ]; then=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        resolvectl =
+dnssec &quot;$dev&quot; allow-downgrade</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+    elif [ &quot;${!dnssec_var}&quot; =3D &quot;yes&quo=
+t; ]; then</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        r=
+esolvectl dnssec &quot;$dev&quot; true</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+    else</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+        resolvectl dnssec &quot;$dev&quot; false</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+    fi</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+function do_r=
+esolved_dnsovertls {</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++    local transport_var=3Ddns_server_${n}_transport</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    if [ &quot;${!transport_var}&quot; =
+=3D &quot;DoT&quot; ]; then</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+        resolvectl dnsovertls &quot;$dev&quot; true</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+    else</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+        resolvectl dnsovertls &quot;$dev&quot;=
+ false</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    fi</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+function do_resolved {</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+    [[ &quot;$(readlink /etc/resolv.conf)&quot; =3D~ systemd=
+ ]] || return 1</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+    n=3D1</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+    while :; do</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+        local addr_var=3Ddns_server_$=
+{n}_address_1</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
+  [ -n &quot;${!addr_var}&quot; ] || {</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+            echo &quot;setting DNS failed, no compatible=
+ server profile&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+            return 1</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+        }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+        # Skip server prof=
+iles which require DNS-over-HTTPS</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+        local transport_var=3Ddns_server_${n}_transport</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+        [ -n &quot;${!tra=
+nsport_var}&quot; -a &quot;${!transport_var}&quot; =3D &quot;DoH&quot; ] ||=
+ break</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+        n=3D$((n+1))</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+    done</span><br><span style=
 =3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+        err =3D SetNameServers(iid, msg-&gt;family, addrs);<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+        if (err)</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+        {</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+            return err;</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+        }</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+        wchar_t *tmp_iid =3D _wcsdup(iid);</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+        if (!tmp_iid || AddListItem=
-(&amp;(*lists)[undo_type], tmp_iid))</span><br><span style=3D"color: hsl(12=
+ 100%, 40%);">+    if [ &quot;$script_type&quot; =3D &quot;dns-up&quot; ]; =
+then</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        echo &q=
+uot;setting DNS using resolvectl&quot;</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+        do_resolved_servers</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+        do_resolved_domains</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+        do_resolved_dnssec</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+        do_resolved_dnsovertls</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+    else</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+        echo &quot;unsetting DNS =
+using resolvectl&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+        resolvectl revert &quot;$dev&quot;</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+    fi</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    re=
+turn 0</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+function only_standard_server_ports {</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+    local i=3D1</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+    while :; do</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+        local addr_var=3Ddns_server_${n}=
+_address_${i}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
+  [ -n &quot;${!addr_var}&quot; ] || return 0</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+        local port_var=3Ddns_server_${n}_port_${i}</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+        [ -z &quot;${!port_var}&quot;=
+ -o &quot;${!port_var}&quot; =3D &quot;53&quot; ] || return 1</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+        i=3D$((i+1))</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+    done</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+function do_resolvconf {=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    [ -x /sbin/reso=
+lvconf ] || return 1</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    n=3D1</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+    while :; do</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+        local server_addr_var=3D=
+dns_server_${n}_address_1</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+        [ -n &quot;${!server_addr_var}&quot; ] || {</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+            echo &quot;setting DNS fa=
+iled, no compatible server profile&quot;</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+            return 1</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+        }</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
+ # Skip server profiles which require DNSSEC,</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+        # secure transport or use a custom port</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+        local dnssec_=
+var=3Ddns_server_${n}_dnssec</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+        local transport_var=3Ddns_server_${n}_transport</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+        [ -z &quot;${!transpor=
+t_var}&quot; -o &quot;${!transport_var}&quot; =3D &quot;plain&quot; ] \</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+            &amp;&amp; =
+[ -z &quot;${!dnssec_var}&quot; -o &quot;${!dnssec_var}&quot; =3D &quot;no&=
+quot; ] \</span><br><span style=3D"color: hsl(120, 100%, 40%);">+          =
+  &amp;&amp; only_standard_server_ports &amp;&amp; break</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+        n=3D$((n+1))</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+    done</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if [ &q=
+uot;$script_type&quot; =3D &quot;dns-up&quot; ]; then</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+        echo &quot;setting DNS using reso=
+lvconf&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
+ local domains=3D&quot;&quot;</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+        for domain_var in ${!dns_search_domain_*}; do</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+            domains+=3D&quot;${=
+!domain_var} &quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+        done</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
+ {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            local=
+ maxns=3D3</span><br><span style=3D"color: hsl(120, 100%, 40%);">+         =
+   for addr_var in ${!dns_server_1_address_*}; do</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+                [ $((maxns--)) -gt 0 ] || bre=
+ak</span><br><span style=3D"color: hsl(120, 100%, 40%);">+                e=
+cho &quot;nameserver ${!addr_var}&quot;</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+            done</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+            [ -z &quot;$domains&quot; ] || echo &quot;sear=
+ch $domains&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+      } | /sbin/resolvconf -a &quot;$dev&quot;</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+    else</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+        echo &quot;unsetting DNS using resolvconf&quot;</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+        /sbin/resolvcon=
+f -d &quot;$dev&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+    fi</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+    return 0</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++do_resolved || do_resolvconf</span><br><span>diff --git a/doc/man-sections=
+/script-options.rst b/doc/man-sections/script-options.rst</span><br><span>i=
+ndex 0d1f9ae..b758da4 100644</span><br><span>--- a/doc/man-sections/script-=
+options.rst</span><br><span>+++ b/doc/man-sections/script-options.rst</span=
+><br><span>@@ -8,9 +8,13 @@</span><br><span> Script Order of Execution</spa=
+n><br><span> -------------------------</span><br><span> </span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+#. ``--dns-script``</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+   Executed after TCP/UDP socket bind and TUN/TAP open, b=
+efore ``--up``.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</sp=
+an><br><span> #. ``--up``</span><br><span> </span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-   Executed after TCP/UDP socket bind and TUN/TAP ope=
+n.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   Executed after=
+ TCP/UDP socket bind and TUN/TAP open, after ``--dns-script``.</span><br><s=
+pan> </span><br><span> #. ``--tls-verify``</span><br><span> </span><br><spa=
+n>@@ -38,9 +42,13 @@</span><br><span> </span><br><span>    Executed in ``--=
+mode server`` mode on client instance shutdown.</span><br><span> </span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+#. ``--dns-script``</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+   Executed before TCP/UDP and TUN/TAP close, be=
+fore ``--down``.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</s=
+pan><br><span> #. ``--down``</span><br><span> </span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-   Executed after TCP/UDP and TUN/TAP close.</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+   Executed after TCP/UDP=
+ and TUN/TAP close, after ``--dns-script``.</span><br><span> </span><br><sp=
+an> #. ``--learn-address``</span><br><span> </span><br><span>@@ -173,7 +181=
+,7 @@</span><br><span>         client-crresponse cmd</span><br><span> </spa=
+n><br><span>   OpenVPN will write the response of the client into a tempora=
+ry file.</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  The filenam=
+e will be passed as an argument to ``cmd``, and the file will be</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+  The filename will be passed =
+as an argument to ``cmd``, and the file will</span><br><span>   automatical=
+ly deleted by OpenVPN after the script returns.</span><br><span> </span><br=
+><span>   The response is passed as is from the client. The script needs to=
+ check</span><br><span>@@ -235,6 +243,23 @@</span><br><span>   The ``--clie=
+nt-disconnect`` command is not passed any extra arguments</span><br><span> =
+  (only those arguments specified in cmd, if any).</span><br><span> </span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+--dns-script cmd | disable=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  Run command ``cmd=
+``, instead of the default DNS command that comes with</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+  openvpn. If ``cmd`` is ``disable`` no =
+command is executed to set ``--dns``</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+  options. If you write your own command, please make sure=
+ to ignore ``--dns``</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++  server profiles that cannot be applied. Port, DNSSEC and secure transpor=
+t</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  settings need to=
+ be adhered to. If split DNS is not possible a full redirect</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+  can be used as a fallback. If no=
+t all of the server addresses or search domains</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+  can be configured, apply them on the order th=
+ey are listed in.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+  Note that ``--dns-s=
+cript`` is not supported on Windows. DNS will</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+  always be set by the service there.</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+  Note that DNS-related ``--dhcp-option``s will no=
+t be handled by this hook.</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+  If any ``--dns server`` option is present, DNS-related ``--dhcp-op=
+tion``s will</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  be ig=
+nored. Otherwise foreign_option environment variables will be passed to</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+   ``--up`` and ``--dow=
+n`` hooks for backward compatibility.</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+</span><br><span> --down cmd</span><br><span>   Run comma=
+nd ``cmd`` after TUN/TAP device close (post ``--user`` UID</span><br><span>=
+   change and/or ``--chroot`` ). ``cmd`` consists of a path to script (or</=
+span><br><span>@@ -661,7 +686,7 @@</span><br><span>     names). Set prior t=
+o ``--up`` or ``--down`` script execution.</span><br><span> </span><br><spa=
+n> :code:`dns_*`</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    T=
+he ``--dns`` configuration options will be made available to script</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+    The ``--dns`` configura=
+tion options will be made available to ``--dns-script``</span><br><span>   =
+  execution through this set of environment variables. Variables appear</sp=
+an><br><span>     only if the corresponding option has a value assigned. Fo=
+r the semantics</span><br><span>     of each individual variable, please re=
+fer to the documentation for ``--dns``.</span><br><span>diff --git a/src/op=
+envpn/Makefile.am b/src/openvpn/Makefile.am</span><br><span>index 37af683..=
+6664aae 100644</span><br><span>--- a/src/openvpn/Makefile.am</span><br><spa=
+n>+++ b/src/openvpn/Makefile.am</span><br><span>@@ -30,7 +30,8 @@</span><br=
+><span> 	$(OPTIONAL_LZ4_CFLAGS) \</span><br><span> 	$(OPTIONAL_PKCS11_HELPE=
+R_CFLAGS) \</span><br><span> 	$(OPTIONAL_INOTIFY_CFLAGS) \</span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">-	-DPLUGIN_LIBDIR=3D\&quot;${plugindir}=
+\&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+	-DPLUGIN_LI=
+BDIR=3D\&quot;${plugindir}\&quot; \</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+	-DDNS_UPDOWN_PATH=3D\&quot;${scriptdir}/dns-updown\&quot;<=
+/span><br><span> </span><br><span> if WIN32</span><br><span> # we want unic=
+ode entry point but not the macro</span><br><span>diff --git a/src/openvpn/=
+dns.c b/src/openvpn/dns.c</span><br><span>index b6e524f..6a4669f 100644</sp=
+an><br><span>--- a/src/openvpn/dns.c</span><br><span>+++ b/src/openvpn/dns.=
+c</span><br><span>@@ -30,6 +30,7 @@</span><br><span> #include &quot;dns.h&q=
+uot;</span><br><span> #include &quot;socket.h&quot;</span><br><span> #inclu=
+de &quot;options.h&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+#include &quot;run_command.h&quot;</span><br><span> </span><br><span> =
+#ifdef _WIN32</span><br><span> #include &quot;win32.h&quot;</span><br><span=
+>@@ -262,6 +263,8 @@</span><br><span>     clone.search_domains =3D clone_dn=
+s_domains(o-&gt;search_domains, gc);</span><br><span>     clone.servers =3D=
+ clone_dns_servers(o-&gt;servers, gc);</span><br><span>     clone.servers_p=
+repull =3D clone_dns_servers(o-&gt;servers_prepull, gc);</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+    clone.script =3D o-&gt;script;</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+    clone.user_defined_=
+script =3D o-&gt;user_defined_script;</span><br><span> </span><br><span>   =
+  return clone;</span><br><span> }</span><br><span>@@ -548,6 +551,54 @@</sp=
+an><br><span>     send_msg_iservice(o-&gt;msg_channel, &amp;nrpt, sizeof(nr=
+pt), &amp;ack, &quot;DNS&quot;);</span><br><span> }</span><br><span> </span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+#else /* ifdef _WIN32 */<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+static void</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+script_env_set(bool up, const struct dns_option=
+s *o, const struct tuntap *tt, struct env_set *es)</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+    setenv_str(es, &quot;dev&quot;, tt-&gt;actual_name);</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+    setenv_str(es, &quot;=
+script_type&quot;, up ? &quot;dns-up&quot; : &quot;dns-down&quot;);</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+    setenv_dns_options(o, e=
+s);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+static int</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+do_run_up_down_script(bool up, const struct dns_options *o, co=
+nst struct tuntap *tt)</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    struct gc_a=
+rena gc =3D gc_new();</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+    struct argv argv =3D argv_new();</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+    struct env_set *es =3D env_set_create(&amp;gc);</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    script_env_set(up, o, tt, es);</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+    argv_printf(&amp;argv, &quot;%s&quot;, o-=
+&gt;script);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    arg=
+v_msg(M_INFO, &amp;argv);</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+    int res;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+   if (o-&gt;user_defined_script)</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+        res =3D openvpn_run_script(&amp;argv, es, S_EXITCODE, &quot;dns scr=
+ipt&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+    else</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+        res =3D openvpn_execve_check(&amp;argv,=
+ es, S_EXITCODE, &quot;WARNING: Failed running dns script&quot;);</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    argv_free(&amp;argv);</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+    gc_free(&amp;gc);</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+    return res;</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++static void</span><br><span style=3D"color: hsl(120, 100%, 40%);">+run_up_=
+down_script(bool up, struct options *o, const struct tuntap *tt)</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+    if (!o-&gt;dns_options.script)</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+        return;</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    int s=
+tatus;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    status =
+=3D do_run_up_down_script(up, &amp;o-&gt;dns_options, tt);</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+    msg(M_INFO, &quot;dns script exi=
+ted with status %d&quot;, status);</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</s=
+pan><br><span> #endif /* _WIN32 */</span><br><span> </span><br><span> void<=
+/span><br><span>@@ -666,5 +717,7 @@</span><br><span> </span><br><span> #ifd=
+ef _WIN32</span><br><span>     run_up_down_service(up, o, tt);</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+#else</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+    run_up_down_script(up, o, tt);</span><br><=
+span> #endif /* ifdef _WIN32 */</span><br><span> }</span><br><span>diff --g=
+it a/src/openvpn/dns.h b/src/openvpn/dns.h</span><br><span>index f24e30b..3=
+8ced79 100644</span><br><span>--- a/src/openvpn/dns.h</span><br><span>+++ b=
+/src/openvpn/dns.h</span><br><span>@@ -73,6 +73,8 @@</span><br><span>     s=
+truct dns_server *servers_prepull;</span><br><span>     struct dns_server *=
+servers;</span><br><span>     struct gc_arena gc;</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+    const char *script;</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    bool user_defined_script;</span><br><=
+span> };</span><br><span> </span><br><span> /**</span><br><span>diff --git =
+a/src/openvpn/options.c b/src/openvpn/options.c</span><br><span>index 11a19=
+bb..48fefb2 100644</span><br><span>--- a/src/openvpn/options.c</span><br><s=
+pan>+++ b/src/openvpn/options.c</span><br><span>@@ -528,6 +528,7 @@</span><=
+br><span>     &quot;                  sni &lt;domain&gt; : DNS server name =
+indication\n&quot;</span><br><span>     &quot;--dns search-domains &lt;doma=
+in&gt; [domain ...]:\n&quot;</span><br><span>     &quot;                  A=
+dd domains to DNS domain search list\n&quot;</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+    &quot;--dns-script cmd : Run cmd as user defin=
+ed dns configuration script\n&quot;</span><br><span>     &quot;--auth-retry=
+ t  : How to handle auth failures.  Set t to\n&quot;</span><br><span>     &=
+quot;                  none (default), interact, or nointeract.\n&quot;</sp=
+an><br><span>     &quot;--static-challenge t e [&lt;scrv1|concat&gt;]: Enab=
+le static challenge/response protocol using\n&quot;</span><br><span>@@ -919=
+,6 +920,8 @@</span><br><span> #ifndef ENABLE_DCO</span><br><span>     o-&gt=
+;disable_dco =3D true;</span><br><span> #endif /* ENABLE_DCO */</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+    o-&gt;dns_options.script =3D DNS_UPDOWN_PATH;<=
+/span><br><span> }</span><br><span> </span><br><span> void</span><br><span>=
+@@ -8194,6 +8197,28 @@</span><br><span>         to-&gt;ip_win32_defined =3D=
+ true;</span><br><span>     }</span><br><span> #endif /* ifdef _WIN32 */</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+    else if (streq(p[0=
+], &quot;dns-script&quot;) &amp;&amp; p[1])</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+        VERIFY_PERMISSION(OPT_P_SCRIPT);</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+        if (!no_more_than_n_args(msglevel, p=
+, 2, NM_QUOTE_HINT))</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++        {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+         =
+   goto err;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
+ }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        if (streq=
+(p[1], &quot;disable&quot;))</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+        {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+           options-&gt;dns_options.script =3D NULL;</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+        }</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+        else</span><br><span style=3D"color: hsl(12=
 0, 100%, 40%);">+        {</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+            free(tmp_iid);</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+            ResetNameServers(iid, msg-&gt;family);</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+            return ERROR_OUTOF=
-MEMORY;</span><br><span>         }</span><br><span>     }</span><br><span> =
-</span><br><span>@@ -1916,8 +1949,6 @@</span><br><span>     }</span><br><sp=
-an>     ApplyDnsSettings(gpol);</span><br><span> </span><br><span style=3D"=
-color: hsl(0, 100%, 40%);">-out:</span><br><span style=3D"color: hsl(0, 100=
-%, 40%);">-    free(wide_name);</span><br><span>     return err;</span><br>=
-<span> }</span><br><span> </span><br><span>@@ -2298,11 +2329,11 @@</span><b=
-r><span>                     break;</span><br><span> </span><br><span>     =
-            case undo_dns4:</span><br><span style=3D"color: hsl(0, 100%, 40=
-%);">-                    DeleteDNS(AF_INET, item-&gt;data);</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+                    ResetNameServe=
-rs(item-&gt;data, AF_INET);</span><br><span>                     break;</sp=
-an><br><span> </span><br><span>                 case undo_dns6:</span><br><=
-span style=3D"color: hsl(0, 100%, 40%);">-                    DeleteDNS(AF_=
-INET6, item-&gt;data);</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+                    ResetNameServers(item-&gt;data, AF_INET6);</span><br=
-><span>                     break;</span><br><span> </span><br><span>      =
-           case undo_domains:</span><br><span></span><br></pre><p>To view, =
-visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/825?usp=3Demail">cha=
-nge 825</a>. To unsubscribe, or for help writing mail filters, visit <a hre=
-f=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope it=
-emtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"action=
-" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"=
-http://gerrit.openvpn.net/c/openvpn/+/825?usp=3Demail"/><meta itemprop=3D"n=
-ame" content=3D"View Change"/></div></div>
+0%);">+            if (options-&gt;dns_options.user_defined_script =3D=3D f=
+alse)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            {<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+                /* U=
+nset the default script to prevent warnings */</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+                options-&gt;dns_options.script =
+=3D NULL;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+          =
+  }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            set_=
+user_script(options, &amp;options-&gt;dns_options.script, p[1], p[0], false=
+);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            optio=
+ns-&gt;dns_options.user_defined_script =3D true;</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+        }</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+    }</span><br><span>     else if (streq(p[0], &quot;dn=
+s&quot;) &amp;&amp; p[1])</span><br><span>     {</span><br><span>         V=
+ERIFY_PERMISSION(OPT_P_DHCPDNS);</span><br><span></span><br></pre><p>To vie=
+w, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/838?usp=3Demail">=
+change 838</a>. To unsubscribe, or for help writing mail filters, visit <a =
+href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope=
+ itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"act=
+ion" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=
+=3D"http://gerrit.openvpn.net/c/openvpn/+/838?usp=3Demail"/><meta itemprop=
+=3D"name" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: Id2bed0908e84c19b8fb6fe80637=
-6316793e550b4 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 825 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 12 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: Ifbe4ffb44d3bfcaa50adb38cacb=
+3436fcdc71b10 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 838 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 11 </div>
 <div style=3D"display:none"> Gerrit-Owner: d12fk &lt;heiko@...515...&gt; </=
 div>
 <div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
 1...&gt; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
 .1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: stipa &lt;lstipakov@...277...=
-&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
 ..1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
 41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: d12fk &lt;heiko@...515...&gt=
-; </div>
 <div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
 
 
---QrVMnOZj8gM=--
+--84cSgnFGRNE=--
 
