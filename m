@@ -1,16 +1,16 @@
-From: "flichtenheld (Code Review)" <gerrit@...515...>
-Date: Thu, 6 Mar 2025 12:54:53 +0000
-In-Reply-To: <gerrit.1733989644000.I6b67e3a00dd84bf348b6af28115ee11138c3a111@...2715...>
-References: <gerrit.1733989644000.I6b67e3a00dd84bf348b6af28115ee11138c3a111@...2715...>
-Reply-To: frank@...2641..., arne-openvpn@...1227..., heiko@...515...,
- openvpn-devel@lists.sourceforge.net, max@...2606...
-Message-ID: <055b412af95ef659c383ec00edd8442576aaaf4e-EmailReviewComments-HTML@...2715...>
+From: "d12fk (Code Review)" <gerrit@...515...>
+Date: Thu, 6 Mar 2025 12:56:53 +0000
+In-Reply-To: <gerrit.1733989644000.Ifbe4ffb44d3bfcaa50adb38cacb3436fcdc71b10@...2715...>
+References: <gerrit.1733989644000.Ifbe4ffb44d3bfcaa50adb38cacb3436fcdc71b10@...2715...>
+Reply-To: heiko@...515..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net, frank@...2641...
+Message-ID: <7098a617c655f5b414043b79382a65dae5377f51-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="aNG832TCCkU="; charset=UTF-8
-Subject: [Openvpn-devel] [L] Change in openvpn[master]: dns: support running
- up/down script with privsep
+Content-Type: multipart/alternative; boundary="6MGhz2I/seE="; charset=UTF-8
+Subject: [Openvpn-devel] [L] Change in openvpn[master]: dns: apply settings
+ via script on unixoid systems
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,90 +19,118 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: d12fk <heiko@...515...>
-Cc: MaxF <max@...2606...>, plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Cc: flichtenheld <frank@...2641...>, plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---aNG832TCCkU=
+--6MGhz2I/seE=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: d12fk, plaisthos.
+Attention is currently required from: flichtenheld, plaisthos.
 
-flichtenheld has posted comments on this change. ( http://gerrit.openvpn.ne=
-t/c/openvpn/+/839?usp=3Demail )
+d12fk has posted comments on this change. ( http://gerrit.openvpn.net/c/ope=
+nvpn/+/838?usp=3Demail )
 
-The change is no longer submittable: Code-Review is unsatisfied now.
-
-Change subject: dns: support running up/down script with privsep
+Change subject: dns: apply settings via script on unixoid systems
 ......................................................................
 
 
-Patch Set 10: -Code-Review
+Patch Set 10:
 
-(1 comment)
+(3 comments)
 
-Patchset:
+File distro/dns-scripts/systemd-dns-updown.sh:
 
-PS10:
-still testing
+http://gerrit.openvpn.net/c/openvpn/+/838/comment/48ccf623_85a0324a :
+PS9, Line 75: =3D~
+> This broken now. [=E2=80=A6]
+Good catch
+
+
+http://gerrit.openvpn.net/c/openvpn/+/838/comment/9f07bc79_ffc94f9f :
+PS9, Line 75: "$
+> Maybe we could add a comment here like: "Add as a routing-only domain (~ =
+prefix) unless already conf [=E2=80=A6]
+Acknowledged
+
+
+http://gerrit.openvpn.net/c/openvpn/+/838/comment/172c246a_ae95ab11 :
+PS9, Line 116:         [ -n "${!transport_var}" -a "${!transport_var}" =3D =
+"DoH" ] || break
+> I think this line could use a comment like "skip DoH dns entries", otherw=
+ise it takes a while to und [=E2=80=A6]
+Done
 
 
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/839?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/838?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings
 
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: I6b67e3a00dd84bf348b6af28115ee11138c3a111
-Gerrit-Change-Number: 839
+Gerrit-Change-Id: Ifbe4ffb44d3bfcaa50adb38cacb3436fcdc71b10
+Gerrit-Change-Number: 838
 Gerrit-PatchSet: 10
 Gerrit-Owner: d12fk <heiko@...515...>
-Gerrit-Reviewer: MaxF <max@...2606...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: d12fk <heiko@...515...>
-Gerrit-Comment-Date: Thu, 06 Mar 2025 12:54:53 +0000
+Gerrit-Attention: flichtenheld <frank@...2641...>
+Gerrit-Comment-Date: Thu, 06 Mar 2025 12:56:53 +0000
 Gerrit-HasComments: Yes
-Gerrit-Has-Labels: Yes
+Gerrit-Has-Labels: No
+Comment-In-Reply-To: flichtenheld <frank@...2641...>
 Gerrit-MessageType: comment
 
---aNG832TCCkU=
+--6MGhz2I/seE=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p> Attention is currently required from: d12fk, plaisthos. </p>
-<p>Patch set 10:<span style=3D"border-radius: 3px; display: inline-block; m=
-argin: 0 2px; padding: 4px;background-color: #ddd;">-Code-Review</span></p>=
-<p>The change is no longer submittable: Code-Review is unsatisfied now.</p>=
-<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/839?usp=3Demail">View C=
-hange</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0;"><=
-li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-style=
-: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p style=
-=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/8=
-39?tab=3Dcomments">Patch Set #10:</a> </p><p style=3D"white-space: pre-wrap=
-; word-wrap: break-word;">still testing</p></li></ul></li></ul><p>To view, =
-visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/839?usp=3Demail">cha=
-nge 839</a>. To unsubscribe, or for help writing mail filters, visit <a hre=
-f=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope it=
-emtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"action=
-" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"=
-http://gerrit.openvpn.net/c/openvpn/+/839?usp=3Demail"/><meta itemprop=3D"n=
-ame" content=3D"View Change"/></div></div>
+<p> Attention is currently required from: flichtenheld, plaisthos. </p>
+<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/838?usp=3Demail">View C=
+hange</a></p><p>3 comments:</p><ul style=3D"list-style: none; padding: 0;">=
+<li style=3D"margin: 0; padding: 0;"><p>File distro/dns-scripts/systemd-dns=
+-updown.sh:</p><ul style=3D"list-style: none; padding: 0;"><li style=3D"mar=
+gin: 0; padding: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"h=
+ttp://gerrit.openvpn.net/c/openvpn/+/838/comment/48ccf623_85a0324a">Patch S=
+et #9, Line 75:</a> <code style=3D"font-family:monospace,monospace">=3D~</c=
+ode></p><p><blockquote style=3D"border-left: 1px solid #aaa; margin: 10px 0=
+; padding: 0 10px;">This broken now. [=E2=80=A6]</blockquote></p><p style=
+=3D"white-space: pre-wrap; word-wrap: break-word;">Good catch</p></li><li s=
+tyle=3D"margin: 0; padding: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><=
+a href=3D"http://gerrit.openvpn.net/c/openvpn/+/838/comment/9f07bc79_ffc94f=
+9f">Patch Set #9, Line 75:</a> <code style=3D"font-family:monospace,monospa=
+ce">&quot;$</code></p><p><blockquote style=3D"border-left: 1px solid #aaa; =
+margin: 10px 0; padding: 0 10px;">Maybe we could add a comment here like: &=
+quot;Add as a routing-only domain (~ prefix) unless already conf [=E2=80=A6=
+]</blockquote></p><p style=3D"white-space: pre-wrap; word-wrap: break-word;=
+">Acknowledged</p></li><li style=3D"margin: 0; padding: 0 0 0 16px;"><p sty=
+le=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/+=
+/838/comment/172c246a_ae95ab11">Patch Set #9, Line 116:</a> <code style=3D"=
+font-family:monospace,monospace">        [ -n &quot;${!transport_var}&quot;=
+ -a &quot;${!transport_var}&quot; =3D &quot;DoH&quot; ] || break</code></p>=
+<p><blockquote style=3D"border-left: 1px solid #aaa; margin: 10px 0; paddin=
+g: 0 10px;">I think this line could use a comment like &quot;skip DoH dns e=
+ntries&quot;, otherwise it takes a while to und [=E2=80=A6]</blockquote></p=
+><p style=3D"white-space: pre-wrap; word-wrap: break-word;">Done</p></li></=
+ul></li></ul><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openv=
+pn/+/838?usp=3Demail">change 838</a>. To unsubscribe, or for help writing m=
+ail filters, visit <a href=3D"http://gerrit.openvpn.net/settings">settings<=
+/a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div ite=
+mscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link =
+itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/838?usp=3Dem=
+ail"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I6b67e3a00dd84bf348b6af28115=
-ee11138c3a111 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 839 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: Ifbe4ffb44d3bfcaa50adb38cacb=
+3436fcdc71b10 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 838 </div>
 <div style=3D"display:none"> Gerrit-PatchSet: 10 </div>
 <div style=3D"display:none"> Gerrit-Owner: d12fk &lt;heiko@...515...&gt; </=
 div>
-<div style=3D"display:none"> Gerrit-Reviewer: MaxF &lt;max@...2606...&gt; <=
-/div>
 <div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
 1...&gt; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
@@ -111,14 +139,16 @@ div>
 ts.sourceforge.net&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
 ..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: d12fk &lt;heiko@...515...&gt=
-; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Thu, 06 Mar 2025 12:54:53=
+<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
+41...&gt; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Thu, 06 Mar 2025 12:56:53=
  +0000 </div>
 <div style=3D"display:none"> Gerrit-HasComments: Yes </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: No </div>
+<div style=3D"display:none"> Comment-In-Reply-To: flichtenheld &lt;frank@...1186...=
+.2641...&gt; </div>
 <div style=3D"display:none"> Gerrit-MessageType: comment </div>
 
 
---aNG832TCCkU=--
+--6MGhz2I/seE=--
 
