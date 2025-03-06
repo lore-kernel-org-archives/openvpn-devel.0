@@ -1,17 +1,16 @@
-From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Thu, 6 Mar 2025 12:18:06 +0000
-In-Reply-To: <gerrit.1737719138000.Iff12c4dbac84a814612aa8b5b89224be08bb9058@...2715...>
-References: <gerrit.1737719138000.Iff12c4dbac84a814612aa8b5b89224be08bb9058@...2715...>
-Reply-To: gert@...1296..., arne-openvpn@...1227...,
- gianmarco@...2726..., openvpn-devel@lists.sourceforge.net,
- frank@...2641...
-Message-ID: <bf3dd5f69fd1c0aae7d4ffd4712cd0136d59a17a-EmailReplacePatchSet-HTML@...2715...>
+From: "flichtenheld (Code Review)" <gerrit@...515...>
+Date: Thu, 6 Mar 2025 12:41:26 +0000
+In-Reply-To: <gerrit.1733989644000.Ifbe4ffb44d3bfcaa50adb38cacb3436fcdc71b10@...2715...>
+References: <gerrit.1733989644000.Ifbe4ffb44d3bfcaa50adb38cacb3436fcdc71b10@...2715...>
+Reply-To: frank@...2641..., arne-openvpn@...1227..., heiko@...515...,
+ openvpn-devel@lists.sourceforge.net
+Message-ID: <846d2b3562c7e867b71f3c0430a69ec1bebec1fd-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="iFOXF7eu56Y="; charset=UTF-8
-Subject: [Openvpn-devel] [M] Change in openvpn[master]: Rename occurences of
- 'struct link_socket' from 'ls' to 'sock'
+Content-Type: multipart/alternative; boundary="zPod/9e4ROc="; charset=UTF-8
+Subject: [Openvpn-devel] [L] Change in openvpn[master]: dns: apply settings
+ via script on unixoid systems
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,685 +19,151 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: its_Giaan <gianmarco@...2726...>, plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: d12fk <heiko@...515...>
+Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---iFOXF7eu56Y=
+--zPod/9e4ROc=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-cron2 has uploaded a new patch set (#8) to the change originally created by=
- its_Giaan. ( http://gerrit.openvpn.net/c/openvpn/+/874?usp=3Demail )
+Attention is currently required from: d12fk, plaisthos.
 
-The following approvals got outdated and were removed:
-Code-Review+2 by cron2
+flichtenheld has posted comments on this change. ( http://gerrit.openvpn.ne=
+t/c/openvpn/+/838?usp=3Demail )
 
-
-Change subject: Rename occurences of 'struct link_socket' from 'ls' to 'soc=
-k'
+Change subject: dns: apply settings via script on unixoid systems
 ......................................................................
 
-Rename occurences of 'struct link_socket' from 'ls' to 'sock'
 
-This commit renames all instances of 'struct link_socket'
-from the abbreviation 'ls' to the more descriptive 'sock'
-making it clearer that the variables represent
-socket-related structures.
+Patch Set 10: Code-Review-1
 
-No functional changes have been introduced.
+(4 comments)
 
-Change-Id: Iff12c4dbac84a814612aa8b5b89224be08bb9058
-Signed-off-by: Gianmarco De Gregori <gianmarco@...2726...>
-Acked-by: Gert Doering <gert@...1296...>
-Message-Id: <20250306101339.12985-1-gert@...1296...>
-URL: https://sourceforge.net/p/openvpn/mailman/message/59156800/
-URL: https://gerrit.openvpn.net/c/openvpn/+/874
-Signed-off-by: Gert Doering <gert@...1296...>
----
-M src/openvpn/init.c
-M src/openvpn/init.h
-M src/openvpn/mtcp.c
-M src/openvpn/mtcp.h
-M src/openvpn/mudp.c
-M src/openvpn/mudp.h
-M src/openvpn/multi.c
-M src/openvpn/multi.h
-8 files changed, 33 insertions(+), 33 deletions(-)
+Patchset:
+
+PS10:
+not all of my comments addressed, but works again
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/74/874/8
+File distro/dns-scripts/systemd-dns-updown.sh:
 
-diff --git a/src/openvpn/init.c b/src/openvpn/init.c
-index c21474a..1be205b 100644
---- a/src/openvpn/init.c
-+++ b/src/openvpn/init.c
-@@ -4946,12 +4946,12 @@
- void
- inherit_context_child(struct context *dest,
-                       const struct context *src,
--                      struct link_socket *ls)
-+                      struct link_socket *sock)
- {
-     CLEAR(*dest);
-
-     /* proto_is_dgram will ASSERT(0) if proto is invalid */
--    dest->mode =3D proto_is_dgram(ls->info.proto) ? CM_CHILD_UDP : CM_CHIL=
-D_TCP;
-+    dest->mode =3D proto_is_dgram(sock->info.proto) ? CM_CHILD_UDP : CM_CH=
-ILD_TCP;
-
-     dest->gc =3D gc_new();
-
-@@ -4977,7 +4977,7 @@
-
-     /* options */
-     dest->options =3D src->options;
--    dest->options.ce.proto =3D ls->info.proto;
-+    dest->options.ce.proto =3D sock->info.proto;
-     options_detach(&dest->options);
-
-     dest->c2.event_set =3D src->c2.event_set;
-@@ -4988,7 +4988,7 @@
-          * The CM_TOP context does the socket listen(),
-          * and the CM_CHILD_TCP context does the accept().
-          */
--        dest->c2.accept_from =3D ls;
-+        dest->c2.accept_from =3D sock;
-     }
-
- #ifdef ENABLE_PLUGIN
-@@ -5015,11 +5015,11 @@
-         ALLOC_ARRAY_GC(dest->c2.link_sockets, struct link_socket *, 1, &de=
-st->gc);
-
-         /* inherit parent link_socket and tuntap */
--        dest->c2.link_sockets[0] =3D ls;
-+        dest->c2.link_sockets[0] =3D sock;
-
-         ALLOC_ARRAY_GC(dest->c2.link_socket_infos, struct link_socket_info=
- *, 1, &dest->gc);
-         ALLOC_OBJ_GC(dest->c2.link_socket_infos[0], struct link_socket_inf=
-o, &dest->gc);
--        *dest->c2.link_socket_infos[0] =3D ls->info;
-+        *dest->c2.link_socket_infos[0] =3D sock->info;
-
-         /* locally override some link_socket_info fields */
-         dest->c2.link_socket_infos[0]->lsa =3D &dest->c1.link_socket_addrs=
-[0];
-diff --git a/src/openvpn/init.h b/src/openvpn/init.h
-index 11c32ac..50b38e3 100644
---- a/src/openvpn/init.h
-+++ b/src/openvpn/init.h
-@@ -96,7 +96,7 @@
-
- void inherit_context_child(struct context *dest,
-                            const struct context *src,
--                           struct link_socket *ls);
-+                           struct link_socket *sock);
-
- void inherit_context_top(struct context *dest,
-                          const struct context *src);
-diff --git a/src/openvpn/mtcp.c b/src/openvpn/mtcp.c
-index 0d409b6..1d62ea6 100644
---- a/src/openvpn/mtcp.c
-+++ b/src/openvpn/mtcp.c
-@@ -47,16 +47,16 @@
- };
-
- struct multi_instance *
--multi_create_instance_tcp(struct multi_context *m, struct link_socket *ls)
-+multi_create_instance_tcp(struct multi_context *m, struct link_socket *soc=
-k)
- {
-     struct gc_arena gc =3D gc_new();
-     struct multi_instance *mi =3D NULL;
-     struct hash *hash =3D m->hash;
-
--    mi =3D multi_create_instance(m, NULL, ls);
-+    mi =3D multi_create_instance(m, NULL, sock);
-     if (mi)
-     {
--        mi->real.proto =3D ls->info.proto;
-+        mi->real.proto =3D sock->info.proto;
-         struct hash_element *he;
-         const uint32_t hv =3D hash_value(hash, &mi->real);
-         struct hash_bucket *bucket =3D hash_bucket(hash, hv);
-@@ -140,10 +140,10 @@
- void
- multi_tcp_dereference_instance(struct multi_io *multi_io, struct multi_ins=
-tance *mi)
- {
--    struct link_socket *ls =3D mi->context.c2.link_sockets[0];
--    if (ls && mi->socket_set_called)
-+    struct link_socket *sock =3D mi->context.c2.link_sockets[0];
-+    if (sock && mi->socket_set_called)
-     {
--        event_del(multi_io->es, socket_event_handle(ls));
-+        event_del(multi_io->es, socket_event_handle(sock));
-         mi->socket_set_called =3D false;
-     }
-     multi_io->n_esr =3D 0;
-diff --git a/src/openvpn/mtcp.h b/src/openvpn/mtcp.h
-index 9de5203..7f95529 100644
---- a/src/openvpn/mtcp.h
-+++ b/src/openvpn/mtcp.h
-@@ -44,7 +44,7 @@
-
- bool multi_tcp_process_outgoing_link_ready(struct multi_context *m, struct=
- multi_instance *mi, const unsigned int mpp_flags);
-
--struct multi_instance *multi_create_instance_tcp(struct multi_context *m, =
-struct link_socket *ls);
-+struct multi_instance *multi_create_instance_tcp(struct multi_context *m, =
-struct link_socket *sock);
-
- void multi_tcp_link_out_deferred(struct multi_context *m, struct multi_ins=
-tance *mi);
-
-diff --git a/src/openvpn/mudp.c b/src/openvpn/mudp.c
-index c0344b1..54dfc72 100644
---- a/src/openvpn/mudp.c
-+++ b/src/openvpn/mudp.c
-@@ -188,14 +188,14 @@
-
- struct multi_instance *
- multi_get_create_instance_udp(struct multi_context *m, bool *floated,
--                              struct link_socket *ls)
-+                              struct link_socket *sock)
- {
-     struct gc_arena gc =3D gc_new();
-     struct mroute_addr real =3D {0};
-     struct multi_instance *mi =3D NULL;
-     struct hash *hash =3D m->hash;
--    real.proto =3D ls->info.proto;
--    m->hmac_reply_ls =3D ls;
-+    real.proto =3D sock->info.proto;
-+    m->hmac_reply_ls =3D sock;
-
-     if (mroute_extract_openvpn_sockaddr(&real, &m->top.c2.from.dest, true)
-         && m->top.c2.buf.len > 0)
-@@ -261,7 +261,7 @@
-                      * connect-freq but not against connect-freq-initial */
-                     reflect_filter_rate_limit_decrease(m->initial_rate_lim=
-iter);
-
--                    mi =3D multi_create_instance(m, &real, ls);
-+                    mi =3D multi_create_instance(m, &real, sock);
-                     if (mi)
-                     {
-                         hash_add_fast(hash, bucket, &mi->real, hv, mi);
-diff --git a/src/openvpn/mudp.h b/src/openvpn/mudp.h
-index 357b684..37752e1 100644
---- a/src/openvpn/mudp.h
-+++ b/src/openvpn/mudp.h
-@@ -33,7 +33,7 @@
-
- unsigned int p2mp_iow_flags(const struct multi_context *m);
-
--void multi_process_io_udp(struct multi_context *m, struct link_socket *ls);
-+void multi_process_io_udp(struct multi_context *m, struct link_socket *soc=
-k);
- /*************************************************************************=
-*/
- /**
-  * Get, and if necessary create, the multi_instance associated with a
-@@ -47,13 +47,13 @@
-  * successful, returns the newly created instance.
-  *
-  * @param m           - The single multi_context structure.
-- * @param ls          - Listening socket where this instance is connecting=
- to
-+ * @param sock        - Listening socket where this instance is connecting=
- to
-  *
-  * @return A pointer to a multi_instance if one already existed for the
-  *     packet's source address or if one was a newly created successfully.
-  *      NULL if one did not yet exist and a new one was not created.
-  */
- struct multi_instance *multi_get_create_instance_udp(struct multi_context =
-*m, bool *floated,
--                                                     struct link_socket *l=
-s);
-+                                                     struct link_socket *s=
-ock);
-
- #endif /* ifndef MUDP_H */
-diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
-index 07258be..85a1712 100644
---- a/src/openvpn/multi.c
-+++ b/src/openvpn/multi.c
-@@ -751,7 +751,7 @@
-  */
- struct multi_instance *
- multi_create_instance(struct multi_context *m, const struct mroute_addr *r=
-eal,
--                      struct link_socket *ls)
-+                      struct link_socket *sock)
- {
-     struct gc_arena gc =3D gc_new();
-     struct multi_instance *mi;
-@@ -774,7 +774,7 @@
-         generate_prefix(mi);
-     }
-
--    inherit_context_child(&mi->context, &m->top, ls);
-+    inherit_context_child(&mi->context, &m->top, sock);
-     if (IS_SIG(&mi->context))
-     {
-         goto err;
-@@ -3139,7 +3139,7 @@
-
- void
- multi_process_float(struct multi_context *m, struct multi_instance *mi,
--                    struct link_socket *ls)
-+                    struct link_socket *sock)
- {
-     struct mroute_addr real =3D {0};
-     struct hash *hash =3D m->hash;
-@@ -3195,7 +3195,7 @@
-     mi->context.c2.to_link_addr =3D &mi->context.c2.from;
-
-     /* inherit parent link_socket and link_socket_info */
--    mi->context.c2.link_sockets[0] =3D ls;
-+    mi->context.c2.link_sockets[0] =3D sock;
-     mi->context.c2.link_socket_infos[0]->lsa->actual =3D m->top.c2.from;
-
-     tls_update_remote_addr(mi->context.c2.tls_multi, &mi->context.c2.from);
-@@ -3346,7 +3346,7 @@
-  */
- bool
- multi_process_incoming_link(struct multi_context *m, struct multi_instance=
- *instance,
--                            const unsigned int mpp_flags, struct link_sock=
-et *ls)
-+                            const unsigned int mpp_flags, struct link_sock=
-et *sock)
- {
-     struct gc_arena gc =3D gc_new();
-
-@@ -3367,7 +3367,7 @@
- #ifdef MULTI_DEBUG_EVENT_LOOP
-         printf("TCP/UDP -> TUN [%d]\n", BLEN(&m->top.c2.buf));
- #endif
--        multi_set_pending(m, multi_get_create_instance_udp(m, &floated, ls=
-));
-+        multi_set_pending(m, multi_get_create_instance_udp(m, &floated, so=
-ck));
-     }
-     else
-     {
-@@ -3401,14 +3401,14 @@
-             /* decrypt in instance context */
-
-             perf_push(PERF_PROC_IN_LINK);
--            lsi =3D &ls->info;
-+            lsi =3D &sock->info;
-             orig_buf =3D c->c2.buf.data;
-             if (process_incoming_link_part1(c, lsi, floated))
-             {
-                 /* nonzero length means that we have a valid, decrypted pa=
-cked */
-                 if (floated && c->c2.buf.len > 0)
-                 {
--                    multi_process_float(m, m->pending, ls);
-+                    multi_process_float(m, m->pending, sock);
-                 }
-
-                 process_incoming_link_part2(c, lsi, orig_buf);
-diff --git a/src/openvpn/multi.h b/src/openvpn/multi.h
-index 4104706..e14ad60 100644
---- a/src/openvpn/multi.h
-+++ b/src/openvpn/multi.h
-@@ -272,7 +272,7 @@
- void multi_top_free(struct multi_context *m);
-
- struct multi_instance *multi_create_instance(struct multi_context *m, cons=
-t struct mroute_addr *real,
--                                             struct link_socket *ls);
-+                                             struct link_socket *sock);
-
- void multi_close_instance(struct multi_context *m, struct multi_instance *=
-mi, bool shutdown);
-
-@@ -287,7 +287,7 @@
-  * updates hashtables in multi_context.
-  */
- void multi_process_float(struct multi_context *m, struct multi_instance *m=
-i,
--                         struct link_socket *ls);
-+                         struct link_socket *sock);
-
- #define MPP_PRE_SELECT             (1<<0)
- #define MPP_CONDITIONAL_PRE_SELECT (1<<1)
-@@ -352,10 +352,10 @@
-  *                       when using TCP transport. Otherwise NULL, as is
-  *                       the case when using UDP transport.
-  * @param mpp_flags    - Fast I/O optimization flags.
-- * @param ls           - Socket where the packet was received.
-+ * @param sock         - Socket where the packet was received.
-  */
- bool multi_process_incoming_link(struct multi_context *m, struct multi_ins=
-tance *instance, const unsigned int mpp_flags,
--                                 struct link_socket *ls);
-+                                 struct link_socket *sock);
+http://gerrit.openvpn.net/c/openvpn/+/838/comment/b6e04719_5c31cad2 :
+PS9, Line 75: "$
+> Maybe we could add a comment here like: "Add as a routing-only domain (~ =
+prefix) unless already conf [=E2=80=A6]
+Done
 
 
- /**
+http://gerrit.openvpn.net/c/openvpn/+/838/comment/00a046e5_14744958 :
+PS9, Line 75: =3D~
+> This broken now. [=E2=80=A6]
+Done
+
+
+http://gerrit.openvpn.net/c/openvpn/+/838/comment/97e01f52_40b91b62 :
+PS9, Line 116:         [ -n "${!transport_var}" -a "${!transport_var}" =3D =
+"DoH" ] || break
+> I think this line could use a comment like "skip DoH dns entries", otherw=
+ise it takes a while to und [=E2=80=A6]
+Done
+
+
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/874?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/838?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings
 
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: Iff12c4dbac84a814612aa8b5b89224be08bb9058
-Gerrit-Change-Number: 874
-Gerrit-PatchSet: 8
-Gerrit-Owner: its_Giaan <gianmarco@...2726...>
-Gerrit-Reviewer: cron2 <gert@...1296...>
+Gerrit-Change-Id: Ifbe4ffb44d3bfcaa50adb38cacb3436fcdc71b10
+Gerrit-Change-Number: 838
+Gerrit-PatchSet: 10
+Gerrit-Owner: d12fk <heiko@...515...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-MessageType: newpatchset
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Attention: d12fk <heiko@...515...>
+Gerrit-Comment-Date: Thu, 06 Mar 2025 12:41:26 +0000
+Gerrit-HasComments: Yes
+Gerrit-Has-Labels: Yes
+Comment-In-Reply-To: flichtenheld <frank@...2641...>
+Gerrit-MessageType: comment
 
---iFOXF7eu56Y=
+--zPod/9e4ROc=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p>cron2 <strong>uploaded patch set #8</strong> to the change originally cr=
-eated by its_Giaan.</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/=
-874?usp=3Demail">View Change</a></p><p>The following approvals got outdated=
- and were removed:
-Code-Review+2 by cron2</p><pre style=3D"font-family: monospace,monospace; w=
-hite-space: pre-wrap;">Rename occurences of &#39;struct link_socket&#39; fr=
-om &#39;ls&#39; to &#39;sock&#39;<br><br>This commit renames all instances =
-of &#39;struct link_socket&#39;<br>from the abbreviation &#39;ls&#39; to th=
-e more descriptive &#39;sock&#39;<br>making it clearer that the variables r=
-epresent<br>socket-related structures.<br><br>No functional changes have be=
-en introduced.<br><br>Change-Id: Iff12c4dbac84a814612aa8b5b89224be08bb9058<=
-br>Signed-off-by: Gianmarco De Gregori &lt;gianmarco@...2726...&gt;<br>Acke=
-d-by: Gert Doering &lt;gert@...1296...&gt;<br>Message-Id: &lt;2025030610133=
-9.12985-1-gert@...1296...&gt;<br>URL: https://sourceforge.net/p/openvpn/mai=
-lman/message/59156800/<br>URL: https://gerrit.openvpn.net/c/openvpn/+/874<b=
-r>Signed-off-by: Gert Doering &lt;gert@...1296...&gt;<br>---<br>M src/openv=
-pn/init.c<br>M src/openvpn/init.h<br>M src/openvpn/mtcp.c<br>M src/openvpn/=
-mtcp.h<br>M src/openvpn/mudp.c<br>M src/openvpn/mudp.h<br>M src/openvpn/mul=
-ti.c<br>M src/openvpn/multi.h<br>8 files changed, 33 insertions(+), 33 dele=
-tions(-)<br><br></pre><pre style=3D"font-family: monospace,monospace; white=
--space: pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/openvpn refs/cha=
-nges/74/874/8</pre><pre style=3D"font-family: monospace,monospace; white-sp=
-ace: pre-wrap;"><span>diff --git a/src/openvpn/init.c b/src/openvpn/init.c<=
-/span><br><span>index c21474a..1be205b 100644</span><br><span>--- a/src/ope=
-nvpn/init.c</span><br><span>+++ b/src/openvpn/init.c</span><br><span>@@ -49=
-46,12 +4946,12 @@</span><br><span> void</span><br><span> inherit_context_ch=
-ild(struct context *dest,</span><br><span>                       const stru=
-ct context *src,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-     =
-                 struct link_socket *ls)</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+                      struct link_socket *sock)</span>=
-<br><span> {</span><br><span>     CLEAR(*dest);</span><br><span> </span><br=
-><span>     /* proto_is_dgram will ASSERT(0) if proto is invalid */</span><=
-br><span style=3D"color: hsl(0, 100%, 40%);">-    dest-&gt;mode =3D proto_i=
-s_dgram(ls-&gt;info.proto) ? CM_CHILD_UDP : CM_CHILD_TCP;</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+    dest-&gt;mode =3D proto_is_dgram(=
-sock-&gt;info.proto) ? CM_CHILD_UDP : CM_CHILD_TCP;</span><br><span> </span=
-><br><span>     dest-&gt;gc =3D gc_new();</span><br><span> </span><br><span=
->@@ -4977,7 +4977,7 @@</span><br><span> </span><br><span>     /* options */=
-</span><br><span>     dest-&gt;options =3D src-&gt;options;</span><br><span=
- style=3D"color: hsl(0, 100%, 40%);">-    dest-&gt;options.ce.proto =3D ls-=
-&gt;info.proto;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-dest-&gt;options.ce.proto =3D sock-&gt;info.proto;</span><br><span>     opt=
-ions_detach(&amp;dest-&gt;options);</span><br><span> </span><br><span>     =
-dest-&gt;c2.event_set =3D src-&gt;c2.event_set;</span><br><span>@@ -4988,7 =
-+4988,7 @@</span><br><span>          * The CM_TOP context does the socket l=
-isten(),</span><br><span>          * and the CM_CHILD_TCP context does the =
-accept().</span><br><span>          */</span><br><span style=3D"color: hsl(=
-0, 100%, 40%);">-        dest-&gt;c2.accept_from =3D ls;</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+        dest-&gt;c2.accept_from =3D so=
-ck;</span><br><span>     }</span><br><span> </span><br><span> #ifdef ENABLE=
-_PLUGIN</span><br><span>@@ -5015,11 +5015,11 @@</span><br><span>         AL=
-LOC_ARRAY_GC(dest-&gt;c2.link_sockets, struct link_socket *, 1, &amp;dest-&=
-gt;gc);</span><br><span> </span><br><span>         /* inherit parent link_s=
-ocket and tuntap */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
-      dest-&gt;c2.link_sockets[0] =3D ls;</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+        dest-&gt;c2.link_sockets[0] =3D sock;</span><=
-br><span> </span><br><span>         ALLOC_ARRAY_GC(dest-&gt;c2.link_socket_=
-infos, struct link_socket_info *, 1, &amp;dest-&gt;gc);</span><br><span>   =
-      ALLOC_OBJ_GC(dest-&gt;c2.link_socket_infos[0], struct link_socket_inf=
-o, &amp;dest-&gt;gc);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
-        *dest-&gt;c2.link_socket_infos[0] =3D ls-&gt;info;</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+        *dest-&gt;c2.link_socket_inf=
-os[0] =3D sock-&gt;info;</span><br><span> </span><br><span>         /* loca=
-lly override some link_socket_info fields */</span><br><span>         dest-=
-&gt;c2.link_socket_infos[0]-&gt;lsa =3D &amp;dest-&gt;c1.link_socket_addrs[=
-0];</span><br><span>diff --git a/src/openvpn/init.h b/src/openvpn/init.h</s=
-pan><br><span>index 11c32ac..50b38e3 100644</span><br><span>--- a/src/openv=
-pn/init.h</span><br><span>+++ b/src/openvpn/init.h</span><br><span>@@ -96,7=
- +96,7 @@</span><br><span> </span><br><span> void inherit_context_child(str=
-uct context *dest,</span><br><span>                            const struct=
- context *src,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-       =
-                    struct link_socket *ls);</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+                           struct link_socket *soc=
-k);</span><br><span> </span><br><span> void inherit_context_top(struct cont=
-ext *dest,</span><br><span>                          const struct context *=
-src);</span><br><span>diff --git a/src/openvpn/mtcp.c b/src/openvpn/mtcp.c<=
-/span><br><span>index 0d409b6..1d62ea6 100644</span><br><span>--- a/src/ope=
-nvpn/mtcp.c</span><br><span>+++ b/src/openvpn/mtcp.c</span><br><span>@@ -47=
-,16 +47,16 @@</span><br><span> };</span><br><span> </span><br><span> struct=
- multi_instance *</span><br><span style=3D"color: hsl(0, 100%, 40%);">-mult=
-i_create_instance_tcp(struct multi_context *m, struct link_socket *ls)</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+multi_create_instance_tc=
-p(struct multi_context *m, struct link_socket *sock)</span><br><span> {</sp=
-an><br><span>     struct gc_arena gc =3D gc_new();</span><br><span>     str=
-uct multi_instance *mi =3D NULL;</span><br><span>     struct hash *hash =3D=
- m-&gt;hash;</span><br><span> </span><br><span style=3D"color: hsl(0, 100%,=
- 40%);">-    mi =3D multi_create_instance(m, NULL, ls);</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+    mi =3D multi_create_instance(m, NUL=
-L, sock);</span><br><span>     if (mi)</span><br><span>     {</span><br><sp=
-an style=3D"color: hsl(0, 100%, 40%);">-        mi-&gt;real.proto =3D ls-&g=
-t;info.proto;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
-  mi-&gt;real.proto =3D sock-&gt;info.proto;</span><br><span>         struc=
-t hash_element *he;</span><br><span>         const uint32_t hv =3D hash_val=
-ue(hash, &amp;mi-&gt;real);</span><br><span>         struct hash_bucket *bu=
-cket =3D hash_bucket(hash, hv);</span><br><span>@@ -140,10 +140,10 @@</span=
-><br><span> void</span><br><span> multi_tcp_dereference_instance(struct mul=
-ti_io *multi_io, struct multi_instance *mi)</span><br><span> {</span><br><s=
-pan style=3D"color: hsl(0, 100%, 40%);">-    struct link_socket *ls =3D mi-=
-&gt;context.c2.link_sockets[0];</span><br><span style=3D"color: hsl(0, 100%=
-, 40%);">-    if (ls &amp;&amp; mi-&gt;socket_set_called)</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+    struct link_socket *sock =3D mi-&=
-gt;context.c2.link_sockets[0];</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+    if (sock &amp;&amp; mi-&gt;socket_set_called)</span><br><spa=
-n>     {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        event=
-_del(multi_io-&gt;es, socket_event_handle(ls));</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+        event_del(multi_io-&gt;es, socket_event=
-_handle(sock));</span><br><span>         mi-&gt;socket_set_called =3D false=
-;</span><br><span>     }</span><br><span>     multi_io-&gt;n_esr =3D 0;</sp=
-an><br><span>diff --git a/src/openvpn/mtcp.h b/src/openvpn/mtcp.h</span><br=
-><span>index 9de5203..7f95529 100644</span><br><span>--- a/src/openvpn/mtcp=
-.h</span><br><span>+++ b/src/openvpn/mtcp.h</span><br><span>@@ -44,7 +44,7 =
-@@</span><br><span> </span><br><span> bool multi_tcp_process_outgoing_link_=
-ready(struct multi_context *m, struct multi_instance *mi, const unsigned in=
-t mpp_flags);</span><br><span> </span><br><span style=3D"color: hsl(0, 100%=
-, 40%);">-struct multi_instance *multi_create_instance_tcp(struct multi_con=
-text *m, struct link_socket *ls);</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+struct multi_instance *multi_create_instance_tcp(struct multi=
-_context *m, struct link_socket *sock);</span><br><span> </span><br><span> =
-void multi_tcp_link_out_deferred(struct multi_context *m, struct multi_inst=
-ance *mi);</span><br><span> </span><br><span>diff --git a/src/openvpn/mudp.=
-c b/src/openvpn/mudp.c</span><br><span>index c0344b1..54dfc72 100644</span>=
-<br><span>--- a/src/openvpn/mudp.c</span><br><span>+++ b/src/openvpn/mudp.c=
-</span><br><span>@@ -188,14 +188,14 @@</span><br><span> </span><br><span> s=
-truct multi_instance *</span><br><span> multi_get_create_instance_udp(struc=
-t multi_context *m, bool *floated,</span><br><span style=3D"color: hsl(0, 1=
-00%, 40%);">-                              struct link_socket *ls)</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+                            =
-  struct link_socket *sock)</span><br><span> {</span><br><span>     struct =
-gc_arena gc =3D gc_new();</span><br><span>     struct mroute_addr real =3D =
-{0};</span><br><span>     struct multi_instance *mi =3D NULL;</span><br><sp=
-an>     struct hash *hash =3D m-&gt;hash;</span><br><span style=3D"color: h=
-sl(0, 100%, 40%);">-    real.proto =3D ls-&gt;info.proto;</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-    m-&gt;hmac_reply_ls =3D ls;</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+    real.proto =3D sock-&gt=
-;info.proto;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    m-&=
-gt;hmac_reply_ls =3D sock;</span><br><span> </span><br><span>     if (mrout=
-e_extract_openvpn_sockaddr(&amp;real, &amp;m-&gt;top.c2.from.dest, true)</s=
-pan><br><span>         &amp;&amp; m-&gt;top.c2.buf.len &gt; 0)</span><br><s=
-pan>@@ -261,7 +261,7 @@</span><br><span>                      * connect-fre=
-q but not against connect-freq-initial */</span><br><span>                 =
-    reflect_filter_rate_limit_decrease(m-&gt;initial_rate_limiter);</span><=
-br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-           =
-         mi =3D multi_create_instance(m, &amp;real, ls);</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+                    mi =3D multi_creat=
-e_instance(m, &amp;real, sock);</span><br><span>                     if (mi=
-)</span><br><span>                     {</span><br><span>                  =
-       hash_add_fast(hash, bucket, &amp;mi-&gt;real, hv, mi);</span><br><sp=
-an>diff --git a/src/openvpn/mudp.h b/src/openvpn/mudp.h</span><br><span>ind=
-ex 357b684..37752e1 100644</span><br><span>--- a/src/openvpn/mudp.h</span><=
-br><span>+++ b/src/openvpn/mudp.h</span><br><span>@@ -33,7 +33,7 @@</span><=
-br><span> </span><br><span> unsigned int p2mp_iow_flags(const struct multi_=
-context *m);</span><br><span> </span><br><span style=3D"color: hsl(0, 100%,=
- 40%);">-void multi_process_io_udp(struct multi_context *m, struct link_soc=
-ket *ls);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+void multi=
-_process_io_udp(struct multi_context *m, struct link_socket *sock);</span><=
-br><span> /****************************************************************=
-**********/</span><br><span> /**</span><br><span>  * Get, and if necessary =
-create, the multi_instance associated with a</span><br><span>@@ -47,13 +47,=
-13 @@</span><br><span>  * successful, returns the newly created instance.</=
-span><br><span>  *</span><br><span>  * @param m           - The single mult=
-i_context structure.</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
-* @param ls          - Listening socket where this instance is connecting t=
-o</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @param sock    =
-    - Listening socket where this instance is connecting to</span><br><span=
->  *</span><br><span>  * @return A pointer to a multi_instance if one alrea=
-dy existed for the</span><br><span>  *     packet&#39;s source address or i=
-f one was a newly created successfully.</span><br><span>  *      NULL if on=
-e did not yet exist and a new one was not created.</span><br><span>  */</sp=
-an><br><span> struct multi_instance *multi_get_create_instance_udp(struct m=
-ulti_context *m, bool *floated,</span><br><span style=3D"color: hsl(0, 100%=
-, 40%);">-                                                     struct link_=
-socket *ls);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
-                                              struct link_socket *sock);</s=
-pan><br><span> </span><br><span> #endif /* ifndef MUDP_H */</span><br><span=
->diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c</span><br><span>ind=
-ex 07258be..85a1712 100644</span><br><span>--- a/src/openvpn/multi.c</span>=
-<br><span>+++ b/src/openvpn/multi.c</span><br><span>@@ -751,7 +751,7 @@</sp=
-an><br><span>  */</span><br><span> struct multi_instance *</span><br><span>=
- multi_create_instance(struct multi_context *m, const struct mroute_addr *r=
-eal,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-                 =
-     struct link_socket *ls)</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+                      struct link_socket *sock)</span><br><span> {=
-</span><br><span>     struct gc_arena gc =3D gc_new();</span><br><span>    =
- struct multi_instance *mi;</span><br><span>@@ -774,7 +774,7 @@</span><br><=
-span>         generate_prefix(mi);</span><br><span>     }</span><br><span> =
-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    inherit_context_c=
-hild(&amp;mi-&gt;context, &amp;m-&gt;top, ls);</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+    inherit_context_child(&amp;mi-&gt;context, &=
-amp;m-&gt;top, sock);</span><br><span>     if (IS_SIG(&amp;mi-&gt;context))=
-</span><br><span>     {</span><br><span>         goto err;</span><br><span>=
-@@ -3139,7 +3139,7 @@</span><br><span> </span><br><span> void</span><br><sp=
-an> multi_process_float(struct multi_context *m, struct multi_instance *mi,=
-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-                    s=
-truct link_socket *ls)</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+                    struct link_socket *sock)</span><br><span> {</span><=
-br><span>     struct mroute_addr real =3D {0};</span><br><span>     struct =
-hash *hash =3D m-&gt;hash;</span><br><span>@@ -3195,7 +3195,7 @@</span><br>=
-<span>     mi-&gt;context.c2.to_link_addr =3D &amp;mi-&gt;context.c2.from;<=
-/span><br><span> </span><br><span>     /* inherit parent link_socket and li=
-nk_socket_info */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
-mi-&gt;context.c2.link_sockets[0] =3D ls;</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+    mi-&gt;context.c2.link_sockets[0] =3D sock;</span=
-><br><span>     mi-&gt;context.c2.link_socket_infos[0]-&gt;lsa-&gt;actual =
-=3D m-&gt;top.c2.from;</span><br><span> </span><br><span>     tls_update_re=
-mote_addr(mi-&gt;context.c2.tls_multi, &amp;mi-&gt;context.c2.from);</span>=
-<br><span>@@ -3346,7 +3346,7 @@</span><br><span>  */</span><br><span> bool<=
-/span><br><span> multi_process_incoming_link(struct multi_context *m, struc=
-t multi_instance *instance,</span><br><span style=3D"color: hsl(0, 100%, 40=
-%);">-                            const unsigned int mpp_flags, struct link=
-_socket *ls)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
-                     const unsigned int mpp_flags, struct link_socket *sock=
-)</span><br><span> {</span><br><span>     struct gc_arena gc =3D gc_new();<=
-/span><br><span> </span><br><span>@@ -3367,7 +3367,7 @@</span><br><span> #i=
-fdef MULTI_DEBUG_EVENT_LOOP</span><br><span>         printf(&quot;TCP/UDP -=
-&gt; TUN [%d]\n&quot;, BLEN(&amp;m-&gt;top.c2.buf));</span><br><span> #endi=
-f</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        multi_set_pe=
-nding(m, multi_get_create_instance_udp(m, &amp;floated, ls));</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+        multi_set_pending(m, mult=
-i_get_create_instance_udp(m, &amp;floated, sock));</span><br><span>     }</=
-span><br><span>     else</span><br><span>     {</span><br><span>@@ -3401,14=
- +3401,14 @@</span><br><span>             /* decrypt in instance context */=
-</span><br><span> </span><br><span>             perf_push(PERF_PROC_IN_LINK=
-);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            lsi =3D=
- &amp;ls-&gt;info;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-           lsi =3D &amp;sock-&gt;info;</span><br><span>             orig_bu=
-f =3D c-&gt;c2.buf.data;</span><br><span>             if (process_incoming_=
-link_part1(c, lsi, floated))</span><br><span>             {</span><br><span=
->                 /* nonzero length means that we have a valid, decrypted p=
-acked */</span><br><span>                 if (floated &amp;&amp; c-&gt;c2.b=
-uf.len &gt; 0)</span><br><span>                 {</span><br><span style=3D"=
-color: hsl(0, 100%, 40%);">-                    multi_process_float(m, m-&g=
-t;pending, ls);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-                multi_process_float(m, m-&gt;pending, sock);</span><br><spa=
-n>                 }</span><br><span> </span><br><span>                 pro=
-cess_incoming_link_part2(c, lsi, orig_buf);</span><br><span>diff --git a/sr=
-c/openvpn/multi.h b/src/openvpn/multi.h</span><br><span>index 4104706..e14a=
-d60 100644</span><br><span>--- a/src/openvpn/multi.h</span><br><span>+++ b/=
-src/openvpn/multi.h</span><br><span>@@ -272,7 +272,7 @@</span><br><span> vo=
-id multi_top_free(struct multi_context *m);</span><br><span> </span><br><sp=
-an> struct multi_instance *multi_create_instance(struct multi_context *m, c=
-onst struct mroute_addr *real,</span><br><span style=3D"color: hsl(0, 100%,=
- 40%);">-                                             struct link_socket *l=
-s);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+                =
-                             struct link_socket *sock);</span><br><span> </=
-span><br><span> void multi_close_instance(struct multi_context *m, struct m=
-ulti_instance *mi, bool shutdown);</span><br><span> </span><br><span>@@ -28=
-7,7 +287,7 @@</span><br><span>  * updates hashtables in multi_context.</spa=
-n><br><span>  */</span><br><span> void multi_process_float(struct multi_con=
-text *m, struct multi_instance *mi,</span><br><span style=3D"color: hsl(0, =
-100%, 40%);">-                         struct link_socket *ls);</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+                         struct=
- link_socket *sock);</span><br><span> </span><br><span> #define MPP_PRE_SEL=
-ECT             (1&lt;&lt;0)</span><br><span> #define MPP_CONDITIONAL_PRE_S=
-ELECT (1&lt;&lt;1)</span><br><span>@@ -352,10 +352,10 @@</span><br><span>  =
-*                       when using TCP transport. Otherwise NULL, as is</sp=
-an><br><span>  *                       the case when using UDP transport.</=
-span><br><span>  * @param mpp_flags    - Fast I/O optimization flags.</span=
-><br><span style=3D"color: hsl(0, 100%, 40%);">- * @param ls           - So=
-cket where the packet was received.</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+ * @param sock         - Socket where the packet was receiv=
-ed.</span><br><span>  */</span><br><span> bool multi_process_incoming_link(=
-struct multi_context *m, struct multi_instance *instance, const unsigned in=
-t mpp_flags,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-         =
-                        struct link_socket *ls);</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+                                 struct link_s=
-ocket *sock);</span><br><span> </span><br><span> </span><br><span> /**</spa=
-n><br><span></span><br></pre><p>To view, visit <a href=3D"http://gerrit.ope=
-nvpn.net/c/openvpn/+/874?usp=3Demail">change 874</a>. To unsubscribe, or fo=
-r help writing mail filters, visit <a href=3D"http://gerrit.openvpn.net/set=
-tings">settings</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailM=
-essage"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.org/Vi=
-ewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvp=
-n/+/874?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></di=
-v></div>
+<p> Attention is currently required from: d12fk, plaisthos. </p>
+<p>Patch set 10:<span style=3D"border-radius: 3px; display: inline-block; m=
+argin: 0 2px; padding: 4px;background-color: #ffd4d4;">Code-Review -1</span=
+></p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/838?usp=3Demail">V=
+iew Change</a></p><p>4 comments:</p><ul style=3D"list-style: none; padding:=
+ 0;"><li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list=
+-style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p=
+ style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openv=
+pn/+/838?tab=3Dcomments">Patch Set #10:</a> </p><p style=3D"white-space: pr=
+e-wrap; word-wrap: break-word;">not all of my comments addressed, but works=
+ again</p></li></ul></li><li style=3D"margin: 0; padding: 0;"><p>File distr=
+o/dns-scripts/systemd-dns-updown.sh:</p><ul style=3D"list-style: none; padd=
+ing: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p style=3D"margin-b=
+ottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/838/comment/b=
+6e04719_5c31cad2">Patch Set #9, Line 75:</a> <code style=3D"font-family:mon=
+ospace,monospace">&quot;$</code></p><p><blockquote style=3D"border-left: 1p=
+x solid #aaa; margin: 10px 0; padding: 0 10px;">Maybe we could add a commen=
+t here like: &quot;Add as a routing-only domain (~ prefix) unless already c=
+onf [=E2=80=A6]</blockquote></p><p style=3D"white-space: pre-wrap; word-wra=
+p: break-word;">Done</p></li><li style=3D"margin: 0; padding: 0 0 0 16px;">=
+<p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/ope=
+nvpn/+/838/comment/00a046e5_14744958">Patch Set #9, Line 75:</a> <code styl=
+e=3D"font-family:monospace,monospace">=3D~</code></p><p><blockquote style=
+=3D"border-left: 1px solid #aaa; margin: 10px 0; padding: 0 10px;">This bro=
+ken now. [=E2=80=A6]</blockquote></p><p style=3D"white-space: pre-wrap; wor=
+d-wrap: break-word;">Done</p></li><li style=3D"margin: 0; padding: 0 0 0 16=
+px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/=
+c/openvpn/+/838/comment/97e01f52_40b91b62">Patch Set #9, Line 116:</a> <cod=
+e style=3D"font-family:monospace,monospace">        [ -n &quot;${!transport=
+_var}&quot; -a &quot;${!transport_var}&quot; =3D &quot;DoH&quot; ] || break=
+</code></p><p><blockquote style=3D"border-left: 1px solid #aaa; margin: 10p=
+x 0; padding: 0 10px;">I think this line could use a comment like &quot;ski=
+p DoH dns entries&quot;, otherwise it takes a while to und [=E2=80=A6]</blo=
+ckquote></p><p style=3D"white-space: pre-wrap; word-wrap: break-word;">Done=
+</p></li></ul></li></ul><p>To view, visit <a href=3D"http://gerrit.openvpn.=
+net/c/openvpn/+/838?usp=3Demail">change 838</a>. To unsubscribe, or for hel=
+p writing mail filters, visit <a href=3D"http://gerrit.openvpn.net/settings=
+">settings</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessag=
+e"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAct=
+ion"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/8=
+38?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div></d=
+iv>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: Iff12c4dbac84a814612aa8b5b89=
-224be08bb9058 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 874 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 8 </div>
-<div style=3D"display:none"> Gerrit-Owner: its_Giaan &lt;gianmarco@...2786...=
-..&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
- </div>
+<div style=3D"display:none"> Gerrit-Change-Id: Ifbe4ffb44d3bfcaa50adb38cacb=
+3436fcdc71b10 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 838 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 10 </div>
+<div style=3D"display:none"> Gerrit-Owner: d12fk &lt;heiko@...515...&gt; </=
+div>
 <div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
 1...&gt; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
 .1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: d12fk &lt;heiko@...515...&gt=
+; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Thu, 06 Mar 2025 12:41:26=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
+<div style=3D"display:none"> Comment-In-Reply-To: flichtenheld &lt;frank@...1186...=
+.2641...&gt; </div>
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
 
 
---iFOXF7eu56Y=--
+--zPod/9e4ROc=--
 
