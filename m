@@ -1,14 +1,14 @@
 From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Sat, 8 Mar 2025 08:39:19 +0000
+Date: Sat, 8 Mar 2025 08:39:16 +0000
 In-Reply-To: <gerrit.1733849609000.Ib118426c5a69256894040c69856a4003d9f4637c@...2715...>
 References: <gerrit.1733849609000.Ib118426c5a69256894040c69856a4003d9f4637c@...2715...>
 Reply-To: gert@...1296..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net, ralf@...2726..., frank@...2641...
-Message-ID: <476087e71d118f21a2d6b0a02f0f7af6d297876e-HTML@...2715...>
+Message-ID: <476087e71d118f21a2d6b0a02f0f7af6d297876e-EmailReplacePatchSet-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="RRZncAY1b0s="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="QcAZEQb376c="; charset=UTF-8
 Subject: [Openvpn-devel] [M] Change in openvpn[master]: Handle missing DCO
  peer by restarting the session
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -19,15 +19,19 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: ralf_lici <ralf@...2726...>
-Cc: flichtenheld <frank@...2641...>, plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: ralf_lici <ralf@...2726...>, plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---RRZncAY1b0s=
+--QcAZEQb376c=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-cron2 has submitted this change. ( http://gerrit.openvpn.net/c/openvpn/+/83=
-1?usp=3Demail )
+cron2 has uploaded a new patch set (#4) to the change originally created by=
+ ralf_lici. ( http://gerrit.openvpn.net/c/openvpn/+/831?usp=3Demail )
+
+The following approvals got outdated and were removed:
+Code-Review+2 by flichtenheld
+
 
 Change subject: Handle missing DCO peer by restarting the session
 ......................................................................
@@ -62,7 +66,7 @@ M src/openvpn/sig.c
 8 files changed, 63 insertions(+), 21 deletions(-)
 
 
-
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/31/831/4
 
 diff --git a/src/openvpn/dco.h b/src/openvpn/dco.h
 index 35ceace..ed194cc 100644
@@ -335,238 +339,242 @@ Gerrit-Reviewer: cron2 <gert@...1296...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-MessageType: merged
+Gerrit-MessageType: newpatchset
 
---RRZncAY1b0s=
+--QcAZEQb376c=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p>cron2 <strong>submitted</strong> this change.</p><p><a href=3D"http://ge=
-rrit.openvpn.net/c/openvpn/+/831?usp=3Demail">View Change</a></p><div style=
-=3D"white-space:pre-wrap"></div><pre style=3D"font-family: monospace,monosp=
-ace; white-space: pre-wrap;">Handle missing DCO peer by restarting the sess=
-ion<br><br>Occasionally, CMD_DEL_PEER is not delivered to userspace, preven=
-ting the<br>openvpn process from registering the event. To handle this case=
-, we<br>check if calls to the Linux DCO module return an error, and, if so,=
- send<br>a SIGUSR1 signal to reset the session.<br><br>Most DCO commands th=
-at return an error already trigger a SIGUSR1 signal<br>or even call _exit(1=
-). This commit extends that behavior to include<br>dco_get_peer_stats_multi=
-() and dco_get_peer_stats().<br><br>Change-Id: Ib118426c5a69256894040c69856=
-a4003d9f4637c<br>Signed-off-by: Ralf Lici &lt;ralf@...2726...&gt;<br>Acked-=
-by: Frank Lichtenheld &lt;frank@...2641...&gt;<br>Message-Id: &lt;202503051=
-71730.250444-1-frank@...2641...&gt;<br>URL: https://www.mail-archive.com/op=
-envpn-devel@lists.sourceforge.net/msg31022.html<br>Signed-off-by: Gert Doer=
-ing &lt;gert@...1296...&gt;<br>---<br>M src/openvpn/dco.h<br>M src/openvpn/=
-dco_freebsd.c<br>M src/openvpn/dco_linux.c<br>M src/openvpn/dco_win.c<br>M =
-src/openvpn/forward.c<br>M src/openvpn/manage.c<br>M src/openvpn/multi.c<br=
->M src/openvpn/sig.c<br>8 files changed, 63 insertions(+), 21 deletions(-)<=
-br><br></pre>
-<pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><sp=
-an>diff --git a/src/openvpn/dco.h b/src/openvpn/dco.h</span><br><span>index=
- 35ceace..ed194cc 100644</span><br><span>--- a/src/openvpn/dco.h</span><br>=
-<span>+++ b/src/openvpn/dco.h</span><br><span>@@ -231,17 +231,20 @@</span><=
-br><span> /**</span><br><span>  * Update traffic statistics for all peers</=
-span><br><span>  *</span><br><span style=3D"color: hsl(0, 100%, 40%);">- * =
-@param dco   DCO device context</span><br><span style=3D"color: hsl(0, 100%=
-, 40%);">- * @param m     the server context</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+ * @param dco                   DCO device context=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @param m        =
-             the server context</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+ * @param raise_sigusr1_on_err  whether to raise SIGUSR1 on err=
-or</span><br><span>  **/</span><br><span style=3D"color: hsl(0, 100%, 40%);=
-">-int dco_get_peer_stats_multi(dco_context_t *dco, struct multi_context *m=
-);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+int dco_get_peer_=
-stats_multi(dco_context_t *dco, struct multi_context *m,</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+                             const boo=
-l raise_sigusr1_on_err);</span><br><span> </span><br><span> /**</span><br><=
-span>  * Update traffic statistics for single peer</span><br><span>  *</spa=
-n><br><span style=3D"color: hsl(0, 100%, 40%);">- * @param c   instance con=
-text of the peer</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * =
-@param c                     instance context of the peer</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+ * @param raise_sigusr1_on_err  wheth=
-er to raise SIGUSR1 on error</span><br><span>  **/</span><br><span style=3D=
-"color: hsl(0, 100%, 40%);">-int dco_get_peer_stats(struct context *c);</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+int dco_get_peer_stats(=
-struct context *c, const bool raise_sigusr1_on_err);</span><br><span> </spa=
-n><br><span> /**</span><br><span>  * Retrieve the list of ciphers supported=
- by the current platform</span><br><span>@@ -373,13 +376,14 @@</span><br><s=
-pan> }</span><br><span> </span><br><span> static inline int</span><br><span=
- style=3D"color: hsl(0, 100%, 40%);">-dco_get_peer_stats_multi(dco_context_=
-t *dco, struct multi_context *m)</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+dco_get_peer_stats_multi(dco_context_t *dco, struct multi_cont=
-ext *m,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            =
-             const bool raise_sigusr1_on_err)</span><br><span> {</span><br>=
-<span>     return 0;</span><br><span> }</span><br><span> </span><br><span> =
-static inline int</span><br><span style=3D"color: hsl(0, 100%, 40%);">-dco_=
-get_peer_stats(struct context *c)</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+dco_get_peer_stats(struct context *c, const bool raise_sigusr=
-1_on_err)</span><br><span> {</span><br><span>     return 0;</span><br><span=
-> }</span><br><span>diff --git a/src/openvpn/dco_freebsd.c b/src/openvpn/dc=
-o_freebsd.c</span><br><span>index 0e536de..b8816c6 100644</span><br><span>-=
--- a/src/openvpn/dco_freebsd.c</span><br><span>+++ b/src/openvpn/dco_freebs=
-d.c</span><br><span>@@ -713,7 +713,8 @@</span><br><span> }</span><br><span>=
- </span><br><span> int</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
--dco_get_peer_stats_multi(dco_context_t *dco, struct multi_context *m)</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+dco_get_peer_stats_multi=
-(dco_context_t *dco, struct multi_context *m,</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+                         const bool raise_sigusr1=
-_on_err)</span><br><span> {</span><br><span> </span><br><span>     struct i=
-fdrv drv;</span><br><span>@@ -781,7 +782,7 @@</span><br><span> }</span><br>=
-<span> </span><br><span> int</span><br><span style=3D"color: hsl(0, 100%, 4=
+<p>cron2 <strong>uploaded patch set #4</strong> to the change originally cr=
+eated by ralf_lici.</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/=
+831?usp=3Demail">View Change</a></p><p>The following approvals got outdated=
+ and were removed:
+Code-Review+2 by flichtenheld</p><pre style=3D"font-family: monospace,monos=
+pace; white-space: pre-wrap;">Handle missing DCO peer by restarting the ses=
+sion<br><br>Occasionally, CMD_DEL_PEER is not delivered to userspace, preve=
+nting the<br>openvpn process from registering the event. To handle this cas=
+e, we<br>check if calls to the Linux DCO module return an error, and, if so=
+, send<br>a SIGUSR1 signal to reset the session.<br><br>Most DCO commands t=
+hat return an error already trigger a SIGUSR1 signal<br>or even call _exit(=
+1). This commit extends that behavior to include<br>dco_get_peer_stats_mult=
+i() and dco_get_peer_stats().<br><br>Change-Id: Ib118426c5a69256894040c6985=
+6a4003d9f4637c<br>Signed-off-by: Ralf Lici &lt;ralf@...2726...&gt;<br>Acked=
+-by: Frank Lichtenheld &lt;frank@...2641...&gt;<br>Message-Id: &lt;20250305=
+171730.250444-1-frank@...2641...&gt;<br>URL: https://www.mail-archive.com/o=
+penvpn-devel@lists.sourceforge.net/msg31022.html<br>Signed-off-by: Gert Doe=
+ring &lt;gert@...1296...&gt;<br>---<br>M src/openvpn/dco.h<br>M src/openvpn=
+/dco_freebsd.c<br>M src/openvpn/dco_linux.c<br>M src/openvpn/dco_win.c<br>M=
+ src/openvpn/forward.c<br>M src/openvpn/manage.c<br>M src/openvpn/multi.c<b=
+r>M src/openvpn/sig.c<br>8 files changed, 63 insertions(+), 21 deletions(-)=
+<br><br></pre><pre style=3D"font-family: monospace,monospace; white-space: =
+pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/31/=
+831/4</pre><pre style=3D"font-family: monospace,monospace; white-space: pre=
+-wrap;"><span>diff --git a/src/openvpn/dco.h b/src/openvpn/dco.h</span><br>=
+<span>index 35ceace..ed194cc 100644</span><br><span>--- a/src/openvpn/dco.h=
+</span><br><span>+++ b/src/openvpn/dco.h</span><br><span>@@ -231,17 +231,20=
+ @@</span><br><span> /**</span><br><span>  * Update traffic statistics for =
+all peers</span><br><span>  *</span><br><span style=3D"color: hsl(0, 100%, =
+40%);">- * @param dco   DCO device context</span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">- * @param m     the server context</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+ * @param dco                   DCO dev=
+ice context</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @para=
+m m                     the server context</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+ * @param raise_sigusr1_on_err  whether to raise SIG=
+USR1 on error</span><br><span>  **/</span><br><span style=3D"color: hsl(0, =
+100%, 40%);">-int dco_get_peer_stats_multi(dco_context_t *dco, struct multi=
+_context *m);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+int dc=
+o_get_peer_stats_multi(dco_context_t *dco, struct multi_context *m,</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+                           =
+  const bool raise_sigusr1_on_err);</span><br><span> </span><br><span> /**<=
+/span><br><span>  * Update traffic statistics for single peer</span><br><sp=
+an>  *</span><br><span style=3D"color: hsl(0, 100%, 40%);">- * @param c   i=
+nstance context of the peer</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+ * @param c                     instance context of the peer</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+ * @param raise_sigusr1_on=
+_err  whether to raise SIGUSR1 on error</span><br><span>  **/</span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-int dco_get_peer_stats(struct conte=
+xt *c);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+int dco_get_=
+peer_stats(struct context *c, const bool raise_sigusr1_on_err);</span><br><=
+span> </span><br><span> /**</span><br><span>  * Retrieve the list of cipher=
+s supported by the current platform</span><br><span>@@ -373,13 +376,14 @@</=
+span><br><span> }</span><br><span> </span><br><span> static inline int</spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-dco_get_peer_stats_multi(d=
+co_context_t *dco, struct multi_context *m)</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+dco_get_peer_stats_multi(dco_context_t *dco, struct=
+ multi_context *m,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+                        const bool raise_sigusr1_on_err)</span><br><span> {=
+</span><br><span>     return 0;</span><br><span> }</span><br><span> </span>=
+<br><span> static inline int</span><br><span style=3D"color: hsl(0, 100%, 4=
 0%);">-dco_get_peer_stats(struct context *c)</span><br><span style=3D"color=
 : hsl(120, 100%, 40%);">+dco_get_peer_stats(struct context *c, const bool r=
-aise_sigusr1_on_err)</span><br><span> {</span><br><span>     /* Not impleme=
-nted. */</span><br><span>     return 0;</span><br><span>diff --git a/src/op=
-envpn/dco_linux.c b/src/openvpn/dco_linux.c</span><br><span>index 68c1a8d..=
-b0a85fd 100644</span><br><span>--- a/src/openvpn/dco_linux.c</span><br><spa=
-n>+++ b/src/openvpn/dco_linux.c</span><br><span>@@ -952,7 +952,8 @@</span><=
-br><span> }</span><br><span> </span><br><span> int</span><br><span style=3D=
-"color: hsl(0, 100%, 40%);">-dco_get_peer_stats_multi(dco_context_t *dco, s=
-truct multi_context *m)</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+dco_get_peer_stats_multi(dco_context_t *dco, struct multi_context *m,</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+                     =
-    const bool raise_sigusr1_on_err)</span><br><span> {</span><br><span>   =
-  msg(D_DCO_DEBUG, &quot;%s&quot;, __func__);</span><br><span> </span><br><=
-span>@@ -963,6 +964,14 @@</span><br><span>     int ret =3D ovpn_nl_msg_send=
-(dco, nl_msg, dco_parse_peer_multi, m, __func__);</span><br><span> </span><=
-br><span>     nlmsg_free(nl_msg);</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    i=
-f (raise_sigusr1_on_err &amp;&amp; ret &lt; 0)</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+        msg(M_WARN, &quot;Error retrieving DCO peer stats: the=
- underlying DCO peer&quot;</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+            &quot;may have been deleted from the kernel without noti=
-fying &quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
-     &quot;userspace. Restarting the session&quot;);</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+        register_signal(m-&gt;top.sig, SI=
-GUSR1, &quot;dco peer stats error&quot;);</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+    }</span><br><span>     return ret;</span><br><spa=
-n> }</span><br><span> </span><br><span>@@ -1008,9 +1017,14 @@</span><br><sp=
-an> }</span><br><span> </span><br><span> int</span><br><span style=3D"color=
-: hsl(0, 100%, 40%);">-dco_get_peer_stats(struct context *c)</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+dco_get_peer_stats(struct context =
-*c, const bool raise_sigusr1_on_err)</span><br><span> {</span><br><span sty=
-le=3D"color: hsl(0, 100%, 40%);">-    uint32_t peer_id =3D c-&gt;c2.tls_mul=
-ti-&gt;dco_peer_id;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-    int peer_id =3D c-&gt;c2.tls_multi-&gt;dco_peer_id;</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+    if (peer_id =3D=3D -1)</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+        return 0;</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+</span><br><span>     msg(D_DCO_DEBUG, &quot;%s: peer-id %d&qu=
-ot;, __func__, peer_id);</span><br><span> </span><br><span>     if (!c-&gt;=
-c1.tuntap)</span><br><span>@@ -1030,6 +1044,14 @@</span><br><span> </span><=
-br><span> nla_put_failure:</span><br><span>     nlmsg_free(nl_msg);</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+    if (raise_sigusr1_on_err &amp;&amp; ret &l=
-t; 0)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+        msg(M_WARN, &quot;Er=
-ror retrieving DCO peer stats: the underlying DCO peer&quot;</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+            &quot;may have been de=
-leted from the kernel without notifying &quot;</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+            &quot;userspace. Restarting the sess=
-ion&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        =
-register_signal(c-&gt;sig, SIGUSR1, &quot;dco peer stats error&quot;);</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span>  =
-   return ret;</span><br><span> }</span><br><span> </span><br><span>diff --=
-git a/src/openvpn/dco_win.c b/src/openvpn/dco_win.c</span><br><span>index 4=
-5cb919..8b47124 100644</span><br><span>--- a/src/openvpn/dco_win.c</span><b=
-r><span>+++ b/src/openvpn/dco_win.c</span><br><span>@@ -712,14 +712,15 @@</=
+aise_sigusr1_on_err)</span><br><span> {</span><br><span>     return 0;</spa=
+n><br><span> }</span><br><span>diff --git a/src/openvpn/dco_freebsd.c b/src=
+/openvpn/dco_freebsd.c</span><br><span>index 0e536de..b8816c6 100644</span>=
+<br><span>--- a/src/openvpn/dco_freebsd.c</span><br><span>+++ b/src/openvpn=
+/dco_freebsd.c</span><br><span>@@ -713,7 +713,8 @@</span><br><span> }</span=
+><br><span> </span><br><span> int</span><br><span style=3D"color: hsl(0, 10=
+0%, 40%);">-dco_get_peer_stats_multi(dco_context_t *dco, struct multi_conte=
+xt *m)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+dco_get_peer_=
+stats_multi(dco_context_t *dco, struct multi_context *m,</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+                         const bool ra=
+ise_sigusr1_on_err)</span><br><span> {</span><br><span> </span><br><span>  =
+   struct ifdrv drv;</span><br><span>@@ -781,7 +782,7 @@</span><br><span> }=
+</span><br><span> </span><br><span> int</span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-dco_get_peer_stats(struct context *c)</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+dco_get_peer_stats(struct context *c, c=
+onst bool raise_sigusr1_on_err)</span><br><span> {</span><br><span>     /* =
+Not implemented. */</span><br><span>     return 0;</span><br><span>diff --g=
+it a/src/openvpn/dco_linux.c b/src/openvpn/dco_linux.c</span><br><span>inde=
+x 68c1a8d..b0a85fd 100644</span><br><span>--- a/src/openvpn/dco_linux.c</sp=
+an><br><span>+++ b/src/openvpn/dco_linux.c</span><br><span>@@ -952,7 +952,8=
+ @@</span><br><span> }</span><br><span> </span><br><span> int</span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-dco_get_peer_stats_multi(dco_contex=
+t_t *dco, struct multi_context *m)</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+dco_get_peer_stats_multi(dco_context_t *dco, struct multi_co=
+ntext *m,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+          =
+               const bool raise_sigusr1_on_err)</span><br><span> {</span><b=
+r><span>     msg(D_DCO_DEBUG, &quot;%s&quot;, __func__);</span><br><span> <=
+/span><br><span>@@ -963,6 +964,14 @@</span><br><span>     int ret =3D ovpn_=
+nl_msg_send(dco, nl_msg, dco_parse_peer_multi, m, __func__);</span><br><spa=
+n> </span><br><span>     nlmsg_free(nl_msg);</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+    if (raise_sigusr1_on_err &amp;&amp; ret &lt; 0)</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+        msg(M_WARN, &quot;Error retrieving DCO peer=
+ stats: the underlying DCO peer&quot;</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+            &quot;may have been deleted from the kernel w=
+ithout notifying &quot;</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+            &quot;userspace. Restarting the session&quot;);</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+        register_signal(m-&gt;t=
+op.sig, SIGUSR1, &quot;dco peer stats error&quot;);</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span>     return ret;</s=
+pan><br><span> }</span><br><span> </span><br><span>@@ -1008,9 +1017,14 @@</=
 span><br><span> }</span><br><span> </span><br><span> int</span><br><span st=
-yle=3D"color: hsl(0, 100%, 40%);">-dco_get_peer_stats_multi(dco_context_t *=
-dco, struct multi_context *m)</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+dco_get_peer_stats_multi(dco_context_t *dco, struct multi_context=
- *m,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+               =
-          const bool raise_sigusr1_on_err)</span><br><span> {</span><br><sp=
-an>     /* Not implemented. */</span><br><span>     return 0;</span><br><sp=
-an> }</span><br><span> </span><br><span> int</span><br><span style=3D"color=
-: hsl(0, 100%, 40%);">-dco_get_peer_stats(struct context *c)</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+dco_get_peer_stats(struct context =
-*c, const bool raise_sigusr1_on_err)</span><br><span> {</span><br><span>   =
-  struct tuntap *tt =3D c-&gt;c1.tuntap;</span><br><span> </span><br><span>=
-diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c</span><br><span>=
-index b025344..fce7ac8 100644</span><br><span>--- a/src/openvpn/forward.c</=
-span><br><span>+++ b/src/openvpn/forward.c</span><br><span>@@ -488,7 +488,7=
- @@</span><br><span> static void</span><br><span> check_inactivity_timeout(=
-struct context *c)</span><br><span> {</span><br><span style=3D"color: hsl(0=
-, 100%, 40%);">-    if (dco_enabled(&amp;c-&gt;options) &amp;&amp; dco_get_=
-peer_stats(c) =3D=3D 0)</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+    if (dco_enabled(&amp;c-&gt;options) &amp;&amp; dco_get_peer_stats(c=
-, true) =3D=3D 0)</span><br><span>     {</span><br><span>         int64_t t=
-ot_bytes =3D c-&gt;c2.tun_read_bytes + c-&gt;c2.tun_write_bytes;</span><br>=
-<span>         int64_t new_bytes =3D tot_bytes - c-&gt;c2.inactivity_bytes;=
-</span><br><span>@@ -497,7 +497,6 @@</span><br><span>         {</span><br><=
-span>             c-&gt;c2.inactivity_bytes =3D tot_bytes;</span><br><span>=
-             event_timeout_reset(&amp;c-&gt;c2.inactivity_interval);</span>=
-<br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span>           =
-  return;</span><br><span>         }</span><br><span>     }</span><br><span=
->diff --git a/src/openvpn/manage.c b/src/openvpn/manage.c</span><br><span>i=
-ndex 484042a..0e73942 100644</span><br><span>--- a/src/openvpn/manage.c</sp=
-an><br><span>+++ b/src/openvpn/manage.c</span><br><span>@@ -4146,8 +4146,13=
- @@</span><br><span>         counter_type dco_read_bytes =3D 0;</span><br><=
-span>         counter_type dco_write_bytes =3D 0;</span><br><span> </span><=
-br><span style=3D"color: hsl(0, 100%, 40%);">-        if (dco_enabled(&amp;=
-c-&gt;options) &amp;&amp; (dco_get_peer_stats(c) =3D=3D 0))</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+        if (dco_enabled(&amp;c-&gt;=
-options))</span><br><span>         {</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+            if (dco_get_peer_stats(c, true) &lt; 0)</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+            {</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+                return;</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+            }</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+</span><br><span>             dco_=
-read_bytes =3D c-&gt;c2.dco_read_bytes;</span><br><span>             dco_wr=
-ite_bytes =3D c-&gt;c2.dco_write_bytes;</span><br><span>         }</span><b=
-r><span>@@ -4166,7 +4171,8 @@</span><br><span> void</span><br><span> man_pe=
-rsist_client_stats(struct management *man, struct context *c)</span><br><sp=
-an> {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    if (dco_enab=
-led(&amp;c-&gt;options) &amp;&amp; (dco_get_peer_stats(c) =3D=3D 0))</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+    /* no need to raise SI=
-GUSR1 since we are already closing the instance */</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+    if (dco_enabled(&amp;c-&gt;options) &amp=
-;&amp; (dco_get_peer_stats(c, false) =3D=3D 0))</span><br><span>     {</spa=
-n><br><span>         management_bytes_client(man, c-&gt;c2.dco_read_bytes, =
-c-&gt;c2.dco_write_bytes);</span><br><span>     }</span><br><span>diff --gi=
-t a/src/openvpn/multi.c b/src/openvpn/multi.c</span><br><span>index 85a1712=
-..9d244be 100644</span><br><span>--- a/src/openvpn/multi.c</span><br><span>=
-+++ b/src/openvpn/multi.c</span><br><span>@@ -548,7 +548,10 @@</span><br><s=
-pan> {</span><br><span>     if (dco_enabled(&amp;m-&gt;top.options))</span>=
-<br><span>     {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-     =
-   dco_get_peer_stats_multi(&amp;m-&gt;top.c1.tuntap-&gt;dco, m);</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+        if (dco_get_peer_stat=
-s_multi(&amp;m-&gt;top.c1.tuntap-&gt;dco, m, false) &lt; 0)</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+        {</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+            return;</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+        }</span><br><span>     }</span><br><s=
-pan> </span><br><span>     setenv_counter(c-&gt;c2.es, &quot;bytes_received=
-&quot;, c-&gt;c2.link_read_bytes + c-&gt;c2.dco_read_bytes);</span><br><spa=
-n>@@ -856,7 +859,10 @@</span><br><span> </span><br><span>         if (dco_e=
-nabled(&amp;m-&gt;top.options))</span><br><span>         {</span><br><span =
-style=3D"color: hsl(0, 100%, 40%);">-            dco_get_peer_stats_multi(&=
-amp;m-&gt;top.c1.tuntap-&gt;dco, m);</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+            if (dco_get_peer_stats_multi(&amp;m-&gt;top.c1=
-.tuntap-&gt;dco, m, true) &lt; 0)</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+            {</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+                return;</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+            }</span><br><span>         }</span><br><span> </spa=
-n><br><span>         if (version =3D=3D 1)</span><br><span>diff --git a/src=
-/openvpn/sig.c b/src/openvpn/sig.c</span><br><span>index 8323f0d..b0f8935 1=
-00644</span><br><span>--- a/src/openvpn/sig.c</span><br><span>+++ b/src/ope=
-nvpn/sig.c</span><br><span>@@ -489,7 +489,10 @@</span><br><span> </span><br=
-><span>     if (dco_enabled(&amp;c-&gt;options))</span><br><span>     {</sp=
-an><br><span style=3D"color: hsl(0, 100%, 40%);">-        dco_get_peer_stat=
-s(c);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        if (dc=
-o_get_peer_stats(c, true) &lt; 0)</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+        {</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+            return;</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+        }</span><br><span>     }</span><br><span> </span><br><span>    =
- status_printf(so, &quot;OpenVPN STATISTICS&quot;);</span><br><span></span>=
-<br></pre><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/=
-+/831?usp=3Demail">change 831</a>. To unsubscribe, or for help writing mail=
- filters, visit <a href=3D"http://gerrit.openvpn.net/settings">settings</a>=
-.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemsc=
-ope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link ite=
-mprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/831?usp=3Demail=
-"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
+yle=3D"color: hsl(0, 100%, 40%);">-dco_get_peer_stats(struct context *c)</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+dco_get_peer_stats(str=
+uct context *c, const bool raise_sigusr1_on_err)</span><br><span> {</span><=
+br><span style=3D"color: hsl(0, 100%, 40%);">-    uint32_t peer_id =3D c-&g=
+t;c2.tls_multi-&gt;dco_peer_id;</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+    int peer_id =3D c-&gt;c2.tls_multi-&gt;dco_peer_id;</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+    if (peer_id =3D=3D -1)<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+        return 0;</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+</span><br><span>     msg(D_DCO_DEBUG, &quot;%s: p=
+eer-id %d&quot;, __func__, peer_id);</span><br><span> </span><br><span>    =
+ if (!c-&gt;c1.tuntap)</span><br><span>@@ -1030,6 +1044,14 @@</span><br><sp=
+an> </span><br><span> nla_put_failure:</span><br><span>     nlmsg_free(nl_m=
+sg);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+    if (raise_sigusr1_on_err &amp;=
+&amp; ret &lt; 0)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+  {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        msg(M_WA=
+RN, &quot;Error retrieving DCO peer stats: the underlying DCO peer&quot;</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+            &quot;may =
+have been deleted from the kernel without notifying &quot;</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+            &quot;userspace. Restart=
+ing the session&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+        register_signal(c-&gt;sig, SIGUSR1, &quot;dco peer stats error&=
+quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span>=
+<br><span>     return ret;</span><br><span> }</span><br><span> </span><br><=
+span>diff --git a/src/openvpn/dco_win.c b/src/openvpn/dco_win.c</span><br><=
+span>index 45cb919..8b47124 100644</span><br><span>--- a/src/openvpn/dco_wi=
+n.c</span><br><span>+++ b/src/openvpn/dco_win.c</span><br><span>@@ -712,14 =
++712,15 @@</span><br><span> }</span><br><span> </span><br><span> int</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-dco_get_peer_stats_multi(dco=
+_context_t *dco, struct multi_context *m)</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+dco_get_peer_stats_multi(dco_context_t *dco, struct m=
+ulti_context *m,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+                      const bool raise_sigusr1_on_err)</span><br><span> {</=
+span><br><span>     /* Not implemented. */</span><br><span>     return 0;</=
+span><br><span> }</span><br><span> </span><br><span> int</span><br><span st=
+yle=3D"color: hsl(0, 100%, 40%);">-dco_get_peer_stats(struct context *c)</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+dco_get_peer_stats(str=
+uct context *c, const bool raise_sigusr1_on_err)</span><br><span> {</span><=
+br><span>     struct tuntap *tt =3D c-&gt;c1.tuntap;</span><br><span> </spa=
+n><br><span>diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c</spa=
+n><br><span>index b025344..fce7ac8 100644</span><br><span>--- a/src/openvpn=
+/forward.c</span><br><span>+++ b/src/openvpn/forward.c</span><br><span>@@ -=
+488,7 +488,7 @@</span><br><span> static void</span><br><span> check_inactiv=
+ity_timeout(struct context *c)</span><br><span> {</span><br><span style=3D"=
+color: hsl(0, 100%, 40%);">-    if (dco_enabled(&amp;c-&gt;options) &amp;&a=
+mp; dco_get_peer_stats(c) =3D=3D 0)</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+    if (dco_enabled(&amp;c-&gt;options) &amp;&amp; dco_get_=
+peer_stats(c, true) =3D=3D 0)</span><br><span>     {</span><br><span>      =
+   int64_t tot_bytes =3D c-&gt;c2.tun_read_bytes + c-&gt;c2.tun_write_bytes=
+;</span><br><span>         int64_t new_bytes =3D tot_bytes - c-&gt;c2.inact=
+ivity_bytes;</span><br><span>@@ -497,7 +497,6 @@</span><br><span>         {=
+</span><br><span>             c-&gt;c2.inactivity_bytes =3D tot_bytes;</spa=
+n><br><span>             event_timeout_reset(&amp;c-&gt;c2.inactivity_inter=
+val);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span=
+>             return;</span><br><span>         }</span><br><span>     }</sp=
+an><br><span>diff --git a/src/openvpn/manage.c b/src/openvpn/manage.c</span=
+><br><span>index 484042a..0e73942 100644</span><br><span>--- a/src/openvpn/=
+manage.c</span><br><span>+++ b/src/openvpn/manage.c</span><br><span>@@ -414=
+6,8 +4146,13 @@</span><br><span>         counter_type dco_read_bytes =3D 0;=
+</span><br><span>         counter_type dco_write_bytes =3D 0;</span><br><sp=
+an> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-        if (dco_e=
+nabled(&amp;c-&gt;options) &amp;&amp; (dco_get_peer_stats(c) =3D=3D 0))</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+        if (dco_enabled=
+(&amp;c-&gt;options))</span><br><span>         {</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+            if (dco_get_peer_stats(c, true) &l=
+t; 0)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            {<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+                retu=
+rn;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            }</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span>     =
+        dco_read_bytes =3D c-&gt;c2.dco_read_bytes;</span><br><span>       =
+      dco_write_bytes =3D c-&gt;c2.dco_write_bytes;</span><br><span>       =
+  }</span><br><span>@@ -4166,7 +4171,8 @@</span><br><span> void</span><br><=
+span> man_persist_client_stats(struct management *man, struct context *c)</=
+span><br><span> {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
+if (dco_enabled(&amp;c-&gt;options) &amp;&amp; (dco_get_peer_stats(c) =3D=
+=3D 0))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    /* no ne=
+ed to raise SIGUSR1 since we are already closing the instance */</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+    if (dco_enabled(&amp;c-&gt=
+;options) &amp;&amp; (dco_get_peer_stats(c, false) =3D=3D 0))</span><br><sp=
+an>     {</span><br><span>         management_bytes_client(man, c-&gt;c2.dc=
+o_read_bytes, c-&gt;c2.dco_write_bytes);</span><br><span>     }</span><br><=
+span>diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c</span><br><span=
+>index 85a1712..9d244be 100644</span><br><span>--- a/src/openvpn/multi.c</s=
+pan><br><span>+++ b/src/openvpn/multi.c</span><br><span>@@ -548,7 +548,10 @=
+@</span><br><span> {</span><br><span>     if (dco_enabled(&amp;m-&gt;top.op=
+tions))</span><br><span>     {</span><br><span style=3D"color: hsl(0, 100%,=
+ 40%);">-        dco_get_peer_stats_multi(&amp;m-&gt;top.c1.tuntap-&gt;dco,=
+ m);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        if (dco=
+_get_peer_stats_multi(&amp;m-&gt;top.c1.tuntap-&gt;dco, m, false) &lt; 0)</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+        {</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+            return;</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+        }</span><br><span>     =
+}</span><br><span> </span><br><span>     setenv_counter(c-&gt;c2.es, &quot;=
+bytes_received&quot;, c-&gt;c2.link_read_bytes + c-&gt;c2.dco_read_bytes);<=
+/span><br><span>@@ -856,7 +859,10 @@</span><br><span> </span><br><span>    =
+     if (dco_enabled(&amp;m-&gt;top.options))</span><br><span>         {</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-            dco_get_peer=
+_stats_multi(&amp;m-&gt;top.c1.tuntap-&gt;dco, m);</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+            if (dco_get_peer_stats_multi(&am=
+p;m-&gt;top.c1.tuntap-&gt;dco, m, true) &lt; 0)</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+            {</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+                return;</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+            }</span><br><span>         }</span><b=
+r><span> </span><br><span>         if (version =3D=3D 1)</span><br><span>di=
+ff --git a/src/openvpn/sig.c b/src/openvpn/sig.c</span><br><span>index 8323=
+f0d..b0f8935 100644</span><br><span>--- a/src/openvpn/sig.c</span><br><span=
+>+++ b/src/openvpn/sig.c</span><br><span>@@ -489,7 +489,10 @@</span><br><sp=
+an> </span><br><span>     if (dco_enabled(&amp;c-&gt;options))</span><br><s=
+pan>     {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        dco=
+_get_peer_stats(c);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+        if (dco_get_peer_stats(c, true) &lt; 0)</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+        {</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+            return;</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+        }</span><br><span>     }</span><br><span> </span>=
+<br><span>     status_printf(so, &quot;OpenVPN STATISTICS&quot;);</span><br=
+><span></span><br></pre><p>To view, visit <a href=3D"http://gerrit.openvpn.=
+net/c/openvpn/+/831?usp=3Demail">change 831</a>. To unsubscribe, or for hel=
+p writing mail filters, visit <a href=3D"http://gerrit.openvpn.net/settings=
+">settings</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessag=
+e"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAct=
+ion"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/8=
+31?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div></d=
+iv>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
@@ -584,8 +592,8 @@ a4003d9f4637c </div>
 .1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: merged </div>
+<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
 
 
---RRZncAY1b0s=--
+--QcAZEQb376c=--
 
