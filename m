@@ -1,16 +1,10 @@
-From: "flichtenheld (Code Review)" <gerrit@...515...>
-Date: Fri, 7 Mar 2025 11:05:00 +0000
-In-Reply-To: <gerrit.1733989644000.I3fb01ab76cf3df0874ba92e08f371d17607a8369@...2715...>
-References: <gerrit.1733989644000.I3fb01ab76cf3df0874ba92e08f371d17607a8369@...2715...>
-Reply-To: frank@...2641..., arne-openvpn@...1227..., heiko@...515...,
- openvpn-devel@lists.sourceforge.net, gert@...1296...
-Message-ID: <9600dc2ee09e46ecf9a4e2524dfa63b54b80571e-EmailReviewComments-HTML@...2715...>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="XW9G/MtUxeA="; charset=UTF-8
-Subject: [Openvpn-devel] [L] Change in openvpn[master]: dns: don't publish
- env vars to non-dns scripts
+Date: Sat, 8 Mar 2025 09:38:34 +0100 (CET)
+Message-Id: <202503080838.5288cYu5075708@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <20250305171730.250444-1-frank@...2641...>
+References: <20250305171730.250444-1-frank@...2641...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Handle missing DCO peer by
+ restarting the session
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,89 +13,43 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: d12fk <heiko@...515...>
-Cc: cron2 <gert@...1296...>, plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: Ralf Lici <ralf@...2726...>
+Cc: openvpn-devel@lists.sourceforge.net
 
---XW9G/MtUxeA=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Thanks, and sorry for stalling since January.  This is still not 
+"really really" pretty, but I am still convinced that dealing with DCO
+related issues inside dco*.c is a better approach :-)
 
-Attention is currently required from: d12fk, plaisthos.
+I have not actually excercised the code (I do not have experienced the
+underlying issue yet, which smells like a race condition between kernel
+and userland), just stared at it for a bit, and relied on the BB army
+to verify that it compiles and passes t_client on all DCO-enabled
+platforms (it does).
 
-flichtenheld has posted comments on this change. ( http://gerrit.openvpn.ne=
-t/c/openvpn/+/840?usp=3Demail )
+Not sure why we would ever hit dco_get_peer_stats() with peer_id == -1
+(in that case userland should know "the peer is gone") but the check
+won't harm - though slightly unrelated.  Good catch on the uint32_t.
 
-Change subject: dns: don't publish env vars to non-dns scripts
-......................................................................
+Your patch has been applied to the master branch.
 
+commit 6f9ba8bfd259742ee19b173898a9bfd20e22fcf3
+Author: Ralf Lici
+Date:   Wed Mar 5 18:17:30 2025 +0100
 
-Patch Set 12: Code-Review+2
+     Handle missing DCO peer by restarting the session
+
+     Signed-off-by: Ralf Lici <ralf@...2726...>
+     Acked-by: Frank Lichtenheld <frank@...2641...>
+     Message-Id: <20250305171730.250444-1-frank@...2641...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg31022.html
+     Signed-off-by: Gert Doering <gert@...1296...>
 
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/840?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings
+kind regards,
 
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: I3fb01ab76cf3df0874ba92e08f371d17607a8369
-Gerrit-Change-Number: 840
-Gerrit-PatchSet: 12
-Gerrit-Owner: d12fk <heiko@...515...>
-Gerrit-Reviewer: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-CC: cron2 <gert@...1296...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: d12fk <heiko@...515...>
-Gerrit-Comment-Date: Fri, 07 Mar 2025 11:05:00 +0000
-Gerrit-HasComments: No
-Gerrit-Has-Labels: Yes
-Gerrit-MessageType: comment
+Gert Doering
 
---XW9G/MtUxeA=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<p> Attention is currently required from: d12fk, plaisthos. </p>
-<p>Patch set 12:<span style=3D"border-radius: 3px; display: inline-block; m=
-argin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span=
-></p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/840?usp=3Demail">V=
-iew Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To vi=
-ew, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/840?usp=3Demail"=
->change 840</a>. To unsubscribe, or for help writing mail filters, visit <a=
- href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemscop=
-e itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"ac=
-tion" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=
-=3D"http://gerrit.openvpn.net/c/openvpn/+/840?usp=3Demail"/><meta itemprop=
-=3D"name" content=3D"View Change"/></div></div>
-
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I3fb01ab76cf3df0874ba92e08f3=
-71d17607a8369 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 840 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 12 </div>
-<div style=3D"display:none"> Gerrit-Owner: d12fk &lt;heiko@...515...&gt; </=
-div>
-<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
-1...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: cron2 &lt;gert@...1296...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: d12fk &lt;heiko@...515...&gt=
-; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Fri, 07 Mar 2025 11:05:00=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: No </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
-
-
---XW9G/MtUxeA=--
 
