@@ -1,11 +1,17 @@
-From: Gert Doering <gert@...1296...>
-Date: Sun,  9 Mar 2025 13:50:40 +0100
-Message-ID: <20250309125040.5041-1-gert@...1296...>
-In-Reply-To: <gerrit.1733328040000.Id2bed0908e84c19b8fb6fe806376316793e550b4@...2715...>
-References: <gerrit.1733328040000.Id2bed0908e84c19b8fb6fe806376316793e550b4@...2715...>
+From: "cron2 (Code Review)" <gerrit@...515...>
+Date: Sun, 9 Mar 2025 15:21:04 +0000
+In-Reply-To: <gerrit.1733316222000.Icaffbfa6b2e8efa2bd24a05537cb74b15f4fed96@...2715...>
+References: <gerrit.1733316222000.Icaffbfa6b2e8efa2bd24a05537cb74b15f4fed96@...2715...>
+Reply-To: gert@...1296..., arne-openvpn@...1227..., heiko@...515...,
+ openvpn-devel@lists.sourceforge.net, frank@...2641...,
+ lstipakov@...277...
+Message-ID: <0bc98d34f4542b7e50a67cdef4b0b227cce8d4c1-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v12] dns: do not use netsh to set name
- server addresses
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="LO66ede9YMg="; charset=UTF-8
+Subject: [Openvpn-devel] [L] Change in openvpn[master]: dns: support
+ multiple domains without DHCP
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,369 +20,203 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: d12fk <heiko@...515...>
+Cc: stipa <lstipakov@...277...>, flichtenheld <frank@...2641...>, plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-From: Heiko Hund <heiko@...2662...>
+--LO66ede9YMg=
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Instead of spawning a netsh process, set the name server addresses
-directly in the registry hive of the VPN interface.
+Attention is currently required from: d12fk, flichtenheld, plaisthos.
 
-This is a first step to get rid of the use of command line tools in the
-service and move to a more API driven style of modifying the VPN adapter
-configuration.
+cron2 has posted comments on this change. ( http://gerrit.openvpn.net/c/ope=
+nvpn/+/824?usp=3Demail )
 
-Change-Id: Id2bed0908e84c19b8fb6fe806376316793e550b4
-Signed-off-by: Heiko Hund <heiko@...2662...>
-Acked-by: Lev Stipakov <lstipakov@...277...>
----
+Change subject: dns: support multiple domains without DHCP
+......................................................................
 
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to master.
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/825
-This mail reflects revision 12 of this Change.
+Patch Set 12: Code-Review-1
 
-Acked-by according to Gerrit (reflected above):
-Lev Stipakov <lstipakov@...277...>
+(8 comments)
 
-        
-diff --git a/src/openvpnserv/interactive.c b/src/openvpnserv/interactive.c
-index a76d908..13a6091 100644
---- a/src/openvpnserv/interactive.c
-+++ b/src/openvpnserv/interactive.c
-@@ -1024,65 +1024,6 @@
- }
- 
- /**
-- * Run the command: netsh interface $proto $action dns $if_name $addr [validate=no]
-- * @param  action      "delete" or "add"
-- * @param  proto       "ipv6" or "ip"
-- * @param  if_name     "name_of_interface"
-- * @param  addr         IPv4 (for proto = ip) or IPv6 address as a string
-- *
-- * If addr is null and action = "delete" all addresses are deleted.
-- */
--static DWORD
--netsh_dns_cmd(const wchar_t *action, const wchar_t *proto, const wchar_t *if_name, const wchar_t *addr)
--{
--    DWORD err = 0;
--    int timeout = 30000; /* in msec */
--    wchar_t argv0[MAX_PATH];
--    wchar_t *cmdline = NULL;
--
--    if (!addr)
--    {
--        if (wcscmp(action, L"delete") == 0)
--        {
--            addr = L"all";
--        }
--        else /* nothing to do -- return success*/
--        {
--            goto out;
--        }
--    }
--
--    /* Path of netsh */
--    swprintf(argv0, _countof(argv0), L"%ls\\%ls", get_win_sys_path(), L"netsh.exe");
--
--    /* cmd template:
--     * netsh interface $proto $action dns $if_name $addr [validate=no]
--     */
--    const wchar_t *fmt = L"netsh interface %ls %ls dns \"%ls\" %ls";
--
--    /* max cmdline length in wchars -- include room for worst case and some */
--    size_t ncmdline = wcslen(fmt) + wcslen(if_name) + wcslen(addr) + 32 + 1;
--    cmdline = malloc(ncmdline*sizeof(wchar_t));
--    if (!cmdline)
--    {
--        err = ERROR_OUTOFMEMORY;
--        goto out;
--    }
--
--    swprintf(cmdline, ncmdline, fmt, proto, action, if_name, addr);
--
--    if (IsWindows7OrGreater())
--    {
--        wcscat_s(cmdline, ncmdline, L" validate=no");
--    }
--    err = ExecCommand(argv0, cmdline, timeout);
--
--out:
--    free(cmdline);
--    return err;
--}
--
--/**
-  * Run the command: netsh interface ip $action wins $if_name [static] $addr
-  * @param  action      "delete", "add" or "set"
-  * @param  if_name     "name_of_interface"
-@@ -1139,22 +1080,6 @@
-     return err;
- }
- 
--/* Delete all IPv4 or IPv6 dns servers for an interface */
--static DWORD
--DeleteDNS(short family, wchar_t *if_name)
--{
--    wchar_t *proto = (family == AF_INET6) ? L"ipv6" : L"ip";
--    return netsh_dns_cmd(L"delete", proto, if_name, NULL);
--}
--
--/* Add an IPv4 or IPv6 dns server to an interface */
--static DWORD
--AddDNS(short family, wchar_t *if_name, wchar_t *addr)
--{
--    wchar_t *proto = (family == AF_INET6) ? L"ipv6" : L"ip";
--    return netsh_dns_cmd(L"add", proto, if_name, addr);
--}
--
- static BOOL
- CmpWString(LPVOID item, LPVOID str)
- {
-@@ -1818,11 +1743,115 @@
-     return err;
- }
- 
-+/**
-+ * Return the interfaces registry key for the specified address family
-+ *
-+ * @param family    the internet address family to open the key for
-+ * @param key       PHKEY to return the key in
-+ * @return BOOL to indicate success or failure
-+ */
-+static BOOL
-+GetInterfacesKey(short family, PHKEY key)
-+{
-+    PCSTR itfs_key = family == AF_INET6
-+        ? "SYSTEM\\CurrentControlSet\\Services\\Tcpip6\\Parameters\\Interfaces"
-+        : "SYSTEM\\CurrentControlSet\\Services\\Tcpip\\Parameters\\Interfaces";
-+
-+    LSTATUS err = RegOpenKeyExA(HKEY_LOCAL_MACHINE, itfs_key, 0, KEY_ALL_ACCESS, key);
-+    if (err)
-+    {
-+        *key = INVALID_HANDLE_VALUE;
-+        MsgToEventLog(M_SYSERR, TEXT("GetInterfacesKey: "
-+                                     "could not open interfaces registry key for family %d (%lu)"),
-+                      family, err);
-+    }
-+
-+    return err ? FALSE : TRUE;
-+}
-+
-+/**
-+ * Set the DNS name servers in a registry interface configuration
-+ *
-+ * @param itf_id    the interface id to set the servers for
-+ * @param family    internet address family to set the servers for
-+ * @param value     the value to set the name servers to
-+ *
-+ * @return DWORD NO_ERROR on success, a Windows error code otherwise
-+ */
-+static DWORD
-+SetNameServersValue(PCWSTR itf_id, short family, PCSTR value)
-+{
-+    DWORD err;
-+
-+    HKEY itfs;
-+    if (!GetInterfacesKey(family, &itfs))
-+    {
-+        return ERROR_FILE_NOT_FOUND;
-+    }
-+
-+    HKEY itf = INVALID_HANDLE_VALUE;
-+    err = RegOpenKeyExW(itfs, itf_id, 0, KEY_ALL_ACCESS, &itf);
-+    if (err)
-+    {
-+        MsgToEventLog(M_SYSERR, TEXT("SetNameServersValue: "
-+                                     "could not open interface key for %s family %d (%lu)"),
-+                      itf_id, family, err);
-+        goto out;
-+    }
-+
-+    err = RegSetValueExA(itf, "NameServer", 0, REG_SZ, (PBYTE)value, strlen(value) + 1);
-+    if (err)
-+    {
-+        MsgToEventLog(M_SYSERR, TEXT("SetNameServersValue: "
-+                                     "could not set name servers '%S' for %s family %d (%lu)"),
-+                      value, itf_id, family, err);
-+    }
-+
-+out:
-+    if (itf != INVALID_HANDLE_VALUE)
-+    {
-+        RegCloseKey(itf);
-+    }
-+    if (itfs != INVALID_HANDLE_VALUE)
-+    {
-+        RegCloseKey(itfs);
-+    }
-+    return err;
-+}
-+
-+/**
-+ * Set the DNS name servers in a registry interface configuration
-+ *
-+ * @param itf_id    the interface id to set the servers for
-+ * @param family    internet address family to set the servers for
-+ * @param addrs     comma separated list of name server addresses
-+ *
-+ * @return DWORD NO_ERROR on success, a Windows error code otherwise
-+ */
-+static DWORD
-+SetNameServers(PCWSTR itf_id, short family, PCSTR addrs)
-+{
-+    return SetNameServersValue(itf_id, family, addrs);
-+}
-+
-+/**
-+ * Delete all DNS name servers from a registry interface configuration
-+ *
-+ * @param itf_id    the interface id to clear the servers for
-+ * @param family    internet address family to clear the servers for
-+ *
-+ * @return DWORD NO_ERROR on success, a Windows error code otherwise
-+ */
-+static DWORD
-+ResetNameServers(PCWSTR itf_id, short family)
-+{
-+    return SetNameServersValue(itf_id, family, "");
-+}
-+
- static DWORD
- HandleDNSConfigMessage(const dns_cfg_message_t *msg, undo_lists_t *lists)
- {
-     DWORD err = 0;
--    wchar_t addr[46]; /* large enough to hold string representation of an ipv4 / ipv6 address */
-     undo_type_t undo_type = (msg->family == AF_INET6) ? undo_dns4 : undo_dns6;
-     int addr_len = msg->addr_len;
- 
-@@ -1844,10 +1873,11 @@
-         msgptr->domains[_countof(msg->domains)-1] = '\0';
-     }
- 
--    wchar_t *wide_name = utf8to16(msg->iface.name); /* utf8 to wide-char */
--    if (!wide_name)
-+    WCHAR iid[64];
-+    err = InterfaceIdString(msg->iface.name, iid, _countof(iid));
-+    if (err)
-     {
--        return ERROR_OUTOFMEMORY;
-+        return err;
-     }
- 
-     /* We delete all current addresses before adding any
-@@ -1855,12 +1885,12 @@
-      */
-     if (addr_len > 0 || msg->header.type == msg_del_dns_cfg)
-     {
--        err = DeleteDNS(msg->family, wide_name);
-+        err = ResetNameServers(iid, msg->family);
-         if (err)
-         {
--            goto out;
-+            return err;
-         }
--        free(RemoveListItem(&(*lists)[undo_type], CmpWString, wide_name));
-+        free(RemoveListItem(&(*lists)[undo_type], CmpAny, iid));
-     }
- 
-     if (msg->header.type == msg_del_dns_cfg)
-@@ -1872,40 +1902,43 @@
-             err = SetDnsSearchDomains(msg->iface.name, NULL, &gpol, lists);
-         }
-         ApplyDnsSettings(gpol);
--        goto out;  /* job done */
-+        return err;  /* job done */
-     }
- 
--    for (int i = 0; i < addr_len; ++i)
--    {
--        if (msg->family == AF_INET6)
--        {
--            RtlIpv6AddressToStringW(&msg->addr[i].ipv6, addr);
--        }
--        else
--        {
--            RtlIpv4AddressToStringW(&msg->addr[i].ipv4, addr);
--        }
--        err = AddDNS(msg->family, wide_name, addr);
--        if (i == 0 && err)
--        {
--            goto out;
--        }
--        /* We do not check for duplicate addresses, so any error in adding
--         * additional addresses is ignored.
--         */
--    }
--
--    err = 0;
--
-     if (msg->addr_len > 0)
-     {
--        wchar_t *tmp_name = _wcsdup(wide_name);
--        if (!tmp_name || AddListItem(&(*lists)[undo_type], tmp_name))
-+        /* prepare the comma separated address list */
-+        CHAR addrs[256]; /* large enough to hold four IPv4 / IPv6 address strings */
-+        size_t offset = 0;
-+        for (int i = 0; i < addr_len; ++i)
-         {
--            free(tmp_name);
--            DeleteDNS(msg->family, wide_name);
--            err = ERROR_OUTOFMEMORY;
--            goto out;
-+            if (i != 0)
-+            {
-+                addrs[offset++] = ',';
-+            }
-+            if (msg->family == AF_INET6)
-+            {
-+                RtlIpv6AddressToStringA(&msg->addr[i].ipv6, addrs + offset);
-+            }
-+            else
-+            {
-+                RtlIpv4AddressToStringA(&msg->addr[i].ipv4, addrs + offset);
-+            }
-+            offset += strlen(addrs);
-+        }
-+
-+        err = SetNameServers(iid, msg->family, addrs);
-+        if (err)
-+        {
-+            return err;
-+        }
-+
-+        wchar_t *tmp_iid = _wcsdup(iid);
-+        if (!tmp_iid || AddListItem(&(*lists)[undo_type], tmp_iid))
-+        {
-+            free(tmp_iid);
-+            ResetNameServers(iid, msg->family);
-+            return ERROR_OUTOFMEMORY;
-         }
-     }
- 
-@@ -1916,8 +1949,6 @@
-     }
-     ApplyDnsSettings(gpol);
- 
--out:
--    free(wide_name);
-     return err;
- }
- 
-@@ -2298,11 +2329,11 @@
-                     break;
- 
-                 case undo_dns4:
--                    DeleteDNS(AF_INET, item->data);
-+                    ResetNameServers(item->data, AF_INET);
-                     break;
- 
-                 case undo_dns6:
--                    DeleteDNS(AF_INET6, item->data);
-+                    ResetNameServers(item->data, AF_INET6);
-                     break;
- 
-                 case undo_domains:
+Commit Message:
+
+http://gerrit.openvpn.net/c/openvpn/+/824/comment/0e9bde67_521ea38a :
+PS12, Line 23:
+please reference the github issue about WMIC no longer working on Win11
+
+Github: OpenVPN/openvpn#642
+
+
+Patchset:
+
+PS12:
+a couple of very minor nits, but there's one thing I consider important eno=
+ugh to clarify before applying.
+
+
+File src/openvpnserv/interactive.c:
+
+http://gerrit.openvpn.net/c/openvpn/+/824/comment/614ca4f1_082ef8e0 :
+PS12, Line 1171: ApplyGpolSettings32()
+`(void)`
+
+
+http://gerrit.openvpn.net/c/openvpn/+/824/comment/15f3c9b6_c46bf981 :
+PS12, Line 1211: ApplyGpolSettings64()
+`(void)`
+
+
+http://gerrit.openvpn.net/c/openvpn/+/824/comment/31278e47_77ce57be :
+PS12, Line 1248: ApplyGpolSettings()
+`(void)`
+
+
+http://gerrit.openvpn.net/c/openvpn/+/824/comment/17e52f07_1dd206a9 :
+PS12, Line 1609:  * If it doesn't exists, resets to empty, effectively disa=
+bling it.
+typo here ("exists")
+
+
+http://gerrit.openvpn.net/c/openvpn/+/824/comment/94c13555_6c14a07a :
+PS12, Line 1631:         goto out;
+my understanding of the code flow is that the `goto out` should be inside t=
+he `if (err !=3D ERROR_FILE_NOT_FOUND)` because otherwise the described beh=
+aviour "if it doesn't exist =3D FILE NOT FOUND, reset to empty" can never b=
+e triggered.
+
+
+http://gerrit.openvpn.net/c/openvpn/+/824/comment/c8ba0a57_5dfb1b78 :
+PS12, Line 1698:         }
+in this case ("no InitialSearchList can be found") this whole function woul=
+d then fail to do anything, as RegSetValueExW() is skipped.  Is this intent=
+ional?
+
+
+
+--
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/824?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings
+
+Gerrit-Project: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: Icaffbfa6b2e8efa2bd24a05537cb74b15f4fed96
+Gerrit-Change-Number: 824
+Gerrit-PatchSet: 12
+Gerrit-Owner: d12fk <heiko@...515...>
+Gerrit-Reviewer: cron2 <gert@...1296...>
+Gerrit-Reviewer: flichtenheld <frank@...2641...>
+Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
+Gerrit-Reviewer: stipa <lstipakov@...277...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Attention: flichtenheld <frank@...2641...>
+Gerrit-Attention: d12fk <heiko@...515...>
+Gerrit-Comment-Date: Sun, 09 Mar 2025 15:21:04 +0000
+Gerrit-HasComments: Yes
+Gerrit-Has-Labels: Yes
+Gerrit-MessageType: comment
+
+--LO66ede9YMg=
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<p> Attention is currently required from: d12fk, flichtenheld, plaisthos. <=
+/p>
+<p>Patch set 12:<span style=3D"border-radius: 3px; display: inline-block; m=
+argin: 0 2px; padding: 4px;background-color: #ffd4d4;">Code-Review -1</span=
+></p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/824?usp=3Demail">V=
+iew Change</a></p><p>8 comments:</p><ul style=3D"list-style: none; padding:=
+ 0;"><li style=3D"margin: 0; padding: 0;"><p>Commit Message:</p><ul style=
+=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 1=
+6px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net=
+/c/openvpn/+/824/comment/0e9bde67_521ea38a">Patch Set #12, Line 23:</a> <co=
+de style=3D"font-family:monospace,monospace"></code></p><p style=3D"white-s=
+pace: pre-wrap; word-wrap: break-word;">please reference the github issue a=
+bout WMIC no longer working on Win11</p><p style=3D"white-space: pre-wrap; =
+word-wrap: break-word;">Github: OpenVPN/openvpn#642</p></li></ul></li><li s=
+tyle=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-style: no=
+ne; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p style=3D"=
+margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/824?t=
+ab=3Dcomments">Patch Set #12:</a> </p><p style=3D"white-space: pre-wrap; wo=
+rd-wrap: break-word;">a couple of very minor nits, but there&#39;s one thin=
+g I consider important enough to clarify before applying.</p></li></ul></li=
+><li style=3D"margin: 0; padding: 0;"><p>File src/openvpnserv/interactive.c=
+:</p><ul style=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; pa=
+dding: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerr=
+it.openvpn.net/c/openvpn/+/824/comment/614ca4f1_082ef8e0">Patch Set #12, Li=
+ne 1171:</a> <code style=3D"font-family:monospace,monospace">ApplyGpolSetti=
+ngs32()</code></p><p style=3D"white-space: pre-wrap; word-wrap: break-word;=
+">`(void)`</p></li><li style=3D"margin: 0; padding: 0 0 0 16px;"><p style=
+=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/8=
+24/comment/15f3c9b6_c46bf981">Patch Set #12, Line 1211:</a> <code style=3D"=
+font-family:monospace,monospace">ApplyGpolSettings64()</code></p><p style=
+=3D"white-space: pre-wrap; word-wrap: break-word;">`(void)`</p></li><li sty=
+le=3D"margin: 0; padding: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a =
+href=3D"http://gerrit.openvpn.net/c/openvpn/+/824/comment/31278e47_77ce57be=
+">Patch Set #12, Line 1248:</a> <code style=3D"font-family:monospace,monosp=
+ace">ApplyGpolSettings()</code></p><p style=3D"white-space: pre-wrap; word-=
+wrap: break-word;">`(void)`</p></li><li style=3D"margin: 0; padding: 0 0 0 =
+16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.ne=
+t/c/openvpn/+/824/comment/17e52f07_1dd206a9">Patch Set #12, Line 1609:</a> =
+<code style=3D"font-family:monospace,monospace"> * If it doesn&#39;t exists=
+, resets to empty, effectively disabling it.</code></p><p style=3D"white-sp=
+ace: pre-wrap; word-wrap: break-word;">typo here (&quot;exists&quot;)</p></=
+li><li style=3D"margin: 0; padding: 0 0 0 16px;"><p style=3D"margin-bottom:=
+ 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/824/comment/94c1355=
+5_6c14a07a">Patch Set #12, Line 1631:</a> <code style=3D"font-family:monosp=
+ace,monospace">        goto out;</code></p><p style=3D"white-space: pre-wra=
+p; word-wrap: break-word;">my understanding of the code flow is that the `g=
+oto out` should be inside the `if (err !=3D ERROR_FILE_NOT_FOUND)` because =
+otherwise the described behaviour &quot;if it doesn&#39;t exist =3D FILE NO=
+T FOUND, reset to empty&quot; can never be triggered.</p></li><li style=3D"=
+margin: 0; padding: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=
+=3D"http://gerrit.openvpn.net/c/openvpn/+/824/comment/c8ba0a57_5dfb1b78">Pa=
+tch Set #12, Line 1698:</a> <code style=3D"font-family:monospace,monospace"=
+>        }</code></p><p style=3D"white-space: pre-wrap; word-wrap: break-wo=
+rd;">in this case (&quot;no InitialSearchList can be found&quot;) this whol=
+e function would then fail to do anything, as RegSetValueExW() is skipped. =
+ Is this intentional?</p></li></ul></li></ul><p>To view, visit <a href=3D"h=
+ttp://gerrit.openvpn.net/c/openvpn/+/824?usp=3Demail">change 824</a>. To un=
+subscribe, or for help writing mail filters, visit <a href=3D"http://gerrit=
+.openvpn.net/settings">settings</a>.</p><div itemscope itemtype=3D"http://s=
+chema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http=
+://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.open=
+vpn.net/c/openvpn/+/824?usp=3Demail"/><meta itemprop=3D"name" content=3D"Vi=
+ew Change"/></div></div>
+
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: Icaffbfa6b2e8efa2bd24a05537c=
+b74b15f4fed96 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 824 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 12 </div>
+<div style=3D"display:none"> Gerrit-Owner: d12fk &lt;heiko@...515...&gt; </=
+div>
+<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
+ </div>
+<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
+1...&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
+.1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: stipa &lt;lstipakov@...277...=
+&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
+41...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: d12fk &lt;heiko@...515...&gt=
+; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Sun, 09 Mar 2025 15:21:04=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
+
+
+--LO66ede9YMg=--
 
