@@ -1,16 +1,11 @@
-From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Sun, 9 Mar 2025 16:54:40 +0000
+From: Gert Doering <gert@...1296...>
+Date: Sun,  9 Mar 2025 17:55:00 +0100
+Message-ID: <20250309165500.21796-1-gert@...1296...>
 In-Reply-To: <gerrit.1736860439000.If570253e57371e4126b0e8aa4c349e2051cb8b00@...2715...>
 References: <gerrit.1736860439000.If570253e57371e4126b0e8aa4c349e2051cb8b00@...2715...>
-Reply-To: gert@...1296..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <129f7304f20cde60a31e4880623d6ab007aad80d-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="JZuE5+BJSHo="; charset=UTF-8
-Subject: [Openvpn-devel] [M] Change in openvpn[master]: Remove unused
- function check_subnet_conflict
+Subject: [Openvpn-devel] [PATCH v4] Remove unused function
+ check_subnet_conflict
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,87 +14,120 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: flichtenheld <frank@...2641...>
-Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---JZuE5+BJSHo=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+From: Frank Lichtenheld <frank@...2641...>
 
-Attention is currently required from: flichtenheld, plaisthos.
+This has been #if 0 for over a decade. Let's just
+remove this.
 
-cron2 has posted comments on this change. ( http://gerrit.openvpn.net/c/ope=
-nvpn/+/863?usp=3Demail )
+Change-Id: If570253e57371e4126b0e8aa4c349e2051cb8b00
+Signed-off-by: Frank Lichtenheld <frank@...2641...>
+Acked-by: Gert Doering <gert@...1296...>
+---
 
-Change subject: Remove unused function check_subnet_conflict
-......................................................................
+This change was reviewed on Gerrit and approved by at least one
+developer. I request to merge it to master.
 
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/863
+This mail reflects revision 4 of this Change.
 
-Patch Set 4: Code-Review+2
+Acked-by according to Gerrit (reflected above):
+Gert Doering <gert@...1296...>
 
-
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/863?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings
-
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: If570253e57371e4126b0e8aa4c349e2051cb8b00
-Gerrit-Change-Number: 863
-Gerrit-PatchSet: 4
-Gerrit-Owner: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: cron2 <gert@...1296...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Comment-Date: Sun, 09 Mar 2025 16:54:40 +0000
-Gerrit-HasComments: No
-Gerrit-Has-Labels: Yes
-Gerrit-MessageType: comment
-
---JZuE5+BJSHo=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<p> Attention is currently required from: flichtenheld, plaisthos. </p>
-<p>Patch set 4:<span style=3D"border-radius: 3px; display: inline-block; ma=
-rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/863?usp=3Demail">Vi=
-ew Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To vie=
-w, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/863?usp=3Demail">=
-change 863</a>. To unsubscribe, or for help writing mail filters, visit <a =
-href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope=
- itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"act=
-ion" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=
-=3D"http://gerrit.openvpn.net/c/openvpn/+/863?usp=3Demail"/><meta itemprop=
-=3D"name" content=3D"View Change"/></div></div>
-
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: If570253e57371e4126b0e8aa4c3=
-49e2051cb8b00 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 863 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 4 </div>
-<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
-.&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
- </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
-41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Sun, 09 Mar 2025 16:54:40=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: No </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
-
-
---JZuE5+BJSHo=--
+        
+diff --git a/src/openvpn/route.c b/src/openvpn/route.c
+index 245b15b..dbdc01d 100644
+--- a/src/openvpn/route.c
++++ b/src/openvpn/route.c
+@@ -1218,7 +1218,6 @@
+ 
+         for (r = rl->routes; r; r = r->next)
+         {
+-            check_subnet_conflict(r->network, r->netmask, "route");
+             if (flags & ROUTE_DELETE_FIRST)
+             {
+                 delete_route(r, tt, flags, &rl->rgi, es, ctx);
+diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
+index 4817f45..de54e89 100644
+--- a/src/openvpn/tun.c
++++ b/src/openvpn/tun.c
+@@ -626,44 +626,6 @@
+     gc_free(&gc);
+ }
+ 
+-/*
+- * Issue a warning if ip/netmask (on the virtual IP network) conflicts with
+- * the settings on the local LAN.  This is designed to flag issues where
+- * (for example) the OpenVPN server LAN is running on 192.168.1.x, but then
+- * an OpenVPN client tries to connect from a public location that is also running
+- * off of a router set to 192.168.1.x.
+- */
+-void
+-check_subnet_conflict(const in_addr_t ip,
+-                      const in_addr_t netmask,
+-                      const char *prefix)
+-{
+-#if 0 /* too many false positives */
+-    struct gc_arena gc = gc_new();
+-    in_addr_t lan_gw = 0;
+-    in_addr_t lan_netmask = 0;
+-
+-    if (get_default_gateway(&lan_gw, &lan_netmask) && lan_netmask)
+-    {
+-        const in_addr_t lan_network = lan_gw & lan_netmask;
+-        const in_addr_t network = ip & netmask;
+-
+-        /* do the two subnets defined by network/netmask and lan_network/lan_netmask intersect? */
+-        if ((network & lan_netmask) == lan_network
+-            || (lan_network & netmask) == network)
+-        {
+-            msg(M_WARN, "WARNING: potential %s subnet conflict between local LAN [%s/%s] and remote VPN [%s/%s]",
+-                prefix,
+-                print_in_addr_t(lan_network, 0, &gc),
+-                print_in_addr_t(lan_netmask, 0, &gc),
+-                print_in_addr_t(network, 0, &gc),
+-                print_in_addr_t(netmask, 0, &gc));
+-        }
+-    }
+-    gc_free(&gc);
+-#endif /* if 0 */
+-}
+-
+ void
+ warn_on_use_of_common_subnets(openvpn_net_ctx_t *ctx)
+ {
+@@ -922,15 +884,6 @@
+                                      tt->remote_netmask);
+                 }
+             }
+-
+-            if (!tun_p2p)
+-            {
+-                check_subnet_conflict(tt->local, tt->remote_netmask, "TUN/TAP adapter");
+-            }
+-            else
+-            {
+-                check_subnet_conflict(tt->local, IPV4_NETMASK_HOST, "TUN/TAP adapter");
+-            }
+         }
+ 
+ #ifdef _WIN32
+diff --git a/src/openvpn/tun.h b/src/openvpn/tun.h
+index ccba0bc..b616f5d 100644
+--- a/src/openvpn/tun.h
++++ b/src/openvpn/tun.h
+@@ -355,10 +355,6 @@
+ 
+ bool is_tun_p2p(const struct tuntap *tt);
+ 
+-void check_subnet_conflict(const in_addr_t ip,
+-                           const in_addr_t netmask,
+-                           const char *prefix);
+-
+ void warn_on_use_of_common_subnets(openvpn_net_ctx_t *ctx);
+ 
+ /**
 
