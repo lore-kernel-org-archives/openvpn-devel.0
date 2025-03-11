@@ -1,15 +1,15 @@
-From: "plaisthos (Code Review)" <gerrit@...515...>
-Date: Tue, 11 Mar 2025 11:08:37 +0000
+From: "cron2 (Code Review)" <gerrit@...515...>
+Date: Tue, 11 Mar 2025 15:58:39 +0000
 In-Reply-To: <gerrit.1737375148000.Ia4095518d5e4447992a2974e0d7a159d79ba6b6f@...2715...>
 References: <gerrit.1737375148000.Ia4095518d5e4447992a2974e0d7a159d79ba6b6f@...2715...>
-Reply-To: arne-openvpn@...1227..., heiko@...515...,
+Reply-To: gert@...1296..., arne-openvpn@...1227..., heiko@...515...,
  openvpn-devel@lists.sourceforge.net, frank@...2641...,
- lstipakov@...277..., a@...2181..., gert@...1296...
-Message-ID: <337b207d40b4c7f065e9eba417b186131e6f0002-EmailReviewComments-HTML@...2715...>
+ lstipakov@...277..., a@...2181...
+Message-ID: <f8d411683da89d76b4a1db33292383a68d4a95eb-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="5DMeEXQlbWQ="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="vf/5nVfOX74="; charset=UTF-8
 Subject: [Openvpn-devel] [M] Change in openvpn[master]: Implement
  override-username
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -20,49 +20,32 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
+To: plaisthos <arne-openvpn@...1227...>
 Cc: d12fk <heiko@...515...>, stipa <lstipakov@...277...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---5DMeEXQlbWQ=
+--vf/5nVfOX74=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: cron2, d12fk, flichtenheld, ordex, st=
-ipa.
+Attention is currently required from: d12fk, flichtenheld, ordex, plaisthos=
+, stipa.
 
-plaisthos has posted comments on this change. ( http://gerrit.openvpn.net/c=
-/openvpn/+/872?usp=3Demail )
+cron2 has posted comments on this change. ( http://gerrit.openvpn.net/c/ope=
+nvpn/+/872?usp=3Demail )
 
 Change subject: Implement override-username
 ......................................................................
 
 
-Patch Set 9:
+Patch Set 9: Code-Review+2
 
-(3 comments)
+(1 comment)
 
-File doc/man-sections/server-options.rst:
+Patchset:
 
-http://gerrit.openvpn.net/c/openvpn/+/872/comment/b2dd7ffe_4a981081 :
-PS8, Line 421: --override-username
-> this is missing the "username" argument
-Done
-
-
-http://gerrit.openvpn.net/c/openvpn/+/872/comment/364aca32_63ffd58b :
-PS8, Line 428:   Also ``username-as-common-name`` will use the client provi=
-ded username
-> `--` missing before `username-as-common-name`, while all other opions ref=
-erenced have it
-Done
-
-
-File src/openvpn/multi.c:
-
-http://gerrit.openvpn.net/c/openvpn/+/872/comment/716437e6_f582f74f :
-PS8, Line 2692:         && strcmp(multi->locked_username, options->override=
-_username) !=3D 0)
-> I managed to SIGSEGV this on client connect... [=E2=80=A6]
-Done
+PS9:
+Looks good.  Haven't tested in detail, but the code paths tested should con=
+tinue to work fine, and the crash I saw is now appropriately handled.
 
 
 
@@ -83,58 +66,40 @@ Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-CC: ordex <a@...2181...>
 Gerrit-CC: stipa <lstipakov@...277...>
-Gerrit-Attention: cron2 <gert@...1296...>
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
 Gerrit-Attention: flichtenheld <frank@...2641...>
 Gerrit-Attention: ordex <a@...2181...>
 Gerrit-Attention: d12fk <heiko@...515...>
 Gerrit-Attention: stipa <lstipakov@...277...>
-Gerrit-Comment-Date: Tue, 11 Mar 2025 11:08:37 +0000
+Gerrit-Comment-Date: Tue, 11 Mar 2025 15:58:39 +0000
 Gerrit-HasComments: Yes
-Gerrit-Has-Labels: No
-Comment-In-Reply-To: cron2 <gert@...1296...>
+Gerrit-Has-Labels: Yes
 Gerrit-MessageType: comment
 
---5DMeEXQlbWQ=
+--vf/5nVfOX74=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p> Attention is currently required from: cron2, d12fk, flichtenheld, ordex=
-, stipa. </p>
-<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/872?usp=3Demail">View C=
-hange</a></p><p>3 comments:</p><ul style=3D"list-style: none; padding: 0;">=
-<li style=3D"margin: 0; padding: 0;"><p>File doc/man-sections/server-option=
-s.rst:</p><ul style=3D"list-style: none; padding: 0;"><li style=3D"margin: =
-0; padding: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http:/=
-/gerrit.openvpn.net/c/openvpn/+/872/comment/b2dd7ffe_4a981081">Patch Set #8=
-, Line 421:</a> <code style=3D"font-family:monospace,monospace">--override-=
-username</code></p><p><blockquote style=3D"border-left: 1px solid #aaa; mar=
-gin: 10px 0; padding: 0 10px;">this is missing the &quot;username&quot; arg=
-ument</blockquote></p><p style=3D"white-space: pre-wrap; word-wrap: break-w=
-ord;">Done</p></li><li style=3D"margin: 0; padding: 0 0 0 16px;"><p style=
-=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/8=
-72/comment/364aca32_63ffd58b">Patch Set #8, Line 428:</a> <code style=3D"fo=
-nt-family:monospace,monospace">  Also ``username-as-common-name`` will use =
-the client provided username</code></p><p><blockquote style=3D"border-left:=
- 1px solid #aaa; margin: 10px 0; padding: 0 10px;">`--` missing before `use=
-rname-as-common-name`, while all other opions referenced have it</blockquot=
-e></p><p style=3D"white-space: pre-wrap; word-wrap: break-word;">Done</p></=
-li></ul></li><li style=3D"margin: 0; padding: 0;"><p>File src/openvpn/multi=
-.c:</p><ul style=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; =
-padding: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://ge=
-rrit.openvpn.net/c/openvpn/+/872/comment/716437e6_f582f74f">Patch Set #8, L=
-ine 2692:</a> <code style=3D"font-family:monospace,monospace">        &amp;=
-&amp; strcmp(multi-&gt;locked_username, options-&gt;override_username) !=3D=
- 0)</code></p><p><blockquote style=3D"border-left: 1px solid #aaa; margin: =
-10px 0; padding: 0 10px;">I managed to SIGSEGV this on client connect... [=
-=E2=80=A6]</blockquote></p><p style=3D"white-space: pre-wrap; word-wrap: br=
-eak-word;">Done</p></li></ul></li></ul><p>To view, visit <a href=3D"http://=
-gerrit.openvpn.net/c/openvpn/+/872?usp=3Demail">change 872</a>. To unsubscr=
-ibe, or for help writing mail filters, visit <a href=3D"http://gerrit.openv=
-pn.net/settings">settings</a>.</p><div itemscope itemtype=3D"http://schema.=
-org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://sch=
-ema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.ne=
-t/c/openvpn/+/872?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Cha=
-nge"/></div></div>
+<p> Attention is currently required from: d12fk, flichtenheld, ordex, plais=
+thos, stipa. </p>
+<p>Patch set 9:<span style=3D"border-radius: 3px; display: inline-block; ma=
+rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/872?usp=3Demail">Vi=
+ew Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0=
+;"><li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-s=
+tyle: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p s=
+tyle=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn=
+/+/872?tab=3Dcomments">Patch Set #9:</a> </p><p style=3D"white-space: pre-w=
+rap; word-wrap: break-word;">Looks good.  Haven&#39;t tested in detail, but=
+ the code paths tested should continue to work fine, and the crash I saw is=
+ now appropriately handled.</p></li></ul></li></ul><p>To view, visit <a hre=
+f=3D"http://gerrit.openvpn.net/c/openvpn/+/872?usp=3Demail">change 872</a>.=
+ To unsubscribe, or for help writing mail filters, visit <a href=3D"http://=
+gerrit.openvpn.net/settings">settings</a>.</p><div itemscope itemtype=3D"ht=
+tp://schema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=
+=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://ger=
+rit.openvpn.net/c/openvpn/+/872?usp=3Demail"/><meta itemprop=3D"name" conte=
+nt=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
@@ -155,8 +120,8 @@ ts.sourceforge.net&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: ordex &lt;a@...2181...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: stipa &lt;lstipakov@...277...&gt; <=
 /div>
-<div style=3D"display:none"> Gerrit-Attention: cron2 &lt;gert@...1296...&gt=
-; </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
 41...&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: ordex &lt;a@...2181...&gt; <=
@@ -165,14 +130,12 @@ ts.sourceforge.net&gt; </div>
 ; </div>
 <div style=3D"display:none"> Gerrit-Attention: stipa &lt;lstipakov@...1663...=
 .&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Tue, 11 Mar 2025 11:08:37=
+<div style=3D"display:none"> Gerrit-Comment-Date: Tue, 11 Mar 2025 15:58:39=
  +0000 </div>
 <div style=3D"display:none"> Gerrit-HasComments: Yes </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: No </div>
-<div style=3D"display:none"> Comment-In-Reply-To: cron2 &lt;gert@...1296...=
-&gt; </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
 <div style=3D"display:none"> Gerrit-MessageType: comment </div>
 
 
---5DMeEXQlbWQ=--
+--vf/5nVfOX74=--
 
