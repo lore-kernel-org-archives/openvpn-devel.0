@@ -1,15 +1,15 @@
 From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Wed, 12 Mar 2025 09:41:28 +0000
+Date: Wed, 12 Mar 2025 09:41:31 +0000
 In-Reply-To: <gerrit.1733316222000.Icaffbfa6b2e8efa2bd24a05537cb74b15f4fed96@...2715...>
 References: <gerrit.1733316222000.Icaffbfa6b2e8efa2bd24a05537cb74b15f4fed96@...2715...>
 Reply-To: gert@...1296..., arne-openvpn@...1227..., heiko@...515...,
  openvpn-devel@lists.sourceforge.net, frank@...2641...,
  lstipakov@...277...
-Message-ID: <db77a8359bb4f34c9bd71a5da0e75d3baaa352c4-EmailReplacePatchSet-HTML@...2715...>
+Message-ID: <db77a8359bb4f34c9bd71a5da0e75d3baaa352c4-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="paXaWjcmi/E="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="o4UdNK8DUsc="; charset=UTF-8
 Subject: [Openvpn-devel] [L] Change in openvpn[master]: dns: support
  multiple domains without DHCP
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -20,19 +20,15 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: d12fk <heiko@...515...>, plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, stipa <lstipakov@...277...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: d12fk <heiko@...515...>
+Cc: stipa <lstipakov@...277...>, flichtenheld <frank@...2641...>, plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---paXaWjcmi/E=
+--o4UdNK8DUsc=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-cron2 has uploaded a new patch set (#14) to the change originally created b=
-y d12fk. ( http://gerrit.openvpn.net/c/openvpn/+/824?usp=3Demail )
-
-The following approvals got outdated and were removed:
-Code-Review+2 by cron2
-
+cron2 has submitted this change. ( http://gerrit.openvpn.net/c/openvpn/+/82=
+4?usp=3Demail )
 
 Change subject: dns: support multiple domains without DHCP
 ......................................................................
@@ -71,7 +67,7 @@ M src/openvpnserv/interactive.c
 5 files changed, 722 insertions(+), 111 deletions(-)
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/24/824/14
+
 
 diff --git a/src/openvpn/options.c b/src/openvpn/options.c
 index 704e65a..31000e9 100644
@@ -1150,7 +1146,7 @@ lists);
 @@ -2283,6 +2866,9 @@
      status.dwWaitHint =3D 3000;
      ReportStatusToSCMgr(service, &status);
-=20
+
 +    /* Clean up potentially left over registry values */
 +    CleanupRegistry();
 +
@@ -1174,1111 +1170,1108 @@ Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-Reviewer: stipa <lstipakov@...277...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-MessageType: newpatchset
+Gerrit-MessageType: merged
 
---paXaWjcmi/E=
+--o4UdNK8DUsc=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p>cron2 <strong>uploaded patch set #14</strong> to the change originally c=
-reated by d12fk.</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/824=
-?usp=3Demail">View Change</a></p><p>The following approvals got outdated an=
-d were removed:
-Code-Review+2 by cron2</p><pre style=3D"font-family: monospace,monospace; w=
-hite-space: pre-wrap;">dns: support multiple domains without DHCP<br><br>In=
-stead of using wmic on Windows to set one (the first) DNS domain,<br>modify=
- the registry directly and let the resolver know that something<br>changed.=
-<br><br>This fixes that more than one search domain suffix could only be ap=
-plied<br>when DHCP and the tap driver was used. Now this works as well in n=
-etsh<br>mode with the interactive service.<br><br>If possible the search do=
-mains are stored with the rest of the VPN interface<br>parameter values. Ho=
-wever, a global search list and one which is<br>distributed via group polic=
-y have priority (in that order), so we probe<br>for the existence of those =
-first. In order to be able to restore the<br>original list in any case we s=
-tore an &quot;initial list&quot; as a backup of the<br>search list before w=
-e modify it.<br><br>Github: closes OpenVPN/openvpn#642<br>Change-Id: Icaffb=
-fa6b2e8efa2bd24a05537cb74b15f4fed96<br>Signed-off-by: Heiko Hund &lt;heiko@=
-...2662...&gt;<br>Acked-by: Gert Doering &lt;gert@...1296...&gt;<br>Message=
--Id: &lt;20250312092259.26487-1-gert@...1296...&gt;<br>URL: https://www.mai=
-l-archive.com/openvpn-devel@lists.sourceforge.net/msg31108.html<br>Signed-o=
-ff-by: Gert Doering &lt;gert@...1296...&gt;<br>---<br>M src/openvpn/options=
-.c<br>M src/openvpn/tun.c<br>M src/openvpnserv/CMakeLists.txt<br>M src/open=
-vpnserv/Makefile.am<br>M src/openvpnserv/interactive.c<br>5 files changed, =
-722 insertions(+), 111 deletions(-)<br><br></pre><pre style=3D"font-family:=
- monospace,monospace; white-space: pre-wrap;">git pull ssh://gerrit.openvpn=
-.net:29418/openvpn refs/changes/24/824/14</pre><pre style=3D"font-family: m=
-onospace,monospace; white-space: pre-wrap;"><span>diff --git a/src/openvpn/=
-options.c b/src/openvpn/options.c</span><br><span>index 704e65a..31000e9 10=
-0644</span><br><span>--- a/src/openvpn/options.c</span><br><span>+++ b/src/=
-openvpn/options.c</span><br><span>@@ -8370,7 +8370,7 @@</span><br><span>   =
-              msg(msglevel, &quot;--dhcp-option %s: maximum of %d search en=
-tries can be specified&quot;,</span><br><span>                     p[1], N_=
-SEARCH_LIST_LEN);</span><br><span>             }</span><br><span style=3D"c=
-olor: hsl(0, 100%, 40%);">-            o-&gt;dhcp_options |=3D DHCP_OPTIONS=
-_DHCP_REQUIRED;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-        o-&gt;dhcp_options |=3D DHCP_OPTIONS_DHCP_OPTIONAL;</span><br><span=
->         }</span><br><span>         else if (streq(p[1], &quot;DISABLE-NBT=
-&quot;) &amp;&amp; !p[2])</span><br><span>         {</span><br><span>diff -=
--git a/src/openvpn/tun.c b/src/openvpn/tun.c</span><br><span>index de54e89.=
-.4f7de6c 100644</span><br><span>--- a/src/openvpn/tun.c</span><br><span>+++=
- b/src/openvpn/tun.c</span><br><span>@@ -183,9 +183,10 @@</span><br><span> =
-{</span><br><span>     ack_message_t ack;</span><br><span>     struct gc_ar=
-ena gc =3D gc_new();</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
-   HANDLE pipe =3D tt-&gt;options.msg_channel;</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+    const struct tuntap_options *o =3D &amp;tt-&=
-gt;options;</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, =
-40%);">-    if (!tt-&gt;options.domain) /* no  domain to add or delete */</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+    /* no domains to =
-add or delete */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
- if (!o-&gt;domain &amp;&amp; !o-&gt;domain_search_list[0])</span><br><span=
->     {</span><br><span>         goto out;</span><br><span>     }</span><br=
-><span>@@ -203,28 +204,49 @@</span><br><span>         .addr_len =3D 0      =
- /* add/delete only the domain, not DNS servers */</span><br><span>     };<=
-/span><br><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-  /* interface name is required */</span><br><span>     strncpynt(dns.iface=
-.name, tt-&gt;actual_name, sizeof(dns.iface.name));</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-    strncpynt(dns.domains, tt-&gt;options.d=
-omain, sizeof(dns.domains));</span><br><span style=3D"color: hsl(0, 100%, 4=
-0%);">-    /* truncation of domain name is not checked as it can&#39;t happ=
-en</span><br><span style=3D"color: hsl(0, 100%, 40%);">-     * with 512 byt=
-es room in dns.domains.</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
->-     */</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40=
-%);">-    msg(D_LOW, &quot;%s dns domain on &#39;%s&#39; (if_index =3D %d) =
-using service&quot;,</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+    /* only use domain when there are no search domains */</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+    if (o-&gt;domain &amp;&amp; !o-=
-&gt;domain_search_list[0])</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
- strncpynt(dns.domains, o-&gt;domain, sizeof(dns.domains));</span><br><span=
+<p>cron2 <strong>submitted</strong> this change.</p><p><a href=3D"http://ge=
+rrit.openvpn.net/c/openvpn/+/824?usp=3Demail">View Change</a></p><div style=
+=3D"white-space:pre-wrap"></div><pre style=3D"font-family: monospace,monosp=
+ace; white-space: pre-wrap;">dns: support multiple domains without DHCP<br>=
+<br>Instead of using wmic on Windows to set one (the first) DNS domain,<br>=
+modify the registry directly and let the resolver know that something<br>ch=
+anged.<br><br>This fixes that more than one search domain suffix could only=
+ be applied<br>when DHCP and the tap driver was used. Now this works as wel=
+l in netsh<br>mode with the interactive service.<br><br>If possible the sea=
+rch domains are stored with the rest of the VPN interface<br>parameter valu=
+es. However, a global search list and one which is<br>distributed via group=
+ policy have priority (in that order), so we probe<br>for the existence of =
+those first. In order to be able to restore the<br>original list in any cas=
+e we store an &quot;initial list&quot; as a backup of the<br>search list be=
+fore we modify it.<br><br>Github: closes OpenVPN/openvpn#642<br>Change-Id: =
+Icaffbfa6b2e8efa2bd24a05537cb74b15f4fed96<br>Signed-off-by: Heiko Hund &lt;=
+heiko@...2662...&gt;<br>Acked-by: Gert Doering &lt;gert@...1296...&gt;<br>M=
+essage-Id: &lt;20250312092259.26487-1-gert@...1296...&gt;<br>URL: https://w=
+ww.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg31108.html<br>Si=
+gned-off-by: Gert Doering &lt;gert@...1296...&gt;<br>---<br>M src/openvpn/o=
+ptions.c<br>M src/openvpn/tun.c<br>M src/openvpnserv/CMakeLists.txt<br>M sr=
+c/openvpnserv/Makefile.am<br>M src/openvpnserv/interactive.c<br>5 files cha=
+nged, 722 insertions(+), 111 deletions(-)<br><br></pre>
+<pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><sp=
+an>diff --git a/src/openvpn/options.c b/src/openvpn/options.c</span><br><sp=
+an>index 704e65a..31000e9 100644</span><br><span>--- a/src/openvpn/options.=
+c</span><br><span>+++ b/src/openvpn/options.c</span><br><span>@@ -8370,7 +8=
+370,7 @@</span><br><span>                 msg(msglevel, &quot;--dhcp-option=
+ %s: maximum of %d search entries can be specified&quot;,</span><br><span> =
+                    p[1], N_SEARCH_LIST_LEN);</span><br><span>             =
+}</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            o-&gt;dh=
+cp_options |=3D DHCP_OPTIONS_DHCP_REQUIRED;</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+            o-&gt;dhcp_options |=3D DHCP_OPTIONS_DH=
+CP_OPTIONAL;</span><br><span>         }</span><br><span>         else if (s=
+treq(p[1], &quot;DISABLE-NBT&quot;) &amp;&amp; !p[2])</span><br><span>     =
+    {</span><br><span>diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c</s=
+pan><br><span>index de54e89..4f7de6c 100644</span><br><span>--- a/src/openv=
+pn/tun.c</span><br><span>+++ b/src/openvpn/tun.c</span><br><span>@@ -183,9 =
++183,10 @@</span><br><span> {</span><br><span>     ack_message_t ack;</span=
+><br><span>     struct gc_arena gc =3D gc_new();</span><br><span style=3D"c=
+olor: hsl(0, 100%, 40%);">-    HANDLE pipe =3D tt-&gt;options.msg_channel;<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+    const struct tun=
+tap_options *o =3D &amp;tt-&gt;options;</span><br><span> </span><br><span s=
+tyle=3D"color: hsl(0, 100%, 40%);">-    if (!tt-&gt;options.domain) /* no  =
+domain to add or delete */</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+    /* no domains to add or delete */</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+    if (!o-&gt;domain &amp;&amp; !o-&gt;domain_sea=
+rch_list[0])</span><br><span>     {</span><br><span>         goto out;</spa=
+n><br><span>     }</span><br><span>@@ -203,28 +204,49 @@</span><br><span>  =
+       .addr_len =3D 0       /* add/delete only the domain, not DNS servers=
+ */</span><br><span>     };</span><br><span> </span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+    /* interface name is required */</span><br><s=
+pan>     strncpynt(dns.iface.name, tt-&gt;actual_name, sizeof(dns.iface.nam=
+e));</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    strncpynt(dns=
+.domains, tt-&gt;options.domain, sizeof(dns.domains));</span><br><span styl=
+e=3D"color: hsl(0, 100%, 40%);">-    /* truncation of domain name is not ch=
+ecked as it can&#39;t happen</span><br><span style=3D"color: hsl(0, 100%, 4=
+0%);">-     * with 512 bytes room in dns.domains.</span><br><span style=3D"=
+color: hsl(0, 100%, 40%);">-     */</span><br><span> </span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-    msg(D_LOW, &quot;%s dns domain on &#39;=
+%s&#39; (if_index =3D %d) using service&quot;,</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+    /* only use domain when there are no search =
+domains */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (o=
+-&gt;domain &amp;&amp; !o-&gt;domain_search_list[0])</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+        strncpynt(dns.domains, o-&gt;domain, sizeof(dns=
+.domains));</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    /* Create a comma separated list of s=
+earch domains */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+ for (int i =3D 0; i &lt; N_SEARCH_LIST_LEN &amp;&amp; o-&gt;domain_search_=
+list[i]; ++i)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+        size_t dstle=
+n =3D strlen(dns.domains);</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+        size_t srclen =3D strlen(o-&gt;domain_search_list[i]);</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+        size_t extra =3D =
+dstlen ? 2 : 1; /* space for comma and NUL */</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+        if (dstlen + srclen + extra &gt; sizeof(d=
+ns.domains))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
+ {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            msg(M=
+_WARN, &quot;DNS search domains sent to service truncated to %d&quot;, i);<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+            break;</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+        }</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+        if (dstlen)</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+        {</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+            dns.domains[dstlen++] =3D &#3=
+9;,&#39;;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        }<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+        strncpy(dns.=
+domains + dstlen, o-&gt;domain_search_list[i], srclen + 1);</span><br><span=
  style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"colo=
 r: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+    /* Create a comma separated list of search domains */</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+    for (int i =3D 0; i &lt; N=
-_SEARCH_LIST_LEN &amp;&amp; o-&gt;domain_search_list[i]; ++i)</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+        size_t dstlen =3D strlen(dns.domains);<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+        size_t srcle=
-n =3D strlen(o-&gt;domain_search_list[i]);</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+        size_t extra =3D dstlen ? 2 : 1; /* space fo=
-r comma and NUL */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-       if (dstlen + srclen + extra &gt; sizeof(dns.domains))</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+        {</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+            msg(M_WARN, &quot;DNS search dom=
-ains sent to service truncated to %d&quot;, i);</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+            break;</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+        }</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+        if (dstlen)</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+        {</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+            dns.domains[dstlen++] =3D &#39;,&#39;;</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+        }</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+        strncpy(dns.domains + dstlen, o-&gt;dom=
-ain_search_list[i], srclen + 1);</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+    msg(D_LOW, &quot=
-;%s DNS domains on &#39;%s&#39; (if_index =3D %d) using service&quot;,</spa=
-n><br><span>         (add ? &quot;Setting&quot; : &quot;Deleting&quot;), dn=
-s.iface.name, dns.iface.index);</span><br><span style=3D"color: hsl(0, 100%=
-, 40%);">-    if (!send_msg_iservice(pipe, &amp;dns, sizeof(dns), &amp;ack,=
- &quot;TUN&quot;))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-   if (!send_msg_iservice(o-&gt;msg_channel, &amp;dns, sizeof(dns), &amp;ac=
-k, &quot;TUN&quot;))</span><br><span>     {</span><br><span>         goto o=
-ut;</span><br><span>     }</span><br><span> </span><br><span>     if (ack.e=
-rror_number !=3D NO_ERROR)</span><br><span>     {</span><br><span style=3D"=
-color: hsl(0, 100%, 40%);">-        msg(M_WARN, &quot;TUN: %s dns domain fa=
-iled using service: %s [status=3D%u if_name=3D%s]&quot;,</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+        msg(M_WARN, &quot;TUN: %s DNS =
-domains failed using service: %s [status=3D%u if_name=3D%s]&quot;,</span><b=
-r><span>             (add ? &quot;adding&quot; : &quot;deleting&quot;), str=
-error_win32(ack.error_number, &amp;gc),</span><br><span>             ack.er=
-ror_number, dns.iface.name);</span><br><span>         goto out;</span><br><=
-span>     }</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, =
-40%);">-    msg(M_INFO, &quot;DNS domain %s using service&quot;, (add ? &qu=
-ot;set&quot; : &quot;deleted&quot;));</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+    msg(M_INFO, &quot;DNS domains %s using service&quot;,=
- (add ? &quot;set&quot; : &quot;deleted&quot;));</span><br><span> </span><b=
-r><span> out:</span><br><span>     gc_free(&amp;gc);</span><br><span>diff -=
--git a/src/openvpnserv/CMakeLists.txt b/src/openvpnserv/CMakeLists.txt</spa=
-n><br><span>index ff03867..44a40fe 100644</span><br><span>--- a/src/openvpn=
-serv/CMakeLists.txt</span><br><span>+++ b/src/openvpnserv/CMakeLists.txt</s=
-pan><br><span>@@ -28,7 +28,8 @@</span><br><span>     -D_WIN32_WINNT=3D_WIN3=
-2_WINNT_VISTA</span><br><span>     )</span><br><span> target_link_libraries=
-(openvpnserv</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    advap=
-i32.lib userenv.lib iphlpapi.lib fwpuclnt.lib rpcrt4.lib shlwapi.lib netapi=
-32.lib ws2_32.lib ntdll.lib)</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+    advapi32.lib userenv.lib iphlpapi.lib fwpuclnt.lib rpcrt4.lib<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+    shlwapi.lib neta=
-pi32.lib ws2_32.lib ntdll.lib ole32.lib)</span><br><span> if (MINGW)</span>=
-<br><span>     target_compile_options(openvpnserv PRIVATE -municode)</span>=
-<br><span>     target_link_options(openvpnserv PRIVATE -municode)</span><br=
-><span>diff --git a/src/openvpnserv/Makefile.am b/src/openvpnserv/Makefile.=
-am</span><br><span>index 621ce73..f053f40 100644</span><br><span>--- a/src/=
-openvpnserv/Makefile.am</span><br><span>+++ b/src/openvpnserv/Makefile.am</=
-span><br><span>@@ -25,7 +25,9 @@</span><br><span> 	-municode -D_UNICODE \</=
-span><br><span> 	-UNTDDI_VERSION -U_WIN32_WINNT \</span><br><span> 	-D_WIN3=
-2_WINNT=3D_WIN32_WINNT_VISTA</span><br><span style=3D"color: hsl(0, 100%, 4=
-0%);">-openvpnserv_LDADD =3D -ladvapi32 -luserenv -liphlpapi -lfwpuclnt -lr=
-pcrt4 -lshlwapi -lnetapi32 -lws2_32 -lntdll</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+openvpnserv_LDADD =3D \</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+	-ladvapi32 -luserenv -liphlpapi -lfwpuclnt -lr=
-pcrt4 \</span><br><span style=3D"color: hsl(120, 100%, 40%);">+	-lshlwapi -=
-lnetapi32 -lws2_32 -lntdll -lole32</span><br><span> endif</span><br><span> =
-</span><br><span> openvpnserv_SOURCES =3D \</span><br><span>diff --git a/sr=
-c/openvpnserv/interactive.c b/src/openvpnserv/interactive.c</span><br><span=
->index 35753b7..606ca4b 100644</span><br><span>--- a/src/openvpnserv/intera=
-ctive.c</span><br><span>+++ b/src/openvpnserv/interactive.c</span><br><span=
->@@ -88,7 +88,7 @@</span><br><span>     wfp_block,</span><br><span>     und=
-o_dns4,</span><br><span>     undo_dns6,</span><br><span style=3D"color: hsl=
-(0, 100%, 40%);">-    undo_domain,</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+    undo_domains,</span><br><span>     undo_ring_buffer,</sp=
-an><br><span>     undo_wins,</span><br><span>     _undo_type_max</span><br>=
-<span>@@ -103,6 +103,11 @@</span><br><span> } wfp_block_data_t;</span><br><=
-span> </span><br><span> typedef struct {</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+    char itf_name[256];</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+    PWSTR domains;</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+} dns_domains_undo_data_t;</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+typedef struct {</span><br><span>     struct tun_ring *send_rin=
-g;</span><br><span>     struct tun_ring *receive_ring;</span><br><span> } r=
-ing_buffer_maps_t;</span><br><span>@@ -565,24 +570,6 @@</span><br><span>   =
-  return status;</span><br><span> }</span><br><span> </span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-static DWORD</span><br><span style=3D"color=
-: hsl(0, 100%, 40%);">-ConvertInterfaceNameToIndex(const wchar_t *ifname, N=
-ET_IFINDEX *index)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-{</=
-span><br><span style=3D"color: hsl(0, 100%, 40%);">-    NET_LUID luid;</spa=
-n><br><span style=3D"color: hsl(0, 100%, 40%);">-    DWORD err;</span><br><=
-span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: =
-hsl(0, 100%, 40%);">-    err =3D ConvertInterfaceAliasToLuid(ifname, &amp;l=
-uid);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    if (err =3D=
-=3D ERROR_SUCCESS)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
- {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        err =3D Con=
-vertInterfaceLuidToIndex(&amp;luid, index);</span><br><span style=3D"color:=
- hsl(0, 100%, 40%);">-    }</span><br><span style=3D"color: hsl(0, 100%, 40=
-%);">-    if (err !=3D ERROR_SUCCESS)</span><br><span style=3D"color: hsl(0=
-, 100%, 40%);">-    {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
-        MsgToEventLog(M_ERR, L&quot;Failed to find interface index for &lt;=
-%ls&gt;&quot;, ifname);</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
->-    }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    return err=
-;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-}</span><br><span st=
-yle=3D"color: hsl(0, 100%, 40%);">-</span><br><span> static BOOL</span><br>=
-<span> CmpAddress(LPVOID item, LPVOID address)</span><br><span> {</span><br=
-><span>@@ -1152,52 +1139,6 @@</span><br><span>     return err;</span><br><s=
-pan> }</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);=
-">-/**</span><br><span style=3D"color: hsl(0, 100%, 40%);">- * Run command:=
- wmic nicconfig (InterfaceIndex=3D$if_index) call $action ($data)</span><br=
-><span style=3D"color: hsl(0, 100%, 40%);">- * @param  if_index    &quot;in=
-dex of interface&quot;</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
-- * @param  action      e.g., &quot;SetDNSDomain&quot;</span><br><span styl=
-e=3D"color: hsl(0, 100%, 40%);">- * @param  data        data if required fo=
-r action</span><br><span style=3D"color: hsl(0, 100%, 40%);">- *           =
-          - a single word for SetDNSDomain, empty or NULL to delete</span><=
-br><span style=3D"color: hsl(0, 100%, 40%);">- *                     - comm=
-a separated values for a list</span><br><span style=3D"color: hsl(0, 100%, =
-40%);">- */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-static DWO=
-RD</span><br><span style=3D"color: hsl(0, 100%, 40%);">-wmic_nicconfig_cmd(=
-const wchar_t *action, const NET_IFINDEX if_index,</span><br><span style=3D=
-"color: hsl(0, 100%, 40%);">-                   const wchar_t *data)</span>=
-<br><span style=3D"color: hsl(0, 100%, 40%);">-{</span><br><span style=3D"c=
-olor: hsl(0, 100%, 40%);">-    DWORD err =3D 0;</span><br><span style=3D"co=
-lor: hsl(0, 100%, 40%);">-    wchar_t argv0[MAX_PATH];</span><br><span styl=
-e=3D"color: hsl(0, 100%, 40%);">-    wchar_t *cmdline =3D NULL;</span><br><=
-span style=3D"color: hsl(0, 100%, 40%);">-    int timeout =3D 10000; /* in =
-msec */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><sp=
-an style=3D"color: hsl(0, 100%, 40%);">-    swprintf(argv0, _countof(argv0)=
-, L&quot;%ls\\%ls&quot;, get_win_sys_path(), L&quot;wbem\\wmic.exe&quot;);<=
-/span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-    const wchar_t *fmt;</span><br><span sty=
-le=3D"color: hsl(0, 100%, 40%);">-    /* comma separated list must be enclo=
-sed in parenthesis */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
-    if (data &amp;&amp; wcschr(data, L&#39;,&#39;))</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-    {</span><br><span style=3D"color: hsl(0=
-, 100%, 40%);">-        fmt =3D L&quot;wmic nicconfig where (InterfaceIndex=
-=3D%ld) call %ls (%ls)&quot;;</span><br><span style=3D"color: hsl(0, 100%, =
-40%);">-    }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    else=
-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    {</span><br><span=
- style=3D"color: hsl(0, 100%, 40%);">-        fmt =3D L&quot;wmic nicconfig=
- where (InterfaceIndex=3D%ld) call %ls \&quot;%ls\&quot;&quot;;</span><br><=
-span style=3D"color: hsl(0, 100%, 40%);">-    }</span><br><span style=3D"co=
-lor: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%=
-);">-    size_t ncmdline =3D wcslen(fmt) + 20 + wcslen(action) /* max 20 fo=
-r ifindex */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-         =
-             + (data ? wcslen(data) + 1 : 1);</span><br><span style=3D"colo=
-r: hsl(0, 100%, 40%);">-    cmdline =3D malloc(ncmdline*sizeof(wchar_t));</=
-span><br><span style=3D"color: hsl(0, 100%, 40%);">-    if (!cmdline)</span=
-><br><span style=3D"color: hsl(0, 100%, 40%);">-    {</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-        return ERROR_OUTOFMEMORY;</span><br=
-><span style=3D"color: hsl(0, 100%, 40%);">-    }</span><br><span style=3D"=
-color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 4=
-0%);">-    swprintf(cmdline, ncmdline, fmt, if_index, action,</span><br><sp=
-an style=3D"color: hsl(0, 100%, 40%);">-             data ? data : L&quot;&=
-quot;);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    err =3D Ex=
-ecCommand(argv0, cmdline, timeout);</span><br><span style=3D"color: hsl(0, =
-100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    fre=
-e(cmdline);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    return=
- err;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-}</span><br><spa=
-n style=3D"color: hsl(0, 100%, 40%);">-</span><br><span> /* Delete all IPv4=
- or IPv6 dns servers for an interface */</span><br><span> static DWORD</spa=
-n><br><span> DeleteDNS(short family, wchar_t *if_name)</span><br><span>@@ -=
-1221,50 +1162,660 @@</span><br><span> }</span><br><span> </span><br><span> =
-/**</span><br><span style=3D"color: hsl(0, 100%, 40%);">- * Set interface s=
-pecific DNS domain suffix</span><br><span style=3D"color: hsl(0, 100%, 40%)=
-;">- * @param  if_name    name of the interface</span><br><span style=3D"co=
-lor: hsl(0, 100%, 40%);">- * @param  domain     a single domain name</span>=
-<br><span style=3D"color: hsl(0, 100%, 40%);">- * @param  lists      pointe=
-r to the undo lists. If NULL</span><br><span style=3D"color: hsl(0, 100%, 4=
-0%);">- *                    undo lists are not altered.</span><br><span st=
-yle=3D"color: hsl(0, 100%, 40%);">- * Will delete the currently set value i=
-f domain is empty.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-* Signal the DNS resolver (and others potentially) to reload the</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+ * group policy (DNS) settings=
- on 32 bit Windows systems</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+ *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @return=
- BOOL to indicate if the reload was initiated</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+ */</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+static BOOL</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+ApplyGpolSettings32(void)</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    typede=
-f NTSTATUS (__stdcall *publish_fn_t)(</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+        DWORD StateNameLo,</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+        DWORD StateNameHi,</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+        DWORD TypeId,</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+        DWORD Buffer,</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+        DWORD Length,</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+        DWORD ExplicitScope);</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+    publish_fn_t RtlPubli=
-shWnfStateData;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-const DWORD WNF_GPOL_SYSTEM_CHANGES_HI =3D 0x0D891E2A;</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+    const DWORD WNF_GPOL_SYSTEM_CHANGES_=
-LO =3D 0xA3BC0875;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+    HMODULE ntdll =
-=3D LoadLibraryA(&quot;ntdll.dll&quot;);</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+    if (ntdll =3D=3D NULL)</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+        return FALSE;</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    RtlPublishWnf=
-StateData =3D (publish_fn_t) GetProcAddress(ntdll, &quot;RtlPublishWnfState=
-Data&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if =
-(RtlPublishWnfStateData =3D=3D NULL)</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+        return FALSE;</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+    if (RtlPublishWnfStateDa=
-ta(WNF_GPOL_SYSTEM_CHANGES_LO, WNF_GPOL_SYSTEM_CHANGES_HI, 0, 0, 0, 0) !=3D=
- ERROR_SUCCESS)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        return FAL=
-SE;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+    return TRUE;</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+/**</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+ * Signal the DNS resolver (an=
-d others potentially) to reload the</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+ * group policy (DNS) settings on 64 bit Windows systems</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+ * @return BOOL to indicate if the relo=
-ad was initiated</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ */=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+static BOOL</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+ApplyGpolSettings64(void)</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+    typedef NTSTATUS (*publish_fn_t)(</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+        INT64 StateNa=
-me,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        INT64 Ty=
-peId,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        INT64 =
-Buffer,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        unsi=
-gned int Length,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
-     INT64 ExplicitScope);</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+    publish_fn_t RtlPublishWnfStateData;</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+    const INT64 WNF_GPOL_SYSTEM_CHANGES =3D 0x0=
-D891E2AA3BC0875;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+    HMODULE ntdll =3D =
-LoadLibraryA(&quot;ntdll.dll&quot;);</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+    if (ntdll =3D=3D NULL)</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+        return FALSE;</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+    RtlPublishWnfStat=
-eData =3D (publish_fn_t) GetProcAddress(ntdll, &quot;RtlPublishWnfStateData=
-&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (Rtl=
-PublishWnfStateData =3D=3D NULL)</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-       return FALSE;</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+    if (RtlPublishWnfStateData(W=
-NF_GPOL_SYSTEM_CHANGES, 0, 0, 0, 0) !=3D ERROR_SUCCESS)</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+        return FALSE;</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    retur=
-n TRUE;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+/**</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+ * Signal the DNS resolver (and others potentially) to reload the=
- group policy (DNS) settings</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+ *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @retu=
-rn BOOL to indicate if the reload was initiated</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+ */</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+static BOOL</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+ApplyGpolSettings(void)</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    SYSTEM=
-_INFO si;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    GetSys=
-temInfo(&amp;si);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-  const BOOL win_32bit =3D si.wProcessorArchitecture =3D=3D PROCESSOR_ARCHI=
-TECTURE_INTEL;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    r=
-eturn win_32bit ? ApplyGpolSettings32() : ApplyGpolSettings64();</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+/**</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * Signa=
-l the DNS resolver to reload its settings</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+ *</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+ * @param apply_gpol    BOOL reload setting from group policy hives as=
- well</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+ * @return BOOL to indicate if =
-the reload was initiated</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+ */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+static BOOL=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ApplyDnsSettings(BO=
-OL apply_gpol)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+    BOOL res =3D FALSE;=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    SC_HANDLE scm =
-=3D NULL;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    SC_HAN=
-DLE dnssvc =3D NULL;</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (apply_gpol=
- &amp;&amp; ApplyGpolSettings() =3D=3D FALSE)</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+        MsgToEventLog(M_ERR, TEXT(&quot;ApplyDnsSettings: sendi=
-ng GPOL notification failed&quot;));</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    scm =3D Open=
-SCManager(NULL, NULL, SC_MANAGER_ALL_ACCESS);</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+    if (scm =3D=3D NULL)</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+        MsgToEventLog(M_ERR, TEXT(&quot;ApplyDnsSettings: =
-&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+             =
-                     &quot;OpenSCManager call failed (%lu)&quot;), GetLastE=
-rror());</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        got=
-o out;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+    dnssvc =3D OpenServiceA(scm, &quot;Dnscach=
-e&quot;, SERVICE_PAUSE_CONTINUE);</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+    if (dnssvc =3D=3D NULL)</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+        MsgToEventLog(M_ERR, TEXT(&quot;ApplyDnsSettings: &quot;</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+                      =
-            &quot;OpenService call failed (%lu)&quot;), GetLastError());</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+        goto out;</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+    SERVICE_STATUS status;</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+    if (ControlService(dnssvc, SERVICE_CONTROL_PAR=
-AMCHANGE, &amp;status) =3D=3D 0)</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-       MsgToEventLog(M_ERR, TEXT(&quot;ApplyDnsSettings: &quot;</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+                               =
-   &quot;ControlService call failed (%lu)&quot;), GetLastError());</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+        goto out;</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+    res =3D TRUE;</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+out:</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (dnssvc)</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+        CloseServiceHandle(dnssvc);</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+    if (scm)</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+        CloseServiceHandle(scm);</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+    return res;</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+/**</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+ * Get the string interface UUID (with br=
-aces) for an interface alias name</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+ *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * =
-@param  itf_name   the interface alias name</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+ * @param  str        pointer to the buffer the wid=
-e UUID is returned in</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+ * @param  len        size of the str buffer in characters</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+ * @return NO_ERROR on success, or the Windows erro=
-r code for the failure</span><br><span>  */</span><br><span> static DWORD</=
-span><br><span style=3D"color: hsl(0, 100%, 40%);">-SetDNSDomain(const wcha=
-r_t *if_name, const char *domain, undo_lists_t *lists)</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+InterfaceIdString(PCSTR itf_name, PWSTR =
-str, size_t len)</span><br><span> {</span><br><span style=3D"color: hsl(0, =
-100%, 40%);">-    NET_IFINDEX if_index;</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+    DWORD err;</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+    GUID guid;</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+    NET_LUID luid;</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+    PWSTR iid_str =3D NULL;</span><br><span> </span><br><span styl=
-e=3D"color: hsl(0, 100%, 40%);">-    DWORD err  =3D ConvertInterfaceNameToI=
-ndex(if_name, &amp;if_index);</span><br><span style=3D"color: hsl(0, 100%, =
-40%);">-    if (err !=3D ERROR_SUCCESS)</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+    err =3D InterfaceLuid(itf_name, &amp;luid);</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+    if (err)</span><br><spa=
-n>     {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        retur=
-n err;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        MsgTo=
-EventLog(M_ERR, TEXT(&quot;InterfaceIdString: &quot;</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+                                  &quot;f=
-ailed to convert itf alias &#39;%s&#39;&quot;), itf_name);</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+        goto out;</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+    err =3D ConvertInterfaceLuidToGuid(&amp;luid, &a=
-mp;guid);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (er=
-r)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+        MsgToEventLog(M_ERR, TE=
-XT(&quot;InterfaceIdString: &quot;</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+                                  &quot;Failed to convert it=
-f &#39;%s&#39; LUID&quot;), itf_name);</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+        goto out;</span><br><span>     }</span><br><span=
-> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-    wchar_t *wdomai=
-n =3D utf8to16(domain); /* utf8 to wide-char */</span><br><span style=3D"co=
-lor: hsl(0, 100%, 40%);">-    if (!wdomain)</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+    if (StringFromIID(&amp;guid, &amp;iid_str) !=3D=
- S_OK)</span><br><span>     {</span><br><span style=3D"color: hsl(0, 100%, =
-40%);">-        return ERROR_OUTOFMEMORY;</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+        MsgToEventLog(M_ERR, TEXT(&quot;InterfaceIdSt=
-ring: &quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
-                           &quot;Failed to convert itf &#39;%s&#39; IID&quo=
-t;), itf_name);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-    err =3D ERROR_OUTOFMEMORY;</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+        goto out;</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    i=
-f (wcslen(iid_str) + 1 &gt; len)</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-       err =3D ERROR_INVALID_PARAMETER;</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+        goto out;</span><br><span>     }</span><br><spa=
-n> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-    /* free undo l=
-ist if previously set */</span><br><span style=3D"color: hsl(0, 100%, 40%);=
-">-    if (lists)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-  wcsncpy(str, iid_str, len);</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+out:</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (iid_str)</span><=
-br><span>     {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-      =
-  free(RemoveListItem(&amp;(*lists)[undo_domain], CmpWString, (void *)if_na=
-me));</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        CoTask=
-MemFree(iid_str);</span><br><span>     }</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+    return err;</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+}</span><br><span> </span><br><span style=3D"color: hsl(0,=
- 100%, 40%);">-    err =3D wmic_nicconfig_cmd(L&quot;SetDNSDomain&quot;, if=
-_index, wdomain);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</sp=
-an><br><span style=3D"color: hsl(0, 100%, 40%);">-    /* Add to undo list i=
-f domain is non-empty */</span><br><span style=3D"color: hsl(0, 100%, 40%);=
-">-    if (err =3D=3D 0 &amp;&amp; wdomain[0] &amp;&amp; lists)</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+/**</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+ * Check for a valid search list in a certain k=
-ey of the registry</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-*</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * Valid means tha=
-t a string value &quot;SearchList&quot; exists and that it</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+ * contains one or more domains. We =
-only check if the string contains</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+ * a valid domain name character, but the main point is to pr=
-event letting</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * pas=
-s whitespace-only lists, so that check is good enough for that</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+ * purpose.</span><br><span styl=
+0%);">+    msg(D_LOW, &quot;%s DNS domains on &#39;%s&#39; (if_index =3D %d=
+) using service&quot;,</span><br><span>         (add ? &quot;Setting&quot; =
+: &quot;Deleting&quot;), dns.iface.name, dns.iface.index);</span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">-    if (!send_msg_iservice(pipe, &amp;=
+dns, sizeof(dns), &amp;ack, &quot;TUN&quot;))</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+    if (!send_msg_iservice(o-&gt;msg_channel, &am=
+p;dns, sizeof(dns), &amp;ack, &quot;TUN&quot;))</span><br><span>     {</spa=
+n><br><span>         goto out;</span><br><span>     }</span><br><span> </sp=
+an><br><span>     if (ack.error_number !=3D NO_ERROR)</span><br><span>     =
+{</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        msg(M_WARN, =
+&quot;TUN: %s dns domain failed using service: %s [status=3D%u if_name=3D%s=
+]&quot;,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        msg=
+(M_WARN, &quot;TUN: %s DNS domains failed using service: %s [status=3D%u if=
+_name=3D%s]&quot;,</span><br><span>             (add ? &quot;adding&quot; :=
+ &quot;deleting&quot;), strerror_win32(ack.error_number, &amp;gc),</span><b=
+r><span>             ack.error_number, dns.iface.name);</span><br><span>   =
+      goto out;</span><br><span>     }</span><br><span> </span><br><span st=
+yle=3D"color: hsl(0, 100%, 40%);">-    msg(M_INFO, &quot;DNS domain %s usin=
+g service&quot;, (add ? &quot;set&quot; : &quot;deleted&quot;));</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+    msg(M_INFO, &quot;DNS doma=
+ins %s using service&quot;, (add ? &quot;set&quot; : &quot;deleted&quot;));=
+</span><br><span> </span><br><span> out:</span><br><span>     gc_free(&amp;=
+gc);</span><br><span>diff --git a/src/openvpnserv/CMakeLists.txt b/src/open=
+vpnserv/CMakeLists.txt</span><br><span>index ff03867..44a40fe 100644</span>=
+<br><span>--- a/src/openvpnserv/CMakeLists.txt</span><br><span>+++ b/src/op=
+envpnserv/CMakeLists.txt</span><br><span>@@ -28,7 +28,8 @@</span><br><span>=
+     -D_WIN32_WINNT=3D_WIN32_WINNT_VISTA</span><br><span>     )</span><br><=
+span> target_link_libraries(openvpnserv</span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-    advapi32.lib userenv.lib iphlpapi.lib fwpuclnt.lib rp=
+crt4.lib shlwapi.lib netapi32.lib ws2_32.lib ntdll.lib)</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+    advapi32.lib userenv.lib iphlpapi.l=
+ib fwpuclnt.lib rpcrt4.lib</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+    shlwapi.lib netapi32.lib ws2_32.lib ntdll.lib ole32.lib)</span><=
+br><span> if (MINGW)</span><br><span>     target_compile_options(openvpnser=
+v PRIVATE -municode)</span><br><span>     target_link_options(openvpnserv P=
+RIVATE -municode)</span><br><span>diff --git a/src/openvpnserv/Makefile.am =
+b/src/openvpnserv/Makefile.am</span><br><span>index 621ce73..f053f40 100644=
+</span><br><span>--- a/src/openvpnserv/Makefile.am</span><br><span>+++ b/sr=
+c/openvpnserv/Makefile.am</span><br><span>@@ -25,7 +25,9 @@</span><br><span=
+> 	-municode -D_UNICODE \</span><br><span> 	-UNTDDI_VERSION -U_WIN32_WINNT =
+\</span><br><span> 	-D_WIN32_WINNT=3D_WIN32_WINNT_VISTA</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-openvpnserv_LDADD =3D -ladvapi32 -luseren=
+v -liphlpapi -lfwpuclnt -lrpcrt4 -lshlwapi -lnetapi32 -lws2_32 -lntdll</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+openvpnserv_LDADD =3D \<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+	-ladvapi32 -luseren=
+v -liphlpapi -lfwpuclnt -lrpcrt4 \</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+	-lshlwapi -lnetapi32 -lws2_32 -lntdll -lole32</span><br><sp=
+an> endif</span><br><span> </span><br><span> openvpnserv_SOURCES =3D \</spa=
+n><br><span>diff --git a/src/openvpnserv/interactive.c b/src/openvpnserv/in=
+teractive.c</span><br><span>index 35753b7..606ca4b 100644</span><br><span>-=
+-- a/src/openvpnserv/interactive.c</span><br><span>+++ b/src/openvpnserv/in=
+teractive.c</span><br><span>@@ -88,7 +88,7 @@</span><br><span>     wfp_bloc=
+k,</span><br><span>     undo_dns4,</span><br><span>     undo_dns6,</span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-    undo_domain,</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+    undo_domains,</span><br><span=
+>     undo_ring_buffer,</span><br><span>     undo_wins,</span><br><span>   =
+  _undo_type_max</span><br><span>@@ -103,6 +103,11 @@</span><br><span> } wf=
+p_block_data_t;</span><br><span> </span><br><span> typedef struct {</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+    char itf_name[256];</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+    PWSTR domains;</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+} dns_domains_undo_data_=
+t;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+typedef struct {</span><br><span>   =
+  struct tun_ring *send_ring;</span><br><span>     struct tun_ring *receive=
+_ring;</span><br><span> } ring_buffer_maps_t;</span><br><span>@@ -565,24 +5=
+70,6 @@</span><br><span>     return status;</span><br><span> }</span><br><s=
+pan> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-static DWORD</sp=
+an><br><span style=3D"color: hsl(0, 100%, 40%);">-ConvertInterfaceNameToInd=
+ex(const wchar_t *ifname, NET_IFINDEX *index)</span><br><span style=3D"colo=
+r: hsl(0, 100%, 40%);">-{</span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">-    NET_LUID luid;</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
+-    DWORD err;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-    err =3D ConvertInterfac=
+eAliasToLuid(ifname, &amp;luid);</span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-    if (err =3D=3D ERROR_SUCCESS)</span><br><span style=3D"color=
+: hsl(0, 100%, 40%);">-    {</span><br><span style=3D"color: hsl(0, 100%, 4=
+0%);">-        err =3D ConvertInterfaceLuidToIndex(&amp;luid, index);</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-    }</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-    if (err !=3D ERROR_SUCCESS)</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-    {</span><br><span style=3D"co=
+lor: hsl(0, 100%, 40%);">-        MsgToEventLog(M_ERR, L&quot;Failed to fin=
+d interface index for &lt;%ls&gt;&quot;, ifname);</span><br><span style=3D"=
+color: hsl(0, 100%, 40%);">-    }</span><br><span style=3D"color: hsl(0, 10=
+0%, 40%);">-    return err;</span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">-}</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><sp=
+an> static BOOL</span><br><span> CmpAddress(LPVOID item, LPVOID address)</s=
+pan><br><span> {</span><br><span>@@ -1152,52 +1139,6 @@</span><br><span>   =
+  return err;</span><br><span> }</span><br><span> </span><br><span style=3D=
+"color: hsl(0, 100%, 40%);">-/**</span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">- * Run command: wmic nicconfig (InterfaceIndex=3D$if_index) call=
+ $action ($data)</span><br><span style=3D"color: hsl(0, 100%, 40%);">- * @p=
+aram  if_index    &quot;index of interface&quot;</span><br><span style=3D"c=
+olor: hsl(0, 100%, 40%);">- * @param  action      e.g., &quot;SetDNSDomain&=
+quot;</span><br><span style=3D"color: hsl(0, 100%, 40%);">- * @param  data =
+       data if required for action</span><br><span style=3D"color: hsl(0, 1=
+00%, 40%);">- *                     - a single word for SetDNSDomain, empty=
+ or NULL to delete</span><br><span style=3D"color: hsl(0, 100%, 40%);">- * =
+                    - comma separated values for a list</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">- */</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-static DWORD</span><br><span style=3D"color: hsl(0, 100%, 4=
+0%);">-wmic_nicconfig_cmd(const wchar_t *action, const NET_IFINDEX if_index=
+,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-                   c=
+onst wchar_t *data)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-{<=
+/span><br><span style=3D"color: hsl(0, 100%, 40%);">-    DWORD err =3D 0;</=
+span><br><span style=3D"color: hsl(0, 100%, 40%);">-    wchar_t argv0[MAX_P=
+ATH];</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    wchar_t *cmd=
+line =3D NULL;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    int=
+ timeout =3D 10000; /* in msec */</span><br><span style=3D"color: hsl(0, 10=
+0%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    swpri=
+ntf(argv0, _countof(argv0), L&quot;%ls\\%ls&quot;, get_win_sys_path(), L&qu=
+ot;wbem\\wmic.exe&quot;);</span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    const wchar_t=
+ *fmt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    /* comma se=
+parated list must be enclosed in parenthesis */</span><br><span style=3D"co=
+lor: hsl(0, 100%, 40%);">-    if (data &amp;&amp; wcschr(data, L&#39;,&#39;=
+))</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    {</span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-        fmt =3D L&quot;wmic nicconf=
+ig where (InterfaceIndex=3D%ld) call %ls (%ls)&quot;;</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-    }</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-    else</span><br><span style=3D"color: hsl(0, 100%, 40%);=
+">-    {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        fmt =
+=3D L&quot;wmic nicconfig where (InterfaceIndex=3D%ld) call %ls \&quot;%ls\=
+&quot;&quot;;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    }</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-    size_t ncmdline =3D wcslen(fmt) + 20 + =
+wcslen(action) /* max 20 for ifindex */</span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-                      + (data ? wcslen(data) + 1 : 1);</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-    cmdline =3D malloc(n=
+cmdline*sizeof(wchar_t));</span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">-    if (!cmdline)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
+    {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        return E=
+RROR_OUTOFMEMORY;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
+}</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-    swprintf(cmdline, ncmdline, fmt, if_i=
+ndex, action,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        =
+     data ? data : L&quot;&quot;);</span><br><span style=3D"color: hsl(0, 1=
+00%, 40%);">-    err =3D ExecCommand(argv0, cmdline, timeout);</span><br><s=
+pan style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-    free(cmdline);</span><br><span style=3D"color: hsl(=
+0, 100%, 40%);">-    return err;</span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-}</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><b=
+r><span> /* Delete all IPv4 or IPv6 dns servers for an interface */</span><=
+br><span> static DWORD</span><br><span> DeleteDNS(short family, wchar_t *if=
+_name)</span><br><span>@@ -1221,50 +1162,660 @@</span><br><span> }</span><b=
+r><span> </span><br><span> /**</span><br><span style=3D"color: hsl(0, 100%,=
+ 40%);">- * Set interface specific DNS domain suffix</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">- * @param  if_name    name of the interface=
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">- * @param  domain    =
+ a single domain name</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
+ * @param  lists      pointer to the undo lists. If NULL</span><br><span st=
+yle=3D"color: hsl(0, 100%, 40%);">- *                    undo lists are not=
+ altered.</span><br><span style=3D"color: hsl(0, 100%, 40%);">- * Will dele=
+te the currently set value if domain is empty.</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+ * Signal the DNS resolver (and others potential=
+ly) to reload the</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *=
+ group policy (DNS) settings on 32 bit Windows systems</span><br><span styl=
 e=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+ * @param  key  HKEY in which to check for a valid search=
- list</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+ * @return BOOL to indicate if =
-a valid search list has been found</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+ */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+s=
-tatic BOOL</span><br><span style=3D"color: hsl(120, 100%, 40%);">+HasValidS=
-earchList(HKEY key)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    char data[64];=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    DWORD size =3D =
-sizeof(data);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    LS=
-TATUS err =3D RegGetValueA(key, NULL, &quot;SearchList&quot;, RRF_RT_REG_SZ=
-, NULL, (PBYTE)data, &amp;size);</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+    if (!err || err =3D=3D ERROR_MORE_DATA)</span><br><span>  =
-   {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        wchar_t *=
-tmp_name =3D _wcsdup(if_name);</span><br><span style=3D"color: hsl(0, 100%,=
- 40%);">-        if (!tmp_name || AddListItem(&amp;(*lists)[undo_domain], t=
-mp_name))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        da=
-ta[sizeof(data) - 1] =3D &#39;\0&#39;;</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+        for (int i =3D 0; i &lt; strlen(data); ++i)</spa=
-n><br><span>         {</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
--            free(tmp_name);</span><br><span style=3D"color: hsl(0, 100%, 4=
-0%);">-            err =3D ERROR_OUTOFMEMORY;</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+            if (isalnum(data[i]) || data[i] =3D=
-=3D &#39;-&#39; || data[i] =3D=3D &#39;.&#39;)</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+            {</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+                return TRUE;</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+            }</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+        }</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-    return FALSE;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+/**</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+ * Find the registry key for storing the DNS domains fo=
-r the VPN interface</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
- *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @param  itf_na=
-me PCSTR that contains the alias name of the interface the domains</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+ *                  are rela=
-ted to. If this is NULL the interface probing is skipped.</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+ * @param  gpol     PBOOL to indicate=
- if the key returned is the group policy hive</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+ * @param  key      PHKEY in which the found regi=
-stry key is returned in</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+ *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @return BO=
-OL to indicate if a search list is already present at the location.</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+ *         If the key retur=
-ned is INVALID_HANDLE_VALUE, this indicates an</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+ *         unrecoverable error.</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+ * The correct location to add them is where a non-em=
-pty &quot;SearchList&quot; value exists,</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+ * or in the interface configuration itself. However, =
-the system-wide and then the</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+ * group policy search lists overrule the previous one respectivel=
-y, so we need to</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * =
-probe to find the effective list.</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+ */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+st=
-atic BOOL</span><br><span style=3D"color: hsl(120, 100%, 40%);">+GetDnsSear=
-chListKey(PCSTR itf_name, PBOOL gpol, PHKEY key)</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+    LSTATUS err;</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    *gpol =
-=3D FALSE;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+    /* Try the group policy =
-search list */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    e=
-rr =3D RegOpenKeyExA(HKEY_LOCAL_MACHINE,</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+                        &quot;SOFTWARE\\Policies\\Micr=
-osoft\\Windows NT\\DNSClient&quot;,</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+                        0, KEY_ALL_ACCESS, key);</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+    if (!err)</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+        if (HasValidSearchList(*key))</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+        {</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+            *gpol =3D TRUE;</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+            return TRUE;</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+        }</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+        RegCloseKey(*key);</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+    /* Try the system-wide search list */</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    err =3D RegOpenKeyExA(HKEY_LOCAL_MACH=
-INE,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+               =
-         &quot;System\\CurrentControlSet\\Services\\TCPIP\\Parameters&quot;=
-,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+                  =
-      0, KEY_ALL_ACCESS, key);</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+    if (!err)</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        i=
-f (HasValidSearchList(*key))</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+        {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-           return TRUE;</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+        }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
-  RegCloseKey(*key);</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+    if (itf_name)</span><br><spa=
+20, 100%, 40%);">+ * @return BOOL to indicate if the reload was initiated</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+ */</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+static BOOL</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+ApplyGpolSettings32(void)</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+    typedef NTSTATUS (__stdcall *publish_fn_t)(</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+        DWORD StateNameLo,</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+        DWORD StateNam=
+eHi,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        DWORD T=
+ypeId,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        DWORD=
+ Buffer,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        DWO=
+RD Length,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        D=
+WORD ExplicitScope);</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++    publish_fn_t RtlPublishWnfStateData;</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+    const DWORD WNF_GPOL_SYSTEM_CHANGES_HI =3D 0x0D89=
+1E2A;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    const DWOR=
+D WNF_GPOL_SYSTEM_CHANGES_LO =3D 0xA3BC0875;</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+    HMODULE ntdll =3D LoadLibraryA(&quot;ntdll.dll&quot;);</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+    if (ntdll =3D=3D NULL)</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+        return FALSE;</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+    RtlPublishWnfStateData =3D (publish_fn_t) GetProcAddress(ntdll, =
+&quot;RtlPublishWnfStateData&quot;);</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+    if (RtlPublishWnfStateData =3D=3D NULL)</span><br><spa=
 n style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+        /* Always return the VPN interface key (=
-if it exists) */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
-     WCHAR iid[64];</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-        DWORD iid_err =3D InterfaceIdString(itf_name, iid, _countof(iid));<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+        if (!iid_err=
-)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        {</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+            HKEY itfs;</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+            err =3D RegOp=
-enKeyExA(HKEY_LOCAL_MACHINE,</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+                                &quot;System\\CurrentControlSet\\S=
-ervices\\TCPIP\\Parameters\\Interfaces&quot;,</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+                                0, KEY_ALL_ACCESS=
-, &amp;itfs);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
-      if (!err)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-        {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+          =
-      err =3D RegOpenKeyExW(itfs, iid, 0, KEY_ALL_ACCESS, key);</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+                RegCloseKey(itf=
-s);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+                =
-if (!err)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+          =
-      {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            =
-        return FALSE; /* No need to preserve the VPN itf search list */</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+                }</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+            }</span><br><=
-span>         }</span><br><span>     }</span><br><span> </span><br><span st=
-yle=3D"color: hsl(0, 100%, 40%);">-    free(wdomain);</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    *key =3D INVALID_HANDLE_VALUE;</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+    return FALSE;</span><b=
+or: hsl(120, 100%, 40%);">+        return FALSE;</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+if (RtlPublishWnfStateData(WNF_GPOL_SYSTEM_CHANGES_LO, WNF_GPOL_SYSTEM_CHAN=
+GES_HI, 0, 0, 0, 0) !=3D ERROR_SUCCESS)</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+        return FALSE;</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+    return TRUE;</span><b=
 r><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"c=
 olor: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+/**</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * Che=
-ck if a initial list had already been created</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+ *</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+ * @param  key      HKEY of the registry subkey to search in</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+ * @return BOOL to indicate if the initia=
-l list is already present under key</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+ */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-static BOOL</span><br><span style=3D"color: hsl(120, 100%, 40%);">+InitialS=
-earchListExists(HKEY key)</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    LSTATUS =
-err;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+    err =3D RegGetValueA(key, NULL=
-, &quot;InitialSearchList&quot;, RRF_RT_REG_SZ, NULL, NULL, NULL);</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+    if (err)</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+        if (err =3D=3D ERROR_FILE_NOT_FOUND)</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+        {</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+            return FALSE;</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+        }</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+        MsgToEventLog(M_ERR, TEXT(&quo=
-t;InitialSearchListExists: &quot;</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+                                  &quot;failed to get Initial=
-SearchList (%lu)&quot;), err);</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+    return TRUE;</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=
+, 40%);">+/**</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * Sig=
+nal the DNS resolver (and others potentially) to reload the</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+ * group policy (DNS) settings on 6=
+4 bit Windows systems</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+ *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @return BOOL=
+ to indicate if the reload was initiated</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+ */</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+static BOOL</span><br><span style=3D"color: hsl(120, 100%, 40%);">+App=
+lyGpolSettings64(void)</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    typedef NTS=
+TATUS (*publish_fn_t)(</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+        INT64 StateName,</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+        INT64 TypeId,</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+        INT64 Buffer,</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+        unsigned int Length,</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+        INT64 ExplicitScope);</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+    publish_fn_t RtlPublishWnfStateData;</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+    const INT64 WNF_GPO=
+L_SYSTEM_CHANGES =3D 0x0D891E2AA3BC0875;</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+    HMODULE ntdll =3D LoadLibraryA(&quot;ntdll.dll&quot;);</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+    if (ntdll =3D=3D NULL)</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+        return FALSE;</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+    RtlPublishWnfStateData =3D (publish_fn_t) GetProcAddress(ntdll, &quo=
+t;RtlPublishWnfStateData&quot;);</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+    if (RtlPublishWnfStateData =3D=3D NULL)</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+        return FALSE;</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (=
+RtlPublishWnfStateData(WNF_GPOL_SYSTEM_CHANGES, 0, 0, 0, 0) !=3D ERROR_SUCC=
+ESS)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+        return FALSE;</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=
 =3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+/**</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-* Prepare DNS domain &quot;SearchList&quot; registry value, so additional</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * VPN domains can be=
- added and its original state can be restored</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+ * in case the system cannot clean up regularly.<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+ * @param  key      registry subkey t=
-o store the list in</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
- * @param  list     string of comma separated domains to use as the list</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+ * @return boolean to indicate whether =
-the list was stored successfully</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+ */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+sta=
-tic BOOL</span><br><span style=3D"color: hsl(120, 100%, 40%);">+StoreInitia=
-lDnsSearchList(HKEY key, PCWSTR list)</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-    if (!list || wcslen(list) =3D=3D 0)</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+        MsgToEventLog(M_ERR, TEXT(&quot;StoreInitialDnsSearchList: em=
-pty search list&quot;));</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+        return FALSE;</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+    if (InitialSearchListE=
-xists(key))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+        /* Initial lis=
-t had already been stored */</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+        return TRUE;</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+    DWORD size =3D (wcs=
-len(list) + 1) * sizeof(*list);</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+    LSTATUS err =3D RegSetValueExW(key, L&quot;InitialSearchLis=
-t&quot;, 0, REG_SZ, (PBYTE)list, size);</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+    if (err)</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-       MsgToEventLog(M_ERR, TEXT(&quot;StoreInitialDnsSearchList: &quot;</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+                      =
-            &quot;failed to set InitialSearchList value (%lu)&quot;), err);=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        return FALS=
-E;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+    return TRUE;</span><br><span style=3D"color: h=
+ 100%, 40%);">+    return TRUE;</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+/**</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+ * Signal the DNS resolver (and others po=
+tentially) to reload the group policy (DNS) settings</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+ * @return BOOL to indicate if the reload was initiated</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+ */</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+static BOOL</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+ApplyGpolSettings(void)</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+    SYSTEM_INFO si;</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+    GetSystemInfo(&amp;si);</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+    const BOOL win_32bit =3D si.wProcessorArchitect=
+ure =3D=3D PROCESSOR_ARCHITECTURE_INTEL;</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+    return win_32bit ? ApplyGpolSettings32() : ApplyGp=
+olSettings64();</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+/**</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+ * Signal the DNS resolver to reload its settings</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+ * @param apply_gpol    BOOL reload setting =
+from group policy hives as well</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+ *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @r=
+eturn BOOL to indicate if the reload was initiated</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+ */</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+static BOOL</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+ApplyDnsSettings(BOOL apply_gpol)</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+    BOOL res =3D FALSE;</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+    SC_HANDLE scm =3D NULL;</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+    SC_HANDLE dnssvc =3D NULL;</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+    if (apply_gpol &amp;&amp; ApplyGpolSettings() =3D=3D FALSE)</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+        MsgToEventLog(M_ERR, TEXT(&quo=
+t;ApplyDnsSettings: sending GPOL notification failed&quot;));</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+    scm =3D OpenSCManager(NULL, NULL, SC_MANAGER_ALL_ACCESS);</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (scm =3D=3D NULL)=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+        MsgToEventLog(M_ERR, TEXT=
+(&quot;ApplyDnsSettings: &quot;</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+                                  &quot;OpenSCManager call fail=
+ed (%lu)&quot;), GetLastError());</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+        goto out;</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+    dnssvc =3D OpenSe=
+rviceA(scm, &quot;Dnscache&quot;, SERVICE_PAUSE_CONTINUE);</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+    if (dnssvc =3D=3D NULL)</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+        MsgToEventLog(M_ERR, TEXT(&quot;A=
+pplyDnsSettings: &quot;</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+                                  &quot;OpenService call failed (%lu)&q=
+uot;), GetLastError());</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+        goto out;</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+    SERVICE_STATUS status;</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (ControlService(d=
+nssvc, SERVICE_CONTROL_PARAMCHANGE, &amp;status) =3D=3D 0)</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+        MsgToEventLog(M_ERR, TEXT(&quot;ApplyDnsSe=
+ttings: &quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
+                             &quot;ControlService call failed (%lu)&quot;),=
+ GetLastError());</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+      goto out;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+    res =3D TRUE;</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+out:</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+    if (dnssvc)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+  {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        CloseSer=
+viceHandle(dnssvc);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (scm)</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+        CloseServiceHandle(scm);</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+    return res;</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+/*=
+*</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * Get the string =
+interface UUID (with braces) for an interface alias name</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+ * @param  itf_name   the interface alias name</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+ * @param  str        pointe=
+r to the buffer the wide UUID is returned in</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+ * @param  len        size of the str buffer in ch=
+aracters</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+ * @return NO_ERROR on succe=
+ss, or the Windows error code for the failure</span><br><span>  */</span><b=
+r><span> static DWORD</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
+SetDNSDomain(const wchar_t *if_name, const char *domain, undo_lists_t *list=
+s)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+InterfaceIdString=
+(PCSTR itf_name, PWSTR str, size_t len)</span><br><span> {</span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">-    NET_IFINDEX if_index;</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+    DWORD err;</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+    GUID guid;</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    NET_LUID luid;</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    PWSTR iid_str =3D NULL;</span><br><sp=
+an> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-    DWORD err  =
+=3D ConvertInterfaceNameToIndex(if_name, &amp;if_index);</span><br><span st=
+yle=3D"color: hsl(0, 100%, 40%);">-    if (err !=3D ERROR_SUCCESS)</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+    err =3D InterfaceLuid(it=
+f_name, &amp;luid);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+    if (err)</span><br><span>     {</span><br><span style=3D"color: hsl(0, =
+100%, 40%);">-        return err;</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+        MsgToEventLog(M_ERR, TEXT(&quot;InterfaceIdString: &q=
+uot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+               =
+                   &quot;failed to convert itf alias &#39;%s&#39;&quot;), i=
+tf_name);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        go=
+to out;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+    err =3D ConvertInterfa=
+ceLuidToGuid(&amp;luid, &amp;guid);</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+    if (err)</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
+   MsgToEventLog(M_ERR, TEXT(&quot;InterfaceIdString: &quot;</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+                                  =
+&quot;Failed to convert itf &#39;%s&#39; LUID&quot;), itf_name);</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+        goto out;</span><br><s=
+pan>     }</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 4=
+0%);">-    wchar_t *wdomain =3D utf8to16(domain); /* utf8 to wide-char */</=
+span><br><span style=3D"color: hsl(0, 100%, 40%);">-    if (!wdomain)</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (StringFromIID(&am=
+p;guid, &amp;iid_str) !=3D S_OK)</span><br><span>     {</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-        return ERROR_OUTOFMEMORY;</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+        MsgToEventLog(M_ERR=
+, TEXT(&quot;InterfaceIdString: &quot;</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+                                  &quot;Failed to conver=
+t itf &#39;%s&#39; IID&quot;), itf_name);</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+        err =3D ERROR_OUTOFMEMORY;</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+        goto out;</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+    if (wcslen(iid_str) + 1 &gt; len)</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+        err =3D ERROR_INVALID_PARAMETER;</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+        goto out;</span><br><=
+span>     }</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, =
+40%);">-    /* free undo list if previously set */</span><br><span style=3D=
+"color: hsl(0, 100%, 40%);">-    if (lists)</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+    wcsncpy(str, iid_str, len);</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+out:</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+    if (iid_str)</span><br><span>     {</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-        free(RemoveListItem(&amp;(*lists)[undo_domain],=
+ CmpWString, (void *)if_name));</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+        CoTaskMemFree(iid_str);</span><br><span>     }</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+    return err;</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span> </span><br><s=
+pan style=3D"color: hsl(0, 100%, 40%);">-    err =3D wmic_nicconfig_cmd(L&q=
+uot;SetDNSDomain&quot;, if_index, wdomain);</span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
+-    /* Add to undo list if domain is non-empty */</span><br><span style=3D=
+"color: hsl(0, 100%, 40%);">-    if (err =3D=3D 0 &amp;&amp; wdomain[0] &am=
+p;&amp; lists)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+/**</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * Check for a valid =
+search list in a certain key of the registry</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+ *</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+ * Valid means that a string value &quot;SearchList&quot; exists an=
+d that it</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * contain=
+s one or more domains. We only check if the string contains</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+ * a valid domain name character, b=
+ut the main point is to prevent letting</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+ * pass whitespace-only lists, so that check is good en=
+ough for that</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * pur=
+pose.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+ * @param  key  HKEY in which t=
+o check for a valid search list</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+ *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @r=
+eturn BOOL to indicate if a valid search list has been found</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+ */</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+static BOOL</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+HasValidSearchList(HKEY key)</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+    char data[64];</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+    DWORD size =3D sizeof(data);</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+    LSTATUS err =3D RegGetValueA(key, NULL, &quot;Searc=
+hList&quot;, RRF_RT_REG_SZ, NULL, (PBYTE)data, &amp;size);</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+    if (!err || err =3D=3D ERROR_MOR=
+E_DATA)</span><br><span>     {</span><br><span style=3D"color: hsl(0, 100%,=
+ 40%);">-        wchar_t *tmp_name =3D _wcsdup(if_name);</span><br><span st=
+yle=3D"color: hsl(0, 100%, 40%);">-        if (!tmp_name || AddListItem(&am=
+p;(*lists)[undo_domain], tmp_name))</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+        data[sizeof(data) - 1] =3D &#39;\0&#39;;</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+        for (int i =3D 0; i &l=
+t; strlen(data); ++i)</span><br><span>         {</span><br><span style=3D"c=
+olor: hsl(0, 100%, 40%);">-            free(tmp_name);</span><br><span styl=
+e=3D"color: hsl(0, 100%, 40%);">-            err =3D ERROR_OUTOFMEMORY;</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+            if (isalnum=
+(data[i]) || data[i] =3D=3D &#39;-&#39; || data[i] =3D=3D &#39;.&#39;)</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+            {</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+                return TRUE;</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+            }</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+        }</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+    return FALSE;</span><br><span style=3D"color: h=
 sl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%)=
 ;">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+/**</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+ * Append domain suffixes to an=
- existing search list</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+ *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @param  key =
-         HKEY the list is stored at</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+ * @param  have_list    BOOL to indicate if a search list a=
-lready exists</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @pa=
-ram  domains      domain suffixes as comma separated string</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+ * @return BOOL to indicate success or failure</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+ */</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+static BOOL</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+AddDnsSearchDomains(HKEY key, BOOL have_list, PCW=
-STR domains)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+    LSTATUS err;</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+    WCHAR list[2048] =3D {0}=
-;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    DWORD size =3D=
- sizeof(list);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (have_list)</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+        err =3D RegGetValueW(key, NULL,=
- L&quot;SearchList&quot;, RRF_RT_REG_SZ, NULL, list, &amp;size);</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+        if (err)</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+        {</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+            MsgToEventLog(M_SYSERR, TEXT(=
-&quot;AddDnsSearchDomains: &quot;</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+                                         &quot;could not get =
-SearchList from registry (%lu)&quot;), err);</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+            return FALSE;</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+        }</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+        if (!StoreInitialDnsSearchList(key, list))</span><br><span style=
+span style=3D"color: hsl(120, 100%, 40%);">+ * Find the registry key for st=
+oring the DNS domains for the VPN interface</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+ *</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+ * @param  itf_name PCSTR that contains the alias name of the interf=
+ace the domains</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  =
+                are related to. If this is NULL the interface probing is sk=
+ipped.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @param  gp=
+ol     PBOOL to indicate if the key returned is the group policy hive</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @param  key      PHKEY=
+ in which the found registry key is returned in</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+ *</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+ * @return BOOL to indicate if a search list is already present =
+at the location.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * =
+        If the key returned is INVALID_HANDLE_VALUE, this indicates an</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+ *         unrecoverable=
+ error.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+ * The correct location to ad=
+d them is where a non-empty &quot;SearchList&quot; value exists,</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+ * or in the interface configu=
+ration itself. However, the system-wide and then the</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+ * group policy search lists overrule the=
+ previous one respectively, so we need to</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+ * probe to find the effective list.</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+ */</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+static BOOL</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+GetDnsSearchListKey(PCSTR itf_name, PBOOL gpol, PHKEY key)</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+    LSTATUS err;</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+    *gpol =3D FALSE;</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+ /* Try the group policy search list */</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+    err =3D RegOpenKeyExA(HKEY_LOCAL_MACHINE,</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+                        &quot=
+;SOFTWARE\\Policies\\Microsoft\\Windows NT\\DNSClient&quot;,</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+                        0, KEY_ALL=
+_ACCESS, key);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    i=
+f (!err)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+        if (HasValidSearc=
+hList(*key))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
+ {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            *gpol=
+ =3D TRUE;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+         =
+   return TRUE;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        RegClo=
+seKey(*key);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+    /* Try the system-wide search list *=
+/</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    err =3D RegOpe=
+nKeyExA(HKEY_LOCAL_MACHINE,</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+                        &quot;System\\CurrentControlSet\\Services\\=
+TCPIP\\Parameters&quot;,</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+                        0, KEY_ALL_ACCESS, key);</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    if (!err)</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+        if (HasValidSearchList(*key))</span><br><span style=
 =3D"color: hsl(120, 100%, 40%);">+        {</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+            return FALSE;</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+        }</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+        size_t listlen =3D (size / sizeof(list[0])) - 1; /* returned size =
-is in bytes */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
-   size_t domlen =3D wcslen(domains);</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+        if (listlen + domlen + 2 &gt; _countof(list))</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+        {</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+            MsgToEventLog(M_SYSER=
-R, TEXT(&quot;AddDnsSearchDomains: &quot;</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+                                         &quot;not en=
-ough space in list for search domains (len=3D%lu)&quot;),</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+                          domlen);</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+            return FAL=
-SE;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        }</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+        /* Append to end of the search list *=
-/</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        PWSTR pos =
-=3D list + listlen;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-        *pos =3D &#39;,&#39;;</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+        wcsncpy(pos + 1, domains, domlen + 1);</span><br><span st=
+ hsl(120, 100%, 40%);">+            return TRUE;</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+        }</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+        RegCloseKey(*key);</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if =
+(itf_name)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+        /* Always retur=
+n the VPN interface key (if it exists) */</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+        WCHAR iid[64];</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+        DWORD iid_err =3D InterfaceIdString(itf_na=
+me, iid, _countof(iid));</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+        if (!iid_err)</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+        {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+         HKEY itfs;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+            err =3D RegOpenKeyExA(HKEY_LOCAL_MACHINE,</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+                                &quot;Sys=
+tem\\CurrentControlSet\\Services\\TCPIP\\Parameters\\Interfaces&quot;,</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+                        =
+        0, KEY_ALL_ACCESS, &amp;itfs);</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+            if (!err)</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+            {</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+                err =3D RegOpenKeyExW(itfs, iid, 0, KEY_ALL_=
+ACCESS, key);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
+          RegCloseKey(itfs);</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+                if (!err)</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+                {</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+                    return FALSE; /* No need to preserve the V=
+PN itf search list */</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+                }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+            }</span><br><span>         }</span><br><span>     }</span><br><=
+span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-    free(wdomai=
+n);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    *key =3D INV=
+ALID_HANDLE_VALUE;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+   return FALSE;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+/**</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+ * Check if a initial list had already been created</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+ * @param  key      HKEY of the registry =
+subkey to search in</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+ *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @return BOOL t=
+o indicate if the initial list is already present under key</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+ */</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+static BOOL</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+InitialSearchListExists(HKEY key)</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+    LSTATUS err;</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    err =
+=3D RegGetValueA(key, NULL, &quot;InitialSearchList&quot;, RRF_RT_REG_SZ, N=
+ULL, NULL, NULL);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+  if (err)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+        if (err =3D=3D =
+ERROR_FILE_NOT_FOUND)</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+        {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        =
+    return FALSE;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+      }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        MsgT=
+oEventLog(M_ERR, TEXT(&quot;InitialSearchListExists: &quot;</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+                                  &=
+quot;failed to get InitialSearchList (%lu)&quot;), err);</span><br><span st=
 yle=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+    else</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-      wcsncpy(list, domains, wcslen(domains) + 1);</span><br><span style=3D=
+hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+    return TRUE;</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+/**</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+ * Prepare DNS domain &quot;SearchList&quot; registr=
+y value, so additional</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+ * VPN domains can be added and its original state can be restored</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+ * in case the system can=
+not clean up regularly.</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+ *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @param  ke=
+y      registry subkey to store the list in</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+ * @param  list     string of comma separated domai=
+ns to use as the list</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+ *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @return bool=
+ean to indicate whether the list was stored successfully</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+ */</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+static BOOL</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+StoreInitialDnsSearchList(HKEY key, PCWSTR list)</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+    if (!list || wcslen(list) =3D=3D 0)</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+        MsgToEventLog(M_ERR, TEXT(&quot;Store=
+InitialDnsSearchList: empty search list&quot;));</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+        return FALSE;</span><br><span style=3D=
 "color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(12=
 0, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-  size =3D (wcslen(list) + 1) * sizeof(list[0]);</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+    err =3D RegSetValueExW(key, L&quot;SearchL=
-ist&quot;, 0, REG_SZ, (PBYTE)list, size);</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+    if (err)</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+        MsgToEventLog(M_SYSERR, TEXT(&quot;AddDnsSearchDomains: &quot;</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+                       =
-              &quot;could not set SearchList to registry (%lu)&quot;), err)=
-;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        return FAL=
-SE;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+    return TRUE;</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+/**</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+ * Reset the DNS search list t=
-o its original value</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+ *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * Looks for a &=
-quot;InitialSearchList&quot; value as the one to reset to.</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+ * If it doesn&#39;t exist, doesn&#3=
-9;t reset anything, as there was no</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+ * SearchList in the first place.</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+ *</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+ * @param  key  HKEY of the location in the registry to reset<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+ * @return BOOL to indicate if someth=
-ing was reset</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ */</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+static BOOL</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+ResetDnsSearchDomains(HKEY key=
-)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+    LSTATUS err;</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+    BOOL ret =3D FALSE;</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+    WCHAR list[2048];</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+    DWORD size =3D sizeof(list);<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+    err =3D RegGetValueW(key, NULL, L&q=
-uot;InitialSearchList&quot;, RRF_RT_REG_SZ, NULL, list, &amp;size);</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+    if (err)</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+        if (err !=3D ERROR_FILE_NOT_FOUND)</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+        {</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+            MsgToEventLog(M_SYSERR,=
- TEXT(&quot;ResetDnsSearchDomains: &quot;</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+                                         &quot;could =
-not get InitialSearchList from registry (%lu)&quot;), err);</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+        }</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+        goto out;</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    s=
-ize =3D (wcslen(list) + 1) * sizeof(list[0]);</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+    err =3D RegSetValueExW(key, L&quot;SearchList=
-&quot;, 0, REG_SZ, (PBYTE)list, size);</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+    if (err)</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-      MsgToEventLog(M_SYSERR, TEXT(&quot;ResetDnsSearchDomains: &quot;</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+                        =
-             &quot;could not set SearchList in registry (%lu)&quot;), err);=
+  if (InitialSearchListExists(key))</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+        /* Initial list had already been stored */</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+        return TRUE;</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+    DWORD size =3D (wcslen(list) + 1) * sizeof(*list);</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+    LSTATUS err =3D RegSetValueExW(key=
+, L&quot;InitialSearchList&quot;, 0, REG_SZ, (PBYTE)list, size);</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+    if (err)</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+        MsgToEventLog(M_ERR, TEXT(&quot;StoreInitia=
+lDnsSearchList: &quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+                                  &quot;failed to set InitialSearchList =
+value (%lu)&quot;), err);</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+        return FALSE;</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+    return TRUE;</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+/**</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * App=
+end domain suffixes to an existing search list</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+ *</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+ * @param  key          HKEY the list is stored at</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+ * @param  have_list    BOOL to in=
+dicate if a search list already exists</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+ * @param  domains      domain suffixes as comma separat=
+ed string</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+ * @return BOOL to indicate=
+ success or failure</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+ */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+static BOOL</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+AddDnsSearchDomains(HKEY=
+ key, BOOL have_list, PCWSTR domains)</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+    LSTATUS err;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+ WCHAR list[2048] =3D {0};</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+    DWORD size =3D sizeof(list);</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++    if (have_list)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        err =
+=3D RegGetValueW(key, NULL, L&quot;SearchList&quot;, RRF_RT_REG_SZ, NULL, l=
+ist, &amp;size);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+     if (err)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
+  {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            MsgT=
+oEventLog(M_SYSERR, TEXT(&quot;AddDnsSearchDomains: &quot;</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+                                    =
+     &quot;could not get SearchList from registry (%lu)&quot;), err);</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+            return FALSE;=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        }</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+        if (!StoreInitialDnsSearchList(key, list=
+))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        {</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+            return FALSE;</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+        }</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+        size_t listlen =3D (size / sizeof(list[0])=
+) - 1; /* returned size is in bytes */</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+        size_t domlen =3D wcslen(domains);</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+        if (listlen + domlen + 2 =
+&gt; _countof(list))</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++        {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+         =
+   MsgToEventLog(M_SYSERR, TEXT(&quot;AddDnsSearchDomains: &quot;</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+                             =
+            &quot;not enough space in list for search domains (len=3D%lu)&q=
+uot;),</span><br><span style=3D"color: hsl(120, 100%, 40%);">+             =
+             domlen);</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+            return FALSE;</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+        }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+        /* Append to =
+end of the search list */</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+        PWSTR pos =3D list + listlen;</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+        *pos =3D &#39;,&#39;;</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+        wcsncpy(pos + 1, domains, domlen =
++ 1);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+    else</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+        wcsncpy(list, domains, wcslen(domains) + 1);<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+    size =3D (wcslen(list) + 1) * sizeof(list[0]);</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+    err =3D RegSetValu=
+eExW(key, L&quot;SearchList&quot;, 0, REG_SZ, (PBYTE)list, size);</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+    if (err)</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+        MsgToEventLog(M_SYSERR, TEXT(&quot;AddDnsS=
+earchDomains: &quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++                                     &quot;could not set SearchList to reg=
+istry (%lu)&quot;), err);</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+        return FALSE;</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+    return TRUE;</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+/**</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * Res=
+et the DNS search list to its original value</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+ *</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+ * Looks for a &quot;InitialSearchList&quot; value as the one to re=
+set to.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * If it doe=
+sn&#39;t exist, doesn&#39;t reset anything, as there was no</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+ * SearchList in the first place.</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+ * @param  key  HKEY of the location i=
+n the registry to reset</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+ *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @return BO=
+OL to indicate if something was reset</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+ */</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+static BOOL</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ResetD=
+nsSearchDomains(HKEY key)</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    LSTATUS =
+err;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    BOOL ret =
+=3D FALSE;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    WCHAR=
+ list[2048];</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    DWO=
+RD size =3D sizeof(list);</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    err =3D R=
+egGetValueW(key, NULL, L&quot;InitialSearchList&quot;, RRF_RT_REG_SZ, NULL,=
+ list, &amp;size);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+   if (err)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+        if (err !=3D E=
+RROR_FILE_NOT_FOUND)</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++        {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+         =
+   MsgToEventLog(M_SYSERR, TEXT(&quot;ResetDnsSearchDomains: &quot;</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+                           =
+              &quot;could not get InitialSearchList from registry (%lu)&quo=
+t;), err);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        }=
 </span><br><span style=3D"color: hsl(120, 100%, 40%);">+        goto out;</=
 span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span=
  style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+    RegDeleteValueA(key, &quot;InitialSearchList&quot;=
-);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    ret =3D TRUE;=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+out:</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+    return ret;</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+/**</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+ * Remove domain suffixes from an e=
-xisting search list</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
- *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @param  key   =
-   HKEY the list is stored at</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+ * @param  domains  domain suffixes to remove as comma separated =
-string</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ */</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+static void</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+RemoveDnsSearchDomains(HKEY key, PCWS=
-TR domains)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+    LSTATUS err;</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+    WCHAR list[2048];</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+    DWORD size =3D sizeof(l=
-ist);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+    err =3D RegGetValueW(key, NUL=
-L, L&quot;SearchList&quot;, RRF_RT_REG_SZ, NULL, list, &amp;size);</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+    if (err)</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+        MsgToEventLog(M_SYSERR, TEXT(&quot;Remove=
-DnsSearchDomains: &quot;</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+                                     &quot;could not get SearchList fr=
-om registry (%lu)&quot;), err);</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+        return;</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+    PWSTR dst =3D wcsstr(=
-list, domains);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-if (!dst)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+        MsgToEventLog(M_=
-ERR, TEXT(&quot;RemoveDnsSearchDomains: &quot;</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+                                  &quot;could no=
-t find domains in search list&quot;));</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+        return;</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    /* Cut out dom=
-ains from list */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-  size_t domlen =3D wcslen(domains);</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+    PCWSTR src =3D dst + domlen;</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+    /* Also remove the leading comma, if ther=
-e is one */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    dst =
-=3D dst &gt; list ? dst - 1 : dst;</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+    wmemmove(dst, src, domlen);</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+    size_t list_len =3D wcslen(list);</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+    if (list_len)</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+        /* Now check if the shortened list equals the initial sea=
-rch list */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        =
-WCHAR initial[2048];</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+        size =3D sizeof(initial);</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+        err =3D RegGetValueW(key, NULL, L&quot;InitialSearch=
-List&quot;, RRF_RT_REG_SZ, NULL, initial, &amp;size);</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+        if (err)</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+        {</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+            MsgToEventLog(M_SYSERR, TEXT(&quot;RemoveD=
-nsSearchDomains: &quot;</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+                                         &quot;could not get InitialSea=
-rchList from registry (%lu)&quot;), err);</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+            return;</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+        }</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
- /* If the search list is back to its initial state reset it */</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+        if (wcsncmp(list, initi=
-al, wcslen(list)) =3D=3D 0)</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+        {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-          ResetDnsSearchDomains(key);</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+            return;</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+        }</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+    size =3D (list_len + =
-1) * sizeof(list[0]);</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+    err =3D RegSetValueExW(key, L&quot;SearchList&quot;, 0, REG_SZ, (PBYT=
-E)list, size);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    i=
-f (err)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+        MsgToEventLog(M_SY=
-SERR, TEXT(&quot;RemoveDnsSearchDomains: &quot;</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+                                     &quot;coul=
-d not set SearchList in registry (%lu)&quot;), err);</span><br><span style=
+l(120, 100%, 40%);">+    size =3D (wcslen(list) + 1) * sizeof(list[0]);</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+    err =3D RegSetValue=
+ExW(key, L&quot;SearchList&quot;, 0, REG_SZ, (PBYTE)list, size);</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+    if (err)</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+        MsgToEventLog(M_SYSERR, TEXT(&quot;ResetDns=
+SearchDomains: &quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+                                     &quot;could not set SearchList in re=
+gistry (%lu)&quot;), err);</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+        goto out;</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+    RegDeleteValueA(key, &qu=
+ot;InitialSearchList&quot;);</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+    ret =3D TRUE;</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+out:</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+    return ret;</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+/**</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * Remove=
+ domain suffixes from an existing search list</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+ *</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+ * @param  key      HKEY the list is stored at</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+ * @param  domains  domain suffixes to =
+remove as comma separated string</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+ */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+sta=
+tic void</span><br><span style=3D"color: hsl(120, 100%, 40%);">+RemoveDnsSe=
+archDomains(HKEY key, PCWSTR domains)</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+    LSTATUS err;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+ WCHAR list[2048];</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+   DWORD size =3D sizeof(list);</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    err=
+ =3D RegGetValueW(key, NULL, L&quot;SearchList&quot;, RRF_RT_REG_SZ, NULL, =
+list, &amp;size);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+  if (err)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+        MsgToEventLog(M=
+_SYSERR, TEXT(&quot;RemoveDnsSearchDomains: &quot;</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+                                     &quot;c=
+ould not get SearchList from registry (%lu)&quot;), err);</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+        return;</span><br><span style=
 =3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+/**</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+ * Removes DNS domains from a sea=
-rch list they were previously added to</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+ *</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+ * @param undo_data     pointer to dns_domains_undo_data_t</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+ */</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+static void</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+UndoDnsSearchDomains(dns_domains_undo_data_t *undo_data)</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+    BOOL gpol;</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+    HKEY dns_searchlist_key;</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+    GetDnsSearchListKey(undo_data-&=
-gt;itf_name, &amp;gpol, &amp;dns_searchlist_key);</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+    if (dns_searchlist_key !=3D INVALID_HANDL=
-E_VALUE)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+        RemoveDnsSearchDo=
-mains(dns_searchlist_key, undo_data-&gt;domains);</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+        RegCloseKey(dns_searchlist_key);</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+        ApplyDnsSettings=
-(gpol);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+        free(undo_data-&gt;doma=
-ins);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        undo_d=
-ata-&gt;domains =3D NULL;</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+/**</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+ * Add or remove DNS search domains</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+ *</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+ * @param  itf_name   alias name of the interface the domains =
-are set for</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @para=
-m  domains    a comma separated list of domain name suffixes</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+ * @param  gpol       PBOOL to ind=
-icate if group policy values were modified</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+ * @param  lists      pointer to the undo lists</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+ * @return NO_ERROR on success, an error =
-status code otherwise</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+ *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * If a SearchL=
-ist is present in the registry already, the domains are added</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+ * to that list. Otherwise the do=
-mains are added to the VPN interface specific list.</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+ * A group policy search list takes prece=
-dence over a system-wide list, and that one</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+ * itself takes precedence over interface specific =
-ones.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+ * This function will remove pr=
-eviously set domains if the domains parameter</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+ * is NULL or empty.</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+ *</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+ * The gpol value is only valid if the function returns no error.=
- In the error</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * cas=
-e nothing is changed.</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+ */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+static DWORD</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+SetDnsSearchDomains(P=
-CSTR itf_name, PCSTR domains, PBOOL gpol, undo_lists_t *lists)</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+    DWORD err =3D ERROR_OUTOFMEMORY;</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+    HKEY list_key;</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+    BOOL have_list =3D GetDnsSearchListKey(itf_name, =
-gpol, &amp;list_key);</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+    if (list_key =3D=3D INVALID_HANDLE_VALUE)</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+        MsgToEventLog(M_SYSERR, TEXT(&quot;SetDnsSearchDomain=
-s: &quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+          =
-                           &quot;could not get search list registry key&quo=
-t;));</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        return=
- ERROR_FILE_NOT_FOUND;</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+    /* Remove previously insta=
-lled search domains */</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+    dns_domains_undo_data_t *undo_data =3D RemoveListItem(&amp;(*lists)[=
-undo_domains], CmpAny, NULL);</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+    if (undo_data)</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
-   RemoveDnsSearchDomains(list_key, undo_data-&gt;domains);</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+        free(undo_data-&gt;domains)=
-;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        free(undo_=
-data);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        undo_=
-data =3D NULL;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+    /* If there are search domains, ad=
-d them */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (do=
-mains &amp;&amp; *domains)</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
- wchar_t *wide_domains =3D utf8to16(domains); /* utf8 to wide-char */</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+        if (!wide_domains=
+(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++    PWSTR dst =3D wcsstr(list, domains);</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+    if (!dst)</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+        MsgToEventLog(M_ERR, TEXT(&quot;RemoveDnsSearchDomains: &quot;</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+                      =
+            &quot;could not find domains in search list&quot;));</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+        return;</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+    /* Cut out domains from list */</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+    size_t domlen =3D wcslen(domains);</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+    PCWSTR src =3D dst + domlen;=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    /* Also remove =
+the leading comma, if there is one */</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+    dst =3D dst &gt; list ? dst - 1 : dst;</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+    wmemmove(dst, src, domlen);</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    size_t list_len =3D wcslen(list);</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (list_len)</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+        /* Now check if the shortened l=
+ist equals the initial search list */</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+        WCHAR initial[2048];</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+        size =3D sizeof(initial);</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+        err =3D RegGetValueW(key, =
+NULL, L&quot;InitialSearchList&quot;, RRF_RT_REG_SZ, NULL, initial, &amp;si=
+ze);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        if (err=
 )</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        {</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+            MsgToEventLog(M_=
+SYSERR, TEXT(&quot;RemoveDnsSearchDomains: &quot;</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+                                         &quo=
+t;could not get InitialSearchList from registry (%lu)&quot;), err);</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+            return;</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+        }</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+        /* If the search list is back to its initial sta=
+te reset it */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
+   if (wcsncmp(list, initial, wcslen(list)) =3D=3D 0)</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+        {</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+            ResetDnsSearchDomains(key);</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+            return;</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+        }</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++    size =3D (list_len + 1) * sizeof(list[0]);</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+    err =3D RegSetValueExW(key, L&quot;SearchLi=
+st&quot;, 0, REG_SZ, (PBYTE)list, size);</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+    if (err)</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+        MsgToEventLog(M_SYSERR, TEXT(&quot;RemoveDnsSearchDomains: &quot;</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+                     =
+                &quot;could not set SearchList in registry (%lu)&quot;), er=
+r);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+/**</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * Remov=
+es DNS domains from a search list they were previously added to</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+ * @param undo_data     pointer to dns_domains_u=
+ndo_data_t</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ */</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+static void</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+UndoDnsSearchDomains(dns_domains_=
+undo_data_t *undo_data)</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    BOOL gpol;=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    HKEY dns_search=
+list_key;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    GetDns=
+SearchListKey(undo_data-&gt;itf_name, &amp;gpol, &amp;dns_searchlist_key);<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (dns_searchli=
+st_key !=3D INVALID_HANDLE_VALUE)</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+        RemoveDnsSearchDomains(dns_searchlist_key, undo_data-&gt;domains);<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+        RegCloseKey(=
+dns_searchlist_key);</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++        ApplyDnsSettings(gpol);</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
+  free(undo_data-&gt;domains);</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+        undo_data-&gt;domains =3D NULL;</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+/**</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+ * Add or remove DNS search domains<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+ * @param  itf_name   alias name of t=
+he interface the domains are set for</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+ * @param  domains    a comma separated list of domain nam=
+e suffixes</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @param=
+  gpol       PBOOL to indicate if group policy values were modified</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+ * @param  lists      point=
+er to the undo lists</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++ *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @return NO_ER=
+ROR on success, an error status code otherwise</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+ *</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+ * If a SearchList is present in the registry already, the domain=
+s are added</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * to th=
+at list. Otherwise the domains are added to the VPN interface specific list=
+.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * A group policy =
+search list takes precedence over a system-wide list, and that one</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+ * itself takes precedence o=
+ver interface specific ones.</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+ *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * This =
+function will remove previously set domains if the domains parameter</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+ * is NULL or empty.</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+ * The gpol value is only valid if the fu=
+nction returns no error. In the error</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+ * case nothing is changed.</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+ */</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+static DWORD</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+SetDnsSearchDomains(PCSTR itf_name, PCSTR domains, PBOOL gpol, undo_list=
+s_t *lists)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+    DWORD err =3D ERROR_OU=
+TOFMEMORY;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+    HKEY list_key;</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+    BOOL have_list =3D GetDns=
+SearchListKey(itf_name, gpol, &amp;list_key);</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+    if (list_key =3D=3D INVALID_HANDLE_VALUE)</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+        MsgToEventLog(M_SYSERR, TEXT(=
+&quot;SetDnsSearchDomains: &quot;</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+                                     &quot;could not get sear=
+ch list registry key&quot;));</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+        return ERROR_FILE_NOT_FOUND;</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    /*=
+ Remove previously installed search domains */</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+    dns_domains_undo_data_t *undo_data =3D Remov=
+eListItem(&amp;(*lists)[undo_domains], CmpAny, NULL);</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    if (undo_data)</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+        RemoveDnsSearchDomains(list_key, undo_data-&gt;=
+domains);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        fr=
+ee(undo_data-&gt;domains);</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+        free(undo_data);</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+        undo_data =3D NULL;</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    /* If the=
+re are search domains, add them */</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+    if (domains &amp;&amp; *domains)</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+        wchar_t *wide_domains =3D utf8to16(domains); /*=
+ utf8 to wide-char */</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+        if (!wide_domains)</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+        {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+           goto out;</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++        }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+        undo_data =3D malloc=
+(sizeof(*undo_data));</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+        if (!undo_data)</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+        {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+        free(wide_domains);</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+            wide_domains =3D NULL;</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+            goto out;</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+        }</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+        strncpy(undo_data-&gt;itf_name, itf_name, sizeof(und=
+o_data-&gt;itf_name));</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+        undo_data-&gt;domains =3D wide_domains;</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+        if (AddDnsSearchDomains(list_key, have_list, wide_domai=
+ns) =3D=3D FALSE</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+         || AddListItem(&amp;(*lists)[undo_domains], undo_data) !=3D NO_ERR=
+OR)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        {</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+            RemoveDnsSearc=
+hDomains(list_key, wide_domains);</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+            free(wide_domains);</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+            free(undo_data);</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+            undo_data =3D NULL;</span><b=
 r><span style=3D"color: hsl(120, 100%, 40%);">+            goto out;</span>=
 <br><span style=3D"color: hsl(120, 100%, 40%);">+        }</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+    err =3D NO_ERROR;</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+out:</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+    RegCloseKey(list_key);=
+</span><br><span>     return err;</span><br><span> }</span><br><span> </spa=
+n><br><span>@@ -1315,11 +1866,13 @@</span><br><span> </span><br><span>     =
+if (msg-&gt;header.type =3D=3D msg_del_dns_cfg)</span><br><span>     {</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+        BOOL gpol =3D FA=
+LSE;</span><br><span>         if (msg-&gt;domains[0])</span><br><span>     =
+    {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            /* s=
+etting an empty domain removes any previous value */</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-            err =3D SetDNSDomain(wide_name,=
+ &quot;&quot;, lists);</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+            /* setting an empty domain list removes any previous value *=
+/</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            err =
+=3D SetDnsSearchDomains(msg-&gt;iface.name, NULL, &amp;gpol, lists);</span>=
+<br><span>         }</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++        ApplyDnsSettings(gpol);</span><br><span>         goto out;  /* job=
+ done */</span><br><span>     }</span><br><span> </span><br><span>@@ -1357,=
+10 +1910,12 @@</span><br><span>         }</span><br><span>     }</span><br>=
+<span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+    BOOL gpo=
+l =3D FALSE;</span><br><span>     if (msg-&gt;domains[0])</span><br><span> =
+    {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        err =3D =
+SetDNSDomain(wide_name, msg-&gt;domains, lists);</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+        err =3D SetDnsSearchDomains(msg-&gt;if=
+ace.name, msg-&gt;domains, &amp;gpol, lists);</span><br><span>     }</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+    ApplyDnsSettings(gpol)=
+;</span><br><span> </span><br><span> out:</span><br><span>     free(wide_na=
+me);</span><br><span>@@ -1751,12 +2306,12 @@</span><br><span>              =
+       DeleteDNS(AF_INET6, item-&gt;data);</span><br><span>                =
+     break;</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, =
+40%);">-                case undo_wins:</span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-                    netsh_wins_cmd(L&quot;delete&quot;, i=
+tem-&gt;data, NULL);</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++                case undo_domains:</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+                    UndoDnsSearchDomains(item-&gt;data);</s=
+pan><br><span>                     break;</span><br><span> </span><br><span=
+ style=3D"color: hsl(0, 100%, 40%);">-                case undo_domain:</sp=
+an><br><span style=3D"color: hsl(0, 100%, 40%);">-                    SetDN=
+SDomain(item-&gt;data, &quot;&quot;, NULL);</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+                case undo_wins:</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+                    netsh_wins_cmd(L&qu=
+ot;delete&quot;, item-&gt;data, NULL);</span><br><span>                    =
+ break;</span><br><span> </span><br><span>                 case wfp_block:<=
+/span><br><span>@@ -2260,6 +2815,34 @@</span><br><span>     ServiceStartInt=
+eractive(dwArgc, lpszArgv);</span><br><span> }</span><br><span> </span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+/**</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+ * Clean up remains of previous sessions in re=
+gistry. These remains can</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+ * happen with unclean shutdowns or crashes and would interfere with<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * normal operation =
+of the system with and without active tunnels.</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+ */</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+static void</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+CleanupRegistry(void)</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    HKEY key;=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    DWORD changed =
+=3D 0;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+    /* Clean up leftover DNS sea=
+rch list fragments */</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+    BOOL gpol_list;</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+    GetDnsSearchListKey(NULL, &amp;gpol_list, &amp;key);</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+    if (key !=3D INVALID_HANDLE_VALU=
+E)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+        if (ResetDnsSearchDomai=
+ns(key))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        {</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+            changed++=
+;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        }</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+        RegCloseKey(key);</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span =
 style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+        undo_data =3D malloc(sizeof(*undo_data));</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+        if (!undo_data)</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+        {</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+            free(wide_domains);=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            wide_do=
-mains =3D NULL;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-        goto out;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-      }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        strn=
-cpy(undo_data-&gt;itf_name, itf_name, sizeof(undo_data-&gt;itf_name));</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+        undo_data-&gt;do=
-mains =3D wide_domains;</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        if (Add=
-DnsSearchDomains(list_key, have_list, wide_domains) =3D=3D FALSE</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+            || AddListItem(&am=
-p;(*lists)[undo_domains], undo_data) !=3D NO_ERROR)</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+        {</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+            RemoveDnsSearchDomains(list_key, wide_d=
-omains);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+           =
- free(wide_domains);</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+            free(undo_data);</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+            undo_data =3D NULL;</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+            goto out;</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+        }</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    err =3D NO_ERRO=
-R;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+out:</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+    RegCloseKey(list_key);</span><br><span>     ret=
-urn err;</span><br><span> }</span><br><span> </span><br><span>@@ -1315,11 +=
-1866,13 @@</span><br><span> </span><br><span>     if (msg-&gt;header.type =
-=3D=3D msg_del_dns_cfg)</span><br><span>     {</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+        BOOL gpol =3D FALSE;</span><br><span>   =
-      if (msg-&gt;domains[0])</span><br><span>         {</span><br><span st=
-yle=3D"color: hsl(0, 100%, 40%);">-            /* setting an empty domain r=
-emoves any previous value */</span><br><span style=3D"color: hsl(0, 100%, 4=
-0%);">-            err =3D SetDNSDomain(wide_name, &quot;&quot;, lists);</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+            /* setting=
- an empty domain list removes any previous value */</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+            err =3D SetDnsSearchDomains(m=
-sg-&gt;iface.name, NULL, &amp;gpol, lists);</span><br><span>         }</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+        ApplyDnsSettings=
-(gpol);</span><br><span>         goto out;  /* job done */</span><br><span>=
-     }</span><br><span> </span><br><span>@@ -1357,10 +1910,12 @@</span><br>=
-<span>         }</span><br><span>     }</span><br><span> </span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+    BOOL gpol =3D FALSE;</span><br><s=
-pan>     if (msg-&gt;domains[0])</span><br><span>     {</span><br><span sty=
-le=3D"color: hsl(0, 100%, 40%);">-        err =3D SetDNSDomain(wide_name, m=
-sg-&gt;domains, lists);</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+        err =3D SetDnsSearchDomains(msg-&gt;iface.name, msg-&gt;domains=
-, &amp;gpol, lists);</span><br><span>     }</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+    ApplyDnsSettings(gpol);</span><br><span> </span=
-><br><span> out:</span><br><span>     free(wide_name);</span><br><span>@@ -=
-1751,12 +2306,12 @@</span><br><span>                     DeleteDNS(AF_INET6=
-, item-&gt;data);</span><br><span>                     break;</span><br><sp=
-an> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-                c=
-ase undo_wins:</span><br><span style=3D"color: hsl(0, 100%, 40%);">-       =
-             netsh_wins_cmd(L&quot;delete&quot;, item-&gt;data, NULL);</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+                case und=
-o_domains:</span><br><span style=3D"color: hsl(120, 100%, 40%);">+         =
-           UndoDnsSearchDomains(item-&gt;data);</span><br><span>           =
-          break;</span><br><span> </span><br><span style=3D"color: hsl(0, 1=
-00%, 40%);">-                case undo_domain:</span><br><span style=3D"col=
-or: hsl(0, 100%, 40%);">-                    SetDNSDomain(item-&gt;data, &q=
-uot;&quot;, NULL);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-               case undo_wins:</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+                    netsh_wins_cmd(L&quot;delete&quot;, item-&gt=
-;data, NULL);</span><br><span>                     break;</span><br><span> =
-</span><br><span>                 case wfp_block:</span><br><span>@@ -2260,=
-6 +2815,34 @@</span><br><span>     ServiceStartInteractive(dwArgc, lpszArgv=
-);</span><br><span> }</span><br><span> </span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+/**</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+ * Clean up remains of previous sessions in registry. These remains can=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * happen with uncl=
-ean shutdowns or crashes and would interfere with</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+ * normal operation of the system with and wi=
-thout active tunnels.</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+ */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+static void</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+CleanupRegistry(void)<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+    HKEY key;</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+    DWORD changed =3D 0;</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+    /* Clean up leftover DNS search list fragments */</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+    BOOL gpol_list;</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+    GetDnsSearchListKey(=
-NULL, &amp;gpol_list, &amp;key);</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+    if (key !=3D INVALID_HANDLE_VALUE)</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+        if (ResetDnsSearchDomains(key))</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+        {</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+            changed++;</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+        }</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+        RegCloseKey(key);</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
- if (changed)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+        ApplyDnsSett=
-ings(gpol_list);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
- }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span=
-> </span><br><span> VOID WINAPI</span><br><span> ServiceStartInteractive(DW=
-ORD dwArgc, LPTSTR *lpszArgv)</span><br><span>@@ -2283,6 +2866,9 @@</span><=
-br><span>     status.dwWaitHint =3D 3000;</span><br><span>     ReportStatus=
-ToSCMgr(service, &amp;status);</span><br><span> </span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+    /* Clean up potentially left over registry=
- values */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    Clean=
-upRegistry();</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span=
-><br><span>     /* Read info from registry in key HKLM\SOFTWARE\OpenVPN */<=
-/span><br><span>     error =3D GetOpenvpnSettings(&amp;settings);</span><br=
-><span>     if (error !=3D ERROR_SUCCESS)</span><br><span></span><br></pre>=
-<p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/824?usp=
-=3Demail">change 824</a>. To unsubscribe, or for help writing mail filters,=
- visit <a href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div=
- itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemp=
-rop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"=
-url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/824?usp=3Demail"/><meta =
-itemprop=3D"name" content=3D"View Change"/></div></div>
+(120, 100%, 40%);">+    if (changed)</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+        ApplyDnsSettings(gpol_list);</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+}</span><br><span> </span><br><span> VOID WINAPI</span><br><span> Ser=
+viceStartInteractive(DWORD dwArgc, LPTSTR *lpszArgv)</span><br><span>@@ -22=
+83,6 +2866,9 @@</span><br><span>     status.dwWaitHint =3D 3000;</span><br>=
+<span>     ReportStatusToSCMgr(service, &amp;status);</span><br><span> </sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+    /* Clean up potenti=
+ally left over registry values */</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+    CleanupRegistry();</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+</span><br><span>     /* Read info from registry in key HK=
+LM\SOFTWARE\OpenVPN */</span><br><span>     error =3D GetOpenvpnSettings(&a=
+mp;settings);</span><br><span>     if (error !=3D ERROR_SUCCESS)</span><br>=
+<span></span><br></pre><p>To view, visit <a href=3D"http://gerrit.openvpn.n=
+et/c/openvpn/+/824?usp=3Demail">change 824</a>. To unsubscribe, or for help=
+ writing mail filters, visit <a href=3D"http://gerrit.openvpn.net/settings"=
+>settings</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage=
+"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewActi=
+on"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/82=
+4?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div></di=
+v>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
@@ -2298,8 +2291,8 @@ div>
 &gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
+<div style=3D"display:none"> Gerrit-MessageType: merged </div>
 
 
---paXaWjcmi/E=--
+--o4UdNK8DUsc=--
 
