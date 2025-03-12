@@ -1,11 +1,15 @@
-Content-Type: multipart/alternative;
- boundary="------------8oN0HYwPNppgB6nfcigAmuYx"
-Message-ID: <0a346107-a603-46b4-a563-e74b055b0f89@...2722...>
-Date: Wed, 12 Mar 2025 17:43:47 +0100
+From: "ordex (Code Review)" <gerrit@...515...>
+Date: Wed, 12 Mar 2025 21:52:28 +0000
+References: <gerrit.1741816346000.I27f305d3ae9bf650bab409e99173688d9f88ab65@...2715...>
+Reply-To: a@...2181..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net, frank@...2641...
+Message-ID: <af3734d26265712334e0cba48f8b5876c2f0b7e3-HTML@...2715...>
 MIME-Version: 1.0
-From: Johan Draaisma <johan@...2722...>
-Content-Language: en-US
-Subject: [Openvpn-devel]  IRC community meeting summary
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="wogSq2oTJck="; charset=UTF-8
+Subject: [Openvpn-devel] [S] Change in openvpn[master]: socket: don't
+ transfer bind family to socket in case of ANY address
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,127 +18,170 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: openvpn-devel@lists.sourceforge.net
+To: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-This is a multi-part message in MIME format.
---------------8oN0HYwPNppgB6nfcigAmuYx
-Content-Type: text/plain; charset="utf-8"; format="flowed"
-Content-Transfer-Encoding: 8bit
+--wogSq2oTJck=
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Meeting summary for 12 March 2025:
+Attention is currently required from: flichtenheld, plaisthos.
 
-  * *Updated: security mailing list*
-    /Both community and company want to be in control of security
-    mailing list. We need some resolution./
-    /novaflash suggested to nominate ordex and cron2 as representatives
-    of community to discuss directly with andrew from openvpn inc to
-    come to some agreement./
-    /This idea was accepted by community and novaflash will arrange a
-    date/time for the call./
+Hello plaisthos, flichtenheld,
 
-  * *Updated: DCO Linux upstreaming*
-    /Upstreaming DCO to Linux is proceeding, it is in review stage at
-    the moment./
-    /A patchset v22 was sent in on Tuesday./
+I'd like you to do a code review.
+Please visit
 
-  * *Updated: new --dns option support
-    */​https://gerrit.openvpn.net/q/topic:%22dns+option%22
-    <https://gerrit.openvpn.net/q/topic:%22dns+option%22>//As agreed
-    d12fk has been addressing things in the PR and handling comments there.
-    //The new --dns directive allows more functionality and to resolve
-    ambiguity in current dhcp-option dns handling, which is different
-    per client and OS.
-    //OpenVPN2 on unix-like systems does not have built-in DNS handling.
-    On these you tend to have to add --up and --down script handling for
-    DNS. Not ideal.
-    //We want to deliver a DNS script that is enabled by default so
-    OpenVPN2 on unix-like systems can 'just do DNS' out of the box.
-    //But we also don't want to break situations where people have
-    already implemented --up and --down script handling.
-    //The proposed behavior is;
-    //- by default dns-script is delivered with openvpn2 on Linux and
-    enabled by default
-    //- it is not used when --up script is set in openvpn config file -
-    that will function as before
-    //- it is not used when at runtime --dns-script disable is set
-    //- it is not used when at compile time --disable-dns-script is set
-    //The PRs for improving DNS implementation using NRPT on Windows and
-    solving a WMIC related problem have already been merged./
+    http://gerrit.openvpn.net/c/openvpn/+/907?usp=3Demail
 
-As always you're welcome to join at #openvpn-meeting on Libera IRC 
-network every Wednesday at 14:00 Central European Time.
+to review the following change.
 
-Kind regards,
-Johan Draaisma
 
---------------8oN0HYwPNppgB6nfcigAmuYx
-Content-Type: text/html; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+Change subject: socket: don't transfer bind family to socket in case of ANY=
+ address
+......................................................................
 
-<!DOCTYPE html>
-<html>
-  <head>
-    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
-  </head>
-  <body>
-    <p> Meeting summary for 12 March 2025:</p>
-    <ul
-style="color: rgb(0, 0, 0); font-family: Verdana, Arial, &quot;Bitstream Vera Sans&quot;, Helvetica, sans-serif; font-size: 13px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;">
-      <li><strong>Updated: security mailing list</strong><br>
-        <em>Both community and company want to be in control of security
-          mailing list. We need some resolution.</em><br>
-        <em>novaflash suggested to nominate ordex and cron2 as
-          representatives of community to discuss directly with andrew
-          from openvpn inc to come to some agreement.</em><br>
-        <em>This idea was accepted by community and novaflash will
-          arrange a date/time for the call.</em></li>
-    </ul>
-    <ul
-style="color: rgb(0, 0, 0); font-family: Verdana, Arial, &quot;Bitstream Vera Sans&quot;, Helvetica, sans-serif; font-size: 13px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;">
-      <li><strong>Updated: DCO Linux upstreaming</strong><br>
-        <em>Upstreaming DCO to Linux is proceeding, it is in review
-          stage at the moment.</em><br>
-        <em>A patchset v22 was sent in on Tuesday.</em></li>
-    </ul>
-    <ul
-style="color: rgb(0, 0, 0); font-family: Verdana, Arial, &quot;Bitstream Vera Sans&quot;, Helvetica, sans-serif; font-size: 13px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;">
-      <li><strong>Updated: new --dns option support<br>
-        </strong><em><a class="ext-link"
-            href="https://gerrit.openvpn.net/q/topic:%22dns+option%22"><span
-              class="icon">​</span>https://gerrit.openvpn.net/q/topic:%22dns+option%22<br>
-          </a></em><em>As agreed d12fk has been addressing things in the
-          PR and handling comments there.<br>
-        </em><em>The new --dns directive allows more functionality and
-          to resolve ambiguity in current dhcp-option dns handling,
-          which is different per client and OS.<br>
-        </em><em>OpenVPN2 on unix-like systems does not have built-in
-          DNS handling. On these you tend to have to add --up and --down
-          script handling for DNS. Not ideal.<br>
-        </em><em>We want to deliver a DNS script that is enabled by
-          default so OpenVPN2 on unix-like systems can 'just do DNS' out
-          of the box.<br>
-        </em><em>But we also don't want to break situations where people
-          have already implemented --up and --down script handling.<br>
-        </em><em>The proposed behavior is;<br>
-        </em><em>- by default dns-script is delivered with openvpn2 on
-          Linux and enabled by default<br>
-        </em><em>- it is not used when --up script is set in openvpn
-          config file - that will function as before<br>
-        </em><em>- it is not used when at runtime --dns-script disable
-          is set<br>
-        </em><em>- it is not used when at compile time
-          --disable-dns-script is set<br>
-        </em><em>The PRs for improving DNS implementation using NRPT on
-          Windows and solving a WMIC related problem have already been
-          merged.</em></li>
-    </ul>
-    <p>As always you're welcome to join at #openvpn-meeting on Libera
-      IRC network every Wednesday at 14:00 Central European Time. </p>
-    <p>Kind regards,<br>
-      Johan Draaisma<br>
-    </p>
-  </body>
-</html>
+socket: don't transfer bind family to socket in case of ANY address
 
---------------8oN0HYwPNppgB6nfcigAmuYx--
+With the introduction of multisocket, we need to transfer the
+AI family of the bound address to the socket, as it may differ
+from what was set globally.
+
+However, this operation makes sense only when getaddrinfo()
+for bind is performed on a non-empty hostname.
+An empty hostname (ANY) may return AF_INET which will break
+following connection attempts to v6 only remotes.
+
+Change-Id: I27f305d3ae9bf650bab409e99173688d9f88ab65
+Signed-off-by: Antonio Quartulli <antonio@...2726...>
+---
+M src/openvpn/socket.c
+1 file changed, 11 insertions(+), 3 deletions(-)
+
+
+
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/07/907/1
+
+diff --git a/src/openvpn/socket.c b/src/openvpn/socket.c
+index 6b32e30..808870b 100644
+--- a/src/openvpn/socket.c
++++ b/src/openvpn/socket.c
+@@ -1724,9 +1724,17 @@
+                 gai_strerror(status));
+         }
+
+-        /* the resolved 'local entry' might have a different family than w=
+hat
+-         * was globally configured */
+-        sock->info.af =3D sock->info.lsa->bind_local->ai_family;
++        /* the resolved family makes sense only if the host is not ANY,
++         * otherwise getaddrinfo() may return v4 and break connections
++         * to v6 only remotes
++         */
++        if (sock->local_host)
++        {
++            /* the resolved 'local entry' might have a different family th=
+an
++             * what was globally configured
++             */
++            sock->info.af =3D sock->info.lsa->bind_local->ai_family;
++        }
+     }
+
+     gc_free(&gc);
+
+--
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/907?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings
+
+Gerrit-Project: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: I27f305d3ae9bf650bab409e99173688d9f88ab65
+Gerrit-Change-Number: 907
+Gerrit-PatchSet: 1
+Gerrit-Owner: ordex <a@...2181...>
+Gerrit-Reviewer: flichtenheld <frank@...2641...>
+Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Attention: flichtenheld <frank@...2641...>
+Gerrit-MessageType: newchange
+
+--wogSq2oTJck=
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<p> Attention is currently required from: flichtenheld, plaisthos. </p>
+<p>ordex would like plaisthos and flichtenheld to <strong>review</strong> t=
+his change.
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/907?usp=3Demail">Vi=
+ew Change</a></p><pre style=3D"font-family: monospace,monospace; white-spac=
+e: pre-wrap;">socket: don&#39;t transfer bind family to socket in case of A=
+NY address<br><br>With the introduction of multisocket, we need to transfer=
+ the<br>AI family of the bound address to the socket, as it may differ<br>f=
+rom what was set globally.<br><br>However, this operation makes sense only =
+when getaddrinfo()<br>for bind is performed on a non-empty hostname.<br>An =
+empty hostname (ANY) may return AF_INET which will break<br>following conne=
+ction attempts to v6 only remotes.<br><br>Change-Id: I27f305d3ae9bf650bab40=
+9e99173688d9f88ab65<br>Signed-off-by: Antonio Quartulli &lt;antonio@...2787...=
+...&gt;<br>---<br>M src/openvpn/socket.c<br>1 file changed, 11 insertions(+=
+), 3 deletions(-)<br><br></pre><pre style=3D"font-family: monospace,monospa=
+ce; white-space: pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/openvpn=
+ refs/changes/07/907/1</pre><pre style=3D"font-family: monospace,monospace;=
+ white-space: pre-wrap;"><span>diff --git a/src/openvpn/socket.c b/src/open=
+vpn/socket.c</span><br><span>index 6b32e30..808870b 100644</span><br><span>=
+--- a/src/openvpn/socket.c</span><br><span>+++ b/src/openvpn/socket.c</span=
+><br><span>@@ -1724,9 +1724,17 @@</span><br><span>                 gai_stre=
+rror(status));</span><br><span>         }</span><br><span> </span><br><span=
+ style=3D"color: hsl(0, 100%, 40%);">-        /* the resolved &#39;local en=
+try&#39; might have a different family than what</span><br><span style=3D"c=
+olor: hsl(0, 100%, 40%);">-         * was globally configured */</span><br>=
+<span style=3D"color: hsl(0, 100%, 40%);">-        sock-&gt;info.af =3D soc=
+k-&gt;info.lsa-&gt;bind_local-&gt;ai_family;</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+        /* the resolved family makes sense only if=
+ the host is not ANY,</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+         * otherwise getaddrinfo() may return v4 and break connections</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+         * to v6 only =
+remotes</span><br><span style=3D"color: hsl(120, 100%, 40%);">+         */<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+        if (sock-&gt=
+;local_host)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
+ {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            /* th=
+e resolved &#39;local entry&#39; might have a different family than</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+             * what was glo=
+bally configured</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+          */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
+     sock-&gt;info.af =3D sock-&gt;info.lsa-&gt;bind_local-&gt;ai_family;</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+        }</span><br><=
+span>     }</span><br><span> </span><br><span>     gc_free(&amp;gc);</span>=
+<br><span></span><br></pre><p>To view, visit <a href=3D"http://gerrit.openv=
+pn.net/c/openvpn/+/907?usp=3Demail">change 907</a>. To unsubscribe, or for =
+help writing mail filters, visit <a href=3D"http://gerrit.openvpn.net/setti=
+ngs">settings</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMes=
+sage"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.org/View=
+Action"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/=
++/907?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div>=
+</div>
+
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I27f305d3ae9bf650bab409e9917=
+3688d9f88ab65 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 907 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
+<div style=3D"display:none"> Gerrit-Owner: ordex &lt;a@...2181...&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
+1...&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
+.1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
+41...&gt; </div>
+<div style=3D"display:none"> Gerrit-MessageType: newchange </div>
+
+
+--wogSq2oTJck=--
 
