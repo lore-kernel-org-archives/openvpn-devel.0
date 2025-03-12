@@ -1,16 +1,11 @@
-From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Wed, 12 Mar 2025 13:38:44 +0000
-In-Reply-To: <gerrit.1733989644000.I3fb01ab76cf3df0874ba92e08f371d17607a8369@...2715...>
-References: <gerrit.1733989644000.I3fb01ab76cf3df0874ba92e08f371d17607a8369@...2715...>
-Reply-To: gert@...1296..., arne-openvpn@...1227..., heiko@...515...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <f69b730755fae0f71bd5c7e4a0657d3012fc9b64-EmailReviewComments-HTML@...2715...>
+Content-Type: multipart/alternative;
+ boundary="------------8oN0HYwPNppgB6nfcigAmuYx"
+Message-ID: <0a346107-a603-46b4-a563-e74b055b0f89@...2722...>
+Date: Wed, 12 Mar 2025 17:43:47 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="YpBho6Qs4tk="; charset=UTF-8
-Subject: [Openvpn-devel] [L] Change in openvpn[master]: dns: don't publish
- env vars to non-dns scripts
+From: Johan Draaisma <johan@...2722...>
+Content-Language: en-US
+Subject: [Openvpn-devel]  IRC community meeting summary
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,108 +14,127 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: d12fk <heiko@...515...>
-Cc: flichtenheld <frank@...2641...>, plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: openvpn-devel@lists.sourceforge.net
 
---YpBho6Qs4tk=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+This is a multi-part message in MIME format.
+--------------8oN0HYwPNppgB6nfcigAmuYx
+Content-Type: text/plain; charset="utf-8"; format="flowed"
+Content-Transfer-Encoding: 8bit
 
-Attention is currently required from: d12fk, plaisthos.
+Meeting summary for 12 March 2025:
 
-cron2 has posted comments on this change. ( http://gerrit.openvpn.net/c/ope=
-nvpn/+/840?usp=3Demail )
+  * *Updated: security mailing list*
+    /Both community and company want to be in control of security
+    mailing list. We need some resolution./
+    /novaflash suggested to nominate ordex and cron2 as representatives
+    of community to discuss directly with andrew from openvpn inc to
+    come to some agreement./
+    /This idea was accepted by community and novaflash will arrange a
+    date/time for the call./
 
-Change subject: dns: don't publish env vars to non-dns scripts
-......................................................................
+  * *Updated: DCO Linux upstreaming*
+    /Upstreaming DCO to Linux is proceeding, it is in review stage at
+    the moment./
+    /A patchset v22 was sent in on Tuesday./
 
+  * *Updated: new --dns option support
+    */​https://gerrit.openvpn.net/q/topic:%22dns+option%22
+    <https://gerrit.openvpn.net/q/topic:%22dns+option%22>//As agreed
+    d12fk has been addressing things in the PR and handling comments there.
+    //The new --dns directive allows more functionality and to resolve
+    ambiguity in current dhcp-option dns handling, which is different
+    per client and OS.
+    //OpenVPN2 on unix-like systems does not have built-in DNS handling.
+    On these you tend to have to add --up and --down script handling for
+    DNS. Not ideal.
+    //We want to deliver a DNS script that is enabled by default so
+    OpenVPN2 on unix-like systems can 'just do DNS' out of the box.
+    //But we also don't want to break situations where people have
+    already implemented --up and --down script handling.
+    //The proposed behavior is;
+    //- by default dns-script is delivered with openvpn2 on Linux and
+    enabled by default
+    //- it is not used when --up script is set in openvpn config file -
+    that will function as before
+    //- it is not used when at runtime --dns-script disable is set
+    //- it is not used when at compile time --disable-dns-script is set
+    //The PRs for improving DNS implementation using NRPT on Windows and
+    solving a WMIC related problem have already been merged./
 
-Patch Set 13: -Code-Review
+As always you're welcome to join at #openvpn-meeting on Libera IRC 
+network every Wednesday at 14:00 Central European Time.
 
-(1 comment)
+Kind regards,
+Johan Draaisma
 
-Patchset:
+--------------8oN0HYwPNppgB6nfcigAmuYx
+Content-Type: text/html; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 
-PS13:
-reread code, and make commit message more clear that this is only about `--=
-dns` related vars - those are new, we're not breaking anyone's legacy `--up=
-` scripts relying on foreign_option env vars.
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  </head>
+  <body>
+    <p> Meeting summary for 12 March 2025:</p>
+    <ul
+style="color: rgb(0, 0, 0); font-family: Verdana, Arial, &quot;Bitstream Vera Sans&quot;, Helvetica, sans-serif; font-size: 13px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;">
+      <li><strong>Updated: security mailing list</strong><br>
+        <em>Both community and company want to be in control of security
+          mailing list. We need some resolution.</em><br>
+        <em>novaflash suggested to nominate ordex and cron2 as
+          representatives of community to discuss directly with andrew
+          from openvpn inc to come to some agreement.</em><br>
+        <em>This idea was accepted by community and novaflash will
+          arrange a date/time for the call.</em></li>
+    </ul>
+    <ul
+style="color: rgb(0, 0, 0); font-family: Verdana, Arial, &quot;Bitstream Vera Sans&quot;, Helvetica, sans-serif; font-size: 13px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;">
+      <li><strong>Updated: DCO Linux upstreaming</strong><br>
+        <em>Upstreaming DCO to Linux is proceeding, it is in review
+          stage at the moment.</em><br>
+        <em>A patchset v22 was sent in on Tuesday.</em></li>
+    </ul>
+    <ul
+style="color: rgb(0, 0, 0); font-family: Verdana, Arial, &quot;Bitstream Vera Sans&quot;, Helvetica, sans-serif; font-size: 13px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;">
+      <li><strong>Updated: new --dns option support<br>
+        </strong><em><a class="ext-link"
+            href="https://gerrit.openvpn.net/q/topic:%22dns+option%22"><span
+              class="icon">​</span>https://gerrit.openvpn.net/q/topic:%22dns+option%22<br>
+          </a></em><em>As agreed d12fk has been addressing things in the
+          PR and handling comments there.<br>
+        </em><em>The new --dns directive allows more functionality and
+          to resolve ambiguity in current dhcp-option dns handling,
+          which is different per client and OS.<br>
+        </em><em>OpenVPN2 on unix-like systems does not have built-in
+          DNS handling. On these you tend to have to add --up and --down
+          script handling for DNS. Not ideal.<br>
+        </em><em>We want to deliver a DNS script that is enabled by
+          default so OpenVPN2 on unix-like systems can 'just do DNS' out
+          of the box.<br>
+        </em><em>But we also don't want to break situations where people
+          have already implemented --up and --down script handling.<br>
+        </em><em>The proposed behavior is;<br>
+        </em><em>- by default dns-script is delivered with openvpn2 on
+          Linux and enabled by default<br>
+        </em><em>- it is not used when --up script is set in openvpn
+          config file - that will function as before<br>
+        </em><em>- it is not used when at runtime --dns-script disable
+          is set<br>
+        </em><em>- it is not used when at compile time
+          --disable-dns-script is set<br>
+        </em><em>The PRs for improving DNS implementation using NRPT on
+          Windows and solving a WMIC related problem have already been
+          merged.</em></li>
+    </ul>
+    <p>As always you're welcome to join at #openvpn-meeting on Libera
+      IRC network every Wednesday at 14:00 Central European Time. </p>
+    <p>Kind regards,<br>
+      Johan Draaisma<br>
+    </p>
+  </body>
+</html>
 
-
-
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/840?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings
-
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: I3fb01ab76cf3df0874ba92e08f371d17607a8369
-Gerrit-Change-Number: 840
-Gerrit-PatchSet: 13
-Gerrit-Owner: d12fk <heiko@...515...>
-Gerrit-Reviewer: cron2 <gert@...1296...>
-Gerrit-Reviewer: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: d12fk <heiko@...515...>
-Gerrit-Comment-Date: Wed, 12 Mar 2025 13:38:44 +0000
-Gerrit-HasComments: Yes
-Gerrit-Has-Labels: Yes
-Gerrit-MessageType: comment
-
---YpBho6Qs4tk=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<p> Attention is currently required from: d12fk, plaisthos. </p>
-<p>Patch set 13:<span style=3D"border-radius: 3px; display: inline-block; m=
-argin: 0 2px; padding: 4px;background-color: #ddd;">-Code-Review</span></p>=
-<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/840?usp=3Demail">View C=
-hange</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0;"><=
-li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-style=
-: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p style=
-=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/8=
-40?tab=3Dcomments">Patch Set #13:</a> </p><p style=3D"white-space: pre-wrap=
-; word-wrap: break-word;">reread code, and make commit message more clear t=
-hat this is only about `--dns` related vars - those are new, we&#39;re not =
-breaking anyone&#39;s legacy `--up` scripts relying on foreign_option env v=
-ars.</p></li></ul></li></ul><p>To view, visit <a href=3D"http://gerrit.open=
-vpn.net/c/openvpn/+/840?usp=3Demail">change 840</a>. To unsubscribe, or for=
- help writing mail filters, visit <a href=3D"http://gerrit.openvpn.net/sett=
-ings">settings</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMe=
-ssage"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.org/Vie=
-wAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn=
-/+/840?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div=
-></div>
-
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I3fb01ab76cf3df0874ba92e08f3=
-71d17607a8369 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 840 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 13 </div>
-<div style=3D"display:none"> Gerrit-Owner: d12fk &lt;heiko@...515...&gt; </=
-div>
-<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
- </div>
-<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
-1...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: d12fk &lt;heiko@...515...&gt=
-; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Wed, 12 Mar 2025 13:38:44=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
-
-
---YpBho6Qs4tk=--
+--------------8oN0HYwPNppgB6nfcigAmuYx--
 
