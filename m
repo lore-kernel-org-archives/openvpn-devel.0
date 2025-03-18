@@ -1,14 +1,14 @@
 From: "flichtenheld (Code Review)" <gerrit@...515...>
-Date: Tue, 18 Mar 2025 12:17:59 +0000
+Date: Tue, 18 Mar 2025 12:19:58 +0000
 In-Reply-To: <gerrit.1736341120000.Ib3a166ead912beb2a591105c84d96d342664c05f@...2715...>
 References: <gerrit.1736341120000.Ib3a166ead912beb2a591105c84d96d342664c05f@...2715...>
 Reply-To: frank@...2641..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net, lstipakov@...277...
-Message-ID: <e122b558d3976a9427c2be908feb5c80a3363909-EmailReviewComments-HTML@...2715...>
+Message-ID: <829762b78b70f4b02f7c5a71f1999dd6d4bbcc29-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="F3YUfYPb4vw="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="pZUuboJRsgQ="; charset=UTF-8
 Subject: [Openvpn-devel] [M] Change in openvpn[master]: Post tchar.h removal
  cleanup
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -21,7 +21,7 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Cc: stipa <lstipakov@...277...>, plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---F3YUfYPb4vw=
+--pZUuboJRsgQ=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
@@ -36,7 +36,17 @@ Change subject: Post tchar.h removal cleanup
 
 Patch Set 3:
 
-This change is ready for review.
+(1 comment)
+
+File src/tapctl/basic.h:
+
+http://gerrit.openvpn.net/c/openvpn/+/854/comment/d1853ec4_d79d4a31 :
+PS2, Line 25: /* We do not support non-unicode builds */
+> Shouldn't we instead just define UNICODE in project file or ensure there =
+it has defined? And have an [=E2=80=A6]
+I don't see the advantage. This here is the most central place. Otherwise y=
+ou always have to make it consistent over all build systems?
+
 
 
 --
@@ -55,25 +65,37 @@ Gerrit-Reviewer: stipa <lstipakov@...277...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
 Gerrit-Attention: stipa <lstipakov@...277...>
-Gerrit-Comment-Date: Tue, 18 Mar 2025 12:17:59 +0000
-Gerrit-HasComments: No
+Gerrit-Comment-Date: Tue, 18 Mar 2025 12:19:58 +0000
+Gerrit-HasComments: Yes
 Gerrit-Has-Labels: No
+Comment-In-Reply-To: stipa <lstipakov@...277...>
 Gerrit-MessageType: comment
 
---F3YUfYPb4vw=
+--pZUuboJRsgQ=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <p> Attention is currently required from: plaisthos, stipa. </p>
 <p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/854?usp=3Demail">View C=
-hange</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To view, v=
-isit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/854?usp=3Demail">chan=
-ge 854</a>. To unsubscribe, or for help writing mail filters, visit <a href=
-=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope ite=
-mtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"action"=
- itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"h=
-ttp://gerrit.openvpn.net/c/openvpn/+/854?usp=3Demail"/><meta itemprop=3D"na=
-me" content=3D"View Change"/></div></div>
+hange</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0;"><=
+li style=3D"margin: 0; padding: 0;"><p>File src/tapctl/basic.h:</p><ul styl=
+e=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 =
+16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.ne=
+t/c/openvpn/+/854/comment/d1853ec4_d79d4a31">Patch Set #2, Line 25:</a> <co=
+de style=3D"font-family:monospace,monospace">/* We do not support non-unico=
+de builds */</code></p><p><blockquote style=3D"border-left: 1px solid #aaa;=
+ margin: 10px 0; padding: 0 10px;">Shouldn&#39;t we instead just define UNI=
+CODE in project file or ensure there it has defined? And have an [=E2=80=A6=
+]</blockquote></p><p style=3D"white-space: pre-wrap; word-wrap: break-word;=
+">I don&#39;t see the advantage. This here is the most central place. Other=
+wise you always have to make it consistent over all build systems?</p></li>=
+</ul></li></ul><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/ope=
+nvpn/+/854?usp=3Demail">change 854</a>. To unsubscribe, or for help writing=
+ mail filters, visit <a href=3D"http://gerrit.openvpn.net/settings">setting=
+s</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div i=
+temscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><lin=
+k itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/854?usp=3D=
+email"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
@@ -93,12 +115,14 @@ ts.sourceforge.net&gt; </div>
 ..1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: stipa &lt;lstipakov@...1663...=
 .&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Tue, 18 Mar 2025 12:17:59=
+<div style=3D"display:none"> Gerrit-Comment-Date: Tue, 18 Mar 2025 12:19:58=
  +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: No </div>
+<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
 <div style=3D"display:none"> Gerrit-Has-Labels: No </div>
+<div style=3D"display:none"> Comment-In-Reply-To: stipa &lt;lstipakov@...1664...=
+7...&gt; </div>
 <div style=3D"display:none"> Gerrit-MessageType: comment </div>
 
 
---F3YUfYPb4vw=--
+--pZUuboJRsgQ=--
 
