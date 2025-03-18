@@ -1,16 +1,17 @@
 From: "d12fk (Code Review)" <gerrit@...515...>
 Date: Tue, 18 Mar 2025 05:30:38 +0000
-In-Reply-To: <gerrit.1741299308000.I635c4018fb43b5976a39b6a90cb2e9cb2570cd6a@...2715...>
-References: <gerrit.1741299308000.I635c4018fb43b5976a39b6a90cb2e9cb2570cd6a@...2715...>
+In-Reply-To: <gerrit.1733989644000.I3fb01ab76cf3df0874ba92e08f371d17607a8369@...2715...>
+References: <gerrit.1733989644000.I3fb01ab76cf3df0874ba92e08f371d17607a8369@...2715...>
 Reply-To: heiko@...515..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <fa486e88e05b697c138e290c47b1bcebf7e2b0b8-EmailReplacePatchSet-HTML@...2715...>
+ openvpn-devel@lists.sourceforge.net, frank@...2641...,
+ gert@...1296...
+Message-ID: <c30a836be35406a0a8c32835299f48ff2f8b2da2-EmailReplacePatchSet-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="jEjmESKsRB4="; charset=UTF-8
-Subject: [Openvpn-devel] [M] Change in openvpn[master]: dns: clean up
- --dhcp-options when --dns is active
+Content-Type: multipart/alternative; boundary="rcHSZCQkAaU="; charset=UTF-8
+Subject: [Openvpn-devel] [L] Change in openvpn[master]: dns: don't publish
+ env vars to non-dns scripts
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -22,502 +23,952 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---jEjmESKsRB4=
+--rcHSZCQkAaU=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: d12fk, flichtenheld, plaisthos.
+Attention is currently required from: cron2, flichtenheld, plaisthos.
 
-Hello flichtenheld, plaisthos,
+Hello cron2, flichtenheld, plaisthos,
 
 I'd like you to reexamine a change. Please visit
 
-    http://gerrit.openvpn.net/c/openvpn/+/904?usp=3Demail
+    http://gerrit.openvpn.net/c/openvpn/+/840?usp=3Demail
 
-to look at the new patch set (#6).
+to look at the new patch set (#15).
 
 
-Change subject: dns: clean up --dhcp-options when --dns is active
+Change subject: dns: don't publish env vars to non-dns scripts
 ......................................................................
 
-dns: clean up --dhcp-options when --dns is active
+dns: don't publish env vars to non-dns scripts
 
-Since --dns settings overrule DNS related --dhcp-options,
-remove the latter when we got some via --dns.
+With --dns-updown in place we no longer need --dns option related vars in
+the environment for other script hooks. Code for doing that is removed and
+the function to set --dns stuff made static, for internal use only.
 
-To stay as backward compatible as possible, the --dns server addresses
-and search domains are added as foreign_options env vars, so that an
-existing --up script can use them to set up DNS as before, without the
-immediate need to change after an openvpn upgrade. Same goes for the
-DNS information in struct tuntap_options, which is used by Android.
-
-In case an --up script is defined, the --dns-updown is not run to
-prevent potential double DNS configuration.
-
-Change-Id: I635c4018fb43b5976a39b6a90cb2e9cb2570cd6a
+Change-Id: I3fb01ab76cf3df0874ba92e08f371d17607a8369
 Signed-off-by: Heiko Hund <heiko@...2662...>
 ---
 M src/openvpn/dns.c
+M src/openvpn/dns.h
 M src/openvpn/options.c
-2 files changed, 155 insertions(+), 1 deletion(-)
+3 files changed, 87 insertions(+), 258 deletions(-)
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/04/904/6
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/40/840/15
 
 diff --git a/src/openvpn/dns.c b/src/openvpn/dns.c
-index 0ad8e44..6a5999a 100644
+index b45c290..0ad8e44 100644
 --- a/src/openvpn/dns.c
 +++ b/src/openvpn/dns.c
-@@ -703,7 +703,7 @@
- static void
- run_up_down_command(bool up, struct options *o, const struct tuntap *tt, s=
-truct dns_updown_runner_info *updown_runner)
- {
--    if (!o->dns_options.updown)
-+    if (!o->dns_options.updown || o->up_script)
-     {
-         return;
+@@ -350,93 +350,6 @@
      }
+ }
+
+-static void
+-setenv_dns_option(struct env_set *es,
+-                  const char *format, int i, int j,
+-                  const char *value)
+-{
+-    char name[64];
+-    bool name_ok =3D false;
+-
+-    if (j < 0)
+-    {
+-        name_ok =3D snprintf(name, sizeof(name), format, i);
+-    }
+-    else
+-    {
+-        name_ok =3D snprintf(name, sizeof(name), format, i, j);
+-    }
+-
+-    if (!name_ok)
+-    {
+-        msg(M_WARN, "WARNING: dns option setenv name buffer overflow");
+-    }
+-
+-    setenv_str(es, name, value);
+-}
+-
+-void
+-setenv_dns_options(const struct dns_options *o, struct env_set *es)
+-{
+-    struct gc_arena gc =3D gc_new();
+-    const struct dns_server *s;
+-    const struct dns_domain *d;
+-    int i, j;
+-
+-    for (i =3D 1, d =3D o->search_domains; d !=3D NULL; i++, d =3D d->next)
+-    {
+-        setenv_dns_option(es, "dns_search_domain_%d", i, -1, d->name);
+-    }
+-
+-    for (i =3D 1, s =3D o->servers; s !=3D NULL; i++, s =3D s->next)
+-    {
+-        for (j =3D 0; j < s->addr_count; ++j)
+-        {
+-            if (s->addr[j].family =3D=3D AF_INET)
+-            {
+-                setenv_dns_option(es, "dns_server_%d_address_%d", i, j + 1,
+-                                  print_in_addr_t(s->addr[j].in.a4.s_addr,=
+ IA_NET_ORDER, &gc));
+-            }
+-            else
+-            {
+-                setenv_dns_option(es, "dns_server_%d_address_%d", i, j + 1,
+-                                  print_in6_addr(s->addr[j].in.a6, 0, &gc)=
+);
+-            }
+-            if (s->addr[j].port)
+-            {
+-                setenv_dns_option(es, "dns_server_%d_port_%d", i, j + 1,
+-                                  print_in_port_t(s->addr[j].port, &gc));
+-            }
+-        }
+-
+-        if (s->domains)
+-        {
+-            for (j =3D 1, d =3D s->domains; d !=3D NULL; j++, d =3D d->nex=
+t)
+-            {
+-                setenv_dns_option(es, "dns_server_%d_resolve_domain_%d", i=
+, j, d->name);
+-            }
+-        }
+-
+-        if (s->dnssec)
+-        {
+-            setenv_dns_option(es, "dns_server_%d_dnssec", i, -1,
+-                              dnssec_value(s->dnssec));
+-        }
+-
+-        if (s->transport)
+-        {
+-            setenv_dns_option(es, "dns_server_%d_transport", i, -1,
+-                              transport_value(s->transport));
+-        }
+-        if (s->sni)
+-        {
+-            setenv_dns_option(es, "dns_server_%d_sni", i, -1, s->sni);
+-        }
+-    }
+-
+-    gc_free(&gc);
+-}
+-
+ #ifdef _WIN32
+
+ static void
+@@ -554,6 +467,93 @@
+ #else /* ifdef _WIN32 */
+
+ static void
++setenv_dns_option(struct env_set *es,
++                  const char *format, int i, int j,
++                  const char *value)
++{
++    char name[64];
++    bool name_ok =3D false;
++
++    if (j < 0)
++    {
++        name_ok =3D snprintf(name, sizeof(name), format, i);
++    }
++    else
++    {
++        name_ok =3D snprintf(name, sizeof(name), format, i, j);
++    }
++
++    if (!name_ok)
++    {
++        msg(M_WARN, "WARNING: dns option setenv name buffer overflow");
++    }
++
++    setenv_str(es, name, value);
++}
++
++static void
++setenv_dns_options(const struct dns_options *o, struct env_set *es)
++{
++    struct gc_arena gc =3D gc_new();
++    const struct dns_server *s;
++    const struct dns_domain *d;
++    int i, j;
++
++    for (i =3D 1, d =3D o->search_domains; d !=3D NULL; i++, d =3D d->next)
++    {
++        setenv_dns_option(es, "dns_search_domain_%d", i, -1, d->name);
++    }
++
++    for (i =3D 1, s =3D o->servers; s !=3D NULL; i++, s =3D s->next)
++    {
++        for (j =3D 0; j < s->addr_count; ++j)
++        {
++            if (s->addr[j].family =3D=3D AF_INET)
++            {
++                setenv_dns_option(es, "dns_server_%d_address_%d", i, j + 1,
++                                  print_in_addr_t(s->addr[j].in.a4.s_addr,=
+ IA_NET_ORDER, &gc));
++            }
++            else
++            {
++                setenv_dns_option(es, "dns_server_%d_address_%d", i, j + 1,
++                                  print_in6_addr(s->addr[j].in.a6, 0, &gc)=
+);
++            }
++            if (s->addr[j].port)
++            {
++                setenv_dns_option(es, "dns_server_%d_port_%d", i, j + 1,
++                                  print_in_port_t(s->addr[j].port, &gc));
++            }
++        }
++
++        if (s->domains)
++        {
++            for (j =3D 1, d =3D s->domains; d !=3D NULL; j++, d =3D d->nex=
+t)
++            {
++                setenv_dns_option(es, "dns_server_%d_resolve_domain_%d", i=
+, j, d->name);
++            }
++        }
++
++        if (s->dnssec)
++        {
++            setenv_dns_option(es, "dns_server_%d_dnssec", i, -1,
++                              dnssec_value(s->dnssec));
++        }
++
++        if (s->transport)
++        {
++            setenv_dns_option(es, "dns_server_%d_transport", i, -1,
++                              transport_value(s->transport));
++        }
++        if (s->sni)
++        {
++            setenv_dns_option(es, "dns_server_%d_sni", i, -1, s->sni);
++        }
++    }
++
++    gc_free(&gc);
++}
++
++static void
+ updown_env_set(bool up, const struct dns_options *o, const struct tuntap *=
+tt, struct env_set *es)
+ {
+     setenv_str(es, "dev", tt->actual_name);
+diff --git a/src/openvpn/dns.h b/src/openvpn/dns.h
+index c21b33a..b2ec2e7 100644
+--- a/src/openvpn/dns.h
++++ b/src/openvpn/dns.h
+@@ -168,14 +168,6 @@
+                      struct dns_updown_runner_info *duri);
+
+ /**
+- * Puts the DNS options into an environment set.
+- *
+- * @param   o           Pointer to the DNS options to set
+- * @param   es          Pointer to the env_set to set the options into
+- */
+-void setenv_dns_options(const struct dns_options *o, struct env_set *es);
+-
+-/**
+  * Prints configured DNS options.
+  *
+  * @param   o           Pointer to the DNS options to print
 diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index b63f929..966230a 100644
+index 4660e9d..b63f929 100644
 --- a/src/openvpn/options.c
 +++ b/src/openvpn/options.c
-@@ -4163,6 +4163,160 @@
+@@ -1061,11 +1061,6 @@
+             setenv_local_entry(es, o->ce.local_list->array[i], i+1);
+         }
+     }
+-
+-    if (!o->pull)
+-    {
+-        setenv_dns_options(&o->dns_options, es);
+-    }
+ }
+
+ #ifndef _WIN32
+@@ -1379,149 +1374,6 @@
+         }
+     }
+ }
+-
+-/*
+- * If DNS options are set use these for TUN/TAP options as well.
+- * Applies to DNS, DNS6 and DOMAIN-SEARCH.
+- * Existing options will be discarded.
+- */
+-static void
+-tuntap_options_copy_dns(struct options *o)
+-{
+-    struct tuntap_options *tt =3D &o->tuntap_options;
+-    struct dns_options *dns =3D &o->dns_options;
+-
+-    if (dns->search_domains)
+-    {
+-        tt->domain_search_list_len =3D 0;
+-        const struct dns_domain *domain =3D dns->search_domains;
+-        while (domain && tt->domain_search_list_len < N_SEARCH_LIST_LEN)
+-        {
+-            tt->domain_search_list[tt->domain_search_list_len++] =3D domai=
+n->name;
+-            domain =3D domain->next;
+-        }
+-        if (domain)
+-        {
+-            msg(M_WARN, "WARNING: couldn't copy all --dns search-domains t=
+o --dhcp-option");
+-        }
+-        tt->dhcp_options |=3D DHCP_OPTIONS_DHCP_REQUIRED;
+-    }
+-
+-    if (dns->servers)
+-    {
+-        tt->dns_len =3D 0;
+-        tt->dns6_len =3D 0;
+-        bool overflow =3D false;
+-        const struct dns_server *server =3D dns->servers;
+-        while (server)
+-        {
+-            for (int i =3D 0; i < server->addr_count; ++i)
+-            {
+-                if (server->addr[i].family =3D=3D AF_INET)
+-                {
+-                    if (tt->dns_len >=3D N_DHCP_ADDR)
+-                    {
+-                        overflow =3D true;
+-                        continue;
+-                    }
+-                    tt->dns[tt->dns_len++] =3D ntohl(server->addr[i].in.a4=
+.s_addr);
+-                }
+-                else
+-                {
+-                    if (tt->dns6_len >=3D N_DHCP_ADDR)
+-                    {
+-                        overflow =3D true;
+-                        continue;
+-                    }
+-                    tt->dns6[tt->dns6_len++] =3D server->addr[i].in.a6;
+-                }
+-            }
+-            server =3D server->next;
+-        }
+-        if (overflow)
+-        {
+-            msg(M_WARN, "WARNING: couldn't copy all --dns server addresses=
+ to --dhcp-option");
+-        }
+-        tt->dhcp_options |=3D DHCP_OPTIONS_DHCP_OPTIONAL;
+-    }
+-}
+-#else /* if defined(_WIN32) || defined(TARGET_ANDROID) */
+-static void
+-foreign_options_copy_dns(struct options *o, struct env_set *es)
+-{
+-    const struct dns_domain *domain =3D o->dns_options.search_domains;
+-    const struct dns_server *server =3D o->dns_options.servers;
+-    if (!domain && !server)
+-    {
+-        return;
+-    }
+-
+-    /* reset the index since we're starting all over again */
+-    int opt_max =3D o->foreign_option_index;
+-    o->foreign_option_index =3D 0;
+-
+-    for (int i =3D 1; i <=3D opt_max; ++i)
+-    {
+-        char name[32];
+-        snprintf(name, sizeof(name), "foreign_option_%d", i);
+-
+-        const char *env_str =3D env_set_get(es, name);
+-        const char *value =3D strchr(env_str, '=3D') + 1;
+-        if ((domain && strstr(value, "dhcp-option DOMAIN-SEARCH") =3D=3D v=
+alue)
+-            || (server && strstr(value, "dhcp-option DNS") =3D=3D value))
+-        {
+-            setenv_del(es, name);
+-        }
+-        else
+-        {
+-            setenv_foreign_option(o, &value, 1, es);
+-        }
+-    }
+-
+-    struct gc_arena gc =3D gc_new();
+-
+-    while (server)
+-    {
+-        for (size_t i =3D 0; i < server->addr_count; ++i)
+-        {
+-            if (server->addr[i].family =3D=3D AF_INET)
+-            {
+-                const char *argv[] =3D {
+-                    "dhcp-option",
+-                    "DNS",
+-                    print_in_addr_t(server->addr[i].in.a4.s_addr, 0, &gc)
+-                };
+-                setenv_foreign_option(o, argv, 3, es);
+-            }
+-            else
+-            {
+-                const char *argv[] =3D {
+-                    "dhcp-option",
+-                    "DNS6",
+-                    print_in6_addr(server->addr[i].in.a6, 0, &gc)
+-                };
+-                setenv_foreign_option(o, argv, 3, es);
+-            }
+-        }
+-        server =3D server->next;
+-    }
+-    while (domain)
+-    {
+-        const char *argv[] =3D { "dhcp-option", "DOMAIN-SEARCH", domain->n=
+ame };
+-        setenv_foreign_option(o, argv, 3, es);
+-        domain =3D domain->next;
+-    }
+-
+-    gc_free(&gc);
+-
+-    /* remove old leftover entries */
+-    while (o->foreign_option_index < opt_max)
+-    {
+-        char name[32];
+-        snprintf(name, sizeof(name), "foreign_option_%d", opt_max--);
+-        setenv_del(es, name);
+-    }
+-}
+ #endif /* if defined(_WIN32) || defined(TARGET_ANDROID) */
+
+ #ifndef ENABLE_SMALL
+@@ -3933,14 +3785,6 @@
+     {
+         dns_options_preprocess_pull(&o->dns_options);
+     }
+-    else
+-    {
+-#if defined(_WIN32) || defined(TARGET_ANDROID)
+-        tuntap_options_copy_dns(o);
+-#else
+-        foreign_options_copy_dns(o, es);
+-#endif
+-    }
+     if (o->auth_token_generate && !o->auth_token_renewal)
+     {
+         o->auth_token_renewal =3D o->renegotiate_seconds;
+@@ -4311,7 +4155,6 @@
+=20
+ /*
+  * Sanity check on options after more options were pulled from server.
+- * Also time to modify some options based on other options.
+  */
+ bool
+ options_postprocess_pull(struct options *o, struct env_set *es)
+@@ -4320,12 +4163,6 @@
      if (success)
      {
          dns_options_postprocess_pull(&o->dns_options);
-+        if (!o->dns_options.servers)
-+        {
-+            return true;
-+        }
-+
-+#if defined(_WIN32) || defined(TARGET_ANDROID)
-+        /* Remove DNS related --dhcp-options */
-+        struct tuntap_options *tt =3D &o->tuntap_options;
-+        tt->dns_len =3D 0;
-+        tt->dns6_len =3D 0;
-+        tt->domain =3D NULL;
-+        tt->domain_search_list_len =3D 0;
-+
-+#if defined(TARGET_ANDROID)
-+        /* Set options from --dns config */
-+        const struct dns_domain *d =3D o->dns_options.search_domains;
-+        while (d && tt->domain_search_list_len + 1 < N_SEARCH_LIST_LEN)
-+        {
-+            tt->domain_search_list[tt->domain_search_list_len++] =3D d->na=
-me;
-+            d =3D d->next;
-+        }
-+
-+        const struct dns_server *s =3D o->dns_options.servers;
-+        while (s)
-+        {
-+            bool non_standard_server_port =3D false;
-+            for (int i =3D 0; i < s->addr_count; ++i)
-+            {
-+                if (s->addr[i].port && s->addr[i].port !=3D 53)
-+                {
-+                    non_standard_server_port =3D true;
-+                    break;
-+                }
-+            }
-+            if ((s->transport && s->transport !=3D DNS_TRANSPORT_PLAIN)
-+                || (s->dnssec && s->dnssec !=3D DNS_SECURITY_NO)
-+                || non_standard_server_port)
-+            {
-+                /* Skip servers requiring unsupported config to be set */
-+                s =3D s->next;
-+            }
-+            else
-+            {
-+                for (int i =3D 0; i < s->addr_count; ++i)
-+                {
-+                    if (s->addr[i].family =3D=3D AF_INET && tt->dns_len + =
-1 < N_DHCP_ADDR)
-+                    {
-+                        tt->dns[tt->dns_len++] =3D s->addr[i].in.a4.s_addr;
-+                    }
-+                    else if (tt->dns6_len + 1 < N_DHCP_ADDR)
-+                    {
-+                        tt->dns6[tt->dns6_len] =3D s->addr[i].in.a6;
-+                    }
-+                }
-+                break;
-+            }
-+        }
-+#endif /* if defined(TARGET_ANDROID) */
-+
-+#else  /* if defined(_WIN32) || defined(TARGET_ANDROID) */
-+
-+        /* Clean up env from --dhcp-option DNS config */
-+        struct gc_arena gc =3D gc_new();
-+        struct buffer name =3D alloc_buf_gc(OPTION_PARM_SIZE, &gc);
-+        struct buffer value =3D alloc_buf_gc(OPTION_PARM_SIZE, &gc);
-+
-+        const int fo_count =3D o->foreign_option_index;
-+        o->foreign_option_index =3D 0;
-+
-+        for (int i =3D 1; i <=3D fo_count; ++i)
-+        {
-+            buf_clear(&name);
-+            buf_printf(&name, "foreign_option_%d", i);
-+            const char *env_str =3D env_set_get(es, BSTR(&name));
-+            const char *item_val =3D strchr(env_str, '=3D') + 1;
-+            buf_clear(&value);
-+            buf_printf(&value, "%s", item_val);
-+
-+            /* Remove foreign option item from env set */
-+            env_set_del(es, BSTR(&name));
-+
-+            item_val =3D BSTR(&value);
-+            if (strncmp(item_val, "dhcp-option ", 12) !=3D 0
-+                || (strncmp(item_val + 12, "ADAPTER-DOMAIN-SUFFIX ", 22) !=
-=3D 0
-+                    && strncmp(item_val + 12, "DOMAIN-SEARCH ", 14) !=3D 0
-+                    && strncmp(item_val + 12, "DOMAIN ", 7) !=3D 0
-+                    && strncmp(item_val + 12, "DNS6 ", 5) !=3D 0
-+                    && strncmp(item_val + 12, "DNS ", 4) !=3D 0))
-+            {
-+                /* Re-set the item with potentially updated name */
-+                buf_clear(&name);
-+                buf_printf(&name, "foreign_option_%d", ++o->foreign_option=
-_index);
-+                setenv_str(es, BSTR(&name), BSTR(&value));
-+            }
-+        }
-+
-+        /* Set foreign option env vars from --dns config */
-+        if (!o->up_script)
-+        {
-+            /* No need to, when there is no --up script */
-+            return true;
-+        }
-+        const char *p[] =3D { "dhcp-option", NULL, NULL };
-+        size_t p_len =3D sizeof(p) / sizeof(p[0]);
-+
-+        p[1] =3D "DOMAIN";
-+        const struct dns_domain *d =3D o->dns_options.search_domains;
-+        while (d)
-+        {
-+            p[2] =3D d->name;
-+            setenv_foreign_option(o, (const char **)p, p_len, es);
-+            d =3D d->next;
-+        }
-+
-+        const struct dns_server *s =3D o->dns_options.servers;
-+        while (s)
-+        {
-+            bool non_standard_server_port =3D false;
-+            for (int i =3D 0; i < s->addr_count; ++i)
-+            {
-+                if (s->addr[i].port && s->addr[i].port !=3D 53)
-+                {
-+                    non_standard_server_port =3D true;
-+                    break;
-+                }
-+            }
-+            if ((s->transport && s->transport !=3D DNS_TRANSPORT_PLAIN)
-+                || (s->dnssec && s->dnssec !=3D DNS_SECURITY_NO)
-+                || non_standard_server_port)
-+            {
-+                /* Skip servers requiring unsupported config to be set */
-+                s =3D s->next;
-+            }
-+            else
-+            {
-+                for (int i =3D 0; i < s->addr_count; ++i)
-+                {
-+                    if (s->addr[i].family =3D=3D AF_INET)
-+                    {
-+                        p[1] =3D "DNS";
-+                        p[2] =3D print_in_addr_t(s->addr[i].in.a4.s_addr, =
-IA_NET_ORDER, &gc);
-+                    }
-+                    else
-+                    {
-+                        p[1] =3D "DNS6";
-+                        p[2] =3D print_in6_addr(s->addr[i].in.a6, 0, &gc);
-+                    }
-+                    setenv_foreign_option(o, (const char **)p, p_len, es);
-+                }
-+                break;
-+            }
-+        }
-+        gc_free(&gc);
-+#endif /* defined(_WIN32) || defined(TARGET_ANDROID) */
+-        setenv_dns_options(&o->dns_options, es);
+-#if defined(_WIN32) || defined(TARGET_ANDROID)
+-        tuntap_options_copy_dns(o);
+-#else
+-        foreign_options_copy_dns(o, es);
+-#endif
      }
      return success;
  }
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/904?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/840?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings
 
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: I635c4018fb43b5976a39b6a90cb2e9cb2570cd6a
-Gerrit-Change-Number: 904
-Gerrit-PatchSet: 6
+Gerrit-Change-Id: I3fb01ab76cf3df0874ba92e08f371d17607a8369
+Gerrit-Change-Number: 840
+Gerrit-PatchSet: 15
 Gerrit-Owner: d12fk <heiko@...515...>
+Gerrit-Reviewer: cron2 <gert@...1296...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Attention: cron2 <gert@...1296...>
 Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Attention: d12fk <heiko@...515...>
 Gerrit-MessageType: newpatchset
 
---jEjmESKsRB4=
+--rcHSZCQkAaU=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p> Attention is currently required from: d12fk, flichtenheld, plaisthos. <=
+<p> Attention is currently required from: cron2, flichtenheld, plaisthos. <=
 /p>
-<p>d12fk <strong>uploaded patch set #6</strong> to this change.</p><p><a hr=
-ef=3D"http://gerrit.openvpn.net/c/openvpn/+/904?usp=3Demail">View Change</a=
-></p><pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;=
-">dns: clean up --dhcp-options when --dns is active<br><br>Since --dns sett=
-ings overrule DNS related --dhcp-options,<br>remove the latter when we got =
-some via --dns.<br><br>To stay as backward compatible as possible, the --dn=
-s server addresses<br>and search domains are added as foreign_options env v=
-ars, so that an<br>existing --up script can use them to set up DNS as befor=
-e, without the<br>immediate need to change after an openvpn upgrade. Same g=
-oes for the<br>DNS information in struct tuntap_options, which is used by A=
-ndroid.<br><br>In case an --up script is defined, the --dns-updown is not r=
-un to<br>prevent potential double DNS configuration.<br><br>Change-Id: I635=
-c4018fb43b5976a39b6a90cb2e9cb2570cd6a<br>Signed-off-by: Heiko Hund &lt;heik=
-o@...2662...&gt;<br>---<br>M src/openvpn/dns.c<br>M src/openvpn/options.c<b=
-r>2 files changed, 155 insertions(+), 1 deletion(-)<br><br></pre><pre style=
-=3D"font-family: monospace,monospace; white-space: pre-wrap;">git pull ssh:=
-//gerrit.openvpn.net:29418/openvpn refs/changes/04/904/6</pre><pre style=3D=
-"font-family: monospace,monospace; white-space: pre-wrap;"><span>diff --git=
- a/src/openvpn/dns.c b/src/openvpn/dns.c</span><br><span>index 0ad8e44..6a5=
-999a 100644</span><br><span>--- a/src/openvpn/dns.c</span><br><span>+++ b/s=
-rc/openvpn/dns.c</span><br><span>@@ -703,7 +703,7 @@</span><br><span> stati=
-c void</span><br><span> run_up_down_command(bool up, struct options *o, con=
-st struct tuntap *tt, struct dns_updown_runner_info *updown_runner)</span><=
-br><span> {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    if (!o=
--&gt;dns_options.updown)</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+    if (!o-&gt;dns_options.updown || o-&gt;up_script)</span><br><span>=
-     {</span><br><span>         return;</span><br><span>     }</span><br><s=
-pan>diff --git a/src/openvpn/options.c b/src/openvpn/options.c</span><br><s=
-pan>index b63f929..966230a 100644</span><br><span>--- a/src/openvpn/options=
-.c</span><br><span>+++ b/src/openvpn/options.c</span><br><span>@@ -4163,6 +=
-4163,160 @@</span><br><span>     if (success)</span><br><span>     {</span>=
-<br><span>         dns_options_postprocess_pull(&amp;o-&gt;dns_options);</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+        if (!o-&gt;dns=
-_options.servers)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-      {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            =
-return true;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
- }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+#if defined(_WIN32) || defined(TARGE=
-T_ANDROID)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        /=
-* Remove DNS related --dhcp-options */</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+        struct tuntap_options *tt =3D &amp;o-&gt;tuntap_=
-options;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        tt-=
-&gt;dns_len =3D 0;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-       tt-&gt;dns6_len =3D 0;</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+        tt-&gt;domain =3D NULL;</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+        tt-&gt;domain_search_list_len =3D 0;</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+#if defined(TARGET_ANDROID)</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+        /* Set options from --dns confi=
-g */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        const s=
-truct dns_domain *d =3D o-&gt;dns_options.search_domains;</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+        while (d &amp;&amp; tt-&gt;do=
-main_search_list_len + 1 &lt; N_SEARCH_LIST_LEN)</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+        {</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+            tt-&gt;domain_search_list[tt-&gt;domain_sear=
-ch_list_len++] =3D d-&gt;name;</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+            d =3D d-&gt;next;</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+        }</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        =
-const struct dns_server *s =3D o-&gt;dns_options.servers;</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+        while (s)</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+        {</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+            bool non_standard_server_port =3D fal=
-se;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            for =
-(int i =3D 0; i &lt; s-&gt;addr_count; ++i)</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+            {</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+                if (s-&gt;addr[i].port &amp;&amp; s-&gt;a=
-ddr[i].port !=3D 53)</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+                {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-                   non_standard_server_port =3D true;</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+                    break;</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+                }</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+            }</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+            if ((s-&gt;transport &amp;&am=
-p; s-&gt;transport !=3D DNS_TRANSPORT_PLAIN)</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+                || (s-&gt;dnssec &amp;&amp; s-&gt;=
-dnssec !=3D DNS_SECURITY_NO)</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+                || non_standard_server_port)</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+            {</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+                /* Skip servers requiring unsup=
-ported config to be set */</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+                s =3D s-&gt;next;</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+            }</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+            else</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+            {</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+                for (int i =3D 0; i &lt; s-&gt;addr_count; ++i)</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+                {</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+                    if (s-&=
-gt;addr[i].family =3D=3D AF_INET &amp;&amp; tt-&gt;dns_len + 1 &lt; N_DHCP_=
-ADDR)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+              =
-      {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            =
-            tt-&gt;dns[tt-&gt;dns_len++] =3D s-&gt;addr[i].in.a4.s_addr;</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+                    }<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+                    =
-else if (tt-&gt;dns6_len + 1 &lt; N_DHCP_ADDR)</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+                    {</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+                        tt-&gt;dns6[tt-&gt;dns=
-6_len] =3D s-&gt;addr[i].in.a6;</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+                    }</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+                }</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+                break;</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+            }</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+        }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#=
-endif /* if defined(TARGET_ANDROID) */</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-#else  /* if defined(_WIN32) || defined(TARGET_ANDROID) */</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+        /* Clean up env from --dhcp-option DNS config *=
-/</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        struct gc_=
-arena gc =3D gc_new();</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+        struct buffer name =3D alloc_buf_gc(OPTION_PARM_SIZE, &amp;gc);<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+        struct buffe=
-r value =3D alloc_buf_gc(OPTION_PARM_SIZE, &amp;gc);</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+        const int fo_count =3D o-&gt;foreign_option_index;</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+        o-&gt;foreign=
-_option_index =3D 0;</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        for (int i=
- =3D 1; i &lt;=3D fo_count; ++i)</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+        {</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+            buf_clear(&amp;name);</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+            buf_printf(&amp;name, &quot;foreign_option_%d&=
-quot;, i);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+         =
-   const char *env_str =3D env_set_get(es, BSTR(&amp;name));</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+            const char *item_val =
-=3D strchr(env_str, &#39;=3D&#39;) + 1;</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+            buf_clear(&amp;value);</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+            buf_printf(&amp;value, &quot=
-;%s&quot;, item_val);</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            /* Re=
-move foreign option item from env set */</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+            env_set_del(es, BSTR(&amp;name));</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+            item_val =3D BSTR(&amp;value);</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+            if (strncmp(=
-item_val, &quot;dhcp-option &quot;, 12) !=3D 0</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+                || (strncmp(item_val + 12, &quot=
-;ADAPTER-DOMAIN-SUFFIX &quot;, 22) !=3D 0</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+                    &amp;&amp; strncmp(item_val + 12,=
- &quot;DOMAIN-SEARCH &quot;, 14) !=3D 0</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+                    &amp;&amp; strncmp(item_val + 12, &=
-quot;DOMAIN &quot;, 7) !=3D 0</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+                    &amp;&amp; strncmp(item_val + 12, &quot;DNS6 =
-&quot;, 5) !=3D 0</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-                  &amp;&amp; strncmp(item_val + 12, &quot;DNS &quot;, 4) !=
-=3D 0))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            =
-{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+                /*=
- Re-set the item with potentially updated name */</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+                buf_clear(&amp;name);</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+                buf_printf(=
-&amp;name, &quot;foreign_option_%d&quot;, ++o-&gt;foreign_option_index);</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+                setenv=
-_str(es, BSTR(&amp;name), BSTR(&amp;value));</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+            }</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+        }</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        /*=
- Set foreign option env vars from --dns config */</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+        if (!o-&gt;up_script)</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+        {</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+            /* No need to, when there is no -=
--up script */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
-      return true;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-       }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        con=
-st char *p[] =3D { &quot;dhcp-option&quot;, NULL, NULL };</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+        size_t p_len =3D sizeof(p) / =
-sizeof(p[0]);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+        p[1] =3D &quot;DO=
-MAIN&quot;;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        =
-const struct dns_domain *d =3D o-&gt;dns_options.search_domains;</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+        while (d)</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+        {</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+            p[2] =3D d-&gt;name;</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+            setenv_foreign_o=
-ption(o, (const char **)p, p_len, es);</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+            d =3D d-&gt;next;</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+        }</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-        const struct dns_server *s =3D o-&gt;dns_options.servers;</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+        while (s)</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+        {</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+            bool non_standard_server_port=
- =3D false;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        =
-    for (int i =3D 0; i &lt; s-&gt;addr_count; ++i)</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+            {</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+                if (s-&gt;addr[i].port &amp;&am=
-p; s-&gt;addr[i].port !=3D 53)</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+                {</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+                    non_standard_server_port =3D true;</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+                    break;</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+                }</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+            }</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+            if ((s-&gt;transport=
- &amp;&amp; s-&gt;transport !=3D DNS_TRANSPORT_PLAIN)</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+                || (s-&gt;dnssec &amp;&am=
-p; s-&gt;dnssec !=3D DNS_SECURITY_NO)</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+                || non_standard_server_port)</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+            {</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+                /* Skip servers requir=
-ing unsupported config to be set */</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+                s =3D s-&gt;next;</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+            }</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+            else</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+            {</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+                for (int i =3D 0; i &lt; s-&gt;addr_count; +=
-+i)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+                =
-{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+                  =
-  if (s-&gt;addr[i].family =3D=3D AF_INET)</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+                    {</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+                        p[1] =3D &quot;DNS&quot;;<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+                    =
-    p[2] =3D print_in_addr_t(s-&gt;addr[i].in.a4.s_addr, IA_NET_ORDER, &amp=
-;gc);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+              =
+<p>d12fk <strong>uploaded patch set #15</strong> to this change.</p><p><a h=
+ref=3D"http://gerrit.openvpn.net/c/openvpn/+/840?usp=3Demail">View Change</=
+a></p><pre style=3D"font-family: monospace,monospace; white-space: pre-wrap=
+;">dns: don&#39;t publish env vars to non-dns scripts<br><br>With --dns-upd=
+own in place we no longer need --dns option related vars in<br>the environm=
+ent for other script hooks. Code for doing that is removed and<br>the funct=
+ion to set --dns stuff made static, for internal use only.<br><br>Change-Id=
+: I3fb01ab76cf3df0874ba92e08f371d17607a8369<br>Signed-off-by: Heiko Hund &l=
+t;heiko@...2662...&gt;<br>---<br>M src/openvpn/dns.c<br>M src/openvpn/dns.h=
+<br>M src/openvpn/options.c<br>3 files changed, 87 insertions(+), 258 delet=
+ions(-)<br><br></pre><pre style=3D"font-family: monospace,monospace; white-=
+space: pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/openvpn refs/chan=
+ges/40/840/15</pre><pre style=3D"font-family: monospace,monospace; white-sp=
+ace: pre-wrap;"><span>diff --git a/src/openvpn/dns.c b/src/openvpn/dns.c</s=
+pan><br><span>index b45c290..0ad8e44 100644</span><br><span>--- a/src/openv=
+pn/dns.c</span><br><span>+++ b/src/openvpn/dns.c</span><br><span>@@ -350,93=
+ +350,6 @@</span><br><span>     }</span><br><span> }</span><br><span> </spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-static void</span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">-setenv_dns_option(struct env_set *es=
+,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-                  co=
+nst char *format, int i, int j,</span><br><span style=3D"color: hsl(0, 100%=
+, 40%);">-                  const char *value)</span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-{</span><br><span style=3D"color: hsl(0, 100%, 40%=
+);">-    char name[64];</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>-    bool name_ok =3D false;</span><br><span style=3D"color: hsl(0, 100%, =
+40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    if (j &lt=
+; 0)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    {</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-        name_ok =3D snprintf(name=
+, sizeof(name), format, i);</span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">-    }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    else</=
+span><br><span style=3D"color: hsl(0, 100%, 40%);">-    {</span><br><span s=
+tyle=3D"color: hsl(0, 100%, 40%);">-        name_ok =3D snprintf(name, size=
+of(name), format, i, j);</span><br><span style=3D"color: hsl(0, 100%, 40%);=
+">-    }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><s=
+pan style=3D"color: hsl(0, 100%, 40%);">-    if (!name_ok)</span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">-    {</span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">-        msg(M_WARN, &quot;WARNING: dns option setenv n=
+ame buffer overflow&quot;);</span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">-    }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br=
+><span style=3D"color: hsl(0, 100%, 40%);">-    setenv_str(es, name, value)=
+;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-}</span><br><span st=
+yle=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, =
+100%, 40%);">-void</span><br><span style=3D"color: hsl(0, 100%, 40%);">-set=
+env_dns_options(const struct dns_options *o, struct env_set *es)</span><br>=
+<span style=3D"color: hsl(0, 100%, 40%);">-{</span><br><span style=3D"color=
+: hsl(0, 100%, 40%);">-    struct gc_arena gc =3D gc_new();</span><br><span=
+ style=3D"color: hsl(0, 100%, 40%);">-    const struct dns_server *s;</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-    const struct dns_domain=
+ *d;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    int i, j;</sp=
+an><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D=
+"color: hsl(0, 100%, 40%);">-    for (i =3D 1, d =3D o-&gt;search_domains; =
+d !=3D NULL; i++, d =3D d-&gt;next)</span><br><span style=3D"color: hsl(0, =
+100%, 40%);">-    {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
+      setenv_dns_option(es, &quot;dns_search_domain_%d&quot;, i, -1, d-&gt;=
+name);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    }</span><br=
+><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color=
+: hsl(0, 100%, 40%);">-    for (i =3D 1, s =3D o-&gt;servers; s !=3D NULL; =
+i++, s =3D s-&gt;next)</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
+-    {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        for (j =
+=3D 0; j &lt; s-&gt;addr_count; ++j)</span><br><span style=3D"color: hsl(0,=
+ 100%, 40%);">-        {</span><br><span style=3D"color: hsl(0, 100%, 40%);=
+">-            if (s-&gt;addr[j].family =3D=3D AF_INET)</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-            {</span><br><span style=3D"co=
+lor: hsl(0, 100%, 40%);">-                setenv_dns_option(es, &quot;dns_s=
+erver_%d_address_%d&quot;, i, j + 1,</span><br><span style=3D"color: hsl(0,=
+ 100%, 40%);">-                                  print_in_addr_t(s-&gt;addr=
+[j].in.a4.s_addr, IA_NET_ORDER, &amp;gc));</span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">-            }</span><br><span style=3D"color: hsl(0, 1=
+00%, 40%);">-            else</span><br><span style=3D"color: hsl(0, 100%, =
+40%);">-            {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
+                setenv_dns_option(es, &quot;dns_server_%d_address_%d&quot;,=
+ i, j + 1,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-           =
+                       print_in6_addr(s-&gt;addr[j].in.a6, 0, &amp;gc));</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-            }</span><br>=
+<span style=3D"color: hsl(0, 100%, 40%);">-            if (s-&gt;addr[j].po=
+rt)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            {</spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-                setenv_dns=
+_option(es, &quot;dns_server_%d_port_%d&quot;, i, j + 1,</span><br><span st=
+yle=3D"color: hsl(0, 100%, 40%);">-                                  print_=
+in_port_t(s-&gt;addr[j].port, &amp;gc));</span><br><span style=3D"color: hs=
+l(0, 100%, 40%);">-            }</span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-        }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-<=
+/span><br><span style=3D"color: hsl(0, 100%, 40%);">-        if (s-&gt;doma=
+ins)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        {</span><=
+br><span style=3D"color: hsl(0, 100%, 40%);">-            for (j =3D 1, d =
+=3D s-&gt;domains; d !=3D NULL; j++, d =3D d-&gt;next)</span><br><span styl=
+e=3D"color: hsl(0, 100%, 40%);">-            {</span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-                setenv_dns_option(es, &quot;dns_se=
+rver_%d_resolve_domain_%d&quot;, i, j, d-&gt;name);</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-            }</span><br><span style=3D"colo=
+r: hsl(0, 100%, 40%);">-        }</span><br><span style=3D"color: hsl(0, 10=
+0%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        i=
+f (s-&gt;dnssec)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-     =
+   {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            seten=
+v_dns_option(es, &quot;dns_server_%d_dnssec&quot;, i, -1,</span><br><span s=
+tyle=3D"color: hsl(0, 100%, 40%);">-                              dnssec_va=
+lue(s-&gt;dnssec));</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
+      }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-        if (s-&gt;transport)</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-        {</span><br><span st=
+yle=3D"color: hsl(0, 100%, 40%);">-            setenv_dns_option(es, &quot;=
+dns_server_%d_transport&quot;, i, -1,</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-                              transport_value(s-&gt;transpo=
+rt));</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        }</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-        if (s-&gt;sni)</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-        {</span><br><span s=
+tyle=3D"color: hsl(0, 100%, 40%);">-            setenv_dns_option(es, &quot=
+;dns_server_%d_sni&quot;, i, -1, s-&gt;sni);</span><br><span style=3D"color=
+: hsl(0, 100%, 40%);">-        }</span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-    }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-    gc_free(&amp;gc);</spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-}</span><br><span style=3D=
+"color: hsl(0, 100%, 40%);">-</span><br><span> #ifdef _WIN32</span><br><spa=
+n> </span><br><span> static void</span><br><span>@@ -554,6 +467,93 @@</span=
+><br><span> #else /* ifdef _WIN32 */</span><br><span> </span><br><span> sta=
+tic void</span><br><span style=3D"color: hsl(120, 100%, 40%);">+setenv_dns_=
+option(struct env_set *es,</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+                  const char *format, int i, int j,</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+                  const char *value)=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+    char name[64];</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+    bool name_ok =3D false;</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+    if (j &lt; 0)</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+        name_ok =3D snprintf(name, sizeof(name), format, i);</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+    else</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+        name_ok =3D snprintf(name, sizeof(name), format, i, j);=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+    if (!name_ok)</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+        msg(M_WARN, &quot;WARNING: dns option setenv name buffer ove=
+rflow&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+    setenv_str(es, name, value);</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+static void</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+setenv_dns_options(const struct dns_options *o, struct env_set *es)</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    struct gc_arena gc =3D gc_new();</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+    const struct dns_ser=
+ver *s;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    const st=
+ruct dns_domain *d;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+    int i, j;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+    for (i =3D 1, d =3D o=
+-&gt;search_domains; d !=3D NULL; i++, d =3D d-&gt;next)</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+        setenv_dns_option(es, &quot;dns_search_domai=
+n_%d&quot;, i, -1, d-&gt;name);</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+    for (i =3D 1, s =
+=3D o-&gt;servers; s !=3D NULL; i++, s =3D s-&gt;next)</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+        for (j =3D 0; j &lt; s-&gt;addr_count; ++j)</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+        {</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+            if (s-&gt;addr[j].fa=
+mily =3D=3D AF_INET)</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++            {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
+           setenv_dns_option(es, &quot;dns_server_%d_address_%d&quot;, i, j=
+ + 1,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+              =
+                    print_in_addr_t(s-&gt;addr[j].in.a4.s_addr, IA_NET_ORDE=
+R, &amp;gc));</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
       }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            =
-        else</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
-             {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
-                   p[1] =3D &quot;DNS6&quot;;</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+                        p[2] =3D print_in6_addr(s=
--&gt;addr[i].in.a6, 0, &amp;gc);</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+                    }</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+                    setenv_foreign_option(o, (const char **)=
-p, p_len, es);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
-           }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
-         break;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-        }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        }<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+        gc_free(&amp=
-;gc);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#endif /* defi=
-ned(_WIN32) || defined(TARGET_ANDROID) */</span><br><span>     }</span><br>=
-<span>     return success;</span><br><span> }</span><br><span></span><br></=
-pre><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/904?=
-usp=3Demail">change 904</a>. To unsubscribe, or for help writing mail filte=
-rs, visit <a href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><=
-div itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope it=
-emprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=
-=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/904?usp=3Demail"/><m=
-eta itemprop=3D"name" content=3D"View Change"/></div></div>
+else</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            {</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+                seten=
+v_dns_option(es, &quot;dns_server_%d_address_%d&quot;, i, j + 1,</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+                              =
+    print_in6_addr(s-&gt;addr[j].in.a6, 0, &amp;gc));</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+            }</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+            if (s-&gt;addr[j].port)</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+            {</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+                setenv_dns_option(es,=
+ &quot;dns_server_%d_port_%d&quot;, i, j + 1,</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+                                  print_in_port_t=
+(s-&gt;addr[j].port, &amp;gc));</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+            }</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+        }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+        if (s-&gt;domai=
+ns)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        {</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+            for (j =3D 1, =
+d =3D s-&gt;domains; d !=3D NULL; j++, d =3D d-&gt;next)</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+            {</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+                setenv_dns_option(es, &quot;=
+dns_server_%d_resolve_domain_%d&quot;, i, j, d-&gt;name);</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+            }</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+        }</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+        if (s-&gt;dnssec)</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+        {</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++            setenv_dns_option(es, &quot;dns_server_%d_dnssec&quot;, i, -1,=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+                   =
+           dnssec_value(s-&gt;dnssec));</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+        }</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        i=
+f (s-&gt;transport)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+        {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+          =
+  setenv_dns_option(es, &quot;dns_server_%d_transport&quot;, i, -1,</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+                           =
+   transport_value(s-&gt;transport));</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+        }</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+        if (s-&gt;sni)</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+        {</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++            setenv_dns_option(es, &quot;dns_server_%d_sni&quot;, i, -1, s-=
+&gt;sni);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        }<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+    gc_free(&amp;gc);</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+static void</=
+span><br><span> updown_env_set(bool up, const struct dns_options *o, const =
+struct tuntap *tt, struct env_set *es)</span><br><span> {</span><br><span> =
+    setenv_str(es, &quot;dev&quot;, tt-&gt;actual_name);</span><br><span>di=
+ff --git a/src/openvpn/dns.h b/src/openvpn/dns.h</span><br><span>index c21b=
+33a..b2ec2e7 100644</span><br><span>--- a/src/openvpn/dns.h</span><br><span=
+>+++ b/src/openvpn/dns.h</span><br><span>@@ -168,14 +168,6 @@</span><br><sp=
+an>                      struct dns_updown_runner_info *duri);</span><br><s=
+pan> </span><br><span> /**</span><br><span style=3D"color: hsl(0, 100%, 40%=
+);">- * Puts the DNS options into an environment set.</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">- *</span><br><span style=3D"color: hsl(0, 1=
+00%, 40%);">- * @param   o           Pointer to the DNS options to set</spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">- * @param   es          Po=
+inter to the env_set to set the options into</span><br><span style=3D"color=
+: hsl(0, 100%, 40%);">- */</span><br><span style=3D"color: hsl(0, 100%, 40%=
+);">-void setenv_dns_options(const struct dns_options *o, struct env_set *e=
+s);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span s=
+tyle=3D"color: hsl(0, 100%, 40%);">-/**</span><br><span>  * Prints configur=
+ed DNS options.</span><br><span>  *</span><br><span>  * @param   o         =
+  Pointer to the DNS options to print</span><br><span>diff --git a/src/open=
+vpn/options.c b/src/openvpn/options.c</span><br><span>index 4660e9d..b63f92=
+9 100644</span><br><span>--- a/src/openvpn/options.c</span><br><span>+++ b/=
+src/openvpn/options.c</span><br><span>@@ -1061,11 +1061,6 @@</span><br><spa=
+n>             setenv_local_entry(es, o-&gt;ce.local_list-&gt;array[i], i+1=
+);</span><br><span>         }</span><br><span>     }</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-    if (!o-&gt;pull)</span><br><span style=3D"color: hsl(0, 100%=
+, 40%);">-    {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-      =
+  setenv_dns_options(&amp;o-&gt;dns_options, es);</span><br><span style=3D"=
+color: hsl(0, 100%, 40%);">-    }</span><br><span> }</span><br><span> </spa=
+n><br><span> #ifndef _WIN32</span><br><span>@@ -1379,149 +1374,6 @@</span><=
+br><span>         }</span><br><span>     }</span><br><span> }</span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hs=
+l(0, 100%, 40%);">-/*</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
+ * If DNS options are set use these for TUN/TAP options as well.</span><br>=
+<span style=3D"color: hsl(0, 100%, 40%);">- * Applies to DNS, DNS6 and DOMA=
+IN-SEARCH.</span><br><span style=3D"color: hsl(0, 100%, 40%);">- * Existing=
+ options will be discarded.</span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">- */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-static void<=
+/span><br><span style=3D"color: hsl(0, 100%, 40%);">-tuntap_options_copy_dn=
+s(struct options *o)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-{=
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    struct tuntap_opt=
+ions *tt =3D &amp;o-&gt;tuntap_options;</span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-    struct dns_options *dns =3D &amp;o-&gt;dns_options;</=
+span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-    if (dns-&gt;search_domains)</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-    {</span><br><span style=3D"co=
+lor: hsl(0, 100%, 40%);">-        tt-&gt;domain_search_list_len =3D 0;</spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-        const struct dns_d=
+omain *domain =3D dns-&gt;search_domains;</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-        while (domain &amp;&amp; tt-&gt;domain_search_l=
+ist_len &lt; N_SEARCH_LIST_LEN)</span><br><span style=3D"color: hsl(0, 100%=
+, 40%);">-        {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
+          tt-&gt;domain_search_list[tt-&gt;domain_search_list_len++] =3D do=
+main-&gt;name;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-       =
+     domain =3D domain-&gt;next;</span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-        }</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
+       if (domain)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
+     {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            msg=
+(M_WARN, &quot;WARNING: couldn&#39;t copy all --dns search-domains to --dhc=
+p-option&quot;);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-     =
+   }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        tt-&gt;dh=
+cp_options |=3D DHCP_OPTIONS_DHCP_REQUIRED;</span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-    }</span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    if (dns-&gt=
+;servers)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    {</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-        tt-&gt;dns_len =3D 0=
+;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        tt-&gt;dns6_=
+len =3D 0;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        boo=
+l overflow =3D false;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
+        const struct dns_server *server =3D dns-&gt;servers;</span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">-        while (server)</span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-        {</span><br><span style=3D"=
+color: hsl(0, 100%, 40%);">-            for (int i =3D 0; i &lt; server-&gt=
+;addr_count; ++i)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
+        {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            =
+    if (server-&gt;addr[i].family =3D=3D AF_INET)</span><br><span style=3D"=
+color: hsl(0, 100%, 40%);">-                {</span><br><span style=3D"colo=
+r: hsl(0, 100%, 40%);">-                    if (tt-&gt;dns_len &gt;=3D N_DH=
+CP_ADDR)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-             =
+       {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-             =
+           overflow =3D true;</span><br><span style=3D"color: hsl(0, 100%, =
+40%);">-                        continue;</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-                    }</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-                    tt-&gt;dns[tt-&gt;dns_len++] =3D nt=
+ohl(server-&gt;addr[i].in.a4.s_addr);</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-                }</span><br><span style=3D"color: hsl(0, 10=
+0%, 40%);">-                else</span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-                {</span><br><span style=3D"color: hsl(0, 100%, 4=
+0%);">-                    if (tt-&gt;dns6_len &gt;=3D N_DHCP_ADDR)</span><=
+br><span style=3D"color: hsl(0, 100%, 40%);">-                    {</span><=
+br><span style=3D"color: hsl(0, 100%, 40%);">-                        overf=
+low =3D true;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        =
+                continue;</span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">-                    }</span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">-                    tt-&gt;dns6[tt-&gt;dns6_len++] =3D server-&gt;addr[=
+i].in.a6;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            =
+    }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            }</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-            server =3D s=
+erver-&gt;next;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-      =
+  }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        if (overfl=
+ow)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        {</span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-            msg(M_WARN, &quot;=
+WARNING: couldn&#39;t copy all --dns server addresses to --dhcp-option&quot=
+;);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        }</span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-        tt-&gt;dhcp_options |=
+=3D DHCP_OPTIONS_DHCP_OPTIONAL;</span><br><span style=3D"color: hsl(0, 100%=
+, 40%);">-    }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-}</spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-#else /* if defined(_WIN32=
+) || defined(TARGET_ANDROID) */</span><br><span style=3D"color: hsl(0, 100%=
+, 40%);">-static void</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
+foreign_options_copy_dns(struct options *o, struct env_set *es)</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-{</span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-    const struct dns_domain *domain =3D o-&gt;dns_opt=
+ions.search_domains;</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
+   const struct dns_server *server =3D o-&gt;dns_options.servers;</span><br=
+><span style=3D"color: hsl(0, 100%, 40%);">-    if (!domain &amp;&amp; !ser=
+ver)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    {</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-        return;</span><br><span s=
+tyle=3D"color: hsl(0, 100%, 40%);">-    }</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
+   /* reset the index since we&#39;re starting all over again */</span><br>=
+<span style=3D"color: hsl(0, 100%, 40%);">-    int opt_max =3D o-&gt;foreig=
+n_option_index;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    o-=
+&gt;foreign_option_index =3D 0;</span><br><span style=3D"color: hsl(0, 100%=
+, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    for (in=
+t i =3D 1; i &lt;=3D opt_max; ++i)</span><br><span style=3D"color: hsl(0, 1=
+00%, 40%);">-    {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
+     char name[32];</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
+      snprintf(name, sizeof(name), &quot;foreign_option_%d&quot;, i);</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"c=
+olor: hsl(0, 100%, 40%);">-        const char *env_str =3D env_set_get(es, =
+name);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        const c=
+har *value =3D strchr(env_str, &#39;=3D&#39;) + 1;</span><br><span style=3D=
+"color: hsl(0, 100%, 40%);">-        if ((domain &amp;&amp; strstr(value, &=
+quot;dhcp-option DOMAIN-SEARCH&quot;) =3D=3D value)</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-            || (server &amp;&amp; strstr(va=
+lue, &quot;dhcp-option DNS&quot;) =3D=3D value))</span><br><span style=3D"c=
+olor: hsl(0, 100%, 40%);">-        {</span><br><span style=3D"color: hsl(0,=
+ 100%, 40%);">-            setenv_del(es, name);</span><br><span style=3D"c=
+olor: hsl(0, 100%, 40%);">-        }</span><br><span style=3D"color: hsl(0,=
+ 100%, 40%);">-        else</span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">-        {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-      =
+      setenv_foreign_option(o, &amp;value, 1, es);</span><br><span style=3D=
+"color: hsl(0, 100%, 40%);">-        }</span><br><span style=3D"color: hsl(=
+0, 100%, 40%);">-    }</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
+-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    struct gc_arena =
+gc =3D gc_new();</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-    while (server)</span><=
+br><span style=3D"color: hsl(0, 100%, 40%);">-    {</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-        for (size_t i =3D 0; i &lt; server-=
+&gt;addr_count; ++i)</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
+       {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            i=
+f (server-&gt;addr[i].family =3D=3D AF_INET)</span><br><span style=3D"color=
+: hsl(0, 100%, 40%);">-            {</span><br><span style=3D"color: hsl(0,=
+ 100%, 40%);">-                const char *argv[] =3D {</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-                    &quot;dhcp-option&quo=
+t;,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-                  =
+  &quot;DNS&quot;,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
+                 print_in_addr_t(server-&gt;addr[i].in.a4.s_addr, 0, &amp;g=
+c)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-                };<=
+/span><br><span style=3D"color: hsl(0, 100%, 40%);">-                setenv=
+_foreign_option(o, argv, 3, es);</span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-            }</span><br><span style=3D"color: hsl(0, 100%, 40%);=
+">-            else</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
+          {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-          =
+      const char *argv[] =3D {</span><br><span style=3D"color: hsl(0, 100%,=
+ 40%);">-                    &quot;dhcp-option&quot;,</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-                    &quot;DNS6&quot;,</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-                    print_i=
+n6_addr(server-&gt;addr[i].in.a6, 0, &amp;gc)</span><br><span style=3D"colo=
+r: hsl(0, 100%, 40%);">-                };</span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">-                setenv_foreign_option(o, argv, 3, es);=
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            }</span><=
+br><span style=3D"color: hsl(0, 100%, 40%);">-        }</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-        server =3D server-&gt;next;</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-    }</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-    while (domain)</span><br><span style=3D=
+"color: hsl(0, 100%, 40%);">-    {</span><br><span style=3D"color: hsl(0, 1=
+00%, 40%);">-        const char *argv[] =3D { &quot;dhcp-option&quot;, &quo=
+t;DOMAIN-SEARCH&quot;, domain-&gt;name };</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-        setenv_foreign_option(o, argv, 3, es);</span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-        domain =3D domain-&gt;=
+next;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    }</span><br>=
+<span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-    gc_free(&amp;gc);</span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
+-    /* remove old leftover entries */</span><br><span style=3D"color: hsl(=
+0, 100%, 40%);">-    while (o-&gt;foreign_option_index &lt; opt_max)</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-    {</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-        char name[32];</span><br><span styl=
+e=3D"color: hsl(0, 100%, 40%);">-        snprintf(name, sizeof(name), &quot=
+;foreign_option_%d&quot;, opt_max--);</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-        setenv_del(es, name);</span><br><span style=3D"colo=
+r: hsl(0, 100%, 40%);">-    }</span><br><span style=3D"color: hsl(0, 100%, =
+40%);">-}</span><br><span> #endif /* if defined(_WIN32) || defined(TARGET_A=
+NDROID) */</span><br><span> </span><br><span> #ifndef ENABLE_SMALL</span><b=
+r><span>@@ -3933,14 +3785,6 @@</span><br><span>     {</span><br><span>     =
+    dns_options_preprocess_pull(&amp;o-&gt;dns_options);</span><br><span>  =
+   }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    else</span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-    {</span><br><span style=3D=
+"color: hsl(0, 100%, 40%);">-#if defined(_WIN32) || defined(TARGET_ANDROID)=
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        tuntap_option=
+s_copy_dns(o);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#else</=
+span><br><span style=3D"color: hsl(0, 100%, 40%);">-        foreign_options=
+_copy_dns(o, es);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#end=
+if</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    }</span><br><sp=
+an>     if (o-&gt;auth_token_generate &amp;&amp; !o-&gt;auth_token_renewal)=
+</span><br><span>     {</span><br><span>         o-&gt;auth_token_renewal =
+=3D o-&gt;renegotiate_seconds;</span><br><span>@@ -4311,7 +4155,6 @@</span>=
+<br><span> </span><br><span> /*</span><br><span>  * Sanity check on options=
+ after more options were pulled from server.</span><br><span style=3D"color=
+: hsl(0, 100%, 40%);">- * Also time to modify some options based on other o=
+ptions.</span><br><span>  */</span><br><span> bool</span><br><span> options=
+_postprocess_pull(struct options *o, struct env_set *es)</span><br><span>@@=
+ -4320,12 +4163,6 @@</span><br><span>     if (success)</span><br><span>    =
+ {</span><br><span>         dns_options_postprocess_pull(&amp;o-&gt;dns_opt=
+ions);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        setenv_=
+dns_options(&amp;o-&gt;dns_options, es);</span><br><span style=3D"color: hs=
+l(0, 100%, 40%);">-#if defined(_WIN32) || defined(TARGET_ANDROID)</span><br=
+><span style=3D"color: hsl(0, 100%, 40%);">-        tuntap_options_copy_dns=
+(o);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#else</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-        foreign_options_copy_dns(=
+o, es);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#endif</span><=
+br><span>     }</span><br><span>     return success;</span><br><span> }</sp=
+an><br><span></span><br></pre><p>To view, visit <a href=3D"http://gerrit.op=
+envpn.net/c/openvpn/+/840?usp=3Demail">change 840</a>. To unsubscribe, or f=
+or help writing mail filters, visit <a href=3D"http://gerrit.openvpn.net/se=
+ttings">settings</a>.</p><div itemscope itemtype=3D"http://schema.org/Email=
+Message"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.org/V=
+iewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openv=
+pn/+/840?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></d=
+iv></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I635c4018fb43b5976a39b6a90cb=
-2e9cb2570cd6a </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 904 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 6 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I3fb01ab76cf3df0874ba92e08f3=
+71d17607a8369 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 840 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 15 </div>
 <div style=3D"display:none"> Gerrit-Owner: d12fk &lt;heiko@...515...&gt; </=
 div>
+<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
+ </div>
 <div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
 1...&gt; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
@@ -526,12 +977,12 @@ div>
 ts.sourceforge.net&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
 ..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: cron2 &lt;gert@...1296...&gt=
+; </div>
 <div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
 41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: d12fk &lt;heiko@...515...&gt=
-; </div>
 <div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
 
 
---jEjmESKsRB4=--
+--rcHSZCQkAaU=--
 
