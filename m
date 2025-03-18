@@ -1,10 +1,16 @@
+From: "flichtenheld (Code Review)" <gerrit@...515...>
+Date: Tue, 18 Mar 2025 12:17:45 +0000
+In-Reply-To: <gerrit.1736341120000.I4879f983ed6cc035cd6ad8d571e00eb14f9ffdc1@...2715...>
+References: <gerrit.1736341120000.I4879f983ed6cc035cd6ad8d571e00eb14f9ffdc1@...2715...>
+Reply-To: frank@...2641..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net
+Message-ID: <a068fc86a0571fbf73e2a4a0d73f499bfe4ae971-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-From: Marc Leeman <marc.leeman@...277...>
-Date: Tue, 18 Mar 2025 11:37:33 +0100
-Message-ID: <CAH+fs=8tVbnH1Ha0FZN7J7yBMJarisLDw=p44mWtP7mtEnnmVQ@...278...>
-Content-Type: multipart/mixed; boundary="000000000000115d3b06309b7f86"
-Subject: [Openvpn-devel] [patch]: debian lintian informational warning
- (Authorization)
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="BoTzCs5ogBc="; charset=UTF-8
+Subject: [Openvpn-devel] [M] Change in openvpn[master]:
+ dev-tools/text-removal.sh: Script to remove usage of tchar.h
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,37 +19,80 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: openvpn-devel@lists.sourceforge.net
+Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---000000000000115d3b06309b7f86
+--BoTzCs5ogBc=
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-trivial spelling error raised by lintian.
+Attention is currently required from: plaisthos.
+
+flichtenheld has posted comments on this change. ( http://gerrit.openvpn.ne=
+t/c/openvpn/+/852?usp=3Demail )
+
+Change subject: dev-tools/text-removal.sh: Script to remove usage of tchar.h
+......................................................................
 
 
--- 
-g. Marc
+Patch Set 2:
 
-GPG: 827C FD74 BA46 8152 A041 F3A0 7A6A 4F17 5995 A65B
+This change is ready for review.
 
---000000000000115d3b06309b7f86
-Content-Type: text/x-patch; charset="US-ASCII"; name="0001_spelling.patch"
-Content-Disposition: attachment; filename="0001_spelling.patch"
-Content-Transfer-Encoding: base64
-Content-ID: <f_m8eczoc30>
-X-Attachment-Id: f_m8eczoc30
 
-RGVzY3JpcHRpb246IEZpeCBzcGVsbGluZyBlcnJvciBpbiBlcnJvciBtZXNzYWdlCkF1dGhvcjog
-TWFyYyBMZWVtYW4gPG1hcmMubGVlbWFuQGdtYWlsLmNvbT4KIFdoZW4gcGFja2FnaW5nLCBsaW50
-aWFuIGNvbXBsYWlucyBhYm91dCBhIHNwZWxsaW5nIGVycm9yIChpbmZvcm1hdGlvbmFsKS4KTGFz
-dC1VcGRhdGU6IDIwMjUtMDMtMTgKCkluZGV4OiBzYWxzYS9nZGJ1c3BwL2dkYnVzcHAvYXV0aHot
-cmVxdWVzdC5jcHAKPT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09
-PT09PT09PT09PT09PT09PT09PT09PQotLS0gc2Fsc2Eub3JpZy9nZGJ1c3BwL2F1dGh6LXJlcXVl
-c3QuY3BwCisrKyBzYWxzYS9nZGJ1c3BwL2F1dGh6LXJlcXVlc3QuY3BwCkBAIC0zOCw3ICszOCw3
-IEBAIGNvbnN0IHN0ZDo6c3RyaW5nIEV4Y2VwdGlvbjo6Y29tcG9zZV9lcnIKICAgICB9CgogICAg
-IHN0ZDo6b3N0cmluZ3N0cmVhbSByOwotICAgIHIgPDwgIkF1dG9yaXphdGlvbiBmYWlsZWQgZm9y
-ICIgPDwgcmVxLT5jYWxsZXI7CisgICAgciA8PCAiQXV0aG9yaXphdGlvbiBmYWlsZWQgZm9yICIg
-PDwgcmVxLT5jYWxsZXI7CiAgICAgc3dpdGNoIChyZXEtPm9wZXJhdGlvbikKICAgICB7CiAgICAg
-Y2FzZSBPYmplY3Q6Ok9wZXJhdGlvbjo6TUVUSE9EX0NBTEw6Cg==
---000000000000115d3b06309b7f86--
+--
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/852?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings
+
+Gerrit-Project: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: I4879f983ed6cc035cd6ad8d571e00eb14f9ffdc1
+Gerrit-Change-Number: 852
+Gerrit-PatchSet: 2
+Gerrit-Owner: flichtenheld <frank@...2641...>
+Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Comment-Date: Tue, 18 Mar 2025 12:17:45 +0000
+Gerrit-HasComments: No
+Gerrit-Has-Labels: No
+Gerrit-MessageType: comment
+
+--BoTzCs5ogBc=
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<p> Attention is currently required from: plaisthos. </p>
+<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/852?usp=3Demail">View C=
+hange</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To view, v=
+isit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/852?usp=3Demail">chan=
+ge 852</a>. To unsubscribe, or for help writing mail filters, visit <a href=
+=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope ite=
+mtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"action"=
+ itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"h=
+ttp://gerrit.openvpn.net/c/openvpn/+/852?usp=3Demail"/><meta itemprop=3D"na=
+me" content=3D"View Change"/></div></div>
+
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I4879f983ed6cc035cd6ad8d571e=
+00eb14f9ffdc1 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 852 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
+<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
+.&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
+.1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Tue, 18 Mar 2025 12:17:45=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: No </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: No </div>
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
+
+
+--BoTzCs5ogBc=--
 
