@@ -1,17 +1,10 @@
-From: "stipa (Code Review)" <gerrit@...515...>
-Date: Tue, 18 Mar 2025 09:05:49 +0000
-In-Reply-To: <gerrit.1733989644000.I3fb01ab76cf3df0874ba92e08f371d17607a8369@...2715...>
-References: <gerrit.1733989644000.I3fb01ab76cf3df0874ba92e08f371d17607a8369@...2715...>
-Reply-To: lstipakov@...277..., arne-openvpn@...1227..., heiko@...515...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...,
- gert@...1296...
-Message-ID: <1908f022f8c6b54f9c88f7f5c4fe5873dac65693-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="tRCgKZxawiE="; charset=UTF-8
-Subject: [Openvpn-devel] [L] Change in openvpn[master]: dns: don't publish
- env vars to non-dns scripts
+From: Marc Leeman <marc.leeman@...277...>
+Date: Tue, 18 Mar 2025 11:37:33 +0100
+Message-ID: <CAH+fs=8tVbnH1Ha0FZN7J7yBMJarisLDw=p44mWtP7mtEnnmVQ@...278...>
+Content-Type: multipart/mixed; boundary="000000000000115d3b06309b7f86"
+Subject: [Openvpn-devel] [patch]: debian lintian informational warning
+ (Authorization)
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,119 +13,37 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: d12fk <heiko@...515...>
-Cc: flichtenheld <frank@...2641...>, plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: openvpn-devel@lists.sourceforge.net
 
---tRCgKZxawiE=
+--000000000000115d3b06309b7f86
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: cron2, d12fk, flichtenheld, plaisthos.
-
-stipa has posted comments on this change. ( http://gerrit.openvpn.net/c/ope=
-nvpn/+/840?usp=3Demail )
-
-Change subject: dns: don't publish env vars to non-dns scripts
-......................................................................
+trivial spelling error raised by lintian.
 
 
-Patch Set 15:
+-- 
+g. Marc
 
-(1 comment)
+GPG: 827C FD74 BA46 8152 A041 F3A0 7A6A 4F17 5995 A65B
 
-Patchset:
+--000000000000115d3b06309b7f86
+Content-Type: text/x-patch; charset="US-ASCII"; name="0001_spelling.patch"
+Content-Disposition: attachment; filename="0001_spelling.patch"
+Content-Transfer-Encoding: base64
+Content-ID: <f_m8eczoc30>
+X-Attachment-Id: f_m8eczoc30
 
-PS15:
-I like that tuntap_options_copy_dns() is removed (including warnings about =
-dhcp required) but I think this is separate from publishing dns vars to scr=
-ipts. Could we split it into two - one patch deals with copying options and=
- warnings and another one deals with env vars? Or am I missing something he=
-re?
-
-
-
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/840?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings
-
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: I3fb01ab76cf3df0874ba92e08f371d17607a8369
-Gerrit-Change-Number: 840
-Gerrit-PatchSet: 15
-Gerrit-Owner: d12fk <heiko@...515...>
-Gerrit-Reviewer: cron2 <gert@...1296...>
-Gerrit-Reviewer: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-CC: stipa <lstipakov@...277...>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: cron2 <gert@...1296...>
-Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Attention: d12fk <heiko@...515...>
-Gerrit-Comment-Date: Tue, 18 Mar 2025 09:05:49 +0000
-Gerrit-HasComments: Yes
-Gerrit-Has-Labels: No
-Gerrit-MessageType: comment
-
---tRCgKZxawiE=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<p> Attention is currently required from: cron2, d12fk, flichtenheld, plais=
-thos. </p>
-<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/840?usp=3Demail">View C=
-hange</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0;"><=
-li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-style=
-: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p style=
-=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/8=
-40?tab=3Dcomments">Patch Set #15:</a> </p><p style=3D"white-space: pre-wrap=
-; word-wrap: break-word;">I like that tuntap_options_copy_dns() is removed =
-(including warnings about dhcp required) but I think this is separate from =
-publishing dns vars to scripts. Could we split it into two - one patch deal=
-s with copying options and warnings and another one deals with env vars? Or=
- am I missing something here?</p></li></ul></li></ul><p>To view, visit <a h=
-ref=3D"http://gerrit.openvpn.net/c/openvpn/+/840?usp=3Demail">change 840</a=
->. To unsubscribe, or for help writing mail filters, visit <a href=3D"http:=
-//gerrit.openvpn.net/settings">settings</a>.</p><div itemscope itemtype=3D"=
-http://schema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=
-=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://ger=
-rit.openvpn.net/c/openvpn/+/840?usp=3Demail"/><meta itemprop=3D"name" conte=
-nt=3D"View Change"/></div></div>
-
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I3fb01ab76cf3df0874ba92e08f3=
-71d17607a8369 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 840 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 15 </div>
-<div style=3D"display:none"> Gerrit-Owner: d12fk &lt;heiko@...515...&gt; </=
-div>
-<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
- </div>
-<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
-1...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: stipa &lt;lstipakov@...277...&gt; <=
-/div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: cron2 &lt;gert@...1296...&gt=
-; </div>
-<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
-41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: d12fk &lt;heiko@...515...&gt=
-; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Tue, 18 Mar 2025 09:05:49=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: No </div>
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
-
-
---tRCgKZxawiE=--
+RGVzY3JpcHRpb246IEZpeCBzcGVsbGluZyBlcnJvciBpbiBlcnJvciBtZXNzYWdlCkF1dGhvcjog
+TWFyYyBMZWVtYW4gPG1hcmMubGVlbWFuQGdtYWlsLmNvbT4KIFdoZW4gcGFja2FnaW5nLCBsaW50
+aWFuIGNvbXBsYWlucyBhYm91dCBhIHNwZWxsaW5nIGVycm9yIChpbmZvcm1hdGlvbmFsKS4KTGFz
+dC1VcGRhdGU6IDIwMjUtMDMtMTgKCkluZGV4OiBzYWxzYS9nZGJ1c3BwL2dkYnVzcHAvYXV0aHot
+cmVxdWVzdC5jcHAKPT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09
+PT09PT09PT09PT09PT09PT09PT09PQotLS0gc2Fsc2Eub3JpZy9nZGJ1c3BwL2F1dGh6LXJlcXVl
+c3QuY3BwCisrKyBzYWxzYS9nZGJ1c3BwL2F1dGh6LXJlcXVlc3QuY3BwCkBAIC0zOCw3ICszOCw3
+IEBAIGNvbnN0IHN0ZDo6c3RyaW5nIEV4Y2VwdGlvbjo6Y29tcG9zZV9lcnIKICAgICB9CgogICAg
+IHN0ZDo6b3N0cmluZ3N0cmVhbSByOwotICAgIHIgPDwgIkF1dG9yaXphdGlvbiBmYWlsZWQgZm9y
+ICIgPDwgcmVxLT5jYWxsZXI7CisgICAgciA8PCAiQXV0aG9yaXphdGlvbiBmYWlsZWQgZm9yICIg
+PDwgcmVxLT5jYWxsZXI7CiAgICAgc3dpdGNoIChyZXEtPm9wZXJhdGlvbikKICAgICB7CiAgICAg
+Y2FzZSBPYmplY3Q6Ok9wZXJhdGlvbjo6TUVUSE9EX0NBTEw6Cg==
+--000000000000115d3b06309b7f86--
 
