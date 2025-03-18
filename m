@@ -1,14 +1,14 @@
 From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Tue, 18 Mar 2025 17:18:13 +0000
+Date: Tue, 18 Mar 2025 17:18:15 +0000
 In-Reply-To: <gerrit.1733851405000.I4f766fa22865eaf4466c31cf55e3d73b00008c38@...2715...>
 References: <gerrit.1733851405000.I4f766fa22865eaf4466c31cf55e3d73b00008c38@...2715...>
 Reply-To: gert@...1296..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <9776e7a31ea0b0f60c36ec957cc39d7822672669-EmailReplacePatchSet-HTML@...2715...>
+Message-ID: <9776e7a31ea0b0f60c36ec957cc39d7822672669-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="Yfnhn1UNmcQ="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="QB1dbig3bIw="; charset=UTF-8
 Subject: [Openvpn-devel] [L] Change in openvpn[master]: options: Cleanup and
  simplify options_postprocess_verify_ce
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -19,19 +19,15 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: flichtenheld <frank@...2641...>, plaisthos <arne-openvpn@...1227...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: flichtenheld <frank@...2641...>
+Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---Yfnhn1UNmcQ=
+--QB1dbig3bIw=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-cron2 has uploaded a new patch set (#4) to the change originally created by=
- flichtenheld. ( http://gerrit.openvpn.net/c/openvpn/+/832?usp=3Demail )
-
-The following approvals got outdated and were removed:
-Code-Review+2 by cron2
-
+cron2 has submitted this change. ( http://gerrit.openvpn.net/c/openvpn/+/83=
+2?usp=3Demail )
 
 Change subject: options: Cleanup and simplify options_postprocess_verify_ce
 ......................................................................
@@ -61,7 +57,7 @@ M src/openvpn/options.c
 1 file changed, 142 insertions(+), 272 deletions(-)
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/32/832/4
+
 
 diff --git a/src/openvpn/options.c b/src/openvpn/options.c
 index 31000e9..67ef55b 100644
@@ -85,7 +81,7 @@ version of OpenVPN.");
 @@ -2388,6 +2395,11 @@
      msg(M_USAGE, "%s", str);
  }
-=20
+
 +#define MUST_BE_UNDEF(parm, parm_name) \
 +    if (options->parm !=3D defaults.parm) { msg(M_USAGE, use_err, parm_nam=
 e); }
@@ -729,360 +725,357 @@ Gerrit-Owner: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: cron2 <gert@...1296...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-MessageType: newpatchset
+Gerrit-MessageType: merged
 
---Yfnhn1UNmcQ=
+--QB1dbig3bIw=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p>cron2 <strong>uploaded patch set #4</strong> to the change originally cr=
-eated by flichtenheld.</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn=
-/+/832?usp=3Demail">View Change</a></p><p>The following approvals got outda=
-ted and were removed:
-Code-Review+2 by cron2</p><pre style=3D"font-family: monospace,monospace; w=
-hite-space: pre-wrap;">options: Cleanup and simplify options_postprocess_ve=
-rify_ce<br><br>- Reuse the MUST_BE_UNDEF macro in more places<br>- Add a se=
-cond parameter so it actually reports the<br>  correct option name<br>- Add=
- MUST_BE_FALSE for similar cases<br>- Reorder the checks for cert/key optio=
-ns to make<br>  more sense. Some of the checks could have never<br>  fired =
-due to wrong placement of the management<br>  checks<br>- Some other small =
-cleanups like missing spaces<br>  in multiline string literal<br><br>Change=
--Id: I4f766fa22865eaf4466c31cf55e3d73b00008c38<br>Signed-off-by: Frank Lich=
-tenheld &lt;frank@...2641...&gt;<br>Acked-by: Gert Doering &lt;gert@...1726...=
-...&gt;<br>Message-Id: &lt;20250318155320.32573-1-gert@...1296...&gt;<br>UR=
-L: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg3115=
-5.html<br>Signed-off-by: Gert Doering &lt;gert@...1296...&gt;<br>---<br>M s=
-rc/openvpn/options.c<br>1 file changed, 142 insertions(+), 272 deletions(-)=
-<br><br></pre><pre style=3D"font-family: monospace,monospace; white-space: =
-pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/32/=
-832/4</pre><pre style=3D"font-family: monospace,monospace; white-space: pre=
--wrap;"><span>diff --git a/src/openvpn/options.c b/src/openvpn/options.c</s=
-pan><br><span>index 31000e9..67ef55b 100644</span><br><span>--- a/src/openv=
-pn/options.c</span><br><span>+++ b/src/openvpn/options.c</span><br><span>@@=
- -2369,6 +2369,13 @@</span><br><span> static void</span><br><span> check_ca=
-_required(const struct options *options)</span><br><span> {</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+#ifdef ENABLE_CRYPTO_MBEDTLS</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+    if (options-&gt;ca_pat=
-h)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+        msg(M_USAGE, &quot;Para=
-meter --capath cannot be used with the mbed TLS version of OpenVPN.&quot;);=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+#endif</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+</span><br><span>     if (options-&gt;verify_h=
-ash_no_ca</span><br><span>         || options-&gt;pkcs12_file</span><br><sp=
-an>         || options-&gt;ca_file</span><br><span>@@ -2388,6 +2395,11 @@</=
-span><br><span>     msg(M_USAGE, &quot;%s&quot;, str);</span><br><span> }</=
-span><br><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+#de=
-fine MUST_BE_UNDEF(parm, parm_name) \</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+    if (options-&gt;parm !=3D defaults.parm) { msg(M_USAG=
-E, use_err, parm_name); }</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+#define MUST_BE_FALSE(condition, parm_name) \</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    if (condition) { msg(M_USAGE, use_err=
-, parm_name); }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</sp=
-an><br><span> static void</span><br><span> options_postprocess_verify_ce(co=
-nst struct options *options,</span><br><span>                              =
- const struct connection_entry *ce)</span><br><span>@@ -2636,6 +2648,8 @@</=
-span><br><span>      */</span><br><span>     if (options-&gt;mode =3D=3D MO=
-DE_SERVER)</span><br><span>     {</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+        const char use_err[] =3D &quot;--%s cannot be used wi=
-th --mode server.&quot;;</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+</span><br><span> #define USAGE_VALID_SERVER_PROTOS &quot;--mode serve=
-r currently only supports &quot; \</span><br><span>     &quot;--proto value=
-s of udp, tcp-server, tcp4-server, or tcp6-server&quot;</span><br><span> #i=
-fdef TARGET_ANDROID</span><br><span>@@ -2645,10 +2659,7 @@</span><br><span>=
-         {</span><br><span>             msg(M_USAGE, &quot;--mode server on=
-ly works with --dev tun or --dev tap&quot;);</span><br><span>         }</sp=
-an><br><span style=3D"color: hsl(0, 100%, 40%);">-        if (options-&gt;p=
-ull)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        {</span><=
-br><span style=3D"color: hsl(0, 100%, 40%);">-            msg(M_USAGE, &quo=
-t;--pull cannot be used with --mode server&quot;);</span><br><span style=3D=
-"color: hsl(0, 100%, 40%);">-        }</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+        MUST_BE_UNDEF(pull, &quot;pull&quot;);</span><br=
-><span>         if (options-&gt;pull_filter_list)</span><br><span>         =
-{</span><br><span>             msg(M_WARN, &quot;--pull-filter ignored for =
---mode server&quot;);</span><br><span>@@ -2669,22 +2680,10 @@</span><br><sp=
-an>         {</span><br><span>             msg(M_USAGE, &quot;--mode server=
- requires --tls-server&quot;);</span><br><span>         }</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-        if (ce-&gt;remote)</span><br><s=
-pan style=3D"color: hsl(0, 100%, 40%);">-        {</span><br><span style=3D=
-"color: hsl(0, 100%, 40%);">-            msg(M_USAGE, &quot;--remote cannot=
- be used with --mode server&quot;);</span><br><span style=3D"color: hsl(0, =
-100%, 40%);">-        }</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
->-        if (!ce-&gt;bind_local)</span><br><span style=3D"color: hsl(0, 10=
-0%, 40%);">-        {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
-            msg(M_USAGE, &quot;--nobind cannot be used with --mode server&q=
-uot;);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        }</span=
-><br><span style=3D"color: hsl(0, 100%, 40%);">-        if (ce-&gt;http_pro=
-xy_options)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        {<=
-/span><br><span style=3D"color: hsl(0, 100%, 40%);">-            msg(M_USAG=
-E, &quot;--http-proxy cannot be used with --mode server&quot;);</span><br><=
-span style=3D"color: hsl(0, 100%, 40%);">-        }</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-        if (ce-&gt;socks_proxy_server)</spa=
-n><br><span style=3D"color: hsl(0, 100%, 40%);">-        {</span><br><span =
-style=3D"color: hsl(0, 100%, 40%);">-            msg(M_USAGE, &quot;--socks=
--proxy cannot be used with --mode server&quot;);</span><br><span style=3D"c=
-olor: hsl(0, 100%, 40%);">-        }</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+        MUST_BE_FALSE(ce-&gt;remote, &quot;remote&quot;);<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+        MUST_BE_FALS=
-E(!ce-&gt;bind_local, &quot;nobind&quot;);</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+        MUST_BE_FALSE(ce-&gt;http_proxy_options, &qu=
-ot;http-proxy&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+        MUST_BE_FALSE(ce-&gt;socks_proxy_server, &quot;socks-proxy&quot;)=
-;</span><br><span>         /* &lt;connection&gt; blocks force to have a rem=
-ote embedded, so we check</span><br><span>          * for the --remote and =
-bail out if it is present</span><br><span>          */</span><br><span>@@ -=
-2694,10 +2693,7 @@</span><br><span>             msg(M_USAGE, &quot;&lt;conn=
-ection&gt; cannot be used with --mode server&quot;);</span><br><span>      =
-   }</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">=
--        if (options-&gt;shaper)</span><br><span style=3D"color: hsl(0, 100=
-%, 40%);">-        {</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
-           msg(M_USAGE, &quot;--shaper cannot be used with --mode server&qu=
-ot;);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        }</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+        MUST_BE_UNDEF(shap=
-er, &quot;shaper&quot;);</span><br><span>         if (options-&gt;ipchange)=
-</span><br><span>         {</span><br><span>             msg(M_USAGE,</span=
-><br><span>@@ -2720,14 +2716,8 @@</span><br><span>         {</span><br><spa=
-n>             msg(M_USAGE, &quot;--redirect-gateway cannot be used with --=
-mode server (however --push \&quot;redirect-gateway\&quot; is fine)&quot;);=
-</span><br><span>         }</span><br><span style=3D"color: hsl(0, 100%, 40=
-%);">-        if (options-&gt;route_delay_defined)</span><br><span style=3D=
-"color: hsl(0, 100%, 40%);">-        {</span><br><span style=3D"color: hsl(=
-0, 100%, 40%);">-            msg(M_USAGE, &quot;--route-delay cannot be use=
-d with --mode server&quot;);</span><br><span style=3D"color: hsl(0, 100%, 4=
-0%);">-        }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-     =
-   if (options-&gt;up_delay)</span><br><span style=3D"color: hsl(0, 100%, 4=
-0%);">-        {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-     =
-       msg(M_USAGE, &quot;--up-delay cannot be used with --mode server&quot=
-;);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        }</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+        MUST_BE_UNDEF(route_=
-delay_defined, &quot;route-delay&quot;);</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+        MUST_BE_UNDEF(up_delay, &quot;up-delay&quot;);=
-</span><br><span>         if (!options-&gt;ifconfig_pool_defined</span><br>=
-<span>             &amp;&amp; !options-&gt;ifconfig_ipv6_pool_defined</span=
-><br><span>             &amp;&amp; options-&gt;ifconfig_pool_persist_filena=
-me)</span><br><span>@@ -2739,10 +2729,7 @@</span><br><span>         {</span=
-><br><span>             msg(M_USAGE, &quot;--ifconfig-ipv6-pool needs --ifc=
-onfig-ipv6&quot;);</span><br><span>         }</span><br><span style=3D"colo=
-r: hsl(0, 100%, 40%);">-        if (options-&gt;allow_recursive_routing)</s=
-pan><br><span style=3D"color: hsl(0, 100%, 40%);">-        {</span><br><spa=
-n style=3D"color: hsl(0, 100%, 40%);">-            msg(M_USAGE, &quot;--all=
-ow-recursive-routing cannot be used with --mode server&quot;);</span><br><s=
-pan style=3D"color: hsl(0, 100%, 40%);">-        }</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+        MUST_BE_UNDEF(allow_recursive_routin=
-g, &quot;allow-recursive-routing&quot;);</span><br><span>         if (optio=
-ns-&gt;auth_user_pass_file)</span><br><span>         {</span><br><span>    =
-         msg(M_USAGE, &quot;--auth-user-pass cannot be used with --mode ser=
-ver (it should be used on the client side only)&quot;);</span><br><span>@@ =
--2764,23 +2751,19 @@</span><br><span>                 options-&gt;handshake=
-_window);</span><br><span> </span><br><span>         }</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+        if (!options-&gt;auth_user_pass_=
-verify_script</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
-      || PLUGIN_OPTION_LIST(options)</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+            || MAN_CLIENT_AUTH_ENABLED(options))</span><br=
-><span>         {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
-        const bool ccnr =3D (options-&gt;auth_user_pass_verify_script</span=
-><br><span style=3D"color: hsl(0, 100%, 40%);">-                           =
-    || PLUGIN_OPTION_LIST(options)</span><br><span style=3D"color: hsl(0, 1=
-00%, 40%);">-                               || MAN_CLIENT_AUTH_ENABLED(opti=
-ons));</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            con=
-st char *postfix =3D &quot;must be used with --management-client-auth, an -=
--auth-user-pass-verify script, or plugin&quot;;</span><br><span style=3D"co=
-lor: hsl(0, 100%, 40%);">-            if ((options-&gt;ssl_flags &amp; (SSL=
-F_CLIENT_CERT_NOT_REQUIRED|SSLF_CLIENT_CERT_OPTIONAL)) &amp;&amp; !ccnr)</s=
-pan><br><span style=3D"color: hsl(0, 100%, 40%);">-            {</span><br>=
-<span style=3D"color: hsl(0, 100%, 40%);">-                msg(M_USAGE, &qu=
-ot;--verify-client-cert none|optional %s&quot;, postfix);</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-            }</span><br><span style=3D"=
-color: hsl(0, 100%, 40%);">-            if ((options-&gt;ssl_flags &amp; SS=
-LF_USERNAME_AS_COMMON_NAME) &amp;&amp; !ccnr)</span><br><span style=3D"colo=
-r: hsl(0, 100%, 40%);">-            {</span><br><span style=3D"color: hsl(0=
-, 100%, 40%);">-                msg(M_USAGE, &quot;--username-as-common-nam=
-e %s&quot;, postfix);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
-            }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        =
-    if ((options-&gt;ssl_flags &amp; SSLF_AUTH_USER_PASS_OPTIONAL) &amp;&am=
-p; !ccnr)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            =
-{</span><br><span style=3D"color: hsl(0, 100%, 40%);">-                msg(=
-M_USAGE, &quot;--auth-user-pass-optional %s&quot;, postfix);</span><br><spa=
-n style=3D"color: hsl(0, 100%, 40%);">-            }</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+            const char *use_err =3D &quot=
-;--%s must be used with --management-client-auth, an --auth-user-pass-verif=
-y script, or plugin&quot;;</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            =
-MUST_BE_FALSE(options-&gt;ssl_flags</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+                          &amp; (SSLF_CLIENT_CERT_NOT_REQUI=
-RED|SSLF_CLIENT_CERT_OPTIONAL),</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+                          &quot;verify-client-cert none|optiona=
-l&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+          =
-  MUST_BE_FALSE(options-&gt;ssl_flags &amp; SSLF_USERNAME_AS_COMMON_NAME,</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+                     =
-     &quot;username-as-common-name&quot;);</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+            MUST_BE_FALSE(options-&gt;ssl_flags &amp=
-; SSLF_AUTH_USER_PASS_OPTIONAL,</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+                          &quot;auth-user-pass-optional&quot;);=
-</span><br><span>         }</span><br><span> </span><br><span>         if (=
-options-&gt;vlan_tagging &amp;&amp; dev !=3D DEV_TYPE_TAP)</span><br><span>=
-@@ -2789,125 +2772,65 @@</span><br><span>         }</span><br><span>       =
-  if (!options-&gt;vlan_tagging)</span><br><span>         {</span><br><span=
- style=3D"color: hsl(0, 100%, 40%);">-            if (options-&gt;vlan_acce=
-pt !=3D defaults.vlan_accept)</span><br><span style=3D"color: hsl(0, 100%, =
-40%);">-            {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
-                msg(M_USAGE, &quot;--vlan-accept requires --vlan-tagging&qu=
-ot;);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            }</s=
-pan><br><span style=3D"color: hsl(0, 100%, 40%);">-            if (options-=
-&gt;vlan_pvid !=3D defaults.vlan_pvid)</span><br><span style=3D"color: hsl(=
-0, 100%, 40%);">-            {</span><br><span style=3D"color: hsl(0, 100%,=
- 40%);">-                msg(M_USAGE, &quot;--vlan-pvid requires --vlan-tag=
-ging&quot;);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-         =
-   }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            con=
-st char use_err[] =3D &quot;--%s requires --vlan-tagging&quot;;</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+            MUST_BE_UNDEF(vlan_=
-accept, &quot;vlan-accept&quot;);</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+            MUST_BE_UNDEF(vlan_pvid, &quot;vlan-pvid&quot;);<=
-/span><br><span>         }</span><br><span>     }</span><br><span>     else=
+<p>cron2 <strong>submitted</strong> this change.</p><p><a href=3D"http://ge=
+rrit.openvpn.net/c/openvpn/+/832?usp=3Demail">View Change</a></p><div style=
+=3D"white-space:pre-wrap"></div><pre style=3D"font-family: monospace,monosp=
+ace; white-space: pre-wrap;">options: Cleanup and simplify options_postproc=
+ess_verify_ce<br><br>- Reuse the MUST_BE_UNDEF macro in more places<br>- Ad=
+d a second parameter so it actually reports the<br>  correct option name<br=
+>- Add MUST_BE_FALSE for similar cases<br>- Reorder the checks for cert/key=
+ options to make<br>  more sense. Some of the checks could have never<br>  =
+fired due to wrong placement of the management<br>  checks<br>- Some other =
+small cleanups like missing spaces<br>  in multiline string literal<br><br>=
+Change-Id: I4f766fa22865eaf4466c31cf55e3d73b00008c38<br>Signed-off-by: Fran=
+k Lichtenheld &lt;frank@...2641...&gt;<br>Acked-by: Gert Doering &lt;gert@...220...=
+..1296...&gt;<br>Message-Id: &lt;20250318155320.32573-1-gert@...1296...&gt;=
+<br>URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/m=
+sg31155.html<br>Signed-off-by: Gert Doering &lt;gert@...1296...&gt;<br>---<=
+br>M src/openvpn/options.c<br>1 file changed, 142 insertions(+), 272 deleti=
+ons(-)<br><br></pre>
+<pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><sp=
+an>diff --git a/src/openvpn/options.c b/src/openvpn/options.c</span><br><sp=
+an>index 31000e9..67ef55b 100644</span><br><span>--- a/src/openvpn/options.=
+c</span><br><span>+++ b/src/openvpn/options.c</span><br><span>@@ -2369,6 +2=
+369,13 @@</span><br><span> static void</span><br><span> check_ca_required(c=
+onst struct options *options)</span><br><span> {</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+#ifdef ENABLE_CRYPTO_MBEDTLS</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+    if (options-&gt;ca_path)</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+        msg(M_USAGE, &quot;Parameter --ca=
+path cannot be used with the mbed TLS version of OpenVPN.&quot;);</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+#endif</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+</span><br><span>     if (options-&gt;verify_hash_no_c=
+a</span><br><span>         || options-&gt;pkcs12_file</span><br><span>     =
+    || options-&gt;ca_file</span><br><span>@@ -2388,6 +2395,11 @@</span><br=
+><span>     msg(M_USAGE, &quot;%s&quot;, str);</span><br><span> }</span><br=
+><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+#define MUS=
+T_BE_UNDEF(parm, parm_name) \</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+    if (options-&gt;parm !=3D defaults.parm) { msg(M_USAGE, use_e=
+rr, parm_name); }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#d=
+efine MUST_BE_FALSE(condition, parm_name) \</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+    if (condition) { msg(M_USAGE, use_err, parm_nam=
+e); }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><sp=
+an> static void</span><br><span> options_postprocess_verify_ce(const struct=
+ options *options,</span><br><span>                               const str=
+uct connection_entry *ce)</span><br><span>@@ -2636,6 +2648,8 @@</span><br><=
+span>      */</span><br><span>     if (options-&gt;mode =3D=3D MODE_SERVER)=
 </span><br><span>     {</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+        const char use_err[] =3D &quot;--%s requires --mode server&quot=
-;;</span><br><span>         /*</span><br><span>          * When not in serv=
-er mode, err if parameters are</span><br><span>          * specified which =
-require --mode server.</span><br><span>          */</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-        if (options-&gt;ifconfig_pool_defin=
-ed || options-&gt;ifconfig_pool_persist_filename)</span><br><span style=3D"=
-color: hsl(0, 100%, 40%);">-        {</span><br><span style=3D"color: hsl(0=
-, 100%, 40%);">-            msg(M_USAGE, &quot;--ifconfig-pool/--ifconfig-p=
-ool-persist requires --mode server&quot;);</span><br><span style=3D"color: =
-hsl(0, 100%, 40%);">-        }</span><br><span style=3D"color: hsl(0, 100%,=
- 40%);">-        if (options-&gt;ifconfig_ipv6_pool_defined)</span><br><spa=
-n style=3D"color: hsl(0, 100%, 40%);">-        {</span><br><span style=3D"c=
-olor: hsl(0, 100%, 40%);">-            msg(M_USAGE, &quot;--ifconfig-ipv6-p=
-ool requires --mode server&quot;);</span><br><span style=3D"color: hsl(0, 1=
-00%, 40%);">-        }</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
--        if (options-&gt;real_hash_size !=3D defaults.real_hash_size</span>=
-<br><span style=3D"color: hsl(0, 100%, 40%);">-            || options-&gt;v=
-irtual_hash_size !=3D defaults.virtual_hash_size)</span><br><span style=3D"=
-color: hsl(0, 100%, 40%);">-        {</span><br><span style=3D"color: hsl(0=
-, 100%, 40%);">-            msg(M_USAGE, &quot;--hash-size requires --mode =
-server&quot;);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-       =
- }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        if (options=
--&gt;learn_address_script)</span><br><span style=3D"color: hsl(0, 100%, 40%=
-);">-        {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-       =
-     msg(M_USAGE, &quot;--learn-address requires --mode server&quot;);</spa=
-n><br><span style=3D"color: hsl(0, 100%, 40%);">-        }</span><br><span =
-style=3D"color: hsl(0, 100%, 40%);">-        if (options-&gt;client_connect=
-_script)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        {</sp=
-an><br><span style=3D"color: hsl(0, 100%, 40%);">-            msg(M_USAGE, =
-&quot;--client-connect requires --mode server&quot;);</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-        }</span><br><span style=3D"color: h=
-sl(0, 100%, 40%);">-        if (options-&gt;client_crresponse_script)</span=
+;">+        const char use_err[] =3D &quot;--%s cannot be used with --mode =
+server.&quot;;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</spa=
+n><br><span> #define USAGE_VALID_SERVER_PROTOS &quot;--mode server currentl=
+y only supports &quot; \</span><br><span>     &quot;--proto values of udp, =
+tcp-server, tcp4-server, or tcp6-server&quot;</span><br><span> #ifdef TARGE=
+T_ANDROID</span><br><span>@@ -2645,10 +2659,7 @@</span><br><span>         {=
+</span><br><span>             msg(M_USAGE, &quot;--mode server only works w=
+ith --dev tun or --dev tap&quot;);</span><br><span>         }</span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-        if (options-&gt;pull)</span=
 ><br><span style=3D"color: hsl(0, 100%, 40%);">-        {</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-            msg(M_USAGE, &quot;--client=
--crresponse requires --mode server&quot;);</span><br><span style=3D"color: =
-hsl(0, 100%, 40%);">-        }</span><br><span style=3D"color: hsl(0, 100%,=
- 40%);">-        if (options-&gt;client_disconnect_script)</span><br><span =
-style=3D"color: hsl(0, 100%, 40%);">-        {</span><br><span style=3D"col=
-or: hsl(0, 100%, 40%);">-            msg(M_USAGE, &quot;--client-disconnect=
- requires --mode server&quot;);</span><br><span style=3D"color: hsl(0, 100%=
-, 40%);">-        }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
-      if (options-&gt;client_config_dir || options-&gt;ccd_exclusive)</span=
-><br><span style=3D"color: hsl(0, 100%, 40%);">-        {</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-            msg(M_USAGE, &quot;--client=
--config-dir/--ccd-exclusive requires --mode server&quot;);</span><br><span =
-style=3D"color: hsl(0, 100%, 40%);">-        }</span><br><span style=3D"col=
-or: hsl(0, 100%, 40%);">-        if (options-&gt;enable_c2c)</span><br><spa=
-n style=3D"color: hsl(0, 100%, 40%);">-        {</span><br><span style=3D"c=
-olor: hsl(0, 100%, 40%);">-            msg(M_USAGE, &quot;--client-to-clien=
-t requires --mode server&quot;);</span><br><span style=3D"color: hsl(0, 100=
-%, 40%);">-        }</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
-       if (options-&gt;duplicate_cn)</span><br><span style=3D"color: hsl(0,=
- 100%, 40%);">-        {</span><br><span style=3D"color: hsl(0, 100%, 40%);=
-">-            msg(M_USAGE, &quot;--duplicate-cn requires --mode server&quo=
-t;);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        }</span><=
-br><span style=3D"color: hsl(0, 100%, 40%);">-        if (options-&gt;cf_ma=
-x || options-&gt;cf_per)</span><br><span style=3D"color: hsl(0, 100%, 40%);=
+tyle=3D"color: hsl(0, 100%, 40%);">-            msg(M_USAGE, &quot;--pull c=
+annot be used with --mode server&quot;);</span><br><span style=3D"color: hs=
+l(0, 100%, 40%);">-        }</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+        MUST_BE_UNDEF(pull, &quot;pull&quot;);</span><br><span>   =
+      if (options-&gt;pull_filter_list)</span><br><span>         {</span><b=
+r><span>             msg(M_WARN, &quot;--pull-filter ignored for --mode ser=
+ver&quot;);</span><br><span>@@ -2669,22 +2680,10 @@</span><br><span>       =
+  {</span><br><span>             msg(M_USAGE, &quot;--mode server requires =
+--tls-server&quot;);</span><br><span>         }</span><br><span style=3D"co=
+lor: hsl(0, 100%, 40%);">-        if (ce-&gt;remote)</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-        {</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-            msg(M_USAGE, &quot;--remote cannot be used =
+with --mode server&quot;);</span><br><span style=3D"color: hsl(0, 100%, 40%=
+);">-        }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-       =
+ if (!ce-&gt;bind_local)</span><br><span style=3D"color: hsl(0, 100%, 40%);=
 ">-        {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-         =
-   msg(M_USAGE, &quot;--connect-freq requires --mode server&quot;);</span><=
+   msg(M_USAGE, &quot;--nobind cannot be used with --mode server&quot;);</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-        }</span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">-        if (ce-&gt;http_proxy_option=
+s)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        {</span><br=
+><span style=3D"color: hsl(0, 100%, 40%);">-            msg(M_USAGE, &quot;=
+--http-proxy cannot be used with --mode server&quot;);</span><br><span styl=
+e=3D"color: hsl(0, 100%, 40%);">-        }</span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">-        if (ce-&gt;socks_proxy_server)</span><br><span=
+ style=3D"color: hsl(0, 100%, 40%);">-        {</span><br><span style=3D"co=
+lor: hsl(0, 100%, 40%);">-            msg(M_USAGE, &quot;--socks-proxy cann=
+ot be used with --mode server&quot;);</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-        }</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+        MUST_BE_FALSE(ce-&gt;remote, &quot;remote&quot;);</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+        MUST_BE_FALSE(!ce-&gt;b=
+ind_local, &quot;nobind&quot;);</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+        MUST_BE_FALSE(ce-&gt;http_proxy_options, &quot;http-pro=
+xy&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        M=
+UST_BE_FALSE(ce-&gt;socks_proxy_server, &quot;socks-proxy&quot;);</span><br=
+><span>         /* &lt;connection&gt; blocks force to have a remote embedde=
+d, so we check</span><br><span>          * for the --remote and bail out if=
+ it is present</span><br><span>          */</span><br><span>@@ -2694,10 +26=
+93,7 @@</span><br><span>             msg(M_USAGE, &quot;&lt;connection&gt; =
+cannot be used with --mode server&quot;);</span><br><span>         }</span>=
+<br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-        if=
+ (options-&gt;shaper)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
+        {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            =
+msg(M_USAGE, &quot;--shaper cannot be used with --mode server&quot;);</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-        }</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+        MUST_BE_UNDEF(shaper, &quot;s=
+haper&quot;);</span><br><span>         if (options-&gt;ipchange)</span><br>=
+<span>         {</span><br><span>             msg(M_USAGE,</span><br><span>=
+@@ -2720,14 +2716,8 @@</span><br><span>         {</span><br><span>         =
+    msg(M_USAGE, &quot;--redirect-gateway cannot be used with --mode server=
+ (however --push \&quot;redirect-gateway\&quot; is fine)&quot;);</span><br>=
+<span>         }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-     =
+   if (options-&gt;route_delay_defined)</span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-        {</span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">-            msg(M_USAGE, &quot;--route-delay cannot be used with --mo=
+de server&quot;);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
+    }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        if (opti=
+ons-&gt;up_delay)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
+    {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            msg(=
+M_USAGE, &quot;--up-delay cannot be used with --mode server&quot;);</span><=
 br><span style=3D"color: hsl(0, 100%, 40%);">-        }</span><br><span sty=
-le=3D"color: hsl(0, 100%, 40%);">-        if (options-&gt;ssl_flags &amp; (=
-SSLF_CLIENT_CERT_NOT_REQUIRED|SSLF_CLIENT_CERT_OPTIONAL))</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-        {</span><br><span style=3D"colo=
-r: hsl(0, 100%, 40%);">-            msg(M_USAGE, &quot;--verify-client-cert=
- requires --mode server&quot;);</span><br><span style=3D"color: hsl(0, 100%=
-, 40%);">-        }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
-      if (options-&gt;ssl_flags &amp; SSLF_USERNAME_AS_COMMON_NAME)</span><=
-br><span style=3D"color: hsl(0, 100%, 40%);">-        {</span><br><span sty=
-le=3D"color: hsl(0, 100%, 40%);">-            msg(M_USAGE, &quot;--username=
--as-common-name requires --mode server&quot;);</span><br><span style=3D"col=
-or: hsl(0, 100%, 40%);">-        }</span><br><span style=3D"color: hsl(0, 1=
-00%, 40%);">-        if (options-&gt;ssl_flags &amp; SSLF_AUTH_USER_PASS_OP=
-TIONAL)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        {</spa=
+le=3D"color: hsl(120, 100%, 40%);">+        MUST_BE_UNDEF(route_delay_defin=
+ed, &quot;route-delay&quot;);</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+        MUST_BE_UNDEF(up_delay, &quot;up-delay&quot;);</span><br>=
+<span>         if (!options-&gt;ifconfig_pool_defined</span><br><span>     =
+        &amp;&amp; !options-&gt;ifconfig_ipv6_pool_defined</span><br><span>=
+             &amp;&amp; options-&gt;ifconfig_pool_persist_filename)</span><=
+br><span>@@ -2739,10 +2729,7 @@</span><br><span>         {</span><br><span>=
+             msg(M_USAGE, &quot;--ifconfig-ipv6-pool needs --ifconfig-ipv6&=
+quot;);</span><br><span>         }</span><br><span style=3D"color: hsl(0, 1=
+00%, 40%);">-        if (options-&gt;allow_recursive_routing)</span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-        {</span><br><span style=3D"=
+color: hsl(0, 100%, 40%);">-            msg(M_USAGE, &quot;--allow-recursiv=
+e-routing cannot be used with --mode server&quot;);</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-        }</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+        MUST_BE_UNDEF(allow_recursive_routing, &quot;=
+allow-recursive-routing&quot;);</span><br><span>         if (options-&gt;au=
+th_user_pass_file)</span><br><span>         {</span><br><span>             =
+msg(M_USAGE, &quot;--auth-user-pass cannot be used with --mode server (it s=
+hould be used on the client side only)&quot;);</span><br><span>@@ -2764,23 =
++2751,19 @@</span><br><span>                 options-&gt;handshake_window);=
+</span><br><span> </span><br><span>         }</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+        if (!options-&gt;auth_user_pass_verify_sc=
+ript</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            || =
+PLUGIN_OPTION_LIST(options)</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+            || MAN_CLIENT_AUTH_ENABLED(options))</span><br><span>  =
+       {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            c=
+onst bool ccnr =3D (options-&gt;auth_user_pass_verify_script</span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">-                               || PL=
+UGIN_OPTION_LIST(options)</span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">-                               || MAN_CLIENT_AUTH_ENABLED(options));</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-            const char *=
+postfix =3D &quot;must be used with --management-client-auth, an --auth-use=
+r-pass-verify script, or plugin&quot;;</span><br><span style=3D"color: hsl(=
+0, 100%, 40%);">-            if ((options-&gt;ssl_flags &amp; (SSLF_CLIENT_=
+CERT_NOT_REQUIRED|SSLF_CLIENT_CERT_OPTIONAL)) &amp;&amp; !ccnr)</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-            {</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-                msg(M_USAGE, &quot;--veri=
+fy-client-cert none|optional %s&quot;, postfix);</span><br><span style=3D"c=
+olor: hsl(0, 100%, 40%);">-            }</span><br><span style=3D"color: hs=
+l(0, 100%, 40%);">-            if ((options-&gt;ssl_flags &amp; SSLF_USERNA=
+ME_AS_COMMON_NAME) &amp;&amp; !ccnr)</span><br><span style=3D"color: hsl(0,=
+ 100%, 40%);">-            {</span><br><span style=3D"color: hsl(0, 100%, 4=
+0%);">-                msg(M_USAGE, &quot;--username-as-common-name %s&quot=
+;, postfix);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-         =
+   }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            if ((=
+options-&gt;ssl_flags &amp; SSLF_AUTH_USER_PASS_OPTIONAL) &amp;&amp; !ccnr)=
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            {</span><=
+br><span style=3D"color: hsl(0, 100%, 40%);">-                msg(M_USAGE, =
+&quot;--auth-user-pass-optional %s&quot;, postfix);</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-            }</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+            const char *use_err =3D &quot;--%s mu=
+st be used with --management-client-auth, an --auth-user-pass-verify script=
+, or plugin&quot;;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+            MUST_BE_=
+FALSE(options-&gt;ssl_flags</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+                          &amp; (SSLF_CLIENT_CERT_NOT_REQUIRED|SSLF=
+_CLIENT_CERT_OPTIONAL),</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+                          &quot;verify-client-cert none|optional&quot;)=
+;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            MUST_B=
+E_FALSE(options-&gt;ssl_flags &amp; SSLF_USERNAME_AS_COMMON_NAME,</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+                          &qu=
+ot;username-as-common-name&quot;);</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+            MUST_BE_FALSE(options-&gt;ssl_flags &amp; SSLF_A=
+UTH_USER_PASS_OPTIONAL,</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+                          &quot;auth-user-pass-optional&quot;);</span><=
+br><span>         }</span><br><span> </span><br><span>         if (options-=
+&gt;vlan_tagging &amp;&amp; dev !=3D DEV_TYPE_TAP)</span><br><span>@@ -2789=
+,125 +2772,65 @@</span><br><span>         }</span><br><span>         if (!o=
+ptions-&gt;vlan_tagging)</span><br><span>         {</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-            if (options-&gt;vlan_accept !=
+=3D defaults.vlan_accept)</span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">-            {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
+            msg(M_USAGE, &quot;--vlan-accept requires --vlan-tagging&quot;)=
+;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            }</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-            if (options-&gt;=
+vlan_pvid !=3D defaults.vlan_pvid)</span><br><span style=3D"color: hsl(0, 1=
+00%, 40%);">-            {</span><br><span style=3D"color: hsl(0, 100%, 40%=
+);">-                msg(M_USAGE, &quot;--vlan-pvid requires --vlan-tagging=
+&quot;);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            }=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            const c=
+har use_err[] =3D &quot;--%s requires --vlan-tagging&quot;;</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+            MUST_BE_UNDEF(vlan_acce=
+pt, &quot;vlan-accept&quot;);</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+            MUST_BE_UNDEF(vlan_pvid, &quot;vlan-pvid&quot;);</spa=
+n><br><span>         }</span><br><span>     }</span><br><span>     else</sp=
+an><br><span>     {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+        const char use_err[] =3D &quot;--%s requires --mode server&quot;;</=
+span><br><span>         /*</span><br><span>          * When not in server m=
+ode, err if parameters are</span><br><span>          * specified which requ=
+ire --mode server.</span><br><span>          */</span><br><span style=3D"co=
+lor: hsl(0, 100%, 40%);">-        if (options-&gt;ifconfig_pool_defined || =
+options-&gt;ifconfig_pool_persist_filename)</span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-        {</span><br><span style=3D"color: hsl(0, 100%=
+, 40%);">-            msg(M_USAGE, &quot;--ifconfig-pool/--ifconfig-pool-pe=
+rsist requires --mode server&quot;);</span><br><span style=3D"color: hsl(0,=
+ 100%, 40%);">-        }</span><br><span style=3D"color: hsl(0, 100%, 40%);=
+">-        if (options-&gt;ifconfig_ipv6_pool_defined)</span><br><span styl=
+e=3D"color: hsl(0, 100%, 40%);">-        {</span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">-            msg(M_USAGE, &quot;--ifconfig-ipv6-pool re=
+quires --mode server&quot;);</span><br><span style=3D"color: hsl(0, 100%, 4=
+0%);">-        }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-     =
+   if (options-&gt;real_hash_size !=3D defaults.real_hash_size</span><br><s=
+pan style=3D"color: hsl(0, 100%, 40%);">-            || options-&gt;virtual=
+_hash_size !=3D defaults.virtual_hash_size)</span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-        {</span><br><span style=3D"color: hsl(0, 100%=
+, 40%);">-            msg(M_USAGE, &quot;--hash-size requires --mode server=
+&quot;);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        }</sp=
+an><br><span style=3D"color: hsl(0, 100%, 40%);">-        if (options-&gt;l=
+earn_address_script)</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
+       {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            m=
+sg(M_USAGE, &quot;--learn-address requires --mode server&quot;);</span><br>=
+<span style=3D"color: hsl(0, 100%, 40%);">-        }</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-        if (options-&gt;client_connect_scri=
+pt)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        {</span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-            msg(M_USAGE, &quot=
+;--client-connect requires --mode server&quot;);</span><br><span style=3D"c=
+olor: hsl(0, 100%, 40%);">-        }</span><br><span style=3D"color: hsl(0,=
+ 100%, 40%);">-        if (options-&gt;client_crresponse_script)</span><br>=
+<span style=3D"color: hsl(0, 100%, 40%);">-        {</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-            msg(M_USAGE, &quot;--client-crr=
+esponse requires --mode server&quot;);</span><br><span style=3D"color: hsl(=
+0, 100%, 40%);">-        }</span><br><span style=3D"color: hsl(0, 100%, 40%=
+);">-        if (options-&gt;client_disconnect_script)</span><br><span styl=
+e=3D"color: hsl(0, 100%, 40%);">-        {</span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">-            msg(M_USAGE, &quot;--client-disconnect req=
+uires --mode server&quot;);</span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">-        }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-      =
+  if (options-&gt;client_config_dir || options-&gt;ccd_exclusive)</span><br=
+><span style=3D"color: hsl(0, 100%, 40%);">-        {</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-            msg(M_USAGE, &quot;--client-con=
+fig-dir/--ccd-exclusive requires --mode server&quot;);</span><br><span styl=
+e=3D"color: hsl(0, 100%, 40%);">-        }</span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">-        if (options-&gt;enable_c2c)</span><br><span st=
+yle=3D"color: hsl(0, 100%, 40%);">-        {</span><br><span style=3D"color=
+: hsl(0, 100%, 40%);">-            msg(M_USAGE, &quot;--client-to-client re=
+quires --mode server&quot;);</span><br><span style=3D"color: hsl(0, 100%, 4=
+0%);">-        }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-     =
+   if (options-&gt;duplicate_cn)</span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-        {</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
+           msg(M_USAGE, &quot;--duplicate-cn requires --mode server&quot;);=
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        }</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-        if (options-&gt;cf_max ||=
+ options-&gt;cf_per)</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
+       {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            m=
+sg(M_USAGE, &quot;--connect-freq requires --mode server&quot;);</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-        }</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-        if (options-&gt;ssl_flags &amp; (SS=
+LF_CLIENT_CERT_NOT_REQUIRED|SSLF_CLIENT_CERT_OPTIONAL))</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-        {</span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-            msg(M_USAGE, &quot;--verify-client-cert r=
+equires --mode server&quot;);</span><br><span style=3D"color: hsl(0, 100%, =
+40%);">-        }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
+    if (options-&gt;ssl_flags &amp; SSLF_USERNAME_AS_COMMON_NAME)</span><br=
+><span style=3D"color: hsl(0, 100%, 40%);">-        {</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-            msg(M_USAGE, &quot;--username-a=
+s-common-name requires --mode server&quot;);</span><br><span style=3D"color=
+: hsl(0, 100%, 40%);">-        }</span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-        if (options-&gt;ssl_flags &amp; SSLF_AUTH_USER_PASS_OPTI=
+ONAL)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        {</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-            msg(M_USAGE, &qu=
+ot;--auth-user-pass-optional requires --mode server&quot;);</span><br><span=
+ style=3D"color: hsl(0, 100%, 40%);">-        }</span><br><span style=3D"co=
+lor: hsl(0, 100%, 40%);">-        if (options-&gt;ssl_flags &amp; SSLF_OPT_=
+VERIFY)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        {</spa=
 n><br><span style=3D"color: hsl(0, 100%, 40%);">-            msg(M_USAGE, &=
-quot;--auth-user-pass-optional requires --mode server&quot;);</span><br><sp=
-an style=3D"color: hsl(0, 100%, 40%);">-        }</span><br><span style=3D"=
-color: hsl(0, 100%, 40%);">-        if (options-&gt;ssl_flags &amp; SSLF_OP=
-T_VERIFY)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        {</s=
-pan><br><span style=3D"color: hsl(0, 100%, 40%);">-            msg(M_USAGE,=
- &quot;--opt-verify requires --mode server&quot;);</span><br><span style=3D=
-"color: hsl(0, 100%, 40%);">-        }</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+        MUST_BE_UNDEF(ifconfig_pool_defined, &quot;ifcon=
-fig-pool&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
-     MUST_BE_UNDEF(ifconfig_pool_persist_filename, &quot;ifconfig-pool-pers=
-ist&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        =
-MUST_BE_UNDEF(ifconfig_ipv6_pool_defined, &quot;ifconfig-ipv6-pool&quot;);<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+        MUST_BE_UNDE=
-F(real_hash_size, &quot;hash-size&quot;);</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+        MUST_BE_UNDEF(virtual_hash_size, &quot;hash-s=
-ize&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        =
-MUST_BE_UNDEF(learn_address_script, &quot;learn-address&quot;);</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+        MUST_BE_UNDEF(client_co=
-nnect_script, &quot;client-connect&quot;);</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+        MUST_BE_UNDEF(client_crresponse_script, &quo=
-t;client-crresponse&quot;);</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+        MUST_BE_UNDEF(client_disconnect_script, &quot;client-discon=
-nect&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
- MUST_BE_UNDEF(client_config_dir, &quot;client-config-dir&quot;);</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+        MUST_BE_UNDEF(ccd_exc=
-lusive, &quot;ccd-exclusive&quot;);</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+        MUST_BE_UNDEF(enable_c2c, &quot;client-to-client&qu=
-ot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        MUST_B=
-E_UNDEF(duplicate_cn, &quot;duplicate-cn&quot;);</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+        MUST_BE_UNDEF(cf_max, &quot;connect-fr=
-eq&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        M=
-UST_BE_UNDEF(cf_per, &quot;connect-freq&quot;);</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+        MUST_BE_FALSE(options-&gt;ssl_flags</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+                      &=
-amp; (SSLF_CLIENT_CERT_NOT_REQUIRED|SSLF_CLIENT_CERT_OPTIONAL),</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+                      &quot;ver=
-ify-client-cert&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+        MUST_BE_FALSE(options-&gt;ssl_flags &amp; SSLF_USERNAME_AS_COMM=
-ON_NAME, &quot;username-as-common-name&quot;);</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+        MUST_BE_FALSE(options-&gt;ssl_flags &amp=
-; SSLF_AUTH_USER_PASS_OPTIONAL, &quot;auth-user-pass-optional&quot;);</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+        MUST_BE_FALSE(opt=
-ions-&gt;ssl_flags &amp; SSLF_OPT_VERIFY, &quot;opt-verify&quot;);</span><b=
-r><span>         if (options-&gt;server_flags &amp; SF_TCP_NODELAY_HELPER)<=
-/span><br><span>         {</span><br><span>             msg(M_WARN, &quot;W=
-ARNING: setting tcp-nodelay on the client side will not &quot;</span><br><s=
-pan>                 &quot;affect the server. To have TCP_NODELAY in both d=
-irection use &quot;</span><br><span>                 &quot;tcp-nodelay in t=
-he server configuration instead.&quot;);</span><br><span>         }</span><=
-br><span style=3D"color: hsl(0, 100%, 40%);">-        if (options-&gt;auth_=
-user_pass_verify_script)</span><br><span style=3D"color: hsl(0, 100%, 40%);=
-">-        {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-         =
-   msg(M_USAGE, &quot;--auth-user-pass-verify requires --mode server&quot;)=
-;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        }</span><br>=
-<span style=3D"color: hsl(0, 100%, 40%);">-        if (options-&gt;auth_tok=
-en_generate)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        {=
-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            msg(M_USA=
-GE, &quot;--auth-gen-token requires --mode server&quot;);</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-        }</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+        MUST_BE_UNDEF(auth_user_pass_verify_scrip=
-t, &quot;auth-user-pass-verify&quot;);</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+        MUST_BE_UNDEF(auth_token_generate, &quot;auth-ge=
-n-token&quot;);</span><br><span> #if PORT_SHARE</span><br><span>         if=
- (options-&gt;port_share_host || options-&gt;port_share_port)</span><br><sp=
-an>         {</span><br><span>             msg(M_USAGE, &quot;--port-share =
-requires TCP server mode (--mode server --proto tcp-server)&quot;);</span><=
-br><span>         }</span><br><span> #endif</span><br><span style=3D"color:=
- hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
--        if (options-&gt;stale_routes_check_interval)</span><br><span style=
+quot;--opt-verify requires --mode server&quot;);</span><br><span style=3D"c=
+olor: hsl(0, 100%, 40%);">-        }</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+        MUST_BE_UNDEF(ifconfig_pool_defined, &quot;ifconfi=
+g-pool&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
+   MUST_BE_UNDEF(ifconfig_pool_persist_filename, &quot;ifconfig-pool-persis=
+t&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        MU=
+ST_BE_UNDEF(ifconfig_ipv6_pool_defined, &quot;ifconfig-ipv6-pool&quot;);</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+        MUST_BE_UNDEF(=
+real_hash_size, &quot;hash-size&quot;);</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+        MUST_BE_UNDEF(virtual_hash_size, &quot;hash-siz=
+e&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        MU=
+ST_BE_UNDEF(learn_address_script, &quot;learn-address&quot;);</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+        MUST_BE_UNDEF(client_conn=
+ect_script, &quot;client-connect&quot;);</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+        MUST_BE_UNDEF(client_crresponse_script, &quot;=
+client-crresponse&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+        MUST_BE_UNDEF(client_disconnect_script, &quot;client-disconne=
+ct&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        M=
+UST_BE_UNDEF(client_config_dir, &quot;client-config-dir&quot;);</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+        MUST_BE_UNDEF(ccd_exclu=
+sive, &quot;ccd-exclusive&quot;);</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+        MUST_BE_UNDEF(enable_c2c, &quot;client-to-client&quot=
+;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        MUST_BE_=
+UNDEF(duplicate_cn, &quot;duplicate-cn&quot;);</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+        MUST_BE_UNDEF(cf_max, &quot;connect-freq=
+&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        MUS=
+T_BE_UNDEF(cf_per, &quot;connect-freq&quot;);</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+        MUST_BE_FALSE(options-&gt;ssl_flags</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+                      &am=
+p; (SSLF_CLIENT_CERT_NOT_REQUIRED|SSLF_CLIENT_CERT_OPTIONAL),</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+                      &quot;verif=
+y-client-cert&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+        MUST_BE_FALSE(options-&gt;ssl_flags &amp; SSLF_USERNAME_AS_COMMON=
+_NAME, &quot;username-as-common-name&quot;);</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+        MUST_BE_FALSE(options-&gt;ssl_flags &amp; =
+SSLF_AUTH_USER_PASS_OPTIONAL, &quot;auth-user-pass-optional&quot;);</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+        MUST_BE_FALSE(optio=
+ns-&gt;ssl_flags &amp; SSLF_OPT_VERIFY, &quot;opt-verify&quot;);</span><br>=
+<span>         if (options-&gt;server_flags &amp; SF_TCP_NODELAY_HELPER)</s=
+pan><br><span>         {</span><br><span>             msg(M_WARN, &quot;WAR=
+NING: setting tcp-nodelay on the client side will not &quot;</span><br><spa=
+n>                 &quot;affect the server. To have TCP_NODELAY in both dir=
+ection use &quot;</span><br><span>                 &quot;tcp-nodelay in the=
+ server configuration instead.&quot;);</span><br><span>         }</span><br=
+><span style=3D"color: hsl(0, 100%, 40%);">-        if (options-&gt;auth_us=
+er_pass_verify_script)</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
+-        {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-           =
+ msg(M_USAGE, &quot;--auth-user-pass-verify requires --mode server&quot;);<=
+/span><br><span style=3D"color: hsl(0, 100%, 40%);">-        }</span><br><s=
+pan style=3D"color: hsl(0, 100%, 40%);">-        if (options-&gt;auth_token=
+_generate)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        {</=
+span><br><span style=3D"color: hsl(0, 100%, 40%);">-            msg(M_USAGE=
+, &quot;--auth-gen-token requires --mode server&quot;);</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-        }</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+        MUST_BE_UNDEF(auth_user_pass_verify_script,=
+ &quot;auth-user-pass-verify&quot;);</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+        MUST_BE_UNDEF(auth_token_generate, &quot;auth-gen-=
+token&quot;);</span><br><span> #if PORT_SHARE</span><br><span>         if (=
+options-&gt;port_share_host || options-&gt;port_share_port)</span><br><span=
+>         {</span><br><span>             msg(M_USAGE, &quot;--port-share re=
+quires TCP server mode (--mode server --proto tcp-server)&quot;);</span><br=
+><span>         }</span><br><span> #endif</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
+       if (options-&gt;stale_routes_check_interval)</span><br><span style=
 =3D"color: hsl(0, 100%, 40%);">-        {</span><br><span style=3D"color: h=
 sl(0, 100%, 40%);">-            msg(M_USAGE, &quot;--stale-routes-check req=
 uires --mode server&quot;);</span><br><span style=3D"color: hsl(0, 100%, 40=
@@ -1460,8 +1453,8 @@ name" content=3D"View Change"/></div></div>
 .1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
+<div style=3D"display:none"> Gerrit-MessageType: merged </div>
 
 
---Yfnhn1UNmcQ=--
+--QB1dbig3bIw=--
 
