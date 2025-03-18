@@ -1,14 +1,14 @@
 From: "ordex (Code Review)" <gerrit@...515...>
-Date: Tue, 18 Mar 2025 03:32:36 +0000
+Date: Tue, 18 Mar 2025 03:32:49 +0000
 In-Reply-To: <gerrit.1741816346000.I27f305d3ae9bf650bab409e99173688d9f88ab65@...2715...>
 References: <gerrit.1741816346000.I27f305d3ae9bf650bab409e99173688d9f88ab65@...2715...>
 Reply-To: a@...2181..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <a41cdf7ea03c9c64c2212bee167e275022dc7a1d-EmailReviewComments-HTML@...2715...>
+Message-ID: <a8f823abfb38d474b43253970b376e490c783fa3-EmailReplacePatchSet-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="Chs0IL+8t4I="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="UGXrUwssPtM="; charset=UTF-8
 Subject: [Openvpn-devel] [S] Change in openvpn[master]: socket: don't
  transfer bind family to socket in case of ANY address
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -19,35 +19,77 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Cc: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---Chs0IL+8t4I=
+--UGXrUwssPtM=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 Attention is currently required from: flichtenheld, plaisthos.
 
-ordex has posted comments on this change. ( http://gerrit.openvpn.net/c/ope=
-nvpn/+/907?usp=3Demail )
+Hello flichtenheld, plaisthos,
+
+I'd like you to reexamine a change. Please visit
+
+    http://gerrit.openvpn.net/c/openvpn/+/907?usp=3Demail
+
+to look at the new patch set (#2).
+
 
 Change subject: socket: don't transfer bind family to socket in case of ANY=
  address
 ......................................................................
 
+socket: don't transfer bind family to socket in case of ANY address
 
-Patch Set 1:
+With the introduction of multisocket, we need to transfer the
+AI family of the bound address to the socket, as it may differ
+from what was set globally.
 
-(1 comment)
+However, this operation makes sense only when getaddrinfo()
+for bind is performed on a non-empty hostname.
+An empty hostname (ANY) may return AF_INET which will break
+following connection attempts to v6 only remotes.
 
-File src/openvpn/socket.c:
-
-http://gerrit.openvpn.net/c/openvpn/+/907/comment/a5cb1f54_3afcb853 :
-PS1, Line 1730:          */
-> ANY was meant to be either INADDR_ANY or IN6ADDR_ANY and represents 0.0.0=
-.0 or :: [=E2=80=A6]
-Done
+Change-Id: I27f305d3ae9bf650bab409e99173688d9f88ab65
+Signed-off-by: Antonio Quartulli <antonio@...2726...>
+---
+M src/openvpn/socket.c
+1 file changed, 13 insertions(+), 3 deletions(-)
 
 
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/07/907/2
+
+diff --git a/src/openvpn/socket.c b/src/openvpn/socket.c
+index 6b32e30..be7395d 100644
+--- a/src/openvpn/socket.c
++++ b/src/openvpn/socket.c
+@@ -1724,9 +1724,19 @@
+                 gai_strerror(status));
+         }
+
+-        /* the resolved 'local entry' might have a different family than w=
+hat
+-         * was globally configured */
+-        sock->info.af =3D sock->info.lsa->bind_local->ai_family;
++        /* the address family returned by openvpn_getaddrinfo() should be
++         * taken into consideration only if we really passed an hostname
++         * to resolve. Otherwise its value is not useful to us and may
++         * actually break our socket, i.e. when it returns AF_INET
++         * but our remote is v6 only.
++         */
++        if (sock->local_host)
++        {
++            /* the resolved 'local entry' might have a different family th=
+an
++             * what was globally configured
++             */
++            sock->info.af =3D sock->info.lsa->bind_local->ai_family;
++        }
+     }
+
+     gc_free(&gc);
 
 --
 To view, visit http://gerrit.openvpn.net/c/openvpn/+/907?usp=3Demail
@@ -58,50 +100,78 @@ Gerrit-Project: openvpn
 Gerrit-Branch: master
 Gerrit-Change-Id: I27f305d3ae9bf650bab409e99173688d9f88ab65
 Gerrit-Change-Number: 907
-Gerrit-PatchSet: 1
+Gerrit-PatchSet: 2
 Gerrit-Owner: ordex <a@...2181...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
 Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Comment-Date: Tue, 18 Mar 2025 03:32:36 +0000
-Gerrit-HasComments: Yes
-Gerrit-Has-Labels: No
-Comment-In-Reply-To: plaisthos <arne-openvpn@...1227...>
-Comment-In-Reply-To: ordex <a@...2181...>
-Gerrit-MessageType: comment
+Gerrit-MessageType: newpatchset
 
---Chs0IL+8t4I=
+--UGXrUwssPtM=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <p> Attention is currently required from: flichtenheld, plaisthos. </p>
-<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/907?usp=3Demail">View C=
-hange</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0;"><=
-li style=3D"margin: 0; padding: 0;"><p>File src/openvpn/socket.c:</p><ul st=
-yle=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 =
-0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.=
-net/c/openvpn/+/907/comment/a5cb1f54_3afcb853">Patch Set #1, Line 1730:</a>=
- <code style=3D"font-family:monospace,monospace">         */</code></p><p><=
-blockquote style=3D"border-left: 1px solid #aaa; margin: 10px 0; padding: 0=
- 10px;">ANY was meant to be either INADDR_ANY or IN6ADDR_ANY and represents=
- 0.0.0.0 or :: [=E2=80=A6]</blockquote></p><p style=3D"white-space: pre-wra=
-p; word-wrap: break-word;">Done</p></li></ul></li></ul><p>To view, visit <a=
- href=3D"http://gerrit.openvpn.net/c/openvpn/+/907?usp=3Demail">change 907<=
-/a>. To unsubscribe, or for help writing mail filters, visit <a href=3D"htt=
-p://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope itemtype=
-=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"action" item=
-type=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http:/=
-/gerrit.openvpn.net/c/openvpn/+/907?usp=3Demail"/><meta itemprop=3D"name" c=
-ontent=3D"View Change"/></div></div>
+<p>ordex <strong>uploaded patch set #2</strong> to this change.</p><p><a hr=
+ef=3D"http://gerrit.openvpn.net/c/openvpn/+/907?usp=3Demail">View Change</a=
+></p><pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;=
+">socket: don&#39;t transfer bind family to socket in case of ANY address<b=
+r><br>With the introduction of multisocket, we need to transfer the<br>AI f=
+amily of the bound address to the socket, as it may differ<br>from what was=
+ set globally.<br><br>However, this operation makes sense only when getaddr=
+info()<br>for bind is performed on a non-empty hostname.<br>An empty hostna=
+me (ANY) may return AF_INET which will break<br>following connection attemp=
+ts to v6 only remotes.<br><br>Change-Id: I27f305d3ae9bf650bab409e99173688d9=
+f88ab65<br>Signed-off-by: Antonio Quartulli &lt;antonio@...2726...&gt;<br>-=
+--<br>M src/openvpn/socket.c<br>1 file changed, 13 insertions(+), 3 deletio=
+ns(-)<br><br></pre><pre style=3D"font-family: monospace,monospace; white-sp=
+ace: pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/openvpn refs/change=
+s/07/907/2</pre><pre style=3D"font-family: monospace,monospace; white-space=
+: pre-wrap;"><span>diff --git a/src/openvpn/socket.c b/src/openvpn/socket.c=
+</span><br><span>index 6b32e30..be7395d 100644</span><br><span>--- a/src/op=
+envpn/socket.c</span><br><span>+++ b/src/openvpn/socket.c</span><br><span>@=
+@ -1724,9 +1724,19 @@</span><br><span>                 gai_strerror(status)=
+);</span><br><span>         }</span><br><span> </span><br><span style=3D"co=
+lor: hsl(0, 100%, 40%);">-        /* the resolved &#39;local entry&#39; mig=
+ht have a different family than what</span><br><span style=3D"color: hsl(0,=
+ 100%, 40%);">-         * was globally configured */</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-        sock-&gt;info.af =3D sock-&gt;info.=
+lsa-&gt;bind_local-&gt;ai_family;</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+        /* the address family returned by openvpn_getaddrinfo=
+() should be</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
+  * taken into consideration only if we really passed an hostname</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+         * to resolve. Otherw=
+ise its value is not useful to us and may</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+         * actually break our socket, i.e. when it re=
+turns AF_INET</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
+   * but our remote is v6 only.</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+         */</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+        if (sock-&gt;local_host)</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+        {</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+            /* the resolved &#39;local entry&#39; might have a diffe=
+rent family than</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+          * what was globally configured</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+             */</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+            sock-&gt;info.af =3D sock-&gt;info.lsa-&gt;bin=
+d_local-&gt;ai_family;</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+        }</span><br><span>     }</span><br><span> </span><br><span>     =
+gc_free(&amp;gc);</span><br><span></span><br></pre><p>To view, visit <a hre=
+f=3D"http://gerrit.openvpn.net/c/openvpn/+/907?usp=3Demail">change 907</a>.=
+ To unsubscribe, or for help writing mail filters, visit <a href=3D"http://=
+gerrit.openvpn.net/settings">settings</a>.</p><div itemscope itemtype=3D"ht=
+tp://schema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=
+=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://ger=
+rit.openvpn.net/c/openvpn/+/907?usp=3Demail"/><meta itemprop=3D"name" conte=
+nt=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
 <div style=3D"display:none"> Gerrit-Change-Id: I27f305d3ae9bf650bab409e9917=
 3688d9f88ab65 </div>
 <div style=3D"display:none"> Gerrit-Change-Number: 907 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
 <div style=3D"display:none"> Gerrit-Owner: ordex &lt;a@...2181...&gt; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
 1...&gt; </div>
@@ -113,16 +183,8 @@ ts.sourceforge.net&gt; </div>
 ..1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
 41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Tue, 18 Mar 2025 03:32:36=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: No </div>
-<div style=3D"display:none"> Comment-In-Reply-To: plaisthos &lt;arne-openvp=
-n@...1227...&gt; </div>
-<div style=3D"display:none"> Comment-In-Reply-To: ordex &lt;a@...2181...&gt=
-; </div>
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
+<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
 
 
---Chs0IL+8t4I=--
+--UGXrUwssPtM=--
 
