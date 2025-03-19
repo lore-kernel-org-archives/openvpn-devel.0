@@ -1,17 +1,17 @@
-From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Wed, 19 Mar 2025 17:48:17 +0000
-In-Reply-To: <gerrit.1736341120000.Ib3a166ead912beb2a591105c84d96d342664c05f@...2715...>
-References: <gerrit.1736341120000.Ib3a166ead912beb2a591105c84d96d342664c05f@...2715...>
-Reply-To: gert@...1296..., arne-openvpn@...1227...,
+From: "d12fk (Code Review)" <gerrit@...515...>
+Date: Wed, 19 Mar 2025 22:45:28 +0000
+In-Reply-To: <gerrit.1733989644000.Ifbe4ffb44d3bfcaa50adb38cacb3436fcdc71b10@...2715...>
+References: <gerrit.1733989644000.Ifbe4ffb44d3bfcaa50adb38cacb3436fcdc71b10@...2715...>
+Reply-To: heiko@...515..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net, frank@...2641...,
- lstipakov@...277...
-Message-ID: <a700c7fe0bfb263b3767f7e035d9b424eb55e35f-HTML@...2715...>
+ gert@...1296...
+Message-ID: <c33224aab79ef5d40f42e2f67adf0bd3ee40fd7e-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="3Zgpd0lLU6I="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: Post tchar.h removal
- cleanup
+Content-Type: multipart/alternative; boundary="P8W5x/sOelI="; charset=UTF-8
+Subject: [Openvpn-devel] [L] Change in openvpn[master]: dns: apply settings
+ via script on unixoid systems
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,169 +20,143 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: flichtenheld <frank@...2641...>
-Cc: stipa <lstipakov@...277...>, plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Cc: flichtenheld <frank@...2641...>, plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---3Zgpd0lLU6I=
+--P8W5x/sOelI=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-cron2 has submitted this change. ( http://gerrit.openvpn.net/c/openvpn/+/85=
-4?usp=3Demail )
+Attention is currently required from: cron2, flichtenheld, plaisthos.
 
-Change subject: Post tchar.h removal cleanup
+d12fk has posted comments on this change. ( http://gerrit.openvpn.net/c/ope=
+nvpn/+/838?usp=3Demail )
+
+Change subject: dns: apply settings via script on unixoid systems
 ......................................................................
 
-Post tchar.h removal cleanup
 
-Remove some unused defines.
+Patch Set 15:
 
-Change-Id: Ib3a166ead912beb2a591105c84d96d342664c05f
-Signed-off-by: Frank Lichtenheld <frank@...2641...>
-Acked-by: Gert Doering <gert@...1296...>
-Message-Id: <20250319142234.25046-1-gert@...1296...>
-URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg31=
-172.html
-Signed-off-by: Gert Doering <gert@...1296...>
----
-M src/openvpnserv/service.h
-M src/tapctl/basic.h
-2 files changed, 4 insertions(+), 11 deletions(-)
+(3 comments)
+
+File CMakeLists.txt:
+
+http://gerrit.openvpn.net/c/openvpn/+/838/comment/46a4965c_d67b6a1d :
+PS15, Line 582:
+> does this need some sort of magic to enable `-DENABLE_DNS_UPDOWN`?
+Now you can disable the feature with ccmake or `-DENABLE_DNS_UPDOWN=3DON`, =
+just like the others.
 
 
+File src/openvpn/options.c:
+
+http://gerrit.openvpn.net/c/openvpn/+/838/comment/929d0d87_38955934 :
+PS15, Line 926: #ifdef ENABLE_DNS_SCRIPT
+> should that be ENABLE_DNS_UPDOWN?
+Done
 
 
-diff --git a/src/openvpnserv/service.h b/src/openvpnserv/service.h
-index b2b706b..7112f26 100644
---- a/src/openvpnserv/service.h
-+++ b/src/openvpnserv/service.h
-@@ -24,11 +24,6 @@
- #ifndef _SERVICE_H
- #define _SERVICE_H
+http://gerrit.openvpn.net/c/openvpn/+/838/comment/b0363c3c_449e72d0 :
+PS15, Line 8227: #ifdef ENABLE_DNS_SCRIPT
+> same here
+Done
 
--/* We do not support non-unicode builds */
--#ifndef UNICODE
--#define UNICODE
--#endif
--
- #ifdef HAVE_CONFIG_H
- #include "config.h"
- #endif
-diff --git a/src/tapctl/basic.h b/src/tapctl/basic.h
-index ca5c6d4..49a3cf6 100644
---- a/src/tapctl/basic.h
-+++ b/src/tapctl/basic.h
-@@ -22,13 +22,11 @@
- #ifndef BASIC_H
- #define BASIC_H
 
--#ifdef _UNICODE
--#define PRIsLPWSTR      "ls"
--#define PRIsLPOLESTR    "ls"
--#else
--#define PRIsLPWSTR      "s"
--#define PRIsLPOLESTR    "ls"
-+/* We do not support non-unicode builds */
-+#ifndef UNICODE
-+#define UNICODE
- #endif
-+
- #define PRIXGUID        "{%08lX-%04hX-%04hX-%02hhX%02hhX-%02hhX%02hhX%02hh=
-X%02hhX%02hhX%02hhX}"
- #define PRIGUID_PARAM(g) \
-     (g).Data1, (g).Data2, (g).Data3, (g).Data4[0], (g).Data4[1], (g).Data4=
-[2], (g).Data4[3], (g).Data4[4], (g).Data4[5], (g).Data4[6], (g).Data4[7]
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/854?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/838?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings
 
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: Ib3a166ead912beb2a591105c84d96d342664c05f
-Gerrit-Change-Number: 854
-Gerrit-PatchSet: 5
-Gerrit-Owner: flichtenheld <frank@...2641...>
+Gerrit-Change-Id: Ifbe4ffb44d3bfcaa50adb38cacb3436fcdc71b10
+Gerrit-Change-Number: 838
+Gerrit-PatchSet: 15
+Gerrit-Owner: d12fk <heiko@...515...>
 Gerrit-Reviewer: cron2 <gert@...1296...>
+Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-Reviewer: stipa <lstipakov@...277...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-MessageType: merged
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Attention: cron2 <gert@...1296...>
+Gerrit-Attention: flichtenheld <frank@...2641...>
+Gerrit-Comment-Date: Wed, 19 Mar 2025 22:45:28 +0000
+Gerrit-HasComments: Yes
+Gerrit-Has-Labels: No
+Comment-In-Reply-To: cron2 <gert@...1296...>
+Gerrit-MessageType: comment
 
---3Zgpd0lLU6I=
+--P8W5x/sOelI=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p>cron2 <strong>submitted</strong> this change.</p><p><a href=3D"http://ge=
-rrit.openvpn.net/c/openvpn/+/854?usp=3Demail">View Change</a></p><div style=
-=3D"white-space:pre-wrap"></div><pre style=3D"font-family: monospace,monosp=
-ace; white-space: pre-wrap;">Post tchar.h removal cleanup<br><br>Remove som=
-e unused defines.<br><br>Change-Id: Ib3a166ead912beb2a591105c84d96d342664c0=
-5f<br>Signed-off-by: Frank Lichtenheld &lt;frank@...2641...&gt;<br>Acked-by=
-: Gert Doering &lt;gert@...1296...&gt;<br>Message-Id: &lt;20250319142234.25=
-046-1-gert@...1296...&gt;<br>URL: https://www.mail-archive.com/openvpn-deve=
-l@lists.sourceforge.net/msg31172.html<br>Signed-off-by: Gert Doering &lt;ge=
-rt@...1296...&gt;<br>---<br>M src/openvpnserv/service.h<br>M src/tapctl/bas=
-ic.h<br>2 files changed, 4 insertions(+), 11 deletions(-)<br><br></pre>
-<pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><sp=
-an>diff --git a/src/openvpnserv/service.h b/src/openvpnserv/service.h</span=
-><br><span>index b2b706b..7112f26 100644</span><br><span>--- a/src/openvpns=
-erv/service.h</span><br><span>+++ b/src/openvpnserv/service.h</span><br><sp=
-an>@@ -24,11 +24,6 @@</span><br><span> #ifndef _SERVICE_H</span><br><span> =
-#define _SERVICE_H</span><br><span> </span><br><span style=3D"color: hsl(0,=
- 100%, 40%);">-/* We do not support non-unicode builds */</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-#ifndef UNICODE</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-#define UNICODE</span><br><span style=3D"co=
-lor: hsl(0, 100%, 40%);">-#endif</span><br><span style=3D"color: hsl(0, 100=
-%, 40%);">-</span><br><span> #ifdef HAVE_CONFIG_H</span><br><span> #include=
- &quot;config.h&quot;</span><br><span> #endif</span><br><span>diff --git a/=
-src/tapctl/basic.h b/src/tapctl/basic.h</span><br><span>index ca5c6d4..49a3=
-cf6 100644</span><br><span>--- a/src/tapctl/basic.h</span><br><span>+++ b/s=
-rc/tapctl/basic.h</span><br><span>@@ -22,13 +22,11 @@</span><br><span> #ifn=
-def BASIC_H</span><br><span> #define BASIC_H</span><br><span> </span><br><s=
-pan style=3D"color: hsl(0, 100%, 40%);">-#ifdef _UNICODE</span><br><span st=
-yle=3D"color: hsl(0, 100%, 40%);">-#define PRIsLPWSTR      &quot;ls&quot;</=
-span><br><span style=3D"color: hsl(0, 100%, 40%);">-#define PRIsLPOLESTR   =
- &quot;ls&quot;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#else<=
-/span><br><span style=3D"color: hsl(0, 100%, 40%);">-#define PRIsLPWSTR    =
-  &quot;s&quot;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#defin=
-e PRIsLPOLESTR    &quot;ls&quot;</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+/* We do not support non-unicode builds */</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+#ifndef UNICODE</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+#define UNICODE</span><br><span> #endif</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> #de=
-fine PRIXGUID        &quot;{%08lX-%04hX-%04hX-%02hhX%02hhX-%02hhX%02hhX%02h=
-hX%02hhX%02hhX%02hhX}&quot;</span><br><span> #define PRIGUID_PARAM(g) \</sp=
-an><br><span>     (g).Data1, (g).Data2, (g).Data3, (g).Data4[0], (g).Data4[=
-1], (g).Data4[2], (g).Data4[3], (g).Data4[4], (g).Data4[5], (g).Data4[6], (=
-g).Data4[7]</span><br><span></span><br></pre><p>To view, visit <a href=3D"h=
-ttp://gerrit.openvpn.net/c/openvpn/+/854?usp=3Demail">change 854</a>. To un=
-subscribe, or for help writing mail filters, visit <a href=3D"http://gerrit=
-.openvpn.net/settings">settings</a>.</p><div itemscope itemtype=3D"http://s=
-chema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http=
-://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.open=
-vpn.net/c/openvpn/+/854?usp=3Demail"/><meta itemprop=3D"name" content=3D"Vi=
-ew Change"/></div></div>
+<p> Attention is currently required from: cron2, flichtenheld, plaisthos. <=
+/p>
+<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/838?usp=3Demail">View C=
+hange</a></p><p>3 comments:</p><ul style=3D"list-style: none; padding: 0;">=
+<li style=3D"margin: 0; padding: 0;"><p>File CMakeLists.txt:</p><ul style=
+=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 1=
+6px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net=
+/c/openvpn/+/838/comment/46a4965c_d67b6a1d">Patch Set #15, Line 582:</a> <c=
+ode style=3D"font-family:monospace,monospace"></code></p><p><blockquote sty=
+le=3D"border-left: 1px solid #aaa; margin: 10px 0; padding: 0 10px;">does t=
+his need some sort of magic to enable `-DENABLE_DNS_UPDOWN`?</blockquote></=
+p><p style=3D"white-space: pre-wrap; word-wrap: break-word;">Now you can di=
+sable the feature with ccmake or `-DENABLE_DNS_UPDOWN=3DON`, just like the =
+others.</p></li></ul></li><li style=3D"margin: 0; padding: 0;"><p>File src/=
+openvpn/options.c:</p><ul style=3D"list-style: none; padding: 0;"><li style=
+=3D"margin: 0; padding: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a hr=
+ef=3D"http://gerrit.openvpn.net/c/openvpn/+/838/comment/929d0d87_38955934">=
+Patch Set #15, Line 926:</a> <code style=3D"font-family:monospace,monospace=
+">#ifdef ENABLE_DNS_SCRIPT</code></p><p><blockquote style=3D"border-left: 1=
+px solid #aaa; margin: 10px 0; padding: 0 10px;">should that be ENABLE_DNS_=
+UPDOWN?</blockquote></p><p style=3D"white-space: pre-wrap; word-wrap: break=
+-word;">Done</p></li><li style=3D"margin: 0; padding: 0 0 0 16px;"><p style=
+=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/8=
+38/comment/b0363c3c_449e72d0">Patch Set #15, Line 8227:</a> <code style=3D"=
+font-family:monospace,monospace">#ifdef ENABLE_DNS_SCRIPT</code></p><p><blo=
+ckquote style=3D"border-left: 1px solid #aaa; margin: 10px 0; padding: 0 10=
+px;">same here</blockquote></p><p style=3D"white-space: pre-wrap; word-wrap=
+: break-word;">Done</p></li></ul></li></ul><p>To view, visit <a href=3D"htt=
+p://gerrit.openvpn.net/c/openvpn/+/838?usp=3Demail">change 838</a>. To unsu=
+bscribe, or for help writing mail filters, visit <a href=3D"http://gerrit.o=
+penvpn.net/settings">settings</a>.</p><div itemscope itemtype=3D"http://sch=
+ema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http:/=
+/schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvp=
+n.net/c/openvpn/+/838?usp=3Demail"/><meta itemprop=3D"name" content=3D"View=
+ Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: Ib3a166ead912beb2a591105c84d=
-96d342664c05f </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 854 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 5 </div>
-<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
-.&gt; </div>
+<div style=3D"display:none"> Gerrit-Change-Id: Ifbe4ffb44d3bfcaa50adb38cacb=
+3436fcdc71b10 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 838 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 15 </div>
+<div style=3D"display:none"> Gerrit-Owner: d12fk &lt;heiko@...515...&gt; </=
+div>
 <div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
  </div>
+<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
+1...&gt; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
 .1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: stipa &lt;lstipakov@...277...=
-&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: merged </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: cron2 &lt;gert@...1296...&gt=
+; </div>
+<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
+41...&gt; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Wed, 19 Mar 2025 22:45:28=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: No </div>
+<div style=3D"display:none"> Comment-In-Reply-To: cron2 &lt;gert@...1296...=
+&gt; </div>
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
 
 
---3Zgpd0lLU6I=--
+--P8W5x/sOelI=--
 
