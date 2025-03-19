@@ -1,15 +1,15 @@
 From: "flichtenheld (Code Review)" <gerrit@...515...>
-Date: Wed, 19 Mar 2025 14:21:58 +0000
-References: <gerrit.1730386897000.I40f6af10c5ee2f5aed4185d783fc622a2e3c19ff@...2715...>
+Date: Wed, 19 Mar 2025 14:24:50 +0000
+References: <gerrit.1733837528000.I4dd0c44982955f16ec4a3f167d4e6f3e9b4dbc11@...2715...>
 Reply-To: frank@...2641..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net
-Message-ID: <8dd10d25af752f122403842c6072ea8a8219a3d5-HTML@...2715...>
+Message-ID: <2fd29a10c1e64e066180a351fba6d9beeb424b71-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="vjuyGsnr4uU="; charset=UTF-8
-Subject: [Openvpn-devel] [M] Change in openvpn[master]: Define a
- .clang-format file for the project
+Content-Type: multipart/alternative; boundary="Z4TGYeybDXA="; charset=UTF-8
+Subject: [Openvpn-devel] [XS] Change in openvpn[master]: Disable
+ clang-format for some code parts
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -21,7 +21,7 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: plaisthos <arne-openvpn@...1227...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---vjuyGsnr4uU=
+--Z4TGYeybDXA=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
@@ -32,216 +32,148 @@ Hello plaisthos,
 I'd like you to do a code review.
 Please visit
 
-    http://gerrit.openvpn.net/c/openvpn/+/790?usp=3Demail
+    http://gerrit.openvpn.net/c/openvpn/+/829?usp=3Demail
 
 to review the following change.
 
 
-Change subject: Define a .clang-format file for the project
+Change subject: Disable clang-format for some code parts
 ......................................................................
 
-Define a .clang-format file for the project
+Disable clang-format for some code parts
 
-Each of these statements has been reviewed but
-not all of them are obvious.
+These do not come out better with clang-format,
+so leave them be.
 
-Also add a pre-commit config to easily check the
-formatting.
-
-Change-Id: I40f6af10c5ee2f5aed4185d783fc622a2e3c19ff
+Change-Id: I4dd0c44982955f16ec4a3f167d4e6f3e9b4dbc11
 Signed-off-by: Frank Lichtenheld <frank@...2641...>
 ---
-A .clang-format
-A .pre-commit-config.yaml
-2 files changed, 54 insertions(+), 0 deletions(-)
+M src/openvpn/ssl_common.h
+M src/tapctl/main.c
+2 files changed, 4 insertions(+), 1 deletion(-)
 
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/90/790/9
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/29/829/3
 
-diff --git a/.clang-format b/.clang-format
-new file mode 100644
-index 0000000..0960fe7
---- /dev/null
-+++ b/.clang-format
-@@ -0,0 +1,46 @@
-+---
-+BasedOnStyle: Mozilla
-+AccessModifierOffset: '-4'
-+AlignAfterOpenBracket: Align
-+AlignConsecutiveMacros:
-+  Enabled: true
-+  AcrossEmptyLines: false
-+  AcrossComments: true
-+AlignEscapedNewlines: Left
-+AlignOperands: true
-+AlignTrailingComments:
-+  Kind: Always
-+  OverEmptyLines: 1
-+AllowAllParametersOfDeclarationOnNextLine: true
-+AllowShortBlocksOnASingleLine: Never
-+AllowShortCaseLabelsOnASingleLine: false
-+AllowShortFunctionsOnASingleLine: None
-+AllowShortIfStatementsOnASingleLine: Never
-+AllowShortLoopsOnASingleLine: false
-+AlwaysBreakAfterReturnType: None
-+BreakBeforeBinaryOperators: NonAssignment
-+BreakBeforeBraces: Allman
-+BreakBeforeTernaryOperators: true
-+BreakStringLiterals: false
-+ColumnLimit: '100'
-+ContinuationIndentWidth: '4'
-+DerivePointerAlignment: false
-+IndentCaseLabels: true
-+IndentGotoLabels: false
-+IndentWidth: '4'
-+IndentWrappedFunctionNames: false
-+KeepEmptyLinesAtTheStartOfBlocks: false
-+Language: Cpp
-+MaxEmptyLinesToKeep: '2'
-+PointerAlignment: Right
-+ReflowComments: true
-+SortIncludes: false
-+SpaceAfterCStyleCast: false
-+SpaceBeforeAssignmentOperators: true
-+SpaceBeforeParens: ControlStatements
-+SpacesBeforeTrailingComments: '2'
-+SpacesInParens: Never
-+TabWidth: '4'
-+TypeNames: [DWORD]
-+UseTab: Never
-+WhitespaceSensitiveMacros: [_STRINGIFY]
-diff --git a/.pre-commit-config.yaml b/.pre-commit-config.yaml
-new file mode 100644
-index 0000000..0f09a06
---- /dev/null
-+++ b/.pre-commit-config.yaml
-@@ -0,0 +1,8 @@
-+repos:
-+  - repo: https://github.com/pre-commit/mirrors-clang-format
-+    rev: 'v19.1.4'
-+    hooks:
-+      - id: clang-format
-+        files: \.[ch]$
-+        # preserve upstream formatting
-+        exclude: ^(src/compat/compat-lz4\.[ch]|src/openvpn/ovpn_dco_(linux=
-|win)\.h)$
+diff --git a/src/openvpn/ssl_common.h b/src/openvpn/ssl_common.h
+index 4e54001..97c5041 100644
+--- a/src/openvpn/ssl_common.h
++++ b/src/openvpn/ssl_common.h
+@@ -75,6 +75,7 @@
+  *
+  * @{
+  */
++/* clang-format off */
+ #define S_ERROR         (-2)    /**< Error state.  */
+ #define S_ERROR_PRE     (-1)    /**< Error state but try to send out alerts
+                                  *  before killing the keystore and moving
+@@ -102,7 +103,7 @@
+ #define S_GENERATED_KEYS  7     /**< The data channel keys have been gener=
+ated
+                                  *  The TLS session is fully authenticated
+                                  *  when reaching this state. */
+-
++/* clang-format on */
+ /* Note that earlier versions also had a S_OP_NORMAL state that was
+  * virtually identical with S_ACTIVE and the code still assumes everything
+  * >=3D S_ACTIVE to be fully operational */
+diff --git a/src/tapctl/main.c b/src/tapctl/main.c
+index 551a8e6..d27da6b 100644
+--- a/src/tapctl/main.c
++++ b/src/tapctl/main.c
+@@ -37,6 +37,7 @@
+ #endif
+
+
++/* clang-format off */
+ const WCHAR title_string[] =3D
+     _L(PACKAGE_NAME) L" " _L(PACKAGE_VERSION)
+ ;
+@@ -111,6 +112,7 @@
+     L"\n"
+     L"tapctl delete <adapter GUID | adapter name>\n"
+ ;
++/* clang-format on */
+
+
+ /**
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/790?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/829?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings
 
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: I40f6af10c5ee2f5aed4185d783fc622a2e3c19ff
-Gerrit-Change-Number: 790
-Gerrit-PatchSet: 9
+Gerrit-Change-Id: I4dd0c44982955f16ec4a3f167d4e6f3e9b4dbc11
+Gerrit-Change-Number: 829
+Gerrit-PatchSet: 3
 Gerrit-Owner: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
 Gerrit-MessageType: newchange
 
---vjuyGsnr4uU=
+--Z4TGYeybDXA=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <p> Attention is currently required from: plaisthos. </p>
 <p>flichtenheld would like plaisthos to <strong>review</strong> this change.
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/790?usp=3Demail">Vi=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/829?usp=3Demail">Vi=
 ew Change</a></p><pre style=3D"font-family: monospace,monospace; white-spac=
-e: pre-wrap;">Define a .clang-format file for the project<br><br>Each of th=
-ese statements has been reviewed but<br>not all of them are obvious.<br><br=
->Also add a pre-commit config to easily check the<br>formatting.<br><br>Cha=
-nge-Id: I40f6af10c5ee2f5aed4185d783fc622a2e3c19ff<br>Signed-off-by: Frank L=
-ichtenheld &lt;frank@...2641...&gt;<br>---<br>A .clang-format<br>A .pre-com=
-mit-config.yaml<br>2 files changed, 54 insertions(+), 0 deletions(-)<br><br=
-></pre><pre style=3D"font-family: monospace,monospace; white-space: pre-wra=
-p;">git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/90/790/9</=
-pre><pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"=
-><span>diff --git a/.clang-format b/.clang-format</span><br><span>new file =
-mode 100644</span><br><span>index 0000000..0960fe7</span><br><span>--- /dev=
-/null</span><br><span>+++ b/.clang-format</span><br><span>@@ -0,0 +1,46 @@<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+---</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+BasedOnStyle: Mozilla</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+AccessModifierOffset: &#39;-4&#39;=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+AlignAfterOpenBrack=
-et: Align</span><br><span style=3D"color: hsl(120, 100%, 40%);">+AlignConse=
-cutiveMacros:</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  Enab=
-led: true</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  AcrossEm=
-ptyLines: false</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  Ac=
-rossComments: true</span><br><span style=3D"color: hsl(120, 100%, 40%);">+A=
-lignEscapedNewlines: Left</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+AlignOperands: true</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+AlignTrailingComments:</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+  Kind: Always</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+  OverEmptyLines: 1</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+AllowAllParametersOfDeclarationOnNextLine: true</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+AllowShortBlocksOnASingleLine: Never</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+AllowShortCaseLabelsOnAS=
-ingleLine: false</span><br><span style=3D"color: hsl(120, 100%, 40%);">+All=
-owShortFunctionsOnASingleLine: None</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+AllowShortIfStatementsOnASingleLine: Never</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+AllowShortLoopsOnASingleLine: false<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+AlwaysBreakAfterRetu=
-rnType: None</span><br><span style=3D"color: hsl(120, 100%, 40%);">+BreakBe=
-foreBinaryOperators: NonAssignment</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+BreakBeforeBraces: Allman</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+BreakBeforeTernaryOperators: true</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+BreakStringLiterals: false</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+ColumnLimit: &#39;100&#39;</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+ContinuationIndentWidth: &=
-#39;4&#39;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+DerivePoi=
-nterAlignment: false</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+IndentCaseLabels: true</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+IndentGotoLabels: false</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+IndentWidth: &#39;4&#39;</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+IndentWrappedFunctionNames: false</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+KeepEmptyLinesAtTheStartOfBlocks: false</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+Language: Cpp</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+MaxEmptyLinesToKeep: &#39;2&#39;</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+PointerAlignment: Rig=
-ht</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ReflowComments: t=
-rue</span><br><span style=3D"color: hsl(120, 100%, 40%);">+SortIncludes: fa=
-lse</span><br><span style=3D"color: hsl(120, 100%, 40%);">+SpaceAfterCStyle=
-Cast: false</span><br><span style=3D"color: hsl(120, 100%, 40%);">+SpaceBef=
-oreAssignmentOperators: true</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+SpaceBeforeParens: ControlStatements</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+SpacesBeforeTrailingComments: &#39;2&#39;</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+SpacesInParens: Never</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+TabWidth: &#39;4&#39;</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+TypeNames: [DWORD]</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+UseTab: Never</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+WhitespaceSensitiveMacros: [_S=
-TRINGIFY]</span><br><span>diff --git a/.pre-commit-config.yaml b/.pre-commi=
-t-config.yaml</span><br><span>new file mode 100644</span><br><span>index 00=
-00000..0f09a06</span><br><span>--- /dev/null</span><br><span>+++ b/.pre-com=
-mit-config.yaml</span><br><span>@@ -0,0 +1,8 @@</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+repos:</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+  - repo: https://github.com/pre-commit/mirrors-clang-format=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    rev: &#39;v19.1=
-.4&#39;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    hooks:</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+      - id: clang-for=
-mat</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        files: \=
-.[ch]$</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        # pre=
-serve upstream formatting</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+        exclude: ^(src/compat/compat-lz4\.[ch]|src/openvpn/ovpn_dco_(=
-linux|win)\.h)$</span><br><span></span><br></pre><p>To view, visit <a href=
-=3D"http://gerrit.openvpn.net/c/openvpn/+/790?usp=3Demail">change 790</a>. =
-To unsubscribe, or for help writing mail filters, visit <a href=3D"http://g=
-errit.openvpn.net/settings">settings</a>.</p><div itemscope itemtype=3D"htt=
-p://schema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D=
-"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit=
-.openvpn.net/c/openvpn/+/790?usp=3Demail"/><meta itemprop=3D"name" content=
-=3D"View Change"/></div></div>
+e: pre-wrap;">Disable clang-format for some code parts<br><br>These do not =
+come out better with clang-format,<br>so leave them be.<br><br>Change-Id: I=
+4dd0c44982955f16ec4a3f167d4e6f3e9b4dbc11<br>Signed-off-by: Frank Lichtenhel=
+d &lt;frank@...2641...&gt;<br>---<br>M src/openvpn/ssl_common.h<br>M src/ta=
+pctl/main.c<br>2 files changed, 4 insertions(+), 1 deletion(-)<br><br></pre=
+><pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;">gi=
+t pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/29/829/3</pre><p=
+re style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><span=
+>diff --git a/src/openvpn/ssl_common.h b/src/openvpn/ssl_common.h</span><br=
+><span>index 4e54001..97c5041 100644</span><br><span>--- a/src/openvpn/ssl_=
+common.h</span><br><span>+++ b/src/openvpn/ssl_common.h</span><br><span>@@ =
+-75,6 +75,7 @@</span><br><span>  *</span><br><span>  * @{</span><br><span> =
+ */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+/* clang-format =
+off */</span><br><span> #define S_ERROR         (-2)    /**&lt; Error state=
+.  */</span><br><span> #define S_ERROR_PRE     (-1)    /**&lt; Error state =
+but try to send out alerts</span><br><span>                                =
+  *  before killing the keystore and moving</span><br><span>@@ -102,7 +103,=
+7 @@</span><br><span> #define S_GENERATED_KEYS  7     /**&lt; The data chan=
+nel keys have been generated</span><br><span>                              =
+    *  The TLS session is fully authenticated</span><br><span>             =
+                     *  when reaching this state. */</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+/* clang-format on */</span><br><span> /* Note that earlier ve=
+rsions also had a S_OP_NORMAL state that was</span><br><span>  * virtually =
+identical with S_ACTIVE and the code still assumes everything</span><br><sp=
+an>  * &gt;=3D S_ACTIVE to be fully operational */</span><br><span>diff --g=
+it a/src/tapctl/main.c b/src/tapctl/main.c</span><br><span>index 551a8e6..d=
+27da6b 100644</span><br><span>--- a/src/tapctl/main.c</span><br><span>+++ b=
+/src/tapctl/main.c</span><br><span>@@ -37,6 +37,7 @@</span><br><span> #endi=
+f</span><br><span> </span><br><span> </span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+/* clang-format off */</span><br><span> const WCHAR title=
+_string[] =3D</span><br><span>     _L(PACKAGE_NAME) L&quot; &quot; _L(PACKA=
+GE_VERSION)</span><br><span> ;</span><br><span>@@ -111,6 +112,7 @@</span><b=
+r><span>     L&quot;\n&quot;</span><br><span>     L&quot;tapctl delete &lt;=
+adapter GUID | adapter name&gt;\n&quot;</span><br><span> ;</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+/* clang-format on */</span><br><spa=
+n> </span><br><span> </span><br><span> /**</span><br><span></span><br></pre=
+><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/829?usp=
+=3Demail">change 829</a>. To unsubscribe, or for help writing mail filters,=
+ visit <a href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div=
+ itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemp=
+rop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"=
+url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/829?usp=3Demail"/><meta =
+itemprop=3D"name" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I40f6af10c5ee2f5aed4185d783f=
-c622a2e3c19ff </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 790 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 9 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I4dd0c44982955f16ec4a3f167d4=
+e6f3e9b4dbc11 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 829 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 3 </div>
 <div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
 .&gt; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
@@ -253,5 +185,5 @@ ts.sourceforge.net&gt; </div>
 <div style=3D"display:none"> Gerrit-MessageType: newchange </div>
 
 
---vjuyGsnr4uU=--
+--Z4TGYeybDXA=--
 
