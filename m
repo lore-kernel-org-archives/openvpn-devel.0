@@ -1,15 +1,16 @@
-From: "flichtenheld (Code Review)" <gerrit@...515...>
-Date: Wed, 19 Mar 2025 14:24:50 +0000
-References: <gerrit.1733837528000.I4dd0c44982955f16ec4a3f167d4e6f3e9b4dbc11@...2715...>
-Reply-To: frank@...2641..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net
-Message-ID: <2fd29a10c1e64e066180a351fba6d9beeb424b71-HTML@...2715...>
+From: "stipa (Code Review)" <gerrit@...515...>
+Date: Wed, 19 Mar 2025 13:58:01 +0000
+In-Reply-To: <gerrit.1733989644000.I576e74f3276362606e9cbd50bb5adbebaaf209cc@...2715...>
+References: <gerrit.1733989644000.I576e74f3276362606e9cbd50bb5adbebaaf209cc@...2715...>
+Reply-To: lstipakov@...277..., arne-openvpn@...1227..., heiko@...515...,
+ openvpn-devel@lists.sourceforge.net, frank@...2641...
+Message-ID: <03d884a6f3ec6d292a7cc008b15bf6b6aaa21097-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="Z4TGYeybDXA="; charset=UTF-8
-Subject: [Openvpn-devel] [XS] Change in openvpn[master]: Disable
- clang-format for some code parts
+Content-Type: multipart/alternative; boundary="TXA98i0V3YQ="; charset=UTF-8
+Subject: [Openvpn-devel] [XL] Change in openvpn[master]: win: implement
+ --dns option support with NRPT
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,172 +19,122 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: plaisthos <arne-openvpn@...1227...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: d12fk <heiko@...515...>
+Cc: flichtenheld <frank@...2641...>, plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---Z4TGYeybDXA=
+--TXA98i0V3YQ=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: plaisthos.
+Attention is currently required from: d12fk, plaisthos.
 
-Hello plaisthos,
+stipa has posted comments on this change. ( http://gerrit.openvpn.net/c/ope=
+nvpn/+/837?usp=3Demail )
 
-I'd like you to do a code review.
-Please visit
-
-    http://gerrit.openvpn.net/c/openvpn/+/829?usp=3Demail
-
-to review the following change.
-
-
-Change subject: Disable clang-format for some code parts
+Change subject: win: implement --dns option support with NRPT
 ......................................................................
 
-Disable clang-format for some code parts
 
-These do not come out better with clang-format,
-so leave them be.
+Patch Set 13: Code-Review-2
 
-Change-Id: I4dd0c44982955f16ec4a3f167d4e6f3e9b4dbc11
-Signed-off-by: Frank Lichtenheld <frank@...2641...>
----
-M src/openvpn/ssl_common.h
-M src/tapctl/main.c
-2 files changed, 4 insertions(+), 1 deletion(-)
+(2 comments)
 
+File src/openvpnserv/interactive.c:
 
-
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/29/829/3
-
-diff --git a/src/openvpn/ssl_common.h b/src/openvpn/ssl_common.h
-index 4e54001..97c5041 100644
---- a/src/openvpn/ssl_common.h
-+++ b/src/openvpn/ssl_common.h
-@@ -75,6 +75,7 @@
-  *
-  * @{
-  */
-+/* clang-format off */
- #define S_ERROR         (-2)    /**< Error state.  */
- #define S_ERROR_PRE     (-1)    /**< Error state but try to send out alerts
-                                  *  before killing the keystore and moving
-@@ -102,7 +103,7 @@
- #define S_GENERATED_KEYS  7     /**< The data channel keys have been gener=
-ated
-                                  *  The TLS session is fully authenticated
-                                  *  when reaching this state. */
--
-+/* clang-format on */
- /* Note that earlier versions also had a S_OP_NORMAL state that was
-  * virtually identical with S_ACTIVE and the code still assumes everything
-  * >=3D S_ACTIVE to be fully operational */
-diff --git a/src/tapctl/main.c b/src/tapctl/main.c
-index 551a8e6..d27da6b 100644
---- a/src/tapctl/main.c
-+++ b/src/tapctl/main.c
-@@ -37,6 +37,7 @@
- #endif
+http://gerrit.openvpn.net/c/openvpn/+/837/comment/527430f0_4471f7d6 :
+PS13, Line 2602:     free(wide_domains);
+If domains is not set, we're freeing stack-allocated wide_domains (PWSTR wi=
+de_domains =3D L".\0";).
 
 
-+/* clang-format off */
- const WCHAR title_string[] =3D
-     _L(PACKAGE_NAME) L" " _L(PACKAGE_VERSION)
- ;
-@@ -111,6 +112,7 @@
-     L"\n"
-     L"tapctl delete <adapter GUID | adapter name>\n"
- ;
-+/* clang-format on */
+http://gerrit.openvpn.net/c/openvpn/+/837/comment/828a5a05_4a81dca3 :
+PS13, Line 2782:     DWORD iid_err =3D InterfaceIdString(msg->iface.name, i=
+id, sizeof(iid));
+We pass sizeof(iid) as count to wcsncpy and it should be count of wide char=
+s, not the buffer size. This causes crash.
 
 
- /**
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/829?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/837?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings
 
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: I4dd0c44982955f16ec4a3f167d4e6f3e9b4dbc11
-Gerrit-Change-Number: 829
-Gerrit-PatchSet: 3
-Gerrit-Owner: flichtenheld <frank@...2641...>
+Gerrit-Change-Id: I576e74f3276362606e9cbd50bb5adbebaaf209cc
+Gerrit-Change-Number: 837
+Gerrit-PatchSet: 13
+Gerrit-Owner: d12fk <heiko@...515...>
+Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
+Gerrit-Reviewer: stipa <lstipakov@...277...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-MessageType: newchange
+Gerrit-Attention: d12fk <heiko@...515...>
+Gerrit-Comment-Date: Wed, 19 Mar 2025 13:58:01 +0000
+Gerrit-HasComments: Yes
+Gerrit-Has-Labels: Yes
+Gerrit-MessageType: comment
 
---Z4TGYeybDXA=
+--TXA98i0V3YQ=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p> Attention is currently required from: plaisthos. </p>
-<p>flichtenheld would like plaisthos to <strong>review</strong> this change.
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/829?usp=3Demail">Vi=
-ew Change</a></p><pre style=3D"font-family: monospace,monospace; white-spac=
-e: pre-wrap;">Disable clang-format for some code parts<br><br>These do not =
-come out better with clang-format,<br>so leave them be.<br><br>Change-Id: I=
-4dd0c44982955f16ec4a3f167d4e6f3e9b4dbc11<br>Signed-off-by: Frank Lichtenhel=
-d &lt;frank@...2641...&gt;<br>---<br>M src/openvpn/ssl_common.h<br>M src/ta=
-pctl/main.c<br>2 files changed, 4 insertions(+), 1 deletion(-)<br><br></pre=
-><pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;">gi=
-t pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/29/829/3</pre><p=
-re style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><span=
->diff --git a/src/openvpn/ssl_common.h b/src/openvpn/ssl_common.h</span><br=
-><span>index 4e54001..97c5041 100644</span><br><span>--- a/src/openvpn/ssl_=
-common.h</span><br><span>+++ b/src/openvpn/ssl_common.h</span><br><span>@@ =
--75,6 +75,7 @@</span><br><span>  *</span><br><span>  * @{</span><br><span> =
- */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+/* clang-format =
-off */</span><br><span> #define S_ERROR         (-2)    /**&lt; Error state=
-.  */</span><br><span> #define S_ERROR_PRE     (-1)    /**&lt; Error state =
-but try to send out alerts</span><br><span>                                =
-  *  before killing the keystore and moving</span><br><span>@@ -102,7 +103,=
-7 @@</span><br><span> #define S_GENERATED_KEYS  7     /**&lt; The data chan=
-nel keys have been generated</span><br><span>                              =
-    *  The TLS session is fully authenticated</span><br><span>             =
-                     *  when reaching this state. */</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+/* clang-format on */</span><br><span> /* Note that earlier ve=
-rsions also had a S_OP_NORMAL state that was</span><br><span>  * virtually =
-identical with S_ACTIVE and the code still assumes everything</span><br><sp=
-an>  * &gt;=3D S_ACTIVE to be fully operational */</span><br><span>diff --g=
-it a/src/tapctl/main.c b/src/tapctl/main.c</span><br><span>index 551a8e6..d=
-27da6b 100644</span><br><span>--- a/src/tapctl/main.c</span><br><span>+++ b=
-/src/tapctl/main.c</span><br><span>@@ -37,6 +37,7 @@</span><br><span> #endi=
-f</span><br><span> </span><br><span> </span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+/* clang-format off */</span><br><span> const WCHAR title=
-_string[] =3D</span><br><span>     _L(PACKAGE_NAME) L&quot; &quot; _L(PACKA=
-GE_VERSION)</span><br><span> ;</span><br><span>@@ -111,6 +112,7 @@</span><b=
-r><span>     L&quot;\n&quot;</span><br><span>     L&quot;tapctl delete &lt;=
-adapter GUID | adapter name&gt;\n&quot;</span><br><span> ;</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+/* clang-format on */</span><br><spa=
-n> </span><br><span> </span><br><span> /**</span><br><span></span><br></pre=
-><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/829?usp=
-=3Demail">change 829</a>. To unsubscribe, or for help writing mail filters,=
- visit <a href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div=
- itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemp=
-rop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"=
-url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/829?usp=3Demail"/><meta =
-itemprop=3D"name" content=3D"View Change"/></div></div>
+<p> Attention is currently required from: d12fk, plaisthos. </p>
+<p>Patch set 13:<span style=3D"border-radius: 3px; display: inline-block; m=
+argin: 0 2px; padding: 4px;background-color: #ffd4d4;">Code-Review -2</span=
+></p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/837?usp=3Demail">V=
+iew Change</a></p><p>2 comments:</p><ul style=3D"list-style: none; padding:=
+ 0;"><li style=3D"margin: 0; padding: 0;"><p>File src/openvpnserv/interacti=
+ve.c:</p><ul style=3D"list-style: none; padding: 0;"><li style=3D"margin: 0=
+; padding: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://=
+gerrit.openvpn.net/c/openvpn/+/837/comment/527430f0_4471f7d6">Patch Set #13=
+, Line 2602:</a> <code style=3D"font-family:monospace,monospace">    free(w=
+ide_domains);</code></p><p style=3D"white-space: pre-wrap; word-wrap: break=
+-word;">If domains is not set, we&#39;re freeing stack-allocated wide_domai=
+ns (PWSTR wide_domains =3D L&quot;.\0&quot;;).</p></li><li style=3D"margin:=
+ 0; padding: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http:=
+//gerrit.openvpn.net/c/openvpn/+/837/comment/828a5a05_4a81dca3">Patch Set #=
+13, Line 2782:</a> <code style=3D"font-family:monospace,monospace">    DWOR=
+D iid_err =3D InterfaceIdString(msg-&gt;iface.name, iid, sizeof(iid));</cod=
+e></p><p style=3D"white-space: pre-wrap; word-wrap: break-word;">We pass si=
+zeof(iid) as count to wcsncpy and it should be count of wide chars, not the=
+ buffer size. This causes crash.</p></li></ul></li></ul><p>To view, visit <=
+a href=3D"http://gerrit.openvpn.net/c/openvpn/+/837?usp=3Demail">change 837=
+</a>. To unsubscribe, or for help writing mail filters, visit <a href=3D"ht=
+tp://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope itemtype=
+=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"action" item=
+type=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http:/=
+/gerrit.openvpn.net/c/openvpn/+/837?usp=3Demail"/><meta itemprop=3D"name" c=
+ontent=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I4dd0c44982955f16ec4a3f167d4=
-e6f3e9b4dbc11 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 829 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 3 </div>
-<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
-.&gt; </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I576e74f3276362606e9cbd50bb5=
+adbebaaf209cc </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 837 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 13 </div>
+<div style=3D"display:none"> Gerrit-Owner: d12fk &lt;heiko@...515...&gt; </=
+div>
+<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
+1...&gt; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
 .1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: stipa &lt;lstipakov@...277...=
+&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
 ..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: newchange </div>
+<div style=3D"display:none"> Gerrit-Attention: d12fk &lt;heiko@...515...&gt=
+; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Wed, 19 Mar 2025 13:58:01=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
 
 
---Z4TGYeybDXA=--
+--TXA98i0V3YQ=--
 
