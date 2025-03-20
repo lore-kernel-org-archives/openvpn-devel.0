@@ -1,16 +1,16 @@
-From: "d12fk (Code Review)" <gerrit@...515...>
-Date: Thu, 20 Mar 2025 12:10:04 +0000
-In-Reply-To: <gerrit.1741299308000.I635c4018fb43b5976a39b6a90cb2e9cb2570cd6a@...2715...>
-References: <gerrit.1741299308000.I635c4018fb43b5976a39b6a90cb2e9cb2570cd6a@...2715...>
-Reply-To: heiko@...515..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <4ac60f6db1a4bb0d1f6283e026611a322e5e053b-EmailReviewComments-HTML@...2715...>
+From: "flichtenheld (Code Review)" <gerrit@...515...>
+Date: Thu, 20 Mar 2025 17:13:57 +0000
+In-Reply-To: <gerrit.1741926089000.I23710b1f5b2122ec1f14465911836c0f0afa9c64@...2715...>
+References: <gerrit.1741926089000.I23710b1f5b2122ec1f14465911836c0f0afa9c64@...2715...>
+Reply-To: frank@...2641..., arne-openvpn@...1227..., heiko@...515...,
+ openvpn-devel@lists.sourceforge.net
+Message-ID: <4fb5e3ee48ccf6a334dc9ce20284c10c8d7ffed7-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="epvP1ACktx4="; charset=UTF-8
-Subject: [Openvpn-devel] [L] Change in openvpn[master]: dns: deal with
- --dhcp-options when --dns is active
+Content-Type: multipart/alternative; boundary="mJzDHAtQG6E="; charset=UTF-8
+Subject: [Openvpn-devel] [XS] Change in openvpn[master]: win: calculate
+ address string buffer size
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,85 +19,69 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Cc: flichtenheld <frank@...2641...>, plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: d12fk <heiko@...515...>
+Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---epvP1ACktx4=
+--mJzDHAtQG6E=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: flichtenheld, plaisthos.
+Attention is currently required from: d12fk, plaisthos.
 
-d12fk has posted comments on this change. ( http://gerrit.openvpn.net/c/ope=
-nvpn/+/904?usp=3Demail )
+flichtenheld has posted comments on this change. ( http://gerrit.openvpn.ne=
+t/c/openvpn/+/908?usp=3Demail )
 
-Change subject: dns: deal with --dhcp-options when --dns is active
+Change subject: win: calculate address string buffer size
 ......................................................................
 
 
-Patch Set 9:
-
-(1 comment)
-
-File src/openvpn/options.c:
-
-http://gerrit.openvpn.net/c/openvpn/+/904/comment/f01dbf32_e7fe61de :
-PS8, Line 3511: )
-> `error: use of undeclared identifier 'domain'`
-Done
-
+Patch Set 6: Code-Review+2
 
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/904?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/908?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings
 
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: I635c4018fb43b5976a39b6a90cb2e9cb2570cd6a
-Gerrit-Change-Number: 904
-Gerrit-PatchSet: 9
+Gerrit-Change-Id: I23710b1f5b2122ec1f14465911836c0f0afa9c64
+Gerrit-Change-Number: 908
+Gerrit-PatchSet: 6
 Gerrit-Owner: d12fk <heiko@...515...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Comment-Date: Thu, 20 Mar 2025 12:10:04 +0000
-Gerrit-HasComments: Yes
-Gerrit-Has-Labels: No
-Comment-In-Reply-To: flichtenheld <frank@...2641...>
+Gerrit-Attention: d12fk <heiko@...515...>
+Gerrit-Comment-Date: Thu, 20 Mar 2025 17:13:57 +0000
+Gerrit-HasComments: No
+Gerrit-Has-Labels: Yes
 Gerrit-MessageType: comment
 
---epvP1ACktx4=
+--mJzDHAtQG6E=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p> Attention is currently required from: flichtenheld, plaisthos. </p>
-<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/904?usp=3Demail">View C=
-hange</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0;"><=
-li style=3D"margin: 0; padding: 0;"><p>File src/openvpn/options.c:</p><ul s=
-tyle=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0=
- 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn=
-.net/c/openvpn/+/904/comment/f01dbf32_e7fe61de">Patch Set #8, Line 3511:</a=
-> <code style=3D"font-family:monospace,monospace">)</code></p><p><blockquot=
-e style=3D"border-left: 1px solid #aaa; margin: 10px 0; padding: 0 10px;">`=
-error: use of undeclared identifier &#39;domain&#39;`</blockquote></p><p st=
-yle=3D"white-space: pre-wrap; word-wrap: break-word;">Done</p></li></ul></l=
-i></ul><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/9=
-04?usp=3Demail">change 904</a>. To unsubscribe, or for help writing mail fi=
-lters, visit <a href=3D"http://gerrit.openvpn.net/settings">settings</a>.</=
-p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope=
- itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itempr=
-op=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/904?usp=3Demail"/>=
-<meta itemprop=3D"name" content=3D"View Change"/></div></div>
+<p> Attention is currently required from: d12fk, plaisthos. </p>
+<p>Patch set 6:<span style=3D"border-radius: 3px; display: inline-block; ma=
+rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/908?usp=3Demail">Vi=
+ew Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To vie=
+w, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/908?usp=3Demail">=
+change 908</a>. To unsubscribe, or for help writing mail filters, visit <a =
+href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope=
+ itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"act=
+ion" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=
+=3D"http://gerrit.openvpn.net/c/openvpn/+/908?usp=3Demail"/><meta itemprop=
+=3D"name" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I635c4018fb43b5976a39b6a90cb=
-2e9cb2570cd6a </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 904 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 9 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I23710b1f5b2122ec1f144659118=
+36c0f0afa9c64 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 908 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 6 </div>
 <div style=3D"display:none"> Gerrit-Owner: d12fk &lt;heiko@...515...&gt; </=
 div>
 <div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
@@ -108,16 +92,14 @@ div>
 ts.sourceforge.net&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
 ..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
-41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Thu, 20 Mar 2025 12:10:04=
+<div style=3D"display:none"> Gerrit-Attention: d12fk &lt;heiko@...515...&gt=
+; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Thu, 20 Mar 2025 17:13:57=
  +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: No </div>
-<div style=3D"display:none"> Comment-In-Reply-To: flichtenheld &lt;frank@...1186...=
-.2641...&gt; </div>
+<div style=3D"display:none"> Gerrit-HasComments: No </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
 <div style=3D"display:none"> Gerrit-MessageType: comment </div>
 
 
---epvP1ACktx4=--
+--mJzDHAtQG6E=--
 
