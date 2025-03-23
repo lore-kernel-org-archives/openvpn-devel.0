@@ -1,13 +1,14 @@
-From: "plaisthos (Code Review)" <gerrit@...515...>
-Date: Sun, 23 Mar 2025 12:06:42 +0000
+From: "ordex (Code Review)" <gerrit@...515...>
+Date: Sun, 23 Mar 2025 20:40:07 +0000
+In-Reply-To: <gerrit.1742731599000.I28a8abd0ee3fa9168a716171b0a405476089c4a1@...2715...>
 References: <gerrit.1742731599000.I28a8abd0ee3fa9168a716171b0a405476089c4a1@...2715...>
-Reply-To: arne-openvpn@...1227..., openvpn-devel@lists.sourceforge.net,
- frank@...2641...
-Message-ID: <c40e436ae0879108dbd2a075747a37794438c8f8-HTML@...2715...>
+Reply-To: a@...2181..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net, frank@...2641...
+Message-ID: <4eafccd2b478513f85c7c24f57289cd7afa68b5c-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="af5a6DpR5O0="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="LmKlqwReWqg="; charset=UTF-8
 Subject: [Openvpn-devel] [XS] Change in openvpn[master]: Fix incorrect
  condition for checking password related check
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -18,68 +19,33 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: flichtenheld <frank@...2641...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: plaisthos <arne-openvpn@...1227...>
+Cc: flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---af5a6DpR5O0=
+--LmKlqwReWqg=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: flichtenheld.
+Attention is currently required from: flichtenheld, plaisthos.
 
-Hello flichtenheld,
-
-I'd like you to do a code review.
-Please visit
-
-    http://gerrit.openvpn.net/c/openvpn/+/912?usp=3Demail
-
-to review the following change.
-
+ordex has posted comments on this change. ( http://gerrit.openvpn.net/c/ope=
+nvpn/+/912?usp=3Demail )
 
 Change subject: Fix incorrect condition for checking password related check
 ......................................................................
 
-Fix incorrect condition for checking password related check
 
-Commit db48cea chagned logic to move logic from a variable and repeated
-checks to an if clause.
+Patch Set 1: Code-Review+2
 
-The old code had
+(1 comment)
 
-            const bool ccnr =3D (options->auth_user_pass_verify_script
-                                || PLUGIN_OPTION_LIST(options)
-                                || MAN_CLIENT_AUTH_ENABLED(options));
+Patchset:
 
-followed by several condition that checked !ccnr
+PS1:
+it's De Morgan, not De Margan.
+Other than that the fix looks good. Thanks to the extensive commit it is ea=
+sy to verify the change.
 
-This commit fixes the if clause by correctly applying De Margan's law.
-
-Change-Id: I28a8abd0ee3fa9168a716171b0a405476089c4a1
-Signed-off-by: Arne Schwabe <arne@...1227...>
----
-M src/openvpn/options.c
-1 file changed, 2 insertions(+), 2 deletions(-)
-
-
-
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/12/912/1
-
-diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index 67ef55b..ab56609 100644
---- a/src/openvpn/options.c
-+++ b/src/openvpn/options.c
-@@ -2752,8 +2752,8 @@
-
-         }
-         if (!options->auth_user_pass_verify_script
--            || PLUGIN_OPTION_LIST(options)
--            || MAN_CLIENT_AUTH_ENABLED(options))
-+            && !PLUGIN_OPTION_LIST(options)
-+            && !MAN_CLIENT_AUTH_ENABLED(options))
-         {
-             const char *use_err =3D "--%s must be used with --management-c=
-lient-auth, an --auth-user-pass-verify script, or plugin";
 
 
 --
@@ -94,52 +60,38 @@ Gerrit-Change-Number: 912
 Gerrit-PatchSet: 1
 Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
+Gerrit-Reviewer: ordex <a@...2181...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
 Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-MessageType: newchange
+Gerrit-Comment-Date: Sun, 23 Mar 2025 20:40:07 +0000
+Gerrit-HasComments: Yes
+Gerrit-Has-Labels: Yes
+Gerrit-MessageType: comment
 
---af5a6DpR5O0=
+--LmKlqwReWqg=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p> Attention is currently required from: flichtenheld. </p>
-<p>plaisthos would like flichtenheld to <strong>review</strong> this change.
+<p> Attention is currently required from: flichtenheld, plaisthos. </p>
+<p>Patch set 1:<span style=3D"border-radius: 3px; display: inline-block; ma=
+rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
 </p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/912?usp=3Demail">Vi=
-ew Change</a></p><pre style=3D"font-family: monospace,monospace; white-spac=
-e: pre-wrap;">Fix incorrect condition for checking password related check<b=
-r><br>Commit db48cea chagned logic to move logic from a variable and repeat=
-ed<br>checks to an if clause.<br><br>The old code had<br><br>            co=
-nst bool ccnr =3D (options-&gt;auth_user_pass_verify_script<br>            =
-                    || PLUGIN_OPTION_LIST(options)<br>                     =
-           || MAN_CLIENT_AUTH_ENABLED(options));<br><br>followed by several=
- condition that checked !ccnr<br><br>This commit fixes the if clause by cor=
-rectly applying De Margan&#39;s law.<br><br>Change-Id: I28a8abd0ee3fa9168a7=
-16171b0a405476089c4a1<br>Signed-off-by: Arne Schwabe &lt;arne@...1227...&gt=
-;<br>---<br>M src/openvpn/options.c<br>1 file changed, 2 insertions(+), 2 d=
-eletions(-)<br><br></pre><pre style=3D"font-family: monospace,monospace; wh=
-ite-space: pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/openvpn refs/=
-changes/12/912/1</pre><pre style=3D"font-family: monospace,monospace; white=
--space: pre-wrap;"><span>diff --git a/src/openvpn/options.c b/src/openvpn/o=
-ptions.c</span><br><span>index 67ef55b..ab56609 100644</span><br><span>--- =
-a/src/openvpn/options.c</span><br><span>+++ b/src/openvpn/options.c</span><=
-br><span>@@ -2752,8 +2752,8 @@</span><br><span> </span><br><span>         }=
-</span><br><span>         if (!options-&gt;auth_user_pass_verify_script</sp=
-an><br><span style=3D"color: hsl(0, 100%, 40%);">-            || PLUGIN_OPT=
-ION_LIST(options)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
-        || MAN_CLIENT_AUTH_ENABLED(options))</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+            &amp;&amp; !PLUGIN_OPTION_LIST(options=
-)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            &amp;&=
-amp; !MAN_CLIENT_AUTH_ENABLED(options))</span><br><span>         {</span><b=
-r><span>             const char *use_err =3D &quot;--%s must be used with -=
--management-client-auth, an --auth-user-pass-verify script, or plugin&quot;=
-;</span><br><span> </span><br><span></span><br></pre><p>To view, visit <a h=
-ref=3D"http://gerrit.openvpn.net/c/openvpn/+/912?usp=3Demail">change 912</a=
->. To unsubscribe, or for help writing mail filters, visit <a href=3D"http:=
-//gerrit.openvpn.net/settings">settings</a>.</p><div itemscope itemtype=3D"=
-http://schema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=
-=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://ger=
-rit.openvpn.net/c/openvpn/+/912?usp=3Demail"/><meta itemprop=3D"name" conte=
-nt=3D"View Change"/></div></div>
+ew Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0=
+;"><li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-s=
+tyle: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p s=
+tyle=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn=
+/+/912?tab=3Dcomments">Patch Set #1:</a> </p><p style=3D"white-space: pre-w=
+rap; word-wrap: break-word;">it&#39;s De Morgan, not De Margan.<br>Other th=
+an that the fix looks good. Thanks to the extensive commit it is easy to ve=
+rify the change.</p></li></ul></li></ul><p>To view, visit <a href=3D"http:/=
+/gerrit.openvpn.net/c/openvpn/+/912?usp=3Demail">change 912</a>. To unsubsc=
+ribe, or for help writing mail filters, visit <a href=3D"http://gerrit.open=
+vpn.net/settings">settings</a>.</p><div itemscope itemtype=3D"http://schema=
+.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://sc=
+hema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.n=
+et/c/openvpn/+/912?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Ch=
+ange"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
@@ -151,12 +103,20 @@ nt=3D"View Change"/></div></div>
 27...&gt; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
 1...&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: ordex &lt;a@...2181...&gt; </=
+div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
 41...&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: newchange </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Sun, 23 Mar 2025 20:40:07=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
 
 
---af5a6DpR5O0=--
+--LmKlqwReWqg=--
 
