@@ -1,16 +1,11 @@
-From: "flichtenheld (Code Review)" <gerrit@...515...>
-Date: Mon, 24 Mar 2025 13:36:14 +0000
-In-Reply-To: <gerrit.1742821192000.Ifc7443974345042ab9945d6a10e1d1b4525e5e05@...2715...>
-References: <gerrit.1742821192000.Ifc7443974345042ab9945d6a10e1d1b4525e5e05@...2715...>
-Reply-To: frank@...2641..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net
-Message-ID: <c376eb3e55b23efbe24df8a9872741b5b18e25da-EmailReviewComments-HTML@...2715...>
+From: Gert Doering <gert@...1296...>
+Date: Mon, 24 Mar 2025 14:37:53 +0100
+Message-ID: <20250324133759.13155-1-gert@...1296...>
+In-Reply-To: <gerrit.1742822307000.Ib579c1538eb5440bb7008bc866a5cb7d74844374@...2715...>
+References: <gerrit.1742822307000.Ib579c1538eb5440bb7008bc866a5cb7d74844374@...2715...>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="NGzIdVZM44w="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: Improve
- documentation for override-username
+Subject: [Openvpn-devel] [PATCH v2] Directly use _countof in array
+ initialisation
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,81 +14,49 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: plaisthos <arne-openvpn@...1227...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---NGzIdVZM44w=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+From: Arne Schwabe <arne@...1227...>
 
-Attention is currently required from: plaisthos.
+This fixes the build failures on MSVC cl compiler.
 
-flichtenheld has posted comments on this change. ( http://gerrit.openvpn.ne=
-t/c/openvpn/+/914?usp=3Demail )
+MSVC cl does not thinks of the expression of a const variable times
+an integer to be compile time static. C23 introduce the constexpr
+(like in C++) statement for that but we are only on C11 for now.
 
-Change subject: Improve documentation for override-username
-......................................................................
+So directly use the _countof(msg->addr) expression in the array
+initialisation.
 
+Change-Id: Ib579c1538eb5440bb7008bc866a5cb7d74844374
+Signed-off-by: Arne Schwabe <arne@...1227...>
+Acked-by: Frank Lichtenheld <frank@...2641...>
+---
 
-Patch Set 1: Code-Review+2
+This change was reviewed on Gerrit and approved by at least one
+developer. I request to merge it to master.
 
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/915
+This mail reflects revision 2 of this Change.
 
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/914?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings
+Acked-by according to Gerrit (reflected above):
+Frank Lichtenheld <frank@...2641...>
 
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: Ifc7443974345042ab9945d6a10e1d1b4525e5e05
-Gerrit-Change-Number: 914
-Gerrit-PatchSet: 1
-Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
-Gerrit-Reviewer: flichtenheld <frank@...2641...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Comment-Date: Mon, 24 Mar 2025 13:36:14 +0000
-Gerrit-HasComments: No
-Gerrit-Has-Labels: Yes
-Gerrit-MessageType: comment
-
---NGzIdVZM44w=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<p> Attention is currently required from: plaisthos. </p>
-<p>Patch set 1:<span style=3D"border-radius: 3px; display: inline-block; ma=
-rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/914?usp=3Demail">Vi=
-ew Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To vie=
-w, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/914?usp=3Demail">=
-change 914</a>. To unsubscribe, or for help writing mail filters, visit <a =
-href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope=
- itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"act=
-ion" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=
-=3D"http://gerrit.openvpn.net/c/openvpn/+/914?usp=3Demail"/><meta itemprop=
-=3D"name" content=3D"View Change"/></div></div>
-
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: Ifc7443974345042ab9945d6a10e=
-1d1b4525e5e05 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 914 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
-<div style=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@...1711...=
-27...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
-1...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Mon, 24 Mar 2025 13:36:14=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: No </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
-
-
---NGzIdVZM44w=--
+        
+diff --git a/src/openvpnserv/interactive.c b/src/openvpnserv/interactive.c
+index e64ac30..c6963b3 100644
+--- a/src/openvpnserv/interactive.c
++++ b/src/openvpnserv/interactive.c
+@@ -1901,7 +1901,9 @@
+     if (msg->addr_len > 0)
+     {
+         /* prepare the comma separated address list */
+-        CHAR addrs[max_addrs * 64]; /* 64 is enough for one IPv4/6 address */
++        /* cannot use max_addrs here as that is not considered compile
++         * time constant by all compilers and constexpr is C23 */
++        CHAR addrs[_countof(msg->addr) * 64]; /* 64 is enough for one IPv4/6 address */
+         size_t offset = 0;
+         for (int i = 0; i < addr_len; ++i)
+         {
 
