@@ -1,14 +1,14 @@
 From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Mon, 24 Mar 2025 13:54:02 +0000
+Date: Mon, 24 Mar 2025 13:54:00 +0000
 In-Reply-To: <gerrit.1742822307000.Ib579c1538eb5440bb7008bc866a5cb7d74844374@...2715...>
 References: <gerrit.1742822307000.Ib579c1538eb5440bb7008bc866a5cb7d74844374@...2715...>
 Reply-To: gert@...1296..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <5f5258e8299bea649821ef416f173d2e7d46a6d7-HTML@...2715...>
+Message-ID: <5f5258e8299bea649821ef416f173d2e7d46a6d7-EmailReplacePatchSet-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="JH0nmlPpGIU="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="AGgpSYN1TJk="; charset=UTF-8
 Subject: [Openvpn-devel] [XS] Change in openvpn[master]: Directly use
  _countof in array initialisation
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -19,15 +19,19 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: plaisthos <arne-openvpn@...1227...>
-Cc: flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---JH0nmlPpGIU=
+--AGgpSYN1TJk=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-cron2 has submitted this change. ( http://gerrit.openvpn.net/c/openvpn/+/91=
-5?usp=3Demail )
+cron2 has uploaded a new patch set (#3) to the change originally created by=
+ plaisthos. ( http://gerrit.openvpn.net/c/openvpn/+/915?usp=3Demail )
+
+The following approvals got outdated and were removed:
+Code-Review+2 by flichtenheld
+
 
 Change subject: Directly use _countof in array initialisation
 ......................................................................
@@ -55,7 +59,7 @@ M src/openvpnserv/interactive.c
 1 file changed, 3 insertions(+), 1 deletion(-)
 
 
-
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/15/915/3
 
 diff --git a/src/openvpnserv/interactive.c b/src/openvpnserv/interactive.c
 index e64ac30..c6963b3 100644
@@ -88,51 +92,54 @@ Gerrit-PatchSet: 3
 Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-MessageType: merged
+Gerrit-MessageType: newpatchset
 
---JH0nmlPpGIU=
+--AGgpSYN1TJk=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p>cron2 <strong>submitted</strong> this change.</p><p><a href=3D"http://ge=
-rrit.openvpn.net/c/openvpn/+/915?usp=3Demail">View Change</a></p><div style=
-=3D"white-space:pre-wrap"></div><pre style=3D"font-family: monospace,monosp=
-ace; white-space: pre-wrap;">Directly use _countof in array initialisation<=
-br><br>This fixes the build failures on MSVC cl compiler.<br><br>MSVC cl do=
-es not thinks of the expression of a const variable times<br>an integer to =
-be compile time static. C23 introduce the constexpr<br>(like in C++) statem=
-ent for that but we are only on C11 for now.<br><br>So directly use the _co=
-untof(msg-&gt;addr) expression in the array<br>initialisation.<br><br>Chang=
-e-Id: Ib579c1538eb5440bb7008bc866a5cb7d74844374<br>Signed-off-by: Arne Schw=
-abe &lt;arne@...1227...&gt;<br>Acked-by: Frank Lichtenheld &lt;frank@...2716...=
-1...&gt;<br>Message-Id: &lt;20250324133759.13155-1-gert@...1296...&gt;<br>U=
-RL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg312=
-05.html<br>Signed-off-by: Gert Doering &lt;gert@...1296...&gt;<br>---<br>M =
-src/openvpnserv/interactive.c<br>1 file changed, 3 insertions(+), 1 deletio=
-n(-)<br><br></pre>
-<pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><sp=
-an>diff --git a/src/openvpnserv/interactive.c b/src/openvpnserv/interactive=
-.c</span><br><span>index e64ac30..c6963b3 100644</span><br><span>--- a/src/=
-openvpnserv/interactive.c</span><br><span>+++ b/src/openvpnserv/interactive=
-.c</span><br><span>@@ -1901,7 +1901,9 @@</span><br><span>     if (msg-&gt;a=
-ddr_len &gt; 0)</span><br><span>     {</span><br><span>         /* prepare =
-the comma separated address list */</span><br><span style=3D"color: hsl(0, =
-100%, 40%);">-        CHAR addrs[max_addrs * 64]; /* 64 is enough for one I=
-Pv4/6 address */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
-     /* cannot use max_addrs here as that is not considered compile</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+         * time constant by=
- all compilers and constexpr is C23 */</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+        CHAR addrs[_countof(msg-&gt;addr) * 64]; /* 64 i=
-s enough for one IPv4/6 address */</span><br><span>         size_t offset =
-=3D 0;</span><br><span>         for (int i =3D 0; i &lt; addr_len; ++i)</sp=
-an><br><span>         {</span><br><span></span><br></pre><p>To view, visit =
-<a href=3D"http://gerrit.openvpn.net/c/openvpn/+/915?usp=3Demail">change 91=
-5</a>. To unsubscribe, or for help writing mail filters, visit <a href=3D"h=
-ttp://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope itemtype=
-=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"action" item=
-type=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http:/=
-/gerrit.openvpn.net/c/openvpn/+/915?usp=3Demail"/><meta itemprop=3D"name" c=
-ontent=3D"View Change"/></div></div>
+<p>cron2 <strong>uploaded patch set #3</strong> to the change originally cr=
+eated by plaisthos.</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/=
+915?usp=3Demail">View Change</a></p><p>The following approvals got outdated=
+ and were removed:
+Code-Review+2 by flichtenheld</p><pre style=3D"font-family: monospace,monos=
+pace; white-space: pre-wrap;">Directly use _countof in array initialisation=
+<br><br>This fixes the build failures on MSVC cl compiler.<br><br>MSVC cl d=
+oes not thinks of the expression of a const variable times<br>an integer to=
+ be compile time static. C23 introduce the constexpr<br>(like in C++) state=
+ment for that but we are only on C11 for now.<br><br>So directly use the _c=
+ountof(msg-&gt;addr) expression in the array<br>initialisation.<br><br>Chan=
+ge-Id: Ib579c1538eb5440bb7008bc866a5cb7d74844374<br>Signed-off-by: Arne Sch=
+wabe &lt;arne@...1227...&gt;<br>Acked-by: Frank Lichtenheld &lt;frank@...2375...=
+41...&gt;<br>Message-Id: &lt;20250324133759.13155-1-gert@...1296...&gt;<br>=
+URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg31=
+205.html<br>Signed-off-by: Gert Doering &lt;gert@...1296...&gt;<br>---<br>M=
+ src/openvpnserv/interactive.c<br>1 file changed, 3 insertions(+), 1 deleti=
+on(-)<br><br></pre><pre style=3D"font-family: monospace,monospace; white-sp=
+ace: pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/openvpn refs/change=
+s/15/915/3</pre><pre style=3D"font-family: monospace,monospace; white-space=
+: pre-wrap;"><span>diff --git a/src/openvpnserv/interactive.c b/src/openvpn=
+serv/interactive.c</span><br><span>index e64ac30..c6963b3 100644</span><br>=
+<span>--- a/src/openvpnserv/interactive.c</span><br><span>+++ b/src/openvpn=
+serv/interactive.c</span><br><span>@@ -1901,7 +1901,9 @@</span><br><span>  =
+   if (msg-&gt;addr_len &gt; 0)</span><br><span>     {</span><br><span>    =
+     /* prepare the comma separated address list */</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-        CHAR addrs[max_addrs * 64]; /* 64 i=
+s enough for one IPv4/6 address */</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+        /* cannot use max_addrs here as that is not consider=
+ed compile</span><br><span style=3D"color: hsl(120, 100%, 40%);">+         =
+* time constant by all compilers and constexpr is C23 */</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+        CHAR addrs[_countof(msg-&gt;ad=
+dr) * 64]; /* 64 is enough for one IPv4/6 address */</span><br><span>      =
+   size_t offset =3D 0;</span><br><span>         for (int i =3D 0; i &lt; a=
+ddr_len; ++i)</span><br><span>         {</span><br><span></span><br></pre><=
+p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/915?usp=
+=3Demail">change 915</a>. To unsubscribe, or for help writing mail filters,=
+ visit <a href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div=
+ itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemp=
+rop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"=
+url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/915?usp=3Demail"/><meta =
+itemprop=3D"name" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
@@ -146,8 +153,8 @@ ontent=3D"View Change"/></div></div>
 1...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: merged </div>
+<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
 
 
---JH0nmlPpGIU=--
+--AGgpSYN1TJk=--
 
