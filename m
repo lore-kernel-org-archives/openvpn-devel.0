@@ -1,17 +1,11 @@
-From: "ordex (Code Review)" <gerrit@...515...>
-Date: Mon, 24 Mar 2025 16:47:20 +0000
+From: Gert Doering <gert@...1296...>
+Date: Mon, 24 Mar 2025 19:27:26 +0100
+Message-ID: <20250324182735.12657-1-gert@...1296...>
 In-Reply-To: <gerrit.1742829972000.I1976307a7643c82f31d55ca32c79cbe64b6fffc6@...2715...>
 References: <gerrit.1742829972000.I1976307a7643c82f31d55ca32c79cbe64b6fffc6@...2715...>
-Reply-To: antonio@...2726..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...,
- gert@...1296...
-Message-ID: <1de7e9e692fed10e84fd475e0c1bcc3e54c708bc-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="gfUlhVslm3U="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: Make 'lport 0' no
- longer sufficient to do '--bind'.
+Subject: [Openvpn-devel] [PATCH v1] Make 'lport 0' no longer sufficient to
+ do '--bind'.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,104 +14,77 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Cc: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---gfUlhVslm3U=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+'lport <anything>' used to trigger 'do socket bind', which is not
+useful in itself for the 'lport 0' case (port 0 -> OS assigns a
+random port, as it is done for unbound sockets) unless also binding
+to a particular local IP address ('--local 192.0.2.1').
 
-Attention is currently required from: cron2, flichtenheld.
+The trigger for 'lport has been used, do socket bind' is
+ce.local_port_defined -> change the code to test for "0", and
+only set this for non-0 ports (NOTE: this is a string match,
+so if you really really want the old "lport 0" behaviour, using
+"lport 00" still does that...).
 
-ordex has posted comments on this change. ( http://gerrit.openvpn.net/c/ope=
-nvpn/+/916?usp=3Demail )
+The ce.local_port value is still set, so '--lport 0' together
+with '--local 192.0.2.1' will give you a random port number
+bound to that IP address - without 'lport 0' it would default
+to 1194 or the value of '--port' (if not using '--rport').
 
-Change subject: Make 'lport 0' no longer sufficient to do '--bind'.
-......................................................................
+Summary:  socket bind is now only done if one of these is set
+  - --port <port> with <port> not "0"
+  - --bind  (default on the client is "--nobind")
+  - --local <address>
 
+Change-Id: I1976307a7643c82f31d55ca32c79cbe64b6fffc6
+Signed-off-by: Gert Doering <gert@...1296...>
+Acked-by: Arne Schwabe <arne-openvpn@...1227...>
+---
 
-Patch Set 1:
+This change was reviewed on Gerrit and approved by at least one
+developer. I request to merge it to master.
 
-(1 comment)
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/916
+This mail reflects revision 1 of this Change.
 
-File src/openvpn/options.c:
+Acked-by according to Gerrit (reflected above):
+Arne Schwabe <arne-openvpn@...1227...>
 
-http://gerrit.openvpn.net/c/openvpn/+/916/comment/e5ea9251_3915c842 :
-PS1, Line 6719:         options->ce.local_port =3D p[1];
-what's the purpose of keeping this line outside the ifblock?
-
-
-
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/916?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings
-
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: I1976307a7643c82f31d55ca32c79cbe64b6fffc6
-Gerrit-Change-Number: 916
-Gerrit-PatchSet: 1
-Gerrit-Owner: cron2 <gert@...1296...>
-Gerrit-Reviewer: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-CC: ordex <antonio@...2726...>
-Gerrit-Attention: cron2 <gert@...1296...>
-Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Comment-Date: Mon, 24 Mar 2025 16:47:20 +0000
-Gerrit-HasComments: Yes
-Gerrit-Has-Labels: No
-Gerrit-MessageType: comment
-
---gfUlhVslm3U=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<p> Attention is currently required from: cron2, flichtenheld. </p>
-<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/916?usp=3Demail">View C=
-hange</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0;"><=
-li style=3D"margin: 0; padding: 0;"><p>File src/openvpn/options.c:</p><ul s=
-tyle=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0=
- 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn=
-.net/c/openvpn/+/916/comment/e5ea9251_3915c842">Patch Set #1, Line 6719:</a=
-> <code style=3D"font-family:monospace,monospace">        options-&gt;ce.lo=
-cal_port =3D p[1];</code></p><p style=3D"white-space: pre-wrap; word-wrap: =
-break-word;">what&#39;s the purpose of keeping this line outside the ifbloc=
-k?</p></li></ul></li></ul><p>To view, visit <a href=3D"http://gerrit.openvp=
-n.net/c/openvpn/+/916?usp=3Demail">change 916</a>. To unsubscribe, or for h=
-elp writing mail filters, visit <a href=3D"http://gerrit.openvpn.net/settin=
-gs">settings</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMess=
-age"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewA=
-ction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+=
-/916?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div><=
-/div>
-
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I1976307a7643c82f31d55ca32c7=
-9cbe64b6fffc6 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 916 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
-<div style=3D"display:none"> Gerrit-Owner: cron2 &lt;gert@...1296...&gt; </=
-div>
-<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
-1...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: ordex &lt;antonio@...2726...&gt; </=
-div>
-<div style=3D"display:none"> Gerrit-Attention: cron2 &lt;gert@...1296...&gt=
-; </div>
-<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
-41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Mon, 24 Mar 2025 16:47:20=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: No </div>
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
-
-
---gfUlhVslm3U=--
+        
+diff --git a/doc/man-sections/link-options.rst b/doc/man-sections/link-options.rst
+index d48021e..287473e 100644
+--- a/doc/man-sections/link-options.rst
++++ b/doc/man-sections/link-options.rst
+@@ -122,7 +122,9 @@
+ 
+ --lport port
+   Set default TCP/UDP port number. Cannot be used together with
+-  ``--nobind`` option.
++  ``--nobind`` option.  A port number of ``0`` is only honoured to
++  achieve "bind() to a random assigned port number" if a bind-to IP
++  address is specified with ``--local``.
+ 
+ --mark value
+   Mark encrypted packets being sent with ``value``. The mark value can be
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index ab56609..99dd60a 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -6710,7 +6710,12 @@
+     else if (streq(p[0], "lport") && p[1] && !p[2])
+     {
+         VERIFY_PERMISSION(OPT_P_GENERAL|OPT_P_CONNECTION);
+-        options->ce.local_port_defined = true;
++
++        /* only trigger bind() if port is not 0 (or --local is used) */
++        if (!streq(p[1], "0"))
++        {
++            options->ce.local_port_defined = true;
++        }
+         options->ce.local_port = p[1];
+     }
+     else if (streq(p[0], "rport") && p[1] && !p[2])
 
