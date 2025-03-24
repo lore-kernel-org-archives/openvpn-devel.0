@@ -1,10 +1,10 @@
+Date: Mon, 24 Mar 2025 10:20:05 +0100 (CET)
+Message-Id: <202503240920.52O9K5T4076577@...2054...>
 From: Gert Doering <gert@...1296...>
-Date: Mon, 24 Mar 2025 09:33:44 +0100
-Message-ID: <20250324083350.4019-1-gert@...1296...>
-In-Reply-To: <gerrit.1741926089000.I23710b1f5b2122ec1f14465911836c0f0afa9c64@...2715...>
-References: <gerrit.1741926089000.I23710b1f5b2122ec1f14465911836c0f0afa9c64@...2715...>
-MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v6] win: calculate address string buffer size
+In-Reply-To: <20250324083350.4019-1-gert@...1296...>
+References: <20250324083350.4019-1-gert@...1296...>
+Subject: [Openvpn-devel] [PATCH applied] Re: win: calculate address string
+ buffer size
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,55 +15,34 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Heiko Hund <heiko@...2662...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-From: Heiko Hund <heiko@...2662...>
+Thanks for future-proofing this part of the code - it's fine today, but
+we might bump the number of allowed DNS addresses to "8" one day, and
+then the old code was at-risk for overflows...
 
-Instead of making the string buffer statically sized for a max. of
-four addresses, calculate it to hold up to the max number of addresses
-a dns_cfg_message_t can hold (currently four as well). Improves the code
-so that it doesn't rely on the addresses never being more than four in
-the future.
+I haven't actually tested it, just stared at it for a bit, asked mingw
+("no warnings") and we have Frank's +2 in gerrit.
 
-Change-Id: I23710b1f5b2122ec1f14465911836c0f0afa9c64
-Signed-off-by: Heiko Hund <heiko@...2662...>
-Acked-by: Frank Lichtenheld <frank@...2641...>
----
+Your patch has been applied to the master branch.
 
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to master.
+commit 8ea5debaea01da5fee56fbad56b50820c1beee92
+Author: Heiko Hund
+Date:   Mon Mar 24 09:33:44 2025 +0100
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/908
-This mail reflects revision 6 of this Change.
+     win: calculate address string buffer size
 
-Acked-by according to Gerrit (reflected above):
-Frank Lichtenheld <frank@...2641...>
+     Signed-off-by: Heiko Hund <heiko@...2662...>
+     Acked-by: Frank Lichtenheld <frank@...2641...>
+     Message-Id: <20250324083350.4019-1-gert@...1296...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg31196.html
+     Signed-off-by: Gert Doering <gert@...1296...>
 
-        
-diff --git a/src/openvpnserv/interactive.c b/src/openvpnserv/interactive.c
-index abbc916..100c69a 100644
---- a/src/openvpnserv/interactive.c
-+++ b/src/openvpnserv/interactive.c
-@@ -1857,9 +1857,10 @@
-     int addr_len = msg->addr_len;
- 
-     /* sanity check */
--    if (addr_len > _countof(msg->addr))
-+    const size_t max_addrs = _countof(msg->addr);
-+    if (addr_len > max_addrs)
-     {
--        addr_len = _countof(msg->addr);
-+        addr_len = max_addrs;
-     }
- 
-     if (!msg->iface.name[0]) /* interface name is required */
-@@ -1909,7 +1910,7 @@
-     if (msg->addr_len > 0)
-     {
-         /* prepare the comma separated address list */
--        CHAR addrs[256]; /* large enough to hold four IPv4 / IPv6 address strings */
-+        CHAR addrs[max_addrs * 64]; /* 64 is enough for one IPv4/6 address */
-         size_t offset = 0;
-         for (int i = 0; i < addr_len; ++i)
-         {
+
+--
+kind regards,
+
+Gert Doering
+
 
