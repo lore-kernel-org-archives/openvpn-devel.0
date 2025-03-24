@@ -1,14 +1,15 @@
-From: "plaisthos (Code Review)" <gerrit@...515...>
-Date: Mon, 24 Mar 2025 15:45:59 +0000
+From: "ordex (Code Review)" <gerrit@...515...>
+Date: Mon, 24 Mar 2025 16:47:20 +0000
 In-Reply-To: <gerrit.1742829972000.I1976307a7643c82f31d55ca32c79cbe64b6fffc6@...2715...>
 References: <gerrit.1742829972000.I1976307a7643c82f31d55ca32c79cbe64b6fffc6@...2715...>
-Reply-To: arne-openvpn@...1227..., openvpn-devel@lists.sourceforge.net,
- frank@...2641..., gert@...1296...
-Message-ID: <2bcc69d2ec66db7e14412516932a1e1d21286b0c-EmailReviewComments-HTML@...2715...>
+Reply-To: antonio@...2726..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net, frank@...2641...,
+ gert@...1296...
+Message-ID: <1de7e9e692fed10e84fd475e0c1bcc3e54c708bc-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="T/5yvV86uoU="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="gfUlhVslm3U="; charset=UTF-8
 Subject: [Openvpn-devel] [S] Change in openvpn[master]: Make 'lport 0' no
  longer sufficient to do '--bind'.
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -19,22 +20,31 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Cc: flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Cc: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---T/5yvV86uoU=
+--gfUlhVslm3U=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 Attention is currently required from: cron2, flichtenheld.
 
-plaisthos has posted comments on this change. ( http://gerrit.openvpn.net/c=
-/openvpn/+/916?usp=3Demail )
+ordex has posted comments on this change. ( http://gerrit.openvpn.net/c/ope=
+nvpn/+/916?usp=3Demail )
 
 Change subject: Make 'lport 0' no longer sufficient to do '--bind'.
 ......................................................................
 
 
-Patch Set 1: Code-Review+2
+Patch Set 1:
+
+(1 comment)
+
+File src/openvpn/options.c:
+
+http://gerrit.openvpn.net/c/openvpn/+/916/comment/e5ea9251_3915c842 :
+PS1, Line 6719:         options->ce.local_port =3D p[1];
+what's the purpose of keeping this line outside the ifblock?
+
 
 
 --
@@ -51,29 +61,36 @@ Gerrit-Owner: cron2 <gert@...1296...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-CC: ordex <antonio@...2726...>
 Gerrit-Attention: cron2 <gert@...1296...>
 Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Comment-Date: Mon, 24 Mar 2025 15:45:59 +0000
-Gerrit-HasComments: No
-Gerrit-Has-Labels: Yes
+Gerrit-Comment-Date: Mon, 24 Mar 2025 16:47:20 +0000
+Gerrit-HasComments: Yes
+Gerrit-Has-Labels: No
 Gerrit-MessageType: comment
 
---T/5yvV86uoU=
+--gfUlhVslm3U=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <p> Attention is currently required from: cron2, flichtenheld. </p>
-<p>Patch set 1:<span style=3D"border-radius: 3px; display: inline-block; ma=
-rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/916?usp=3Demail">Vi=
-ew Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To vie=
-w, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/916?usp=3Demail">=
-change 916</a>. To unsubscribe, or for help writing mail filters, visit <a =
-href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope=
- itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"act=
-ion" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=
-=3D"http://gerrit.openvpn.net/c/openvpn/+/916?usp=3Demail"/><meta itemprop=
-=3D"name" content=3D"View Change"/></div></div>
+<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/916?usp=3Demail">View C=
+hange</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0;"><=
+li style=3D"margin: 0; padding: 0;"><p>File src/openvpn/options.c:</p><ul s=
+tyle=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0=
+ 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn=
+.net/c/openvpn/+/916/comment/e5ea9251_3915c842">Patch Set #1, Line 6719:</a=
+> <code style=3D"font-family:monospace,monospace">        options-&gt;ce.lo=
+cal_port =3D p[1];</code></p><p style=3D"white-space: pre-wrap; word-wrap: =
+break-word;">what&#39;s the purpose of keeping this line outside the ifbloc=
+k?</p></li></ul></li></ul><p>To view, visit <a href=3D"http://gerrit.openvp=
+n.net/c/openvpn/+/916?usp=3Demail">change 916</a>. To unsubscribe, or for h=
+elp writing mail filters, visit <a href=3D"http://gerrit.openvpn.net/settin=
+gs">settings</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMess=
+age"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewA=
+ction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+=
+/916?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div><=
+/div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
@@ -89,16 +106,18 @@ div>
 .1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: ordex &lt;antonio@...2726...&gt; </=
+div>
 <div style=3D"display:none"> Gerrit-Attention: cron2 &lt;gert@...1296...&gt=
 ; </div>
 <div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
 41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Mon, 24 Mar 2025 15:45:59=
+<div style=3D"display:none"> Gerrit-Comment-Date: Mon, 24 Mar 2025 16:47:20=
  +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: No </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
+<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: No </div>
 <div style=3D"display:none"> Gerrit-MessageType: comment </div>
 
 
---T/5yvV86uoU=--
+--gfUlhVslm3U=--
 
