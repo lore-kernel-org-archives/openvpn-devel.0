@@ -1,11 +1,10 @@
+Date: Mon, 24 Mar 2025 08:19:49 +0100 (CET)
+Message-Id: <202503240719.52O7JneO072415@...2054...>
 From: Gert Doering <gert@...1296...>
-Date: Sun, 23 Mar 2025 22:13:53 +0100
-Message-ID: <20250323211359.14117-1-gert@...1296...>
-In-Reply-To: <gerrit.1742731599000.I28a8abd0ee3fa9168a716171b0a405476089c4a1@...2715...>
-References: <gerrit.1742731599000.I28a8abd0ee3fa9168a716171b0a405476089c4a1@...2715...>
-MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v1] Fix incorrect condition for checking
- password related check
+In-Reply-To: <20250323211359.14117-1-gert@...1296...>
+References: <20250323211359.14117-1-gert@...1296...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Fix incorrect condition for
+ checking password related check
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,51 +15,34 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Arne Schwabe <arne@...1227...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-From: Arne Schwabe <arne@...1227...>
+Yeah, sorry for not noticing when reviewing db48cea.  In retrospective
+this is quite obviously the correct fix.
 
-Commit db48cea chagned logic to move logic from a variable and repeated
-checks to an if clause.
+Added Github: reference, and URLs to sf.net mail archive & gerrit - the
+archive at mail-archive.org is broken again :-(
 
-The old code had
+Your patch has been applied to the master branch.
 
-            const bool ccnr = (options->auth_user_pass_verify_script
-                                || PLUGIN_OPTION_LIST(options)
-                                || MAN_CLIENT_AUTH_ENABLED(options));
+commit 15e663c898fe7a2350c35f5263cbad116cd5b61a
+Author: Arne Schwabe
+Date:   Sun Mar 23 22:13:53 2025 +0100
 
-followed by several condition that checked !ccnr
+     Fix incorrect condition for checking password related check
 
-This commit fixes the if clause by correctly applying De Margan's law.
+     Signed-off-by: Arne Schwabe <arne@...1227...>
+     Acked-by: Antonio Quartulli <antonio@...2726...>
+     Message-Id: <20250323211359.14117-1-gert@...1296...>
+     URL: https://sourceforge.net/p/openvpn/mailman/message/59164222/
+     URL: http://gerrit.openvpn.net/c/openvpn/+/912
+     Signed-off-by: Gert Doering <gert@...1296...>
 
-Change-Id: I28a8abd0ee3fa9168a716171b0a405476089c4a1
-Signed-off-by: Arne Schwabe <arne@...1227...>
-Acked-by: Antonio Quartulli <a@...2181...>
----
 
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to master.
+--
+kind regards,
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/912
-This mail reflects revision 1 of this Change.
+Gert Doering
 
-Acked-by according to Gerrit (reflected above):
-Antonio Quartulli <a@...2181...>
-
-        
-diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index 67ef55b..ab56609 100644
---- a/src/openvpn/options.c
-+++ b/src/openvpn/options.c
-@@ -2752,8 +2752,8 @@
- 
-         }
-         if (!options->auth_user_pass_verify_script
--            || PLUGIN_OPTION_LIST(options)
--            || MAN_CLIENT_AUTH_ENABLED(options))
-+            && !PLUGIN_OPTION_LIST(options)
-+            && !MAN_CLIENT_AUTH_ENABLED(options))
-         {
-             const char *use_err = "--%s must be used with --management-client-auth, an --auth-user-pass-verify script, or plugin";
- 
 
