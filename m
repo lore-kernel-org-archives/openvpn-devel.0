@@ -1,16 +1,11 @@
-From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Tue, 25 Mar 2025 10:54:24 +0000
+From: Gert Doering <gert@...1296...>
+Date: Tue, 25 Mar 2025 11:54:40 +0100
+Message-ID: <20250325105447.32164-1-gert@...1296...>
 In-Reply-To: <gerrit.1742224441000.I1c8fcd5bb6e1fa0020d52879eefbafdb2630e7b5@...2715...>
 References: <gerrit.1742224441000.I1c8fcd5bb6e1fa0020d52879eefbafdb2630e7b5@...2715...>
-Reply-To: gert@...1296..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <b8bb255ebbdb54f8062b6d0922b78d97cba67399-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="1SaBYDpijZg="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: Mention address if
- not unspecific on DNS failure
+Subject: [Openvpn-devel] [PATCH v3] Mention address if not unspecific on DNS
+ failure
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,87 +14,79 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: plaisthos <arne-openvpn@...1227...>
-Cc: flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---1SaBYDpijZg=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+From: Arne Schwabe <arne@...1227...>
 
-Attention is currently required from: flichtenheld, plaisthos.
+With the recent changes breaking configs that included lport 0, it became
+apparent that having  the address family in the error message when
+resolving fails, would have made diagnosis in this case and probably others
+much easier.
 
-cron2 has posted comments on this change. ( http://gerrit.openvpn.net/c/ope=
-nvpn/+/909?usp=3Demail )
+Change-Id: I1c8fcd5bb6e1fa0020d52879eefbafdb2630e7b5
+Signed-off-by: Arne Schwabe <arne@...1227...>
+Acked-by: Gert Doering <gert@...1296...>
+---
 
-Change subject: Mention address if not unspecific on DNS failure
-......................................................................
+This change was reviewed on Gerrit and approved by at least one
+developer. I request to merge it to master.
 
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/909
+This mail reflects revision 3 of this Change.
 
-Patch Set 3: Code-Review+2
+Acked-by according to Gerrit (reflected above):
+Gert Doering <gert@...1296...>
 
-
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/909?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings
-
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: I1c8fcd5bb6e1fa0020d52879eefbafdb2630e7b5
-Gerrit-Change-Number: 909
-Gerrit-PatchSet: 3
-Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
-Gerrit-Reviewer: cron2 <gert@...1296...>
-Gerrit-Reviewer: flichtenheld <frank@...2641...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Comment-Date: Tue, 25 Mar 2025 10:54:24 +0000
-Gerrit-HasComments: No
-Gerrit-Has-Labels: Yes
-Gerrit-MessageType: comment
-
---1SaBYDpijZg=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<p> Attention is currently required from: flichtenheld, plaisthos. </p>
-<p>Patch set 3:<span style=3D"border-radius: 3px; display: inline-block; ma=
-rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/909?usp=3Demail">Vi=
-ew Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To vie=
-w, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/909?usp=3Demail">=
-change 909</a>. To unsubscribe, or for help writing mail filters, visit <a =
-href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope=
- itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"act=
-ion" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=
-=3D"http://gerrit.openvpn.net/c/openvpn/+/909?usp=3Demail"/><meta itemprop=
-=3D"name" content=3D"View Change"/></div></div>
-
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I1c8fcd5bb6e1fa0020d52879eef=
-bafdb2630e7b5 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 909 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 3 </div>
-<div style=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@...1711...=
-27...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
- </div>
-<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
-1...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
-41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Tue, 25 Mar 2025 10:54:24=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: No </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
-
-
---1SaBYDpijZg=--
+        
+diff --git a/src/openvpn/socket.c b/src/openvpn/socket.c
+index 6b32e30..bea5393 100644
+--- a/src/openvpn/socket.c
++++ b/src/openvpn/socket.c
+@@ -445,6 +445,22 @@
+     throw_signal_soft(SIGHUP, "Preresolving failed");
+ }
+ 
++/**
++ * Small helper function for openvpn_getaddrinfo to print the address
++ * family when resolving fails
++ */
++static const char *
++getaddrinfo_addr_family_name(int af)
++{
++    switch (af)
++    {
++        case AF_INET:  return "[AF_INET]";
++
++        case AF_INET6: return "[AF_INET6]";
++    }
++    return "";
++}
++
+ /*
+  * Translate IPv4/IPv6 addr or hostname into struct addrinfo
+  * If resolve error, try again for resolve_retry_seconds seconds.
+@@ -545,11 +561,11 @@
+             print_hostname = "undefined";
+         }
+ 
+-        fmt = "RESOLVE: Cannot resolve host address: %s:%s (%s)";
++        fmt = "RESOLVE: Cannot resolve host address: %s:%s%s (%s)";
+         if ((flags & GETADDR_MENTION_RESOLVE_RETRY)
+             && !resolve_retry_seconds)
+         {
+-            fmt = "RESOLVE: Cannot resolve host address: %s:%s (%s) "
++            fmt = "RESOLVE: Cannot resolve host address: %s:%s%s (%s) %s"
+                   "(I would have retried this name query if you had "
+                   "specified the --resolv-retry option.)";
+         }
+@@ -639,6 +655,7 @@
+                 fmt,
+                 print_hostname,
+                 print_servname,
++                getaddrinfo_addr_family_name(ai_family),
+                 gai_strerror(status));
+ 
+             if (--resolve_retries <= 0)
 
