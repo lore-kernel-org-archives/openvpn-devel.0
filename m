@@ -1,11 +1,11 @@
 From: Gert Doering <gert@...1296...>
-Date: Tue, 25 Mar 2025 11:54:40 +0100
-Message-ID: <20250325105447.32164-1-gert@...1296...>
-In-Reply-To: <gerrit.1742224441000.I1c8fcd5bb6e1fa0020d52879eefbafdb2630e7b5@...2715...>
-References: <gerrit.1742224441000.I1c8fcd5bb6e1fa0020d52879eefbafdb2630e7b5@...2715...>
+Date: Tue, 25 Mar 2025 11:57:24 +0100
+Message-ID: <20250325105724.1285-1-gert@...1296...>
+In-Reply-To: <gerrit.1742429994000.I6d2ec69ac7a9ef5900d8f1d8541d6a19c9cb7df9@...2715...>
+References: <gerrit.1742429994000.I6d2ec69ac7a9ef5900d8f1d8541d6a19c9cb7df9@...2715...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v3] Mention address if not unspecific on DNS
- failure
+Subject: [Openvpn-devel] [PATCH v1] socket: use remote proto when creating
+ client sockets
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,75 +18,44 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-From: Arne Schwabe <arne@...1227...>
+From: Antonio Quartulli <antonio@...2726...>
 
-With the recent changes breaking configs that included lport 0, it became
-apparent that having  the address family in the error message when
-resolving fails, would have made diagnosis in this case and probably others
-much easier.
+When creating a socket to connect to a remote (this happens
+in client mode) always use the protocol specified for the
+remote.
 
-Change-Id: I1c8fcd5bb6e1fa0020d52879eefbafdb2630e7b5
-Signed-off-by: Arne Schwabe <arne@...1227...>
-Acked-by: Gert Doering <gert@...1296...>
+The listening protocol in this case is just ignored as it
+does not make any sense.
+
+Change-Id: I6d2ec69ac7a9ef5900d8f1d8541d6a19c9cb7df9
+Signed-off-by: Antonio Quartulli <antonio@...2726...>
+Acked-by: Arne Schwabe <arne-openvpn@...1227...>
 ---
 
 This change was reviewed on Gerrit and approved by at least one
 developer. I request to merge it to master.
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/909
-This mail reflects revision 3 of this Change.
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/911
+This mail reflects revision 1 of this Change.
 
 Acked-by according to Gerrit (reflected above):
-Gert Doering <gert@...1296...>
+Arne Schwabe <arne-openvpn@...1227...>
 
         
 diff --git a/src/openvpn/socket.c b/src/openvpn/socket.c
-index 6b32e30..bea5393 100644
+index 6b32e30..ad97830 100644
 --- a/src/openvpn/socket.c
 +++ b/src/openvpn/socket.c
-@@ -445,6 +445,22 @@
-     throw_signal_soft(SIGHUP, "Preresolving failed");
- }
+@@ -1886,6 +1886,11 @@
+     const char *remote_host = o->ce.remote;
+     const char *remote_port = o->ce.remote_port;
  
-+/**
-+ * Small helper function for openvpn_getaddrinfo to print the address
-+ * family when resolving fails
-+ */
-+static const char *
-+getaddrinfo_addr_family_name(int af)
-+{
-+    switch (af)
++    if (remote_host)
 +    {
-+        case AF_INET:  return "[AF_INET]";
-+
-+        case AF_INET6: return "[AF_INET6]";
++        proto = o->ce.proto;
 +    }
-+    return "";
-+}
 +
- /*
-  * Translate IPv4/IPv6 addr or hostname into struct addrinfo
-  * If resolve error, try again for resolve_retry_seconds seconds.
-@@ -545,11 +561,11 @@
-             print_hostname = "undefined";
-         }
- 
--        fmt = "RESOLVE: Cannot resolve host address: %s:%s (%s)";
-+        fmt = "RESOLVE: Cannot resolve host address: %s:%s%s (%s)";
-         if ((flags & GETADDR_MENTION_RESOLVE_RETRY)
-             && !resolve_retry_seconds)
-         {
--            fmt = "RESOLVE: Cannot resolve host address: %s:%s (%s) "
-+            fmt = "RESOLVE: Cannot resolve host address: %s:%s%s (%s) %s"
-                   "(I would have retried this name query if you had "
-                   "specified the --resolv-retry option.)";
-         }
-@@ -639,6 +655,7 @@
-                 fmt,
-                 print_hostname,
-                 print_servname,
-+                getaddrinfo_addr_family_name(ai_family),
-                 gai_strerror(status));
- 
-             if (--resolve_retries <= 0)
+     if (c->mode == CM_CHILD_TCP || c->mode == CM_CHILD_UDP)
+     {
+         struct link_socket *tmp_sock = NULL;
 
