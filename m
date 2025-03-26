@@ -1,15 +1,16 @@
-From: "its_Giaan (Code Review)" <gerrit@...515...>
-Date: Wed, 26 Mar 2025 08:24:13 +0000
-References: <gerrit.1742977449000.Id9dbb4d3c550bd4c13f6ee97e67749686457d9fc@...2715...>
-Reply-To: gianmarco@...2726..., arne-openvpn@...1227...,
+From: "stipa (Code Review)" <gerrit@...515...>
+Date: Wed, 26 Mar 2025 08:55:03 +0000
+In-Reply-To: <gerrit.1733989644000.I576e74f3276362606e9cbd50bb5adbebaaf209cc@...2715...>
+References: <gerrit.1733989644000.I576e74f3276362606e9cbd50bb5adbebaaf209cc@...2715...>
+Reply-To: lstipakov@...277..., arne-openvpn@...1227..., heiko@...515...,
  openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <f4598c685c3aa7748b04ff4a56e6662bda4f37d4-HTML@...2715...>
+Message-ID: <0ceb772deedf0110682c8e9221997abdab71eabf-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="1uwaJ7+f9pY="; charset=UTF-8
-Subject: [Openvpn-devel] [XS] Change in openvpn[master]:
- Explicit-exit-notify and multisocket interaction
+Content-Type: multipart/alternative; boundary="pBi1oSjrUaI="; charset=UTF-8
+Subject: [Openvpn-devel] [XL] Change in openvpn[master]: win: implement
+ --dns option support with NRPT
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,141 +19,139 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: d12fk <heiko@...515...>
+Cc: flichtenheld <frank@...2641...>, plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---1uwaJ7+f9pY=
+--pBi1oSjrUaI=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: flichtenheld, plaisthos.
+Attention is currently required from: d12fk, plaisthos.
 
-Hello plaisthos, flichtenheld,
+stipa has posted comments on this change. ( http://gerrit.openvpn.net/c/ope=
+nvpn/+/837?usp=3Demail )
 
-I'd like you to do a code review.
-Please visit
-
-    http://gerrit.openvpn.net/c/openvpn/+/917?usp=3Demail
-
-to review the following change.
-
-
-Change subject: Explicit-exit-notify and multisocket interaction
+Change subject: win: implement --dns option support with NRPT
 ......................................................................
 
-Explicit-exit-notify and multisocket interaction
 
-Check signals after timeout handling to avoid
-unusual delay when using explicit-exit-notify.
+Patch Set 14:
 
-Github: #702
+(2 comments)
 
-Change-Id: Id9dbb4d3c550bd4c13f6ee97e67749686457d9fc
-Signed-off-by: Gianmarco De Gregori <gianmarco@...2726...>
----
-M src/openvpn/multi.c
-1 file changed, 1 insertion(+), 1 deletion(-)
+File src/openvpnserv/interactive.c:
+
+http://gerrit.openvpn.net/c/openvpn/+/837/comment/b879805b_55fa9a7f :
+PS14, Line 2259:         MsgToEventLog(M_SYSERR, TEXT("IsInterfaceConnected=
+: "
+> Hm, I do not have adapters I can reproduce this on my system. [=E2=80=A6]
+Sure. In my case it is probably Hyper-V virtual adapters.
+
+https://gist.github.com/lstipakov/b30a662ab8001d4a07ddda7406808eb5
+
+Again, I think it is fine just to omit error message in this error case.
 
 
+http://gerrit.openvpn.net/c/openvpn/+/837/comment/a11626e1_0dcbd6ed :
+PS14, Line 2510:     for (int i =3D 0; i < _countof(data); ++i)
+> Yeah, if no domains or nameservers are defined the adapters are not added=
+ as exclude data, so there  [=E2=80=A6]
+But there are: https://usercontent.irccloud-cdn.com/file/eJy2zlR6/image.png
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/17/917/1
 
-diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
-index a673ec1..8e2c4d4 100644
---- a/src/openvpn/multi.c
-+++ b/src/openvpn/multi.c
-@@ -4265,13 +4265,13 @@
-         {
-             /* process the I/O which triggered select */
-             multi_io_process_io(multi);
--            MULTI_CHECK_SIG(multi);
-         }
-         else if (status =3D=3D 0)
-         {
-             multi_io_action(multi, NULL, TA_TIMEOUT, false);
-         }
-
-+        MULTI_CHECK_SIG(multi);
-         perf_pop();
-     }
- }
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/917?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/837?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings
 
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: Id9dbb4d3c550bd4c13f6ee97e67749686457d9fc
-Gerrit-Change-Number: 917
-Gerrit-PatchSet: 1
-Gerrit-Owner: its_Giaan <gianmarco@...2726...>
+Gerrit-Change-Id: I576e74f3276362606e9cbd50bb5adbebaaf209cc
+Gerrit-Change-Number: 837
+Gerrit-PatchSet: 14
+Gerrit-Owner: d12fk <heiko@...515...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
+Gerrit-Reviewer: stipa <lstipakov@...277...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-MessageType: newchange
+Gerrit-Attention: d12fk <heiko@...515...>
+Gerrit-Comment-Date: Wed, 26 Mar 2025 08:55:03 +0000
+Gerrit-HasComments: Yes
+Gerrit-Has-Labels: No
+Comment-In-Reply-To: d12fk <heiko@...515...>
+Comment-In-Reply-To: stipa <lstipakov@...277...>
+Gerrit-MessageType: comment
 
---1uwaJ7+f9pY=
+--pBi1oSjrUaI=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p> Attention is currently required from: flichtenheld, plaisthos. </p>
-<p>its_Giaan would like plaisthos and flichtenheld to <strong>review</stron=
-g> this change.
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/917?usp=3Demail">Vi=
-ew Change</a></p><pre style=3D"font-family: monospace,monospace; white-spac=
-e: pre-wrap;">Explicit-exit-notify and multisocket interaction<br><br>Check=
- signals after timeout handling to avoid<br>unusual delay when using explic=
-it-exit-notify.<br><br>Github: #702<br><br>Change-Id: Id9dbb4d3c550bd4c13f6=
-ee97e67749686457d9fc<br>Signed-off-by: Gianmarco De Gregori &lt;gianmarco@...220...=
-..2726...&gt;<br>---<br>M src/openvpn/multi.c<br>1 file changed, 1 insertio=
-n(+), 1 deletion(-)<br><br></pre><pre style=3D"font-family: monospace,monos=
-pace; white-space: pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/openv=
-pn refs/changes/17/917/1</pre><pre style=3D"font-family: monospace,monospac=
-e; white-space: pre-wrap;"><span>diff --git a/src/openvpn/multi.c b/src/ope=
-nvpn/multi.c</span><br><span>index a673ec1..8e2c4d4 100644</span><br><span>=
---- a/src/openvpn/multi.c</span><br><span>+++ b/src/openvpn/multi.c</span><=
-br><span>@@ -4265,13 +4265,13 @@</span><br><span>         {</span><br><span=
->             /* process the I/O which triggered select */</span><br><span>=
-             multi_io_process_io(multi);</span><br><span style=3D"color: hs=
-l(0, 100%, 40%);">-            MULTI_CHECK_SIG(multi);</span><br><span>    =
-     }</span><br><span>         else if (status =3D=3D 0)</span><br><span> =
-        {</span><br><span>             multi_io_action(multi, NULL, TA_TIME=
-OUT, false);</span><br><span>         }</span><br><span> </span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+        MULTI_CHECK_SIG(multi);</span=
-><br><span>         perf_pop();</span><br><span>     }</span><br><span> }</=
-span><br><span></span><br></pre><p>To view, visit <a href=3D"http://gerrit.=
-openvpn.net/c/openvpn/+/917?usp=3Demail">change 917</a>. To unsubscribe, or=
+<p> Attention is currently required from: d12fk, plaisthos. </p>
+<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/837?usp=3Demail">View C=
+hange</a></p><p>2 comments:</p><ul style=3D"list-style: none; padding: 0;">=
+<li style=3D"margin: 0; padding: 0;"><p>File src/openvpnserv/interactive.c:=
+</p><ul style=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; pad=
+ding: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerri=
+t.openvpn.net/c/openvpn/+/837/comment/b879805b_55fa9a7f">Patch Set #14, Lin=
+e 2259:</a> <code style=3D"font-family:monospace,monospace">        MsgToEv=
+entLog(M_SYSERR, TEXT(&quot;IsInterfaceConnected: &quot;</code></p><p><bloc=
+kquote style=3D"border-left: 1px solid #aaa; margin: 10px 0; padding: 0 10p=
+x;">Hm, I do not have adapters I can reproduce this on my system. [=E2=80=
+=A6]</blockquote></p><p style=3D"white-space: pre-wrap; word-wrap: break-wo=
+rd;">Sure. In my case it is probably Hyper-V virtual adapters.</p><p style=
+=3D"white-space: pre-wrap; word-wrap: break-word;">https://gist.github.com/=
+lstipakov/b30a662ab8001d4a07ddda7406808eb5</p><p style=3D"white-space: pre-=
+wrap; word-wrap: break-word;">Again, I think it is fine just to omit error =
+message in this error case.</p></li><li style=3D"margin: 0; padding: 0 0 0 =
+16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.ne=
+t/c/openvpn/+/837/comment/a11626e1_0dcbd6ed">Patch Set #14, Line 2510:</a> =
+<code style=3D"font-family:monospace,monospace">    for (int i =3D 0; i &lt=
+; _countof(data); ++i)</code></p><p><blockquote style=3D"border-left: 1px s=
+olid #aaa; margin: 10px 0; padding: 0 10px;">Yeah, if no domains or nameser=
+vers are defined the adapters are not added as exclude data, so there  [=E2=
+=80=A6]</blockquote></p><p style=3D"white-space: pre-wrap; word-wrap: break=
+-word;">But there are: https://usercontent.irccloud-cdn.com/file/eJy2zlR6/i=
+mage.png</p></li></ul></li></ul><p>To view, visit <a href=3D"http://gerrit.=
+openvpn.net/c/openvpn/+/837?usp=3Demail">change 837</a>. To unsubscribe, or=
  for help writing mail filters, visit <a href=3D"http://gerrit.openvpn.net/=
 settings">settings</a>.</p><div itemscope itemtype=3D"http://schema.org/Ema=
 ilMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.org=
 /ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/ope=
-nvpn/+/917?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/><=
+nvpn/+/837?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/><=
 /div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: Id9dbb4d3c550bd4c13f6ee97e67=
-749686457d9fc </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 917 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
-<div style=3D"display:none"> Gerrit-Owner: its_Giaan &lt;gianmarco@...2786...=
-..&gt; </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I576e74f3276362606e9cbd50bb5=
+adbebaaf209cc </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 837 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 14 </div>
+<div style=3D"display:none"> Gerrit-Owner: d12fk &lt;heiko@...515...&gt; </=
+div>
 <div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
 1...&gt; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
 .1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: stipa &lt;lstipakov@...277...=
+&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
 ..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
-41...&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: newchange </div>
+<div style=3D"display:none"> Gerrit-Attention: d12fk &lt;heiko@...515...&gt=
+; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Wed, 26 Mar 2025 08:55:03=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: No </div>
+<div style=3D"display:none"> Comment-In-Reply-To: d12fk &lt;heiko@...515...=
+&gt; </div>
+<div style=3D"display:none"> Comment-In-Reply-To: stipa &lt;lstipakov@...1664...=
+7...&gt; </div>
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
 
 
---1uwaJ7+f9pY=--
+--pBi1oSjrUaI=--
 
