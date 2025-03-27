@@ -1,14 +1,14 @@
 From: "flichtenheld (Code Review)" <gerrit@...515...>
-Date: Thu, 27 Mar 2025 09:14:05 +0000
+Date: Thu, 27 Mar 2025 09:15:48 +0000
 In-Reply-To: <gerrit.1742992852000.I8bbb6ffdac7d0029dbf3c13e62c11b61813c15ef@...2715...>
 References: <gerrit.1742992852000.I8bbb6ffdac7d0029dbf3c13e62c11b61813c15ef@...2715...>
 Reply-To: frank@...2641..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net, max@...2606...
-Message-ID: <39229a26fd52499a913f25c1ca1ba8701a6915a4-EmailReplacePatchSet-HTML@...2715...>
+Message-ID: <778b145d67d4ab26d87e580f808ee36f81b19ea1-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="KM77wlXzr70="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="YrfwMdeQaYs="; charset=UTF-8
 Subject: [Openvpn-devel] [XS] Change in openvpn[master]: Fix compatibility
  with mbedTLS 2.28.10+ and 3.6.3+
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -19,62 +19,40 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: plaisthos <arne-openvpn@...1227...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>, MaxF <max@...2606...>
+Cc: MaxF <max@...2606...>, plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---KM77wlXzr70=
+--YrfwMdeQaYs=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: flichtenheld.
+Attention is currently required from: flichtenheld, plaisthos.
 
-Hello plaisthos,
-
-I'd like you to reexamine a change. Please visit
-
-    http://gerrit.openvpn.net/c/openvpn/+/918?usp=3Demail
-
-to look at the new patch set (#3).
-
+flichtenheld has posted comments on this change. ( http://gerrit.openvpn.ne=
+t/c/openvpn/+/918?usp=3Demail )
 
 Change subject: Fix compatibility with mbedTLS 2.28.10+ and 3.6.3+
 ......................................................................
 
-Fix compatibility with mbedTLS 2.28.10+ and 3.6.3+
 
-From release notes:
-In TLS clients, if mbedtls_ssl_set_hostname() has not been called,
-mbedtls_ssl_handshake() now fails with
-MBEDTLS_ERR_SSL_CERTIFICATE_VERIFICATION_WITHOUT_HOSTNAME
-if certificate-based authentication of the server is attempted.
-This is because authenticating a server without knowing what name
-to expect is usually insecure. To restore the old behavior, either
-call mbedtls_ssl_set_hostname() with NULL as the hostname [...]
+Patch Set 1:
 
-Change-Id: I8bbb6ffdac7d0029dbf3c13e62c11b61813c15ef
-Signed-off-by: Frank Lichtenheld <frank@...2641...>
----
-M src/openvpn/ssl_mbedtls.c
-1 file changed, 4 insertions(+), 0 deletions(-)
+(2 comments)
+
+File src/openvpn/ssl_mbedtls.c:
+
+http://gerrit.openvpn.net/c/openvpn/+/918/comment/27f3471d_e88982f4 :
+PS1, Line 1249:     /* Tell mbedTLS that we generally do not care about the=
+ hostname */
+> That sounds a bit broken. [=E2=80=A6]
+Done
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/18/918/3
+http://gerrit.openvpn.net/c/openvpn/+/918/comment/0b79fb03_9d5e2a4a :
+PS1, Line 1250:     mbedtls_ssl_set_hostname(ks_ssl->ctx, NULL);
+> That applies to a lot of calls in this function, right? [=E2=80=A6]
+Done
 
-diff --git a/src/openvpn/ssl_mbedtls.c b/src/openvpn/ssl_mbedtls.c
-index 92b52fe..e15c391 100644
---- a/src/openvpn/ssl_mbedtls.c
-+++ b/src/openvpn/ssl_mbedtls.c
-@@ -1246,6 +1246,10 @@
-     ALLOC_OBJ_CLEAR(ks_ssl->ctx, mbedtls_ssl_context);
-     mbedtls_ssl_init(ks_ssl->ctx);
-     mbed_ok(mbedtls_ssl_setup(ks_ssl->ctx, ks_ssl->ssl_config));
-+    /* We do verification in our own callback depending on the
-+     * exact configuration. We do not rely on the default hostname
-+     * verification. */
-+    ASSERT(mbed_ok(mbedtls_ssl_set_hostname(ks_ssl->ctx, NULL)));
 
- #if HAVE_MBEDTLS_SSL_SET_EXPORT_KEYS_CB
-     /* Initialize keying material exporter, new style. */
 
 --
 To view, visit http://gerrit.openvpn.net/c/openvpn/+/918?usp=3Demail
@@ -85,64 +63,58 @@ Gerrit-Project: openvpn
 Gerrit-Branch: master
 Gerrit-Change-Id: I8bbb6ffdac7d0029dbf3c13e62c11b61813c15ef
 Gerrit-Change-Number: 918
-Gerrit-PatchSet: 3
+Gerrit-PatchSet: 1
 Gerrit-Owner: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: MaxF <max@...2606...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
 Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-MessageType: newpatchset
+Gerrit-Comment-Date: Thu, 27 Mar 2025 09:15:48 +0000
+Gerrit-HasComments: Yes
+Gerrit-Has-Labels: No
+Comment-In-Reply-To: plaisthos <arne-openvpn@...1227...>
+Comment-In-Reply-To: flichtenheld <frank@...2641...>
+Comment-In-Reply-To: MaxF <max@...2606...>
+Gerrit-MessageType: comment
 
---KM77wlXzr70=
+--YrfwMdeQaYs=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p> Attention is currently required from: flichtenheld. </p>
-<p>flichtenheld <strong>uploaded patch set #3</strong> to this change.</p><=
-p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/918?usp=3Demail">View Ch=
-ange</a></p><pre style=3D"font-family: monospace,monospace; white-space: pr=
-e-wrap;">Fix compatibility with mbedTLS 2.28.10+ and 3.6.3+<br><br>From rel=
-ease notes:<br>In TLS clients, if mbedtls_ssl_set_hostname() has not been c=
-alled,<br>mbedtls_ssl_handshake() now fails with<br>MBEDTLS_ERR_SSL_CERTIFI=
-CATE_VERIFICATION_WITHOUT_HOSTNAME<br>if certificate-based authentication o=
-f the server is attempted.<br>This is because authenticating a server witho=
-ut knowing what name<br>to expect is usually insecure. To restore the old b=
-ehavior, either<br>call mbedtls_ssl_set_hostname() with NULL as the hostnam=
-e [...]<br><br>Change-Id: I8bbb6ffdac7d0029dbf3c13e62c11b61813c15ef<br>Sign=
-ed-off-by: Frank Lichtenheld &lt;frank@...2641...&gt;<br>---<br>M src/openv=
-pn/ssl_mbedtls.c<br>1 file changed, 4 insertions(+), 0 deletions(-)<br><br>=
-</pre><pre style=3D"font-family: monospace,monospace; white-space: pre-wrap=
-;">git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/18/918/3</p=
-re><pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;">=
-<span>diff --git a/src/openvpn/ssl_mbedtls.c b/src/openvpn/ssl_mbedtls.c</s=
-pan><br><span>index 92b52fe..e15c391 100644</span><br><span>--- a/src/openv=
-pn/ssl_mbedtls.c</span><br><span>+++ b/src/openvpn/ssl_mbedtls.c</span><br>=
-<span>@@ -1246,6 +1246,10 @@</span><br><span>     ALLOC_OBJ_CLEAR(ks_ssl-&g=
-t;ctx, mbedtls_ssl_context);</span><br><span>     mbedtls_ssl_init(ks_ssl-&=
-gt;ctx);</span><br><span>     mbed_ok(mbedtls_ssl_setup(ks_ssl-&gt;ctx, ks_=
-ssl-&gt;ssl_config));</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+    /* We do verification in our own callback depending on the</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+     * exact configuration. We=
- do not rely on the default hostname</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+     * verification. */</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+    ASSERT(mbed_ok(mbedtls_ssl_set_hostname(ks_ssl-&gt=
-;ctx, NULL)));</span><br><span> </span><br><span> #if HAVE_MBEDTLS_SSL_SET_=
-EXPORT_KEYS_CB</span><br><span>     /* Initialize keying material exporter,=
- new style. */</span><br><span></span><br></pre><p>To view, visit <a href=
-=3D"http://gerrit.openvpn.net/c/openvpn/+/918?usp=3Demail">change 918</a>. =
-To unsubscribe, or for help writing mail filters, visit <a href=3D"http://g=
-errit.openvpn.net/settings">settings</a>.</p><div itemscope itemtype=3D"htt=
-p://schema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D=
-"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit=
-.openvpn.net/c/openvpn/+/918?usp=3Demail"/><meta itemprop=3D"name" content=
-=3D"View Change"/></div></div>
+<p> Attention is currently required from: flichtenheld, plaisthos. </p>
+<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/918?usp=3Demail">View C=
+hange</a></p><p>2 comments:</p><ul style=3D"list-style: none; padding: 0;">=
+<li style=3D"margin: 0; padding: 0;"><p>File src/openvpn/ssl_mbedtls.c:</p>=
+<ul style=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; padding=
+: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.op=
+envpn.net/c/openvpn/+/918/comment/27f3471d_e88982f4">Patch Set #1, Line 124=
+9:</a> <code style=3D"font-family:monospace,monospace">    /* Tell mbedTLS =
+that we generally do not care about the hostname */</code></p><p><blockquot=
+e style=3D"border-left: 1px solid #aaa; margin: 10px 0; padding: 0 10px;">T=
+hat sounds a bit broken. [=E2=80=A6]</blockquote></p><p style=3D"white-spac=
+e: pre-wrap; word-wrap: break-word;">Done</p></li><li style=3D"margin: 0; p=
+adding: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://ger=
+rit.openvpn.net/c/openvpn/+/918/comment/0b79fb03_9d5e2a4a">Patch Set #1, Li=
+ne 1250:</a> <code style=3D"font-family:monospace,monospace">    mbedtls_ss=
+l_set_hostname(ks_ssl-&gt;ctx, NULL);</code></p><p><blockquote style=3D"bor=
+der-left: 1px solid #aaa; margin: 10px 0; padding: 0 10px;">That applies to=
+ a lot of calls in this function, right? [=E2=80=A6]</blockquote></p><p sty=
+le=3D"white-space: pre-wrap; word-wrap: break-word;">Done</p></li></ul></li=
+></ul><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/91=
+8?usp=3Demail">change 918</a>. To unsubscribe, or for help writing mail fil=
+ters, visit <a href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p=
+><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope =
+itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itempro=
+p=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/918?usp=3Demail"/><=
+meta itemprop=3D"name" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
 <div style=3D"display:none"> Gerrit-Change-Id: I8bbb6ffdac7d0029dbf3c13e62c=
 11b61813c15ef </div>
 <div style=3D"display:none"> Gerrit-Change-Number: 918 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 3 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
 <div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
 .&gt; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
@@ -150,10 +122,22 @@ p://schema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D=
 <div style=3D"display:none"> Gerrit-CC: MaxF &lt;max@...2606...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
 41...&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Thu, 27 Mar 2025 09:15:48=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: No </div>
+<div style=3D"display:none"> Comment-In-Reply-To: plaisthos &lt;arne-openvp=
+n@...1227...&gt; </div>
+<div style=3D"display:none"> Comment-In-Reply-To: flichtenheld &lt;frank@...1186...=
+.2641...&gt; </div>
+<div style=3D"display:none"> Comment-In-Reply-To: MaxF &lt;max@...2606...&g=
+t; </div>
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
 
 
---KM77wlXzr70=--
+--YrfwMdeQaYs=--
 
