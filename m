@@ -1,16 +1,11 @@
-From: "flichtenheld (Code Review)" <gerrit@...515...>
-Date: Thu, 27 Mar 2025 09:15:48 +0000
-In-Reply-To: <gerrit.1742992852000.I8bbb6ffdac7d0029dbf3c13e62c11b61813c15ef@...2715...>
-References: <gerrit.1742992852000.I8bbb6ffdac7d0029dbf3c13e62c11b61813c15ef@...2715...>
-Reply-To: frank@...2641..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, max@...2606...
-Message-ID: <778b145d67d4ab26d87e580f808ee36f81b19ea1-EmailReviewComments-HTML@...2715...>
+From: Frank Lichtenheld <frank@...2641...>
+Date: Thu, 27 Mar 2025 10:47:00 +0100
+Message-Id: <20250327094700.305156-1-frank@...2641...>
+In-Reply-To: <gerrit.1735303463000.I47d95eee8a00b9878331fd6cd6a7db12665f5537@...2715...>
+References: <gerrit.1735303463000.I47d95eee8a00b9878331fd6cd6a7db12665f5537@...2715...>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="YrfwMdeQaYs="; charset=UTF-8
-Subject: [Openvpn-devel] [XS] Change in openvpn[master]: Fix compatibility
- with mbedTLS 2.28.10+ and 3.6.3+
+Subject: [Openvpn-devel] [PATCH v2] t_server_null_default.rc: Add some tests
+ with --data-ciphers
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,125 +14,91 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Cc: MaxF <max@...2606...>, plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
+Cc: =?UTF-8?q?Samuli=20Sepp=C3=A4nen?= <sasepp@...2783...>
 
---YrfwMdeQaYs=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Trying to verify some of the negotiation parts.
 
-Attention is currently required from: flichtenheld, plaisthos.
+Change-Id: I47d95eee8a00b9878331fd6cd6a7db12665f5537
+Signed-off-by: Frank Lichtenheld <frank@...2641...>
+Acked-by: Samuli Seppänen <sasepp@...2783...>
+---
 
-flichtenheld has posted comments on this change. ( http://gerrit.openvpn.ne=
-t/c/openvpn/+/918?usp=3Demail )
+This change was reviewed on Gerrit and approved by at least one
+developer. I request to merge it to master.
 
-Change subject: Fix compatibility with mbedTLS 2.28.10+ and 3.6.3+
-......................................................................
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/847
+This mail reflects revision 2 of this Change.
 
+Acked-by according to Gerrit (reflected above):
+Samuli Seppänen <sasepp@...2783...>
 
-Patch Set 1:
-
-(2 comments)
-
-File src/openvpn/ssl_mbedtls.c:
-
-http://gerrit.openvpn.net/c/openvpn/+/918/comment/27f3471d_e88982f4 :
-PS1, Line 1249:     /* Tell mbedTLS that we generally do not care about the=
- hostname */
-> That sounds a bit broken. [=E2=80=A6]
-Done
-
-
-http://gerrit.openvpn.net/c/openvpn/+/918/comment/0b79fb03_9d5e2a4a :
-PS1, Line 1250:     mbedtls_ssl_set_hostname(ks_ssl->ctx, NULL);
-> That applies to a lot of calls in this function, right? [=E2=80=A6]
-Done
-
-
-
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/918?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings
-
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: I8bbb6ffdac7d0029dbf3c13e62c11b61813c15ef
-Gerrit-Change-Number: 918
-Gerrit-PatchSet: 1
-Gerrit-Owner: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-CC: MaxF <max@...2606...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Comment-Date: Thu, 27 Mar 2025 09:15:48 +0000
-Gerrit-HasComments: Yes
-Gerrit-Has-Labels: No
-Comment-In-Reply-To: plaisthos <arne-openvpn@...1227...>
-Comment-In-Reply-To: flichtenheld <frank@...2641...>
-Comment-In-Reply-To: MaxF <max@...2606...>
-Gerrit-MessageType: comment
-
---YrfwMdeQaYs=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<p> Attention is currently required from: flichtenheld, plaisthos. </p>
-<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/918?usp=3Demail">View C=
-hange</a></p><p>2 comments:</p><ul style=3D"list-style: none; padding: 0;">=
-<li style=3D"margin: 0; padding: 0;"><p>File src/openvpn/ssl_mbedtls.c:</p>=
-<ul style=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; padding=
-: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.op=
-envpn.net/c/openvpn/+/918/comment/27f3471d_e88982f4">Patch Set #1, Line 124=
-9:</a> <code style=3D"font-family:monospace,monospace">    /* Tell mbedTLS =
-that we generally do not care about the hostname */</code></p><p><blockquot=
-e style=3D"border-left: 1px solid #aaa; margin: 10px 0; padding: 0 10px;">T=
-hat sounds a bit broken. [=E2=80=A6]</blockquote></p><p style=3D"white-spac=
-e: pre-wrap; word-wrap: break-word;">Done</p></li><li style=3D"margin: 0; p=
-adding: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://ger=
-rit.openvpn.net/c/openvpn/+/918/comment/0b79fb03_9d5e2a4a">Patch Set #1, Li=
-ne 1250:</a> <code style=3D"font-family:monospace,monospace">    mbedtls_ss=
-l_set_hostname(ks_ssl-&gt;ctx, NULL);</code></p><p><blockquote style=3D"bor=
-der-left: 1px solid #aaa; margin: 10px 0; padding: 0 10px;">That applies to=
- a lot of calls in this function, right? [=E2=80=A6]</blockquote></p><p sty=
-le=3D"white-space: pre-wrap; word-wrap: break-word;">Done</p></li></ul></li=
-></ul><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/91=
-8?usp=3Demail">change 918</a>. To unsubscribe, or for help writing mail fil=
-ters, visit <a href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p=
-><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope =
-itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itempro=
-p=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/918?usp=3Demail"/><=
-meta itemprop=3D"name" content=3D"View Change"/></div></div>
-
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I8bbb6ffdac7d0029dbf3c13e62c=
-11b61813c15ef </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 918 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
-<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
-.&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: MaxF &lt;max@...2606...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
-41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Thu, 27 Mar 2025 09:15:48=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: No </div>
-<div style=3D"display:none"> Comment-In-Reply-To: plaisthos &lt;arne-openvp=
-n@...1227...&gt; </div>
-<div style=3D"display:none"> Comment-In-Reply-To: flichtenheld &lt;frank@...1186...=
-.2641...&gt; </div>
-<div style=3D"display:none"> Comment-In-Reply-To: MaxF &lt;max@...2606...&g=
-t; </div>
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
-
-
---YrfwMdeQaYs=--
+        
+diff --git a/tests/t_server_null_default.rc b/tests/t_server_null_default.rc
+index e7bf5bc..ca8004a 100755
+--- a/tests/t_server_null_default.rc
++++ b/tests/t_server_null_default.rc
+@@ -1,3 +1,4 @@
++# -*- shell-script -*-
+ # Notes regarding --dev null server and client configurations:
+ #
+ # The t_server_null_server.sh exits when all client pid files have gone
+@@ -42,7 +43,7 @@
+ SERVER_CERT_OPTS="--ca ${CA} --dh ${DH} --cert ${SERVER_CERT} --key ${SERVER_KEY} --tls-auth ${TA} 0"
+ SERVER_CONF_BASE="${SERVER_BASE_OPTS} ${SERVER_CIPHER_OPTS} ${SERVER_CERT_OPTS}"
+ 
+-TEST_SERVER_LIST="1 2"
++TEST_SERVER_LIST="1 2 3"
+ 
+ SERVER_NAME_1="t_server_null_server-1194_udp"
+ SERVER_SERVER_1="--server 10.29.41.0 255.255.255.0"
+@@ -56,6 +57,12 @@
+ SERVER_EXEC_2="${SERVER_EXEC}"
+ SERVER_CONF_2="${SERVER_CONF_BASE} ${SERVER_SERVER_2} --lport 1195 --proto tcp --management 127.0.0.1 ${SERVER_MGMT_PORT_2}"
+ 
++SERVER_NAME_3="t_server_null_server-1196_udp"
++SERVER_SERVER_3="--server 10.29.43.0 255.255.255.0"
++SERVER_MGMT_PORT_3="11196"
++SERVER_EXEC_3="${SERVER_EXEC}"
++SERVER_CONF_3="${SERVER_CONF_BASE} ${SERVER_SERVER_3} --lport 1196 --proto udp --management 127.0.0.1 ${SERVER_MGMT_PORT_3} --cipher AES-192-CBC --data-ciphers DEFAULT:AES-192-CBC"
++
+ # Test client configurations
+ CLIENT_EXEC="${top_builddir}/src/openvpn/openvpn"
+ CLIENT_BASE_OPTS="--client --nobind --remote-cert-tls server --persist-tun --verb 3 --resolv-retry infinite --connect-retry-max 3 --server-poll-timeout 5 --explicit-exit-notify 3 --script-security 2"
+@@ -65,7 +72,7 @@
+ CLIENT_CIPHER_OPTS=""
+ CLIENT_CERT_OPTS="--ca ${CA} --cert ${CLIENT_CERT} --key ${CLIENT_KEY} --tls-auth ${TA} 1"
+ 
+-TEST_RUN_LIST="1 1L 2 2L 3"
++TEST_RUN_LIST="1 1L 2 2L 3 4a 4b 4c"
+ CLIENT_CONF_BASE="${CLIENT_NULL_OPTS} ${CLIENT_BASE_OPTS} ${CLIENT_CIPHER_OPTS} ${CLIENT_CERT_OPTS}"
+ CLIENT_CONF_BASE_LWIP="${CLIENT_LWIP_OPTS} ${CLIENT_BASE_OPTS} ${CLIENT_CIPHER_OPTS} ${CLIENT_CERT_OPTS}"
+ 
+@@ -93,3 +100,24 @@
+ SHOULD_PASS_3="no"
+ CLIENT_EXEC_3="${CLIENT_EXEC}"
+ CLIENT_CONF_3="${CLIENT_CONF_BASE} --remote 127.0.0.1 11194 udp --proto udp"
++
++# --data-cipher list against server with defaults
++# --cipher ignored
++TEST_NAME_4a="t_server_null_client.sh-openvpn_current_udp_dc1"
++SHOULD_PASS_4a="yes"
++CLIENT_EXEC_4a="${CLIENT_EXEC}"
++CLIENT_CONF_4a="${CLIENT_CONF_BASE} --remote 127.0.0.1 1194 udp --proto udp --cipher AES-128-CBC --data-ciphers AES-192-CBC:DEFAULT"
++
++# specific --data-cipher against server that supports that cipher
++# --cipher ignored
++TEST_NAME_4b="t_server_null_client.sh-openvpn_current_udp_dc3"
++SHOULD_PASS_4b="yes"
++CLIENT_EXEC_4b="${CLIENT_EXEC}"
++CLIENT_CONF_4b="${CLIENT_CONF_BASE} --remote 127.0.0.1 1196 udp --proto udp --cipher AES-128-CBC --data-ciphers AES-192-CBC"
++
++# specific --data-cipher against server that doesn't support that cipher
++# --cipher ignored
++TEST_NAME_4c="t_server_null_client.sh-openvpn_current_udp_dc3_fail"
++SHOULD_PASS_4c="no"
++CLIENT_EXEC_4c="${CLIENT_EXEC}"
++CLIENT_CONF_4c="${CLIENT_CONF_BASE} --remote 127.0.0.1 1196 udp --proto udp --cipher AES-192-CBC --data-ciphers AES-128-CBC"
 
