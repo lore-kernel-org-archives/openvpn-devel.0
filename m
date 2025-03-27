@@ -1,14 +1,14 @@
 From: "flichtenheld (Code Review)" <gerrit@...515...>
-Date: Thu, 27 Mar 2025 09:11:24 +0000
+Date: Thu, 27 Mar 2025 09:14:05 +0000
 In-Reply-To: <gerrit.1742992852000.I8bbb6ffdac7d0029dbf3c13e62c11b61813c15ef@...2715...>
 References: <gerrit.1742992852000.I8bbb6ffdac7d0029dbf3c13e62c11b61813c15ef@...2715...>
 Reply-To: frank@...2641..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net, max@...2606...
-Message-ID: <18e39987c4d60d5b766c99061949372d072fc616-EmailReplacePatchSet-HTML@...2715...>
+Message-ID: <39229a26fd52499a913f25c1ca1ba8701a6915a4-EmailReplacePatchSet-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="+FneMv1VAA8="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="KM77wlXzr70="; charset=UTF-8
 Subject: [Openvpn-devel] [XS] Change in openvpn[master]: Fix compatibility
  with mbedTLS 2.28.10+ and 3.6.3+
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -22,7 +22,7 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: plaisthos <arne-openvpn@...1227...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>, MaxF <max@...2606...>
 
---+FneMv1VAA8=
+--KM77wlXzr70=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
@@ -34,7 +34,7 @@ I'd like you to reexamine a change. Please visit
 
     http://gerrit.openvpn.net/c/openvpn/+/918?usp=3Demail
 
-to look at the new patch set (#2).
+to look at the new patch set (#3).
 
 
 Change subject: Fix compatibility with mbedTLS 2.28.10+ and 3.6.3+
@@ -58,10 +58,10 @@ M src/openvpn/ssl_mbedtls.c
 1 file changed, 4 insertions(+), 0 deletions(-)
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/18/918/2
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/18/918/3
 
 diff --git a/src/openvpn/ssl_mbedtls.c b/src/openvpn/ssl_mbedtls.c
-index 92b52fe..c31079e 100644
+index 92b52fe..e15c391 100644
 --- a/src/openvpn/ssl_mbedtls.c
 +++ b/src/openvpn/ssl_mbedtls.c
 @@ -1246,6 +1246,10 @@
@@ -69,8 +69,8 @@ index 92b52fe..c31079e 100644
      mbedtls_ssl_init(ks_ssl->ctx);
      mbed_ok(mbedtls_ssl_setup(ks_ssl->ctx, ks_ssl->ssl_config));
 +    /* We do verification in our own callback depending on the
-+       exact configuration. We do not rely on the default hostname
-+       verification. */
++     * exact configuration. We do not rely on the default hostname
++     * verification. */
 +    ASSERT(mbed_ok(mbedtls_ssl_set_hostname(ks_ssl->ctx, NULL)));
 
  #if HAVE_MBEDTLS_SSL_SET_EXPORT_KEYS_CB
@@ -85,7 +85,7 @@ Gerrit-Project: openvpn
 Gerrit-Branch: master
 Gerrit-Change-Id: I8bbb6ffdac7d0029dbf3c13e62c11b61813c15ef
 Gerrit-Change-Number: 918
-Gerrit-PatchSet: 2
+Gerrit-PatchSet: 3
 Gerrit-Owner: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: MaxF <max@...2606...>
@@ -93,12 +93,12 @@ Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: flichtenheld <frank@...2641...>
 Gerrit-MessageType: newpatchset
 
---+FneMv1VAA8=
+--KM77wlXzr70=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <p> Attention is currently required from: flichtenheld. </p>
-<p>flichtenheld <strong>uploaded patch set #2</strong> to this change.</p><=
+<p>flichtenheld <strong>uploaded patch set #3</strong> to this change.</p><=
 p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/918?usp=3Demail">View Ch=
 ange</a></p><pre style=3D"font-family: monospace,monospace; white-space: pr=
 e-wrap;">Fix compatibility with mbedTLS 2.28.10+ and 3.6.3+<br><br>From rel=
@@ -112,19 +112,19 @@ e [...]<br><br>Change-Id: I8bbb6ffdac7d0029dbf3c13e62c11b61813c15ef<br>Sign=
 ed-off-by: Frank Lichtenheld &lt;frank@...2641...&gt;<br>---<br>M src/openv=
 pn/ssl_mbedtls.c<br>1 file changed, 4 insertions(+), 0 deletions(-)<br><br>=
 </pre><pre style=3D"font-family: monospace,monospace; white-space: pre-wrap=
-;">git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/18/918/2</p=
+;">git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/18/918/3</p=
 re><pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;">=
 <span>diff --git a/src/openvpn/ssl_mbedtls.c b/src/openvpn/ssl_mbedtls.c</s=
-pan><br><span>index 92b52fe..c31079e 100644</span><br><span>--- a/src/openv=
+pan><br><span>index 92b52fe..e15c391 100644</span><br><span>--- a/src/openv=
 pn/ssl_mbedtls.c</span><br><span>+++ b/src/openvpn/ssl_mbedtls.c</span><br>=
 <span>@@ -1246,6 +1246,10 @@</span><br><span>     ALLOC_OBJ_CLEAR(ks_ssl-&g=
 t;ctx, mbedtls_ssl_context);</span><br><span>     mbedtls_ssl_init(ks_ssl-&=
 gt;ctx);</span><br><span>     mbed_ok(mbedtls_ssl_setup(ks_ssl-&gt;ctx, ks_=
 ssl-&gt;ssl_config));</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
 >+    /* We do verification in our own callback depending on the</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+       exact configuration. We=
+<span style=3D"color: hsl(120, 100%, 40%);">+     * exact configuration. We=
  do not rely on the default hostname</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+       verification. */</span><br><span style=3D"color: hs=
+0, 100%, 40%);">+     * verification. */</span><br><span style=3D"color: hs=
 l(120, 100%, 40%);">+    ASSERT(mbed_ok(mbedtls_ssl_set_hostname(ks_ssl-&gt=
 ;ctx, NULL)));</span><br><span> </span><br><span> #if HAVE_MBEDTLS_SSL_SET_=
 EXPORT_KEYS_CB</span><br><span>     /* Initialize keying material exporter,=
@@ -142,7 +142,7 @@ p://schema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D=
 <div style=3D"display:none"> Gerrit-Change-Id: I8bbb6ffdac7d0029dbf3c13e62c=
 11b61813c15ef </div>
 <div style=3D"display:none"> Gerrit-Change-Number: 918 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 3 </div>
 <div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
 .&gt; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
@@ -155,5 +155,5 @@ ts.sourceforge.net&gt; </div>
 <div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
 
 
---+FneMv1VAA8=--
+--KM77wlXzr70=--
 
