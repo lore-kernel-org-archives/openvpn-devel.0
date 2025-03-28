@@ -1,13 +1,15 @@
-From: "its_Giaan (Code Review)" <gerrit@...515...>
-Date: Fri, 28 Mar 2025 15:26:29 +0000
+From: "cron2 (Code Review)" <gerrit@...515...>
+Date: Fri, 28 Mar 2025 21:34:30 +0000
+In-Reply-To: <gerrit.1743175587000.I9b6359076a61ae2bbb8e5cea00e33969cb5f92cf@...2715...>
 References: <gerrit.1743175587000.I9b6359076a61ae2bbb8e5cea00e33969cb5f92cf@...2715...>
-Reply-To: gianmarco@...2726..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <e88922794197334e59ead195e266856a28ac82b9-HTML@...2715...>
+Reply-To: gert@...1296..., arne-openvpn@...1227...,
+ gianmarco@...2726..., openvpn-devel@lists.sourceforge.net,
+ frank@...2641...
+Message-ID: <1d7c5223805ac5d9c2e620ecced6d88181227f41-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="mqzXtyhCFjg="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="RainoNgYXhk="; charset=UTF-8
 Subject: [Openvpn-devel] [S] Change in openvpn[master]: Fix FreeBSD-DCO and
  Multisocket interaction
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -18,117 +20,46 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: its_Giaan <gianmarco@...2726...>
+Cc: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---mqzXtyhCFjg=
+--RainoNgYXhk=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: flichtenheld, plaisthos.
+Attention is currently required from: flichtenheld, its_Giaan, plaisthos.
 
-Hello plaisthos, flichtenheld,
-
-I'd like you to do a code review.
-Please visit
-
-    http://gerrit.openvpn.net/c/openvpn/+/925?usp=3Demail
-
-to review the following change.
-
+cron2 has posted comments on this change. ( http://gerrit.openvpn.net/c/ope=
+nvpn/+/925?usp=3Demail )
 
 Change subject: Fix FreeBSD-DCO and Multisocket interaction
 ......................................................................
 
-Fix FreeBSD-DCO and Multisocket interaction
 
-FreeBSD-DCO does not support TCP as transport
-protocol so in order to be able to use DCO in a
-multi-socket environment we need to check
-the local_list entries and disable DCO
-if any of the listening socket is TCP.
+Patch Set 1:
 
-While at it, removed some dead code left
-from Multisocket polishing.
+(3 comments)
 
-Github: #710
+Patchset:
 
-Change-Id: I9b6359076a61ae2bbb8e5cea00e33969cb5f92cf
-Signed-off-by: Gianmarco De Gregori <gianmarco@...2726...>
----
-M src/openvpn/dco.c
-M src/openvpn/options.c
-M src/openvpn/options.h
-3 files changed, 9 insertions(+), 22 deletions(-)
+PS1:
+questions...
 
 
+File src/openvpn/dco.c:
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/25/925/1
+http://gerrit.openvpn.net/c/openvpn/+/925/comment/9d655d2e_4fc29dc7 :
+PS1, Line 263:     if (ce->local_list)
+will this also catch clients that have no `--local` at all, just `--remote =
+... tcp`?  FreeBSD DCO also needs to be disabled for TCP clients.
 
-diff --git a/src/openvpn/dco.c b/src/openvpn/dco.c
-index d00958d..7ad9cb3 100644
---- a/src/openvpn/dco.c
-+++ b/src/openvpn/dco.c
-@@ -260,10 +260,16 @@
-     }
 
- #if defined(TARGET_FREEBSD)
--    if (!proto_is_udp(ce->proto))
-+    if (ce->local_list)
-     {
--        msg(msglevel, "NOTE: TCP transport disables data channel offload o=
-n FreeBSD.");
--        return false;
-+        for (int i =3D 0; i < ce->local_list->len; i++)
-+        {
-+            if (!proto_is_dgram(ce->local_list->array[i]->proto))
-+            {
-+                msg(msglevel, "NOTE: TCP transport disables data channel o=
-ffload on FreeBSD.");
-+                return false;
-+            }
-+        }
-     }
- #endif
+http://gerrit.openvpn.net/c/openvpn/+/925/comment/95331584_9525203f :
+PS1, Line 277:     if (!proto_is_udp(ce->proto) && mode =3D=3D MODE_SERVER)
+this looks as if we need the fix for windows too...  maybe keep & use the h=
+as_tcp_in_local_list() for this?
 
-diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index 99dd60a..6605a42 100644
---- a/src/openvpn/options.c
-+++ b/src/openvpn/options.c
-@@ -9577,20 +9577,3 @@
 
-     return false;
- }
--
--bool
--has_tcp_in_local_list(const struct options *options)
--{
--    if (options->ce.local_list)
--    {
--        for (int i =3D 0; i < options->ce.local_list->len; i++)
--        {
--            if (!proto_is_dgram(options->ce.local_list->array[i]->proto))
--            {
--                return true;
--            }
--        }
--    }
--
--    return false;
--}
-diff --git a/src/openvpn/options.h b/src/openvpn/options.h
-index fa617c8..8d1ef6c 100644
---- a/src/openvpn/options.h
-+++ b/src/openvpn/options.h
-@@ -921,8 +921,6 @@
-
- bool has_udp_in_local_list(const struct options *options);
-
--bool has_tcp_in_local_list(const struct options *options);
--
- /**
-  * Returns whether the current configuration has dco enabled.
-  */
 
 --
 To view, visit http://gerrit.openvpn.net/c/openvpn/+/925?usp=3Demail
@@ -143,90 +74,51 @@ Gerrit-PatchSet: 1
 Gerrit-Owner: its_Giaan <gianmarco@...2726...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
+Gerrit-CC: cron2 <gert@...1296...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Attention: its_Giaan <gianmarco@...2726...>
 Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-MessageType: newchange
+Gerrit-Comment-Date: Fri, 28 Mar 2025 21:34:30 +0000
+Gerrit-HasComments: Yes
+Gerrit-Has-Labels: No
+Gerrit-MessageType: comment
 
---mqzXtyhCFjg=
+--RainoNgYXhk=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p> Attention is currently required from: flichtenheld, plaisthos. </p>
-<p>its_Giaan would like plaisthos and flichtenheld to <strong>review</stron=
-g> this change.
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/925?usp=3Demail">Vi=
-ew Change</a></p><pre style=3D"font-family: monospace,monospace; white-spac=
-e: pre-wrap;">Fix FreeBSD-DCO and Multisocket interaction<br><br>FreeBSD-DC=
-O does not support TCP as transport<br>protocol so in order to be able to u=
-se DCO in a<br>multi-socket environment we need to check<br>the local_list =
-entries and disable DCO<br>if any of the listening socket is TCP.<br><br>Wh=
-ile at it, removed some dead code left<br>from Multisocket polishing.<br><b=
-r>Github: #710<br><br>Change-Id: I9b6359076a61ae2bbb8e5cea00e33969cb5f92cf<=
-br>Signed-off-by: Gianmarco De Gregori &lt;gianmarco@...2726...&gt;<br>---<=
-br>M src/openvpn/dco.c<br>M src/openvpn/options.c<br>M src/openvpn/options.=
-h<br>3 files changed, 9 insertions(+), 22 deletions(-)<br><br></pre><pre st=
-yle=3D"font-family: monospace,monospace; white-space: pre-wrap;">git pull s=
-sh://gerrit.openvpn.net:29418/openvpn refs/changes/25/925/1</pre><pre style=
-=3D"font-family: monospace,monospace; white-space: pre-wrap;"><span>diff --=
-git a/src/openvpn/dco.c b/src/openvpn/dco.c</span><br><span>index d00958d..=
-7ad9cb3 100644</span><br><span>--- a/src/openvpn/dco.c</span><br><span>+++ =
-b/src/openvpn/dco.c</span><br><span>@@ -260,10 +260,16 @@</span><br><span> =
-    }</span><br><span> </span><br><span> #if defined(TARGET_FREEBSD)</span>=
-<br><span style=3D"color: hsl(0, 100%, 40%);">-    if (!proto_is_udp(ce-&gt=
-;proto))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (ce-=
-&gt;local_list)</span><br><span>     {</span><br><span style=3D"color: hsl(=
-0, 100%, 40%);">-        msg(msglevel, &quot;NOTE: TCP transport disables d=
-ata channel offload on FreeBSD.&quot;);</span><br><span style=3D"color: hsl=
-(0, 100%, 40%);">-        return false;</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+        for (int i =3D 0; i &lt; ce-&gt;local_list-&gt;=
-len; i++)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        {<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+            if (!pro=
-to_is_dgram(ce-&gt;local_list-&gt;array[i]-&gt;proto))</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+            {</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+                msg(msglevel, &quot;NOTE: TCP =
-transport disables data channel offload on FreeBSD.&quot;);</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+                return false;</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+            }</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+        }</span><br><span>     =
-}</span><br><span> #endif</span><br><span> </span><br><span>diff --git a/sr=
-c/openvpn/options.c b/src/openvpn/options.c</span><br><span>index 99dd60a..=
-6605a42 100644</span><br><span>--- a/src/openvpn/options.c</span><br><span>=
-+++ b/src/openvpn/options.c</span><br><span>@@ -9577,20 +9577,3 @@</span><b=
-r><span> </span><br><span>     return false;</span><br><span> }</span><br><=
-span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: =
-hsl(0, 100%, 40%);">-bool</span><br><span style=3D"color: hsl(0, 100%, 40%)=
-;">-has_tcp_in_local_list(const struct options *options)</span><br><span st=
-yle=3D"color: hsl(0, 100%, 40%);">-{</span><br><span style=3D"color: hsl(0,=
- 100%, 40%);">-    if (options-&gt;ce.local_list)</span><br><span style=3D"=
-color: hsl(0, 100%, 40%);">-    {</span><br><span style=3D"color: hsl(0, 10=
-0%, 40%);">-        for (int i =3D 0; i &lt; options-&gt;ce.local_list-&gt;=
-len; i++)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        {</s=
-pan><br><span style=3D"color: hsl(0, 100%, 40%);">-            if (!proto_i=
-s_dgram(options-&gt;ce.local_list-&gt;array[i]-&gt;proto))</span><br><span =
-style=3D"color: hsl(0, 100%, 40%);">-            {</span><br><span style=3D=
-"color: hsl(0, 100%, 40%);">-                return true;</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-            }</span><br><span style=3D"=
-color: hsl(0, 100%, 40%);">-        }</span><br><span style=3D"color: hsl(0=
-, 100%, 40%);">-    }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    return false;</sp=
-an><br><span style=3D"color: hsl(0, 100%, 40%);">-}</span><br><span>diff --=
-git a/src/openvpn/options.h b/src/openvpn/options.h</span><br><span>index f=
-a617c8..8d1ef6c 100644</span><br><span>--- a/src/openvpn/options.h</span><b=
-r><span>+++ b/src/openvpn/options.h</span><br><span>@@ -921,8 +921,6 @@</sp=
-an><br><span> </span><br><span> bool has_udp_in_local_list(const struct opt=
-ions *options);</span><br><span> </span><br><span style=3D"color: hsl(0, 10=
-0%, 40%);">-bool has_tcp_in_local_list(const struct options *options);</spa=
-n><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span> /**</spa=
-n><br><span>  * Returns whether the current configuration has dco enabled.<=
-/span><br><span>  */</span><br><span></span><br></pre><p>To view, visit <a =
-href=3D"http://gerrit.openvpn.net/c/openvpn/+/925?usp=3Demail">change 925</=
-a>. To unsubscribe, or for help writing mail filters, visit <a href=3D"http=
-://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope itemtype=3D=
-"http://schema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtyp=
-e=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://ge=
-rrit.openvpn.net/c/openvpn/+/925?usp=3Demail"/><meta itemprop=3D"name" cont=
-ent=3D"View Change"/></div></div>
+<p> Attention is currently required from: flichtenheld, its_Giaan, plaistho=
+s. </p>
+<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/925?usp=3Demail">View C=
+hange</a></p><p>3 comments:</p><ul style=3D"list-style: none; padding: 0;">=
+<li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-styl=
+e: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p styl=
+e=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/=
+925?tab=3Dcomments">Patch Set #1:</a> </p><p style=3D"white-space: pre-wrap=
+; word-wrap: break-word;">questions...</p></li></ul></li><li style=3D"margi=
+n: 0; padding: 0;"><p>File src/openvpn/dco.c:</p><ul style=3D"list-style: n=
+one; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p style=3D=
+"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/925/=
+comment/9d655d2e_4fc29dc7">Patch Set #1, Line 263:</a> <code style=3D"font-=
+family:monospace,monospace">    if (ce-&gt;local_list)</code></p><p style=
+=3D"white-space: pre-wrap; word-wrap: break-word;">will this also catch cli=
+ents that have no `--local` at all, just `--remote ... tcp`?  FreeBSD DCO a=
+lso needs to be disabled for TCP clients.</p></li><li style=3D"margin: 0; p=
+adding: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://ger=
+rit.openvpn.net/c/openvpn/+/925/comment/95331584_9525203f">Patch Set #1, Li=
+ne 277:</a> <code style=3D"font-family:monospace,monospace">    if (!proto_=
+is_udp(ce-&gt;proto) &amp;&amp; mode =3D=3D MODE_SERVER)</code></p><p style=
+=3D"white-space: pre-wrap; word-wrap: break-word;">this looks as if we need=
+ the fix for windows too...  maybe keep &amp; use the has_tcp_in_local_list=
+() for this?</p></li></ul></li></ul><p>To view, visit <a href=3D"http://ger=
+rit.openvpn.net/c/openvpn/+/925?usp=3Demail">change 925</a>. To unsubscribe=
+, or for help writing mail filters, visit <a href=3D"http://gerrit.openvpn.=
+net/settings">settings</a>.</p><div itemscope itemtype=3D"http://schema.org=
+/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://schema=
+.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c=
+/openvpn/+/925?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change=
+"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
@@ -240,14 +132,21 @@ ent=3D"View Change"/></div></div>
 1...&gt; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
 .1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: cron2 &lt;gert@...1296...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
 ..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: its_Giaan &lt;gianmarco@...1665...=
+726...&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
 41...&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: newchange </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Fri, 28 Mar 2025 21:34:30=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: No </div>
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
 
 
---mqzXtyhCFjg=--
+--RainoNgYXhk=--
 
