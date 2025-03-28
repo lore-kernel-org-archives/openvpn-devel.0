@@ -1,17 +1,16 @@
-From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Thu, 27 Mar 2025 16:09:01 +0000
-In-Reply-To: <gerrit.1742996678000.I54073f8b63894a62699f6ecdc90a77f9f131205b@...2715...>
-References: <gerrit.1742996678000.I54073f8b63894a62699f6ecdc90a77f9f131205b@...2715...>
-Reply-To: gert@...1296..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...,
- max@...2606...
-Message-ID: <12a69438e4e3e61fac12a5bc3ea002e62344bf43-HTML@...2715...>
+From: "mattock (Code Review)" <gerrit@...515...>
+Date: Fri, 28 Mar 2025 07:38:18 +0000
+In-Reply-To: <gerrit.1742993493000.I4ebe1158c36a641888131e824f59004a0f8fb4c5@...2715...>
+References: <gerrit.1742993493000.I4ebe1158c36a641888131e824f59004a0f8fb4c5@...2715...>
+Reply-To: sasepp@...2783..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net, frank@...2641...
+Message-ID: <9b130e478dcb046418174f91d198f3aa305300e6-EmailReplacePatchSet-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="bNA/XB68D8k="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: Do not leave
- half-initialised key wrap struct when dynamic tls-crypt ...
+Content-Type: multipart/alternative; boundary="LG7M5iGwQWo="; charset=UTF-8
+Subject: [Openvpn-devel] [S] Change in openvpn[master]: t_server_null: add
+ multi-socket testing
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,187 +19,270 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: plaisthos <arne-openvpn@...1227...>
-Cc: MaxF <max@...2606...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---bNA/XB68D8k=
+--LG7M5iGwQWo=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-cron2 has submitted this change. ( http://gerrit.openvpn.net/c/openvpn/+/92=
-1?usp=3Demail )
+Attention is currently required from: flichtenheld, plaisthos.
 
-Change subject: Do not leave half-initialised key wrap struct when dynamic =
-tls-crypt fails
+Hello flichtenheld, plaisthos,
+
+I'd like you to reexamine a change. Please visit
+
+    http://gerrit.openvpn.net/c/openvpn/+/919?usp=3Demail
+
+to look at the new patch set (#3).
+
+
+Change subject: t_server_null: add multi-socket testing
 ......................................................................
 
-Do not leave half-initialised key wrap struct when dynamic tls-crypt fails
+t_server_null: add multi-socket testing
 
-In case when key_state_export_keying_material fails we left a
-half-initialised tls_wrap_reneg  structure in the tls_session.
-Later calls to try to free this structure causes freeing of
-invalid memory locations.
+This adds a new multi-socket server that listens on IPv4 and IPv6
+localhost addresses for TCP and UDP connections respectively. It also
+adds two success tests and one failure test with wrong protocol defined
+at the client side.
 
-To test: make key_state_export_keying_material return false even though
-         HAVE_EXPORT_KEYING_MATERIAL is defined and connect to a server
-         supporting dynamic tls-crypt (2.6.0+)
-
-Change-Id: I54073f8b63894a62699f6ecdc90a77f9f131205b
-Signed-off-by: Arne Schwabe <arne@...1227...>
-Acked-by: MaxF <max@...2606...>
-Message-Id: <20250327153606.15282-1-gert@...1296...>
-URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg31=
-267.html
-Signed-off-by: Gert Doering <gert@...1296...>
+Change-Id: I4ebe1158c36a641888131e824f59004a0f8fb4c5
+Signed-off-by: Samuli Sepp=C3=A4nen <samuli.seppanen@...277...>
 ---
-M src/openvpn/tls_crypt.c
-1 file changed, 9 insertions(+), 10 deletions(-)
+M tests/t_server_null_default.rc
+1 file changed, 27 insertions(+), 4 deletions(-)
 
 
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/19/919/3
 
+diff --git a/tests/t_server_null_default.rc b/tests/t_server_null_default.rc
+index ca8004a..5b74761 100755
+--- a/tests/t_server_null_default.rc
++++ b/tests/t_server_null_default.rc
+@@ -38,12 +38,14 @@
+ MAX_CLIENTS=3D"10"
+ CLIENT_MATCH=3D"Test-Client"
+ SERVER_EXEC=3D"${top_builddir}/src/openvpn/openvpn"
+-SERVER_BASE_OPTS=3D"--daemon --local 127.0.0.1 --dev tun --topology subnet=
+ --max-clients $MAX_CLIENTS --persist-tun --verb 3 --duplicate-cn"
++SERVER_BASE_OPTS=3D"--daemon --dev tun --topology subnet --max-clients $MA=
+X_CLIENTS --persist-tun --verb 3 --duplicate-cn"
++SERVER_BIND_OPTS=3D"--local 127.0.0.1"
+ SERVER_CIPHER_OPTS=3D""
+ SERVER_CERT_OPTS=3D"--ca ${CA} --dh ${DH} --cert ${SERVER_CERT} --key ${SE=
+RVER_KEY} --tls-auth ${TA} 0"
+-SERVER_CONF_BASE=3D"${SERVER_BASE_OPTS} ${SERVER_CIPHER_OPTS} ${SERVER_CER=
+T_OPTS}"
++SERVER_CONF_BASE=3D"${SERVER_BASE_OPTS} ${SERVER_CIPHER_OPTS} ${SERVER_CER=
+T_OPTS} ${SERVER_BIND_OPTS}"
++SERVER_CONF_BASE_MULTISOCKET=3D"${SERVER_BASE_OPTS} ${SERVER_CIPHER_OPTS} =
+${SERVER_CERT_OPTS}"
 
-diff --git a/src/openvpn/tls_crypt.c b/src/openvpn/tls_crypt.c
-index eb7b03d..9e9807d 100644
---- a/src/openvpn/tls_crypt.c
-+++ b/src/openvpn/tls_crypt.c
-@@ -97,6 +97,15 @@
- bool
- tls_session_generate_dynamic_tls_crypt_key(struct tls_session *session)
- {
-+    struct key2 rengokeys;
-+    if (!key_state_export_keying_material(session, EXPORT_DYNAMIC_TLS_CRYP=
-T_LABEL,
-+                                          strlen(EXPORT_DYNAMIC_TLS_CRYPT_=
-LABEL),
-+                                          rengokeys.keys, sizeof(rengokeys=
-.keys)))
-+    {
-+        return false;
-+    }
-+    rengokeys.n =3D 2;
+-TEST_SERVER_LIST=3D"1 2 3"
++TEST_SERVER_LIST=3D"1 2 3 4"
+
+ SERVER_NAME_1=3D"t_server_null_server-1194_udp"
+ SERVER_SERVER_1=3D"--server 10.29.41.0 255.255.255.0"
+@@ -63,6 +65,12 @@
+ SERVER_EXEC_3=3D"${SERVER_EXEC}"
+ SERVER_CONF_3=3D"${SERVER_CONF_BASE} ${SERVER_SERVER_3} --lport 1196 --pro=
+to udp --management 127.0.0.1 ${SERVER_MGMT_PORT_3} --cipher AES-192-CBC --=
+data-ciphers DEFAULT:AES-192-CBC"
+
++SERVER_NAME_4=3D"t_server_null_server-1197_multisocket_ipv4_ipv6"
++SERVER_SERVER_4=3D"--server 10.29.43.0 255.255.255.0"
++SERVER_MGMT_PORT_4=3D"11197"
++SERVER_EXEC_4=3D"${SERVER_EXEC}"
++SERVER_CONF_4=3D"${SERVER_CONF_BASE_MULTISOCKET} ${SERVER_SERVER_4} --loca=
+l 127.0.0.1 1197 tcp --local ::1 1197 udp --management 127.0.0.1 ${SERVER_M=
+GMT_PORT_4}"
 +
-     session->tls_wrap_reneg.opt =3D session->tls_wrap.opt;
-     session->tls_wrap_reneg.mode =3D TLS_WRAP_CRYPT;
-     session->tls_wrap_reneg.cleanup_key_ctx =3D true;
-@@ -108,16 +117,6 @@
-                    session->opt->replay_time,
-                    "TLS_WRAP_RENEG", session->key_id);
+ # Test client configurations
+ CLIENT_EXEC=3D"${top_builddir}/src/openvpn/openvpn"
+ CLIENT_BASE_OPTS=3D"--client --nobind --remote-cert-tls server --persist-t=
+un --verb 3 --resolv-retry infinite --connect-retry-max 3 --server-poll-tim=
+eout 5 --explicit-exit-notify 3 --script-security 2"
+@@ -72,7 +80,7 @@
+ CLIENT_CIPHER_OPTS=3D""
+ CLIENT_CERT_OPTS=3D"--ca ${CA} --cert ${CLIENT_CERT} --key ${CLIENT_KEY} -=
+-tls-auth ${TA} 1"
 
--
--    struct key2 rengokeys;
--    if (!key_state_export_keying_material(session, EXPORT_DYNAMIC_TLS_CRYP=
-T_LABEL,
--                                          strlen(EXPORT_DYNAMIC_TLS_CRYPT_=
-LABEL),
--                                          rengokeys.keys, sizeof(rengokeys=
-.keys)))
--    {
--        return false;
--    }
--    rengokeys.n =3D 2;
--
-     if (session->tls_wrap.mode =3D=3D TLS_WRAP_CRYPT
-         || session->tls_wrap.mode =3D=3D TLS_WRAP_AUTH)
-     {
+-TEST_RUN_LIST=3D"1 1L 2 2L 3 4a 4b 4c"
++TEST_RUN_LIST=3D"1 1L 2 2L 3 4a 4b 4c 5a 5b 5c"
+ CLIENT_CONF_BASE=3D"${CLIENT_NULL_OPTS} ${CLIENT_BASE_OPTS} ${CLIENT_CIPHE=
+R_OPTS} ${CLIENT_CERT_OPTS}"
+ CLIENT_CONF_BASE_LWIP=3D"${CLIENT_LWIP_OPTS} ${CLIENT_BASE_OPTS} ${CLIENT_=
+CIPHER_OPTS} ${CLIENT_CERT_OPTS}"
+
+@@ -121,3 +129,18 @@
+ SHOULD_PASS_4c=3D"no"
+ CLIENT_EXEC_4c=3D"${CLIENT_EXEC}"
+ CLIENT_CONF_4c=3D"${CLIENT_CONF_BASE} --remote 127.0.0.1 1196 udp --proto =
+udp --cipher AES-192-CBC --data-ciphers AES-128-CBC"
++
++TEST_NAME_5a=3D"t_server_null_client.sh-openvpn_current_multisocket_ipv4_t=
+cp"
++SHOULD_PASS_5a=3D"yes"
++CLIENT_EXEC_5a=3D"${CLIENT_EXEC}"
++CLIENT_CONF_5a=3D"${CLIENT_CONF_BASE} --remote 127.0.0.1 1197 tcp"
++
++TEST_NAME_5b=3D"t_server_null_client.sh-openvpn_current_multisocket_ipv6_u=
+dp"
++SHOULD_PASS_5b=3D"yes"
++CLIENT_EXEC_5b=3D"${CLIENT_EXEC}"
++CLIENT_CONF_5b=3D"${CLIENT_CONF_BASE} --remote ::1 1197 udp"
++
++TEST_NAME_5c=3D"t_server_null_client.sh-openvpn_current_multisocket_ipv6_t=
+cp_fail"
++SHOULD_PASS_5c=3D"no"
++CLIENT_EXEC_5c=3D"${CLIENT_EXEC}"
++CLIENT_CONF_5c=3D"${CLIENT_CONF_BASE} --remote ::1 1197 tcp"
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/921?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/919?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings
 
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: I54073f8b63894a62699f6ecdc90a77f9f131205b
-Gerrit-Change-Number: 921
-Gerrit-PatchSet: 2
-Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
-Gerrit-Reviewer: MaxF <max@...2606...>
+Gerrit-Change-Id: I4ebe1158c36a641888131e824f59004a0f8fb4c5
+Gerrit-Change-Number: 919
+Gerrit-PatchSet: 3
+Gerrit-Owner: mattock <sasepp@...2783...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
+Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-MessageType: merged
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Attention: flichtenheld <frank@...2641...>
+Gerrit-MessageType: newpatchset
 
---bNA/XB68D8k=
+--LG7M5iGwQWo=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p>cron2 <strong>submitted</strong> this change.</p><p><a href=3D"http://ge=
-rrit.openvpn.net/c/openvpn/+/921?usp=3Demail">View Change</a></p><div style=
-=3D"white-space:pre-wrap"></div><pre style=3D"font-family: monospace,monosp=
-ace; white-space: pre-wrap;">Do not leave half-initialised key wrap struct =
-when dynamic tls-crypt fails<br><br>In case when key_state_export_keying_ma=
-terial fails we left a<br>half-initialised tls_wrap_reneg  structure in the=
- tls_session.<br>Later calls to try to free this structure causes freeing o=
-f<br>invalid memory locations.<br><br>To test: make key_state_export_keying=
-_material return false even though<br>         HAVE_EXPORT_KEYING_MATERIAL =
-is defined and connect to a server<br>         supporting dynamic tls-crypt=
- (2.6.0+)<br><br>Change-Id: I54073f8b63894a62699f6ecdc90a77f9f131205b<br>Si=
-gned-off-by: Arne Schwabe &lt;arne@...1227...&gt;<br>Acked-by: MaxF &lt;max=
-@...2606...&gt;<br>Message-Id: &lt;20250327153606.15282-1-gert@...1296...&g=
-t;<br>URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net=
-/msg31267.html<br>Signed-off-by: Gert Doering &lt;gert@...1296...&gt;<br>--=
--<br>M src/openvpn/tls_crypt.c<br>1 file changed, 9 insertions(+), 10 delet=
-ions(-)<br><br></pre>
-<pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><sp=
-an>diff --git a/src/openvpn/tls_crypt.c b/src/openvpn/tls_crypt.c</span><br=
-><span>index eb7b03d..9e9807d 100644</span><br><span>--- a/src/openvpn/tls_=
-crypt.c</span><br><span>+++ b/src/openvpn/tls_crypt.c</span><br><span>@@ -9=
-7,6 +97,15 @@</span><br><span> bool</span><br><span> tls_session_generate_d=
-ynamic_tls_crypt_key(struct tls_session *session)</span><br><span> {</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+    struct key2 rengokeys;=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (!key_state_=
-export_keying_material(session, EXPORT_DYNAMIC_TLS_CRYPT_LABEL,</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+                               =
-           strlen(EXPORT_DYNAMIC_TLS_CRYPT_LABEL),</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+                                          re=
-ngokeys.keys, sizeof(rengokeys.keys)))</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+        return false;</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    ren=
-gokeys.n =3D 2;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</sp=
-an><br><span>     session-&gt;tls_wrap_reneg.opt =3D session-&gt;tls_wrap.o=
-pt;</span><br><span>     session-&gt;tls_wrap_reneg.mode =3D TLS_WRAP_CRYPT=
-;</span><br><span>     session-&gt;tls_wrap_reneg.cleanup_key_ctx =3D true;=
-</span><br><span>@@ -108,16 +117,6 @@</span><br><span>                    s=
-ession-&gt;opt-&gt;replay_time,</span><br><span>                    &quot;T=
-LS_WRAP_RENEG&quot;, session-&gt;key_id);</span><br><span> </span><br><span=
- style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(=
-0, 100%, 40%);">-    struct key2 rengokeys;</span><br><span style=3D"color:=
- hsl(0, 100%, 40%);">-    if (!key_state_export_keying_material(session, EX=
-PORT_DYNAMIC_TLS_CRYPT_LABEL,</span><br><span style=3D"color: hsl(0, 100%, =
-40%);">-                                          strlen(EXPORT_DYNAMIC_TLS=
-_CRYPT_LABEL),</span><br><span style=3D"color: hsl(0, 100%, 40%);">-       =
-                                   rengokeys.keys, sizeof(rengokeys.keys)))=
-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    {</span><br><span=
- style=3D"color: hsl(0, 100%, 40%);">-        return false;</span><br><span=
- style=3D"color: hsl(0, 100%, 40%);">-    }</span><br><span style=3D"color:=
- hsl(0, 100%, 40%);">-    rengokeys.n =3D 2;</span><br><span style=3D"color=
-: hsl(0, 100%, 40%);">-</span><br><span>     if (session-&gt;tls_wrap.mode =
-=3D=3D TLS_WRAP_CRYPT</span><br><span>         || session-&gt;tls_wrap.mode=
- =3D=3D TLS_WRAP_AUTH)</span><br><span>     {</span><br><span></span><br></=
-pre><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/921?=
-usp=3Demail">change 921</a>. To unsubscribe, or for help writing mail filte=
-rs, visit <a href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><=
-div itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope it=
-emprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=
-=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/921?usp=3Demail"/><m=
-eta itemprop=3D"name" content=3D"View Change"/></div></div>
+<p> Attention is currently required from: flichtenheld, plaisthos. </p>
+<p>mattock <strong>uploaded patch set #3</strong> to this change.</p><p><a =
+href=3D"http://gerrit.openvpn.net/c/openvpn/+/919?usp=3Demail">View Change<=
+/a></p><pre style=3D"font-family: monospace,monospace; white-space: pre-wra=
+p;">t_server_null: add multi-socket testing<br><br>This adds a new multi-so=
+cket server that listens on IPv4 and IPv6<br>localhost addresses for TCP an=
+d UDP connections respectively. It also<br>adds two success tests and one f=
+ailure test with wrong protocol defined<br>at the client side.<br><br>Chang=
+e-Id: I4ebe1158c36a641888131e824f59004a0f8fb4c5<br>Signed-off-by: Samuli Se=
+pp=C3=A4nen &lt;samuli.seppanen@...277...&gt;<br>---<br>M tests/t_server_nu=
+ll_default.rc<br>1 file changed, 27 insertions(+), 4 deletions(-)<br><br></=
+pre><pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"=
+>git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/19/919/3</pre=
+><pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><s=
+pan>diff --git a/tests/t_server_null_default.rc b/tests/t_server_null_defau=
+lt.rc</span><br><span>index ca8004a..5b74761 100755</span><br><span>--- a/t=
+ests/t_server_null_default.rc</span><br><span>+++ b/tests/t_server_null_def=
+ault.rc</span><br><span>@@ -38,12 +38,14 @@</span><br><span> MAX_CLIENTS=3D=
+&quot;10&quot;</span><br><span> CLIENT_MATCH=3D&quot;Test-Client&quot;</spa=
+n><br><span> SERVER_EXEC=3D&quot;${top_builddir}/src/openvpn/openvpn&quot;<=
+/span><br><span style=3D"color: hsl(0, 100%, 40%);">-SERVER_BASE_OPTS=3D&qu=
+ot;--daemon --local 127.0.0.1 --dev tun --topology subnet --max-clients $MA=
+X_CLIENTS --persist-tun --verb 3 --duplicate-cn&quot;</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+SERVER_BASE_OPTS=3D&quot;--daemon --dev t=
+un --topology subnet --max-clients $MAX_CLIENTS --persist-tun --verb 3 --du=
+plicate-cn&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+SER=
+VER_BIND_OPTS=3D&quot;--local 127.0.0.1&quot;</span><br><span> SERVER_CIPHE=
+R_OPTS=3D&quot;&quot;</span><br><span> SERVER_CERT_OPTS=3D&quot;--ca ${CA} =
+--dh ${DH} --cert ${SERVER_CERT} --key ${SERVER_KEY} --tls-auth ${TA} 0&quo=
+t;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-SERVER_CONF_BASE=3D=
+&quot;${SERVER_BASE_OPTS} ${SERVER_CIPHER_OPTS} ${SERVER_CERT_OPTS}&quot;</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+SERVER_CONF_BASE=3D&q=
+uot;${SERVER_BASE_OPTS} ${SERVER_CIPHER_OPTS} ${SERVER_CERT_OPTS} ${SERVER_=
+BIND_OPTS}&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+SER=
+VER_CONF_BASE_MULTISOCKET=3D&quot;${SERVER_BASE_OPTS} ${SERVER_CIPHER_OPTS}=
+ ${SERVER_CERT_OPTS}&quot;</span><br><span> </span><br><span style=3D"color=
+: hsl(0, 100%, 40%);">-TEST_SERVER_LIST=3D&quot;1 2 3&quot;</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+TEST_SERVER_LIST=3D&quot;1 2 3 4&qu=
+ot;</span><br><span> </span><br><span> SERVER_NAME_1=3D&quot;t_server_null_=
+server-1194_udp&quot;</span><br><span> SERVER_SERVER_1=3D&quot;--server 10.=
+29.41.0 255.255.255.0&quot;</span><br><span>@@ -63,6 +65,12 @@</span><br><s=
+pan> SERVER_EXEC_3=3D&quot;${SERVER_EXEC}&quot;</span><br><span> SERVER_CON=
+F_3=3D&quot;${SERVER_CONF_BASE} ${SERVER_SERVER_3} --lport 1196 --proto udp=
+ --management 127.0.0.1 ${SERVER_MGMT_PORT_3} --cipher AES-192-CBC --data-c=
+iphers DEFAULT:AES-192-CBC&quot;</span><br><span> </span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+SERVER_NAME_4=3D&quot;t_server_null_server-1=
+197_multisocket_ipv4_ipv6&quot;</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+SERVER_SERVER_4=3D&quot;--server 10.29.43.0 255.255.255.0&quot;=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+SERVER_MGMT_PORT_4=
+=3D&quot;11197&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++SERVER_EXEC_4=3D&quot;${SERVER_EXEC}&quot;</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+SERVER_CONF_4=3D&quot;${SERVER_CONF_BASE_MULTISOCKE=
+T} ${SERVER_SERVER_4} --local 127.0.0.1 1197 tcp --local ::1 1197 udp --man=
+agement 127.0.0.1 ${SERVER_MGMT_PORT_4}&quot;</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+</span><br><span> # Test client configurations</s=
+pan><br><span> CLIENT_EXEC=3D&quot;${top_builddir}/src/openvpn/openvpn&quot=
+;</span><br><span> CLIENT_BASE_OPTS=3D&quot;--client --nobind --remote-cert=
+-tls server --persist-tun --verb 3 --resolv-retry infinite --connect-retry-=
+max 3 --server-poll-timeout 5 --explicit-exit-notify 3 --script-security 2&=
+quot;</span><br><span>@@ -72,7 +80,7 @@</span><br><span> CLIENT_CIPHER_OPTS=
+=3D&quot;&quot;</span><br><span> CLIENT_CERT_OPTS=3D&quot;--ca ${CA} --cert=
+ ${CLIENT_CERT} --key ${CLIENT_KEY} --tls-auth ${TA} 1&quot;</span><br><spa=
+n> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-TEST_RUN_LIST=3D&q=
+uot;1 1L 2 2L 3 4a 4b 4c&quot;</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+TEST_RUN_LIST=3D&quot;1 1L 2 2L 3 4a 4b 4c 5a 5b 5c&quot;</span>=
+<br><span> CLIENT_CONF_BASE=3D&quot;${CLIENT_NULL_OPTS} ${CLIENT_BASE_OPTS}=
+ ${CLIENT_CIPHER_OPTS} ${CLIENT_CERT_OPTS}&quot;</span><br><span> CLIENT_CO=
+NF_BASE_LWIP=3D&quot;${CLIENT_LWIP_OPTS} ${CLIENT_BASE_OPTS} ${CLIENT_CIPHE=
+R_OPTS} ${CLIENT_CERT_OPTS}&quot;</span><br><span> </span><br><span>@@ -121=
+,3 +129,18 @@</span><br><span> SHOULD_PASS_4c=3D&quot;no&quot;</span><br><s=
+pan> CLIENT_EXEC_4c=3D&quot;${CLIENT_EXEC}&quot;</span><br><span> CLIENT_CO=
+NF_4c=3D&quot;${CLIENT_CONF_BASE} --remote 127.0.0.1 1196 udp --proto udp -=
+-cipher AES-192-CBC --data-ciphers AES-128-CBC&quot;</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+TEST_NAME_5a=3D&quot;t_server_null_client.sh-openvpn_current=
+_multisocket_ipv4_tcp&quot;</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+SHOULD_PASS_5a=3D&quot;yes&quot;</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+CLIENT_EXEC_5a=3D&quot;${CLIENT_EXEC}&quot;</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+CLIENT_CONF_5a=3D&quot;${CLIEN=
+T_CONF_BASE} --remote 127.0.0.1 1197 tcp&quot;</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+TEST_NAME_5b=3D&quot;t_server_null_client.sh-openvpn_current_multis=
+ocket_ipv6_udp&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++SHOULD_PASS_5b=3D&quot;yes&quot;</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+CLIENT_EXEC_5b=3D&quot;${CLIENT_EXEC}&quot;</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+CLIENT_CONF_5b=3D&quot;${CLIENT_CONF_=
+BASE} --remote ::1 1197 udp&quot;</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+TEST_=
+NAME_5c=3D&quot;t_server_null_client.sh-openvpn_current_multisocket_ipv6_tc=
+p_fail&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+SHOULD_=
+PASS_5c=3D&quot;no&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+CLIENT_EXEC_5c=3D&quot;${CLIENT_EXEC}&quot;</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+CLIENT_CONF_5c=3D&quot;${CLIENT_CONF_BASE} --r=
+emote ::1 1197 tcp&quot;</span><br><span></span><br></pre><p>To view, visit=
+ <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/919?usp=3Demail">change 9=
+19</a>. To unsubscribe, or for help writing mail filters, visit <a href=3D"=
+http://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope itemtyp=
+e=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"action" ite=
+mtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http:=
+//gerrit.openvpn.net/c/openvpn/+/919?usp=3Demail"/><meta itemprop=3D"name" =
+content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I54073f8b63894a62699f6ecdc90=
-a77f9f131205b </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 921 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
-<div style=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@...1711...=
-27...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: MaxF &lt;max@...2606...&gt; <=
-/div>
+<div style=3D"display:none"> Gerrit-Change-Id: I4ebe1158c36a641888131e824f5=
+9004a0f8fb4c5 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 919 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 3 </div>
+<div style=3D"display:none"> Gerrit-Owner: mattock &lt;sasepp@...2783...&gt=
+; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
 1...&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
+.1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: merged </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
+41...&gt; </div>
+<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
 
 
---bNA/XB68D8k=--
+--LG7M5iGwQWo=--
 
