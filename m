@@ -1,16 +1,16 @@
 From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Tue, 1 Apr 2025 18:01:01 +0000
-In-Reply-To: <gerrit.1743525501000.Ief11d5d7ccae084c863b50054d4e97c71f57d6f0@...2715...>
-References: <gerrit.1743525501000.Ief11d5d7ccae084c863b50054d4e97c71f57d6f0@...2715...>
+Date: Tue, 1 Apr 2025 18:00:59 +0000
+In-Reply-To: <gerrit.1743422979000.Ie9bffcc487f53a3a8ae6e59b79e654360d99902c@...2715...>
+References: <gerrit.1743422979000.Ie9bffcc487f53a3a8ae6e59b79e654360d99902c@...2715...>
 Reply-To: gert@...1296..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <5658e78c843bb3a77410067037af66ee41ed22ea-HTML@...2715...>
+Message-ID: <cc1b7a551f8e72bb5f868baf6e4d462b8e31453d-EmailReplacePatchSet-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="0gF3cutOztQ="; charset=UTF-8
-Subject: [Openvpn-devel] [XS] Change in openvpn[master]: GHA: Pin version of
- CMake for all builds
+Content-Type: multipart/alternative; boundary="SXa6UDsYZJA="; charset=UTF-8
+Subject: [Openvpn-devel] [S] Change in openvpn[master]: GHA: Dependency and
+ Actions update April 2025
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,193 +19,394 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: flichtenheld <frank@...2641...>
-Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: flichtenheld <frank@...2641...>, plaisthos <arne-openvpn@...1227...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---0gF3cutOztQ=
+--SXa6UDsYZJA=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-cron2 has submitted this change. ( http://gerrit.openvpn.net/c/openvpn/+/92=
-9?usp=3Demail )
+cron2 has uploaded a new patch set (#2) to the change originally created by=
+ flichtenheld. ( http://gerrit.openvpn.net/c/openvpn/+/926?usp=3Demail )
 
-Change subject: GHA: Pin version of CMake for all builds
+The following approvals got outdated and were removed:
+Code-Review+2 by plaisthos
+
+
+Change subject: GHA: Dependency and Actions update April 2025
 ......................................................................
 
-GHA: Pin version of CMake for all builds
+GHA: Dependency and Actions update April 2025
 
-Turns out that "apt install cmake" is useless since
-Github installs also CMake but not as a package. So
-make sure we control which CMake we get and not
-Github.
+- Fix Android build with newer vcpkg
+  Need to sync CMAKE_SYSTEM_VERSION with vcpkg.
+- Update mbedTLS v3 builds to latest release.
+  Depends on commit
+  4897c522948c8cdb82c0325ee08f6907cfc16f57
+- Update all actions to latest releases.
 
-Switch to get-cmake action (which also installs ninja)
-and remove the installation via apt.
-
-Change-Id: Ief11d5d7ccae084c863b50054d4e97c71f57d6f0
+Change-Id: Ie9bffcc487f53a3a8ae6e59b79e654360d99902c
 Signed-off-by: Frank Lichtenheld <frank@...2641...>
-Acked-by: Gert Doering <gert@...1296...>
-Message-Id: <20250401170420.29808-1-gert@...1296...>
+Acked-by: Arne Schwabe <arne-openvpn@...1227...>
+Message-Id: <20250331153309.77901-1-frank@...2641...>
 URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg31=
-299.html
+290.html
 Signed-off-by: Gert Doering <gert@...1296...>
 ---
 M .github/workflows/build.yaml
-1 file changed, 5 insertions(+), 2 deletions(-)
+M .github/workflows/coverity-scan.yml
+M .github/workflows/doxygen.yml
+3 files changed, 20 insertions(+), 15 deletions(-)
 
 
-
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/26/926/2
 
 diff --git a/.github/workflows/build.yaml b/.github/workflows/build.yaml
-index b1af7ec..617b866 100644
+index 617b866..5e8e15d 100644
 --- a/.github/workflows/build.yaml
 +++ b/.github/workflows/build.yaml
-@@ -54,6 +54,7 @@
-     steps:
-       - name: Checkout OpenVPN
-         uses: actions/checkout@...2844... # v4.2.2
-+      - uses: lukka/get-cmake@...2870... # v3.31.6
+@@ -27,7 +27,7 @@
+       - name: Show changes on standard output
+         run: git diff
+         working-directory: openvpn
+-      - uses: actions/upload-artifact@...2860... # v4.6.0
++      - uses: actions/upload-artifact@...2868... # v4.6.2
+         with:
+           name: uncrustify-changes.patch
+           path: 'openvpn/uncrustify-changes.patch'
+@@ -58,11 +58,16 @@
        - name: Install vcpkg
          uses: lukka/run-vcpkg@...2815... # v11.5
          with:
-@@ -78,10 +79,11 @@
-       VCPKG_ROOT: ${{ github.workspace }}/vcpkg
-     steps:
+-          vcpkgGitCommitId: 33e9c99208736b713cabe4490e15235f62f893d4
++          vcpkgGitCommitId: acd5bba5aac8b6573b5f6f463dc0341ac0ee6fa4
        - name: Install dependencies
--        run: sudo apt update && sudo apt install -y mingw-w64 unzip cmake =
-ninja-build build-essential wget python3-docutils man2html-base
-+        run: sudo apt update && sudo apt install -y mingw-w64 unzip build-=
-essential wget python3-docutils man2html-base
-       - name: Checkout OpenVPN
-         uses: actions/checkout@...2844... # v4.2.2
+         run: ${VCPKG_ROOT}/vcpkg install openssl lz4 cmocka
+       - name: configure OpenVPN with cmake
+-        run: cmake -S . -B openvpn-build -DUNSUPPORTED_BUILDS=3Dyes -DCMAK=
+E_SYSTEM_NAME=3DAndroid -DOPENSSL_ROOT_DIR=3D${VCPKG_INSTALLED_DIR}/${{ mat=
+rix.vcpkg_triplet }} -DENABLE_PKCS11=3Dfalse -DBUILD_TESTING=3Dtrue -DCMAKE=
+_ANDROID_ARCH_ABI=3D${{ matrix.abi }} -DENABLE_LZO=3Dfalse -DUSE_WERROR=3Dno
++        run: |
++          cmake -S . -B openvpn-build -DUNSUPPORTED_BUILDS=3Dyes \
++            -DCMAKE_SYSTEM_NAME=3DAndroid -DCMAKE_SYSTEM_VERSION=3D28 \
++            -DCMAKE_ANDROID_ARCH_ABI=3D${{ matrix.abi }} \
++            -DOPENSSL_ROOT_DIR=3D${VCPKG_INSTALLED_DIR}/${{ matrix.vcpkg_t=
+riplet }} \
++            -DENABLE_PKCS11=3Dfalse -DBUILD_TESTING=3Dtrue -DENABLE_LZO=3D=
+false -DUSE_WERROR=3Dno
+       - name: Build OpenVPN Android binary with cmake
+         run: cmake --build openvpn-build
 
-+      - uses: lukka/get-cmake@...2870... # v3.31.6
+@@ -87,7 +92,7 @@
        - name: Restore from cache and install vcpkg
          uses: lukka/run-vcpkg@...2815... # v11.5
          with:
-@@ -457,13 +459,14 @@
+-          vcpkgGitCommitId: 33e9c99208736b713cabe4490e15235f62f893d4
++          vcpkgGitCommitId: acd5bba5aac8b6573b5f6f463dc0341ac0ee6fa4
+           vcpkgJsonGlob: '**/mingw/vcpkg.json'
 
-     steps:
-       - name: Install dependencies
--        run: sudo apt update && sudo apt install -y cmake gcc ninja-build =
-golang make liblzo2-dev libpam0g-dev liblz4-dev linux-libc-dev man2html cla=
-ng libcmocka-dev python3-docutils python3-jinja2 python3-jsonschema libtool=
- automake autoconf pkg-config libcap-ng-dev libnl-genl-3-dev
-+        run: sudo apt update && sudo apt install -y gcc golang make liblzo=
-2-dev libpam0g-dev liblz4-dev linux-libc-dev man2html clang libcmocka-dev p=
-ython3-docutils python3-jinja2 python3-jsonschema libtool automake autoconf=
- pkg-config libcap-ng-dev libnl-genl-3-dev
-       - name: "AWS-LC: checkout"
-         uses: actions/checkout@...2844... # v4.2.2
+       - name: Run CMake with vcpkg.json manifest
+@@ -97,7 +102,7 @@
+           buildPreset: mingw-${{ matrix.arch }}
+           buildPresetAdditionalArgs: "['--config Debug']"
+
+-      - uses: actions/upload-artifact@...2860... # v4.6.0
++      - uses: actions/upload-artifact@...2868... # v4.6.2
          with:
-           path: aws-lc
-           repository: aws/aws-lc
-           ref: v1.42.0
+           name: openvpn-mingw-${{ matrix.arch }}
+           path: |
+@@ -105,7 +110,7 @@
+             ${{ github.workspace }}/out/build/mingw/${{ matrix.arch }}/Deb=
+ug/*.dll
+             !${{ github.workspace }}/out/build/mingw/${{ matrix.arch }}/De=
+bug/test_*.exe
+
+-      - uses: actions/upload-artifact@...2860... # v4.6.0
++      - uses: actions/upload-artifact@...2868... # v4.6.2
+         with:
+           name: openvpn-mingw-${{ matrix.arch }}-tests
+           path: |
+@@ -126,7 +131,7 @@
+       - name: Checkout OpenVPN
+         uses: actions/checkout@...2844... # v4.2.2
+       - name: Retrieve mingw unittest
+-        uses: actions/download-artifact@...2817... # v4.1.8
++        uses: actions/download-artifact@...2869... # v4.2.1
+         with:
+           name: openvpn-mingw-${{ matrix.arch }}-tests
+           path: unittests
+@@ -271,7 +276,7 @@
+       runs-on: windows-latest
+       steps:
+       - uses: actions/checkout@...2844... # v4.2.2
+-      - uses: lukka/get-cmake@...2861... # v3.31.5
 +      - uses: lukka/get-cmake@...2870... # v3.31.6
-       - name: "AWS-LC: build"
-         run: |
-           mkdir build
+
+       - name: Install rst2html
+         run: python -m pip install --upgrade pip docutils
+@@ -279,7 +284,7 @@
+       - name: Restore artifacts, or setup vcpkg (do not install any packag=
+e)
+         uses: lukka/run-vcpkg@...2815... # v11.5
+         with:
+-          vcpkgGitCommitId: 33e9c99208736b713cabe4490e15235f62f893d4
++          vcpkgGitCommitId: acd5bba5aac8b6573b5f6f463dc0341ac0ee6fa4
+           vcpkgJsonGlob: '**/windows/vcpkg.json'
+
+       - name: Run CMake with vcpkg.json manifest (NO TESTS)
+@@ -298,7 +303,7 @@
+           testPreset: win-${{ matrix.arch }}-release
+           testPresetAdditionalArgs: "['--output-on-failure']"
+
+-      - uses: actions/upload-artifact@...2860... # v4.6.0
++      - uses: actions/upload-artifact@...2868... # v4.6.2
+         with:
+           name: openvpn-msvc-${{ matrix.arch }}
+           path: |
+@@ -408,7 +413,7 @@
+           submodules: true
+           # versioning=3Dsemver-coerced
+           repository: Mbed-TLS/mbedtls
+-          ref: v3.6.2
++          ref: v3.6.3
+       - name: "mbedtls: make no_test"
+         run: make -j3 no_test SHARED=3D1
+         working-directory: mbedtls
+diff --git a/.github/workflows/coverity-scan.yml b/.github/workflows/coveri=
+ty-scan.yml
+index 3381d8f..222c57e 100644
+--- a/.github/workflows/coverity-scan.yml
++++ b/.github/workflows/coverity-scan.yml
+@@ -13,7 +13,7 @@
+     steps:
+       - name: Check submission cache
+         id: check_submit
+-        uses: actions/cache/restore@...2847... # v4.2.0
++        uses: actions/cache/restore@...2871... # v4.2.3
+         with:
+           path: |
+             cov-int
+@@ -65,7 +65,7 @@
+
+       - name: Cache submission
+         if: steps.check_submit.outputs.cache-hit !=3D 'true'
+-        uses: actions/cache/save@...2847... # v4.2.0
++        uses: actions/cache/save@...2871... # v4.2.3
+         with:
+           path: |
+             cov-int
+diff --git a/.github/workflows/doxygen.yml b/.github/workflows/doxygen.yml
+index f1ece70..ffd1b82 100644
+--- a/.github/workflows/doxygen.yml
++++ b/.github/workflows/doxygen.yml
+@@ -34,7 +34,7 @@
+           touch doc/doxygen/html/.nojekyll
+       - name: Upload static files as artifact
+         id: deployment
+-        uses: actions/upload-pages-artifact@...2858...
++        uses: actions/upload-pages-artifact@...2872... # v3.0.1
+         with:
+           path: doxygen/doc/doxygen/html/
+
+@@ -50,4 +50,4 @@
+     steps:
+       - name: Deploy to GitHub Pages
+         id: deployment
+-        uses: actions/deploy-pages@...2859...
++        uses: actions/deploy-pages@...2873... # v4.0.5
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/929?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/926?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings
 
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: Ief11d5d7ccae084c863b50054d4e97c71f57d6f0
-Gerrit-Change-Number: 929
+Gerrit-Change-Id: Ie9bffcc487f53a3a8ae6e59b79e654360d99902c
+Gerrit-Change-Number: 926
 Gerrit-PatchSet: 2
 Gerrit-Owner: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: cron2 <gert@...1296...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-MessageType: merged
+Gerrit-MessageType: newpatchset
 
---0gF3cutOztQ=
+--SXa6UDsYZJA=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p>cron2 <strong>submitted</strong> this change.</p><p><a href=3D"http://ge=
-rrit.openvpn.net/c/openvpn/+/929?usp=3Demail">View Change</a></p><div style=
-=3D"white-space:pre-wrap"></div><pre style=3D"font-family: monospace,monosp=
-ace; white-space: pre-wrap;">GHA: Pin version of CMake for all builds<br><b=
-r>Turns out that &quot;apt install cmake&quot; is useless since<br>Github i=
-nstalls also CMake but not as a package. So<br>make sure we control which C=
-Make we get and not<br>Github.<br><br>Switch to get-cmake action (which als=
-o installs ninja)<br>and remove the installation via apt.<br><br>Change-Id:=
- Ief11d5d7ccae084c863b50054d4e97c71f57d6f0<br>Signed-off-by: Frank Lichtenh=
-eld &lt;frank@...2641...&gt;<br>Acked-by: Gert Doering &lt;gert@...1296...&=
-gt;<br>Message-Id: &lt;20250401170420.29808-1-gert@...1296...&gt;<br>URL: h=
-ttps://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg31299.ht=
-ml<br>Signed-off-by: Gert Doering &lt;gert@...1296...&gt;<br>---<br>M .gith=
-ub/workflows/build.yaml<br>1 file changed, 5 insertions(+), 2 deletions(-)<=
-br><br></pre>
-<pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><sp=
-an>diff --git a/.github/workflows/build.yaml b/.github/workflows/build.yaml=
-</span><br><span>index b1af7ec..617b866 100644</span><br><span>--- a/.githu=
-b/workflows/build.yaml</span><br><span>+++ b/.github/workflows/build.yaml</=
-span><br><span>@@ -54,6 +54,7 @@</span><br><span>     steps:</span><br><spa=
-n>       - name: Checkout OpenVPN</span><br><span>         uses: actions/ch=
-eckout@...2844... # v4.2.2</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+      - uses: lukka/get-cmake@...2870... # v3.31.6</span><br><span> =
-      - name: Install vcpkg</span><br><span>         uses: lukka/run-vcpkg@=
-...2815... # v11.5</span><br><span>         with:</span><br><span>@@ -78,10=
- +79,11 @@</span><br><span>       VCPKG_ROOT: ${{ github.workspace }}/vcpkg=
-</span><br><span>     steps:</span><br><span>       - name: Install depende=
-ncies</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        run: sud=
-o apt update &amp;&amp; sudo apt install -y mingw-w64 unzip cmake ninja-bui=
-ld build-essential wget python3-docutils man2html-base</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+        run: sudo apt update &amp;&amp; =
-sudo apt install -y mingw-w64 unzip build-essential wget python3-docutils m=
-an2html-base</span><br><span>       - name: Checkout OpenVPN</span><br><spa=
-n>         uses: actions/checkout@...2844... # v4.2.2</span><br><span> </sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+      - uses: lukka/get=
--cmake@...2870... # v3.31.6</span><br><span>       - name: Restore from cac=
-he and install vcpkg</span><br><span>         uses: lukka/run-vcpkg@...2876...=
-... # v11.5</span><br><span>         with:</span><br><span>@@ -457,13 +459,=
-14 @@</span><br><span> </span><br><span>     steps:</span><br><span>       =
-- name: Install dependencies</span><br><span style=3D"color: hsl(0, 100%, 4=
-0%);">-        run: sudo apt update &amp;&amp; sudo apt install -y cmake gc=
-c ninja-build golang make liblzo2-dev libpam0g-dev liblz4-dev linux-libc-de=
-v man2html clang libcmocka-dev python3-docutils python3-jinja2 python3-json=
-schema libtool automake autoconf pkg-config libcap-ng-dev libnl-genl-3-dev<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+        run: sudo ap=
-t update &amp;&amp; sudo apt install -y gcc golang make liblzo2-dev libpam0=
-g-dev liblz4-dev linux-libc-dev man2html clang libcmocka-dev python3-docuti=
-ls python3-jinja2 python3-jsonschema libtool automake autoconf pkg-config l=
-ibcap-ng-dev libnl-genl-3-dev</span><br><span>       - name: &quot;AWS-LC: =
-checkout&quot;</span><br><span>         uses: actions/checkout@...2844... #=
- v4.2.2</span><br><span>         with:</span><br><span>           path: aws=
--lc</span><br><span>           repository: aws/aws-lc</span><br><span>     =
-      ref: v1.42.0</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-     - uses: lukka/get-cmake@...2870... # v3.31.6</span><br><span>       - =
-name: &quot;AWS-LC: build&quot;</span><br><span>         run: |</span><br><=
-span>           mkdir build</span><br><span></span><br></pre><p>To view, vi=
-sit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/929?usp=3Demail">chang=
-e 929</a>. To unsubscribe, or for help writing mail filters, visit <a href=
-=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope ite=
-mtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"action"=
- itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"h=
-ttp://gerrit.openvpn.net/c/openvpn/+/929?usp=3Demail"/><meta itemprop=3D"na=
-me" content=3D"View Change"/></div></div>
+<p>cron2 <strong>uploaded patch set #2</strong> to the change originally cr=
+eated by flichtenheld.</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn=
+/+/926?usp=3Demail">View Change</a></p><p>The following approvals got outda=
+ted and were removed:
+Code-Review+2 by plaisthos</p><pre style=3D"font-family: monospace,monospac=
+e; white-space: pre-wrap;">GHA: Dependency and Actions update April 2025<br=
+><br>- Fix Android build with newer vcpkg<br>  Need to sync CMAKE_SYSTEM_VE=
+RSION with vcpkg.<br>- Update mbedTLS v3 builds to latest release.<br>  Dep=
+ends on commit<br>  4897c522948c8cdb82c0325ee08f6907cfc16f57<br>- Update al=
+l actions to latest releases.<br><br>Change-Id: Ie9bffcc487f53a3a8ae6e59b79=
+e654360d99902c<br>Signed-off-by: Frank Lichtenheld &lt;frank@...2641...&gt;=
+<br>Acked-by: Arne Schwabe &lt;arne-openvpn@...1227...&gt;<br>Message-Id: &=
+lt;20250331153309.77901-1-frank@...2641...&gt;<br>URL: https://www.mail-arc=
+hive.com/openvpn-devel@lists.sourceforge.net/msg31290.html<br>Signed-off-by=
+: Gert Doering &lt;gert@...1296...&gt;<br>---<br>M .github/workflows/build.=
+yaml<br>M .github/workflows/coverity-scan.yml<br>M .github/workflows/doxyge=
+n.yml<br>3 files changed, 20 insertions(+), 15 deletions(-)<br><br></pre><p=
+re style=3D"font-family: monospace,monospace; white-space: pre-wrap;">git p=
+ull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/26/926/2</pre><pre =
+style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><span>di=
+ff --git a/.github/workflows/build.yaml b/.github/workflows/build.yaml</spa=
+n><br><span>index 617b866..5e8e15d 100644</span><br><span>--- a/.github/wor=
+kflows/build.yaml</span><br><span>+++ b/.github/workflows/build.yaml</span>=
+<br><span>@@ -27,7 +27,7 @@</span><br><span>       - name: Show changes on =
+standard output</span><br><span>         run: git diff</span><br><span>    =
+     working-directory: openvpn</span><br><span style=3D"color: hsl(0, 100%=
+, 40%);">-      - uses: actions/upload-artifact@...2860... # v4.6.0</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+      - uses: actions/uploa=
+d-artifact@...2868... # v4.6.2</span><br><span>         with:</span><br><sp=
+an>           name: uncrustify-changes.patch</span><br><span>           pat=
+h: &#39;openvpn/uncrustify-changes.patch&#39;</span><br><span>@@ -58,11 +58=
+,16 @@</span><br><span>       - name: Install vcpkg</span><br><span>       =
+  uses: lukka/run-vcpkg@...2815... # v11.5</span><br><span>         with:</=
+span><br><span style=3D"color: hsl(0, 100%, 40%);">-          vcpkgGitCommi=
+tId: 33e9c99208736b713cabe4490e15235f62f893d4</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+          vcpkgGitCommitId: acd5bba5aac8b6573b5f6=
+f463dc0341ac0ee6fa4</span><br><span>       - name: Install dependencies</sp=
+an><br><span>         run: ${VCPKG_ROOT}/vcpkg install openssl lz4 cmocka</=
+span><br><span>       - name: configure OpenVPN with cmake</span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">-        run: cmake -S . -B openvpn-bui=
+ld -DUNSUPPORTED_BUILDS=3Dyes -DCMAKE_SYSTEM_NAME=3DAndroid -DOPENSSL_ROOT_=
+DIR=3D${VCPKG_INSTALLED_DIR}/${{ matrix.vcpkg_triplet }} -DENABLE_PKCS11=3D=
+false -DBUILD_TESTING=3Dtrue -DCMAKE_ANDROID_ARCH_ABI=3D${{ matrix.abi }} -=
+DENABLE_LZO=3Dfalse -DUSE_WERROR=3Dno</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+        run: |</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+          cmake -S . -B openvpn-build -DUNSUPPORTED_BUILDS=3Dy=
+es \</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            -DC=
+MAKE_SYSTEM_NAME=3DAndroid -DCMAKE_SYSTEM_VERSION=3D28 \</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+            -DCMAKE_ANDROID_ARCH_ABI=
+=3D${{ matrix.abi }} \</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+            -DOPENSSL_ROOT_DIR=3D${VCPKG_INSTALLED_DIR}/${{ matrix.vcpkg=
+_triplet }} \</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
+      -DENABLE_PKCS11=3Dfalse -DBUILD_TESTING=3Dtrue -DENABLE_LZO=3Dfalse -=
+DUSE_WERROR=3Dno</span><br><span>       - name: Build OpenVPN Android binar=
+y with cmake</span><br><span>         run: cmake --build openvpn-build</spa=
+n><br><span> </span><br><span>@@ -87,7 +92,7 @@</span><br><span>       - na=
+me: Restore from cache and install vcpkg</span><br><span>         uses: luk=
+ka/run-vcpkg@...2815... # v11.5</span><br><span>         with:</span><br><s=
+pan style=3D"color: hsl(0, 100%, 40%);">-          vcpkgGitCommitId: 33e9c9=
+9208736b713cabe4490e15235f62f893d4</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+          vcpkgGitCommitId: acd5bba5aac8b6573b5f6f463dc0341a=
+c0ee6fa4</span><br><span>           vcpkgJsonGlob: &#39;**/mingw/vcpkg.json=
+&#39;</span><br><span> </span><br><span>       - name: Run CMake with vcpkg=
+.json manifest</span><br><span>@@ -97,7 +102,7 @@</span><br><span>         =
+  buildPreset: mingw-${{ matrix.arch }}</span><br><span>           buildPre=
+setAdditionalArgs: &quot;[&#39;--config Debug&#39;]&quot;</span><br><span> =
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">-      - uses: actions=
+/upload-artifact@...2860... # v4.6.0</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+      - uses: actions/upload-artifact@...2868... # v4.6.2<=
+/span><br><span>         with:</span><br><span>           name: openvpn-min=
+gw-${{ matrix.arch }}</span><br><span>           path: |</span><br><span>@@=
+ -105,7 +110,7 @@</span><br><span>             ${{ github.workspace }}/out/=
+build/mingw/${{ matrix.arch }}/Debug/*.dll</span><br><span>             !${=
+{ github.workspace }}/out/build/mingw/${{ matrix.arch }}/Debug/test_*.exe</=
+span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-     =
+ - uses: actions/upload-artifact@...2860... # v4.6.0</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+      - uses: actions/upload-artifact@...493...=
+2868... # v4.6.2</span><br><span>         with:</span><br><span>           =
+name: openvpn-mingw-${{ matrix.arch }}-tests</span><br><span>           pat=
+h: |</span><br><span>@@ -126,7 +131,7 @@</span><br><span>       - name: Che=
+ckout OpenVPN</span><br><span>         uses: actions/checkout@...2844... # =
+v4.2.2</span><br><span>       - name: Retrieve mingw unittest</span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-        uses: actions/download-arti=
+fact@...2817... # v4.1.8</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+        uses: actions/download-artifact@...2869... # v4.2.1</span><br>=
+<span>         with:</span><br><span>           name: openvpn-mingw-${{ mat=
+rix.arch }}-tests</span><br><span>           path: unittests</span><br><spa=
+n>@@ -271,7 +276,7 @@</span><br><span>       runs-on: windows-latest</span>=
+<br><span>       steps:</span><br><span>       - uses: actions/checkout@...493...=
+2844... # v4.2.2</span><br><span style=3D"color: hsl(0, 100%, 40%);">-     =
+ - uses: lukka/get-cmake@...2861... # v3.31.5</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+      - uses: lukka/get-cmake@...2870... # v3.31.=
+6</span><br><span> </span><br><span>       - name: Install rst2html</span><=
+br><span>         run: python -m pip install --upgrade pip docutils</span><=
+br><span>@@ -279,7 +284,7 @@</span><br><span>       - name: Restore artifac=
+ts, or setup vcpkg (do not install any package)</span><br><span>         us=
+es: lukka/run-vcpkg@...2815... # v11.5</span><br><span>         with:</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-          vcpkgGitCommitId:=
+ 33e9c99208736b713cabe4490e15235f62f893d4</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+          vcpkgGitCommitId: acd5bba5aac8b6573b5f6f463=
+dc0341ac0ee6fa4</span><br><span>           vcpkgJsonGlob: &#39;**/windows/v=
+cpkg.json&#39;</span><br><span> </span><br><span>       - name: Run CMake w=
+ith vcpkg.json manifest (NO TESTS)</span><br><span>@@ -298,7 +303,7 @@</spa=
+n><br><span>           testPreset: win-${{ matrix.arch }}-release</span><br=
+><span>           testPresetAdditionalArgs: &quot;[&#39;--output-on-failure=
+&#39;]&quot;</span><br><span> </span><br><span style=3D"color: hsl(0, 100%,=
+ 40%);">-      - uses: actions/upload-artifact@...2860... # v4.6.0</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+      - uses: actions/upload=
+-artifact@...2868... # v4.6.2</span><br><span>         with:</span><br><spa=
+n>           name: openvpn-msvc-${{ matrix.arch }}</span><br><span>        =
+   path: |</span><br><span>@@ -408,7 +413,7 @@</span><br><span>           s=
+ubmodules: true</span><br><span>           # versioning=3Dsemver-coerced</s=
+pan><br><span>           repository: Mbed-TLS/mbedtls</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-          ref: v3.6.2</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+          ref: v3.6.3</span><br><span>   =
+    - name: &quot;mbedtls: make no_test&quot;</span><br><span>         run:=
+ make -j3 no_test SHARED=3D1</span><br><span>         working-directory: mb=
+edtls</span><br><span>diff --git a/.github/workflows/coverity-scan.yml b/.g=
+ithub/workflows/coverity-scan.yml</span><br><span>index 3381d8f..222c57e 10=
+0644</span><br><span>--- a/.github/workflows/coverity-scan.yml</span><br><s=
+pan>+++ b/.github/workflows/coverity-scan.yml</span><br><span>@@ -13,7 +13,=
+7 @@</span><br><span>     steps:</span><br><span>       - name: Check submi=
+ssion cache</span><br><span>         id: check_submit</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-        uses: actions/cache/restore@...2877...=
+... # v4.2.0</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
+ uses: actions/cache/restore@...2871... # v4.2.3</span><br><span>         w=
+ith:</span><br><span>           path: |</span><br><span>             cov-in=
+t</span><br><span>@@ -65,7 +65,7 @@</span><br><span> </span><br><span>     =
+  - name: Cache submission</span><br><span>         if: steps.check_submit.=
+outputs.cache-hit !=3D &#39;true&#39;</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-        uses: actions/cache/save@...2847... # v4.2.0</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+        uses: actions/cach=
+e/save@...2871... # v4.2.3</span><br><span>         with:</span><br><span> =
+          path: |</span><br><span>             cov-int</span><br><span>diff=
+ --git a/.github/workflows/doxygen.yml b/.github/workflows/doxygen.yml</spa=
+n><br><span>index f1ece70..ffd1b82 100644</span><br><span>--- a/.github/wor=
+kflows/doxygen.yml</span><br><span>+++ b/.github/workflows/doxygen.yml</spa=
+n><br><span>@@ -34,7 +34,7 @@</span><br><span>           touch doc/doxygen/=
+html/.nojekyll</span><br><span>       - name: Upload static files as artifa=
+ct</span><br><span>         id: deployment</span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">-        uses: actions/upload-pages-artifact@...2858...=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        uses: actio=
+ns/upload-pages-artifact@...2872... # v3.0.1</span><br><span>         with:=
+</span><br><span>           path: doxygen/doc/doxygen/html/</span><br><span=
+> </span><br><span>@@ -50,4 +50,4 @@</span><br><span>     steps:</span><br>=
+<span>       - name: Deploy to GitHub Pages</span><br><span>         id: de=
+ployment</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        uses:=
+ actions/deploy-pages@...2859...</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+        uses: actions/deploy-pages@...2873... # v4.0.5</span><=
+br><span></span><br></pre><p>To view, visit <a href=3D"http://gerrit.openvp=
+n.net/c/openvpn/+/926?usp=3Demail">change 926</a>. To unsubscribe, or for h=
+elp writing mail filters, visit <a href=3D"http://gerrit.openvpn.net/settin=
+gs">settings</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMess=
+age"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewA=
+ction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+=
+/926?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div><=
+/div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: Ief11d5d7ccae084c863b50054d4=
-e97c71f57d6f0 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 929 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: Ie9bffcc487f53a3a8ae6e59b79e=
+654360d99902c </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 926 </div>
 <div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
 <div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
 .&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
- </div>
 <div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
 .1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: merged </div>
+<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
 
 
---0gF3cutOztQ=--
+--SXa6UDsYZJA=--
 
