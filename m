@@ -1,17 +1,15 @@
-From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Tue, 1 Apr 2025 14:08:34 +0000
-In-Reply-To: <gerrit.1742429994000.I6d2ec69ac7a9ef5900d8f1d8541d6a19c9cb7df9@...2715...>
-References: <gerrit.1742429994000.I6d2ec69ac7a9ef5900d8f1d8541d6a19c9cb7df9@...2715...>
-Reply-To: gert@...1296..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...,
- antonio@...2726...
-Message-ID: <f6216d2d184ac1bd1b63051977796e9620500bbb-HTML@...2715...>
+From: "flichtenheld (Code Review)" <gerrit@...515...>
+Date: Tue, 1 Apr 2025 16:38:23 +0000
+References: <gerrit.1743525501000.Ief11d5d7ccae084c863b50054d4e97c71f57d6f0@...2715...>
+Reply-To: frank@...2641..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net
+Message-ID: <50683004da0c4da9868b906542e15ee786031758-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="FHDjcrYwAf8="; charset=UTF-8
-Subject: [Openvpn-devel] [XS] Change in openvpn[master]: socket: use remote
- proto when creating client sockets
+Content-Type: multipart/alternative; boundary="MYET9MSximA="; charset=UTF-8
+Subject: [Openvpn-devel] [XS] Change in openvpn[master]: GHA: Pin version of
+ CMake for all builds
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,130 +18,197 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Cc: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: plaisthos <arne-openvpn@...1227...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---FHDjcrYwAf8=
+--MYET9MSximA=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-cron2 has submitted this change. ( http://gerrit.openvpn.net/c/openvpn/+/91=
-1?usp=3Demail )
+Attention is currently required from: plaisthos.
 
-Change subject: socket: use remote proto when creating client sockets
+Hello plaisthos,
+
+I'd like you to do a code review.
+Please visit
+
+    http://gerrit.openvpn.net/c/openvpn/+/929?usp=3Demail
+
+to review the following change.
+
+
+Change subject: GHA: Pin version of CMake for all builds
 ......................................................................
 
-socket: use remote proto when creating client sockets
+GHA: Pin version of CMake for all builds
 
-When creating a socket to connect to a remote (this happens
-in client mode) always use the protocol specified for the
-remote.
+Turns out that "apt install cmake" is useless since
+Github installs also CMake but not as a package. So
+make sure we control which CMake we get and not
+Github.
 
-The listening protocol in this case is just ignored as it
-does not make any sense.
+Switch to get-cmake action (which also installs ninja)
+and remove the installation via apt.
 
-Change-Id: I6d2ec69ac7a9ef5900d8f1d8541d6a19c9cb7df9
-Signed-off-by: Antonio Quartulli <antonio@...2726...>
-Acked-by: Arne Schwabe <arne-openvpn@...1227...>
-Message-Id: <20250325105724.1285-1-gert@...1296...>
-URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg31=
-234.html
-Signed-off-by: Gert Doering <gert@...1296...>
+Change-Id: Ief11d5d7ccae084c863b50054d4e97c71f57d6f0
+Signed-off-by: Frank Lichtenheld <frank@...2641...>
 ---
-M src/openvpn/socket.c
-1 file changed, 5 insertions(+), 0 deletions(-)
+M .github/workflows/build.yaml
+1 file changed, 5 insertions(+), 2 deletions(-)
 
 
 
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/29/929/1
 
-diff --git a/src/openvpn/socket.c b/src/openvpn/socket.c
-index 09de1b0..4fb6fe6 100644
---- a/src/openvpn/socket.c
-+++ b/src/openvpn/socket.c
-@@ -1903,6 +1903,11 @@
-     const char *remote_host =3D o->ce.remote;
-     const char *remote_port =3D o->ce.remote_port;
+diff --git a/.github/workflows/build.yaml b/.github/workflows/build.yaml
+index b1af7ec..617b866 100644
+--- a/.github/workflows/build.yaml
++++ b/.github/workflows/build.yaml
+@@ -54,6 +54,7 @@
+     steps:
+       - name: Checkout OpenVPN
+         uses: actions/checkout@...2844... # v4.2.2
++      - uses: lukka/get-cmake@...2870... # v3.31.6
+       - name: Install vcpkg
+         uses: lukka/run-vcpkg@...2815... # v11.5
+         with:
+@@ -78,10 +79,11 @@
+       VCPKG_ROOT: ${{ github.workspace }}/vcpkg
+     steps:
+       - name: Install dependencies
+-        run: sudo apt update && sudo apt install -y mingw-w64 unzip cmake =
+ninja-build build-essential wget python3-docutils man2html-base
++        run: sudo apt update && sudo apt install -y mingw-w64 unzip build-=
+essential wget python3-docutils man2html-base
+       - name: Checkout OpenVPN
+         uses: actions/checkout@...2844... # v4.2.2
 
-+    if (remote_host)
-+    {
-+        proto =3D o->ce.proto;
-+    }
-+
-     if (c->mode =3D=3D CM_CHILD_TCP || c->mode =3D=3D CM_CHILD_UDP)
-     {
-         struct link_socket *tmp_sock =3D NULL;
++      - uses: lukka/get-cmake@...2870... # v3.31.6
+       - name: Restore from cache and install vcpkg
+         uses: lukka/run-vcpkg@...2815... # v11.5
+         with:
+@@ -457,13 +459,14 @@
+
+     steps:
+       - name: Install dependencies
+-        run: sudo apt update && sudo apt install -y cmake gcc ninja-build =
+golang make liblzo2-dev libpam0g-dev liblz4-dev linux-libc-dev man2html cla=
+ng libcmocka-dev python3-docutils python3-jinja2 python3-jsonschema libtool=
+ automake autoconf pkg-config libcap-ng-dev libnl-genl-3-dev
++        run: sudo apt update && sudo apt install -y gcc golang make liblzo=
+2-dev libpam0g-dev liblz4-dev linux-libc-dev man2html clang libcmocka-dev p=
+ython3-docutils python3-jinja2 python3-jsonschema libtool automake autoconf=
+ pkg-config libcap-ng-dev libnl-genl-3-dev
+       - name: "AWS-LC: checkout"
+         uses: actions/checkout@...2844... # v4.2.2
+         with:
+           path: aws-lc
+           repository: aws/aws-lc
+           ref: v1.42.0
++      - uses: lukka/get-cmake@...2870... # v3.31.6
+       - name: "AWS-LC: build"
+         run: |
+           mkdir build
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/911?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/929?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings
 
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: I6d2ec69ac7a9ef5900d8f1d8541d6a19c9cb7df9
-Gerrit-Change-Number: 911
-Gerrit-PatchSet: 2
-Gerrit-Owner: ordex <antonio@...2726...>
-Gerrit-Reviewer: flichtenheld <frank@...2641...>
+Gerrit-Change-Id: Ief11d5d7ccae084c863b50054d4e97c71f57d6f0
+Gerrit-Change-Number: 929
+Gerrit-PatchSet: 1
+Gerrit-Owner: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-MessageType: merged
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-MessageType: newchange
 
---FHDjcrYwAf8=
+--MYET9MSximA=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p>cron2 <strong>submitted</strong> this change.</p><p><a href=3D"http://ge=
-rrit.openvpn.net/c/openvpn/+/911?usp=3Demail">View Change</a></p><div style=
-=3D"white-space:pre-wrap"></div><pre style=3D"font-family: monospace,monosp=
-ace; white-space: pre-wrap;">socket: use remote proto when creating client =
-sockets<br><br>When creating a socket to connect to a remote (this happens<=
-br>in client mode) always use the protocol specified for the<br>remote.<br>=
-<br>The listening protocol in this case is just ignored as it<br>does not m=
-ake any sense.<br><br>Change-Id: I6d2ec69ac7a9ef5900d8f1d8541d6a19c9cb7df9<=
-br>Signed-off-by: Antonio Quartulli &lt;antonio@...2726...&gt;<br>Acked-by:=
- Arne Schwabe &lt;arne-openvpn@...1227...&gt;<br>Message-Id: &lt;2025032510=
-5724.1285-1-gert@...1296...&gt;<br>URL: https://www.mail-archive.com/openvp=
-n-devel@lists.sourceforge.net/msg31234.html<br>Signed-off-by: Gert Doering =
-&lt;gert@...1296...&gt;<br>---<br>M src/openvpn/socket.c<br>1 file changed,=
- 5 insertions(+), 0 deletions(-)<br><br></pre>
-<pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><sp=
-an>diff --git a/src/openvpn/socket.c b/src/openvpn/socket.c</span><br><span=
->index 09de1b0..4fb6fe6 100644</span><br><span>--- a/src/openvpn/socket.c</=
-span><br><span>+++ b/src/openvpn/socket.c</span><br><span>@@ -1903,6 +1903,=
-11 @@</span><br><span>     const char *remote_host =3D o-&gt;ce.remote;</sp=
-an><br><span>     const char *remote_port =3D o-&gt;ce.remote_port;</span><=
-br><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (r=
-emote_host)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+        proto =3D o-&g=
-t;ce.proto;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span>     =
-if (c-&gt;mode =3D=3D CM_CHILD_TCP || c-&gt;mode =3D=3D CM_CHILD_UDP)</span=
-><br><span>     {</span><br><span>         struct link_socket *tmp_sock =3D=
- NULL;</span><br><span></span><br></pre><p>To view, visit <a href=3D"http:/=
-/gerrit.openvpn.net/c/openvpn/+/911?usp=3Demail">change 911</a>. To unsubsc=
-ribe, or for help writing mail filters, visit <a href=3D"http://gerrit.open=
-vpn.net/settings">settings</a>.</p><div itemscope itemtype=3D"http://schema=
-.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://sc=
-hema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.n=
-et/c/openvpn/+/911?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Ch=
-ange"/></div></div>
+<p> Attention is currently required from: plaisthos. </p>
+<p>flichtenheld would like plaisthos to <strong>review</strong> this change.
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/929?usp=3Demail">Vi=
+ew Change</a></p><pre style=3D"font-family: monospace,monospace; white-spac=
+e: pre-wrap;">GHA: Pin version of CMake for all builds<br><br>Turns out tha=
+t &quot;apt install cmake&quot; is useless since<br>Github installs also CM=
+ake but not as a package. So<br>make sure we control which CMake we get and=
+ not<br>Github.<br><br>Switch to get-cmake action (which also installs ninj=
+a)<br>and remove the installation via apt.<br><br>Change-Id: Ief11d5d7ccae0=
+84c863b50054d4e97c71f57d6f0<br>Signed-off-by: Frank Lichtenheld &lt;frank@...220...=
+..2641...&gt;<br>---<br>M .github/workflows/build.yaml<br>1 file changed, 5=
+ insertions(+), 2 deletions(-)<br><br></pre><pre style=3D"font-family: mono=
+space,monospace; white-space: pre-wrap;">git pull ssh://gerrit.openvpn.net:=
+29418/openvpn refs/changes/29/929/1</pre><pre style=3D"font-family: monospa=
+ce,monospace; white-space: pre-wrap;"><span>diff --git a/.github/workflows/=
+build.yaml b/.github/workflows/build.yaml</span><br><span>index b1af7ec..61=
+7b866 100644</span><br><span>--- a/.github/workflows/build.yaml</span><br><=
+span>+++ b/.github/workflows/build.yaml</span><br><span>@@ -54,6 +54,7 @@</=
+span><br><span>     steps:</span><br><span>       - name: Checkout OpenVPN<=
+/span><br><span>         uses: actions/checkout@...2844... # v4.2.2</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+      - uses: lukka/get-cma=
+ke@...2870... # v3.31.6</span><br><span>       - name: Install vcpkg</span>=
+<br><span>         uses: lukka/run-vcpkg@...2815... # v11.5</span><br><span=
+>         with:</span><br><span>@@ -78,10 +79,11 @@</span><br><span>       =
+VCPKG_ROOT: ${{ github.workspace }}/vcpkg</span><br><span>     steps:</span=
+><br><span>       - name: Install dependencies</span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-        run: sudo apt update &amp;&amp; sudo apt i=
+nstall -y mingw-w64 unzip cmake ninja-build build-essential wget python3-do=
+cutils man2html-base</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++        run: sudo apt update &amp;&amp; sudo apt install -y mingw-w64 unzi=
+p build-essential wget python3-docutils man2html-base</span><br><span>     =
+  - name: Checkout OpenVPN</span><br><span>         uses: actions/checkout@=
+...2844... # v4.2.2</span><br><span> </span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+      - uses: lukka/get-cmake@...2870... # v3.31.6</span>=
+<br><span>       - name: Restore from cache and install vcpkg</span><br><sp=
+an>         uses: lukka/run-vcpkg@...2815... # v11.5</span><br><span>      =
+   with:</span><br><span>@@ -457,13 +459,14 @@</span><br><span> </span><br>=
+<span>     steps:</span><br><span>       - name: Install dependencies</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-        run: sudo apt updat=
+e &amp;&amp; sudo apt install -y cmake gcc ninja-build golang make liblzo2-=
+dev libpam0g-dev liblz4-dev linux-libc-dev man2html clang libcmocka-dev pyt=
+hon3-docutils python3-jinja2 python3-jsonschema libtool automake autoconf p=
+kg-config libcap-ng-dev libnl-genl-3-dev</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+        run: sudo apt update &amp;&amp; sudo apt insta=
+ll -y gcc golang make liblzo2-dev libpam0g-dev liblz4-dev linux-libc-dev ma=
+n2html clang libcmocka-dev python3-docutils python3-jinja2 python3-jsonsche=
+ma libtool automake autoconf pkg-config libcap-ng-dev libnl-genl-3-dev</spa=
+n><br><span>       - name: &quot;AWS-LC: checkout&quot;</span><br><span>   =
+      uses: actions/checkout@...2844... # v4.2.2</span><br><span>         w=
+ith:</span><br><span>           path: aws-lc</span><br><span>           rep=
+ository: aws/aws-lc</span><br><span>           ref: v1.42.0</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+      - uses: lukka/get-cmake@...2825...=
+70... # v3.31.6</span><br><span>       - name: &quot;AWS-LC: build&quot;</s=
+pan><br><span>         run: |</span><br><span>           mkdir build</span>=
+<br><span></span><br></pre><p>To view, visit <a href=3D"http://gerrit.openv=
+pn.net/c/openvpn/+/929?usp=3Demail">change 929</a>. To unsubscribe, or for =
+help writing mail filters, visit <a href=3D"http://gerrit.openvpn.net/setti=
+ngs">settings</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMes=
+sage"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.org/View=
+Action"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/=
++/929?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div>=
+</div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I6d2ec69ac7a9ef5900d8f1d8541=
-d6a19c9cb7df9 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 911 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
-<div style=3D"display:none"> Gerrit-Owner: ordex &lt;antonio@...2726...&gt;=
- </div>
-<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
-1...&gt; </div>
+<div style=3D"display:none"> Gerrit-Change-Id: Ief11d5d7ccae084c863b50054d4=
+e97c71f57d6f0 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 929 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
+<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
+.&gt; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
 .1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: merged </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-MessageType: newchange </div>
 
 
---FHDjcrYwAf8=--
+--MYET9MSximA=--
 
