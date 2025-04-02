@@ -1,17 +1,9 @@
-From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Wed, 2 Apr 2025 14:33:34 +0000
-In-Reply-To: <gerrit.1743592292000.I44a73f06c0672c1d288bf46e9424dc0dc2abe054@...2715...>
-References: <gerrit.1743592292000.I44a73f06c0672c1d288bf46e9424dc0dc2abe054@...2715...>
-Reply-To: gert@...1296..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...,
- lstipakov@...277...
-Message-ID: <fa42fa26960e0efd78356ff2b066939487ea4b87-EmailReplacePatchSet-HTML@...2715...>
+From: Gert Doering <gert@...1296...>
+Date: Wed,  2 Apr 2025 16:23:38 +0200
+Message-ID: <20250402142338.60879-1-gert@...1296...>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="OmZTUqKfYyY="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[release/2.6]: dco-win: Ensure
- correct OVERLAPPED scope
+Subject: [Openvpn-devel] [PATCH] Allow tls-crypt-v2 to be setup only on
+ initial packet of a session
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,273 +12,288 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: stipa <lstipakov@...277...>, plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---OmZTUqKfYyY=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+From: Arne Schwabe <arne@...1227...>
 
-cron2 has uploaded a new patch set (#2) to the change originally created by=
- stipa. ( http://gerrit.openvpn.net/c/openvpn/+/933?usp=3Demail )
+This fixes an internal server error condition that can be triggered by a
+malicous authenticated client, a very unlucky corruption of packets in
+transit or by an attacker that is able to inject a specially created
+packet at the right time and is able to observe the traffic to construct
+the packet.
 
-The following approvals got outdated and were removed:
-Code-Review+2 by cron2
+The error condition results in an ASSERT statement being triggered,
 
+NOTE: due to the security sensitive nature, this patch was prepared
+under embargo on the security@...515... mailing list, and thus has
+no publically available "mailing list discussion before merge" URL.
 
-Change subject: dco-win: Ensure correct OVERLAPPED scope
-......................................................................
-
-dco-win: Ensure correct OVERLAPPED scope
-
-This is a backport of the master commit
-
-   f60a493 ("dco-win: Fix crash when cancelling pending operation")
-
-Although I am unable to reproduce this issue on release branch,
-the code is clearly wrong and has to be fixed.
-
-The OVERLAPPED structure must remain valid for the entire duration of an
-asynchronous operation. Previously, when a TCP connection was pending
-inside the NEW_PEER call, the OVERLAPPED structure was defined as a
-local variable within dco_p2p_new_peer().
-
-When CancelIo() was called later from close_tun_handle(), the OVERLAPPED
-structure was already out of scope, resulting in undefined behavior and
-stack corruption.
-
-This fix moves the OVERLAPPED structure to the tuntap struct, ensuring
-it remains valid throughout the operation's lifetime.
-
-Change-Id: I44a73f06c0672c1d288bf46e9424dc0dc2abe054
-Signed-off-by: Lev Stipakov <lev@...515...>
+CVE: 2025-2704
+Change-Id: I07c1352204d308e5bde5f0b85e561a5dd0bc63c8
+Signed-off-by: Arne Schwabe <arne@...1227...>
 Acked-by: Gert Doering <gert@...1296...>
-Message-Id: <20250402113016.14980-1-gert@...1296...>
-URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg31=
-316.html
+Message-Id: <385d88f0-d7c9-4330-82ff-9f5931183afd@...1227...>
 Signed-off-by: Gert Doering <gert@...1296...>
 ---
-M src/openvpn/dco_win.c
-M src/openvpn/dco_win.h
-M src/openvpn/socket.c
-M src/openvpn/tun.h
-4 files changed, 9 insertions(+), 6 deletions(-)
+ src/openvpn/ssl.c                         | 26 +++++++++++++++++++----
+ src/openvpn/ssl_common.h                  | 15 +++++++------
+ src/openvpn/ssl_pkt.c                     |  7 +++---
+ src/openvpn/ssl_pkt.h                     | 12 +++++++++--
+ src/openvpn/tls_crypt.c                   | 24 ++++++++++++++++++++-
+ src/openvpn/tls_crypt.h                   |  7 +++++-
+ tests/unit_tests/openvpn/test_tls_crypt.c |  2 +-
+ 7 files changed, 75 insertions(+), 18 deletions(-)
 
-
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/33/933/2
-
-diff --git a/src/openvpn/dco_win.c b/src/openvpn/dco_win.c
-index 3ec946f..0b8f831 100644
---- a/src/openvpn/dco_win.c
-+++ b/src/openvpn/dco_win.c
-@@ -156,7 +156,8 @@
- }
-
- void
--dco_create_socket(HANDLE handle, struct addrinfo *remoteaddr, bool bind_lo=
-cal,
-+dco_create_socket(HANDLE handle, OVERLAPPED *ov,
-+                  struct addrinfo *remoteaddr, bool bind_local,
-                   struct addrinfo *bind, int timeout,
-                   struct signal_info *sig_info)
- {
-@@ -229,8 +230,8 @@
-         ASSERT(0);
+diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
+index 99b5c077..23f64232 100644
+--- a/src/openvpn/ssl.c
++++ b/src/openvpn/ssl.c
+@@ -697,6 +697,9 @@ state_name(int state)
+         case S_INITIAL:
+             return "S_INITIAL";
+ 
++        case S_PRE_START_SKIP:
++            return "S_PRE_START_SKIP";
++
+         case S_PRE_START:
+             return "S_PRE_START";
+ 
+@@ -2506,7 +2509,7 @@ session_move_pre_start(const struct tls_session *session,
      }
-
--    OVERLAPPED ov =3D { 0 };
--    if (!DeviceIoControl(handle, OVPN_IOCTL_NEW_PEER, &peer, sizeof(peer),=
- NULL, 0, NULL, &ov))
-+    CLEAR(*ov);
-+    if (!DeviceIoControl(handle, OVPN_IOCTL_NEW_PEER, &peer, sizeof(peer),=
- NULL, 0, NULL, ov))
-     {
-         DWORD err =3D GetLastError();
-         if (err !=3D ERROR_IO_PENDING)
-@@ -239,7 +240,7 @@
+     INCR_GENERATED;
+ 
+-    ks->state = S_PRE_START;
++    ks->state = skip_initial_send ? S_PRE_START_SKIP : S_PRE_START;
+ 
+     struct gc_arena gc = gc_new();
+     dmsg(D_TLS_DEBUG, "TLS: Initial Handshake, sid=%s",
+@@ -3825,7 +3828,7 @@ tls_pre_decrypt(struct tls_multi *multi,
+         }
+ 
+         if (!read_control_auth(buf, tls_session_get_tls_wrap(session, key_id), from,
+-                               session->opt))
++                               session->opt, true))
+         {
+             goto error;
+         }
+@@ -3895,7 +3898,7 @@ tls_pre_decrypt(struct tls_multi *multi,
+         if (op == P_CONTROL_SOFT_RESET_V1 && ks->state >= S_GENERATED_KEYS)
+         {
+             if (!read_control_auth(buf, tls_session_get_tls_wrap(session, key_id),
+-                                   from, session->opt))
++                                   from, session->opt, false))
+             {
+                 goto error;
+             }
+@@ -3908,6 +3911,15 @@ tls_pre_decrypt(struct tls_multi *multi,
          }
          else
          {
--            dco_connect_wait(handle, &ov, timeout, sig_info);
-+            dco_connect_wait(handle, ov, timeout, sig_info);
-         }
++            bool initial_packet = false;
++            if (ks->state == S_PRE_START_SKIP)
++            {
++                /* When we are coming from the session_skip_to_pre_start
++                 * method, we allow this initial packet to setup the
++                 * tls-crypt-v2 peer specific key */
++                initial_packet = true;
++                ks->state = S_PRE_START;
++            }
+             /*
+              * Remote responding to our key renegotiation request?
+              */
+@@ -3917,8 +3929,14 @@ tls_pre_decrypt(struct tls_multi *multi,
+             }
+ 
+             if (!read_control_auth(buf, tls_session_get_tls_wrap(session, key_id),
+-                                   from, session->opt))
++                                   from, session->opt, initial_packet))
+             {
++                /* if an initial packet in read_control_auth, we rather
++                 * error out than anything else */
++                if (initial_packet)
++                {
++                    multi->n_hard_errors++;
++                }
+                 goto error;
+             }
+ 
+diff --git a/src/openvpn/ssl_common.h b/src/openvpn/ssl_common.h
+index 68a6ce63..90e16f9e 100644
+--- a/src/openvpn/ssl_common.h
++++ b/src/openvpn/ssl_common.h
+@@ -84,22 +84,25 @@
+ #define S_INITIAL         1     /**< Initial \c key_state state after
+                                  *   initialization by \c key_state_init()
+                                  *   before start of three-way handshake. */
+-#define S_PRE_START       2     /**< Waiting for the remote OpenVPN peer
++#define S_PRE_START_SKIP  2     /**< Waiting for the remote OpenVPN peer
+                                  *   to acknowledge during the initial
+                                  *   three-way handshake. */
+-#define S_START           3     /**< Three-way handshake is complete,
++#define S_PRE_START       3     /**< Waiting for the remote OpenVPN peer
++                                 *   to acknowledge during the initial
++                                 *   three-way handshake. */
++#define S_START           4     /**< Three-way handshake is complete,
+                                  *   start of key exchange. */
+-#define S_SENT_KEY        4     /**< Local OpenVPN process has sent its
++#define S_SENT_KEY        5     /**< Local OpenVPN process has sent its
+                                  *   part of the key material. */
+-#define S_GOT_KEY         5     /**< Local OpenVPN process has received
++#define S_GOT_KEY         6     /**< Local OpenVPN process has received
+                                  *   the remote's part of the key
+                                  *   material. */
+-#define S_ACTIVE          6     /**< Operational \c key_state state
++#define S_ACTIVE          7     /**< Operational \c key_state state
+                                  *   immediately after negotiation has
+                                  *   completed while still within the
+                                  *   handshake window.  Deferred auth and
+                                  *   client connect can still be pending. */
+-#define S_GENERATED_KEYS  7     /**< The data channel keys have been generated
++#define S_GENERATED_KEYS  8     /**< The data channel keys have been generated
+                                  *  The TLS session is fully authenticated
+                                  *  when reaching this state. */
+ 
+diff --git a/src/openvpn/ssl_pkt.c b/src/openvpn/ssl_pkt.c
+index 689cd7f9..41299f46 100644
+--- a/src/openvpn/ssl_pkt.c
++++ b/src/openvpn/ssl_pkt.c
+@@ -200,7 +200,8 @@ bool
+ read_control_auth(struct buffer *buf,
+                   struct tls_wrap_ctx *ctx,
+                   const struct link_socket_actual *from,
+-                  const struct tls_options *opt)
++                  const struct tls_options *opt,
++                  bool initial_packet)
+ {
+     struct gc_arena gc = gc_new();
+     bool ret = false;
+@@ -208,7 +209,7 @@ read_control_auth(struct buffer *buf,
+     const uint8_t opcode = *(BPTR(buf)) >> P_OPCODE_SHIFT;
+     if ((opcode == P_CONTROL_HARD_RESET_CLIENT_V3
+          || opcode == P_CONTROL_WKC_V1)
+-        && !tls_crypt_v2_extract_client_key(buf, ctx, opt))
++        && !tls_crypt_v2_extract_client_key(buf, ctx, opt, initial_packet))
+     {
+         msg(D_TLS_ERRORS,
+             "TLS Error: can not extract tls-crypt-v2 client key from %s",
+@@ -373,7 +374,7 @@ tls_pre_decrypt_lite(const struct tls_auth_standalone *tas,
+      * into newbuf or just setting newbuf to point to the start of control
+      * message */
+     bool status = read_control_auth(&state->newbuf, &state->tls_wrap_tmp,
+-                                    from, NULL);
++                                    from, NULL, true);
+ 
+     if (!status)
+     {
+diff --git a/src/openvpn/ssl_pkt.h b/src/openvpn/ssl_pkt.h
+index b2c4b372..e7823916 100644
+--- a/src/openvpn/ssl_pkt.h
++++ b/src/openvpn/ssl_pkt.h
+@@ -208,14 +208,22 @@ write_control_auth(struct tls_session *session,
+                    bool prepend_ack);
+ 
+ 
+-/*
++
++/**
+  * Read a control channel authentication record.
++ * @param buf               buffer that holds the incoming packet
++ * @param ctx               control channel security context
++ * @param from              incoming link socket address
++ * @param opt               tls options struct for the session
++ * @param initial_packet    whether this is the initial packet for the connection
++ * @return                  if the packet was successfully processed
+  */
+ bool
+ read_control_auth(struct buffer *buf,
+                   struct tls_wrap_ctx *ctx,
+                   const struct link_socket_actual *from,
+-                  const struct tls_options *opt);
++                  const struct tls_options *opt,
++                  bool initial_packet);
+ 
+ 
+ /**
+diff --git a/src/openvpn/tls_crypt.c b/src/openvpn/tls_crypt.c
+index 9e9807d3..67e19382 100644
+--- a/src/openvpn/tls_crypt.c
++++ b/src/openvpn/tls_crypt.c
+@@ -614,7 +614,8 @@ cleanup:
+ bool
+ tls_crypt_v2_extract_client_key(struct buffer *buf,
+                                 struct tls_wrap_ctx *ctx,
+-                                const struct tls_options *opt)
++                                const struct tls_options *opt,
++                                bool initial_packet)
+ {
+     if (!ctx->tls_crypt_v2_server_key.cipher)
+     {
+@@ -643,6 +644,27 @@ tls_crypt_v2_extract_client_key(struct buffer *buf,
+         return false;
      }
+ 
++    if (!initial_packet)
++    {
++        /* This might be a harmless resend of the packet but it is better to
++         * just ignore the WKC part than trying to setup tls-crypt keys again.
++         *
++         * A CONTROL_WKC_V1 packets has a normal packet part and an appended
++         * wrapped control key. These are authenticated individually. We already
++         * set up tls-crypt with the wrapped key, so we are ignoring this part
++         * of the message but we return the normal packet part as the normal
++         * part of the message might have been corrupted earlier and discarded
++         * and this is resend. So return the normal part of the packet,
++         * basically transforming the CONTROL_WKC_V1 into a normal CONTROL_V1
++         * packet*/
++        msg(D_TLS_ERRORS, "control channel security already setup ignoring "
++            "wrapped key part of packet.");
++
++        /* Remove client key from buffer so tls-crypt code can unwrap message */
++        ASSERT(buf_inc_len(buf, -(BLEN(&wrapped_client_key))));
++        return true;
++    }
++
+     ctx->tls_crypt_v2_metadata = alloc_buf(TLS_CRYPT_V2_MAX_METADATA_LEN);
+     if (!tls_crypt_v2_unwrap_client_key(&ctx->original_wrap_keydata,
+                                         &ctx->tls_crypt_v2_metadata,
+diff --git a/src/openvpn/tls_crypt.h b/src/openvpn/tls_crypt.h
+index e98aae78..1a604ce8 100644
+--- a/src/openvpn/tls_crypt.h
++++ b/src/openvpn/tls_crypt.h
+@@ -205,11 +205,16 @@ void tls_crypt_v2_init_client_key(struct key_ctx_bi *key,
+  *              message.
+  * @param ctx   tls-wrap context to be initialized with the client key.
+  *
++ * @param initial_packet    whether this is the initial packet of the
++ *                          connection. Only in these scenarios unwrapping
++ *                          of a tls-crypt-v2 key is allowed
++ *
+  * @returns true if a key was successfully extracted.
+  */
+ bool tls_crypt_v2_extract_client_key(struct buffer *buf,
+                                      struct tls_wrap_ctx *ctx,
+-                                     const struct tls_options *opt);
++                                     const struct tls_options *opt,
++                                     bool initial_packet);
+ 
+ /**
+  * Generate a tls-crypt-v2 server key, and write to file.
+diff --git a/tests/unit_tests/openvpn/test_tls_crypt.c b/tests/unit_tests/openvpn/test_tls_crypt.c
+index ee252f43..cc415c89 100644
+--- a/tests/unit_tests/openvpn/test_tls_crypt.c
++++ b/tests/unit_tests/openvpn/test_tls_crypt.c
+@@ -535,7 +535,7 @@ tls_crypt_v2_wrap_unwrap_max_metadata(void **state)
+         .mode = TLS_WRAP_CRYPT,
+         .tls_crypt_v2_server_key = ctx->server_keys.encrypt,
+     };
+-    assert_true(tls_crypt_v2_extract_client_key(&ctx->wkc, &wrap_ctx, NULL));
++    assert_true(tls_crypt_v2_extract_client_key(&ctx->wkc, &wrap_ctx, NULL, true));
+     tls_wrap_free(&wrap_ctx);
  }
-diff --git a/src/openvpn/dco_win.h b/src/openvpn/dco_win.h
-index 4883629..dcf480e 100644
---- a/src/openvpn/dco_win.h
-+++ b/src/openvpn/dco_win.h
-@@ -41,7 +41,8 @@
- create_dco_handle(const char *devname, struct gc_arena *gc);
+ 
+-- 
+2.47.0
 
- void
--dco_create_socket(HANDLE handle, struct addrinfo *remoteaddr, bool bind_lo=
-cal,
-+dco_create_socket(HANDLE handle, OVERLAPPED *ov,
-+                  struct addrinfo *remoteaddr, bool bind_local,
-                   struct addrinfo *bind, int timeout,
-                   struct signal_info *sig_info);
-
-diff --git a/src/openvpn/socket.c b/src/openvpn/socket.c
-index e070688..2eb2e74 100644
---- a/src/openvpn/socket.c
-+++ b/src/openvpn/socket.c
-@@ -2148,7 +2148,7 @@
-         c->c1.tuntap =3D tt;
-     }
-
--    dco_create_socket(c->c1.tuntap->hand,
-+    dco_create_socket(c->c1.tuntap->hand, &c->c1.tuntap->dco_new_peer_ov,
-                       sock->info.lsa->current_remote,
-                       sock->bind_local, sock->info.lsa->bind_local,
-                       get_server_poll_remaining_time(sock->server_poll_tim=
-eout),
-diff --git a/src/openvpn/tun.h b/src/openvpn/tun.h
-index 33b9552..91dbeef 100644
---- a/src/openvpn/tun.h
-+++ b/src/openvpn/tun.h
-@@ -196,6 +196,7 @@
-
- #ifdef _WIN32
-     HANDLE hand;
-+    OVERLAPPED dco_new_peer_ov; /* used for async NEW_PEER dco call, which=
- might wait for TCP connect */
-     struct overlapped_io reads;
-     struct overlapped_io writes;
-     struct rw_handle rw_handle;
-
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/933?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings
-
-Gerrit-Project: openvpn
-Gerrit-Branch: release/2.6
-Gerrit-Change-Id: I44a73f06c0672c1d288bf46e9424dc0dc2abe054
-Gerrit-Change-Number: 933
-Gerrit-PatchSet: 2
-Gerrit-Owner: stipa <lstipakov@...277...>
-Gerrit-Reviewer: cron2 <gert@...1296...>
-Gerrit-Reviewer: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-MessageType: newpatchset
-
---OmZTUqKfYyY=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<p>cron2 <strong>uploaded patch set #2</strong> to the change originally cr=
-eated by stipa.</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/933?=
-usp=3Demail">View Change</a></p><p>The following approvals got outdated and=
- were removed:
-Code-Review+2 by cron2</p><pre style=3D"font-family: monospace,monospace; w=
-hite-space: pre-wrap;">dco-win: Ensure correct OVERLAPPED scope<br><br>This=
- is a backport of the master commit<br><br>   f60a493 (&quot;dco-win: Fix c=
-rash when cancelling pending operation&quot;)<br><br>Although I am unable t=
-o reproduce this issue on release branch,<br>the code is clearly wrong and =
-has to be fixed.<br><br>The OVERLAPPED structure must remain valid for the =
-entire duration of an<br>asynchronous operation. Previously, when a TCP con=
-nection was pending<br>inside the NEW_PEER call, the OVERLAPPED structure w=
-as defined as a<br>local variable within dco_p2p_new_peer().<br><br>When Ca=
-ncelIo() was called later from close_tun_handle(), the OVERLAPPED<br>struct=
-ure was already out of scope, resulting in undefined behavior and<br>stack =
-corruption.<br><br>This fix moves the OVERLAPPED structure to the tuntap st=
-ruct, ensuring<br>it remains valid throughout the operation&#39;s lifetime.=
-<br><br>Change-Id: I44a73f06c0672c1d288bf46e9424dc0dc2abe054<br>Signed-off-=
-by: Lev Stipakov &lt;lev@...515...&gt;<br>Acked-by: Gert Doering &lt;gert@...220...=
-..1296...&gt;<br>Message-Id: &lt;20250402113016.14980-1-gert@...1296...&gt;=
-<br>URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/m=
-sg31316.html<br>Signed-off-by: Gert Doering &lt;gert@...1296...&gt;<br>---<=
-br>M src/openvpn/dco_win.c<br>M src/openvpn/dco_win.h<br>M src/openvpn/sock=
-et.c<br>M src/openvpn/tun.h<br>4 files changed, 9 insertions(+), 6 deletion=
-s(-)<br><br></pre><pre style=3D"font-family: monospace,monospace; white-spa=
-ce: pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes=
-/33/933/2</pre><pre style=3D"font-family: monospace,monospace; white-space:=
- pre-wrap;"><span>diff --git a/src/openvpn/dco_win.c b/src/openvpn/dco_win.=
-c</span><br><span>index 3ec946f..0b8f831 100644</span><br><span>--- a/src/o=
-penvpn/dco_win.c</span><br><span>+++ b/src/openvpn/dco_win.c</span><br><spa=
-n>@@ -156,7 +156,8 @@</span><br><span> }</span><br><span> </span><br><span>=
- void</span><br><span style=3D"color: hsl(0, 100%, 40%);">-dco_create_socke=
-t(HANDLE handle, struct addrinfo *remoteaddr, bool bind_local,</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+dco_create_socket(HANDLE handle,=
- OVERLAPPED *ov,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
-               struct addrinfo *remoteaddr, bool bind_local,</span><br><spa=
-n>                   struct addrinfo *bind, int timeout,</span><br><span>  =
-                 struct signal_info *sig_info)</span><br><span> {</span><br=
-><span>@@ -229,8 +230,8 @@</span><br><span>         ASSERT(0);</span><br><s=
-pan>     }</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 4=
-0%);">-    OVERLAPPED ov =3D { 0 };</span><br><span style=3D"color: hsl(0, =
-100%, 40%);">-    if (!DeviceIoControl(handle, OVPN_IOCTL_NEW_PEER, &amp;pe=
-er, sizeof(peer), NULL, 0, NULL, &amp;ov))</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+    CLEAR(*ov);</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+    if (!DeviceIoControl(handle, OVPN_IOCTL_NEW_PEER, &a=
-mp;peer, sizeof(peer), NULL, 0, NULL, ov))</span><br><span>     {</span><br=
-><span>         DWORD err =3D GetLastError();</span><br><span>         if (=
-err !=3D ERROR_IO_PENDING)</span><br><span>@@ -239,7 +240,7 @@</span><br><s=
-pan>         }</span><br><span>         else</span><br><span>         {</sp=
-an><br><span style=3D"color: hsl(0, 100%, 40%);">-            dco_connect_w=
-ait(handle, &amp;ov, timeout, sig_info);</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+            dco_connect_wait(handle, ov, timeout, sig_=
-info);</span><br><span>         }</span><br><span>     }</span><br><span> }=
-</span><br><span>diff --git a/src/openvpn/dco_win.h b/src/openvpn/dco_win.h=
-</span><br><span>index 4883629..dcf480e 100644</span><br><span>--- a/src/op=
-envpn/dco_win.h</span><br><span>+++ b/src/openvpn/dco_win.h</span><br><span=
->@@ -41,7 +41,8 @@</span><br><span> create_dco_handle(const char *devname, =
-struct gc_arena *gc);</span><br><span> </span><br><span> void</span><br><sp=
-an style=3D"color: hsl(0, 100%, 40%);">-dco_create_socket(HANDLE handle, st=
-ruct addrinfo *remoteaddr, bool bind_local,</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+dco_create_socket(HANDLE handle, OVERLAPPED *ov,</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+                  stru=
-ct addrinfo *remoteaddr, bool bind_local,</span><br><span>                 =
-  struct addrinfo *bind, int timeout,</span><br><span>                   st=
-ruct signal_info *sig_info);</span><br><span> </span><br><span>diff --git a=
-/src/openvpn/socket.c b/src/openvpn/socket.c</span><br><span>index e070688.=
-.2eb2e74 100644</span><br><span>--- a/src/openvpn/socket.c</span><br><span>=
-+++ b/src/openvpn/socket.c</span><br><span>@@ -2148,7 +2148,7 @@</span><br>=
-<span>         c-&gt;c1.tuntap =3D tt;</span><br><span>     }</span><br><sp=
-an> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-    dco_create_so=
-cket(c-&gt;c1.tuntap-&gt;hand,</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+    dco_create_socket(c-&gt;c1.tuntap-&gt;hand, &amp;c-&gt;c1.tu=
-ntap-&gt;dco_new_peer_ov,</span><br><span>                       sock-&gt;i=
-nfo.lsa-&gt;current_remote,</span><br><span>                       sock-&gt=
-;bind_local, sock-&gt;info.lsa-&gt;bind_local,</span><br><span>            =
-           get_server_poll_remaining_time(sock-&gt;server_poll_timeout),</s=
-pan><br><span>diff --git a/src/openvpn/tun.h b/src/openvpn/tun.h</span><br>=
-<span>index 33b9552..91dbeef 100644</span><br><span>--- a/src/openvpn/tun.h=
-</span><br><span>+++ b/src/openvpn/tun.h</span><br><span>@@ -196,6 +196,7 @=
-@</span><br><span> </span><br><span> #ifdef _WIN32</span><br><span>     HAN=
-DLE hand;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    OVERLA=
-PPED dco_new_peer_ov; /* used for async NEW_PEER dco call, which might wait=
- for TCP connect */</span><br><span>     struct overlapped_io reads;</span>=
-<br><span>     struct overlapped_io writes;</span><br><span>     struct rw_=
-handle rw_handle;</span><br><span></span><br></pre><p>To view, visit <a hre=
-f=3D"http://gerrit.openvpn.net/c/openvpn/+/933?usp=3Demail">change 933</a>.=
- To unsubscribe, or for help writing mail filters, visit <a href=3D"http://=
-gerrit.openvpn.net/settings">settings</a>.</p><div itemscope itemtype=3D"ht=
-tp://schema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=
-=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://ger=
-rit.openvpn.net/c/openvpn/+/933?usp=3Demail"/><meta itemprop=3D"name" conte=
-nt=3D"View Change"/></div></div>
-
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: release/2.6 </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I44a73f06c0672c1d288bf46e942=
-4dc0dc2abe054 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 933 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
-<div style=3D"display:none"> Gerrit-Owner: stipa &lt;lstipakov@...277...&gt=
-; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
- </div>
-<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
-1...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
-
-
---OmZTUqKfYyY=--
 
