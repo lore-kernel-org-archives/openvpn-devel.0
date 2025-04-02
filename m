@@ -1,10 +1,11 @@
 From: Gert Doering <gert@...1296...>
-Date: Wed,  2 Apr 2025 17:32:44 +0200
-Message-ID: <20250402153250.4764-1-gert@...1296...>
-In-Reply-To: <gerrit.1743589873000.Ief11d5d7ccae084c863b50054d4e97c71f57d6f0@...2715...>
-References: <gerrit.1743589873000.Ief11d5d7ccae084c863b50054d4e97c71f57d6f0@...2715...>
+Date: Wed,  2 Apr 2025 17:33:28 +0200
+Message-ID: <20250402153337.5262-1-gert@...1296...>
+In-Reply-To: <gerrit.1743496145000.I2bc782ceebcc91a8dc8ada0bb72ac042be46cad6@...2715...>
+References: <gerrit.1743496145000.I2bc782ceebcc91a8dc8ada0bb72ac042be46cad6@...2715...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v1] GHA: Pin version of CMake for MinGW build
+Subject: [Openvpn-devel] [PATCH v4] Use SSL_get0_peer_signature_name instead
+ of SSL_get_peer_signature_nid
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,54 +18,105 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-From: Frank Lichtenheld <frank@...2641...>
+From: Arne Schwabe <arne@...1227...>
 
-Turns out that "apt install cmake" is useless since
-Github installs also CMake but not as a package. So
-make sure we control which CMake we get and not
-Github.
+SSL_get0_peer_signature_name returns a string instead of hardcoded NIDs.
+NIDS do not work with provider provided signatures or the new PQ
+signatures introduced in OpenSSL 3.5.
 
-Switch to get-cmake action (which also installs ninja)
-and remove the installation via apt.
+Remove also the comment that was added earlier that says that there
+is no proper API replacement for SSL_get_peer_signature_nid yet as
+OpenSSL 3.5.0 has now introduced it.
 
-Backport from master but much more limited since we
-do not have Android nor AWS LC builds in release/2.6.
-
-Change-Id: Ief11d5d7ccae084c863b50054d4e97c71f57d6f0
-Signed-off-by: Frank Lichtenheld <frank@...2641...>
-Acked-by: Gert Doering <gert@...1296...>
-Message-Id: <20250401170420.29808-1-gert@...1296...>
-URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg31299.html
-Signed-off-by: Gert Doering <gert@...1296...>
-Acked-by: Gert Doering <gert@...1296...>
-(cherry picked from commit da65c4fdde20e36df38a90c1f1ef1d8ebf486c28)
+Change-Id: I2bc782ceebcc91a8dc8ada0bb72ac042be46cad6
+Signed-off-by: Arne Schwabe <arne@...1227...>
+Acked-by: Antonio Quartulli <antonio@...2726...>
 ---
 
 This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to release/2.6.
+developer. I request to merge it to master.
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/930
-This mail reflects revision 1 of this Change.
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/927
+This mail reflects revision 4 of this Change.
 
 Acked-by according to Gerrit (reflected above):
-Gert Doering <gert@...1296...>
+Antonio Quartulli <antonio@...2726...>
 
         
-diff --git a/.github/workflows/build.yaml b/.github/workflows/build.yaml
-index 5b1c797..37ac6ec 100644
---- a/.github/workflows/build.yaml
-+++ b/.github/workflows/build.yaml
-@@ -47,10 +47,11 @@
-       VCPKG_ROOT: ${{ github.workspace }}/vcpkg
-     steps:
-       - name: Install dependencies
--        run: sudo apt update && sudo apt install -y mingw-w64 unzip cmake ninja-build build-essential wget python3-docutils man2html-base
-+        run: sudo apt update && sudo apt install -y mingw-w64 unzip build-essential wget python3-docutils man2html-base
-       - name: Checkout OpenVPN
-         uses: actions/checkout@...2844... # v4.2.2
+diff --git a/src/openvpn/openssl_compat.h b/src/openvpn/openssl_compat.h
+index 3e3b406..e2bd9bf 100644
+--- a/src/openvpn/openssl_compat.h
++++ b/src/openvpn/openssl_compat.h
+@@ -173,4 +173,30 @@
  
-+      - uses: lukka/get-cmake@...2870... # v3.31.6
-       - name: Restore from cache and install vcpkg
-         uses: lukka/run-vcpkg@...2815... # v11.5
-         with:
+ #endif /* OPENSSL_VERSION_NUMBER < 0x30000000L */
+ 
++#if OPENSSL_VERSION_NUMBER < 0x30500000 && (!defined(LIBRESSL_VERSION_NUMBER) || LIBRESSL_VERSION_NUMBER > 0x3050400fL)
++static inline int
++SSL_get0_peer_signature_name(SSL *ssl, const char **sigalg)
++{
++    int peer_sig_nid;
++    if (SSL_get_peer_signature_nid(ssl, &peer_sig_nid)
++        && peer_sig_nid != NID_undef)
++    {
++        *sigalg = OBJ_nid2sn(peer_sig_nid);
++        return 1;
++    }
++    return 0;
++}
++#elif defined(LIBRESSL_VERSION_NUMBER) && LIBRESSL_VERSION_NUMBER <= 0x3050400fL
++/* The older LibreSSL version do not implement any variant of getting the peer
++ * signature */
++static inline int
++SSL_get0_peer_signature_name(const SSL *ssl, const char **sigalg)
++{
++    *sigalg = NULL;
++    return 0;
++}
++#endif /* if OPENSSL_VERSION_NUMBER < 0x30500000 && (!defined(LIBRESSL_VERSION_NUMBER) || LIBRESSL_VERSION_NUMBER > 0x3050400fL) */
++
++
++
+ #endif /* OPENSSL_COMPAT_H_ */
+diff --git a/src/openvpn/ssl_openssl.c b/src/openvpn/ssl_openssl.c
+index aad79a4..23b0266 100644
+--- a/src/openvpn/ssl_openssl.c
++++ b/src/openvpn/ssl_openssl.c
+@@ -2454,20 +2454,17 @@
+ static void
+ print_peer_signature(SSL *ssl, char *buf, size_t buflen)
+ {
+-    int peer_sig_nid = NID_undef, peer_sig_type_nid = NID_undef;
+-    const char *peer_sig = "unknown";
++    int peer_sig_type_nid = NID_undef;
++    const char *peer_sig_unknown = "unknown";
++    const char *peer_sig = peer_sig_unknown;
+     const char *peer_sig_type = "unknown type";
+ 
+-    /* Even though these methods use the deprecated NIDs instead of using
+-     * string as new OpenSSL APIs do, there seem to be no API that replaces
+-     * it yet */
+-#if !defined(LIBRESSL_VERSION_NUMBER) || LIBRESSL_VERSION_NUMBER > 0x3050400fL
+-    if (SSL_get_peer_signature_nid(ssl, &peer_sig_nid)
+-        && peer_sig_nid != NID_undef)
++    const char *signame = NULL;
++    SSL_get0_peer_signature_name(ssl, &signame);
++    if (signame)
+     {
+-        peer_sig = OBJ_nid2sn(peer_sig_nid);
++        peer_sig = signame;
+     }
+-#endif
+ 
+ #if !defined(LIBRESSL_VERSION_NUMBER) \
+     || (defined(LIBRESSL_VERSION_NUMBER) && LIBRESSL_VERSION_NUMBER >= 0x3090000fL)
+@@ -2480,7 +2477,7 @@
+     }
+ #endif
+ 
+-    if (peer_sig_nid == NID_undef && peer_sig_type_nid == NID_undef)
++    if (peer_sig == peer_sig_unknown && peer_sig_type_nid == NID_undef)
+     {
+         return;
+     }
 
