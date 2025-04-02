@@ -1,16 +1,10 @@
-From: "ordex (Code Review)" <gerrit@...515...>
-Date: Wed, 2 Apr 2025 13:50:58 +0000
-In-Reply-To: <gerrit.1743496145000.I2bc782ceebcc91a8dc8ada0bb72ac042be46cad6@...2715...>
-References: <gerrit.1743496145000.I2bc782ceebcc91a8dc8ada0bb72ac042be46cad6@...2715...>
-Reply-To: antonio@...2726..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <13f140cbb14dd3ee2a994ff97b45743d51ad9a7b-EmailReviewComments-HTML@...2715...>
+From: Gert Doering <gert@...1296...>
+Date: Wed,  2 Apr 2025 17:32:44 +0200
+Message-ID: <20250402153250.4764-1-gert@...1296...>
+In-Reply-To: <gerrit.1743589873000.Ief11d5d7ccae084c863b50054d4e97c71f57d6f0@...2715...>
+References: <gerrit.1743589873000.Ief11d5d7ccae084c863b50054d4e97c71f57d6f0@...2715...>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="9RQYGtFOsKQ="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: Use
- SSL_get0_peer_signature_name instead of SSL_get_peer_signature_nid
+Subject: [Openvpn-devel] [PATCH v1] GHA: Pin version of CMake for MinGW build
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,127 +13,58 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: plaisthos <arne-openvpn@...1227...>
-Cc: flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---9RQYGtFOsKQ=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+From: Frank Lichtenheld <frank@...2641...>
 
-Attention is currently required from: flichtenheld, plaisthos.
+Turns out that "apt install cmake" is useless since
+Github installs also CMake but not as a package. So
+make sure we control which CMake we get and not
+Github.
 
-ordex has posted comments on this change. ( http://gerrit.openvpn.net/c/ope=
-nvpn/+/927?usp=3Demail )
+Switch to get-cmake action (which also installs ninja)
+and remove the installation via apt.
 
-Change subject: Use SSL_get0_peer_signature_name instead of SSL_get_peer_si=
-gnature_nid
-......................................................................
+Backport from master but much more limited since we
+do not have Android nor AWS LC builds in release/2.6.
 
+Change-Id: Ief11d5d7ccae084c863b50054d4e97c71f57d6f0
+Signed-off-by: Frank Lichtenheld <frank@...2641...>
+Acked-by: Gert Doering <gert@...1296...>
+Message-Id: <20250401170420.29808-1-gert@...1296...>
+URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg31299.html
+Signed-off-by: Gert Doering <gert@...1296...>
+Acked-by: Gert Doering <gert@...1296...>
+(cherry picked from commit da65c4fdde20e36df38a90c1f1ef1d8ebf486c28)
+---
 
-Patch Set 4: Code-Review+2
+This change was reviewed on Gerrit and approved by at least one
+developer. I request to merge it to release/2.6.
 
-(2 comments)
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/930
+This mail reflects revision 1 of this Change.
 
-Patchset:
+Acked-by according to Gerrit (reflected above):
+Gert Doering <gert@...1296...>
 
-PS4:
-patch makes sense and does what it says.
-Our openssl-ifdef-foomble-moomble is already a bit out of control and nothi=
-ng this patch can do about...
-
-
-File src/openvpn/ssl_openssl.c:
-
-http://gerrit.openvpn.net/c/openvpn/+/927/comment/648cca6f_9030f9dc :
-PS4, Line 2462:     const char *signame =3D NULL;
-> No. [=E2=80=A6]
-Acknowledged
-
-
-
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/927?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings
-
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: I2bc782ceebcc91a8dc8ada0bb72ac042be46cad6
-Gerrit-Change-Number: 927
-Gerrit-PatchSet: 4
-Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
-Gerrit-Reviewer: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: ordex <antonio@...2726...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Comment-Date: Wed, 02 Apr 2025 13:50:58 +0000
-Gerrit-HasComments: Yes
-Gerrit-Has-Labels: Yes
-Comment-In-Reply-To: plaisthos <arne-openvpn@...1227...>
-Comment-In-Reply-To: ordex <antonio@...2726...>
-Gerrit-MessageType: comment
-
---9RQYGtFOsKQ=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<p> Attention is currently required from: flichtenheld, plaisthos. </p>
-<p>Patch set 4:<span style=3D"border-radius: 3px; display: inline-block; ma=
-rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/927?usp=3Demail">Vi=
-ew Change</a></p><p>2 comments:</p><ul style=3D"list-style: none; padding: =
-0;"><li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-=
-style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p =
-style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvp=
-n/+/927?tab=3Dcomments">Patch Set #4:</a> </p><p style=3D"white-space: pre-=
-wrap; word-wrap: break-word;">patch makes sense and does what it says.<br>O=
-ur openssl-ifdef-foomble-moomble is already a bit out of control and nothin=
-g this patch can do about...</p></li></ul></li><li style=3D"margin: 0; padd=
-ing: 0;"><p>File src/openvpn/ssl_openssl.c:</p><ul style=3D"list-style: non=
-e; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p style=3D"m=
-argin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/927/co=
-mment/648cca6f_9030f9dc">Patch Set #4, Line 2462:</a> <code style=3D"font-f=
-amily:monospace,monospace">    const char *signame =3D NULL;</code></p><p><=
-blockquote style=3D"border-left: 1px solid #aaa; margin: 10px 0; padding: 0=
- 10px;">No. [=E2=80=A6]</blockquote></p><p style=3D"white-space: pre-wrap; =
-word-wrap: break-word;">Acknowledged</p></li></ul></li></ul><p>To view, vis=
-it <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/927?usp=3Demail">change=
- 927</a>. To unsubscribe, or for help writing mail filters, visit <a href=
-=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope ite=
-mtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"action"=
- itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"h=
-ttp://gerrit.openvpn.net/c/openvpn/+/927?usp=3Demail"/><meta itemprop=3D"na=
-me" content=3D"View Change"/></div></div>
-
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I2bc782ceebcc91a8dc8ada0bb72=
-ac042be46cad6 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 927 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 4 </div>
-<div style=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@...1711...=
-27...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
-1...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: ordex &lt;antonio@...2726...&=
-gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
-41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Wed, 02 Apr 2025 13:50:58=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
-<div style=3D"display:none"> Comment-In-Reply-To: plaisthos &lt;arne-openvp=
-n@...1227...&gt; </div>
-<div style=3D"display:none"> Comment-In-Reply-To: ordex &lt;antonio@...2787...=
-...&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
-
-
---9RQYGtFOsKQ=--
+        
+diff --git a/.github/workflows/build.yaml b/.github/workflows/build.yaml
+index 5b1c797..37ac6ec 100644
+--- a/.github/workflows/build.yaml
++++ b/.github/workflows/build.yaml
+@@ -47,10 +47,11 @@
+       VCPKG_ROOT: ${{ github.workspace }}/vcpkg
+     steps:
+       - name: Install dependencies
+-        run: sudo apt update && sudo apt install -y mingw-w64 unzip cmake ninja-build build-essential wget python3-docutils man2html-base
++        run: sudo apt update && sudo apt install -y mingw-w64 unzip build-essential wget python3-docutils man2html-base
+       - name: Checkout OpenVPN
+         uses: actions/checkout@...2844... # v4.2.2
+ 
++      - uses: lukka/get-cmake@...2870... # v3.31.6
+       - name: Restore from cache and install vcpkg
+         uses: lukka/run-vcpkg@...2815... # v11.5
+         with:
 
