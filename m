@@ -1,17 +1,15 @@
-From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Tue, 1 Apr 2025 20:53:42 +0000
-In-Reply-To: <gerrit.1743515497000.Ib1db457c42a80f6b8fc0e3ceb4a895d4cf7f0155@...2715...>
-References: <gerrit.1743515497000.Ib1db457c42a80f6b8fc0e3ceb4a895d4cf7f0155@...2715...>
-Reply-To: gert@...1296..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...,
- lstipakov@...277...
-Message-ID: <216cd5e5058336330d341078e688efd1a4855911-HTML@...2715...>
+From: "flichtenheld (Code Review)" <gerrit@...515...>
+Date: Wed, 2 Apr 2025 10:31:20 +0000
+References: <gerrit.1743589873000.Ie9bffcc487f53a3a8ae6e59b79e654360d99902c@...2715...>
+Reply-To: frank@...2641..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net, gert@...1296...
+Message-ID: <bfa56548d8e600c1c31a6d12c17c21a41be0d96c-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="H2Hce27RKO4="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: dco-win: Fix crash
- when cancelling pending operation
+Content-Type: multipart/alternative; boundary="Qh/lXC/6LMU="; charset=UTF-8
+Subject: [Openvpn-devel] [S] Change in openvpn[release/2.6]: GHA: Dependency
+ and Actions update April 2025 (2.6)
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,257 +18,296 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: stipa <lstipakov@...277...>
-Cc: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>, plaisthos <arne-openvpn@...1227...>
 
---H2Hce27RKO4=
+--Qh/lXC/6LMU=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-cron2 has submitted this change. ( http://gerrit.openvpn.net/c/openvpn/+/92=
-8?usp=3Demail )
+Attention is currently required from: cron2, plaisthos.
 
-Change subject: dco-win: Fix crash when cancelling pending operation
+flichtenheld has uploaded this change for review. ( http://gerrit.openvpn.n=
+et/c/openvpn/+/931?usp=3Demail )
+
+
+Change subject: GHA: Dependency and Actions update April 2025 (2.6)
 ......................................................................
 
-dco-win: Fix crash when cancelling pending operation
+GHA: Dependency and Actions update April 2025 (2.6)
 
-The OVERLAPPED structure must remain valid for the entire duration of an
-asynchronous operation. Previously, when a TCP connection was pending
-inside the NEW_PEER call, the OVERLAPPED structure was defined as a
-local variable within dco_p2p_new_peer().
+- Update all actions to latest releases.
+- Update vcpkg commit to latest master.
 
-When CancelIo() was called later from close_tun_handle(), the OVERLAPPED
-structure was already out of scope, resulting in undefined behavior and
-stack corruption.
-
-This fix moves the OVERLAPPED structure to the tuntap struct, ensuring
-it remains valid throughout the operation's lifetime.
-
-Github: closes OpenVPN/openvpn#715
-
-Change-Id: Ib1db457c42a80f6b8fc0e3ceb4a895d4cf7f0155
-Signed-off-by: Lev Stipakov <lev@...515...>
-Acked-by: Gert Doering <gert@...1296...>
-Message-Id: <20250401181535.7854-1-gert@...1296...>
-URL: https://sourceforge.net/p/openvpn/mailman/message/59168247/
-URL: https://gerrit.openvpn.net/c/openvpn/+/928
+Change-Id: Ie9bffcc487f53a3a8ae6e59b79e654360d99902c
+Signed-off-by: Frank Lichtenheld <frank@...2641...>
+Acked-by: Arne Schwabe <arne-openvpn@...1227...>
+Message-Id: <20250331153309.77901-1-frank@...2641...>
+URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg31=
+290.html
 Signed-off-by: Gert Doering <gert@...1296...>
+(cherry picked from commit 0ffa7b57fdfb2658ae326baea0871ccca2c01b7d)
 ---
-M src/openvpn/dco_win.c
-M src/openvpn/dco_win.h
-M src/openvpn/socket.c
-M src/openvpn/tun.h
-4 files changed, 7 insertions(+), 6 deletions(-)
+M .github/workflows/build.yaml
+M .github/workflows/coverity-scan.yml
+2 files changed, 10 insertions(+), 10 deletions(-)
 
 
 
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/31/931/1
 
-diff --git a/src/openvpn/dco_win.c b/src/openvpn/dco_win.c
-index 8b47124..a386e53 100644
---- a/src/openvpn/dco_win.c
-+++ b/src/openvpn/dco_win.c
-@@ -321,7 +321,7 @@
- }
+diff --git a/.github/workflows/build.yaml b/.github/workflows/build.yaml
+index 37ac6ec..22b7aca 100644
+--- a/.github/workflows/build.yaml
++++ b/.github/workflows/build.yaml
+@@ -27,7 +27,7 @@
+       - name: Show changes on standard output
+         run: git diff
+         working-directory: openvpn
+-      - uses: actions/upload-artifact@...2860... # v4.6.0
++      - uses: actions/upload-artifact@...2868... # v4.6.2
+         with:
+           name: uncrustify-changes.patch
+           path: 'openvpn/uncrustify-changes.patch'
+@@ -55,7 +55,7 @@
+       - name: Restore from cache and install vcpkg
+         uses: lukka/run-vcpkg@...2815... # v11.5
+         with:
+-          vcpkgGitCommitId: 33e9c99208736b713cabe4490e15235f62f893d4
++          vcpkgGitCommitId: acd5bba5aac8b6573b5f6f463dc0341ac0ee6fa4
+           vcpkgJsonGlob: '**/mingw/vcpkg.json'
 
- void
--dco_p2p_new_peer(HANDLE handle, struct link_socket *sock, struct signal_in=
-fo *sig_info)
-+dco_p2p_new_peer(HANDLE handle, OVERLAPPED *ov, struct link_socket *sock, =
-struct signal_info *sig_info)
- {
-     msg(D_DCO_DEBUG, "%s", __func__);
+       - name: Run CMake with vcpkg.json manifest
+@@ -65,7 +65,7 @@
+           buildPreset: mingw-${{ matrix.arch }}
+           buildPresetAdditionalArgs: "['--config Debug']"
 
-@@ -395,8 +395,8 @@
-         ASSERT(0);
-     }
+-      - uses: actions/upload-artifact@...2860... # v4.6.0
++      - uses: actions/upload-artifact@...2868... # v4.6.2
+         with:
+           name: openvpn-mingw-${{ matrix.arch }}
+           path: |
+@@ -73,7 +73,7 @@
+             ${{ github.workspace }}/out/build/mingw/${{ matrix.arch }}/Deb=
+ug/*.dll
+             !${{ github.workspace }}/out/build/mingw/${{ matrix.arch }}/De=
+bug/test_*.exe
 
--    OVERLAPPED ov =3D { 0 };
--    if (!DeviceIoControl(handle, OVPN_IOCTL_NEW_PEER, &peer, sizeof(peer),=
- NULL, 0, NULL, &ov))
-+    CLEAR(*ov);
-+    if (!DeviceIoControl(handle, OVPN_IOCTL_NEW_PEER, &peer, sizeof(peer),=
- NULL, 0, NULL, ov))
-     {
-         DWORD err =3D GetLastError();
-         if (err !=3D ERROR_IO_PENDING)
-@@ -405,7 +405,7 @@
-         }
-         else
-         {
--            dco_connect_wait(handle, &ov, get_server_poll_remaining_time(s=
-ock->server_poll_timeout), sig_info);
-+            dco_connect_wait(handle, ov, get_server_poll_remaining_time(so=
-ck->server_poll_timeout), sig_info);
-         }
-     }
- }
-diff --git a/src/openvpn/dco_win.h b/src/openvpn/dco_win.h
-index 95c95c8..e8e4e22 100644
---- a/src/openvpn/dco_win.h
-+++ b/src/openvpn/dco_win.h
-@@ -63,7 +63,7 @@
- dco_mp_start_vpn(HANDLE handle, struct link_socket *sock);
+-      - uses: actions/upload-artifact@...2860... # v4.6.0
++      - uses: actions/upload-artifact@...2868... # v4.6.2
+         with:
+           name: openvpn-mingw-${{ matrix.arch }}-tests
+           path: |
+@@ -92,7 +92,7 @@
+     name: "mingw unittest ${{ matrix.test }} - ${{ matrix.arch }} - OSSL"
+     steps:
+       - name: Retrieve mingw unittest
+-        uses: actions/download-artifact@...2817... # v4.1.8
++        uses: actions/download-artifact@...2869... # v4.2.1
+         with:
+           name: openvpn-mingw-${{ matrix.arch }}-tests
+           path: unittests
+@@ -227,7 +227,7 @@
+       runs-on: windows-latest
+       steps:
+       - uses: actions/checkout@...2844... # v4.2.2
+-      - uses: lukka/get-cmake@...2861... # v3.31.5
++      - uses: lukka/get-cmake@...2870... # v3.31.6
 
- void
--dco_p2p_new_peer(HANDLE handle, struct link_socket *sock, struct signal_in=
-fo *sig_info);
-+dco_p2p_new_peer(HANDLE handle, OVERLAPPED *ov, struct link_socket *sock, =
-struct signal_info *sig_info);
+       - name: Install rst2html
+         run: python -m pip install --upgrade pip docutils
+@@ -235,7 +235,7 @@
+       - name: Restore artifacts, or setup vcpkg (do not install any packag=
+e)
+         uses: lukka/run-vcpkg@...2815... # v11.5
+         with:
+-          vcpkgGitCommitId: 33e9c99208736b713cabe4490e15235f62f893d4
++          vcpkgGitCommitId: acd5bba5aac8b6573b5f6f463dc0341ac0ee6fa4
+           vcpkgJsonGlob: '**/windows/vcpkg.json'
 
- void
- dco_start_tun(struct tuntap *tt);
-diff --git a/src/openvpn/socket.c b/src/openvpn/socket.c
-index 4fb6fe6..bd7a449 100644
---- a/src/openvpn/socket.c
-+++ b/src/openvpn/socket.c
-@@ -2247,7 +2247,7 @@
-     }
-     else
-     {
--        dco_p2p_new_peer(c->c1.tuntap->hand, sock, sig_info);
-+        dco_p2p_new_peer(c->c1.tuntap->hand, &c->c1.tuntap->dco_new_peer_o=
-v, sock, sig_info);
-     }
-     sock->sockflags |=3D SF_DCO_WIN;
+       - name: Run CMake with vcpkg.json manifest (NO TESTS)
+@@ -254,7 +254,7 @@
+           testPreset: win-${{ matrix.arch }}-release
+           testPresetAdditionalArgs: "['--output-on-failure']"
 
-diff --git a/src/openvpn/tun.h b/src/openvpn/tun.h
-index b616f5d..bcc23b4 100644
---- a/src/openvpn/tun.h
-+++ b/src/openvpn/tun.h
-@@ -215,6 +215,7 @@
+-      - uses: actions/upload-artifact@...2860... # v4.6.0
++      - uses: actions/upload-artifact@...2868... # v4.6.2
+         with:
+           name: openvpn-msvc-${{ matrix.arch }}
+           path: |
+diff --git a/.github/workflows/coverity-scan.yml b/.github/workflows/coveri=
+ty-scan.yml
+index b5e1920..7998632d6 100644
+--- a/.github/workflows/coverity-scan.yml
++++ b/.github/workflows/coverity-scan.yml
+@@ -13,7 +13,7 @@
+     steps:
+       - name: Check submission cache
+         id: check_submit
+-        uses: actions/cache/restore@...2691...
++        uses: actions/cache/restore@...2871... # v4.2.3
+         with:
+           path: |
+             cov-int
+@@ -65,7 +65,7 @@
 
- #ifdef _WIN32
-     HANDLE hand;
-+    OVERLAPPED dco_new_peer_ov; /* used for async NEW_PEER dco call, which=
- might wait for TCP connect */
-     struct overlapped_io reads;
-     struct overlapped_io writes;
-     struct rw_handle rw_handle;
+       - name: Cache submission
+         if: steps.check_submit.outputs.cache-hit !=3D 'true'
+-        uses: actions/cache/save@...2691...
++        uses: actions/cache/save@...2871... # v4.2.3
+         with:
+           path: |
+             cov-int
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/928?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/931?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings
 
 Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: Ib1db457c42a80f6b8fc0e3ceb4a895d4cf7f0155
-Gerrit-Change-Number: 928
-Gerrit-PatchSet: 2
-Gerrit-Owner: stipa <lstipakov@...277...>
+Gerrit-Branch: release/2.6
+Gerrit-Change-Id: Ie9bffcc487f53a3a8ae6e59b79e654360d99902c
+Gerrit-Change-Number: 931
+Gerrit-PatchSet: 1
+Gerrit-Owner: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: cron2 <gert@...1296...>
-Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-MessageType: merged
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Attention: cron2 <gert@...1296...>
+Gerrit-MessageType: newchange
 
---H2Hce27RKO4=
+--Qh/lXC/6LMU=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p>cron2 <strong>submitted</strong> this change.</p><p><a href=3D"http://ge=
-rrit.openvpn.net/c/openvpn/+/928?usp=3Demail">View Change</a></p><div style=
-=3D"white-space:pre-wrap"></div><pre style=3D"font-family: monospace,monosp=
-ace; white-space: pre-wrap;">dco-win: Fix crash when cancelling pending ope=
-ration<br><br>The OVERLAPPED structure must remain valid for the entire dur=
-ation of an<br>asynchronous operation. Previously, when a TCP connection wa=
-s pending<br>inside the NEW_PEER call, the OVERLAPPED structure was defined=
- as a<br>local variable within dco_p2p_new_peer().<br><br>When CancelIo() w=
-as called later from close_tun_handle(), the OVERLAPPED<br>structure was al=
-ready out of scope, resulting in undefined behavior and<br>stack corruption=
-.<br><br>This fix moves the OVERLAPPED structure to the tuntap struct, ensu=
-ring<br>it remains valid throughout the operation&#39;s lifetime.<br><br>Gi=
-thub: closes OpenVPN/openvpn#715<br><br>Change-Id: Ib1db457c42a80f6b8fc0e3c=
-eb4a895d4cf7f0155<br>Signed-off-by: Lev Stipakov &lt;lev@...515...&gt;<br>A=
-cked-by: Gert Doering &lt;gert@...1296...&gt;<br>Message-Id: &lt;2025040118=
-1535.7854-1-gert@...1296...&gt;<br>URL: https://sourceforge.net/p/openvpn/m=
-ailman/message/59168247/<br>URL: https://gerrit.openvpn.net/c/openvpn/+/928=
-<br>Signed-off-by: Gert Doering &lt;gert@...1296...&gt;<br>---<br>M src/ope=
-nvpn/dco_win.c<br>M src/openvpn/dco_win.h<br>M src/openvpn/socket.c<br>M sr=
-c/openvpn/tun.h<br>4 files changed, 7 insertions(+), 6 deletions(-)<br><br>=
-</pre>
-<pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><sp=
-an>diff --git a/src/openvpn/dco_win.c b/src/openvpn/dco_win.c</span><br><sp=
-an>index 8b47124..a386e53 100644</span><br><span>--- a/src/openvpn/dco_win.=
-c</span><br><span>+++ b/src/openvpn/dco_win.c</span><br><span>@@ -321,7 +32=
-1,7 @@</span><br><span> }</span><br><span> </span><br><span> void</span><br=
-><span style=3D"color: hsl(0, 100%, 40%);">-dco_p2p_new_peer(HANDLE handle,=
- struct link_socket *sock, struct signal_info *sig_info)</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+dco_p2p_new_peer(HANDLE handle, OVERLA=
-PPED *ov, struct link_socket *sock, struct signal_info *sig_info)</span><br=
-><span> {</span><br><span>     msg(D_DCO_DEBUG, &quot;%s&quot;, __func__);<=
-/span><br><span> </span><br><span>@@ -395,8 +395,8 @@</span><br><span>     =
-    ASSERT(0);</span><br><span>     }</span><br><span> </span><br><span sty=
-le=3D"color: hsl(0, 100%, 40%);">-    OVERLAPPED ov =3D { 0 };</span><br><s=
-pan style=3D"color: hsl(0, 100%, 40%);">-    if (!DeviceIoControl(handle, O=
-VPN_IOCTL_NEW_PEER, &amp;peer, sizeof(peer), NULL, 0, NULL, &amp;ov))</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+    CLEAR(*ov);</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+    if (!DeviceIoControl(hand=
-le, OVPN_IOCTL_NEW_PEER, &amp;peer, sizeof(peer), NULL, 0, NULL, ov))</span=
-><br><span>     {</span><br><span>         DWORD err =3D GetLastError();</s=
-pan><br><span>         if (err !=3D ERROR_IO_PENDING)</span><br><span>@@ -4=
-05,7 +405,7 @@</span><br><span>         }</span><br><span>         else</sp=
-an><br><span>         {</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
->-            dco_connect_wait(handle, &amp;ov, get_server_poll_remaining_t=
-ime(sock-&gt;server_poll_timeout), sig_info);</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+            dco_connect_wait(handle, ov, get_serv=
-er_poll_remaining_time(sock-&gt;server_poll_timeout), sig_info);</span><br>=
-<span>         }</span><br><span>     }</span><br><span> }</span><br><span>=
-diff --git a/src/openvpn/dco_win.h b/src/openvpn/dco_win.h</span><br><span>=
-index 95c95c8..e8e4e22 100644</span><br><span>--- a/src/openvpn/dco_win.h</=
-span><br><span>+++ b/src/openvpn/dco_win.h</span><br><span>@@ -63,7 +63,7 @=
-@</span><br><span> dco_mp_start_vpn(HANDLE handle, struct link_socket *sock=
-);</span><br><span> </span><br><span> void</span><br><span style=3D"color: =
-hsl(0, 100%, 40%);">-dco_p2p_new_peer(HANDLE handle, struct link_socket *so=
-ck, struct signal_info *sig_info);</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+dco_p2p_new_peer(HANDLE handle, OVERLAPPED *ov, struct link_=
-socket *sock, struct signal_info *sig_info);</span><br><span> </span><br><s=
-pan> void</span><br><span> dco_start_tun(struct tuntap *tt);</span><br><spa=
-n>diff --git a/src/openvpn/socket.c b/src/openvpn/socket.c</span><br><span>=
-index 4fb6fe6..bd7a449 100644</span><br><span>--- a/src/openvpn/socket.c</s=
-pan><br><span>+++ b/src/openvpn/socket.c</span><br><span>@@ -2247,7 +2247,7=
- @@</span><br><span>     }</span><br><span>     else</span><br><span>     {=
-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        dco_p2p_new_p=
-eer(c-&gt;c1.tuntap-&gt;hand, sock, sig_info);</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+        dco_p2p_new_peer(c-&gt;c1.tuntap-&gt;han=
-d, &amp;c-&gt;c1.tuntap-&gt;dco_new_peer_ov, sock, sig_info);</span><br><sp=
-an>     }</span><br><span>     sock-&gt;sockflags |=3D SF_DCO_WIN;</span><b=
-r><span> </span><br><span>diff --git a/src/openvpn/tun.h b/src/openvpn/tun.=
-h</span><br><span>index b616f5d..bcc23b4 100644</span><br><span>--- a/src/o=
-penvpn/tun.h</span><br><span>+++ b/src/openvpn/tun.h</span><br><span>@@ -21=
-5,6 +215,7 @@</span><br><span> </span><br><span> #ifdef _WIN32</span><br><s=
-pan>     HANDLE hand;</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+    OVERLAPPED dco_new_peer_ov; /* used for async NEW_PEER dco call, whic=
-h might wait for TCP connect */</span><br><span>     struct overlapped_io r=
-eads;</span><br><span>     struct overlapped_io writes;</span><br><span>   =
-  struct rw_handle rw_handle;</span><br><span></span><br></pre><p>To view, =
-visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/928?usp=3Demail">cha=
-nge 928</a>. To unsubscribe, or for help writing mail filters, visit <a hre=
-f=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope it=
-emtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"action=
-" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"=
-http://gerrit.openvpn.net/c/openvpn/+/928?usp=3Demail"/><meta itemprop=3D"n=
-ame" content=3D"View Change"/></div></div>
+<p> Attention is currently required from: cron2, plaisthos. </p>
+<p>flichtenheld has uploaded this change for <strong>review</strong>.</p><p=
+><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/931?usp=3Demail">View Cha=
+nge</a></p><pre style=3D"font-family: monospace,monospace; white-space: pre=
+-wrap;">GHA: Dependency and Actions update April 2025 (2.6)<br><br>- Update=
+ all actions to latest releases.<br>- Update vcpkg commit to latest master.=
+<br><br>Change-Id: Ie9bffcc487f53a3a8ae6e59b79e654360d99902c<br>Signed-off-=
+by: Frank Lichtenheld &lt;frank@...2641...&gt;<br>Acked-by: Arne Schwabe &l=
+t;arne-openvpn@...1227...&gt;<br>Message-Id: &lt;20250331153309.77901-1-fra=
+nk@...2641...&gt;<br>URL: https://www.mail-archive.com/openvpn-devel@...1199...=
+sourceforge.net/msg31290.html<br>Signed-off-by: Gert Doering &lt;gert@...1711...=
+96...&gt;<br>(cherry picked from commit 0ffa7b57fdfb2658ae326baea0871ccca2c=
+01b7d)<br>---<br>M .github/workflows/build.yaml<br>M .github/workflows/cove=
+rity-scan.yml<br>2 files changed, 10 insertions(+), 10 deletions(-)<br><br>=
+</pre><pre style=3D"font-family: monospace,monospace; white-space: pre-wrap=
+;">git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/31/931/1</p=
+re><pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;">=
+<span>diff --git a/.github/workflows/build.yaml b/.github/workflows/build.y=
+aml</span><br><span>index 37ac6ec..22b7aca 100644</span><br><span>--- a/.gi=
+thub/workflows/build.yaml</span><br><span>+++ b/.github/workflows/build.yam=
+l</span><br><span>@@ -27,7 +27,7 @@</span><br><span>       - name: Show cha=
+nges on standard output</span><br><span>         run: git diff</span><br><s=
+pan>         working-directory: openvpn</span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-      - uses: actions/upload-artifact@...2860... # v4.6.0=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      - uses: actio=
+ns/upload-artifact@...2868... # v4.6.2</span><br><span>         with:</span=
+><br><span>           name: uncrustify-changes.patch</span><br><span>      =
+     path: &#39;openvpn/uncrustify-changes.patch&#39;</span><br><span>@@ -5=
+5,7 +55,7 @@</span><br><span>       - name: Restore from cache and install =
+vcpkg</span><br><span>         uses: lukka/run-vcpkg@...2815... # v11.5</sp=
+an><br><span>         with:</span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">-          vcpkgGitCommitId: 33e9c99208736b713cabe4490e15235f62f893d4<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+          vcpkgGitCo=
+mmitId: acd5bba5aac8b6573b5f6f463dc0341ac0ee6fa4</span><br><span>          =
+ vcpkgJsonGlob: &#39;**/mingw/vcpkg.json&#39;</span><br><span> </span><br><=
+span>       - name: Run CMake with vcpkg.json manifest</span><br><span>@@ -=
+65,7 +65,7 @@</span><br><span>           buildPreset: mingw-${{ matrix.arch=
+ }}</span><br><span>           buildPresetAdditionalArgs: &quot;[&#39;--con=
+fig Debug&#39;]&quot;</span><br><span> </span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-      - uses: actions/upload-artifact@...2860... # v4.6.0=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      - uses: actio=
+ns/upload-artifact@...2868... # v4.6.2</span><br><span>         with:</span=
+><br><span>           name: openvpn-mingw-${{ matrix.arch }}</span><br><spa=
+n>           path: |</span><br><span>@@ -73,7 +73,7 @@</span><br><span>    =
+         ${{ github.workspace }}/out/build/mingw/${{ matrix.arch }}/Debug/*=
+.dll</span><br><span>             !${{ github.workspace }}/out/build/mingw/=
+${{ matrix.arch }}/Debug/test_*.exe</span><br><span> </span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-      - uses: actions/upload-artifact@...2825...=
+60... # v4.6.0</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
+ - uses: actions/upload-artifact@...2868... # v4.6.2</span><br><span>      =
+   with:</span><br><span>           name: openvpn-mingw-${{ matrix.arch }}-=
+tests</span><br><span>           path: |</span><br><span>@@ -92,7 +92,7 @@<=
+/span><br><span>     name: &quot;mingw unittest ${{ matrix.test }} - ${{ ma=
+trix.arch }} - OSSL&quot;</span><br><span>     steps:</span><br><span>     =
+  - name: Retrieve mingw unittest</span><br><span style=3D"color: hsl(0, 10=
+0%, 40%);">-        uses: actions/download-artifact@...2817... # v4.1.8</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+        uses: actions/d=
+ownload-artifact@...2869... # v4.2.1</span><br><span>         with:</span><=
+br><span>           name: openvpn-mingw-${{ matrix.arch }}-tests</span><br>=
+<span>           path: unittests</span><br><span>@@ -227,7 +227,7 @@</span>=
+<br><span>       runs-on: windows-latest</span><br><span>       steps:</spa=
+n><br><span>       - uses: actions/checkout@...2844... # v4.2.2</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-      - uses: lukka/get-cmake@...493...=
+2861... # v3.31.5</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+    - uses: lukka/get-cmake@...2870... # v3.31.6</span><br><span> </span><b=
+r><span>       - name: Install rst2html</span><br><span>         run: pytho=
+n -m pip install --upgrade pip docutils</span><br><span>@@ -235,7 +235,7 @@=
+</span><br><span>       - name: Restore artifacts, or setup vcpkg (do not i=
+nstall any package)</span><br><span>         uses: lukka/run-vcpkg@...2822...=
+.. # v11.5</span><br><span>         with:</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-          vcpkgGitCommitId: 33e9c99208736b713cabe4490e1=
+5235f62f893d4</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
+    vcpkgGitCommitId: acd5bba5aac8b6573b5f6f463dc0341ac0ee6fa4</span><br><s=
+pan>           vcpkgJsonGlob: &#39;**/windows/vcpkg.json&#39;</span><br><sp=
+an> </span><br><span>       - name: Run CMake with vcpkg.json manifest (NO =
+TESTS)</span><br><span>@@ -254,7 +254,7 @@</span><br><span>           testP=
+reset: win-${{ matrix.arch }}-release</span><br><span>           testPreset=
+AdditionalArgs: &quot;[&#39;--output-on-failure&#39;]&quot;</span><br><span=
+> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-      - uses: actio=
+ns/upload-artifact@...2860... # v4.6.0</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+      - uses: actions/upload-artifact@...2868... # v4.6.=
+2</span><br><span>         with:</span><br><span>           name: openvpn-m=
+svc-${{ matrix.arch }}</span><br><span>           path: |</span><br><span>d=
+iff --git a/.github/workflows/coverity-scan.yml b/.github/workflows/coverit=
+y-scan.yml</span><br><span>index b5e1920..7998632d6 100644</span><br><span>=
+--- a/.github/workflows/coverity-scan.yml</span><br><span>+++ b/.github/wor=
+kflows/coverity-scan.yml</span><br><span>@@ -13,7 +13,7 @@</span><br><span>=
+     steps:</span><br><span>       - name: Check submission cache</span><br=
+><span>         id: check_submit</span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-        uses: actions/cache/restore@...2691...</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+        uses: actions/cache/restore@...220...=
+..2871... # v4.2.3</span><br><span>         with:</span><br><span>         =
+  path: |</span><br><span>             cov-int</span><br><span>@@ -65,7 +65=
+,7 @@</span><br><span> </span><br><span>       - name: Cache submission</sp=
+an><br><span>         if: steps.check_submit.outputs.cache-hit !=3D &#39;tr=
+ue&#39;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        uses: =
+actions/cache/save@...2691...</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+        uses: actions/cache/save@...2871... # v4.2.3</span><br><s=
+pan>         with:</span><br><span>           path: |</span><br><span>     =
+        cov-int</span><br><span></span><br></pre><p>To view, visit <a href=
+=3D"http://gerrit.openvpn.net/c/openvpn/+/931?usp=3Demail">change 931</a>. =
+To unsubscribe, or for help writing mail filters, visit <a href=3D"http://g=
+errit.openvpn.net/settings">settings</a>.</p><div itemscope itemtype=3D"htt=
+p://schema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D=
+"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit=
+.openvpn.net/c/openvpn/+/931?usp=3Demail"/><meta itemprop=3D"name" content=
+=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: Ib1db457c42a80f6b8fc0e3ceb4a=
-895d4cf7f0155 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 928 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
-<div style=3D"display:none"> Gerrit-Owner: stipa &lt;lstipakov@...277...&gt=
-; </div>
+<div style=3D"display:none"> Gerrit-Branch: release/2.6 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: Ie9bffcc487f53a3a8ae6e59b79e=
+654360d99902c </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 931 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
+<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
+.&gt; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
  </div>
-<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
-1...&gt; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
 .1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: merged </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: cron2 &lt;gert@...1296...&gt=
+; </div>
+<div style=3D"display:none"> Gerrit-MessageType: newchange </div>
 
 
---H2Hce27RKO4=--
+--Qh/lXC/6LMU=--
 
