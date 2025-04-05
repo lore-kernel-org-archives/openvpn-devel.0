@@ -1,17 +1,17 @@
 From: "d12fk (Code Review)" <gerrit@...515...>
 Date: Sat, 5 Apr 2025 04:11:42 +0000
-In-Reply-To: <gerrit.1733989644000.I576e74f3276362606e9cbd50bb5adbebaaf209cc@...2715...>
-References: <gerrit.1733989644000.I576e74f3276362606e9cbd50bb5adbebaaf209cc@...2715...>
+In-Reply-To: <gerrit.1733989644000.I6b67e3a00dd84bf348b6af28115ee11138c3a111@...2715...>
+References: <gerrit.1733989644000.I6b67e3a00dd84bf348b6af28115ee11138c3a111@...2715...>
 Reply-To: heiko@...515..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net, frank@...2641...,
- lstipakov@...277...
-Message-ID: <1702893136f39eaa5edfb3062351bbec1b2eba49-EmailReplacePatchSet-HTML@...2715...>
+ max@...2606...
+Message-ID: <0ea738415358be39c856df25259b65513dc7d36b-EmailReplacePatchSet-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="jpMhEt5y+Zg="; charset=UTF-8
-Subject: [Openvpn-devel] [XL] Change in openvpn[master]: win: implement
- --dns option support with NRPT
+Content-Type: multipart/alternative; boundary="r96uv8w+biY="; charset=UTF-8
+Subject: [Openvpn-devel] [L] Change in openvpn[master]: dns: support running
+ up/down command with privsep
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,3335 +20,1048 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, stipa <lstipakov@...277...>
+To: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, MaxF <max@...2606...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---jpMhEt5y+Zg=
+--r96uv8w+biY=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: plaisthos, stipa.
+Attention is currently required from: MaxF, d12fk, plaisthos.
 
-Hello flichtenheld, plaisthos, stipa,
+Hello MaxF, flichtenheld, plaisthos,
 
 I'd like you to reexamine a change. Please visit
 
-    http://gerrit.openvpn.net/c/openvpn/+/837?usp=3Demail
+    http://gerrit.openvpn.net/c/openvpn/+/839?usp=3Demail
 
-to look at the new patch set (#17).
+to look at the new patch set (#20).
+
+The change is no longer submittable: checks~ChecksSubmitRule is unsatisfied=
+ now.
 
 
-Change subject: win: implement --dns option support with NRPT
+Change subject: dns: support running up/down command with privsep
 ......................................................................
 
-win: implement --dns option support with NRPT
+dns: support running up/down command with privsep
 
-Implement support for setting options from --dns. This is hugely
-different than what we had so far with DNS related --dhcp-option.
+With --user / --group privileges are dropped after init. Unfortunately
+this affects --dns-updown when tearing down previous modifications.
 
-The main difference it that we support split DNS and DNSSEC by making
-use of NRPT (Name Resolution Policy Table). Also OpenVPN tries to keep
-local DNS resolution working when DNS is redirected into the tunnel. To
-prevent this from happening we have --block-outside-dns, in case you
-wonder. Basically we collect domains and name server addresses from
-network adapters and add so called exclude NRPT rules in addition to the
-catch all rule that is pushed by the server.
+To keep the privileges for just that, the concept of a dns updown runner
+in introduced. It's basically a fork of openvpn at the time the
+modifications to DNS are made. Its only capability is running the
+--dns-updown command when asked to. The parent openvpn process signals
+this by writing to a pipe the runner is waiting on.
 
-All is done via the interactive service, since modifying all this
-requires the elevated privileges that the openvpn process hopefully
-doesn't have.
+Commands need to be ready to receive variables from a file instead of the
+process environment. A shameless and effective workaround to keep the
+protocol between the two processes simple.
 
-Change-Id: I576e74f3276362606e9cbd50bb5adbebaaf209cc
+Change-Id: I6b67e3a00dd84bf348b6af28115ee11138c3a111
 Signed-off-by: Heiko Hund <heiko@...2662...>
 ---
-M include/openvpn-msg.h
+M distro/dns-scripts/haikuos_file-dns-updown.sh
+M distro/dns-scripts/openresolv-dns-updown.sh
+M distro/dns-scripts/resolvconf_file-dns-updown.sh
+M distro/dns-scripts/systemd-dns-updown.sh
 M src/openvpn/dns.c
 M src/openvpn/dns.h
+M src/openvpn/env_set.c
+M src/openvpn/env_set.h
 M src/openvpn/init.c
-M src/openvpnserv/interactive.c
-5 files changed, 1,149 insertions(+), 30 deletions(-)
+M src/openvpn/openvpn.h
+10 files changed, 246 insertions(+), 10 deletions(-)
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/37/837/17
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/39/839/20
 
-diff --git a/include/openvpn-msg.h b/include/openvpn-msg.h
-index 7a99335..8b48053 100644
---- a/include/openvpn-msg.h
-+++ b/include/openvpn-msg.h
-@@ -35,6 +35,8 @@
-     msg_del_route,
-     msg_add_dns_cfg,
-     msg_del_dns_cfg,
-+    msg_add_nrpt_cfg,
-+    msg_del_nrpt_cfg,
-     msg_add_nbt_cfg,
-     msg_del_nbt_cfg,
-     msg_flush_neighbors,
-@@ -96,6 +98,23 @@
-     inet_address_t addr[4]; /* support up to 4 dns addresses */
- } dns_cfg_message_t;
+diff --git a/distro/dns-scripts/haikuos_file-dns-updown.sh b/distro/dns-scr=
+ipts/haikuos_file-dns-updown.sh
+index 1b03e9c..f1472c0 100644
+--- a/distro/dns-scripts/haikuos_file-dns-updown.sh
++++ b/distro/dns-scripts/haikuos_file-dns-updown.sh
+@@ -7,6 +7,10 @@
+ #
+ # Example env from openvpn (most are not applied):
+ #
++#   dns_vars_file /tmp/openvpn_dvf_58b95c0c97b2db43afb5d745f986c53c.tmp
++#
++#      or
++#
+ #   dev tun0
+ #   script-type dns-up
+ #   dns_search_domain_1 mycorp.in
+@@ -39,6 +43,7 @@
 
+ onf=3D/boot/system/settings/network/resolv.conf
+ test -e "$conf" || exit 1
++test -z "${dns_vars_file}" || . "${dns_vars_file}"
+ case "${script_type}" in
+ dns-up)
+     n=3D1
+diff --git a/distro/dns-scripts/openresolv-dns-updown.sh b/distro/dns-scrip=
+ts/openresolv-dns-updown.sh
+index 1b218f5..1944e10 100644
+--- a/distro/dns-scripts/openresolv-dns-updown.sh
++++ b/distro/dns-scripts/openresolv-dns-updown.sh
+@@ -8,6 +8,10 @@
+ #
+ # Example env from openvpn (most are not applied):
+ #
++#   dns_vars_file /tmp/openvpn_dvf_58b95c0c97b2db43afb5d745f986c53c.tmp
++#
++#      or
++#
+ #   dev tun0
+ #   script-type dns-up
+ #   dns_search_domain_1 mycorp.in
+@@ -38,6 +42,7 @@
+     done
+ }
+
++[ -z "${dns_vars_file}" ] || . "${dns_vars_file}"
+ : ${script_type:=3Ddns-down}
+ case "${script_type}" in
+ dns-up)
+diff --git a/distro/dns-scripts/resolvconf_file-dns-updown.sh b/distro/dns-=
+scripts/resolvconf_file-dns-updown.sh
+index c469490..8ab4969 100644
+--- a/distro/dns-scripts/resolvconf_file-dns-updown.sh
++++ b/distro/dns-scripts/resolvconf_file-dns-updown.sh
+@@ -7,6 +7,10 @@
+ #
+ # Example env from openvpn (most are not applied):
+ #
++#   dns_vars_file /tmp/openvpn_dvf_58b95c0c97b2db43afb5d745f986c53c.tmp
++#
++#      or
++#
+ #   dev tun0
+ #   script-type dns-up
+ #   dns_search_domain_1 mycorp.in
+@@ -39,6 +43,7 @@
+
+ conf=3D/etc/resolv.conf
+ test -e "$conf" || exit 1
++test -z "${dns_vars_file}" || . "${dns_vars_file}"
+ case "${script_type}" in
+ dns-up)
+     n=3D1
+diff --git a/distro/dns-scripts/systemd-dns-updown.sh b/distro/dns-scripts/=
+systemd-dns-updown.sh
+index 69bbebf..962310d 100644
+--- a/distro/dns-scripts/systemd-dns-updown.sh
++++ b/distro/dns-scripts/systemd-dns-updown.sh
+@@ -14,6 +14,10 @@
+ #
+ # Example env from openvpn (not all are always applied):
+ #
++#   dns_vars_file /tmp/openvpn_dvf_58b95c0c97b2db43afb5d745f986c53c.tmp
++#
++#      or
++#
+ #   dev tun0
+ #   script-type dns-up
+ #   dns_search_domain_1 mycorp.in
+@@ -29,6 +33,8 @@
+ #   dns_server_1_sni dns.mycorp.in
+ #
+
++[ -z "${dns_vars_file}" ] || . "${dns_vars_file}"
 +
-+typedef enum {
-+    nrpt_dnssec
-+} nrpt_flags_t;
-+
-+#define NRPT_ADDR_NUM 8   /* Max. number of addresses */
-+#define NRPT_ADDR_SIZE 48 /* Max. address strlen + some */
-+typedef char nrpt_address_t[NRPT_ADDR_SIZE];
-+typedef struct {
-+    message_header_t header;
-+    interface_t iface;
-+    nrpt_address_t addresses[NRPT_ADDR_NUM];
-+    char resolve_domains[512]; /* double \0 terminated */
-+    char search_domains[512];
-+    nrpt_flags_t flags;
-+} nrpt_dns_cfg_message_t;
-+
- typedef struct {
-     message_header_t header;
-     interface_t iface;
+ function do_resolved_servers {
+     local sni=3D""
+     local transport_var=3Ddns_server_${n}_transport
 diff --git a/src/openvpn/dns.c b/src/openvpn/dns.c
-index cf48c22..b6e524f 100644
+index 4da0747..19de321 100644
 --- a/src/openvpn/dns.c
 +++ b/src/openvpn/dns.c
-@@ -29,6 +29,12 @@
-
- #include "dns.h"
- #include "socket.h"
-+#include "options.h"
-+
-+#ifdef _WIN32
-+#include "win32.h"
-+#include "openvpn-msg.h"
-+#endif
-
- /**
-  * Parses a string as port and stores it
-@@ -428,6 +434,122 @@
-     gc_free(&gc);
+@@ -562,13 +562,20 @@
  }
 
-+#ifdef _WIN32
-+
-+static void
-+make_domain_list(const char *what, const struct dns_domain *src,
-+                 bool nrpt_domains, char *dst, size_t dst_size)
-+{
-+    /* NRPT domains need two \0 at the end for REG_MULTI_SZ
-+     * and a leading '.' added in front of the domain name */
-+    size_t term_size =3D nrpt_domains ? 2 : 1;
-+    size_t leading_dot =3D nrpt_domains ? 1 : 0;
-+    size_t offset =3D 0;
-+
-+    memset(dst, 0, dst_size);
-+
-+    while (src)
-+    {
-+        size_t len =3D strlen(src->name);
-+        if (offset + leading_dot + len + term_size > dst_size)
-+        {
-+            msg(M_WARN, "WARNING: %s truncated", what);
-+            if (offset)
-+            {
-+                /* Remove trailing comma */
-+                *(dst + offset - 1) =3D '\0';
-+            }
-+            break;
-+        }
-+
-+        if (leading_dot)
-+        {
-+            *(dst + offset++) =3D '.';
-+        }
-+        strncpy(dst + offset, src->name, len);
-+        offset +=3D len;
-+
-+        src =3D src->next;
-+        if (src)
-+        {
-+            *(dst + offset++) =3D ',';
-+        }
-+    }
-+}
-+
-+static void
-+run_up_down_service(bool add, const struct options *o, const struct tuntap=
- *tt)
-+{
-+    const struct dns_server *server =3D o->dns_options.servers;
-+    const struct dns_domain *search_domains =3D o->dns_options.search_doma=
-ins;
-+
-+    while (true)
-+    {
-+        if (!server)
-+        {
-+            if (add)
-+            {
-+                msg(M_WARN, "WARNING: setting DNS failed, no compatible se=
-rver profile");
-+            }
-+            return;
-+        }
-+
-+        bool only_standard_server_ports =3D true;
-+        for (size_t i =3D 0; i < NRPT_ADDR_NUM; ++i)
-+        {
-+            if (server->addr[i].port && server->addr[i].port !=3D 53)
-+            {
-+                only_standard_server_ports =3D false;
-+                break;
-+            }
-+        }
-+        if ((server->transport =3D=3D DNS_TRANSPORT_UNSET || server->trans=
-port =3D=3D DNS_TRANSPORT_PLAIN)
-+            && only_standard_server_ports)
-+        {
-+            break; /* found compatible server */
-+        }
-+
-+        server =3D server->next;
-+    }
-+
-+    ack_message_t ack;
-+    nrpt_dns_cfg_message_t nrpt =3D {
-+        .header =3D {
-+            (add ? msg_add_nrpt_cfg : msg_del_nrpt_cfg),
-+            sizeof(nrpt_dns_cfg_message_t),
-+            0
-+        },
-+        .iface =3D { .index =3D tt->adapter_index, .name =3D "" },
-+        .flags =3D server->dnssec =3D=3D DNS_SECURITY_NO ? 0 : nrpt_dnssec,
-+    };
-+    strncpynt(nrpt.iface.name, tt->actual_name, sizeof(nrpt.iface.name));
-+
-+    for (size_t i =3D 0; i < NRPT_ADDR_NUM; ++i)
-+    {
-+        if (server->addr[i].family =3D=3D AF_UNSPEC)
-+        {
-+            /* No more addresses */
-+            break;
-+        }
-+
-+        if (inet_ntop(server->addr[i].family, &server->addr[i].in,
-+                      nrpt.addresses[i], NRPT_ADDR_SIZE) =3D=3D NULL)
-+        {
-+            msg(M_WARN, "WARNING: could not convert dns server address");
-+        }
-+    }
-+
-+    make_domain_list("dns server resolve domains", server->domains, true,
-+                     nrpt.resolve_domains, sizeof(nrpt.resolve_domains));
-+
-+    make_domain_list("dns search domains", search_domains, false,
-+                     nrpt.search_domains, sizeof(nrpt.search_domains));
-+
-+    send_msg_iservice(o->msg_channel, &nrpt, sizeof(nrpt), &ack, "DNS");
-+}
-+
-+#endif /* _WIN32 */
-+
- void
- show_dns_options(const struct dns_options *o)
+ static int
+-do_run_up_down_command(bool up, const struct dns_options *o, const struct =
+tuntap *tt)
++do_run_up_down_command(bool up, const char *vars_file, const struct dns_op=
+tions *o, const struct tuntap *tt)
  {
-@@ -506,3 +628,43 @@
+     struct gc_arena gc =3D gc_new();
+     struct argv argv =3D argv_new();
+     struct env_set *es =3D env_set_create(&gc);
 
-     gc_free(&gc);
- }
-+
-+void
-+run_dns_up_down(bool up, struct options *o, const struct tuntap *tt)
-+{
-+    if (!o->dns_options.servers)
+-    updown_env_set(up, o, tt, es);
++    if (vars_file)
 +    {
-+        return;
-+    }
-+
-+    /* Warn about adding servers of unsupported AF */
-+    const struct dns_server *s =3D o->dns_options.servers;
-+    while (up && s)
-+    {
-+        size_t bad_count =3D 0;
-+        for (size_t i =3D 0; i < s->addr_count; ++i)
-+        {
-+            if ((s->addr[i].family =3D=3D AF_INET6 && !tt->did_ifconfig_ip=
-v6_setup)
-+                || (s->addr[i].family =3D=3D AF_INET && !tt->did_ifconfig_=
-setup))
-+            {
-+                ++bad_count;
-+            }
-+        }
-+        if (bad_count =3D=3D s->addr_count)
-+        {
-+            msg(M_WARN, "DNS server %ld only has address(es) from a family=
- "
-+                "the tunnel is not configured for - it will not be reachab=
-le",
-+                s->priority);
-+        }
-+        else if (bad_count)
-+        {
-+            msg(M_WARN, "DNS server %ld has address(es) from a family "
-+                "the tunnel is not configured for", s->priority);
-+        }
-+        s =3D s->next;
-+    }
-+
-+#ifdef _WIN32
-+    run_up_down_service(up, o, tt);
-+#endif /* ifdef _WIN32 */
-+}
-diff --git a/src/openvpn/dns.h b/src/openvpn/dns.h
-index 838ebe1..f24e30b 100644
---- a/src/openvpn/dns.h
-+++ b/src/openvpn/dns.h
-@@ -26,6 +26,7 @@
-
- #include "buffer.h"
- #include "env_set.h"
-+#include "tun.h"
-
- enum dns_security {
-     DNS_SECURITY_UNSET,
-@@ -147,6 +148,14 @@
- void dns_options_postprocess_pull(struct dns_options *o);
-
- /**
-+ * Invokes the action associated with bringing DNS up or down
-+ * @param   up          Boolean to set this call to "up" when true
-+ * @param   o           Pointer to the program options
-+ * @param   tt          Pointer to the connection's tuntap struct
-+ */
-+void run_dns_up_down(bool up, struct options *o, const struct tuntap *tt);
-+
-+/**
-  * Puts the DNS options into an environment set.
-  *
-  * @param   o           Pointer to the DNS options to set
-diff --git a/src/openvpn/init.c b/src/openvpn/init.c
-index 1be205b..9eb8290 100644
---- a/src/openvpn/init.c
-+++ b/src/openvpn/init.c
-@@ -2026,6 +2026,8 @@
-                         c->c2.frame.tun_mtu, c->c2.es, &c->net_ctx);
-         }
-
-+        run_dns_up_down(true, &c->options, c->c1.tuntap);
-+
-         /* run the up script */
-         run_up_down(c->options.up_script,
-                     c->plugins,
-@@ -2064,6 +2066,8 @@
-         /* explicitly set the ifconfig_* env vars */
-         do_ifconfig_setenv(c->c1.tuntap, c->c2.es);
-
-+        run_dns_up_down(true, &c->options, c->c1.tuntap);
-+
-         /* run the up script if user specified --up-restart */
-         if (c->options.up_restart)
-         {
-@@ -2152,6 +2156,8 @@
-     adapter_index =3D c->c1.tuntap->adapter_index;
- #endif
-
-+    run_dns_up_down(false, &c->options, c->c1.tuntap);
-+
-     if (force || !(c->sig->signal_received =3D=3D SIGUSR1 && c->options.pe=
-rsist_tun))
-     {
-         static_context =3D NULL;
-diff --git a/src/openvpnserv/interactive.c b/src/openvpnserv/interactive.c
-index c6963b3..3cefcc7 100644
---- a/src/openvpnserv/interactive.c
-+++ b/src/openvpnserv/interactive.c
-@@ -88,6 +88,7 @@
-     wfp_block,
-     undo_dns4,
-     undo_dns6,
-+    undo_nrpt,
-     undo_domains,
-     undo_ring_buffer,
-     undo_wins,
-@@ -119,12 +120,20 @@
-     flush_neighbors_message_t flush_neighbors;
-     wfp_block_message_t wfp_block;
-     dns_cfg_message_t dns;
-+    nrpt_dns_cfg_message_t nrpt_dns;
-     enable_dhcp_message_t dhcp;
-     register_ring_buffers_message_t rrb;
-     set_mtu_message_t mtu;
-     wins_cfg_message_t wins;
- } pipe_message_t;
-
-+typedef struct {
-+    CHAR addresses[NRPT_ADDR_NUM * NRPT_ADDR_SIZE];
-+    WCHAR domains[512]; /* MULTI_SZ string */
-+    DWORD domains_size; /* bytes in domains */
-+} nrpt_exclude_data_t;
-+
-+
- static DWORD
- AddListItem(list_item_t **pfirst, LPVOID data)
- {
-@@ -1194,13 +1203,13 @@
-
-     if (apply_gpol && ApplyGpolSettings() =3D=3D FALSE)
-     {
--        MsgToEventLog(M_ERR, L"%s: sending GPOL notification failed", __fu=
-nc__);
-+        MsgToEventLog(M_ERR, L"%S: sending GPOL notification failed", __fu=
-nc__);
-     }
-
-     scm =3D OpenSCManager(NULL, NULL, SC_MANAGER_ALL_ACCESS);
-     if (scm =3D=3D NULL)
-     {
--        MsgToEventLog(M_ERR, L"%s: OpenSCManager call failed (%lu)",
-+        MsgToEventLog(M_ERR, L"%S: OpenSCManager call failed (%lu)",
-                       __func__, GetLastError());
-         goto out;
-     }
-@@ -1208,7 +1217,7 @@
-     dnssvc =3D OpenServiceA(scm, "Dnscache", SERVICE_PAUSE_CONTINUE);
-     if (dnssvc =3D=3D NULL)
-     {
--        MsgToEventLog(M_ERR, L"%s: OpenService call failed (%lu)",
-+        MsgToEventLog(M_ERR, L"%S: OpenService call failed (%lu)",
-                       __func__, GetLastError());
-         goto out;
-     }
-@@ -1216,7 +1225,7 @@
-     SERVICE_STATUS status;
-     if (ControlService(dnssvc, SERVICE_CONTROL_PARAMCHANGE, &status) =3D=
-=3D 0)
-     {
--        MsgToEventLog(M_ERR, L"%s: ControlService call failed (%lu)",
-+        MsgToEventLog(M_ERR, L"%S: ControlService call failed (%lu)",
-                       __func__, GetLastError());
-         goto out;
-     }
-@@ -1255,19 +1264,19 @@
-     err =3D InterfaceLuid(itf_name, &luid);
-     if (err)
-     {
--        MsgToEventLog(M_ERR, L"%s: failed to convert itf alias '%s'", __fu=
-nc__, itf_name);
-+        MsgToEventLog(M_ERR, L"%S: failed to convert itf alias '%s'", __fu=
-nc__, itf_name);
-         goto out;
-     }
-     err =3D ConvertInterfaceLuidToGuid(&luid, &guid);
-     if (err)
-     {
--        MsgToEventLog(M_ERR, L"%s: Failed to convert itf '%s' LUID", __fun=
-c__, itf_name);
-+        MsgToEventLog(M_ERR, L"%S: Failed to convert itf '%s' LUID", __fun=
-c__, itf_name);
-         goto out;
-     }
-
-     if (StringFromIID(&guid, &iid_str) !=3D S_OK)
-     {
--        MsgToEventLog(M_ERR, L"%s: Failed to convert itf '%s' IID", __func=
-__, itf_name);
-+        MsgToEventLog(M_ERR, L"%S: Failed to convert itf '%s' IID", __func=
-__, itf_name);
-         err =3D ERROR_OUTOFMEMORY;
-         goto out;
-     }
-@@ -1417,7 +1426,7 @@
-         {
-             return FALSE;
-         }
--        MsgToEventLog(M_ERR, L"%s: failed to get InitialSearchList (%lu)",
-+        MsgToEventLog(M_ERR, L"%S: failed to get InitialSearchList (%lu)",
-                       __func__, err);
-     }
-
-@@ -1439,7 +1448,7 @@
- {
-     if (!list || wcslen(list) =3D=3D 0)
-     {
--        MsgToEventLog(M_ERR, L"StoreInitialDnsSearchList: empty search lis=
-t");
-+        MsgToEventLog(M_ERR, L"%S: empty search list", __func__);
-         return FALSE;
-     }
-
-@@ -1453,7 +1462,7 @@
-     LSTATUS err =3D RegSetValueExW(key, L"InitialSearchList", 0, REG_SZ, (=
-PBYTE)list, size);
-     if (err)
-     {
--        MsgToEventLog(M_ERR, L"%s: failed to set InitialSearchList value (=
-%lu)",
-+        MsgToEventLog(M_ERR, L"%S: failed to set InitialSearchList value (=
-%lu)",
-                       __func__, err);
-         return FALSE;
-     }
-@@ -1482,7 +1491,7 @@
-         err =3D RegGetValueW(key, NULL, L"SearchList", RRF_RT_REG_SZ, NULL=
-, list, &size);
-         if (err)
-         {
--            MsgToEventLog(M_SYSERR, L"%s: could not get SearchList from re=
-gistry (%lu)",
-+            MsgToEventLog(M_SYSERR, L"%S: could not get SearchList from re=
-gistry (%lu)",
-                           __func__, err);
-             return FALSE;
-         }
-@@ -1496,7 +1505,7 @@
-         size_t domlen =3D wcslen(domains);
-         if (listlen + domlen + 2 > _countof(list))
-         {
--            MsgToEventLog(M_SYSERR, L"%s: not enough space in list for sea=
-rch domains (len=3D%lu)",
-+            MsgToEventLog(M_SYSERR, L"%S: not enough space in list for sea=
-rch domains (len=3D%lu)",
-                           __func__, domlen);
-             return FALSE;
-         }
-@@ -1515,7 +1524,7 @@
-     err =3D RegSetValueExW(key, L"SearchList", 0, REG_SZ, (PBYTE)list, siz=
-e);
-     if (err)
-     {
--        MsgToEventLog(M_SYSERR, L"%s: could not set SearchList to registry=
- (%lu)",
-+        MsgToEventLog(M_SYSERR, L"%S: could not set SearchList to registry=
- (%lu)",
-                       __func__, err);
-         return FALSE;
-     }
-@@ -1547,7 +1556,7 @@
-     {
-         if (err !=3D ERROR_FILE_NOT_FOUND)
-         {
--            MsgToEventLog(M_SYSERR, L"%s: could not get InitialSearchList =
-from registry (%lu)",
-+            MsgToEventLog(M_SYSERR, L"%S: could not get InitialSearchList =
-from registry (%lu)",
-                           __func__, err);
-         }
-         goto out;
-@@ -1557,7 +1566,7 @@
-     err =3D RegSetValueExW(key, L"SearchList", 0, REG_SZ, (PBYTE)list, siz=
-e);
-     if (err)
-     {
--        MsgToEventLog(M_SYSERR, L"%s: could not set SearchList in registry=
- (%lu)",
-+        MsgToEventLog(M_SYSERR, L"%S: could not set SearchList in registry=
- (%lu)",
-                       __func__, err);
-         goto out;
-     }
-@@ -1585,7 +1594,7 @@
-     err =3D RegGetValueW(key, NULL, L"SearchList", RRF_RT_REG_SZ, NULL, li=
-st, &size);
-     if (err)
-     {
--        MsgToEventLog(M_SYSERR, L"%s: could not get SearchList from regist=
-ry (%lu)",
-+        MsgToEventLog(M_SYSERR, L"%S: could not get SearchList from regist=
-ry (%lu)",
-                       __func__, err);
-         return;
-     }
-@@ -1593,7 +1602,7 @@
-     PWSTR dst =3D wcsstr(list, domains);
-     if (!dst)
-     {
--        MsgToEventLog(M_ERR, L"%s: could not find domains in search list",=
- __func__);
-+        MsgToEventLog(M_ERR, L"%S: could not find domains in search list",=
- __func__);
-         return;
-     }
-
-@@ -1613,7 +1622,7 @@
-         err =3D RegGetValueW(key, NULL, L"InitialSearchList", RRF_RT_REG_S=
-Z, NULL, initial, &size);
-         if (err)
-         {
--            MsgToEventLog(M_SYSERR, L"%s: could not get InitialSearchList =
-from registry (%lu)",
-+            MsgToEventLog(M_SYSERR, L"%S: could not get InitialSearchList =
-from registry (%lu)",
-                           __func__, err);
-             return;
-         }
-@@ -1630,7 +1639,7 @@
-     err =3D RegSetValueExW(key, L"SearchList", 0, REG_SZ, (PBYTE)list, siz=
-e);
-     if (err)
-     {
--        MsgToEventLog(M_SYSERR, L"%s: could not set SearchList in registry=
- (%lu)",
-+        MsgToEventLog(M_SYSERR, L"%S: could not set SearchList in registry=
- (%lu)",
-                       __func__, err);
-     }
- }
-@@ -1687,7 +1696,7 @@
-     BOOL have_list =3D GetDnsSearchListKey(itf_name, gpol, &list_key);
-     if (list_key =3D=3D INVALID_HANDLE_VALUE)
-     {
--        MsgToEventLog(M_SYSERR, L"%s: could not get search list registry k=
-ey", __func__);
-+        MsgToEventLog(M_SYSERR, L"%S: could not get search list registry k=
-ey", __func__);
-         return ERROR_FILE_NOT_FOUND;
-     }
-
-@@ -1756,7 +1765,7 @@
-     if (err)
-     {
-         *key =3D INVALID_HANDLE_VALUE;
--        MsgToEventLog(M_SYSERR, L"%s: could not open interfaces registry k=
-ey for family %d (%lu)",
-+        MsgToEventLog(M_SYSERR, L"%S: could not open interfaces registry k=
-ey for family %d (%lu)",
-                       __func__, family, err);
-     }
-
-@@ -1787,7 +1796,7 @@
-     err =3D RegOpenKeyExW(itfs, itf_id, 0, KEY_ALL_ACCESS, &itf);
-     if (err)
-     {
--        MsgToEventLog(M_SYSERR, L"%s: could not open interface key for %s =
-family %d (%lu)",
-+        MsgToEventLog(M_SYSERR, L"%S: could not open interface key for %s =
-family %d (%lu)",
-                       __func__, itf_id, family, err);
-         goto out;
-     }
-@@ -1795,7 +1804,7 @@
-     err =3D RegSetValueExA(itf, "NameServer", 0, REG_SZ, (PBYTE)value, str=
-len(value) + 1);
-     if (err)
-     {
--        MsgToEventLog(M_SYSERR, L"%s: could not set name servers '%S' for =
-%s family %d (%lu)",
-+        MsgToEventLog(M_SYSERR, L"%S: could not set name servers '%S' for =
-%s family %d (%lu)",
-                       __func__, value, itf_id, family, err);
-     }
-
-@@ -1947,6 +1956,903 @@
-     return err;
- }
-
-+/**
-+ * Checks if DHCP is enabled for an interface
-+ *
-+ * @param  key        HKEY of the interface to check for
-+ *
-+ * @return BOOL set to TRUE if DHCP is enabled, or FALSE if
-+ *         disabled or an error occurred
-+ */
-+static BOOL
-+IsDhcpEnabled(HKEY key)
-+{
-+    DWORD dhcp;
-+    DWORD size =3D sizeof(dhcp);
-+    LSTATUS err;
-+
-+    err =3D RegGetValueA(key, NULL, "EnableDHCP", RRF_RT_REG_DWORD, NULL, =
-(PBYTE)&dhcp, &size);
-+    if (err !=3D NO_ERROR)
-+    {
-+        MsgToEventLog(M_SYSERR, L"%S: Could not read DHCP status (%lu)", _=
-_func__, err);
-+        return FALSE;
-+    }
-+
-+    return dhcp ? TRUE : FALSE;
-+}
-+
-+/**
-+ * Set name servers from a NRPT address list
-+ *
-+ * @param itf_id        the VPN interface ID to set the name servers for
-+ * @param addresses     the list of NRPT addresses
-+ *
-+ * @return LSTATUS NO_ERROR in case of success, a Windows error code other=
-wise
-+ */
-+static LSTATUS
-+SetNameServerAddresses(PWSTR itf_id, const nrpt_address_t *addresses)
-+{
-+    const short families[] =3D { AF_INET, AF_INET6 };
-+    for (int i =3D 0; i < _countof(families); i++)
-+    {
-+        short family =3D families[i];
-+
-+        /* Create a comma sparated list of addresses of this family */
-+        int offset =3D 0;
-+        char addr_list[NRPT_ADDR_SIZE * NRPT_ADDR_NUM];
-+        for (int j =3D 0; j < NRPT_ADDR_NUM && addresses[j][0]; j++)
-+        {
-+            if ((family =3D=3D AF_INET6 && strchr(addresses[j], ':') =3D=
-=3D NULL)
-+                || (family =3D=3D AF_INET && strchr(addresses[j], ':') !=
-=3D NULL))
-+            {
-+                /* Address family doesn't match, skip this one */
-+                continue;
-+            }
-+            if (offset)
-+            {
-+                addr_list[offset++] =3D ',';
-+            }
-+            strcpy(addr_list + offset, addresses[j]);
-+            offset +=3D strlen(addresses[j]);
-+        }
-+
-+        if (offset =3D=3D 0)
-+        {
-+            /* No address for this family to set */
-+            continue;
-+        }
-+
-+        /* Set name server addresses */
-+        LSTATUS err =3D SetNameServers(itf_id, family, addr_list);
-+        if (err)
-+        {
-+            return err;
-+        }
-+    }
-+    return NO_ERROR;
-+}
-+
-+/**
-+ * Get DNS server IPv4 addresses of an interface
-+ *
-+ * @param  itf_key    registry key of the IPv4 interface data
-+ * @param  addrs      pointer to the buffer addresses are returned in
-+ * @param  size       pointer to the size of the buffer, contains the
-+ *                    size of the addresses on return
-+ *
-+ * @return LSTATUS NO_ERROR on success, a Windows error code otherwise
-+ */
-+static LSTATUS
-+GetItfDnsServersV4(HKEY itf_key, PSTR addrs, PDWORD size)
-+{
-+    addrs[*size - 1] =3D '\0';
-+
-+    LSTATUS err;
-+    DWORD s =3D *size;
-+    err =3D RegGetValueA(itf_key, NULL, "NameServer", RRF_RT_REG_SZ, NULL,=
- (PBYTE)addrs, &s);
-+    if (err && err !=3D ERROR_FILE_NOT_FOUND)
-+    {
-+        *size =3D 0;
-+        return err;
-+    }
-+
-+    /* Try DHCP addresses if we don't have some already */
-+    if (!strchr(addrs, '.') && IsDhcpEnabled(itf_key))
-+    {
-+        s =3D *size;
-+        RegGetValueA(itf_key, NULL, "DhcpNameServer", RRF_RT_REG_SZ, NULL,=
- (PBYTE)addrs, &s);
-+        if (err)
-+        {
-+            *size =3D 0;
-+            return err;
-+        }
-+    }
-+
-+    if (strchr(addrs, '.'))
-+    {
-+        *size =3D s;
-+        return NO_ERROR;
-+    }
-+
-+    *size =3D 0;
-+    return ERROR_FILE_NOT_FOUND;
-+}
-+
-+/**
-+ * Get DNS server IPv6 addresses of an interface
-+ *
-+ * @param  itf_key    registry key of the IPv6 interface data
-+ * @param  addrs      pointer to the buffer addresses are returned in
-+ * @param  size       pointer to the size of the buffer
-+ *
-+ * @return LSTATUS NO_ERROR on success, a Windows error code otherwise
-+ */
-+static LSTATUS
-+GetItfDnsServersV6(HKEY itf_key, PSTR addrs, PDWORD size)
-+{
-+    addrs[*size - 1] =3D '\0';
-+
-+    LSTATUS err;
-+    DWORD s =3D *size;
-+    err =3D RegGetValueA(itf_key, NULL, "NameServer", RRF_RT_REG_SZ, NULL,=
- (PBYTE)addrs, &s);
-+    if (err && err !=3D ERROR_FILE_NOT_FOUND)
-+    {
-+        *size =3D 0;
-+        return err;
-+    }
-+
-+    /* Try DHCP addresses if we don't have some already */
-+    if (!strchr(addrs, ':') && IsDhcpEnabled(itf_key))
-+    {
-+        IN6_ADDR in_addrs[8];
-+        DWORD in_addrs_size =3D sizeof(in_addrs);
-+        err =3D RegGetValueA(itf_key, NULL, "Dhcpv6DNSServers", RRF_RT_REG=
-_BINARY, NULL,
-+                           (PBYTE)in_addrs, &in_addrs_size);
-+        if (err)
-+        {
-+            *size =3D 0;
-+            return err;
-+        }
-+
-+        s =3D *size;
-+        PSTR pos =3D addrs;
-+        size_t in_addrs_read =3D in_addrs_size / sizeof(IN6_ADDR);
-+        for (size_t i =3D 0; i < in_addrs_read; ++i)
-+        {
-+            if (i !=3D 0)
-+            {
-+                /* Add separator */
-+                *pos++ =3D ',';
-+                s--;
-+            }
-+
-+            if (inet_ntop(AF_INET6, &in_addrs[i],
-+                          pos, s) !=3D NULL)
-+            {
-+                *size =3D 0;
-+                return ERROR_MORE_DATA;
-+            }
-+
-+            size_t addr_len =3D strlen(pos);
-+            pos +=3D addr_len;
-+            s -=3D addr_len;
-+        }
-+        s =3D strlen(addrs) + 1;
-+    }
-+
-+    if (strchr(addrs, ':'))
-+    {
-+        *size =3D s;
-+        return NO_ERROR;
-+    }
-+
-+    *size =3D 0;
-+    return ERROR_FILE_NOT_FOUND;
-+}
-+
-+/**
-+ * Return interface specific domain suffix(es)
-+ *
-+ * The \p domains paramter will be set to a MULTI_SZ domains string.
-+ * In case of an error or if no domains are found for the interface
-+ * \p size is set to 0 and the contents of \p domains are invalid.
-+ * Note that the domains could have been set by DHCP or manually.
-+ *
-+ * @param  itf        HKEY of the interface to read from
-+ * @param  domains    PWSTR buffer to return the domain(s) in
-+ * @param  size       pointer to size of the domains buffer in bytes. Will=
- be
-+ *                    set to the size of the string returned, including
-+ *                    the terminating zeros or 0.
-+ *
-+ * @return LSTATUS NO_ERROR if the domain suffix(es) were read successfull=
-y,
-+ *         ERROR_FILE_NOT_FOUND if no domain was found for the interface,
-+ *         ERROR_MORE_DATA if the list did not fit into the buffer,
-+ *         any other error indicates an error while reading from the regis=
-try.
-+ */
-+static LSTATUS
-+GetItfDnsDomains(HKEY itf, PWSTR domains, PDWORD size)
-+{
-+    if (domains =3D=3D NULL || size =3D=3D 0)
-+    {
-+        return ERROR_INVALID_PARAMETER;
-+    }
-+
-+    LSTATUS err =3D ERROR_FILE_NOT_FOUND;
-+    const DWORD buf_size =3D *size;
-+    const size_t one_glyph =3D sizeof(*domains);
-+    PWSTR values[] =3D { L"SearchList", L"Domain", L"DhcpDomainSearchList"=
-, L"DhcpDomain", NULL};
-+
-+    for (int i =3D 0; values[i]; i++)
-+    {
-+        *size =3D buf_size;
-+        err =3D RegGetValueW(itf, NULL, values[i], RRF_RT_REG_SZ, NULL, (P=
-BYTE)domains, size);
-+        if (!err && *size > one_glyph && wcschr(domains, '.'))
-+        {
-+            /*
-+             * Found domain(s), now convert them:
-+             *   - prefix each domain with a dot
-+             *   - convert comma separated list to MULTI_SZ
-+             */
-+            PWCHAR pos =3D domains;
-+            const DWORD buf_len =3D buf_size / one_glyph;
-+            while (TRUE)
-+            {
-+                /* Terminate the domain at the next comma */
-+                PWCHAR comma =3D wcschr(pos, ',');
-+                if (comma)
-+                {
-+                    *comma =3D '\0';
-+                }
-+
-+                /* Check for enough space to convert this domain */
-+                size_t converted_size =3D pos - domains;
-+                size_t domain_len =3D wcslen(pos) + 1;
-+                size_t domain_size =3D domain_len * one_glyph;
-+                size_t extra_size =3D 2 * one_glyph;
-+                if (converted_size + domain_size + extra_size > buf_size)
-+                {
-+                    /* Domain doesn't fit, bad luck if it's the first one =
-*/
-+                    *pos =3D '\0';
-+                    *size =3D converted_size =3D=3D 0 ? 0 : *size + 1;
-+                    return ERROR_MORE_DATA;
-+                }
-+
-+                /* Prefix domain at pos with the dot */
-+                memmove(pos + 1, pos, buf_size - converted_size - one_glyp=
-h);
-+                domains[buf_len - 1] =3D '\0';
-+                *pos =3D '.';
-+                *size +=3D 1;
-+
-+                if (!comma)
-+                {
-+                    /* Conversion is done */
-+                    *(pos + domain_len) =3D '\0';
-+                    *size +=3D 1;
-+                    return NO_ERROR;
-+                }
-+
-+                pos =3D comma + 1;
-+            }
-+        }
-+    }
-+
-+    *size =3D 0;
-+    return err;
-+}
-+
-+/**
-+ * Check if an interface is connected and up
-+ *
-+ * @param  iid_str    the interface GUID as string
-+ *
-+ * @return TRUE if the interface is connected and up, FALSE otherwise or in
-+ *         case an error happened
-+ */
-+static BOOL
-+IsInterfaceConnected(PWSTR iid_str)
-+{
-+    GUID iid;
-+    BOOL res =3D FALSE;
-+    MIB_IF_ROW2 itf_row;
-+
-+    /* Get GUID from string */
-+    if (IIDFromString(iid_str, &iid) !=3D S_OK)
-+    {
-+        MsgToEventLog(M_SYSERR, L"%S: could not convert interface %s GUID =
-string", __func__, iid_str);
-+        goto out;
-+    }
-+
-+    /* Get LUID from GUID */
-+    if (ConvertInterfaceGuidToLuid(&iid, &itf_row.InterfaceLuid) !=3D NO_E=
-RROR)
-+    {
-+        goto out;
-+    }
-+
-+    /* Look up interface status */
-+    if (GetIfEntry2(&itf_row) !=3D NO_ERROR)
-+    {
-+        MsgToEventLog(M_SYSERR, L"%S: could not get interface %s status", =
-__func__, iid_str);
-+        goto out;
-+    }
-+
-+    if (itf_row.MediaConnectState =3D=3D MediaConnectStateConnected
-+        && itf_row.OperStatus =3D=3D IfOperStatusUp)
-+    {
-+        res =3D TRUE;
-+    }
-+
-+out:
-+    return res;
-+}
-+
-+/**
-+ * Collect interface DNS settings to be used in excluding NRPT rules. This=
- is
-+ * needed so that local DNS keeps working even when a catch all NRPT rule =
-is
-+ * installed by a VPN connection.
-+ *
-+ * @param  data       pointer to the data structures the values are return=
-ed in
-+ * @param  data_size  number of exclude data structures pointed to
-+ */
-+static void
-+GetNrptExcludeData(nrpt_exclude_data_t *data, size_t data_size)
-+{
-+    HKEY v4_itfs =3D INVALID_HANDLE_VALUE;
-+    HKEY v6_itfs =3D INVALID_HANDLE_VALUE;
-+
-+    if (!GetInterfacesKey(AF_INET, &v4_itfs)
-+        || !GetInterfacesKey(AF_INET6, &v6_itfs))
-+    {
-+        goto out;
-+    }
-+
-+    size_t i =3D 0;
-+    DWORD enum_index =3D 0;
-+    while (i < data_size)
-+    {
-+        WCHAR itf_guid[MAX_PATH];
-+        DWORD itf_guid_len =3D _countof(itf_guid);
-+        LSTATUS err =3D RegEnumKeyExW(v4_itfs, enum_index++, itf_guid, &it=
-f_guid_len,
-+                                    NULL, NULL, NULL, NULL);
-+        if (err)
-+        {
-+            if (err !=3D ERROR_NO_MORE_ITEMS)
-+            {
-+                MsgToEventLog(M_SYSERR, L"%S: could not enumerate interfac=
-es (%lu)", __func__, err);
-+            }
-+            goto out;
-+        }
-+
-+        /* Ignore interfaces that are not connected or disabled */
-+        if (!IsInterfaceConnected(itf_guid))
-+        {
-+            continue;
-+        }
-+
-+        HKEY v4_itf;
-+        if (RegOpenKeyExW(v4_itfs, itf_guid, 0, KEY_READ, &v4_itf) !=3D NO=
-_ERROR)
-+        {
-+            MsgToEventLog(M_SYSERR, L"%S: could not open interface %s v4 r=
-egistry key", __func__, itf_guid);
-+            goto out;
-+        }
-+
-+        /* Get the DNS domain(s) for exclude routing */
-+        data[i].domains_size =3D sizeof(data[0].domains);
-+        memset(data[i].domains, 0, data[i].domains_size);
-+        err =3D GetItfDnsDomains(v4_itf, data[i].domains, &data[i].domains=
-_size);
-+        if (err)
-+        {
-+            if (err !=3D ERROR_FILE_NOT_FOUND)
-+            {
-+                MsgToEventLog(M_SYSERR, L"%S: could not read interface %s =
-domain suffix", __func__, itf_guid);
-+            }
-+            goto next_itf;
-+        }
-+
-+        /* Get the IPv4 DNS servers */
-+        DWORD v4_addrs_size =3D sizeof(data[0].addresses);
-+        err =3D GetItfDnsServersV4(v4_itf, data[i].addresses, &v4_addrs_si=
-ze);
-+        if (err && err !=3D ERROR_FILE_NOT_FOUND)
-+        {
-+            MsgToEventLog(M_SYSERR, L"%S: could not read interface %s v4 n=
-ame servers (%ld)",
-+                          __func__, itf_guid, err);
-+            goto next_itf;
-+        }
-+
-+        /* Get the IPv6 DNS servers, if there's space left */
-+        PSTR v6_addrs =3D data[i].addresses + v4_addrs_size;
-+        DWORD v6_addrs_size =3D sizeof(data[0].addresses) - v4_addrs_size;
-+        if (v6_addrs_size > NRPT_ADDR_SIZE)
-+        {
-+            HKEY v6_itf;
-+            if (RegOpenKeyExW(v6_itfs, itf_guid, 0, KEY_READ, &v6_itf) !=
-=3D NO_ERROR)
-+            {
-+                MsgToEventLog(M_SYSERR, L"%S: could not open interface %s =
-v6 registry key", __func__, itf_guid);
-+                goto next_itf;
-+            }
-+            err =3D GetItfDnsServersV6(v6_itf, v6_addrs, &v6_addrs_size);
-+            RegCloseKey(v6_itf);
-+            if (err && err !=3D ERROR_FILE_NOT_FOUND)
-+            {
-+                MsgToEventLog(M_SYSERR, L"%S: could not read interface %s =
-v6 name servers (%ld)",
-+                              __func__, itf_guid, err);
-+                goto next_itf;
-+            }
-+        }
-+
-+        if (v4_addrs_size || v6_addrs_size)
-+        {
-+            /* Replace comma-delimters with semicolons, as required by NRP=
-T */
-+            for (int j =3D 0; j < sizeof(data[0].addresses) && data[i].add=
-resses[j]; j++)
-+            {
-+                if (data[i].addresses[j] =3D=3D ',')
-+                {
-+                    data[i].addresses[j] =3D ';';
-+                }
-+            }
-+            ++i;
-+        }
-+
-+next_itf:
-+        RegCloseKey(v4_itf);
-+    }
-+
-+out:
-+    RegCloseKey(v6_itfs);
-+    RegCloseKey(v4_itfs);
-+}
-+
-+/**
-+ * Set a NRPT rule (subkey) and its values in the registry
-+ *
-+ * @param  nrpt_key   NRPT registry key handle
-+ * @param  subkey     subkey string to create
-+ * @param  address    name server address string
-+ * @param  domains    domains to resolve by this server as MULTI_SZ
-+ * @param  dom_size   size of domains in bytes including the terminators
-+ * @param  dnssec     boolean to determine if DNSSEC is to be enabled
-+ *
-+ * @return NO_ERROR on success, or Windows error code
-+ */
-+static DWORD
-+SetNrptRule(HKEY nrpt_key, PCWSTR subkey, PCSTR address,
-+            PCWSTR domains, DWORD dom_size, BOOL dnssec)
-+{
-+    /* Create rule subkey */
-+    DWORD err =3D NO_ERROR;
-+    HKEY rule_key;
-+    err =3D RegCreateKeyExW(nrpt_key, subkey, 0, NULL, 0, KEY_ALL_ACCESS, =
-NULL, &rule_key, NULL);
-+    if (err)
-+    {
-+        return err;
-+    }
-+
-+    /* Set name(s) for DNS routing */
-+    err =3D RegSetValueExW(rule_key, L"Name", 0, REG_MULTI_SZ, (PBYTE)doma=
-ins, dom_size);
-+    if (err)
-+    {
-+        goto out;
-+    }
-+
-+    /* Set DNS Server address */
-+    err =3D RegSetValueExA(rule_key, "GenericDNSServers", 0, REG_SZ, (PBYT=
-E)address, strlen(address) + 1);
-+    if (err)
-+    {
-+        goto out;
-+    }
-+
-+    DWORD reg_val;
-+    /* Set DNSSEC if required */
-+    if (dnssec)
-+    {
-+        reg_val =3D 1;
-+        err =3D RegSetValueExA(rule_key, "DNSSECValidationRequired", 0, RE=
-G_DWORD, (PBYTE)&reg_val, sizeof(reg_val));
-+        if (err)
-+        {
-+            goto out;
-+        }
-+
-+        reg_val =3D 0;
-+        err =3D RegSetValueExA(rule_key, "DNSSECQueryIPSECRequired", 0, RE=
-G_DWORD, (PBYTE)&reg_val, sizeof(reg_val));
-+        if (err)
-+        {
-+            goto out;
-+        }
-+
-+        reg_val =3D 0;
-+        err =3D RegSetValueExA(rule_key, "DNSSECQueryIPSECEncryption", 0, =
-REG_DWORD, (PBYTE)&reg_val, sizeof(reg_val));
-+        if (err)
-+        {
-+            goto out;
-+        }
-+    }
-+
-+    /* Set NRPT config options */
-+    reg_val =3D dnssec ? 0x0000000A : 0x00000008;
-+    err =3D RegSetValueExA(rule_key, "ConfigOptions", 0, REG_DWORD, (const=
- PBYTE)&reg_val, sizeof(reg_val));
-+    if (err)
-+    {
-+        goto out;
-+    }
-+
-+    /* Mandatory NRPT version */
-+    reg_val =3D 2;
-+    err =3D RegSetValueExA(rule_key, "Version", 0, REG_DWORD, (const PBYTE=
-)&reg_val, sizeof(reg_val));
-+    if (err)
-+    {
-+        goto out;
-+    }
-+
-+out:
-+    if (err)
-+    {
-+        RegDeleteKeyW(nrpt_key, subkey);
-+    }
-+    RegCloseKey(rule_key);
-+    return err;
-+}
-+
-+/**
-+ * Set NRPT exclude rules to accompany a catch all rule. This is done so t=
-hat
-+ * local resolution of names is not interfered with in case the VPN resolv=
-es
-+ * all names.
-+ *
-+ * @param  nrpt_key   the registry key to set the rules under
-+ * @param  ovpn_pid   the PID of the openvpn process
-+ */
-+static void
-+SetNrptExcludeRules(HKEY nrpt_key, DWORD ovpn_pid)
-+{
-+    nrpt_exclude_data_t data[8]; /* data from up to 8 interfaces */
-+    memset(data, 0, sizeof(data));
-+    GetNrptExcludeData(data, _countof(data));
-+
-+    unsigned n =3D 0;
-+    for (int i =3D 0; i < _countof(data); ++i)
-+    {
-+        nrpt_exclude_data_t *d =3D &data[i];
-+        if (d->domains_size =3D=3D 0)
-+        {
-+            break;
-+        }
-+
-+        DWORD err;
-+        WCHAR subkey[48];
-+        swprintf(subkey, _countof(subkey), L"OpenVPNDNSRoutingX-%02x-%lu",=
- ++n, ovpn_pid);
-+        err =3D SetNrptRule(nrpt_key, subkey, d->addresses, d->domains, d-=
->domains_size, FALSE);
-+        if (err)
-+        {
-+            MsgToEventLog(M_ERR, L"%S: failed to set rule %s (%lu)", __fun=
-c__, subkey, err);
-+        }
-+    }
-+}
-+
-+/**
-+ * Set NRPT rules for a openvpn process
-+ *
-+ * @param  nrpt_key   the registry key to set the rules under
-+ * @param  addresses  name server addresses
-+ * @param  domains    optional list of split routing domains
-+ * @param  dnssec     boolean whether DNSSEC is to be used
-+ * @param  ovpn_pid   the PID of the openvpn process
-+ *
-+ * @return NO_ERROR on success, or a Windows error code
-+ */
-+static DWORD
-+SetNrptRules(HKEY nrpt_key, const nrpt_address_t *addresses,
-+             const char *domains, BOOL dnssec, DWORD ovpn_pid)
-+{
-+    DWORD err =3D NO_ERROR;
-+    PWSTR wide_domains =3D L".\0"; /* DNS route everything by default */
-+    DWORD dom_size =3D 6;
-+
-+    /* Prepare DNS routing domains / split DNS */
-+    if (domains[0])
-+    {
-+        size_t domains_len =3D strlen(domains);
-+        dom_size =3D domains_len + 2; /* len + the trailing NULs */
-+
-+        wide_domains =3D utf8to16_size(domains, dom_size);
-+        dom_size *=3D sizeof(*wide_domains);
-+        if (!wide_domains)
-+        {
-+            return ERROR_OUTOFMEMORY;
-+        }
-+        /* Make a MULTI_SZ from a comma separated list */
-+        for (size_t i =3D 0; i < domains_len; ++i)
-+        {
-+            if (wide_domains[i] =3D=3D ',')
-+            {
-+                wide_domains[i] =3D 0;
-+            }
-+        }
++        setenv_str(es, "dns_vars_file", vars_file);
 +    }
 +    else
 +    {
-+        SetNrptExcludeRules(nrpt_key, ovpn_pid);
++        updown_env_set(up, o, tt, es);
 +    }
-+
-+    /* Create address string list */
-+    CHAR addr_list[NRPT_ADDR_NUM * NRPT_ADDR_SIZE];
-+    PSTR pos =3D addr_list;
-+    for (int i =3D 0; i < NRPT_ADDR_NUM && addresses[i][0]; ++i)
-+    {
-+        if (i !=3D 0)
-+        {
-+            *pos++ =3D ';';
-+        }
-+        strcpy(pos, addresses[i]);
-+        pos +=3D strlen(pos);
-+    }
-+
-+    WCHAR subkey[MAX_PATH];
-+    swprintf(subkey, _countof(subkey), L"OpenVPNDNSRouting-%lu", ovpn_pid);
-+    err =3D SetNrptRule(nrpt_key, subkey, addr_list, wide_domains, dom_siz=
-e, dnssec);
-+    if (err)
-+    {
-+        MsgToEventLog(M_ERR, L"%S: failed to set rule %s (%lu)", __func__,=
- subkey, err);
-+    }
-+
-+    if (domains[0])
-+    {
-+        free(wide_domains);
-+    }
-+    return err;
-+}
-+
-+/**
-+ * Return the registry key where NRPT rules are stored
-+ *
-+ * @param  key        pointer to the HKEY it is returned in
-+ * @param  gpol       pointer to BOOL the use of GPOL hive is returned in
-+ *
-+ * @return NO_ERROR on success, or a Windows error code
-+ */
-+static LSTATUS
-+OpenNrptBaseKey(PHKEY key, PBOOL gpol)
+
+     argv_printf(&argv, "%s", o->updown);
+     argv_msg(M_INFO, &argv);
+@@ -586,8 +593,115 @@
+     return res;
+ }
+
++static bool
++run_updown_runner(bool up, struct options *o, const struct tuntap *tt, str=
+uct dns_updown_runner_info *updown_runner)
 +{
-+    /*
-+     * Registry keys Name Service Policy Table (NRPT) rules can be stored =
-at.
-+     * When the group policy key exists, NRPT rules must be placed there.
-+     * It is created when NRPT rules are pushed via group policy and it
-+     * remains in the registry even if the last GP-NRPT rule is deleted.
-+     */
-+    static PCSTR gpol_key =3D "SOFTWARE\\Policies\\Microsoft\\Windows NT\\=
-DNSClient\\DnsPolicyConfig";
-+    static PCSTR sys_key =3D "SYSTEM\\CurrentControlSet\\Services\\Dnscach=
-e\\Parameters\\DnsPolicyConfig";
-+
-+    HKEY nrpt;
-+    *gpol =3D TRUE;
-+    LSTATUS err =3D RegOpenKeyExA(HKEY_LOCAL_MACHINE, gpol_key, 0, KEY_ALL=
-_ACCESS, &nrpt);
-+    if (err =3D=3D ERROR_FILE_NOT_FOUND)
++    int dns_pipe_fd[2];
++    int ack_pipe_fd[2];
++    if (pipe(dns_pipe_fd) !=3D 0
++        || pipe(ack_pipe_fd) !=3D 0)
 +    {
-+        *gpol =3D FALSE;
-+        err =3D RegOpenKeyExA(HKEY_LOCAL_MACHINE, sys_key, 0, KEY_ALL_ACCE=
-SS, &nrpt);
-+        if (err)
++        msg(M_ERR | M_ERRNO, "run_dns_up_down: unable to create pipes");
++        return false;
++    }
++    updown_runner->pid =3D fork();
++    if (updown_runner->pid =3D=3D -1)
++    {
++        msg(M_ERR | M_ERRNO, "run_dns_up_down: unable to fork");
++        close(dns_pipe_fd[0]);
++        close(dns_pipe_fd[1]);
++        close(ack_pipe_fd[0]);
++        close(ack_pipe_fd[1]);
++        return false;
++    }
++    else if (updown_runner->pid > 0)
++    {
++        /* Parent process */
++        close(dns_pipe_fd[0]);
++        close(ack_pipe_fd[1]);
++        updown_runner->fds[0] =3D ack_pipe_fd[0];
++        updown_runner->fds[1] =3D dns_pipe_fd[1];
++    }
++    else
++    {
++        /* Script runner process, close unused FDs */
++        for (int fd =3D 3; fd < 100; ++fd)
 +        {
-+            nrpt =3D INVALID_HANDLE_VALUE;
-+        }
-+    }
-+    *key =3D nrpt;
-+    return err;
-+}
-+
-+/**
-+ * Delete OpenVPN NRPT rules from the registry
-+ *
-+ * If the pid parameter is 0 all NRPT rules added by OpenVPN are deleted.
-+ * In all other cases only rules matching the pid are deleted.
-+ *
-+ * @param  pid        PID of the process to delete the rules for or 0
-+ * @param  gpol
-+ *
-+ * @return BOOL to indicate if rules were deleted
-+ */
-+static BOOL
-+DeleteNrptRules(DWORD pid, PBOOL gpol)
-+{
-+    HKEY key;
-+    LSTATUS err =3D OpenNrptBaseKey(&key, gpol);
-+    if (err)
-+    {
-+        MsgToEventLog(M_SYSERR, L"%S: could not open NRPT base key (%lu)",=
- __func__, err);
-+        return FALSE;
-+    }
-+
-+    /* PID suffix string to compare against later */
-+    WCHAR pid_str[16];
-+    size_t pidlen =3D 0;
-+    if (pid)
-+    {
-+        swprintf(pid_str, _countof(pid_str), L"-%lu", pid);
-+        pidlen =3D wcslen(pid_str);
-+    }
-+
-+    int deleted =3D 0;
-+    DWORD enum_index =3D 0;
-+    while (TRUE)
-+    {
-+        WCHAR name[MAX_PATH];
-+        DWORD namelen =3D _countof(name);
-+        err =3D RegEnumKeyExW(key, enum_index++, name, &namelen, NULL, NUL=
-L, NULL, NULL);
-+        if (err)
-+        {
-+            if (err !=3D ERROR_NO_MORE_ITEMS)
++            if (fd !=3D dns_pipe_fd[0]
++                && fd !=3D ack_pipe_fd[1])
 +            {
-+                MsgToEventLog(M_SYSERR, L"%S: could not enumerate NRPT rul=
-es (%lu)", __func__, err);
++                close(fd);
++            }
++        }
++
++        /* Ignore signals */
++        signal(SIGINT, SIG_IGN);
++        signal(SIGHUP, SIG_IGN);
++        signal(SIGTERM, SIG_IGN);
++        signal(SIGUSR1, SIG_IGN);
++        signal(SIGUSR2, SIG_IGN);
++        signal(SIGPIPE, SIG_IGN);
++
++        while (1)
++        {
++            ssize_t rlen, wlen;
++            char path[PATH_MAX];
++
++            /* Block here until parent sends a path */
++            rlen =3D read(dns_pipe_fd[0], &path, sizeof(path));
++            if (rlen < 1)
++            {
++                if (rlen =3D=3D -1 && errno =3D=3D EINTR)
++                {
++                    continue;
++                }
++                close(dns_pipe_fd[0]);
++                close(ack_pipe_fd[1]);
++                exit(0);
++            }
++
++            path[sizeof(path) - 1] =3D '\0';
++            int res =3D do_run_up_down_command(up, path, &o->dns_options, =
+tt);
++            platform_unlink(path);
++
++            /* Unblock parent process */
++            while (1)
++            {
++                wlen =3D write(ack_pipe_fd[1], &res, sizeof(res));
++                if ((wlen =3D=3D -1 && errno !=3D EINTR) || wlen < sizeof(=
+res))
++                {
++                    /* Not much we can do about errors but exit */
++                    close(dns_pipe_fd[0]);
++                    close(ack_pipe_fd[1]);
++                    exit(0);
++                }
++                else if (wlen =3D=3D sizeof(res))
++                {
++                    break;
++                }
++            }
++
++            up =3D !up; /* do the opposite next time */
++        }
++    }
++
++    return true;
++}
++
++static const char *
++write_dns_vars_file(bool up, const struct options *o, const struct tuntap =
+*tt, struct gc_arena *gc)
++{
++    struct env_set *es =3D env_set_create(gc);
++    const char *dvf =3D platform_create_temp_file(o->tmp_dir, "dvf", gc);
++
++    updown_env_set(up, &o->dns_options, tt, es);
++    env_set_write_file(dvf, es);
++
++    return dvf;
++}
++
+ static void
+-run_up_down_command(bool up, struct options *o, const struct tuntap *tt)
++run_up_down_command(bool up, struct options *o, const struct tuntap *tt, s=
+truct dns_updown_runner_info *updown_runner)
+ {
+     if (!o->dns_options.updown)
+     {
+@@ -595,7 +709,60 @@
+     }
+
+     int status;
+-    status =3D do_run_up_down_command(up, &o->dns_options, tt);
++
++    if (!updown_runner->required)
++    {
++        /* Run dns updown directly */
++        status =3D do_run_up_down_command(up, NULL, &o->dns_options, tt);
++    }
++    else
++    {
++        if (updown_runner->pid < 1)
++        {
++            /* Need to set up privilege preserving child first */
++            if (!run_updown_runner(up, o, tt, updown_runner))
++            {
++                return;
++            }
++        }
++
++        struct gc_arena gc =3D gc_new();
++        int rfd =3D updown_runner->fds[0];
++        int wfd =3D updown_runner->fds[1];
++        const char *dvf =3D write_dns_vars_file(up, o, tt, &gc);
++        size_t dvf_size =3D strlen(dvf) + 1;
++
++        while (1)
++        {
++            ssize_t len =3D write(wfd, dvf, dvf_size);
++            if (len < dvf_size)
++            {
++                if (len =3D=3D -1 && errno =3D=3D EINTR)
++                {
++                    continue;
++                }
++                msg(M_ERR | M_ERRNO, "could not send dns vars filename");
 +            }
 +            break;
 +        }
 +
-+        /* Keep rule if name doesn't match */
-+        if (wcsncmp(name, L"OpenVPNDNSRouting", 17) !=3D 0
-+            || (pid && wcsncmp(name + namelen - pidlen, pid_str, pidlen) !=
-=3D 0))
++        while (1)
 +        {
-+            continue;
++            ssize_t len =3D read(rfd, &status, sizeof(status));
++            if (len < sizeof(status))
++            {
++                if (len =3D=3D -1 && errno =3D=3D EINTR)
++                {
++                    continue;
++                }
++                msg(M_ERR | M_ERRNO, "could not receive dns updown status"=
+);
++            }
++            break;
 +        }
 +
-+        if (RegDeleteKeyW(key, name) =3D=3D NO_ERROR)
-+        {
-+            enum_index--;
-+            deleted++;
-+        }
++        gc_free(&gc);
 +    }
 +
-+    RegCloseKey(key);
-+    return deleted ? TRUE : FALSE;
-+}
-+
-+/**
-+ * Delete a process' NRPT rules and apply the reduced set of rules
-+ *
-+ * @param ovpn_pid  OpenVPN process id to delete rules for
-+ */
-+static void
-+UndoNrptRules(DWORD ovpn_pid)
-+{
-+    BOOL gpol;
-+    if (DeleteNrptRules(ovpn_pid, &gpol))
-+    {
-+        ApplyDnsSettings(gpol);
-+    }
-+}
-+
-+/**
-+ * Add Name Resolution Policy Table (NRPT) rules as documented in
-+ * https://msdn.microsoft.com/en-us/library/ff957356.aspx for DNS name
-+ * resolution, as well as DNS search domain(s), if given.
-+ *
-+ * @param  msg        config messages sent by the openvpn process
-+ * @param  ovpn_pid   process id of the sending openvpn process
-+ * @param  lists      undo lists for this process
-+ *
-+ * @return NO_ERROR on success, or a Windows error code
-+ */
-+static DWORD
-+HandleDNSConfigNrptMessage(const nrpt_dns_cfg_message_t *msg,
-+                           DWORD ovpn_pid, undo_lists_t *lists)
-+{
-+    /*
-+     * Use a non-const reference with limited scope to
-+     * enforce null-termination of strings from client
-+     */
-+    {
-+        nrpt_dns_cfg_message_t *msgptr =3D (nrpt_dns_cfg_message_t *) msg;
-+        msgptr->iface.name[_countof(msg->iface.name) - 1] =3D '\0';
-+        msgptr->search_domains[_countof(msg->search_domains) - 1] =3D '\0';
-+        msgptr->resolve_domains[_countof(msg->resolve_domains) - 1] =3D '\=
-0';
-+        for (size_t i =3D 0; i < NRPT_ADDR_NUM; ++i)
-+        {
-+            msgptr->addresses[i][_countof(msg->addresses[0]) - 1] =3D '\0';
-+        }
-+    }
-+
-+    /* Make sure we have the VPN interface name */
-+    if (msg->iface.name[0] =3D=3D 0)
-+    {
-+        return ERROR_MESSAGE_DATA;
-+    }
-+
-+    /* Some sanity checks on the add message data */
-+    if (msg->header.type =3D=3D msg_add_nrpt_cfg)
-+    {
-+        /* At least one name server address is set */
-+        if (msg->addresses[0][0] =3D=3D 0)
-+        {
-+            return ERROR_MESSAGE_DATA;
-+        }
-+        /* Resolve domains are double zero terminated (MULTI_SZ) */
-+        const char *rdom =3D msg->resolve_domains;
-+        size_t rdom_size =3D sizeof(msg->resolve_domains);
-+        size_t rdom_len =3D strlen(rdom);
-+        if (rdom_len && (rdom_len + 1 >=3D rdom_size || rdom[rdom_len + 2]=
- !=3D 0))
-+        {
-+            return ERROR_MESSAGE_DATA;
-+        }
-+    }
-+
-+    BOOL gpol_nrpt =3D FALSE;
-+    BOOL gpol_list =3D FALSE;
-+
-+    WCHAR iid[64];
-+    DWORD iid_err =3D InterfaceIdString(msg->iface.name, iid, _countof(iid=
-));
-+    if (iid_err)
-+    {
-+        return iid_err;
-+    }
-+
-+    /* Delete previously set values for this instance first, if any */
-+    PDWORD undo_pid =3D RemoveListItem(&(*lists)[undo_nrpt], CmpAny, NULL);
-+    if (undo_pid)
-+    {
-+        if (*undo_pid !=3D ovpn_pid)
-+        {
-+            MsgToEventLog(M_INFO,
-+                          L"%S: PID stored for undo doesn't match: %lu vs =
-%lu. "
-+                          "This is likely an error. Cleaning up anyway.",
-+                          __func__, *undo_pid, ovpn_pid);
-+        }
-+        DeleteNrptRules(*undo_pid, &gpol_nrpt);
-+        free(undo_pid);
-+
-+        ResetNameServers(iid, AF_INET);
-+        ResetNameServers(iid, AF_INET6);
-+    }
-+    SetDnsSearchDomains(msg->iface.name, NULL, &gpol_list, lists);
-+
-+    if (msg->header.type =3D=3D msg_del_nrpt_cfg)
-+    {
-+        ApplyDnsSettings(gpol_nrpt || gpol_list);
-+        return NO_ERROR; /* Done dealing with del message */
-+    }
-+
-+    HKEY key;
-+    LSTATUS err =3D OpenNrptBaseKey(&key, &gpol_nrpt);
-+    if (err)
-+    {
-+        goto out;
-+    }
-+
-+    /* Add undo information first in case there's no heap left */
-+    PDWORD pid =3D malloc(sizeof(ovpn_pid));
-+    if (!pid)
-+    {
-+        err =3D ERROR_OUTOFMEMORY;
-+        goto out;
-+    }
-+    *pid =3D ovpn_pid;
-+    if (AddListItem(&(*lists)[undo_nrpt], pid))
-+    {
-+        err =3D ERROR_OUTOFMEMORY;
-+        free(pid);
-+        goto out;
-+    }
-+
-+    /* Set NRPT rules */
-+    BOOL dnssec =3D (msg->flags & nrpt_dnssec) !=3D 0;
-+    err =3D SetNrptRules(key, msg->addresses, msg->resolve_domains, dnssec=
-, ovpn_pid);
-+    if (err)
-+    {
-+        goto out;
-+    }
-+
-+    /* Set name servers */
-+    err =3D SetNameServerAddresses(iid, msg->addresses);
-+    if (err)
-+    {
-+        goto out;
-+    }
-+
-+    /* Set search domains, if any */
-+    if (msg->search_domains[0])
-+    {
-+        err =3D SetDnsSearchDomains(msg->iface.name, msg->search_domains, =
-&gpol_list, lists);
-+    }
-+
-+    ApplyDnsSettings(gpol_nrpt || gpol_list);
-+
-+out:
-+    return err;
-+}
-+
- static DWORD
- HandleWINSConfigMessage(const wins_cfg_message_t *msg, undo_lists_t *lists)
- {
-@@ -2202,7 +3108,7 @@
+     msg(M_INFO, "dns %s command exited with status %d", up ? "up" : "down"=
+, status);
+ }
+=20
+@@ -681,7 +848,7 @@
  }
 
- static VOID
--HandleMessage(HANDLE pipe, HANDLE ovpn_proc,
-+HandleMessage(HANDLE pipe, PPROCESS_INFORMATION proc_info,
-               DWORD bytes, DWORD count, LPHANDLE events, undo_lists_t *lis=
-ts)
+ void
+-run_dns_up_down(bool up, struct options *o, const struct tuntap *tt)
++run_dns_up_down(bool up, struct options *o, const struct tuntap *tt, struc=
+t dns_updown_runner_info *duri)
  {
-     pipe_message_t msg;
-@@ -2265,6 +3171,14 @@
-             ack.error_number =3D HandleDNSConfigMessage(&msg.dns, lists);
-             break;
+     if (!o->dns_options.servers)
+     {
+@@ -718,6 +885,6 @@
+ #ifdef _WIN32
+     run_up_down_service(up, o, tt);
+ #else
+-    run_up_down_command(up, o, tt);
++    run_up_down_command(up, o, tt, duri);
+ #endif /* ifdef _WIN32 */
+ }
+diff --git a/src/openvpn/dns.h b/src/openvpn/dns.h
+index c4d19ff..4cc1e73 100644
+--- a/src/openvpn/dns.h
++++ b/src/openvpn/dns.h
+@@ -68,6 +68,14 @@
+     const char *sni;
+ };
 
-+        case msg_add_nrpt_cfg:
-+        case msg_del_nrpt_cfg:
++struct dns_updown_runner_info {
++    bool required;
++    int fds[2];
++#if !defined(_WIN32)
++    pid_t pid;
++#endif
++};
++
+ struct dns_options {
+     struct dns_domain *search_domains;
+     struct dns_server *servers_prepull;
+@@ -154,8 +162,10 @@
+  * @param   up          Boolean to set this call to "up" when true
+  * @param   o           Pointer to the program options
+  * @param   tt          Pointer to the connection's tuntap struct
++ * @param   duri        Pointer to the updown runner info struct
+  */
+-void run_dns_up_down(bool up, struct options *o, const struct tuntap *tt);
++void run_dns_up_down(bool up, struct options *o, const struct tuntap *tt,
++                     struct dns_updown_runner_info *duri);
+
+ /**
+  * Puts the DNS options into an environment set.
+diff --git a/src/openvpn/env_set.c b/src/openvpn/env_set.c
+index 81ab59e..3fe23fd 100644
+--- a/src/openvpn/env_set.c
++++ b/src/openvpn/env_set.c
+@@ -33,6 +33,7 @@
+ #include "env_set.h"
+
+ #include "run_command.h"
++#include "platform.h"
+
+ /*
+  * Set environmental variable (int or string).
+@@ -235,6 +236,30 @@
+ }
+
+ void
++env_set_write_file(const char *path, const struct env_set *es)
++{
++    FILE *fp =3D platform_fopen(path, "w");
++    if (!fp)
++    {
++        msg(M_ERR, "could not write env set to '%s'", path);
++        return;
++    }
++
++    if (es)
++    {
++        const struct env_item *item =3D  es->list;
++        while (item)
 +        {
-+            DWORD ovpn_pid =3D proc_info->dwProcessId;
-+            ack.error_number =3D HandleDNSConfigNrptMessage(&msg.nrpt_dns,=
- ovpn_pid, lists);
++            fputs(item->string, fp);
++            fputc('\n', fp);
++            item =3D item->next;
 +        }
-+        break;
++    }
 +
-         case msg_add_wins_cfg:
-         case msg_del_wins_cfg:
-             ack.error_number =3D HandleWINSConfigMessage(&msg.wins, lists);
-@@ -2280,7 +3194,8 @@
-         case msg_register_ring_buffers:
-             if (msg.header.size =3D=3D sizeof(msg.rrb))
-             {
--                ack.error_number =3D HandleRegisterRingBuffers(&msg.rrb, o=
-vpn_proc, lists);
-+                HANDLE ovpn_hnd =3D proc_info->hProcess;
-+                ack.error_number =3D HandleRegisterRingBuffers(&msg.rrb, o=
-vpn_hnd, lists);
-             }
-             break;
-
-@@ -2331,6 +3246,10 @@
-                     ResetNameServers(item->data, AF_INET6);
-                     break;
-
-+                case undo_nrpt:
-+                    UndoNrptRules(*(PDWORD)item->data);
-+                    break;
++    fclose(fp);
++}
 +
-                 case undo_domains:
-                     UndoDnsSearchDomains(item->data);
-                     break;
-@@ -2652,7 +3571,7 @@
-             break;
++void
+ env_set_inherit(struct env_set *es, const struct env_set *src)
+ {
+     const struct env_item *e;
+diff --git a/src/openvpn/env_set.h b/src/openvpn/env_set.h
+index 4294d6e..70d01e2 100644
+--- a/src/openvpn/env_set.h
++++ b/src/openvpn/env_set.h
+@@ -91,6 +91,14 @@
+
+ void env_set_print(int msglevel, const struct env_set *es);
+
++/**
++ * Write a struct env_set to a file. Each item on one line.
++ *
++ * @param path  The filepath to write to.
++ * @param es    Pointer to the env_set to write.
++ */
++void env_set_write_file(const char *path, const struct env_set *es);
++
+ void env_set_inherit(struct env_set *es, const struct env_set *src);
+
+ /* returns true if environmental variable name starts with 'password' */
+diff --git a/src/openvpn/init.c b/src/openvpn/init.c
+index 9eb8290..9ad64aa 100644
+--- a/src/openvpn/init.c
++++ b/src/openvpn/init.c
+@@ -2026,7 +2026,7 @@
+                         c->c2.frame.tun_mtu, c->c2.es, &c->net_ctx);
          }
 
--        HandleMessage(ovpn_pipe, proc_info.hProcess, bytes, 1, &exit_event=
-, &undo_lists);
-+        HandleMessage(ovpn_pipe, &proc_info, bytes, 1, &exit_event, &undo_=
-lists);
-     }
+-        run_dns_up_down(true, &c->options, c->c1.tuntap);
++        run_dns_up_down(true, &c->options, c->c1.tuntap, &c->persist.duri);
 
-     WaitForSingleObject(proc_info.hProcess, IO_TIMEOUT);
-@@ -2848,24 +3767,28 @@
- static void
- CleanupRegistry(void)
- {
--    HKEY key;
--    DWORD changed =3D 0;
-+    BOOL changed =3D FALSE;
-+
-+    /* Clean up leftover NRPT rules */
-+    BOOL gpol_nrpt;
-+    changed =3D DeleteNrptRules(0, &gpol_nrpt);
+         /* run the up script */
+         run_up_down(c->options.up_script,
+@@ -2066,7 +2066,7 @@
+         /* explicitly set the ifconfig_* env vars */
+         do_ifconfig_setenv(c->c1.tuntap, c->c2.es);
 
-     /* Clean up leftover DNS search list fragments */
-+    HKEY key;
-     BOOL gpol_list;
-     GetDnsSearchListKey(NULL, &gpol_list, &key);
-     if (key !=3D INVALID_HANDLE_VALUE)
+-        run_dns_up_down(true, &c->options, c->c1.tuntap);
++        run_dns_up_down(true, &c->options, c->c1.tuntap, &c->persist.duri);
+
+         /* run the up script if user specified --up-restart */
+         if (c->options.up_restart)
+@@ -2156,7 +2156,7 @@
+     adapter_index =3D c->c1.tuntap->adapter_index;
+ #endif
+
+-    run_dns_up_down(false, &c->options, c->c1.tuntap);
++    run_dns_up_down(false, &c->options, c->c1.tuntap, &c->persist.duri);
+
+     if (force || !(c->sig->signal_received =3D=3D SIGUSR1 && c->options.pe=
+rsist_tun))
      {
-         if (ResetDnsSearchDomains(key))
+@@ -3968,6 +3968,9 @@
+
+         c0->uid_gid_specified =3D user_defined || group_defined;
+
++        /* fork the dns script runner to preserve root? */
++        c->persist.duri.required =3D c0->uid_gid_specified;
++
+         /* perform postponed chdir if --daemon */
+         if (c->did_we_daemonize && c->options.cd_dir =3D=3D NULL)
          {
--            changed++;
-+            changed =3D TRUE;
-         }
-         RegCloseKey(key);
-     }
+diff --git a/src/openvpn/openvpn.h b/src/openvpn/openvpn.h
+index 0bbd1a4..1023520 100644
+--- a/src/openvpn/openvpn.h
++++ b/src/openvpn/openvpn.h
+@@ -45,6 +45,7 @@
+ #include "pool.h"
+ #include "plugin.h"
+ #include "manage.h"
++#include "dns.h"
 
-     if (changed)
-     {
--        ApplyDnsSettings(gpol_list);
-+        ApplyDnsSettings(gpol_nrpt || gpol_list);
-     }
- }
+ /*
+  * Our global key schedules, packaged thusly
+@@ -120,6 +121,7 @@
+ struct context_persist
+ {
+     int restart_sleep_seconds;
++    struct dns_updown_runner_info duri;
+ };
+
 
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/837?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/839?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings
 
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: I576e74f3276362606e9cbd50bb5adbebaaf209cc
-Gerrit-Change-Number: 837
-Gerrit-PatchSet: 17
+Gerrit-Change-Id: I6b67e3a00dd84bf348b6af28115ee11138c3a111
+Gerrit-Change-Number: 839
+Gerrit-PatchSet: 20
 Gerrit-Owner: d12fk <heiko@...515...>
+Gerrit-Reviewer: MaxF <max@...2606...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-Reviewer: stipa <lstipakov@...277...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: stipa <lstipakov@...277...>
+Gerrit-Attention: d12fk <heiko@...515...>
+Gerrit-Attention: MaxF <max@...2606...>
 Gerrit-MessageType: newpatchset
 
---jpMhEt5y+Zg=
+--r96uv8w+biY=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p> Attention is currently required from: plaisthos, stipa. </p>
-<p>d12fk <strong>uploaded patch set #17</strong> to this change.</p><p><a h=
-ref=3D"http://gerrit.openvpn.net/c/openvpn/+/837?usp=3Demail">View Change</=
-a></p><pre style=3D"font-family: monospace,monospace; white-space: pre-wrap=
-;">win: implement --dns option support with NRPT<br><br>Implement support f=
-or setting options from --dns. This is hugely<br>different than what we had=
- so far with DNS related --dhcp-option.<br><br>The main difference it that =
-we support split DNS and DNSSEC by making<br>use of NRPT (Name Resolution P=
-olicy Table). Also OpenVPN tries to keep<br>local DNS resolution working wh=
-en DNS is redirected into the tunnel. To<br>prevent this from happening we =
-have --block-outside-dns, in case you<br>wonder. Basically we collect domai=
-ns and name server addresses from<br>network adapters and add so called exc=
-lude NRPT rules in addition to the<br>catch all rule that is pushed by the =
-server.<br><br>All is done via the interactive service, since modifying all=
- this<br>requires the elevated privileges that the openvpn process hopefull=
-y<br>doesn&#39;t have.<br><br>Change-Id: I576e74f3276362606e9cbd50bb5adbeba=
-af209cc<br>Signed-off-by: Heiko Hund &lt;heiko@...2662...&gt;<br>---<br>M i=
-nclude/openvpn-msg.h<br>M src/openvpn/dns.c<br>M src/openvpn/dns.h<br>M src=
-/openvpn/init.c<br>M src/openvpnserv/interactive.c<br>5 files changed, 1,14=
-9 insertions(+), 30 deletions(-)<br><br></pre><pre style=3D"font-family: mo=
-nospace,monospace; white-space: pre-wrap;">git pull ssh://gerrit.openvpn.ne=
-t:29418/openvpn refs/changes/37/837/17</pre><pre style=3D"font-family: mono=
-space,monospace; white-space: pre-wrap;"><span>diff --git a/include/openvpn=
--msg.h b/include/openvpn-msg.h</span><br><span>index 7a99335..8b48053 10064=
-4</span><br><span>--- a/include/openvpn-msg.h</span><br><span>+++ b/include=
-/openvpn-msg.h</span><br><span>@@ -35,6 +35,8 @@</span><br><span>     msg_d=
-el_route,</span><br><span>     msg_add_dns_cfg,</span><br><span>     msg_de=
-l_dns_cfg,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    msg_a=
-dd_nrpt_cfg,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    msg=
-_del_nrpt_cfg,</span><br><span>     msg_add_nbt_cfg,</span><br><span>     m=
-sg_del_nbt_cfg,</span><br><span>     msg_flush_neighbors,</span><br><span>@=
-@ -96,6 +98,23 @@</span><br><span>     inet_address_t addr[4]; /* support u=
-p to 4 dns addresses */</span><br><span> } dns_cfg_message_t;</span><br><sp=
-an> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+typedef enum {</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+    nrpt_dnssec</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+} nrpt_flags_t;</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+#define NRPT_ADDR_NUM 8   /* Max. number of addresses */</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+#define NRPT_ADDR_SIZE 48 /=
-* Max. address strlen + some */</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+typedef char nrpt_address_t[NRPT_ADDR_SIZE];</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+typedef struct {</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    message_header_t header;</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+    interface_t iface;</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+    nrpt_address_t addresses[=
-NRPT_ADDR_NUM];</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-char resolve_domains[512]; /* double \0 terminated */</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    char search_domains[512];</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+    nrpt_flags_t flags;</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+} nrpt_dns_cfg_message_t;</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> typ=
-edef struct {</span><br><span>     message_header_t header;</span><br><span=
->     interface_t iface;</span><br><span>diff --git a/src/openvpn/dns.c b/s=
-rc/openvpn/dns.c</span><br><span>index cf48c22..b6e524f 100644</span><br><s=
-pan>--- a/src/openvpn/dns.c</span><br><span>+++ b/src/openvpn/dns.c</span><=
-br><span>@@ -29,6 +29,12 @@</span><br><span> </span><br><span> #include &qu=
-ot;dns.h&quot;</span><br><span> #include &quot;socket.h&quot;</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+#include &quot;options.h&quot;</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+#ifdef _WIN32</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+#include &quot;win32.h&quot;</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+#include &quot;openvpn-msg.h&quot;</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+#endif</span><br><span>=
- </span><br><span> /**</span><br><span>  * Parses a string as port and stor=
-es it</span><br><span>@@ -428,6 +434,122 @@</span><br><span>     gc_free(&a=
-mp;gc);</span><br><span> }</span><br><span> </span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+#ifdef _WIN32</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-static void</span><br><span style=3D"color: hsl(120, 100%, 40%);">+make_dom=
-ain_list(const char *what, const struct dns_domain *src,</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+                 bool nrpt_domains, ch=
-ar *dst, size_t dst_size)</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    /* NRPT =
-domains need two \0 at the end for REG_MULTI_SZ</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+     * and a leading &#39;.&#39; added in front=
- of the domain name */</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+    size_t term_size =3D nrpt_domains ? 2 : 1;</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+    size_t leading_dot =3D nrpt_domains ? 1 :=
- 0;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    size_t offse=
-t =3D 0;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+    memset(dst, 0, dst_size);<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+    while (src)</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+        size_t len =3D strlen(src-&gt;name);</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+        if (offset + leading_d=
-ot + len + term_size &gt; dst_size)</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+        {</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+            msg(M_WARN, &quot;WARNING: %s truncated&quot;, what);</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+            if (offset)=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            {</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+                /* Remove=
- trailing comma */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-               *(dst + offset - 1) =3D &#39;\0&#39;;</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+            }</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+            break;</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+        }</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-      if (leading_dot)</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+        {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
-     *(dst + offset++) =3D &#39;.&#39;;</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+        }</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+        strncpy(dst + offset, src-&gt;name, len);</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+        offset +=3D len;</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+        src =3D src-&gt;next;</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+        if (src)</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+        {</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+            *(dst + offset++) =3D &#39;,&#39;;</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+        }</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+static voi=
-d</span><br><span style=3D"color: hsl(120, 100%, 40%);">+run_up_down_servic=
-e(bool add, const struct options *o, const struct tuntap *tt)</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+    const struct dns_server *server =3D o-&gt;dns_o=
-ptions.servers;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-const struct dns_domain *search_domains =3D o-&gt;dns_options.search_domain=
-s;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+    while (true)</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+        if (!server)</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+        {</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+            if (add)</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+            {</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+                msg(M_WARN, &quot;WARNING: setting DNS failed, no c=
-ompatible server profile&quot;);</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+            }</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+            return;</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+        }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+        bool only_stan=
-dard_server_ports =3D true;</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+        for (size_t i =3D 0; i &lt; NRPT_ADDR_NUM; ++i)</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+        {</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+            if (server-&gt;addr[i].port &=
-amp;&amp; server-&gt;addr[i].port !=3D 53)</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+            {</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+                only_standard_server_ports =3D false;</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+                break;</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+            }</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+        }</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+        if ((server-&gt;transport =3D=
-=3D DNS_TRANSPORT_UNSET || server-&gt;transport =3D=3D DNS_TRANSPORT_PLAIN)=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            &amp;&a=
-mp; only_standard_server_ports)</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+        {</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+            break; /* found compatible server */</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+        }</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+        server =3D server-&gt;next;</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    ack_message=
-_t ack;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    nrpt_dns=
-_cfg_message_t nrpt =3D {</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+        .header =3D {</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+            (add ? msg_add_nrpt_cfg : msg_del_nrpt_cfg),</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+            sizeof(nrpt_dns_cf=
-g_message_t),</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
-      0</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        },</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+        .iface =3D { =
-.index =3D tt-&gt;adapter_index, .name =3D &quot;&quot; },</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+        .flags =3D server-&gt;dnssec=
- =3D=3D DNS_SECURITY_NO ? 0 : nrpt_dnssec,</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+    };</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+    strncpynt(nrpt.iface.name, tt-&gt;actual_name, sizeof(nrpt.if=
-ace.name));</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+    for (size_t i =3D 0; i =
-&lt; NRPT_ADDR_NUM; ++i)</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        i=
-f (server-&gt;addr[i].family =3D=3D AF_UNSPEC)</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+        {</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+            /* No more addresses */</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+            break;</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+        }</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+        if (inet_ntop(server-&gt;addr[i].family, &amp;server-&gt;addr[=
-i].in,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+             =
-         nrpt.addresses[i], NRPT_ADDR_SIZE) =3D=3D NULL)</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+        {</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+            msg(M_WARN, &quot;WARNING: could not=
- convert dns server address&quot;);</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+        }</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+    make_domain_list(&quot;=
-dns server resolve domains&quot;, server-&gt;domains, true,</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+                     nrpt.resolve_d=
-omains, sizeof(nrpt.resolve_domains));</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-    make_domain_list(&quot;dns search domains&quot;, search_domains, false,=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+                   =
-  nrpt.search_domains, sizeof(nrpt.search_domains));</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+    send_msg_iservice(o-&gt;msg_channel, &amp;nrpt, sizeof(n=
-rpt), &amp;ack, &quot;DNS&quot;);</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+#endif /* _WIN32 */</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> void<=
-/span><br><span> show_dns_options(const struct dns_options *o)</span><br><s=
-pan> {</span><br><span>@@ -506,3 +628,43 @@</span><br><span> </span><br><sp=
-an>     gc_free(&amp;gc);</span><br><span> }</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+void</span><br><span style=3D"color: hsl(120, 100%, 40%);">+run_dns_u=
-p_down(bool up, struct options *o, const struct tuntap *tt)</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+    if (!o-&gt;dns_options.servers)</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+        return;</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    /* Warn a=
-bout adding servers of unsupported AF */</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+    const struct dns_server *s =3D o-&gt;dns_options.s=
-ervers;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    while (u=
-p &amp;&amp; s)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        size_t bad=
-_count =3D 0;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
-  for (size_t i =3D 0; i &lt; s-&gt;addr_count; ++i)</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+        {</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+            if ((s-&gt;addr[i].family =3D=3D AF_INE=
-T6 &amp;&amp; !tt-&gt;did_ifconfig_ipv6_setup)</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+                || (s-&gt;addr[i].family =3D=3D =
-AF_INET &amp;&amp; !tt-&gt;did_ifconfig_setup))</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+            {</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+                ++bad_count;</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+            }</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+        }</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+        if (bad_count =3D=3D s-&gt;addr_count)</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+        {</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+            msg(M_WARN, &quot;DNS server =
-%ld only has address(es) from a family &quot;</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+                &quot;the tunnel is not configure=
-d for - it will not be reachable&quot;,</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+                s-&gt;priority);</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+        }</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+        else if (bad_count)</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+        {</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+            msg(M_WARN, &quot;DNS server %ld has ad=
-dress(es) from a family &quot;</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+                &quot;the tunnel is not configured for&quot;, s-=
-&gt;priority);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
-   }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        s =3D s=
--&gt;next;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+#ifdef _WIN32</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+    run_up_down_service(up, o, tt);</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+#endif /* ifdef _WIN32 */</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span>diff --=
-git a/src/openvpn/dns.h b/src/openvpn/dns.h</span><br><span>index 838ebe1..=
-f24e30b 100644</span><br><span>--- a/src/openvpn/dns.h</span><br><span>+++ =
-b/src/openvpn/dns.h</span><br><span>@@ -26,6 +26,7 @@</span><br><span> </sp=
-an><br><span> #include &quot;buffer.h&quot;</span><br><span> #include &quot=
-;env_set.h&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#in=
-clude &quot;tun.h&quot;</span><br><span> </span><br><span> enum dns_securit=
-y {</span><br><span>     DNS_SECURITY_UNSET,</span><br><span>@@ -147,6 +148=
-,14 @@</span><br><span> void dns_options_postprocess_pull(struct dns_option=
-s *o);</span><br><span> </span><br><span> /**</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+ * Invokes the action associated with bringing DN=
-S up or down</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @par=
-am   up          Boolean to set this call to &quot;up&quot; when true</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @param   o           P=
-ointer to the program options</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+ * @param   tt          Pointer to the connection&#39;s tuntap st=
-ruct</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ */</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+void run_dns_up_down(bool up, s=
-truct options *o, const struct tuntap *tt);</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+/**</span><br><span>  * Puts the DNS options into an environment set.<=
-/span><br><span>  *</span><br><span>  * @param   o           Pointer to the=
- DNS options to set</span><br><span>diff --git a/src/openvpn/init.c b/src/o=
-penvpn/init.c</span><br><span>index 1be205b..9eb8290 100644</span><br><span=
->--- a/src/openvpn/init.c</span><br><span>+++ b/src/openvpn/init.c</span><b=
-r><span>@@ -2026,6 +2026,8 @@</span><br><span>                         c-&g=
-t;c2.frame.tun_mtu, c-&gt;c2.es, &amp;c-&gt;net_ctx);</span><br><span>     =
-    }</span><br><span> </span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+        run_dns_up_down(true, &amp;c-&gt;options, c-&gt;c1.tuntap);</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span>      =
-   /* run the up script */</span><br><span>         run_up_down(c-&gt;optio=
-ns.up_script,</span><br><span>                     c-&gt;plugins,</span><br=
-><span>@@ -2064,6 +2066,8 @@</span><br><span>         /* explicitly set the=
- ifconfig_* env vars */</span><br><span>         do_ifconfig_setenv(c-&gt;c=
-1.tuntap, c-&gt;c2.es);</span><br><span> </span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+        run_dns_up_down(true, &amp;c-&gt;options, c-&=
-gt;c1.tuntap);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</spa=
-n><br><span>         /* run the up script if user specified --up-restart */=
-</span><br><span>         if (c-&gt;options.up_restart)</span><br><span>   =
-      {</span><br><span>@@ -2152,6 +2156,8 @@</span><br><span>     adapter_=
-index =3D c-&gt;c1.tuntap-&gt;adapter_index;</span><br><span> #endif</span>=
-<br><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+    run_=
-dns_up_down(false, &amp;c-&gt;options, c-&gt;c1.tuntap);</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+</span><br><span>     if (force || !(c=
--&gt;sig-&gt;signal_received =3D=3D SIGUSR1 &amp;&amp; c-&gt;options.persis=
-t_tun))</span><br><span>     {</span><br><span>         static_context =3D =
-NULL;</span><br><span>diff --git a/src/openvpnserv/interactive.c b/src/open=
-vpnserv/interactive.c</span><br><span>index c6963b3..3cefcc7 100644</span><=
-br><span>--- a/src/openvpnserv/interactive.c</span><br><span>+++ b/src/open=
-vpnserv/interactive.c</span><br><span>@@ -88,6 +88,7 @@</span><br><span>   =
-  wfp_block,</span><br><span>     undo_dns4,</span><br><span>     undo_dns6=
-,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    undo_nrpt,</sp=
-an><br><span>     undo_domains,</span><br><span>     undo_ring_buffer,</spa=
-n><br><span>     undo_wins,</span><br><span>@@ -119,12 +120,20 @@</span><br=
-><span>     flush_neighbors_message_t flush_neighbors;</span><br><span>    =
- wfp_block_message_t wfp_block;</span><br><span>     dns_cfg_message_t dns;=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    nrpt_dns_cfg_me=
-ssage_t nrpt_dns;</span><br><span>     enable_dhcp_message_t dhcp;</span><b=
-r><span>     register_ring_buffers_message_t rrb;</span><br><span>     set_=
-mtu_message_t mtu;</span><br><span>     wins_cfg_message_t wins;</span><br>=
-<span> } pipe_message_t;</span><br><span> </span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+typedef struct {</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+    CHAR addresses[NRPT_ADDR_NUM * NRPT_ADDR_SIZE];</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+    WCHAR domains[512];=
- /* MULTI_SZ string */</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+    DWORD domains_size; /* bytes in domains */</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+} nrpt_exclude_data_t;</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+</span><br><span> static DWORD</span><br><span> AddListItem(=
-list_item_t **pfirst, LPVOID data)</span><br><span> {</span><br><span>@@ -1=
-194,13 +1203,13 @@</span><br><span> </span><br><span>     if (apply_gpol &a=
-mp;&amp; ApplyGpolSettings() =3D=3D FALSE)</span><br><span>     {</span><br=
-><span style=3D"color: hsl(0, 100%, 40%);">-        MsgToEventLog(M_ERR, L&=
-quot;%s: sending GPOL notification failed&quot;, __func__);</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+        MsgToEventLog(M_ERR, L&quot=
-;%S: sending GPOL notification failed&quot;, __func__);</span><br><span>   =
-  }</span><br><span> </span><br><span>     scm =3D OpenSCManager(NULL, NULL=
-, SC_MANAGER_ALL_ACCESS);</span><br><span>     if (scm =3D=3D NULL)</span><=
-br><span>     {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-      =
-  MsgToEventLog(M_ERR, L&quot;%s: OpenSCManager call failed (%lu)&quot;,</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+        MsgToEventLog(=
-M_ERR, L&quot;%S: OpenSCManager call failed (%lu)&quot;,</span><br><span>  =
-                     __func__, GetLastError());</span><br><span>         go=
-to out;</span><br><span>     }</span><br><span>@@ -1208,7 +1217,7 @@</span>=
-<br><span>     dnssvc =3D OpenServiceA(scm, &quot;Dnscache&quot;, SERVICE_P=
-AUSE_CONTINUE);</span><br><span>     if (dnssvc =3D=3D NULL)</span><br><spa=
-n>     {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        MsgTo=
-EventLog(M_ERR, L&quot;%s: OpenService call failed (%lu)&quot;,</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+        MsgToEventLog(M_ERR, L&=
-quot;%S: OpenService call failed (%lu)&quot;,</span><br><span>             =
-          __func__, GetLastError());</span><br><span>         goto out;</sp=
-an><br><span>     }</span><br><span>@@ -1216,7 +1225,7 @@</span><br><span> =
-    SERVICE_STATUS status;</span><br><span>     if (ControlService(dnssvc, =
-SERVICE_CONTROL_PARAMCHANGE, &amp;status) =3D=3D 0)</span><br><span>     {<=
-/span><br><span style=3D"color: hsl(0, 100%, 40%);">-        MsgToEventLog(=
-M_ERR, L&quot;%s: ControlService call failed (%lu)&quot;,</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+        MsgToEventLog(M_ERR, L&quot;%=
-S: ControlService call failed (%lu)&quot;,</span><br><span>                =
-       __func__, GetLastError());</span><br><span>         goto out;</span>=
-<br><span>     }</span><br><span>@@ -1255,19 +1264,19 @@</span><br><span>  =
-   err =3D InterfaceLuid(itf_name, &amp;luid);</span><br><span>     if (err=
-)</span><br><span>     {</span><br><span style=3D"color: hsl(0, 100%, 40%);=
-">-        MsgToEventLog(M_ERR, L&quot;%s: failed to convert itf alias &#39=
-;%s&#39;&quot;, __func__, itf_name);</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+        MsgToEventLog(M_ERR, L&quot;%S: failed to convert =
-itf alias &#39;%s&#39;&quot;, __func__, itf_name);</span><br><span>        =
- goto out;</span><br><span>     }</span><br><span>     err =3D ConvertInter=
-faceLuidToGuid(&amp;luid, &amp;guid);</span><br><span>     if (err)</span><=
-br><span>     {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-      =
-  MsgToEventLog(M_ERR, L&quot;%s: Failed to convert itf &#39;%s&#39; LUID&q=
-uot;, __func__, itf_name);</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+        MsgToEventLog(M_ERR, L&quot;%S: Failed to convert itf &#39;%=
-s&#39; LUID&quot;, __func__, itf_name);</span><br><span>         goto out;<=
-/span><br><span>     }</span><br><span> </span><br><span>     if (StringFro=
-mIID(&amp;guid, &amp;iid_str) !=3D S_OK)</span><br><span>     {</span><br><=
-span style=3D"color: hsl(0, 100%, 40%);">-        MsgToEventLog(M_ERR, L&qu=
-ot;%s: Failed to convert itf &#39;%s&#39; IID&quot;, __func__, itf_name);</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+        MsgToEventLog=
-(M_ERR, L&quot;%S: Failed to convert itf &#39;%s&#39; IID&quot;, __func__, =
-itf_name);</span><br><span>         err =3D ERROR_OUTOFMEMORY;</span><br><s=
-pan>         goto out;</span><br><span>     }</span><br><span>@@ -1417,7 +1=
-426,7 @@</span><br><span>         {</span><br><span>             return FAL=
-SE;</span><br><span>         }</span><br><span style=3D"color: hsl(0, 100%,=
- 40%);">-        MsgToEventLog(M_ERR, L&quot;%s: failed to get InitialSearc=
-hList (%lu)&quot;,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-       MsgToEventLog(M_ERR, L&quot;%S: failed to get InitialSearchList (%lu=
-)&quot;,</span><br><span>                       __func__, err);</span><br><=
-span>     }</span><br><span> </span><br><span>@@ -1439,7 +1448,7 @@</span><=
-br><span> {</span><br><span>     if (!list || wcslen(list) =3D=3D 0)</span>=
-<br><span>     {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-     =
-   MsgToEventLog(M_ERR, L&quot;StoreInitialDnsSearchList: empty search list=
-&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        Msg=
-ToEventLog(M_ERR, L&quot;%S: empty search list&quot;, __func__);</span><br>=
-<span>         return FALSE;</span><br><span>     }</span><br><span> </span=
-><br><span>@@ -1453,7 +1462,7 @@</span><br><span>     LSTATUS err =3D RegSe=
-tValueExW(key, L&quot;InitialSearchList&quot;, 0, REG_SZ, (PBYTE)list, size=
-);</span><br><span>     if (err)</span><br><span>     {</span><br><span sty=
-le=3D"color: hsl(0, 100%, 40%);">-        MsgToEventLog(M_ERR, L&quot;%s: f=
-ailed to set InitialSearchList value (%lu)&quot;,</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+        MsgToEventLog(M_ERR, L&quot;%S: faile=
-d to set InitialSearchList value (%lu)&quot;,</span><br><span>             =
-          __func__, err);</span><br><span>         return FALSE;</span><br>=
-<span>     }</span><br><span>@@ -1482,7 +1491,7 @@</span><br><span>        =
- err =3D RegGetValueW(key, NULL, L&quot;SearchList&quot;, RRF_RT_REG_SZ, NU=
-LL, list, &amp;size);</span><br><span>         if (err)</span><br><span>   =
-      {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            Ms=
-gToEventLog(M_SYSERR, L&quot;%s: could not get SearchList from registry (%l=
-u)&quot;,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+          =
-  MsgToEventLog(M_SYSERR, L&quot;%S: could not get SearchList from registry=
- (%lu)&quot;,</span><br><span>                           __func__, err);</s=
-pan><br><span>             return FALSE;</span><br><span>         }</span><=
-br><span>@@ -1496,7 +1505,7 @@</span><br><span>         size_t domlen =3D w=
-cslen(domains);</span><br><span>         if (listlen + domlen + 2 &gt; _cou=
-ntof(list))</span><br><span>         {</span><br><span style=3D"color: hsl(=
-0, 100%, 40%);">-            MsgToEventLog(M_SYSERR, L&quot;%s: not enough =
-space in list for search domains (len=3D%lu)&quot;,</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+            MsgToEventLog(M_SYSERR, L&quo=
-t;%S: not enough space in list for search domains (len=3D%lu)&quot;,</span>=
-<br><span>                           __func__, domlen);</span><br><span>   =
-          return FALSE;</span><br><span>         }</span><br><span>@@ -1515=
-,7 +1524,7 @@</span><br><span>     err =3D RegSetValueExW(key, L&quot;Searc=
-hList&quot;, 0, REG_SZ, (PBYTE)list, size);</span><br><span>     if (err)</=
-span><br><span>     {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
-        MsgToEventLog(M_SYSERR, L&quot;%s: could not set SearchList to regi=
-stry (%lu)&quot;,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-      MsgToEventLog(M_SYSERR, L&quot;%S: could not set SearchList to regist=
-ry (%lu)&quot;,</span><br><span>                       __func__, err);</spa=
-n><br><span>         return FALSE;</span><br><span>     }</span><br><span>@=
-@ -1547,7 +1556,7 @@</span><br><span>     {</span><br><span>         if (er=
-r !=3D ERROR_FILE_NOT_FOUND)</span><br><span>         {</span><br><span sty=
-le=3D"color: hsl(0, 100%, 40%);">-            MsgToEventLog(M_SYSERR, L&quo=
-t;%s: could not get InitialSearchList from registry (%lu)&quot;,</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+            MsgToEventLog(M_SY=
-SERR, L&quot;%S: could not get InitialSearchList from registry (%lu)&quot;,=
-</span><br><span>                           __func__, err);</span><br><span=
->         }</span><br><span>         goto out;</span><br><span>@@ -1557,7 +=
-1566,7 @@</span><br><span>     err =3D RegSetValueExW(key, L&quot;SearchLis=
-t&quot;, 0, REG_SZ, (PBYTE)list, size);</span><br><span>     if (err)</span=
-><br><span>     {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
-    MsgToEventLog(M_SYSERR, L&quot;%s: could not set SearchList in registry=
- (%lu)&quot;,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
-  MsgToEventLog(M_SYSERR, L&quot;%S: could not set SearchList in registry (=
-%lu)&quot;,</span><br><span>                       __func__, err);</span><b=
-r><span>         goto out;</span><br><span>     }</span><br><span>@@ -1585,=
-7 +1594,7 @@</span><br><span>     err =3D RegGetValueW(key, NULL, L&quot;Se=
-archList&quot;, RRF_RT_REG_SZ, NULL, list, &amp;size);</span><br><span>    =
- if (err)</span><br><span>     {</span><br><span style=3D"color: hsl(0, 100=
-%, 40%);">-        MsgToEventLog(M_SYSERR, L&quot;%s: could not get SearchL=
-ist from registry (%lu)&quot;,</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+        MsgToEventLog(M_SYSERR, L&quot;%S: could not get SearchL=
-ist from registry (%lu)&quot;,</span><br><span>                       __fun=
-c__, err);</span><br><span>         return;</span><br><span>     }</span><b=
-r><span>@@ -1593,7 +1602,7 @@</span><br><span>     PWSTR dst =3D wcsstr(lis=
-t, domains);</span><br><span>     if (!dst)</span><br><span>     {</span><b=
-r><span style=3D"color: hsl(0, 100%, 40%);">-        MsgToEventLog(M_ERR, L=
-&quot;%s: could not find domains in search list&quot;, __func__);</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+        MsgToEventLog(M_ERR, =
-L&quot;%S: could not find domains in search list&quot;, __func__);</span><b=
-r><span>         return;</span><br><span>     }</span><br><span> </span><br=
-><span>@@ -1613,7 +1622,7 @@</span><br><span>         err =3D RegGetValueW(=
-key, NULL, L&quot;InitialSearchList&quot;, RRF_RT_REG_SZ, NULL, initial, &a=
-mp;size);</span><br><span>         if (err)</span><br><span>         {</spa=
-n><br><span style=3D"color: hsl(0, 100%, 40%);">-            MsgToEventLog(=
-M_SYSERR, L&quot;%s: could not get InitialSearchList from registry (%lu)&qu=
-ot;,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            Msg=
-ToEventLog(M_SYSERR, L&quot;%S: could not get InitialSearchList from regist=
-ry (%lu)&quot;,</span><br><span>                           __func__, err);<=
-/span><br><span>             return;</span><br><span>         }</span><br><=
-span>@@ -1630,7 +1639,7 @@</span><br><span>     err =3D RegSetValueExW(key,=
- L&quot;SearchList&quot;, 0, REG_SZ, (PBYTE)list, size);</span><br><span>  =
-   if (err)</span><br><span>     {</span><br><span style=3D"color: hsl(0, 1=
-00%, 40%);">-        MsgToEventLog(M_SYSERR, L&quot;%s: could not set Searc=
-hList in registry (%lu)&quot;,</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+        MsgToEventLog(M_SYSERR, L&quot;%S: could not set SearchL=
-ist in registry (%lu)&quot;,</span><br><span>                       __func_=
-_, err);</span><br><span>     }</span><br><span> }</span><br><span>@@ -1687=
-,7 +1696,7 @@</span><br><span>     BOOL have_list =3D GetDnsSearchListKey(i=
-tf_name, gpol, &amp;list_key);</span><br><span>     if (list_key =3D=3D INV=
-ALID_HANDLE_VALUE)</span><br><span>     {</span><br><span style=3D"color: h=
-sl(0, 100%, 40%);">-        MsgToEventLog(M_SYSERR, L&quot;%s: could not ge=
-t search list registry key&quot;, __func__);</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+        MsgToEventLog(M_SYSERR, L&quot;%S: could n=
-ot get search list registry key&quot;, __func__);</span><br><span>         =
-return ERROR_FILE_NOT_FOUND;</span><br><span>     }</span><br><span> </span=
-><br><span>@@ -1756,7 +1765,7 @@</span><br><span>     if (err)</span><br><s=
-pan>     {</span><br><span>         *key =3D INVALID_HANDLE_VALUE;</span><b=
-r><span style=3D"color: hsl(0, 100%, 40%);">-        MsgToEventLog(M_SYSERR=
-, L&quot;%s: could not open interfaces registry key for family %d (%lu)&quo=
-t;,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        MsgToEve=
-ntLog(M_SYSERR, L&quot;%S: could not open interfaces registry key for famil=
-y %d (%lu)&quot;,</span><br><span>                       __func__, family, =
-err);</span><br><span>     }</span><br><span> </span><br><span>@@ -1787,7 +=
-1796,7 @@</span><br><span>     err =3D RegOpenKeyExW(itfs, itf_id, 0, KEY_A=
-LL_ACCESS, &amp;itf);</span><br><span>     if (err)</span><br><span>     {<=
-/span><br><span style=3D"color: hsl(0, 100%, 40%);">-        MsgToEventLog(=
-M_SYSERR, L&quot;%s: could not open interface key for %s family %d (%lu)&qu=
-ot;,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        MsgToEv=
-entLog(M_SYSERR, L&quot;%S: could not open interface key for %s family %d (=
-%lu)&quot;,</span><br><span>                       __func__, itf_id, family=
-, err);</span><br><span>         goto out;</span><br><span>     }</span><br=
-><span>@@ -1795,7 +1804,7 @@</span><br><span>     err =3D RegSetValueExA(it=
-f, &quot;NameServer&quot;, 0, REG_SZ, (PBYTE)value, strlen(value) + 1);</sp=
-an><br><span>     if (err)</span><br><span>     {</span><br><span style=3D"=
-color: hsl(0, 100%, 40%);">-        MsgToEventLog(M_SYSERR, L&quot;%s: coul=
-d not set name servers &#39;%S&#39; for %s family %d (%lu)&quot;,</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+        MsgToEventLog(M_SYSER=
-R, L&quot;%S: could not set name servers &#39;%S&#39; for %s family %d (%lu=
-)&quot;,</span><br><span>                       __func__, value, itf_id, fa=
-mily, err);</span><br><span>     }</span><br><span> </span><br><span>@@ -19=
-47,6 +1956,903 @@</span><br><span>     return err;</span><br><span> }</span=
-><br><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+/**</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+ * Checks if DHCP is en=
-abled for an interface</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+ *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @param  key=
-        HKEY of the interface to check for</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+ *</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+ * @return BOOL set to TRUE if DHCP is enabled, or FALSE if</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+ *         disabled or an err=
-or occurred</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ */</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+static BOOL</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+IsDhcpEnabled(HKEY key)</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+    DWORD dhcp;</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+    DWORD size =3D sizeof(dhcp);</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+    LSTATUS err;</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+    err =3D RegGetValueA(key, NULL, &quot;EnableDHCP&quot;,=
- RRF_RT_REG_DWORD, NULL, (PBYTE)&amp;dhcp, &amp;size);</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+    if (err !=3D NO_ERROR)</span><br><sp=
+<p> Attention is currently required from: MaxF, d12fk, plaisthos. </p>
+<p>d12fk <strong>uploaded patch set #20</strong> to this change.</p><p><a h=
+ref=3D"http://gerrit.openvpn.net/c/openvpn/+/839?usp=3Demail">View Change</=
+a></p><p>The change is no longer submittable: checks~ChecksSubmitRule is un=
+satisfied now.</p><pre style=3D"font-family: monospace,monospace; white-spa=
+ce: pre-wrap;">dns: support running up/down command with privsep<br><br>Wit=
+h --user / --group privileges are dropped after init. Unfortunately<br>this=
+ affects --dns-updown when tearing down previous modifications.<br><br>To k=
+eep the privileges for just that, the concept of a dns updown runner<br>in =
+introduced. It&#39;s basically a fork of openvpn at the time the<br>modific=
+ations to DNS are made. Its only capability is running the<br>--dns-updown =
+command when asked to. The parent openvpn process signals<br>this by writin=
+g to a pipe the runner is waiting on.<br><br>Commands need to be ready to r=
+eceive variables from a file instead of the<br>process environment. A shame=
+less and effective workaround to keep the<br>protocol between the two proce=
+sses simple.<br><br>Change-Id: I6b67e3a00dd84bf348b6af28115ee11138c3a111<br=
+>Signed-off-by: Heiko Hund &lt;heiko@...2662...&gt;<br>---<br>M distro/dns-=
+scripts/haikuos_file-dns-updown.sh<br>M distro/dns-scripts/openresolv-dns-u=
+pdown.sh<br>M distro/dns-scripts/resolvconf_file-dns-updown.sh<br>M distro/=
+dns-scripts/systemd-dns-updown.sh<br>M src/openvpn/dns.c<br>M src/openvpn/d=
+ns.h<br>M src/openvpn/env_set.c<br>M src/openvpn/env_set.h<br>M src/openvpn=
+/init.c<br>M src/openvpn/openvpn.h<br>10 files changed, 246 insertions(+), =
+10 deletions(-)<br><br></pre><pre style=3D"font-family: monospace,monospace=
+; white-space: pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/openvpn r=
+efs/changes/39/839/20</pre><pre style=3D"font-family: monospace,monospace; =
+white-space: pre-wrap;"><span>diff --git a/distro/dns-scripts/haikuos_file-=
+dns-updown.sh b/distro/dns-scripts/haikuos_file-dns-updown.sh</span><br><sp=
+an>index 1b03e9c..f1472c0 100644</span><br><span>--- a/distro/dns-scripts/h=
+aikuos_file-dns-updown.sh</span><br><span>+++ b/distro/dns-scripts/haikuos_=
+file-dns-updown.sh</span><br><span>@@ -7,6 +7,10 @@</span><br><span> #</spa=
+n><br><span> # Example env from openvpn (most are not applied):</span><br><=
+span> #</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#   dns_vars=
+_file /tmp/openvpn_dvf_58b95c0c97b2db43afb5d745f986c53c.tmp</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+#</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+#      or</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+#</span><br><span> #   dev tun0</span><br><span> #   script-typ=
+e dns-up</span><br><span> #   dns_search_domain_1 mycorp.in</span><br><span=
+>@@ -39,6 +43,7 @@</span><br><span> </span><br><span> onf=3D/boot/system/se=
+ttings/network/resolv.conf</span><br><span> test -e &quot;$conf&quot; || ex=
+it 1</span><br><span style=3D"color: hsl(120, 100%, 40%);">+test -z &quot;$=
+{dns_vars_file}&quot; || . &quot;${dns_vars_file}&quot;</span><br><span> ca=
+se &quot;${script_type}&quot; in</span><br><span> dns-up)</span><br><span> =
+    n=3D1</span><br><span>diff --git a/distro/dns-scripts/openresolv-dns-up=
+down.sh b/distro/dns-scripts/openresolv-dns-updown.sh</span><br><span>index=
+ 1b218f5..1944e10 100644</span><br><span>--- a/distro/dns-scripts/openresol=
+v-dns-updown.sh</span><br><span>+++ b/distro/dns-scripts/openresolv-dns-upd=
+own.sh</span><br><span>@@ -8,6 +8,10 @@</span><br><span> #</span><br><span>=
+ # Example env from openvpn (most are not applied):</span><br><span> #</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+#   dns_vars_file /tmp/o=
+penvpn_dvf_58b95c0c97b2db43afb5d745f986c53c.tmp</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+#</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+#      or</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+#</span><br><span> #   dev tun0</span><br><span> #   script-type dns-up</sp=
+an><br><span> #   dns_search_domain_1 mycorp.in</span><br><span>@@ -38,6 +4=
+2,7 @@</span><br><span>     done</span><br><span> }</span><br><span> </span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+[ -z &quot;${dns_vars_fil=
+e}&quot; ] || . &quot;${dns_vars_file}&quot;</span><br><span> : ${script_ty=
+pe:=3Ddns-down}</span><br><span> case &quot;${script_type}&quot; in</span><=
+br><span> dns-up)</span><br><span>diff --git a/distro/dns-scripts/resolvcon=
+f_file-dns-updown.sh b/distro/dns-scripts/resolvconf_file-dns-updown.sh</sp=
+an><br><span>index c469490..8ab4969 100644</span><br><span>--- a/distro/dns=
+-scripts/resolvconf_file-dns-updown.sh</span><br><span>+++ b/distro/dns-scr=
+ipts/resolvconf_file-dns-updown.sh</span><br><span>@@ -7,6 +7,10 @@</span><=
+br><span> #</span><br><span> # Example env from openvpn (most are not appli=
+ed):</span><br><span> #</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+#   dns_vars_file /tmp/openvpn_dvf_58b95c0c97b2db43afb5d745f986c53c.tmp=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+#      or</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+#</span><br><span> #   dev tun0</span><br><span=
+> #   script-type dns-up</span><br><span> #   dns_search_domain_1 mycorp.in=
+</span><br><span>@@ -39,6 +43,7 @@</span><br><span> </span><br><span> conf=
+=3D/etc/resolv.conf</span><br><span> test -e &quot;$conf&quot; || exit 1</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+test -z &quot;${dns_va=
+rs_file}&quot; || . &quot;${dns_vars_file}&quot;</span><br><span> case &quo=
+t;${script_type}&quot; in</span><br><span> dns-up)</span><br><span>     n=
+=3D1</span><br><span>diff --git a/distro/dns-scripts/systemd-dns-updown.sh =
+b/distro/dns-scripts/systemd-dns-updown.sh</span><br><span>index 69bbebf..9=
+62310d 100644</span><br><span>--- a/distro/dns-scripts/systemd-dns-updown.s=
+h</span><br><span>+++ b/distro/dns-scripts/systemd-dns-updown.sh</span><br>=
+<span>@@ -14,6 +14,10 @@</span><br><span> #</span><br><span> # Example env =
+from openvpn (not all are always applied):</span><br><span> #</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+#   dns_vars_file /tmp/openvpn_dv=
+f_58b95c0c97b2db43afb5d745f986c53c.tmp</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+#</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++#      or</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#</span><=
+br><span> #   dev tun0</span><br><span> #   script-type dns-up</span><br><s=
+pan> #   dns_search_domain_1 mycorp.in</span><br><span>@@ -29,6 +33,8 @@</s=
+pan><br><span> #   dns_server_1_sni dns.mycorp.in</span><br><span> #</span>=
+<br><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+[ -z &qu=
+ot;${dns_vars_file}&quot; ] || . &quot;${dns_vars_file}&quot;</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> function do_res=
+olved_servers {</span><br><span>     local sni=3D&quot;&quot;</span><br><sp=
+an>     local transport_var=3Ddns_server_${n}_transport</span><br><span>dif=
+f --git a/src/openvpn/dns.c b/src/openvpn/dns.c</span><br><span>index 4da07=
+47..19de321 100644</span><br><span>--- a/src/openvpn/dns.c</span><br><span>=
++++ b/src/openvpn/dns.c</span><br><span>@@ -562,13 +562,20 @@</span><br><sp=
+an> }</span><br><span> </span><br><span> static int</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-do_run_up_down_command(bool up, const struc=
+t dns_options *o, const struct tuntap *tt)</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+do_run_up_down_command(bool up, const char *vars_fil=
+e, const struct dns_options *o, const struct tuntap *tt)</span><br><span> {=
+</span><br><span>     struct gc_arena gc =3D gc_new();</span><br><span>    =
+ struct argv argv =3D argv_new();</span><br><span>     struct env_set *es =
+=3D env_set_create(&amp;gc);</span><br><span> </span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-    updown_env_set(up, o, tt, es);</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+    if (vars_file)</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+        setenv_str(es, &quot;dns_vars_file&quot;, =
+vars_file);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+    else</span><br><sp=
 an style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+        MsgToEventLog(M_SYSERR, L&quot;%S: Coul=
-d not read DHCP status (%lu)&quot;, __func__, err);</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+        return FALSE;</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+    return dhcp ? TRUE : FALSE;</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+/**</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+ * Set name servers from a NRPT addres=
-s list</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+ * @param itf_id        the VP=
-N interface ID to set the name servers for</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+ * @param addresses     the list of NRPT addresses</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+ * @return LSTATUS NO_ERROR in case of=
- success, a Windows error code otherwise</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+ */</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+static LSTATUS</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-SetNameServerAddresses(PWSTR itf_id, const nrpt_address_t *addresses)</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    const short families[] =3D { AF_INET,=
- AF_INET6 };</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    for=
- (int i =3D 0; i &lt; _countof(families); i++)</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+        short family =3D families[i];</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+        /* Create a comma sparated list of addresses of this fa=
-mily */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        int =
-offset =3D 0;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
-  char addr_list[NRPT_ADDR_SIZE * NRPT_ADDR_NUM];</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+        for (int j =3D 0; j &lt; NRPT_ADDR_NU=
-M &amp;&amp; addresses[j][0]; j++)</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+        {</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+            if ((family =3D=3D AF_INET6 &amp;&amp; strchr(addresses[j]=
-, &#39;:&#39;) =3D=3D NULL)</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+                || (family =3D=3D AF_INET &amp;&amp; strchr(address=
-es[j], &#39;:&#39;) !=3D NULL))</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+            {</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+                /* Address family doesn&#39;t match, skip this one */=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+                con=
-tinue;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            }=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            if (off=
-set)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            {</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+                addr_=
-list[offset++] =3D &#39;,&#39;;</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+            }</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+            strcpy(addr_list + offset, addresses[j]);</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+            offset +=3D strlen(addr=
-esses[j]);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        }=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+        if (offset =3D=3D 0)</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+        {</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+            /* No address for this fami=
-ly to set */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
-     continue;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
-   }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+        /* Set name server address=
-es */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        LSTATU=
-S err =3D SetNameServers(itf_id, family, addr_list);</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+        if (err)</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+        {</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+            return err;</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+        }</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+    return NO_ERROR;</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+/**</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+ * Get DNS server IPv4 addresses of an interface</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+ * @param  itf_key    registry key of t=
-he IPv4 interface data</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+ * @param  addrs      pointer to the buffer addresses are returned in</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @param  size       =
-pointer to the size of the buffer, contains the</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+ *                    size of the addresses on =
-return</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+ * @return LSTATUS NO_ERROR on=
- success, a Windows error code otherwise</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+ */</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+static LSTATUS</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-GetItfDnsServersV4(HKEY itf_key, PSTR addrs, PDWORD size)</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+    addrs[*size - 1] =3D &#39;\0&#39;;</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+    LSTATUS err;</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+    DWORD s =3D *size;</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+    err =3D RegGetValueA(itf_key, NULL, &quot;NameServe=
-r&quot;, RRF_RT_REG_SZ, NULL, (PBYTE)addrs, &amp;s);</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    if (err &amp;&amp; err !=3D ERROR_FIL=
-E_NOT_FOUND)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+        *size =3D 0;<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+        return err;<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+    /* Try DHCP addresses if we don&#39;t have some a=
-lready */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (!s=
-trchr(addrs, &#39;.&#39;) &amp;&amp; IsDhcpEnabled(itf_key))</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+        s =3D *size;</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+        RegGetValueA(itf_key, NULL, &quot;DhcpN=
-ameServer&quot;, RRF_RT_REG_SZ, NULL, (PBYTE)addrs, &amp;s);</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+        if (err)</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+        {</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+            *size =3D 0;</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+            return err;</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+        }</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    i=
-f (strchr(addrs, &#39;.&#39;))</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
-     *size =3D s;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-      return NO_ERROR;</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+    *size =3D 0;</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+    return ERROR_FILE_NOT_FOUND;<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+/**</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+ * Get DNS server IPv6 addresses of an interface</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+ *</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+ * @param  itf_key    registry key of the IPv6 interface data=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @param  addrs   =
-   pointer to the buffer addresses are returned in</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+ * @param  size       pointer to the size of=
- the buffer</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @return LSTATUS NO_ERR=
-OR on success, a Windows error code otherwise</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+ */</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+static LSTATUS</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+GetItfDnsServersV6(HKEY itf_key, PSTR addrs, PDWORD size)</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+    addrs[*size - 1] =3D &#39;\0&#39;;</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+    LSTATUS err;</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+    DWORD s =3D *size;</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+    err =3D RegGetValueA(itf_key, NULL, &quot;Name=
-Server&quot;, RRF_RT_REG_SZ, NULL, (PBYTE)addrs, &amp;s);</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+    if (err &amp;&amp; err !=3D ERROR=
-_FILE_NOT_FOUND)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
- {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        *size =3D=
- 0;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        return e=
-rr;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+    /* Try DHCP addresses if we don&#39;t have so=
-me already */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if=
- (!strchr(addrs, &#39;:&#39;) &amp;&amp; IsDhcpEnabled(itf_key))</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+        IN6_ADDR in_addrs[8];</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+        DWORD in_addrs_size =3D si=
-zeof(in_addrs);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-    err =3D RegGetValueA(itf_key, NULL, &quot;Dhcpv6DNSServers&quot;, RRF_R=
-T_REG_BINARY, NULL,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-                           (PBYTE)in_addrs, &amp;in_addrs_size);</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+        if (err)</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+        {</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+            *size =3D 0;</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+            return err;</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+        }</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+        s =3D *size;</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+        PSTR pos =3D addrs;</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+        size_t in_addrs_read =3D in_addrs_size / si=
-zeof(IN6_ADDR);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-    for (size_t i =3D 0; i &lt; in_addrs_read; ++i)</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+        {</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+            if (i !=3D 0)</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+            {</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+                /* Add separator */</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+                *pos++ =3D &#39;,&#=
-39;;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+               =
- s--;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            }<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+            if (inet_ntop(AF_INET6, &am=
-p;in_addrs[i],</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
-                     pos, s) !=3D NULL)</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+            {</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+                *size =3D 0;</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+                return ERROR_MORE_DATA;</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+            }</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+            size_t addr_len =3D strlen(pos);</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+            pos +=3D addr_len;</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+            s -=3D ad=
-dr_len;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        }</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+        s =3D strlen(a=
-ddrs) + 1;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    if (strchr(addrs, &#39;:&#39;))</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+        *size =3D s;</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+        return NO_ERROR;</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+    *size =3D 0;</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+    return ERROR_FILE_NOT_FOUND;</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+/**</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+ * Return interface specific domai=
-n suffix(es)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+ * The \p domains paramt=
-er will be set to a MULTI_SZ domains string.</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+ * In case of an error or if no domains are found =
-for the interface</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *=
- \p size is set to 0 and the contents of \p domains are invalid.</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+ * Note that the domains could=
- have been set by DHCP or manually.</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+ *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-* @param  itf        HKEY of the interface to read from</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+ * @param  domains    PWSTR buffer to r=
-eturn the domain(s) in</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+ * @param  size       pointer to size of the domains buffer in bytes. Wi=
-ll be</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *            =
-        set to the size of the string returned, including</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+ *                    the terminating=
- zeros or 0.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @return LSTATUS NO_ER=
-ROR if the domain suffix(es) were read successfully,</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+ *         ERROR_FILE_NOT_FOUND if no dom=
-ain was found for the interface,</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+ *         ERROR_MORE_DATA if the list did not fit into the bu=
-ffer,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *         any=
- other error indicates an error while reading from the registry.</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+ */</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+static LSTATUS</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+GetItfDnsDomains(HKEY itf, PWSTR domains, PDWORD si=
-ze)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+    if (domains =3D=3D NULL || siz=
-e =3D=3D 0)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+        return ERROR_I=
-NVALID_PARAMETER;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-  }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+    LSTATUS err =3D ERROR_FILE_NOT_=
-FOUND;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    const DWO=
-RD buf_size =3D *size;</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+    const size_t one_glyph =3D sizeof(*domains);</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    PWSTR values[] =3D { L&quot;SearchLis=
-t&quot;, L&quot;Domain&quot;, L&quot;DhcpDomainSearchList&quot;, L&quot;Dhc=
-pDomain&quot;, NULL};</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    for (int i =
-=3D 0; values[i]; i++)</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        *si=
-ze =3D buf_size;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
-     err =3D RegGetValueW(itf, NULL, values[i], RRF_RT_REG_SZ, NULL, (PBYTE=
-)domains, size);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
-     if (!err &amp;&amp; *size &gt; one_glyph &amp;&amp; wcschr(domains, &#=
-39;.&#39;))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        =
-{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            /*</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+             * Found do=
-main(s), now convert them:</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+             *   - prefix each domain with a dot</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+             *   - convert comma separa=
-ted list to MULTI_SZ</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+             */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
-         PWCHAR pos =3D domains;</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+            const DWORD buf_len =3D buf_size / one_glyph;</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+            while (TRUE)=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            {</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+                /* Termin=
-ate the domain at the next comma */</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+                PWCHAR comma =3D wcschr(pos, &#39;,&#39;);<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+                if (=
-comma)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+             =
-   {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+               =
-     *comma =3D &#39;\0&#39;;</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+                }</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+           =
-     /* Check for enough space to convert this domain */</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+                size_t converted_size =
-=3D pos - domains;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-               size_t domain_len =3D wcslen(pos) + 1;</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+                size_t domain_size =3D do=
-main_len * one_glyph;</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+                size_t extra_size =3D 2 * one_glyph;</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+                if (converted_size + dom=
-ain_size + extra_size &gt; buf_size)</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+                {</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+                    /* Domain doesn&#39;t fit, bad luck if i=
-t&#39;s the first one */</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+                    *pos =3D &#39;\0&#39;;</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+                    *size =3D converted_size =
-=3D=3D 0 ? 0 : *size + 1;</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+                    return ERROR_MORE_DATA;</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+                }</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+                /* Prefix domain at pos with the dot */</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+                memmove(pos + =
-1, pos, buf_size - converted_size - one_glyph);</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+                domains[buf_len - 1] =3D &#39;\=
-0&#39;;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            =
-    *pos =3D &#39;.&#39;;</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+                *size +=3D 1;</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
-             if (!comma)</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+                {</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+                    /* Conversion is done */</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+                    *(pos + domain_len) =3D &#3=
-9;\0&#39;;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+         =
-           *size +=3D 1;</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+                    return NO_ERROR;</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+                }</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+                pos =3D comma + 1;</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+            }</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+        }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+    *size =3D 0;</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+    return err;</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+/*=
-*</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * Check if an int=
-erface is connected and up</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+ *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @param =
- iid_str    the interface GUID as string</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+ *</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+ * @return TRUE if the interface is connected and up, FALSE otherwise o=
-r in</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *         case=
- an error happened</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-*/</span><br><span style=3D"color: hsl(120, 100%, 40%);">+static BOOL</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+IsInterfaceConnected(PWST=
-R iid_str)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+    GUID iid;</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+    BOOL res =3D FALSE;</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+    MIB_IF_ROW2 itf_row;</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    /* Get GUID from string */</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+    if (IIDFromString(iid_str,=
- &amp;iid) !=3D S_OK)</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        MsgT=
-oEventLog(M_SYSERR, L&quot;%S: could not convert interface %s GUID string&q=
-uot;, __func__, iid_str);</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+        goto out;</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+    /* Get LUID from GUID */<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (ConvertInter=
-faceGuidToLuid(&amp;iid, &amp;itf_row.InterfaceLuid) !=3D NO_ERROR)</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+        goto out;</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+    /* Look up interface status */</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+    if (GetIfEntry2(&amp;itf_row) !=3D NO_ERROR)</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+        MsgToEventLog(M_SYSERR, L&quot;%S: c=
-ould not get interface %s status&quot;, __func__, iid_str);</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+        goto out;</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+    if (itf_row.MediaConnectState =3D=3D MediaConnectStateConnected</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+        &amp;&amp; itf=
-_row.OperStatus =3D=3D IfOperStatusUp)</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+        res =3D TRUE;</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+out:</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    return res;</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+/**</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+ * Collect interface DN=
-S settings to be used in excluding NRPT rules. This is</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+ * needed so that local DNS keeps workin=
-g even when a catch all NRPT rule is</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+ * installed by a VPN connection.</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+ *</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+ * @param  data       pointer to the data structures the valu=
-es are returned in</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-* @param  data_size  number of exclude data structures pointed to</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+ */</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+static void</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+GetNrptExcludeData(nrpt_exclude_data_t *data, size_t =
-data_size)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+    HKEY v4_itfs =3D INVALI=
-D_HANDLE_VALUE;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-HKEY v6_itfs =3D INVALID_HANDLE_VALUE;</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-    if (!GetInterfacesKey(AF_INET, &amp;v4_itfs)</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+        || !GetInterfacesKey(AF_INET6, &amp;v6=
-_itfs))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+        goto out;</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+    size_t i =3D 0;</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+    DWORD enum_index =3D 0;</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+    while (i &lt; data_size)</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+        WCHAR itf_guid[MAX_PATH];</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+        DWORD itf_guid_len =3D _countof(i=
-tf_guid);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        LS=
-TATUS err =3D RegEnumKeyExW(v4_itfs, enum_index++, itf_guid, &amp;itf_guid_=
-len,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+               =
-                     NULL, NULL, NULL, NULL);</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+        if (err)</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+        {</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+            if (err !=3D ERROR_NO_MORE_ITEMS)</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+            {</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+                MsgToEventLog(M_SYSERR, L=
-&quot;%S: could not enumerate interfaces (%lu)&quot;, __func__, err);</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+            }</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+            goto out;</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+        }</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+        /* Ignore interfaces that are not connected or dis=
-abled */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        if =
-(!IsInterfaceConnected(itf_guid))</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+        {</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+            continue;</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+        }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+        HKEY v4_itf;</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+        if (RegOpenKey=
-ExW(v4_itfs, itf_guid, 0, KEY_READ, &amp;v4_itf) !=3D NO_ERROR)</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+        {</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+            MsgToEventLog(M_SYSERR, L&quo=
-t;%S: could not open interface %s v4 registry key&quot;, __func__, itf_guid=
-);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            goto =
-out;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        }</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+        /* Get the DNS domain(s) for exclude=
- routing */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        =
-data[i].domains_size =3D sizeof(data[0].domains);</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+        memset(data[i].domains, 0, data[i].do=
-mains_size);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
- err =3D GetItfDnsDomains(v4_itf, data[i].domains, &amp;data[i].domains_siz=
-e);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        if (err)=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        {</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+            if (err !=3D ERRO=
-R_FILE_NOT_FOUND)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-          {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        =
-        MsgToEventLog(M_SYSERR, L&quot;%S: could not read interface %s doma=
-in suffix&quot;, __func__, itf_guid);</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+            }</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+            goto next_itf;</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+        }</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        /*=
- Get the IPv4 DNS servers */</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+        DWORD v4_addrs_size =3D sizeof(data[0].addresses);</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+        err =3D GetItfDnsSe=
-rversV4(v4_itf, data[i].addresses, &amp;v4_addrs_size);</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+        if (err &amp;&amp; err !=3D ERR=
-OR_FILE_NOT_FOUND)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-       {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+           =
- MsgToEventLog(M_SYSERR, L&quot;%S: could not read interface %s v4 name ser=
-vers (%ld)&quot;,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-                        __func__, itf_guid, err);</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+            goto next_itf;</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+        }</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+        /* Get the IPv6 DNS servers, if there&#39;s space left */</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+        PSTR v6_addrs=
- =3D data[i].addresses + v4_addrs_size;</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+        DWORD v6_addrs_size =3D sizeof(data[0].addresse=
-s) - v4_addrs_size;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-        if (v6_addrs_size &gt; NRPT_ADDR_SIZE)</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+        {</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+            HKEY v6_itf;</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+            if (RegOpenKeyExW(v6_itfs, itf_guid, 0, K=
-EY_READ, &amp;v6_itf) !=3D NO_ERROR)</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+            {</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+                MsgToEventLog(M_SYSERR, L&quot;%S: could not ope=
-n interface %s v6 registry key&quot;, __func__, itf_guid);</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+                goto next_itf;</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+            }</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+            err =3D GetItfDnsSe=
-rversV6(v6_itf, v6_addrs, &amp;v6_addrs_size);</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+            RegCloseKey(v6_itf);</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+            if (err &amp;&amp; err =
-!=3D ERROR_FILE_NOT_FOUND)</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+            {</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+                MsgToEventLog(M_SYSERR, L&quot;%S: could not read interfac=
-e %s v6 name servers (%ld)&quot;,</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+                              __func__, itf_guid, err);</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+                goto next=
-_itf;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            }<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+        }</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+        if (v4_addrs_size || v6_addrs_size)</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+        {</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+            /* Replace comma-delimt=
-ers with semicolons, as required by NRPT */</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+            for (int j =3D 0; j &lt; sizeof(data[0]=
-.addresses) &amp;&amp; data[i].addresses[j]; j++)</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+            {</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+                if (data[i].addresses[j] =3D=3D &#3=
-9;,&#39;)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+          =
-      {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            =
-        data[i].addresses[j] =3D &#39;;&#39;;</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+                }</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+            }</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+            ++i;</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+        }</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+next_itf:</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+        RegCloseKey(v4_i=
-tf);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+out:</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+    RegCloseKey(v6_itfs);</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+    RegCloseKey(v4_itfs);</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+/**</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+ * Set a NRPT rule (subkey) a=
-nd its values in the registry</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+ *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @par=
-am  nrpt_key   NRPT registry key handle</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+ * @param  subkey     subkey string to create</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+ * @param  address    name se=
-rver address string</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
- * @param  domains    domains to resolve by this server as MULTI_SZ</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+ * @param  dom_size   size =
-of domains in bytes including the terminators</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+ * @param  dnssec     boolean to determine if DNS=
-SEC is to be enabled</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+ *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @return NO_ER=
-ROR on success, or Windows error code</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+ */</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+static DWORD</span><br><span style=3D"color: hsl(120, 100%, 40%);">+SetNr=
-ptRule(HKEY nrpt_key, PCWSTR subkey, PCSTR address,</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+            PCWSTR domains, DWORD dom_siz=
-e, BOOL dnssec)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+    /* Create rule sub=
-key */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    DWORD err=
- =3D NO_ERROR;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    H=
-KEY rule_key;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    er=
-r =3D RegCreateKeyExW(nrpt_key, subkey, 0, NULL, 0, KEY_ALL_ACCESS, NULL, &=
-amp;rule_key, NULL);</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+    if (err)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+        return err;<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+    /* Set name(s) for DNS routing */</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+    err =3D RegSetValueExW(rule_key=
-, L&quot;Name&quot;, 0, REG_MULTI_SZ, (PBYTE)domains, dom_size);</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+    if (err)</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+        goto out;</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    /* Set =
-DNS Server address */</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+    err =3D RegSetValueExA(rule_key, &quot;GenericDNSServers&quot;, 0, RE=
-G_SZ, (PBYTE)address, strlen(address) + 1);</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+    if (err)</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+        goto out;</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+    DWORD reg_val;</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+    /* Set DNSSEC if required */<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (dnssec)</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+        reg_val =3D 1;</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+        err =3D RegSetValueExA(rule=
-_key, &quot;DNSSECValidationRequired&quot;, 0, REG_DWORD, (PBYTE)&amp;reg_v=
-al, sizeof(reg_val));</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+        if (err)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-       {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+           =
- goto out;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        }=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+        reg_val =3D 0;</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+        err =3D RegSetValueExA(rule=
-_key, &quot;DNSSECQueryIPSECRequired&quot;, 0, REG_DWORD, (PBYTE)&amp;reg_v=
-al, sizeof(reg_val));</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+        if (err)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-       {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+           =
- goto out;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        }=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+        reg_val =3D 0;</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+        err =3D RegSetValueExA(rule=
-_key, &quot;DNSSECQueryIPSECEncryption&quot;, 0, REG_DWORD, (PBYTE)&amp;reg=
-_val, sizeof(reg_val));</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+        if (err)</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+        {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+         =
-   goto out;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
- }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+    /* Set NRPT config options */</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+    reg_val =3D dnssec ? 0x0000000A =
-: 0x00000008;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    er=
-r =3D RegSetValueExA(rule_key, &quot;ConfigOptions&quot;, 0, REG_DWORD, (co=
-nst PBYTE)&amp;reg_val, sizeof(reg_val));</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+    if (err)</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+        goto out;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-   }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+    /* Mandatory NRPT version */</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+    reg_val =3D 2;</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+    err =3D RegSetValu=
-eExA(rule_key, &quot;Version&quot;, 0, REG_DWORD, (const PBYTE)&amp;reg_val=
-, sizeof(reg_val));</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-    if (err)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+        goto out;</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+out:</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+    if (err)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
- {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        RegDelete=
-KeyW(nrpt_key, subkey);</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    RegClo=
-seKey(rule_key);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
- return err;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+/**</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+ * Set NRPT exclude rules to accompany a catch all rule. Thi=
-s is done so that</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *=
- local resolution of names is not interfered with in case the VPN resolves<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * all names.</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+ * @param  nrpt_key   the registry key to=
- set the rules under</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+ * @param  ovpn_pid   the PID of the openvpn process</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+ */</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+static void</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+SetNrptExcludeRules(HKEY nrpt_key, DWORD ovpn_pid)</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+    nrpt_exclude_data_t data[8]; /* data from up to =
-8 interfaces */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-memset(data, 0, sizeof(data));</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+    GetNrptExcludeData(data, _countof(data));</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+    unsigned n =3D 0;</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+    for (int i =3D 0; i &lt; _countof(data); ++i)</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+        nrpt_exclude_data_t *d =3D &amp=
-;data[i];</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        if=
- (d-&gt;domains_size =3D=3D 0)</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+        {</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+            break;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-        }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+        DWORD err;</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+        WCHAR subkey[48];</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+        swprintf(subkey,=
- _countof(subkey), L&quot;OpenVPNDNSRoutingX-%02x-%lu&quot;, ++n, ovpn_pid)=
-;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        err =3D Se=
-tNrptRule(nrpt_key, subkey, d-&gt;addresses, d-&gt;domains, d-&gt;domains_s=
-ize, FALSE);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
- if (err)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        {<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+            MsgToEve=
-ntLog(M_ERR, L&quot;%S: failed to set rule %s (%lu)&quot;, __func__, subkey=
-, err);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        }</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+/**</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * Set NRPT ru=
-les for a openvpn process</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+ *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @param  =
-nrpt_key   the registry key to set the rules under</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+ * @param  addresses  name server addresses<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @param  domains  =
-  optional list of split routing domains</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+ * @param  dnssec     boolean whether DNSSEC is to be =
-used</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @param  ovpn=
-_pid   the PID of the openvpn process</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+ *</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+ * @return NO_ERROR on success, or a Windows error code</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+ */</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+static DWORD</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+SetNrptRules(HKEY nrpt_key, const nrpt_address_t *addresses,<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+             const c=
-har *domains, BOOL dnssec, DWORD ovpn_pid)</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+    DWORD err =3D NO_ERROR;</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+    PWSTR wide_domains =3D L&quot;.\0&quot;; /* DNS route ever=
-ything by default */</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+    DWORD dom_size =3D 6;</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    /* Prepa=
-re DNS routing domains / split DNS */</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+    if (domains[0])</span><br><span style=3D"color: hsl(1=
+lor: hsl(120, 100%, 40%);">+        updown_env_set(up, o, tt, es);</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span> </spa=
+n><br><span>     argv_printf(&amp;argv, &quot;%s&quot;, o-&gt;updown);</spa=
+n><br><span>     argv_msg(M_INFO, &amp;argv);</span><br><span>@@ -586,8 +59=
+3,115 @@</span><br><span>     return res;</span><br><span> }</span><br><spa=
+n> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+static bool</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+run_updown_runner(bool u=
+p, struct options *o, const struct tuntap *tt, struct dns_updown_runner_inf=
+o *updown_runner)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+    int dns_pipe_fd[=
+2];</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    int ack_pipe=
+_fd[2];</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (pipe=
+(dns_pipe_fd) !=3D 0</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++        || pipe(ack_pipe_fd) !=3D 0)</span><br><span style=3D"color: hsl(1=
 20, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+        size_t domains_len =3D strlen(domains);</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+        dom_size =3D domains_len + 2; /* =
-len + the trailing NULs */</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        wide=
-_domains =3D utf8to16_size(domains, dom_size);</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+        dom_size *=3D sizeof(*wide_domains);</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+        if (!wide_domai=
-ns)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        {</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+            return ERROR_O=
-UTOFMEMORY;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        =
-}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        /* Make a =
-MULTI_SZ from a comma separated list */</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+        for (size_t i =3D 0; i &lt; domains_len; ++i)</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+        {</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+            if (wide_domains[i]=
- =3D=3D &#39;,&#39;)</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+            {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
-           wide_domains[i] =3D 0;</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+            }</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+        }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-  }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    else</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+        SetNrptExcludeRules(nrpt_key, ovp=
-n_pid);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span>=
+;">+        msg(M_ERR | M_ERRNO, &quot;run_dns_up_down: unable to create pi=
+pes&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        =
+return false;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+    updown_runner-&g=
+t;pid =3D fork();</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+  if (updown_runner-&gt;pid =3D=3D -1)</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+        msg(M_ERR | M_ERRNO, &quot;run_dns_up_down: unable to fork&quo=
+t;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        close(d=
+ns_pipe_fd[0]);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+    close(dns_pipe_fd[1]);</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+        close(ack_pipe_fd[0]);</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+        close(ack_pipe_fd[1]);</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+        return false;</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+    else if (updown_runner-&gt;pid &gt; 0)</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+        /* Parent process */</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+        close(dns_pipe_fd[0]);</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+        close(ack_pipe_fd[1])=
+;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        updown_run=
+ner-&gt;fds[0] =3D ack_pipe_fd[0];</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+        updown_runner-&gt;fds[1] =3D dns_pipe_fd[1];</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    else</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+        /* Script runner process, close unused FDs */</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+        for (int fd =3D 3; fd &l=
+t; 100; ++fd)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
+  {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            if (=
+fd !=3D dns_pipe_fd[0]</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+                &amp;&amp; fd !=3D ack_pipe_fd[1])</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+            {</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+                close(fd);</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+            }</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+        }</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+        /* Ignore signals */</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+        signal(SIGINT, SIG_IGN);</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+        signal(SIGHUP, SIG_IGN);</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+        signal(SIGTERM, SIG_IGN);</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+        signal(SIGUSR1, SI=
+G_IGN);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        sign=
+al(SIGUSR2, SIG_IGN);</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+        signal(SIGPIPE, SIG_IGN);</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+     while (1)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
+   {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            ssi=
+ze_t rlen, wlen;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+         char path[PATH_MAX];</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+         =
+   /* Block here until parent sends a path */</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+            rlen =3D read(dns_pipe_fd[0], &amp;pa=
+th, sizeof(path));</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+           if (rlen &lt; 1)</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+            {</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+                if (rlen =3D=3D -1 &amp;&amp; errno =3D=3D EINTR)</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+                {</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+                    continue;=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+                }</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+                close=
+(dns_pipe_fd[0]);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+              close(ack_pipe_fd[1]);</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+                exit(0);</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+            }</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+         path[sizeof(path) - 1] =3D &#39;\0&#39;;</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+            int res =3D do_run_up_down_comman=
+d(up, path, &amp;o-&gt;dns_options, tt);</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+            platform_unlink(path);</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+            /* Unblock parent process */</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+            while (1)</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+            {</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+                wlen =3D write(ack_pipe_f=
+d[1], &amp;res, sizeof(res));</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+                if ((wlen =3D=3D -1 &amp;&amp; errno !=3D EINTR) =
+|| wlen &lt; sizeof(res))</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+                {</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+                    /* Not much we can do about errors but exit */</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+                    clos=
+e(dns_pipe_fd[0]);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+                   close(ack_pipe_fd[1]);</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+                    exit(0);</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+                }</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+                else if (wlen =3D=3D sizeof(re=
+s))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+                =
+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+                  =
+  break;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+           =
+     }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            }=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+            up =3D !up; /* do the oppo=
+site next time */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+      }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span>=
 <br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+    /* Create address string list */</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+    CHAR addr_list[NRPT_ADDR=
-_NUM * NRPT_ADDR_SIZE];</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+    PSTR pos =3D addr_list;</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+    for (int i =3D 0; i &lt; NRPT_ADDR_NUM &amp;&amp; addresses=
-[i][0]; ++i)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+        if (i !=3D 0)=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        {</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+            *pos++ =3D &#39;;=
-&#39;;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        }</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+        strcpy(pos, add=
-resses[i]);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        =
-pos +=3D strlen(pos);</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+    WCHAR subkey[MAX_PATH];</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+    swprintf(subkey, _c=
-ountof(subkey), L&quot;OpenVPNDNSRouting-%lu&quot;, ovpn_pid);</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+    err =3D SetNrptRule(nrpt_key=
-, subkey, addr_list, wide_domains, dom_size, dnssec);</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    if (err)</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+        MsgToEventLog(M_ERR, L&quot;%S: failed to set rule %s =
-(%lu)&quot;, __func__, subkey, err);</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (domains[=
-0])</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+        free(wide_domains);</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+    return err;</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+/*=
-*</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * Return the regi=
-stry key where NRPT rules are stored</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+ *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
- * @param  key        pointer to the HKEY it is returned in</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+ * @param  gpol       pointer to BO=
-OL the use of GPOL hive is returned in</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+ *</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+ * @return NO_ERROR on success, or a Windows error code</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+ */</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+static LSTATUS</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+OpenNrptBaseKey(PHKEY key, PBOOL gpol)</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+    /*</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+     * Registry keys Name Service Policy Table (NRPT) rules can be sto=
-red at.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     * When =
-the group policy key exists, NRPT rules must be placed there.</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+     * It is created when NRPT ru=
-les are pushed via group policy and it</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+     * remains in the registry even if the last GP-NRPT =
-rule is deleted.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
-  */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    static PCST=
-R gpol_key =3D &quot;SOFTWARE\\Policies\\Microsoft\\Windows NT\\DNSClient\\=
-DnsPolicyConfig&quot;;</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+    static PCSTR sys_key =3D &quot;SYSTEM\\CurrentControlSet\\Services\\=
-Dnscache\\Parameters\\DnsPolicyConfig&quot;;</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+    HKEY nrpt;</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+    *gpol =3D TRUE;</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+    LSTATUS err =3D RegOpenKeyExA(HKEY_LOCAL_MACHINE, gpol_key, 0, KEY_ALL=
-_ACCESS, &amp;nrpt);</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+    if (err =3D=3D ERROR_FILE_NOT_FOUND)</span><br><span style=3D"color: h=
+color: hsl(120, 100%, 40%);">+    return true;</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+static con=
+st char *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+write_dns_=
+vars_file(bool up, const struct options *o, const struct tuntap *tt, struct=
+ gc_arena *gc)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+    struct env_set *es =
+=3D env_set_create(gc);</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+    const char *dvf =3D platform_create_temp_file(o-&gt;tmp_dir, &quot;=
+dvf&quot;, gc);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+    updown_env_set(up, =
+&amp;o-&gt;dns_options, tt, es);</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+    env_set_write_file(dvf, es);</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+    return dvf;</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><spa=
+n> static void</span><br><span style=3D"color: hsl(0, 100%, 40%);">-run_up_=
+down_command(bool up, struct options *o, const struct tuntap *tt)</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+run_up_down_command(bool up, =
+struct options *o, const struct tuntap *tt, struct dns_updown_runner_info *=
+updown_runner)</span><br><span> {</span><br><span>     if (!o-&gt;dns_optio=
+ns.updown)</span><br><span>     {</span><br><span>@@ -595,7 +709,60 @@</spa=
+n><br><span>     }</span><br><span> </span><br><span>     int status;</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-    status =3D do_run_up_do=
+wn_command(up, &amp;o-&gt;dns_options, tt);</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+    if (!updown_runner-&gt;required)</span><br><span style=3D"color: h=
 sl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+        *gpol =3D FALSE;</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+        err =3D RegOpenKeyExA(HKEY_LOCAL_MACHINE, sys_key, 0, =
-KEY_ALL_ACCESS, &amp;nrpt);</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+        if (err)</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+        {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
-       nrpt =3D INVALID_HANDLE_VALUE;</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+        }</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    *k=
-ey =3D nrpt;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    ret=
-urn err;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+/**</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+ * Delete OpenVPN NRPT rules from the registry</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+ * If the pid parameter is 0 all NRPT rules added by O=
-penVPN are deleted.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
- * In all other cases only rules matching the pid are deleted.</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+ * @param  pid        PID of the process to delet=
-e the rules for or 0</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+ * @param  gpol</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @return BOOL to i=
-ndicate if rules were deleted</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+ */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+static=
- BOOL</span><br><span style=3D"color: hsl(120, 100%, 40%);">+DeleteNrptRule=
-s(DWORD pid, PBOOL gpol)</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    HKEY key;=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    LSTATUS err =3D=
- OpenNrptBaseKey(&amp;key, gpol);</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+    if (err)</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
- MsgToEventLog(M_SYSERR, L&quot;%S: could not open NRPT base key (%lu)&quot=
-;, __func__, err);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-       return FALSE;</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+    /* PID suffix string to comp=
-are against later */</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+    WCHAR pid_str[16];</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+    size_t pidlen =3D 0;</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+    if (pid)</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        swpr=
-intf(pid_str, _countof(pid_str), L&quot;-%lu&quot;, pid);</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+        pidlen =3D wcslen(pid_str);</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+    int deleted =3D 0;</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+    DWORD enum_index =3D 0;</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    while (TRUE)</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+        WCHAR name[MAX_PATH];</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+        DWORD namelen =3D _countof(name);</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+        err =3D RegEnumKey=
-ExW(key, enum_index++, name, &amp;namelen, NULL, NULL, NULL, NULL);</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+        if (err)</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+        {</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+            if (err !=3D ERROR_NO_MORE_I=
-TEMS)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            {<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+                MsgT=
-oEventLog(M_SYSERR, L&quot;%S: could not enumerate NRPT rules (%lu)&quot;, =
-__func__, err);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+40%);">+        /* Run dns updown directly */</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+        status =3D do_run_up_down_command(up, NUL=
+L, &amp;o-&gt;dns_options, tt);</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+  else</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+        if (updown_runner-&=
+gt;pid &lt; 1)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
+   {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            /* =
+Need to set up privilege preserving child first */</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+            if (!run_updown_runner(up, o, tt=
+, updown_runner))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+          {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        =
+        return;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+        }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        }<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+        struct gc_arena gc =3D gc_new()=
+;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        int rfd =
+=3D updown_runner-&gt;fds[0];</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+        int wfd =3D updown_runner-&gt;fds[1];</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+        const char *dvf =3D write_dns_v=
+ars_file(up, o, tt, &amp;gc);</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+        size_t dvf_size =3D strlen(dvf) + 1;</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+        while (1)</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+        {</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+            ssize_t len =3D write(wfd, dvf, dvf_size);</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+            if (len &lt; dvf_size)</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+            {</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+                if (len =3D=
+=3D -1 &amp;&amp; errno =3D=3D EINTR)</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+                {</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+                    continue;</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+                }</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+                msg(M_ERR | M_ERRNO, &quot;could no=
+t send dns vars filename&quot;);</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+            }</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+            break;</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+        }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+        while (1)</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+        {</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+            ssize_t len =3D read(rf=
+d, &amp;status, sizeof(status));</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+            if (len &lt; sizeof(status))</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+            {</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+                if (len =3D=3D -1 &amp;&amp; er=
+rno =3D=3D EINTR)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+              {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+                continue;</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+                }</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+                msg(M_ERR | M_ERRNO, &quot;could not receive dns updown=
+ status&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
         }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+          =
   break;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        }</=
 span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+        /* Keep rule if name doesn&#39;t=
- match */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        if=
- (wcsncmp(name, L&quot;OpenVPNDNSRouting&quot;, 17) !=3D 0</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+            || (pid &amp;&amp; wcsnc=
-mp(name + namelen - pidlen, pid_str, pidlen) !=3D 0))</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+        {</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+            continue;</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+        }</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
-     if (RegDeleteKeyW(key, name) =3D=3D NO_ERROR)</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+        {</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+            enum_index--;</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+            deleted++;</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+        }</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    RegCloseK=
-ey(key);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    return =
-deleted ? TRUE : FALSE;</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+/**</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+ * Delete a process&#39; NRPT rules and apply the=
- reduced set of rules</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+ *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @param ovpn_=
-pid  OpenVPN process id to delete rules for</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+ */</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+static void</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-UndoNrptRules(DWORD ovpn_pid)</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    BOOL=
- gpol;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (Delet=
-eNrptRules(ovpn_pid, &amp;gpol))</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-       ApplyDnsSettings(gpol);</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</=
+e=3D"color: hsl(120, 100%, 40%);">+        gc_free(&amp;gc);</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+</span><br><span>     msg(M_INFO, &quot;dns %s c=
+ommand exited with status %d&quot;, up ? &quot;up&quot; : &quot;down&quot;,=
+ status);</span><br><span> }</span><br><span> </span><br><span>@@ -681,7 +8=
+48,7 @@</span><br><span> }</span><br><span> </span><br><span> void</span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-run_dns_up_down(bool up, struc=
+t options *o, const struct tuntap *tt)</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+run_dns_up_down(bool up, struct options *o, const struct=
+ tuntap *tt, struct dns_updown_runner_info *duri)</span><br><span> {</span>=
+<br><span>     if (!o-&gt;dns_options.servers)</span><br><span>     {</span=
+><br><span>@@ -718,6 +885,6 @@</span><br><span> #ifdef _WIN32</span><br><sp=
+an>     run_up_down_service(up, o, tt);</span><br><span> #else</span><br><s=
+pan style=3D"color: hsl(0, 100%, 40%);">-    run_up_down_command(up, o, tt)=
+;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    run_up_down_co=
+mmand(up, o, tt, duri);</span><br><span> #endif /* ifdef _WIN32 */</span><b=
+r><span> }</span><br><span>diff --git a/src/openvpn/dns.h b/src/openvpn/dns=
+.h</span><br><span>index c4d19ff..4cc1e73 100644</span><br><span>--- a/src/=
+openvpn/dns.h</span><br><span>+++ b/src/openvpn/dns.h</span><br><span>@@ -6=
+8,6 +68,14 @@</span><br><span>     const char *sni;</span><br><span> };</sp=
+an><br><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+struc=
+t dns_updown_runner_info {</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+    bool required;</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+    int fds[2];</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+#if !defined(_WIN32)</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+    pid_t pid;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#e=
+ndif</span><br><span style=3D"color: hsl(120, 100%, 40%);">+};</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> struct dns_opt=
+ions {</span><br><span>     struct dns_domain *search_domains;</span><br><s=
+pan>     struct dns_server *servers_prepull;</span><br><span>@@ -154,8 +162=
+,10 @@</span><br><span>  * @param   up          Boolean to set this call to=
+ &quot;up&quot; when true</span><br><span>  * @param   o           Pointer =
+to the program options</span><br><span>  * @param   tt          Pointer to =
+the connection&#39;s tuntap struct</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+ * @param   duri        Pointer to the updown runner info st=
+ruct</span><br><span>  */</span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">-void run_dns_up_down(bool up, struct options *o, const struct tuntap *t=
+t);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+void run_dns_up_=
+down(bool up, struct options *o, const struct tuntap *tt,</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+                     struct dns_updow=
+n_runner_info *duri);</span><br><span> </span><br><span> /**</span><br><spa=
+n>  * Puts the DNS options into an environment set.</span><br><span>diff --=
+git a/src/openvpn/env_set.c b/src/openvpn/env_set.c</span><br><span>index 8=
+1ab59e..3fe23fd 100644</span><br><span>--- a/src/openvpn/env_set.c</span><b=
+r><span>+++ b/src/openvpn/env_set.c</span><br><span>@@ -33,6 +33,7 @@</span=
+><br><span> #include &quot;env_set.h&quot;</span><br><span> </span><br><spa=
+n> #include &quot;run_command.h&quot;</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+#include &quot;platform.h&quot;</span><br><span> </span><=
+br><span> /*</span><br><span>  * Set environmental variable (int or string)=
+.</span><br><span>@@ -235,6 +236,30 @@</span><br><span> }</span><br><span> =
+</span><br><span> void</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+env_set_write_file(const char *path, const struct env_set *es)</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+    FILE *fp =3D platform_fopen(path, &quot;w&q=
+uot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (!fp)<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+        msg(M_ERR, &quot;could not=
+ write env set to &#39;%s&#39;&quot;, path);</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+        return;</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (es)<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+        const struct env_item *ite=
+m =3D  es-&gt;list;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+        while (item)</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++        {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+         =
+   fputs(item-&gt;string, fp);</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+            fputc(&#39;\n&#39;, fp);</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+            item =3D item-&gt;next;</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+        }</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++    fclose(fp);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</=
 span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+/**</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+ * Add Name Resolution Policy Table (NRPT) rules as docu=
-mented in</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * https:/=
-/msdn.microsoft.com/en-us/library/ff957356.aspx for DNS name</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+ * resolution, as well as DNS sear=
-ch domain(s), if given.</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+ *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @param  ms=
-g        config messages sent by the openvpn process</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+ * @param  ovpn_pid   process id of the s=
-ending openvpn process</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+ * @param  lists      undo lists for this process</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+ * @return NO_ERROR on success, or a Windows error code</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+ */</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+static DWORD</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+HandleDNSConfigNrptMessage(const nrpt_dns_cfg=
-_message_t *msg,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
-                        DWORD ovpn_pid, undo_lists_t *lists)</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+    /*</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+     * Use a non-const reference with limited scope to</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+     * enforce null-terminatio=
-n of strings from client</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+     */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+        nrpt_dns_cfg_=
-message_t *msgptr =3D (nrpt_dns_cfg_message_t *) msg;</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+        msgptr-&gt;iface.name[_countof(ms=
-g-&gt;iface.name) - 1] =3D &#39;\0&#39;;</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+        msgptr-&gt;search_domains[_countof(msg-&gt;sea=
-rch_domains) - 1] =3D &#39;\0&#39;;</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+        msgptr-&gt;resolve_domains[_countof(msg-&gt;resolve=
-_domains) - 1] =3D &#39;\0&#39;;</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+        for (size_t i =3D 0; i &lt; NRPT_ADDR_NUM; ++i)</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+        {</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+            msgptr-&gt;addresses[i][=
-_countof(msg-&gt;addresses[0]) - 1] =3D &#39;\0&#39;;</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+        }</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    /* Ma=
-ke sure we have the VPN interface name */</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+    if (msg-&gt;iface.name[0] =3D=3D 0)</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+        return ERROR_MESSAGE_DATA;</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+    /* Some sanity checks on the add message data */</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+    if (msg-&gt;header.type =3D=
-=3D msg_add_nrpt_cfg)</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        /* A=
-t least one name server address is set */</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+        if (msg-&gt;addresses[0][0] =3D=3D 0)</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+        {</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+            return ERROR_MESSAGE_DATA=
-;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        }</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+        /* Resolve domains a=
-re double zero terminated (MULTI_SZ) */</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+        const char *rdom =3D msg-&gt;resolve_domains;</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+        size_t rdom_s=
-ize =3D sizeof(msg-&gt;resolve_domains);</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+        size_t rdom_len =3D strlen(rdom);</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+        if (rdom_len &amp;&amp; =
-(rdom_len + 1 &gt;=3D rdom_size || rdom[rdom_len + 2] !=3D 0))</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+        {</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+            return ERROR_MESSAGE_DATA;</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+        }</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+    BOOL gpol_nrpt =3D FALSE;</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+    BOOL gpol_list =3D FALSE;</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+    WCHAR iid[64];</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+    DWORD iid_err =3D InterfaceIdString(msg-&gt;iface.name, iid, =
-_countof(iid));</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-if (iid_err)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+        return iid_er=
-r;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+    /* Delete previously set values for this insta=
-nce first, if any */</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+    PDWORD undo_pid =3D RemoveListItem(&amp;(*lists)[undo_nrpt], CmpAny, N=
-ULL);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (undo_p=
-id)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+        if (*undo_pid !=3D ovp=
-n_pid)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        {</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+            MsgToEventL=
-og(M_INFO,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+         =
-                 L&quot;%S: PID stored for undo doesn&#39;t match: %lu vs %=
-lu. &quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+         =
-                 &quot;This is likely an error. Cleaning up anyway.&quot;,<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+                    =
-      __func__, *undo_pid, ovpn_pid);</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+        }</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+        DeleteNrptRules(*undo_pid, &amp;gpol_nrpt);</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+        free(undo_pid);</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+        ResetNameServers(iid, AF_INET);</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+        ResetNameServers(iid, =
-AF_INET6);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+    SetDnsSearchDomains=
-(msg-&gt;iface.name, NULL, &amp;gpol_list, lists);</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+    if (msg-&gt;header.type =3D=3D msg_del_nrpt_cfg)</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+        ApplyDnsSettings(gpol_nrpt || gpol_l=
-ist);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        return=
- NO_ERROR; /* Done dealing with del message */</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    HK=
-EY key;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    LSTATUS =
-err =3D OpenNrptBaseKey(&amp;key, &amp;gpol_nrpt);</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+    if (err)</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+        goto out;</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+    /* Add undo informati=
-on first in case there&#39;s no heap left */</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+    PDWORD pid =3D malloc(sizeof(ovpn_pid));</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (!pid)</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+        err =3D ERROR_OUTOFMEMORY;</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+        goto out;</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+    *pid =3D ovpn_pid;</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    if (AddListItem(&amp;(*lists)[undo_nr=
-pt], pid))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+        err =3D ERROR_O=
-UTOFMEMORY;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        =
-free(pid);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        g=
-oto out;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+    /* Set NRPT rules */</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+    BOOL dnssec =3D (msg-&gt;flags &amp=
-; nrpt_dnssec) !=3D 0;</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+    err =3D SetNrptRules(key, msg-&gt;addresses, msg-&gt;resolve_domains=
-, dnssec, ovpn_pid);</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+    if (err)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+        goto out;</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+    /* Set name servers */</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+    err =3D SetNameServerAddresses(iid, msg-&gt;=
-addresses);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (=
-err)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+        goto out;</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+    /* Set search domains, if any */</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+    if (msg-&gt;search_domains[0])</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+        err =3D SetDnsSearchDomains(msg-&gt;if=
-ace.name, msg-&gt;search_domains, &amp;gpol_list, lists);</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+    ApplyDnsSettings(gpol_nrpt || gpol_list);</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+out:</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
- return err;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> static =
-DWORD</span><br><span> HandleWINSConfigMessage(const wins_cfg_message_t *ms=
-g, undo_lists_t *lists)</span><br><span> {</span><br><span>@@ -2202,7 +3108=
-,7 @@</span><br><span> }</span><br><span> </span><br><span> static VOID</sp=
-an><br><span style=3D"color: hsl(0, 100%, 40%);">-HandleMessage(HANDLE pipe=
-, HANDLE ovpn_proc,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-HandleMessage(HANDLE pipe, PPROCESS_INFORMATION proc_info,</span><br><span>=
-               DWORD bytes, DWORD count, LPHANDLE events, undo_lists_t *lis=
-ts)</span><br><span> {</span><br><span>     pipe_message_t msg;</span><br><=
-span>@@ -2265,6 +3171,14 @@</span><br><span>             ack.error_number =
-=3D HandleDNSConfigMessage(&amp;msg.dns, lists);</span><br><span>          =
-   break;</span><br><span> </span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+        case msg_add_nrpt_cfg:</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+        case msg_del_nrpt_cfg:</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+        {</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+            DWORD ovpn_pid =3D proc_info-&gt;dwProcessI=
-d;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            ack.e=
-rror_number =3D HandleDNSConfigNrptMessage(&amp;msg.nrpt_dns, ovpn_pid, lis=
-ts);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        }</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+        break;</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span>         case=
- msg_add_wins_cfg:</span><br><span>         case msg_del_wins_cfg:</span><b=
-r><span>             ack.error_number =3D HandleWINSConfigMessage(&amp;msg.=
-wins, lists);</span><br><span>@@ -2280,7 +3194,8 @@</span><br><span>       =
-  case msg_register_ring_buffers:</span><br><span>             if (msg.head=
-er.size =3D=3D sizeof(msg.rrb))</span><br><span>             {</span><br><s=
-pan style=3D"color: hsl(0, 100%, 40%);">-                ack.error_number =
-=3D HandleRegisterRingBuffers(&amp;msg.rrb, ovpn_proc, lists);</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+                HANDLE ovpn_hnd =
-=3D proc_info-&gt;hProcess;</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+                ack.error_number =3D HandleRegisterRingBuffers(&amp=
-;msg.rrb, ovpn_hnd, lists);</span><br><span>             }</span><br><span>=
-             break;</span><br><span> </span><br><span>@@ -2331,6 +3246,10 @=
-@</span><br><span>                     ResetNameServers(item-&gt;data, AF_I=
-NET6);</span><br><span>                     break;</span><br><span> </span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+                case undo_=
-nrpt:</span><br><span style=3D"color: hsl(120, 100%, 40%);">+              =
-      UndoNrptRules(*(PDWORD)item-&gt;data);</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+                    break;</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+</span><br><span>                 case un=
-do_domains:</span><br><span>                     UndoDnsSearchDomains(item-=
-&gt;data);</span><br><span>                     break;</span><br><span>@@ -=
-2652,7 +3571,7 @@</span><br><span>             break;</span><br><span>     =
-    }</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);"=
->-        HandleMessage(ovpn_pipe, proc_info.hProcess, bytes, 1, &amp;exit_=
-event, &amp;undo_lists);</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+        HandleMessage(ovpn_pipe, &amp;proc_info, bytes, 1, &amp;exit_e=
-vent, &amp;undo_lists);</span><br><span>     }</span><br><span> </span><br>=
-<span>     WaitForSingleObject(proc_info.hProcess, IO_TIMEOUT);</span><br><=
-span>@@ -2848,24 +3767,28 @@</span><br><span> static void</span><br><span> =
-CleanupRegistry(void)</span><br><span> {</span><br><span style=3D"color: hs=
-l(0, 100%, 40%);">-    HKEY key;</span><br><span style=3D"color: hsl(0, 100=
-%, 40%);">-    DWORD changed =3D 0;</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+    BOOL changed =3D FALSE;</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+    /* Clean up leftover NRPT rules */</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+    BOOL gpol_nrpt;</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+    changed =3D DeleteNrptRules(0, &amp;gpol_nrpt);=
-</span><br><span> </span><br><span>     /* Clean up leftover DNS search lis=
-t fragments */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    H=
-KEY key;</span><br><span>     BOOL gpol_list;</span><br><span>     GetDnsSe=
-archListKey(NULL, &amp;gpol_list, &amp;key);</span><br><span>     if (key !=
-=3D INVALID_HANDLE_VALUE)</span><br><span>     {</span><br><span>         i=
-f (ResetDnsSearchDomains(key))</span><br><span>         {</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-            changed++;</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+            changed =3D TRUE;</span>=
-<br><span>         }</span><br><span>         RegCloseKey(key);</span><br><=
-span>     }</span><br><span> </span><br><span>     if (changed)</span><br><=
-span>     {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        Ap=
-plyDnsSettings(gpol_list);</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+        ApplyDnsSettings(gpol_nrpt || gpol_list);</span><br><span>  =
-   }</span><br><span> }</span><br><span> </span><br><span></span><br></pre>=
-<p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/837?usp=
-=3Demail">change 837</a>. To unsubscribe, or for help writing mail filters,=
- visit <a href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div=
- itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemp=
-rop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"=
-url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/837?usp=3Demail"/><meta =
-itemprop=3D"name" content=3D"View Change"/></div></div>
+e=3D"color: hsl(120, 100%, 40%);">+void</span><br><span> env_set_inherit(st=
+ruct env_set *es, const struct env_set *src)</span><br><span> {</span><br><=
+span>     const struct env_item *e;</span><br><span>diff --git a/src/openvp=
+n/env_set.h b/src/openvpn/env_set.h</span><br><span>index 4294d6e..70d01e2 =
+100644</span><br><span>--- a/src/openvpn/env_set.h</span><br><span>+++ b/sr=
+c/openvpn/env_set.h</span><br><span>@@ -91,6 +91,14 @@</span><br><span> </s=
+pan><br><span> void env_set_print(int msglevel, const struct env_set *es);<=
+/span><br><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+/*=
+*</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * Write a struct =
+env_set to a file. Each item on one line.</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+ *</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+ * @param path  The filepath to write to.</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+ * @param es    Pointer to the env_set to write.=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ */</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+void env_set_write_file(const char =
+*path, const struct env_set *es);</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+</span><br><span> void env_set_inherit(struct env_set *es, co=
+nst struct env_set *src);</span><br><span> </span><br><span> /* returns tru=
+e if environmental variable name starts with &#39;password&#39; */</span><b=
+r><span>diff --git a/src/openvpn/init.c b/src/openvpn/init.c</span><br><spa=
+n>index 9eb8290..9ad64aa 100644</span><br><span>--- a/src/openvpn/init.c</s=
+pan><br><span>+++ b/src/openvpn/init.c</span><br><span>@@ -2026,7 +2026,7 @=
+@</span><br><span>                         c-&gt;c2.frame.tun_mtu, c-&gt;c2=
+.es, &amp;c-&gt;net_ctx);</span><br><span>         }</span><br><span> </spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-        run_dns_up_down(tr=
+ue, &amp;c-&gt;options, c-&gt;c1.tuntap);</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+        run_dns_up_down(true, &amp;c-&gt;options, c-&=
+gt;c1.tuntap, &amp;c-&gt;persist.duri);</span><br><span> </span><br><span> =
+        /* run the up script */</span><br><span>         run_up_down(c-&gt;=
+options.up_script,</span><br><span>@@ -2066,7 +2066,7 @@</span><br><span>  =
+       /* explicitly set the ifconfig_* env vars */</span><br><span>       =
+  do_ifconfig_setenv(c-&gt;c1.tuntap, c-&gt;c2.es);</span><br><span> </span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-        run_dns_up_down(tru=
+e, &amp;c-&gt;options, c-&gt;c1.tuntap);</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+        run_dns_up_down(true, &amp;c-&gt;options, c-&g=
+t;c1.tuntap, &amp;c-&gt;persist.duri);</span><br><span> </span><br><span>  =
+       /* run the up script if user specified --up-restart */</span><br><sp=
+an>         if (c-&gt;options.up_restart)</span><br><span>@@ -2156,7 +2156,=
+7 @@</span><br><span>     adapter_index =3D c-&gt;c1.tuntap-&gt;adapter_ind=
+ex;</span><br><span> #endif</span><br><span> </span><br><span style=3D"colo=
+r: hsl(0, 100%, 40%);">-    run_dns_up_down(false, &amp;c-&gt;options, c-&g=
+t;c1.tuntap);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    ru=
+n_dns_up_down(false, &amp;c-&gt;options, c-&gt;c1.tuntap, &amp;c-&gt;persis=
+t.duri);</span><br><span> </span><br><span>     if (force || !(c-&gt;sig-&g=
+t;signal_received =3D=3D SIGUSR1 &amp;&amp; c-&gt;options.persist_tun))</sp=
+an><br><span>     {</span><br><span>@@ -3968,6 +3968,9 @@</span><br><span> =
+</span><br><span>         c0-&gt;uid_gid_specified =3D user_defined || grou=
+p_defined;</span><br><span> </span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+        /* fork the dns script runner to preserve root? */</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+        c-&gt;persist.duri.=
+required =3D c0-&gt;uid_gid_specified;</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+</span><br><span>         /* perform postponed chdir if =
+--daemon */</span><br><span>         if (c-&gt;did_we_daemonize &amp;&amp; =
+c-&gt;options.cd_dir =3D=3D NULL)</span><br><span>         {</span><br><spa=
+n>diff --git a/src/openvpn/openvpn.h b/src/openvpn/openvpn.h</span><br><spa=
+n>index 0bbd1a4..1023520 100644</span><br><span>--- a/src/openvpn/openvpn.h=
+</span><br><span>+++ b/src/openvpn/openvpn.h</span><br><span>@@ -45,6 +45,7=
+ @@</span><br><span> #include &quot;pool.h&quot;</span><br><span> #include =
+&quot;plugin.h&quot;</span><br><span> #include &quot;manage.h&quot;</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+#include &quot;dns.h&quot;<=
+/span><br><span> </span><br><span> /*</span><br><span>  * Our global key sc=
+hedules, packaged thusly</span><br><span>@@ -120,6 +121,7 @@</span><br><spa=
+n> struct context_persist</span><br><span> {</span><br><span>     int resta=
+rt_sleep_seconds;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+  struct dns_updown_runner_info duri;</span><br><span> };</span><br><span> =
+</span><br><span> </span><br><span></span><br></pre><p>To view, visit <a hr=
+ef=3D"http://gerrit.openvpn.net/c/openvpn/+/839?usp=3Demail">change 839</a>=
+. To unsubscribe, or for help writing mail filters, visit <a href=3D"http:/=
+/gerrit.openvpn.net/settings">settings</a>.</p><div itemscope itemtype=3D"h=
+ttp://schema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=
+=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://ger=
+rit.openvpn.net/c/openvpn/+/839?usp=3Demail"/><meta itemprop=3D"name" conte=
+nt=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I576e74f3276362606e9cbd50bb5=
-adbebaaf209cc </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 837 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 17 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I6b67e3a00dd84bf348b6af28115=
+ee11138c3a111 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 839 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 20 </div>
 <div style=3D"display:none"> Gerrit-Owner: d12fk &lt;heiko@...515...&gt; </=
 div>
+<div style=3D"display:none"> Gerrit-Reviewer: MaxF &lt;max@...2606...&gt; <=
+/div>
 <div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
 1...&gt; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
 .1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: stipa &lt;lstipakov@...277...=
-&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
 ..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: stipa &lt;lstipakov@...1663...=
-.&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: d12fk &lt;heiko@...515...&gt=
+; </div>
+<div style=3D"display:none"> Gerrit-Attention: MaxF &lt;max@...2606...&gt; =
+</div>
 <div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
 
 
---jpMhEt5y+Zg=--
+--r96uv8w+biY=--
 
