@@ -1,14 +1,15 @@
-From: "stipa (Code Review)" <gerrit@...515...>
-Date: Wed, 9 Apr 2025 13:54:44 +0000
+From: "d12fk (Code Review)" <gerrit@...515...>
+Date: Wed, 9 Apr 2025 14:03:48 +0000
 In-Reply-To: <gerrit.1733989644000.I576e74f3276362606e9cbd50bb5adbebaaf209cc@...2715...>
 References: <gerrit.1733989644000.I576e74f3276362606e9cbd50bb5adbebaaf209cc@...2715...>
-Reply-To: lstipakov@...277..., arne-openvpn@...1227..., heiko@...515...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <a726a1ffd82210af0bcaa30f813249f0cc6ccd19-EmailReviewComments-HTML@...2715...>
+Reply-To: heiko@...515..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net, frank@...2641...,
+ lstipakov@...277...
+Message-ID: <a049467b214eba970a621b6f9befab97dae810b7-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="7bT/12/os2Y="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="sY9eZ/Ul2RA="; charset=UTF-8
 Subject: [Openvpn-devel] [XL] Change in openvpn[master]: win: implement
  --dns option support with NRPT
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -19,16 +20,15 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: d12fk <heiko@...515...>
-Cc: flichtenheld <frank@...2641...>, plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Cc: stipa <lstipakov@...277...>, flichtenheld <frank@...2641...>, plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---7bT/12/os2Y=
+--sY9eZ/Ul2RA=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: d12fk, plaisthos.
+Attention is currently required from: plaisthos.
 
-stipa has posted comments on this change. ( http://gerrit.openvpn.net/c/ope=
+d12fk has posted comments on this change. ( http://gerrit.openvpn.net/c/ope=
 nvpn/+/837?usp=3Demail )
 
 Change subject: win: implement --dns option support with NRPT
@@ -36,27 +36,6 @@ Change subject: win: implement --dns option support with NRPT
 
 
 Patch Set 18: Code-Review+2
-
-(1 comment)
-
-Patchset:
-
-PS18:
-I couldn't find any more issues in the code, I tested it and it works like =
-expected - I checked that the NRPT rules are created/removed and adapter-sp=
-ecific DNS suffixes are also respected in NRPT.
-
-Probably not directly related to this patch, but the behavior is now not ac=
-cording to man page. For example if server pushes
-
-  push "dns server 1 resolve-domains fi"
-  push "dns server 1 address 1.1.1.1"
-
-I would expect only .fi domains being resolved via 1.1.1.1, however ALL dom=
-ains are resolved via 1.1.1.1 - this is likely because we set 1.1.1.1 DNS o=
-n VPN adapter. why we do it in addition to NRPT? We should either change th=
-e man page or fix the behavior.
-
 
 
 --
@@ -70,49 +49,33 @@ Gerrit-Change-Id: I576e74f3276362606e9cbd50bb5adbebaaf209cc
 Gerrit-Change-Number: 837
 Gerrit-PatchSet: 18
 Gerrit-Owner: d12fk <heiko@...515...>
+Gerrit-Reviewer: d12fk <heiko@...515...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-Reviewer: stipa <lstipakov@...277...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: d12fk <heiko@...515...>
-Gerrit-Comment-Date: Wed, 09 Apr 2025 13:54:44 +0000
-Gerrit-HasComments: Yes
+Gerrit-Comment-Date: Wed, 09 Apr 2025 14:03:48 +0000
+Gerrit-HasComments: No
 Gerrit-Has-Labels: Yes
 Gerrit-MessageType: comment
 
---7bT/12/os2Y=
+--sY9eZ/Ul2RA=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p> Attention is currently required from: d12fk, plaisthos. </p>
+<p> Attention is currently required from: plaisthos. </p>
 <p>Patch set 18:<span style=3D"border-radius: 3px; display: inline-block; m=
 argin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span=
 ></p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/837?usp=3Demail">V=
-iew Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: =
-0;"><li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-=
-style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p =
-style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvp=
-n/+/837?tab=3Dcomments">Patch Set #18:</a> </p><p style=3D"white-space: pre=
--wrap; word-wrap: break-word;">I couldn&#39;t find any more issues in the c=
-ode, I tested it and it works like expected - I checked that the NRPT rules=
- are created/removed and adapter-specific DNS suffixes are also respected i=
-n NRPT.</p><p style=3D"white-space: pre-wrap; word-wrap: break-word;">Proba=
-bly not directly related to this patch, but the behavior is now not accordi=
-ng to man page. For example if server pushes</p><pre style=3D"font-family: =
-monospace,monospace; white-space: pre-wrap;">  push &quot;dns server 1 reso=
-lve-domains fi&quot;<br>  push &quot;dns server 1 address 1.1.1.1&quot;<br>=
-  <br>I would expect only .fi domains being resolved via 1.1.1.1, however A=
-LL domains are resolved via 1.1.1.1 - this is likely because we set 1.1.1.1=
- DNS on VPN adapter. why we do it in addition to NRPT? We should either cha=
-nge the man page or fix the behavior.</pre></li></ul></li></ul><p>To view, =
-visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/837?usp=3Demail">cha=
-nge 837</a>. To unsubscribe, or for help writing mail filters, visit <a hre=
-f=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope it=
-emtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"action=
-" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"=
-http://gerrit.openvpn.net/c/openvpn/+/837?usp=3Demail"/><meta itemprop=3D"n=
-ame" content=3D"View Change"/></div></div>
+iew Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To vi=
+ew, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/837?usp=3Demail"=
+>change 837</a>. To unsubscribe, or for help writing mail filters, visit <a=
+ href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemscop=
+e itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"ac=
+tion" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=
+=3D"http://gerrit.openvpn.net/c/openvpn/+/837?usp=3Demail"/><meta itemprop=
+=3D"name" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
@@ -122,6 +85,8 @@ adbebaaf209cc </div>
 <div style=3D"display:none"> Gerrit-PatchSet: 18 </div>
 <div style=3D"display:none"> Gerrit-Owner: d12fk &lt;heiko@...515...&gt; </=
 div>
+<div style=3D"display:none"> Gerrit-Reviewer: d12fk &lt;heiko@...515...&gt;=
+ </div>
 <div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
 1...&gt; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
@@ -132,14 +97,12 @@ div>
 ts.sourceforge.net&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
 ..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: d12fk &lt;heiko@...515...&gt=
-; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Wed, 09 Apr 2025 13:54:44=
+<div style=3D"display:none"> Gerrit-Comment-Date: Wed, 09 Apr 2025 14:03:48=
  +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
+<div style=3D"display:none"> Gerrit-HasComments: No </div>
 <div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
 <div style=3D"display:none"> Gerrit-MessageType: comment </div>
 
 
---7bT/12/os2Y=--
+--sY9eZ/Ul2RA=--
 
