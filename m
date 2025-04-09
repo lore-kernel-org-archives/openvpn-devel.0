@@ -1,16 +1,11 @@
-From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Wed, 9 Apr 2025 11:51:35 +0000
+From: Gert Doering <gert@...1296...>
+Date: Wed,  9 Apr 2025 14:24:03 +0200
+Message-ID: <20250409122409.17616-1-gert@...1296...>
 In-Reply-To: <gerrit.1744197804000.I90d54853fe1b1d820661cc2c099e07ec5d31ed05@...2715...>
 References: <gerrit.1744197804000.I90d54853fe1b1d820661cc2c099e07ec5d31ed05@...2715...>
-Reply-To: gert@...1296..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <d3ddf805224ce5d5cb075bdd3e383a66a8b3d817-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="Tx+fG0qpSxE="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: Also print key
- agreement when printing negotiated details
+Subject: [Openvpn-devel] [PATCH v1] Also print key agreement when printing
+ negotiated details
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,102 +14,121 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: plaisthos <arne-openvpn@...1227...>
-Cc: flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---Tx+fG0qpSxE=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+From: Arne Schwabe <arne@...1227...>
 
-Attention is currently required from: flichtenheld, plaisthos.
+With TLS 1.0 to 1.2, the used key agreement was depended on the certificates
+themselves. With TLS 1.3 is no longer the case but basically always X25519
+was used. So this information has been very interesting so far. But with
+OpenSSL 3.5.0 and the new X25519MLKEM768 hybrid key agreement, the used
+key agreement group actually becomes interesting information.
 
-cron2 has posted comments on this change. ( http://gerrit.openvpn.net/c/ope=
-nvpn/+/938?usp=3Demail )
+This commit adds printing this information for OpenSSL 3.0.0+ and uses
+a compat version for OpenSSL 3.0-3.1 to avoid an additional ifdef in the
+code itself.
 
-Change subject: Also print key agreement when printing negotiated details
-......................................................................
+Example output with ML-DSA-65 certificates on the server (client output):
 
+   Control Channel: TLSv1.3, cipher
+   TLSv1.3 TLS_AES_256_GCM_SHA384, peer certificate: 15616
+   bits ML-DSA-65, signature: id-ml-dsa-65, peer signing
+   digest/type: mldsa65 id-ml-dsa-65,
+   key agreement: X25519MLKEM768
 
-Patch Set 1: Code-Review+2
+with an secp384r1 certificate:
 
-(1 comment)
+  Control Channel: TLSv1.3, cipher
+  TLSv1.3 TLS_AES_256_GCM_SHA384, peer certificate: 384
+  bits ECsecp384r1, signature: ecdsa-with-SHA256, peer signing
+  digest/type: ecdsa_secp384r1_sha384 ECDSA,
+  key agreement: X25519MLKEM768
 
-Patchset:
+Change-Id: I90d54853fe1b1d820661cc2c099e07ec5d31ed05
+Signed-off-by: Arne Schwabe <arne@...1227...>
+Acked-by: Gert Doering <gert@...1296...>
+---
 
-PS1:
-Useful.  Code matches what the OpenSSL online docs say how to use the funct=
-ion & the compat functions.
+This change was reviewed on Gerrit and approved by at least one
+developer. I request to merge it to master.
 
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/938
+This mail reflects revision 1 of this Change.
 
+Acked-by according to Gerrit (reflected above):
+Gert Doering <gert@...1296...>
 
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/938?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings
-
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: I90d54853fe1b1d820661cc2c099e07ec5d31ed05
-Gerrit-Change-Number: 938
-Gerrit-PatchSet: 1
-Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
-Gerrit-Reviewer: cron2 <gert@...1296...>
-Gerrit-Reviewer: flichtenheld <frank@...2641...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Comment-Date: Wed, 09 Apr 2025 11:51:35 +0000
-Gerrit-HasComments: Yes
-Gerrit-Has-Labels: Yes
-Gerrit-MessageType: comment
-
---Tx+fG0qpSxE=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<p> Attention is currently required from: flichtenheld, plaisthos. </p>
-<p>Patch set 1:<span style=3D"border-radius: 3px; display: inline-block; ma=
-rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/938?usp=3Demail">Vi=
-ew Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0=
-;"><li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-s=
-tyle: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p s=
-tyle=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn=
-/+/938?tab=3Dcomments">Patch Set #1:</a> </p><p style=3D"white-space: pre-w=
-rap; word-wrap: break-word;">Useful.  Code matches what the OpenSSL online =
-docs say how to use the function &amp; the compat functions.</p></li></ul><=
-/li></ul><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+=
-/938?usp=3Demail">change 938</a>. To unsubscribe, or for help writing mail =
-filters, visit <a href=3D"http://gerrit.openvpn.net/settings">settings</a>.=
-</p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemsco=
-pe itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link item=
-prop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/938?usp=3Demail"=
-/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
-
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I90d54853fe1b1d820661cc2c099=
-e07ec5d31ed05 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 938 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
-<div style=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@...1711...=
-27...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
- </div>
-<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
-1...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
-41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Wed, 09 Apr 2025 11:51:35=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
-
-
---Tx+fG0qpSxE=--
+        
+diff --git a/src/openvpn/openssl_compat.h b/src/openvpn/openssl_compat.h
+index e2bd9bf..bd6f09c 100644
+--- a/src/openvpn/openssl_compat.h
++++ b/src/openvpn/openssl_compat.h
+@@ -197,6 +197,13 @@
+ }
+ #endif /* if OPENSSL_VERSION_NUMBER < 0x30500000 && (!defined(LIBRESSL_VERSION_NUMBER) || LIBRESSL_VERSION_NUMBER > 0x3050400fL) */
+ 
+-
++#if OPENSSL_VERSION_NUMBER < 0x30200000L && OPENSSL_VERSION_NUMBER >= 0x30000000L
++static inline const char *
++SSL_get0_group_name(SSL *s)
++{
++    int nid = SSL_get_negotiated_group(s);
++    return SSL_group_to_name(s, nid);
++}
++#endif
+ 
+ #endif /* OPENSSL_COMPAT_H_ */
+diff --git a/src/openvpn/ssl_openssl.c b/src/openvpn/ssl_openssl.c
+index 23b0266..d1d5d3e 100644
+--- a/src/openvpn/ssl_openssl.c
++++ b/src/openvpn/ssl_openssl.c
+@@ -2486,7 +2486,21 @@
+              peer_sig, peer_sig_type);
+ }
+ 
+-
++#if OPENSSL_VERSION_NUMBER >= 0x30000000L
++void
++print_tls_key_agreement_group(SSL *ssl, char *buf, size_t buflen)
++{
++    const char *groupname = SSL_get0_group_name(ssl);
++    if (!groupname)
++    {
++        snprintf(buf, buflen, ", key agreement: (error fetching group)");
++    }
++    else
++    {
++        snprintf(buf, buflen, ", key agreement: %s", groupname);
++    }
++}
++#endif
+ 
+ /* **************************************
+  *
+@@ -2503,8 +2517,9 @@
+     char s2[256];
+     char s3[256];
+     char s4[256];
++    char s5[256];
+ 
+-    s1[0] = s2[0] = s3[0] = s4[0] = 0;
++    s1[0] = s2[0] = s3[0] = s4[0] = s5[0] = 0;
+     ciph = SSL_get_current_cipher(ks_ssl->ssl);
+     snprintf(s1, sizeof(s1), "%s %s, cipher %s %s",
+              prefix,
+@@ -2520,8 +2535,11 @@
+     }
+     print_server_tempkey(ks_ssl->ssl, s3, sizeof(s3));
+     print_peer_signature(ks_ssl->ssl, s4, sizeof(s4));
++#if OPENSSL_VERSION_NUMBER >= 0x30000000L
++    print_tls_key_agreement_group(ks_ssl->ssl, s5, sizeof(s5));
++#endif
+ 
+-    msg(D_HANDSHAKE, "%s%s%s%s", s1, s2, s3, s4);
++    msg(D_HANDSHAKE, "%s%s%s%s%s", s1, s2, s3, s4, s5);
+ }
+ 
+ void
 
