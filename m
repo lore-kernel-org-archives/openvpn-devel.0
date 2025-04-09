@@ -1,14 +1,14 @@
 From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Wed, 9 Apr 2025 09:34:26 +0000
+Date: Wed, 9 Apr 2025 09:34:29 +0000
 In-Reply-To: <gerrit.1742815876000.I1c2c050dd160746a0f8d9c234abe1e258bc8e48d@...2715...>
 References: <gerrit.1742815876000.I1c2c050dd160746a0f8d9c234abe1e258bc8e48d@...2715...>
 Reply-To: gert@...1296..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <5beeb503aac8dccde4b1c1b172fcf19663a6e0d3-EmailReplacePatchSet-HTML@...2715...>
+Message-ID: <5beeb503aac8dccde4b1c1b172fcf19663a6e0d3-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="LnBsudpnwQQ="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="s+WLFhHwccM="; charset=UTF-8
 Subject: [Openvpn-devel] [S] Change in openvpn[master]: Use USER_PASS_LEN
  instead of TLS_USERNAME_LEN for override-username
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -19,19 +19,15 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: plaisthos <arne-openvpn@...1227...>
+Cc: flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---LnBsudpnwQQ=
+--s+WLFhHwccM=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-cron2 has uploaded a new patch set (#4) to the change originally created by=
- plaisthos. ( http://gerrit.openvpn.net/c/openvpn/+/913?usp=3Demail )
-
-The following approvals got outdated and were removed:
-Code-Review+2 by cron2
-
+cron2 has submitted this change. ( http://gerrit.openvpn.net/c/openvpn/+/91=
+3?usp=3Demail )
 
 Change subject: Use USER_PASS_LEN instead of TLS_USERNAME_LEN for override-=
 username
@@ -61,7 +57,7 @@ M src/openvpn/ssl_verify.h
 4 files changed, 42 insertions(+), 7 deletions(-)
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/13/913/4
+
 
 diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
 index a673ec1..a2d3fd1 100644
@@ -191,85 +187,82 @@ Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
 Gerrit-Reviewer: cron2 <gert@...1296...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-MessageType: newpatchset
+Gerrit-MessageType: merged
 
---LnBsudpnwQQ=
+--s+WLFhHwccM=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p>cron2 <strong>uploaded patch set #4</strong> to the change originally cr=
-eated by plaisthos.</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/=
-913?usp=3Demail">View Change</a></p><p>The following approvals got outdated=
- and were removed:
-Code-Review+2 by cron2</p><pre style=3D"font-family: monospace,monospace; w=
-hite-space: pre-wrap;">Use USER_PASS_LEN instead of TLS_USERNAME_LEN for ov=
-erride-username<br><br>Currently override-username is artificially restrict=
-ed to the length of<br>TLS common-name (64) for the corner case of using us=
-ername-as-common-name,<br>which we explicitly do not recommend to use.<br><=
-br>Do away with that limitation and only error out on longer usernames when=
-<br>username-as-common-name is actually in effect.<br><br>Change-Id: I1c2c0=
-50dd160746a0f8d9c234abe1e258bc8e48d<br>Signed-off-by: Arne Schwabe &lt;arne=
-@...1227...&gt;<br>Acked-by: Gert Doering &lt;gert@...1296...&gt;<br>Messag=
-e-Id: &lt;20250402134546.3504-1-gert@...1296...&gt;<br>URL: https://www.mai=
-l-archive.com/openvpn-devel@lists.sourceforge.net/msg31323.html<br>Signed-o=
-ff-by: Gert Doering &lt;gert@...1296...&gt;<br>---<br>M src/openvpn/multi.c=
-<br>M src/openvpn/options.c<br>M src/openvpn/ssl_verify.c<br>M src/openvpn/=
-ssl_verify.h<br>4 files changed, 42 insertions(+), 7 deletions(-)<br><br></=
-pre><pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"=
->git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/13/913/4</pre=
-><pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><s=
-pan>diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c</span><br><span>=
-index a673ec1..a2d3fd1 100644</span><br><span>--- a/src/openvpn/multi.c</sp=
-an><br><span>+++ b/src/openvpn/multi.c</span><br><span>@@ -2705,6 +2705,12 =
-@@</span><br><span>     if (!multi-&gt;locked_original_username</span><br><=
-span>         &amp;&amp; strcmp(multi-&gt;locked_username, options-&gt;over=
-ride_username) !=3D 0)</span><br><span>     {</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+        /* Check if the username length is accept=
-able */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        if (=
-!ssl_verify_username_length(session, options-&gt;override_username))</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+        {</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+            return false;</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+        }</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+</span><br><span>         multi-&gt;lock=
-ed_original_username =3D multi-&gt;locked_username;</span><br><span>       =
-  multi-&gt;locked_username =3D strdup(options-&gt;override_username);</spa=
-n><br><span> </span><br><span>diff --git a/src/openvpn/options.c b/src/open=
-vpn/options.c</span><br><span>index 6605a42..96119c4 100644</span><br><span=
->--- a/src/openvpn/options.c</span><br><span>+++ b/src/openvpn/options.c</s=
-pan><br><span>@@ -7880,10 +7880,10 @@</span><br><span>     else if (streq(p=
-[0], &quot;override-username&quot;) &amp;&amp; p[1] &amp;&amp; !p[2])</span=
-><br><span>     {</span><br><span>         VERIFY_PERMISSION(OPT_P_INSTANCE=
-);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        if (strlen(=
-p[1]) &gt; TLS_USERNAME_LEN)</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+        if (strlen(p[1]) &gt; USER_PASS_LEN)</span><br><span>     =
-    {</span><br><span>             msg(msglevel, &quot;override-username ex=
-ceeds the maximum length of %d &quot;</span><br><span style=3D"color: hsl(0=
-, 100%, 40%);">-                &quot;characters&quot;, TLS_USERNAME_LEN);<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+                &quo=
-t;characters&quot;, USER_PASS_LEN);</span><br><span> </span><br><span>     =
-        /* disable the connection since ignoring the request to</span><br><=
-span>              * set another username might cause serious problems */</=
-span><br><span>diff --git a/src/openvpn/ssl_verify.c b/src/openvpn/ssl_veri=
-fy.c</span><br><span>index 5f8f1d3..d2cc3d1 100644</span><br><span>--- a/sr=
-c/openvpn/ssl_verify.c</span><br><span>+++ b/src/openvpn/ssl_verify.c</span=
-><br><span>@@ -1568,6 +1568,24 @@</span><br><span>     }</span><br><span> }=
-</span><br><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+b=
-ool</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ssl_verify_usern=
-ame_length(struct tls_session *session, const char *username)</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+    if ((session-&gt;opt-&gt;ssl_flags &amp; SSLF_U=
-SERNAME_AS_COMMON_NAME)</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+        &amp;&amp; strlen(username) &gt; TLS_USERNAME_LEN)</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+        msg(D_TLS_ERRORS,</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+            &quot;TLS Auth Error: --user=
-name-as-common name specified and &quot;</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+            &quot;username is longer than the maximum =
-permitted Common Name &quot;</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+            &quot;length of %d characters&quot;, TLS_USERNAME_LEN)=
-;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        return fal=
-se;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+    else</span><br><span style=
+<p>cron2 <strong>submitted</strong> this change.</p><p><a href=3D"http://ge=
+rrit.openvpn.net/c/openvpn/+/913?usp=3Demail">View Change</a></p><div style=
+=3D"white-space:pre-wrap"></div><pre style=3D"font-family: monospace,monosp=
+ace; white-space: pre-wrap;">Use USER_PASS_LEN instead of TLS_USERNAME_LEN =
+for override-username<br><br>Currently override-username is artificially re=
+stricted to the length of<br>TLS common-name (64) for the corner case of us=
+ing username-as-common-name,<br>which we explicitly do not recommend to use=
+.<br><br>Do away with that limitation and only error out on longer username=
+s when<br>username-as-common-name is actually in effect.<br><br>Change-Id: =
+I1c2c050dd160746a0f8d9c234abe1e258bc8e48d<br>Signed-off-by: Arne Schwabe &l=
+t;arne@...1227...&gt;<br>Acked-by: Gert Doering &lt;gert@...1296...&gt;<br>=
+Message-Id: &lt;20250402134546.3504-1-gert@...1296...&gt;<br>URL: https://w=
+ww.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg31323.html<br>Si=
+gned-off-by: Gert Doering &lt;gert@...1296...&gt;<br>---<br>M src/openvpn/m=
+ulti.c<br>M src/openvpn/options.c<br>M src/openvpn/ssl_verify.c<br>M src/op=
+envpn/ssl_verify.h<br>4 files changed, 42 insertions(+), 7 deletions(-)<br>=
+<br></pre>
+<pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><sp=
+an>diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c</span><br><span>i=
+ndex a673ec1..a2d3fd1 100644</span><br><span>--- a/src/openvpn/multi.c</spa=
+n><br><span>+++ b/src/openvpn/multi.c</span><br><span>@@ -2705,6 +2705,12 @=
+@</span><br><span>     if (!multi-&gt;locked_original_username</span><br><s=
+pan>         &amp;&amp; strcmp(multi-&gt;locked_username, options-&gt;overr=
+ide_username) !=3D 0)</span><br><span>     {</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+        /* Check if the username length is accepta=
+ble */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        if (!=
+ssl_verify_username_length(session, options-&gt;override_username))</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+        {</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+            return false;</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+        }</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+</span><br><span>         multi-&gt;locke=
+d_original_username =3D multi-&gt;locked_username;</span><br><span>        =
+ multi-&gt;locked_username =3D strdup(options-&gt;override_username);</span=
+><br><span> </span><br><span>diff --git a/src/openvpn/options.c b/src/openv=
+pn/options.c</span><br><span>index 6605a42..96119c4 100644</span><br><span>=
+--- a/src/openvpn/options.c</span><br><span>+++ b/src/openvpn/options.c</sp=
+an><br><span>@@ -7880,10 +7880,10 @@</span><br><span>     else if (streq(p[=
+0], &quot;override-username&quot;) &amp;&amp; p[1] &amp;&amp; !p[2])</span>=
+<br><span>     {</span><br><span>         VERIFY_PERMISSION(OPT_P_INSTANCE)=
+;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        if (strlen(p=
+[1]) &gt; TLS_USERNAME_LEN)</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+        if (strlen(p[1]) &gt; USER_PASS_LEN)</span><br><span>      =
+   {</span><br><span>             msg(msglevel, &quot;override-username exc=
+eeds the maximum length of %d &quot;</span><br><span style=3D"color: hsl(0,=
+ 100%, 40%);">-                &quot;characters&quot;, TLS_USERNAME_LEN);</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+                &quot=
+;characters&quot;, USER_PASS_LEN);</span><br><span> </span><br><span>      =
+       /* disable the connection since ignoring the request to</span><br><s=
+pan>              * set another username might cause serious problems */</s=
+pan><br><span>diff --git a/src/openvpn/ssl_verify.c b/src/openvpn/ssl_verif=
+y.c</span><br><span>index 5f8f1d3..d2cc3d1 100644</span><br><span>--- a/src=
+/openvpn/ssl_verify.c</span><br><span>+++ b/src/openvpn/ssl_verify.c</span>=
+<br><span>@@ -1568,6 +1568,24 @@</span><br><span>     }</span><br><span> }<=
+/span><br><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+bo=
+ol</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ssl_verify_userna=
+me_length(struct tls_session *session, const char *username)</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+    if ((session-&gt;opt-&gt;ssl_flags &amp; SSLF_US=
+ERNAME_AS_COMMON_NAME)</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+        &amp;&amp; strlen(username) &gt; TLS_USERNAME_LEN)</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+        msg(D_TLS_ERRORS,</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+            &quot;TLS Auth Error: --usern=
+ame-as-common name specified and &quot;</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+            &quot;username is longer than the maximum p=
+ermitted Common Name &quot;</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+            &quot;length of %d characters&quot;, TLS_USERNAME_LEN);=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        return fals=
+e;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+    else</span><br><span style=
 =3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl=
 (120, 100%, 40%);">+        return true;</span><br><span style=3D"color: hs=
 l(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 4=
@@ -341,8 +334,8 @@ e1e258bc8e48d </div>
 1...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
+<div style=3D"display:none"> Gerrit-MessageType: merged </div>
 
 
---LnBsudpnwQQ=--
+--s+WLFhHwccM=--
 
