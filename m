@@ -1,15 +1,15 @@
 From: "d12fk (Code Review)" <gerrit@...515...>
-Date: Wed, 9 Apr 2025 14:03:48 +0000
+Date: Wed, 9 Apr 2025 14:03:54 +0000
 In-Reply-To: <gerrit.1733989644000.I576e74f3276362606e9cbd50bb5adbebaaf209cc@...2715...>
 References: <gerrit.1733989644000.I576e74f3276362606e9cbd50bb5adbebaaf209cc@...2715...>
 Reply-To: heiko@...515..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net, frank@...2641...,
  lstipakov@...277...
-Message-ID: <a049467b214eba970a621b6f9befab97dae810b7-EmailReviewComments-HTML@...2715...>
+Message-ID: <ac4439e23c3f2e9dd318a2bce6b0cbda46e27247-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="sY9eZ/Ul2RA="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="oKFqTnWjhqE="; charset=UTF-8
 Subject: [Openvpn-devel] [XL] Change in openvpn[master]: win: implement
  --dns option support with NRPT
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -22,22 +22,21 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Cc: stipa <lstipakov@...277...>, flichtenheld <frank@...2641...>, plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---sY9eZ/Ul2RA=
+--oKFqTnWjhqE=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 Attention is currently required from: plaisthos.
 
-d12fk has posted comments on this change. ( http://gerrit.openvpn.net/c/ope=
-nvpn/+/837?usp=3Demail )
+d12fk has removed a vote from this change. ( http://gerrit.openvpn.net/c/op=
+envpn/+/837?usp=3Demail )
+
 
 Change subject: win: implement --dns option support with NRPT
 ......................................................................
 
 
-Patch Set 18: Code-Review+2
-
-
+Removed Code-Review+2 by d12fk <heiko@...515...>
 --
 To view, visit http://gerrit.openvpn.net/c/openvpn/+/837?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
@@ -55,27 +54,23 @@ Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-Reviewer: stipa <lstipakov@...277...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Comment-Date: Wed, 09 Apr 2025 14:03:48 +0000
-Gerrit-HasComments: No
-Gerrit-Has-Labels: Yes
-Gerrit-MessageType: comment
+Gerrit-MessageType: deleteVote
 
---sY9eZ/Ul2RA=
+--oKFqTnWjhqE=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <p> Attention is currently required from: plaisthos. </p>
-<p>Patch set 18:<span style=3D"border-radius: 3px; display: inline-block; m=
-argin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span=
-></p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/837?usp=3Demail">V=
-iew Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To vi=
-ew, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/837?usp=3Demail"=
->change 837</a>. To unsubscribe, or for help writing mail filters, visit <a=
- href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemscop=
-e itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"ac=
-tion" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=
-=3D"http://gerrit.openvpn.net/c/openvpn/+/837?usp=3Demail"/><meta itemprop=
-=3D"name" content=3D"View Change"/></div></div>
+<p>d12fk <strong>removed a vote</strong> from this change.</p><p><a href=3D=
+"http://gerrit.openvpn.net/c/openvpn/+/837?usp=3Demail">View Change</a></p>=
+<div style=3D"white-space:pre-wrap">Removed Code-Review+2 by d12fk &lt;heik=
+o@...515...&gt;</div><p>To view, visit <a href=3D"http://gerrit.openvpn.net=
+/c/openvpn/+/837?usp=3Demail">change 837</a>. To unsubscribe, or for help w=
+riting mail filters, visit <a href=3D"http://gerrit.openvpn.net/settings">s=
+ettings</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage">=
+<div itemscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction=
+"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/837?=
+usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
@@ -97,12 +92,8 @@ div>
 ts.sourceforge.net&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
 ..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Wed, 09 Apr 2025 14:03:48=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: No </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
+<div style=3D"display:none"> Gerrit-MessageType: deleteVote </div>
 
 
---sY9eZ/Ul2RA=--
+--oKFqTnWjhqE=--
 
