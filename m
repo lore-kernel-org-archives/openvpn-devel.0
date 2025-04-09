@@ -1,16 +1,15 @@
-From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Wed, 9 Apr 2025 09:34:29 +0000
-In-Reply-To: <gerrit.1742815876000.I1c2c050dd160746a0f8d9c234abe1e258bc8e48d@...2715...>
-References: <gerrit.1742815876000.I1c2c050dd160746a0f8d9c234abe1e258bc8e48d@...2715...>
-Reply-To: gert@...1296..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <5beeb503aac8dccde4b1c1b172fcf19663a6e0d3-HTML@...2715...>
+From: "flichtenheld (Code Review)" <gerrit@...515...>
+Date: Wed, 9 Apr 2025 09:57:59 +0000
+References: <gerrit.1744192676000.I9a27248557fabcd9f7584deb4aba16cd71fb803c@...2715...>
+Reply-To: frank@...2641..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net
+Message-ID: <e95d6b3ee256a49bb0e903ad8a9d9f5a658bfdfa-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="s+WLFhHwccM="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: Use USER_PASS_LEN
- instead of TLS_USERNAME_LEN for override-username
+Content-Type: multipart/alternative; boundary="3CtGaLwvflU="; charset=UTF-8
+Subject: [Openvpn-devel] [S] Change in openvpn[master]: Doxygen: Clean up
+ tls-crypt documentation
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,322 +19,359 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 To: plaisthos <arne-openvpn@...1227...>
-Cc: flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---s+WLFhHwccM=
+--3CtGaLwvflU=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-cron2 has submitted this change. ( http://gerrit.openvpn.net/c/openvpn/+/91=
-3?usp=3Demail )
+Attention is currently required from: plaisthos.
 
-Change subject: Use USER_PASS_LEN instead of TLS_USERNAME_LEN for override-=
-username
+Hello plaisthos,
+
+I'd like you to do a code review.
+Please visit
+
+    http://gerrit.openvpn.net/c/openvpn/+/936?usp=3Demail
+
+to review the following change.
+
+
+Change subject: Doxygen: Clean up tls-crypt documentation
 ......................................................................
 
-Use USER_PASS_LEN instead of TLS_USERNAME_LEN for override-username
+Doxygen: Clean up tls-crypt documentation
 
-Currently override-username is artificially restricted to the length of
-TLS common-name (64) for the corner case of using username-as-common-name,
-which we explicitly do not recommend to use.
+- Fix broken links to OpenSSL documentation
+- Remove some unnecessary \c for function names.
+  Doxygen does handle them automatically.
+- Add some \c for --option since otherwise --
+  gets converted to one character (e.g. &ndash; in
+  HTML).
 
-Do away with that limitation and only error out on longer usernames when
-username-as-common-name is actually in effect.
-
-Change-Id: I1c2c050dd160746a0f8d9c234abe1e258bc8e48d
-Signed-off-by: Arne Schwabe <arne@...1227...>
-Acked-by: Gert Doering <gert@...1296...>
-Message-Id: <20250402134546.3504-1-gert@...1296...>
-URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg31=
-323.html
-Signed-off-by: Gert Doering <gert@...1296...>
+Change-Id: I9a27248557fabcd9f7584deb4aba16cd71fb803c
+Signed-off-by: Frank Lichtenheld <frank@...2641...>
 ---
-M src/openvpn/multi.c
-M src/openvpn/options.c
-M src/openvpn/ssl_verify.c
-M src/openvpn/ssl_verify.h
-4 files changed, 42 insertions(+), 7 deletions(-)
+M doc/doxygen/doc_control_tls.h
+M src/openvpn/tls_crypt.h
+2 files changed, 16 insertions(+), 16 deletions(-)
 
 
 
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/36/936/1
 
-diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
-index a673ec1..a2d3fd1 100644
---- a/src/openvpn/multi.c
-+++ b/src/openvpn/multi.c
-@@ -2705,6 +2705,12 @@
-     if (!multi->locked_original_username
-         && strcmp(multi->locked_username, options->override_username) !=3D=
- 0)
-     {
-+        /* Check if the username length is acceptable */
-+        if (!ssl_verify_username_length(session, options->override_usernam=
-e))
-+        {
-+            return false;
-+        }
-+
-         multi->locked_original_username =3D multi->locked_username;
-         multi->locked_username =3D strdup(options->override_username);
-
-diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index 6605a42..96119c4 100644
---- a/src/openvpn/options.c
-+++ b/src/openvpn/options.c
-@@ -7880,10 +7880,10 @@
-     else if (streq(p[0], "override-username") && p[1] && !p[2])
-     {
-         VERIFY_PERMISSION(OPT_P_INSTANCE);
--        if (strlen(p[1]) > TLS_USERNAME_LEN)
-+        if (strlen(p[1]) > USER_PASS_LEN)
-         {
-             msg(msglevel, "override-username exceeds the maximum length of=
- %d "
--                "characters", TLS_USERNAME_LEN);
-+                "characters", USER_PASS_LEN);
-
-             /* disable the connection since ignoring the request to
-              * set another username might cause serious problems */
-diff --git a/src/openvpn/ssl_verify.c b/src/openvpn/ssl_verify.c
-index 5f8f1d3..d2cc3d1 100644
---- a/src/openvpn/ssl_verify.c
-+++ b/src/openvpn/ssl_verify.c
-@@ -1568,6 +1568,24 @@
-     }
- }
-
-+bool
-+ssl_verify_username_length(struct tls_session *session, const char *userna=
-me)
-+{
-+    if ((session->opt->ssl_flags & SSLF_USERNAME_AS_COMMON_NAME)
-+        && strlen(username) > TLS_USERNAME_LEN)
-+    {
-+        msg(D_TLS_ERRORS,
-+            "TLS Auth Error: --username-as-common name specified and "
-+            "username is longer than the maximum permitted Common Name "
-+            "length of %d characters", TLS_USERNAME_LEN);
-+        return false;
-+    }
-+    else
-+    {
-+        return true;
-+    }
-+}
-+
- /**
-  * Main username/password verification entry point
+diff --git a/doc/doxygen/doc_control_tls.h b/doc/doxygen/doc_control_tls.h
+index 7ff5e99..3c92a76 100644
+--- a/doc/doxygen/doc_control_tls.h
++++ b/doc/doxygen/doc_control_tls.h
+@@ -49,7 +49,7 @@
   *
-@@ -1689,15 +1707,12 @@
-     }
-
-     /* check sizing of username if it will become our common name */
--    if ((session->opt->ssl_flags & SSLF_USERNAME_AS_COMMON_NAME)
--        && strlen(up->username)>TLS_USERNAME_LEN)
-+    if (!ssl_verify_username_length(session, up->username))
-     {
--        msg(D_TLS_ERRORS,
--            "TLS Auth Error: --username-as-common name specified and usern=
-ame is longer than the maximum permitted Common Name length of %d character=
-s",
--            TLS_USERNAME_LEN);
-         plugin_status =3D OPENVPN_PLUGIN_FUNC_ERROR;
-         script_status =3D OPENVPN_PLUGIN_FUNC_ERROR;
-     }
-+
-     /* auth succeeded? */
-     bool plugin_ok =3D plugin_status =3D=3D OPENVPN_PLUGIN_FUNC_SUCCESS
-                      || plugin_status =3D=3D OPENVPN_PLUGIN_FUNC_DEFERRED;
-diff --git a/src/openvpn/ssl_verify.h b/src/openvpn/ssl_verify.h
-index eba3832..7a4d44a 100644
---- a/src/openvpn/ssl_verify.h
-+++ b/src/openvpn/ssl_verify.h
-@@ -192,6 +192,20 @@
-                       struct tls_session *session);
-
-
-+/**
-+ * Checks if the username length is valid to use.  This checks when
-+ * username-as-common-name is active if the username is shorter than
-+ * the maximum TLS common name length (64).
-+ *
-+ * It will also display an error message if the name is too long
-+ *
-+ * @param session       current TLS session
-+ * @param username      username to check
-+ * @return              true if name is under limit or username-as-common-=
-name
-+ *                      is not active
-+ */
-+bool ssl_verify_username_length(struct tls_session *session,
-+                                const char *username);
+  * @par
+  * The former role is described below.  The latter is described in the
+- * documentation for the \c verify_callback() function.
++ * documentation for the verify_callback() function.
+  *
+  * @par
+  * In other words, this module takes care of the confidentiality and
+@@ -61,7 +61,7 @@
+  * Because of the one-to-one relationship between control channel TLS
+  * state and \c key_state structures, the initialization and cleanup of an
+  * instance of the Control Channel TLS module's state happens within the
+- * \c key_state_init() and \c key_state_free() functions.  In other words,
++ * key_state_init() and key_state_free() functions.  In other words,
+  * each \c key_state object contains exactly one OpenSSL SSL-BIO object,
+  * which is initialized and cleaned up together with the rest of the \c
+  * key_state object.
+@@ -69,26 +69,26 @@
+  * @par Packet processing functions
+  * This object behaves somewhat like a black box with a ciphertext and a
+  * plaintext I/O port. Its interaction with OpenVPN's control channel
+- * during operation takes place within the \c tls_process() function of
++ * during operation takes place within the tls_process() function of
+  * the \link control_processor Control Channel Processor\endlink.  The
+  * following functions are available for processing packets:
+  * - If ciphertext received from the remote peer is available in the \link
+  *   reliable Reliability Layer\endlink:
+  *   - Insert it into the ciphertext-side of the SSL-BIO.
+- *   - Use function: \c key_state_write_ciphertext()
++ *   - Use function: key_state_write_ciphertext()
+  * - If ciphertext can be extracted from the ciphertext-side of the
+  *   SSL-BIO:
+  *   - Pass it to the \link reliable Reliability Layer\endlink for sending
+  *     to the remote peer.
+- *   - Use function: \c key_state_read_ciphertext()
++ *   - Use function: key_state_read_ciphertext()
+  * - If plaintext can be extracted from the plaintext-side of the SSL-BIO:
+  *   - Pass it on to the \link control_processor Control Channel
+  *     Processor\endlink for local processing.
+- *   - Use function: \c key_state_read_plaintext()
++ *   - Use function: key_state_read_plaintext()
+  * - If plaintext from the \link control_processor Control Channel
+  *   Processor\endlink is available to be sent to the remote peer:
+  *   - Insert it into the plaintext-side of the SSL-BIO.
+- *   - Use function: \c key_state_write_plaintext() or \c
++ *   - Use function: key_state_write_plaintext() or
+  *     key_state_write_plaintext_const()
+  *
+  * @par Transport Layer Security protocol implementation
+@@ -98,7 +98,7 @@
+  * @par
+  * For more information on the OpenSSL library's BIO objects, please see:
+  *  - OpenSSL's generic BIO objects:
+- *    http://www.openssl.org/docs/crypto/bio.html
++ *    https://docs.openssl.org/master/man7/bio/#bio
+  *  - OpenSSL's SSL-BIO object:
+- *    http://www.openssl.org/docs/crypto/BIO_f_ssl.html
++ *    https://docs.openssl.org/master/man3/BIO_f_ssl/#bio_f_ssl
+  */
+diff --git a/src/openvpn/tls_crypt.h b/src/openvpn/tls_crypt.h
+index 1a604ce..87e9867 100644
+--- a/src/openvpn/tls_crypt.h
++++ b/src/openvpn/tls_crypt.h
+@@ -22,11 +22,11 @@
+  */
 
  /**
-  * Runs the --client-crresponse script if one is defined.
+- * @defgroup tls_crypt Control channel encryption (--tls-crypt, --tls-cryp=
+t-v2)
++ * @defgroup tls_crypt Control channel encryption (tls-crypt, tls-crypt-v2)
+  * @ingroup control_tls
+  * @{
+  *
+- * Control channel encryption uses a pre-shared static key (like the --tls=
+-auth
++ * Control channel encryption uses a pre-shared static key (like the @c --=
+tls-auth
+  * key) to encrypt control channel packets.
+  *
+  * Encrypting control channel packets has three main advantages:
+@@ -36,8 +36,8 @@
+  *  - It provides "poor-man's" post-quantum security, against attackers who
+  *    will never know the pre-shared key (i.e. no forward secrecy).
+  *
+- * --tls-crypt uses a tls-auth-style group key, where all servers and clie=
+nts
+- * share the same group key. --tls-crypt-v2 adds support for client-specif=
+ic
++ * @c --tls-crypt uses a tls-auth-style group key, where all servers and c=
+lients
++ * share the same group key. @c --tls-crypt-v2 adds support for client-spe=
+cific
+  * keys, where all servers share the same client-key encryption key, and e=
+ach
+  * clients receives a unique client key, both in plaintext and in encrypted
+  * form.  When connecting to a server, the client sends the encrypted key =
+to
+@@ -103,7 +103,7 @@
+                                                     + sizeof(uint16_t)))
+
+ /**
+- * Initialize a key_ctx_bi structure for use with --tls-crypt.
++ * Initialize a key_ctx_bi structure for use with @c --tls-crypt.
+  *
+  * @param key           The key context to initialize
+  * @param key_file      The file to read the key from or the key itself if
+@@ -141,7 +141,7 @@
+  * @param dst   Any data present in this buffer is first authenticated, th=
+en
+  *              the wrapped packet id and data from the src buffer are app=
+ended.
+  *              Must have at least tls_crypt_buf_overhead()+BLEN(src) head=
+room.
+- * @param opt   The crypto state for this --tls-crypt instance.
++ * @param opt   The crypto state for this @c --tls-crypt instance.
+  *
+  * @returns true iff wrapping succeeded.
+  */
+@@ -154,7 +154,7 @@
+  *
+  * @param src   Data to decrypt and authenticate.
+  * @param dst   Returns the decrypted data, if unwrapping was successful.
+- * @param opt   The crypto state for this --tls-crypt instance.
++ * @param opt   The crypto state for this @c --tls-crypt instance.
+  *
+  * @returns true iff unwrapping succeeded (data authenticated correctly an=
+d was
+  * no replay).
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/913?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/936?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings
 
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: I1c2c050dd160746a0f8d9c234abe1e258bc8e48d
-Gerrit-Change-Number: 913
-Gerrit-PatchSet: 4
-Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
-Gerrit-Reviewer: cron2 <gert@...1296...>
-Gerrit-Reviewer: flichtenheld <frank@...2641...>
+Gerrit-Change-Id: I9a27248557fabcd9f7584deb4aba16cd71fb803c
+Gerrit-Change-Number: 936
+Gerrit-PatchSet: 1
+Gerrit-Owner: flichtenheld <frank@...2641...>
+Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-MessageType: merged
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-MessageType: newchange
 
---s+WLFhHwccM=
+--3CtGaLwvflU=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p>cron2 <strong>submitted</strong> this change.</p><p><a href=3D"http://ge=
-rrit.openvpn.net/c/openvpn/+/913?usp=3Demail">View Change</a></p><div style=
-=3D"white-space:pre-wrap"></div><pre style=3D"font-family: monospace,monosp=
-ace; white-space: pre-wrap;">Use USER_PASS_LEN instead of TLS_USERNAME_LEN =
-for override-username<br><br>Currently override-username is artificially re=
-stricted to the length of<br>TLS common-name (64) for the corner case of us=
-ing username-as-common-name,<br>which we explicitly do not recommend to use=
-.<br><br>Do away with that limitation and only error out on longer username=
-s when<br>username-as-common-name is actually in effect.<br><br>Change-Id: =
-I1c2c050dd160746a0f8d9c234abe1e258bc8e48d<br>Signed-off-by: Arne Schwabe &l=
-t;arne@...1227...&gt;<br>Acked-by: Gert Doering &lt;gert@...1296...&gt;<br>=
-Message-Id: &lt;20250402134546.3504-1-gert@...1296...&gt;<br>URL: https://w=
-ww.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg31323.html<br>Si=
-gned-off-by: Gert Doering &lt;gert@...1296...&gt;<br>---<br>M src/openvpn/m=
-ulti.c<br>M src/openvpn/options.c<br>M src/openvpn/ssl_verify.c<br>M src/op=
-envpn/ssl_verify.h<br>4 files changed, 42 insertions(+), 7 deletions(-)<br>=
-<br></pre>
-<pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><sp=
-an>diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c</span><br><span>i=
-ndex a673ec1..a2d3fd1 100644</span><br><span>--- a/src/openvpn/multi.c</spa=
-n><br><span>+++ b/src/openvpn/multi.c</span><br><span>@@ -2705,6 +2705,12 @=
-@</span><br><span>     if (!multi-&gt;locked_original_username</span><br><s=
-pan>         &amp;&amp; strcmp(multi-&gt;locked_username, options-&gt;overr=
-ide_username) !=3D 0)</span><br><span>     {</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+        /* Check if the username length is accepta=
-ble */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        if (!=
-ssl_verify_username_length(session, options-&gt;override_username))</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+        {</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+            return false;</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+        }</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+</span><br><span>         multi-&gt;locke=
-d_original_username =3D multi-&gt;locked_username;</span><br><span>        =
- multi-&gt;locked_username =3D strdup(options-&gt;override_username);</span=
-><br><span> </span><br><span>diff --git a/src/openvpn/options.c b/src/openv=
-pn/options.c</span><br><span>index 6605a42..96119c4 100644</span><br><span>=
---- a/src/openvpn/options.c</span><br><span>+++ b/src/openvpn/options.c</sp=
-an><br><span>@@ -7880,10 +7880,10 @@</span><br><span>     else if (streq(p[=
-0], &quot;override-username&quot;) &amp;&amp; p[1] &amp;&amp; !p[2])</span>=
-<br><span>     {</span><br><span>         VERIFY_PERMISSION(OPT_P_INSTANCE)=
-;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        if (strlen(p=
-[1]) &gt; TLS_USERNAME_LEN)</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+        if (strlen(p[1]) &gt; USER_PASS_LEN)</span><br><span>      =
-   {</span><br><span>             msg(msglevel, &quot;override-username exc=
-eeds the maximum length of %d &quot;</span><br><span style=3D"color: hsl(0,=
- 100%, 40%);">-                &quot;characters&quot;, TLS_USERNAME_LEN);</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+                &quot=
-;characters&quot;, USER_PASS_LEN);</span><br><span> </span><br><span>      =
-       /* disable the connection since ignoring the request to</span><br><s=
-pan>              * set another username might cause serious problems */</s=
-pan><br><span>diff --git a/src/openvpn/ssl_verify.c b/src/openvpn/ssl_verif=
-y.c</span><br><span>index 5f8f1d3..d2cc3d1 100644</span><br><span>--- a/src=
-/openvpn/ssl_verify.c</span><br><span>+++ b/src/openvpn/ssl_verify.c</span>=
-<br><span>@@ -1568,6 +1568,24 @@</span><br><span>     }</span><br><span> }<=
-/span><br><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+bo=
-ol</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ssl_verify_userna=
-me_length(struct tls_session *session, const char *username)</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+    if ((session-&gt;opt-&gt;ssl_flags &amp; SSLF_US=
-ERNAME_AS_COMMON_NAME)</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+        &amp;&amp; strlen(username) &gt; TLS_USERNAME_LEN)</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+        msg(D_TLS_ERRORS,</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+            &quot;TLS Auth Error: --usern=
-ame-as-common name specified and &quot;</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+            &quot;username is longer than the maximum p=
-ermitted Common Name &quot;</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+            &quot;length of %d characters&quot;, TLS_USERNAME_LEN);=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        return fals=
-e;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+    else</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+        return true;</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br>=
-<span> /**</span><br><span>  * Main username/password verification entry po=
-int</span><br><span>  *</span><br><span>@@ -1689,15 +1707,12 @@</span><br><=
-span>     }</span><br><span> </span><br><span>     /* check sizing of usern=
-ame if it will become our common name */</span><br><span style=3D"color: hs=
-l(0, 100%, 40%);">-    if ((session-&gt;opt-&gt;ssl_flags &amp; SSLF_USERNA=
-ME_AS_COMMON_NAME)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
-     &amp;&amp; strlen(up-&gt;username)&gt;TLS_USERNAME_LEN)</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+    if (!ssl_verify_username_lengt=
-h(session, up-&gt;username))</span><br><span>     {</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-        msg(D_TLS_ERRORS,</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-            &quot;TLS Auth Error: --use=
-rname-as-common name specified and username is longer than the maximum perm=
-itted Common Name length of %d characters&quot;,</span><br><span style=3D"c=
-olor: hsl(0, 100%, 40%);">-            TLS_USERNAME_LEN);</span><br><span> =
-        plugin_status =3D OPENVPN_PLUGIN_FUNC_ERROR;</span><br><span>      =
-   script_status =3D OPENVPN_PLUGIN_FUNC_ERROR;</span><br><span>     }</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span>     /*=
- auth succeeded? */</span><br><span>     bool plugin_ok =3D plugin_status =
-=3D=3D OPENVPN_PLUGIN_FUNC_SUCCESS</span><br><span>                      ||=
- plugin_status =3D=3D OPENVPN_PLUGIN_FUNC_DEFERRED;</span><br><span>diff --=
-git a/src/openvpn/ssl_verify.h b/src/openvpn/ssl_verify.h</span><br><span>i=
-ndex eba3832..7a4d44a 100644</span><br><span>--- a/src/openvpn/ssl_verify.h=
-</span><br><span>+++ b/src/openvpn/ssl_verify.h</span><br><span>@@ -192,6 +=
-192,20 @@</span><br><span>                       struct tls_session *sessio=
-n);</span><br><span> </span><br><span> </span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+/**</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+ * Checks if the username length is valid to use.  This checks when</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+ * username-as-common-n=
-ame is active if the username is shorter than</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+ * the maximum TLS common name length (64).</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+ * It will also display an error message =
-if the name is too long</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+ *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @param ses=
-sion       current TLS session</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+ * @param username      username to check</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+ * @return              true if name is u=
-nder limit or username-as-common-name</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+ *                      is not active</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+ */</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+bool ssl_verify_username_length(struct tls_session *ses=
-sion,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+              =
-                  const char *username);</span><br><span> </span><br><span>=
- /**</span><br><span>  * Runs the --client-crresponse script if one is defi=
-ned.</span><br><span></span><br></pre><p>To view, visit <a href=3D"http://g=
-errit.openvpn.net/c/openvpn/+/913?usp=3Demail">change 913</a>. To unsubscri=
-be, or for help writing mail filters, visit <a href=3D"http://gerrit.openvp=
-n.net/settings">settings</a>.</p><div itemscope itemtype=3D"http://schema.o=
-rg/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://sche=
-ma.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net=
-/c/openvpn/+/913?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Chan=
-ge"/></div></div>
+<p> Attention is currently required from: plaisthos. </p>
+<p>flichtenheld would like plaisthos to <strong>review</strong> this change.
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/936?usp=3Demail">Vi=
+ew Change</a></p><pre style=3D"font-family: monospace,monospace; white-spac=
+e: pre-wrap;">Doxygen: Clean up tls-crypt documentation<br><br>- Fix broken=
+ links to OpenSSL documentation<br>- Remove some unnecessary \c for functio=
+n names.<br>  Doxygen does handle them automatically.<br>- Add some \c for =
+--option since otherwise --<br>  gets converted to one character (e.g. &amp=
+;ndash; in<br>  HTML).<br><br>Change-Id: I9a27248557fabcd9f7584deb4aba16cd7=
+1fb803c<br>Signed-off-by: Frank Lichtenheld &lt;frank@...2641...&gt;<br>---=
+<br>M doc/doxygen/doc_control_tls.h<br>M src/openvpn/tls_crypt.h<br>2 files=
+ changed, 16 insertions(+), 16 deletions(-)<br><br></pre><pre style=3D"font=
+-family: monospace,monospace; white-space: pre-wrap;">git pull ssh://gerrit=
+.openvpn.net:29418/openvpn refs/changes/36/936/1</pre><pre style=3D"font-fa=
+mily: monospace,monospace; white-space: pre-wrap;"><span>diff --git a/doc/d=
+oxygen/doc_control_tls.h b/doc/doxygen/doc_control_tls.h</span><br><span>in=
+dex 7ff5e99..3c92a76 100644</span><br><span>--- a/doc/doxygen/doc_control_t=
+ls.h</span><br><span>+++ b/doc/doxygen/doc_control_tls.h</span><br><span>@@=
+ -49,7 +49,7 @@</span><br><span>  *</span><br><span>  * @par</span><br><spa=
+n>  * The former role is described below.  The latter is described in the</=
+span><br><span style=3D"color: hsl(0, 100%, 40%);">- * documentation for th=
+e \c verify_callback() function.</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+ * documentation for the verify_callback() function.</span><br=
+><span>  *</span><br><span>  * @par</span><br><span>  * In other words, thi=
+s module takes care of the confidentiality and</span><br><span>@@ -61,7 +61=
+,7 @@</span><br><span>  * Because of the one-to-one relationship between co=
+ntrol channel TLS</span><br><span>  * state and \c key_state structures, th=
+e initialization and cleanup of an</span><br><span>  * instance of the Cont=
+rol Channel TLS module&#39;s state happens within the</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">- * \c key_state_init() and \c key_state_fre=
+e() functions.  In other words,</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+ * key_state_init() and key_state_free() functions.  In other w=
+ords,</span><br><span>  * each \c key_state object contains exactly one Ope=
+nSSL SSL-BIO object,</span><br><span>  * which is initialized and cleaned u=
+p together with the rest of the \c</span><br><span>  * key_state object.</s=
+pan><br><span>@@ -69,26 +69,26 @@</span><br><span>  * @par Packet processin=
+g functions</span><br><span>  * This object behaves somewhat like a black b=
+ox with a ciphertext and a</span><br><span>  * plaintext I/O port. Its inte=
+raction with OpenVPN&#39;s control channel</span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">- * during operation takes place within the \c tls_proc=
+ess() function of</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *=
+ during operation takes place within the tls_process() function of</span><b=
+r><span>  * the \link control_processor Control Channel Processor\endlink. =
+ The</span><br><span>  * following functions are available for processing p=
+ackets:</span><br><span>  * - If ciphertext received from the remote peer i=
+s available in the \link</span><br><span>  *   reliable Reliability Layer\e=
+ndlink:</span><br><span>  *   - Insert it into the ciphertext-side of the S=
+SL-BIO.</span><br><span style=3D"color: hsl(0, 100%, 40%);">- *   - Use fun=
+ction: \c key_state_write_ciphertext()</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+ *   - Use function: key_state_write_ciphertext()</span>=
+<br><span>  * - If ciphertext can be extracted from the ciphertext-side of =
+the</span><br><span>  *   SSL-BIO:</span><br><span>  *   - Pass it to the \=
+link reliable Reliability Layer\endlink for sending</span><br><span>  *    =
+ to the remote peer.</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
+*   - Use function: \c key_state_read_ciphertext()</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+ *   - Use function: key_state_read_cipherte=
+xt()</span><br><span>  * - If plaintext can be extracted from the plaintext=
+-side of the SSL-BIO:</span><br><span>  *   - Pass it on to the \link contr=
+ol_processor Control Channel</span><br><span>  *     Processor\endlink for =
+local processing.</span><br><span style=3D"color: hsl(0, 100%, 40%);">- *  =
+ - Use function: \c key_state_read_plaintext()</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+ *   - Use function: key_state_read_plaintext()<=
+/span><br><span>  * - If plaintext from the \link control_processor Control=
+ Channel</span><br><span>  *   Processor\endlink is available to be sent to=
+ the remote peer:</span><br><span>  *   - Insert it into the plaintext-side=
+ of the SSL-BIO.</span><br><span style=3D"color: hsl(0, 100%, 40%);">- *   =
+- Use function: \c key_state_write_plaintext() or \c</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+ *   - Use function: key_state_write_plai=
+ntext() or</span><br><span>  *     key_state_write_plaintext_const()</span>=
+<br><span>  *</span><br><span>  * @par Transport Layer Security protocol im=
+plementation</span><br><span>@@ -98,7 +98,7 @@</span><br><span>  * @par</sp=
+an><br><span>  * For more information on the OpenSSL library&#39;s BIO obje=
+cts, please see:</span><br><span>  *  - OpenSSL&#39;s generic BIO objects:<=
+/span><br><span style=3D"color: hsl(0, 100%, 40%);">- *    http://www.opens=
+sl.org/docs/crypto/bio.html</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+ *    https://docs.openssl.org/master/man7/bio/#bio</span><br><span=
+>  *  - OpenSSL&#39;s SSL-BIO object:</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">- *    http://www.openssl.org/docs/crypto/BIO_f_ssl.html</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+ *    https://docs.open=
+ssl.org/master/man3/BIO_f_ssl/#bio_f_ssl</span><br><span>  */</span><br><sp=
+an>diff --git a/src/openvpn/tls_crypt.h b/src/openvpn/tls_crypt.h</span><br=
+><span>index 1a604ce..87e9867 100644</span><br><span>--- a/src/openvpn/tls_=
+crypt.h</span><br><span>+++ b/src/openvpn/tls_crypt.h</span><br><span>@@ -2=
+2,11 +22,11 @@</span><br><span>  */</span><br><span> </span><br><span> /**<=
+/span><br><span style=3D"color: hsl(0, 100%, 40%);">- * @defgroup tls_crypt=
+ Control channel encryption (--tls-crypt, --tls-crypt-v2)</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+ * @defgroup tls_crypt Control channe=
+l encryption (tls-crypt, tls-crypt-v2)</span><br><span>  * @ingroup control=
+_tls</span><br><span>  * @{</span><br><span>  *</span><br><span style=3D"co=
+lor: hsl(0, 100%, 40%);">- * Control channel encryption uses a pre-shared s=
+tatic key (like the --tls-auth</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+ * Control channel encryption uses a pre-shared static key (like=
+ the @c --tls-auth</span><br><span>  * key) to encrypt control channel pack=
+ets.</span><br><span>  *</span><br><span>  * Encrypting control channel pac=
+kets has three main advantages:</span><br><span>@@ -36,8 +36,8 @@</span><br=
+><span>  *  - It provides &quot;poor-man&#39;s&quot; post-quantum security,=
+ against attackers who</span><br><span>  *    will never know the pre-share=
+d key (i.e. no forward secrecy).</span><br><span>  *</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">- * --tls-crypt uses a tls-auth-style group =
+key, where all servers and clients</span><br><span style=3D"color: hsl(0, 1=
+00%, 40%);">- * share the same group key. --tls-crypt-v2 adds support for c=
+lient-specific</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @c=
+ --tls-crypt uses a tls-auth-style group key, where all servers and clients=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * share the same g=
+roup key. @c --tls-crypt-v2 adds support for client-specific</span><br><spa=
+n>  * keys, where all servers share the same client-key encryption key, and=
+ each</span><br><span>  * clients receives a unique client key, both in pla=
+intext and in encrypted</span><br><span>  * form.  When connecting to a ser=
+ver, the client sends the encrypted key to</span><br><span>@@ -103,7 +103,7=
+ @@</span><br><span>                                                     + =
+sizeof(uint16_t)))</span><br><span> </span><br><span> /**</span><br><span s=
+tyle=3D"color: hsl(0, 100%, 40%);">- * Initialize a key_ctx_bi structure fo=
+r use with --tls-crypt.</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+ * Initialize a key_ctx_bi structure for use with @c --tls-crypt.</span=
+><br><span>  *</span><br><span>  * @param key           The key context to =
+initialize</span><br><span>  * @param key_file      The file to read the ke=
+y from or the key itself if</span><br><span>@@ -141,7 +141,7 @@</span><br><=
+span>  * @param dst   Any data present in this buffer is first authenticate=
+d, then</span><br><span>  *              the wrapped packet id and data fro=
+m the src buffer are appended.</span><br><span>  *              Must have a=
+t least tls_crypt_buf_overhead()+BLEN(src) headroom.</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">- * @param opt   The crypto state for this -=
+-tls-crypt instance.</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++ * @param opt   The crypto state for this @c --tls-crypt instance.</span><=
+br><span>  *</span><br><span>  * @returns true iff wrapping succeeded.</spa=
+n><br><span>  */</span><br><span>@@ -154,7 +154,7 @@</span><br><span>  *</s=
+pan><br><span>  * @param src   Data to decrypt and authenticate.</span><br>=
+<span>  * @param dst   Returns the decrypted data, if unwrapping was succes=
+sful.</span><br><span style=3D"color: hsl(0, 100%, 40%);">- * @param opt   =
+The crypto state for this --tls-crypt instance.</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+ * @param opt   The crypto state for this @c --=
+tls-crypt instance.</span><br><span>  *</span><br><span>  * @returns true i=
+ff unwrapping succeeded (data authenticated correctly and was</span><br><sp=
+an>  * no replay).</span><br><span></span><br></pre><p>To view, visit <a hr=
+ef=3D"http://gerrit.openvpn.net/c/openvpn/+/936?usp=3Demail">change 936</a>=
+. To unsubscribe, or for help writing mail filters, visit <a href=3D"http:/=
+/gerrit.openvpn.net/settings">settings</a>.</p><div itemscope itemtype=3D"h=
+ttp://schema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=
+=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://ger=
+rit.openvpn.net/c/openvpn/+/936?usp=3Demail"/><meta itemprop=3D"name" conte=
+nt=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I1c2c050dd160746a0f8d9c234ab=
-e1e258bc8e48d </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 913 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 4 </div>
-<div style=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@...1711...=
-27...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
- </div>
-<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
-1...&gt; </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I9a27248557fabcd9f7584deb4ab=
+a16cd71fb803c </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 936 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
+<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
+.&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
+.1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: merged </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-MessageType: newchange </div>
 
 
---s+WLFhHwccM=--
+--3CtGaLwvflU=--
 
