@@ -1,15 +1,15 @@
 From: "stipa (Code Review)" <gerrit@...515...>
-Date: Wed, 9 Apr 2025 10:44:05 +0000
+Date: Wed, 9 Apr 2025 10:44:54 +0000
 In-Reply-To: <gerrit.1744182251000.I719b1aa2d2f4d63dc9c18d8e313fba339e3e4b0c@...2715...>
 References: <gerrit.1744182251000.I719b1aa2d2f4d63dc9c18d8e313fba339e3e4b0c@...2715...>
 Reply-To: lstipakov@...277..., arne-openvpn@...1227...,
  gianmarco@...2726..., openvpn-devel@lists.sourceforge.net,
  frank@...2641...
-Message-ID: <0b3a3a235426e95f48bba0b84889e55911e9f723-EmailReviewComments-HTML@...2715...>
+Message-ID: <bca3384c8ea53336196006ea27ce861d4b015ae1-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="dsji8GeGpkk="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="HmssWuel8GU="; charset=UTF-8
 Subject: [Openvpn-devel] [S] Change in openvpn[master]: Fix dco_win and
  multisocket interaction
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -23,7 +23,7 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: its_Giaan <gianmarco@...2726...>
 Cc: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---dsji8GeGpkk=
+--HmssWuel8GU=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
@@ -43,12 +43,13 @@ Patch Set 1:
 Patchset:
 
 PS1:
-This fixes the first issue, but then we crash on ASSERT(management); in mul=
-ti_io_process_io().
+> This fixes the first issue, but then we crash on ASSERT(management); in m=
+ulti_io_process_io().
+I misclicked on "Resolved".
 
 
 
---=20
+--
 To view, visit http://gerrit.openvpn.net/c/openvpn/+/935?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings
@@ -66,12 +67,13 @@ Gerrit-CC: stipa <lstipakov@...277...>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
 Gerrit-Attention: its_Giaan <gianmarco@...2726...>
 Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Comment-Date: Wed, 09 Apr 2025 10:44:05 +0000
+Gerrit-Comment-Date: Wed, 09 Apr 2025 10:44:54 +0000
 Gerrit-HasComments: Yes
 Gerrit-Has-Labels: No
+Comment-In-Reply-To: stipa <lstipakov@...277...>
 Gerrit-MessageType: comment
 
---dsji8GeGpkk=
+--HmssWuel8GU=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
@@ -82,16 +84,18 @@ hange</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0;"><=
 li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-style=
 : none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p style=
 =3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/9=
-35?tab=3Dcomments">Patch Set #1:</a> </p><p style=3D"white-space: pre-wrap;=
- word-wrap: break-word;">This fixes the first issue, but then we crash on A=
-SSERT(management); in multi_io_process_io().</p></li></ul></li></ul><p>To v=
-iew, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/935?usp=3Demail=
-">change 935</a>. To unsubscribe, or for help writing mail filters, visit <=
-a href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemsco=
-pe itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"a=
-ction" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" hre=
-f=3D"http://gerrit.openvpn.net/c/openvpn/+/935?usp=3Demail"/><meta itemprop=
-=3D"name" content=3D"View Change"/></div></div>
+35?tab=3Dcomments">Patch Set #1:</a> </p><p><blockquote style=3D"border-lef=
+t: 1px solid #aaa; margin: 10px 0; padding: 0 10px;">This fixes the first i=
+ssue, but then we crash on ASSERT(management); in multi_io_process_io().</b=
+lockquote></p><p style=3D"white-space: pre-wrap; word-wrap: break-word;">I =
+misclicked on &quot;Resolved&quot;.</p></li></ul></li></ul><p>To view, visi=
+t <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/935?usp=3Demail">change =
+935</a>. To unsubscribe, or for help writing mail filters, visit <a href=3D=
+"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope itemty=
+pe=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"action" it=
+emtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http=
+://gerrit.openvpn.net/c/openvpn/+/935?usp=3Demail"/><meta itemprop=3D"name"=
+ content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
@@ -115,12 +119,14 @@ ts.sourceforge.net&gt; </div>
 726...&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
 41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Wed, 09 Apr 2025 10:44:05=
+<div style=3D"display:none"> Gerrit-Comment-Date: Wed, 09 Apr 2025 10:44:54=
  +0000 </div>
 <div style=3D"display:none"> Gerrit-HasComments: Yes </div>
 <div style=3D"display:none"> Gerrit-Has-Labels: No </div>
+<div style=3D"display:none"> Comment-In-Reply-To: stipa &lt;lstipakov@...1664...=
+7...&gt; </div>
 <div style=3D"display:none"> Gerrit-MessageType: comment </div>
 
 
---dsji8GeGpkk=--
+--HmssWuel8GU=--
 
