@@ -1,11 +1,11 @@
 From: Gert Doering <gert@...1296...>
-Date: Wed,  9 Apr 2025 14:53:31 +0200
-Message-ID: <20250409125336.5835-1-gert@...1296...>
-In-Reply-To: <gerrit.1744193529000.Iabef94b36bae16b2c8288b15b14d660ecb06842d@...2715...>
-References: <gerrit.1744193529000.Iabef94b36bae16b2c8288b15b14d660ecb06842d@...2715...>
+Date: Wed,  9 Apr 2025 15:11:42 +0200
+Message-ID: <20250409131148.18147-1-gert@...1296...>
+In-Reply-To: <gerrit.1744115087000.Ibabb4aa80d7786614dbd6b76bd4cd096f217acfd@...2715...>
+References: <gerrit.1744115087000.Ibabb4aa80d7786614dbd6b76bd4cd096f217acfd@...2715...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v1] Doxygen: Fix obsolete links to OpenSSL
- documentation
+Subject: [Openvpn-devel] [PATCH v1] GHA: Use CMake 4.0 and apply required
+ fixes
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,51 +20,87 @@ To: openvpn-devel@lists.sourceforge.net
 
 From: Frank Lichtenheld <frank@...2641...>
 
-Change-Id: Iabef94b36bae16b2c8288b15b14d660ecb06842d
+- update vcpkg reference to 856505bb76
+  This includes a general work-around for the CMake 4.0
+  compat. See commit
+  a1aebfa9d5eae7cf493e0a706b43915d687bb860.
+- update lukka/get-cmake action to v4
+- update dependency aws/aws-lc to v1.49.1
+
+Change-Id: Ibabb4aa80d7786614dbd6b76bd4cd096f217acfd
 Signed-off-by: Frank Lichtenheld <frank@...2641...>
-Acked-by: Gert Doering <gert@...1296...>
+Acked-by: Yuriy Darnobyt <yura.uddr@...277...>
 ---
 
 This change was reviewed on Gerrit and approved by at least one
 developer. I request to merge it to master.
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/937
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/934
 This mail reflects revision 1 of this Change.
 
 Acked-by according to Gerrit (reflected above):
-Gert Doering <gert@...1296...>
+Yuriy Darnobyt <yura.uddr@...277...>
 
         
-diff --git a/contrib/OCSP_check/OCSP_check.sh b/contrib/OCSP_check/OCSP_check.sh
-index e4fec83..ad1a420 100644
---- a/contrib/OCSP_check/OCSP_check.sh
-+++ b/contrib/OCSP_check/OCSP_check.sh
-@@ -7,7 +7,7 @@
- # OCSP server using the -port option to "openssl ocsp".
+diff --git a/.github/workflows/build.yaml b/.github/workflows/build.yaml
+index 2df495c..0f5e617 100644
+--- a/.github/workflows/build.yaml
++++ b/.github/workflows/build.yaml
+@@ -54,11 +54,11 @@
+     steps:
+       - name: Checkout OpenVPN
+         uses: actions/checkout@...2844... # v4.2.2
+-      - uses: lukka/get-cmake@...2870... # v3.31.6
++      - uses: lukka/get-cmake@...2881... # v4.0.0
+       - name: Install vcpkg
+         uses: lukka/run-vcpkg@...2815... # v11.5
+         with:
+-          vcpkgGitCommitId: acd5bba5aac8b6573b5f6f463dc0341ac0ee6fa4
++          vcpkgGitCommitId: 856505bb767458c99d8e3c3ed441f59a058d3687
+       - name: Install dependencies
+         run: ${VCPKG_ROOT}/vcpkg install openssl lz4 cmocka
+       - name: configure OpenVPN with cmake
+@@ -88,11 +88,11 @@
+       - name: Checkout OpenVPN
+         uses: actions/checkout@...2844... # v4.2.2
  
- # Full documentation and examples:
--# http://www.openssl.org/docs/apps/ocsp.html
-+# https://docs.openssl.org/master/man1/openssl-ocsp/#openssl-ocsp
+-      - uses: lukka/get-cmake@...2870... # v3.31.6
++      - uses: lukka/get-cmake@...2881... # v4.0.0
+       - name: Restore from cache and install vcpkg
+         uses: lukka/run-vcpkg@...2815... # v11.5
+         with:
+-          vcpkgGitCommitId: acd5bba5aac8b6573b5f6f463dc0341ac0ee6fa4
++          vcpkgGitCommitId: 856505bb767458c99d8e3c3ed441f59a058d3687
+           vcpkgJsonGlob: '**/mingw/vcpkg.json'
  
+       - name: Run CMake with vcpkg.json manifest
+@@ -276,7 +276,7 @@
+       runs-on: windows-latest
+       steps:
+       - uses: actions/checkout@...2844... # v4.2.2
+-      - uses: lukka/get-cmake@...2870... # v3.31.6
++      - uses: lukka/get-cmake@...2881... # v4.0.0
  
- # Edit the following values to suit your needs
-diff --git a/doc/doxygen/doc_key_generation.h b/doc/doxygen/doc_key_generation.h
-index d32f9d8..91c7a5a 100644
---- a/doc/doxygen/doc_key_generation.h
-+++ b/doc/doxygen/doc_key_generation.h
-@@ -95,11 +95,11 @@
-  * to supply cryptographically strong pseudo-random data.  The following links
-  * contain more information on this subject:
-  * - For OpenSSL's \c RAND_bytes() function:
-- *   http://www.openssl.org/docs/crypto/RAND_bytes.html
-+ *   https://docs.openssl.org/master/man3/RAND_bytes/#rand_bytes
-  * - For OpenSSL's pseudo-random number generating system:
-- *   http://www.openssl.org/docs/crypto/rand.html
-+ *   https://docs.openssl.org/master/man7/RAND/#rand
-  * - For OpenSSL's support for external crypto modules:
-- *   http://www.openssl.org/docs/crypto/engine.html
-+ *   https://docs.openssl.org/master/man7/provider/#provider
-  *
-  * In mbed TLS, the Havege random number generator is used. For details, see
-  * the mbed TLS documentation.
+       - name: Install rst2html
+         run: python -m pip install --upgrade pip docutils
+@@ -284,7 +284,7 @@
+       - name: Restore artifacts, or setup vcpkg (do not install any package)
+         uses: lukka/run-vcpkg@...2815... # v11.5
+         with:
+-          vcpkgGitCommitId: acd5bba5aac8b6573b5f6f463dc0341ac0ee6fa4
++          vcpkgGitCommitId: 856505bb767458c99d8e3c3ed441f59a058d3687
+           vcpkgJsonGlob: '**/windows/vcpkg.json'
+ 
+       - name: Run CMake with vcpkg.json manifest (NO TESTS)
+@@ -471,8 +471,8 @@
+           path: aws-lc
+           # versioning=semver-coerced
+           repository: aws/aws-lc
+-          ref: v1.42.0
+-      - uses: lukka/get-cmake@...2870... # v3.31.6
++          ref: v1.49.1
++      - uses: lukka/get-cmake@...2881... # v4.0.0
+       - name: "AWS-LC: build"
+         run: |
+           mkdir build
 
