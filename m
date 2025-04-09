@@ -1,11 +1,15 @@
-From: Gert Doering <gert@...1296...>
-Date: Wed,  9 Apr 2025 14:24:03 +0200
-Message-ID: <20250409122409.17616-1-gert@...1296...>
-In-Reply-To: <gerrit.1744197804000.I90d54853fe1b1d820661cc2c099e07ec5d31ed05@...2715...>
-References: <gerrit.1744197804000.I90d54853fe1b1d820661cc2c099e07ec5d31ed05@...2715...>
+From: "flichtenheld (Code Review)" <gerrit@...515...>
+Date: Wed, 9 Apr 2025 12:46:10 +0000
+References: <gerrit.1744202768000.Ia7186b528773c0549748f1051c1c8d1db39a7e11@...2715...>
+Reply-To: frank@...2641..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net
+Message-ID: <43ef315cce2f38f8c9eb06213127dc325f28a38d-HTML@...2715...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v1] Also print key agreement when printing
- negotiated details
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="EswHDtamKPU="; charset=UTF-8
+Subject: [Openvpn-devel] [S] Change in openvpn[master]: Doxygen: Remove
+ useless Python information
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,121 +18,189 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: plaisthos <arne-openvpn@...1227...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-From: Arne Schwabe <arne@...1227...>
+--EswHDtamKPU=
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-With TLS 1.0 to 1.2, the used key agreement was depended on the certificates
-themselves. With TLS 1.3 is no longer the case but basically always X25519
-was used. So this information has been very interesting so far. But with
-OpenSSL 3.5.0 and the new X25519MLKEM768 hybrid key agreement, the used
-key agreement group actually becomes interesting information.
+Attention is currently required from: plaisthos.
 
-This commit adds printing this information for OpenSSL 3.0.0+ and uses
-a compat version for OpenSSL 3.0-3.1 to avoid an additional ifdef in the
-code itself.
+Hello plaisthos,
 
-Example output with ML-DSA-65 certificates on the server (client output):
+I'd like you to do a code review.
+Please visit
 
-   Control Channel: TLSv1.3, cipher
-   TLSv1.3 TLS_AES_256_GCM_SHA384, peer certificate: 15616
-   bits ML-DSA-65, signature: id-ml-dsa-65, peer signing
-   digest/type: mldsa65 id-ml-dsa-65,
-   key agreement: X25519MLKEM768
+    http://gerrit.openvpn.net/c/openvpn/+/939?usp=3Demail
 
-with an secp384r1 certificate:
+to review the following change.
 
-  Control Channel: TLSv1.3, cipher
-  TLSv1.3 TLS_AES_256_GCM_SHA384, peer certificate: 384
-  bits ECsecp384r1, signature: ecdsa-with-SHA256, peer signing
-  digest/type: ecdsa_secp384r1_sha384 ECDSA,
-  key agreement: X25519MLKEM768
 
-Change-Id: I90d54853fe1b1d820661cc2c099e07ec5d31ed05
-Signed-off-by: Arne Schwabe <arne@...1227...>
-Acked-by: Gert Doering <gert@...1296...>
+Change subject: Doxygen: Remove useless Python information
+......................................................................
+
+Doxygen: Remove useless Python information
+
+Do not include information for the trivial Python
+scripts we have. Completely eliminates the "Namespaces"
+page as well.
+
+Change-Id: Ia7186b528773c0549748f1051c1c8d1db39a7e11
+Signed-off-by: Frank Lichtenheld <frank@...2641...>
 ---
+M doc/doxygen/openvpn.doxyfile.in
+1 file changed, 1 insertion(+), 30 deletions(-)
 
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to master.
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/938
-This mail reflects revision 1 of this Change.
 
-Acked-by according to Gerrit (reflected above):
-Gert Doering <gert@...1296...>
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/39/939/1
 
-        
-diff --git a/src/openvpn/openssl_compat.h b/src/openvpn/openssl_compat.h
-index e2bd9bf..bd6f09c 100644
---- a/src/openvpn/openssl_compat.h
-+++ b/src/openvpn/openssl_compat.h
-@@ -197,6 +197,13 @@
- }
- #endif /* if OPENSSL_VERSION_NUMBER < 0x30500000 && (!defined(LIBRESSL_VERSION_NUMBER) || LIBRESSL_VERSION_NUMBER > 0x3050400fL) */
- 
--
-+#if OPENSSL_VERSION_NUMBER < 0x30200000L && OPENSSL_VERSION_NUMBER >= 0x30000000L
-+static inline const char *
-+SSL_get0_group_name(SSL *s)
-+{
-+    int nid = SSL_get_negotiated_group(s);
-+    return SSL_group_to_name(s, nid);
-+}
-+#endif
- 
- #endif /* OPENSSL_COMPAT_H_ */
-diff --git a/src/openvpn/ssl_openssl.c b/src/openvpn/ssl_openssl.c
-index 23b0266..d1d5d3e 100644
---- a/src/openvpn/ssl_openssl.c
-+++ b/src/openvpn/ssl_openssl.c
-@@ -2486,7 +2486,21 @@
-              peer_sig, peer_sig_type);
- }
- 
--
-+#if OPENSSL_VERSION_NUMBER >= 0x30000000L
-+void
-+print_tls_key_agreement_group(SSL *ssl, char *buf, size_t buflen)
-+{
-+    const char *groupname = SSL_get0_group_name(ssl);
-+    if (!groupname)
-+    {
-+        snprintf(buf, buflen, ", key agreement: (error fetching group)");
-+    }
-+    else
-+    {
-+        snprintf(buf, buflen, ", key agreement: %s", groupname);
-+    }
-+}
-+#endif
- 
- /* **************************************
-  *
-@@ -2503,8 +2517,9 @@
-     char s2[256];
-     char s3[256];
-     char s4[256];
-+    char s5[256];
- 
--    s1[0] = s2[0] = s3[0] = s4[0] = 0;
-+    s1[0] = s2[0] = s3[0] = s4[0] = s5[0] = 0;
-     ciph = SSL_get_current_cipher(ks_ssl->ssl);
-     snprintf(s1, sizeof(s1), "%s %s, cipher %s %s",
-              prefix,
-@@ -2520,8 +2535,11 @@
-     }
-     print_server_tempkey(ks_ssl->ssl, s3, sizeof(s3));
-     print_peer_signature(ks_ssl->ssl, s4, sizeof(s4));
-+#if OPENSSL_VERSION_NUMBER >= 0x30000000L
-+    print_tls_key_agreement_group(ks_ssl->ssl, s5, sizeof(s5));
-+#endif
- 
--    msg(D_HANDSHAKE, "%s%s%s%s", s1, s2, s3, s4);
-+    msg(D_HANDSHAKE, "%s%s%s%s%s", s1, s2, s3, s4, s5);
- }
- 
- void
+diff --git a/doc/doxygen/openvpn.doxyfile.in b/doc/doxygen/openvpn.doxyfile=
+.in
+index 573b7c2..edecc54 100644
+--- a/doc/doxygen/openvpn.doxyfile.in
++++ b/doc/doxygen/openvpn.doxyfile.in
+@@ -894,36 +894,7 @@
+ # *.ucf, *.qsf and *.ice.
+
+ FILE_PATTERNS          =3D *.c \
+-                         *.cc \
+-                         *.cxx \
+-                         *.cpp \
+-                         *.c++ \
+-                         *.d \
+-                         *.java \
+-                         *.ii \
+-                         *.ixx \
+-                         *.ipp \
+-                         *.i++ \
+-                         *.inl \
+-                         *.h \
+-                         *.hh \
+-                         *.hxx \
+-                         *.hpp \
+-                         *.h++ \
+-                         *.idl \
+-                         *.odl \
+-                         *.cs \
+-                         *.php \
+-                         *.php3 \
+-                         *.inc \
+-                         *.m \
+-                         *.mm \
+-                         *.dox \
+-                         *.py \
+-                         *.f90 \
+-                         *.f \
+-                         *.vhd \
+-                         *.vhdl
++                         *.h
+
+ # The RECURSIVE tag can be used to specify whether or not subdirectories s=
+hould
+ # be searched for input files as well.
+
+--
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/939?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings
+
+Gerrit-Project: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: Ia7186b528773c0549748f1051c1c8d1db39a7e11
+Gerrit-Change-Number: 939
+Gerrit-PatchSet: 1
+Gerrit-Owner: flichtenheld <frank@...2641...>
+Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-MessageType: newchange
+
+--EswHDtamKPU=
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<p> Attention is currently required from: plaisthos. </p>
+<p>flichtenheld would like plaisthos to <strong>review</strong> this change.
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/939?usp=3Demail">Vi=
+ew Change</a></p><pre style=3D"font-family: monospace,monospace; white-spac=
+e: pre-wrap;">Doxygen: Remove useless Python information<br><br>Do not incl=
+ude information for the trivial Python<br>scripts we have. Completely elimi=
+nates the &quot;Namespaces&quot;<br>page as well.<br><br>Change-Id: Ia7186b=
+528773c0549748f1051c1c8d1db39a7e11<br>Signed-off-by: Frank Lichtenheld &lt;=
+frank@...2641...&gt;<br>---<br>M doc/doxygen/openvpn.doxyfile.in<br>1 file =
+changed, 1 insertion(+), 30 deletions(-)<br><br></pre><pre style=3D"font-fa=
+mily: monospace,monospace; white-space: pre-wrap;">git pull ssh://gerrit.op=
+envpn.net:29418/openvpn refs/changes/39/939/1</pre><pre style=3D"font-famil=
+y: monospace,monospace; white-space: pre-wrap;"><span>diff --git a/doc/doxy=
+gen/openvpn.doxyfile.in b/doc/doxygen/openvpn.doxyfile.in</span><br><span>i=
+ndex 573b7c2..edecc54 100644</span><br><span>--- a/doc/doxygen/openvpn.doxy=
+file.in</span><br><span>+++ b/doc/doxygen/openvpn.doxyfile.in</span><br><sp=
+an>@@ -894,36 +894,7 @@</span><br><span> # *.ucf, *.qsf and *.ice.</span><b=
+r><span> </span><br><span> FILE_PATTERNS          =3D *.c \</span><br><span=
+ style=3D"color: hsl(0, 100%, 40%);">-                         *.cc \</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-                         *.=
+cxx \</span><br><span style=3D"color: hsl(0, 100%, 40%);">-                =
+         *.cpp \</span><br><span style=3D"color: hsl(0, 100%, 40%);">-     =
+                    *.c++ \</span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">-                         *.d \</span><br><span style=3D"color: hsl(0,=
+ 100%, 40%);">-                         *.java \</span><br><span style=3D"c=
+olor: hsl(0, 100%, 40%);">-                         *.ii \</span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">-                         *.ixx \</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-                         *.=
+ipp \</span><br><span style=3D"color: hsl(0, 100%, 40%);">-                =
+         *.i++ \</span><br><span style=3D"color: hsl(0, 100%, 40%);">-     =
+                    *.inl \</span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">-                         *.h \</span><br><span style=3D"color: hsl(0,=
+ 100%, 40%);">-                         *.hh \</span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-                         *.hxx \</span><br><span s=
+tyle=3D"color: hsl(0, 100%, 40%);">-                         *.hpp \</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-                         *.h=
+++ \</span><br><span style=3D"color: hsl(0, 100%, 40%);">-                 =
+        *.idl \</span><br><span style=3D"color: hsl(0, 100%, 40%);">-      =
+                   *.odl \</span><br><span style=3D"color: hsl(0, 100%, 40%=
+);">-                         *.cs \</span><br><span style=3D"color: hsl(0,=
+ 100%, 40%);">-                         *.php \</span><br><span style=3D"co=
+lor: hsl(0, 100%, 40%);">-                         *.php3 \</span><br><span=
+ style=3D"color: hsl(0, 100%, 40%);">-                         *.inc \</spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-                         *=
+.m \</span><br><span style=3D"color: hsl(0, 100%, 40%);">-                 =
+        *.mm \</span><br><span style=3D"color: hsl(0, 100%, 40%);">-       =
+                  *.dox \</span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">-                         *.py \</span><br><span style=3D"color: hsl(0, =
+100%, 40%);">-                         *.f90 \</span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-                         *.f \</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-                         *.vhd \</span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-                         *.vhd=
+l</span><br><span style=3D"color: hsl(120, 100%, 40%);">+                  =
+       *.h</span><br><span> </span><br><span> # The RECURSIVE tag can be us=
+ed to specify whether or not subdirectories should</span><br><span> # be se=
+arched for input files as well.</span><br><span></span><br></pre><p>To view=
+, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/939?usp=3Demail">c=
+hange 939</a>. To unsubscribe, or for help writing mail filters, visit <a h=
+ref=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope =
+itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"acti=
+on" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=
+=3D"http://gerrit.openvpn.net/c/openvpn/+/939?usp=3Demail"/><meta itemprop=
+=3D"name" content=3D"View Change"/></div></div>
+
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: Ia7186b528773c0549748f1051c1=
+c8d1db39a7e11 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 939 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
+<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
+.&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
+.1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-MessageType: newchange </div>
+
+
+--EswHDtamKPU=--
 
