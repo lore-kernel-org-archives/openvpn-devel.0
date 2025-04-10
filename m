@@ -1,17 +1,10 @@
-From: "flichtenheld (Code Review)" <gerrit@...515...>
-Date: Thu, 10 Apr 2025 16:50:56 +0000
+From: Gert Doering <gert@...1296...>
+Date: Thu, 10 Apr 2025 23:50:29 +0200
+Message-ID: <20250410215037.11878-1-gert@...1296...>
 In-Reply-To: <gerrit.1744182251000.I719b1aa2d2f4d63dc9c18d8e313fba339e3e4b0c@...2715...>
 References: <gerrit.1744182251000.I719b1aa2d2f4d63dc9c18d8e313fba339e3e4b0c@...2715...>
-Reply-To: frank@...2641..., arne-openvpn@...1227...,
- gianmarco@...2726..., openvpn-devel@lists.sourceforge.net,
- lstipakov@...277...
-Message-ID: <648150a240eec36db769aba46f8c7211c6a5093d-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="w280svBiMtA="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: Fix dco_win and
- multisocket interaction
+Subject: [Openvpn-devel] [PATCH v4] Fix dco_win and multisocket interaction
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,90 +13,109 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: its_Giaan <gianmarco@...2726...>
-Cc: stipa <lstipakov@...277...>, plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---w280svBiMtA=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+From: Gianmarco De Gregori <gianmarco@...2726...>
 
-Attention is currently required from: its_Giaan, plaisthos.
+The recent introduction of the multisocket support
+did not account for some Windows-specific DCO paths.
+This patch restores correct behavior on Windows.
 
-flichtenheld has posted comments on this change. ( http://gerrit.openvpn.ne=
-t/c/openvpn/+/935?usp=3Demail )
+Key changes:
 
-Change subject: Fix dco_win and multisocket interaction
-......................................................................
+ - Add WIN32 guards around DCO-specifc code.
+ - Disable wait_signal() when running in
+   server mode, as it conflicts with the
+   event engine since Windows handles
+   signals as I/Os.
+ - Ensure correct socket handling for TCP
+   vs UDP.
 
+Github: #720
 
-Patch Set 4: -Code-Review
+Change-Id: I719b1aa2d2f4d63dc9c18d8e313fba339e3e4b0c
+Signed-off-by: Gianmarco De Gregori <gianmarco@...2726...>
+Acked-by: Lev Stipakov <lstipakov@...277...>
+---
 
+This change was reviewed on Gerrit and approved by at least one
+developer. I request to merge it to master.
 
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/935?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/935
+This mail reflects revision 4 of this Change.
 
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: I719b1aa2d2f4d63dc9c18d8e313fba339e3e4b0c
-Gerrit-Change-Number: 935
-Gerrit-PatchSet: 4
-Gerrit-Owner: its_Giaan <gianmarco@...2726...>
-Gerrit-Reviewer: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-Reviewer: stipa <lstipakov@...277...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: its_Giaan <gianmarco@...2726...>
-Gerrit-Comment-Date: Thu, 10 Apr 2025 16:50:56 +0000
-Gerrit-HasComments: No
-Gerrit-Has-Labels: Yes
-Gerrit-MessageType: comment
+Acked-by according to Gerrit (reflected above):
+Lev Stipakov <lstipakov@...277...>
 
---w280svBiMtA=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<p> Attention is currently required from: its_Giaan, plaisthos. </p>
-<p>Patch set 4:<span style=3D"border-radius: 3px; display: inline-block; ma=
-rgin: 0 2px; padding: 4px;background-color: #ddd;">-Code-Review</span></p><=
-p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/935?usp=3Demail">View Ch=
-ange</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To view, vi=
-sit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/935?usp=3Demail">chang=
-e 935</a>. To unsubscribe, or for help writing mail filters, visit <a href=
-=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope ite=
-mtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"action"=
- itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"h=
-ttp://gerrit.openvpn.net/c/openvpn/+/935?usp=3Demail"/><meta itemprop=3D"na=
-me" content=3D"View Change"/></div></div>
-
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I719b1aa2d2f4d63dc9c18d8e313=
-fba339e3e4b0c </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 935 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 4 </div>
-<div style=3D"display:none"> Gerrit-Owner: its_Giaan &lt;gianmarco@...2786...=
-..&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
-1...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: stipa &lt;lstipakov@...277...=
-&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: its_Giaan &lt;gianmarco@...1665...=
-726...&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Thu, 10 Apr 2025 16:50:56=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: No </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
-
-
---w280svBiMtA=--
+        
+diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c
+index af1d008..0b8b262 100644
+--- a/src/openvpn/forward.c
++++ b/src/openvpn/forward.c
+@@ -2072,7 +2072,7 @@
+     /*
+      * Calculate the flags based on the provided 'flags' argument.
+      */
+-    if (flags & IOW_WAIT_SIGNAL)
++    if ((c->options.mode != MODE_SERVER) && (flags & IOW_WAIT_SIGNAL))
+     {
+         wait_signal(es, (void *)err_shift);
+     }
+diff --git a/src/openvpn/mtcp.c b/src/openvpn/mtcp.c
+index 1d62ea6..86c5160 100644
+--- a/src/openvpn/mtcp.c
++++ b/src/openvpn/mtcp.c
+@@ -181,7 +181,8 @@
+ 
+     if (mi)
+     {
+-        if (defer || mbuf_defined(mi->tcp_link_out_deferred))
++        if ((defer && !proto_is_dgram(mi->context.c2.link_sockets[0]->info.proto))
++            || mbuf_defined(mi->tcp_link_out_deferred))
+         {
+             /* save to queue */
+             struct buffer *buf = &mi->context.c2.to_link;
+diff --git a/src/openvpn/multi_io.c b/src/openvpn/multi_io.c
+index f1751ff..f4ca4df 100644
+--- a/src/openvpn/multi_io.c
++++ b/src/openvpn/multi_io.c
+@@ -176,10 +176,13 @@
+     int status, i;
+     unsigned int *persistent = &m->multi_io->tun_rwflags;
+ 
+-    for (i = 0; i < m->top.c1.link_sockets_num; i++)
++    if (!tuntap_is_dco_win(m->top.c1.tuntap))
+     {
+-        socket_set_listen_persistent(m->top.c2.link_sockets[i], m->multi_io->es,
+-                                     &m->top.c2.link_sockets[i]->ev_arg);
++        for (i = 0; i < m->top.c1.link_sockets_num; i++)
++        {
++            socket_set_listen_persistent(m->top.c2.link_sockets[i], m->multi_io->es,
++                                         &m->top.c2.link_sockets[i]->ev_arg);
++        }
+     }
+ 
+     if (has_udp_in_local_list(&m->top.options))
+@@ -202,7 +205,8 @@
+     }
+ #endif
+     tun_set(m->top.c1.tuntap, m->multi_io->es, EVENT_READ, MULTI_IO_TUN, persistent);
+-#if defined(TARGET_LINUX) || defined(TARGET_FREEBSD)
++#if defined(ENABLE_DCO) \
++    && (defined(TARGET_LINUX) || defined(TARGET_FREEBSD) || defined(TARGET_WIN32))
+     dco_event_set(&m->top.c1.tuntap->dco, m->multi_io->es, MULTI_IO_DCO);
+ #endif
+ 
+@@ -535,7 +539,8 @@
+                     multi_io_action(m, mi, TA_INITIAL, false);
+                 }
+             }
+-#if defined(ENABLE_DCO) && (defined(TARGET_LINUX) || defined(TARGET_FREEBSD))
++#if defined(ENABLE_DCO) \
++            && (defined(TARGET_LINUX) || defined(TARGET_FREEBSD) || defined(TARGET_WIN32))
+             /* incoming data on DCO? */
+             else if (e->arg == MULTI_IO_DCO)
+             {
 
