@@ -1,10 +1,10 @@
-Date: Tue, 15 Apr 2025 20:12:47 +0200 (CEST)
-Message-Id: <202504151812.53FIClKv062947@...2054...>
+Date: Tue, 15 Apr 2025 20:14:20 +0200 (CEST)
+Message-Id: <202504151814.53FIEKDj063092@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20250415155720.13034-1-gert@...1296...>
-References: <20250415155720.13034-1-gert@...1296...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Doxygen: Clean up tls-crypt
- documentation
+In-Reply-To: <20250415155656.12963-1-gert@...1296...>
+References: <20250415155656.12963-1-gert@...1296...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Doxygen: Remove useless Python
+ information
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,20 +18,20 @@ Content-Transfer-Encoding: 8bit
 To: Frank Lichtenheld <frank@...2641...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-No code change, nothing to test for me :-) - Arne, thanks for the review.
+And another one - no code change, nothing to test ;-)
 
 Your patch has been applied to the master branch.
 
-commit 0911d6e1a59e1566d984e2c75662dc7e407300e2
+commit 78d0c15f48388c0d2376c12be47b0f8be98fac55
 Author: Frank Lichtenheld
-Date:   Tue Apr 15 17:57:11 2025 +0200
+Date:   Tue Apr 15 17:56:50 2025 +0200
 
-     Doxygen: Clean up tls-crypt documentation
+     Doxygen: Remove useless Python information
 
      Signed-off-by: Frank Lichtenheld <frank@...2641...>
      Acked-by: Arne Schwabe <arne-openvpn@...1227...>
-     Message-Id: <20250415155720.13034-1-gert@...1296...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg31434.html
+     Message-Id: <20250415155656.12963-1-gert@...1296...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg31433.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
