@@ -1,14 +1,14 @@
 From: "stipa (Code Review)" <gerrit@...515...>
-Date: Tue, 15 Apr 2025 08:25:02 +0000
+Date: Tue, 15 Apr 2025 09:38:22 +0000
 In-Reply-To: <gerrit.1741780483000.I44d308301dfb7c22600d8632a553288f52b3068f@...2715...>
 References: <gerrit.1741780483000.I44d308301dfb7c22600d8632a553288f52b3068f@...2715...>
 Reply-To: lstipakov@...277..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <237116a4c15b805840b81cc011c659b6b5e0339a-EmailReplacePatchSet-HTML@...2715...>
+Message-ID: <60ffcf9281ef31ca6379d86c0e4a168310c84392-EmailReplacePatchSet-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="XqHzhlACm0I="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="cKMBFTADlus="; charset=UTF-8
 Subject: [Openvpn-devel] [S] Change in openvpn[master]: win: allow OpenVPN
  service account to use any command-line options
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -22,7 +22,7 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---XqHzhlACm0I=
+--cKMBFTADlus=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
@@ -34,7 +34,7 @@ I'd like you to reexamine a change. Please visit
 
     http://gerrit.openvpn.net/c/openvpn/+/906?usp=3Demail
 
-to look at the new patch set (#3).
+to look at the new patch set (#4).
 
 
 Change subject: win: allow OpenVPN service account to use any command-line =
@@ -61,7 +61,7 @@ M src/openvpnserv/validate.h
 5 files changed, 25 insertions(+), 9 deletions(-)
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/06/906/3
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/06/906/4
 
 diff --git a/src/openvpnserv/common.c b/src/openvpnserv/common.c
 index 39b39aa..4a11e6c 100644
@@ -111,7 +111,7 @@ index 7112f26..cbe213b 100644
      BOOL append;
  } settings_t;
 diff --git a/src/openvpnserv/validate.c b/src/openvpnserv/validate.c
-index 23d78af..98c96c8 100644
+index 23d78af..9f176c0 100644
 --- a/src/openvpnserv/validate.c
 +++ b/src/openvpnserv/validate.c
 @@ -140,12 +140,8 @@
@@ -136,7 +136,7 @@ up, const WCHAR *ovpn_service_user)
 
 +    /* is this service account? */
 +    if ((wcscmp(username, ovpn_service_user) =3D=3D 0) && (wcscmp(domain, =
-TEXT("NT SERVICE")) =3D=3D 0))
+L"NT SERVICE") =3D=3D 0))
 +    {
 +        return TRUE;
 +    }
@@ -184,7 +184,7 @@ Gerrit-Project: openvpn
 Gerrit-Branch: master
 Gerrit-Change-Id: I44d308301dfb7c22600d8632a553288f52b3068f
 Gerrit-Change-Number: 906
-Gerrit-PatchSet: 3
+Gerrit-PatchSet: 4
 Gerrit-Owner: stipa <lstipakov@...277...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
@@ -193,12 +193,12 @@ Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
 Gerrit-Attention: flichtenheld <frank@...2641...>
 Gerrit-MessageType: newpatchset
 
---XqHzhlACm0I=
+--cKMBFTADlus=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <p> Attention is currently required from: flichtenheld, plaisthos. </p>
-<p>stipa <strong>uploaded patch set #3</strong> to this change.</p><p><a hr=
+<p>stipa <strong>uploaded patch set #4</strong> to this change.</p><p><a hr=
 ef=3D"http://gerrit.openvpn.net/c/openvpn/+/906?usp=3Demail">View Change</a=
 ></p><pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;=
 ">win: allow OpenVPN service account to use any command-line options<br><br=
@@ -212,7 +212,7 @@ erv/common.c<br>M src/openvpnserv/interactive.c<br>M src/openvpnserv/servic=
 e.h<br>M src/openvpnserv/validate.c<br>M src/openvpnserv/validate.h<br>5 fi=
 les changed, 25 insertions(+), 9 deletions(-)<br><br></pre><pre style=3D"fo=
 nt-family: monospace,monospace; white-space: pre-wrap;">git pull ssh://gerr=
-it.openvpn.net:29418/openvpn refs/changes/06/906/3</pre><pre style=3D"font-=
+it.openvpn.net:29418/openvpn refs/changes/06/906/4</pre><pre style=3D"font-=
 family: monospace,monospace; white-space: pre-wrap;"><span>diff --git a/src=
 /openvpnserv/common.c b/src/openvpnserv/common.c</span><br><span>index 39b3=
 9aa..4a11e6c 100644</span><br><span>--- a/src/openvpnserv/common.c</span><b=
@@ -251,7 +251,7 @@ roup[MAX_NAME];</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
 WCHAR ovpn_service_user[MAX_NAME];</span><br><span>     DWORD priority;</sp=
 an><br><span>     BOOL append;</span><br><span> } settings_t;</span><br><sp=
 an>diff --git a/src/openvpnserv/validate.c b/src/openvpnserv/validate.c</sp=
-an><br><span>index 23d78af..98c96c8 100644</span><br><span>--- a/src/openvp=
+an><br><span>index 23d78af..9f176c0 100644</span><br><span>--- a/src/openvp=
 nserv/validate.c</span><br><span>+++ b/src/openvpnserv/validate.c</span><br=
 ><span>@@ -140,12 +140,8 @@</span><br><span>     return b;</span><br><span>=
  }</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-/=
@@ -269,53 +269,53 @@ an> {</span><br><span>     const WCHAR *admin_group[2];</span><br><span>   =
 ><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+    /* is t=
 his service account? */</span><br><span style=3D"color: hsl(120, 100%, 40%)=
 ;">+    if ((wcscmp(username, ovpn_service_user) =3D=3D 0) &amp;&amp; (wcsc=
-mp(domain, TEXT(&quot;NT SERVICE&quot;)) =3D=3D 0))</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+        return TRUE;</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+</span><br><span>     if (GetBuiltinAdminGroupName(sysadmin_group, _=
-countof(sysadmin_group)))</span><br><span>     {</span><br><span>         a=
-dmin_group[0] =3D sysadmin_group;</span><br><span>diff --git a/src/openvpns=
-erv/validate.h b/src/openvpnserv/validate.h</span><br><span>index 61a0ad6..=
-5cd6d16 100644</span><br><span>--- a/src/openvpnserv/validate.h</span><br><=
-span>+++ b/src/openvpnserv/validate.h</span><br><span>@@ -29,11 +29,16 @@</=
-span><br><span> </span><br><span> /* Authorized groups who can use any opti=
-ons and config locations */</span><br><span> #define SYSTEM_ADMIN_GROUP L&q=
-uot;Administrators&quot;</span><br><span style=3D"color: hsl(0, 100%, 40%);=
-">-#define OVPN_ADMIN_GROUP L&quot;OpenVPN Administrators&quot;</span><br><=
-span style=3D"color: hsl(0, 100%, 40%);">-/* The last one may be reset in r=
-egistry: HKLM\Software\OpenVPN\ovpn_admin_group */</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+#define OVPN_ADMIN_GROUP L&quot;OpenVPN Admi=
-nistrators&quot; /* may be set in HKLM\Software\OpenVPN\ovpn_admin_group */=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#define OVPN_SERVIC=
-E_USER L&quot;OpenVPNService&quot; /* may be set in HKLM\Software\OpenVPN\o=
-vpn_service_user */</span><br><span> </span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+/*</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+ * Check whether user is a member of Administrators group or</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+ * the group specified in ovpn_ad=
-min_group or</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * Open=
-VPN Virtual Service Account user</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+ */</span><br><span> BOOL</span><br><span style=3D"color: hsl(=
-0, 100%, 40%);">-IsAuthorizedUser(PSID sid, const HANDLE token, const WCHAR=
- *ovpn_admin_group);</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+IsAuthorizedUser(PSID sid, const HANDLE token, const WCHAR *ovpn_admin_gro=
-up, const WCHAR *ovpn_service_user);</span><br><span> </span><br><span> BOO=
-L</span><br><span> CheckOption(const WCHAR *workdir, int narg, WCHAR *argv[=
-], const settings_t *s);</span><br><span></span><br></pre><p>To view, visit=
- <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/906?usp=3Demail">change 9=
-06</a>. To unsubscribe, or for help writing mail filters, visit <a href=3D"=
-http://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope itemtyp=
-e=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"action" ite=
-mtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http:=
-//gerrit.openvpn.net/c/openvpn/+/906?usp=3Demail"/><meta itemprop=3D"name" =
-content=3D"View Change"/></div></div>
+mp(domain, L&quot;NT SERVICE&quot;) =3D=3D 0))</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+        return TRUE;</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+</span><br><span>     if (GetBuiltinAdminGroupName(sysadmin_group, _countof=
+(sysadmin_group)))</span><br><span>     {</span><br><span>         admin_gr=
+oup[0] =3D sysadmin_group;</span><br><span>diff --git a/src/openvpnserv/val=
+idate.h b/src/openvpnserv/validate.h</span><br><span>index 61a0ad6..5cd6d16=
+ 100644</span><br><span>--- a/src/openvpnserv/validate.h</span><br><span>++=
++ b/src/openvpnserv/validate.h</span><br><span>@@ -29,11 +29,16 @@</span><b=
+r><span> </span><br><span> /* Authorized groups who can use any options and=
+ config locations */</span><br><span> #define SYSTEM_ADMIN_GROUP L&quot;Adm=
+inistrators&quot;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#def=
+ine OVPN_ADMIN_GROUP L&quot;OpenVPN Administrators&quot;</span><br><span st=
+yle=3D"color: hsl(0, 100%, 40%);">-/* The last one may be reset in registry=
+: HKLM\Software\OpenVPN\ovpn_admin_group */</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+#define OVPN_ADMIN_GROUP L&quot;OpenVPN Administrat=
+ors&quot; /* may be set in HKLM\Software\OpenVPN\ovpn_admin_group */</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+#define OVPN_SERVICE_USER =
+L&quot;OpenVPNService&quot; /* may be set in HKLM\Software\OpenVPN\ovpn_ser=
+vice_user */</span><br><span> </span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+/*</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * Che=
+ck whether user is a member of Administrators group or</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+ * the group specified in ovpn_admin_gro=
+up or</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * OpenVPN Vir=
+tual Service Account user</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+ */</span><br><span> BOOL</span><br><span style=3D"color: hsl(0, 100%=
+, 40%);">-IsAuthorizedUser(PSID sid, const HANDLE token, const WCHAR *ovpn_=
+admin_group);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+IsAuth=
+orizedUser(PSID sid, const HANDLE token, const WCHAR *ovpn_admin_group, con=
+st WCHAR *ovpn_service_user);</span><br><span> </span><br><span> BOOL</span=
+><br><span> CheckOption(const WCHAR *workdir, int narg, WCHAR *argv[], cons=
+t settings_t *s);</span><br><span></span><br></pre><p>To view, visit <a hre=
+f=3D"http://gerrit.openvpn.net/c/openvpn/+/906?usp=3Demail">change 906</a>.=
+ To unsubscribe, or for help writing mail filters, visit <a href=3D"http://=
+gerrit.openvpn.net/settings">settings</a>.</p><div itemscope itemtype=3D"ht=
+tp://schema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=
+=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://ger=
+rit.openvpn.net/c/openvpn/+/906?usp=3Demail"/><meta itemprop=3D"name" conte=
+nt=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
 <div style=3D"display:none"> Gerrit-Change-Id: I44d308301dfb7c22600d8632a55=
 3288f52b3068f </div>
 <div style=3D"display:none"> Gerrit-Change-Number: 906 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 3 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 4 </div>
 <div style=3D"display:none"> Gerrit-Owner: stipa &lt;lstipakov@...277...&gt=
 ; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
@@ -331,5 +331,5 @@ ts.sourceforge.net&gt; </div>
 <div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
 
 
---XqHzhlACm0I=--
+--cKMBFTADlus=--
 
