@@ -1,16 +1,11 @@
-From: "plaisthos (Code Review)" <gerrit@...515...>
-Date: Wed, 16 Apr 2025 14:11:42 +0000
-In-Reply-To: <gerrit.1742996678000.If38e80e268dc0ee7e57de2c175c5b4db0ce55ed0@...2715...>
-References: <gerrit.1742996678000.If38e80e268dc0ee7e57de2c175c5b4db0ce55ed0@...2715...>
-Reply-To: arne-openvpn@...1227..., openvpn-devel@lists.sourceforge.net,
- frank@...2641..., max@...2606...
-Message-ID: <099fcc1c59a17b194ce027ed7bfecd215c7d9be0-EmailReplacePatchSet-HTML@...2715...>
+Content-Type: multipart/alternative;
+ boundary="------------mtVzMzjocnZVpKK88PSuoqJP"
+Message-ID: <9aa21212-efc1-4d7e-b1b8-e9735437ef07@...2722...>
+Date: Wed, 16 Apr 2025 18:24:46 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="RztWQS87pFU="; charset=UTF-8
-Subject: [Openvpn-devel] [XS] Change in openvpn[master]: Fix mbed TLS key
- exporter functionality in 3.6.x and cmake
+From: Johan Draaisma <johan@...2722...>
+Content-Language: en-US
+Subject: [Openvpn-devel]  IRC community meeting summary
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,163 +14,149 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: flichtenheld <frank@...2641...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>, MaxF <max@...2606...>
+To: openvpn-devel@lists.sourceforge.net
 
---RztWQS87pFU=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+This is a multi-part message in MIME format.
+--------------mtVzMzjocnZVpKK88PSuoqJP
+Content-Type: text/plain; charset="utf-8"; format="flowed"
+Content-Transfer-Encoding: 8bit
 
-Attention is currently required from: flichtenheld, plaisthos.
+Meeting summary for 16 April 2025:
 
-Hello flichtenheld,
+  * *Closed: Release 2.6.14*
+    /This was released on April 2nd 2025 and addressesCVE-2025-2704
+    <https://community.openvpn.net/openvpn/wiki/CVE-2025-2704>./
+    /Access Server 2.14.3 was released April 14th that has this version
+    and fix in it./
 
-I'd like you to reexamine a change. Please visit
+  * *Updated: DCO Linux upstreaming*
+    /Upstreaming DCO to Linux is proceeding, it is still in review phase
+    but very close to being merge ready./
+    /Sabrina has extensively reviewed and all items are now resolved and
+    her reviewed-by blessing given./
+    /Jakub is now reviewing and had a few comments and a patchset v26
+    was sent in yesterday to address these./
+    /The tentative expectation is that once finally Jakub okays it, it
+    may get merged./
 
-    http://gerrit.openvpn.net/c/openvpn/+/920?usp=3Demail
+  * *Updated: Release 2.7*
+    /Unfortunately our initial goal to get 2.7 ready for the next Debian
+    13 release is not feasible./
+    /Current estimates are to have all major code items in by May 1st
+    and then a release on July 1st./
+    /For DCO the plan is to take the DCO code that is being worked on to
+    upstream to Linux kernel, and make it like a backport to go together
+    with 2.7./
+    /For changes to Windows service handling for 2.7, those changes have
+    been made so openvpn can run nicely under a limited privileges account./
+    /There is a party interested in doing a security audit of OpenVPN
+    2.7, there are some questions to be clarified about it being a code
+    audit and/or testing./
+    /SRLabs.de was the party chosen to do the audit./
 
-to look at the new patch set (#3).
+  * *Updated: forums situation*
+    /Situation in a nutshell; old forums got flooded with spam. attempt
+    was made to make new forums to fix it. this was aborted. now we're
+    in limbo./
+    /We now have someone from OpenVPN Inc to help us fix it up, so we'll
+    let him try./
 
+  * *Updated: new --dns option support*
+    /​https://gerrit.openvpn.net/q/topic:%22dns+option%22
+    <https://gerrit.openvpn.net/q/topic:%22dns+option%22>/
+    /Implementation for unix-like has needed approvals but needs to go
+    in. Windows implementation is done and in./
+    /Currently work is being done on expanding the test framework to
+    test the new DNS options - server-side of that is done, client side
+    needs to comply./
 
-Change subject: Fix mbed TLS key exporter functionality in 3.6.x and cmake
-......................................................................
+As always you're welcome to join at #openvpn-meeting on Libera IRC 
+network every Wednesday at 14:00 Central European Time.
 
-Fix mbed TLS key exporter functionality in 3.6.x and cmake
+Kind regards,
+Johan Draaisma
 
-Cmake did not check for the mbedtls_ssl_set_export_keys_cb symbol
-when generating an mbed TLS configuration. This cause no actual
-working key exporter to be in the binary.
+--------------mtVzMzjocnZVpKK88PSuoqJP
+Content-Type: text/html; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 
-Also add an explicit #error to catch this situation during compilation.
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  </head>
+  <body>
+    <p> Meeting summary for 16 April 2025:</p>
+    <ul
+style="color: rgb(0, 0, 0); font-family: Verdana, Arial, &quot;Bitstream Vera Sans&quot;, Helvetica, sans-serif; font-size: 13px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;">
+      <li><strong>Closed: Release 2.6.14</strong><br>
+        <em>This was released on April 2nd 2025 and addresses<span> </span><a
+            class="wiki"
+href="https://community.openvpn.net/openvpn/wiki/CVE-2025-2704"
+style="text-decoration: none; color: rgb(187, 0, 0); border-bottom: 1px dotted rgb(187, 187, 187);">CVE-2025-2704</a>.</em><br>
+        <em>Access Server 2.14.3 was released April 14th that has this
+          version and fix in it.</em></li>
+    </ul>
+    <ul
+style="color: rgb(0, 0, 0); font-family: Verdana, Arial, &quot;Bitstream Vera Sans&quot;, Helvetica, sans-serif; font-size: 13px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;">
+      <li><strong>Updated: DCO Linux upstreaming</strong><br>
+        <em>Upstreaming DCO to Linux is proceeding, it is still in
+          review phase but very close to being merge ready.</em><br>
+        <em>Sabrina has extensively reviewed and all items are now
+          resolved and her reviewed-by blessing given.</em><br>
+        <em>Jakub is now reviewing and had a few comments and a patchset
+          v26 was sent in yesterday to address these.</em><br>
+        <em>The tentative expectation is that once finally Jakub okays
+          it, it may get merged.</em></li>
+    </ul>
+    <ul
+style="color: rgb(0, 0, 0); font-family: Verdana, Arial, &quot;Bitstream Vera Sans&quot;, Helvetica, sans-serif; font-size: 13px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;">
+      <li><strong>Updated: Release 2.7</strong><br>
+        <em>Unfortunately our initial goal to get 2.7 ready for the next
+          Debian 13 release is not feasible.</em><br>
+        <em>Current estimates are to have all major code items in by May
+          1st and then a release on July 1st.</em><br>
+        <em>For DCO the plan is to take the DCO code that is being
+          worked on to upstream to Linux kernel, and make it like a
+          backport to go together with 2.7.</em><br>
+        <em>For changes to Windows service handling for 2.7, those
+          changes have been made so openvpn can run nicely under a
+          limited privileges account.</em><br>
+        <em>There is a party interested in doing a security audit of
+          OpenVPN 2.7, there are some questions to be clarified about it
+          being a code audit and/or testing.</em><br>
+        <em>SRLabs.de was the party chosen to do the audit.</em></li>
+    </ul>
+    <ul
+style="color: rgb(0, 0, 0); font-family: Verdana, Arial, &quot;Bitstream Vera Sans&quot;, Helvetica, sans-serif; font-size: 13px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;">
+      <li><strong>Updated: forums situation</strong><br>
+        <em>Situation in a nutshell; old forums got flooded with spam.
+          attempt was made to make new forums to fix it. this was
+          aborted. now we're in limbo.</em><br>
+        <em>We now have someone from OpenVPN Inc to help us fix it up,
+          so we'll let him try.</em></li>
+    </ul>
+    <ul
+style="color: rgb(0, 0, 0); font-family: Verdana, Arial, &quot;Bitstream Vera Sans&quot;, Helvetica, sans-serif; font-size: 13px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;">
+      <li><strong>Updated: new --dns option support</strong><br>
+        <em><a class="ext-link"
+            href="https://gerrit.openvpn.net/q/topic:%22dns+option%22"
+style="text-decoration: none; color: rgb(187, 0, 0); border-bottom: 1px dotted rgb(187, 187, 187);"><span
+              class="icon"
+style="background: url(&quot;../extlink.gif&quot;) left center no-repeat; padding-left: 15px;">​</span>https://gerrit.openvpn.net/q/topic:%22dns+option%22</a></em><br>
+        <em>Implementation for unix-like has needed approvals but needs
+          to go in. Windows implementation is done and in.</em><br>
+        <em>Currently work is being done on expanding the test framework
+          to test the new DNS options - server-side of that is done,
+          client side needs to comply.</em></li>
+    </ul>
+    <p>As always you're welcome to join at #openvpn-meeting on Libera
+      IRC network every Wednesday at 14:00 Central European Time. </p>
+    <p>Kind regards,<br>
+      Johan Draaisma<br>
+    </p>
+  </body>
+</html>
 
-Change-Id: If38e80e268dc0ee7e57de2c175c5b4db0ce55ed0
-Signed-off-by: Arne Schwabe <arne@...1227...>
----
-M CMakeLists.txt
-M src/openvpn/ssl_mbedtls.c
-2 files changed, 3 insertions(+), 0 deletions(-)
-
-
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/20/920/3
-
-diff --git a/CMakeLists.txt b/CMakeLists.txt
-index b04adce..a8fb64b 100644
---- a/CMakeLists.txt
-+++ b/CMakeLists.txt
-@@ -275,6 +275,7 @@
-     set(CMAKE_REQUIRED_LIBRARIES "mbedtls;mbedx509;mbedcrypto")
-     check_symbol_exists(mbedtls_ctr_drbg_update_ret mbedtls/ctr_drbg.h HAV=
-E_MBEDTLS_CTR_DRBG_UPDATE_RET)
-     check_symbol_exists(mbedtls_ssl_conf_export_keys_ext_cb mbedtls/ssl.h =
-HAVE_MBEDTLS_SSL_CONF_EXPORT_KEYS_EXT_CB)
-+    check_symbol_exists(mbedtls_ssl_set_export_keys_cb mbedtls/ssl.h HAVE_=
-MBEDTLS_SSL_SET_EXPORT_KEYS_CB)
-     check_include_files(psa/crypto.h HAVE_MBEDTLS_PSA_CRYPTO_H)
- endfunction()
-
-diff --git a/src/openvpn/ssl_mbedtls.c b/src/openvpn/ssl_mbedtls.c
-index e15c391..ec3135a 100644
---- a/src/openvpn/ssl_mbedtls.c
-+++ b/src/openvpn/ssl_mbedtls.c
-@@ -253,6 +253,8 @@
-     memcpy(cache->master_secret, secret, sizeof(cache->master_secret));
-     cache->tls_prf_type =3D tls_prf_type;
- }
-+#else  /* if HAVE_MBEDTLS_SSL_CONF_EXPORT_KEYS_EXT_CB */
-+#error either HAVE_MBEDTLS_SSL_CONF_EXPORT_KEYS_EXT_CB or HAVE_MBEDTLS_SSL=
-_SET_EXPORT_KEYS_CB must be defined when HAVE_EXPORT_KEYING_MATERIAL is def=
-ined
- #endif /* HAVE_MBEDTLS_SSL_CONF_EXPORT_KEYS_EXT_CB */
-
- bool
-
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/920?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings
-
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: If38e80e268dc0ee7e57de2c175c5b4db0ce55ed0
-Gerrit-Change-Number: 920
-Gerrit-PatchSet: 3
-Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
-Gerrit-Reviewer: flichtenheld <frank@...2641...>
-Gerrit-CC: MaxF <max@...2606...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-MessageType: newpatchset
-
---RztWQS87pFU=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<p> Attention is currently required from: flichtenheld, plaisthos. </p>
-<p>plaisthos <strong>uploaded patch set #3</strong> to this change.</p><p><=
-a href=3D"http://gerrit.openvpn.net/c/openvpn/+/920?usp=3Demail">View Chang=
-e</a></p><pre style=3D"font-family: monospace,monospace; white-space: pre-w=
-rap;">Fix mbed TLS key exporter functionality in 3.6.x and cmake<br><br>Cma=
-ke did not check for the mbedtls_ssl_set_export_keys_cb symbol<br>when gene=
-rating an mbed TLS configuration. This cause no actual<br>working key expor=
-ter to be in the binary.<br><br>Also add an explicit #error to catch this s=
-ituation during compilation.<br><br>Change-Id: If38e80e268dc0ee7e57de2c175c=
-5b4db0ce55ed0<br>Signed-off-by: Arne Schwabe &lt;arne@...1227...&gt;<br>---=
-<br>M CMakeLists.txt<br>M src/openvpn/ssl_mbedtls.c<br>2 files changed, 3 i=
-nsertions(+), 0 deletions(-)<br><br></pre><pre style=3D"font-family: monosp=
-ace,monospace; white-space: pre-wrap;">git pull ssh://gerrit.openvpn.net:29=
-418/openvpn refs/changes/20/920/3</pre><pre style=3D"font-family: monospace=
-,monospace; white-space: pre-wrap;"><span>diff --git a/CMakeLists.txt b/CMa=
-keLists.txt</span><br><span>index b04adce..a8fb64b 100644</span><br><span>-=
--- a/CMakeLists.txt</span><br><span>+++ b/CMakeLists.txt</span><br><span>@@=
- -275,6 +275,7 @@</span><br><span>     set(CMAKE_REQUIRED_LIBRARIES &quot;m=
-bedtls;mbedx509;mbedcrypto&quot;)</span><br><span>     check_symbol_exists(=
-mbedtls_ctr_drbg_update_ret mbedtls/ctr_drbg.h HAVE_MBEDTLS_CTR_DRBG_UPDATE=
-_RET)</span><br><span>     check_symbol_exists(mbedtls_ssl_conf_export_keys=
-_ext_cb mbedtls/ssl.h HAVE_MBEDTLS_SSL_CONF_EXPORT_KEYS_EXT_CB)</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+    check_symbol_exists(mbedtls=
-_ssl_set_export_keys_cb mbedtls/ssl.h HAVE_MBEDTLS_SSL_SET_EXPORT_KEYS_CB)<=
-/span><br><span>     check_include_files(psa/crypto.h HAVE_MBEDTLS_PSA_CRYP=
-TO_H)</span><br><span> endfunction()</span><br><span> </span><br><span>diff=
- --git a/src/openvpn/ssl_mbedtls.c b/src/openvpn/ssl_mbedtls.c</span><br><s=
-pan>index e15c391..ec3135a 100644</span><br><span>--- a/src/openvpn/ssl_mbe=
-dtls.c</span><br><span>+++ b/src/openvpn/ssl_mbedtls.c</span><br><span>@@ -=
-253,6 +253,8 @@</span><br><span>     memcpy(cache-&gt;master_secret, secret=
-, sizeof(cache-&gt;master_secret));</span><br><span>     cache-&gt;tls_prf_=
-type =3D tls_prf_type;</span><br><span> }</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+#else  /* if HAVE_MBEDTLS_SSL_CONF_EXPORT_KEYS_EXT_CB=
- */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#error either HA=
-VE_MBEDTLS_SSL_CONF_EXPORT_KEYS_EXT_CB or HAVE_MBEDTLS_SSL_SET_EXPORT_KEYS_=
-CB must be defined when HAVE_EXPORT_KEYING_MATERIAL is defined</span><br><s=
-pan> #endif /* HAVE_MBEDTLS_SSL_CONF_EXPORT_KEYS_EXT_CB */</span><br><span>=
- </span><br><span> bool</span><br><span></span><br></pre><p>To view, visit =
-<a href=3D"http://gerrit.openvpn.net/c/openvpn/+/920?usp=3Demail">change 92=
-0</a>. To unsubscribe, or for help writing mail filters, visit <a href=3D"h=
-ttp://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope itemtype=
-=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"action" item=
-type=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http:/=
-/gerrit.openvpn.net/c/openvpn/+/920?usp=3Demail"/><meta itemprop=3D"name" c=
-ontent=3D"View Change"/></div></div>
-
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: If38e80e268dc0ee7e57de2c175c=
-5b4db0ce55ed0 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 920 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 3 </div>
-<div style=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@...1711...=
-27...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
-1...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: MaxF &lt;max@...2606...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
-41...&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
-
-
---RztWQS87pFU=--
+--------------mtVzMzjocnZVpKK88PSuoqJP--
 
