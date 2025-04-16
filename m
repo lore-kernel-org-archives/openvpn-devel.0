@@ -1,16 +1,16 @@
-From: "flichtenheld (Code Review)" <gerrit@...515...>
-Date: Wed, 16 Apr 2025 12:00:53 +0000
-In-Reply-To: <gerrit.1730386897000.I40f6af10c5ee2f5aed4185d783fc622a2e3c19ff@...2715...>
-References: <gerrit.1730386897000.I40f6af10c5ee2f5aed4185d783fc622a2e3c19ff@...2715...>
-Reply-To: frank@...2641..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net
-Message-ID: <9dee706e804814daa53c92e79da5d9bc0a1284af-EmailReplacePatchSet-HTML@...2715...>
+From: "cron2 (Code Review)" <gerrit@...515...>
+Date: Wed, 16 Apr 2025 12:53:18 +0000
+In-Reply-To: <gerrit.1733989644000.Ifbe4ffb44d3bfcaa50adb38cacb3436fcdc71b10@...2715...>
+References: <gerrit.1733989644000.Ifbe4ffb44d3bfcaa50adb38cacb3436fcdc71b10@...2715...>
+Reply-To: gert@...1296..., arne-openvpn@...1227..., heiko@...515...,
+ openvpn-devel@lists.sourceforge.net, frank@...2641...
+Message-ID: <bea7a9df5fa33a09fa6d12a8f9440928ff2b5b43-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="g+MWP/nY8Wc="; charset=UTF-8
-Subject: [Openvpn-devel] [M] Change in openvpn[master]: Define a
- .clang-format file for the project
+Content-Type: multipart/alternative; boundary="T3xP3U9AYu4="; charset=UTF-8
+Subject: [Openvpn-devel] [L] Change in openvpn[master]: dns: apply settings
+ via script on unixoid systems
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,245 +19,151 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: plaisthos <arne-openvpn@...1227...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: d12fk <heiko@...515...>
+Cc: flichtenheld <frank@...2641...>, plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---g+MWP/nY8Wc=
+--T3xP3U9AYu4=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: plaisthos.
+Attention is currently required from: d12fk, plaisthos.
 
-Hello plaisthos,
+cron2 has posted comments on this change. ( http://gerrit.openvpn.net/c/ope=
+nvpn/+/838?usp=3Demail )
 
-I'd like you to reexamine a change. Please visit
-
-    http://gerrit.openvpn.net/c/openvpn/+/790?usp=3Demail
-
-to look at the new patch set (#12).
-
-
-Change subject: Define a .clang-format file for the project
+Change subject: dns: apply settings via script on unixoid systems
 ......................................................................
 
-Define a .clang-format file for the project
 
-Each of these statements has been reviewed but
-not all of them are obvious.
+Patch Set 21:
 
-Also add a pre-commit config to easily check the
-formatting.
+(1 comment)
 
-Change-Id: I40f6af10c5ee2f5aed4185d783fc622a2e3c19ff
-Signed-off-by: Frank Lichtenheld <frank@...2641...>
----
-A .clang-format
-A .pre-commit-config.yaml
-2 files changed, 58 insertions(+), 0 deletions(-)
+Patchset:
+
+PS21:
+Working my way through it, first findings
+
+```
+2025-04-16 14:44:56 /usr/local/libexec/openvpn/dns-updown
+2025-04-16 14:44:56 dns up command exited with status 127
+```
+
+so if trying to test this from a build environment, without it being instal=
+led ever before, it will not work, with a non very helpful error message ("=
+this file does not exist").
+
+Then, trying to run from build directory
+
+```
+SU .. openvpn ... --dns-updown ../distro/dns-scripts/dns-updown
+Options error: --dns-updown script fails with '../distro/dns-scripts/dns-up=
+down': Permission denied (errno=3D13)
+Options error: Please correct this error.
+```
+
+does not work because (as I feared) this is built with no x-bit
+
+```
+gert@...2718... ~/t_server.git/tests $ ls -l ../distro/dns-scripts/dns-updo=
+wn
+-rw-r--r-- 1 gert gert 5324 Apr 16 05:30 ../distro/dns-scripts/dns-updown
+```
+
+can we get this in place with an x bit?  (I could add a precondition to t_c=
+lient.rc but this would really be modifying the build results on "make chec=
+k" which is not something I want)
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/90/790/12
-
-diff --git a/.clang-format b/.clang-format
-new file mode 100644
-index 0000000..7f6073e
---- /dev/null
-+++ b/.clang-format
-@@ -0,0 +1,50 @@
-+---
-+BasedOnStyle: Mozilla
-+AccessModifierOffset: '-4'
-+AlignAfterOpenBracket: Align
-+AlignConsecutiveMacros:
-+  Enabled: true
-+  AcrossEmptyLines: false
-+  AcrossComments: true
-+AlignEscapedNewlines: Left
-+AlignOperands: true
-+AlignTrailingComments:
-+  Kind: Always
-+  OverEmptyLines: 1
-+AllowAllParametersOfDeclarationOnNextLine: true
-+AllowShortBlocksOnASingleLine: Never
-+AllowShortCaseLabelsOnASingleLine: false
-+AllowShortFunctionsOnASingleLine: None
-+AllowShortIfStatementsOnASingleLine: Never
-+AllowShortLoopsOnASingleLine: false
-+AlwaysBreakAfterReturnType: None
-+BinPackArguments: true
-+BreakBeforeBinaryOperators: NonAssignment
-+BreakBeforeBraces: Allman
-+BreakBeforeTernaryOperators: true
-+BreakStringLiterals: false
-+ColumnLimit: '100'
-+ContinuationIndentWidth: '4'
-+DerivePointerAlignment: false
-+IndentCaseLabels: true
-+IndentGotoLabels: false
-+IndentWidth: '4'
-+IndentWrappedFunctionNames: false
-+KeepEmptyLinesAtTheStartOfBlocks: false
-+MaxEmptyLinesToKeep: '2'
-+PointerAlignment: Right
-+ReflowComments: true
-+SortIncludes: false
-+SpaceAfterCStyleCast: false
-+SpaceBeforeAssignmentOperators: true
-+SpaceBeforeParens: ControlStatements
-+SpacesBeforeTrailingComments: '2'
-+SpacesInParens: Never
-+TabWidth: '4'
-+TypeNames: [DWORD]
-+UseTab: Never
-+WhitespaceSensitiveMacros: [_STRINGIFY]
-+---
-+Language: C
-+---
-+Language: Cpp
-diff --git a/.pre-commit-config.yaml b/.pre-commit-config.yaml
-new file mode 100644
-index 0000000..c1bca47
---- /dev/null
-+++ b/.pre-commit-config.yaml
-@@ -0,0 +1,8 @@
-+repos:
-+  - repo: https://github.com/pre-commit/mirrors-clang-format
-+    rev: 'v20.1.0'
-+    hooks:
-+      - id: clang-format
-+        files: \.[ch]$
-+        # preserve upstream formatting
-+        exclude: ^(src/compat/compat-lz4\.[ch]|src/openvpn/ovpn_dco_(linux=
-|win)\.h)$
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/790?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/838?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings
 
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: I40f6af10c5ee2f5aed4185d783fc622a2e3c19ff
-Gerrit-Change-Number: 790
-Gerrit-PatchSet: 12
-Gerrit-Owner: flichtenheld <frank@...2641...>
+Gerrit-Change-Id: Ifbe4ffb44d3bfcaa50adb38cacb3436fcdc71b10
+Gerrit-Change-Number: 838
+Gerrit-PatchSet: 21
+Gerrit-Owner: d12fk <heiko@...515...>
+Gerrit-Reviewer: cron2 <gert@...1296...>
+Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-MessageType: newpatchset
+Gerrit-Attention: d12fk <heiko@...515...>
+Gerrit-Comment-Date: Wed, 16 Apr 2025 12:53:18 +0000
+Gerrit-HasComments: Yes
+Gerrit-Has-Labels: No
+Gerrit-MessageType: comment
 
---g+MWP/nY8Wc=
+--T3xP3U9AYu4=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p> Attention is currently required from: plaisthos. </p>
-<p>flichtenheld <strong>uploaded patch set #12</strong> to this change.</p>=
-<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/790?usp=3Demail">View C=
-hange</a></p><pre style=3D"font-family: monospace,monospace; white-space: p=
-re-wrap;">Define a .clang-format file for the project<br><br>Each of these =
-statements has been reviewed but<br>not all of them are obvious.<br><br>Als=
-o add a pre-commit config to easily check the<br>formatting.<br><br>Change-=
-Id: I40f6af10c5ee2f5aed4185d783fc622a2e3c19ff<br>Signed-off-by: Frank Licht=
-enheld &lt;frank@...2641...&gt;<br>---<br>A .clang-format<br>A .pre-commit-=
-config.yaml<br>2 files changed, 58 insertions(+), 0 deletions(-)<br><br></p=
-re><pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;">=
-git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/90/790/12</pre=
-><pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><s=
-pan>diff --git a/.clang-format b/.clang-format</span><br><span>new file mod=
-e 100644</span><br><span>index 0000000..7f6073e</span><br><span>--- /dev/nu=
-ll</span><br><span>+++ b/.clang-format</span><br><span>@@ -0,0 +1,50 @@</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+---</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+BasedOnStyle: Mozilla</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+AccessModifierOffset: &#39;-4&#39;</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+AlignAfterOpenBracket:=
- Align</span><br><span style=3D"color: hsl(120, 100%, 40%);">+AlignConsecut=
-iveMacros:</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  Enabled=
-: true</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  AcrossEmpty=
-Lines: false</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  Acros=
-sComments: true</span><br><span style=3D"color: hsl(120, 100%, 40%);">+Alig=
-nEscapedNewlines: Left</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+AlignOperands: true</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+AlignTrailingComments:</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+  Kind: Always</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+  OverEmptyLines: 1</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+AllowAllParametersOfDeclarationOnNextLine: true</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+AllowShortBlocksOnASingleLine: Never</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+AllowShortCaseLabelsOnASingle=
-Line: false</span><br><span style=3D"color: hsl(120, 100%, 40%);">+AllowSho=
-rtFunctionsOnASingleLine: None</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+AllowShortIfStatementsOnASingleLine: Never</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+AllowShortLoopsOnASingleLine: false</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+AlwaysBreakAfterReturnTyp=
-e: None</span><br><span style=3D"color: hsl(120, 100%, 40%);">+BinPackArgum=
-ents: true</span><br><span style=3D"color: hsl(120, 100%, 40%);">+BreakBefo=
-reBinaryOperators: NonAssignment</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+BreakBeforeBraces: Allman</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+BreakBeforeTernaryOperators: true</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+BreakStringLiterals: false</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+ColumnLimit: &#39;100&#39;</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+ContinuationIndentWidth: &#=
-39;4&#39;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+DerivePoin=
-terAlignment: false</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-IndentCaseLabels: true</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+IndentGotoLabels: false</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+IndentWidth: &#39;4&#39;</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+IndentWrappedFunctionNames: false</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+KeepEmptyLinesAtTheStartOfBlocks: false</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+MaxEmptyLinesToKeep: &#39;2&#=
-39;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+PointerAlignment=
-: Right</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ReflowCommen=
-ts: true</span><br><span style=3D"color: hsl(120, 100%, 40%);">+SortInclude=
-s: false</span><br><span style=3D"color: hsl(120, 100%, 40%);">+SpaceAfterC=
-StyleCast: false</span><br><span style=3D"color: hsl(120, 100%, 40%);">+Spa=
-ceBeforeAssignmentOperators: true</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+SpaceBeforeParens: ControlStatements</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+SpacesBeforeTrailingComments: &#39;2&#39;</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+SpacesInParens: Never<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+TabWidth: &#39;4&#39=
-;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+TypeNames: [DWORD]=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+UseTab: Never</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+WhitespaceSensitiveMacros=
-: [_STRINGIFY]</span><br><span style=3D"color: hsl(120, 100%, 40%);">+---</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+Language: C</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+---</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+Language: Cpp</span><br><span>diff --git a/.p=
-re-commit-config.yaml b/.pre-commit-config.yaml</span><br><span>new file mo=
-de 100644</span><br><span>index 0000000..c1bca47</span><br><span>--- /dev/n=
-ull</span><br><span>+++ b/.pre-commit-config.yaml</span><br><span>@@ -0,0 +=
-1,8 @@</span><br><span style=3D"color: hsl(120, 100%, 40%);">+repos:</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+  - repo: https://github.c=
-om/pre-commit/mirrors-clang-format</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+    rev: &#39;v20.1.0&#39;</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+    hooks:</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+      - id: clang-format</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+        files: \.[ch]$</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+        # preserve upstream formatting</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+        exclude: ^(src/compat/compa=
-t-lz4\.[ch]|src/openvpn/ovpn_dco_(linux|win)\.h)$</span><br><span></span><b=
-r></pre><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/=
-790?usp=3Demail">change 790</a>. To unsubscribe, or for help writing mail f=
-ilters, visit <a href=3D"http://gerrit.openvpn.net/settings">settings</a>.<=
-/p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscop=
-e itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itemp=
-rop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/790?usp=3Demail"/=
-><meta itemprop=3D"name" content=3D"View Change"/></div></div>
+<p> Attention is currently required from: d12fk, plaisthos. </p>
+<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/838?usp=3Demail">View C=
+hange</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0;"><=
+li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-style=
+: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p style=
+=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/8=
+38?tab=3Dcomments">Patch Set #21:</a> </p><p style=3D"white-space: pre-wrap=
+; word-wrap: break-word;">Working my way through it, first findings</p><p s=
+tyle=3D"white-space: pre-wrap; word-wrap: break-word;">```<br>2025-04-16 14=
+:44:56 /usr/local/libexec/openvpn/dns-updown<br>2025-04-16 14:44:56 dns up =
+command exited with status 127<br>```</p><p style=3D"white-space: pre-wrap;=
+ word-wrap: break-word;">so if trying to test this from a build environment=
+, without it being installed ever before, it will not work, with a non very=
+ helpful error message (&quot;this file does not exist&quot;).</p><p style=
+=3D"white-space: pre-wrap; word-wrap: break-word;">Then, trying to run from=
+ build directory</p><p style=3D"white-space: pre-wrap; word-wrap: break-wor=
+d;">```<br>SU .. openvpn ... --dns-updown ../distro/dns-scripts/dns-updown<=
+br>Options error: --dns-updown script fails with &#39;../distro/dns-scripts=
+/dns-updown&#39;: Permission denied (errno=3D13)<br>Options error: Please c=
+orrect this error.<br>```</p><p style=3D"white-space: pre-wrap; word-wrap: =
+break-word;">does not work because (as I feared) this is built with no x-bi=
+t</p><p style=3D"white-space: pre-wrap; word-wrap: break-word;">```<br>gert=
+@...2718... ~/t_server.git/tests $ ls -l ../distro/dns-scripts/dns-updown<b=
+r>-rw-r--r-- 1 gert gert 5324 Apr 16 05:30 ../distro/dns-scripts/dns-updown=
+<br>```</p><p style=3D"white-space: pre-wrap; word-wrap: break-word;">can w=
+e get this in place with an x bit?  (I could add a precondition to t_client=
+.rc but this would really be modifying the build results on &quot;make chec=
+k&quot; which is not something I want)</p></li></ul></li></ul><p>To view, v=
+isit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/838?usp=3Demail">chan=
+ge 838</a>. To unsubscribe, or for help writing mail filters, visit <a href=
+=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope ite=
+mtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"action"=
+ itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"h=
+ttp://gerrit.openvpn.net/c/openvpn/+/838?usp=3Demail"/><meta itemprop=3D"na=
+me" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I40f6af10c5ee2f5aed4185d783f=
-c622a2e3c19ff </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 790 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 12 </div>
-<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
-.&gt; </div>
+<div style=3D"display:none"> Gerrit-Change-Id: Ifbe4ffb44d3bfcaa50adb38cacb=
+3436fcdc71b10 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 838 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 21 </div>
+<div style=3D"display:none"> Gerrit-Owner: d12fk &lt;heiko@...515...&gt; </=
+div>
+<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
+ </div>
+<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
+1...&gt; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
 .1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
 ..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
+<div style=3D"display:none"> Gerrit-Attention: d12fk &lt;heiko@...515...&gt=
+; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Wed, 16 Apr 2025 12:53:18=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: No </div>
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
 
 
---g+MWP/nY8Wc=--
+--T3xP3U9AYu4=--
 
