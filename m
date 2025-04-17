@@ -1,15 +1,15 @@
 From: "ordex (Code Review)" <gerrit@...515...>
-Date: Thu, 17 Apr 2025 09:58:03 +0000
+Date: Thu, 17 Apr 2025 10:01:32 +0000
 In-Reply-To: <gerrit.1744809221000.I009f4e7ad38636f1c0b78d267561194c2bb4c051@...2715...>
 References: <gerrit.1744809221000.I009f4e7ad38636f1c0b78d267561194c2bb4c051@...2715...>
 Reply-To: antonio@...2726..., arne-openvpn@...1227...,
  gianmarco@...2726..., openvpn-devel@lists.sourceforge.net,
  frank@...2641...
-Message-ID: <bda6a848a6f806a3534e124b5add6258c9fa455d-EmailReviewComments-HTML@...2715...>
+Message-ID: <b7fb699ee9bb4981dca09cba732a0f2593ff29ba-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="KUODzKdlit0="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="ubYx+TOLQ+k="; charset=UTF-8
 Subject: [Openvpn-devel] [L] Change in openvpn[master]: Add support to
  "ovpn" aka "in upstream kernel"
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -23,7 +23,7 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: its_Giaan <gianmarco@...2726...>
 Cc: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---KUODzKdlit0=
+--ubYx+TOLQ+k=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
@@ -36,21 +36,21 @@ Change subject: Add support to "ovpn" aka "in upstream kernel"
 ......................................................................
 
 
-Patch Set 1: Code-Review-1
+Patch Set 1:
 
 (1 comment)
 
 Patchset:
 
 PS1:
-I wouldc hange the commit title a bit...will suggest something.
+I also got the following:
 
-Then I got this report:
+1. is it expected for then tun iface to stay after the connection is brough=
+t down? If that matters, I'm using NetworkManager for managing my OpenVPN c=
+onnections
 
-2. a userspace nit probably not relevant to this submission: the daemon sti=
-ll reports "DCO version:" but with "N/A" value because that version file un=
-der /sys is not presented any more like it was with an out-of-tree v2 imple=
-mentation
+
+Is openvpn not deleting the interface upon cleanup?
 
 
 
@@ -72,39 +72,36 @@ Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
 Gerrit-Attention: its_Giaan <gianmarco@...2726...>
 Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Comment-Date: Thu, 17 Apr 2025 09:58:03 +0000
+Gerrit-Comment-Date: Thu, 17 Apr 2025 10:01:32 +0000
 Gerrit-HasComments: Yes
-Gerrit-Has-Labels: Yes
+Gerrit-Has-Labels: No
 Gerrit-MessageType: comment
 
---KUODzKdlit0=
+--ubYx+TOLQ+k=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <p> Attention is currently required from: flichtenheld, its_Giaan, plaistho=
 s. </p>
-<p>Patch set 1:<span style=3D"border-radius: 3px; display: inline-block; ma=
-rgin: 0 2px; padding: 4px;background-color: #ffd4d4;">Code-Review -1</span>=
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/941?usp=3Demail">Vi=
-ew Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0=
-;"><li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-s=
-tyle: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p s=
-tyle=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn=
-/+/941?tab=3Dcomments">Patch Set #1:</a> </p><p style=3D"white-space: pre-w=
-rap; word-wrap: break-word;">I wouldc hange the commit title a bit...will s=
-uggest something.</p><p style=3D"white-space: pre-wrap; word-wrap: break-wo=
-rd;">Then I got this report:</p><p style=3D"white-space: pre-wrap; word-wra=
-p: break-word;">2. a userspace nit probably not relevant to this submission=
-: the daemon still reports &quot;DCO version:&quot; but with &quot;N/A&quot=
-; value because that version file under /sys is not presented any more like=
- it was with an out-of-tree v2 implementation</p></li></ul></li></ul><p>To =
-view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/941?usp=3Demai=
-l">change 941</a>. To unsubscribe, or for help writing mail filters, visit =
-<a href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemsc=
-ope itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"=
-action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" hr=
-ef=3D"http://gerrit.openvpn.net/c/openvpn/+/941?usp=3Demail"/><meta itempro=
-p=3D"name" content=3D"View Change"/></div></div>
+<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/941?usp=3Demail">View C=
+hange</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0;"><=
+li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-style=
+: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p style=
+=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/9=
+41?tab=3Dcomments">Patch Set #1:</a> </p><p style=3D"white-space: pre-wrap;=
+ word-wrap: break-word;">I also got the following:</p><p style=3D"white-spa=
+ce: pre-wrap; word-wrap: break-word;">1. is it expected for then tun iface =
+to stay after the connection is brought down? If that matters, I&#39;m usin=
+g NetworkManager for managing my OpenVPN connections</p><p style=3D"white-s=
+pace: pre-wrap; word-wrap: break-word;"><br>Is openvpn not deleting the int=
+erface upon cleanup?</p></li></ul></li></ul><p>To view, visit <a href=3D"ht=
+tp://gerrit.openvpn.net/c/openvpn/+/941?usp=3Demail">change 941</a>. To uns=
+ubscribe, or for help writing mail filters, visit <a href=3D"http://gerrit.=
+openvpn.net/settings">settings</a>.</p><div itemscope itemtype=3D"http://sc=
+hema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http:=
+//schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openv=
+pn.net/c/openvpn/+/941?usp=3Demail"/><meta itemprop=3D"name" content=3D"Vie=
+w Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
@@ -128,12 +125,12 @@ ts.sourceforge.net&gt; </div>
 726...&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
 41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Thu, 17 Apr 2025 09:58:03=
+<div style=3D"display:none"> Gerrit-Comment-Date: Thu, 17 Apr 2025 10:01:32=
  +0000 </div>
 <div style=3D"display:none"> Gerrit-HasComments: Yes </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: No </div>
 <div style=3D"display:none"> Gerrit-MessageType: comment </div>
 
 
---KUODzKdlit0=--
+--ubYx+TOLQ+k=--
 
