@@ -1,15 +1,15 @@
 From: "ordex (Code Review)" <gerrit@...515...>
-Date: Thu, 17 Apr 2025 10:02:39 +0000
+Date: Thu, 17 Apr 2025 11:22:50 +0000
 In-Reply-To: <gerrit.1744809221000.I009f4e7ad38636f1c0b78d267561194c2bb4c051@...2715...>
 References: <gerrit.1744809221000.I009f4e7ad38636f1c0b78d267561194c2bb4c051@...2715...>
 Reply-To: antonio@...2726..., arne-openvpn@...1227...,
  gianmarco@...2726..., openvpn-devel@lists.sourceforge.net,
  frank@...2641...
-Message-ID: <95f32e10db535e1abda6e556ca48b83066a531d4-EmailReviewComments-HTML@...2715...>
+Message-ID: <93ebecc5a6158a69a6470e548c010531b858794d-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="7JRJ6eDMIsA="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="NfkF5pLacWc="; charset=UTF-8
 Subject: [Openvpn-devel] [L] Change in openvpn[master]: Add support to
  "ovpn" aka "in upstream kernel"
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -23,7 +23,7 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: its_Giaan <gianmarco@...2726...>
 Cc: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---7JRJ6eDMIsA=
+--NfkF5pLacWc=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
@@ -36,23 +36,28 @@ Change subject: Add support to "ovpn" aka "in upstream kernel"
 ......................................................................
 
 
-Patch Set 1:
+Patch Set 1: -Code-Review
 
-(1 comment)
+(2 comments)
 
 Patchset:
 
 PS1:
-[re-adding comment as it was set a Resolved by accident]
+> I also got the following: [=E2=80=A6]
+Gianmarco confirmed that openvpn cleans the interface up correctly.
+We need to check with the NM guy why this is happening under NM.
+Therefore this is not an issue with this patch.
 
-I would change the commit title a bit...will suggest something.
 
-Then I got this report:
+PS1:
+> [re-adding comment as it was set a Resolved by accident] [=E2=80=A6]
+this is something that we could deal with in a separate patch.
+Basically in-kernel modules do not have a separate "version" file.
+We will have it when compiling the 'ovpn' through dkms, but we won't when u=
+sing the in-kernel version.
 
-2. a userspace nit probably not relevant to this submission: the daemon sti=
-ll reports "DCO version:" but with "N/A" value because that version file un=
-der /sys is not presented any more like it was with an out-of-tree v2 imple=
-mentation
+Therefore we will have to extend the check and possibly print the kernel ve=
+rsion when using the in-kernel one.
 
 
 
@@ -74,39 +79,49 @@ Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
 Gerrit-Attention: its_Giaan <gianmarco@...2726...>
 Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Comment-Date: Thu, 17 Apr 2025 10:02:39 +0000
+Gerrit-Comment-Date: Thu, 17 Apr 2025 11:22:50 +0000
 Gerrit-HasComments: Yes
-Gerrit-Has-Labels: No
+Gerrit-Has-Labels: Yes
+Comment-In-Reply-To: ordex <antonio@...2726...>
 Gerrit-MessageType: comment
 
---7JRJ6eDMIsA=
+--NfkF5pLacWc=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <p> Attention is currently required from: flichtenheld, its_Giaan, plaistho=
 s. </p>
-<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/941?usp=3Demail">View C=
-hange</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0;"><=
+<p>Patch set 1:<span style=3D"border-radius: 3px; display: inline-block; ma=
+rgin: 0 2px; padding: 4px;background-color: #ddd;">-Code-Review</span></p><=
+p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/941?usp=3Demail">View Ch=
+ange</a></p><p>2 comments:</p><ul style=3D"list-style: none; padding: 0;"><=
 li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-style=
 : none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p style=
 =3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/9=
-41?tab=3Dcomments">Patch Set #1:</a> </p><p style=3D"white-space: pre-wrap;=
- word-wrap: break-word;">[re-adding comment as it was set a Resolved by acc=
-ident]</p><p style=3D"white-space: pre-wrap; word-wrap: break-word;">I woul=
-d change the commit title a bit...will suggest something.</p><p style=3D"wh=
-ite-space: pre-wrap; word-wrap: break-word;">Then I got this report:</p><p =
-style=3D"white-space: pre-wrap; word-wrap: break-word;">2. a userspace nit =
-probably not relevant to this submission: the daemon still reports &quot;DC=
-O version:&quot; but with &quot;N/A&quot; value because that version file u=
-nder /sys is not presented any more like it was with an out-of-tree v2 impl=
-ementation</p></li></ul></li></ul><p>To view, visit <a href=3D"http://gerri=
-t.openvpn.net/c/openvpn/+/941?usp=3Demail">change 941</a>. To unsubscribe, =
-or for help writing mail filters, visit <a href=3D"http://gerrit.openvpn.ne=
-t/settings">settings</a>.</p><div itemscope itemtype=3D"http://schema.org/E=
-mailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.o=
-rg/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/o=
-penvpn/+/941?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/=
-></div></div>
+41?tab=3Dcomments">Patch Set #1:</a> </p><p><blockquote style=3D"border-lef=
+t: 1px solid #aaa; margin: 10px 0; padding: 0 10px;">I also got the followi=
+ng: [=E2=80=A6]</blockquote></p><p style=3D"white-space: pre-wrap; word-wra=
+p: break-word;">Gianmarco confirmed that openvpn cleans the interface up co=
+rrectly.<br>We need to check with the NM guy why this is happening under NM=
+.<br>Therefore this is not an issue with this patch.</p></li><li style=3D"m=
+argin: 0; padding: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D=
+"http://gerrit.openvpn.net/c/openvpn/+/941?tab=3Dcomments">Patch Set #1:</a=
+> </p><p><blockquote style=3D"border-left: 1px solid #aaa; margin: 10px 0; =
+padding: 0 10px;">[re-adding comment as it was set a Resolved by accident] =
+[=E2=80=A6]</blockquote></p><p style=3D"white-space: pre-wrap; word-wrap: b=
+reak-word;">this is something that we could deal with in a separate patch.<=
+br>Basically in-kernel modules do not have a separate &quot;version&quot; f=
+ile.<br>We will have it when compiling the &#39;ovpn&#39; through dkms, but=
+ we won&#39;t when using the in-kernel version.</p><p style=3D"white-space:=
+ pre-wrap; word-wrap: break-word;">Therefore we will have to extend the che=
+ck and possibly print the kernel version when using the in-kernel one.</p><=
+/li></ul></li></ul><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c=
+/openvpn/+/941?usp=3Demail">change 941</a>. To unsubscribe, or for help wri=
+ting mail filters, visit <a href=3D"http://gerrit.openvpn.net/settings">set=
+tings</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><d=
+iv itemscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction">=
+<link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/941?us=
+p=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
@@ -130,12 +145,14 @@ ts.sourceforge.net&gt; </div>
 726...&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
 41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Thu, 17 Apr 2025 10:02:39=
+<div style=3D"display:none"> Gerrit-Comment-Date: Thu, 17 Apr 2025 11:22:50=
  +0000 </div>
 <div style=3D"display:none"> Gerrit-HasComments: Yes </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: No </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
+<div style=3D"display:none"> Comment-In-Reply-To: ordex &lt;antonio@...2787...=
+...&gt; </div>
 <div style=3D"display:none"> Gerrit-MessageType: comment </div>
 
 
---7JRJ6eDMIsA=--
+--NfkF5pLacWc=--
 
