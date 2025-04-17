@@ -1,11 +1,17 @@
-Content-Type: multipart/alternative;
- boundary="------------mtVzMzjocnZVpKK88PSuoqJP"
-Message-ID: <9aa21212-efc1-4d7e-b1b8-e9735437ef07@...2722...>
-Date: Wed, 16 Apr 2025 18:24:46 +0200
+From: "ordex (Code Review)" <gerrit@...515...>
+Date: Thu, 17 Apr 2025 09:58:03 +0000
+In-Reply-To: <gerrit.1744809221000.I009f4e7ad38636f1c0b78d267561194c2bb4c051@...2715...>
+References: <gerrit.1744809221000.I009f4e7ad38636f1c0b78d267561194c2bb4c051@...2715...>
+Reply-To: antonio@...2726..., arne-openvpn@...1227...,
+ gianmarco@...2726..., openvpn-devel@lists.sourceforge.net,
+ frank@...2641...
+Message-ID: <bda6a848a6f806a3534e124b5add6258c9fa455d-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-From: Johan Draaisma <johan@...2722...>
-Content-Language: en-US
-Subject: [Openvpn-devel]  IRC community meeting summary
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="KUODzKdlit0="; charset=UTF-8
+Subject: [Openvpn-devel] [L] Change in openvpn[master]: Add support to
+ "ovpn" aka "in upstream kernel"
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,149 +20,120 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: openvpn-devel@lists.sourceforge.net
+To: its_Giaan <gianmarco@...2726...>
+Cc: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-This is a multi-part message in MIME format.
---------------mtVzMzjocnZVpKK88PSuoqJP
-Content-Type: text/plain; charset="utf-8"; format="flowed"
-Content-Transfer-Encoding: 8bit
+--KUODzKdlit0=
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Meeting summary for 16 April 2025:
+Attention is currently required from: flichtenheld, its_Giaan, plaisthos.
 
-  * *Closed: Release 2.6.14*
-    /This was released on April 2nd 2025 and addressesCVE-2025-2704
-    <https://community.openvpn.net/openvpn/wiki/CVE-2025-2704>./
-    /Access Server 2.14.3 was released April 14th that has this version
-    and fix in it./
+ordex has posted comments on this change. ( http://gerrit.openvpn.net/c/ope=
+nvpn/+/941?usp=3Demail )
 
-  * *Updated: DCO Linux upstreaming*
-    /Upstreaming DCO to Linux is proceeding, it is still in review phase
-    but very close to being merge ready./
-    /Sabrina has extensively reviewed and all items are now resolved and
-    her reviewed-by blessing given./
-    /Jakub is now reviewing and had a few comments and a patchset v26
-    was sent in yesterday to address these./
-    /The tentative expectation is that once finally Jakub okays it, it
-    may get merged./
+Change subject: Add support to "ovpn" aka "in upstream kernel"
+......................................................................
 
-  * *Updated: Release 2.7*
-    /Unfortunately our initial goal to get 2.7 ready for the next Debian
-    13 release is not feasible./
-    /Current estimates are to have all major code items in by May 1st
-    and then a release on July 1st./
-    /For DCO the plan is to take the DCO code that is being worked on to
-    upstream to Linux kernel, and make it like a backport to go together
-    with 2.7./
-    /For changes to Windows service handling for 2.7, those changes have
-    been made so openvpn can run nicely under a limited privileges account./
-    /There is a party interested in doing a security audit of OpenVPN
-    2.7, there are some questions to be clarified about it being a code
-    audit and/or testing./
-    /SRLabs.de was the party chosen to do the audit./
 
-  * *Updated: forums situation*
-    /Situation in a nutshell; old forums got flooded with spam. attempt
-    was made to make new forums to fix it. this was aborted. now we're
-    in limbo./
-    /We now have someone from OpenVPN Inc to help us fix it up, so we'll
-    let him try./
+Patch Set 1: Code-Review-1
 
-  * *Updated: new --dns option support*
-    /​https://gerrit.openvpn.net/q/topic:%22dns+option%22
-    <https://gerrit.openvpn.net/q/topic:%22dns+option%22>/
-    /Implementation for unix-like has needed approvals but needs to go
-    in. Windows implementation is done and in./
-    /Currently work is being done on expanding the test framework to
-    test the new DNS options - server-side of that is done, client side
-    needs to comply./
+(1 comment)
 
-As always you're welcome to join at #openvpn-meeting on Libera IRC 
-network every Wednesday at 14:00 Central European Time.
+Patchset:
 
-Kind regards,
-Johan Draaisma
+PS1:
+I wouldc hange the commit title a bit...will suggest something.
 
---------------mtVzMzjocnZVpKK88PSuoqJP
-Content-Type: text/html; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+Then I got this report:
 
-<!DOCTYPE html>
-<html>
-  <head>
-    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
-  </head>
-  <body>
-    <p> Meeting summary for 16 April 2025:</p>
-    <ul
-style="color: rgb(0, 0, 0); font-family: Verdana, Arial, &quot;Bitstream Vera Sans&quot;, Helvetica, sans-serif; font-size: 13px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;">
-      <li><strong>Closed: Release 2.6.14</strong><br>
-        <em>This was released on April 2nd 2025 and addresses<span> </span><a
-            class="wiki"
-href="https://community.openvpn.net/openvpn/wiki/CVE-2025-2704"
-style="text-decoration: none; color: rgb(187, 0, 0); border-bottom: 1px dotted rgb(187, 187, 187);">CVE-2025-2704</a>.</em><br>
-        <em>Access Server 2.14.3 was released April 14th that has this
-          version and fix in it.</em></li>
-    </ul>
-    <ul
-style="color: rgb(0, 0, 0); font-family: Verdana, Arial, &quot;Bitstream Vera Sans&quot;, Helvetica, sans-serif; font-size: 13px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;">
-      <li><strong>Updated: DCO Linux upstreaming</strong><br>
-        <em>Upstreaming DCO to Linux is proceeding, it is still in
-          review phase but very close to being merge ready.</em><br>
-        <em>Sabrina has extensively reviewed and all items are now
-          resolved and her reviewed-by blessing given.</em><br>
-        <em>Jakub is now reviewing and had a few comments and a patchset
-          v26 was sent in yesterday to address these.</em><br>
-        <em>The tentative expectation is that once finally Jakub okays
-          it, it may get merged.</em></li>
-    </ul>
-    <ul
-style="color: rgb(0, 0, 0); font-family: Verdana, Arial, &quot;Bitstream Vera Sans&quot;, Helvetica, sans-serif; font-size: 13px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;">
-      <li><strong>Updated: Release 2.7</strong><br>
-        <em>Unfortunately our initial goal to get 2.7 ready for the next
-          Debian 13 release is not feasible.</em><br>
-        <em>Current estimates are to have all major code items in by May
-          1st and then a release on July 1st.</em><br>
-        <em>For DCO the plan is to take the DCO code that is being
-          worked on to upstream to Linux kernel, and make it like a
-          backport to go together with 2.7.</em><br>
-        <em>For changes to Windows service handling for 2.7, those
-          changes have been made so openvpn can run nicely under a
-          limited privileges account.</em><br>
-        <em>There is a party interested in doing a security audit of
-          OpenVPN 2.7, there are some questions to be clarified about it
-          being a code audit and/or testing.</em><br>
-        <em>SRLabs.de was the party chosen to do the audit.</em></li>
-    </ul>
-    <ul
-style="color: rgb(0, 0, 0); font-family: Verdana, Arial, &quot;Bitstream Vera Sans&quot;, Helvetica, sans-serif; font-size: 13px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;">
-      <li><strong>Updated: forums situation</strong><br>
-        <em>Situation in a nutshell; old forums got flooded with spam.
-          attempt was made to make new forums to fix it. this was
-          aborted. now we're in limbo.</em><br>
-        <em>We now have someone from OpenVPN Inc to help us fix it up,
-          so we'll let him try.</em></li>
-    </ul>
-    <ul
-style="color: rgb(0, 0, 0); font-family: Verdana, Arial, &quot;Bitstream Vera Sans&quot;, Helvetica, sans-serif; font-size: 13px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;">
-      <li><strong>Updated: new --dns option support</strong><br>
-        <em><a class="ext-link"
-            href="https://gerrit.openvpn.net/q/topic:%22dns+option%22"
-style="text-decoration: none; color: rgb(187, 0, 0); border-bottom: 1px dotted rgb(187, 187, 187);"><span
-              class="icon"
-style="background: url(&quot;../extlink.gif&quot;) left center no-repeat; padding-left: 15px;">​</span>https://gerrit.openvpn.net/q/topic:%22dns+option%22</a></em><br>
-        <em>Implementation for unix-like has needed approvals but needs
-          to go in. Windows implementation is done and in.</em><br>
-        <em>Currently work is being done on expanding the test framework
-          to test the new DNS options - server-side of that is done,
-          client side needs to comply.</em></li>
-    </ul>
-    <p>As always you're welcome to join at #openvpn-meeting on Libera
-      IRC network every Wednesday at 14:00 Central European Time. </p>
-    <p>Kind regards,<br>
-      Johan Draaisma<br>
-    </p>
-  </body>
-</html>
+2. a userspace nit probably not relevant to this submission: the daemon sti=
+ll reports "DCO version:" but with "N/A" value because that version file un=
+der /sys is not presented any more like it was with an out-of-tree v2 imple=
+mentation
 
---------------mtVzMzjocnZVpKK88PSuoqJP--
+
+
+--
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/941?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings
+
+Gerrit-Project: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: I009f4e7ad38636f1c0b78d267561194c2bb4c051
+Gerrit-Change-Number: 941
+Gerrit-PatchSet: 1
+Gerrit-Owner: its_Giaan <gianmarco@...2726...>
+Gerrit-Reviewer: flichtenheld <frank@...2641...>
+Gerrit-Reviewer: ordex <antonio@...2726...>
+Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Attention: its_Giaan <gianmarco@...2726...>
+Gerrit-Attention: flichtenheld <frank@...2641...>
+Gerrit-Comment-Date: Thu, 17 Apr 2025 09:58:03 +0000
+Gerrit-HasComments: Yes
+Gerrit-Has-Labels: Yes
+Gerrit-MessageType: comment
+
+--KUODzKdlit0=
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<p> Attention is currently required from: flichtenheld, its_Giaan, plaistho=
+s. </p>
+<p>Patch set 1:<span style=3D"border-radius: 3px; display: inline-block; ma=
+rgin: 0 2px; padding: 4px;background-color: #ffd4d4;">Code-Review -1</span>=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/941?usp=3Demail">Vi=
+ew Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0=
+;"><li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-s=
+tyle: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p s=
+tyle=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn=
+/+/941?tab=3Dcomments">Patch Set #1:</a> </p><p style=3D"white-space: pre-w=
+rap; word-wrap: break-word;">I wouldc hange the commit title a bit...will s=
+uggest something.</p><p style=3D"white-space: pre-wrap; word-wrap: break-wo=
+rd;">Then I got this report:</p><p style=3D"white-space: pre-wrap; word-wra=
+p: break-word;">2. a userspace nit probably not relevant to this submission=
+: the daemon still reports &quot;DCO version:&quot; but with &quot;N/A&quot=
+; value because that version file under /sys is not presented any more like=
+ it was with an out-of-tree v2 implementation</p></li></ul></li></ul><p>To =
+view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/941?usp=3Demai=
+l">change 941</a>. To unsubscribe, or for help writing mail filters, visit =
+<a href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemsc=
+ope itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"=
+action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" hr=
+ef=3D"http://gerrit.openvpn.net/c/openvpn/+/941?usp=3Demail"/><meta itempro=
+p=3D"name" content=3D"View Change"/></div></div>
+
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I009f4e7ad38636f1c0b78d26756=
+1194c2bb4c051 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 941 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
+<div style=3D"display:none"> Gerrit-Owner: its_Giaan &lt;gianmarco@...2786...=
+..&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
+1...&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: ordex &lt;antonio@...2726...&=
+gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
+.1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: its_Giaan &lt;gianmarco@...1665...=
+726...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
+41...&gt; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Thu, 17 Apr 2025 09:58:03=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
+
+
+--KUODzKdlit0=--
 
