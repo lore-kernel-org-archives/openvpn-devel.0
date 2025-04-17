@@ -1,15 +1,15 @@
 From: "stipa (Code Review)" <gerrit@...515...>
-Date: Thu, 17 Apr 2025 11:51:44 +0000
+Date: Thu, 17 Apr 2025 11:52:17 +0000
 In-Reply-To: <gerrit.1744889440000.I4507be07cd5573b2117e837ef03187535a38a4b1@...2715...>
 References: <gerrit.1744889440000.I4507be07cd5573b2117e837ef03187535a38a4b1@...2715...>
 Reply-To: lstipakov@...277..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net, frank@...2641...,
  antonio@...2726...
-Message-ID: <b655c2abe2118afa719c429a6595ea884195cba2-EmailReplacePatchSet-HTML@...2715...>
+Message-ID: <08e877df11e9ac99fee555a95b086059db14b2e7-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="lW71ceocA2E="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="F/qhEQotaP8="; charset=UTF-8
 Subject: [Openvpn-devel] [XS] Change in openvpn[master]: ssl_openssl.c:
  Prevent potential double-free
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -20,71 +20,33 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Cc: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---lW71ceocA2E=
+--F/qhEQotaP8=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: flichtenheld, ordex, plaisthos, stipa.
+Attention is currently required from: flichtenheld, ordex, plaisthos.
 
-Hello flichtenheld, ordex, plaisthos,
-
-I'd like you to reexamine a change. Please visit
-
-    http://gerrit.openvpn.net/c/openvpn/+/942?usp=3Demail
-
-to look at the new patch set (#4).
-
-The following approvals got outdated and were removed:
-Code-Review-1 by ordex
-
+stipa has posted comments on this change. ( http://gerrit.openvpn.net/c/ope=
+nvpn/+/942?usp=3Demail )
 
 Change subject: ssl_openssl.c: Prevent potential double-free
 ......................................................................
 
-ssl_openssl.c: Prevent potential double-free
 
-Fixes a potential double-free issue in tls_ctx_load_cert_uri()
-by explicitly nullifying the pointer immediately after calling OSSL_STORE_I=
-NFO_free(info).
+Patch Set 4:
 
-This ensures that subsequent cleanup won't attempt to free the same pointer=
- again.
+(1 comment)
 
-GitHub: #726
+File src/openvpn/ssl_openssl.c:
 
-Change-Id: I4507be07cd5573b2117e837ef03187535a38a4b1
-Signed-off-by: Lev Stipakov <lev@...515...>
----
-M src/openvpn/ssl_openssl.c
-1 file changed, 2 insertions(+), 0 deletions(-)
+http://gerrit.openvpn.net/c/openvpn/+/942/comment/11a0580f_b354ffa1 :
+PS3, Line 1190:     info =3D NULL;
+> what is this for? the variable is going out of scope at this point.
+Done
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/42/942/4
-
-diff --git a/src/openvpn/ssl_openssl.c b/src/openvpn/ssl_openssl.c
-index d1d5d3e..f7be50c 100644
---- a/src/openvpn/ssl_openssl.c
-+++ b/src/openvpn/ssl_openssl.c
-@@ -1152,6 +1152,7 @@
-         goto end;
-     }
-     OSSL_STORE_INFO_free(info);
-+    info =3D NULL;
-
-     /* iterate through the store and add extra certificates if any to the =
-chain */
-     while (!OSSL_STORE_eof(store_ctx))
-@@ -1170,6 +1171,7 @@
-             break;
-         }
-         OSSL_STORE_INFO_free(info);
-+        info =3D NULL;
-     }
-
- end:
 
 --
 To view, visit http://gerrit.openvpn.net/c/openvpn/+/942?usp=3Demail
@@ -104,49 +66,36 @@ Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
 Gerrit-Attention: flichtenheld <frank@...2641...>
 Gerrit-Attention: ordex <antonio@...2726...>
-Gerrit-Attention: stipa <lstipakov@...277...>
-Gerrit-MessageType: newpatchset
+Gerrit-Comment-Date: Thu, 17 Apr 2025 11:52:17 +0000
+Gerrit-HasComments: Yes
+Gerrit-Has-Labels: No
+Comment-In-Reply-To: ordex <antonio@...2726...>
+Gerrit-MessageType: comment
 
---lW71ceocA2E=
+--F/qhEQotaP8=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p> Attention is currently required from: flichtenheld, ordex, plaisthos, s=
-tipa. </p>
-<p>stipa <strong>uploaded patch set #4</strong> to this change.</p><p><a hr=
-ef=3D"http://gerrit.openvpn.net/c/openvpn/+/942?usp=3Demail">View Change</a=
-></p><p>The following approvals got outdated and were removed:
-Code-Review-1 by ordex</p><pre style=3D"font-family: monospace,monospace; w=
-hite-space: pre-wrap;">ssl_openssl.c: Prevent potential double-free<br><br>=
-Fixes a potential double-free issue in tls_ctx_load_cert_uri()<br>by explic=
-itly nullifying the pointer immediately after calling OSSL_STORE_INFO_free(=
-info).<br><br>This ensures that subsequent cleanup won&#39;t attempt to fre=
-e the same pointer again.<br><br>GitHub: #726<br><br>Change-Id: I4507be07cd=
-5573b2117e837ef03187535a38a4b1<br>Signed-off-by: Lev Stipakov &lt;lev@...1387...=
-5...&gt;<br>---<br>M src/openvpn/ssl_openssl.c<br>1 file changed, 2 inserti=
-ons(+), 0 deletions(-)<br><br></pre><pre style=3D"font-family: monospace,mo=
-nospace; white-space: pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/op=
-envpn refs/changes/42/942/4</pre><pre style=3D"font-family: monospace,monos=
-pace; white-space: pre-wrap;"><span>diff --git a/src/openvpn/ssl_openssl.c =
-b/src/openvpn/ssl_openssl.c</span><br><span>index d1d5d3e..f7be50c 100644</=
-span><br><span>--- a/src/openvpn/ssl_openssl.c</span><br><span>+++ b/src/op=
-envpn/ssl_openssl.c</span><br><span>@@ -1152,6 +1152,7 @@</span><br><span> =
-        goto end;</span><br><span>     }</span><br><span>     OSSL_STORE_IN=
-FO_free(info);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    i=
-nfo =3D NULL;</span><br><span> </span><br><span>     /* iterate through the=
- store and add extra certificates if any to the chain */</span><br><span>  =
-   while (!OSSL_STORE_eof(store_ctx))</span><br><span>@@ -1170,6 +1171,7 @@=
-</span><br><span>             break;</span><br><span>         }</span><br><=
-span>         OSSL_STORE_INFO_free(info);</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+        info =3D NULL;</span><br><span>     }</span><=
-br><span> </span><br><span> end:</span><br><span></span><br></pre><p>To vie=
-w, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/942?usp=3Demail">=
-change 942</a>. To unsubscribe, or for help writing mail filters, visit <a =
-href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope=
- itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"act=
-ion" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=
-=3D"http://gerrit.openvpn.net/c/openvpn/+/942?usp=3Demail"/><meta itemprop=
-=3D"name" content=3D"View Change"/></div></div>
+<p> Attention is currently required from: flichtenheld, ordex, plaisthos. <=
+/p>
+<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/942?usp=3Demail">View C=
+hange</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0;"><=
+li style=3D"margin: 0; padding: 0;"><p>File src/openvpn/ssl_openssl.c:</p><=
+ul style=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; padding:=
+ 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.ope=
+nvpn.net/c/openvpn/+/942/comment/11a0580f_b354ffa1">Patch Set #3, Line 1190=
+:</a> <code style=3D"font-family:monospace,monospace">    info =3D NULL;</c=
+ode></p><p><blockquote style=3D"border-left: 1px solid #aaa; margin: 10px 0=
+; padding: 0 10px;">what is this for? the variable is going out of scope at=
+ this point.</blockquote></p><p style=3D"white-space: pre-wrap; word-wrap: =
+break-word;">Done</p></li></ul></li></ul><p>To view, visit <a href=3D"http:=
+//gerrit.openvpn.net/c/openvpn/+/942?usp=3Demail">change 942</a>. To unsubs=
+cribe, or for help writing mail filters, visit <a href=3D"http://gerrit.ope=
+nvpn.net/settings">settings</a>.</p><div itemscope itemtype=3D"http://schem=
+a.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://s=
+chema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.=
+net/c/openvpn/+/942?usp=3Demail"/><meta itemprop=3D"name" content=3D"View C=
+hange"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
@@ -170,10 +119,14 @@ ts.sourceforge.net&gt; </div>
 41...&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: ordex &lt;antonio@...2726...=
 &gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: stipa &lt;lstipakov@...1663...=
-.&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Thu, 17 Apr 2025 11:52:17=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: No </div>
+<div style=3D"display:none"> Comment-In-Reply-To: ordex &lt;antonio@...2787...=
+...&gt; </div>
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
 
 
---lW71ceocA2E=--
+--F/qhEQotaP8=--
 
