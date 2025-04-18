@@ -1,13 +1,14 @@
 From: "stipa (Code Review)" <gerrit@...515...>
-Date: Fri, 18 Apr 2025 13:06:41 +0000
+Date: Fri, 18 Apr 2025 13:23:39 +0000
+In-Reply-To: <gerrit.1744981598000.I39d660ebeec76280e4d4357192b74bf2c0980615@...2715...>
 References: <gerrit.1744981598000.I39d660ebeec76280e4d4357192b74bf2c0980615@...2715...>
 Reply-To: lstipakov@...277..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <a71edc302e7e6355b4349baaee7a3ddfb7f4fdf0-HTML@...2715...>
+Message-ID: <b13e835f63b996b3e3a426be0fe6bdc1084e45be-EmailReplacePatchSet-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="awA6vww8by0="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="yedlwUHABV8="; charset=UTF-8
 Subject: [Openvpn-devel] [M] Change in openvpn[master]: win: refactor
  get_windows_version()
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -21,20 +22,19 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---awA6vww8by0=
+--yedlwUHABV8=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 Attention is currently required from: flichtenheld, plaisthos.
 
-Hello plaisthos, flichtenheld,
+Hello flichtenheld, plaisthos,
 
-I'd like you to do a code review.
-Please visit
+I'd like you to reexamine a change. Please visit
 
     http://gerrit.openvpn.net/c/openvpn/+/944?usp=3Demail
 
-to review the following change.
+to look at the new patch set (#2).
 
 
 Change subject: win: refactor get_windows_version()
@@ -45,35 +45,55 @@ win: refactor get_windows_version()
 It's 2025, and almost all clients now run on Windows 10 or newer.
 Instead of displaying:
 
-  "Windows version 10.0 (Windows 10 or greater)"
+  "Windows version 10.0 (Windows 10 or greater), amd64 executable"
 
 we now show the exact build number, e.g.:
 
-  "Windows version: 10.0.22631"
+  "Windows version: 10.0.22631,amd64"
 
 Remove "pre-Win7" checks in a few places.
-
-For IV_PLAT_VER, we now provide only the version number without
-binary architecture info. Previously:
-
-  IV_PLAT_VER=3D10.0,_amd64_executable
-
-Now:
-
-  IV_PLAT_VER=3D10.0.22631
 
 Change-Id: I39d660ebeec76280e4d4357192b74bf2c0980615
 Signed-off-by: Lev Stipakov <lev@...515...>
 ---
+M src/openvpn/options.c
+M src/openvpn/ssl.c
 M src/openvpn/tun.c
 M src/openvpn/win32.c
 M src/openvpn/win32.h
-3 files changed, 49 insertions(+), 93 deletions(-)
+5 files changed, 36 insertions(+), 86 deletions(-)
 
 
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/44/944/2
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/44/944/1
-
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index 96119c4..c523649 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -4846,7 +4846,7 @@
+ show_windows_version(const unsigned int flags)
+ {
+     struct gc_arena gc =3D gc_new();
+-    msg(flags, "Windows version %s", win32_version_string(&gc, true));
++    msg(flags, "Windows version: %s", win32_version_string(&gc));
+     gc_free(&gc);
+ }
+ #endif
+diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
+index 23f6423..fd299ef 100644
+--- a/src/openvpn/ssl.c
++++ b/src/openvpn/ssl.c
+@@ -2060,7 +2060,7 @@
+             }
+             buf_printf(&out, "IV_SSL=3D%s\n", get_ssl_library_version() );
+ #if defined(_WIN32)
+-            buf_printf(&out, "IV_PLAT_VER=3D%s\n", win32_version_string(&g=
+c, false));
++            buf_printf(&out, "IV_PLAT_VER=3D%s\n", win32_version_string(&g=
+c));
+ #else
+             struct utsname u;
+             uname(&u);
 diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
 index 4f7de6c..5186afa 100644
 --- a/src/openvpn/tun.c
@@ -107,7 +127,7 @@ uplicates */
                      argv_printf_cat(&argv, "%s", "validate=3Dno");
                  }
 diff --git a/src/openvpn/win32.c b/src/openvpn/win32.c
-index edac71e..8d4c4a3 100644
+index edac71e..caa14d6 100644
 --- a/src/openvpn/win32.c
 +++ b/src/openvpn/win32.c
 @@ -1283,42 +1283,6 @@
@@ -153,7 +173,7 @@ index edac71e..8d4c4a3 100644
  typedef enum {
      ARCH_X86,
      ARCH_AMD64,
-@@ -1420,57 +1384,50 @@
+@@ -1420,52 +1384,40 @@
      }
  }
 
@@ -161,7 +181,7 @@ index edac71e..8d4c4a3 100644
 +
  const char *
 -win32_version_string(struct gc_arena *gc, bool add_name)
-+win32_version_string(struct gc_arena *gc, bool add_exec_info)
++win32_version_string(struct gc_arena *gc)
  {
 -    int version =3D win32_version_info();
 -    struct buffer out =3D alloc_buf_gc(256, gc);
@@ -203,21 +223,10 @@ index edac71e..8d4c4a3 100644
      }
 
 -    buf_printf(&out, ", ");
--
--    arch_t process_arch, host_arch;
--    win32_get_arch(&process_arch, &host_arch);
--    win32_print_arch(process_arch, &out);
--
--    buf_printf(&out, " executable");
--
--    if (host_arch !=3D ARCH_NATIVE)
 +    RtlGetVersionPtr fn =3D (RtlGetVersionPtr)GetProcAddress(hMod, "RtlGet=
 Version");
 +    if (!fn)
-     {
--        buf_printf(&out, " running on ");
--        win32_print_arch(host_arch, &out);
--        buf_printf(&out, " host");
++    {
 +        return "N/A";
 +    }
 +
@@ -233,30 +242,22 @@ Version");
 +    buf_printf(&out, "%lu.%lu.%lu", rovi.dwMajorVersion, rovi.dwMinorVersi=
 on, rovi.dwBuildNumber);
 +
-+    if (add_exec_info)
-+    {
-+        buf_printf(&out, ", ");
-+
-+        arch_t process_arch, host_arch;
-+        win32_get_arch(&process_arch, &host_arch);
-+        win32_print_arch(process_arch, &out);
-+
-+        buf_printf(&out, " executable");
-+
-+        if (host_arch !=3D ARCH_NATIVE)
-+        {
-+            buf_printf(&out, " running on ");
-+            win32_print_arch(host_arch, &out);
-+            buf_printf(&out, " host");
-+        }
-     }
++    buf_printf(&out, ",");
 
-     return (const char *)out.data;
+     arch_t process_arch, host_arch;
+     win32_get_arch(&process_arch, &host_arch);
+     win32_print_arch(process_arch, &out);
+
+-    buf_printf(&out, " executable");
+-
+     if (host_arch !=3D ARCH_NATIVE)
+     {
+         buf_printf(&out, " running on ");
 diff --git a/src/openvpn/win32.h b/src/openvpn/win32.h
-index 081beeb..d663586 100644
+index 081beeb..bb934b7 100644
 --- a/src/openvpn/win32.h
 +++ b/src/openvpn/win32.h
-@@ -301,11 +301,14 @@
+@@ -301,11 +301,13 @@
 
  int win32_version_info(void);
 
@@ -265,14 +266,13 @@ index 081beeb..d663586 100644
 - * https://msdn.microsoft.com/en-us/library/windows/desktop/ms724832(v=3Dv=
 s.85).aspx
 +/**
-+ * @brief Get Windows version string, optionally with architecture info.
++ * @brief Get Windows version string with architecture info.
 + *
 + * @param gc gc arena to allocate string.
-+ * @param add_exec_info Whether to include architecture details.
 + * @return Version string, or "N/A" on failure.
   */
 -const char *win32_version_string(struct gc_arena *gc, bool add_name);
-+const char *win32_version_string(struct gc_arena *gc, bool add_exec_info);
++const char *win32_version_string(struct gc_arena *gc);
 
  /*
   * Send the |size| bytes in buffer |data| to the interactive service |pipe|
@@ -286,39 +286,57 @@ Gerrit-Project: openvpn
 Gerrit-Branch: master
 Gerrit-Change-Id: I39d660ebeec76280e4d4357192b74bf2c0980615
 Gerrit-Change-Number: 944
-Gerrit-PatchSet: 1
+Gerrit-PatchSet: 2
 Gerrit-Owner: stipa <lstipakov@...277...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
 Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-MessageType: newchange
+Gerrit-MessageType: newpatchset
 
---awA6vww8by0=
+--yedlwUHABV8=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <p> Attention is currently required from: flichtenheld, plaisthos. </p>
-<p>stipa would like plaisthos and flichtenheld to <strong>review</strong> t=
-his change.
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/944?usp=3Demail">Vi=
-ew Change</a></p><pre style=3D"font-family: monospace,monospace; white-spac=
-e: pre-wrap;">win: refactor get_windows_version()<br><br>It&#39;s 2025, and=
- almost all clients now run on Windows 10 or newer.<br>Instead of displayin=
-g:<br><br>  &quot;Windows version 10.0 (Windows 10 or greater)&quot;<br><br=
->we now show the exact build number, e.g.:<br><br>  &quot;Windows version: =
-10.0.22631&quot;<br><br>Remove &quot;pre-Win7&quot; checks in a few places.=
-<br><br>For IV_PLAT_VER, we now provide only the version number without<br>=
-binary architecture info. Previously:<br><br>  IV_PLAT_VER=3D10.0,_amd64_ex=
-ecutable<br><br>Now:<br><br>  IV_PLAT_VER=3D10.0.22631<br><br>Change-Id: I3=
-9d660ebeec76280e4d4357192b74bf2c0980615<br>Signed-off-by: Lev Stipakov &lt;=
-lev@...515...&gt;<br>---<br>M src/openvpn/tun.c<br>M src/openvpn/win32.c<br=
->M src/openvpn/win32.h<br>3 files changed, 49 insertions(+), 93 deletions(-=
-)<br><br></pre><pre style=3D"font-family: monospace,monospace; white-space:=
- pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/44=
-/944/1</pre><pre style=3D"font-family: monospace,monospace; white-space: pr=
-e-wrap;"><span>diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c</span><br=
+<p>stipa <strong>uploaded patch set #2</strong> to this change.</p><p><a hr=
+ef=3D"http://gerrit.openvpn.net/c/openvpn/+/944?usp=3Demail">View Change</a=
+></p><pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;=
+">win: refactor get_windows_version()<br><br>It&#39;s 2025, and almost all =
+clients now run on Windows 10 or newer.<br>Instead of displaying:<br><br>  =
+&quot;Windows version 10.0 (Windows 10 or greater), amd64 executable&quot;<=
+br><br>we now show the exact build number, e.g.:<br><br>  &quot;Windows ver=
+sion: 10.0.22631,amd64&quot;<br><br>Remove &quot;pre-Win7&quot; checks in a=
+ few places.<br><br>Change-Id: I39d660ebeec76280e4d4357192b74bf2c0980615<br=
+>Signed-off-by: Lev Stipakov &lt;lev@...515...&gt;<br>---<br>M src/openvpn/=
+options.c<br>M src/openvpn/ssl.c<br>M src/openvpn/tun.c<br>M src/openvpn/wi=
+n32.c<br>M src/openvpn/win32.h<br>5 files changed, 36 insertions(+), 86 del=
+etions(-)<br><br></pre><pre style=3D"font-family: monospace,monospace; whit=
+e-space: pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/openvpn refs/ch=
+anges/44/944/2</pre><pre style=3D"font-family: monospace,monospace; white-s=
+pace: pre-wrap;"><span>diff --git a/src/openvpn/options.c b/src/openvpn/opt=
+ions.c</span><br><span>index 96119c4..c523649 100644</span><br><span>--- a/=
+src/openvpn/options.c</span><br><span>+++ b/src/openvpn/options.c</span><br=
+><span>@@ -4846,7 +4846,7 @@</span><br><span> show_windows_version(const un=
+signed int flags)</span><br><span> {</span><br><span>     struct gc_arena g=
+c =3D gc_new();</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    ms=
+g(flags, &quot;Windows version %s&quot;, win32_version_string(&amp;gc, true=
+));</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    msg(flags, &=
+quot;Windows version: %s&quot;, win32_version_string(&amp;gc));</span><br><=
+span>     gc_free(&amp;gc);</span><br><span> }</span><br><span> #endif</spa=
+n><br><span>diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c</span><br><s=
+pan>index 23f6423..fd299ef 100644</span><br><span>--- a/src/openvpn/ssl.c</=
+span><br><span>+++ b/src/openvpn/ssl.c</span><br><span>@@ -2060,7 +2060,7 @=
+@</span><br><span>             }</span><br><span>             buf_printf(&a=
+mp;out, &quot;IV_SSL=3D%s\n&quot;, get_ssl_library_version() );</span><br><=
+span> #if defined(_WIN32)</span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">-            buf_printf(&amp;out, &quot;IV_PLAT_VER=3D%s\n&quot;, win32_=
+version_string(&amp;gc, false));</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+            buf_printf(&amp;out, &quot;IV_PLAT_VER=3D%s\n&quot=
+;, win32_version_string(&amp;gc));</span><br><span> #else</span><br><span> =
+            struct utsname u;</span><br><span>             uname(&amp;u);</=
+span><br><span>diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c</span><br=
 ><span>index 4f7de6c..5186afa 100644</span><br><span>--- a/src/openvpn/tun.=
 c</span><br><span>+++ b/src/openvpn/tun.c</span><br><span>@@ -5428,11 +5428=
 ,8 @@</span><br><span>                     NETSH_PATH_SUFFIX, adapter_index=
@@ -349,7 +367,7 @@ color: hsl(120, 100%, 40%);">+                if (is_dns)</span><br><span> =
                 {</span><br><span>                     argv_printf_cat(&amp=
 ;argv, &quot;%s&quot;, &quot;validate=3Dno&quot;);</span><br><span>        =
          }</span><br><span>diff --git a/src/openvpn/win32.c b/src/openvpn/w=
-in32.c</span><br><span>index edac71e..8d4c4a3 100644</span><br><span>--- a/=
+in32.c</span><br><span>index edac71e..caa14d6 100644</span><br><span>--- a/=
 src/openvpn/win32.c</span><br><span>+++ b/src/openvpn/win32.c</span><br><sp=
 an>@@ -1283,42 +1283,6 @@</span><br><span>     return true;</span><br><span=
 > }</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
@@ -386,145 +404,119 @@ r><span style=3D"color: hsl(0, 100%, 40%);">-        return WIN_8_1;</span>=
 %, 40%);">-    return WIN_10;</span><br><span style=3D"color: hsl(0, 100%, =
 40%);">-}</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><=
 span> typedef enum {</span><br><span>     ARCH_X86,</span><br><span>     AR=
-CH_AMD64,</span><br><span>@@ -1420,57 +1384,50 @@</span><br><span>     }</s=
+CH_AMD64,</span><br><span>@@ -1420,52 +1384,40 @@</span><br><span>     }</s=
 pan><br><span> }</span><br><span> </span><br><span style=3D"color: hsl(120,=
  100%, 40%);">+typedef LONG (WINAPI *RtlGetVersionPtr)(PRTL_OSVERSIONINFOW)=
 ;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> =
 const char *</span><br><span style=3D"color: hsl(0, 100%, 40%);">-win32_ver=
 sion_string(struct gc_arena *gc, bool add_name)</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+win32_version_string(struct gc_arena *gc, bool =
-add_exec_info)</span><br><span> {</span><br><span style=3D"color: hsl(0, 10=
-0%, 40%);">-    int version =3D win32_version_info();</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-    struct buffer out =3D alloc_buf_gc(256,=
- gc);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span=
- style=3D"color: hsl(0, 100%, 40%);">-    switch (version)</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+    HMODULE hMod =3D GetModuleHandle=
-W(L&quot;ntdll.dll&quot;);</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+    if (!hMod)</span><br><span>     {</span><br><span style=3D"color=
-: hsl(0, 100%, 40%);">-        case WIN_XP:</span><br><span style=3D"color:=
- hsl(0, 100%, 40%);">-            buf_printf(&amp;out, &quot;5.1%s&quot;, a=
-dd_name ? &quot; (Windows XP)&quot; : &quot;&quot;);</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-            break;</span><br><span style=3D=
-"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, =
-40%);">-        case WIN_VISTA:</span><br><span style=3D"color: hsl(0, 100%=
-, 40%);">-            buf_printf(&amp;out, &quot;6.0%s&quot;, add_name ? &q=
-uot; (Windows Vista)&quot; : &quot;&quot;);</span><br><span style=3D"color:=
+lor: hsl(120, 100%, 40%);">+win32_version_string(struct gc_arena *gc)</span=
+><br><span> {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    int =
+version =3D win32_version_info();</span><br><span style=3D"color: hsl(0, 10=
+0%, 40%);">-    struct buffer out =3D alloc_buf_gc(256, gc);</span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-    switch (version)</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+    HMODULE hMod =3D GetModuleHandleW(L&quot;ntdll.dll&q=
+uot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (!hMod=
+)</span><br><span>     {</span><br><span style=3D"color: hsl(0, 100%, 40%);=
+">-        case WIN_XP:</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>-            buf_printf(&amp;out, &quot;5.1%s&quot;, add_name ? &quot; (Wi=
+ndows XP)&quot; : &quot;&quot;);</span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-            break;</span><br><span style=3D"color: hsl(0, 100%, =
+40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        case =
+WIN_VISTA:</span><br><span style=3D"color: hsl(0, 100%, 40%);">-           =
+ buf_printf(&amp;out, &quot;6.0%s&quot;, add_name ? &quot; (Windows Vista)&=
+quot; : &quot;&quot;);</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
+-            break;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</=
+span><br><span style=3D"color: hsl(0, 100%, 40%);">-        case WIN_7:</sp=
+an><br><span style=3D"color: hsl(0, 100%, 40%);">-            buf_printf(&a=
+mp;out, &quot;6.1%s&quot;, add_name ? &quot; (Windows 7)&quot; : &quot;&quo=
+t;);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            break=
+;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-        case WIN_8:</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-            buf_printf(&amp;out, &quot;6.2%=
+s&quot;, add_name ? &quot; (Windows 8)&quot; : &quot;&quot;);</span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-            break;</span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-        case WIN_8_1:</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-            buf_printf(&amp;out, &quot;6.3%s&quot;, add_nam=
+e ? &quot; (Windows 8.1)&quot; : &quot;&quot;);</span><br><span style=3D"co=
+lor: hsl(0, 100%, 40%);">-            break;</span><br><span style=3D"color=
+: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>-        case WIN_10:</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
+-            buf_printf(&amp;out, &quot;10.0%s&quot;, add_name ? &quot; (Wi=
+ndows 10 or greater)&quot; : &quot;&quot;);</span><br><span style=3D"color:=
  hsl(0, 100%, 40%);">-            break;</span><br><span style=3D"color: hs=
 l(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
-      case WIN_7:</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
-        buf_printf(&amp;out, &quot;6.1%s&quot;, add_name ? &quot; (Windows =
-7)&quot; : &quot;&quot;);</span><br><span style=3D"color: hsl(0, 100%, 40%)=
-;">-            break;</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
--</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        case WIN_8:<=
-/span><br><span style=3D"color: hsl(0, 100%, 40%);">-            buf_printf=
-(&amp;out, &quot;6.2%s&quot;, add_name ? &quot; (Windows 8)&quot; : &quot;&=
-quot;);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            br=
-eak;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span =
-style=3D"color: hsl(0, 100%, 40%);">-        case WIN_8_1:</span><br><span =
-style=3D"color: hsl(0, 100%, 40%);">-            buf_printf(&amp;out, &quot=
-;6.3%s&quot;, add_name ? &quot; (Windows 8.1)&quot; : &quot;&quot;);</span>=
-<br><span style=3D"color: hsl(0, 100%, 40%);">-            break;</span><br=
-><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color=
-: hsl(0, 100%, 40%);">-        case WIN_10:</span><br><span style=3D"color:=
- hsl(0, 100%, 40%);">-            buf_printf(&amp;out, &quot;10.0%s&quot;, =
-add_name ? &quot; (Windows 10 or greater)&quot; : &quot;&quot;);</span><br>=
-<span style=3D"color: hsl(0, 100%, 40%);">-            break;</span><br><sp=
-an style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hs=
-l(0, 100%, 40%);">-        default:</span><br><span style=3D"color: hsl(0, =
-100%, 40%);">-            msg(M_NONFATAL, &quot;Unknown Windows version: %d=
-&quot;, version);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
-        buf_printf(&amp;out, &quot;0.0%s&quot;, add_name ? &quot; (unknown)=
-&quot; : &quot;&quot;);</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
->-            break;</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+        return &quot;N/A&quot;;</span><br><span>     }</span><br><span> </=
-span><br><span style=3D"color: hsl(0, 100%, 40%);">-    buf_printf(&amp;out=
-, &quot;, &quot;);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</s=
-pan><br><span style=3D"color: hsl(0, 100%, 40%);">-    arch_t process_arch,=
- host_arch;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    win32_=
-get_arch(&amp;process_arch, &amp;host_arch);</span><br><span style=3D"color=
-: hsl(0, 100%, 40%);">-    win32_print_arch(process_arch, &amp;out);</span>=
-<br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"co=
-lor: hsl(0, 100%, 40%);">-    buf_printf(&amp;out, &quot; executable&quot;)=
-;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span sty=
-le=3D"color: hsl(0, 100%, 40%);">-    if (host_arch !=3D ARCH_NATIVE)</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+    RtlGetVersionPtr fn =
-=3D (RtlGetVersionPtr)GetProcAddress(hMod, &quot;RtlGetVersion&quot;);</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (!fn)</span><br><=
-span>     {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        bu=
-f_printf(&amp;out, &quot; running on &quot;);</span><br><span style=3D"colo=
-r: hsl(0, 100%, 40%);">-        win32_print_arch(host_arch, &amp;out);</spa=
-n><br><span style=3D"color: hsl(0, 100%, 40%);">-        buf_printf(&amp;ou=
-t, &quot; host&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+        return &quot;N/A&quot;;</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    RTL_OSVERSIONI=
-NFOW rovi =3D { 0 };</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+    rovi.dwOSVersionInfoSize =3D sizeof(rovi);</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+    if (fn(&amp;rovi) !=3D 0)</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+        return &quot;N/A&quot;;</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+    struct buffer out =3D alloc_buf_gc(256, gc);</span><br><span style=
+      default:</span><br><span style=3D"color: hsl(0, 100%, 40%);">-       =
+     msg(M_NONFATAL, &quot;Unknown Windows version: %d&quot;, version);</sp=
+an><br><span style=3D"color: hsl(0, 100%, 40%);">-            buf_printf(&a=
+mp;out, &quot;0.0%s&quot;, add_name ? &quot; (unknown)&quot; : &quot;&quot;=
+);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            break;<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+        return &quot=
+;N/A&quot;;</span><br><span>     }</span><br><span> </span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-    buf_printf(&amp;out, &quot;, &quot;);</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+    RtlGetVersionPtr =
+fn =3D (RtlGetVersionPtr)GetProcAddress(hMod, &quot;RtlGetVersion&quot;);</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (!fn)</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+        return &quot;N/A&quot;;</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=
 =3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+    buf_printf(&amp;out, &quot;%lu.%lu.%lu&quot;, rovi.dwMaj=
-orVersion, rovi.dwMinorVersion, rovi.dwBuildNumber);</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+    if (add_exec_info)</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+        buf_printf(&amp;out, &quot;, &quot;);</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+        arch_t process_arch, host_arch;</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+        win32_get_arch(&amp;process_arch, &a=
-mp;host_arch);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
-   win32_print_arch(process_arch, &amp;out);</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+        buf_printf(&amp;out, &quot; executable&quot;);</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+        if (host_arch !=3D ARCH_NATIVE)</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+        {</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+            buf_printf(&amp;out, &quot; r=
-unning on &quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-           win32_print_arch(host_arch, &amp;out);</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+            buf_printf(&amp;out, &quot; host&=
-quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        }</s=
-pan><br><span>     }</span><br><span> </span><br><span>     return (const c=
-har *)out.data;</span><br><span>diff --git a/src/openvpn/win32.h b/src/open=
-vpn/win32.h</span><br><span>index 081beeb..d663586 100644</span><br><span>-=
--- a/src/openvpn/win32.h</span><br><span>+++ b/src/openvpn/win32.h</span><b=
-r><span>@@ -301,11 +301,14 @@</span><br><span> </span><br><span> int win32_=
-version_info(void);</span><br><span> </span><br><span style=3D"color: hsl(0=
-, 100%, 40%);">-/*</span><br><span style=3D"color: hsl(0, 100%, 40%);">- * =
-String representation of Windows version number and name, see</span><br><sp=
-an style=3D"color: hsl(0, 100%, 40%);">- * https://msdn.microsoft.com/en-us=
-/library/windows/desktop/ms724832(v=3Dvs.85).aspx</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+/**</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+ * @brief Get Windows version string, optionally with archite=
-cture info.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @param gc gc arena to =
-allocate string.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * =
-@param add_exec_info Whether to include architecture details.</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+ * @return Version string, or &qu=
-ot;N/A&quot; on failure.</span><br><span>  */</span><br><span style=3D"colo=
-r: hsl(0, 100%, 40%);">-const char *win32_version_string(struct gc_arena *g=
-c, bool add_name);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+c=
-onst char *win32_version_string(struct gc_arena *gc, bool add_exec_info);</=
-span><br><span> </span><br><span> /*</span><br><span>  * Send the |size| by=
-tes in buffer |data| to the interactive service |pipe|</span><br><span></sp=
-an><br></pre><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openv=
-pn/+/944?usp=3Demail">change 944</a>. To unsubscribe, or for help writing m=
-ail filters, visit <a href=3D"http://gerrit.openvpn.net/settings">settings<=
-/a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div ite=
-mscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link =
-itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/944?usp=3Dem=
-ail"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
+ 100%, 40%);">+    RTL_OSVERSIONINFOW rovi =3D { 0 };</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    rovi.dwOSVersionInfoSize =3D sizeof(r=
+ovi);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (fn(&am=
+p;rovi) !=3D 0)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        return &qu=
+ot;N/A&quot;;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+    struct buffer out =3D alloc_buf_gc(=
+256, gc);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+    buf_printf(&amp;out, &quo=
+t;%lu.%lu.%lu&quot;, rovi.dwMajorVersion, rovi.dwMinorVersion, rovi.dwBuild=
+Number);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+    buf_printf(&amp;out, &quot=
+;,&quot;);</span><br><span> </span><br><span>     arch_t process_arch, host=
+_arch;</span><br><span>     win32_get_arch(&amp;process_arch, &amp;host_arc=
+h);</span><br><span>     win32_print_arch(process_arch, &amp;out);</span><b=
+r><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-    buf_prin=
+tf(&amp;out, &quot; executable&quot;);</span><br><span style=3D"color: hsl(=
+0, 100%, 40%);">-</span><br><span>     if (host_arch !=3D ARCH_NATIVE)</spa=
+n><br><span>     {</span><br><span>         buf_printf(&amp;out, &quot; run=
+ning on &quot;);</span><br><span>diff --git a/src/openvpn/win32.h b/src/ope=
+nvpn/win32.h</span><br><span>index 081beeb..bb934b7 100644</span><br><span>=
+--- a/src/openvpn/win32.h</span><br><span>+++ b/src/openvpn/win32.h</span><=
+br><span>@@ -301,11 +301,13 @@</span><br><span> </span><br><span> int win32=
+_version_info(void);</span><br><span> </span><br><span style=3D"color: hsl(=
+0, 100%, 40%);">-/*</span><br><span style=3D"color: hsl(0, 100%, 40%);">- *=
+ String representation of Windows version number and name, see</span><br><s=
+pan style=3D"color: hsl(0, 100%, 40%);">- * https://msdn.microsoft.com/en-u=
+s/library/windows/desktop/ms724832(v=3Dvs.85).aspx</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+/**</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+ * @brief Get Windows version string with architecture info.=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+ * @param gc gc arena to allocate st=
+ring.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @return Ver=
+sion string, or &quot;N/A&quot; on failure.</span><br><span>  */</span><br>=
+<span style=3D"color: hsl(0, 100%, 40%);">-const char *win32_version_string=
+(struct gc_arena *gc, bool add_name);</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+const char *win32_version_string(struct gc_arena *gc);</s=
+pan><br><span> </span><br><span> /*</span><br><span>  * Send the |size| byt=
+es in buffer |data| to the interactive service |pipe|</span><br><span></spa=
+n><br></pre><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvp=
+n/+/944?usp=3Demail">change 944</a>. To unsubscribe, or for help writing ma=
+il filters, visit <a href=3D"http://gerrit.openvpn.net/settings">settings</=
+a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div item=
+scope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link i=
+temprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/944?usp=3Dema=
+il"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
 <div style=3D"display:none"> Gerrit-Change-Id: I39d660ebeec76280e4d4357192b=
 74bf2c0980615 </div>
 <div style=3D"display:none"> Gerrit-Change-Number: 944 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
 <div style=3D"display:none"> Gerrit-Owner: stipa &lt;lstipakov@...277...&gt=
 ; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
@@ -537,8 +529,8 @@ ts.sourceforge.net&gt; </div>
 ..1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
 41...&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: newchange </div>
+<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
 
 
---awA6vww8by0=--
+--yedlwUHABV8=--
 
