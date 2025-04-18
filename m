@@ -1,14 +1,14 @@
 From: "stipa (Code Review)" <gerrit@...515...>
-Date: Fri, 18 Apr 2025 13:23:39 +0000
+Date: Fri, 18 Apr 2025 13:25:37 +0000
 In-Reply-To: <gerrit.1744981598000.I39d660ebeec76280e4d4357192b74bf2c0980615@...2715...>
 References: <gerrit.1744981598000.I39d660ebeec76280e4d4357192b74bf2c0980615@...2715...>
 Reply-To: lstipakov@...277..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <b13e835f63b996b3e3a426be0fe6bdc1084e45be-EmailReplacePatchSet-HTML@...2715...>
+Message-ID: <36ae0a157c057c5ca58e89b0e8d274d995027163-EmailReplacePatchSet-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="yedlwUHABV8="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="oLU0bFdicV0="; charset=UTF-8
 Subject: [Openvpn-devel] [M] Change in openvpn[master]: win: refactor
  get_windows_version()
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -22,7 +22,7 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---yedlwUHABV8=
+--oLU0bFdicV0=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
@@ -34,7 +34,7 @@ I'd like you to reexamine a change. Please visit
 
     http://gerrit.openvpn.net/c/openvpn/+/944?usp=3Demail
 
-to look at the new patch set (#2).
+to look at the new patch set (#3).
 
 
 Change subject: win: refactor get_windows_version()
@@ -61,10 +61,10 @@ M src/openvpn/ssl.c
 M src/openvpn/tun.c
 M src/openvpn/win32.c
 M src/openvpn/win32.h
-5 files changed, 36 insertions(+), 86 deletions(-)
+5 files changed, 36 insertions(+), 95 deletions(-)
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/44/944/2
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/44/944/3
 
 diff --git a/src/openvpn/options.c b/src/openvpn/options.c
 index 96119c4..c523649 100644
@@ -254,13 +254,22 @@ on, rovi.dwBuildNumber);
      {
          buf_printf(&out, " running on ");
 diff --git a/src/openvpn/win32.h b/src/openvpn/win32.h
-index 081beeb..bb934b7 100644
+index 081beeb..685898c 100644
 --- a/src/openvpn/win32.h
 +++ b/src/openvpn/win32.h
-@@ -301,11 +301,13 @@
+@@ -292,20 +292,13 @@
 
- int win32_version_info(void);
+ bool win_wfp_uninit(const NET_IFINDEX index, const HANDLE msg_channel);
 
+-#define WIN_XP    0
+-#define WIN_VISTA 1
+-#define WIN_7     2
+-#define WIN_8     3
+-#define WIN_8_1   4
+-#define WIN_10    5
+-
+-int win32_version_info(void);
+-
 -/*
 - * String representation of Windows version number and name, see
 - * https://msdn.microsoft.com/en-us/library/windows/desktop/ms724832(v=3Dv=
@@ -286,7 +295,7 @@ Gerrit-Project: openvpn
 Gerrit-Branch: master
 Gerrit-Change-Id: I39d660ebeec76280e4d4357192b74bf2c0980615
 Gerrit-Change-Number: 944
-Gerrit-PatchSet: 2
+Gerrit-PatchSet: 3
 Gerrit-Owner: stipa <lstipakov@...277...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
@@ -295,12 +304,12 @@ Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
 Gerrit-Attention: flichtenheld <frank@...2641...>
 Gerrit-MessageType: newpatchset
 
---yedlwUHABV8=
+--oLU0bFdicV0=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <p> Attention is currently required from: flichtenheld, plaisthos. </p>
-<p>stipa <strong>uploaded patch set #2</strong> to this change.</p><p><a hr=
+<p>stipa <strong>uploaded patch set #3</strong> to this change.</p><p><a hr=
 ef=3D"http://gerrit.openvpn.net/c/openvpn/+/944?usp=3Demail">View Change</a=
 ></p><pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;=
 ">win: refactor get_windows_version()<br><br>It&#39;s 2025, and almost all =
@@ -311,10 +320,10 @@ sion: 10.0.22631,amd64&quot;<br><br>Remove &quot;pre-Win7&quot; checks in a=
  few places.<br><br>Change-Id: I39d660ebeec76280e4d4357192b74bf2c0980615<br=
 >Signed-off-by: Lev Stipakov &lt;lev@...515...&gt;<br>---<br>M src/openvpn/=
 options.c<br>M src/openvpn/ssl.c<br>M src/openvpn/tun.c<br>M src/openvpn/wi=
-n32.c<br>M src/openvpn/win32.h<br>5 files changed, 36 insertions(+), 86 del=
+n32.c<br>M src/openvpn/win32.h<br>5 files changed, 36 insertions(+), 95 del=
 etions(-)<br><br></pre><pre style=3D"font-family: monospace,monospace; whit=
 e-space: pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/openvpn refs/ch=
-anges/44/944/2</pre><pre style=3D"font-family: monospace,monospace; white-s=
+anges/44/944/3</pre><pre style=3D"font-family: monospace,monospace; white-s=
 pace: pre-wrap;"><span>diff --git a/src/openvpn/options.c b/src/openvpn/opt=
 ions.c</span><br><span>index 96119c4..c523649 100644</span><br><span>--- a/=
 src/openvpn/options.c</span><br><span>+++ b/src/openvpn/options.c</span><br=
@@ -484,39 +493,48 @@ tf(&amp;out, &quot; executable&quot;);</span><br><span style=3D"color: hsl(=
 0, 100%, 40%);">-</span><br><span>     if (host_arch !=3D ARCH_NATIVE)</spa=
 n><br><span>     {</span><br><span>         buf_printf(&amp;out, &quot; run=
 ning on &quot;);</span><br><span>diff --git a/src/openvpn/win32.h b/src/ope=
-nvpn/win32.h</span><br><span>index 081beeb..bb934b7 100644</span><br><span>=
+nvpn/win32.h</span><br><span>index 081beeb..685898c 100644</span><br><span>=
 --- a/src/openvpn/win32.h</span><br><span>+++ b/src/openvpn/win32.h</span><=
-br><span>@@ -301,11 +301,13 @@</span><br><span> </span><br><span> int win32=
-_version_info(void);</span><br><span> </span><br><span style=3D"color: hsl(=
-0, 100%, 40%);">-/*</span><br><span style=3D"color: hsl(0, 100%, 40%);">- *=
- String representation of Windows version number and name, see</span><br><s=
-pan style=3D"color: hsl(0, 100%, 40%);">- * https://msdn.microsoft.com/en-u=
-s/library/windows/desktop/ms724832(v=3Dvs.85).aspx</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+/**</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+ * @brief Get Windows version string with architecture info.=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+ * @param gc gc arena to allocate st=
-ring.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @return Ver=
-sion string, or &quot;N/A&quot; on failure.</span><br><span>  */</span><br>=
-<span style=3D"color: hsl(0, 100%, 40%);">-const char *win32_version_string=
-(struct gc_arena *gc, bool add_name);</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+const char *win32_version_string(struct gc_arena *gc);</s=
-pan><br><span> </span><br><span> /*</span><br><span>  * Send the |size| byt=
-es in buffer |data| to the interactive service |pipe|</span><br><span></spa=
-n><br></pre><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvp=
-n/+/944?usp=3Demail">change 944</a>. To unsubscribe, or for help writing ma=
-il filters, visit <a href=3D"http://gerrit.openvpn.net/settings">settings</=
-a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div item=
-scope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link i=
-temprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/944?usp=3Dema=
-il"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
+br><span>@@ -292,20 +292,13 @@</span><br><span> </span><br><span> bool win_=
+wfp_uninit(const NET_IFINDEX index, const HANDLE msg_channel);</span><br><s=
+pan> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-#define WIN_XP  =
+  0</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#define WIN_VISTA =
+1</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#define WIN_7     2<=
+/span><br><span style=3D"color: hsl(0, 100%, 40%);">-#define WIN_8     3</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-#define WIN_8_1   4</spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-#define WIN_10    5</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"co=
+lor: hsl(0, 100%, 40%);">-int win32_version_info(void);</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 1=
+00%, 40%);">-/*</span><br><span style=3D"color: hsl(0, 100%, 40%);">- * Str=
+ing representation of Windows version number and name, see</span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">- * https://msdn.microsoft.com/en-us/li=
+brary/windows/desktop/ms724832(v=3Dvs.85).aspx</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+/**</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+ * @brief Get Windows version string with architecture info.</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+ * @param gc gc arena to allocate string=
+.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @return Version=
+ string, or &quot;N/A&quot; on failure.</span><br><span>  */</span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">-const char *win32_version_string(str=
+uct gc_arena *gc, bool add_name);</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+const char *win32_version_string(struct gc_arena *gc);</span>=
+<br><span> </span><br><span> /*</span><br><span>  * Send the |size| bytes i=
+n buffer |data| to the interactive service |pipe|</span><br><span></span><b=
+r></pre><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/=
+944?usp=3Demail">change 944</a>. To unsubscribe, or for help writing mail f=
+ilters, visit <a href=3D"http://gerrit.openvpn.net/settings">settings</a>.<=
+/p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscop=
+e itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itemp=
+rop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/944?usp=3Demail"/=
+><meta itemprop=3D"name" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
 <div style=3D"display:none"> Gerrit-Change-Id: I39d660ebeec76280e4d4357192b=
 74bf2c0980615 </div>
 <div style=3D"display:none"> Gerrit-Change-Number: 944 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 3 </div>
 <div style=3D"display:none"> Gerrit-Owner: stipa &lt;lstipakov@...277...&gt=
 ; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
@@ -532,5 +550,5 @@ ts.sourceforge.net&gt; </div>
 <div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
 
 
---yedlwUHABV8=--
+--oLU0bFdicV0=--
 
