@@ -1,17 +1,9 @@
-From: "ordex (Code Review)" <gerrit@...515...>
-Date: Sat, 19 Apr 2025 11:14:34 +0000
-In-Reply-To: <gerrit.1744809221000.I009f4e7ad38636f1c0b78d267561194c2bb4c051@...2715...>
-References: <gerrit.1744809221000.I009f4e7ad38636f1c0b78d267561194c2bb4c051@...2715...>
-Reply-To: antonio@...2726..., arne-openvpn@...1227...,
- gianmarco@...2726..., openvpn-devel@lists.sourceforge.net,
- frank@...2641...
-Message-ID: <d2a73c27aa602dfdd680f947150e2bd196c45355-EmailReviewComments-HTML@...2715...>
+From: Klemens Nanni <klemens@...2010...>
+Date: Tue, 22 Apr 2025 00:44:34 +0300
+Message-ID: <20250421214434.83431-1-klemens@...2010...>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="X4SVnf+/ang="; charset=UTF-8
-Subject: [Openvpn-devel] [L] Change in openvpn[master]: Add support to
- "ovpn" aka "in upstream kernel"
+Subject: [Openvpn-devel] [SPAM] [PATCH 1/1] Accept "issuer" in
+ `x509-username-field` for the peer certificate's issuer name
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,123 +12,108 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: its_Giaan <gianmarco@...2726...>
-Cc: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
+Cc: Klemens Nanni <klemens@...2010...>, Klemens Nanni <kn@...2273...>
 
---X4SVnf+/ang=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+This allows for accepting clients based on their certificate authority:
+	x509-username-field issuer CN
+	verify-x509-name    ...CA=ExampleCA_ match-prefix
 
-Attention is currently required from: flichtenheld, its_Giaan, plaisthos.
+`tls-verify` or `plugin` can do the equivalent, but require additional code
+execution and always incur overhead or may not be an option when running with
+reduced privileges, e.g. `chroot`.
 
-ordex has posted comments on this change. ( http://gerrit.openvpn.net/c/ope=
-nvpn/+/941?usp=3Demail )
+Tested against
+- FreeBSD 13,          OpenSSL 1.1.1t, OpenVPN 2.5.6
+- OpenBSD 7.7-stable,  LibreSSL 4.1.0, OpenVPN 2.6.4
+- OpenBSD 7.7-current, LibreSSL 4.1.0, OpenVPN f7aedca7
 
-Change subject: Add support to "ovpn" aka "in upstream kernel"
-......................................................................
+Signed-off-by: Klemens Nanni <kn@...2273...>
+---
+ doc/man-sections/tls-options.rst | 18 ++++++++++++++----
+ src/openvpn/ssl_verify_openssl.c | 26 ++++++++++++++++++++++++++
+ 2 files changed, 40 insertions(+), 4 deletions(-)
 
+diff --git a/doc/man-sections/tls-options.rst b/doc/man-sections/tls-options.rst
+index 0638d095..f60b711c 100644
+--- a/doc/man-sections/tls-options.rst
++++ b/doc/man-sections/tls-options.rst
+@@ -77,9 +77,8 @@ certificates and keys: https://github.com/OpenVPN/easy-rsa
+ 
+   CAs in the capath directory are expected to be named <hash>.<n>. CRLs
+   are expected to be named <hash>.r<n>. See the ``-CApath`` option of
+-  ``openssl verify``, and the ``-hash`` option of ``openssl x509``,
+-  ``openssl crl`` and ``X509_LOOKUP_hash_dir()``\(3)
+-  for more information.
++  ``openssl verify``, the ``-hash`` option of ``openssl x509``, ``openssl crl``
++  and ``X509_LOOKUP_hash_dir(3)`` for more information.
+ 
+   Similar to the ``--crl-verify`` option, CRLs are not mandatory -
+   OpenVPN will log the usual warning in the logs if the relevant CRL is
+@@ -664,7 +663,7 @@ If the option is inlined, ``algo`` is always :code:`SHA256`.
+   Valid syntax:
+   ::
+ 
+-     verify-x509 name type
++     verify-x509-name type
+ 
+   Which X.509 name is compared to ``name`` depends on the setting of type.
+   ``type`` can be :code:`subject` to match the complete subject DN
+@@ -768,3 +767,14 @@ If the option is inlined, ``algo`` is always :code:`SHA256`.
+   Non-compliant symbols are being replaced with the :code:`_` symbol, same as
+   the field separator, so concatenating multiple fields with such or :code:`_`
+   symbols can potentially lead to username collisions.
++
++  The special name :code:`issuer` will yield the certificate's issuer name in
++  *sep_comma_plus_space,sname,utf8,esc_ctrl* format, see the ``-issuer`` option
++  of ``openssl x509`` and ``openssl-namedisplay-options(1)`` for more information:
++  ::
++
++     x509-username-field issuer CN
++     verify-x509-name    'C=DE, ..., CN=ExampleCA_' match-prefix
++
++  This example prepends the default username with the certificate authority to
++  verify it without the need of ``--tls-verify`` or ``--plugin``.
+diff --git a/src/openvpn/ssl_verify_openssl.c b/src/openvpn/ssl_verify_openssl.c
+index ce1e7da1..baebe63c 100644
+--- a/src/openvpn/ssl_verify_openssl.c
++++ b/src/openvpn/ssl_verify_openssl.c
+@@ -283,6 +283,32 @@ backend_x509_get_username(char *common_name, int cn_len,
+         snprintf(common_name, cn_len, "0x%s", serial);
+         gc_free(&gc);
+     }
++    else if (strcmp("ISSUER", x509_username_field) == 0)
++    {
++        BIO *issuer_bio = BIO_new(BIO_s_mem());
++        BUF_MEM *issuer_mem;
++
++        if (!issuer_bio)
++        {
++            return FAILURE;
++        }
++
++        /* match x509_get_subject() format seen in "VERIFY ..." output */
++        X509_NAME_print_ex(issuer_bio, X509_get_issuer_name(peer_cert),
++                           0, XN_FLAG_SEP_CPLUS_SPC | XN_FLAG_FN_SN
++                           | ASN1_STRFLGS_UTF8_CONVERT | ASN1_STRFLGS_ESC_CTRL);
++
++        if (BIO_eof(issuer_bio)
++            || BIO_get_mem_ptr(issuer_bio, &issuer_mem) <= 0
++            || cn_len < issuer_mem->length)
++        {
++            BIO_free(issuer_bio);
++            return FAILURE;
++        }
++
++        strncpynt(common_name, issuer_mem->data, cn_len);
++        BIO_free(issuer_bio);
++    }
+     else
+ #endif /* ifdef ENABLE_X509ALTUSERNAME */
+     if (FAILURE == extract_x509_field_ssl(X509_get_subject_name(peer_cert),
+-- 
+2.49.0
 
-Patch Set 1: Code-Review-1
-
-(1 comment)
-
-Patchset:
-
-PS1:
-I got this report:
-
-2025-04-18 14:54:29 us=3D859916 dco_get_peer_stats: peer-id 0
-2025-04-18 14:54:29 us=3D860232 dco_parse_peer: parsing message...
-2025-04-18 14:54:29 us=3D860278 dco_parse_peer: malformed reply
-
-followed by segmentation fault.
-
-I think we did not port the incoming message parsing.
-and when errori g out it is crashing.
-
-
-
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/941?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings
-
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: I009f4e7ad38636f1c0b78d267561194c2bb4c051
-Gerrit-Change-Number: 941
-Gerrit-PatchSet: 1
-Gerrit-Owner: its_Giaan <gianmarco@...2726...>
-Gerrit-Reviewer: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: ordex <antonio@...2726...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: its_Giaan <gianmarco@...2726...>
-Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Comment-Date: Sat, 19 Apr 2025 11:14:34 +0000
-Gerrit-HasComments: Yes
-Gerrit-Has-Labels: Yes
-Gerrit-MessageType: comment
-
---X4SVnf+/ang=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<p> Attention is currently required from: flichtenheld, its_Giaan, plaistho=
-s. </p>
-<p>Patch set 1:<span style=3D"border-radius: 3px; display: inline-block; ma=
-rgin: 0 2px; padding: 4px;background-color: #ffd4d4;">Code-Review -1</span>=
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/941?usp=3Demail">Vi=
-ew Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0=
-;"><li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-s=
-tyle: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p s=
-tyle=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn=
-/+/941?tab=3Dcomments">Patch Set #1:</a> </p><p style=3D"white-space: pre-w=
-rap; word-wrap: break-word;">I got this report:</p><p style=3D"white-space:=
- pre-wrap; word-wrap: break-word;">2025-04-18 14:54:29 us=3D859916 dco_get_=
-peer_stats: peer-id 0<br>2025-04-18 14:54:29 us=3D860232 dco_parse_peer: pa=
-rsing message...<br>2025-04-18 14:54:29 us=3D860278 dco_parse_peer: malform=
-ed reply</p><p style=3D"white-space: pre-wrap; word-wrap: break-word;">foll=
-owed by segmentation fault.</p><p style=3D"white-space: pre-wrap; word-wrap=
-: break-word;">I think we did not port the incoming message parsing.<br>and=
- when errori g out it is crashing.</p></li></ul></li></ul><p>To view, visit=
- <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/941?usp=3Demail">change 9=
-41</a>. To unsubscribe, or for help writing mail filters, visit <a href=3D"=
-http://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope itemtyp=
-e=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"action" ite=
-mtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http:=
-//gerrit.openvpn.net/c/openvpn/+/941?usp=3Demail"/><meta itemprop=3D"name" =
-content=3D"View Change"/></div></div>
-
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I009f4e7ad38636f1c0b78d26756=
-1194c2bb4c051 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 941 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
-<div style=3D"display:none"> Gerrit-Owner: its_Giaan &lt;gianmarco@...2786...=
-..&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
-1...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: ordex &lt;antonio@...2726...&=
-gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: its_Giaan &lt;gianmarco@...1665...=
-726...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
-41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Sat, 19 Apr 2025 11:14:34=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
-
-
---X4SVnf+/ang=--
 
