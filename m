@@ -1,14 +1,14 @@
 From: "stipa (Code Review)" <gerrit@...515...>
-Date: Wed, 23 Apr 2025 09:43:41 +0000
+Date: Wed, 23 Apr 2025 10:52:03 +0000
 In-Reply-To: <gerrit.1741299308000.I635c4018fb43b5976a39b6a90cb2e9cb2570cd6a@...2715...>
 References: <gerrit.1741299308000.I635c4018fb43b5976a39b6a90cb2e9cb2570cd6a@...2715...>
 Reply-To: lstipakov@...277..., arne-openvpn@...1227..., heiko@...515...,
  openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <925d81a340716cf2a791f54378b984d6aa60de30-EmailReviewComments-HTML@...2715...>
+Message-ID: <50b69af99f42472033b2b78efd79884e98084cbe-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="LOfeSsClzE4="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="2jzOXZ+VFWc="; charset=UTF-8
 Subject: [Openvpn-devel] [L] Change in openvpn[master]: dns: deal with
  --dhcp-options when --dns is active
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -22,7 +22,7 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: d12fk <heiko@...515...>
 Cc: flichtenheld <frank@...2641...>, plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---LOfeSsClzE4=
+--2jzOXZ+VFWc=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
@@ -35,19 +35,17 @@ Change subject: dns: deal with --dhcp-options when --dns is active
 ......................................................................
 
 
-Patch Set 14: Code-Review-1
+Patch Set 14:
 
 (1 comment)
 
 File src/openvpn/options.c:
 
-http://gerrit.openvpn.net/c/openvpn/+/904/comment/b309b0cc_f864d13c :
-PS14, Line 3504:         memcpy(tt->domain_search_list, dhcp->domain_search=
-_list, sizeof(tt->domain_search_list));
-C:\Users\lev\Projects\openvpn-build\src\openvpn\src\openvpn\options.c(3504,=
-18): error C2220: the following warning is treated as an error
-C:\Users\lev\Projects\openvpn-build\src\openvpn\src\openvpn\options.c(3504,=
-18): warning C4090: 'function': different 'const' qualifiers
+http://gerrit.openvpn.net/c/openvpn/+/904/comment/af9bbdf4_cef7db0a :
+PS14, Line 8350:         }
+is "else" missing here? I have "--dhcp-option DNS 8.8.4.4" pushed by server=
+ which got applied, but I also got a warning "Options error: --dhcp-option:=
+ unknown option type 'DNS' or missing or unknown parameter".
 
 
 
@@ -69,40 +67,36 @@ Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
 Gerrit-Attention: flichtenheld <frank@...2641...>
 Gerrit-Attention: d12fk <heiko@...515...>
-Gerrit-Comment-Date: Wed, 23 Apr 2025 09:43:41 +0000
+Gerrit-Comment-Date: Wed, 23 Apr 2025 10:52:03 +0000
 Gerrit-HasComments: Yes
-Gerrit-Has-Labels: Yes
+Gerrit-Has-Labels: No
 Gerrit-MessageType: comment
 
---LOfeSsClzE4=
+--2jzOXZ+VFWc=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <p> Attention is currently required from: d12fk, flichtenheld, plaisthos. <=
 /p>
-<p>Patch set 14:<span style=3D"border-radius: 3px; display: inline-block; m=
-argin: 0 2px; padding: 4px;background-color: #ffd4d4;">Code-Review -1</span=
-></p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/904?usp=3Demail">V=
-iew Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: =
-0;"><li style=3D"margin: 0; padding: 0;"><p>File src/openvpn/options.c:</p>=
-<ul style=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; padding=
-: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.op=
-envpn.net/c/openvpn/+/904/comment/b309b0cc_f864d13c">Patch Set #14, Line 35=
-04:</a> <code style=3D"font-family:monospace,monospace">        memcpy(tt-&=
-gt;domain_search_list, dhcp-&gt;domain_search_list, sizeof(tt-&gt;domain_se=
-arch_list));</code></p><p style=3D"white-space: pre-wrap; word-wrap: break-=
-word;">C:\Users\lev\Projects\openvpn-build\src\openvpn\src\openvpn\options.=
-c(3504,18): error C2220: the following warning is treated as an error <br>C=
-:\Users\lev\Projects\openvpn-build\src\openvpn\src\openvpn\options.c(3504,1=
-8): warning C4090: &#39;function&#39;: different &#39;const&#39; qualifiers=
-</p></li></ul></li></ul><p>To view, visit <a href=3D"http://gerrit.openvpn.=
-net/c/openvpn/+/904?usp=3Demail">change 904</a>. To unsubscribe, or for hel=
-p writing mail filters, visit <a href=3D"http://gerrit.openvpn.net/settings=
-">settings</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessag=
-e"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAct=
-ion"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/9=
-04?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div></d=
-iv>
+<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/904?usp=3Demail">View C=
+hange</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0;"><=
+li style=3D"margin: 0; padding: 0;"><p>File src/openvpn/options.c:</p><ul s=
+tyle=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0=
+ 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn=
+.net/c/openvpn/+/904/comment/af9bbdf4_cef7db0a">Patch Set #14, Line 8350:</=
+a> <code style=3D"font-family:monospace,monospace">        }</code></p><p s=
+tyle=3D"white-space: pre-wrap; word-wrap: break-word;">is &quot;else&quot; =
+missing here? I have &quot;--dhcp-option DNS 8.8.4.4&quot; pushed by server=
+ which got applied, but I also got a warning &quot;Options error: --dhcp-op=
+tion: unknown option type &#39;DNS&#39; or missing or unknown parameter&quo=
+t;.</p></li></ul></li></ul><p>To view, visit <a href=3D"http://gerrit.openv=
+pn.net/c/openvpn/+/904?usp=3Demail">change 904</a>. To unsubscribe, or for =
+help writing mail filters, visit <a href=3D"http://gerrit.openvpn.net/setti=
+ngs">settings</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMes=
+sage"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.org/View=
+Action"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/=
++/904?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div>=
+</div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
@@ -126,12 +120,12 @@ ts.sourceforge.net&gt; </div>
 41...&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: d12fk &lt;heiko@...515...&gt=
 ; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Wed, 23 Apr 2025 09:43:41=
+<div style=3D"display:none"> Gerrit-Comment-Date: Wed, 23 Apr 2025 10:52:03=
  +0000 </div>
 <div style=3D"display:none"> Gerrit-HasComments: Yes </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: No </div>
 <div style=3D"display:none"> Gerrit-MessageType: comment </div>
 
 
---LOfeSsClzE4=--
+--2jzOXZ+VFWc=--
 
