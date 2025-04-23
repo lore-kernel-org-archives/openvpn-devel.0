@@ -1,16 +1,11 @@
-From: "plaisthos (Code Review)" <gerrit@...515...>
-Date: Wed, 23 Apr 2025 11:53:39 +0000
-In-Reply-To: <gerrit.1745405723000.Ica02244c9f0ac9b4690a51f940fda9d900465289@...2715...>
-References: <gerrit.1745405723000.Ica02244c9f0ac9b4690a51f940fda9d900465289@...2715...>
-Reply-To: arne-openvpn@...1227..., openvpn-devel@lists.sourceforge.net,
- frank@...2641...
-Message-ID: <bf55dcbe207cba377e8e38f7672bcfeff4e883db-EmailReplacePatchSet-HTML@...2715...>
+Content-Type: multipart/alternative;
+ boundary="------------ShECNUHkbdbit2SPwin0Oza9"
+Message-ID: <66fb7eaa-41c7-423b-90f3-5d7f3017ee23@...2722...>
+Date: Wed, 23 Apr 2025 14:35:59 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="OFqhojgX7js="; charset=UTF-8
-Subject: [Openvpn-devel] [M] Change in openvpn[master]: Make dh none
- behaviour default if not specified and add dh auto
+From: Johan Draaisma <johan@...2722...>
+Content-Language: en-US
+Subject: [Openvpn-devel]  IRC community meeting summary
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,411 +14,70 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: flichtenheld <frank@...2641...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: openvpn-devel@lists.sourceforge.net
 
---OFqhojgX7js=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+This is a multi-part message in MIME format.
+--------------ShECNUHkbdbit2SPwin0Oza9
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-Attention is currently required from: flichtenheld, plaisthos.
+Meeting summary for 23 April 2025:
 
-Hello flichtenheld,
+  * *Updated, closed: DCO Linux upstreaming*
+    /The moment has arrived; DCO has been accepted upstream. It will
+    become part of Linux kernel 6.16./
+    /Congratulations to everyone and particular Antonio Quartulli who
+    put in so much of his time to get it done./
+    /A backport will be made of the code that was accepted upstream for
+    older kernels, and this backport will eventually replace the current
+    DCO kernel module code together with 2.7 release./
 
-I'd like you to reexamine a change. Please visit
+  * *Updated: community.openvpn.net wiki*
+    /We are planning to switch from trac wiki to otterwiki. Mattock
+    suggests to do this on May 12./
 
-    http://gerrit.openvpn.net/c/openvpn/+/945?usp=3Demail
+As always you're welcome to join at #openvpn-meeting on Libera IRC 
+network every Wednesday at 14:00 Central European Time.
 
-to look at the new patch set (#2).
+Kind regards,
+Johan Draaisma
 
-The following approvals got outdated and were removed:
-Code-Review-1 by flichtenheld
+--------------ShECNUHkbdbit2SPwin0Oza9
+Content-Type: text/html; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  </head>
+  <body>
+    <p> Meeting summary for 23 April 2025:</p>
+    <ul
+style="color: rgb(0, 0, 0); font-family: Verdana, Arial, &quot;Bitstream Vera Sans&quot;, Helvetica, sans-serif; font-size: 13px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;">
+      <li><strong>Updated, closed: DCO Linux upstreaming</strong><br>
+        <em>The moment has arrived; DCO has been accepted upstream. It
+          will become part of Linux kernel 6.16.</em><br>
+        <em>Congratulations to everyone and particular Antonio Quartulli
+          who put in so much of his time to get it done.</em><br>
+        <em>A backport will be made of the code that was accepted
+          upstream for older kernels, and this backport will eventually
+          replace the current DCO kernel module code together with 2.7
+          release.</em></li>
+    </ul>
+    <ul
+style="color: rgb(0, 0, 0); font-family: Verdana, Arial, &quot;Bitstream Vera Sans&quot;, Helvetica, sans-serif; font-size: 13px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;">
+      <li><strong>Updated: community.openvpn.net wiki</strong><br>
+        <em>We are planning to switch from trac wiki to otterwiki.
+          Mattock suggests to do this on May 12.</em></li>
+    </ul>
+    <p>As always you're welcome to join at #openvpn-meeting on Libera
+      IRC network every Wednesday at 14:00 Central European Time. </p>
+    <p>Kind regards,<br>
+      Johan Draaisma<br>
+    </p>
+  </body>
+</html>
 
-Change subject: Make dh none behaviour default if not specified and add dh =
-auto
-......................................................................
-
-Make dh none behaviour default if not specified and add dh auto
-
-Nowadays ciphers that are using still DH and not ECDH are rarely chosen
-as best cipher suite. Our man page even indicates that OpenSSL 1.0.1+
-supports ECDH cipher suites. So it does not feel useful to force
-specifying --dh anymore.
-
-Custom generated Diffie Hellmann parameters are also discouraged
-nowadays. The newest OpenSSL FIPS libraries even flat out reject them:
-
-   FIPS 186-4 type domain parameters no longer allowed in FIPS mode,
-   since the required validation routines were removed from FIPS 186-5
-
-So add --dh auto since is very little extra code to let the TLS library
-itself pick the parameter.
-
-Change-Id: Ica02244c9f0ac9b4690a51f940fda9d900465289
----
-M Changes.rst
-M doc/man-sections/tls-options.rst
-M src/openvpn/options.c
-M src/openvpn/ssl.c
-M src/openvpn/ssl_backend.h
-M src/openvpn/ssl_mbedtls.c
-M src/openvpn/ssl_openssl.c
-7 files changed, 53 insertions(+), 10 deletions(-)
-
-
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/45/945/2
-
-diff --git a/Changes.rst b/Changes.rst
-index a4f5e57..a7ce8f8 100644
---- a/Changes.rst
-+++ b/Changes.rst
-@@ -103,6 +103,12 @@
- - ``--x509-username-field`` will no longer automatically convert fieldname=
-s to
-   uppercase. This is deprecated since OpenVPN 2.4, and has now been remove=
-d.
-
-+- ``--dh none`` is now the default if ``--dh`` is specified. Modern TLS
-+  implementations will prefer ECDH and other more modern algorithm anyway.
-+
-+- ``--dh auto`` instructs the TLS library - if supported - to use internal
-+  Diffie-Hellmann parameters.
-+
- Overview of changes in 2.6
- =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D
-
-diff --git a/doc/man-sections/tls-options.rst b/doc/man-sections/tls-option=
-s.rst
-index 0638d09..ad4c9cc 100644
---- a/doc/man-sections/tls-options.rst
-+++ b/doc/man-sections/tls-options.rst
-@@ -171,16 +171,22 @@
-
-
- --dh file
--  File containing Diffie Hellman parameters in .pem format (required for
-+  File containing Diffie Hellman parameters in .pem format (used by
-   ``--tls-server`` only).
-
-   Set ``file`` to :code:`none` to disable Diffie Hellman key exchange (and
--  use ECDH only). Note that this requires peers to be using an SSL library
--  that supports ECDH TLS cipher suites (e.g. OpenSSL 1.0.1+, or
--  mbed TLS 2.0+).
-+  use ECDH or newer hybrid key agreement algorithms like X25519MLKEM768).
-+  Note that this requires peers to be using an SSL library that supports
-+  ECDH TLS cipher suites (e.g. OpenSSL 1.0.1+, or mbed TLS 2.0+). Starting
-+  with 2.7.0, this is the same as not specifying ``--dh`` at all.
-
--  Use ``openssl dhparam -out dh2048.pem 2048`` to generate 2048-bit DH
--  parameters. Diffie Hellman parameters may be considered public.
-+  Set ``file`` to :code:`auto` to enable builtin Diffie Hellman
-+  parameters of the TLS library, e.g. the ones defined in RFC 7919.
-+
-+  Diffie Hellman parameters can be generated using
-+  ``openssl dhparam -out dh2048.pem 2048`` but it is recommended to
-+  use the public well-known parameters or using ``none``.
-+  Diffie Hellman parameters may be considered public.
-
- --ecdh-curve name
-   Specify the curve to use for elliptic curve Diffie Hellman. Available
-diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index 96119c4..e67371e 100644
---- a/src/openvpn/options.c
-+++ b/src/openvpn/options.c
-@@ -3711,9 +3711,12 @@
-
-     if (o->tls_server)
-     {
--        /* Check that DH file is specified, or explicitly disabled */
--        notnull(o->dh_file, "DH file (--dh)");
--        if (streq(o->dh_file, "none"))
-+        if (streq(o->dh_file, "auto"))
-+        {
-+            /* do not check existence of the "auto" file */
-+            o->dh_file_inline =3D true;
-+        }
-+        else if (streq(o->dh_file, "none"))
-         {
-             o->dh_file =3D NULL;
-         }
-diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
-index 23f6423..d591bac 100644
---- a/src/openvpn/ssl.c
-+++ b/src/openvpn/ssl.c
-@@ -535,7 +535,11 @@
-     {
-         tls_ctx_server_new(new_ctx);
-
--        if (options->dh_file)
-+        if (options->dh_file && !strcmp(options->dh_file, "auto"))
-+        {
-+            tls_ctx_use_dh_params_builtin(new_ctx);
-+        }
-+        else if  (options->dh_file)
-         {
-             tls_ctx_load_dh_params(new_ctx, options->dh_file,
-                                    options->dh_file_inline);
-diff --git a/src/openvpn/ssl_backend.h b/src/openvpn/ssl_backend.h
-index e25727f..326f78d 100644
---- a/src/openvpn/ssl_backend.h
-+++ b/src/openvpn/ssl_backend.h
-@@ -223,6 +223,13 @@
-                             bool dh_file_inline);
-
- /**
-+ * Instructs the TLS library to use builtin Diffie Hellman Parameters inst=
-ead
-+ * of loading specific ones (e.g. the ones from RFC 7919)
-+ * @param ctx
-+ */
-+void tls_ctx_use_dh_params_builtin(struct tls_root_ctx *ctx);
-+
-+/**
-  * Load Elliptic Curve Parameters, and load them into the library-specific
-  * TLS context.
-  *
-diff --git a/src/openvpn/ssl_mbedtls.c b/src/openvpn/ssl_mbedtls.c
-index e15c391..f1fada3 100644
---- a/src/openvpn/ssl_mbedtls.c
-+++ b/src/openvpn/ssl_mbedtls.c
-@@ -480,6 +480,13 @@
- }
-
- void
-+tls_ctx_use_dh_params_builtin(struct tls_root_ctx *ctx)
-+{
-+    msg(M_FATAL, "mbed TLS does not support --dh auto. Use --dh none or "
-+        "manually specify Diffie-Hellmann parameters");
-+}
-+
-+void
- tls_ctx_load_ecdh_params(struct tls_root_ctx *ctx, const char *curve_name
-                          )
- {
-diff --git a/src/openvpn/ssl_openssl.c b/src/openvpn/ssl_openssl.c
-index f7be50c..f204007 100644
---- a/src/openvpn/ssl_openssl.c
-+++ b/src/openvpn/ssl_openssl.c
-@@ -714,6 +714,16 @@
- }
-
- void
-+tls_ctx_use_dh_params_builtin(struct tls_root_ctx *ctx)
-+{
-+    if (!SSL_CTX_set_dh_auto(ctx->ctx, 1))
-+    {
-+        crypto_msg(M_FATAL, "SSL_CTX_set_dh_auto");
-+    }
-+
-+}
-+
-+void
- tls_ctx_load_ecdh_params(struct tls_root_ctx *ctx, const char *curve_name)
- {
- #if OPENSSL_VERSION_NUMBER >=3D 0x30000000L
-
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/945?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings
-
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: Ica02244c9f0ac9b4690a51f940fda9d900465289
-Gerrit-Change-Number: 945
-Gerrit-PatchSet: 2
-Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
-Gerrit-Reviewer: flichtenheld <frank@...2641...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-MessageType: newpatchset
-
---OFqhojgX7js=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<p> Attention is currently required from: flichtenheld, plaisthos. </p>
-<p>plaisthos <strong>uploaded patch set #2</strong> to this change.</p><p><=
-a href=3D"http://gerrit.openvpn.net/c/openvpn/+/945?usp=3Demail">View Chang=
-e</a></p><p>The following approvals got outdated and were removed:
-Code-Review-1 by flichtenheld</p><pre style=3D"font-family: monospace,monos=
-pace; white-space: pre-wrap;">Make dh none behaviour default if not specifi=
-ed and add dh auto<br><br>Nowadays ciphers that are using still DH and not =
-ECDH are rarely chosen<br>as best cipher suite. Our man page even indicates=
- that OpenSSL 1.0.1+<br>supports ECDH cipher suites. So it does not feel us=
-eful to force<br>specifying --dh anymore.<br><br>Custom generated Diffie He=
-llmann parameters are also discouraged<br>nowadays. The newest OpenSSL FIPS=
- libraries even flat out reject them:<br><br>   FIPS 186-4 type domain para=
-meters no longer allowed in FIPS mode,<br>   since the required validation =
-routines were removed from FIPS 186-5<br><br>So add --dh auto since is very=
- little extra code to let the TLS library<br>itself pick the parameter.<br>=
-<br>Change-Id: Ica02244c9f0ac9b4690a51f940fda9d900465289<br>---<br>M Change=
-s.rst<br>M doc/man-sections/tls-options.rst<br>M src/openvpn/options.c<br>M=
- src/openvpn/ssl.c<br>M src/openvpn/ssl_backend.h<br>M src/openvpn/ssl_mbed=
-tls.c<br>M src/openvpn/ssl_openssl.c<br>7 files changed, 53 insertions(+), =
-10 deletions(-)<br><br></pre><pre style=3D"font-family: monospace,monospace=
-; white-space: pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/openvpn r=
-efs/changes/45/945/2</pre><pre style=3D"font-family: monospace,monospace; w=
-hite-space: pre-wrap;"><span>diff --git a/Changes.rst b/Changes.rst</span><=
-br><span>index a4f5e57..a7ce8f8 100644</span><br><span>--- a/Changes.rst</s=
-pan><br><span>+++ b/Changes.rst</span><br><span>@@ -103,6 +103,12 @@</span>=
-<br><span> - ``--x509-username-field`` will no longer automatically convert=
- fieldnames to</span><br><span>   uppercase. This is deprecated since OpenV=
-PN 2.4, and has now been removed.</span><br><span> </span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+- ``--dh none`` is now the default if ``-=
--dh`` is specified. Modern TLS</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+  implementations will prefer ECDH and other more modern algorit=
-hm anyway.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+- ``--dh auto`` instructs th=
-e TLS library - if supported - to use internal</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+  Diffie-Hellmann parameters.</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+</span><br><span> Overview of changes =
-in 2.6</span><br><span> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D</span><br><span> </span><br><span>diff --git a/=
-doc/man-sections/tls-options.rst b/doc/man-sections/tls-options.rst</span><=
-br><span>index 0638d09..ad4c9cc 100644</span><br><span>--- a/doc/man-sectio=
-ns/tls-options.rst</span><br><span>+++ b/doc/man-sections/tls-options.rst</=
-span><br><span>@@ -171,16 +171,22 @@</span><br><span> </span><br><span> </s=
-pan><br><span> --dh file</span><br><span style=3D"color: hsl(0, 100%, 40%);=
-">-  File containing Diffie Hellman parameters in .pem format (required for=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  File containing D=
-iffie Hellman parameters in .pem format (used by</span><br><span>   ``--tls=
--server`` only).</span><br><span> </span><br><span>   Set ``file`` to :code=
-:`none` to disable Diffie Hellman key exchange (and</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-  use ECDH only). Note that this requires p=
-eers to be using an SSL library</span><br><span style=3D"color: hsl(0, 100%=
-, 40%);">-  that supports ECDH TLS cipher suites (e.g. OpenSSL 1.0.1+, or</=
-span><br><span style=3D"color: hsl(0, 100%, 40%);">-  mbed TLS 2.0+).</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+  use ECDH or newer hybri=
-d key agreement algorithms like X25519MLKEM768).</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+  Note that this requires peers to be using an=
- SSL library that supports</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+  ECDH TLS cipher suites (e.g. OpenSSL 1.0.1+, or mbed TLS 2.0+). St=
-arting</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  with 2.7.0,=
- this is the same as not specifying ``--dh`` at all.</span><br><span> </spa=
-n><br><span style=3D"color: hsl(0, 100%, 40%);">-  Use ``openssl dhparam -o=
-ut dh2048.pem 2048`` to generate 2048-bit DH</span><br><span style=3D"color=
-: hsl(0, 100%, 40%);">-  parameters. Diffie Hellman parameters may be consi=
-dered public.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  Set =
-``file`` to :code:`auto` to enable builtin Diffie Hellman</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+  parameters of the TLS library, e.g.=
- the ones defined in RFC 7919.</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  Diffie=
- Hellman parameters can be generated using</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+  ``openssl dhparam -out dh2048.pem 2048`` but it is=
- recommended to</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  us=
-e the public well-known parameters or using ``none``.</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+  Diffie Hellman parameters may be consid=
-ered public.</span><br><span> </span><br><span> --ecdh-curve name</span><br=
-><span>   Specify the curve to use for elliptic curve Diffie Hellman. Avail=
-able</span><br><span>diff --git a/src/openvpn/options.c b/src/openvpn/optio=
-ns.c</span><br><span>index 96119c4..e67371e 100644</span><br><span>--- a/sr=
-c/openvpn/options.c</span><br><span>+++ b/src/openvpn/options.c</span><br><=
-span>@@ -3711,9 +3711,12 @@</span><br><span> </span><br><span>     if (o-&g=
-t;tls_server)</span><br><span>     {</span><br><span style=3D"color: hsl(0,=
- 100%, 40%);">-        /* Check that DH file is specified, or explicitly di=
-sabled */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        notn=
-ull(o-&gt;dh_file, &quot;DH file (--dh)&quot;);</span><br><span style=3D"co=
-lor: hsl(0, 100%, 40%);">-        if (streq(o-&gt;dh_file, &quot;none&quot;=
-))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        if (streq=
-(o-&gt;dh_file, &quot;auto&quot;))</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+        {</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+            /* do not check existence of the &quot;auto&quot; file */<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+            o-&gt;dh=
-_file_inline =3D true;</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+        }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
- else if (streq(o-&gt;dh_file, &quot;none&quot;))</span><br><span>         =
-{</span><br><span>             o-&gt;dh_file =3D NULL;</span><br><span>    =
-     }</span><br><span>diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c</=
-span><br><span>index 23f6423..d591bac 100644</span><br><span>--- a/src/open=
-vpn/ssl.c</span><br><span>+++ b/src/openvpn/ssl.c</span><br><span>@@ -535,7=
- +535,11 @@</span><br><span>     {</span><br><span>         tls_ctx_server_=
-new(new_ctx);</span><br><span> </span><br><span style=3D"color: hsl(0, 100%=
-, 40%);">-        if (options-&gt;dh_file)</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+        if (options-&gt;dh_file &amp;&amp; !strcmp(o=
-ptions-&gt;dh_file, &quot;auto&quot;))</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+        {</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+            tls_ctx_use_dh_params_builtin(new_ctx);</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+        }</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+        else if  (options-&gt;dh_file)</span=
-><br><span>         {</span><br><span>             tls_ctx_load_dh_params(n=
-ew_ctx, options-&gt;dh_file,</span><br><span>                              =
-      options-&gt;dh_file_inline);</span><br><span>diff --git a/src/openvpn=
-/ssl_backend.h b/src/openvpn/ssl_backend.h</span><br><span>index e25727f..3=
-26f78d 100644</span><br><span>--- a/src/openvpn/ssl_backend.h</span><br><sp=
-an>+++ b/src/openvpn/ssl_backend.h</span><br><span>@@ -223,6 +223,13 @@</sp=
-an><br><span>                             bool dh_file_inline);</span><br><=
-span> </span><br><span> /**</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+ * Instructs the TLS library to use builtin Diffie Hellman Paramete=
-rs instead</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * of loa=
-ding specific ones (e.g. the ones from RFC 7919)</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+ * @param ctx</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+ */</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+void tls_ctx_use_dh_params_builtin(struct tls_root_ctx *ctx);</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+/**</span><br><span>  * Load Elliptic Curve P=
-arameters, and load them into the library-specific</span><br><span>  * TLS =
-context.</span><br><span>  *</span><br><span>diff --git a/src/openvpn/ssl_m=
-bedtls.c b/src/openvpn/ssl_mbedtls.c</span><br><span>index e15c391..f1fada3=
- 100644</span><br><span>--- a/src/openvpn/ssl_mbedtls.c</span><br><span>+++=
- b/src/openvpn/ssl_mbedtls.c</span><br><span>@@ -480,6 +480,13 @@</span><br=
-><span> }</span><br><span> </span><br><span> void</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+tls_ctx_use_dh_params_builtin(struct tls_root=
-_ctx *ctx)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+    msg(M_FATAL, &quot;mbed=
- TLS does not support --dh auto. Use --dh none or &quot;</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+        &quot;manually specify Diffie-=
-Hellmann parameters&quot;);</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+void</span><br><span> tls_ctx=
-_load_ecdh_params(struct tls_root_ctx *ctx, const char *curve_name</span><b=
-r><span>                          )</span><br><span> {</span><br><span>diff=
- --git a/src/openvpn/ssl_openssl.c b/src/openvpn/ssl_openssl.c</span><br><s=
-pan>index f7be50c..f204007 100644</span><br><span>--- a/src/openvpn/ssl_ope=
-nssl.c</span><br><span>+++ b/src/openvpn/ssl_openssl.c</span><br><span>@@ -=
-714,6 +714,16 @@</span><br><span> }</span><br><span> </span><br><span> void=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+tls_ctx_use_dh_para=
-ms_builtin(struct tls_root_ctx *ctx)</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-   if (!SSL_CTX_set_dh_auto(ctx-&gt;ctx, 1))</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+        crypto_msg(M_FATAL, &quot;SSL_CTX_set_dh_auto&quot;);</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+void</span><br><s=
-pan> tls_ctx_load_ecdh_params(struct tls_root_ctx *ctx, const char *curve_n=
-ame)</span><br><span> {</span><br><span> #if OPENSSL_VERSION_NUMBER &gt;=3D=
- 0x30000000L</span><br><span></span><br></pre><p>To view, visit <a href=3D"=
-http://gerrit.openvpn.net/c/openvpn/+/945?usp=3Demail">change 945</a>. To u=
-nsubscribe, or for help writing mail filters, visit <a href=3D"http://gerri=
-t.openvpn.net/settings">settings</a>.</p><div itemscope itemtype=3D"http://=
-schema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"htt=
-p://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.ope=
-nvpn.net/c/openvpn/+/945?usp=3Demail"/><meta itemprop=3D"name" content=3D"V=
-iew Change"/></div></div>
-
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: Ica02244c9f0ac9b4690a51f940f=
-da9d900465289 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 945 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
-<div style=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@...1711...=
-27...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
-1...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
-41...&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
-
-
---OFqhojgX7js=--
+--------------ShECNUHkbdbit2SPwin0Oza9--
 
