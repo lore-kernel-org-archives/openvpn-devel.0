@@ -1,13 +1,16 @@
-Message-ID: <c58984b2-e637-42d7-917c-130d282da34c@...2889...>
-Date: Thu, 24 Apr 2025 11:08:12 +0200
+From: "plaisthos (Code Review)" <gerrit@...515...>
+Date: Thu, 24 Apr 2025 11:20:03 +0000
+In-Reply-To: <gerrit.1745405723000.Ica02244c9f0ac9b4690a51f940fda9d900465289@...2715...>
+References: <gerrit.1745405723000.Ica02244c9f0ac9b4690a51f940fda9d900465289@...2715...>
+Reply-To: arne-openvpn@...1227..., openvpn-devel@lists.sourceforge.net,
+ frank@...2641...
+Message-ID: <c723bc77c9642669907dfa001c2ec6b74f0c31dc-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-References: <20250423175843.104553-1-walter.openvpn@...2889...>
- <55dfca69-67f1-4afa-8b05-a0bfddb94929@...1227...>
-Content-Language: en-US, sv-SE, nl
-From: Walter Doekes <walter.openvpn@...2889...>
-In-Reply-To: <55dfca69-67f1-4afa-8b05-a0bfddb94929@...1227...>
-Subject: Re: [Openvpn-devel] [PATCH] multi.c: Allow floating to a new IP
- right after connection setup
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="nvq0Lv2ARU8="; charset=UTF-8
+Subject: [Openvpn-devel] [M] Change in openvpn[master]: Make dh none
+ behaviour default if not specified and add dh auto
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,136 +19,118 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"; format="flowed"
-Content-Transfer-Encoding: 8bit
-To: Arne Schwabe <arne@...1227...>, openvpn-devel@lists.sourceforge.net
+Cc: flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-On 24-04-2025 10:26, Arne Schwabe wrote:
-> I still do not really understanding what network setup you have to 
-> trigger this kind of bizzare behaviour of having a VPN connection.
-> It would really be helpful if you can describe that more. Since the 
-> current explainations do not really explain for me why there is already 
-> an existing half-established connection.
-> 
-> The scenario you are fixing seem like:
-> 
->   * somehow a connection attempt is done from IP A
->   * a connection is fully established for IP B
->   * connection for IP B tries to move to IP A
+--nvq0Lv2ARU8=
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-If you take into account that 2.5 works just fine with this scenario, I 
-don't see why you would call this bizarre.
+Attention is currently required from: flichtenheld.
 
-But I'll break it down some more:
+plaisthos has posted comments on this change. ( http://gerrit.openvpn.net/c=
+/openvpn/+/945?usp=3Demail )
 
-- I have internet, exit IP: 1.1.1.10.
-
-- I have a VPN, CorporateVPN at 2.2.2.1. I use it as my default route. 
-CorporateVPN has one exit IP: 2.2.2.10.
-
-- There is a second VPN server, SecondVPN, at 3.3.3.1, which I'd like to 
-connect to.
+Change subject: Make dh none behaviour default if not specified and add dh =
+auto
+......................................................................
 
 
- From the perspective of SecondVPN, CorporateVPN is connecting to it:
+Patch Set 2:
 
-- 2.2.2.10 -> 3.3.3.1 - openvpn UDP stuff, all works
+(2 comments)
 
+Commit Message:
 
-But, in fact, this is tunneled traffic. There is also:
-
-- 1.1.1.10 -> 2.2.2.1 - here traffic is doubly encrypted
-
-
-So, I'd like the traffic to go directly instead, to lose the double 
-encryption and the extra latency:
-
-- 1.1.1.10 -> 3.3.3.1
+http://gerrit.openvpn.net/c/openvpn/+/945/comment/52d0bfdd_9f13c56b :
+PS1, Line 7: Make dh none behaviour default if not specific and add dh auto
+> Do you mean "specified" instead of "specific"?
+Done
 
 
-To do that, I tell SecondVPN to push this route:
+File src/openvpn/options.c:
 
-   push "route 3.3.3.1 255.255.255.255 net_gateway"
-
-
-This causes my machine to create a direct route, bypassing the CorporateVPN.
-
-- 1.1.1.10 -> 3.3.3.1 - now goes directly without the double tunnel
+http://gerrit.openvpn.net/c/openvpn/+/945/comment/1c0a6e2f_dfb427ff :
+PS1, Line 3716:             o->dh_file =3D "auto";
+> It is already "auto", so this seems redundant.
+Done
 
 
-This seems to me like a legit use of net_gateway.
 
-What happens is that SecondVPN sees traffic that previously came from 
-2.2.2.10 now suddenly comes from 1.1.1.10. And this IP change is 
-detected by openvpn as a "floating IP".
+--
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/945?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings
 
-- In OpenVPN 2.5 this worked like a charm.
+Gerrit-Project: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: Ica02244c9f0ac9b4690a51f940fda9d900465289
+Gerrit-Change-Number: 945
+Gerrit-PatchSet: 2
+Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
+Gerrit-Reviewer: flichtenheld <frank@...2641...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-Attention: flichtenheld <frank@...2641...>
+Gerrit-Comment-Date: Thu, 24 Apr 2025 11:20:03 +0000
+Gerrit-HasComments: Yes
+Gerrit-Has-Labels: No
+Comment-In-Reply-To: flichtenheld <frank@...2641...>
+Gerrit-MessageType: comment
 
-- In OpenVPN 2.6 it doesn't, as mentioned in the Github ticket.
+--nvq0Lv2ARU8=
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-I've reliably reproduced this several times, as there are a bunch of 
-OpenVPN 2.5's that I've connected to that do not exhibit the problematic 
-behaviour, while the OpenVPN 2.6's do (both 2.6.3 bookworm and 2.6.12 
-noble).
+<p> Attention is currently required from: flichtenheld. </p>
+<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/945?usp=3Demail">View C=
+hange</a></p><p>2 comments:</p><ul style=3D"list-style: none; padding: 0;">=
+<li style=3D"margin: 0; padding: 0;"><p>Commit Message:</p><ul style=3D"lis=
+t-style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><=
+p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/open=
+vpn/+/945/comment/52d0bfdd_9f13c56b">Patch Set #1, Line 7:</a> <code style=
+=3D"font-family:monospace,monospace">Make dh none behaviour default if not =
+specific and add dh auto</code></p><p><blockquote style=3D"border-left: 1px=
+ solid #aaa; margin: 10px 0; padding: 0 10px;">Do you mean &quot;specified&=
+quot; instead of &quot;specific&quot;?</blockquote></p><p style=3D"white-sp=
+ace: pre-wrap; word-wrap: break-word;">Done</p></li></ul></li><li style=3D"=
+margin: 0; padding: 0;"><p>File src/openvpn/options.c:</p><ul style=3D"list=
+-style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p=
+ style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openv=
+pn/+/945/comment/1c0a6e2f_dfb427ff">Patch Set #1, Line 3716:</a> <code styl=
+e=3D"font-family:monospace,monospace">            o-&gt;dh_file =3D &quot;a=
+uto&quot;;</code></p><p><blockquote style=3D"border-left: 1px solid #aaa; m=
+argin: 10px 0; padding: 0 10px;">It is already &quot;auto&quot;, so this se=
+ems redundant.</blockquote></p><p style=3D"white-space: pre-wrap; word-wrap=
+: break-word;">Done</p></li></ul></li></ul><p>To view, visit <a href=3D"htt=
+p://gerrit.openvpn.net/c/openvpn/+/945?usp=3Demail">change 945</a>. To unsu=
+bscribe, or for help writing mail filters, visit <a href=3D"http://gerrit.o=
+penvpn.net/settings">settings</a>.</p><div itemscope itemtype=3D"http://sch=
+ema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http:/=
+/schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvp=
+n.net/c/openvpn/+/945?usp=3Demail"/><meta itemprop=3D"name" content=3D"View=
+ Change"/></div></div>
 
-Is this a sufficiently clear explanation?
-
-
-> You are also saying that there is a difference in OpenVPN 2.5 vs OPneVPN 
-> 2.6. If that is indeed the case, a git bisect would be helpful to point 
-> to the commit that is breaking this.
-
-This is a fair request. But bisecting will take me considerably more 
-time, so this wasn't my first priority.
-
-I did look into all the changes, and it indeed looked like the "floating 
-IP detection" was untouched, while there are some connection setup 
-speedup (shortcut?) changes. My suspicion is that the quicker connection 
-setup has something to do with the changed behaviour.
-
-In due time, I can get to bisecting. But if the information in this 
-ticket and workaround is sufficient for someone else to say "A-HA", then 
-that would be my preferred option.
-
-
->  > msg(M_INFO, "peer %" PRIu32 " (%s) floating from %s to %s (m2 still 
-> setting up) state=%d/%d",
-> 
-> A user has no idea what m2 is. This message more confusing than helpful.
-
-I'll look into rephrasing when making a new patch.
-
-
->> +    /* if the new connection is fresh and the old one is already 
->> connected, this
->> +     * might be a legitimate move to a new IP by the original client;
->> +     * for example when the server IP is pushed as net_gateway to 
->> escape from
->> +     * a double VPN. */
->> +    if (m1->multi_state == CAS_CONNECT_DONE && m2->multi_state == 
->> CAS_NOT_CONNECTED
->> +        && m1->locked_cert_hash_set && !m2->locked_cert_hash_set)
-> 
-> The code doesn't really do what the comment does. If you were trying to 
-> actually figure out if it is the same client you should rather compare 
-> the session ID of the tls state.
-> 
-> Also I think this code looks on the first glance to be broken in the way 
-> that an authorized client could just send a bunch of data packets with 
-> faked sender ip and then kill of other connections that are in the 
-> progress of connection.
-
-Given your experience with openvpn, I betting you're right on these points.
-
-I don't know where the "tls state session ID" is and if it's there. I'm 
-dealing with OpenVPN 2.5 clients (no older ones, I hope).
-
-If you can point me in the right direction, I'd be grateful. This is my 
-first venture into openvpn code.
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: Ica02244c9f0ac9b4690a51f940f=
+da9d900465289 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 945 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
+<div style=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@...1711...=
+27...&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
+1...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
+41...&gt; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Thu, 24 Apr 2025 11:20:03=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: No </div>
+<div style=3D"display:none"> Comment-In-Reply-To: flichtenheld &lt;frank@...1186...=
+.2641...&gt; </div>
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
 
 
-Cheers,
-Walter Doekes
-OSSO B.V.
-
+--nvq0Lv2ARU8=--
 
