@@ -1,16 +1,12 @@
-From: "stipa (Code Review)" <gerrit@...515...>
-Date: Thu, 24 Apr 2025 06:58:46 +0000
-In-Reply-To: <gerrit.1744973073000.I621d44ec6b0facc524875c15ddfd11ec47b06c15@...2715...>
-References: <gerrit.1744973073000.I621d44ec6b0facc524875c15ddfd11ec47b06c15@...2715...>
-Reply-To: lstipakov@...277..., arne-openvpn@...1227..., selva.nair@...277...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <8074403dc13562ea3377700b83a56d141ffe00b7-EmailReviewComments-HTML@...2715...>
+Message-ID: <55dfca69-67f1-4afa-8b05-a0bfddb94929@...1227...>
+Date: Thu, 24 Apr 2025 10:26:53 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="7eSD+OJoO+A="; charset=UTF-8
-Subject: [Openvpn-devel] [M] Change in openvpn[master]: win: create adapter
- on demand
+References: <20250423175843.104553-1-walter.openvpn@...2889...>
+Content-Language: en-GB
+From: Arne Schwabe <arne@...1227...>
+In-Reply-To: <20250423175843.104553-1-walter.openvpn@...2889...>
+Subject: Re: [Openvpn-devel] [PATCH] multi.c: Allow floating to a new IP
+ right after connection setup
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,133 +15,69 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Cc: selvanair <selva.nair@...277...>, plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+To: walter.openvpn@...2889..., openvpn-devel@lists.sourceforge.net
 
---7eSD+OJoO+A=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-Attention is currently required from: flichtenheld, plaisthos, selvanair.
-
-stipa has posted comments on this change. ( http://gerrit.openvpn.net/c/ope=
-nvpn/+/943?usp=3Demail )
-
-Change subject: win: create adapter on demand
-......................................................................
-
-
-Patch Set 2:
-
-(2 comments)
-
-File src/openvpn/tun.c:
-
-http://gerrit.openvpn.net/c/openvpn/+/943/comment/4f2d37c4_06eedd41 :
-PS2, Line 6656:     struct device_instance_id_interface *device_instance_id=
-_interface =3D get_device_instance_id_interface(gc);
-> right, the data is const, but not the pointer.
-Acknowledged
+Am 23.04.25 um 19:58 schrieb walter.openvpn--- via Openvpn-devel:
+> From: Walter Doekes <walter+github@...2889...>
+> 
+> When you're connected to a VPN which is used as the default gateway, a
+> connection to a second VPN will cause a tunnel-in-tunnel. If the
+> administrator of the second VPN wants to avoid that, by pushing its IP
+> as net_gateway, this means that the client's source IP switches right
+> after connect:
+> 
+>    the source IP switches from the first-VPN-exit-IP to the
+>    regular-ISP-exit-IP
+> 
+> In openvpn 2.5 and below, this worked fine. Since openvpn 2.6, this
+> triggers the "Disallow float to an address taken by another client"
+> code. The root cause for this change of behaviour is as of yet
+> unexplained.
+> 
+> This change allows one to switch to the new IP, if it is still in an
+> unconnected state. That makes the use-case mentioned above work again.
 
 
-http://gerrit.openvpn.net/c/openvpn/+/943/comment/9ce6ddd6_a5306ffa :
-PS2, Line 6707:                 if (adapter_created || (h && !do_create_ada=
-pter_service(h, tt->backend_driver)))
-> I think we need not limit this using the adapter_created flag. [=E2=80=A6]
-Acknowledged
+I still do not really understanding what network setup you have to 
+trigger this kind of bizzare behaviour of having a VPN connection.
+It would really be helpful if you can describe that more. Since the 
+current explainations do not really explain for me why there is already 
+an existing half-established connection.
+
+The scenario you are fixing seem like:
+
+  * somehow a connection attempt is done from IP A
+  * a connection is fully established for IP B
+  * connection for IP B tries to move to IP A
 
 
+You are also saying that there is a difference in OpenVPN 2.5 vs OPneVPN 
+2.6. If that is indeed the case, a git bisect would be helpful to point 
+to the commit that is breaking this.
 
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/943?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings
+ > msg(M_INFO, "peer %" PRIu32 " (%s) floating from %s to %s (m2 still 
+setting up) state=%d/%d",
 
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: I621d44ec6b0facc524875c15ddfd11ec47b06c15
-Gerrit-Change-Number: 943
-Gerrit-PatchSet: 2
-Gerrit-Owner: stipa <lstipakov@...277...>
-Gerrit-Reviewer: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-Reviewer: selvanair <selva.nair@...277...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Attention: selvanair <selva.nair@...277...>
-Gerrit-Comment-Date: Thu, 24 Apr 2025 06:58:46 +0000
-Gerrit-HasComments: Yes
-Gerrit-Has-Labels: No
-Comment-In-Reply-To: selvanair <selva.nair@...277...>
-Comment-In-Reply-To: stipa <lstipakov@...277...>
-Gerrit-MessageType: comment
-
---7eSD+OJoO+A=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<p> Attention is currently required from: flichtenheld, plaisthos, selvanai=
-r. </p>
-<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/943?usp=3Demail">View C=
-hange</a></p><p>2 comments:</p><ul style=3D"list-style: none; padding: 0;">=
-<li style=3D"margin: 0; padding: 0;"><p>File src/openvpn/tun.c:</p><ul styl=
-e=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 =
-16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.ne=
-t/c/openvpn/+/943/comment/4f2d37c4_06eedd41">Patch Set #2, Line 6656:</a> <=
-code style=3D"font-family:monospace,monospace">    struct device_instance_i=
-d_interface *device_instance_id_interface =3D get_device_instance_id_interf=
-ace(gc);</code></p><p><blockquote style=3D"border-left: 1px solid #aaa; mar=
-gin: 10px 0; padding: 0 10px;">right, the data is const, but not the pointe=
-r.</blockquote></p><p style=3D"white-space: pre-wrap; word-wrap: break-word=
-;">Acknowledged</p></li><li style=3D"margin: 0; padding: 0 0 0 16px;"><p st=
-yle=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/=
-+/943/comment/9ce6ddd6_a5306ffa">Patch Set #2, Line 6707:</a> <code style=
-=3D"font-family:monospace,monospace">                if (adapter_created ||=
- (h &amp;&amp; !do_create_adapter_service(h, tt-&gt;backend_driver)))</code=
-></p><p><blockquote style=3D"border-left: 1px solid #aaa; margin: 10px 0; p=
-adding: 0 10px;">I think we need not limit this using the adapter_created f=
-lag. [=E2=80=A6]</blockquote></p><p style=3D"white-space: pre-wrap; word-wr=
-ap: break-word;">Acknowledged</p></li></ul></li></ul><p>To view, visit <a h=
-ref=3D"http://gerrit.openvpn.net/c/openvpn/+/943?usp=3Demail">change 943</a=
->. To unsubscribe, or for help writing mail filters, visit <a href=3D"http:=
-//gerrit.openvpn.net/settings">settings</a>.</p><div itemscope itemtype=3D"=
-http://schema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=
-=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://ger=
-rit.openvpn.net/c/openvpn/+/943?usp=3Demail"/><meta itemprop=3D"name" conte=
-nt=3D"View Change"/></div></div>
-
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I621d44ec6b0facc524875c15ddf=
-d11ec47b06c15 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 943 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
-<div style=3D"display:none"> Gerrit-Owner: stipa &lt;lstipakov@...277...&gt=
-; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
-1...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: selvanair &lt;selva.nair@...1665...=
-77...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
-41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: selvanair &lt;selva.nair@...493...=
-277...&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Thu, 24 Apr 2025 06:58:46=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: No </div>
-<div style=3D"display:none"> Comment-In-Reply-To: selvanair &lt;selva.nair@=
-...277...&gt; </div>
-<div style=3D"display:none"> Comment-In-Reply-To: stipa &lt;lstipakov@...1664...=
-7...&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
+A user has no idea what m2 is. This message more confusing than helpful.
 
 
---7eSD+OJoO+A=--
+> +	/* if the new connection is fresh and the old one is already connected, this
+> +	 * might be a legitimate move to a new IP by the original client;
+> +	 * for example when the server IP is pushed as net_gateway to escape from
+> +	 * a double VPN. */
+> +	if (m1->multi_state == CAS_CONNECT_DONE && m2->multi_state == CAS_NOT_CONNECTED
+> +		&& m1->locked_cert_hash_set && !m2->locked_cert_hash_set)
+
+The code doesn't really do what the comment does. If you were trying to 
+actually figure out if it is the same client you should rather compare 
+the session ID of the tls state.
+
+Also I think this code looks on the first glance to be broken in the way 
+that an authorized client could just send a bunch of data packets with 
+faked sender ip and then kill of other connections that are in the 
+progress of connection.
+
+Arne
 
