@@ -1,15 +1,15 @@
 From: "ordex (Code Review)" <gerrit@...515...>
-Date: Thu, 24 Apr 2025 23:24:49 +0000
+Date: Thu, 24 Apr 2025 23:37:35 +0000
 In-Reply-To: <gerrit.1744809221000.I009f4e7ad38636f1c0b78d267561194c2bb4c051@...2715...>
 References: <gerrit.1744809221000.I009f4e7ad38636f1c0b78d267561194c2bb4c051@...2715...>
 Reply-To: antonio@...2726..., arne-openvpn@...1227...,
  gianmarco@...2726..., openvpn-devel@lists.sourceforge.net,
  frank@...2641...
-Message-ID: <403b21c97e64f6acdd652dd596e36ec1748f2667-EmailReplacePatchSet-HTML@...2715...>
+Message-ID: <29a921077c47ab8d7fb033fc9f56ace9b30d1eb6-EmailReplacePatchSet-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="zEwOW97mjLA="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="zzGbwbMztKw="; charset=UTF-8
 Subject: [Openvpn-devel] [L] Change in openvpn[master]: dco_linux: Introduce
  new uAPIs
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -23,14 +23,14 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: its_Giaan <gianmarco@...2726...>, plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---zEwOW97mjLA=
+--zzGbwbMztKw=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 Attention is currently required from: flichtenheld, its_Giaan, ordex, plais=
 thos.
 
-ordex has uploaded a new patch set (#3) to the change originally created by=
+ordex has uploaded a new patch set (#4) to the change originally created by=
  its_Giaan. ( http://gerrit.openvpn.net/c/openvpn/+/941?usp=3Demail )
 
 
@@ -54,13 +54,13 @@ M src/openvpn/dco_linux.c
 M src/openvpn/dco_linux.h
 M src/openvpn/networking_sitnl.c
 M src/openvpn/ovpn_dco_linux.h
-4 files changed, 259 insertions(+), 329 deletions(-)
+4 files changed, 255 insertions(+), 330 deletions(-)
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/41/941/3
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/41/941/4
 
 diff --git a/src/openvpn/dco_linux.c b/src/openvpn/dco_linux.c
-index b0a85fd..e9bae55 100644
+index b0a85fd..86e5a00 100644
 --- a/src/openvpn/dco_linux.c
 +++ b/src/openvpn/dco_linux.c
 @@ -96,7 +96,7 @@
@@ -433,7 +433,7 @@ to
      }
 
      /* based on the message type, we parse the subobject contained in the
-@@ -800,40 +819,79 @@
+@@ -800,48 +819,85 @@
       */
      switch (gnlh->cmd)
      {
@@ -454,8 +454,9 @@ ge");
 -            if (nla_parse_nested(dp_attrs, OVPN_DEL_PEER_ATTR_MAX,
 -                                 attrs[OVPN_ATTR_DEL_PEER], NULL))
 +            struct nlattr *dp_attrs[OVPN_A_PEER_MAX + 1];
-+            if (nla_parse_nested(dp_attrs, OVPN_A_PEER_MAX,
-+                                 attrs[OVPN_A_PEER], NULL))
++            if (nla_parse_nested(dp_attrs, OVPN_A_PEER_MAX, attrs[OVPN_A_P=
+EER],
++                                 NULL))
              {
 -                msg(D_DCO, "received bogus del peer packet data from ovpn-=
 dco");
@@ -497,10 +498,9 @@ R_PEER_ID]);
              dco->dco_del_peer_reason =3D reason;
 -            dco->dco_message_type =3D OVPN_CMD_DEL_PEER;
 +            dco->dco_message_type =3D OVPN_CMD_PEER_DEL_NTF;
-+
 +            break;
 +        }
-+
+
 +        case OVPN_CMD_KEY_SWAP_NTF:
 +        {
 +            if (!attrs[OVPN_A_KEYCONF])
@@ -538,10 +538,9 @@ EER_ID]);
 +            dco->dco_message_peer_id =3D peer_id;
 +            dco->dco_message_key_id =3D key_id;
 +            dco->dco_message_type =3D OVPN_CMD_KEY_SWAP_NTF;
-
              break;
          }
-@@ -841,7 +899,7 @@
+
          default:
              msg(D_DCO, "ovpn-dco: received unknown command: %d", gnlh->cmd=
 );
@@ -551,7 +550,7 @@ EER_ID]);
      }
 
      return NL_OK;
-@@ -859,9 +917,9 @@
+@@ -859,9 +915,9 @@
  static void
  dco_update_peer_stat(struct context_2 *c2, struct nlattr *tb[], uint32_t i=
 d)
@@ -565,7 +564,7 @@ _RX_BYTES]);
          msg(D_DCO_DEBUG, "%s / dco_read_bytes: " counter_format, __func__,
              c2->dco_read_bytes);
      }
-@@ -871,9 +929,9 @@
+@@ -871,9 +927,9 @@
              __func__, id);
      }
 
@@ -578,7 +577,7 @@ K_TX_BYTES]);
          msg(D_DCO_DEBUG, "%s / dco_write_bytes: " counter_format, __func__,
              c2->dco_write_bytes);
      }
-@@ -883,9 +941,9 @@
+@@ -883,9 +939,9 @@
              __func__, id);
      }
 
@@ -591,7 +590,7 @@ RX_BYTES]);
          msg(D_DCO_DEBUG, "%s / tun_read_bytes: " counter_format, __func__,
              c2->tun_read_bytes);
      }
-@@ -895,9 +953,9 @@
+@@ -895,9 +951,9 @@
              __func__, id);
      }
 
@@ -604,12 +603,12 @@ _TX_BYTES]);
          msg(D_DCO_DEBUG, "%s / tun_write_bytes: " counter_format, __func__,
              c2->tun_write_bytes);
      }
-@@ -911,33 +969,33 @@
+@@ -911,33 +967,30 @@
  int
  dco_parse_peer_multi(struct nl_msg *msg, void *arg)
  {
 -    struct nlattr *tb[OVPN_ATTR_MAX + 1];
-+    struct nlattr *tb[OVPN_A_PEER_MAX];
++    struct nlattr *tb[OVPN_A_MAX + 1];
      struct genlmsghdr *gnlh =3D nlmsg_data(nlmsg_hdr(msg));
 
      msg(D_DCO_DEBUG, "%s: parsing message...", __func__);
@@ -619,21 +618,19 @@ _TX_BYTES]);
                genlmsg_attrlen(gnlh, 0), NULL);
 
 -    if (!tb[OVPN_ATTR_GET_PEER])
-+    if (!tb[OVPN_A_PEER_ID])
++    if (!tb[OVPN_A_PEER])
      {
          return NL_SKIP;
      }
 
 -    struct nlattr *tb_peer[OVPN_GET_PEER_RESP_ATTR_MAX + 1];
-+    struct nlattr *tb_peer[OVPN_A_PEER_MAX];
++    struct nlattr *tb_peer[OVPN_A_PEER_MAX + 1];
++    nla_parse_nested(tb_peer, OVPN_A_PEER_MAX, tb[OVPN_A_PEER], NULL);
 
 -    nla_parse(tb_peer, OVPN_GET_PEER_RESP_ATTR_MAX,
 -              nla_data(tb[OVPN_ATTR_GET_PEER]),
 -              nla_len(tb[OVPN_ATTR_GET_PEER]), NULL);
-+    nla_parse(tb_peer, OVPN_A_PEER_MAX,
-+              nla_data(tb[OVPN_A_PEER_ID]),
-+              nla_len(tb[OVPN_A_PEER_ID]), NULL);
-
+-
 -    if (!tb_peer[OVPN_GET_PEER_RESP_ATTR_PEER_ID])
 +    if (!tb_peer[OVPN_A_PEER_ID])
      {
@@ -648,7 +645,7 @@ ID]);
 
      if (peer_id >=3D m->max_clients || !m->instances[peer_id])
      {
-@@ -957,7 +1015,7 @@
+@@ -957,7 +1010,7 @@
  {
      msg(D_DCO_DEBUG, "%s", __func__);
 
@@ -659,7 +656,7 @@ ID]);
 
      nlmsg_hdr(nl_msg)->nlmsg_flags |=3D NLM_F_DUMP;
 
-@@ -979,33 +1037,33 @@
+@@ -979,33 +1032,33 @@
  dco_parse_peer(struct nl_msg *msg, void *arg)
  {
      struct context *c =3D arg;
@@ -703,7 +700,7 @@ ID]);
      if (c->c2.tls_multi->dco_peer_id !=3D peer_id)
      {
          return NL_SKIP;
-@@ -1033,11 +1091,11 @@
+@@ -1033,11 +1086,11 @@
      }
 
      dco_context_t *dco =3D &c->c1.tuntap->dco;
@@ -796,7 +793,7 @@ ause) */
 +/* Do not edit directly, auto-generated from: */
 +/*	Documentation/netlink/specs/ovpn.yaml */
 +/* YNL-GEN uapi header */
-=20
+
 -#ifndef _UAPI_LINUX_OVPN_DCO_H_
 -#define _UAPI_LINUX_OVPN_DCO_H_
 +#ifndef _UAPI_LINUX_OVPN_H
@@ -1122,7 +1119,7 @@ Gerrit-Project: openvpn
 Gerrit-Branch: master
 Gerrit-Change-Id: I009f4e7ad38636f1c0b78d267561194c2bb4c051
 Gerrit-Change-Number: 941
-Gerrit-PatchSet: 3
+Gerrit-PatchSet: 4
 Gerrit-Owner: its_Giaan <gianmarco@...2726...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: ordex <antonio@...2726...>
@@ -1134,13 +1131,13 @@ Gerrit-Attention: flichtenheld <frank@...2641...>
 Gerrit-Attention: ordex <antonio@...2726...>
 Gerrit-MessageType: newpatchset
 
---zEwOW97mjLA=
+--zzGbwbMztKw=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <p> Attention is currently required from: flichtenheld, its_Giaan, ordex, p=
 laisthos. </p>
-<p>ordex <strong>uploaded patch set #3</strong> to the change originally cr=
+<p>ordex <strong>uploaded patch set #4</strong> to the change originally cr=
 eated by its_Giaan.</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/=
 941?usp=3Demail">View Change</a></p><pre style=3D"font-family: monospace,mo=
 nospace; white-space: pre-wrap;">dco_linux: Introduce new uAPIs<br><br>This=
@@ -1150,12 +1147,12 @@ br>used for Netlink messages to match the<br>definitions expected by the ke=
 rnel module.<br><br>Change-Id: I009f4e7ad38636f1c0b78d267561194c2bb4c051<br=
 >Signed-off-by: Gianmarco De Gregori &lt;gianmarco@...2726...&gt;<br>---<br=
 >M src/openvpn/dco_linux.c<br>M src/openvpn/dco_linux.h<br>M src/openvpn/ne=
-tworking_sitnl.c<br>M src/openvpn/ovpn_dco_linux.h<br>4 files changed, 259 =
-insertions(+), 329 deletions(-)<br><br></pre><pre style=3D"font-family: mon=
+tworking_sitnl.c<br>M src/openvpn/ovpn_dco_linux.h<br>4 files changed, 255 =
+insertions(+), 330 deletions(-)<br><br></pre><pre style=3D"font-family: mon=
 ospace,monospace; white-space: pre-wrap;">git pull ssh://gerrit.openvpn.net=
-:29418/openvpn refs/changes/41/941/3</pre><pre style=3D"font-family: monosp=
+:29418/openvpn refs/changes/41/941/4</pre><pre style=3D"font-family: monosp=
 ace,monospace; white-space: pre-wrap;"><span>diff --git a/src/openvpn/dco_l=
-inux.c b/src/openvpn/dco_linux.c</span><br><span>index b0a85fd..e9bae55 100=
+inux.c b/src/openvpn/dco_linux.c</span><br><span>index b0a85fd..86e5a00 100=
 644</span><br><span>--- a/src/openvpn/dco_linux.c</span><br><span>+++ b/src=
 /openvpn/dco_linux.c</span><br><span>@@ -96,7 +96,7 @@</span><br><span>    =
  }</span><br><span>     set_cloexec(nl_socket_get_fd(nl_sock));</span><br><=
@@ -1472,7 +1469,7 @@ span style=3D"color: hsl(0, 100%, 40%);">-        return NL_SKIP;</span><br=
 ><span style=3D"color: hsl(120, 100%, 40%);">+        return NL_STOP;</span=
 ><br><span>     }</span><br><span> </span><br><span>     /* based on the me=
 ssage type, we parse the subobject contained in the</span><br><span>@@ -800=
-,40 +819,79 @@</span><br><span>      */</span><br><span>     switch (gnlh-&=
+,48 +819,85 @@</span><br><span>      */</span><br><span>     switch (gnlh-&=
 gt;cmd)</span><br><span>     {</span><br><span style=3D"color: hsl(0, 100%,=
  40%);">-        case OVPN_CMD_DEL_PEER:</span><br><span style=3D"color: hs=
 l(120, 100%, 40%);">+        case OVPN_CMD_PEER_DEL_NTF:</span><br><span>  =
@@ -1493,8 +1490,8 @@ DEL_PEER_ATTR_MAX + 1];</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
      attrs[OVPN_ATTR_DEL_PEER], NULL))</span><br><span style=3D"color: hsl(=
 120, 100%, 40%);">+            struct nlattr *dp_attrs[OVPN_A_PEER_MAX + 1]=
 ;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            if (nl=
-a_parse_nested(dp_attrs, OVPN_A_PEER_MAX,</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+                                 attrs[OVPN_A_PEER], =
+a_parse_nested(dp_attrs, OVPN_A_PEER_MAX, attrs[OVPN_A_PEER],</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+                                 =
 NULL))</span><br><span>             {</span><br><span style=3D"color: hsl(0=
 , 100%, 40%);">-                msg(D_DCO, &quot;received bogus del peer pa=
 cket data from ovpn-dco&quot;);</span><br><span style=3D"color: hsl(0, 100%=
@@ -1540,590 +1537,587 @@ an>             dco-&gt;dco_message_peer_id =3D peerid;</span><br><span>   =
 color: hsl(0, 100%, 40%);">-            dco-&gt;dco_message_type =3D OVPN_C=
 MD_DEL_PEER;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
      dco-&gt;dco_message_type =3D OVPN_CMD_PEER_DEL_NTF;</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+            break;</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+        }</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        case=
- OVPN_CMD_KEY_SWAP_NTF:</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+        {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
-      if (!attrs[OVPN_A_KEYCONF])</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+            {</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+                msg(D_DCO, &quot;ovpn-dco: no keyconf in KEY_SWAP_N=
-TF message&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-               return NL_STOP;</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+            }</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            st=
-ruct nlattr *dp_attrs[OVPN_A_KEYCONF_MAX + 1];</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+            if (nla_parse_nested(dp_attrs, OVPN_=
-A_KEYCONF_MAX,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
-                            attrs[OVPN_A_KEYCONF], NULL))</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+            {</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+                msg(D_DCO, &quot;ovpn-dco=
-: can&#39;t parse keyconf in KEY_SWAP_NTF message&quot;);</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+                return NL_STOP;</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+            }</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+            if (!dp_attrs[OVPN_=
-A_KEYCONF_PEER_ID])</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+yle=3D"color: hsl(120, 100%, 40%);">+            break;</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+        }</span><br><span> </span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+        case OVPN_CMD_KEY_SWAP_=
+NTF:</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        {</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+            if (!attrs[OV=
+PN_A_KEYCONF])</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
+       {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+           =
+     msg(D_DCO, &quot;ovpn-dco: no keyconf in KEY_SWAP_NTF message&quot;);<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+                retu=
+rn NL_STOP;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        =
+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+            struct nlattr *dp_att=
+rs[OVPN_A_KEYCONF_MAX + 1];</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+            if (nla_parse_nested(dp_attrs, OVPN_A_KEYCONF_MAX,</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+                        =
+         attrs[OVPN_A_KEYCONF], NULL))</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+            {</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+                msg(D_DCO, &quot;ovpn-dco: can&#39;t parse key=
+conf in KEY_SWAP_NTF message&quot;);</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+                return NL_STOP;</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+            }</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+            if (!dp_attrs[OVPN_A_KEYCONF_PEER_ID])</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+            {</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+                msg(D_DCO, =
+&quot;ovpn-dco: no peer-id in KEY_SWAP_NTF message&quot;);</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+                return NL_STOP;</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+            }</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+            if (!dp_attrs[OVPN=
+_A_KEYCONF_KEY_ID])</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
             {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
-          msg(D_DCO, &quot;ovpn-dco: no peer-id in KEY_SWAP_NTF message&quo=
-t;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+               =
- return NL_STOP;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
-         }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+         =
-   if (!dp_attrs[OVPN_A_KEYCONF_KEY_ID])</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+            {</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+                msg(D_DCO, &quot;ovpn-dco: no key-id in KEY_=
-SWAP_NTF message&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+                return NL_STOP;</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+            }</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        =
-    int key_id =3D nla_get_u16(dp_attrs[OVPN_A_KEYCONF_KEY_ID]);</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+            unsigned int peer_=
-id =3D nla_get_u32(dp_attrs[OVPN_A_KEYCONF_PEER_ID]);</span><br><span style=
+          msg(D_DCO, &quot;ovpn-dco: no key-id in KEY_SWAP_NTF message&quot=
+;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+                =
+return NL_STOP;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+        }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+            int key_id =3D nl=
+a_get_u16(dp_attrs[OVPN_A_KEYCONF_KEY_ID]);</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+            unsigned int peer_id =3D nla_get_u32(dp=
+_attrs[OVPN_A_KEYCONF_PEER_ID]);</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
+      msg(D_DCO_DEBUG, &quot;ovpn-dco: received CMD_KEY_SWAP_NTF, ifindex: =
+%d, peer-id %u, key-id: %d&quot;,</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+                ifindex, peer_id, key_id);</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+            dco-&gt;dco_message_peer_i=
+d =3D peer_id;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
+       dco-&gt;dco_message_key_id =3D key_id;</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+            dco-&gt;dco_message_type =3D OVPN_CMD=
+_KEY_SWAP_NTF;</span><br><span>             break;</span><br><span>        =
+ }</span><br><span> </span><br><span>         default:</span><br><span>    =
+         msg(D_DCO, &quot;ovpn-dco: received unknown command: %d&quot;, gnl=
+h-&gt;cmd);</span><br><span>             dco-&gt;dco_message_type =3D 0;</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-            return NL_SK=
+IP;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            retu=
+rn NL_STOP;</span><br><span>     }</span><br><span> </span><br><span>     r=
+eturn NL_OK;</span><br><span>@@ -859,9 +915,9 @@</span><br><span> static vo=
+id</span><br><span> dco_update_peer_stat(struct context_2 *c2, struct nlatt=
+r *tb[], uint32_t id)</span><br><span> {</span><br><span style=3D"color: hs=
+l(0, 100%, 40%);">-    if (tb[OVPN_GET_PEER_RESP_ATTR_LINK_RX_BYTES])</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (tb[OVPN_A_PEER_LI=
+NK_RX_BYTES])</span><br><span>     {</span><br><span style=3D"color: hsl(0,=
+ 100%, 40%);">-        c2-&gt;dco_read_bytes =3D nla_get_u64(tb[OVPN_GET_PE=
+ER_RESP_ATTR_LINK_RX_BYTES]);</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+        c2-&gt;dco_read_bytes =3D nla_get_u64(tb[OVPN_A_PEER_LINK=
+_RX_BYTES]);</span><br><span>         msg(D_DCO_DEBUG, &quot;%s / dco_read_=
+bytes: &quot; counter_format, __func__,</span><br><span>             c2-&gt=
+;dco_read_bytes);</span><br><span>     }</span><br><span>@@ -871,9 +927,9 @=
+@</span><br><span>             __func__, id);</span><br><span>     }</span>=
+<br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-    if (tb=
+[OVPN_GET_PEER_RESP_ATTR_LINK_TX_BYTES])</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+    if (tb[OVPN_A_PEER_LINK_TX_BYTES])</span><br><span=
+>     {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        c2-&gt=
+;dco_write_bytes =3D nla_get_u64(tb[OVPN_GET_PEER_RESP_ATTR_LINK_TX_BYTES])=
+;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        c2-&gt;dco=
+_write_bytes =3D nla_get_u64(tb[OVPN_A_PEER_LINK_TX_BYTES]);</span><br><spa=
+n>         msg(D_DCO_DEBUG, &quot;%s / dco_write_bytes: &quot; counter_form=
+at, __func__,</span><br><span>             c2-&gt;dco_write_bytes);</span><=
+br><span>     }</span><br><span>@@ -883,9 +939,9 @@</span><br><span>       =
+      __func__, id);</span><br><span>     }</span><br><span> </span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-    if (tb[OVPN_GET_PEER_RESP_ATTR_=
+VPN_RX_BYTES])</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    i=
+f (tb[OVPN_A_PEER_VPN_RX_BYTES])</span><br><span>     {</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-        c2-&gt;tun_read_bytes =3D nla_get=
+_u64(tb[OVPN_GET_PEER_RESP_ATTR_VPN_RX_BYTES]);</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+        c2-&gt;tun_read_bytes =3D nla_get_u64(t=
+b[OVPN_A_PEER_VPN_RX_BYTES]);</span><br><span>         msg(D_DCO_DEBUG, &qu=
+ot;%s / tun_read_bytes: &quot; counter_format, __func__,</span><br><span>  =
+           c2-&gt;tun_read_bytes);</span><br><span>     }</span><br><span>@=
+@ -895,9 +951,9 @@</span><br><span>             __func__, id);</span><br><s=
+pan>     }</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 4=
+0%);">-    if (tb[OVPN_GET_PEER_RESP_ATTR_VPN_TX_BYTES])</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+    if (tb[OVPN_A_PEER_VPN_TX_BYTES])<=
+/span><br><span>     {</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
+-        c2-&gt;tun_write_bytes =3D nla_get_u64(tb[OVPN_GET_PEER_RESP_ATTR_=
+VPN_TX_BYTES]);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+    c2-&gt;tun_write_bytes =3D nla_get_u64(tb[OVPN_A_PEER_VPN_TX_BYTES]);</=
+span><br><span>         msg(D_DCO_DEBUG, &quot;%s / tun_write_bytes: &quot;=
+ counter_format, __func__,</span><br><span>             c2-&gt;tun_write_by=
+tes);</span><br><span>     }</span><br><span>@@ -911,33 +967,30 @@</span><b=
+r><span> int</span><br><span> dco_parse_peer_multi(struct nl_msg *msg, void=
+ *arg)</span><br><span> {</span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">-    struct nlattr *tb[OVPN_ATTR_MAX + 1];</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+    struct nlattr *tb[OVPN_A_MAX + 1];</span><br>=
+<span>     struct genlmsghdr *gnlh =3D nlmsg_data(nlmsg_hdr(msg));</span><b=
+r><span> </span><br><span>     msg(D_DCO_DEBUG, &quot;%s: parsing message..=
+.&quot;, __func__);</span><br><span> </span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-    nla_parse(tb, OVPN_ATTR_MAX, genlmsg_attrdata(gnlh, 0),=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    nla_parse(tb, O=
+VPN_A_MAX, genlmsg_attrdata(gnlh, 0),</span><br><span>               genlms=
+g_attrlen(gnlh, 0), NULL);</span><br><span> </span><br><span style=3D"color=
+: hsl(0, 100%, 40%);">-    if (!tb[OVPN_ATTR_GET_PEER])</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+    if (!tb[OVPN_A_PEER])</span><br><sp=
+an>     {</span><br><span>         return NL_SKIP;</span><br><span>     }</=
+span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-    s=
+truct nlattr *tb_peer[OVPN_GET_PEER_RESP_ATTR_MAX + 1];</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+    struct nlattr *tb_peer[OVPN_A_PEER_=
+MAX + 1];</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    nla_pa=
+rse_nested(tb_peer, OVPN_A_PEER_MAX, tb[OVPN_A_PEER], NULL);</span><br><spa=
+n> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-    nla_parse(tb_p=
+eer, OVPN_GET_PEER_RESP_ATTR_MAX,</span><br><span style=3D"color: hsl(0, 10=
+0%, 40%);">-              nla_data(tb[OVPN_ATTR_GET_PEER]),</span><br><span=
+ style=3D"color: hsl(0, 100%, 40%);">-              nla_len(tb[OVPN_ATTR_GE=
+T_PEER]), NULL);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-    if (!tb_peer[OVPN_GET_=
+PEER_RESP_ATTR_PEER_ID])</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+    if (!tb_peer[OVPN_A_PEER_ID])</span><br><span>     {</span><br><sp=
+an>         msg(M_WARN, &quot;%s: no peer-id provided in reply&quot;, __fun=
+c__);</span><br><span>         return NL_SKIP;</span><br><span>     }</span=
+><br><span> </span><br><span>     struct multi_context *m =3D arg;</span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-    uint32_t peer_id =3D nla_g=
+et_u32(tb_peer[OVPN_GET_PEER_RESP_ATTR_PEER_ID]);</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+    uint32_t peer_id =3D nla_get_u32(tb_peer[=
+OVPN_A_PEER_ID]);</span><br><span> </span><br><span>     if (peer_id &gt;=
+=3D m-&gt;max_clients || !m-&gt;instances[peer_id])</span><br><span>     {<=
+/span><br><span>@@ -957,7 +1010,7 @@</span><br><span> {</span><br><span>   =
+  msg(D_DCO_DEBUG, &quot;%s&quot;, __func__);</span><br><span> </span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-    struct nl_msg *nl_msg =3D ovp=
+n_dco_nlmsg_create(dco, OVPN_CMD_GET_PEER);</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+    struct nl_msg *nl_msg =3D ovpn_dco_nlmsg_create=
+(dco, OVPN_CMD_PEER_GET);</span><br><span> </span><br><span>     nlmsg_hdr(=
+nl_msg)-&gt;nlmsg_flags |=3D NLM_F_DUMP;</span><br><span> </span><br><span>=
+@@ -979,33 +1032,33 @@</span><br><span> dco_parse_peer(struct nl_msg *msg, =
+void *arg)</span><br><span> {</span><br><span>     struct context *c =3D ar=
+g;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    struct nlattr *=
+tb[OVPN_ATTR_MAX + 1];</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+    struct nlattr *tb[OVPN_A_MAX];</span><br><span>     struct genlmsghd=
+r *gnlh =3D nlmsg_data(nlmsg_hdr(msg));</span><br><span> </span><br><span> =
+    msg(D_DCO_DEBUG, &quot;%s: parsing message...&quot;, __func__);</span><=
+br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-    nla_par=
+se(tb, OVPN_ATTR_MAX, genlmsg_attrdata(gnlh, 0),</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+    nla_parse(tb, OVPN_A_PEER_MAX, genlmsg_att=
+rdata(gnlh, 0),</span><br><span>               genlmsg_attrlen(gnlh, 0), NU=
+LL);</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">=
+-    if (!tb[OVPN_ATTR_GET_PEER])</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+    if (!tb[OVPN_A_PEER])</span><br><span>     {</span><br><s=
+pan>         msg(D_DCO_DEBUG, &quot;%s: malformed reply&quot;, __func__);</=
+span><br><span>         return NL_SKIP;</span><br><span>     }</span><br><s=
+pan> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-    struct nlatt=
+r *tb_peer[OVPN_GET_PEER_RESP_ATTR_MAX + 1];</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+    struct nlattr *tb_peer[OVPN_A_PEER_MAX + 1];</=
+span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-    n=
+la_parse(tb_peer, OVPN_GET_PEER_RESP_ATTR_MAX,</span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-              nla_data(tb[OVPN_ATTR_GET_PEER]),</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-              nla_len(tb=
+[OVPN_ATTR_GET_PEER]), NULL);</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+    nla_parse(tb_peer, OVPN_A_PEER,</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+              nla_data(tb[OVPN_A_PEER]),</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+              nla_len(tb[OVP=
+N_A_PEER]), NULL);</span><br><span> </span><br><span style=3D"color: hsl(0,=
+ 100%, 40%);">-    if (!tb_peer[OVPN_GET_PEER_RESP_ATTR_PEER_ID])</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+    if (!tb_peer[OVPN_A_PEER_=
+ID])</span><br><span>     {</span><br><span>         msg(M_WARN, &quot;%s: =
+no peer-id provided in reply&quot;, __func__);</span><br><span>         ret=
+urn NL_SKIP;</span><br><span>     }</span><br><span> </span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-    uint32_t peer_id =3D nla_get_u32(tb_pee=
+r[OVPN_GET_PEER_RESP_ATTR_PEER_ID]);</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+    uint32_t peer_id =3D nla_get_u32(tb_peer[OVPN_A_PEER_I=
+D]);</span><br><span>     if (c-&gt;c2.tls_multi-&gt;dco_peer_id !=3D peer_=
+id)</span><br><span>     {</span><br><span>         return NL_SKIP;</span><=
+br><span>@@ -1033,11 +1086,11 @@</span><br><span>     }</span><br><span> </=
+span><br><span>     dco_context_t *dco =3D &amp;c-&gt;c1.tuntap-&gt;dco;</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-    struct nl_msg *nl_ms=
+g =3D ovpn_dco_nlmsg_create(dco, OVPN_CMD_GET_PEER);</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-    struct nlattr *attr =3D nla_nest_start(=
+nl_msg, OVPN_ATTR_GET_PEER);</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+    struct nl_msg *nl_msg =3D ovpn_dco_nlmsg_create(dco, OVPN_CMD_=
+PEER_GET);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    struc=
+t nlattr *attr =3D nla_nest_start(nl_msg, OVPN_A_PEER);</span><br><span>   =
+  int ret =3D -EMSGSIZE;</span><br><span> </span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">-    NLA_PUT_U32(nl_msg, OVPN_GET_PEER_ATTR_PEER_ID, pe=
+er_id);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    NLA_PUT_=
+U32(nl_msg, OVPN_A_PEER_ID, peer_id);</span><br><span>     nla_nest_end(nl_=
+msg, attr);</span><br><span> </span><br><span>     ret =3D ovpn_nl_msg_send=
+(dco, nl_msg, dco_parse_peer, c, __func__);</span><br><span>diff --git a/sr=
+c/openvpn/dco_linux.h b/src/openvpn/dco_linux.h</span><br><span>index 51151=
+9a..f3abc15 100644</span><br><span>--- a/src/openvpn/dco_linux.h</span><br>=
+<span>+++ b/src/openvpn/dco_linux.h</span><br><span>@@ -31,9 +31,27 @@</spa=
+n><br><span> #include &lt;netlink/socket.h&gt;</span><br><span> #include &l=
+t;netlink/netlink.h&gt;</span><br><span> </span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+/* Defines to avoid mismatching with other platforms =
+*/</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#define OVPN_CMD_=
+DEL_PEER OVPN_CMD_PEER_DEL_NTF</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+#define OVPN_CMD_SWAP_KEYS OVPN_CMD_KEY_SWAP_NTF</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> typedef enum ovpn=
+_key_slot dco_key_slot_t;</span><br><span> typedef enum ovpn_cipher_alg dco=
+_cipher_t;</span><br><span> </span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+/* OVPN section */</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+enum ovpn_m=
+ode {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    OVPN_MODE_=
+P2P,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    OVPN_MODE_M=
+P,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+};</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+enum ovpn_ifla_attrs {</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+    IFLA_OVPN_UNSPEC =3D 0,</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    IFLA_OVPN_MODE,</span><br><span style=
 =3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+            msg(D_DCO_DEBUG, &quot;ovpn-dco: received CMD_KE=
-Y_SWAP_NTF, ifindex: %d, peer-id %u, key-id: %d&quot;,</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+                ifindex, peer_id, key_id=
-);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            dco-&=
-gt;dco_message_peer_id =3D peer_id;</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+            dco-&gt;dco_message_key_id =3D key_id;</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+            dco-&gt;dco_mess=
-age_type =3D OVPN_CMD_KEY_SWAP_NTF;</span><br><span> </span><br><span>     =
-        break;</span><br><span>         }</span><br><span>@@ -841,7 +899,7 =
-@@</span><br><span>         default:</span><br><span>             msg(D_DCO=
-, &quot;ovpn-dco: received unknown command: %d&quot;, gnlh-&gt;cmd);</span>=
-<br><span>             dco-&gt;dco_message_type =3D 0;</span><br><span styl=
-e=3D"color: hsl(0, 100%, 40%);">-            return NL_SKIP;</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+            return NL_STOP;</span>=
-<br><span>     }</span><br><span> </span><br><span>     return NL_OK;</span=
-><br><span>@@ -859,9 +917,9 @@</span><br><span> static void</span><br><span=
-> dco_update_peer_stat(struct context_2 *c2, struct nlattr *tb[], uint32_t =
-id)</span><br><span> {</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
--    if (tb[OVPN_GET_PEER_RESP_ATTR_LINK_RX_BYTES])</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    if (tb[OVPN_A_PEER_LINK_RX_BYTES])</s=
-pan><br><span>     {</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
-       c2-&gt;dco_read_bytes =3D nla_get_u64(tb[OVPN_GET_PEER_RESP_ATTR_LIN=
-K_RX_BYTES]);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
-  c2-&gt;dco_read_bytes =3D nla_get_u64(tb[OVPN_A_PEER_LINK_RX_BYTES]);</sp=
-an><br><span>         msg(D_DCO_DEBUG, &quot;%s / dco_read_bytes: &quot; co=
-unter_format, __func__,</span><br><span>             c2-&gt;dco_read_bytes)=
-;</span><br><span>     }</span><br><span>@@ -871,9 +929,9 @@</span><br><spa=
-n>             __func__, id);</span><br><span>     }</span><br><span> </spa=
-n><br><span style=3D"color: hsl(0, 100%, 40%);">-    if (tb[OVPN_GET_PEER_R=
-ESP_ATTR_LINK_TX_BYTES])</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+    if (tb[OVPN_A_PEER_LINK_TX_BYTES])</span><br><span>     {</span><b=
-r><span style=3D"color: hsl(0, 100%, 40%);">-        c2-&gt;dco_write_bytes=
- =3D nla_get_u64(tb[OVPN_GET_PEER_RESP_ATTR_LINK_TX_BYTES]);</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+        c2-&gt;dco_write_bytes =3D=
- nla_get_u64(tb[OVPN_A_PEER_LINK_TX_BYTES]);</span><br><span>         msg(D=
-_DCO_DEBUG, &quot;%s / dco_write_bytes: &quot; counter_format, __func__,</s=
-pan><br><span>             c2-&gt;dco_write_bytes);</span><br><span>     }<=
-/span><br><span>@@ -883,9 +941,9 @@</span><br><span>             __func__, =
-id);</span><br><span>     }</span><br><span> </span><br><span style=3D"colo=
-r: hsl(0, 100%, 40%);">-    if (tb[OVPN_GET_PEER_RESP_ATTR_VPN_RX_BYTES])</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (tb[OVPN_A_PEE=
-R_VPN_RX_BYTES])</span><br><span>     {</span><br><span style=3D"color: hsl=
-(0, 100%, 40%);">-        c2-&gt;tun_read_bytes =3D nla_get_u64(tb[OVPN_GET=
-_PEER_RESP_ATTR_VPN_RX_BYTES]);</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+        c2-&gt;tun_read_bytes =3D nla_get_u64(tb[OVPN_A_PEER_VP=
-N_RX_BYTES]);</span><br><span>         msg(D_DCO_DEBUG, &quot;%s / tun_read=
-_bytes: &quot; counter_format, __func__,</span><br><span>             c2-&g=
-t;tun_read_bytes);</span><br><span>     }</span><br><span>@@ -895,9 +953,9 =
-@@</span><br><span>             __func__, id);</span><br><span>     }</span=
-><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-    if (t=
-b[OVPN_GET_PEER_RESP_ATTR_VPN_TX_BYTES])</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+    if (tb[OVPN_A_PEER_VPN_TX_BYTES])</span><br><span>=
-     {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        c2-&gt;=
-tun_write_bytes =3D nla_get_u64(tb[OVPN_GET_PEER_RESP_ATTR_VPN_TX_BYTES]);<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+        c2-&gt;tun_w=
-rite_bytes =3D nla_get_u64(tb[OVPN_A_PEER_VPN_TX_BYTES]);</span><br><span> =
-        msg(D_DCO_DEBUG, &quot;%s / tun_write_bytes: &quot; counter_format,=
- __func__,</span><br><span>             c2-&gt;tun_write_bytes);</span><br>=
-<span>     }</span><br><span>@@ -911,33 +969,33 @@</span><br><span> int</sp=
-an><br><span> dco_parse_peer_multi(struct nl_msg *msg, void *arg)</span><br=
-><span> {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    struct n=
-lattr *tb[OVPN_ATTR_MAX + 1];</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+    struct nlattr *tb[OVPN_A_PEER_MAX];</span><br><span>     stru=
-ct genlmsghdr *gnlh =3D nlmsg_data(nlmsg_hdr(msg));</span><br><span> </span=
-><br><span>     msg(D_DCO_DEBUG, &quot;%s: parsing message...&quot;, __func=
-__);</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">=
--    nla_parse(tb, OVPN_ATTR_MAX, genlmsg_attrdata(gnlh, 0),</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+    nla_parse(tb, OVPN_A_MAX, genl=
-msg_attrdata(gnlh, 0),</span><br><span>               genlmsg_attrlen(gnlh,=
- 0), NULL);</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, =
-40%);">-    if (!tb[OVPN_ATTR_GET_PEER])</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+    if (!tb[OVPN_A_PEER_ID])</span><br><span>     {</s=
-pan><br><span>         return NL_SKIP;</span><br><span>     }</span><br><sp=
-an> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-    struct nlattr=
- *tb_peer[OVPN_GET_PEER_RESP_ATTR_MAX + 1];</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+    struct nlattr *tb_peer[OVPN_A_PEER_MAX];</span>=
-<br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-    nla_pa=
-rse(tb_peer, OVPN_GET_PEER_RESP_ATTR_MAX,</span><br><span style=3D"color: h=
-sl(0, 100%, 40%);">-              nla_data(tb[OVPN_ATTR_GET_PEER]),</span><=
-br><span style=3D"color: hsl(0, 100%, 40%);">-              nla_len(tb[OVPN=
-_ATTR_GET_PEER]), NULL);</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+    nla_parse(tb_peer, OVPN_A_PEER_MAX,</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+              nla_data(tb[OVPN_A_PEER_ID]),</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+              nla_len(tb[O=
-VPN_A_PEER_ID]), NULL);</span><br><span> </span><br><span style=3D"color: h=
-sl(0, 100%, 40%);">-    if (!tb_peer[OVPN_GET_PEER_RESP_ATTR_PEER_ID])</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (!tb_peer[OVPN_A_=
-PEER_ID])</span><br><span>     {</span><br><span>         msg(M_WARN, &quot=
-;%s: no peer-id provided in reply&quot;, __func__);</span><br><span>       =
-  return NL_SKIP;</span><br><span>     }</span><br><span> </span><br><span>=
-     struct multi_context *m =3D arg;</span><br><span style=3D"color: hsl(0=
-, 100%, 40%);">-    uint32_t peer_id =3D nla_get_u32(tb_peer[OVPN_GET_PEER_=
-RESP_ATTR_PEER_ID]);</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+    uint32_t peer_id =3D nla_get_u32(tb_peer[OVPN_A_PEER_ID]);</span><br><=
-span> </span><br><span>     if (peer_id &gt;=3D m-&gt;max_clients || !m-&gt=
-;instances[peer_id])</span><br><span>     {</span><br><span>@@ -957,7 +1015=
-,7 @@</span><br><span> {</span><br><span>     msg(D_DCO_DEBUG, &quot;%s&quo=
-t;, __func__);</span><br><span> </span><br><span style=3D"color: hsl(0, 100=
-%, 40%);">-    struct nl_msg *nl_msg =3D ovpn_dco_nlmsg_create(dco, OVPN_CM=
-D_GET_PEER);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    str=
-uct nl_msg *nl_msg =3D ovpn_dco_nlmsg_create(dco, OVPN_CMD_PEER_GET);</span=
-><br><span> </span><br><span>     nlmsg_hdr(nl_msg)-&gt;nlmsg_flags |=3D NL=
-M_F_DUMP;</span><br><span> </span><br><span>@@ -979,33 +1037,33 @@</span><b=
-r><span> dco_parse_peer(struct nl_msg *msg, void *arg)</span><br><span> {</=
-span><br><span>     struct context *c =3D arg;</span><br><span style=3D"col=
-or: hsl(0, 100%, 40%);">-    struct nlattr *tb[OVPN_ATTR_MAX + 1];</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+    struct nlattr *tb[OVPN_A=
-_MAX];</span><br><span>     struct genlmsghdr *gnlh =3D nlmsg_data(nlmsg_hd=
-r(msg));</span><br><span> </span><br><span>     msg(D_DCO_DEBUG, &quot;%s: =
-parsing message...&quot;, __func__);</span><br><span> </span><br><span styl=
-e=3D"color: hsl(0, 100%, 40%);">-    nla_parse(tb, OVPN_ATTR_MAX, genlmsg_a=
-ttrdata(gnlh, 0),</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-  nla_parse(tb, OVPN_A_PEER_MAX, genlmsg_attrdata(gnlh, 0),</span><br><span=
->               genlmsg_attrlen(gnlh, 0), NULL);</span><br><span> </span><b=
-r><span style=3D"color: hsl(0, 100%, 40%);">-    if (!tb[OVPN_ATTR_GET_PEER=
-])</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (!tb[OVPN_=
-A_PEER])</span><br><span>     {</span><br><span>         msg(D_DCO_DEBUG, &=
-quot;%s: malformed reply&quot;, __func__);</span><br><span>         return =
-NL_SKIP;</span><br><span>     }</span><br><span> </span><br><span style=3D"=
-color: hsl(0, 100%, 40%);">-    struct nlattr *tb_peer[OVPN_GET_PEER_RESP_A=
-TTR_MAX + 1];</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    st=
-ruct nlattr *tb_peer[OVPN_A_PEER_MAX + 1];</span><br><span> </span><br><spa=
-n style=3D"color: hsl(0, 100%, 40%);">-    nla_parse(tb_peer, OVPN_GET_PEER=
-_RESP_ATTR_MAX,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-      =
-        nla_data(tb[OVPN_ATTR_GET_PEER]),</span><br><span style=3D"color: h=
-sl(0, 100%, 40%);">-              nla_len(tb[OVPN_ATTR_GET_PEER]), NULL);</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+    nla_parse(tb_peer=
-, OVPN_A_PEER,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
-         nla_data(tb[OVPN_A_PEER]),</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+              nla_len(tb[OVPN_A_PEER]), NULL);</span><br><s=
-pan> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-    if (!tb_peer=
-[OVPN_GET_PEER_RESP_ATTR_PEER_ID])</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+    if (!tb_peer[OVPN_A_PEER_ID])</span><br><span>     {</sp=
-an><br><span>         msg(M_WARN, &quot;%s: no peer-id provided in reply&qu=
-ot;, __func__);</span><br><span>         return NL_SKIP;</span><br><span>  =
-   }</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">=
--    uint32_t peer_id =3D nla_get_u32(tb_peer[OVPN_GET_PEER_RESP_ATTR_PEER_=
-ID]);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    uint32_t p=
-eer_id =3D nla_get_u32(tb_peer[OVPN_A_PEER_ID]);</span><br><span>     if (c=
--&gt;c2.tls_multi-&gt;dco_peer_id !=3D peer_id)</span><br><span>     {</spa=
-n><br><span>         return NL_SKIP;</span><br><span>@@ -1033,11 +1091,11 @=
-@</span><br><span>     }</span><br><span> </span><br><span>     dco_context=
-_t *dco =3D &amp;c-&gt;c1.tuntap-&gt;dco;</span><br><span style=3D"color: h=
-sl(0, 100%, 40%);">-    struct nl_msg *nl_msg =3D ovpn_dco_nlmsg_create(dco=
-, OVPN_CMD_GET_PEER);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
-    struct nlattr *attr =3D nla_nest_start(nl_msg, OVPN_ATTR_GET_PEER);</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+    struct nl_msg *nl_m=
-sg =3D ovpn_dco_nlmsg_create(dco, OVPN_CMD_PEER_GET);</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    struct nlattr *attr =3D nla_nest_star=
-t(nl_msg, OVPN_A_PEER);</span><br><span>     int ret =3D -EMSGSIZE;</span><=
-br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-    NLA_PUT=
-_U32(nl_msg, OVPN_GET_PEER_ATTR_PEER_ID, peer_id);</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+    NLA_PUT_U32(nl_msg, OVPN_A_PEER_ID, peer=
-_id);</span><br><span>     nla_nest_end(nl_msg, attr);</span><br><span> </s=
-pan><br><span>     ret =3D ovpn_nl_msg_send(dco, nl_msg, dco_parse_peer, c,=
- __func__);</span><br><span>diff --git a/src/openvpn/dco_linux.h b/src/open=
-vpn/dco_linux.h</span><br><span>index 511519a..f3abc15 100644</span><br><sp=
-an>--- a/src/openvpn/dco_linux.h</span><br><span>+++ b/src/openvpn/dco_linu=
-x.h</span><br><span>@@ -31,9 +31,27 @@</span><br><span> #include &lt;netlin=
-k/socket.h&gt;</span><br><span> #include &lt;netlink/netlink.h&gt;</span><b=
-r><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+/* Defines=
- to avoid mismatching with other platforms */</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+#define OVPN_CMD_DEL_PEER OVPN_CMD_PEER_DEL_NTF</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+#define OVPN_CMD_SWAP=
-_KEYS OVPN_CMD_KEY_SWAP_NTF</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+</span><br><span> typedef enum ovpn_key_slot dco_key_slot_t;</span>=
-<br><span> typedef enum ovpn_cipher_alg dco_cipher_t;</span><br><span> </sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+/* OVPN section */</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+enum ovpn_mode {</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+    OVPN_MODE_P2P,</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+    OVPN_MODE_MP,</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+};</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+enum ovp=
-n_ifla_attrs {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    I=
-FLA_OVPN_UNSPEC =3D 0,</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+    IFLA_OVPN_MODE,</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    __IFLA_OVPN_=
-AFTER_LAST,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    IFLA=
-_OVPN_MAX =3D __IFLA_OVPN_AFTER_LAST - 1,</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+};</span><br><span> </span><br><span> typedef struct<=
-/span><br><span> {</span><br><span>@@ -50,6 +68,7 @@</span><br><span> </spa=
-n><br><span>     int dco_message_type;</span><br><span>     int dco_message=
-_peer_id;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    int dc=
-o_message_key_id;</span><br><span>     int dco_del_peer_reason;</span><br><=
-span>     uint64_t dco_read_bytes;</span><br><span>     uint64_t dco_write_=
-bytes;</span><br><span>diff --git a/src/openvpn/networking_sitnl.c b/src/op=
-envpn/networking_sitnl.c</span><br><span>index 9de8912..a75de9b 100644</spa=
-n><br><span>--- a/src/openvpn/networking_sitnl.c</span><br><span>+++ b/src/=
-openvpn/networking_sitnl.c</span><br><span>@@ -1354,7 +1354,7 @@</span><br>=
-<span>     struct rtattr *linkinfo =3D SITNL_NEST(&amp;req.n, sizeof(req), =
-IFLA_LINKINFO);</span><br><span>     SITNL_ADDATTR(&amp;req.n, sizeof(req),=
- IFLA_INFO_KIND, type, strlen(type) + 1);</span><br><span> #if defined(ENAB=
-LE_DCO)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    if (arg &a=
-mp;&amp; (strcmp(type, &quot;ovpn-dco&quot;) =3D=3D 0))</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+    if (arg &amp;&amp; (strcmp(type, OV=
-PN_FAMILY_NAME) =3D=3D 0))</span><br><span>     {</span><br><span>         =
-dco_context_t *dco =3D arg;</span><br><span>         struct rtattr *data =
-=3D SITNL_NEST(&amp;req.n, sizeof(req), IFLA_INFO_DATA);</span><br><span>di=
-ff --git a/src/openvpn/ovpn_dco_linux.h b/src/openvpn/ovpn_dco_linux.h</spa=
-n><br><span>index 73e19b5..680d152 100644</span><br><span>--- a/src/openvpn=
-/ovpn_dco_linux.h</span><br><span>+++ b/src/openvpn/ovpn_dco_linux.h</span>=
-<br><span>@@ -1,256 +1,109 @@</span><br><span style=3D"color: hsl(0, 100%, =
-40%);">-/* SPDX-License-Identifier: (GPL-2.0-only WITH Linux-syscall-note) =
-OR MIT */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-/*</span><br=
-><span style=3D"color: hsl(0, 100%, 40%);">- *  OpenVPN data channel accele=
-rator</span><br><span style=3D"color: hsl(0, 100%, 40%);">- *</span><br><sp=
-an style=3D"color: hsl(0, 100%, 40%);">- *  Copyright (C) 2019-2023 OpenVPN=
-, Inc.</span><br><span style=3D"color: hsl(0, 100%, 40%);">- *</span><br><s=
-pan style=3D"color: hsl(0, 100%, 40%);">- *  Author:	James Yonan &lt;james@=
-...515...&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">- *		Anto=
-nio Quartulli &lt;antonio@...515...&gt;</span><br><span style=3D"color: hsl=
-(0, 100%, 40%);">- */</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+/* SPDX-License-Identifier: ((GPL-2.0 WITH Linux-syscall-note) OR BSD-3-C=
-lause) */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+/* Do not =
-edit directly, auto-generated from: */</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+/*	Documentation/netlink/specs/ovpn.yaml */</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+/* YNL-GEN uapi header */</span>=
-<br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-#ifndef _U=
-API_LINUX_OVPN_DCO_H_</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
-#define _UAPI_LINUX_OVPN_DCO_H_</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+#ifndef _UAPI_LINUX_OVPN_H</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+#define _UAPI_LINUX_OVPN_H</span><br><span> </span><br><=
-span style=3D"color: hsl(0, 100%, 40%);">-#define OVPN_NL_NAME &quot;ovpn-d=
-co-v2&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#define =
-OVPN_FAMILY_NAME	&quot;ovpn&quot;</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+#define OVPN_FAMILY_VERSION	1</span><br><span> </span><br><sp=
-an style=3D"color: hsl(0, 100%, 40%);">-#define OVPN_NL_MULTICAST_GROUP_PEE=
-RS &quot;peers&quot;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-<=
-/span><br><span style=3D"color: hsl(0, 100%, 40%);">-/**</span><br><span st=
-yle=3D"color: hsl(0, 100%, 40%);">- * enum ovpn_nl_commands - supported net=
-link commands</span><br><span style=3D"color: hsl(0, 100%, 40%);">- */</spa=
-n><br><span style=3D"color: hsl(0, 100%, 40%);">-enum ovpn_nl_commands {</s=
-pan><br><span style=3D"color: hsl(0, 100%, 40%);">-	/**</span><br><span sty=
-le=3D"color: hsl(0, 100%, 40%);">-	 * @OVPN_CMD_UNSPEC: unspecified command=
- to catch errors</span><br><span style=3D"color: hsl(0, 100%, 40%);">-	 */<=
-/span><br><span style=3D"color: hsl(0, 100%, 40%);">-	OVPN_CMD_UNSPEC =3D 0=
-,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span sty=
-le=3D"color: hsl(0, 100%, 40%);">-	/**</span><br><span style=3D"color: hsl(=
-0, 100%, 40%);">-	 * @OVPN_CMD_NEW_PEER: Configure peer with its crypto key=
-s</span><br><span style=3D"color: hsl(0, 100%, 40%);">-	 */</span><br><span=
- style=3D"color: hsl(0, 100%, 40%);">-	OVPN_CMD_NEW_PEER,</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0,=
- 100%, 40%);">-	/**</span><br><span style=3D"color: hsl(0, 100%, 40%);">-	 =
-* @OVPN_CMD_SET_PEER: Tweak parameters for an existing peer</span><br><span=
- style=3D"color: hsl(0, 100%, 40%);">-	 */</span><br><span style=3D"color: =
-hsl(0, 100%, 40%);">-	OVPN_CMD_SET_PEER,</span><br><span style=3D"color: hs=
-l(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-	/=
-**</span><br><span style=3D"color: hsl(0, 100%, 40%);">-	 * @OVPN_CMD_DEL_P=
-EER: Remove peer from internal table</span><br><span style=3D"color: hsl(0,=
- 100%, 40%);">-	 */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-	O=
-VPN_CMD_DEL_PEER,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</sp=
-an><br><span style=3D"color: hsl(0, 100%, 40%);">-	OVPN_CMD_NEW_KEY,</span>=
-<br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"co=
-lor: hsl(0, 100%, 40%);">-	OVPN_CMD_SWAP_KEYS,</span><br><span style=3D"col=
+ 100%, 40%);">+    __IFLA_OVPN_AFTER_LAST,</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+    IFLA_OVPN_MAX =3D __IFLA_OVPN_AFTER_LAST - 1,</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+};</span><br><span> </=
+span><br><span> typedef struct</span><br><span> {</span><br><span>@@ -50,6 =
++68,7 @@</span><br><span> </span><br><span>     int dco_message_type;</span=
+><br><span>     int dco_message_peer_id;</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+    int dco_message_key_id;</span><br><span>     int d=
+co_del_peer_reason;</span><br><span>     uint64_t dco_read_bytes;</span><br=
+><span>     uint64_t dco_write_bytes;</span><br><span>diff --git a/src/open=
+vpn/networking_sitnl.c b/src/openvpn/networking_sitnl.c</span><br><span>ind=
+ex 9de8912..a75de9b 100644</span><br><span>--- a/src/openvpn/networking_sit=
+nl.c</span><br><span>+++ b/src/openvpn/networking_sitnl.c</span><br><span>@=
+@ -1354,7 +1354,7 @@</span><br><span>     struct rtattr *linkinfo =3D SITNL=
+_NEST(&amp;req.n, sizeof(req), IFLA_LINKINFO);</span><br><span>     SITNL_A=
+DDATTR(&amp;req.n, sizeof(req), IFLA_INFO_KIND, type, strlen(type) + 1);</s=
+pan><br><span> #if defined(ENABLE_DCO)</span><br><span style=3D"color: hsl(=
+0, 100%, 40%);">-    if (arg &amp;&amp; (strcmp(type, &quot;ovpn-dco&quot;)=
+ =3D=3D 0))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (=
+arg &amp;&amp; (strcmp(type, OVPN_FAMILY_NAME) =3D=3D 0))</span><br><span> =
+    {</span><br><span>         dco_context_t *dco =3D arg;</span><br><span>=
+         struct rtattr *data =3D SITNL_NEST(&amp;req.n, sizeof(req), IFLA_I=
+NFO_DATA);</span><br><span>diff --git a/src/openvpn/ovpn_dco_linux.h b/src/=
+openvpn/ovpn_dco_linux.h</span><br><span>index 73e19b5..680d152 100644</spa=
+n><br><span>--- a/src/openvpn/ovpn_dco_linux.h</span><br><span>+++ b/src/op=
+envpn/ovpn_dco_linux.h</span><br><span>@@ -1,256 +1,109 @@</span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">-/* SPDX-License-Identifier: (GPL-2.0-o=
+nly WITH Linux-syscall-note) OR MIT */</span><br><span style=3D"color: hsl(=
+0, 100%, 40%);">-/*</span><br><span style=3D"color: hsl(0, 100%, 40%);">- *=
+  OpenVPN data channel accelerator</span><br><span style=3D"color: hsl(0, 1=
+00%, 40%);">- *</span><br><span style=3D"color: hsl(0, 100%, 40%);">- *  Co=
+pyright (C) 2019-2023 OpenVPN, Inc.</span><br><span style=3D"color: hsl(0, =
+100%, 40%);">- *</span><br><span style=3D"color: hsl(0, 100%, 40%);">- *  A=
+uthor:	James Yonan &lt;james@...515...&gt;</span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">- *		Antonio Quartulli &lt;antonio@...515...&gt;</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">- */</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+/* SPDX-License-Identifier: ((GPL-2.0 WITH L=
+inux-syscall-note) OR BSD-3-Clause) */</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+/* Do not edit directly, auto-generated from: */</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+/*	Documentation/netlink/sp=
+ecs/ovpn.yaml */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+/* =
+YNL-GEN uapi header */</span><br><span> </span><br><span style=3D"color: hs=
+l(0, 100%, 40%);">-#ifndef _UAPI_LINUX_OVPN_DCO_H_</span><br><span style=3D=
+"color: hsl(0, 100%, 40%);">-#define _UAPI_LINUX_OVPN_DCO_H_</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+#ifndef _UAPI_LINUX_OVPN_H</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+#define _UAPI_LINUX_OVPN_H<=
+/span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-#def=
+ine OVPN_NL_NAME &quot;ovpn-dco-v2&quot;</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+#define OVPN_FAMILY_NAME	&quot;ovpn&quot;</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+#define OVPN_FAMILY_VERSION	1</s=
+pan><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-#defin=
+e OVPN_NL_MULTICAST_GROUP_PEERS &quot;peers&quot;</span><br><span style=3D"=
+color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 4=
+0%);">-/**</span><br><span style=3D"color: hsl(0, 100%, 40%);">- * enum ovp=
+n_nl_commands - supported netlink commands</span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">- */</span><br><span style=3D"color: hsl(0, 100%, 40%);=
+">-enum ovpn_nl_commands {</span><br><span style=3D"color: hsl(0, 100%, 40%=
+);">-	/**</span><br><span style=3D"color: hsl(0, 100%, 40%);">-	 * @OVPN_CM=
+D_UNSPEC: unspecified command to catch errors</span><br><span style=3D"colo=
+r: hsl(0, 100%, 40%);">-	 */</span><br><span style=3D"color: hsl(0, 100%, 4=
+0%);">-	OVPN_CMD_UNSPEC =3D 0,</span><br><span style=3D"color: hsl(0, 100%,=
+ 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-	/**</span><=
+br><span style=3D"color: hsl(0, 100%, 40%);">-	 * @OVPN_CMD_NEW_PEER: Confi=
+gure peer with its crypto keys</span><br><span style=3D"color: hsl(0, 100%,=
+ 40%);">-	 */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-	OVPN_CM=
+D_NEW_PEER,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br=
+><span style=3D"color: hsl(0, 100%, 40%);">-	/**</span><br><span style=3D"c=
+olor: hsl(0, 100%, 40%);">-	 * @OVPN_CMD_SET_PEER: Tweak parameters for an =
+existing peer</span><br><span style=3D"color: hsl(0, 100%, 40%);">-	 */</sp=
+an><br><span style=3D"color: hsl(0, 100%, 40%);">-	OVPN_CMD_SET_PEER,</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"c=
+olor: hsl(0, 100%, 40%);">-	/**</span><br><span style=3D"color: hsl(0, 100%=
+, 40%);">-	 * @OVPN_CMD_DEL_PEER: Remove peer from internal table</span><br=
+><span style=3D"color: hsl(0, 100%, 40%);">-	 */</span><br><span style=3D"c=
+olor: hsl(0, 100%, 40%);">-	OVPN_CMD_DEL_PEER,</span><br><span style=3D"col=
 or: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%)=
-;">-	OVPN_CMD_DEL_KEY,</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
--</span><br><span style=3D"color: hsl(0, 100%, 40%);">-	/**</span><br><span=
- style=3D"color: hsl(0, 100%, 40%);">-	 * @OVPN_CMD_GET_PEER: Retrieve the =
-status of a peer or all peers</span><br><span style=3D"color: hsl(0, 100%, =
-40%);">-	 */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-	OVPN_CMD=
-_GET_PEER,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-};</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+#define OVPN_NONCE_TAIL_SIZE=
-	8</span><br><span> </span><br><span> enum ovpn_cipher_alg {</span><br><spa=
-n style=3D"color: hsl(0, 100%, 40%);">-	/**</span><br><span style=3D"color:=
- hsl(0, 100%, 40%);">-	 * @OVPN_CIPHER_ALG_NONE: No encryption - reserved f=
-or debugging only</span><br><span style=3D"color: hsl(0, 100%, 40%);">-	 */=
-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-	OVPN_CIPHER_ALG_NONE=
- =3D 0,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-	/**</span><br=
-><span style=3D"color: hsl(0, 100%, 40%);">-	 * @OVPN_CIPHER_ALG_AES_GCM: A=
-ES-GCM AEAD cipher with any allowed key size</span><br><span style=3D"color=
-: hsl(0, 100%, 40%);">-	 */</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+	OVPN_CIPHER_ALG_NONE,</span><br><span> 	OVPN_CIPHER_ALG_AES_GCM,</=
-span><br><span style=3D"color: hsl(0, 100%, 40%);">-	/**</span><br><span st=
-yle=3D"color: hsl(0, 100%, 40%);">-	 * @OVPN_CIPHER_ALG_CHACHA20_POLY1305: =
-ChaCha20Poly1305 AEAD cipher</span><br><span style=3D"color: hsl(0, 100%, 4=
-0%);">-	 */</span><br><span> 	OVPN_CIPHER_ALG_CHACHA20_POLY1305,</span><br>=
-<span> };</span><br><span> </span><br><span> enum ovpn_del_peer_reason {</s=
-pan><br><span style=3D"color: hsl(0, 100%, 40%);">-	__OVPN_DEL_PEER_REASON_=
-FIRST,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-	OVPN_DEL_PEER_=
-REASON_TEARDOWN =3D __OVPN_DEL_PEER_REASON_FIRST,</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+	OVPN_DEL_PEER_REASON_TEARDOWN,</span><br><sp=
-an> 	OVPN_DEL_PEER_REASON_USERSPACE,</span><br><span> 	OVPN_DEL_PEER_REASON=
-_EXPIRED,</span><br><span> 	OVPN_DEL_PEER_REASON_TRANSPORT_ERROR,</span><br=
-><span> 	OVPN_DEL_PEER_REASON_TRANSPORT_DISCONNECT,</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-	__OVPN_DEL_PEER_REASON_AFTER_LAST</span><b=
-r><span> };</span><br><span> </span><br><span> enum ovpn_key_slot {</span><=
-br><span style=3D"color: hsl(0, 100%, 40%);">-	__OVPN_KEY_SLOT_FIRST,</span=
-><br><span style=3D"color: hsl(0, 100%, 40%);">-	OVPN_KEY_SLOT_PRIMARY =3D =
-__OVPN_KEY_SLOT_FIRST,</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+	OVPN_KEY_SLOT_PRIMARY,</span><br><span> 	OVPN_KEY_SLOT_SECONDARY,</span=
-><br><span style=3D"color: hsl(0, 100%, 40%);">-	__OVPN_KEY_SLOT_AFTER_LAST=
-,</span><br><span> };</span><br><span> </span><br><span style=3D"color: hsl=
-(0, 100%, 40%);">-enum ovpn_netlink_attrs {</span><br><span style=3D"color:=
- hsl(0, 100%, 40%);">-	OVPN_ATTR_UNSPEC =3D 0,</span><br><span style=3D"col=
-or: hsl(0, 100%, 40%);">-	OVPN_ATTR_IFINDEX,</span><br><span style=3D"color=
-: hsl(0, 100%, 40%);">-	OVPN_ATTR_NEW_PEER,</span><br><span style=3D"color:=
- hsl(0, 100%, 40%);">-	OVPN_ATTR_SET_PEER,</span><br><span style=3D"color: =
-hsl(0, 100%, 40%);">-	OVPN_ATTR_DEL_PEER,</span><br><span style=3D"color: h=
-sl(0, 100%, 40%);">-	OVPN_ATTR_NEW_KEY,</span><br><span style=3D"color: hsl=
-(0, 100%, 40%);">-	OVPN_ATTR_SWAP_KEYS,</span><br><span style=3D"color: hsl=
-(0, 100%, 40%);">-	OVPN_ATTR_DEL_KEY,</span><br><span style=3D"color: hsl(0=
-, 100%, 40%);">-	OVPN_ATTR_GET_PEER,</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+enum {</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+	OVPN_A_PEER_ID =3D 1,</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+	OVPN_A_PEER_REMOTE_IPV4,</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+	OVPN_A_PEER_REMOTE_IPV6,</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+	OVPN_A_PEER_REMOTE_IPV6_SCOPE_ID,</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+	OVPN_A_PEER_REMOTE_PORT,</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+	OVPN_A_PEER_SOCKET,</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+	OVPN_A_PEER_SOCKET_NETNSID,</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+	OVPN_A_PEER_VPN_IPV4,</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+	OVPN_A_PEER_VPN_IPV6,=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+	OVPN_A_PEER_LOCAL_=
-IPV4,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+	OVPN_A_PEER_L=
-OCAL_IPV6,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+	OVPN_A_P=
-EER_LOCAL_PORT,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+	OVP=
-N_A_PEER_KEEPALIVE_INTERVAL,</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+	OVPN_A_PEER_KEEPALIVE_TIMEOUT,</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+	OVPN_A_PEER_DEL_REASON,</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+	OVPN_A_PEER_VPN_RX_BYTES,</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+	OVPN_A_PEER_VPN_TX_BYTES,</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+	OVPN_A_PEER_VPN_RX_PACKETS,</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+	OVPN_A_PEER_VPN_TX_PACKE=
-TS,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+	OVPN_A_PEER_LIN=
-K_RX_BYTES,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+	OVPN_A_=
-PEER_LINK_TX_BYTES,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-	OVPN_A_PEER_LINK_RX_PACKETS,</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+	OVPN_A_PEER_LINK_TX_PACKETS,</span><br><span> </span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-	__OVPN_ATTR_AFTER_LAST,</span><br><spa=
-n style=3D"color: hsl(0, 100%, 40%);">-	OVPN_ATTR_MAX =3D __OVPN_ATTR_AFTER=
-_LAST - 1,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+	__OVPN_A=
-_PEER_MAX,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+	OVPN_A_P=
-EER_MAX =3D (__OVPN_A_PEER_MAX - 1)</span><br><span> };</span><br><span> </=
-span><br><span style=3D"color: hsl(0, 100%, 40%);">-enum ovpn_netlink_key_d=
-ir_attrs {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-	OVPN_KEY_D=
-IR_ATTR_UNSPEC =3D 0,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
-	OVPN_KEY_DIR_ATTR_CIPHER_KEY,</span><br><span style=3D"color: hsl(0, 100%,=
- 40%);">-	OVPN_KEY_DIR_ATTR_NONCE_TAIL,</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+enum {</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+	OVPN_A_KEYCONF_PEER_ID =3D 1,</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+	OVPN_A_KEYCONF_SLOT,</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+	OVPN_A_KEYCONF_KEY_ID,</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+	OVPN_A_KEYCONF_CIPHER_ALG,</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+	OVPN_A_KEYCONF_ENCRYPT_DIR,</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+	OVPN_A_KEYCONF_DECRYPT_DIR,</sp=
-an><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-	__OVPN=
-_KEY_DIR_ATTR_AFTER_LAST,</span><br><span style=3D"color: hsl(0, 100%, 40%)=
-;">-	OVPN_KEY_DIR_ATTR_MAX =3D __OVPN_KEY_DIR_ATTR_AFTER_LAST - 1,</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+	__OVPN_A_KEYCONF_MAX,</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+	OVPN_A_KEYCONF_MAX =3D (=
-__OVPN_A_KEYCONF_MAX - 1)</span><br><span> };</span><br><span> </span><br><=
-span style=3D"color: hsl(0, 100%, 40%);">-enum ovpn_netlink_new_key_attrs {=
-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-	OVPN_NEW_KEY_ATTR_UN=
-SPEC =3D 0,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-	OVPN_NEW_=
-KEY_ATTR_PEER_ID,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-	OVP=
-N_NEW_KEY_ATTR_KEY_SLOT,</span><br><span style=3D"color: hsl(0, 100%, 40%);=
-">-	OVPN_NEW_KEY_ATTR_KEY_ID,</span><br><span style=3D"color: hsl(0, 100%, =
-40%);">-	OVPN_NEW_KEY_ATTR_CIPHER_ALG,</span><br><span style=3D"color: hsl(=
-0, 100%, 40%);">-	OVPN_NEW_KEY_ATTR_ENCRYPT_KEY,</span><br><span style=3D"c=
-olor: hsl(0, 100%, 40%);">-	OVPN_NEW_KEY_ATTR_DECRYPT_KEY,</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+enum {</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+	OVPN_A_KEYDIR_CIPHER_KEY =3D 1,</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+	OVPN_A_KEYDIR_NONCE_TAIL,</span><br=
-><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-	__OVPN_NEW_K=
-EY_ATTR_AFTER_LAST,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-	O=
-VPN_NEW_KEY_ATTR_MAX =3D __OVPN_NEW_KEY_ATTR_AFTER_LAST - 1,</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+	__OVPN_A_KEYDIR_MAX,</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+	OVPN_A_KEYDIR_MAX =3D (__OVPN_A=
-_KEYDIR_MAX - 1)</span><br><span> };</span><br><span> </span><br><span styl=
-e=3D"color: hsl(0, 100%, 40%);">-enum ovpn_netlink_del_key_attrs {</span><b=
-r><span style=3D"color: hsl(0, 100%, 40%);">-	OVPN_DEL_KEY_ATTR_UNSPEC =3D =
-0,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-	OVPN_DEL_KEY_ATTR_=
-PEER_ID,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-	OVPN_DEL_KEY=
-_ATTR_KEY_SLOT,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+enum=
- {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+	OVPN_A_IFINDEX =
-=3D 1,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+	OVPN_A_PEER,=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+	OVPN_A_KEYCONF,</s=
-pan><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-	__OVP=
-N_DEL_KEY_ATTR_AFTER_LAST,</span><br><span style=3D"color: hsl(0, 100%, 40%=
-);">-	OVPN_DEL_KEY_ATTR_MAX =3D __OVPN_DEL_KEY_ATTR_AFTER_LAST - 1,</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+	__OVPN_A_MAX,</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+	OVPN_A_MAX =3D (__OVPN_A_MAX - =
-1)</span><br><span> };</span><br><span> </span><br><span style=3D"color: hs=
-l(0, 100%, 40%);">-enum ovpn_netlink_swap_keys_attrs {</span><br><span styl=
-e=3D"color: hsl(0, 100%, 40%);">-	OVPN_SWAP_KEYS_ATTR_UNSPEC =3D 0,</span><=
-br><span style=3D"color: hsl(0, 100%, 40%);">-	OVPN_SWAP_KEYS_ATTR_PEER_ID,=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+enum {</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+	OVPN_CMD_PEER_NEW =3D 1,</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+	OVPN_CMD_PEER_SET,</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+	OVPN_CMD_PEER_GET,</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+	OVPN_CMD_PEER_DEL,</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+	OVPN_CMD_PEER_DEL_NTF,</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+	OVPN_CMD_KEY_NEW,</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+	OVPN_CMD_KEY_GET,</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+	OVPN_CMD_KEY_SWAP,</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+	OVPN_CMD_KEY_SWAP_NTF,<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+	OVPN_CMD_KEY_DEL,</=
-span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-	__OV=
-PN_SWAP_KEYS_ATTR_AFTER_LAST,</span><br><span style=3D"color: hsl(0, 100%, =
-40%);">-	OVPN_SWAP_KEYS_ATTR_MAX =3D __OVPN_SWAP_KEYS_ATTR_AFTER_LAST - 1,<=
-/span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+	__OVPN_CMD_MAX,</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+	OVPN_CMD_MAX =3D (__OVPN_CMD_MAX - 1)</span=
-><br><span> };</span><br><span> </span><br><span style=3D"color: hsl(0, 100=
-%, 40%);">-enum ovpn_netlink_new_peer_attrs {</span><br><span style=3D"colo=
-r: hsl(0, 100%, 40%);">-	OVPN_NEW_PEER_ATTR_UNSPEC =3D 0,</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-	OVPN_NEW_PEER_ATTR_PEER_ID,</span><br>=
-<span style=3D"color: hsl(0, 100%, 40%);">-	OVPN_NEW_PEER_ATTR_SOCKADDR_REM=
-OTE,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-	OVPN_NEW_PEER_AT=
-TR_SOCKET,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-	OVPN_NEW_P=
-EER_ATTR_IPV4,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-	OVPN_N=
-EW_PEER_ATTR_IPV6,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-	OV=
-PN_NEW_PEER_ATTR_LOCAL_IP,</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+#define OVPN_MCGRP_PEERS	&quot;peers&quot;</span><br><span> </span><=
-br><span style=3D"color: hsl(0, 100%, 40%);">-	__OVPN_NEW_PEER_ATTR_AFTER_L=
-AST,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-	OVPN_NEW_PEER_AT=
-TR_MAX =3D __OVPN_NEW_PEER_ATTR_AFTER_LAST - 1,</span><br><span style=3D"co=
+;">-	OVPN_CMD_NEW_KEY,</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
+-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-	OVPN_CMD_SWAP_KEYS,=
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span styl=
+e=3D"color: hsl(0, 100%, 40%);">-	OVPN_CMD_DEL_KEY,</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-	/**</span><br><span style=3D"color: hsl(0, 100%, 40%);">-	 * @O=
+VPN_CMD_GET_PEER: Retrieve the status of a peer or all peers</span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">-	 */</span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-	OVPN_CMD_GET_PEER,</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-};</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+#define OVPN_NONCE_TAIL_SIZE	8</span><br><span> </span><br><span> enum o=
+vpn_cipher_alg {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-	/**<=
+/span><br><span style=3D"color: hsl(0, 100%, 40%);">-	 * @OVPN_CIPHER_ALG_N=
+ONE: No encryption - reserved for debugging only</span><br><span style=3D"c=
+olor: hsl(0, 100%, 40%);">-	 */</span><br><span style=3D"color: hsl(0, 100%=
+, 40%);">-	OVPN_CIPHER_ALG_NONE =3D 0,</span><br><span style=3D"color: hsl(=
+0, 100%, 40%);">-	/**</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
+	 * @OVPN_CIPHER_ALG_AES_GCM: AES-GCM AEAD cipher with any allowed key size=
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">-	 */</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+	OVPN_CIPHER_ALG_NONE,</span><br><sp=
+an> 	OVPN_CIPHER_ALG_AES_GCM,</span><br><span style=3D"color: hsl(0, 100%, =
+40%);">-	/**</span><br><span style=3D"color: hsl(0, 100%, 40%);">-	 * @OVPN=
+_CIPHER_ALG_CHACHA20_POLY1305: ChaCha20Poly1305 AEAD cipher</span><br><span=
+ style=3D"color: hsl(0, 100%, 40%);">-	 */</span><br><span> 	OVPN_CIPHER_AL=
+G_CHACHA20_POLY1305,</span><br><span> };</span><br><span> </span><br><span>=
+ enum ovpn_del_peer_reason {</span><br><span style=3D"color: hsl(0, 100%, 4=
+0%);">-	__OVPN_DEL_PEER_REASON_FIRST,</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-	OVPN_DEL_PEER_REASON_TEARDOWN =3D __OVPN_DEL_PEER_REASON_F=
+IRST,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+	OVPN_DEL_PEER=
+_REASON_TEARDOWN,</span><br><span> 	OVPN_DEL_PEER_REASON_USERSPACE,</span><=
+br><span> 	OVPN_DEL_PEER_REASON_EXPIRED,</span><br><span> 	OVPN_DEL_PEER_RE=
+ASON_TRANSPORT_ERROR,</span><br><span> 	OVPN_DEL_PEER_REASON_TRANSPORT_DISC=
+ONNECT,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-	__OVPN_DEL_PE=
+ER_REASON_AFTER_LAST</span><br><span> };</span><br><span> </span><br><span>=
+ enum ovpn_key_slot {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
+	__OVPN_KEY_SLOT_FIRST,</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>-	OVPN_KEY_SLOT_PRIMARY =3D __OVPN_KEY_SLOT_FIRST,</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+	OVPN_KEY_SLOT_PRIMARY,</span><br><span> =
+	OVPN_KEY_SLOT_SECONDARY,</span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">-	__OVPN_KEY_SLOT_AFTER_LAST,</span><br><span> };</span><br><span> </spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-enum ovpn_netlink_attrs {<=
+/span><br><span style=3D"color: hsl(0, 100%, 40%);">-	OVPN_ATTR_UNSPEC =3D =
+0,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-	OVPN_ATTR_IFINDEX,=
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">-	OVPN_ATTR_NEW_PEER,<=
+/span><br><span style=3D"color: hsl(0, 100%, 40%);">-	OVPN_ATTR_SET_PEER,</=
+span><br><span style=3D"color: hsl(0, 100%, 40%);">-	OVPN_ATTR_DEL_PEER,</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-	OVPN_ATTR_NEW_KEY,</spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-	OVPN_ATTR_SWAP_KEYS,</spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-	OVPN_ATTR_DEL_KEY,</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-	OVPN_ATTR_GET_PEER,</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+enum {</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+	OVPN_A_PEER_ID =3D 1,</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+	OVPN_A_PEER_REMOTE_IPV4,</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+	OVPN_A_PEER_REMOTE_IPV6,</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+	OVPN_A_PEER_REMOTE_IPV6_=
+SCOPE_ID,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+	OVPN_A_PE=
+ER_REMOTE_PORT,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+	OVP=
+N_A_PEER_SOCKET,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+	OV=
+PN_A_PEER_SOCKET_NETNSID,</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+	OVPN_A_PEER_VPN_IPV4,</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+	OVPN_A_PEER_VPN_IPV6,</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+	OVPN_A_PEER_LOCAL_IPV4,</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+	OVPN_A_PEER_LOCAL_IPV6,</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+	OVPN_A_PEER_LOCAL_PORT,</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+	OVPN_A_PEER_KEEPALIVE_INTERVAL,</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+	OVPN_A_PEER_KEEPALIVE_TIMEOUT,</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+	OVPN_A_PEER_DEL_REASON=
+,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+	OVPN_A_PEER_VPN_R=
+X_BYTES,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+	OVPN_A_PEE=
+R_VPN_TX_BYTES,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+	OVP=
+N_A_PEER_VPN_RX_PACKETS,</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+	OVPN_A_PEER_VPN_TX_PACKETS,</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+	OVPN_A_PEER_LINK_RX_BYTES,</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+	OVPN_A_PEER_LINK_TX_BYTES,</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+	OVPN_A_PEER_LINK_RX_PACKETS,</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+	OVPN_A_PEER_LINK_TX_PACKETS,</span=
+><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-	__OVPN_A=
+TTR_AFTER_LAST,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-	OVPN_=
+ATTR_MAX =3D __OVPN_ATTR_AFTER_LAST - 1,</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+	__OVPN_A_PEER_MAX,</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+	OVPN_A_PEER_MAX =3D (__OVPN_A_PEER_MAX - 1)</span><br=
+><span> };</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 4=
+0%);">-enum ovpn_netlink_key_dir_attrs {</span><br><span style=3D"color: hs=
+l(0, 100%, 40%);">-	OVPN_KEY_DIR_ATTR_UNSPEC =3D 0,</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-	OVPN_KEY_DIR_ATTR_CIPHER_KEY,</span><br><s=
+pan style=3D"color: hsl(0, 100%, 40%);">-	OVPN_KEY_DIR_ATTR_NONCE_TAIL,</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+enum {</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+	OVPN_A_KEYCONF_PEER_ID =3D 1,</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+	OVPN_A_KEYCONF_SLOT,</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+	OVPN_A_KEYCONF_KEY_ID,=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+	OVPN_A_KEYCONF_CIP=
+HER_ALG,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+	OVPN_A_KEY=
+CONF_ENCRYPT_DIR,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+	O=
+VPN_A_KEYCONF_DECRYPT_DIR,</span><br><span> </span><br><span style=3D"color=
+: hsl(0, 100%, 40%);">-	__OVPN_KEY_DIR_ATTR_AFTER_LAST,</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-	OVPN_KEY_DIR_ATTR_MAX =3D __OVPN_KEY_DIR=
+_ATTR_AFTER_LAST - 1,</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+	__OVPN_A_KEYCONF_MAX,</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+	OVPN_A_KEYCONF_MAX =3D (__OVPN_A_KEYCONF_MAX - 1)</span><br><span> };=
+</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-enu=
+m ovpn_netlink_new_key_attrs {</span><br><span style=3D"color: hsl(0, 100%,=
+ 40%);">-	OVPN_NEW_KEY_ATTR_UNSPEC =3D 0,</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-	OVPN_NEW_KEY_ATTR_PEER_ID,</span><br><span style=3D"co=
+lor: hsl(0, 100%, 40%);">-	OVPN_NEW_KEY_ATTR_KEY_SLOT,</span><br><span styl=
+e=3D"color: hsl(0, 100%, 40%);">-	OVPN_NEW_KEY_ATTR_KEY_ID,</span><br><span=
+ style=3D"color: hsl(0, 100%, 40%);">-	OVPN_NEW_KEY_ATTR_CIPHER_ALG,</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-	OVPN_NEW_KEY_ATTR_ENCRYPT_K=
+EY,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-	OVPN_NEW_KEY_ATTR=
+_DECRYPT_KEY,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+enum {=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+	OVPN_A_KEYDIR_CIPH=
+ER_KEY =3D 1,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+	OVPN_=
+A_KEYDIR_NONCE_TAIL,</span><br><span> </span><br><span style=3D"color: hsl(=
+0, 100%, 40%);">-	__OVPN_NEW_KEY_ATTR_AFTER_LAST,</span><br><span style=3D"=
+color: hsl(0, 100%, 40%);">-	OVPN_NEW_KEY_ATTR_MAX =3D __OVPN_NEW_KEY_ATTR_=
+AFTER_LAST - 1,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+	__O=
+VPN_A_KEYDIR_MAX,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+	O=
+VPN_A_KEYDIR_MAX =3D (__OVPN_A_KEYDIR_MAX - 1)</span><br><span> };</span><b=
+r><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-enum ovpn_ne=
+tlink_del_key_attrs {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
+	OVPN_DEL_KEY_ATTR_UNSPEC =3D 0,</span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-	OVPN_DEL_KEY_ATTR_PEER_ID,</span><br><span style=3D"color: hsl(=
+0, 100%, 40%);">-	OVPN_DEL_KEY_ATTR_KEY_SLOT,</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+enum {</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+	OVPN_A_IFINDEX =3D 1,</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+	OVPN_A_PEER,</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+	OVPN_A_KEYCONF,</span><br><span> </span><br><span style=3D"color=
+: hsl(0, 100%, 40%);">-	__OVPN_DEL_KEY_ATTR_AFTER_LAST,</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-	OVPN_DEL_KEY_ATTR_MAX =3D __OVPN_DEL_KEY=
+_ATTR_AFTER_LAST - 1,</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+	__OVPN_A_MAX,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+	OV=
+PN_A_MAX =3D (__OVPN_A_MAX - 1)</span><br><span> };</span><br><span> </span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-enum ovpn_netlink_swap_keys=
+_attrs {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-	OVPN_SWAP_KE=
+YS_ATTR_UNSPEC =3D 0,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
+	OVPN_SWAP_KEYS_ATTR_PEER_ID,</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+enum {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+	OV=
+PN_CMD_PEER_NEW =3D 1,</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+	OVPN_CMD_PEER_SET,</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+	OVPN_CMD_PEER_GET,</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+	OVPN_CMD_PEER_DEL,</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+	OVPN_CMD_PEER_DEL_NTF,</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+	OVPN_CMD_KEY_NEW,</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+	OVPN_CMD_KEY_GET,</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+	OVPN_CMD_KEY_SWAP,</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+	OVPN_CMD_KEY_SWAP_NTF,</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+	OVPN_CMD_KEY_DEL,</span><br><span> </span><br><span style=3D"colo=
+r: hsl(0, 100%, 40%);">-	__OVPN_SWAP_KEYS_ATTR_AFTER_LAST,</span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">-	OVPN_SWAP_KEYS_ATTR_MAX =3D __OVPN_SW=
+AP_KEYS_ATTR_AFTER_LAST - 1,</span><br><span style=3D"color: hsl(0, 100%, 4=
+0%);">-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+	__OVPN_CMD_=
+MAX,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+	OVPN_CMD_MAX =
+=3D (__OVPN_CMD_MAX - 1)</span><br><span> };</span><br><span> </span><br><s=
+pan style=3D"color: hsl(0, 100%, 40%);">-enum ovpn_netlink_new_peer_attrs {=
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">-	OVPN_NEW_PEER_ATTR_U=
+NSPEC =3D 0,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-	OVPN_NEW=
+_PEER_ATTR_PEER_ID,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-	O=
+VPN_NEW_PEER_ATTR_SOCKADDR_REMOTE,</span><br><span style=3D"color: hsl(0, 1=
+00%, 40%);">-	OVPN_NEW_PEER_ATTR_SOCKET,</span><br><span style=3D"color: hs=
+l(0, 100%, 40%);">-	OVPN_NEW_PEER_ATTR_IPV4,</span><br><span style=3D"color=
+: hsl(0, 100%, 40%);">-	OVPN_NEW_PEER_ATTR_IPV6,</span><br><span style=3D"c=
+olor: hsl(0, 100%, 40%);">-	OVPN_NEW_PEER_ATTR_LOCAL_IP,</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+#define OVPN_MCGRP_PEERS	&quot;peers&q=
+uot;</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">=
+-	__OVPN_NEW_PEER_ATTR_AFTER_LAST,</span><br><span style=3D"color: hsl(0, 1=
+00%, 40%);">-	OVPN_NEW_PEER_ATTR_MAX =3D __OVPN_NEW_PEER_ATTR_AFTER_LAST - =
+1,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-};</span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-enum ovpn_netlink_set_peer_attrs {</span><br><span style=3D=
+"color: hsl(0, 100%, 40%);">-	OVPN_SET_PEER_ATTR_UNSPEC =3D 0,</span><br><s=
+pan style=3D"color: hsl(0, 100%, 40%);">-	OVPN_SET_PEER_ATTR_PEER_ID,</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-	OVPN_SET_PEER_ATTR_KEEPALI=
+VE_INTERVAL,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-	OVPN_SET=
+_PEER_ATTR_KEEPALIVE_TIMEOUT,</span><br><span style=3D"color: hsl(0, 100%, =
+40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-	__OVPN_SET_P=
+EER_ATTR_AFTER_LAST,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-	=
+OVPN_SET_PEER_ATTR_MAX =3D __OVPN_SET_PEER_ATTR_AFTER_LAST - 1,</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-};</span><br><span style=3D"color=
+: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>-enum ovpn_netlink_del_peer_attrs {</span><br><span style=3D"color: hsl(0,=
+ 100%, 40%);">-	OVPN_DEL_PEER_ATTR_UNSPEC =3D 0,</span><br><span style=3D"c=
+olor: hsl(0, 100%, 40%);">-	OVPN_DEL_PEER_ATTR_REASON,</span><br><span styl=
+e=3D"color: hsl(0, 100%, 40%);">-	OVPN_DEL_PEER_ATTR_PEER_ID,</span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hs=
+l(0, 100%, 40%);">-	__OVPN_DEL_PEER_ATTR_AFTER_LAST,</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-	OVPN_DEL_PEER_ATTR_MAX =3D __OVPN_DEL_PEER=
+_ATTR_AFTER_LAST - 1,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
+};</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span st=
+yle=3D"color: hsl(0, 100%, 40%);">-enum ovpn_netlink_get_peer_attrs {</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-	OVPN_GET_PEER_ATTR_UNSPEC =
+=3D 0,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-	OVPN_GET_PEER_=
+ATTR_PEER_ID,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><=
+br><span style=3D"color: hsl(0, 100%, 40%);">-	__OVPN_GET_PEER_ATTR_AFTER_L=
+AST,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-	OVPN_GET_PEER_AT=
+TR_MAX =3D __OVPN_GET_PEER_ATTR_AFTER_LAST - 1,</span><br><span style=3D"co=
 lor: hsl(0, 100%, 40%);">-};</span><br><span style=3D"color: hsl(0, 100%, 4=
 0%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-enum ovpn_netl=
-ink_set_peer_attrs {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-	=
-OVPN_SET_PEER_ATTR_UNSPEC =3D 0,</span><br><span style=3D"color: hsl(0, 100=
-%, 40%);">-	OVPN_SET_PEER_ATTR_PEER_ID,</span><br><span style=3D"color: hsl=
-(0, 100%, 40%);">-	OVPN_SET_PEER_ATTR_KEEPALIVE_INTERVAL,</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-	OVPN_SET_PEER_ATTR_KEEPALIVE_TIMEOUT,<=
-/span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-	__OVPN_SET_PEER_ATTR_AFTER_LAST,</span><br=
-><span style=3D"color: hsl(0, 100%, 40%);">-	OVPN_SET_PEER_ATTR_MAX =3D __O=
-VPN_SET_PEER_ATTR_AFTER_LAST - 1,</span><br><span style=3D"color: hsl(0, 10=
-0%, 40%);">-};</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span>=
-<br><span style=3D"color: hsl(0, 100%, 40%);">-enum ovpn_netlink_del_peer_a=
-ttrs {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-	OVPN_DEL_PEER_=
-ATTR_UNSPEC =3D 0,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-	OV=
-PN_DEL_PEER_ATTR_REASON,</span><br><span style=3D"color: hsl(0, 100%, 40%);=
-">-	OVPN_DEL_PEER_ATTR_PEER_ID,</span><br><span style=3D"color: hsl(0, 100%=
-, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-	__OVPN_DEL=
-_PEER_ATTR_AFTER_LAST,</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
--	OVPN_DEL_PEER_ATTR_MAX =3D __OVPN_DEL_PEER_ATTR_AFTER_LAST - 1,</span><br=
-><span style=3D"color: hsl(0, 100%, 40%);">-};</span><br><span style=3D"col=
-or: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%)=
-;">-enum ovpn_netlink_get_peer_attrs {</span><br><span style=3D"color: hsl(=
-0, 100%, 40%);">-	OVPN_GET_PEER_ATTR_UNSPEC =3D 0,</span><br><span style=3D=
-"color: hsl(0, 100%, 40%);">-	OVPN_GET_PEER_ATTR_PEER_ID,</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0,=
- 100%, 40%);">-	__OVPN_GET_PEER_ATTR_AFTER_LAST,</span><br><span style=3D"c=
-olor: hsl(0, 100%, 40%);">-	OVPN_GET_PEER_ATTR_MAX =3D __OVPN_GET_PEER_ATTR=
-_AFTER_LAST - 1,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-};</s=
-pan><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-enum ovpn_netlink_get_peer_response_attrs {=
-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-	OVPN_GET_PEER_RESP_A=
-TTR_UNSPEC =3D 0,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-	OVP=
-N_GET_PEER_RESP_ATTR_PEER_ID,</span><br><span style=3D"color: hsl(0, 100%, =
-40%);">-	OVPN_GET_PEER_RESP_ATTR_SOCKADDR_REMOTE,</span><br><span style=3D"=
-color: hsl(0, 100%, 40%);">-	OVPN_GET_PEER_RESP_ATTR_IPV4,</span><br><span =
-style=3D"color: hsl(0, 100%, 40%);">-	OVPN_GET_PEER_RESP_ATTR_IPV6,</span><=
-br><span style=3D"color: hsl(0, 100%, 40%);">-	OVPN_GET_PEER_RESP_ATTR_LOCA=
-L_IP,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-	OVPN_GET_PEER_R=
-ESP_ATTR_LOCAL_PORT,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-	=
-OVPN_GET_PEER_RESP_ATTR_KEEPALIVE_INTERVAL,</span><br><span style=3D"color:=
- hsl(0, 100%, 40%);">-	OVPN_GET_PEER_RESP_ATTR_KEEPALIVE_TIMEOUT,</span><br=
-><span style=3D"color: hsl(0, 100%, 40%);">-	OVPN_GET_PEER_RESP_ATTR_VPN_RX=
-_BYTES,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-	OVPN_GET_PEER=
-_RESP_ATTR_VPN_TX_BYTES,</span><br><span style=3D"color: hsl(0, 100%, 40%);=
-">-	OVPN_GET_PEER_RESP_ATTR_VPN_RX_PACKETS,</span><br><span style=3D"color:=
- hsl(0, 100%, 40%);">-	OVPN_GET_PEER_RESP_ATTR_VPN_TX_PACKETS,</span><br><s=
-pan style=3D"color: hsl(0, 100%, 40%);">-	OVPN_GET_PEER_RESP_ATTR_LINK_RX_B=
-YTES,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-	OVPN_GET_PEER_R=
-ESP_ATTR_LINK_TX_BYTES,</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
->-	OVPN_GET_PEER_RESP_ATTR_LINK_RX_PACKETS,</span><br><span style=3D"color:=
- hsl(0, 100%, 40%);">-	OVPN_GET_PEER_RESP_ATTR_LINK_TX_PACKETS,</span><br><=
-span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: =
-hsl(0, 100%, 40%);">-	__OVPN_GET_PEER_RESP_ATTR_AFTER_LAST,</span><br><span=
- style=3D"color: hsl(0, 100%, 40%);">-	OVPN_GET_PEER_RESP_ATTR_MAX =3D __OV=
-PN_GET_PEER_RESP_ATTR_AFTER_LAST - 1,</span><br><span style=3D"color: hsl(0=
-, 100%, 40%);">-};</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</s=
-pan><br><span style=3D"color: hsl(0, 100%, 40%);">-enum ovpn_netlink_peer_s=
-tats_attrs {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-	OVPN_PEE=
-R_STATS_ATTR_UNSPEC =3D 0,</span><br><span style=3D"color: hsl(0, 100%, 40%=
-);">-	OVPN_PEER_STATS_BYTES,</span><br><span style=3D"color: hsl(0, 100%, 4=
-0%);">-	OVPN_PEER_STATS_PACKETS,</span><br><span style=3D"color: hsl(0, 100=
-%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-	__OVPN_PE=
-ER_STATS_ATTR_AFTER_LAST,</span><br><span style=3D"color: hsl(0, 100%, 40%)=
-;">-	OVPN_PEER_STATS_ATTR_MAX =3D __OVPN_PEER_STATS_ATTR_AFTER_LAST - 1,</s=
-pan><br><span style=3D"color: hsl(0, 100%, 40%);">-};</span><br><span style=
+ink_get_peer_response_attrs {</span><br><span style=3D"color: hsl(0, 100%, =
+40%);">-	OVPN_GET_PEER_RESP_ATTR_UNSPEC =3D 0,</span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-	OVPN_GET_PEER_RESP_ATTR_PEER_ID,</span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">-	OVPN_GET_PEER_RESP_ATTR_SOCKADDR_REMO=
+TE,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-	OVPN_GET_PEER_RES=
+P_ATTR_IPV4,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-	OVPN_GET=
+_PEER_RESP_ATTR_IPV6,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
+	OVPN_GET_PEER_RESP_ATTR_LOCAL_IP,</span><br><span style=3D"color: hsl(0, 1=
+00%, 40%);">-	OVPN_GET_PEER_RESP_ATTR_LOCAL_PORT,</span><br><span style=3D"=
+color: hsl(0, 100%, 40%);">-	OVPN_GET_PEER_RESP_ATTR_KEEPALIVE_INTERVAL,</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-	OVPN_GET_PEER_RESP_ATTR=
+_KEEPALIVE_TIMEOUT,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-	O=
+VPN_GET_PEER_RESP_ATTR_VPN_RX_BYTES,</span><br><span style=3D"color: hsl(0,=
+ 100%, 40%);">-	OVPN_GET_PEER_RESP_ATTR_VPN_TX_BYTES,</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-	OVPN_GET_PEER_RESP_ATTR_VPN_RX_PACKETS,</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-	OVPN_GET_PEER_RESP_ATTR=
+_VPN_TX_PACKETS,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-	OVPN=
+_GET_PEER_RESP_ATTR_LINK_RX_BYTES,</span><br><span style=3D"color: hsl(0, 1=
+00%, 40%);">-	OVPN_GET_PEER_RESP_ATTR_LINK_TX_BYTES,</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-	OVPN_GET_PEER_RESP_ATTR_LINK_RX_PACKETS,</=
+span><br><span style=3D"color: hsl(0, 100%, 40%);">-	OVPN_GET_PEER_RESP_ATT=
+R_LINK_TX_PACKETS,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-	__OVPN_GET_PEER_RESP_AT=
+TR_AFTER_LAST,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-	OVPN_G=
+ET_PEER_RESP_ATTR_MAX =3D __OVPN_GET_PEER_RESP_ATTR_AFTER_LAST - 1,</span><=
+br><span style=3D"color: hsl(0, 100%, 40%);">-};</span><br><span style=3D"c=
+olor: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">-enum ovpn_netlink_peer_stats_attrs {</span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">-	OVPN_PEER_STATS_ATTR_UNSPEC =3D 0,</span><br><span st=
+yle=3D"color: hsl(0, 100%, 40%);">-	OVPN_PEER_STATS_BYTES,</span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">-	OVPN_PEER_STATS_PACKETS,</span><br><s=
+pan style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-	__OVPN_PEER_STATS_ATTR_AFTER_LAST,</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-	OVPN_PEER_STATS_ATTR_MAX =3D __OVPN_PEER=
+_STATS_ATTR_AFTER_LAST - 1,</span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">-};</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><s=
+pan style=3D"color: hsl(0, 100%, 40%);">-enum ovpn_netlink_peer_attrs {</sp=
+an><br><span style=3D"color: hsl(0, 100%, 40%);">-	OVPN_PEER_ATTR_UNSPEC =
+=3D 0,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-	OVPN_PEER_ATTR=
+_PEER_ID,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-	OVPN_PEER_A=
+TTR_SOCKADDR_REMOTE,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-	=
+OVPN_PEER_ATTR_IPV4,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-	=
+OVPN_PEER_ATTR_IPV6,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-	=
+OVPN_PEER_ATTR_LOCAL_IP,</span><br><span style=3D"color: hsl(0, 100%, 40%);=
+">-	OVPN_PEER_ATTR_KEEPALIVE_INTERVAL,</span><br><span style=3D"color: hsl(=
+0, 100%, 40%);">-	OVPN_PEER_ATTR_KEEPALIVE_TIMEOUT,</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-	OVPN_PEER_ATTR_ENCRYPT_KEY,</span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">-	OVPN_PEER_ATTR_DECRYPT_KEY,</span><=
+br><span style=3D"color: hsl(0, 100%, 40%);">-	OVPN_PEER_ATTR_RX_STATS,</sp=
+an><br><span style=3D"color: hsl(0, 100%, 40%);">-	OVPN_PEER_ATTR_TX_STATS,=
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span styl=
+e=3D"color: hsl(0, 100%, 40%);">-	__OVPN_PEER_ATTR_AFTER_LAST,</span><br><s=
+pan style=3D"color: hsl(0, 100%, 40%);">-	OVPN_PEER_ATTR_MAX =3D __OVPN_PEE=
+R_ATTR_AFTER_LAST - 1,</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
+-};</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span s=
+tyle=3D"color: hsl(0, 100%, 40%);">-enum ovpn_netlink_packet_attrs {</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-	OVPN_PACKET_ATTR_UNSPEC =3D=
+ 0,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-	OVPN_PACKET_ATTR_=
+PACKET,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-	OVPN_PACKET_A=
+TTR_PEER_ID,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-	__OVPN_PACKET_ATTR_AFTER_LAST=
+,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-	OVPN_PACKET_ATTR_MA=
+X =3D __OVPN_PACKET_ATTR_AFTER_LAST - 1,</span><br><span style=3D"color: hs=
+l(0, 100%, 40%);">-};</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">-enum ovpn_ifla_attrs =
+{</span><br><span style=3D"color: hsl(0, 100%, 40%);">-	IFLA_OVPN_UNSPEC =
+=3D 0,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-	IFLA_OVPN_MODE=
+,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-	__IFLA_OVPN_AFTER_LAST,</span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">-	IFLA_OVPN_MAX =3D __IFLA_OVPN_AFTER_L=
+AST - 1,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-};</span><br>=
+<span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-enum ovpn_mode {</span><br><span style=3D"color: hsl(=
+0, 100%, 40%);">-	__OVPN_MODE_FIRST =3D 0,</span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">-	OVPN_MODE_P2P =3D __OVPN_MODE_FIRST,</span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">-	OVPN_MODE_MP,</span><br><span style=
 =3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100=
-%, 40%);">-enum ovpn_netlink_peer_attrs {</span><br><span style=3D"color: h=
-sl(0, 100%, 40%);">-	OVPN_PEER_ATTR_UNSPEC =3D 0,</span><br><span style=3D"=
-color: hsl(0, 100%, 40%);">-	OVPN_PEER_ATTR_PEER_ID,</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-	OVPN_PEER_ATTR_SOCKADDR_REMOTE,</span><br>=
-<span style=3D"color: hsl(0, 100%, 40%);">-	OVPN_PEER_ATTR_IPV4,</span><br>=
-<span style=3D"color: hsl(0, 100%, 40%);">-	OVPN_PEER_ATTR_IPV6,</span><br>=
-<span style=3D"color: hsl(0, 100%, 40%);">-	OVPN_PEER_ATTR_LOCAL_IP,</span>=
-<br><span style=3D"color: hsl(0, 100%, 40%);">-	OVPN_PEER_ATTR_KEEPALIVE_IN=
-TERVAL,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-	OVPN_PEER_ATT=
-R_KEEPALIVE_TIMEOUT,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-	=
-OVPN_PEER_ATTR_ENCRYPT_KEY,</span><br><span style=3D"color: hsl(0, 100%, 40=
-%);">-	OVPN_PEER_ATTR_DECRYPT_KEY,</span><br><span style=3D"color: hsl(0, 1=
-00%, 40%);">-	OVPN_PEER_ATTR_RX_STATS,</span><br><span style=3D"color: hsl(=
-0, 100%, 40%);">-	OVPN_PEER_ATTR_TX_STATS,</span><br><span style=3D"color: =
-hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
-	__OVPN_PEER_ATTR_AFTER_LAST,</span><br><span style=3D"color: hsl(0, 100%, =
-40%);">-	OVPN_PEER_ATTR_MAX =3D __OVPN_PEER_ATTR_AFTER_LAST - 1,</span><br>=
-<span style=3D"color: hsl(0, 100%, 40%);">-};</span><br><span style=3D"colo=
-r: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);=
-">-enum ovpn_netlink_packet_attrs {</span><br><span style=3D"color: hsl(0, =
-100%, 40%);">-	OVPN_PACKET_ATTR_UNSPEC =3D 0,</span><br><span style=3D"colo=
-r: hsl(0, 100%, 40%);">-	OVPN_PACKET_ATTR_PACKET,</span><br><span style=3D"=
-color: hsl(0, 100%, 40%);">-	OVPN_PACKET_ATTR_PEER_ID,</span><br><span styl=
-e=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 10=
-0%, 40%);">-	__OVPN_PACKET_ATTR_AFTER_LAST,</span><br><span style=3D"color:=
- hsl(0, 100%, 40%);">-	OVPN_PACKET_ATTR_MAX =3D __OVPN_PACKET_ATTR_AFTER_LA=
-ST - 1,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-};</span><br><=
-span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: =
-hsl(0, 100%, 40%);">-enum ovpn_ifla_attrs {</span><br><span style=3D"color:=
- hsl(0, 100%, 40%);">-	IFLA_OVPN_UNSPEC =3D 0,</span><br><span style=3D"col=
-or: hsl(0, 100%, 40%);">-	IFLA_OVPN_MODE,</span><br><span style=3D"color: h=
-sl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-	=
-__IFLA_OVPN_AFTER_LAST,</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
->-	IFLA_OVPN_MAX =3D __IFLA_OVPN_AFTER_LAST - 1,</span><br><span style=3D"c=
-olor: hsl(0, 100%, 40%);">-};</span><br><span style=3D"color: hsl(0, 100%, =
-40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-enum ovpn_mod=
-e {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-	__OVPN_MODE_FIRST=
- =3D 0,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-	OVPN_MODE_P2P=
- =3D __OVPN_MODE_FIRST,</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
->-	OVPN_MODE_MP,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</spa=
-n><br><span style=3D"color: hsl(0, 100%, 40%);">-	__OVPN_MODE_AFTER_LAST,</=
-span><br><span style=3D"color: hsl(0, 100%, 40%);">-};</span><br><span styl=
-e=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 10=
-0%, 40%);">-#endif /* _UAPI_LINUX_OVPN_DCO_H_ */</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+#endif /* _UAPI_LINUX_OVPN_H */</span><br><spa=
-n></span><br></pre><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c=
-/openvpn/+/941?usp=3Demail">change 941</a>. To unsubscribe, or for help wri=
-ting mail filters, visit <a href=3D"http://gerrit.openvpn.net/settings">set=
-tings</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><d=
-iv itemscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction">=
-<link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/941?us=
-p=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
+%, 40%);">-	__OVPN_MODE_AFTER_LAST,</span><br><span style=3D"color: hsl(0, =
+100%, 40%);">-};</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-#endif /* _UAPI_LINUX_OVPN=
+_DCO_H_ */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#endif /*=
+ _UAPI_LINUX_OVPN_H */</span><br><span></span><br></pre><p>To view, visit <=
+a href=3D"http://gerrit.openvpn.net/c/openvpn/+/941?usp=3Demail">change 941=
+</a>. To unsubscribe, or for help writing mail filters, visit <a href=3D"ht=
+tp://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope itemtype=
+=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"action" item=
+type=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http:/=
+/gerrit.openvpn.net/c/openvpn/+/941?usp=3Demail"/><meta itemprop=3D"name" c=
+ontent=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
 <div style=3D"display:none"> Gerrit-Change-Id: I009f4e7ad38636f1c0b78d26756=
 1194c2bb4c051 </div>
 <div style=3D"display:none"> Gerrit-Change-Number: 941 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 3 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 4 </div>
 <div style=3D"display:none"> Gerrit-Owner: its_Giaan &lt;gianmarco@...2786...=
 ..&gt; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
@@ -2145,5 +2139,5 @@ ts.sourceforge.net&gt; </div>
 <div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
 
 
---zEwOW97mjLA=--
+--zzGbwbMztKw=--
 
