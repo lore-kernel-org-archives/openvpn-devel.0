@@ -1,17 +1,9 @@
-From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Mon, 28 Apr 2025 19:20:56 +0000
-In-Reply-To: <gerrit.1745857478000.If96c2ebd2af16b18ed34820e8c0531547e2076d9@...2715...>
-References: <gerrit.1745857478000.If96c2ebd2af16b18ed34820e8c0531547e2076d9@...2715...>
-Reply-To: gert@...1296..., arne-openvpn@...1227...,
- rein.vanbaaren@...1435..., openvpn-devel@lists.sourceforge.net,
- frank@...2641...
-Message-ID: <17eb7e26bed2242a36e1c709945d67900e5a5d25-EmailReviewComments-HTML@...2715...>
+From: Klemens Nanni <kn@...2273...>
+Date: Tue, 29 Apr 2025 00:46:29 +0300
+Message-ID: <20250428214629.49104-1-kn@...2273...>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="/nA+3vXmxDc="; charset=UTF-8
-Subject: [Openvpn-devel] [M] Change in openvpn[release/2.6]: Fix
- MBEDTLS_DEPRECATED_REMOVED build errors
+Subject: [Openvpn-devel] [SPAM] [PATCH] Skip tmp-dir check unless actualy
+ used
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,117 +12,57 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: flichtenheld <frank@...2641...>, comododragon <rein.vanbaaren@...1435...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>, plaisthos <arne-openvpn@...1227...>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---/nA+3vXmxDc=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+As per the manual, it is subject to `chroot` and used only by
+`client-connect` and `plugin`.
 
-Attention is currently required from: flichtenheld, plaisthos.
+Without additional code being run and `chroot /var/empty/` (amongst
+`user`, `persist-*`, etc.) set to reduce run-time privileges as much as
+possible, the default temporary is still required upon start:
 
-cron2 has posted comments on this change. ( http://gerrit.openvpn.net/c/ope=
-nvpn/+/946?usp=3Demail )
+Options error: Temporary directory (--tmp-dir) fails with '/var/empty///tmp': No such file or directory (errno=2)
 
-Change subject: Fix MBEDTLS_DEPRECATED_REMOVED build errors
-......................................................................
+`tmp-dir /` works around this, but should not be needed.
 
+In this setup, client and server have no create/write filesystem access
+at all after privilege drop;  with this fix, ktrace(1) (on OpenBSD)
+shows no namei(9) lookup being made at runtime (after `chroot`):
 
-Patch Set 1: Code-Review-2
+	# ktrace -d -i -tn ./openvpn --config ./conf --tmp-dir /nonexistent/
+	...^C
+	# kdump | grep -q -e/tmp -e/nonexistent ; echo $?
+---
+ src/openvpn/options.c | 13 +++++++++++--
+ 1 file changed, 11 insertions(+), 2 deletions(-)
 
-(1 comment)
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index 96119c48..effa8d0f 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -4149,8 +4149,17 @@ options_postprocess_filechecks(struct options *options)
+     /* ** Config related ** */
+     errs |= check_file_access_chroot(options->chroot_dir, CHKACC_FILE, options->client_config_dir,
+                                      R_OK|X_OK, "--client-config-dir");
+-    errs |= check_file_access_chroot(options->chroot_dir, CHKACC_FILE, options->tmp_dir,
+-                                     R_OK|W_OK|X_OK, "Temporary directory (--tmp-dir)");
++
++    msg(M_WARN|M_NOPREFIX, "tmp_dir = '%s'", options->tmp_dir);
++    if (options->client_connect_script
++#ifdef ENABLE_PLUGIN
++        || options->plugin_list
++#endif /* ENABLE_PLUGIN */
++       )
++    {
++        errs |= check_file_access_chroot(options->chroot_dir, CHKACC_FILE, options->tmp_dir,
++                                         R_OK|W_OK|X_OK, "Temporary directory (--tmp-dir)");
++    }
+ 
+     if (errs)
+     {
+-- 
+2.49.0
 
-Patchset:
-
-PS1:
-This looks like a straightforward cherrypick, but then fails on some builde=
-rs with
-
-```
-essl_mbedtls.c: In function ???tls_version_to_ssl_version???:
-essl_mbedtls.c:1069:14: error: ???major??? undeclared (first use in this
-+function)
-e 1069 |             *major =3D MBEDTLS_SSL_MAJOR_VERSION_3;
-e      |              ^~~~~
-```
-
-
-
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/946?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings
-
-Gerrit-Project: openvpn
-Gerrit-Branch: release/2.6
-Gerrit-Change-Id: If96c2ebd2af16b18ed34820e8c0531547e2076d9
-Gerrit-Change-Number: 946
-Gerrit-PatchSet: 1
-Gerrit-Owner: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: cron2 <gert@...1296...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-CC: comododragon <rein.vanbaaren@...1435...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Comment-Date: Mon, 28 Apr 2025 19:20:56 +0000
-Gerrit-HasComments: Yes
-Gerrit-Has-Labels: Yes
-Gerrit-MessageType: comment
-
---/nA+3vXmxDc=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<p> Attention is currently required from: flichtenheld, plaisthos. </p>
-<p>Patch set 1:<span style=3D"border-radius: 3px; display: inline-block; ma=
-rgin: 0 2px; padding: 4px;background-color: #ffd4d4;">Code-Review -2</span>=
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/946?usp=3Demail">Vi=
-ew Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0=
-;"><li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-s=
-tyle: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p s=
-tyle=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn=
-/+/946?tab=3Dcomments">Patch Set #1:</a> </p><p style=3D"white-space: pre-w=
-rap; word-wrap: break-word;">This looks like a straightforward cherrypick, =
-but then fails on some builders with</p><p style=3D"white-space: pre-wrap; =
-word-wrap: break-word;">```<br>essl_mbedtls.c: In function ???tls_version_t=
-o_ssl_version???:<br>essl_mbedtls.c:1069:14: error: ???major??? undeclared =
-(first use in this<br>+function)<br>e 1069 |             *major =3D MBEDTLS=
-_SSL_MAJOR_VERSION_3;<br>e      |              ^~~~~<br>```</p></li></ul></=
-li></ul><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/=
-946?usp=3Demail">change 946</a>. To unsubscribe, or for help writing mail f=
-ilters, visit <a href=3D"http://gerrit.openvpn.net/settings">settings</a>.<=
-/p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscop=
-e itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itemp=
-rop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/946?usp=3Demail"/=
-><meta itemprop=3D"name" content=3D"View Change"/></div></div>
-
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: release/2.6 </div>
-<div style=3D"display:none"> Gerrit-Change-Id: If96c2ebd2af16b18ed34820e8c0=
-531547e2076d9 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 946 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
-<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
-.&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
- </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: comododragon &lt;rein.vanbaaren@...493...=
-1435...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
-41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Mon, 28 Apr 2025 19:20:56=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
-
-
---/nA+3vXmxDc=--
 
