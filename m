@@ -1,10 +1,9 @@
-Date: Mon, 28 Apr 2025 14:38:38 +0200
-From: Frank Lichtenheld <frank@...2641...>
-Message-ID: <aA92znR5RjV5Pe5f@...2685...>
-References: <20250426121903.67930-1-kn@...2273...>
-MIME-Version: 1.0
+Date: Mon, 28 Apr 2025 16:27:04 +0200 (CEST)
+Message-Id: <202504281427.53SER4eD075775@...2054...>
+From: Gert Doering <gert@...1296...>
 In-Reply-To: <20250426121903.67930-1-kn@...2273...>
-Subject: Re: [Openvpn-devel] [PATCH] Fix tmp-dir documentation
+References: <20250426121903.67930-1-kn@...2273...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Fix tmp-dir documentation
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,26 +12,32 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
 To: Klemens Nanni <kn@...2273...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-On Sat, Apr 26, 2025 at 03:19:03PM +0300, Klemens Nanni wrote:
-> Mention its default (on non-Windows systems), rephrase for brevity, fix
-> grammar, correct the module environment variable name and remove a wrong
-> default mentioned in a related option.
-> ---
->  doc/man-sections/generic-options.rst | 11 +++++------
->  doc/man-sections/script-options.rst  |  8 +++-----
->  2 files changed, 8 insertions(+), 11 deletions(-)
+Thanks, documentation improvements are always welcome.
 
-Acked-by: Frank Lichtenheld <frank@...2641...>
+Your patch has been applied to the master and release/2.6 branch
+("documentation improvement").
 
-Comparing to the source code this looks correct to me.
+commit 9ecaf2400a7b399166c0698c30d413b91cd4f534 (master)
+commit 6ca0fb4a0966c7dc80de4c45472281246961ad52 (release/2.6)
+Author: Klemens Nanni
+Date:   Sat Apr 26 15:19:03 2025 +0300
 
-Regards,
--- 
-  Frank Lichtenheld
+     Fix tmp-dir documentation
+
+     Acked-by: Frank Lichtenheld <frank@...2641...>
+     Message-Id: <20250426121903.67930-1-kn@...2273...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg31514.html
+     Signed-off-by: Gert Doering <gert@...1296...>
+
+
+--
+kind regards,
+
+Gert Doering
+
 
