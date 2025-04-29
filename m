@@ -1,8 +1,10 @@
 From: Klemens Nanni <kn@...2273...>
-Date: Tue, 29 Apr 2025 00:46:29 +0300
-Message-ID: <20250428214629.49104-1-kn@...2273...>
+Date: Tue, 29 Apr 2025 08:14:50 +0300
+Message-ID: <20250429051450.32551-1-kn@...2273...>
+In-Reply-To: <20250428214629.49104-1-kn@...2273...>
+References: <20250428214629.49104-1-kn@...2273...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [SPAM] [PATCH] Skip tmp-dir check unless actualy
+Subject: [Openvpn-devel] [SPAM] [PATCH] Skip tmp-dir check unless actually
  used
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
@@ -27,13 +29,14 @@ Options error: Temporary directory (--tmp-dir) fails with '/var/empty///tmp': No
 
 `tmp-dir /` works around this, but should not be needed.
 
-In this setup, client and server have no create/write filesystem access
-at all after privilege drop;  with this fix, ktrace(1) (on OpenBSD)
-shows no namei(9) lookup being made at runtime (after `chroot`):
+In this setup, client and server effectively have no create/write
+filesystem access after privilege drop;  with this fix, ktrace(1)
+(on OpenBSD) shows no namei(9) lookup at runtime (after `chroot`):
 
 	# ktrace -d -i -tn ./openvpn --config ./conf --tmp-dir /nonexistent/
 	...^C
 	# kdump | grep -q -e/tmp -e/nonexistent ; echo $?
+	1
 ---
  src/openvpn/options.c | 13 +++++++++++--
  1 file changed, 11 insertions(+), 2 deletions(-)
