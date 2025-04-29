@@ -1,12 +1,17 @@
-Date: Tue, 29 Apr 2025 11:06:57 +0000
-From: Klemens Nanni <kn@...2273...>
-In-Reply-To: <a82d032f-4010-4368-b667-1f398ac309cb@...1227...>
-References: <20250428214629.49104-1-kn@...2273...>
- <a82d032f-4010-4368-b667-1f398ac309cb@...1227...>
-Message-ID: <D140E24D-4861-42A9-BFE0-D400EF95563B@...2273...>
+From: "cron2 (Code Review)" <gerrit@...515...>
+Date: Tue, 29 Apr 2025 15:48:56 +0000
+In-Reply-To: <gerrit.1745857478000.If96c2ebd2af16b18ed34820e8c0531547e2076d9@...2715...>
+References: <gerrit.1745857478000.If96c2ebd2af16b18ed34820e8c0531547e2076d9@...2715...>
+Reply-To: gert@...1296..., arne-openvpn@...1227...,
+ rein.vanbaaren@...1435..., openvpn-devel@lists.sourceforge.net,
+ frank@...2641...
+Message-ID: <45d72359c6056a6ed090e65276d77ce87076ea55-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-Subject: Re: [Openvpn-devel] [SPAM] [PATCH] Skip tmp-dir check unless
- actualy used
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="h7e4XcYuG+U="; charset=UTF-8
+Subject: [Openvpn-devel] [M] Change in openvpn[release/2.6]: Fix
+ MBEDTLS_DEPRECATED_REMOVED build errors
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,24 +20,90 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
+To: flichtenheld <frank@...2641...>, comododragon <rein.vanbaaren@...1435...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>, plaisthos <arne-openvpn@...1227...>
+
+--h7e4XcYuG+U=
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-To: Arne Schwabe <arne@...1227...>, openvpn-devel@lists.sourceforge.net
 
-29 =D0=B0=D0=BF=D1=80=D0=B5=D0=BB=D1=8F 2025=E2=80=AF=D0=B3. 08:24:12 UTC, =
-Arne Schwabe <arne@...1227...> =D0=BF=D0=B8=D1=88=D0=B5=D1=82:
->There are more instances where the tmp dir is used. Just to name one of th=
-e top of my head is tls-crypt-v2-verify. I wonder if the benefit herre is b=
-ig enough. As you said, even in your ro scenario it can be workarounded wit=
-h specifying an existing directory.
+Attention is currently required from: flichtenheld, plaisthos.
 
-Right, so docs need more fixing.
+cron2 has posted comments on this change. ( http://gerrit.openvpn.net/c/ope=
+nvpn/+/946?usp=3Demail )
 
-It is a marginal benefit indeed, but nevertheless strikes me as "correct".
+Change subject: Fix MBEDTLS_DEPRECATED_REMOVED build errors
+......................................................................
 
-I'll go over the code come back with a manual patch.
-Afterwards there be a second iteration of this one.
 
-Thanks.
+Patch Set 2: Code-Review+2
 
+
+--
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/946?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings
+
+Gerrit-Project: openvpn
+Gerrit-Branch: release/2.6
+Gerrit-Change-Id: If96c2ebd2af16b18ed34820e8c0531547e2076d9
+Gerrit-Change-Number: 946
+Gerrit-PatchSet: 2
+Gerrit-Owner: flichtenheld <frank@...2641...>
+Gerrit-Reviewer: cron2 <gert@...1296...>
+Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
+Gerrit-CC: comododragon <rein.vanbaaren@...1435...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Attention: flichtenheld <frank@...2641...>
+Gerrit-Comment-Date: Tue, 29 Apr 2025 15:48:56 +0000
+Gerrit-HasComments: No
+Gerrit-Has-Labels: Yes
+Gerrit-MessageType: comment
+
+--h7e4XcYuG+U=
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<p> Attention is currently required from: flichtenheld, plaisthos. </p>
+<p>Patch set 2:<span style=3D"border-radius: 3px; display: inline-block; ma=
+rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/946?usp=3Demail">Vi=
+ew Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To vie=
+w, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/946?usp=3Demail">=
+change 946</a>. To unsubscribe, or for help writing mail filters, visit <a =
+href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope=
+ itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"act=
+ion" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=
+=3D"http://gerrit.openvpn.net/c/openvpn/+/946?usp=3Demail"/><meta itemprop=
+=3D"name" content=3D"View Change"/></div></div>
+
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: release/2.6 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: If96c2ebd2af16b18ed34820e8c0=
+531547e2076d9 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 946 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
+<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
+.&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
+ </div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
+.1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: comododragon &lt;rein.vanbaaren@...493...=
+1435...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
+41...&gt; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Tue, 29 Apr 2025 15:48:56=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: No </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
+
+
+--h7e4XcYuG+U=--
 
