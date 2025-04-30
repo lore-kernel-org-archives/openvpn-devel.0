@@ -1,16 +1,11 @@
-From: "plaisthos (Code Review)" <gerrit@...515...>
-Date: Tue, 29 Apr 2025 21:04:21 +0000
-In-Reply-To: <gerrit.1745405723000.Ica02244c9f0ac9b4690a51f940fda9d900465289@...2715...>
-References: <gerrit.1745405723000.Ica02244c9f0ac9b4690a51f940fda9d900465289@...2715...>
-Reply-To: arne-openvpn@...1227..., openvpn-devel@lists.sourceforge.net,
- frank@...2641...
-Message-ID: <b86fca1883981384fc263c2fb5a0ea756a038dab-EmailReviewComments-HTML@...2715...>
+From: Antonio Quartulli <a@...2181...>
+Date: Wed, 30 Apr 2025 14:32:50 +0200
+Message-ID: <20250430123250.8627-2-a@...2181...>
+In-Reply-To: <20250430123250.8627-1-a@...2181...>
+References: <20250430123250.8627-1-a@...2181...>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="hbqWZLZMQvY="; charset=UTF-8
-Subject: [Openvpn-devel] [M] Change in openvpn[master]: Make dh none
- behaviour default if not specified and add dh auto
+Subject: [Openvpn-devel] [PATCH ovpn-net-next 2/2] ovpn: drop useless
+ reg_state check in keepalive worker
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,101 +14,41 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Cc: flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
+Cc: Antonio Quartulli <antonio@...515...>, sd@...2891...
 
---hbqWZLZMQvY=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+From: Antonio Quartulli <antonio@...515...>
 
-plaisthos has posted comments on this change. ( http://gerrit.openvpn.net/c=
-/openvpn/+/945?usp=3Demail )
+The keepalive worker is cancelled before calling
+unregister_netdevice_queue(), therefore it will never
+hit a situation where the reg_state can be different
+than NETDEV_REGISTERED.
 
-Change subject: Make dh none behaviour default if not specified and add dh =
-auto
-......................................................................
+For this reason, checking reg_state is useless and the
+condition can be removed.
 
+Signed-off-by: Antonio Quartulli <antonio@...515...>
+---
+ drivers/net/ovpn/peer.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-Patch Set 2: Code-Review-2
+diff --git a/drivers/net/ovpn/peer.c b/drivers/net/ovpn/peer.c
+index a37f89fffb02..24eb9d81429e 100644
+--- a/drivers/net/ovpn/peer.c
++++ b/drivers/net/ovpn/peer.c
+@@ -1353,8 +1353,7 @@ void ovpn_peer_keepalive_work(struct work_struct *work)
+ 	}
+ 
+ 	/* prevent rearming if the interface is being destroyed */
+-	if (next_run > 0 &&
+-	    READ_ONCE(ovpn->dev->reg_state) == NETREG_REGISTERED) {
++	if (next_run > 0) {
+ 		netdev_dbg(ovpn->dev,
+ 			   "scheduling keepalive work: now=%llu next_run=%llu delta=%llu\n",
+ 			   next_run, now, next_run - now);
+-- 
+2.49.0
 
-(1 comment)
-
-Patchset:
-
-PS2:
-After a bit more consideration, I think we should just not bother with auto=
- and just do dh none as default. They are already forbidden to use by BSI T=
-R-02102-4 by 2029 and IETF also deprecates them (https://datatracker.ietf.o=
-rg/doc/draft-ietf-tls-deprecate-obsolete-kex/).
-
-So I will update the patch to provide only dh none as default.
-
-
-
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/945?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings
-
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: Ica02244c9f0ac9b4690a51f940fda9d900465289
-Gerrit-Change-Number: 945
-Gerrit-PatchSet: 2
-Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
-Gerrit-Reviewer: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Comment-Date: Tue, 29 Apr 2025 21:04:21 +0000
-Gerrit-HasComments: Yes
-Gerrit-Has-Labels: Yes
-Gerrit-MessageType: comment
-
---hbqWZLZMQvY=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<p>Patch set 2:<span style=3D"border-radius: 3px; display: inline-block; ma=
-rgin: 0 2px; padding: 4px;background-color: #ffd4d4;">Code-Review -2</span>=
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/945?usp=3Demail">Vi=
-ew Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0=
-;"><li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-s=
-tyle: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p s=
-tyle=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn=
-/+/945?tab=3Dcomments">Patch Set #2:</a> </p><p style=3D"white-space: pre-w=
-rap; word-wrap: break-word;">After a bit more consideration, I think we sho=
-uld just not bother with auto and just do dh none as default. They are alre=
-ady forbidden to use by BSI TR-02102-4 by 2029 and IETF also deprecates the=
-m (https://datatracker.ietf.org/doc/draft-ietf-tls-deprecate-obsolete-kex/)=
-.</p><p style=3D"white-space: pre-wrap; word-wrap: break-word;">So I will u=
-pdate the patch to provide only dh none as default.</p></li></ul></li></ul>=
-<p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/945?usp=
-=3Demail">change 945</a>. To unsubscribe, or for help writing mail filters,=
- visit <a href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div=
- itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemp=
-rop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"=
-url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/945?usp=3Demail"/><meta =
-itemprop=3D"name" content=3D"View Change"/></div></div>
-
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: Ica02244c9f0ac9b4690a51f940f=
-da9d900465289 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 945 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
-<div style=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@...1711...=
-27...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
-1...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Tue, 29 Apr 2025 21:04:21=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
-
-
---hbqWZLZMQvY=--
 
