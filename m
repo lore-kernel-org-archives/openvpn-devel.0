@@ -1,9 +1,16 @@
-From: Antonio Quartulli <a@...2181...>
-Date: Wed, 30 Apr 2025 14:32:49 +0200
-Message-ID: <20250430123250.8627-1-a@...2181...>
+From: "flichtenheld (Code Review)" <gerrit@...515...>
+Date: Wed, 30 Apr 2025 13:00:29 +0000
+In-Reply-To: <gerrit.1730386897000.I40f6af10c5ee2f5aed4185d783fc622a2e3c19ff@...2715...>
+References: <gerrit.1730386897000.I40f6af10c5ee2f5aed4185d783fc622a2e3c19ff@...2715...>
+Reply-To: frank@...2641..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net
+Message-ID: <3339f231eab43bb6598f4949c1a3c4fbe87cc391-EmailReplacePatchSet-HTML@...2715...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH ovpn-net-next 1/2] ovpn: don't access sk
- after release
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="dl5B1gamy0I="; charset=UTF-8
+Subject: [Openvpn-devel] [M] Change in openvpn[master]: Define a
+ .clang-format file for the project
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,118 +19,247 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
-Cc: Antonio Quartulli <antonio@...515...>, sd@...2891...
+To: plaisthos <arne-openvpn@...1227...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-From: Antonio Quartulli <antonio@...515...>
+--dl5B1gamy0I=
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-In case of UDP peer timeout, an openvpn client (userspace)
-performs the following actions:
-1. receives the peer deletion notification (reason=timeout)
-2. closes the socket
-3. deletes the ovpn interface
+Attention is currently required from: plaisthos.
 
-Upon 3. we have the following:
-- dellink()
- - cancel_delayed_work_sync()
-  - ovpn_peer_keepalive_work()
-   - ovpn_socket_release()
-    - synchronize_rcu()
-At this point, due to 2., ovpn_sock->sock->sk becomes NULL and
-ovpn_socket_release() will attempt dereferencing it, resulting
-in the following crash log:
+Hello plaisthos,
 
-Oops: general protection fault, probably for non-canonical address 0xdffffc0000000077: 0000 [#1] SMP KASAN
-KASAN: null-ptr-deref in range [0x00000000000003b8-0x00000000000003bf]
-CPU: 12 UID: 0 PID: 162 Comm: kworker/12:1 Tainted: G           O        6.15.0-rc2-00635-g521139ac3840 #272 PREEMPT(full)
-Tainted: [O]=OOT_MODULE
-Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.3-20240910_120124-localhost 04/01/2014
-Workqueue: events ovpn_peer_keepalive_work [ovpn]
-RIP: 0010:ovpn_socket_release+0x23c/0x500 [ovpn]
-Code: ea 03 80 3c 02 00 0f 85 71 02 00 00 48 b8 00 00 00 00 00 fc ff df 4d 8b 64 24 18 49 8d bc 24 be 03 00 00 48 89 fa 48 c1 ea 03 <0f> b6 14 02 48 89 f8 83 e0 07 83 c0 01 38 d0 7c 08 84 d2 0f 85 30
-RSP: 0018:ffffc90000c9fb18 EFLAGS: 00010217
-RAX: dffffc0000000000 RBX: ffff8881148d7940 RCX: ffffffff817787bb
-RDX: 0000000000000077 RSI: 0000000000000008 RDI: 00000000000003be
-RBP: ffffc90000c9fb30 R08: 0000000000000000 R09: fffffbfff0d3e840
-R10: ffffffff869f4207 R11: 0000000000000000 R12: 0000000000000000
-R13: ffff888115eb9300 R14: ffffc90000c9fbc8 R15: 000000000000000c
-FS:  0000000000000000(0000) GS:ffff8882b0151000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00007f37266b6114 CR3: 00000000054a8000 CR4: 0000000000750ef0
-PKRU: 55555554
-Call Trace:
- <TASK>
- unlock_ovpn+0x8b/0xe0 [ovpn]
- ovpn_peer_keepalive_work+0xe3/0x540 [ovpn]
- ? ovpn_peers_free+0x780/0x780 [ovpn]
- ? lock_acquire+0x56/0x70
- ? process_one_work+0x888/0x1740
- process_one_work+0x933/0x1740
- ? pwq_dec_nr_in_flight+0x10b0/0x10b0
- ? move_linked_works+0x12d/0x2c0
- ? assign_work+0x163/0x270
- worker_thread+0x4d6/0xd90
- ? preempt_count_sub+0x4c/0x70
- ? process_one_work+0x1740/0x1740
- kthread+0x36c/0x710
- ? trace_preempt_on+0x8c/0x1e0
- ? kthread_is_per_cpu+0xc0/0xc0
- ? preempt_count_sub+0x4c/0x70
- ? _raw_spin_unlock_irq+0x36/0x60
- ? calculate_sigpending+0x7b/0xa0
- ? kthread_is_per_cpu+0xc0/0xc0
- ret_from_fork+0x3a/0x80
- ? kthread_is_per_cpu+0xc0/0xc0
- ret_from_fork_asm+0x11/0x20
- </TASK>
-Modules linked in: ovpn(O)
+I'd like you to reexamine a change. Please visit
 
-Reason for accessing sk is because we need to retrieve its
-protocol and continue the cleanup routine accordingly.
+    http://gerrit.openvpn.net/c/openvpn/+/790?usp=3Demail
 
-Fix the crash by storing the sk_protocol before releasing
-the sk and invoking synchronize_rcu().
+to look at the new patch set (#13).
 
-Signed-off-by: Antonio Quartulli <antonio@...515...>
+
+Change subject: Define a .clang-format file for the project
+......................................................................
+
+Define a .clang-format file for the project
+
+Each of these statements has been reviewed but
+not all of them are obvious.
+
+Also add a pre-commit config to easily check the
+formatting.
+
+Change-Id: I40f6af10c5ee2f5aed4185d783fc622a2e3c19ff
+Signed-off-by: Frank Lichtenheld <frank@...2641...>
 ---
- drivers/net/ovpn/socket.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+A .clang-format
+A .pre-commit-config.yaml
+2 files changed, 59 insertions(+), 0 deletions(-)
 
-diff --git a/drivers/net/ovpn/socket.c b/drivers/net/ovpn/socket.c
-index a83cbab72591..ff499f0fc771 100644
---- a/drivers/net/ovpn/socket.c
-+++ b/drivers/net/ovpn/socket.c
-@@ -66,6 +66,7 @@ static bool ovpn_socket_put(struct ovpn_peer *peer, struct ovpn_socket *sock)
- void ovpn_socket_release(struct ovpn_peer *peer)
- {
- 	struct ovpn_socket *sock;
-+	u16 sk_protocol;
- 	bool released;
- 
- 	might_sleep();
-@@ -92,6 +93,7 @@ void ovpn_socket_release(struct ovpn_peer *peer)
- 	 */
- 	lock_sock(sock->sock->sk);
- 	released = ovpn_socket_put(peer, sock);
-+	sk_protocol = sock->sock->sk->sk_protocol;
- 	release_sock(sock->sock->sk);
- 
- 	/* align all readers with sk_user_data being NULL */
-@@ -99,9 +101,9 @@ void ovpn_socket_release(struct ovpn_peer *peer)
- 
- 	/* following cleanup should happen with lock released */
- 	if (released) {
--		if (sock->sock->sk->sk_protocol == IPPROTO_UDP) {
-+		if (sk_protocol == IPPROTO_UDP) {
- 			netdev_put(sock->ovpn->dev, &sock->dev_tracker);
--		} else if (sock->sock->sk->sk_protocol == IPPROTO_TCP) {
-+		} else if (sk_protocol == IPPROTO_TCP) {
- 			/* wait for TCP jobs to terminate */
- 			ovpn_tcp_socket_wait_finish(sock);
- 			ovpn_peer_put(sock->peer);
--- 
-2.49.0
 
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/90/790/13
+
+diff --git a/.clang-format b/.clang-format
+new file mode 100644
+index 0000000..b95d58d
+--- /dev/null
++++ b/.clang-format
+@@ -0,0 +1,51 @@
++---
++BasedOnStyle: Mozilla
++AccessModifierOffset: '-4'
++AlignAfterOpenBracket: Align
++AlignConsecutiveMacros:
++  Enabled: true
++  AcrossEmptyLines: false
++  AcrossComments: true
++AlignEscapedNewlines: Left
++AlignOperands: true
++AlignTrailingComments:
++  Kind: Always
++  OverEmptyLines: 1
++AllowAllParametersOfDeclarationOnNextLine: true
++AllowShortBlocksOnASingleLine: Never
++AllowShortCaseLabelsOnASingleLine: false
++AllowShortFunctionsOnASingleLine: None
++AllowShortIfStatementsOnASingleLine: Never
++AllowShortLoopsOnASingleLine: false
++AlwaysBreakAfterReturnType: None
++BinPackArguments: true
++BinPackParameters: true
++BreakBeforeBinaryOperators: NonAssignment
++BreakBeforeBraces: Allman
++BreakBeforeTernaryOperators: true
++BreakStringLiterals: false
++ColumnLimit: '100'
++ContinuationIndentWidth: '4'
++DerivePointerAlignment: false
++IndentCaseLabels: true
++IndentGotoLabels: false
++IndentWidth: '4'
++IndentWrappedFunctionNames: false
++KeepEmptyLinesAtTheStartOfBlocks: false
++MaxEmptyLinesToKeep: '2'
++PointerAlignment: Right
++ReflowComments: true
++SortIncludes: false
++SpaceAfterCStyleCast: false
++SpaceBeforeAssignmentOperators: true
++SpaceBeforeParens: ControlStatements
++SpacesBeforeTrailingComments: '2'
++SpacesInParens: Never
++TabWidth: '4'
++TypeNames: [DWORD]
++UseTab: Never
++WhitespaceSensitiveMacros: [_STRINGIFY]
++---
++Language: C
++---
++Language: Cpp
+diff --git a/.pre-commit-config.yaml b/.pre-commit-config.yaml
+new file mode 100644
+index 0000000..c1bca47
+--- /dev/null
++++ b/.pre-commit-config.yaml
+@@ -0,0 +1,8 @@
++repos:
++  - repo: https://github.com/pre-commit/mirrors-clang-format
++    rev: 'v20.1.0'
++    hooks:
++      - id: clang-format
++        files: \.[ch]$
++        # preserve upstream formatting
++        exclude: ^(src/compat/compat-lz4\.[ch]|src/openvpn/ovpn_dco_(linux=
+|win)\.h)$
+
+--
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/790?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings
+
+Gerrit-Project: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: I40f6af10c5ee2f5aed4185d783fc622a2e3c19ff
+Gerrit-Change-Number: 790
+Gerrit-PatchSet: 13
+Gerrit-Owner: flichtenheld <frank@...2641...>
+Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-MessageType: newpatchset
+
+--dl5B1gamy0I=
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<p> Attention is currently required from: plaisthos. </p>
+<p>flichtenheld <strong>uploaded patch set #13</strong> to this change.</p>=
+<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/790?usp=3Demail">View C=
+hange</a></p><pre style=3D"font-family: monospace,monospace; white-space: p=
+re-wrap;">Define a .clang-format file for the project<br><br>Each of these =
+statements has been reviewed but<br>not all of them are obvious.<br><br>Als=
+o add a pre-commit config to easily check the<br>formatting.<br><br>Change-=
+Id: I40f6af10c5ee2f5aed4185d783fc622a2e3c19ff<br>Signed-off-by: Frank Licht=
+enheld &lt;frank@...2641...&gt;<br>---<br>A .clang-format<br>A .pre-commit-=
+config.yaml<br>2 files changed, 59 insertions(+), 0 deletions(-)<br><br></p=
+re><pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;">=
+git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/90/790/13</pre=
+><pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><s=
+pan>diff --git a/.clang-format b/.clang-format</span><br><span>new file mod=
+e 100644</span><br><span>index 0000000..b95d58d</span><br><span>--- /dev/nu=
+ll</span><br><span>+++ b/.clang-format</span><br><span>@@ -0,0 +1,51 @@</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+---</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+BasedOnStyle: Mozilla</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+AccessModifierOffset: &#39;-4&#39;</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+AlignAfterOpenBracket:=
+ Align</span><br><span style=3D"color: hsl(120, 100%, 40%);">+AlignConsecut=
+iveMacros:</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  Enabled=
+: true</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  AcrossEmpty=
+Lines: false</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  Acros=
+sComments: true</span><br><span style=3D"color: hsl(120, 100%, 40%);">+Alig=
+nEscapedNewlines: Left</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+AlignOperands: true</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+AlignTrailingComments:</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+  Kind: Always</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++  OverEmptyLines: 1</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++AllowAllParametersOfDeclarationOnNextLine: true</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+AllowShortBlocksOnASingleLine: Never</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+AllowShortCaseLabelsOnASingle=
+Line: false</span><br><span style=3D"color: hsl(120, 100%, 40%);">+AllowSho=
+rtFunctionsOnASingleLine: None</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+AllowShortIfStatementsOnASingleLine: Never</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+AllowShortLoopsOnASingleLine: false</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+AlwaysBreakAfterReturnTyp=
+e: None</span><br><span style=3D"color: hsl(120, 100%, 40%);">+BinPackArgum=
+ents: true</span><br><span style=3D"color: hsl(120, 100%, 40%);">+BinPackPa=
+rameters: true</span><br><span style=3D"color: hsl(120, 100%, 40%);">+Break=
+BeforeBinaryOperators: NonAssignment</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+BreakBeforeBraces: Allman</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+BreakBeforeTernaryOperators: true</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+BreakStringLiterals: false</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+ColumnLimit: &#39;100&#39;</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+ContinuationIndentWidth:=
+ &#39;4&#39;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+DeriveP=
+ointerAlignment: false</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+IndentCaseLabels: true</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+IndentGotoLabels: false</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+IndentWidth: &#39;4&#39;</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+IndentWrappedFunctionNames: false</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+KeepEmptyLinesAtTheStartOfBlocks: false</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+MaxEmptyLinesToKeep: &#39;=
+2&#39;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+PointerAlignm=
+ent: Right</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ReflowCom=
+ments: true</span><br><span style=3D"color: hsl(120, 100%, 40%);">+SortIncl=
+udes: false</span><br><span style=3D"color: hsl(120, 100%, 40%);">+SpaceAft=
+erCStyleCast: false</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+SpaceBeforeAssignmentOperators: true</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+SpaceBeforeParens: ControlStatements</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+SpacesBeforeTrailingComments: &#39;2&#39;=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+SpacesInParens: Nev=
+er</span><br><span style=3D"color: hsl(120, 100%, 40%);">+TabWidth: &#39;4&=
+#39;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+TypeNames: [DWO=
+RD]</span><br><span style=3D"color: hsl(120, 100%, 40%);">+UseTab: Never</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+WhitespaceSensitiveMac=
+ros: [_STRINGIFY]</span><br><span style=3D"color: hsl(120, 100%, 40%);">+--=
+-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+Language: C</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+---</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+Language: Cpp</span><br><span>diff --git =
+a/.pre-commit-config.yaml b/.pre-commit-config.yaml</span><br><span>new fil=
+e mode 100644</span><br><span>index 0000000..c1bca47</span><br><span>--- /d=
+ev/null</span><br><span>+++ b/.pre-commit-config.yaml</span><br><span>@@ -0=
+,0 +1,8 @@</span><br><span style=3D"color: hsl(120, 100%, 40%);">+repos:</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+  - repo: https://gith=
+ub.com/pre-commit/mirrors-clang-format</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+    rev: &#39;v20.1.0&#39;</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+    hooks:</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+      - id: clang-format</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+        files: \.[ch]$</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+        # preserve upstream formatting</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+        exclude: ^(src/compat/c=
+ompat-lz4\.[ch]|src/openvpn/ovpn_dco_(linux|win)\.h)$</span><br><span></spa=
+n><br></pre><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvp=
+n/+/790?usp=3Demail">change 790</a>. To unsubscribe, or for help writing ma=
+il filters, visit <a href=3D"http://gerrit.openvpn.net/settings">settings</=
+a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div item=
+scope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link i=
+temprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/790?usp=3Dema=
+il"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
+
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I40f6af10c5ee2f5aed4185d783f=
+c622a2e3c19ff </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 790 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 13 </div>
+<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
+.&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
+.1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
+
+
+--dl5B1gamy0I=--
 
