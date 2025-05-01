@@ -1,15 +1,15 @@
 From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Thu, 1 May 2025 11:16:43 +0000
+Date: Thu, 1 May 2025 11:16:39 +0000
 In-Reply-To: <gerrit.1745857478000.If96c2ebd2af16b18ed34820e8c0531547e2076d9@...2715...>
 References: <gerrit.1745857478000.If96c2ebd2af16b18ed34820e8c0531547e2076d9@...2715...>
 Reply-To: gert@...1296..., arne-openvpn@...1227...,
  rein.vanbaaren@...1435..., openvpn-devel@lists.sourceforge.net,
  frank@...2641...
-Message-ID: <4cb2760133dae1641ec62f7830054fd1636ada8b-HTML@...2715...>
+Message-ID: <4cb2760133dae1641ec62f7830054fd1636ada8b-EmailReplacePatchSet-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="QzqJQgaQ1ws="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="DzlrUDQjwRo="; charset=UTF-8
 Subject: [Openvpn-devel] [M] Change in openvpn[release/2.6]: Fix
  MBEDTLS_DEPRECATED_REMOVED build errors
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -20,15 +20,19 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: flichtenheld <frank@...2641...>, comododragon <rein.vanbaaren@...1435...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>, plaisthos <arne-openvpn@...1227...>
+To: flichtenheld <frank@...2641...>, comododragon <rein.vanbaaren@...1435...>, plaisthos <arne-openvpn@...1227...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---QzqJQgaQ1ws=
+--DzlrUDQjwRo=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-cron2 has submitted this change. ( http://gerrit.openvpn.net/c/openvpn/+/94=
-6?usp=3Demail )
+cron2 has uploaded a new patch set (#3) to the change originally created by=
+ flichtenheld. ( http://gerrit.openvpn.net/c/openvpn/+/946?usp=3Demail )
+
+The following approvals got outdated and were removed:
+Code-Review+2 by cron2
+
 
 Change subject: Fix MBEDTLS_DEPRECATED_REMOVED build errors
 ......................................................................
@@ -62,7 +66,7 @@ M src/openvpn/ssl_mbedtls.h
 3 files changed, 79 insertions(+), 35 deletions(-)
 
 
-
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/46/946/3
 
 diff --git a/src/openvpn/mbedtls_compat.h b/src/openvpn/mbedtls_compat.h
 index 610215b..5705706 100644
@@ -225,7 +229,7 @@ r and
 -            break;
 +            return MBEDTLS_SSL_VERSION_TLS1_1;
  #endif
-=20
+
  #if defined(MBEDTLS_SSL_PROTO_TLS1_2)
          case TLS_VER_1_2:
 -            *major =3D MBEDTLS_SSL_MAJOR_VERSION_3;
@@ -349,117 +353,121 @@ Gerrit-Reviewer: cron2 <gert@...1296...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: comododragon <rein.vanbaaren@...1435...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-MessageType: merged
+Gerrit-MessageType: newpatchset
 
---QzqJQgaQ1ws=
+--DzlrUDQjwRo=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p>cron2 <strong>submitted</strong> this change.</p><p><a href=3D"http://ge=
-rrit.openvpn.net/c/openvpn/+/946?usp=3Demail">View Change</a></p><div style=
-=3D"white-space:pre-wrap"></div><pre style=3D"font-family: monospace,monosp=
-ace; white-space: pre-wrap;">Fix MBEDTLS_DEPRECATED_REMOVED build errors<br=
-><br>This commit allows compiling OpenVPN with recent versions of mbed TLS<=
-br>if MBEDTLS_DEPRECATED_REMOVED is defined.<br><br>Cherry-pick note:<br>- =
-Adapt to still support TLS 1.0 and 1.1 which were removed in<br>  master.<b=
-r><br>Change-Id: If96c2ebd2af16b18ed34820e8c0531547e2076d9<br>Signed-off-by=
-: Max Fillinger &lt;maximilian.fillinger@...2507...&gt;<br>Acked-by: Arne S=
-chwabe &lt;arne-openvpn@...1227...&gt;<br>Message-Id: &lt;20240618120127.45=
-64-1-gert@...1296...&gt;<br>URL: https://www.mail-archive.com/openvpn-devel=
-@lists.sourceforge.net/msg28771.html<br>Signed-off-by: Gert Doering &lt;ger=
-t@...1296...&gt;<br>Acked-by: Gert Doering &lt;gert@...1296...&gt;<br>(cher=
-ry picked from commit 8eb397de3656402872f9c9584c6f703b87b50762)<br>Message-=
-Id: &lt;20250429154923.20921-1-gert@...1296...&gt;<br>URL: https://www.mail=
--archive.com/search?l=3Dmid&amp;q=3D20250429154923.20921-1-gert@...1296...<=
-br>Signed-off-by: Gert Doering &lt;gert@...1296...&gt;<br>---<br>M src/open=
-vpn/mbedtls_compat.h<br>M src/openvpn/ssl_mbedtls.c<br>M src/openvpn/ssl_mb=
-edtls.h<br>3 files changed, 79 insertions(+), 35 deletions(-)<br><br></pre>
-<pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><sp=
-an>diff --git a/src/openvpn/mbedtls_compat.h b/src/openvpn/mbedtls_compat.h=
-</span><br><span>index 610215b..5705706 100644</span><br><span>--- a/src/op=
-envpn/mbedtls_compat.h</span><br><span>+++ b/src/openvpn/mbedtls_compat.h</=
-span><br><span>@@ -40,6 +40,7 @@</span><br><span> #include &lt;mbedtls/ciph=
-er.h&gt;</span><br><span> #include &lt;mbedtls/ctr_drbg.h&gt;</span><br><sp=
-an> #include &lt;mbedtls/dhm.h&gt;</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+#include &lt;mbedtls/ecp.h&gt;</span><br><span> #include &lt=
-;mbedtls/md.h&gt;</span><br><span> #include &lt;mbedtls/pem.h&gt;</span><br=
-><span> #include &lt;mbedtls/pk.h&gt;</span><br><span>@@ -51,6 +52,12 @@</s=
-pan><br><span>     #include &lt;psa/crypto.h&gt;</span><br><span> #endif</s=
-pan><br><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+#if =
-MBEDTLS_VERSION_NUMBER &gt;=3D 0x03000000</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+typedef uint16_t mbedtls_compat_group_id;</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+#else</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+typedef mbedtls_ecp_group_id mbedtls_compat_g=
-roup_id;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#endif</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> static=
- inline void</span><br><span> mbedtls_compat_psa_crypto_init(void)</span><b=
-r><span> {</span><br><span>@@ -64,6 +71,16 @@</span><br><span> #endif /* HA=
-VE_MBEDTLS_PSA_CRYPTO_H &amp;&amp; defined(MBEDTLS_PSA_CRYPTO_C) */</span><=
-br><span> }</span><br><span> </span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+static inline mbedtls_compat_group_id</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+mbedtls_compat_get_group_id(const mbedtls_ecp_c=
-urve_info *curve_info)</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#if MBEDTLS_VER=
-SION_NUMBER &gt;=3D 0x03000000</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+    return curve_info-&gt;tls_id;</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+#else</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+    return curve_info-&gt;grp_id;</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+#endif</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span=
-><br><span> /*</span><br><span>  * In older versions of mbedtls, mbedtls_ct=
-r_drbg_update() did not return an</span><br><span>  * error code, and it wa=
-s deprecated in favor of mbedtls_ctr_drbg_update_ret()</span><br><span>@@ -=
-124,6 +141,36 @@</span><br><span> }</span><br><span> </span><br><span> #if =
-MBEDTLS_VERSION_NUMBER &lt; 0x03020100</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+typedef enum {</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+    MBEDTLS_SSL_VERSION_UNKNOWN, /*!&lt; Context not in use o=
-r version not yet negotiated. */</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+    MBEDTLS_SSL_VERSION_TLS1_0 =3D 0x0301, /*!&lt; (D)TLS 1.0 =
-*/</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    MBEDTLS_SSL_V=
-ERSION_TLS1_1 =3D 0x0302, /*!&lt; (D)TLS 1.1 */</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+    MBEDTLS_SSL_VERSION_TLS1_2 =3D 0x0303, /*!&=
-lt; (D)TLS 1.2 */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-  MBEDTLS_SSL_VERSION_TLS1_3 =3D 0x0304, /*!&lt; (D)TLS 1.3 */</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+} mbedtls_ssl_protocol_version;<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+static inline void</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+mbedtls_ssl_conf_min_tls_version(mbedtls=
-_ssl_config *conf, mbedtls_ssl_protocol_version tls_version)</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+    int major =3D (tls_version &gt;&gt; 8) &amp; 0xf=
-f;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    int minor =3D=
- tls_version &amp; 0xff;</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+    mbedtls_ssl_conf_min_version(conf, major, minor);</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+static inline void</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+mbedtls_ssl_conf_max_tls_version(mbedtls_ssl_config *conf, mbedtls_ssl_pro=
-tocol_version tls_version)</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    int maj=
-or =3D (tls_version &gt;&gt; 8) &amp; 0xff;</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+    int minor =3D tls_version &amp; 0xff;</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+    mbedtls_ssl_conf_max_vers=
-ion(conf, major, minor);</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+static inline void</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+mbedtls_ssl_conf_groups(mbedtls_s=
-sl_config *conf, mbedtls_compat_group_id *groups)</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+    mbedtls_ssl_conf_curves(conf, groups);</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+</span><br><span> static inline size_t</span><br><span> mb=
-edtls_cipher_info_get_block_size(const mbedtls_cipher_info_t *cipher)</span=
-><br><span> {</span><br><span>diff --git a/src/openvpn/ssl_mbedtls.c b/src/=
-openvpn/ssl_mbedtls.c</span><br><span>index 7e29bd2..8fb69c3 100644</span><=
-br><span>--- a/src/openvpn/ssl_mbedtls.c</span><br><span>+++ b/src/openvpn/=
-ssl_mbedtls.c</span><br><span>@@ -401,7 +401,7 @@</span><br><span> </span><=
-br><span>     /* Get number of groups and allocate an array in ctx */</span=
-><br><span>     int groups_count =3D get_num_elements(groups, &#39;:&#39;);=
-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    ALLOC_ARRAY_CLEAR=
-(ctx-&gt;groups, mbedtls_ecp_group_id, groups_count + 1)</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+    ALLOC_ARRAY_CLEAR(ctx-&gt;groups, =
-mbedtls_compat_group_id, groups_count + 1)</span><br><span> </span><br><spa=
-n>     /* Parse allowed ciphers, getting IDs */</span><br><span>     int i =
+<p>cron2 <strong>uploaded patch set #3</strong> to the change originally cr=
+eated by flichtenheld.</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn=
+/+/946?usp=3Demail">View Change</a></p><p>The following approvals got outda=
+ted and were removed:
+Code-Review+2 by cron2</p><pre style=3D"font-family: monospace,monospace; w=
+hite-space: pre-wrap;">Fix MBEDTLS_DEPRECATED_REMOVED build errors<br><br>T=
+his commit allows compiling OpenVPN with recent versions of mbed TLS<br>if =
+MBEDTLS_DEPRECATED_REMOVED is defined.<br><br>Cherry-pick note:<br>- Adapt =
+to still support TLS 1.0 and 1.1 which were removed in<br>  master.<br><br>=
+Change-Id: If96c2ebd2af16b18ed34820e8c0531547e2076d9<br>Signed-off-by: Max =
+Fillinger &lt;maximilian.fillinger@...2507...&gt;<br>Acked-by: Arne Schwabe=
+ &lt;arne-openvpn@...1227...&gt;<br>Message-Id: &lt;20240618120127.4564-1-g=
+ert@...1296...&gt;<br>URL: https://www.mail-archive.com/openvpn-devel@...1697...=
+.sourceforge.net/msg28771.html<br>Signed-off-by: Gert Doering &lt;gert@...1386...=
+296...&gt;<br>Acked-by: Gert Doering &lt;gert@...1296...&gt;<br>(cherry pic=
+ked from commit 8eb397de3656402872f9c9584c6f703b87b50762)<br>Message-Id: &l=
+t;20250429154923.20921-1-gert@...1296...&gt;<br>URL: https://www.mail-archi=
+ve.com/search?l=3Dmid&amp;q=3D20250429154923.20921-1-gert@...1296...<br>Sig=
+ned-off-by: Gert Doering &lt;gert@...1296...&gt;<br>---<br>M src/openvpn/mb=
+edtls_compat.h<br>M src/openvpn/ssl_mbedtls.c<br>M src/openvpn/ssl_mbedtls.=
+h<br>3 files changed, 79 insertions(+), 35 deletions(-)<br><br></pre><pre s=
+tyle=3D"font-family: monospace,monospace; white-space: pre-wrap;">git pull =
+ssh://gerrit.openvpn.net:29418/openvpn refs/changes/46/946/3</pre><pre styl=
+e=3D"font-family: monospace,monospace; white-space: pre-wrap;"><span>diff -=
+-git a/src/openvpn/mbedtls_compat.h b/src/openvpn/mbedtls_compat.h</span><b=
+r><span>index 610215b..5705706 100644</span><br><span>--- a/src/openvpn/mbe=
+dtls_compat.h</span><br><span>+++ b/src/openvpn/mbedtls_compat.h</span><br>=
+<span>@@ -40,6 +40,7 @@</span><br><span> #include &lt;mbedtls/cipher.h&gt;<=
+/span><br><span> #include &lt;mbedtls/ctr_drbg.h&gt;</span><br><span> #incl=
+ude &lt;mbedtls/dhm.h&gt;</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+#include &lt;mbedtls/ecp.h&gt;</span><br><span> #include &lt;mbedtls/=
+md.h&gt;</span><br><span> #include &lt;mbedtls/pem.h&gt;</span><br><span> #=
+include &lt;mbedtls/pk.h&gt;</span><br><span>@@ -51,6 +52,12 @@</span><br><=
+span>     #include &lt;psa/crypto.h&gt;</span><br><span> #endif</span><br><=
+span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+#if MBEDTLS_V=
+ERSION_NUMBER &gt;=3D 0x03000000</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+typedef uint16_t mbedtls_compat_group_id;</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+#else</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+typedef mbedtls_ecp_group_id mbedtls_compat_group_id;<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+#endif</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> static inline v=
+oid</span><br><span> mbedtls_compat_psa_crypto_init(void)</span><br><span> =
+{</span><br><span>@@ -64,6 +71,16 @@</span><br><span> #endif /* HAVE_MBEDTL=
+S_PSA_CRYPTO_H &amp;&amp; defined(MBEDTLS_PSA_CRYPTO_C) */</span><br><span>=
+ }</span><br><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++static inline mbedtls_compat_group_id</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+mbedtls_compat_get_group_id(const mbedtls_ecp_curve_info=
+ *curve_info)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+#if MBEDTLS_VERSION_NUMB=
+ER &gt;=3D 0x03000000</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+    return curve_info-&gt;tls_id;</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+#else</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+    return curve_info-&gt;grp_id;</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+#endif</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><spa=
+n> /*</span><br><span>  * In older versions of mbedtls, mbedtls_ctr_drbg_up=
+date() did not return an</span><br><span>  * error code, and it was depreca=
+ted in favor of mbedtls_ctr_drbg_update_ret()</span><br><span>@@ -124,6 +14=
+1,36 @@</span><br><span> }</span><br><span> </span><br><span> #if MBEDTLS_V=
+ERSION_NUMBER &lt; 0x03020100</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+typedef enum {</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+    MBEDTLS_SSL_VERSION_UNKNOWN, /*!&lt; Context not in use or version=
+ not yet negotiated. */</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+    MBEDTLS_SSL_VERSION_TLS1_0 =3D 0x0301, /*!&lt; (D)TLS 1.0 */</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+    MBEDTLS_SSL_VERSION_TL=
+S1_1 =3D 0x0302, /*!&lt; (D)TLS 1.1 */</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+    MBEDTLS_SSL_VERSION_TLS1_2 =3D 0x0303, /*!&lt; (D)TL=
+S 1.2 */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    MBEDTLS=
+_SSL_VERSION_TLS1_3 =3D 0x0304, /*!&lt; (D)TLS 1.3 */</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+} mbedtls_ssl_protocol_version;</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+static inline void</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+mbedtls_ssl_conf_min_tls_version(mbedtls_ssl_conf=
+ig *conf, mbedtls_ssl_protocol_version tls_version)</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+    int major =3D (tls_version &gt;&gt; 8) &amp; 0xff;</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+    int minor =3D tls_ve=
+rsion &amp; 0xff;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+  mbedtls_ssl_conf_min_version(conf, major, minor);</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+sta=
+tic inline void</span><br><span style=3D"color: hsl(120, 100%, 40%);">+mbed=
+tls_ssl_conf_max_tls_version(mbedtls_ssl_config *conf, mbedtls_ssl_protocol=
+_version tls_version)</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    int major =
+=3D (tls_version &gt;&gt; 8) &amp; 0xff;</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+    int minor =3D tls_version &amp; 0xff;</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+    mbedtls_ssl_conf_max_version=
+(conf, major, minor);</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+static inline void</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+mbedtls_ssl_conf_groups(mbedtls_ssl_=
+config *conf, mbedtls_compat_group_id *groups)</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+    mbedtls_ssl_conf_curves(conf, groups);</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+</span><br><span> static inline size_t</span><br><span> mbe=
+dtls_cipher_info_get_block_size(const mbedtls_cipher_info_t *cipher)</span>=
+<br><span> {</span><br><span>diff --git a/src/openvpn/ssl_mbedtls.c b/src/o=
+penvpn/ssl_mbedtls.c</span><br><span>index 7e29bd2..8fb69c3 100644</span><b=
+r><span>--- a/src/openvpn/ssl_mbedtls.c</span><br><span>+++ b/src/openvpn/s=
+sl_mbedtls.c</span><br><span>@@ -401,7 +401,7 @@</span><br><span> </span><b=
+r><span>     /* Get number of groups and allocate an array in ctx */</span>=
+<br><span>     int groups_count =3D get_num_elements(groups, &#39;:&#39;);<=
+/span><br><span style=3D"color: hsl(0, 100%, 40%);">-    ALLOC_ARRAY_CLEAR(=
+ctx-&gt;groups, mbedtls_ecp_group_id, groups_count + 1)</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+    ALLOC_ARRAY_CLEAR(ctx-&gt;groups, m=
+bedtls_compat_group_id, groups_count + 1)</span><br><span> </span><br><span=
+>     /* Parse allowed ciphers, getting IDs */</span><br><span>     int i =
 =3D 0;</span><br><span>@@ -418,11 +418,15 @@</span><br><span>         }</sp=
 an><br><span>         else</span><br><span>         {</span><br><span style=
 =3D"color: hsl(0, 100%, 40%);">-            ctx-&gt;groups[i] =3D ci-&gt;gr=
@@ -621,8 +629,8 @@ p://schema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D=
 1435...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: merged </div>
+<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
 
 
---QzqJQgaQ1ws=--
+--DzlrUDQjwRo=--
 
