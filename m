@@ -1,17 +1,16 @@
-From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Thu, 1 May 2025 11:16:39 +0000
-In-Reply-To: <gerrit.1745857478000.If96c2ebd2af16b18ed34820e8c0531547e2076d9@...2715...>
-References: <gerrit.1745857478000.If96c2ebd2af16b18ed34820e8c0531547e2076d9@...2715...>
-Reply-To: gert@...1296..., arne-openvpn@...1227...,
- rein.vanbaaren@...1435..., openvpn-devel@lists.sourceforge.net,
+From: "plaisthos (Code Review)" <gerrit@...515...>
+Date: Fri, 2 May 2025 12:54:43 +0000
+In-Reply-To: <gerrit.1745405723000.Ica02244c9f0ac9b4690a51f940fda9d900465289@...2715...>
+References: <gerrit.1745405723000.Ica02244c9f0ac9b4690a51f940fda9d900465289@...2715...>
+Reply-To: arne-openvpn@...1227..., openvpn-devel@lists.sourceforge.net,
  frank@...2641...
-Message-ID: <4cb2760133dae1641ec62f7830054fd1636ada8b-EmailReplacePatchSet-HTML@...2715...>
+Message-ID: <d3265f4f08e369d2d81b52e715c18a5081263429-EmailReplacePatchSet-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="DzlrUDQjwRo="; charset=UTF-8
-Subject: [Openvpn-devel] [M] Change in openvpn[release/2.6]: Fix
- MBEDTLS_DEPRECATED_REMOVED build errors
+Content-Type: multipart/alternative; boundary="C6+hwFCd9rg="; charset=UTF-8
+Subject: [Openvpn-devel] [S] Change in openvpn[master]: Make --dh none
+ behaviour default if not specified
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,617 +19,260 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: flichtenheld <frank@...2641...>, comododragon <rein.vanbaaren@...1435...>, plaisthos <arne-openvpn@...1227...>
+To: flichtenheld <frank@...2641...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---DzlrUDQjwRo=
+--C6+hwFCd9rg=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-cron2 has uploaded a new patch set (#3) to the change originally created by=
- flichtenheld. ( http://gerrit.openvpn.net/c/openvpn/+/946?usp=3Demail )
+Attention is currently required from: flichtenheld.
+
+Hello flichtenheld,=20
+
+I'd like you to reexamine a change. Please visit
+
+    http://gerrit.openvpn.net/c/openvpn/+/945?usp=3Demail
+
+to look at the new patch set (#3).
 
 The following approvals got outdated and were removed:
-Code-Review+2 by cron2
+Code-Review-1 by flichtenheld
 
 
-Change subject: Fix MBEDTLS_DEPRECATED_REMOVED build errors
+Change subject: Make --dh none behaviour default if not specified
 ......................................................................
 
-Fix MBEDTLS_DEPRECATED_REMOVED build errors
+Make --dh none behaviour default if not specified
 
-This commit allows compiling OpenVPN with recent versions of mbed TLS
-if MBEDTLS_DEPRECATED_REMOVED is defined.
+Nowadays ciphers that are using still DH and not ECDH are rarely chosen
+as best cipher suite. Our man page even indicates that OpenSSL 1.0.1+
+supports ECDH cipher suites. So it does not feel useful to force
+specifying --dh anymore.
 
-Cherry-pick note:
-- Adapt to still support TLS 1.0 and 1.1 which were removed in
-  master.
+Side note: Custom generated Diffie Hellmann parameters are also
+discouraged nowadays. The newest OpenSSL FIPS libraries even flat
+out reject them:
 
-Change-Id: If96c2ebd2af16b18ed34820e8c0531547e2076d9
-Signed-off-by: Max Fillinger <maximilian.fillinger@...2507...>
-Acked-by: Arne Schwabe <arne-openvpn@...1227...>
-Message-Id: <20240618120127.4564-1-gert@...1296...>
-URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg28=
-771.html
-Signed-off-by: Gert Doering <gert@...1296...>
-Acked-by: Gert Doering <gert@...1296...>
-(cherry picked from commit 8eb397de3656402872f9c9584c6f703b87b50762)
-Message-Id: <20250429154923.20921-1-gert@...1296...>
-URL: https://www.mail-archive.com/search?l=3Dmid&q=3D20250429154923.20921-1=
--gert@...1296...
-Signed-off-by: Gert Doering <gert@...1296...>
+   FIPS 186-4 type domain parameters no longer allowed in FIPS mode,
+   since the required validation routines were removed from FIPS 186-5
+
+But instead of adding support for loading the well-known curve just make
+dh none the default and the recommended option as finite field Diffie
+Hellmann is being deprecated anyway
+(https://datatracker.ietf.org/doc/draft-ietf-tls-deprecate-obsolete-kex/)
+and not supported by TLS 1.3 at all.
+
+Change-Id: Ica02244c9f0ac9b4690a51f940fda9d900465289
 ---
-M src/openvpn/mbedtls_compat.h
-M src/openvpn/ssl_mbedtls.c
-M src/openvpn/ssl_mbedtls.h
-3 files changed, 79 insertions(+), 35 deletions(-)
+M Changes.rst
+M doc/man-sections/tls-options.rst
+M src/openvpn/options.c
+3 files changed, 17 insertions(+), 9 deletions(-)
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/46/946/3
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/45/945/3
 
-diff --git a/src/openvpn/mbedtls_compat.h b/src/openvpn/mbedtls_compat.h
-index 610215b..5705706 100644
---- a/src/openvpn/mbedtls_compat.h
-+++ b/src/openvpn/mbedtls_compat.h
-@@ -40,6 +40,7 @@
- #include <mbedtls/cipher.h>
- #include <mbedtls/ctr_drbg.h>
- #include <mbedtls/dhm.h>
-+#include <mbedtls/ecp.h>
- #include <mbedtls/md.h>
- #include <mbedtls/pem.h>
- #include <mbedtls/pk.h>
-@@ -51,6 +52,12 @@
-     #include <psa/crypto.h>
- #endif
+diff --git a/Changes.rst b/Changes.rst
+index a4f5e57..0b0bbeb 100644
+--- a/Changes.rst
++++ b/Changes.rst
+@@ -103,6 +103,11 @@
+ - ``--x509-username-field`` will no longer automatically convert fieldname=
+s to
+   uppercase. This is deprecated since OpenVPN 2.4, and has now been remove=
+d.
 
-+#if MBEDTLS_VERSION_NUMBER >=3D 0x03000000
-+typedef uint16_t mbedtls_compat_group_id;
-+#else
-+typedef mbedtls_ecp_group_id mbedtls_compat_group_id;
-+#endif
++- ``--dh none`` is now the default if ``--dh`` is specified. Modern TLS
++  implementations will prefer ECDH and other more modern algorithm anyway.
++  And finite field Diffie Hellman is in the proces of being deprecated
++  (see draft-ietf-tls-deprecate-obsolete-kex)
 +
- static inline void
- mbedtls_compat_psa_crypto_init(void)
- {
-@@ -64,6 +71,16 @@
- #endif /* HAVE_MBEDTLS_PSA_CRYPTO_H && defined(MBEDTLS_PSA_CRYPTO_C) */
- }
+ Overview of changes in 2.6
+ =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D
 
-+static inline mbedtls_compat_group_id
-+mbedtls_compat_get_group_id(const mbedtls_ecp_curve_info *curve_info)
-+{
-+#if MBEDTLS_VERSION_NUMBER >=3D 0x03000000
-+    return curve_info->tls_id;
-+#else
-+    return curve_info->grp_id;
-+#endif
-+}
-+
- /*
-  * In older versions of mbedtls, mbedtls_ctr_drbg_update() did not return =
-an
-  * error code, and it was deprecated in favor of mbedtls_ctr_drbg_update_r=
-et()
-@@ -124,6 +141,36 @@
- }
+diff --git a/doc/man-sections/tls-options.rst b/doc/man-sections/tls-option=
+s.rst
+index 0638d09..1ce6424 100644
+--- a/doc/man-sections/tls-options.rst
++++ b/doc/man-sections/tls-options.rst
+@@ -171,16 +171,21 @@
 
- #if MBEDTLS_VERSION_NUMBER < 0x03020100
-+typedef enum {
-+    MBEDTLS_SSL_VERSION_UNKNOWN, /*!< Context not in use or version not ye=
-t negotiated. */
-+    MBEDTLS_SSL_VERSION_TLS1_0 =3D 0x0301, /*!< (D)TLS 1.0 */
-+    MBEDTLS_SSL_VERSION_TLS1_1 =3D 0x0302, /*!< (D)TLS 1.1 */
-+    MBEDTLS_SSL_VERSION_TLS1_2 =3D 0x0303, /*!< (D)TLS 1.2 */
-+    MBEDTLS_SSL_VERSION_TLS1_3 =3D 0x0304, /*!< (D)TLS 1.3 */
-+} mbedtls_ssl_protocol_version;
-+
-+static inline void
-+mbedtls_ssl_conf_min_tls_version(mbedtls_ssl_config *conf, mbedtls_ssl_pro=
-tocol_version tls_version)
-+{
-+    int major =3D (tls_version >> 8) & 0xff;
-+    int minor =3D tls_version & 0xff;
-+    mbedtls_ssl_conf_min_version(conf, major, minor);
-+}
-+
-+static inline void
-+mbedtls_ssl_conf_max_tls_version(mbedtls_ssl_config *conf, mbedtls_ssl_pro=
-tocol_version tls_version)
-+{
-+    int major =3D (tls_version >> 8) & 0xff;
-+    int minor =3D tls_version & 0xff;
-+    mbedtls_ssl_conf_max_version(conf, major, minor);
-+}
-+
-+static inline void
-+mbedtls_ssl_conf_groups(mbedtls_ssl_config *conf, mbedtls_compat_group_id =
-*groups)
-+{
-+    mbedtls_ssl_conf_curves(conf, groups);
-+}
-+
- static inline size_t
- mbedtls_cipher_info_get_block_size(const mbedtls_cipher_info_t *cipher)
- {
-diff --git a/src/openvpn/ssl_mbedtls.c b/src/openvpn/ssl_mbedtls.c
-index 7e29bd2..8fb69c3 100644
---- a/src/openvpn/ssl_mbedtls.c
-+++ b/src/openvpn/ssl_mbedtls.c
-@@ -401,7 +401,7 @@
 
-     /* Get number of groups and allocate an array in ctx */
-     int groups_count =3D get_num_elements(groups, ':');
--    ALLOC_ARRAY_CLEAR(ctx->groups, mbedtls_ecp_group_id, groups_count + 1)
-+    ALLOC_ARRAY_CLEAR(ctx->groups, mbedtls_compat_group_id, groups_count +=
- 1)
+ --dh file
+-  File containing Diffie Hellman parameters in .pem format (required for
+-  ``--tls-server`` only).
++  File containing finite field Diffie Hellman parameters in .pem format (u=
+sed
++  by ``--tls-server`` only).
 
-     /* Parse allowed ciphers, getting IDs */
-     int i =3D 0;
-@@ -418,11 +418,15 @@
-         }
-         else
-         {
--            ctx->groups[i] =3D ci->grp_id;
-+            ctx->groups[i] =3D mbedtls_compat_get_group_id(ci);
-             i++;
-         }
-     }
--    ctx->groups[i] =3D MBEDTLS_ECP_DP_NONE;
+   Set ``file`` to :code:`none` to disable Diffie Hellman key exchange (and
+-  use ECDH only). Note that this requires peers to be using an SSL library
+-  that supports ECDH TLS cipher suites (e.g. OpenSSL 1.0.1+, or
+-  mbed TLS 2.0+).
++  use ECDH or newer hybrid key agreement algorithms like X25519MLKEM768).
++  Note that this requires peers to be using an SSL library that supports
++  ECDH TLS cipher suites (e.g. OpenSSL 1.0.1+, or mbed TLS 2.0+). Starting
++  with 2.7.0, this is the same as not specifying ``--dh`` at all.
+
+-  Use ``openssl dhparam -out dh2048.pem 2048`` to generate 2048-bit DH
+-  parameters. Diffie Hellman parameters may be considered public.
++  Diffie Hellman parameters can be generated using
++  ``openssl dhparam -out dh2048.pem 2048`` but it is recommended to
++  use ``none`` as finite field Diffie Hellman have been replaced
++  by more modern variants like ECDH.
 +
-+    /* Recent mbedtls versions state that the list of groups must be termi=
-nated
-+     * with 0. Older versions state that it must be terminated with MBEDTL=
-S_ECP_DP_NONE
-+     * which is also 0, so this works either way. */
-+    ctx->groups[i] =3D 0;
++  Diffie Hellman parameters may be considered public.
 
-     gc_free(&gc);
- }
-@@ -1049,47 +1053,40 @@
- }
+ --ecdh-curve name
+   Specify the curve to use for elliptic curve Diffie Hellman. Available
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index 96119c4..f84d5f3 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -3711,8 +3711,6 @@
 
- /**
-- * Convert an OpenVPN tls-version variable to mbed TLS format (i.e. a majo=
-r and
-- * minor ssl version number).
-+ * Convert an OpenVPN tls-version variable to mbed TLS format
-  *
-  * @param tls_ver       The tls-version variable to convert.
-- * @param major         Returns the TLS major version in mbed TLS format.
-- *                      Must be a valid pointer.
-- * @param minor         Returns the TLS minor version in mbed TLS format.
-- *                      Must be a valid pointer.
-+ *
-+ * @return Translated mbedTLS SSL version from OpenVPN TLS version.
-  */
--static void
--tls_version_to_major_minor(int tls_ver, int *major, int *minor)
-+static mbedtls_ssl_protocol_version
-+tls_version_to_ssl_version(int tls_ver)
- {
--    ASSERT(major);
--    ASSERT(minor);
--
-     switch (tls_ver)
+     if (o->tls_server)
      {
- #if defined(MBEDTLS_SSL_PROTO_TLS1)
-         case TLS_VER_1_0:
--            *major =3D MBEDTLS_SSL_MAJOR_VERSION_3;
--            *minor =3D MBEDTLS_SSL_MINOR_VERSION_1;
--            break;
-+            return MBEDTLS_SSL_VERSION_TLS1_0;
- #endif
-
- #if defined(MBEDTLS_SSL_PROTO_TLS1_1)
-         case TLS_VER_1_1:
--            *major =3D MBEDTLS_SSL_MAJOR_VERSION_3;
--            *minor =3D MBEDTLS_SSL_MINOR_VERSION_2;
--            break;
-+            return MBEDTLS_SSL_VERSION_TLS1_1;
- #endif
-
- #if defined(MBEDTLS_SSL_PROTO_TLS1_2)
-         case TLS_VER_1_2:
--            *major =3D MBEDTLS_SSL_MAJOR_VERSION_3;
--            *minor =3D MBEDTLS_SSL_MINOR_VERSION_3;
--            break;
-+            return MBEDTLS_SSL_VERSION_TLS1_2;
-+#endif
-+
-+#if defined(MBEDTLS_SSL_PROTO_TLS1_3)
-+        case TLS_VER_1_3:
-+            return MBEDTLS_SSL_VERSION_TLS1_3;
- #endif
-
-         default:
-             msg(M_FATAL, "%s: invalid or unsupported TLS version %d", __fu=
-nc__, tls_ver);
--            break;
-+            return MBEDTLS_SSL_VERSION_UNKNOWN;
-     }
- }
-
-@@ -1170,7 +1167,7 @@
-
-     if (ssl_ctx->groups)
-     {
--        mbedtls_ssl_conf_curves(ks_ssl->ssl_config, ssl_ctx->groups);
-+        mbedtls_ssl_conf_groups(ks_ssl->ssl_config, ssl_ctx->groups);
-     }
-
-     /* Disable TLS renegotiations if the mbedtls library supports that fea=
-ture.
-@@ -1220,15 +1217,14 @@
-             &SSLF_TLS_VERSION_MIN_MASK;
-
-         /* default to TLS 1.2 */
--        int major =3D MBEDTLS_SSL_MAJOR_VERSION_3;
--        int minor =3D MBEDTLS_SSL_MINOR_VERSION_3;
-+        mbedtls_ssl_protocol_version version =3D MBEDTLS_SSL_VERSION_TLS1_=
-2;
-
-         if (configured_tls_version_min > TLS_VER_UNSPEC)
+-        /* Check that DH file is specified, or explicitly disabled */
+-        notnull(o->dh_file, "DH file (--dh)");
+         if (streq(o->dh_file, "none"))
          {
--            tls_version_to_major_minor(configured_tls_version_min, &major,=
- &minor);
-+            version =3D tls_version_to_ssl_version(configured_tls_version_=
-min);
-         }
-
--        mbedtls_ssl_conf_min_version(ks_ssl->ssl_config, major, minor);
-+        mbedtls_ssl_conf_min_tls_version(ks_ssl->ssl_config, version);
-     }
-
-     /* Initialize maximum TLS version */
-@@ -1237,20 +1233,19 @@
-             (session->opt->ssl_flags >> SSLF_TLS_VERSION_MAX_SHIFT)
-             &SSLF_TLS_VERSION_MAX_MASK;
-
--        int major =3D 0;
--        int minor =3D 0;
-+        mbedtls_ssl_protocol_version version =3D MBEDTLS_SSL_VERSION_UNKNO=
-WN;
-
-         if (configured_tls_version_max > TLS_VER_UNSPEC)
-         {
--            tls_version_to_major_minor(configured_tls_version_max, &major,=
- &minor);
-+            version =3D tls_version_to_ssl_version(configured_tls_version_=
-max);
-         }
-         else
-         {
-             /* Default to tls_version_max(). */
--            tls_version_to_major_minor(tls_version_max(), &major, &minor);
-+            version =3D tls_version_to_ssl_version(tls_version_max());
-         }
-
--        mbedtls_ssl_conf_max_version(ks_ssl->ssl_config, major, minor);
-+        mbedtls_ssl_conf_max_tls_version(ks_ssl->ssl_config, version);
-     }
-
- #if HAVE_MBEDTLS_SSL_CONF_EXPORT_KEYS_EXT_CB
-diff --git a/src/openvpn/ssl_mbedtls.h b/src/openvpn/ssl_mbedtls.h
-index 1fd0ce8..34b4f02 100644
---- a/src/openvpn/ssl_mbedtls.h
-+++ b/src/openvpn/ssl_mbedtls.h
-@@ -39,6 +39,8 @@
- #include <pkcs11-helper-1.0/pkcs11h-certificate.h>
- #endif
-
-+#include "mbedtls_compat.h"
-+
- typedef struct _buffer_entry buffer_entry;
-
- struct _buffer_entry {
-@@ -118,7 +120,7 @@
- #endif
-     struct external_context external_key; /**< External key context */
-     int *allowed_ciphers;       /**< List of allowed ciphers for this conn=
-ection */
--    mbedtls_ecp_group_id *groups;     /**< List of allowed groups for this=
- connection */
-+    mbedtls_compat_group_id *groups;     /**< List of allowed groups for t=
-his connection */
-     mbedtls_x509_crt_profile cert_profile; /**< Allowed certificate types =
-*/
- };
-
+             o->dh_file =3D NULL;
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/946?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/945?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings
 
 Gerrit-Project: openvpn
-Gerrit-Branch: release/2.6
-Gerrit-Change-Id: If96c2ebd2af16b18ed34820e8c0531547e2076d9
-Gerrit-Change-Number: 946
+Gerrit-Branch: master
+Gerrit-Change-Id: Ica02244c9f0ac9b4690a51f940fda9d900465289
+Gerrit-Change-Number: 945
 Gerrit-PatchSet: 3
-Gerrit-Owner: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: cron2 <gert@...1296...>
+Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
+Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-CC: comododragon <rein.vanbaaren@...1435...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-Attention: flichtenheld <frank@...2641...>
 Gerrit-MessageType: newpatchset
 
---DzlrUDQjwRo=
+--C6+hwFCd9rg=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p>cron2 <strong>uploaded patch set #3</strong> to the change originally cr=
-eated by flichtenheld.</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn=
-/+/946?usp=3Demail">View Change</a></p><p>The following approvals got outda=
-ted and were removed:
-Code-Review+2 by cron2</p><pre style=3D"font-family: monospace,monospace; w=
-hite-space: pre-wrap;">Fix MBEDTLS_DEPRECATED_REMOVED build errors<br><br>T=
-his commit allows compiling OpenVPN with recent versions of mbed TLS<br>if =
-MBEDTLS_DEPRECATED_REMOVED is defined.<br><br>Cherry-pick note:<br>- Adapt =
-to still support TLS 1.0 and 1.1 which were removed in<br>  master.<br><br>=
-Change-Id: If96c2ebd2af16b18ed34820e8c0531547e2076d9<br>Signed-off-by: Max =
-Fillinger &lt;maximilian.fillinger@...2507...&gt;<br>Acked-by: Arne Schwabe=
- &lt;arne-openvpn@...1227...&gt;<br>Message-Id: &lt;20240618120127.4564-1-g=
-ert@...1296...&gt;<br>URL: https://www.mail-archive.com/openvpn-devel@...1697...=
-.sourceforge.net/msg28771.html<br>Signed-off-by: Gert Doering &lt;gert@...1386...=
-296...&gt;<br>Acked-by: Gert Doering &lt;gert@...1296...&gt;<br>(cherry pic=
-ked from commit 8eb397de3656402872f9c9584c6f703b87b50762)<br>Message-Id: &l=
-t;20250429154923.20921-1-gert@...1296...&gt;<br>URL: https://www.mail-archi=
-ve.com/search?l=3Dmid&amp;q=3D20250429154923.20921-1-gert@...1296...<br>Sig=
-ned-off-by: Gert Doering &lt;gert@...1296...&gt;<br>---<br>M src/openvpn/mb=
-edtls_compat.h<br>M src/openvpn/ssl_mbedtls.c<br>M src/openvpn/ssl_mbedtls.=
-h<br>3 files changed, 79 insertions(+), 35 deletions(-)<br><br></pre><pre s=
-tyle=3D"font-family: monospace,monospace; white-space: pre-wrap;">git pull =
-ssh://gerrit.openvpn.net:29418/openvpn refs/changes/46/946/3</pre><pre styl=
-e=3D"font-family: monospace,monospace; white-space: pre-wrap;"><span>diff -=
--git a/src/openvpn/mbedtls_compat.h b/src/openvpn/mbedtls_compat.h</span><b=
-r><span>index 610215b..5705706 100644</span><br><span>--- a/src/openvpn/mbe=
-dtls_compat.h</span><br><span>+++ b/src/openvpn/mbedtls_compat.h</span><br>=
-<span>@@ -40,6 +40,7 @@</span><br><span> #include &lt;mbedtls/cipher.h&gt;<=
-/span><br><span> #include &lt;mbedtls/ctr_drbg.h&gt;</span><br><span> #incl=
-ude &lt;mbedtls/dhm.h&gt;</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+#include &lt;mbedtls/ecp.h&gt;</span><br><span> #include &lt;mbedtls/=
-md.h&gt;</span><br><span> #include &lt;mbedtls/pem.h&gt;</span><br><span> #=
-include &lt;mbedtls/pk.h&gt;</span><br><span>@@ -51,6 +52,12 @@</span><br><=
-span>     #include &lt;psa/crypto.h&gt;</span><br><span> #endif</span><br><=
-span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+#if MBEDTLS_V=
-ERSION_NUMBER &gt;=3D 0x03000000</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+typedef uint16_t mbedtls_compat_group_id;</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+#else</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+typedef mbedtls_ecp_group_id mbedtls_compat_group_id;<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+#endif</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> static inline v=
-oid</span><br><span> mbedtls_compat_psa_crypto_init(void)</span><br><span> =
-{</span><br><span>@@ -64,6 +71,16 @@</span><br><span> #endif /* HAVE_MBEDTL=
-S_PSA_CRYPTO_H &amp;&amp; defined(MBEDTLS_PSA_CRYPTO_C) */</span><br><span>=
- }</span><br><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+static inline mbedtls_compat_group_id</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+mbedtls_compat_get_group_id(const mbedtls_ecp_curve_info=
- *curve_info)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+#if MBEDTLS_VERSION_NUMB=
-ER &gt;=3D 0x03000000</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+    return curve_info-&gt;tls_id;</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+#else</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+    return curve_info-&gt;grp_id;</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+#endif</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><spa=
-n> /*</span><br><span>  * In older versions of mbedtls, mbedtls_ctr_drbg_up=
-date() did not return an</span><br><span>  * error code, and it was depreca=
-ted in favor of mbedtls_ctr_drbg_update_ret()</span><br><span>@@ -124,6 +14=
-1,36 @@</span><br><span> }</span><br><span> </span><br><span> #if MBEDTLS_V=
-ERSION_NUMBER &lt; 0x03020100</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+typedef enum {</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+    MBEDTLS_SSL_VERSION_UNKNOWN, /*!&lt; Context not in use or version=
- not yet negotiated. */</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+    MBEDTLS_SSL_VERSION_TLS1_0 =3D 0x0301, /*!&lt; (D)TLS 1.0 */</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+    MBEDTLS_SSL_VERSION_TL=
-S1_1 =3D 0x0302, /*!&lt; (D)TLS 1.1 */</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+    MBEDTLS_SSL_VERSION_TLS1_2 =3D 0x0303, /*!&lt; (D)TL=
-S 1.2 */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    MBEDTLS=
-_SSL_VERSION_TLS1_3 =3D 0x0304, /*!&lt; (D)TLS 1.3 */</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+} mbedtls_ssl_protocol_version;</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+static inline void</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+mbedtls_ssl_conf_min_tls_version(mbedtls_ssl_conf=
-ig *conf, mbedtls_ssl_protocol_version tls_version)</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+    int major =3D (tls_version &gt;&gt; 8) &amp; 0xff;</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+    int minor =3D tls_ve=
-rsion &amp; 0xff;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-  mbedtls_ssl_conf_min_version(conf, major, minor);</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+sta=
-tic inline void</span><br><span style=3D"color: hsl(120, 100%, 40%);">+mbed=
-tls_ssl_conf_max_tls_version(mbedtls_ssl_config *conf, mbedtls_ssl_protocol=
-_version tls_version)</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    int major =
-=3D (tls_version &gt;&gt; 8) &amp; 0xff;</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+    int minor =3D tls_version &amp; 0xff;</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+    mbedtls_ssl_conf_max_version=
-(conf, major, minor);</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+static inline void</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+mbedtls_ssl_conf_groups(mbedtls_ssl_=
-config *conf, mbedtls_compat_group_id *groups)</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+    mbedtls_ssl_conf_curves(conf, groups);</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+</span><br><span> static inline size_t</span><br><span> mbe=
-dtls_cipher_info_get_block_size(const mbedtls_cipher_info_t *cipher)</span>=
-<br><span> {</span><br><span>diff --git a/src/openvpn/ssl_mbedtls.c b/src/o=
-penvpn/ssl_mbedtls.c</span><br><span>index 7e29bd2..8fb69c3 100644</span><b=
-r><span>--- a/src/openvpn/ssl_mbedtls.c</span><br><span>+++ b/src/openvpn/s=
-sl_mbedtls.c</span><br><span>@@ -401,7 +401,7 @@</span><br><span> </span><b=
-r><span>     /* Get number of groups and allocate an array in ctx */</span>=
-<br><span>     int groups_count =3D get_num_elements(groups, &#39;:&#39;);<=
-/span><br><span style=3D"color: hsl(0, 100%, 40%);">-    ALLOC_ARRAY_CLEAR(=
-ctx-&gt;groups, mbedtls_ecp_group_id, groups_count + 1)</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+    ALLOC_ARRAY_CLEAR(ctx-&gt;groups, m=
-bedtls_compat_group_id, groups_count + 1)</span><br><span> </span><br><span=
->     /* Parse allowed ciphers, getting IDs */</span><br><span>     int i =
-=3D 0;</span><br><span>@@ -418,11 +418,15 @@</span><br><span>         }</sp=
-an><br><span>         else</span><br><span>         {</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-            ctx-&gt;groups[i] =3D ci-&gt;gr=
-p_id;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            ct=
-x-&gt;groups[i] =3D mbedtls_compat_get_group_id(ci);</span><br><span>      =
-       i++;</span><br><span>         }</span><br><span>     }</span><br><sp=
-an style=3D"color: hsl(0, 100%, 40%);">-    ctx-&gt;groups[i] =3D MBEDTLS_E=
-CP_DP_NONE;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+    /* Recent mbedtls versi=
-ons state that the list of groups must be terminated</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+     * with 0. Older versions state that =
-it must be terminated with MBEDTLS_ECP_DP_NONE</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+     * which is also 0, so this works either way=
-. */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    ctx-&gt;gro=
-ups[i] =3D 0;</span><br><span> </span><br><span>     gc_free(&amp;gc);</spa=
-n><br><span> }</span><br><span>@@ -1049,47 +1053,40 @@</span><br><span> }</=
-span><br><span> </span><br><span> /**</span><br><span style=3D"color: hsl(0=
-, 100%, 40%);">- * Convert an OpenVPN tls-version variable to mbed TLS form=
-at (i.e. a major and</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
-* minor ssl version number).</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+ * Convert an OpenVPN tls-version variable to mbed TLS format</spa=
-n><br><span>  *</span><br><span>  * @param tls_ver       The tls-version va=
-riable to convert.</span><br><span style=3D"color: hsl(0, 100%, 40%);">- * =
-@param major         Returns the TLS major version in mbed TLS format.</spa=
-n><br><span style=3D"color: hsl(0, 100%, 40%);">- *                      Mu=
-st be a valid pointer.</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
-- * @param minor         Returns the TLS minor version in mbed TLS format.<=
-/span><br><span style=3D"color: hsl(0, 100%, 40%);">- *                    =
-  Must be a valid pointer.</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+ *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @return=
- Translated mbedTLS SSL version from OpenVPN TLS version.</span><br><span> =
- */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-static void</span>=
-<br><span style=3D"color: hsl(0, 100%, 40%);">-tls_version_to_major_minor(i=
-nt tls_ver, int *major, int *minor)</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+static mbedtls_ssl_protocol_version</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+tls_version_to_ssl_version(int tls_ver)</=
-span><br><span> {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
-ASSERT(major);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    ASS=
-ERT(minor);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br=
-><span>     switch (tls_ver)</span><br><span>     {</span><br><span> #if de=
-fined(MBEDTLS_SSL_PROTO_TLS1)</span><br><span>         case TLS_VER_1_0:</s=
-pan><br><span style=3D"color: hsl(0, 100%, 40%);">-            *major =3D M=
-BEDTLS_SSL_MAJOR_VERSION_3;</span><br><span style=3D"color: hsl(0, 100%, 40=
-%);">-            *minor =3D MBEDTLS_SSL_MINOR_VERSION_1;</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-            break;</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+            return MBEDTLS_SSL_VERSION_T=
-LS1_0;</span><br><span> #endif</span><br><span> </span><br><span> #if defin=
-ed(MBEDTLS_SSL_PROTO_TLS1_1)</span><br><span>         case TLS_VER_1_1:</sp=
-an><br><span style=3D"color: hsl(0, 100%, 40%);">-            *major =3D MB=
-EDTLS_SSL_MAJOR_VERSION_3;</span><br><span style=3D"color: hsl(0, 100%, 40%=
-);">-            *minor =3D MBEDTLS_SSL_MINOR_VERSION_2;</span><br><span st=
-yle=3D"color: hsl(0, 100%, 40%);">-            break;</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+            return MBEDTLS_SSL_VERSION_TL=
-S1_1;</span><br><span> #endif</span><br><span> </span><br><span> #if define=
-d(MBEDTLS_SSL_PROTO_TLS1_2)</span><br><span>         case TLS_VER_1_2:</spa=
-n><br><span style=3D"color: hsl(0, 100%, 40%);">-            *major =3D MBE=
-DTLS_SSL_MAJOR_VERSION_3;</span><br><span style=3D"color: hsl(0, 100%, 40%)=
-;">-            *minor =3D MBEDTLS_SSL_MINOR_VERSION_3;</span><br><span sty=
-le=3D"color: hsl(0, 100%, 40%);">-            break;</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+            return MBEDTLS_SSL_VERSION_TL=
-S1_2;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#endif</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+#if defined(MBEDTLS_SSL_PROTO_TLS1_3)</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+        case TLS_VER_1_3:</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+            return MBE=
-DTLS_SSL_VERSION_TLS1_3;</span><br><span> #endif</span><br><span> </span><b=
-r><span>         default:</span><br><span>             msg(M_FATAL, &quot;%=
-s: invalid or unsupported TLS version %d&quot;, __func__, tls_ver);</span><=
-br><span style=3D"color: hsl(0, 100%, 40%);">-            break;</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+            return MBEDTLS_SSL=
-_VERSION_UNKNOWN;</span><br><span>     }</span><br><span> }</span><br><span=
-> </span><br><span>@@ -1170,7 +1167,7 @@</span><br><span> </span><br><span>=
-     if (ssl_ctx-&gt;groups)</span><br><span>     {</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-        mbedtls_ssl_conf_curves(ks_ssl-&gt;=
-ssl_config, ssl_ctx-&gt;groups);</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+        mbedtls_ssl_conf_groups(ks_ssl-&gt;ssl_config, ssl_ctx=
--&gt;groups);</span><br><span>     }</span><br><span> </span><br><span>    =
- /* Disable TLS renegotiations if the mbedtls library supports that feature=
-.</span><br><span>@@ -1220,15 +1217,14 @@</span><br><span>             &amp=
-;SSLF_TLS_VERSION_MIN_MASK;</span><br><span> </span><br><span>         /* d=
-efault to TLS 1.2 */</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
-       int major =3D MBEDTLS_SSL_MAJOR_VERSION_3;</span><br><span style=3D"=
-color: hsl(0, 100%, 40%);">-        int minor =3D MBEDTLS_SSL_MINOR_VERSION=
-_3;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        mbedtls_=
-ssl_protocol_version version =3D MBEDTLS_SSL_VERSION_TLS1_2;</span><br><spa=
-n> </span><br><span>         if (configured_tls_version_min &gt; TLS_VER_UN=
-SPEC)</span><br><span>         {</span><br><span style=3D"color: hsl(0, 100=
-%, 40%);">-            tls_version_to_major_minor(configured_tls_version_mi=
-n, &amp;major, &amp;minor);</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+            version =3D tls_version_to_ssl_version(configured_tls_v=
-ersion_min);</span><br><span>         }</span><br><span> </span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-        mbedtls_ssl_conf_min_version(ks=
-_ssl-&gt;ssl_config, major, minor);</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+        mbedtls_ssl_conf_min_tls_version(ks_ssl-&gt;ssl_con=
-fig, version);</span><br><span>     }</span><br><span> </span><br><span>   =
-  /* Initialize maximum TLS version */</span><br><span>@@ -1237,20 +1233,19=
- @@</span><br><span>             (session-&gt;opt-&gt;ssl_flags &gt;&gt; SS=
-LF_TLS_VERSION_MAX_SHIFT)</span><br><span>             &amp;SSLF_TLS_VERSIO=
-N_MAX_MASK;</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, =
-40%);">-        int major =3D 0;</span><br><span style=3D"color: hsl(0, 100=
-%, 40%);">-        int minor =3D 0;</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+        mbedtls_ssl_protocol_version version =3D MBEDTLS_SS=
-L_VERSION_UNKNOWN;</span><br><span> </span><br><span>         if (configure=
-d_tls_version_max &gt; TLS_VER_UNSPEC)</span><br><span>         {</span><br=
-><span style=3D"color: hsl(0, 100%, 40%);">-            tls_version_to_majo=
-r_minor(configured_tls_version_max, &amp;major, &amp;minor);</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+            version =3D tls_versio=
-n_to_ssl_version(configured_tls_version_max);</span><br><span>         }</s=
-pan><br><span>         else</span><br><span>         {</span><br><span>    =
-         /* Default to tls_version_max(). */</span><br><span style=3D"color=
-: hsl(0, 100%, 40%);">-            tls_version_to_major_minor(tls_version_m=
-ax(), &amp;major, &amp;minor);</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+            version =3D tls_version_to_ssl_version(tls_version_m=
-ax());</span><br><span>         }</span><br><span> </span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-        mbedtls_ssl_conf_max_version(ks_ssl=
--&gt;ssl_config, major, minor);</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+        mbedtls_ssl_conf_max_tls_version(ks_ssl-&gt;ssl_config,=
- version);</span><br><span>     }</span><br><span> </span><br><span> #if HA=
-VE_MBEDTLS_SSL_CONF_EXPORT_KEYS_EXT_CB</span><br><span>diff --git a/src/ope=
-nvpn/ssl_mbedtls.h b/src/openvpn/ssl_mbedtls.h</span><br><span>index 1fd0ce=
-8..34b4f02 100644</span><br><span>--- a/src/openvpn/ssl_mbedtls.h</span><br=
-><span>+++ b/src/openvpn/ssl_mbedtls.h</span><br><span>@@ -39,6 +39,8 @@</s=
-pan><br><span> #include &lt;pkcs11-helper-1.0/pkcs11h-certificate.h&gt;</sp=
-an><br><span> #endif</span><br><span> </span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+#include &quot;mbedtls_compat.h&quot;</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+</span><br><span> typedef struct _buff=
-er_entry buffer_entry;</span><br><span> </span><br><span> struct _buffer_en=
-try {</span><br><span>@@ -118,7 +120,7 @@</span><br><span> #endif</span><br=
-><span>     struct external_context external_key; /**&lt; External key cont=
-ext */</span><br><span>     int *allowed_ciphers;       /**&lt; List of all=
-owed ciphers for this connection */</span><br><span style=3D"color: hsl(0, =
-100%, 40%);">-    mbedtls_ecp_group_id *groups;     /**&lt; List of allowed=
- groups for this connection */</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+    mbedtls_compat_group_id *groups;     /**&lt; List of allowed=
- groups for this connection */</span><br><span>     mbedtls_x509_crt_profil=
-e cert_profile; /**&lt; Allowed certificate types */</span><br><span> };</s=
-pan><br><span> </span><br><span></span><br></pre><p>To view, visit <a href=
-=3D"http://gerrit.openvpn.net/c/openvpn/+/946?usp=3Demail">change 946</a>. =
-To unsubscribe, or for help writing mail filters, visit <a href=3D"http://g=
-errit.openvpn.net/settings">settings</a>.</p><div itemscope itemtype=3D"htt=
-p://schema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D=
-"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit=
-.openvpn.net/c/openvpn/+/946?usp=3Demail"/><meta itemprop=3D"name" content=
-=3D"View Change"/></div></div>
+<p> Attention is currently required from: flichtenheld. </p>
+<p>plaisthos <strong>uploaded patch set #3</strong> to this change.</p><p><=
+a href=3D"http://gerrit.openvpn.net/c/openvpn/+/945?usp=3Demail">View Chang=
+e</a></p><p>The following approvals got outdated and were removed:
+Code-Review-1 by flichtenheld</p><pre style=3D"font-family: monospace,monos=
+pace; white-space: pre-wrap;">Make --dh none behaviour default if not speci=
+fied<br><br>Nowadays ciphers that are using still DH and not ECDH are rarel=
+y chosen<br>as best cipher suite. Our man page even indicates that OpenSSL =
+1.0.1+<br>supports ECDH cipher suites. So it does not feel useful to force<=
+br>specifying --dh anymore.<br><br>Side note: Custom generated Diffie Hellm=
+ann parameters are also<br>discouraged nowadays. The newest OpenSSL FIPS li=
+braries even flat<br>out reject them:<br><br>   FIPS 186-4 type domain para=
+meters no longer allowed in FIPS mode,<br>   since the required validation =
+routines were removed from FIPS 186-5<br><br>But instead of adding support =
+for loading the well-known curve just make<br>dh none the default and the r=
+ecommended option as finite field Diffie<br>Hellmann is being deprecated an=
+yway<br>(https://datatracker.ietf.org/doc/draft-ietf-tls-deprecate-obsolete=
+-kex/)<br>and not supported by TLS 1.3 at all.<br><br>Change-Id: Ica02244c9=
+f0ac9b4690a51f940fda9d900465289<br>---<br>M Changes.rst<br>M doc/man-sectio=
+ns/tls-options.rst<br>M src/openvpn/options.c<br>3 files changed, 17 insert=
+ions(+), 9 deletions(-)<br><br></pre><pre style=3D"font-family: monospace,m=
+onospace; white-space: pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/o=
+penvpn refs/changes/45/945/3</pre><pre style=3D"font-family: monospace,mono=
+space; white-space: pre-wrap;"><span>diff --git a/Changes.rst b/Changes.rst=
+</span><br><span>index a4f5e57..0b0bbeb 100644</span><br><span>--- a/Change=
+s.rst</span><br><span>+++ b/Changes.rst</span><br><span>@@ -103,6 +103,11 @=
+@</span><br><span> - ``--x509-username-field`` will no longer automatically=
+ convert fieldnames to</span><br><span>   uppercase. This is deprecated sin=
+ce OpenVPN 2.4, and has now been removed.</span><br><span> </span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+- ``--dh none`` is now the default =
+if ``--dh`` is specified. Modern TLS</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+  implementations will prefer ECDH and other more modern a=
+lgorithm anyway.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  A=
+nd finite field Diffie Hellman is in the proces of being deprecated</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+  (see draft-ietf-tls-depre=
+cate-obsolete-kex)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+<=
+/span><br><span> Overview of changes in 2.6</span><br><span> =3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D</span><b=
+r><span> </span><br><span>diff --git a/doc/man-sections/tls-options.rst b/d=
+oc/man-sections/tls-options.rst</span><br><span>index 0638d09..1ce6424 1006=
+44</span><br><span>--- a/doc/man-sections/tls-options.rst</span><br><span>+=
+++ b/doc/man-sections/tls-options.rst</span><br><span>@@ -171,16 +171,21 @@=
+</span><br><span> </span><br><span> </span><br><span> --dh file</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-  File containing Diffie Hellman =
+parameters in .pem format (required for</span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-  ``--tls-server`` only).</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+  File containing finite field Diffie Hellman param=
+eters in .pem format (used</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+  by ``--tls-server`` only).</span><br><span> </span><br><span>   Se=
+t ``file`` to :code:`none` to disable Diffie Hellman key exchange (and</spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-  use ECDH only). Note tha=
+t this requires peers to be using an SSL library</span><br><span style=3D"c=
+olor: hsl(0, 100%, 40%);">-  that supports ECDH TLS cipher suites (e.g. Ope=
+nSSL 1.0.1+, or</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  mbed=
+ TLS 2.0+).</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  use EC=
+DH or newer hybrid key agreement algorithms like X25519MLKEM768).</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+  Note that this requires pee=
+rs to be using an SSL library that supports</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+  ECDH TLS cipher suites (e.g. OpenSSL 1.0.1+, or m=
+bed TLS 2.0+). Starting</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+  with 2.7.0, this is the same as not specifying ``--dh`` at all.</span=
+><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-  Use ``o=
+penssl dhparam -out dh2048.pem 2048`` to generate 2048-bit DH</span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-  parameters. Diffie Hellman parame=
+ters may be considered public.</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+  Diffie Hellman parameters can be generated using</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+  ``openssl dhparam -out dh2048.p=
+em 2048`` but it is recommended to</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+  use ``none`` as finite field Diffie Hellman have been repl=
+aced</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  by more moder=
+n variants like ECDH.</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  Diffie Hellman =
+parameters may be considered public.</span><br><span> </span><br><span> --e=
+cdh-curve name</span><br><span>   Specify the curve to use for elliptic cur=
+ve Diffie Hellman. Available</span><br><span>diff --git a/src/openvpn/optio=
+ns.c b/src/openvpn/options.c</span><br><span>index 96119c4..f84d5f3 100644<=
+/span><br><span>--- a/src/openvpn/options.c</span><br><span>+++ b/src/openv=
+pn/options.c</span><br><span>@@ -3711,8 +3711,6 @@</span><br><span> </span>=
+<br><span>     if (o-&gt;tls_server)</span><br><span>     {</span><br><span=
+ style=3D"color: hsl(0, 100%, 40%);">-        /* Check that DH file is spec=
+ified, or explicitly disabled */</span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-        notnull(o-&gt;dh_file, &quot;DH file (--dh)&quot;);</spa=
+n><br><span>         if (streq(o-&gt;dh_file, &quot;none&quot;))</span><br>=
+<span>         {</span><br><span>             o-&gt;dh_file =3D NULL;</span=
+><br><span></span><br></pre><p>To view, visit <a href=3D"http://gerrit.open=
+vpn.net/c/openvpn/+/945?usp=3Demail">change 945</a>. To unsubscribe, or for=
+ help writing mail filters, visit <a href=3D"http://gerrit.openvpn.net/sett=
+ings">settings</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMe=
+ssage"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.org/Vie=
+wAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn=
+/+/945?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div=
+></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: release/2.6 </div>
-<div style=3D"display:none"> Gerrit-Change-Id: If96c2ebd2af16b18ed34820e8c0=
-531547e2076d9 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 946 </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: Ica02244c9f0ac9b4690a51f940f=
+da9d900465289 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 945 </div>
 <div style=3D"display:none"> Gerrit-PatchSet: 3 </div>
-<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
-.&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
- </div>
+<div style=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@...1711...=
+27...&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
+1...&gt; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
 .1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: comododragon &lt;rein.vanbaaren@...493...=
-1435...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
+41...&gt; </div>
 <div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
 
 
---DzlrUDQjwRo=--
+--C6+hwFCd9rg=--
 
