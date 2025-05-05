@@ -1,14 +1,14 @@
 From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Mon, 5 May 2025 15:00:57 +0000
+Date: Mon, 5 May 2025 15:00:55 +0000
 In-Reply-To: <gerrit.1746440138000.I9cae7314203424e4a604073c5445559260172477@...2715...>
 References: <gerrit.1746440138000.I9cae7314203424e4a604073c5445559260172477@...2715...>
 Reply-To: gert@...1296..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <c9697f5bf159407cb5a2bd42821510282ee66b03-HTML@...2715...>
+Message-ID: <c9697f5bf159407cb5a2bd42821510282ee66b03-EmailReplacePatchSet-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="Z/ylOIc7pZM="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="b9zPM1MEC+k="; charset=UTF-8
 Subject: [Openvpn-devel] [M] Change in openvpn[master]: Add
  information-gathering about DNS resolvers configured to t_client....
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -19,14 +19,24 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Cc: flichtenheld <frank@...2641...>, plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---Z/ylOIc7pZM=
+--b9zPM1MEC+k=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-cron2 has submitted this change. ( http://gerrit.openvpn.net/c/openvpn/+/96=
-1?usp=3Demail )
+Hello flichtenheld, plaisthos,
+
+I'd like you to reexamine a change. Please visit
+
+    http://gerrit.openvpn.net/c/openvpn/+/961?usp=3Demail
+
+to look at the new patch set (#4).
+
+The following approvals got outdated and were removed:
+Code-Review+2 by flichtenheld
+
 
 Change subject: Add information-gathering about DNS resolvers configured to=
  t_client.sh(.in)
@@ -64,7 +74,7 @@ M tests/t_client.sh.in
 1 file changed, 41 insertions(+), 23 deletions(-)
 
 
-
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/61/961/4
 
 diff --git a/tests/t_client.sh.in b/tests/t_client.sh.in
 index 1ccadeb..7a271b6 100755
@@ -186,145 +196,147 @@ Gerrit-Owner: cron2 <gert@...1296...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-MessageType: merged
+Gerrit-MessageType: newpatchset
 
---Z/ylOIc7pZM=
+--b9zPM1MEC+k=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p>cron2 <strong>submitted</strong> this change.</p><p><a href=3D"http://ge=
-rrit.openvpn.net/c/openvpn/+/961?usp=3Demail">View Change</a></p><div style=
-=3D"white-space:pre-wrap"></div><pre style=3D"font-family: monospace,monosp=
-ace; white-space: pre-wrap;">Add information-gathering about DNS resolvers =
-configured to t_client.sh(.in)<br><br>With the patchsets to add DNS configu=
-ration on Unix+MacOS systems, and<br>the addition of test stanzas to excerc=
-ise and verify the OS specific<br>&quot;dns-updown&quot; script, it becomes=
- important to trace test failures<br>(&quot;did it not ping because the DNS=
- was not installed, or did something<br>else fail?&quot;) and also verify t=
-hat DNS config is properly restored at<br>the end of each test.<br><br>Linu=
-x is probed with &quot;resolvectl status&quot;, if available, and<br>&quot;=
-cat resolv.conf&quot; if not.  MacOS uses scutil --dns.<br><br>All other pl=
-atforms use &quot;cat resolv.conf&quot; for now (because even if<br>&quot;a=
- tool to maintain DNS config&quot; is available, in the end resolv.conf<br>=
-is always where the final config lands).<br><br>Include a bit of restructur=
-ing to handle linux iproute2 testing in the<br>&quot;Linux&quot; branch, an=
-d make the control flow more amenable to having a<br>second case / esac blo=
-ck.<br><br>Change-Id: I9cae7314203424e4a604073c5445559260172477<br>Signed-o=
-ff-by: Gert Doering &lt;gert@...1296...&gt;<br>Acked-by: Frank Lichtenheld =
-&lt;frank@...2641...&gt;<br>Message-Id: &lt;20250505142224.24935-1-gert@...493...=
-1296...&gt;<br>URL: https://www.mail-archive.com/openvpn-devel@...1659...=
-forge.net/msg31568.html<br>Signed-off-by: Gert Doering &lt;gert@...1296...&=
-gt;<br>---<br>M tests/t_client.sh.in<br>1 file changed, 41 insertions(+), 2=
-3 deletions(-)<br><br></pre>
-<pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><sp=
-an>diff --git a/tests/t_client.sh.in b/tests/t_client.sh.in</span><br><span=
->index 1ccadeb..7a271b6 100755</span><br><span>--- a/tests/t_client.sh.in</=
-span><br><span>+++ b/tests/t_client.sh.in</span><br><span>@@ -166,53 +166,7=
-1 @@</span><br><span> # this is higly system dependent...</span><br><span> =
-get_ifconfig_route()</span><br><span> {</span><br><span style=3D"color: hsl=
-(0, 100%, 40%);">-    # linux / iproute2? (-&gt; if configure got a path)</=
-span><br><span style=3D"color: hsl(0, 100%, 40%);">-    if [ -n &quot;@IPRO=
-UTE@&quot; ]</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    then<=
-/span><br><span style=3D"color: hsl(0, 100%, 40%);">-	echo &quot;-- linux i=
-proute2 --&quot;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-	@IPR=
-OUTE@ addr show     | grep -v valid_lft</span><br><span style=3D"color: hsl=
-(0, 100%, 40%);">-	@IPROUTE@ route show</span><br><span style=3D"color: hsl=
-(0, 100%, 40%);">-	@IPROUTE@ -o -6 route show | grep -v &#39; cache&#39; | =
-sed -E -e &#39;s/ expires [0-9]*sec//&#39; -e &#39;s/ (mtu|hoplimit|cwnd|ss=
-thresh) [0-9]+//g&#39; -e &#39;s/ (rtt|rttvar) [0-9]+ms//g&#39;</span><br><=
-span style=3D"color: hsl(0, 100%, 40%);">-	return</span><br><span style=3D"=
-color: hsl(0, 100%, 40%);">-    fi</span><br><span style=3D"color: hsl(0, 1=
-00%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    # tr=
-y uname</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    case `unam=
-e -s` in</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    UNAME=
-=3D`uname -s`</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    ca=
-se $UNAME in</span><br><span> 	Linux)</span><br><span style=3D"color: hsl(0=
-, 100%, 40%);">-	   echo &quot;-- linux / ifconfig --&quot;</span><br><span=
- style=3D"color: hsl(0, 100%, 40%);">-	   LANG=3DC @IFCONFIG@ -a |egrep  &q=
-uot;( addr:|encap:)&quot;</span><br><span style=3D"color: hsl(0, 100%, 40%)=
-;">-	   LANG=3DC @NETSTAT@ -rn -4 -6</span><br><span style=3D"color: hsl(0,=
- 100%, 40%);">-	   return</span><br><span style=3D"color: hsl(0, 100%, 40%)=
-;">-	   ;;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+         =
-   # linux / iproute2? (-&gt; if configure got a path)</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+            if [ -n &quot;@IPROUTE@&quot=
-; ]</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            then=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+                ech=
-o &quot;-- linux iproute2 --&quot;</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+                @IPROUTE@ addr show     | grep -v valid_lft<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+                @IPR=
-OUTE@ route show</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
-             @IPROUTE@ -o -6 route show | grep -v &#39; cache&#39; | sed -E=
- -e &#39;s/ expires [0-9]*sec//&#39; -e &#39;s/ (mtu|hoplimit|cwnd|ssthresh=
-) [0-9]+//g&#39; -e &#39;s/ (rtt|rttvar) [0-9]+ms//g&#39;</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+            else</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+	        echo &quot;-- linux / ifconfig =
---&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+	        LA=
-NG=3DC @IFCONFIG@ -a |egrep  &quot;( addr:|encap:)&quot;</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+	        LANG=3DC @NETSTAT@ -rn -4 -6<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+            fi</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+            ;;</span><br>=
-<span> 	FreeBSD|NetBSD|Darwin)</span><br><span> 	   echo &quot;-- FreeBSD/N=
-etBSD/Darwin [MacOS X] --&quot;</span><br><span> 	   @IFCONFIG@ -a | egrep =
-&quot;(flags=3D|inet)&quot;</span><br><span> 	   @NETSTAT@ -rn | awk &#39;$=
-3 !~ /^UHL/ { print $1,$2,$3,$NF }&#39;</span><br><span style=3D"color: hsl=
-(0, 100%, 40%);">-	   return</span><br><span> 	   ;;</span><br><span> 	Open=
-BSD)</span><br><span> 	   echo &quot;-- OpenBSD --&quot;</span><br><span> 	=
-   @IFCONFIG@ -a | egrep &quot;(flags=3D|inet)&quot; | \</span><br><span> 	=
-	sed -e &#39;s/pltime [0-9]*//&#39; -e &#39;s/vltime [0-9]*//&#39;</span><b=
-r><span> 	   @NETSTAT@ -rn | awk &#39;$3 !~ /^UHL/ { print $1,$2,$3,$NF }&#=
-39;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-	   return</span><=
-br><span> 	   ;;</span><br><span> 	SunOS)</span><br><span> 	   echo &quot;-=
-- Solaris --&quot;</span><br><span> 	   @IFCONFIG@ -a | egrep &quot;(flags=
-=3D|inet)&quot;</span><br><span> 	   @NETSTAT@ -rn | awk &#39;$3 !~ /^UHL/ =
-{ print $1,$2,$3,$6 }&#39;</span><br><span style=3D"color: hsl(0, 100%, 40%=
-);">-	   return</span><br><span> 	   ;;</span><br><span> 	AIX)</span><br><s=
-pan> 	   echo &quot;-- AIX --&quot;</span><br><span> 	   @IFCONFIG@ -a | eg=
-rep &quot;(flags=3D|inet)&quot;</span><br><span> 	   @NETSTAT@ -rn | awk &#=
-39;$3 !~ /^UHL/ { print $1,$2,$3,$6 }&#39;</span><br><span style=3D"color: =
-hsl(0, 100%, 40%);">-	   return</span><br><span> 	   ;;</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+        *)</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+           echo &quot;get_ifconfig_route(): no i=
-dea how to get info on your OS (`uname -s`).  FAIL.&quot; &gt;&amp;2</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+           exit 20</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+           ;;</span><br><sp=
-an>     esac</span><br><span> </span><br><span style=3D"color: hsl(0, 100%,=
- 40%);">-    echo &quot;get_ifconfig_route(): no idea how to get info on yo=
-ur OS.  FAIL.&quot; &gt;&amp;2</span><br><span style=3D"color: hsl(0, 100%,=
- 40%);">-    exit 20</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+    # another round of per-platform information gathering, for DNS info</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+    # for most of the =
-platforms &quot;cat /etc/resolv.conf&quot; is good enough</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+    # except Linux and MacOS</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+    case $UNAME in</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+	Linux)</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+            if [ -x /usr/bin/resolvectl ]=
- ; then</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            =
-    echo &quot;-- linux resolvectl --&quot;</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+                resolvectl status</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+            else</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+                echo &quot;-- linux reso=
-lv.conf --&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
-             cat /etc/resolv.conf</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+            fi</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+            ;;</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+	Darwin)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
-     echo &quot;-- MacOS scutil --dns&quot;</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+            scutil --dns</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+            ;;</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+        *)</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+            echo &quot;-- resolv.conf --&quot;</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+            cat /etc/resolv.conf<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+            ;;</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+    esac</span><br><span>=
- }</span><br><span> </span><br><span> # -----------------------------------=
------------------------</span><br><span></span><br></pre><p>To view, visit =
-<a href=3D"http://gerrit.openvpn.net/c/openvpn/+/961?usp=3Demail">change 96=
-1</a>. To unsubscribe, or for help writing mail filters, visit <a href=3D"h=
-ttp://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope itemtype=
-=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"action" item=
-type=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http:/=
-/gerrit.openvpn.net/c/openvpn/+/961?usp=3Demail"/><meta itemprop=3D"name" c=
-ontent=3D"View Change"/></div></div>
+<p>cron2 <strong>uploaded patch set #4</strong> to this change.</p><p><a hr=
+ef=3D"http://gerrit.openvpn.net/c/openvpn/+/961?usp=3Demail">View Change</a=
+></p><p>The following approvals got outdated and were removed:
+Code-Review+2 by flichtenheld</p><pre style=3D"font-family: monospace,monos=
+pace; white-space: pre-wrap;">Add information-gathering about DNS resolvers=
+ configured to t_client.sh(.in)<br><br>With the patchsets to add DNS config=
+uration on Unix+MacOS systems, and<br>the addition of test stanzas to excer=
+cise and verify the OS specific<br>&quot;dns-updown&quot; script, it become=
+s important to trace test failures<br>(&quot;did it not ping because the DN=
+S was not installed, or did something<br>else fail?&quot;) and also verify =
+that DNS config is properly restored at<br>the end of each test.<br><br>Lin=
+ux is probed with &quot;resolvectl status&quot;, if available, and<br>&quot=
+;cat resolv.conf&quot; if not.  MacOS uses scutil --dns.<br><br>All other p=
+latforms use &quot;cat resolv.conf&quot; for now (because even if<br>&quot;=
+a tool to maintain DNS config&quot; is available, in the end resolv.conf<br=
+>is always where the final config lands).<br><br>Include a bit of restructu=
+ring to handle linux iproute2 testing in the<br>&quot;Linux&quot; branch, a=
+nd make the control flow more amenable to having a<br>second case / esac bl=
+ock.<br><br>Change-Id: I9cae7314203424e4a604073c5445559260172477<br>Signed-=
+off-by: Gert Doering &lt;gert@...1296...&gt;<br>Acked-by: Frank Lichtenheld=
+ &lt;frank@...2641...&gt;<br>Message-Id: &lt;20250505142224.24935-1-gert@...1186...=
+.1296...&gt;<br>URL: https://www.mail-archive.com/openvpn-devel@...1011...=
+eforge.net/msg31568.html<br>Signed-off-by: Gert Doering &lt;gert@...1296...=
+&gt;<br>---<br>M tests/t_client.sh.in<br>1 file changed, 41 insertions(+), =
+23 deletions(-)<br><br></pre><pre style=3D"font-family: monospace,monospace=
+; white-space: pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/openvpn r=
+efs/changes/61/961/4</pre><pre style=3D"font-family: monospace,monospace; w=
+hite-space: pre-wrap;"><span>diff --git a/tests/t_client.sh.in b/tests/t_cl=
+ient.sh.in</span><br><span>index 1ccadeb..7a271b6 100755</span><br><span>--=
+- a/tests/t_client.sh.in</span><br><span>+++ b/tests/t_client.sh.in</span><=
+br><span>@@ -166,53 +166,71 @@</span><br><span> # this is higly system depe=
+ndent...</span><br><span> get_ifconfig_route()</span><br><span> {</span><br=
+><span style=3D"color: hsl(0, 100%, 40%);">-    # linux / iproute2? (-&gt; =
+if configure got a path)</span><br><span style=3D"color: hsl(0, 100%, 40%);=
+">-    if [ -n &quot;@IPROUTE@&quot; ]</span><br><span style=3D"color: hsl(=
+0, 100%, 40%);">-    then</span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">-	echo &quot;-- linux iproute2 --&quot;</span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">-	@IPROUTE@ addr show     | grep -v valid_lft</span><br=
+><span style=3D"color: hsl(0, 100%, 40%);">-	@IPROUTE@ route show</span><br=
+><span style=3D"color: hsl(0, 100%, 40%);">-	@IPROUTE@ -o -6 route show | g=
+rep -v &#39; cache&#39; | sed -E -e &#39;s/ expires [0-9]*sec//&#39; -e &#3=
+9;s/ (mtu|hoplimit|cwnd|ssthresh) [0-9]+//g&#39; -e &#39;s/ (rtt|rttvar) [0=
+-9]+ms//g&#39;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-	return=
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    fi</span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-    # try uname</span><br><span style=3D"color: hsl(0, 10=
+0%, 40%);">-    case `uname -s` in</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+    UNAME=3D`uname -s`</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+    case $UNAME in</span><br><span> 	Linux)</span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-	   echo &quot;-- linux / ifconfig =
+--&quot;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-	   LANG=3DC =
+@IFCONFIG@ -a |egrep  &quot;( addr:|encap:)&quot;</span><br><span style=3D"=
+color: hsl(0, 100%, 40%);">-	   LANG=3DC @NETSTAT@ -rn -4 -6</span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">-	   return</span><br><span style=3D"=
+color: hsl(0, 100%, 40%);">-	   ;;</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+            # linux / iproute2? (-&gt; if configure got a pa=
+th)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            if [=
+ -n &quot;@IPROUTE@&quot; ]</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+            then</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+                echo &quot;-- linux iproute2 --&quot;</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+                @IPROUTE@ addr show =
+    | grep -v valid_lft</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+                @IPROUTE@ route show</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+                @IPROUTE@ -o -6 route show | grep -v &=
+#39; cache&#39; | sed -E -e &#39;s/ expires [0-9]*sec//&#39; -e &#39;s/ (mt=
+u|hoplimit|cwnd|ssthresh) [0-9]+//g&#39; -e &#39;s/ (rtt|rttvar) [0-9]+ms//=
+g&#39;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            e=
+lse</span><br><span style=3D"color: hsl(120, 100%, 40%);">+	        echo &q=
+uot;-- linux / ifconfig --&quot;</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+	        LANG=3DC @IFCONFIG@ -a |egrep  &quot;( addr:|encap:)&=
+quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+	        LANG=
+=3DC @NETSTAT@ -rn -4 -6</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+            fi</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+            ;;</span><br><span> 	FreeBSD|NetBSD|Darwin)</span><br><span> 	 =
+  echo &quot;-- FreeBSD/NetBSD/Darwin [MacOS X] --&quot;</span><br><span> 	=
+   @IFCONFIG@ -a | egrep &quot;(flags=3D|inet)&quot;</span><br><span> 	   @=
+NETSTAT@ -rn | awk &#39;$3 !~ /^UHL/ { print $1,$2,$3,$NF }&#39;</span><br>=
+<span style=3D"color: hsl(0, 100%, 40%);">-	   return</span><br><span> 	   =
+;;</span><br><span> 	OpenBSD)</span><br><span> 	   echo &quot;-- OpenBSD --=
+&quot;</span><br><span> 	   @IFCONFIG@ -a | egrep &quot;(flags=3D|inet)&quo=
+t; | \</span><br><span> 		sed -e &#39;s/pltime [0-9]*//&#39; -e &#39;s/vlti=
+me [0-9]*//&#39;</span><br><span> 	   @NETSTAT@ -rn | awk &#39;$3 !~ /^UHL/=
+ { print $1,$2,$3,$NF }&#39;</span><br><span style=3D"color: hsl(0, 100%, 4=
+0%);">-	   return</span><br><span> 	   ;;</span><br><span> 	SunOS)</span><b=
+r><span> 	   echo &quot;-- Solaris --&quot;</span><br><span> 	   @IFCONFIG@=
+ -a | egrep &quot;(flags=3D|inet)&quot;</span><br><span> 	   @NETSTAT@ -rn =
+| awk &#39;$3 !~ /^UHL/ { print $1,$2,$3,$6 }&#39;</span><br><span style=3D=
+"color: hsl(0, 100%, 40%);">-	   return</span><br><span> 	   ;;</span><br><=
+span> 	AIX)</span><br><span> 	   echo &quot;-- AIX --&quot;</span><br><span=
+> 	   @IFCONFIG@ -a | egrep &quot;(flags=3D|inet)&quot;</span><br><span> 	 =
+  @NETSTAT@ -rn | awk &#39;$3 !~ /^UHL/ { print $1,$2,$3,$6 }&#39;</span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-	   return</span><br><span> 	 =
+  ;;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        *)</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+           echo &quot;ge=
+t_ifconfig_route(): no idea how to get info on your OS (`uname -s`).  FAIL.=
+&quot; &gt;&amp;2</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+         exit 20</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+        ;;</span><br><span>     esac</span><br><span> </span><br><span styl=
+e=3D"color: hsl(0, 100%, 40%);">-    echo &quot;get_ifconfig_route(): no id=
+ea how to get info on your OS.  FAIL.&quot; &gt;&amp;2</span><br><span styl=
+e=3D"color: hsl(0, 100%, 40%);">-    exit 20</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+    # another round of per-platform information ga=
+thering, for DNS info</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+    # for most of the platforms &quot;cat /etc/resolv.conf&quot; is good =
+enough</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    # except =
+Linux and MacOS</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+case $UNAME in</span><br><span style=3D"color: hsl(120, 100%, 40%);">+	Linu=
+x)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            if [ =
+-x /usr/bin/resolvectl ] ; then</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+                echo &quot;-- linux resolvectl --&quot;</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+                resolvectl =
+status</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            e=
+lse</span><br><span style=3D"color: hsl(120, 100%, 40%);">+                =
+echo &quot;-- linux resolv.conf --&quot;</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+                cat /etc/resolv.conf</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+            fi</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+            ;;</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+	Darwin)</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+            echo &quot;-- MacOS scutil --dns&quot;</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+            scutil --dns</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+            ;;</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+        *)</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+            echo &quot;-- resolv.co=
+nf --&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        =
+    cat /etc/resolv.conf</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+            ;;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+    esac</span><br><span> }</span><br><span> </span><br><span> # ----------=
+------------------------------------------------</span><br><span></span><br=
+></pre><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/9=
+61?usp=3Demail">change 961</a>. To unsubscribe, or for help writing mail fi=
+lters, visit <a href=3D"http://gerrit.openvpn.net/settings">settings</a>.</=
+p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope=
+ itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itempr=
+op=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/961?usp=3Demail"/>=
+<meta itemprop=3D"name" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
@@ -340,8 +352,8 @@ div>
 .1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: merged </div>
+<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
 
 
---Z/ylOIc7pZM=--
+--b9zPM1MEC+k=--
 
