@@ -1,13 +1,9 @@
-Message-ID: <5b795a20-df0a-400f-b921-615f01e6a22a@...2181...>
-Date: Tue, 6 May 2025 10:50:36 +0200
-MIME-Version: 1.0
-References: <20250430123250.8627-1-a@...2181...>
- <20250505225549.19492-1-a@...2181...>
-Content-Language: en-US
 From: Antonio Quartulli <a@...2181...>
-In-Reply-To: <20250505225549.19492-1-a@...2181...>
-Subject: Re: [Openvpn-devel] [PATCH ovpn-net-next v2] ovpn: ensure sk is
- still valid during cleanup
+Date: Tue,  6 May 2025 23:08:53 +0200
+Message-ID: <20250506210853.10585-1-a@...2181...>
+MIME-Version: 1.0
+Subject: [Openvpn-devel] [PATCH ovpn-net-next] ovpn: set skb->ignore_df = 1
+ before sending IPv6 packets out
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,72 +12,52 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-To: Sabrina Dubroca <sd@...2891...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
+Cc: Antonio Quartulli <antonio@...515...>, sd@...2891..., Gert Doering <gert@...1296...>
 
-Hi,
+From: Antonio Quartulli <antonio@...515...>
 
-On 06/05/2025 00:55, Antonio Quartulli wrote:
-> From: Antonio Quartulli <antonio@...515...>
-> 
+IPv6 user packets (sent over the tunnel) may be larger than
+the outgoing interface MTU after encapsulation.
+When this happens ovpn should allow the kernel to fragment
+them because they are "locally generated".
 
-[...]
+To achieve the above, we must set skb->ignore_df = 1
+so that ip6_fragment() can be made aware of this decision.
 
-> Signed-off-by: Antonio Quartulli <antonio@...515...>
+Failing to do so will result in ip6_fragment() dropping
+the packet thinking it was "routed".
 
-This is v2 for "[PATCH ovpn-net-next 1/2] ovpn: don't access sk after 
-release".
+Reported-by: Gert Doering <gert@...1296...>
+Signed-off-by: Antonio Quartulli <antonio@...515...>
+---
+ drivers/net/ovpn/udp.c | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
 
-> ---
->   drivers/net/ovpn/socket.c | 21 ++++++++++++---------
->   1 file changed, 12 insertions(+), 9 deletions(-)
-> 
-> diff --git a/drivers/net/ovpn/socket.c b/drivers/net/ovpn/socket.c
-> index a83cbab72591..66a2ecbc483b 100644
-> --- a/drivers/net/ovpn/socket.c
-> +++ b/drivers/net/ovpn/socket.c
-> @@ -66,6 +66,7 @@ static bool ovpn_socket_put(struct ovpn_peer *peer, struct ovpn_socket *sock)
->   void ovpn_socket_release(struct ovpn_peer *peer)
->   {
->   	struct ovpn_socket *sock;
-> +	struct sock *sk;
->   	bool released;
->   
->   	might_sleep();
-> @@ -75,13 +76,14 @@ void ovpn_socket_release(struct ovpn_peer *peer)
->   	if (!sock)
->   		return;
->   
-> -	/* sanity check: we should not end up here if the socket
-> -	 * was already closed
-> +	/* sock->sk may be released concurrently, therefore we
-> +	 * first attempt grabbing a reference.
-> +	 * if sock->sk is NULL it means it is already being
-> +	 * destroyed and we don't need any further cleanup
->   	 */
-> -	if (!sock->sock->sk) {
-> -		DEBUG_NET_WARN_ON_ONCE(1);
-> +	sk = sock->sock->sk;
-> +	if (!sk || !refcount_inc_not_zero(&sk->sk_refcnt))
->   		return;
-> -	}
-
-Rather than accessing sk without any guarantee of not having been 
-nullified in the meantime, I think it is safer to check and possibly 
-grab a reference.
-
-At this point we know for sure that sk must be valid and wasn't released 
-yet.
-
-I hope it makes sense.
-
-
-Cheers,
-
-
+diff --git a/drivers/net/ovpn/udp.c b/drivers/net/ovpn/udp.c
+index c9e189056f33..aef8c0406ec9 100644
+--- a/drivers/net/ovpn/udp.c
++++ b/drivers/net/ovpn/udp.c
+@@ -262,6 +262,16 @@ static int ovpn_udp6_output(struct ovpn_peer *peer, struct ovpn_bind *bind,
+ 	dst_cache_set_ip6(cache, dst, &fl.saddr);
+ 
+ transmit:
++	/* user IPv6 packets may be larger than the transport interface
++	 * MTU (after encapsulation), however, since they are locally
++	 * generated we should ensure they get fragmented.
++	 * Setting the ignore_df flag to 1 will instruct ip6_fragment() to
++	 * fragment packets if needed.
++	 *
++	 * NOTE: this is not needed for IPv4 because we pass df=0 to
++	 * udp_tunnel_xmit_skb()
++	 */
++	skb->ignore_df = 1;
+ 	udp_tunnel6_xmit_skb(dst, sk, skb, skb->dev, &fl.saddr, &fl.daddr, 0,
+ 			     ip6_dst_hoplimit(dst), 0, fl.fl6_sport,
+ 			     fl.fl6_dport, udp_get_no_check6_tx(sk));
 -- 
-Antonio Quartulli
+2.49.0
 
 
