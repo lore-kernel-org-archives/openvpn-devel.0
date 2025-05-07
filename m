@@ -1,16 +1,11 @@
-From: "plaisthos (Code Review)" <gerrit@...515...>
-Date: Wed, 7 May 2025 11:57:03 +0000
+From: Gert Doering <gert@...1296...>
+Date: Wed,  7 May 2025 14:12:20 +0200
+Message-ID: <20250507121226.13824-1-gert@...1296...>
 In-Reply-To: <gerrit.1746615872000.I2551edfaaf5107649398a3fa1db2009ee8644671@...2715...>
 References: <gerrit.1746615872000.I2551edfaaf5107649398a3fa1db2009ee8644671@...2715...>
-Reply-To: arne-openvpn@...1227..., openvpn-devel@lists.sourceforge.net,
- frank@...2641...
-Message-ID: <3872bcf410f8ab0a28404e30b55cb2a97e54dcaf-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="+v9W6kNR+ZY="; charset=UTF-8
-Subject: [Openvpn-devel] [XS] Change in openvpn[master]: CMake: Make sure to
- treat UNIT_TEST_SOURCEDIR as path
+Subject: [Openvpn-devel] [PATCH v1] CMake: Make sure to treat
+ UNIT_TEST_SOURCEDIR as path
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,81 +14,56 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: flichtenheld <frank@...2641...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---+v9W6kNR+ZY=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+From: Frank Lichtenheld <frank@...2641...>
 
-Attention is currently required from: flichtenheld.
+This makes sure that it is properly normalized, and
+on Windows seems to prevent CMake from using back
+slashes which would break the build due to "unknown escape
+sequence" errors.
 
-plaisthos has posted comments on this change. ( http://gerrit.openvpn.net/c=
-/openvpn/+/981?usp=3Demail )
+Change-Id: I2551edfaaf5107649398a3fa1db2009ee8644671
+Signed-off-by: Frank Lichtenheld <frank@...2641...>
+Acked-by: Arne Schwabe <arne-openvpn@...1227...>
+---
 
-Change subject: CMake: Make sure to treat UNIT_TEST_SOURCEDIR as path
-......................................................................
+This change was reviewed on Gerrit and approved by at least one
+developer. I request to merge it to master.
 
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/981
+This mail reflects revision 1 of this Change.
 
-Patch Set 1: Code-Review+2
+Acked-by according to Gerrit (reflected above):
+Arne Schwabe <arne-openvpn@...1227...>
 
-
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/981?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings
-
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: I2551edfaaf5107649398a3fa1db2009ee8644671
-Gerrit-Change-Number: 981
-Gerrit-PatchSet: 1
-Gerrit-Owner: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Comment-Date: Wed, 07 May 2025 11:57:03 +0000
-Gerrit-HasComments: No
-Gerrit-Has-Labels: Yes
-Gerrit-MessageType: comment
-
---+v9W6kNR+ZY=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<p> Attention is currently required from: flichtenheld. </p>
-<p>Patch set 1:<span style=3D"border-radius: 3px; display: inline-block; ma=
-rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/981?usp=3Demail">Vi=
-ew Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To vie=
-w, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/981?usp=3Demail">=
-change 981</a>. To unsubscribe, or for help writing mail filters, visit <a =
-href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope=
- itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"act=
-ion" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=
-=3D"http://gerrit.openvpn.net/c/openvpn/+/981?usp=3Demail"/><meta itemprop=
-=3D"name" content=3D"View Change"/></div></div>
-
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I2551edfaaf5107649398a3fa1db=
-2009ee8644671 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 981 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
-<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
-.&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
-41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Wed, 07 May 2025 11:57:03=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: No </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
-
-
---+v9W6kNR+ZY=--
+        
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index a8fb64b..6687b56 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -679,11 +679,11 @@
+     endif ()
+ 
+     foreach (test_name ${unit_tests})
++        cmake_path(SET _UT_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/tests/unit_tests/openvpn)
+         # test_networking needs special environment
+         if (NOT ${test_name} STREQUAL "test_networking")
+             add_test(${test_name} ${test_name})
+             # for compat with autotools make check
+-            set(_UT_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/tests/unit_tests/openvpn)
+             set_tests_properties(${test_name} PROPERTIES
+                 ENVIRONMENT "srcdir=${_UT_SOURCE_DIR}")
+         endif ()
+@@ -703,7 +703,7 @@
+ 
+         # for compat with IDEs like Clion that ignore the tests properties
+         # for the environment variable srcdir when running tests as fallback
+-        target_compile_definitions(${test_name} PRIVATE "-DUNIT_TEST_SOURCEDIR=\"${CMAKE_SOURCE_DIR}/tests/unit_tests/openvpn\"")
++        target_compile_definitions(${test_name} PRIVATE "UNIT_TEST_SOURCEDIR=\"${_UT_SOURCE_DIR}\"")
+ 
+         if (NOT ${test_name} STREQUAL "test_buffer")
+             target_sources(${test_name} PRIVATE
 
