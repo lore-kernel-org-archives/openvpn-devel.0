@@ -1,10 +1,10 @@
-Date: Wed, 7 May 2025 08:44:50 +0200
+Date: Wed, 7 May 2025 08:45:47 +0200
 From: Gert Doering <gert@...1296...>
-Message-ID: <aBsBYosdJtExivSG@...1296...>
+Message-ID: <aBsBm7IRQYGr8aKm@...1296...>
 References: <20250506210853.10585-1-a@...2181...>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="65wJkWAuH9CaSrti"
+ protocol="application/pgp-signature"; boundary="k9c+ovK4cxzQIaBQ"
 Content-Disposition: inline
 In-Reply-To: <20250506210853.10585-1-a@...2181...>
 Subject: Re: [Openvpn-devel] [PATCH ovpn-net-next] ovpn: set skb->ignore_df
@@ -18,9 +18,9 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 To: Antonio Quartulli <a@...2181...>
-Cc: openvpn-devel@lists.sourceforge.net, Gert Doering <gert@...1296...>, Antonio Quartulli <antonio@...515...>
+Cc: openvpn-devel@lists.sourceforge.net, Antonio Quartulli <antonio@...515...>, sd@...2891..., Gert Doering <gert@...1296...>
 
---65wJkWAuH9CaSrti
+--k9c+ovK4cxzQIaBQ
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 Content-Disposition: inline
@@ -67,22 +67,22 @@ ss
 
 Gert Doering - Munich, Germany                             gert@...1296...
 
---65wJkWAuH9CaSrti
+--k9c+ovK4cxzQIaBQ
 Content-Type: application/pgp-signature; name=signature.asc
 
 -----BEGIN PGP SIGNATURE-----
 
-iQGcBAEBAgAGBQJoGwFiAAoJEB2Cnv7KVigSgwYMAKRuKhcGpC/7duuY81OK5zI2
-9pv7GF2rsf/K2vJBlkfM189S54SrkbB4pYWbdnikZDUqh1L0JA+YaxLkgKiDu/AG
-ZVu0kRvvsYpqXs4JYyMSEXoUGUPzwTSG+IYZYr3ztWr89UVXkYth8i6+VRyR0GWq
-JQ07tC4yJcShr8bUEIzmD79QeCAgr9fE+7F/nTsqo2PGvmgKl5b8zc8iqv4G3MTJ
-dUw+j+VjC0eS6DjZALb2LNdfO+1mUWXazx9hblnqA4KhtrOJyqp3sGRxbRT6Wyhs
-4HWs3D1DTRmobHJ59DXOU964vD3UGkk0IIhq4nq4a/bIPoNQSxKnPKwxwtwHKdHF
-f7nWLhubB6QKLoIxXzu1xap74TRj9ETCw88QTq3qOIB2rh8N+WcuHm+AzRALap+c
-zI7xCayeOg8psZnZmhvNw7xLdfOLyqonZe+aSqFIXls3fIYkZrBj1ouigoY71p2b
-oqYT1Iq7F6uSsjfAIvQrYG3l0wumaW/bxvOaXTrl/Q==
-=gc3x
+iQGcBAEBAgAGBQJoGwGbAAoJEB2Cnv7KVigSyFAL/i9eObfQHU60vxcpeqiC5ZuR
+d7hdWSri7C2BxuyEYuy6ps1ojKbC4iTcHw6UU+Y3pq8iC9G1o5GYK8X+wckW0tCU
+DdtGfETWuQ+6lphELZQfgjSl4aUP2C4HUnaUFrjTIkKqqjX4J5TivkYL1AgaxmkT
+qxkhRQ0ZiHTY3gXOG5fmQMk7migK/vf8EbX4+GbCYZvcTu0WE9LaLsuJTz3loyWn
+7qa9GCPfKk8de1Et82fTS4ocKoTfy506GdIFOt7MHmW0WqXIT+UTxPwpTZCpRIQe
+L8+fLguB2okccqRLWiSUc/iGcVL2U7+PpEBiWBlchmUtMeTtU+BZTwsxaPlu6Ler
+MBufOr55iP+hgYiWNYfS2bqWJqc4UKAqtOFBtN4p9qA4LE19swaQBdiRGvSgSkvn
+APxLK7FvvNZTua4jVUu4ebybcPmiBof8Gw2C+wbCfXjAMkTo6YI6XwHjO2bSJ/0q
+yEhXe0fGcrrjuLc26IXmxRIuJuOObi7loGNfLaDGmA==
+=MIOU
 -----END PGP SIGNATURE-----
 
---65wJkWAuH9CaSrti--
+--k9c+ovK4cxzQIaBQ--
 
