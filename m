@@ -1,9 +1,14 @@
-From: Antonio Quartulli <a@...2181...>
-Date: Wed,  7 May 2025 10:56:32 +0200
-Message-ID: <20250507085632.15329-1-a@...2181...>
+Date: Wed, 7 May 2025 11:11:06 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <aBsjqjXwhr4TxTWb@...1296...>
+References: <20250507085632.15329-1-a@...2181...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH ovpn-net-next] ovpn: don't drop skb's dst
- when xmitting packet
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ protocol="application/pgp-signature"; boundary="97FlI3jjXM9/TN9B"
+Content-Disposition: inline
+In-Reply-To: <20250507085632.15329-1-a@...2181...>
+Subject: Re: [Openvpn-devel] [PATCH ovpn-net-next] ovpn: don't drop skb's
+ dst when xmitting packet
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,51 +17,58 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
-Cc: Antonio Quartulli <antonio@...515...>, sd@...2891..., Gert Doering <gert@...1296...>
+To: Antonio Quartulli <a@...2181...>
+Cc: openvpn-devel@lists.sourceforge.net, Antonio Quartulli <antonio@...515...>, sd@...2891..., Gert Doering <gert@...1296...>
 
-From: Antonio Quartulli <antonio@...515...>
+--97FlI3jjXM9/TN9B
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-When routing a packet to a LAN behind a peer, ovpn need to
-inspect the route entry that brought there the packet in the
-first place.
+Hi,
 
-If this packet is truly routable, the route will provide the
-GW to be used to lookup the VPN peer to send the packet to.
+On Wed, May 07, 2025 at 10:56:32AM +0200, Antonio Quartulli wrote:
+> Clear the IFF_XMIT_DST_RELEASE flag during interface setup to allow
+> the route entry (skb's dst) to survive and thus be inspected
+> by the routing logic.
 
-However, the route entry is currently dropped before entering
-the ovpn xmit function, because the IFF_XMIT_DST_RELEASE priv_flag
-is set by default.
+Tested, fixes the problem I reported in
 
-Clear the IFF_XMIT_DST_RELEASE flag during interface setup to allow
-the route entry (skb's dst) to survive and thus be inspected
-by the routing logic.
+  https://github.com/OpenVPN/ovpn-net-next/issues/2
 
-Reported-by: Gert Doering <gert@...1296...>
-Signed-off-by: Antonio Quartulli <antonio@...515...>
----
- drivers/net/ovpn/main.c | 5 +++++
- 1 file changed, 5 insertions(+)
+... and is also the arguably correct thing to do - packet forwarding
+resolves a next-hop for us, so we should ensure we see & use it :-)
 
-diff --git a/drivers/net/ovpn/main.c b/drivers/net/ovpn/main.c
-index 0acb0934c1be..e17992b937bc 100644
---- a/drivers/net/ovpn/main.c
-+++ b/drivers/net/ovpn/main.c
-@@ -157,6 +157,11 @@ static void ovpn_setup(struct net_device *dev)
- 	dev->type = ARPHRD_NONE;
- 	dev->flags = IFF_POINTOPOINT | IFF_NOARP;
- 	dev->priv_flags |= IFF_NO_QUEUE;
-+	/* when routing packet to a LAN behind a client, we rely on the
-+	 * route entry that originally brought the packet into ovpn, so
-+	 * don't release it
-+	 */
-+	dev->priv_flags &= ~IFF_XMIT_DST_RELEASE;
- 
- 	dev->lltx = true;
- 	dev->features |= feat;
--- 
-2.49.0
+Tested-by: Gert Doering <gert@...1296...>
+Acked-by: Gert Doering <gert@...1296...>
 
+gert
+--=20
+"If was one thing all people took for granted, was conviction that if you=20
+ feed honest figures into a computer, honest figures come out. Never doubte=
+d=20
+ it myself till I met a computer with a sense of humor."
+                             Robert A. Heinlein, The Moon is a Harsh Mistre=
+ss
+
+Gert Doering - Munich, Germany                             gert@...1296...
+
+--97FlI3jjXM9/TN9B
+Content-Type: application/pgp-signature; name=signature.asc
+
+-----BEGIN PGP SIGNATURE-----
+
+iQGcBAEBAgAGBQJoGyOqAAoJEB2Cnv7KVigSvgQL/0PnRJFa9Ov+ttm8LeMY5UTV
+46SvvrmC2R3futlObbFVBEK2PPIvmHeIP+J5VOItbSsy7Dh2SZ3vGdMzIcLuJROL
+zivYcLG4LlHOrOGhHNnd0Wz8vMLSuSgotiqwQmY+JVbO1Gq4x57POKlOMugZCRmW
+7OfVbXY+PDhzEienj1tbjOG+Tx1ffEdaWW+jMfC1aum/3iRdIDJP9YVBJbRb4GbW
+FtrRDc8oKbdwQwRWO3XlF5LXs7WhOX8IYXoI0PEcIqHtHDg7m0o3cvLMgellrB3P
+eqkrBjZt4eOrmPeO4dsgUYE9AtdgGuL6Du+PK38oC5jRP6sJQKeOD6Masg7Bqh6n
+G1IKDr1NqdbTogPPf9tEg+Co+7QJslqVmNI+1W2al8LOFicTB/AI9h9zNvu59EEs
+vSfzqywC3/ifiGUw6x62Lk4NJtolQ8b0ZFAaCPKlWbnT5D97Q8Y+YTcmVNxQgCnM
+7TZiNOQvvPeEKhcCJq4ek3x2F7FF45JgQySv+S0ftQ==
+=ahwU
+-----END PGP SIGNATURE-----
+
+--97FlI3jjXM9/TN9B--
 
