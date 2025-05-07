@@ -1,11 +1,9 @@
-From: Walter Doekes <walter.openvpn@...2889...>
-Date: Wed,  7 May 2025 09:44:38 +0200
-Message-Id: <20250507074438.1326755-1-walter.openvpn@...2889...>
-In-Reply-To: <1e8ccfd451cbf9e6d090bd6a6886e366.squirrel@...2890...>
-References: <1e8ccfd451cbf9e6d090bd6a6886e366.squirrel@...2890...>
+From: Antonio Quartulli <a@...2181...>
+Date: Wed,  7 May 2025 10:56:32 +0200
+Message-ID: <20250507085632.15329-1-a@...2181...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] multi.c: Allow floating to a new IP right
- after connection setup
+Subject: [Openvpn-devel] [PATCH ovpn-net-next] ovpn: don't drop skb's dst
+ when xmitting packet
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,64 +14,49 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net, Arne Schwabe <arne@...1227...>
-Cc: Walter Doekes <walter.openvpn@...2889...>, Walter Doekes <walter+github@...2889...>
+To: openvpn-devel@lists.sourceforge.net
+Cc: Antonio Quartulli <antonio@...515...>, sd@...2891..., Gert Doering <gert@...1296...>
 
-From: Walter Doekes <walter+github@...2889...>
+From: Antonio Quartulli <antonio@...515...>
 
-When you're connected to a VPN which is used as the default gateway, a
-connection to a second VPN will cause a tunnel-in-tunnel traffic. If the
-administrator of the second VPN wants to avoid that, by pushing its IP
-as net_gateway, this means that the client's source IP switches right
-after connect:
+When routing a packet to a LAN behind a peer, ovpn need to
+inspect the route entry that brought there the packet in the
+first place.
 
-  the client source IP switches, from
-  - the first-VPN-exit-IP, to the
-  - regular-ISP-exit-IP
+If this packet is truly routable, the route will provide the
+GW to be used to lookup the VPN peer to send the packet to.
 
-In openvpn 2.5 and below, this worked fine. Since openvpn 2.6,
-specifially b364711486, this triggers the "Disallow float to an address
-taken by another client" code. Since that change, the traffic from the
-second source IP creates a second connection, which now needs special
-handling in the check-floating-IP code.
+However, the route entry is currently dropped before entering
+the ovpn xmit function, because the IFF_XMIT_DST_RELEASE priv_flag
+is set by default.
 
-This change allows one to switch to the new IP, if it is still in an
-unconnected state. That makes the use-case mentioned above work again.
+Clear the IFF_XMIT_DST_RELEASE flag during interface setup to allow
+the route entry (skb's dst) to survive and thus be inspected
+by the routing logic.
 
-Github: closes OpenVPN/openvpn#704
-Signed-off-by: Walter Doekes <walter+github@...2889...>
+Reported-by: Gert Doering <gert@...1296...>
+Signed-off-by: Antonio Quartulli <antonio@...515...>
 ---
- src/openvpn/multi.c | 15 ++++++++++++++-
- 1 file changed, 14 insertions(+), 1 deletion(-)
+ drivers/net/ovpn/main.c | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
-index a2d3fd10..51a00b71 100644
---- a/src/openvpn/multi.c
-+++ b/src/openvpn/multi.c
-@@ -3236,8 +3236,21 @@ multi_process_float(struct multi_context *m, struct multi_instance *mi,
-         struct tls_multi *m1 = mi->context.c2.tls_multi;
-         struct tls_multi *m2 = ex_mi->context.c2.tls_multi;
+diff --git a/drivers/net/ovpn/main.c b/drivers/net/ovpn/main.c
+index 0acb0934c1be..e17992b937bc 100644
+--- a/drivers/net/ovpn/main.c
++++ b/drivers/net/ovpn/main.c
+@@ -157,6 +157,11 @@ static void ovpn_setup(struct net_device *dev)
+ 	dev->type = ARPHRD_NONE;
+ 	dev->flags = IFF_POINTOPOINT | IFF_NOARP;
+ 	dev->priv_flags |= IFF_NO_QUEUE;
++	/* when routing packet to a LAN behind a client, we rely on the
++	 * route entry that originally brought the packet into ovpn, so
++	 * don't release it
++	 */
++	dev->priv_flags &= ~IFF_XMIT_DST_RELEASE;
  
-+        /* if the new connection is fresh and the old one is already connected, this
-+         * might be a legitimate move to a new IP by the original client;
-+         * for example when the server IP is pushed as net_gateway to escape from
-+         * a double VPN. */
-+        if (m1->multi_state == CAS_CONNECT_DONE
-+            && m2->multi_state == CAS_NOT_CONNECTED
-+            && m1->locked_cert_hash_set
-+            && !m2->locked_cert_hash_set
-+            && session_id_equal(&m1->session[TM_ACTIVE].session_id,
-+                          &m2->session[TM_ACTIVE].session_id))
-+        {
-+            /* allow this case */
-+        }
-         /* do not float if target address is taken by client with another cert */
--        if (!cert_hash_compare(m1->locked_cert_hash_set, m2->locked_cert_hash_set))
-+        else if (!cert_hash_compare(m1->locked_cert_hash_set, m2->locked_cert_hash_set))
-         {
-             msg(D_MULTI_LOW, "Disallow float to an address taken by another client %s",
-                 multi_instance_string(ex_mi, false, &gc));
+ 	dev->lltx = true;
+ 	dev->features |= feat;
 -- 
-2.34.1
+2.49.0
 
 
