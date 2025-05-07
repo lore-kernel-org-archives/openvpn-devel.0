@@ -1,12 +1,13 @@
-Date: Wed, 7 May 2025 16:02:54 +0200
+Date: Wed, 7 May 2025 16:36:24 +0200
 From: Gert Doering <gert@...1296...>
-Message-ID: <aBtoDrb9Fjflq52y@...1296...>
+Message-ID: <aBtv6BBzznLqhGU0@...1296...>
 References: <20250507124439.28161-1-a@...2181...>
+ <aBtoDrb9Fjflq52y@...1296...>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="rln4JEdHVfVIfqYe"
+ protocol="application/pgp-signature"; boundary="6uAlJ2u0A0m/8Bii"
 Content-Disposition: inline
-In-Reply-To: <20250507124439.28161-1-a@...2181...>
+In-Reply-To: <aBtoDrb9Fjflq52y@...1296...>
 Subject: Re: [Openvpn-devel] [PATCH ovpn-net-next] ovpn: fix ndo_start_xmit
  return value on error
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -18,66 +19,31 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 To: Antonio Quartulli <a@...2181...>
-Cc: openvpn-devel@lists.sourceforge.net, Antonio Quartulli <antonio@...515...>, sd@...2891...
+Cc: Antonio Quartulli <antonio@...515...>, openvpn-devel@lists.sourceforge.net, sd@...2891...
 
---rln4JEdHVfVIfqYe
+--6uAlJ2u0A0m/8Bii
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 Content-Disposition: inline
 
 Hi,
 
-On Wed, May 07, 2025 at 02:44:39PM +0200, Antonio Quartulli wrote:
-> From: Antonio Quartulli <antonio@...515...>
+On Wed, May 07, 2025 at 04:02:54PM +0200, Gert Doering wrote:
+> Tested, works :-) - so the previous behaviour was "oping was hanging
+> due to 'out of buffer space' error not being counted as 'packet sent'"
+> and now it's behaving as any regular network interface when there
+> is no ARP/IPv6 ND for that neighbour.  Explanation makes sense, too :-)
 >=20
-> ndo_start_xmit is basically expected to always return NETDEV_TX_OK.
-> However, in case of error, it was currently returning NET_XMIT_DROP,
-> which is not a valid netdev_tx_t return value, leading to
-> misinterpretation.
+> So
 >=20
-> Change ndo_start_xmit to always return NETDEV_TX_OK to signal back
-> to the caller that the packet was handled (even if dropped).
->=20
-> Effects of this bug can be seen when sending IPv6 packets having
-> no peer to forward them to:
->=20
->   $ ip netns exec ovpn-server oping -c20 fd00:abcd:220:201::1
->   PING fd00:abcd:220:201::1 (fd00:abcd:220:201::1) 56 bytes of data.00:ab=
-cd:220:201 :1
->   ping_send failed: No buffer space available
->   ping_sendto: No buffer space available
->   ping_send failed: No buffer space available
->   ping_sendto: No buffer space available
->   ...
->=20
-> Fixes: c2d950c4672a ("ovpn: add basic interface creation/destruction/mana=
-gement routines")
-> Signed-off-by: Antonio Quartulli <antonio@...515...>
-> ---
->  drivers/net/ovpn/io.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->=20
-> diff --git a/drivers/net/ovpn/io.c b/drivers/net/ovpn/io.c
-> index dd8a8055d967..03728ce733a9 100644
-> --- a/drivers/net/ovpn/io.c
-> +++ b/drivers/net/ovpn/io.c
-> @@ -408,7 +408,7 @@ netdev_tx_t ovpn_net_xmit(struct sk_buff *skb, struct=
- net_device *dev)
->  	dev_dstats_tx_dropped(ovpn->dev);
->  	skb_tx_error(skb);
->  	kfree_skb_list(skb);
-> -	return NET_XMIT_DROP;
-> +	return NETDEV_TX_OK;
->  }
+> Acked-By: Gert Doering <gert@...1296...>
 
-Tested, works :-) - so the previous behaviour was "oping was hanging
-due to 'out of buffer space' error not being counted as 'packet sent'"
-and now it's behaving as any regular network interface when there
-is no ARP/IPv6 ND for that neighbour.  Explanation makes sense, too :-)
+Antonio says if I test this, I should state so...
 
-So
-
+Tested-By: Gert Doering <gert@...1296...>
 Acked-By: Gert Doering <gert@...1296...>
+
+here we go :-)
 
 gert
 --=20
@@ -90,22 +56,22 @@ ss
 
 Gert Doering - Munich, Germany                             gert@...1296...
 
---rln4JEdHVfVIfqYe
+--6uAlJ2u0A0m/8Bii
 Content-Type: application/pgp-signature; name=signature.asc
 
 -----BEGIN PGP SIGNATURE-----
 
-iQGcBAEBAgAGBQJoG2gOAAoJEB2Cnv7KVigSKDkL/3TthNMbQS79Qh2bm1HCioDL
-A07NaSvZLKNSgjpz5rhZHAJS1gZZfG4ICaBG7CPLbHuQ2x5thNg6DW2oJFIdQ9xL
-GkQQvLZ0HT6ye9u0Bd3iPAu1es1aa353Rui/GsSDcejFpfQrBaj2Un4vfnWvjedG
-Ylvxlw18mol7cLIdBMDdqW7+keSi563cKXPEKUfdDopIqAFulP9MLuLLC/fM4bh7
-nlTZq0ephJpHdE38ntc7Xm4pBynUyfGa1Qp1a8SF+Z29cdv7lnHP/j0VYkTgiHqo
-bGMI0EOrRUq+6NHSxZfKmU0c3mvU9zz3PDrL9QoRzsV1nUq91U39HjLgUIqRSiND
-mrCKs1b3wP2DJcKpcQ4lsS/EqrrabCZU6vTj5f/nYBhA3LovuJXKwJqSFPccL1s7
-uJLRxv6LKrwIZJNshZTFCe/fHhHyaT5l5F0BG5SDjmZ7XIvIxsddY8JNahsXFL8i
-4rdi6yI5GVy7s+ONbR5nxRSoTNRHHOCmXMKg2Rh5Rw==
-=zc0o
+iQGcBAEBAgAGBQJoG2/oAAoJEB2Cnv7KVigSK3cL/AjX40L9hYFn46wmvKNjGeYB
+GV+4JrnL6K9u5yDMv8aTyD3p+nVpMJJq4wQ5gcn+vDfGnmnlwAvJGq5L7Xe9pThN
+y8KLffo+lAUuR1WjyNPsMgCtGprZwG3i5myauXsZiZEnGfFMVZjsEpvvYFzQvdn7
+DVr/DvyK1+4O3YsHTOWVY3UdOaOerRe8nvTw2IfrwzazMeuGd/j+poVr3/N9vNG4
+TBMmlCyin6DrlMzlLmcCYV6B5Zs3zX7BFbjYcJE+0p3NCbpfqHiOx4oz92fUZl6Z
+ysAb7QhakwI9dsh518RfAx+mDIiP+iq9obnv6fM3qXN/+3UqULEE3il/04FZnhuw
+ZCO1fJJm7vNSUDWD69weI/LzGDaiqfVk09SxpK/vvsnxtJaERBunTJTYeVf9lbPk
+1r2tmVxzeS3ePzwCbrbziz6FRSiyJsUyO1+9ef0uSlqj+4WZgKWr1nALGFNn+/7H
+RSzXQ0ZP7vGD62ZZI22lD+wKNcix5laPsTiDPtDEiw==
+=8Brd
 -----END PGP SIGNATURE-----
 
---rln4JEdHVfVIfqYe--
+--6uAlJ2u0A0m/8Bii--
 
