@@ -1,15 +1,16 @@
-Date: Wed, 7 May 2025 13:30:32 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <aBtEWDpucmll4HJJ@...1296...>
-References: <20250430123250.8627-1-a@...2181...>
- <20250505225549.19492-1-a@...2181...>
+From: "plaisthos (Code Review)" <gerrit@...515...>
+Date: Wed, 7 May 2025 11:57:03 +0000
+In-Reply-To: <gerrit.1746615872000.I2551edfaaf5107649398a3fa1db2009ee8644671@...2715...>
+References: <gerrit.1746615872000.I2551edfaaf5107649398a3fa1db2009ee8644671@...2715...>
+Reply-To: arne-openvpn@...1227..., openvpn-devel@lists.sourceforge.net,
+ frank@...2641...
+Message-ID: <3872bcf410f8ab0a28404e30b55cb2a97e54dcaf-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="D3G/nfHoZY1A87To"
+Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-In-Reply-To: <20250505225549.19492-1-a@...2181...>
-Subject: Re: [Openvpn-devel] [PATCH ovpn-net-next v2] ovpn: ensure sk is
- still valid during cleanup
+Content-Type: multipart/alternative; boundary="+v9W6kNR+ZY="; charset=UTF-8
+Subject: [Openvpn-devel] [XS] Change in openvpn[master]: CMake: Make sure to
+ treat UNIT_TEST_SOURCEDIR as path
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,71 +19,81 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Antonio Quartulli <a@...2181...>
-Cc: openvpn-devel@lists.sourceforge.net, Antonio Quartulli <antonio@...515...>
+To: flichtenheld <frank@...2641...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---D3G/nfHoZY1A87To
-Content-Type: text/plain; charset="us-ascii"
+--+v9W6kNR+ZY=
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
 
-Hi,
+Attention is currently required from: flichtenheld.
 
-On Tue, May 06, 2025 at 12:55:49AM +0200, Antonio Quartulli wrote:
-> From: Antonio Quartulli <antonio@...515...>
->=20
-> In case of UDP peer timeout, an openvpn client (userspace)
-> performs the following actions:
-> 1. receives the peer deletion notification (reason=3Dtimeout)
-> 2. closes the socket
-[..]
->=20
-> Signed-off-by: Antonio Quartulli <antonio@...515...>
-> ---
->  drivers/net/ovpn/socket.c | 21 ++++++++++++---------
->  1 file changed, 12 insertions(+), 9 deletions(-)
->=20
-> diff --git a/drivers/net/ovpn/socket.c b/drivers/net/ovpn/socket.c
-> index a83cbab72591..66a2ecbc483b 100644
+plaisthos has posted comments on this change. ( http://gerrit.openvpn.net/c=
+/openvpn/+/981?usp=3Demail )
 
-On my ubuntu 20.04 ("backport of ovpn") running a few OpenVPN instances
-for test purposes, opening and closing DCO interface frequently, I could
-fairly reliably crash the system in ~1 hour.
+Change subject: CMake: Make sure to treat UNIT_TEST_SOURCEDIR as path
+......................................................................
 
-With this patch, the machine survived the full test parcours.
 
-I can not comment on the technical merits on the patch, just state "it
-fixes my problem", so
+Patch Set 1: Code-Review+2
 
-Tested-By: Gert Doering <gert@...1296...>
 
-gert
---=20
-"If was one thing all people took for granted, was conviction that if you=20
- feed honest figures into a computer, honest figures come out. Never doubte=
-d=20
- it myself till I met a computer with a sense of humor."
-                             Robert A. Heinlein, The Moon is a Harsh Mistre=
-ss
+--
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/981?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings
 
-Gert Doering - Munich, Germany                             gert@...1296...
+Gerrit-Project: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: I2551edfaaf5107649398a3fa1db2009ee8644671
+Gerrit-Change-Number: 981
+Gerrit-PatchSet: 1
+Gerrit-Owner: flichtenheld <frank@...2641...>
+Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-Attention: flichtenheld <frank@...2641...>
+Gerrit-Comment-Date: Wed, 07 May 2025 11:57:03 +0000
+Gerrit-HasComments: No
+Gerrit-Has-Labels: Yes
+Gerrit-MessageType: comment
 
---D3G/nfHoZY1A87To
-Content-Type: application/pgp-signature; name=signature.asc
+--+v9W6kNR+ZY=
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
------BEGIN PGP SIGNATURE-----
+<p> Attention is currently required from: flichtenheld. </p>
+<p>Patch set 1:<span style=3D"border-radius: 3px; display: inline-block; ma=
+rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/981?usp=3Demail">Vi=
+ew Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To vie=
+w, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/981?usp=3Demail">=
+change 981</a>. To unsubscribe, or for help writing mail filters, visit <a =
+href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope=
+ itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"act=
+ion" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=
+=3D"http://gerrit.openvpn.net/c/openvpn/+/981?usp=3Demail"/><meta itemprop=
+=3D"name" content=3D"View Change"/></div></div>
 
-iQGcBAEBAgAGBQJoG0RYAAoJEB2Cnv7KVigSFVcL/3Syf/G7sM+3/hGErx8x6965
-Zuib5/GO31B2iuHN7nRrzTcK/haOTaF8ZcyuXaUdSIGEQ9ZRL/QxeyB04DB1cvNU
-ItzmhYAGIoHIZY3DPvJU4ukqm3GvC9Lmydbmie6P8uwQ6iJORw7rUnAUHKgOj8I9
-2pkdqKKvGpl5Qch/xia/fen0m3dFEiZJMgL/yTx1Wg5pKVJlR/oBc14ON6CM00Ze
-ZRlsSmMyXXj/Gz4V8omCwsxYnhVceiDaV0WpsJXg9DpR1O/3US2MS1EL75HIVUTO
-FBZ+u2wGcCy1eNQ5cl7ua/3b+7W58Ol0MVNaWbhUKFsEOw+jBzyHoM/Dq6WRsxJK
-y6wgjiPvtPM3cwv/B/j0N1gT1folOqJSugGRPdGyMiBq6l3ONtj+KsszGbVQBxwA
-4fzKia8lGvlhHYK6VuT3vI6whMdruc0MI7WCkQqjgW5UhZr5CG0Xoh0cmX9u571e
-Y6ObxTGOgY03p811Mz9QU8JfYZQb7Joir9oEuXWWlg==
-=JvcW
------END PGP SIGNATURE-----
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I2551edfaaf5107649398a3fa1db=
+2009ee8644671 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 981 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
+<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
+.&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
+.1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
+41...&gt; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Wed, 07 May 2025 11:57:03=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: No </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
 
---D3G/nfHoZY1A87To--
+
+--+v9W6kNR+ZY=--
 
