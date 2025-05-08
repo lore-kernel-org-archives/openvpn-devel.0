@@ -1,13 +1,13 @@
-Message-ID: <121c1161-262b-46a8-841b-a83e38290881@...2181...>
-Date: Wed, 7 May 2025 21:40:10 +0200
+Message-ID: <21a29ebd-0eef-4084-9c79-a6274bd91ef2@...2181...>
+Date: Thu, 8 May 2025 13:25:27 +0200
 MIME-Version: 1.0
-References: <20250507124439.28161-1-a@...2181...>
- <aBtoDrb9Fjflq52y@...1296...> <aBtv6BBzznLqhGU0@...1296...>
+References: <20250430123250.8627-1-a@...2181...>
+ <20250430123250.8627-2-a@...2181...>
 Content-Language: en-US
 From: Antonio Quartulli <a@...2181...>
-In-Reply-To: <aBtv6BBzznLqhGU0@...1296...>
-Subject: Re: [Openvpn-devel] [PATCH ovpn-net-next] ovpn: fix ndo_start_xmit
- return value on error
+In-Reply-To: <20250430123250.8627-2-a@...2181...>
+Subject: Re: [Openvpn-devel] [PATCH ovpn-net-next 2/2] ovpn: drop useless
+ reg_state check in keepalive worker
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,32 +18,24 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-To: Gert Doering <gert@...1296...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
-On 07/05/2025 16:36, Gert Doering wrote:
-> Hi,
+On 30/04/2025 14:32, Antonio Quartulli wrote:
+> From: Antonio Quartulli <antonio@...515...>
 > 
-> On Wed, May 07, 2025 at 04:02:54PM +0200, Gert Doering wrote:
->> Tested, works :-) - so the previous behaviour was "oping was hanging
->> due to 'out of buffer space' error not being counted as 'packet sent'"
->> and now it's behaving as any regular network interface when there
->> is no ARP/IPv6 ND for that neighbour.  Explanation makes sense, too :-)
->>
->> So
->>
->> Acked-By: Gert Doering <gert@...1296...>
+> The keepalive worker is cancelled before calling
+> unregister_netdevice_queue(), therefore it will never
+> hit a situation where the reg_state can be different
+> than NETDEV_REGISTERED.
 > 
-> Antonio says if I test this, I should state so...
+> For this reason, checking reg_state is useless and the
+> condition can be removed.
 > 
-> Tested-By: Gert Doering <gert@...1296...>
-> Acked-By: Gert Doering <gert@...1296...>
-> 
-> here we go :-)
+> Signed-off-by: Antonio Quartulli <antonio@...515...>
 
-Merged to main branch, commit id 2176a2102216
+Merged to main, commit id 9149a0a9a8f9
 
-Thanks!
+Thanks
 
 -- 
 Antonio Quartulli
