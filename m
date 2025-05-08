@@ -1,13 +1,13 @@
-Message-ID: <21a29ebd-0eef-4084-9c79-a6274bd91ef2@...2181...>
-Date: Thu, 8 May 2025 13:25:27 +0200
+Message-ID: <eb1fff71-bcfb-4360-af40-31f9856a1019@...2181...>
+Date: Thu, 8 May 2025 13:28:45 +0200
 MIME-Version: 1.0
 References: <20250430123250.8627-1-a@...2181...>
- <20250430123250.8627-2-a@...2181...>
+ <20250505225549.19492-1-a@...2181...> <aBtEWDpucmll4HJJ@...1296...>
 Content-Language: en-US
 From: Antonio Quartulli <a@...2181...>
-In-Reply-To: <20250430123250.8627-2-a@...2181...>
-Subject: Re: [Openvpn-devel] [PATCH ovpn-net-next 2/2] ovpn: drop useless
- reg_state check in keepalive worker
+In-Reply-To: <aBtEWDpucmll4HJJ@...1296...>
+Subject: Re: [Openvpn-devel] [PATCH ovpn-net-next v2] ovpn: ensure sk is
+ still valid during cleanup
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,24 +18,27 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-To: openvpn-devel@lists.sourceforge.net
+To: Sabrina Dubroca <sd@...2891...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-On 30/04/2025 14:32, Antonio Quartulli wrote:
-> From: Antonio Quartulli <antonio@...515...>
-> 
-> The keepalive worker is cancelled before calling
-> unregister_netdevice_queue(), therefore it will never
-> hit a situation where the reg_state can be different
-> than NETDEV_REGISTERED.
-> 
-> For this reason, checking reg_state is useless and the
-> condition can be removed.
-> 
-> Signed-off-by: Antonio Quartulli <antonio@...515...>
+Hi Sabrina,
 
-Merged to main, commit id 9149a0a9a8f9
+On 07/05/2025 13:30, Gert Doering wrote:
+> Tested-By: Gert Doering <gert@...1296...>
+> 
 
-Thanks
+Gert has stress tested this change quite a bit and he couldn't reproduce 
+any side issue.
+
+To me it looks like this is a reasonable solution to avoid clashes due 
+to racing cleanups (ovpn_socket_release vs destroy/close).
+
+Please let me know if you have any comment, otherwise I'd like to send 
+this to netdev for inclusion, since it fixes a frequent kernel panic.
+
+Regards,
+
+
 
 -- 
 Antonio Quartulli
