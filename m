@@ -1,14 +1,14 @@
 From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Fri, 9 May 2025 13:04:19 +0000
+Date: Fri, 9 May 2025 13:04:22 +0000
 In-Reply-To: <gerrit.1743171486000.I0c4fce76c81c5297ff5469d787114f1279bf35e5@...2715...>
 References: <gerrit.1743171486000.I0c4fce76c81c5297ff5469d787114f1279bf35e5@...2715...>
 Reply-To: gert@...1296..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <39e202df3a03d3aab711a34746413bb33a0ab111-EmailReplacePatchSet-HTML@...2715...>
+Message-ID: <39e202df3a03d3aab711a34746413bb33a0ab111-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="F3Q6+bGi+zw="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="mQAPAz65Kbo="; charset=UTF-8
 Subject: [Openvpn-devel] [M] Change in openvpn[master]: CMake: Reorganize
  header and symbol tests
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -19,19 +19,15 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: flichtenheld <frank@...2641...>, plaisthos <arne-openvpn@...1227...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: flichtenheld <frank@...2641...>
+Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---F3Q6+bGi+zw=
+--mQAPAz65Kbo=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-cron2 has uploaded a new patch set (#3) to the change originally created by=
- flichtenheld. ( http://gerrit.openvpn.net/c/openvpn/+/924?usp=3Demail )
-
-The following approvals got outdated and were removed:
-Code-Review+2 by plaisthos
-
+cron2 has submitted this change. ( http://gerrit.openvpn.net/c/openvpn/+/92=
+4?usp=3Demail )
 
 Change subject: CMake: Reorganize header and symbol tests
 ......................................................................
@@ -55,7 +51,7 @@ M CMakeLists.txt
 1 file changed, 82 insertions(+), 64 deletions(-)
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/24/924/3
+
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
 index c19d29a..ae818c3 100644
@@ -280,266 +276,262 @@ Gerrit-PatchSet: 3
 Gerrit-Owner: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-MessageType: newpatchset
+Gerrit-MessageType: merged
 
---F3Q6+bGi+zw=
+--mQAPAz65Kbo=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p>cron2 <strong>uploaded patch set #3</strong> to the change originally cr=
-eated by flichtenheld.</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn=
-/+/924?usp=3Demail">View Change</a></p><p>The following approvals got outda=
-ted and were removed:
-Code-Review+2 by plaisthos</p><pre style=3D"font-family: monospace,monospac=
-e; white-space: pre-wrap;">CMake: Reorganize header and symbol tests<br><br=
->When we check for the header and then symbols<br>in that header combine th=
-is so that the<br>relationship between the tests is clear and<br>that we do=
- not do tests we know will fail.<br><br>Change-Id: I0c4fce76c81c5297ff5469d=
-787114f1279bf35e5<br>Signed-off-by: Frank Lichtenheld &lt;frank@...2641...&=
-gt;<br>Acked-by: Arne Schwabe &lt;arne-openvpn@...1227...&gt;<br>Message-Id=
-: &lt;20250508174624.7504-1-gert@...1296...&gt;<br>URL: https://www.mail-ar=
-chive.com/openvpn-devel@lists.sourceforge.net/msg31602.html<br>Signed-off-b=
-y: Gert Doering &lt;gert@...1296...&gt;<br>---<br>M CMakeLists.txt<br>1 fil=
-e changed, 82 insertions(+), 64 deletions(-)<br><br></pre><pre style=3D"fon=
-t-family: monospace,monospace; white-space: pre-wrap;">git pull ssh://gerri=
-t.openvpn.net:29418/openvpn refs/changes/24/924/3</pre><pre style=3D"font-f=
-amily: monospace,monospace; white-space: pre-wrap;"><span>diff --git a/CMak=
-eLists.txt b/CMakeLists.txt</span><br><span>index c19d29a..ae818c3 100644</=
-span><br><span>--- a/CMakeLists.txt</span><br><span>+++ b/CMakeLists.txt</s=
-pan><br><span>@@ -74,7 +74,11 @@</span><br><span> endfunction()</span><br><=
-span> </span><br><span> if (MSVC)</span><br><span style=3D"color: hsl(0, 10=
-0%, 40%);">-    add_definitions(-D_CRT_SECURE_NO_WARNINGS -D_CRT_NONSTDC_NO=
-_DEPRECATE -D_WINSOCK_DEPRECATED_NO_WARNINGS)</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+    add_compile_definitions(</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+        _CRT_SECURE_NO_WARNINGS</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+        _CRT_NONSTDC_NO_DEPR=
-ECATE</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        _WINSO=
-CK_DEPRECATED_NO_WARNINGS</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+        )</span><br><span>     if (USE_WERROR)</span><br><span>      =
-   add_compile_options(/WX)</span><br><span>     endif ()</span><br><span>@=
-@ -171,88 +175,102 @@</span><br><span>     set(TARGET_WIN32 YES)</span><br>=
-<span> endif ()</span><br><span> </span><br><span style=3D"color: hsl(0, 10=
-0%, 40%);">-check_symbol_exists(chroot unistd.h HAVE_CHROOT)</span><br><spa=
-n style=3D"color: hsl(0, 100%, 40%);">-check_symbol_exists(chdir unistd.h H=
-AVE_CHDIR)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-check_symbo=
-l_exists(dup unistd.h HAVE_DUP)</span><br><span style=3D"color: hsl(0, 100%=
-, 40%);">-check_symbol_exists(dup2 unistd.h HAVE_DUP2)</span><br><span styl=
-e=3D"color: hsl(0, 100%, 40%);">-check_symbol_exists(fork unistd.h HAVE_FOR=
-K)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-check_symbol_exists=
-(execve unistd.h HAVE_EXECVE)</span><br><span style=3D"color: hsl(0, 100%, =
-40%);">-check_symbol_exists(ftruncate unistd.h HAVE_FTRUNCATE)</span><br><s=
-pan style=3D"color: hsl(0, 100%, 40%);">-check_symbol_exists(nice unistd.h =
-HAVE_NICE)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-check_symbo=
-l_exists(setgid unistd.h HAVE_SETGID)</span><br><span style=3D"color: hsl(0=
-, 100%, 40%);">-check_symbol_exists(setuid unistd.h HAVE_SETUID)</span><br>=
-<span style=3D"color: hsl(0, 100%, 40%);">-check_symbol_exists(setsid unist=
-d.h HAVE_SETSID)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-check=
-_symbol_exists(getpeereid &quot;unistd.h;sys/socket.h&quot; HAVE_GETPEEREID=
-)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+check_include_file=
-s(unistd.h HAVE_UNISTD_H)</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+if (HAVE_UNISTD_H)</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+    check_symbol_exists(chroot unistd.h HAVE_CHROOT)</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+    check_symbol_exists(chdir unistd.=
-h HAVE_CHDIR)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    ch=
-eck_symbol_exists(dup unistd.h HAVE_DUP)</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+    check_symbol_exists(dup2 unistd.h HAVE_DUP2)</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+    check_symbol_exists(f=
-ork unistd.h HAVE_FORK)</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+    check_symbol_exists(execve unistd.h HAVE_EXECVE)</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+    check_symbol_exists(ftruncate unis=
-td.h HAVE_FTRUNCATE)</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+    check_symbol_exists(nice unistd.h HAVE_NICE)</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+    check_symbol_exists(setgid unistd.h HAVE_=
-SETGID)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    check_sy=
-mbol_exists(setuid unistd.h HAVE_SETUID)</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+    check_symbol_exists(setsid unistd.h HAVE_SETSID)</=
+<p>cron2 <strong>submitted</strong> this change.</p><p><a href=3D"http://ge=
+rrit.openvpn.net/c/openvpn/+/924?usp=3Demail">View Change</a></p><div style=
+=3D"white-space:pre-wrap"></div><pre style=3D"font-family: monospace,monosp=
+ace; white-space: pre-wrap;">CMake: Reorganize header and symbol tests<br><=
+br>When we check for the header and then symbols<br>in that header combine =
+this so that the<br>relationship between the tests is clear and<br>that we =
+do not do tests we know will fail.<br><br>Change-Id: I0c4fce76c81c5297ff546=
+9d787114f1279bf35e5<br>Signed-off-by: Frank Lichtenheld &lt;frank@...2723...=
+.&gt;<br>Acked-by: Arne Schwabe &lt;arne-openvpn@...1227...&gt;<br>Message-=
+Id: &lt;20250508174624.7504-1-gert@...1296...&gt;<br>URL: https://www.mail-=
+archive.com/openvpn-devel@lists.sourceforge.net/msg31602.html<br>Signed-off=
+-by: Gert Doering &lt;gert@...1296...&gt;<br>---<br>M CMakeLists.txt<br>1 f=
+ile changed, 82 insertions(+), 64 deletions(-)<br><br></pre>
+<pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><sp=
+an>diff --git a/CMakeLists.txt b/CMakeLists.txt</span><br><span>index c19d2=
+9a..ae818c3 100644</span><br><span>--- a/CMakeLists.txt</span><br><span>+++=
+ b/CMakeLists.txt</span><br><span>@@ -74,7 +74,11 @@</span><br><span> endfu=
+nction()</span><br><span> </span><br><span> if (MSVC)</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-    add_definitions(-D_CRT_SECURE_NO_WARNIN=
+GS -D_CRT_NONSTDC_NO_DEPRECATE -D_WINSOCK_DEPRECATED_NO_WARNINGS)</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+    add_compile_definitions(<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+        _CRT_SECURE_=
+NO_WARNINGS</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        =
+_CRT_NONSTDC_NO_DEPRECATE</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+        _WINSOCK_DEPRECATED_NO_WARNINGS</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+        )</span><br><span>     if (USE_WERROR)</s=
+pan><br><span>         add_compile_options(/WX)</span><br><span>     endif =
+()</span><br><span>@@ -171,88 +175,102 @@</span><br><span>     set(TARGET_W=
+IN32 YES)</span><br><span> endif ()</span><br><span> </span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-check_symbol_exists(chroot unistd.h HAVE_CH=
+ROOT)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-check_symbol_exi=
+sts(chdir unistd.h HAVE_CHDIR)</span><br><span style=3D"color: hsl(0, 100%,=
+ 40%);">-check_symbol_exists(dup unistd.h HAVE_DUP)</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-check_symbol_exists(dup2 unistd.h HAVE_DUP2=
+)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-check_symbol_exists(=
+fork unistd.h HAVE_FORK)</span><br><span style=3D"color: hsl(0, 100%, 40%);=
+">-check_symbol_exists(execve unistd.h HAVE_EXECVE)</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-check_symbol_exists(ftruncate unistd.h HAVE=
+_FTRUNCATE)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-check_symb=
+ol_exists(nice unistd.h HAVE_NICE)</span><br><span style=3D"color: hsl(0, 1=
+00%, 40%);">-check_symbol_exists(setgid unistd.h HAVE_SETGID)</span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-check_symbol_exists(setuid unistd.h=
+ HAVE_SETUID)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-check_sy=
+mbol_exists(setsid unistd.h HAVE_SETSID)</span><br><span style=3D"color: hs=
+l(0, 100%, 40%);">-check_symbol_exists(getpeereid &quot;unistd.h;sys/socket=
+.h&quot; HAVE_GETPEEREID)</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+check_include_files(unistd.h HAVE_UNISTD_H)</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+if (HAVE_UNISTD_H)</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+    check_symbol_exists(chroot unistd.h HAVE_C=
+HROOT)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    check_sym=
+bol_exists(chdir unistd.h HAVE_CHDIR)</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+    check_symbol_exists(dup unistd.h HAVE_DUP)</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+    check_symbol_exists(dup2 u=
+nistd.h HAVE_DUP2)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+   check_symbol_exists(fork unistd.h HAVE_FORK)</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+    check_symbol_exists(execve unistd.h HAVE_EX=
+ECVE)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    check_symb=
+ol_exists(ftruncate unistd.h HAVE_FTRUNCATE)</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+    check_symbol_exists(nice unistd.h HAVE_NICE)</=
 span><br><span style=3D"color: hsl(120, 100%, 40%);">+    check_symbol_exis=
-ts(daemon &quot;unistd.h;stdlib.h&quot; HAVE_DAEMON)</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    check_symbol_exists(getpeereid &quot;=
-unistd.h;sys/socket.h&quot; HAVE_GETPEEREID)</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+endif()</span><br><span> </span><br><span style=3D=
-"color: hsl(0, 100%, 40%);">-check_symbol_exists(epoll_create sys/epoll.h H=
-AVE_EPOLL_CREATE)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ch=
-eck_include_files(grp.h HAVE_GRP_H)</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+if (HAVE_GRP_H)</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+    check_symbol_exists(getgrnam grp.h HAVE_GETGRNAM)</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+endif()</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+check_include_files(libgen.h HAVE_LIBGEN_=
-H)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+if (HAVE_LIBGEN_H=
+ts(setgid unistd.h HAVE_SETGID)</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+    check_symbol_exists(setuid unistd.h HAVE_SETUID)</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+    check_symbol_exists(setsid=
+ unistd.h HAVE_SETSID)</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+    check_symbol_exists(daemon &quot;unistd.h;stdlib.h&quot; HAVE_DAEMON=
 )</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    check_symbol_e=
-xists(basename libgen.h HAVE_BASENAME)</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+    check_symbol_exists(dirname libgen.h HAVE_DIRNAME)</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+endif()</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+check_include_files(pwd.h HAVE_PW=
-D_H)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+if (HAVE_PWD_H)=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    check_symbol_ex=
-ists(getpwnam pwd.h HAVE_GETPWNAM)</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+endif()</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+check_include_files(sys/epoll.h HAVE_SYS_EPOLL_H)</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+if (HAVE_SYS_EPOLL_H)</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+    check_symbol_exists(epoll_create sy=
-s/epoll.h HAVE_EPOLL_CREATE)</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+endif()</span><br><span style=3D"color: hsl(120, 100%, 40%);">+che=
-ck_include_files(syslog.h HAVE_SYSLOG_H)</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+if (HAVE_SYSLOG_H)</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+    check_symbol_exists(openlog syslog.h HAVE_OPENLOG)<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+    check_symbol_exi=
-sts(syslog syslog.h HAVE_SYSLOG)</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+endif()</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+check_include_files(sys/mman.h HAVE_SYS_MMAN_H)</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+if (HAVE_SYS_MMAN_H)</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+    check_symbol_exists(mlockall sys/mman.h H=
-AVE_MLOCKALL)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+endif(=
+xists(getpeereid &quot;unistd.h;sys/socket.h&quot; HAVE_GETPEEREID)</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+endif()</span><br><span> </=
+span><br><span style=3D"color: hsl(0, 100%, 40%);">-check_symbol_exists(epo=
+ll_create sys/epoll.h HAVE_EPOLL_CREATE)</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+check_include_files(grp.h HAVE_GRP_H)</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+if (HAVE_GRP_H)</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+    check_symbol_exists(getgrnam grp.h H=
+AVE_GETGRNAM)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+endif(=
 )</span><br><span style=3D"color: hsl(120, 100%, 40%);">+check_include_file=
-s(sys/socket.h HAVE_SYS_SOCKET_H)</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+if (HAVE_SYS_SOCKET_H)</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+    check_symbol_exists(sendmsg sys/socket.h HAVE_SENDMSG)=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    check_symbol_ex=
-ists(recvmsg sys/socket.h HAVE_RECVMSG)</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+    check_symbol_exists(getsockname sys/socket.h HAVE_G=
-ETSOCKNAME)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    # Ch=
-ecking for existence of structs with check_symbol_exists does not work,</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+    # so we use check_s=
-truct_hash_member with a member instead</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+    check_struct_has_member(&quot;struct cmsghdr&quot; =
-cmsg_len sys/socket.h HAVE_CMSGHDR)</span><br><span style=3D"color: hsl(120=
+s(libgen.h HAVE_LIBGEN_H)</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+if (HAVE_LIBGEN_H)</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+    check_symbol_exists(basename libgen.h HAVE_BASENAME)</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+    check_symbol_exists(dirname l=
+ibgen.h HAVE_DIRNAME)</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+endif()</span><br><span style=3D"color: hsl(120, 100%, 40%);">+check_incl=
+ude_files(pwd.h HAVE_PWD_H)</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+if (HAVE_PWD_H)</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+    check_symbol_exists(getpwnam pwd.h HAVE_GETPWNAM)</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+endif()</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+check_include_files(sys/epoll.h HAVE_SYS_EPOLL_H)=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+if (HAVE_SYS_EPOLL_=
+H)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    check_symbol_=
+exists(epoll_create sys/epoll.h HAVE_EPOLL_CREATE)</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+endif()</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+check_include_files(syslog.h HAVE_SYSLOG_H)</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+if (HAVE_SYSLOG_H)</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+    check_symbol_exists(openlog s=
+yslog.h HAVE_OPENLOG)</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+    check_symbol_exists(syslog syslog.h HAVE_SYSLOG)</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+endif()</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+check_include_files(sys/mman.h HAVE_SYS_MMAN_H)</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+if (HAVE_SYS_MMAN_H)</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+    check_symbol_exists=
+(mlockall sys/mman.h HAVE_MLOCKALL)</span><br><span style=3D"color: hsl(120=
 , 100%, 40%);">+endif()</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+check_include_files(sys/time.h HAVE_SYS_TIME_H)</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+if (HAVE_SYS_TIME_H)</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+    check_symbol_exists(gettimeofday sys=
-/time.h HAVE_GETTIMEOFDAY)</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+    check_symbol_exists(getrlimit &quot;sys/time.h;sys/resource.h&qu=
-ot; HAVE_GETRLIMIT)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-endif()</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%)=
-;">-check_symbol_exists(gettimeofday sys/time.h HAVE_GETTIMEOFDAY)</span><b=
-r><span style=3D"color: hsl(0, 100%, 40%);">-check_symbol_exists(basename l=
-ibgen.h HAVE_BASENAME)</span><br><span> check_symbol_exists(chsize io.h HAV=
-E_CHSIZE)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-check_symbol=
-_exists(daemon &quot;unistd.h;stdlib.h&quot; HAVE_DAEMON)</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-check_symbol_exists(dirname libgen.h HA=
-VE_DIRNAME)</span><br><span> check_symbol_exists(getrlimit sys/resource.h H=
-AVE_GETRLIMIT)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-check_s=
-ymbol_exists(mlockall sys/mman.h HAVE_MLOCKALL)</span><br><span style=3D"co=
-lor: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%=
-);">-check_symbol_exists(sendmsg sys/socket.h HAVE_SENDMSG)</span><br><span=
- style=3D"color: hsl(0, 100%, 40%);">-check_symbol_exists(recvmsg sys/socke=
-t.h HAVE_RECVMSG)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-chec=
-k_symbol_exists(openlog syslog.h HAVE_OPENLOG)</span><br><span style=3D"col=
-or: hsl(0, 100%, 40%);">-check_symbol_exists(syslog syslog.h HAVE_SYSLOG)</=
-span><br><span style=3D"color: hsl(0, 100%, 40%);">-check_symbol_exists(get=
-grnam grp.h HAVE_GETGRNAM)</span><br><span style=3D"color: hsl(0, 100%, 40%=
-);">-check_symbol_exists(getpwnam pwd.h HAVE_GETPWNAM)</span><br><span styl=
-e=3D"color: hsl(0, 100%, 40%);">-check_symbol_exists(getsockname sys/socket=
-.h HAVE_GETSOCKNAME)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-c=
-heck_symbol_exists(getrlimit &quot;sys/time.h;sys/resource.h&quot; HAVE_GET=
-RLIMIT)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><sp=
-an style=3D"color: hsl(0, 100%, 40%);">-# Checking for existence of structs=
- with check_symbol_exists does not work,</span><br><span style=3D"color: hs=
-l(0, 100%, 40%);">-# so we use check_struct_hash_member with a member inste=
-ad</span><br><span style=3D"color: hsl(0, 100%, 40%);">-check_struct_has_me=
-mber(&quot;struct cmsghdr&quot; cmsg_len sys/socket.h HAVE_CMSGHDR)</span><=
-br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span> </span><br>=
-<span> # Some OS (e.g. FreeBSD) need some basic headers to allow</span><br>=
-<span> # including network headers</span><br><span> set(NETEXTRA sys/types.=
-h)</span><br><span> check_include_files(&quot;${NETEXTRA};netinet/in.h&quot=
-; HAVE_NETINET_IN_H)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-<=
-/span><br><span> if (HAVE_NETINET_IN_H)</span><br><span>     list(APPEND NE=
-TEXTRA netinet/in.h)</span><br><span> endif ()</span><br><span> </span><br>=
-<span style=3D"color: hsl(0, 100%, 40%);">-check_include_files(&quot;${NETE=
-XTRA};netinet/in6.h&quot; HAVE_NETINET_IN_H)</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+check_include_files(arpa/inet.h HAVE_ARPA_INET_H)<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+check_include_files(=
-dlfcn.h HAVE_DLFCN_H)</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+check_include_files(dmalloc.h HAVE_DMALLOC_H)</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+check_include_files(fcntl.h HAVE_FCNTL_H)</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+check_include_files(err.h=
- HAVE_ERR_H)</span><br><span> check_include_files(linux/if_tun.h HAVE_LINUX=
-_IF_TUN_H)</span><br><span> check_include_files(linux/sockios.h HAVE_LINUX_=
-SOCKIOS_H)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-check_inclu=
-de_files(dlfcn.h HAVE_DLFCN_H)</span><br><span style=3D"color: hsl(0, 100%,=
- 40%);">-check_include_files(fcntl.h HAVE_FCNTL_H)</span><br><span style=3D=
-"color: hsl(0, 100%, 40%);">-check_include_files(dmalloc.h HAVE_DMALLOC_H)<=
-/span><br><span style=3D"color: hsl(0, 100%, 40%);">-check_include_files(er=
-r.h HAVE_ERR_H)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-check_=
-include_files(sys/epoll.h HAVE_SYS_EPOLL_H)</span><br><span style=3D"color:=
- hsl(0, 100%, 40%);">-check_include_files(poll.h HAVE_POLL_H)</span><br><sp=
-an style=3D"color: hsl(0, 100%, 40%);">-check_include_files(sys/socket.h HA=
-VE_SYS_SOCKET_H)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-check=
-_include_files(sys/time.h HAVE_SYS_TIME_H)</span><br><span> check_include_f=
-iles(netdb.h HAVE_NETDB_H)</span><br><span style=3D"color: hsl(0, 100%, 40%=
-);">-check_include_files(unistd.h HAVE_UNISTD_H)</span><br><span style=3D"c=
-olor: hsl(0, 100%, 40%);">-check_include_files(sys/un.h HAVE_SYS_UN_H)</spa=
-n><br><span style=3D"color: hsl(0, 100%, 40%);">-check_include_files(libgen=
-.h HAVE_LIBGEN_H)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ch=
-eck_include_files(&quot;${NETEXTRA};netinet/in6.h&quot; HAVE_NETINET_IN_H)<=
-/span><br><span> check_include_files(net/if.h HAVE_NET_IF_H)</span><br><spa=
-n style=3D"color: hsl(0, 100%, 40%);">-check_include_files(&quot;${NETEXTRA=
-};netinet/ip.h&quot; HAVE_NETINET_IP_H)</span><br><span style=3D"color: hsl=
-(0, 100%, 40%);">-check_include_files(arpa/inet.h HAVE_ARPA_INET_H)</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+check_include_files(&quot;$=
-{NETEXTRA};net/if_tun.h&quot; HAVE_NET_IF_TUN_H)</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+check_include_files(poll.h HAVE_POLL_H)</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+check_include_files(&quot;=
-${NETEXTRA};resolv.h&quot; HAVE_RESOLV_H)</span><br><span> check_include_fi=
-les(sys/ioctl.h HAVE_SYS_IOCTL_H)</span><br><span> check_include_files(sys/=
-inotify.h HAVE_SYS_INOTIFY_H)</span><br><span> check_include_files(&quot;${=
-NETEXTRA};sys/uio.h&quot; HAVE_SYS_UIO_H)</span><br><span style=3D"color: h=
-sl(0, 100%, 40%);">-check_include_files(syslog.h HAVE_SYSLOG_H)</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+check_include_files(sys/un.h HA=
-VE_SYS_UN_H)</span><br><span> check_include_files(sys/wait.h HAVE_SYS_WAIT_=
-H)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-check_include_files=
-(grp.h HAVE_GRP_H)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-che=
-ck_include_files(pwd.h HAVE_PWD_H)</span><br><span style=3D"color: hsl(0, 1=
-00%, 40%);">-check_include_files(sys/mman.h HAVE_SYS_MMAN_H)</span><br><spa=
-n> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-check_include_files(&quot;${NETEXTRA};r=
-esolv.h&quot; HAVE_RESOLV_H)</span><br><span style=3D"color: hsl(0, 100%, 4=
-0%);">-check_include_files(&quot;${NETEXTRA};net/if_tun.h&quot; HAVE_NET_IF=
-_TUN_H)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><sp=
-an style=3D"color: hsl(0, 100%, 40%);">-set(CMAKE_EXTRA_INCLUDE_FILES netin=
-et/ip.h)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-check_type_si=
-ze(&quot;struct in_pktinfo&quot; IN_PKTINFO)</span><br><span style=3D"color=
-: hsl(0, 100%, 40%);">-check_struct_has_member(&quot;struct in_pktinfo&quot=
-; ipi_spec_dst netinet/ip.h HAVE_IPI_SPEC_DST)</span><br><span style=3D"col=
-or: hsl(0, 100%, 40%);">-check_type_size(&quot;struct msghdr&quot; MSGHDR)<=
-/span><br><span style=3D"color: hsl(0, 100%, 40%);">-set(CMAKE_EXTRA_INCLUD=
-E_FILES)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+check_inclu=
-de_files(&quot;${NETEXTRA};netinet/ip.h&quot; HAVE_NETINET_IP_H)</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+if (HAVE_NETINET_IP_H)</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+    set(CMAKE_EXTRA_INCLUDE=
-_FILES netinet/ip.h)</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+    check_type_size(&quot;struct in_pktinfo&quot; IN_PKTINFO)</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+    check_struct_has_member(&quo=
-t;struct in_pktinfo&quot; ipi_spec_dst netinet/ip.h HAVE_IPI_SPEC_DST)</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+    check_type_size(&quo=
-t;struct msghdr&quot; MSGHDR)</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+    set(CMAKE_EXTRA_INCLUDE_FILES)</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+endif()</span><br><span> </span><br><span> find_pr=
-ogram(IFCONFIG_PATH ifconfig)</span><br><span> find_program(IPROUTE_PATH ip=
-)</span><br><span>@@ -317,8 +335,8 @@</span><br><span> </span><br><span>   =
-  if (MINGW)</span><br><span>         target_compile_definitions(${target} =
-PRIVATE</span><br><span style=3D"color: hsl(0, 100%, 40%);">-              =
-  -DWIN32_LEAN_AND_MEAN</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
->-                -DNTDDI_VERSION=3DNTDDI_VISTA -D_WIN32_WINNT=3D_WIN32_WIN=
-NT_VISTA</span><br><span style=3D"color: hsl(120, 100%, 40%);">+           =
-     WIN32_LEAN_AND_MEAN</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+                NTDDI_VERSION=3DNTDDI_VISTA _WIN32_WINNT=3D_WIN32_WINN=
-T_VISTA</span><br><span>         )</span><br><span>     endif()</span><br><=
-span> </span><br><span>@@ -360,7 +378,7 @@</span><br><span> configure_file(=
-config.h.cmake.in config.h)</span><br><span> configure_file(include/openvpn=
--plugin.h.in openvpn-plugin.h)</span><br><span> # TODO we should remove the=
- need for this, and always include config.h</span><br><span style=3D"color:=
- hsl(0, 100%, 40%);">-add_definitions(-DHAVE_CONFIG_H)</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+add_compile_definitions(HAVE_CONFIG_H)</=
-span><br><span> </span><br><span> include_directories(${CMAKE_CURRENT_BINAR=
-Y_DIR})</span><br><span> </span><br><span></span><br></pre><p>To view, visi=
-t <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/924?usp=3Demail">change =
-924</a>. To unsubscribe, or for help writing mail filters, visit <a href=3D=
-"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope itemty=
-pe=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"action" it=
-emtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http=
-://gerrit.openvpn.net/c/openvpn/+/924?usp=3Demail"/><meta itemprop=3D"name"=
- content=3D"View Change"/></div></div>
+;">+check_include_files(sys/socket.h HAVE_SYS_SOCKET_H)</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+if (HAVE_SYS_SOCKET_H)</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+    check_symbol_exists(sendmsg sys/=
+socket.h HAVE_SENDMSG)</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+    check_symbol_exists(recvmsg sys/socket.h HAVE_RECVMSG)</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+    check_symbol_exists(getsockna=
+me sys/socket.h HAVE_GETSOCKNAME)</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+    # Checking for existence of structs with check_symbol_exi=
+sts does not work,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+   # so we use check_struct_hash_member with a member instead</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+    check_struct_has_member(&quot=
+;struct cmsghdr&quot; cmsg_len sys/socket.h HAVE_CMSGHDR)</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+endif()</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+check_include_files(sys/time.h HAVE_SYS_TIME_H)</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+if (HAVE_SYS_TIME_H)<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+    check_symbol_exi=
+sts(gettimeofday sys/time.h HAVE_GETTIMEOFDAY)</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+    check_symbol_exists(getrlimit &quot;sys/time=
+.h;sys/resource.h&quot; HAVE_GETRLIMIT)</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+endif()</span><br><span> </span><br><span style=3D"colo=
+r: hsl(0, 100%, 40%);">-check_symbol_exists(gettimeofday sys/time.h HAVE_GE=
+TTIMEOFDAY)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-check_symb=
+ol_exists(basename libgen.h HAVE_BASENAME)</span><br><span> check_symbol_ex=
+ists(chsize io.h HAVE_CHSIZE)</span><br><span style=3D"color: hsl(0, 100%, =
+40%);">-check_symbol_exists(daemon &quot;unistd.h;stdlib.h&quot; HAVE_DAEMO=
+N)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-check_symbol_exists=
+(dirname libgen.h HAVE_DIRNAME)</span><br><span> check_symbol_exists(getrli=
+mit sys/resource.h HAVE_GETRLIMIT)</span><br><span style=3D"color: hsl(0, 1=
+00%, 40%);">-check_symbol_exists(mlockall sys/mman.h HAVE_MLOCKALL)</span><=
+br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-check_symbol_exists(sendmsg sys/socket.h HAVE_SEND=
+MSG)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-check_symbol_exis=
+ts(recvmsg sys/socket.h HAVE_RECVMSG)</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-check_symbol_exists(openlog syslog.h HAVE_OPENLOG)</span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-check_symbol_exists(syslog sys=
+log.h HAVE_SYSLOG)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-che=
+ck_symbol_exists(getgrnam grp.h HAVE_GETGRNAM)</span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-check_symbol_exists(getpwnam pwd.h HAVE_GETPWNAM)<=
+/span><br><span style=3D"color: hsl(0, 100%, 40%);">-check_symbol_exists(ge=
+tsockname sys/socket.h HAVE_GETSOCKNAME)</span><br><span style=3D"color: hs=
+l(0, 100%, 40%);">-check_symbol_exists(getrlimit &quot;sys/time.h;sys/resou=
+rce.h&quot; HAVE_GETRLIMIT)</span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-# Checking for =
+existence of structs with check_symbol_exists does not work,</span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">-# so we use check_struct_hash_member=
+ with a member instead</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
+-check_struct_has_member(&quot;struct cmsghdr&quot; cmsg_len sys/socket.h H=
+AVE_CMSGHDR)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><b=
+r><span> </span><br><span> # Some OS (e.g. FreeBSD) need some basic headers=
+ to allow</span><br><span> # including network headers</span><br><span> set=
+(NETEXTRA sys/types.h)</span><br><span> check_include_files(&quot;${NETEXTR=
+A};netinet/in.h&quot; HAVE_NETINET_IN_H)</span><br><span style=3D"color: hs=
+l(0, 100%, 40%);">-</span><br><span> if (HAVE_NETINET_IN_H)</span><br><span=
+>     list(APPEND NETEXTRA netinet/in.h)</span><br><span> endif ()</span><b=
+r><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-check_includ=
+e_files(&quot;${NETEXTRA};netinet/in6.h&quot; HAVE_NETINET_IN_H)</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+check_include_files(arpa/inet.=
+h HAVE_ARPA_INET_H)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+check_include_files(dlfcn.h HAVE_DLFCN_H)</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+check_include_files(dmalloc.h HAVE_DMALLOC_H)</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+check_include_files(fcntl.h=
+ HAVE_FCNTL_H)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+check=
+_include_files(err.h HAVE_ERR_H)</span><br><span> check_include_files(linux=
+/if_tun.h HAVE_LINUX_IF_TUN_H)</span><br><span> check_include_files(linux/s=
+ockios.h HAVE_LINUX_SOCKIOS_H)</span><br><span style=3D"color: hsl(0, 100%,=
+ 40%);">-check_include_files(dlfcn.h HAVE_DLFCN_H)</span><br><span style=3D=
+"color: hsl(0, 100%, 40%);">-check_include_files(fcntl.h HAVE_FCNTL_H)</spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-check_include_files(dmallo=
+c.h HAVE_DMALLOC_H)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-ch=
+eck_include_files(err.h HAVE_ERR_H)</span><br><span style=3D"color: hsl(0, =
+100%, 40%);">-check_include_files(sys/epoll.h HAVE_SYS_EPOLL_H)</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-check_include_files(poll.h HAVE_P=
+OLL_H)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-check_include_f=
+iles(sys/socket.h HAVE_SYS_SOCKET_H)</span><br><span style=3D"color: hsl(0,=
+ 100%, 40%);">-check_include_files(sys/time.h HAVE_SYS_TIME_H)</span><br><s=
+pan> check_include_files(netdb.h HAVE_NETDB_H)</span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-check_include_files(unistd.h HAVE_UNISTD_H)</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-check_include_files(sys/un.h=
+ HAVE_SYS_UN_H)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-check_=
+include_files(libgen.h HAVE_LIBGEN_H)</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+check_include_files(&quot;${NETEXTRA};netinet/in6.h&quot;=
+ HAVE_NETINET_IN_H)</span><br><span> check_include_files(net/if.h HAVE_NET_=
+IF_H)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-check_include_fi=
+les(&quot;${NETEXTRA};netinet/ip.h&quot; HAVE_NETINET_IP_H)</span><br><span=
+ style=3D"color: hsl(0, 100%, 40%);">-check_include_files(arpa/inet.h HAVE_=
+ARPA_INET_H)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+check_i=
+nclude_files(&quot;${NETEXTRA};net/if_tun.h&quot; HAVE_NET_IF_TUN_H)</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+check_include_files(poll.h=
+ HAVE_POLL_H)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+check_=
+include_files(&quot;${NETEXTRA};resolv.h&quot; HAVE_RESOLV_H)</span><br><sp=
+an> check_include_files(sys/ioctl.h HAVE_SYS_IOCTL_H)</span><br><span> chec=
+k_include_files(sys/inotify.h HAVE_SYS_INOTIFY_H)</span><br><span> check_in=
+clude_files(&quot;${NETEXTRA};sys/uio.h&quot; HAVE_SYS_UIO_H)</span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-check_include_files(syslog.h HAVE_S=
+YSLOG_H)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+check_inclu=
+de_files(sys/un.h HAVE_SYS_UN_H)</span><br><span> check_include_files(sys/w=
+ait.h HAVE_SYS_WAIT_H)</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
+-check_include_files(grp.h HAVE_GRP_H)</span><br><span style=3D"color: hsl(=
+0, 100%, 40%);">-check_include_files(pwd.h HAVE_PWD_H)</span><br><span styl=
+e=3D"color: hsl(0, 100%, 40%);">-check_include_files(sys/mman.h HAVE_SYS_MM=
+AN_H)</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-check_include_files=
+(&quot;${NETEXTRA};resolv.h&quot; HAVE_RESOLV_H)</span><br><span style=3D"c=
+olor: hsl(0, 100%, 40%);">-check_include_files(&quot;${NETEXTRA};net/if_tun=
+.h&quot; HAVE_NET_IF_TUN_H)</span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-set(CMAKE_EXTRA=
+_INCLUDE_FILES netinet/ip.h)</span><br><span style=3D"color: hsl(0, 100%, 4=
+0%);">-check_type_size(&quot;struct in_pktinfo&quot; IN_PKTINFO)</span><br>=
+<span style=3D"color: hsl(0, 100%, 40%);">-check_struct_has_member(&quot;st=
+ruct in_pktinfo&quot; ipi_spec_dst netinet/ip.h HAVE_IPI_SPEC_DST)</span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-check_type_size(&quot;struct m=
+sghdr&quot; MSGHDR)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-se=
+t(CMAKE_EXTRA_INCLUDE_FILES)</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+check_include_files(&quot;${NETEXTRA};netinet/ip.h&quot; HAVE_NETI=
+NET_IP_H)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+if (HAVE_N=
+ETINET_IP_H)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    set=
+(CMAKE_EXTRA_INCLUDE_FILES netinet/ip.h)</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+    check_type_size(&quot;struct in_pktinfo&quot; IN_P=
+KTINFO)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    check_st=
+ruct_has_member(&quot;struct in_pktinfo&quot; ipi_spec_dst netinet/ip.h HAV=
+E_IPI_SPEC_DST)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+check_type_size(&quot;struct msghdr&quot; MSGHDR)</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+    set(CMAKE_EXTRA_INCLUDE_FILES)</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+endif()</span><br><span> </spa=
+n><br><span> find_program(IFCONFIG_PATH ifconfig)</span><br><span> find_pro=
+gram(IPROUTE_PATH ip)</span><br><span>@@ -317,8 +335,8 @@</span><br><span> =
+</span><br><span>     if (MINGW)</span><br><span>         target_compile_de=
+finitions(${target} PRIVATE</span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">-                -DWIN32_LEAN_AND_MEAN</span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-                -DNTDDI_VERSION=3DNTDDI_VISTA -D_WIN3=
+2_WINNT=3D_WIN32_WINNT_VISTA</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+                WIN32_LEAN_AND_MEAN</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+                NTDDI_VERSION=3DNTDDI_VISTA _WIN32=
+_WINNT=3D_WIN32_WINNT_VISTA</span><br><span>         )</span><br><span>    =
+ endif()</span><br><span> </span><br><span>@@ -360,7 +378,7 @@</span><br><s=
+pan> configure_file(config.h.cmake.in config.h)</span><br><span> configure_=
+file(include/openvpn-plugin.h.in openvpn-plugin.h)</span><br><span> # TODO =
+we should remove the need for this, and always include config.h</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-add_definitions(-DHAVE_CONFIG_H)<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+add_compile_definiti=
+ons(HAVE_CONFIG_H)</span><br><span> </span><br><span> include_directories($=
+{CMAKE_CURRENT_BINARY_DIR})</span><br><span> </span><br><span></span><br></=
+pre><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/924?=
+usp=3Demail">change 924</a>. To unsubscribe, or for help writing mail filte=
+rs, visit <a href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><=
+div itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope it=
+emprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=
+=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/924?usp=3Demail"/><m=
+eta itemprop=3D"name" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
@@ -553,8 +545,8 @@ emtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http=
 .1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
+<div style=3D"display:none"> Gerrit-MessageType: merged </div>
 
 
---F3Q6+bGi+zw=--
+--mQAPAz65Kbo=--
 
