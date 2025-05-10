@@ -1,17 +1,10 @@
-From: "d12fk (Code Review)" <gerrit@...515...>
-Date: Sat, 10 May 2025 12:36:41 +0000
-In-Reply-To: <gerrit.1733989644000.I6b67e3a00dd84bf348b6af28115ee11138c3a111@...2715...>
-References: <gerrit.1733989644000.I6b67e3a00dd84bf348b6af28115ee11138c3a111@...2715...>
-Reply-To: heiko@...515..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...,
- max@...2606..., gert@...1296...
-Message-ID: <df37ade507d5e157ec6238dd8b86d8751ab7352d-EmailReviewComments-HTML@...2715...>
+From: Gert Doering <gert@...1296...>
+Date: Sat, 10 May 2025 20:19:30 +0200
+Message-ID: <20250510181937.2993-1-gert@...1296...>
+In-Reply-To: <gerrit.1744973073000.I621d44ec6b0facc524875c15ddfd11ec47b06c15@...2715...>
+References: <gerrit.1744973073000.I621d44ec6b0facc524875c15ddfd11ec47b06c15@...2715...>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="+gjpgDM3A7A="; charset=UTF-8
-Subject: [Openvpn-devel] [L] Change in openvpn[master]: dns: support running
- up/down command with privsep
+Subject: [Openvpn-devel] [PATCH v3] win: create adapter on demand
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,119 +13,316 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Cc: flichtenheld <frank@...2641...>, MaxF <max@...2606...>, plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---+gjpgDM3A7A=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+From: Lev Stipakov <lev@...515...>
 
-Attention is currently required from: MaxF, cron2, flichtenheld, plaisthos.
+The installer currently creates one adapter per driver. When a user tries
+to start a second VPN connection while another is active, the client
+fails with an unclear error message:
 
-d12fk has posted comments on this change. ( http://gerrit.openvpn.net/c/ope=
-nvpn/+/839?usp=3Demail )
+  "All ovpn-dco adapters on this system are currently in use or disabled."
 
-Change subject: dns: support running up/down command with privsep
-......................................................................
+This message does not guide the user toward resolving the issue, such as by
+running the shortcut "Add a new dco-win virtual network adapter."
 
+To improve user experience, the client will now create an adapter on demand
+when no available adapters exist. The client sends a command specifying
+the adapter type to the interactive service, which then executes tapctl.exe
+to create a new adapter.
 
-Patch Set 22:
+This feature requires the interactive service, but this should not pose a
+problem since even our automatic service has recently started relying on the
+interactive service.
 
-(1 comment)
+GitHub: #728
 
-File src/openvpn/init.c:
+Change-Id: I621d44ec6b0facc524875c15ddfd11ec47b06c15
+Signed-off-by: Lev Stipakov <lev@...515...>
+Acked-by: Selva Nair <selva.nair@...277...>
+---
 
-http://gerrit.openvpn.net/c/openvpn/+/839/comment/3fd9ac63_442de512 :
-PS22, Line 3973:
-> this would tie the necessity for the persistent runner to "user *or* grou=
-p defined" - but technicall [=E2=80=A6]
-Done
+This change was reviewed on Gerrit and approved by at least one
+developer. I request to merge it to master.
 
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/943
+This mail reflects revision 3 of this Change.
 
+Acked-by according to Gerrit (reflected above):
+Selva Nair <selva.nair@...277...>
 
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/839?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings
-
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: I6b67e3a00dd84bf348b6af28115ee11138c3a111
-Gerrit-Change-Number: 839
-Gerrit-PatchSet: 22
-Gerrit-Owner: d12fk <heiko@...515...>
-Gerrit-Reviewer: MaxF <max@...2606...>
-Gerrit-Reviewer: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-CC: cron2 <gert@...1296...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: cron2 <gert@...1296...>
-Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Attention: MaxF <max@...2606...>
-Gerrit-Comment-Date: Sat, 10 May 2025 12:36:41 +0000
-Gerrit-HasComments: Yes
-Gerrit-Has-Labels: No
-Comment-In-Reply-To: cron2 <gert@...1296...>
-Gerrit-MessageType: comment
-
---+gjpgDM3A7A=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<p> Attention is currently required from: MaxF, cron2, flichtenheld, plaist=
-hos. </p>
-<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/839?usp=3Demail">View C=
-hange</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0;"><=
-li style=3D"margin: 0; padding: 0;"><p>File src/openvpn/init.c:</p><ul styl=
-e=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 =
-16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.ne=
-t/c/openvpn/+/839/comment/3fd9ac63_442de512">Patch Set #22, Line 3973:</a> =
-<code style=3D"font-family:monospace,monospace"></code></p><p><blockquote s=
-tyle=3D"border-left: 1px solid #aaa; margin: 10px 0; padding: 0 10px;">this=
- would tie the necessity for the persistent runner to &quot;user *or* group=
- defined&quot; - but technicall [=E2=80=A6]</blockquote></p><p style=3D"whi=
-te-space: pre-wrap; word-wrap: break-word;">Done</p></li></ul></li></ul><p>=
-To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/839?usp=3De=
-mail">change 839</a>. To unsubscribe, or for help writing mail filters, vis=
-it <a href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div ite=
-mscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=
-=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url=
-" href=3D"http://gerrit.openvpn.net/c/openvpn/+/839?usp=3Demail"/><meta ite=
-mprop=3D"name" content=3D"View Change"/></div></div>
-
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I6b67e3a00dd84bf348b6af28115=
-ee11138c3a111 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 839 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 22 </div>
-<div style=3D"display:none"> Gerrit-Owner: d12fk &lt;heiko@...515...&gt; </=
-div>
-<div style=3D"display:none"> Gerrit-Reviewer: MaxF &lt;max@...2606...&gt; <=
-/div>
-<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
-1...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: cron2 &lt;gert@...1296...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: cron2 &lt;gert@...1296...&gt=
-; </div>
-<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
-41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: MaxF &lt;max@...2606...&gt; =
-</div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Sat, 10 May 2025 12:36:41=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: No </div>
-<div style=3D"display:none"> Comment-In-Reply-To: cron2 &lt;gert@...1296...=
-&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
-
-
---+gjpgDM3A7A=--
+        
+diff --git a/include/openvpn-msg.h b/include/openvpn-msg.h
+index 8b48053..2cf8d40 100644
+--- a/include/openvpn-msg.h
++++ b/include/openvpn-msg.h
+@@ -47,7 +47,8 @@
+     msg_register_ring_buffers,
+     msg_set_mtu,
+     msg_add_wins_cfg,
+-    msg_del_wins_cfg
++    msg_del_wins_cfg,
++    msg_create_adapter
+ } message_type_t;
+ 
+ typedef struct {
+@@ -172,4 +173,15 @@
+     int mtu;
+ } set_mtu_message_t;
+ 
++typedef enum {
++    ADAPTER_TYPE_DCO,
++    ADAPTER_TYPE_TAP,
++    ADAPTER_TYPE_WINTUN
++} adapter_type_t;
++
++typedef struct {
++    message_header_t header;
++    adapter_type_t adapter_type;
++} create_adapter_message_t;
++
+ #endif /* ifndef OPENVPN_MSG_H_ */
+diff --git a/src/openvpn/socket.c b/src/openvpn/socket.c
+index a0c22b1..34a049e 100644
+--- a/src/openvpn/socket.c
++++ b/src/openvpn/socket.c
+@@ -2231,6 +2231,7 @@
+         ALLOC_OBJ_CLEAR(tt, struct tuntap);
+ 
+         tt->backend_driver = DRIVER_DCO;
++        tt->options.msg_channel = c->options.msg_channel;
+ 
+         const char *device_guid = NULL; /* not used */
+         tun_open_device(tt, c->options.dev_node, &device_guid, &c->gc);
+diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
+index 4f7de6c..0bde6ef 100644
+--- a/src/openvpn/tun.c
++++ b/src/openvpn/tun.c
+@@ -451,6 +451,71 @@
+     argv_free(&argv);
+ }
+ 
++/**
++ * Requests the interactive service to create a VPN adapter of the specified type.
++ *
++ * @param msg_channel Handle to the interactive service communication pipe.
++ * @param driver_type Adapter type to create (e.g., TAP, Wintun, DCO).
++ *
++ * @return true on success, false on failure.
++ */
++static bool
++do_create_adapter_service(HANDLE msg_channel, enum tun_driver_type driver_type)
++{
++    bool ret = false;
++    ack_message_t ack;
++    struct gc_arena gc = gc_new();
++
++    adapter_type_t t;
++    switch (driver_type)
++    {
++        case WINDOWS_DRIVER_TAP_WINDOWS6:
++            t = ADAPTER_TYPE_TAP;
++            break;
++
++        case WINDOWS_DRIVER_WINTUN:
++            t = ADAPTER_TYPE_WINTUN;
++            break;
++
++        case DRIVER_DCO:
++            t = ADAPTER_TYPE_DCO;
++            break;
++
++        default:
++            msg(M_NONFATAL, "Invalid backend driver %s", print_tun_backend_driver(driver_type));
++            goto out;
++    }
++
++    create_adapter_message_t msg = {
++        .header = {
++            msg_create_adapter,
++            sizeof(create_adapter_message_t),
++            0
++        },
++        .adapter_type = t
++    };
++
++    if (!send_msg_iservice(msg_channel, &msg, sizeof(msg), &ack, "create_adapter"))
++    {
++        goto out;
++    }
++
++    if (ack.error_number != NO_ERROR)
++    {
++        msg(M_NONFATAL, "TUN: creating %s adapter using service failed: %s [status=%u]",
++            print_tun_backend_driver(driver_type), strerror_win32(ack.error_number, &gc), ack.error_number);
++    }
++    else
++    {
++        msg(M_INFO, "%s adapter created using service", print_tun_backend_driver(driver_type));
++        ret = true;
++    }
++
++out:
++    gc_free(&gc);
++    return ret;
++}
++
+ #endif /* ifdef _WIN32 */
+ 
+ #ifdef TARGET_SOLARIS
+@@ -6589,9 +6654,8 @@
+     const struct tap_reg *tap_reg = get_tap_reg(gc);
+     const struct panel_reg *panel_reg = get_panel_reg(gc);
+     const struct device_instance_id_interface *device_instance_id_interface = get_device_instance_id_interface(gc);
+-    uint8_t actual_buffer[256];
+ 
+-    at_least_one_tap_win(tap_reg);
++    uint8_t actual_buffer[256];
+ 
+     /*
+      * Lookup the device name in the registry, using the --dev-node high level name.
+@@ -6622,6 +6686,7 @@
+     else
+     {
+         int device_number = 0;
++        int adapters_created = 0;
+ 
+         /* Try opening all TAP devices until we find one available */
+         while (true)
+@@ -6637,7 +6702,22 @@
+ 
+             if (!*device_guid)
+             {
+-                msg(M_FATAL, "All %s adapters on this system are currently in use or disabled.", print_tun_backend_driver(tt->backend_driver));
++                /* try to create an adapter a few times if we have a service pipe handle */
++                if ((++adapters_created > 10) || !do_create_adapter_service(tt->options.msg_channel, tt->backend_driver))
++                {
++                    msg(M_FATAL, "All %s adapters on this system are currently in use or disabled.", print_tun_backend_driver(tt->backend_driver));
++                }
++                else
++                {
++                    /* we have created a new adapter so we must reinitialize adapters structs */
++                    tap_reg = get_tap_reg(gc);
++                    panel_reg = get_panel_reg(gc);
++                    device_instance_id_interface = get_device_instance_id_interface(gc);
++
++                    device_number = 0;
++
++                    continue;
++                }
+             }
+ 
+             if (tt->backend_driver != windows_driver)
+diff --git a/src/openvpnserv/common.c b/src/openvpnserv/common.c
+index 4a11e6c..198835e 100644
+--- a/src/openvpnserv/common.c
++++ b/src/openvpnserv/common.c
+@@ -96,6 +96,14 @@
+         goto out;
+     }
+ 
++    swprintf(default_value, _countof(default_value), L"%ls\\bin", install_path);
++    error = GetRegString(key, L"bin_dir", s->bin_dir, sizeof(s->bin_dir),
++                         default_value);
++    if (error != ERROR_SUCCESS)
++    {
++        goto out;
++    }
++
+     error = GetRegString(key, L"config_ext", s->ext_string, sizeof(s->ext_string),
+                          L".ovpn");
+     if (error != ERROR_SUCCESS)
+diff --git a/src/openvpnserv/interactive.c b/src/openvpnserv/interactive.c
+index f06d386..8a7b50d 100644
+--- a/src/openvpnserv/interactive.c
++++ b/src/openvpnserv/interactive.c
+@@ -125,6 +125,7 @@
+     register_ring_buffers_message_t rrb;
+     set_mtu_message_t mtu;
+     wins_cfg_message_t wins;
++    create_adapter_message_t create_adapter;
+ } pipe_message_t;
+ 
+ typedef struct {
+@@ -3107,6 +3108,52 @@
+     return err;
+ }
+ 
++/**
++ * Creates a VPN adapter of the specified type by invoking tapctl.exe.
++ *
++ * @param msg Adapter creation request specifying the type.
++ *
++ * @return NO_ERROR on success, otherwise a Windows error code.
++ */
++static DWORD
++HandleCreateAdapterMessage(const create_adapter_message_t *msg)
++{
++    const WCHAR *hwid;
++
++    switch (msg->adapter_type)
++    {
++        case ADAPTER_TYPE_DCO:
++            hwid = L"ovpn-dco";
++            break;
++
++        case ADAPTER_TYPE_TAP:
++            hwid = L"root\\tap0901";
++            break;
++
++        case ADAPTER_TYPE_WINTUN:
++            hwid = L"wintun";
++            break;
++
++        default:
++            return ERROR_INVALID_PARAMETER;
++    }
++
++    WCHAR cmd[MAX_PATH];
++    WCHAR args[MAX_PATH];
++
++    if (swprintf_s(cmd, _countof(cmd), L"%s\\tapctl.exe", settings.bin_dir) < 0)
++    {
++        return ERROR_BUFFER_OVERFLOW;
++    }
++
++    if (swprintf_s(args, _countof(args), L"tapctl create --hwid %s", hwid) < 0)
++    {
++        return ERROR_BUFFER_OVERFLOW;
++    }
++
++    return ExecCommand(cmd, args, 10000);
++}
++
+ static VOID
+ HandleMessage(HANDLE pipe, PPROCESS_INFORMATION proc_info,
+               DWORD bytes, DWORD count, LPHANDLE events, undo_lists_t *lists)
+@@ -3206,6 +3253,13 @@
+             }
+             break;
+ 
++        case msg_create_adapter:
++            if (msg.header.size == sizeof(msg.create_adapter))
++            {
++                ack.error_number = HandleCreateAdapterMessage(&msg.create_adapter);
++            }
++            break;
++
+         default:
+             ack.error_number = ERROR_MESSAGE_TYPE;
+             MsgToEventLog(MSG_FLAGS_ERROR, L"Unknown message type %d", msg.header.type);
+diff --git a/src/openvpnserv/service.h b/src/openvpnserv/service.h
+index cbe213b..cebc67f 100644
+--- a/src/openvpnserv/service.h
++++ b/src/openvpnserv/service.h
+@@ -63,6 +63,7 @@
+ typedef struct {
+     WCHAR exe_path[MAX_PATH];
+     WCHAR config_dir[MAX_PATH];
++    WCHAR bin_dir[MAX_PATH];
+     WCHAR ext_string[16];
+     WCHAR log_dir[MAX_PATH];
+     WCHAR ovpn_admin_group[MAX_NAME];
 
