@@ -1,10 +1,10 @@
 From: Gert Doering <gert@...1296...>
-Date: Tue, 13 May 2025 16:26:35 +0200
-Message-ID: <20250513142641.8619-1-gert@...1296...>
+Date: Tue, 13 May 2025 16:32:24 +0200
+Message-ID: <20250513143232.9279-1-gert@...1296...>
 In-Reply-To: <gerrit.1747046041000.I43ec390040bffeec05270271ea7fb54fb219c536@...2715...>
 References: <gerrit.1747046041000.I43ec390040bffeec05270271ea7fb54fb219c536@...2715...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v3] win: remove Wintun support
+Subject: [Openvpn-devel] [PATCH v4] win: remove Wintun support
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -36,7 +36,7 @@ This change was reviewed on Gerrit and approved by at least one
 developer. I request to merge it to master.
 
 Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1021
-This mail reflects revision 3 of this Change.
+This mail reflects revision 4 of this Change.
 
 Acked-by according to Gerrit (reflected above):
 Gert Doering <gert@...1296...>
@@ -71,7 +71,7 @@ index 1955869..af2fb45 100644
 -  require ``--dev tun``. :code:`wintun` also requires OpenVPN process to run
 -  elevated, or be invoked using the Interactive Service.
 diff --git a/include/openvpn-msg.h b/include/openvpn-msg.h
-index 8b48053..ca8b99f 100644
+index 2cf8d40..e7a4ac1 100644
 --- a/include/openvpn-msg.h
 +++ b/include/openvpn-msg.h
 @@ -44,7 +44,7 @@
@@ -82,8 +82,8 @@ index 8b48053..ca8b99f 100644
 +    deprecated_msg_register_ring_buffers,
      msg_set_mtu,
      msg_add_wins_cfg,
-     msg_del_wins_cfg
-@@ -158,15 +158,6 @@
+     msg_del_wins_cfg,
+@@ -159,15 +159,6 @@
  
  typedef struct {
      message_header_t header;
@@ -549,7 +549,7 @@ index c536980..0000000
 -#endif /* ifndef OPENVPN_RING_BUFFER_H */
 -#endif /* ifdef _WIN32 */
 diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
-index 5186afa..4dad3a2 100644
+index 6a2043e..722c693 100644
 --- a/src/openvpn/tun.c
 +++ b/src/openvpn/tun.c
 @@ -63,9 +63,6 @@
@@ -562,7 +562,7 @@ index 5186afa..4dad3a2 100644
          case DRIVER_GENERIC_TUNTAP:
              return "tun/tap";
  
-@@ -975,37 +972,8 @@
+@@ -1040,37 +1037,8 @@
      overlapped_io_init(&tt->writes, frame, TRUE);
      tt->adapter_index = TUN_ADAPTER_INDEX_INVALID;
  
@@ -602,7 +602,7 @@ index 5186afa..4dad3a2 100644
  #endif /* ifdef _WIN32 */
  }
  
-@@ -3945,10 +3913,6 @@
+@@ -4010,10 +3978,6 @@
                      {
                          windows_driver = WINDOWS_DRIVER_TAP_WINDOWS6;
                      }
@@ -613,7 +613,7 @@ index 5186afa..4dad3a2 100644
                      else if (strcasecmp(component_id, "ovpn-dco") == 0)
                      {
                          windows_driver = DRIVER_DCO;
-@@ -4255,7 +4219,7 @@
+@@ -4320,7 +4284,7 @@
  }
  
  /*
@@ -622,7 +622,7 @@ index 5186afa..4dad3a2 100644
   */
  static const struct tap_reg *
  get_adapter_by_guid(const char *guid, const struct tap_reg *tap_reg)
-@@ -4310,7 +4274,7 @@
+@@ -4375,7 +4339,7 @@
  {
      if (!tap_reg)
      {
@@ -631,7 +631,7 @@ index 5186afa..4dad3a2 100644
              "on this system.  You should be able to create an adapter "
              "by using tapctl.exe utility.");
      }
-@@ -6021,46 +5985,6 @@
+@@ -6086,46 +6050,6 @@
      gc_free(&gc);
  }
  
@@ -678,7 +678,7 @@ index 5186afa..4dad3a2 100644
  void
  fork_register_dns_action(struct tuntap *tt)
  {
-@@ -6298,58 +6222,6 @@
+@@ -6363,58 +6287,6 @@
      gc_free(&gc);
  }
  
@@ -737,7 +737,7 @@ index 5186afa..4dad3a2 100644
  static void
  tuntap_set_connected(const struct tuntap *tt)
  {
-@@ -6509,8 +6381,7 @@
+@@ -6574,8 +6446,7 @@
      const char *path = NULL;
      char tuntap_device_path[256];
  
@@ -747,7 +747,7 @@ index 5186afa..4dad3a2 100644
      {
          const struct device_instance_id_interface *dev_if;
  
-@@ -6564,18 +6435,6 @@
+@@ -6629,18 +6500,6 @@
          return false;
      }
  
@@ -766,7 +766,7 @@ index 5186afa..4dad3a2 100644
      return true;
  }
  
-@@ -6908,16 +6767,6 @@
+@@ -6988,16 +6847,6 @@
          }
          tt->hand = NULL;
      }
@@ -1039,7 +1039,7 @@ index f053f40..852746d 100644
 -	$(top_srcdir)/src/openvpn/ring_buffer.h
 +	openvpnserv_resources.rc
 diff --git a/src/openvpnserv/interactive.c b/src/openvpnserv/interactive.c
-index f06d386..cc67181 100644
+index 8a7b50d..1a76b33 100644
 --- a/src/openvpnserv/interactive.c
 +++ b/src/openvpnserv/interactive.c
 @@ -40,7 +40,6 @@
@@ -1077,8 +1077,8 @@ index f06d386..cc67181 100644
 -    register_ring_buffers_message_t rrb;
      set_mtu_message_t mtu;
      wins_cfg_message_t wins;
- } pipe_message_t;
-@@ -187,23 +179,6 @@
+     create_adapter_message_t create_adapter;
+@@ -188,23 +180,6 @@
      return INVALID_HANDLE_VALUE;
  }
  
@@ -1102,7 +1102,7 @@ index f06d386..cc67181 100644
  static HANDLE
  InitOverlapped(LPOVERLAPPED overlapped)
  {
-@@ -212,7 +187,6 @@
+@@ -213,7 +188,6 @@
      return overlapped->hEvent;
  }
  
@@ -1110,7 +1110,7 @@ index f06d386..cc67181 100644
  static BOOL
  ResetOverlapped(LPOVERLAPPED overlapped)
  {
-@@ -2972,119 +2946,6 @@
+@@ -2973,119 +2947,6 @@
  }
  
  static DWORD
@@ -1230,7 +1230,7 @@ index f06d386..cc67181 100644
  HandleMTUMessage(const set_mtu_message_t *mtu)
  {
      DWORD err = 0;
-@@ -3191,14 +3052,6 @@
+@@ -3238,14 +3099,6 @@
              }
              break;
  
@@ -1245,7 +1245,7 @@ index f06d386..cc67181 100644
          case msg_set_mtu:
              if (msg.header.size == sizeof(msg.mtu))
              {
-@@ -3273,10 +3126,6 @@
+@@ -3327,10 +3180,6 @@
                      }
                      break;
  
