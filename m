@@ -1,15 +1,15 @@
 From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Tue, 13 May 2025 15:38:45 +0000
+Date: Tue, 13 May 2025 15:38:42 +0000
 In-Reply-To: <gerrit.1747046041000.I43ec390040bffeec05270271ea7fb54fb219c536@...2715...>
 References: <gerrit.1747046041000.I43ec390040bffeec05270271ea7fb54fb219c536@...2715...>
 Reply-To: gert@...1296..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net, frank@...2641...,
  lstipakov@...277...
-Message-ID: <1a53c18aa67b0596e7bdd403240b8bf6a42ddd25-HTML@...2715...>
+Message-ID: <1a53c18aa67b0596e7bdd403240b8bf6a42ddd25-EmailReplacePatchSet-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="oDYoeUPl/uY="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="bp/JadAD7fM="; charset=UTF-8
 Subject: [Openvpn-devel] [L] Change in openvpn[master]: win: remove Wintun
  support
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -20,15 +20,19 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: stipa <lstipakov@...277...>
-Cc: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: stipa <lstipakov@...277...>, plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---oDYoeUPl/uY=
+--bp/JadAD7fM=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-cron2 has submitted this change. ( http://gerrit.openvpn.net/c/openvpn/+/10=
-21?usp=3Demail )
+cron2 has uploaded a new patch set (#6) to the change originally created by=
+ stipa. ( http://gerrit.openvpn.net/c/openvpn/+/1021?usp=3Demail )
+
+The following approvals got outdated and were removed:
+Code-Review+2 by cron2
+
 
 Change subject: win: remove Wintun support
 ......................................................................
@@ -74,7 +78,7 @@ M src/tapctl/tap.h
 20 files changed, 27 insertions(+), 801 deletions(-)
 
 
-
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/21/1021/6
 
 diff --git a/doc/man-sections/vpn-network-options.rst b/doc/man-sections/vp=
 n-network-options.rst
@@ -90,7 +94,7 @@ ed
 -  ``OpenVPN for Android`` client also handles them internally.
 +  if dhcp is disabled. The ``OpenVPN for Android`` client also handles the=
 m internally.
-
+=20
    On all other platforms these options are only saved in the client's
    environment under the name :code:`foreign_option_{n}` before the
 diff --git a/doc/man-sections/windows-options.rst b/doc/man-sections/window=
@@ -285,7 +289,7 @@ gs */
 +        get_io_flags_dowork_udp(c, multi_io, flags);
      }
  }
-
+=20
 diff --git a/src/openvpn/forward.h b/src/openvpn/forward.h
 index 77892d6..74c6036 100644
 --- a/src/openvpn/forward.h
@@ -1489,296 +1493,299 @@ Gerrit-Reviewer: cron2 <gert@...1296...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-MessageType: merged
+Gerrit-MessageType: newpatchset
 
---oDYoeUPl/uY=
+--bp/JadAD7fM=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p>cron2 <strong>submitted</strong> this change.</p><p><a href=3D"http://ge=
-rrit.openvpn.net/c/openvpn/+/1021?usp=3Demail">View Change</a></p><div styl=
-e=3D"white-space:pre-wrap"></div><pre style=3D"font-family: monospace,monos=
-pace; white-space: pre-wrap;">win: remove Wintun support<br><br>Since DCO s=
-upports modern ciphers and server mode,<br>there is no reason to support Wi=
-ntun anymore.<br><br>This also removes --windows-driver option support. The=
-<br>default driver is DCO, as it has been since 2.6. If for<br>some reasons=
- one doesn&#39;t want to use it, --disable-dco<br>multiplatform option will=
- switch to tap-windows6.<br><br>Change-Id: I43ec390040bffeec05270271ea7fb54=
-fb219c536<br>Signed-off-by: Lev Stipakov &lt;lev@...515...&gt;<br>Acked-by:=
- Gert Doering &lt;gert@...1296...&gt;<br>Message-Id: &lt;20250513151006.136=
-17-1-gert@...1296...&gt;<br>URL: https://www.mail-archive.com/openvpn-devel=
-@lists.sourceforge.net/msg31631.html<br>Signed-off-by: Gert Doering &lt;ger=
-t@...1296...&gt;<br>---<br>M doc/man-sections/vpn-network-options.rst<br>M =
-doc/man-sections/windows-options.rst<br>M include/openvpn-msg.h<br>M src/op=
-envpn/Makefile.am<br>M src/openvpn/dco.c<br>M src/openvpn/forward.c<br>M sr=
-c/openvpn/forward.h<br>M src/openvpn/mudp.c<br>M src/openvpn/multi_io.c<br>=
-M src/openvpn/options.c<br>D src/openvpn/ring_buffer.h<br>M src/openvpn/tun=
-.c<br>M src/openvpn/tun.h<br>M src/openvpnmsica/openvpnmsica.c<br>M src/ope=
-nvpnmsica/openvpnmsica.h<br>M src/openvpnserv/CMakeLists.txt<br>M src/openv=
-pnserv/Makefile.am<br>M src/openvpnserv/interactive.c<br>M src/tapctl/main.=
-c<br>M src/tapctl/tap.h<br>20 files changed, 27 insertions(+), 801 deletion=
-s(-)<br><br></pre>
-<pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><sp=
-an>diff --git a/doc/man-sections/vpn-network-options.rst b/doc/man-sections=
-/vpn-network-options.rst</span><br><span>index 67f7e1f..40b8c19 100644</spa=
-n><br><span>--- a/doc/man-sections/vpn-network-options.rst</span><br><span>=
-+++ b/doc/man-sections/vpn-network-options.rst</span><br><span>@@ -137,8 +1=
-37,7 @@</span><br><span>   Set additional network parameters on supported p=
-latforms. May be specified</span><br><span>   on the client or pushed from =
-the server. On Windows these options are</span><br><span>   handled by the =
-``tap-windows6`` driver by default or directly by OpenVPN</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-  if dhcp is disabled or the ``wintun``=
- driver is in use. The</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
--  ``OpenVPN for Android`` client also handles them internally.</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+  if dhcp is disabled. The ``Op=
-enVPN for Android`` client also handles them internally.</span><br><span> <=
-/span><br><span>   On all other platforms these options are only saved in t=
-he client&#39;s</span><br><span>   environment under the name :code:`foreig=
-n_option_{n}` before the</span><br><span>diff --git a/doc/man-sections/wind=
-ows-options.rst b/doc/man-sections/windows-options.rst</span><br><span>inde=
-x 1955869..af2fb45 100644</span><br><span>--- a/doc/man-sections/windows-op=
-tions.rst</span><br><span>+++ b/doc/man-sections/windows-options.rst</span>=
-<br><span>@@ -252,9 +252,3 @@</span><br><span>   otherwise it defaulted to =
-:code:`C:\\WINDOWS`. It is not needed to use</span><br><span>   the ``env``=
- keyword any more, and it will just be ignored. A warning is</span><br><spa=
-n>   logged when this is found in the configuration file.</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-</span><br><span>---windows-driver drv<=
-/span><br><span style=3D"color: hsl(0, 100%, 40%);">-  Specifies which tun =
-driver to use. Values are :code:`ovpn-dco` (default),</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-  :code:`tap-windows6` and :code:`wintun`. =
-:code:`ovpn-dco` and :code:`wintun`</span><br><span style=3D"color: hsl(0, =
-100%, 40%);">-  require ``--dev tun``. :code:`wintun` also requires OpenVPN=
- process to run</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  elev=
-ated, or be invoked using the Interactive Service.</span><br><span>diff --g=
-it a/include/openvpn-msg.h b/include/openvpn-msg.h</span><br><span>index 2c=
-f8d40..34b133b 100644</span><br><span>--- a/include/openvpn-msg.h</span><br=
-><span>+++ b/include/openvpn-msg.h</span><br><span>@@ -44,7 +44,7 @@</span>=
-<br><span>     msg_del_wfp_block,</span><br><span>     msg_register_dns,</s=
-pan><br><span>     msg_enable_dhcp,</span><br><span style=3D"color: hsl(0, =
-100%, 40%);">-    msg_register_ring_buffers,</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+    deprecated_msg_register_ring_buffers,</span><b=
-r><span>     msg_set_mtu,</span><br><span>     msg_add_wins_cfg,</span><br>=
-<span>     msg_del_wins_cfg,</span><br><span>@@ -159,15 +159,6 @@</span><br=
-><span> </span><br><span> typedef struct {</span><br><span>     message_hea=
-der_t header;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    HAND=
-LE device;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    HANDLE =
-send_ring_handle;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
-HANDLE receive_ring_handle;</span><br><span style=3D"color: hsl(0, 100%, 40=
-%);">-    HANDLE send_tail_moved;</span><br><span style=3D"color: hsl(0, 10=
-0%, 40%);">-    HANDLE receive_tail_moved;</span><br><span style=3D"color: =
-hsl(0, 100%, 40%);">-} register_ring_buffers_message_t;</span><br><span sty=
-le=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 1=
-00%, 40%);">-typedef struct {</span><br><span style=3D"color: hsl(0, 100%, =
-40%);">-    message_header_t header;</span><br><span>     interface_t iface=
-;</span><br><span>     short family;</span><br><span>     int mtu;</span><b=
-r><span>@@ -176,7 +167,6 @@</span><br><span> typedef enum {</span><br><span=
->     ADAPTER_TYPE_DCO,</span><br><span>     ADAPTER_TYPE_TAP,</span><br><s=
-pan style=3D"color: hsl(0, 100%, 40%);">-    ADAPTER_TYPE_WINTUN</span><br>=
-<span> } adapter_type_t;</span><br><span> </span><br><span> typedef struct =
-{</span><br><span>diff --git a/src/openvpn/Makefile.am b/src/openvpn/Makefi=
-le.am</span><br><span>index 37af683..3c1a875 100644</span><br><span>--- a/s=
-rc/openvpn/Makefile.am</span><br><span>+++ b/src/openvpn/Makefile.am</span>=
-<br><span>@@ -163,6 +163,6 @@</span><br><span> 	$(OPTIONAL_DL_LIBS) \</span=
-><br><span> 	$(OPTIONAL_INOTIFY_LIBS)</span><br><span> if WIN32</span><br><=
-span style=3D"color: hsl(0, 100%, 40%);">-openvpn_SOURCES +=3D openvpn_win3=
-2_resources.rc wfp_block.c wfp_block.h ring_buffer.h</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+openvpn_SOURCES +=3D openvpn_win32_resour=
-ces.rc wfp_block.c wfp_block.h</span><br><span> openvpn_LDADD +=3D -lgdi32 =
--lws2_32 -lwininet -lcrypt32 -liphlpapi -lwinmm -lfwpuclnt -lrpcrt4 -lncryp=
-t -lsetupapi -lbcrypt</span><br><span> endif</span><br><span>diff --git a/s=
-rc/openvpn/dco.c b/src/openvpn/dco.c</span><br><span>index 7ad9cb3..c61cbda=
- 100644</span><br><span>--- a/src/openvpn/dco.c</span><br><span>+++ b/src/o=
-penvpn/dco.c</span><br><span>@@ -359,14 +359,6 @@</span><br><span>         =
-return false;</span><br><span>     }</span><br><span> </span><br><span styl=
-e=3D"color: hsl(0, 100%, 40%);">-    if ((o-&gt;windows_driver =3D=3D WINDO=
-WS_DRIVER_WINTUN)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
-    || (o-&gt;windows_driver =3D=3D WINDOWS_DRIVER_TAP_WINDOWS6))</span><br=
+<p>cron2 <strong>uploaded patch set #6</strong> to the change originally cr=
+eated by stipa.</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1021=
+?usp=3Demail">View Change</a></p><p>The following approvals got outdated an=
+d were removed:
+Code-Review+2 by cron2</p><pre style=3D"font-family: monospace,monospace; w=
+hite-space: pre-wrap;">win: remove Wintun support<br><br>Since DCO supports=
+ modern ciphers and server mode,<br>there is no reason to support Wintun an=
+ymore.<br><br>This also removes --windows-driver option support. The<br>def=
+ault driver is DCO, as it has been since 2.6. If for<br>some reasons one do=
+esn&#39;t want to use it, --disable-dco<br>multiplatform option will switch=
+ to tap-windows6.<br><br>Change-Id: I43ec390040bffeec05270271ea7fb54fb219c5=
+36<br>Signed-off-by: Lev Stipakov &lt;lev@...515...&gt;<br>Acked-by: Gert D=
+oering &lt;gert@...1296...&gt;<br>Message-Id: &lt;20250513151006.13617-1-ge=
+rt@...1296...&gt;<br>URL: https://www.mail-archive.com/openvpn-devel@...1199...=
+sourceforge.net/msg31631.html<br>Signed-off-by: Gert Doering &lt;gert@...1711...=
+96...&gt;<br>---<br>M doc/man-sections/vpn-network-options.rst<br>M doc/man=
+-sections/windows-options.rst<br>M include/openvpn-msg.h<br>M src/openvpn/M=
+akefile.am<br>M src/openvpn/dco.c<br>M src/openvpn/forward.c<br>M src/openv=
+pn/forward.h<br>M src/openvpn/mudp.c<br>M src/openvpn/multi_io.c<br>M src/o=
+penvpn/options.c<br>D src/openvpn/ring_buffer.h<br>M src/openvpn/tun.c<br>M=
+ src/openvpn/tun.h<br>M src/openvpnmsica/openvpnmsica.c<br>M src/openvpnmsi=
+ca/openvpnmsica.h<br>M src/openvpnserv/CMakeLists.txt<br>M src/openvpnserv/=
+Makefile.am<br>M src/openvpnserv/interactive.c<br>M src/tapctl/main.c<br>M =
+src/tapctl/tap.h<br>20 files changed, 27 insertions(+), 801 deletions(-)<br=
+><br></pre><pre style=3D"font-family: monospace,monospace; white-space: pre=
+-wrap;">git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/21/102=
+1/6</pre><pre style=3D"font-family: monospace,monospace; white-space: pre-w=
+rap;"><span>diff --git a/doc/man-sections/vpn-network-options.rst b/doc/man=
+-sections/vpn-network-options.rst</span><br><span>index 67f7e1f..40b8c19 10=
+0644</span><br><span>--- a/doc/man-sections/vpn-network-options.rst</span><=
+br><span>+++ b/doc/man-sections/vpn-network-options.rst</span><br><span>@@ =
+-137,8 +137,7 @@</span><br><span>   Set additional network parameters on su=
+pported platforms. May be specified</span><br><span>   on the client or pus=
+hed from the server. On Windows these options are</span><br><span>   handle=
+d by the ``tap-windows6`` driver by default or directly by OpenVPN</span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-  if dhcp is disabled or the `=
+`wintun`` driver is in use. The</span><br><span style=3D"color: hsl(0, 100%=
+, 40%);">-  ``OpenVPN for Android`` client also handles them internally.</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+  if dhcp is disabled.=
+ The ``OpenVPN for Android`` client also handles them internally.</span><br=
+><span> </span><br><span>   On all other platforms these options are only s=
+aved in the client&#39;s</span><br><span>   environment under the name :cod=
+e:`foreign_option_{n}` before the</span><br><span>diff --git a/doc/man-sect=
+ions/windows-options.rst b/doc/man-sections/windows-options.rst</span><br><=
+span>index 1955869..af2fb45 100644</span><br><span>--- a/doc/man-sections/w=
+indows-options.rst</span><br><span>+++ b/doc/man-sections/windows-options.r=
+st</span><br><span>@@ -252,9 +252,3 @@</span><br><span>   otherwise it defa=
+ulted to :code:`C:\\WINDOWS`. It is not needed to use</span><br><span>   th=
+e ``env`` keyword any more, and it will just be ignored. A warning is</span=
+><br><span>   logged when this is found in the configuration file.</span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span>---windows-dr=
+iver drv</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  Specifies w=
+hich tun driver to use. Values are :code:`ovpn-dco` (default),</span><br><s=
+pan style=3D"color: hsl(0, 100%, 40%);">-  :code:`tap-windows6` and :code:`=
+wintun`. :code:`ovpn-dco` and :code:`wintun`</span><br><span style=3D"color=
+: hsl(0, 100%, 40%);">-  require ``--dev tun``. :code:`wintun` also require=
+s OpenVPN process to run</span><br><span style=3D"color: hsl(0, 100%, 40%);=
+">-  elevated, or be invoked using the Interactive Service.</span><br><span=
+>diff --git a/include/openvpn-msg.h b/include/openvpn-msg.h</span><br><span=
+>index 2cf8d40..34b133b 100644</span><br><span>--- a/include/openvpn-msg.h<=
+/span><br><span>+++ b/include/openvpn-msg.h</span><br><span>@@ -44,7 +44,7 =
+@@</span><br><span>     msg_del_wfp_block,</span><br><span>     msg_registe=
+r_dns,</span><br><span>     msg_enable_dhcp,</span><br><span style=3D"color=
+: hsl(0, 100%, 40%);">-    msg_register_ring_buffers,</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    deprecated_msg_register_ring_buffers,=
+</span><br><span>     msg_set_mtu,</span><br><span>     msg_add_wins_cfg,</=
+span><br><span>     msg_del_wins_cfg,</span><br><span>@@ -159,15 +159,6 @@<=
+/span><br><span> </span><br><span> typedef struct {</span><br><span>     me=
+ssage_header_t header;</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
+-    HANDLE device;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
+  HANDLE send_ring_handle;</span><br><span style=3D"color: hsl(0, 100%, 40%=
+);">-    HANDLE receive_ring_handle;</span><br><span style=3D"color: hsl(0,=
+ 100%, 40%);">-    HANDLE send_tail_moved;</span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">-    HANDLE receive_tail_moved;</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-} register_ring_buffers_message_t;</span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"colo=
+r: hsl(0, 100%, 40%);">-typedef struct {</span><br><span style=3D"color: hs=
+l(0, 100%, 40%);">-    message_header_t header;</span><br><span>     interf=
+ace_t iface;</span><br><span>     short family;</span><br><span>     int mt=
+u;</span><br><span>@@ -176,7 +167,6 @@</span><br><span> typedef enum {</spa=
+n><br><span>     ADAPTER_TYPE_DCO,</span><br><span>     ADAPTER_TYPE_TAP,</=
+span><br><span style=3D"color: hsl(0, 100%, 40%);">-    ADAPTER_TYPE_WINTUN=
+</span><br><span> } adapter_type_t;</span><br><span> </span><br><span> type=
+def struct {</span><br><span>diff --git a/src/openvpn/Makefile.am b/src/ope=
+nvpn/Makefile.am</span><br><span>index 37af683..3c1a875 100644</span><br><s=
+pan>--- a/src/openvpn/Makefile.am</span><br><span>+++ b/src/openvpn/Makefil=
+e.am</span><br><span>@@ -163,6 +163,6 @@</span><br><span> 	$(OPTIONAL_DL_LI=
+BS) \</span><br><span> 	$(OPTIONAL_INOTIFY_LIBS)</span><br><span> if WIN32<=
+/span><br><span style=3D"color: hsl(0, 100%, 40%);">-openvpn_SOURCES +=3D o=
+penvpn_win32_resources.rc wfp_block.c wfp_block.h ring_buffer.h</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+openvpn_SOURCES +=3D openvpn_wi=
+n32_resources.rc wfp_block.c wfp_block.h</span><br><span> openvpn_LDADD +=
+=3D -lgdi32 -lws2_32 -lwininet -lcrypt32 -liphlpapi -lwinmm -lfwpuclnt -lrp=
+crt4 -lncrypt -lsetupapi -lbcrypt</span><br><span> endif</span><br><span>di=
+ff --git a/src/openvpn/dco.c b/src/openvpn/dco.c</span><br><span>index 7ad9=
+cb3..c61cbda 100644</span><br><span>--- a/src/openvpn/dco.c</span><br><span=
+>+++ b/src/openvpn/dco.c</span><br><span>@@ -359,14 +359,6 @@</span><br><sp=
+an>         return false;</span><br><span>     }</span><br><span> </span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-    if ((o-&gt;windows_driver =
+=3D=3D WINDOWS_DRIVER_WINTUN)</span><br><span style=3D"color: hsl(0, 100%, =
+40%);">-        || (o-&gt;windows_driver =3D=3D WINDOWS_DRIVER_TAP_WINDOWS6=
+))</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    {</span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-        msg(msglevel, &quot;--windo=
+ws-driver is set to &#39;%s&#39;. Disabling Data Channel Offload&quot;,</sp=
+an><br><span style=3D"color: hsl(0, 100%, 40%);">-            print_tun_bac=
+kend_driver(o-&gt;windows_driver));</span><br><span style=3D"color: hsl(0, =
+100%, 40%);">-        return false;</span><br><span style=3D"color: hsl(0, =
+100%, 40%);">-    }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</=
+span><br><span>     if ((o-&gt;mode =3D=3D MODE_SERVER) &amp;&amp; o-&gt;ce=
+.local_list-&gt;len &gt; 1)</span><br><span>     {</span><br><span>        =
+ msg(msglevel, &quot;multiple --local options defined, disabling data chann=
+el offload&quot;);</span><br><span>diff --git a/src/openvpn/forward.c b/src=
+/openvpn/forward.c</span><br><span>index 0b8b262..ed4cdb4 100644</span><br>=
+<span>--- a/src/openvpn/forward.c</span><br><span>+++ b/src/openvpn/forward=
+.c</span><br><span>@@ -1308,26 +1308,11 @@</span><br><span>     c-&gt;c2.bu=
+f =3D c-&gt;c2.buffers-&gt;read_tun_buf;</span><br><span> </span><br><span>=
+ #ifdef _WIN32</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    if =
+(c-&gt;c1.tuntap-&gt;backend_driver =3D=3D WINDOWS_DRIVER_WINTUN)</span><br=
 ><span style=3D"color: hsl(0, 100%, 40%);">-    {</span><br><span style=3D"=
-color: hsl(0, 100%, 40%);">-        msg(msglevel, &quot;--windows-driver is=
- set to &#39;%s&#39;. Disabling Data Channel Offload&quot;,</span><br><span=
- style=3D"color: hsl(0, 100%, 40%);">-            print_tun_backend_driver(=
-o-&gt;windows_driver));</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
->-        return false;</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
->-    }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><sp=
-an>     if ((o-&gt;mode =3D=3D MODE_SERVER) &amp;&amp; o-&gt;ce.local_list-=
-&gt;len &gt; 1)</span><br><span>     {</span><br><span>         msg(msgleve=
-l, &quot;multiple --local options defined, disabling data channel offload&q=
-uot;);</span><br><span>diff --git a/src/openvpn/forward.c b/src/openvpn/for=
-ward.c</span><br><span>index 0b8b262..ed4cdb4 100644</span><br><span>--- a/=
-src/openvpn/forward.c</span><br><span>+++ b/src/openvpn/forward.c</span><br=
-><span>@@ -1308,26 +1308,11 @@</span><br><span>     c-&gt;c2.buf =3D c-&gt;=
-c2.buffers-&gt;read_tun_buf;</span><br><span> </span><br><span> #ifdef _WIN=
-32</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    if (c-&gt;c1.tu=
-ntap-&gt;backend_driver =3D=3D WINDOWS_DRIVER_WINTUN)</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-    {</span><br><span style=3D"color: hsl(0=
-, 100%, 40%);">-        read_wintun(c-&gt;c1.tuntap, &amp;c-&gt;c2.buf);</s=
-pan><br><span style=3D"color: hsl(0, 100%, 40%);">-        if (c-&gt;c2.buf=
-.len =3D=3D -1)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-      =
-  {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            regist=
-er_signal(c-&gt;sig, SIGHUP, &quot;tun-abort&quot;);</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-            c-&gt;persist.restart_sleep_sec=
-onds =3D 1;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-          =
-  msg(M_INFO, &quot;Wintun read error, restarting&quot;);</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-            perf_pop();</span><br><span=
- style=3D"color: hsl(0, 100%, 40%);">-            return;</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-        }</span><br><span style=3D"colo=
-r: hsl(0, 100%, 40%);">-    }</span><br><span style=3D"color: hsl(0, 100%, =
-40%);">-    else</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    {=
-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        /* we cannot =
-end up here when using dco */</span><br><span style=3D"color: hsl(0, 100%, =
-40%);">-        ASSERT(!dco_enabled(&amp;c-&gt;options));</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+    /* we cannot end up here when usi=
-ng dco */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    ASSERT=
-(!dco_enabled(&amp;c-&gt;options));</span><br><span> </span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-        sockethandle_t sh =3D { .is_handle =
-=3D true, .h =3D c-&gt;c1.tuntap-&gt;hand, .prepend_sa =3D false };</span><=
-br><span style=3D"color: hsl(0, 100%, 40%);">-        sockethandle_finalize=
+color: hsl(0, 100%, 40%);">-        read_wintun(c-&gt;c1.tuntap, &amp;c-&gt=
+;c2.buf);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        if (=
+c-&gt;c2.buf.len =3D=3D -1)</span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">-        {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-      =
+      register_signal(c-&gt;sig, SIGHUP, &quot;tun-abort&quot;);</span><br>=
+<span style=3D"color: hsl(0, 100%, 40%);">-            c-&gt;persist.restar=
+t_sleep_seconds =3D 1;</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
+-            msg(M_INFO, &quot;Wintun read error, restarting&quot;);</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-            perf_pop();</spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-            return;</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-        }</span><br><span st=
+yle=3D"color: hsl(0, 100%, 40%);">-    }</span><br><span style=3D"color: hs=
+l(0, 100%, 40%);">-    else</span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">-    {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        /*=
+ we cannot end up here when using dco */</span><br><span style=3D"color: hs=
+l(0, 100%, 40%);">-        ASSERT(!dco_enabled(&amp;c-&gt;options));</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+    /* we cannot end up he=
+re when using dco */</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++    ASSERT(!dco_enabled(&amp;c-&gt;options));</span><br><span> </span><br>=
+<span style=3D"color: hsl(0, 100%, 40%);">-        sockethandle_t sh =3D { =
+.is_handle =3D true, .h =3D c-&gt;c1.tuntap-&gt;hand, .prepend_sa =3D false=
+ };</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        sockethand=
+le_finalize(sh, &amp;c-&gt;c1.tuntap-&gt;reads, &amp;c-&gt;c2.buf, NULL);</=
+span><br><span style=3D"color: hsl(0, 100%, 40%);">-    }</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+    sockethandle_t sh =3D { .is_handl=
+e =3D true, .h =3D c-&gt;c1.tuntap-&gt;hand, .prepend_sa =3D false };</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+    sockethandle_finalize=
 (sh, &amp;c-&gt;c1.tuntap-&gt;reads, &amp;c-&gt;c2.buf, NULL);</span><br><s=
-pan style=3D"color: hsl(0, 100%, 40%);">-    }</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+    sockethandle_t sh =3D { .is_handle =3D true,=
- .h =3D c-&gt;c1.tuntap-&gt;hand, .prepend_sa =3D false };</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+    sockethandle_finalize(sh, &amp;c=
--&gt;c1.tuntap-&gt;reads, &amp;c-&gt;c2.buf, NULL);</span><br><span> #else =
- /* ifdef _WIN32 */</span><br><span>     ASSERT(buf_init(&amp;c-&gt;c2.buf,=
- c-&gt;c2.frame.buf.headroom));</span><br><span>     ASSERT(buf_safe(&amp;c=
--&gt;c2.buf, c-&gt;c2.frame.buf.payload_size));</span><br><span>@@ -1942,7 =
-+1927,7 @@</span><br><span> #endif</span><br><span> </span><br><span> #ifde=
-f _WIN32</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        size =
-=3D write_tun_buffered(c-&gt;c1.tuntap, &amp;c-&gt;c2.to_tun);</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+        size =3D tun_write_win32=
-(c-&gt;c1.tuntap, &amp;c-&gt;c2.to_tun);</span><br><span> #else</span><br><=
-span>         if (c-&gt;c1.tuntap-&gt;backend_driver =3D=3D DRIVER_AFUNIX)<=
-/span><br><span>         {</span><br><span>@@ -2148,17 +2133,6 @@</span><br=
-><span>         tuntap |=3D EVENT_READ;</span><br><span>     }</span><br><s=
-pan> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-#ifdef _WIN32</s=
-pan><br><span style=3D"color: hsl(0, 100%, 40%);">-    if (tuntap_is_wintun=
-(c-&gt;c1.tuntap))</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
- {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        /*</span><b=
-r><span style=3D"color: hsl(0, 100%, 40%);">-         * With wintun we are =
-only interested in read event. Ring buffer is</span><br><span style=3D"colo=
-r: hsl(0, 100%, 40%);">-         * always ready for write, so we don&#39;t =
-do wait.</span><br><span style=3D"color: hsl(0, 100%, 40%);">-         */</=
-span><br><span style=3D"color: hsl(0, 100%, 40%);">-        tuntap =3D EVEN=
-T_READ;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    }</span><b=
-r><span style=3D"color: hsl(0, 100%, 40%);">-#endif</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-</span><br><span>     /*</span><br><span>  =
-    * Configure event wait based on socket, tuntap flags.</span><br><span> =
-     */</span><br><span>@@ -2217,36 +2191,8 @@</span><br><span>     }</span=
-><br><span>     else</span><br><span>     {</span><br><span style=3D"color:=
- hsl(0, 100%, 40%);">-#ifdef _WIN32</span><br><span style=3D"color: hsl(0, =
-100%, 40%);">-        bool skip_iowait =3D flags &amp; IOW_TO_TUN;</span><b=
-r><span style=3D"color: hsl(0, 100%, 40%);">-        if (flags &amp; IOW_RE=
-AD_TUN)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        {</spa=
-n><br><span style=3D"color: hsl(0, 100%, 40%);">-            /*</span><br><=
-span style=3D"color: hsl(0, 100%, 40%);">-             * don&#39;t read fro=
-m tun if we have pending write to link,</span><br><span style=3D"color: hsl=
-(0, 100%, 40%);">-             * since every tun read overwrites to_link bu=
-ffer filled</span><br><span style=3D"color: hsl(0, 100%, 40%);">-          =
-   * by previous tun read</span><br><span style=3D"color: hsl(0, 100%, 40%)=
-;">-             */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
-          skip_iowait =3D !(flags &amp; IOW_TO_LINK);</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-        }</span><br><span style=3D"color: h=
-sl(0, 100%, 40%);">-        if (tuntap_is_wintun(c-&gt;c1.tuntap) &amp;&amp=
-; skip_iowait)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-       =
- {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            unsigne=
-d int ret =3D 0;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-     =
-       if (flags &amp; IOW_TO_TUN)</span><br><span style=3D"color: hsl(0, 1=
-00%, 40%);">-            {</span><br><span style=3D"color: hsl(0, 100%, 40%=
-);">-                ret |=3D TUN_WRITE;</span><br><span style=3D"color: hs=
-l(0, 100%, 40%);">-            }</span><br><span style=3D"color: hsl(0, 100=
-%, 40%);">-            if (flags &amp; IOW_READ_TUN)</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-            {</span><br><span style=3D"colo=
-r: hsl(0, 100%, 40%);">-                ret |=3D TUN_READ;</span><br><span =
-style=3D"color: hsl(0, 100%, 40%);">-            }</span><br><span style=3D=
-"color: hsl(0, 100%, 40%);">-            multi_io-&gt;udp_flags =3D ret;</s=
-pan><br><span style=3D"color: hsl(0, 100%, 40%);">-        }</span><br><spa=
-n style=3D"color: hsl(0, 100%, 40%);">-        else</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-#endif /* ifdef _WIN32 */</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-        {</span><br><span style=3D"colo=
-r: hsl(0, 100%, 40%);">-            /* slow path - delegate to io_wait_dowo=
-rk_udp to calculate flags */</span><br><span style=3D"color: hsl(0, 100%, 4=
-0%);">-            get_io_flags_dowork_udp(c, multi_io, flags);</span><br><=
-span style=3D"color: hsl(0, 100%, 40%);">-        }</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+        /* slow path - delegate to io_wai=
-t_dowork_udp to calculate flags */</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+        get_io_flags_dowork_udp(c, multi_io, flags);</span><=
-br><span>     }</span><br><span> }</span><br><span> </span><br><span>diff -=
--git a/src/openvpn/forward.h b/src/openvpn/forward.h</span><br><span>index =
-77892d6..74c6036 100644</span><br><span>--- a/src/openvpn/forward.h</span><=
-br><span>+++ b/src/openvpn/forward.h</span><br><span>@@ -360,12 +360,6 @@</=
-span><br><span>     {</span><br><span>         flags |=3D IOW_TO_TUN;</span=
-><br><span>     }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#ifd=
-ef _WIN32</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    if (tunt=
-ap_ring_empty(c-&gt;c1.tuntap))</span><br><span style=3D"color: hsl(0, 100%=
-, 40%);">-    {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-      =
-  flags &amp;=3D ~IOW_READ_TUN;</span><br><span style=3D"color: hsl(0, 100%=
-, 40%);">-    }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#endif=
-</span><br><span>     return flags;</span><br><span> }</span><br><span> </s=
-pan><br><span>@@ -393,36 +387,8 @@</span><br><span>     }</span><br><span> =
-    else</span><br><span>     {</span><br><span style=3D"color: hsl(0, 100%=
-, 40%);">-#ifdef _WIN32</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
->-        bool skip_iowait =3D flags &amp; IOW_TO_TUN;</span><br><span styl=
-e=3D"color: hsl(0, 100%, 40%);">-        if (flags &amp; IOW_READ_TUN)</spa=
-n><br><span style=3D"color: hsl(0, 100%, 40%);">-        {</span><br><span =
-style=3D"color: hsl(0, 100%, 40%);">-            /*</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-             * don&#39;t read from tun if w=
-e have pending write to link,</span><br><span style=3D"color: hsl(0, 100%, =
-40%);">-             * since every tun read overwrites to_link buffer fille=
-d</span><br><span style=3D"color: hsl(0, 100%, 40%);">-             * by pr=
-evious tun read</span><br><span style=3D"color: hsl(0, 100%, 40%);">-      =
-       */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            =
-skip_iowait =3D !(flags &amp; IOW_TO_LINK);</span><br><span style=3D"color:=
- hsl(0, 100%, 40%);">-        }</span><br><span style=3D"color: hsl(0, 100%=
-, 40%);">-        if (tuntap_is_wintun(c-&gt;c1.tuntap) &amp;&amp; skip_iow=
-ait)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        {</span><=
-br><span style=3D"color: hsl(0, 100%, 40%);">-            unsigned int ret =
-=3D 0;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            if =
-(flags &amp; IOW_TO_TUN)</span><br><span style=3D"color: hsl(0, 100%, 40%);=
-">-            {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-     =
-           ret |=3D TUN_WRITE;</span><br><span style=3D"color: hsl(0, 100%,=
- 40%);">-            }</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
--            if (flags &amp; IOW_READ_TUN)</span><br><span style=3D"color: =
-hsl(0, 100%, 40%);">-            {</span><br><span style=3D"color: hsl(0, 1=
-00%, 40%);">-                ret |=3D TUN_READ;</span><br><span style=3D"co=
-lor: hsl(0, 100%, 40%);">-            }</span><br><span style=3D"color: hsl=
-(0, 100%, 40%);">-            c-&gt;c2.event_set_status =3D ret;</span><br>=
-<span style=3D"color: hsl(0, 100%, 40%);">-        }</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-        else</span><br><span style=3D"color=
-: hsl(0, 100%, 40%);">-#endif /* ifdef _WIN32 */</span><br><span style=3D"c=
-olor: hsl(0, 100%, 40%);">-        {</span><br><span style=3D"color: hsl(0,=
- 100%, 40%);">-            /* slow path */</span><br><span style=3D"color: =
-hsl(0, 100%, 40%);">-            io_wait_dowork(c, flags);</span><br><span =
-style=3D"color: hsl(0, 100%, 40%);">-        }</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+        /* slow path */</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+        io_wait_dowork(c, flags);</span><br>=
-<span>     }</span><br><span> }</span><br><span> </span><br><span>diff --gi=
-t a/src/openvpn/mudp.c b/src/openvpn/mudp.c</span><br><span>index 54dfc72..=
-7158d5c 100644</span><br><span>--- a/src/openvpn/mudp.c</span><br><span>+++=
- b/src/openvpn/mudp.c</span><br><span>@@ -457,11 +457,5 @@</span><br><span>=
-     {</span><br><span>         flags |=3D IOW_READ;</span><br><span>     }=
-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#ifdef _WIN32</span><=
-br><span style=3D"color: hsl(0, 100%, 40%);">-    if (tuntap_ring_empty(m-&=
-gt;top.c1.tuntap))</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
- {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        flags &amp;=
-=3D ~IOW_READ_TUN;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
+pan> #else  /* ifdef _WIN32 */</span><br><span>     ASSERT(buf_init(&amp;c-=
+&gt;c2.buf, c-&gt;c2.frame.buf.headroom));</span><br><span>     ASSERT(buf_=
+safe(&amp;c-&gt;c2.buf, c-&gt;c2.frame.buf.payload_size));</span><br><span>=
+@@ -1942,7 +1927,7 @@</span><br><span> #endif</span><br><span> </span><br><=
+span> #ifdef _WIN32</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
+      size =3D write_tun_buffered(c-&gt;c1.tuntap, &amp;c-&gt;c2.to_tun);</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+        size =3D tun_=
+write_win32(c-&gt;c1.tuntap, &amp;c-&gt;c2.to_tun);</span><br><span> #else<=
+/span><br><span>         if (c-&gt;c1.tuntap-&gt;backend_driver =3D=3D DRIV=
+ER_AFUNIX)</span><br><span>         {</span><br><span>@@ -2148,17 +2133,6 @=
+@</span><br><span>         tuntap |=3D EVENT_READ;</span><br><span>     }</=
+span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-#ifde=
+f _WIN32</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    if (tunta=
+p_is_wintun(c-&gt;c1.tuntap))</span><br><span style=3D"color: hsl(0, 100%, =
+40%);">-    {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        =
+/*</span><br><span style=3D"color: hsl(0, 100%, 40%);">-         * With win=
+tun we are only interested in read event. Ring buffer is</span><br><span st=
+yle=3D"color: hsl(0, 100%, 40%);">-         * always ready for write, so we=
+ don&#39;t do wait.</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
+       */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        tunt=
+ap =3D EVENT_READ;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
  }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#endif</span><br><s=
-pan>     return flags;</span><br><span> }</span><br><span>diff --git a/src/=
-openvpn/multi_io.c b/src/openvpn/multi_io.c</span><br><span>index f4ca4df..=
-7f47319 100644</span><br><span>--- a/src/openvpn/multi_io.c</span><br><span=
->+++ b/src/openvpn/multi_io.c</span><br><span>@@ -190,20 +190,6 @@</span><b=
-r><span>         get_io_flags_udp(&amp;m-&gt;top, m-&gt;multi_io, p2mp_iow_=
-flags(m));</span><br><span>     }</span><br><span> </span><br><span style=
+pan style=3D"color: hsl(0, 100%, 40%);">-</span><br><span>     /*</span><br=
+><span>      * Configure event wait based on socket, tuntap flags.</span><b=
+r><span>      */</span><br><span>@@ -2217,36 +2191,8 @@</span><br><span>   =
+  }</span><br><span>     else</span><br><span>     {</span><br><span style=
 =3D"color: hsl(0, 100%, 40%);">-#ifdef _WIN32</span><br><span style=3D"colo=
-r: hsl(0, 100%, 40%);">-    if (tuntap_is_wintun(m-&gt;top.c1.tuntap))</spa=
-n><br><span style=3D"color: hsl(0, 100%, 40%);">-    {</span><br><span styl=
-e=3D"color: hsl(0, 100%, 40%);">-        if (!tuntap_ring_empty(m-&gt;top.c=
-1.tuntap))</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        {</=
-span><br><span style=3D"color: hsl(0, 100%, 40%);">-            /* there is=
- data in wintun ring buffer, read it immediately */</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-            m-&gt;multi_io-&gt;esr[0].arg =
-=3D MULTI_IO_TUN;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
-        m-&gt;multi_io-&gt;esr[0].rwflags =3D EVENT_READ;</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-            m-&gt;multi_io-&gt;n_esr =
+r: hsl(0, 100%, 40%);">-        bool skip_iowait =3D flags &amp; IOW_TO_TUN=
+;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        if (flags &a=
+mp; IOW_READ_TUN)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
+    {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            /*</=
+span><br><span style=3D"color: hsl(0, 100%, 40%);">-             * don&#39;=
+t read from tun if we have pending write to link,</span><br><span style=3D"=
+color: hsl(0, 100%, 40%);">-             * since every tun read overwrites =
+to_link buffer filled</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
+             * by previous tun read</span><br><span style=3D"color: hsl(0, =
+100%, 40%);">-             */</span><br><span style=3D"color: hsl(0, 100%, =
+40%);">-            skip_iowait =3D !(flags &amp; IOW_TO_LINK);</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-        }</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-        if (tuntap_is_wintun(c-&gt;c1.tunta=
+p) &amp;&amp; skip_iowait)</span><br><span style=3D"color: hsl(0, 100%, 40%=
+);">-        {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-       =
+     unsigned int ret =3D 0;</span><br><span style=3D"color: hsl(0, 100%, 4=
+0%);">-            if (flags &amp; IOW_TO_TUN)</span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-            {</span><br><span style=3D"color: hsl(=
+0, 100%, 40%);">-                ret |=3D TUN_WRITE;</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-            }</span><br><span style=3D"colo=
+r: hsl(0, 100%, 40%);">-            if (flags &amp; IOW_READ_TUN)</span><br=
+><span style=3D"color: hsl(0, 100%, 40%);">-            {</span><br><span s=
+tyle=3D"color: hsl(0, 100%, 40%);">-                ret |=3D TUN_READ;</spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-            }</span><br><s=
+pan style=3D"color: hsl(0, 100%, 40%);">-            multi_io-&gt;udp_flags=
+ =3D ret;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        }</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-        else</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-#endif /* ifdef _WIN32 */</span><=
+br><span style=3D"color: hsl(0, 100%, 40%);">-        {</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-            /* slow path - delegate to io=
+_wait_dowork_udp to calculate flags */</span><br><span style=3D"color: hsl(=
+0, 100%, 40%);">-            get_io_flags_dowork_udp(c, multi_io, flags);</=
+span><br><span style=3D"color: hsl(0, 100%, 40%);">-        }</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+        /* slow path - delegate t=
+o io_wait_dowork_udp to calculate flags */</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+        get_io_flags_dowork_udp(c, multi_io, flags);=
+</span><br><span>     }</span><br><span> }</span><br><span> </span><br><spa=
+n>diff --git a/src/openvpn/forward.h b/src/openvpn/forward.h</span><br><spa=
+n>index 77892d6..74c6036 100644</span><br><span>--- a/src/openvpn/forward.h=
+</span><br><span>+++ b/src/openvpn/forward.h</span><br><span>@@ -360,12 +36=
+0,6 @@</span><br><span>     {</span><br><span>         flags |=3D IOW_TO_TU=
+N;</span><br><span>     }</span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">-#ifdef _WIN32</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
+if (tuntap_ring_empty(c-&gt;c1.tuntap))</span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-    {</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>-        flags &amp;=3D ~IOW_READ_TUN;</span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-    }</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>-#endif</span><br><span>     return flags;</span><br><span> }</span><br><s=
+pan> </span><br><span>@@ -393,36 +387,8 @@</span><br><span>     }</span><br=
+><span>     else</span><br><span>     {</span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-#ifdef _WIN32</span><br><span style=3D"color: hsl(0, 100%=
+, 40%);">-        bool skip_iowait =3D flags &amp; IOW_TO_TUN;</span><br><s=
+pan style=3D"color: hsl(0, 100%, 40%);">-        if (flags &amp; IOW_READ_T=
+UN)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        {</span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-            /*</span><br><span=
+ style=3D"color: hsl(0, 100%, 40%);">-             * don&#39;t read from tu=
+n if we have pending write to link,</span><br><span style=3D"color: hsl(0, =
+100%, 40%);">-             * since every tun read overwrites to_link buffer=
+ filled</span><br><span style=3D"color: hsl(0, 100%, 40%);">-             *=
+ by previous tun read</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
+             */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-      =
+      skip_iowait =3D !(flags &amp; IOW_TO_LINK);</span><br><span style=3D"=
+color: hsl(0, 100%, 40%);">-        }</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-        if (tuntap_is_wintun(c-&gt;c1.tuntap) &amp;&amp; sk=
+ip_iowait)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        {</=
+span><br><span style=3D"color: hsl(0, 100%, 40%);">-            unsigned in=
+t ret =3D 0;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-         =
+   if (flags &amp; IOW_TO_TUN)</span><br><span style=3D"color: hsl(0, 100%,=
+ 40%);">-            {</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
+-                ret |=3D TUN_WRITE;</span><br><span style=3D"color: hsl(0,=
+ 100%, 40%);">-            }</span><br><span style=3D"color: hsl(0, 100%, 4=
+0%);">-            if (flags &amp; IOW_READ_TUN)</span><br><span style=3D"c=
+olor: hsl(0, 100%, 40%);">-            {</span><br><span style=3D"color: hs=
+l(0, 100%, 40%);">-                ret |=3D TUN_READ;</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-            }</span><br><span style=3D"colo=
+r: hsl(0, 100%, 40%);">-            c-&gt;c2.event_set_status =3D ret;</spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-        }</span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">-        else</span><br><span style=3D"=
+color: hsl(0, 100%, 40%);">-#endif /* ifdef _WIN32 */</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-        {</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-            /* slow path */</span><br><span style=3D"co=
+lor: hsl(0, 100%, 40%);">-            io_wait_dowork(c, flags);</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-        }</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+        /* slow path */</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+        io_wait_dowork(c, flags);</sp=
+an><br><span>     }</span><br><span> }</span><br><span> </span><br><span>di=
+ff --git a/src/openvpn/mudp.c b/src/openvpn/mudp.c</span><br><span>index 54=
+dfc72..7158d5c 100644</span><br><span>--- a/src/openvpn/mudp.c</span><br><s=
+pan>+++ b/src/openvpn/mudp.c</span><br><span>@@ -457,11 +457,5 @@</span><br=
+><span>     {</span><br><span>         flags |=3D IOW_READ;</span><br><span=
+>     }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#ifdef _WIN32<=
+/span><br><span style=3D"color: hsl(0, 100%, 40%);">-    if (tuntap_ring_em=
+pty(m-&gt;top.c1.tuntap))</span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">-    {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        flag=
+s &amp;=3D ~IOW_READ_TUN;</span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">-    }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#endif</span=
+><br><span>     return flags;</span><br><span> }</span><br><span>diff --git=
+ a/src/openvpn/multi_io.c b/src/openvpn/multi_io.c</span><br><span>index f4=
+ca4df..7f47319 100644</span><br><span>--- a/src/openvpn/multi_io.c</span><b=
+r><span>+++ b/src/openvpn/multi_io.c</span><br><span>@@ -190,20 +190,6 @@</=
+span><br><span>         get_io_flags_udp(&amp;m-&gt;top, m-&gt;multi_io, p2=
+mp_iow_flags(m));</span><br><span>     }</span><br><span> </span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">-#ifdef _WIN32</span><br><span style=3D=
+"color: hsl(0, 100%, 40%);">-    if (tuntap_is_wintun(m-&gt;top.c1.tuntap))=
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    {</span><br><span=
+ style=3D"color: hsl(0, 100%, 40%);">-        if (!tuntap_ring_empty(m-&gt;=
+top.c1.tuntap))</span><br><span style=3D"color: hsl(0, 100%, 40%);">-      =
+  {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            /* the=
+re is data in wintun ring buffer, read it immediately */</span><br><span st=
+yle=3D"color: hsl(0, 100%, 40%);">-            m-&gt;multi_io-&gt;esr[0].ar=
+g =3D MULTI_IO_TUN;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
+          m-&gt;multi_io-&gt;esr[0].rwflags =3D EVENT_READ;</span><br><span=
+ style=3D"color: hsl(0, 100%, 40%);">-            m-&gt;multi_io-&gt;n_esr =
 =3D 1;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            ret=
 urn 1;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        }</span=
 ><br><span style=3D"color: hsl(0, 100%, 40%);">-        persistent =3D NULL=
@@ -2786,8 +2793,8 @@ fb54fb219c536 </div>
 .1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: merged </div>
+<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
 
 
---oDYoeUPl/uY=--
+--bp/JadAD7fM=--
 
