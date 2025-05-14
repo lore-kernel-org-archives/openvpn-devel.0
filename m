@@ -1,17 +1,11 @@
-From: "d12fk (Code Review)" <gerrit@...515...>
-Date: Tue, 13 May 2025 22:11:31 +0000
+From: Gert Doering <gert@...1296...>
+Date: Wed, 14 May 2025 15:53:43 +0200
+Message-ID: <20250514135446.14418-1-gert@...1296...>
 In-Reply-To: <gerrit.1733989644000.I6b67e3a00dd84bf348b6af28115ee11138c3a111@...2715...>
 References: <gerrit.1733989644000.I6b67e3a00dd84bf348b6af28115ee11138c3a111@...2715...>
-Reply-To: heiko@...515..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...,
- max@...2606..., gert@...1296...
-Message-ID: <51325eb518626216d8f4eed5dd0dead20fa5a94a-EmailReplacePatchSet-HTML@...2715...>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="/4RfqSGUFTA="; charset=UTF-8
-Subject: [Openvpn-devel] [L] Change in openvpn[master]: dns: support running
- up/down command with privsep
+Subject: [Openvpn-devel] [PATCH v26] dns: support running up/down command
+ with privsep
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,35 +14,11 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, MaxF <max@...2606...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---/4RfqSGUFTA=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-Attention is currently required from: MaxF, cron2, d12fk, flichtenheld, pla=
-isthos.
-
-Hello MaxF, cron2, flichtenheld, plaisthos,
-
-I'd like you to reexamine a change. Please visit
-
-    http://gerrit.openvpn.net/c/openvpn/+/839?usp=3Demail
-
-to look at the new patch set (#25).
-
-The following approvals got outdated and were removed:
-Code-Review+2 by cron2
-
-The change is no longer submittable: Code-Review and checks~ChecksSubmitRul=
-e are unsatisfied now.
-
-
-Change subject: dns: support running up/down command with privsep
-......................................................................
-
-dns: support running up/down command with privsep
+From: Heiko Hund <heiko@...2662...>
 
 With --user privileges are dropped after init. Unfortunately this
 affects --dns-updown when undoing previous modifications.
@@ -66,24 +36,18 @@ protocol between the two processes simple.
 Change-Id: I6b67e3a00dd84bf348b6af28115ee11138c3a111
 Signed-off-by: Heiko Hund <heiko@...2662...>
 ---
-M distro/dns-scripts/haikuos_file-dns-updown.sh
-M distro/dns-scripts/openresolv-dns-updown.sh
-M distro/dns-scripts/resolvconf_file-dns-updown.sh
-M distro/dns-scripts/systemd-dns-updown.sh
-M src/openvpn/dns.c
-M src/openvpn/dns.h
-M src/openvpn/env_set.c
-M src/openvpn/env_set.h
-M src/openvpn/init.c
-M src/openvpn/openvpn.h
-10 files changed, 248 insertions(+), 12 deletions(-)
 
+This change was reviewed on Gerrit and approved by at least one
+developer. I request to merge it to master.
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/39/839/25
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/839
+This mail reflects revision 26 of this Change.
 
-diff --git a/distro/dns-scripts/haikuos_file-dns-updown.sh b/distro/dns-scr=
-ipts/haikuos_file-dns-updown.sh
-index 2e70554..bc00e10 100644
+Acked-by according to Gerrit (reflected above):
+
+        
+diff --git a/distro/dns-scripts/haikuos_file-dns-updown.sh b/distro/dns-scripts/haikuos_file-dns-updown.sh
+index 748804e..bc00e10 100644
 --- a/distro/dns-scripts/haikuos_file-dns-updown.sh
 +++ b/distro/dns-scripts/haikuos_file-dns-updown.sh
 @@ -7,6 +7,10 @@
@@ -98,24 +62,14 @@ index 2e70554..bc00e10 100644
  #   script_type dns-up
  #   dns_search_domain_1 mycorp.in
 @@ -39,6 +43,7 @@
-
- onf=3D/boot/system/settings/network/resolv.conf
+ 
+ onf=/boot/system/settings/network/resolv.conf
  test -e "$conf" || exit 1
 +test -z "${dns_vars_file}" || . "${dns_vars_file}"
  case "${script_type}" in
  dns-up)
-     n=3D1
-@@ -74,7 +79,7 @@
-         done
-         text=3D"${text}search $domains\n"
-     }
--    text=3D"${text}### openvpn ${dev} end ###\n"
-+    text=3D"${text}### openvpn ${dev} end ###"
-     text=3D"${text}\n$(cat ${conf})"
-
-     echo "${text}" > "${conf}"
-diff --git a/distro/dns-scripts/openresolv-dns-updown.sh b/distro/dns-scrip=
-ts/openresolv-dns-updown.sh
+     n=1
+diff --git a/distro/dns-scripts/openresolv-dns-updown.sh b/distro/dns-scripts/openresolv-dns-updown.sh
 index e50398c..1404819 100644
 --- a/distro/dns-scripts/openresolv-dns-updown.sh
 +++ b/distro/dns-scripts/openresolv-dns-updown.sh
@@ -133,14 +87,13 @@ index e50398c..1404819 100644
 @@ -38,6 +42,7 @@
      done
  }
-
+ 
 +[ -z "${dns_vars_file}" ] || . "${dns_vars_file}"
- : ${script_type:=3Ddns-down}
+ : ${script_type:=dns-down}
  case "${script_type}" in
  dns-up)
-diff --git a/distro/dns-scripts/resolvconf_file-dns-updown.sh b/distro/dns-=
-scripts/resolvconf_file-dns-updown.sh
-index c09a78d..70872c7 100644
+diff --git a/distro/dns-scripts/resolvconf_file-dns-updown.sh b/distro/dns-scripts/resolvconf_file-dns-updown.sh
+index 567b402..70872c7 100644
 --- a/distro/dns-scripts/resolvconf_file-dns-updown.sh
 +++ b/distro/dns-scripts/resolvconf_file-dns-updown.sh
 @@ -7,6 +7,10 @@
@@ -155,24 +108,14 @@ index c09a78d..70872c7 100644
  #   script_type dns-up
  #   dns_search_domain_1 mycorp.in
 @@ -39,6 +43,7 @@
-
- conf=3D/etc/resolv.conf
+ 
+ conf=/etc/resolv.conf
  test -e "$conf" || exit 1
 +test -z "${dns_vars_file}" || . "${dns_vars_file}"
  case "${script_type}" in
  dns-up)
-     n=3D1
-@@ -74,7 +79,7 @@
-         done
-         text=3D"${text}search $domains\n"
-     }
--    text=3D"${text}### openvpn ${dev} end ###\n"
-+    text=3D"${text}### openvpn ${dev} end ###"
-     text=3D"${text}\n$(cat ${conf})"
-
-     echo "${text}" > "${conf}"
-diff --git a/distro/dns-scripts/systemd-dns-updown.sh b/distro/dns-scripts/=
-systemd-dns-updown.sh
+     n=1
+diff --git a/distro/dns-scripts/systemd-dns-updown.sh b/distro/dns-scripts/systemd-dns-updown.sh
 index ecadd29..6eadabc 100644
 --- a/distro/dns-scripts/systemd-dns-updown.sh
 +++ b/distro/dns-scripts/systemd-dns-updown.sh
@@ -190,29 +133,27 @@ index ecadd29..6eadabc 100644
 @@ -30,6 +34,8 @@
  #   dns_server_1_sni dns.mycorp.in
  #
-
+ 
 +[ -z "${dns_vars_file}" ] || . "${dns_vars_file}"
 +
  function do_resolved_servers {
-     local sni=3D""
-     local transport_var=3Ddns_server_${n}_transport
+     local sni=""
+     local transport_var=dns_server_${n}_transport
 diff --git a/src/openvpn/dns.c b/src/openvpn/dns.c
 index 4da0747..19de321 100644
 --- a/src/openvpn/dns.c
 +++ b/src/openvpn/dns.c
 @@ -562,13 +562,20 @@
  }
-
+ 
  static int
--do_run_up_down_command(bool up, const struct dns_options *o, const struct =
-tuntap *tt)
-+do_run_up_down_command(bool up, const char *vars_file, const struct dns_op=
-tions *o, const struct tuntap *tt)
+-do_run_up_down_command(bool up, const struct dns_options *o, const struct tuntap *tt)
++do_run_up_down_command(bool up, const char *vars_file, const struct dns_options *o, const struct tuntap *tt)
  {
-     struct gc_arena gc =3D gc_new();
-     struct argv argv =3D argv_new();
-     struct env_set *es =3D env_set_create(&gc);
-
+     struct gc_arena gc = gc_new();
+     struct argv argv = argv_new();
+     struct env_set *es = env_set_create(&gc);
+ 
 -    updown_env_set(up, o, tt, es);
 +    if (vars_file)
 +    {
@@ -222,27 +163,26 @@ tions *o, const struct tuntap *tt)
 +    {
 +        updown_env_set(up, o, tt, es);
 +    }
-
+ 
      argv_printf(&argv, "%s", o->updown);
      argv_msg(M_INFO, &argv);
 @@ -586,8 +593,115 @@
      return res;
  }
-
+ 
 +static bool
-+run_updown_runner(bool up, struct options *o, const struct tuntap *tt, str=
-uct dns_updown_runner_info *updown_runner)
++run_updown_runner(bool up, struct options *o, const struct tuntap *tt, struct dns_updown_runner_info *updown_runner)
 +{
 +    int dns_pipe_fd[2];
 +    int ack_pipe_fd[2];
-+    if (pipe(dns_pipe_fd) !=3D 0
-+        || pipe(ack_pipe_fd) !=3D 0)
++    if (pipe(dns_pipe_fd) != 0
++        || pipe(ack_pipe_fd) != 0)
 +    {
 +        msg(M_ERR | M_ERRNO, "run_dns_up_down: unable to create pipes");
 +        return false;
 +    }
-+    updown_runner->pid =3D fork();
-+    if (updown_runner->pid =3D=3D -1)
++    updown_runner->pid = fork();
++    if (updown_runner->pid == -1)
 +    {
 +        msg(M_ERR | M_ERRNO, "run_dns_up_down: unable to fork");
 +        close(dns_pipe_fd[0]);
@@ -256,16 +196,16 @@ uct dns_updown_runner_info *updown_runner)
 +        /* Parent process */
 +        close(dns_pipe_fd[0]);
 +        close(ack_pipe_fd[1]);
-+        updown_runner->fds[0] =3D ack_pipe_fd[0];
-+        updown_runner->fds[1] =3D dns_pipe_fd[1];
++        updown_runner->fds[0] = ack_pipe_fd[0];
++        updown_runner->fds[1] = dns_pipe_fd[1];
 +    }
 +    else
 +    {
 +        /* Script runner process, close unused FDs */
-+        for (int fd =3D 3; fd < 100; ++fd)
++        for (int fd = 3; fd < 100; ++fd)
 +        {
-+            if (fd !=3D dns_pipe_fd[0]
-+                && fd !=3D ack_pipe_fd[1])
++            if (fd != dns_pipe_fd[0]
++                && fd != ack_pipe_fd[1])
 +            {
 +                close(fd);
 +            }
@@ -285,10 +225,10 @@ uct dns_updown_runner_info *updown_runner)
 +            char path[PATH_MAX];
 +
 +            /* Block here until parent sends a path */
-+            rlen =3D read(dns_pipe_fd[0], &path, sizeof(path));
++            rlen = read(dns_pipe_fd[0], &path, sizeof(path));
 +            if (rlen < 1)
 +            {
-+                if (rlen =3D=3D -1 && errno =3D=3D EINTR)
++                if (rlen == -1 && errno == EINTR)
 +                {
 +                    continue;
 +                }
@@ -297,30 +237,28 @@ uct dns_updown_runner_info *updown_runner)
 +                exit(0);
 +            }
 +
-+            path[sizeof(path) - 1] =3D '\0';
-+            int res =3D do_run_up_down_command(up, path, &o->dns_options, =
-tt);
++            path[sizeof(path) - 1] = '\0';
++            int res = do_run_up_down_command(up, path, &o->dns_options, tt);
 +            platform_unlink(path);
 +
 +            /* Unblock parent process */
 +            while (1)
 +            {
-+                wlen =3D write(ack_pipe_fd[1], &res, sizeof(res));
-+                if ((wlen =3D=3D -1 && errno !=3D EINTR) || wlen < sizeof(=
-res))
++                wlen = write(ack_pipe_fd[1], &res, sizeof(res));
++                if ((wlen == -1 && errno != EINTR) || wlen < sizeof(res))
 +                {
 +                    /* Not much we can do about errors but exit */
 +                    close(dns_pipe_fd[0]);
 +                    close(ack_pipe_fd[1]);
 +                    exit(0);
 +                }
-+                else if (wlen =3D=3D sizeof(res))
++                else if (wlen == sizeof(res))
 +                {
 +                    break;
 +                }
 +            }
 +
-+            up =3D !up; /* do the opposite next time */
++            up = !up; /* do the opposite next time */
 +        }
 +    }
 +
@@ -328,11 +266,10 @@ res))
 +}
 +
 +static const char *
-+write_dns_vars_file(bool up, const struct options *o, const struct tuntap =
-*tt, struct gc_arena *gc)
++write_dns_vars_file(bool up, const struct options *o, const struct tuntap *tt, struct gc_arena *gc)
 +{
-+    struct env_set *es =3D env_set_create(gc);
-+    const char *dvf =3D platform_create_temp_file(o->tmp_dir, "dvf", gc);
++    struct env_set *es = env_set_create(gc);
++    const char *dvf = platform_create_temp_file(o->tmp_dir, "dvf", gc);
 +
 +    updown_env_set(up, &o->dns_options, tt, es);
 +    env_set_write_file(dvf, es);
@@ -342,21 +279,20 @@ res))
 +
  static void
 -run_up_down_command(bool up, struct options *o, const struct tuntap *tt)
-+run_up_down_command(bool up, struct options *o, const struct tuntap *tt, s=
-truct dns_updown_runner_info *updown_runner)
++run_up_down_command(bool up, struct options *o, const struct tuntap *tt, struct dns_updown_runner_info *updown_runner)
  {
      if (!o->dns_options.updown)
      {
 @@ -595,7 +709,60 @@
      }
-
+ 
      int status;
--    status =3D do_run_up_down_command(up, &o->dns_options, tt);
+-    status = do_run_up_down_command(up, &o->dns_options, tt);
 +
 +    if (!updown_runner->required)
 +    {
 +        /* Run dns updown directly */
-+        status =3D do_run_up_down_command(up, NULL, &o->dns_options, tt);
++        status = do_run_up_down_command(up, NULL, &o->dns_options, tt);
 +    }
 +    else
 +    {
@@ -369,18 +305,18 @@ truct dns_updown_runner_info *updown_runner)
 +            }
 +        }
 +
-+        struct gc_arena gc =3D gc_new();
-+        int rfd =3D updown_runner->fds[0];
-+        int wfd =3D updown_runner->fds[1];
-+        const char *dvf =3D write_dns_vars_file(up, o, tt, &gc);
-+        size_t dvf_size =3D strlen(dvf) + 1;
++        struct gc_arena gc = gc_new();
++        int rfd = updown_runner->fds[0];
++        int wfd = updown_runner->fds[1];
++        const char *dvf = write_dns_vars_file(up, o, tt, &gc);
++        size_t dvf_size = strlen(dvf) + 1;
 +
 +        while (1)
 +        {
-+            ssize_t len =3D write(wfd, dvf, dvf_size);
++            ssize_t len = write(wfd, dvf, dvf_size);
 +            if (len < dvf_size)
 +            {
-+                if (len =3D=3D -1 && errno =3D=3D EINTR)
++                if (len == -1 && errno == EINTR)
 +                {
 +                    continue;
 +                }
@@ -391,15 +327,14 @@ truct dns_updown_runner_info *updown_runner)
 +
 +        while (1)
 +        {
-+            ssize_t len =3D read(rfd, &status, sizeof(status));
++            ssize_t len = read(rfd, &status, sizeof(status));
 +            if (len < sizeof(status))
 +            {
-+                if (len =3D=3D -1 && errno =3D=3D EINTR)
++                if (len == -1 && errno == EINTR)
 +                {
 +                    continue;
 +                }
-+                msg(M_ERR | M_ERRNO, "could not receive dns updown status"=
-);
++                msg(M_ERR | M_ERRNO, "could not receive dns updown status");
 +            }
 +            break;
 +        }
@@ -407,17 +342,15 @@ truct dns_updown_runner_info *updown_runner)
 +        gc_free(&gc);
 +    }
 +
-     msg(M_INFO, "dns %s command exited with status %d", up ? "up" : "down"=
-, status);
+     msg(M_INFO, "dns %s command exited with status %d", up ? "up" : "down", status);
  }
-
+ 
 @@ -681,7 +848,7 @@
  }
-
+ 
  void
 -run_dns_up_down(bool up, struct options *o, const struct tuntap *tt)
-+run_dns_up_down(bool up, struct options *o, const struct tuntap *tt, struc=
-t dns_updown_runner_info *duri)
++run_dns_up_down(bool up, struct options *o, const struct tuntap *tt, struct dns_updown_runner_info *duri)
  {
      if (!o->dns_options.servers)
      {
@@ -436,7 +369,7 @@ index c4d19ff..4cc1e73 100644
 @@ -68,6 +68,14 @@
      const char *sni;
  };
-
+ 
 +struct dns_updown_runner_info {
 +    bool required;
 +    int fds[2];
@@ -457,7 +390,7 @@ index c4d19ff..4cc1e73 100644
 -void run_dns_up_down(bool up, struct options *o, const struct tuntap *tt);
 +void run_dns_up_down(bool up, struct options *o, const struct tuntap *tt,
 +                     struct dns_updown_runner_info *duri);
-
+ 
  /**
   * Puts the DNS options into an environment set.
 diff --git a/src/openvpn/env_set.c b/src/openvpn/env_set.c
@@ -466,19 +399,19 @@ index 81ab59e..3fe23fd 100644
 +++ b/src/openvpn/env_set.c
 @@ -33,6 +33,7 @@
  #include "env_set.h"
-
+ 
  #include "run_command.h"
 +#include "platform.h"
-
+ 
  /*
   * Set environmental variable (int or string).
 @@ -235,6 +236,30 @@
  }
-
+ 
  void
 +env_set_write_file(const char *path, const struct env_set *es)
 +{
-+    FILE *fp =3D platform_fopen(path, "w");
++    FILE *fp = platform_fopen(path, "w");
 +    if (!fp)
 +    {
 +        msg(M_ERR, "could not write env set to '%s'", path);
@@ -487,12 +420,12 @@ index 81ab59e..3fe23fd 100644
 +
 +    if (es)
 +    {
-+        const struct env_item *item =3D  es->list;
++        const struct env_item *item =  es->list;
 +        while (item)
 +        {
 +            fputs(item->string, fp);
 +            fputc('\n', fp);
-+            item =3D item->next;
++            item = item->next;
 +        }
 +    }
 +
@@ -508,9 +441,9 @@ index 4294d6e..70d01e2 100644
 --- a/src/openvpn/env_set.h
 +++ b/src/openvpn/env_set.h
 @@ -91,6 +91,14 @@
-
+ 
  void env_set_print(int msglevel, const struct env_set *es);
-
+ 
 +/**
 + * Write a struct env_set to a file. Each item on one line.
 + *
@@ -520,7 +453,7 @@ index 4294d6e..70d01e2 100644
 +void env_set_write_file(const char *path, const struct env_set *es);
 +
  void env_set_inherit(struct env_set *es, const struct env_set *src);
-
+ 
  /* returns true if environmental variable name starts with 'password' */
 diff --git a/src/openvpn/init.c b/src/openvpn/init.c
 index 187c0a9..e0ba255 100644
@@ -529,40 +462,39 @@ index 187c0a9..e0ba255 100644
 @@ -2027,7 +2027,7 @@
                          c->c2.frame.tun_mtu, c->c2.es, &c->net_ctx);
          }
-
+ 
 -        run_dns_up_down(true, &c->options, c->c1.tuntap);
 +        run_dns_up_down(true, &c->options, c->c1.tuntap, &c->persist.duri);
-
+ 
          /* run the up script */
          run_up_down(c->options.up_script,
 @@ -2067,7 +2067,7 @@
          /* explicitly set the ifconfig_* env vars */
          do_ifconfig_setenv(c->c1.tuntap, c->c2.es);
-
+ 
 -        run_dns_up_down(true, &c->options, c->c1.tuntap);
 +        run_dns_up_down(true, &c->options, c->c1.tuntap, &c->persist.duri);
-
+ 
          /* run the up script if user specified --up-restart */
          if (c->options.up_restart)
 @@ -2157,7 +2157,7 @@
-     adapter_index =3D c->c1.tuntap->adapter_index;
+     adapter_index = c->c1.tuntap->adapter_index;
  #endif
-
+ 
 -    run_dns_up_down(false, &c->options, c->c1.tuntap);
 +    run_dns_up_down(false, &c->options, c->c1.tuntap, &c->persist.duri);
-
-     if (force || !(c->sig->signal_received =3D=3D SIGUSR1 && c->options.pe=
-rsist_tun))
+ 
+     if (force || !(c->sig->signal_received == SIGUSR1 && c->options.persist_tun))
      {
 @@ -3971,6 +3971,9 @@
-
-         c0->uid_gid_specified =3D user_defined || group_defined;
-
+ 
+         c0->uid_gid_specified = user_defined || group_defined;
+ 
 +        /* fork the dns script runner to preserve root? */
-+        c->persist.duri.required =3D user_defined;
++        c->persist.duri.required = user_defined;
 +
          /* perform postponed chdir if --daemon */
-         if (c->did_we_daemonize && c->options.cd_dir =3D=3D NULL)
+         if (c->did_we_daemonize && c->options.cd_dir == NULL)
          {
 diff --git a/src/openvpn/openvpn.h b/src/openvpn/openvpn.h
 index 0bbd1a4..1023520 100644
@@ -573,7 +505,7 @@ index 0bbd1a4..1023520 100644
  #include "plugin.h"
  #include "manage.h"
 +#include "dns.h"
-
+ 
  /*
   * Our global key schedules, packaged thusly
 @@ -120,6 +121,7 @@
@@ -582,533 +514,6 @@ index 0bbd1a4..1023520 100644
      int restart_sleep_seconds;
 +    struct dns_updown_runner_info duri;
  };
-
-
-
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/839?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings
-
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: I6b67e3a00dd84bf348b6af28115ee11138c3a111
-Gerrit-Change-Number: 839
-Gerrit-PatchSet: 25
-Gerrit-Owner: d12fk <heiko@...515...>
-Gerrit-Reviewer: MaxF <max@...2606...>
-Gerrit-Reviewer: cron2 <gert@...1296...>
-Gerrit-Reviewer: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: cron2 <gert@...1296...>
-Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Attention: d12fk <heiko@...515...>
-Gerrit-Attention: MaxF <max@...2606...>
-Gerrit-MessageType: newpatchset
-
---/4RfqSGUFTA=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<p> Attention is currently required from: MaxF, cron2, d12fk, flichtenheld,=
- plaisthos. </p>
-<p>d12fk <strong>uploaded patch set #25</strong> to this change.</p><p><a h=
-ref=3D"http://gerrit.openvpn.net/c/openvpn/+/839?usp=3Demail">View Change</=
-a></p><p>The following approvals got outdated and were removed:
-Code-Review+2 by cron2</p><p>The change is no longer submittable: Code-Revi=
-ew and checks~ChecksSubmitRule are unsatisfied now.</p><pre style=3D"font-f=
-amily: monospace,monospace; white-space: pre-wrap;">dns: support running up=
-/down command with privsep<br><br>With --user privileges are dropped after =
-init. Unfortunately this<br>affects --dns-updown when undoing previous modi=
-fications.<br><br>To keep the privileges for just that, the concept of a dn=
-s updown runner<br>in introduced. It&#39;s basically a fork of openvpn at t=
-he time the<br>modifications to DNS are made. Its only capability is runnin=
-g the<br>--dns-updown command when asked to. The parent openvpn process sig=
-nals<br>this by writing to a pipe the runner is waiting on.<br><br>Commands=
- need to be ready to receive variables from a file instead of the<br>proces=
-s environment. A shameless and effective workaround to keep the<br>protocol=
- between the two processes simple.<br><br>Change-Id: I6b67e3a00dd84bf348b6a=
-f28115ee11138c3a111<br>Signed-off-by: Heiko Hund &lt;heiko@...2662...&gt;<b=
-r>---<br>M distro/dns-scripts/haikuos_file-dns-updown.sh<br>M distro/dns-sc=
-ripts/openresolv-dns-updown.sh<br>M distro/dns-scripts/resolvconf_file-dns-=
-updown.sh<br>M distro/dns-scripts/systemd-dns-updown.sh<br>M src/openvpn/dn=
-s.c<br>M src/openvpn/dns.h<br>M src/openvpn/env_set.c<br>M src/openvpn/env_=
-set.h<br>M src/openvpn/init.c<br>M src/openvpn/openvpn.h<br>10 files change=
-d, 248 insertions(+), 12 deletions(-)<br><br></pre><pre style=3D"font-famil=
-y: monospace,monospace; white-space: pre-wrap;">git pull ssh://gerrit.openv=
-pn.net:29418/openvpn refs/changes/39/839/25</pre><pre style=3D"font-family:=
- monospace,monospace; white-space: pre-wrap;"><span>diff --git a/distro/dns=
--scripts/haikuos_file-dns-updown.sh b/distro/dns-scripts/haikuos_file-dns-u=
-pdown.sh</span><br><span>index 2e70554..bc00e10 100644</span><br><span>--- =
-a/distro/dns-scripts/haikuos_file-dns-updown.sh</span><br><span>+++ b/distr=
-o/dns-scripts/haikuos_file-dns-updown.sh</span><br><span>@@ -7,6 +7,10 @@</=
-span><br><span> #</span><br><span> # Example env from openvpn (most are not=
- applied):</span><br><span> #</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+#   dns_vars_file /tmp/openvpn_dvf_58b95c0c97b2db43afb5d745f986c5=
-3c.tmp</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+#      or</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+#</span><br><span> #   dev tun0</span><br=
-><span> #   script_type dns-up</span><br><span> #   dns_search_domain_1 myc=
-orp.in</span><br><span>@@ -39,6 +43,7 @@</span><br><span> </span><br><span>=
- onf=3D/boot/system/settings/network/resolv.conf</span><br><span> test -e &=
-quot;$conf&quot; || exit 1</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+test -z &quot;${dns_vars_file}&quot; || . &quot;${dns_vars_file}&quo=
-t;</span><br><span> case &quot;${script_type}&quot; in</span><br><span> dns=
--up)</span><br><span>     n=3D1</span><br><span>@@ -74,7 +79,7 @@</span><br=
-><span>         done</span><br><span>         text=3D&quot;${text}search $d=
-omains\n&quot;</span><br><span>     }</span><br><span style=3D"color: hsl(0=
-, 100%, 40%);">-    text=3D&quot;${text}### openvpn ${dev} end ###\n&quot;<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+    text=3D&quot;${t=
-ext}### openvpn ${dev} end ###&quot;</span><br><span>     text=3D&quot;${te=
-xt}\n$(cat ${conf})&quot;</span><br><span> </span><br><span>     echo &quot=
-;${text}&quot; &gt; &quot;${conf}&quot;</span><br><span>diff --git a/distro=
-/dns-scripts/openresolv-dns-updown.sh b/distro/dns-scripts/openresolv-dns-u=
-pdown.sh</span><br><span>index e50398c..1404819 100644</span><br><span>--- =
-a/distro/dns-scripts/openresolv-dns-updown.sh</span><br><span>+++ b/distro/=
-dns-scripts/openresolv-dns-updown.sh</span><br><span>@@ -8,6 +8,10 @@</span=
-><br><span> #</span><br><span> # Example env from openvpn (most are not app=
-lied):</span><br><span> #</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+#   dns_vars_file /tmp/openvpn_dvf_58b95c0c97b2db43afb5d745f986c53c.t=
-mp</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+#      or</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+#</span><br><span> #   dev tun0</span><br><sp=
-an> #   script_type dns-up</span><br><span> #   dns_search_domain_1 mycorp.=
-in</span><br><span>@@ -38,6 +42,7 @@</span><br><span>     done</span><br><s=
-pan> }</span><br><span> </span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+[ -z &quot;${dns_vars_file}&quot; ] || . &quot;${dns_vars_file}&quot;<=
-/span><br><span> : ${script_type:=3Ddns-down}</span><br><span> case &quot;$=
-{script_type}&quot; in</span><br><span> dns-up)</span><br><span>diff --git =
-a/distro/dns-scripts/resolvconf_file-dns-updown.sh b/distro/dns-scripts/res=
-olvconf_file-dns-updown.sh</span><br><span>index c09a78d..70872c7 100644</s=
-pan><br><span>--- a/distro/dns-scripts/resolvconf_file-dns-updown.sh</span>=
-<br><span>+++ b/distro/dns-scripts/resolvconf_file-dns-updown.sh</span><br>=
-<span>@@ -7,6 +7,10 @@</span><br><span> #</span><br><span> # Example env fr=
-om openvpn (most are not applied):</span><br><span> #</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+#   dns_vars_file /tmp/openvpn_dvf_58b95c=
-0c97b2db43afb5d745f986c53c.tmp</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+#</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#      =
-or</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#</span><br><span=
-> #   dev tun0</span><br><span> #   script_type dns-up</span><br><span> #  =
- dns_search_domain_1 mycorp.in</span><br><span>@@ -39,6 +43,7 @@</span><br>=
-<span> </span><br><span> conf=3D/etc/resolv.conf</span><br><span> test -e &=
-quot;$conf&quot; || exit 1</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+test -z &quot;${dns_vars_file}&quot; || . &quot;${dns_vars_file}&quo=
-t;</span><br><span> case &quot;${script_type}&quot; in</span><br><span> dns=
--up)</span><br><span>     n=3D1</span><br><span>@@ -74,7 +79,7 @@</span><br=
-><span>         done</span><br><span>         text=3D&quot;${text}search $d=
-omains\n&quot;</span><br><span>     }</span><br><span style=3D"color: hsl(0=
-, 100%, 40%);">-    text=3D&quot;${text}### openvpn ${dev} end ###\n&quot;<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+    text=3D&quot;${t=
-ext}### openvpn ${dev} end ###&quot;</span><br><span>     text=3D&quot;${te=
-xt}\n$(cat ${conf})&quot;</span><br><span> </span><br><span>     echo &quot=
-;${text}&quot; &gt; &quot;${conf}&quot;</span><br><span>diff --git a/distro=
-/dns-scripts/systemd-dns-updown.sh b/distro/dns-scripts/systemd-dns-updown.=
-sh</span><br><span>index ecadd29..6eadabc 100644</span><br><span>--- a/dist=
-ro/dns-scripts/systemd-dns-updown.sh</span><br><span>+++ b/distro/dns-scrip=
-ts/systemd-dns-updown.sh</span><br><span>@@ -15,6 +15,10 @@</span><br><span=
-> #</span><br><span> # Example env from openvpn (not all are always applied=
-):</span><br><span> #</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+#   dns_vars_file /tmp/openvpn_dvf_58b95c0c97b2db43afb5d745f986c53c.tmp</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+#</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+#      or</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+#</span><br><span> #   dev tun0</span><br><span> =
-#   script_type dns-up</span><br><span> #   dns_search_domain_1 mycorp.in</=
-span><br><span>@@ -30,6 +34,8 @@</span><br><span> #   dns_server_1_sni dns.=
-mycorp.in</span><br><span> #</span><br><span> </span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+[ -z &quot;${dns_vars_file}&quot; ] || . &quot;$=
-{dns_vars_file}&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+</span><br><span> function do_resolved_servers {</span><br><span>     loc=
-al sni=3D&quot;&quot;</span><br><span>     local transport_var=3Ddns_server=
-_${n}_transport</span><br><span>diff --git a/src/openvpn/dns.c b/src/openvp=
-n/dns.c</span><br><span>index 4da0747..19de321 100644</span><br><span>--- a=
-/src/openvpn/dns.c</span><br><span>+++ b/src/openvpn/dns.c</span><br><span>=
-@@ -562,13 +562,20 @@</span><br><span> }</span><br><span> </span><br><span>=
- static int</span><br><span style=3D"color: hsl(0, 100%, 40%);">-do_run_up_=
-down_command(bool up, const struct dns_options *o, const struct tuntap *tt)=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+do_run_up_down_comm=
-and(bool up, const char *vars_file, const struct dns_options *o, const stru=
-ct tuntap *tt)</span><br><span> {</span><br><span>     struct gc_arena gc =
-=3D gc_new();</span><br><span>     struct argv argv =3D argv_new();</span><=
-br><span>     struct env_set *es =3D env_set_create(&amp;gc);</span><br><sp=
-an> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-    updown_env_se=
-t(up, o, tt, es);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-  if (vars_file)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
- {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        setenv_st=
-r(es, &quot;dns_vars_file&quot;, vars_file);</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+    else</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        updown=
-_env_set(up, o, tt, es);</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+    }</span><br><span> </span><br><span>     argv_printf(&amp;argv, &q=
-uot;%s&quot;, o-&gt;updown);</span><br><span>     argv_msg(M_INFO, &amp;arg=
-v);</span><br><span>@@ -586,8 +593,115 @@</span><br><span>     return res;<=
-/span><br><span> }</span><br><span> </span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+static bool</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+run_updown_runner(bool up, struct options *o, const struct tuntap =
-*tt, struct dns_updown_runner_info *updown_runner)</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+    int dns_pipe_fd[2];</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+    int ack_pipe_fd[2];</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+    if (pipe(dns_pipe_fd) !=3D 0</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+        || pipe(ack_pipe_fd) !=3D 0)</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+        msg(M_ERR | M_ERRNO, &quot;run=
-_dns_up_down: unable to create pipes&quot;);</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+        return false;</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+    updown_runner-&gt;pid =3D fork();</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+    if (updown_runner-&gt;pid =3D=3D -1)</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+        msg(M_ERR | M_ERRNO, &quot;ru=
-n_dns_up_down: unable to fork&quot;);</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+        close(dns_pipe_fd[0]);</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+        close(dns_pipe_fd[1]);</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+        close(ack_pipe_fd[0]);</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+        close(ack_pipe_f=
-d[1]);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        retur=
-n false;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+    else if (updown_runne=
-r-&gt;pid &gt; 0)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-  {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        /* Paren=
-t process */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
- close(dns_pipe_fd[0]);</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+        close(ack_pipe_fd[1]);</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+        updown_runner-&gt;fds[0] =3D ack_pipe_fd[0];</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+        updown_runner-&gt;f=
-ds[1] =3D dns_pipe_fd[1];</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    else=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+        /* Script runner process,=
- close unused FDs */</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+        for (int fd =3D 3; fd &lt; 100; ++fd)</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+        {</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+            if (fd !=3D dns_pipe_fd[0]</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+                &amp;&amp; fd !=3D ack_=
-pipe_fd[1])</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        =
-    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+              =
-  close(fd);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
-     }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        }</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+        /* Ignore signals */</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+        signal(SIGINT, SIG_IGN);=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        signal(SIGH=
-UP, SIG_IGN);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
-  signal(SIGTERM, SIG_IGN);</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+        signal(SIGUSR1, SIG_IGN);</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+        signal(SIGUSR2, SIG_IGN);</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+        signal(SIGPIPE, SIG_IGN);</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+        while (1)</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+        {</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+            ssize_t rlen, wlen;</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+            char path[PATH_MAX];</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+            /* Block here until parent sends a pat=
-h */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            rle=
-n =3D read(dns_pipe_fd[0], &amp;path, sizeof(path));</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+            if (rlen &lt; 1)</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+            {</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+                if (rlen =3D=3D -1 &am=
-p;&amp; errno =3D=3D EINTR)</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+                {</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+                    continue;</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+                }</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+                close(dns_pipe_fd[0]);</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+                close(ack_pipe_fd[1]);</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+                exit(0=
-);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            }</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+            path[sizeof(path) - 1] =3D &#=
-39;\0&#39;;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        =
-    int res =3D do_run_up_down_command(up, path, &amp;o-&gt;dns_options, tt=
-);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            platf=
-orm_unlink(path);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+            /* Unbloc=
-k parent process */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-            while (1)</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+            {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-            wlen =3D write(ack_pipe_fd[1], &amp;res, sizeof(res));</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+                if ((wlen =
-=3D=3D -1 &amp;&amp; errno !=3D EINTR) || wlen &lt; sizeof(res))</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+                {</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+                    /* Not much =
-we can do about errors but exit */</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+                    close(dns_pipe_fd[0]);</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+                    close(ack_pipe_fd=
-[1]);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+              =
-      exit(0);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
-           }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
-         else if (wlen =3D=3D sizeof(res))</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+                {</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+                    break;</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+                }</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+            }</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+            up =3D !up; /* do the opposite next time */</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+        }</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    re=
-turn true;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+static const char *</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+write_dns_vars_file(bool up, const struct opti=
-ons *o, const struct tuntap *tt, struct gc_arena *gc)</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+    struct env_set *es =3D env_set_create(gc);</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+    const char *dvf =3D platform=
-_create_temp_file(o-&gt;tmp_dir, &quot;dvf&quot;, gc);</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+    updown_env_set(up, &amp;o-&gt;dns_options, tt, es);</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+    env_set_write_file(=
-dvf, es);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+    return dvf;</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+</span><br><span> static void</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-run_up_down_command(bool up, struct options=
- *o, const struct tuntap *tt)</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+run_up_down_command(bool up, struct options *o, const struct tunt=
-ap *tt, struct dns_updown_runner_info *updown_runner)</span><br><span> {</s=
-pan><br><span>     if (!o-&gt;dns_options.updown)</span><br><span>     {</s=
-pan><br><span>@@ -595,7 +709,60 @@</span><br><span>     }</span><br><span> =
-</span><br><span>     int status;</span><br><span style=3D"color: hsl(0, 10=
-0%, 40%);">-    status =3D do_run_up_down_command(up, &amp;o-&gt;dns_option=
-s, tt);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+    if (!updown_runner-&gt;requ=
-ired)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+        /* Run dns updown di=
-rectly */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        st=
-atus =3D do_run_up_down_command(up, NULL, &amp;o-&gt;dns_options, tt);</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+    else</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+        if (updown_runner-&gt;pid &lt; 1)</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+        {</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+            /* Need to set up privilege preserving =
-child first */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
-       if (!run_updown_runner(up, o, tt, updown_runner))</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+            {</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+                return;</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+            }</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+        }</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-        struct gc_arena gc =3D gc_new();</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+        int rfd =3D updown_runner-&gt;fds[0];</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+        int wfd =3D updown_r=
-unner-&gt;fds[1];</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-      const char *dvf =3D write_dns_vars_file(up, o, tt, &amp;gc);</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+        size_t dvf_size =3D =
-strlen(dvf) + 1;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+        while (1)</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+        {</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+            ssize_t len =3D write(=
-wfd, dvf, dvf_size);</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+            if (len &lt; dvf_size)</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+            {</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+                if (len =3D=3D -1 &amp;&amp; errno =3D=3D EINTR)<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+                {</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+                    co=
-ntinue;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            =
-    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+              =
-  msg(M_ERR | M_ERRNO, &quot;could not send dns vars filename&quot;);</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+            }</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+            break;</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+        }</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+        while (1)</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+        {</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+            ssize_t len =3D read(rfd, &amp;status, sizeof(status));</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+            if (len &lt;=
- sizeof(status))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
-         {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+         =
-       if (len =3D=3D -1 &amp;&amp; errno =3D=3D EINTR)</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+                {</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+                    continue;</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+                }</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+                msg(M_ERR | M_ERR=
-NO, &quot;could not receive dns updown status&quot;);</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+            }</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+            break;</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+        }</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-      gc_free(&amp;gc);</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br=
-><span>     msg(M_INFO, &quot;dns %s command exited with status %d&quot;, u=
-p ? &quot;up&quot; : &quot;down&quot;, status);</span><br><span> }</span><b=
-r><span> </span><br><span>@@ -681,7 +848,7 @@</span><br><span> }</span><br>=
-<span> </span><br><span> void</span><br><span style=3D"color: hsl(0, 100%, =
-40%);">-run_dns_up_down(bool up, struct options *o, const struct tuntap *tt=
-)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+run_dns_up_down(bo=
-ol up, struct options *o, const struct tuntap *tt, struct dns_updown_runner=
-_info *duri)</span><br><span> {</span><br><span>     if (!o-&gt;dns_options=
-.servers)</span><br><span>     {</span><br><span>@@ -718,6 +885,6 @@</span>=
-<br><span> #ifdef _WIN32</span><br><span>     run_up_down_service(up, o, tt=
-);</span><br><span> #else</span><br><span style=3D"color: hsl(0, 100%, 40%)=
-;">-    run_up_down_command(up, o, tt);</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+    run_up_down_command(up, o, tt, duri);</span><br><sp=
-an> #endif /* ifdef _WIN32 */</span><br><span> }</span><br><span>diff --git=
- a/src/openvpn/dns.h b/src/openvpn/dns.h</span><br><span>index c4d19ff..4cc=
-1e73 100644</span><br><span>--- a/src/openvpn/dns.h</span><br><span>+++ b/s=
-rc/openvpn/dns.h</span><br><span>@@ -68,6 +68,14 @@</span><br><span>     co=
-nst char *sni;</span><br><span> };</span><br><span> </span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+struct dns_updown_runner_info {</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+    bool required;</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+    int fds[2];</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+#if !defined(_WIN32)</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+    pid_t pid;</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+#endif</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+};</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+</span><br><span> struct dns_options {</span><br><span>     struct d=
-ns_domain *search_domains;</span><br><span>     struct dns_server *servers_=
-prepull;</span><br><span>@@ -154,8 +162,10 @@</span><br><span>  * @param   =
-up          Boolean to set this call to &quot;up&quot; when true</span><br>=
-<span>  * @param   o           Pointer to the program options</span><br><sp=
-an>  * @param   tt          Pointer to the connection&#39;s tuntap struct</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @param   duri     =
-   Pointer to the updown runner info struct</span><br><span>  */</span><br>=
-<span style=3D"color: hsl(0, 100%, 40%);">-void run_dns_up_down(bool up, st=
-ruct options *o, const struct tuntap *tt);</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+void run_dns_up_down(bool up, struct options *o, con=
-st struct tuntap *tt,</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+                     struct dns_updown_runner_info *duri);</span><br><spa=
-n> </span><br><span> /**</span><br><span>  * Puts the DNS options into an e=
-nvironment set.</span><br><span>diff --git a/src/openvpn/env_set.c b/src/op=
-envpn/env_set.c</span><br><span>index 81ab59e..3fe23fd 100644</span><br><sp=
-an>--- a/src/openvpn/env_set.c</span><br><span>+++ b/src/openvpn/env_set.c<=
-/span><br><span>@@ -33,6 +33,7 @@</span><br><span> #include &quot;env_set.h=
-&quot;</span><br><span> </span><br><span> #include &quot;run_command.h&quot=
-;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#include &quot;pla=
-tform.h&quot;</span><br><span> </span><br><span> /*</span><br><span>  * Set=
- environmental variable (int or string).</span><br><span>@@ -235,6 +236,30 =
-@@</span><br><span> }</span><br><span> </span><br><span> void</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+env_set_write_file(const char *pa=
-th, const struct env_set *es)</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    FILE=
- *fp =3D platform_fopen(path, &quot;w&quot;);</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+    if (!fp)</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+        msg(M_ERR, &quot;could not write env set to &#39;%s&#39;&quot;=
-, path);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        ret=
-urn;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+    if (es)</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+        const struct env_item *item =3D  es-&gt;list;</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+        while (item)</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+        {</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+            fputs(item-&gt;string, fp);</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+            fputc(&#39;\n=
-&#39;, fp);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        =
-    item =3D item-&gt;next;</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+        }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-  }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+    fclose(fp);</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+v=
-oid</span><br><span> env_set_inherit(struct env_set *es, const struct env_s=
-et *src)</span><br><span> {</span><br><span>     const struct env_item *e;<=
-/span><br><span>diff --git a/src/openvpn/env_set.h b/src/openvpn/env_set.h<=
-/span><br><span>index 4294d6e..70d01e2 100644</span><br><span>--- a/src/ope=
-nvpn/env_set.h</span><br><span>+++ b/src/openvpn/env_set.h</span><br><span>=
-@@ -91,6 +91,14 @@</span><br><span> </span><br><span> void env_set_print(in=
-t msglevel, const struct env_set *es);</span><br><span> </span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+/**</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+ * Write a struct env_set to a file. Each item on one =
-line.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+ * @param path  The filepath to=
- write to.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @param=
- es    Pointer to the env_set to write.</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+ */</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+void env_set_write_file(const char *path, const struct env_set *es);</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> void=
- env_set_inherit(struct env_set *es, const struct env_set *src);</span><br>=
-<span> </span><br><span> /* returns true if environmental variable name sta=
-rts with &#39;password&#39; */</span><br><span>diff --git a/src/openvpn/ini=
-t.c b/src/openvpn/init.c</span><br><span>index 187c0a9..e0ba255 100644</spa=
-n><br><span>--- a/src/openvpn/init.c</span><br><span>+++ b/src/openvpn/init=
-.c</span><br><span>@@ -2027,7 +2027,7 @@</span><br><span>                  =
-       c-&gt;c2.frame.tun_mtu, c-&gt;c2.es, &amp;c-&gt;net_ctx);</span><br>=
-<span>         }</span><br><span> </span><br><span style=3D"color: hsl(0, 1=
-00%, 40%);">-        run_dns_up_down(true, &amp;c-&gt;options, c-&gt;c1.tun=
-tap);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        run_dn=
-s_up_down(true, &amp;c-&gt;options, c-&gt;c1.tuntap, &amp;c-&gt;persist.dur=
-i);</span><br><span> </span><br><span>         /* run the up script */</spa=
-n><br><span>         run_up_down(c-&gt;options.up_script,</span><br><span>@=
-@ -2067,7 +2067,7 @@</span><br><span>         /* explicitly set the ifconfi=
-g_* env vars */</span><br><span>         do_ifconfig_setenv(c-&gt;c1.tuntap=
-, c-&gt;c2.es);</span><br><span> </span><br><span style=3D"color: hsl(0, 10=
-0%, 40%);">-        run_dns_up_down(true, &amp;c-&gt;options, c-&gt;c1.tunt=
-ap);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        run_dns=
-_up_down(true, &amp;c-&gt;options, c-&gt;c1.tuntap, &amp;c-&gt;persist.duri=
-);</span><br><span> </span><br><span>         /* run the up script if user =
-specified --up-restart */</span><br><span>         if (c-&gt;options.up_res=
-tart)</span><br><span>@@ -2157,7 +2157,7 @@</span><br><span>     adapter_in=
-dex =3D c-&gt;c1.tuntap-&gt;adapter_index;</span><br><span> #endif</span><b=
-r><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-    run_dns_=
-up_down(false, &amp;c-&gt;options, c-&gt;c1.tuntap);</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    run_dns_up_down(false, &amp;c-&gt;opt=
-ions, c-&gt;c1.tuntap, &amp;c-&gt;persist.duri);</span><br><span> </span><b=
-r><span>     if (force || !(c-&gt;sig-&gt;signal_received =3D=3D SIGUSR1 &a=
-mp;&amp; c-&gt;options.persist_tun))</span><br><span>     {</span><br><span=
->@@ -3971,6 +3971,9 @@</span><br><span> </span><br><span>         c0-&gt;ui=
-d_gid_specified =3D user_defined || group_defined;</span><br><span> </span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+        /* fork the dns sc=
-ript runner to preserve root? */</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+        c-&gt;persist.duri.required =3D user_defined;</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span>         /*=
- perform postponed chdir if --daemon */</span><br><span>         if (c-&gt;=
-did_we_daemonize &amp;&amp; c-&gt;options.cd_dir =3D=3D NULL)</span><br><sp=
-an>         {</span><br><span>diff --git a/src/openvpn/openvpn.h b/src/open=
-vpn/openvpn.h</span><br><span>index 0bbd1a4..1023520 100644</span><br><span=
->--- a/src/openvpn/openvpn.h</span><br><span>+++ b/src/openvpn/openvpn.h</s=
-pan><br><span>@@ -45,6 +45,7 @@</span><br><span> #include &quot;pool.h&quot=
-;</span><br><span> #include &quot;plugin.h&quot;</span><br><span> #include =
-&quot;manage.h&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+#include &quot;dns.h&quot;</span><br><span> </span><br><span> /*</span><br=
-><span>  * Our global key schedules, packaged thusly</span><br><span>@@ -12=
-0,6 +121,7 @@</span><br><span> struct context_persist</span><br><span> {</s=
-pan><br><span>     int restart_sleep_seconds;</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+    struct dns_updown_runner_info duri;</span><br=
-><span> };</span><br><span> </span><br><span> </span><br><span></span><br><=
-/pre><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/839=
-?usp=3Demail">change 839</a>. To unsubscribe, or for help writing mail filt=
-ers, visit <a href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p>=
-<div itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope i=
-temprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=
-=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/839?usp=3Demail"/><m=
-eta itemprop=3D"name" content=3D"View Change"/></div></div>
-
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I6b67e3a00dd84bf348b6af28115=
-ee11138c3a111 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 839 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 25 </div>
-<div style=3D"display:none"> Gerrit-Owner: d12fk &lt;heiko@...515...&gt; </=
-div>
-<div style=3D"display:none"> Gerrit-Reviewer: MaxF &lt;max@...2606...&gt; <=
-/div>
-<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
- </div>
-<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
-1...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: cron2 &lt;gert@...1296...&gt=
-; </div>
-<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
-41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: d12fk &lt;heiko@...515...&gt=
-; </div>
-<div style=3D"display:none"> Gerrit-Attention: MaxF &lt;max@...2606...&gt; =
-</div>
-<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
-
-
---/4RfqSGUFTA=--
+ 
+ 
 
