@@ -1,16 +1,11 @@
-From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Wed, 14 May 2025 13:49:29 +0000
-In-Reply-To: <gerrit.1733989644000.Ifbe4ffb44d3bfcaa50adb38cacb3436fcdc71b10@...2715...>
-References: <gerrit.1733989644000.Ifbe4ffb44d3bfcaa50adb38cacb3436fcdc71b10@...2715...>
-Reply-To: gert@...1296..., arne-openvpn@...1227..., heiko@...515...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <25955c15b9259bd35ca81ca90c76d9d8e891cda7-EmailReviewComments-HTML@...2715...>
+Content-Type: multipart/alternative;
+ boundary="------------8LFail0q0UbgmO6q18fjLBB5"
+Message-ID: <a7372d92-5588-4206-90b1-501e9c194feb@...2722...>
+Date: Wed, 14 May 2025 18:22:37 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="lbDtKqOGzyc="; charset=UTF-8
-Subject: [Openvpn-devel] [L] Change in openvpn[master]: dns: apply settings
- via script on unixoid systems
+From: Johan Draaisma <johan@...2722...>
+Content-Language: en-US
+Subject: [Openvpn-devel]  IRC community meeting summary
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,119 +14,188 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: d12fk <heiko@...515...>
-Cc: flichtenheld <frank@...2641...>, plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: openvpn-devel@lists.sourceforge.net
 
---lbDtKqOGzyc=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+This is a multi-part message in MIME format.
+--------------8LFail0q0UbgmO6q18fjLBB5
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-Attention is currently required from: d12fk, flichtenheld, plaisthos.
+Meeting summary for 14 May 2025:
 
-cron2 has posted comments on this change. ( http://gerrit.openvpn.net/c/ope=
-nvpn/+/838?usp=3Demail )
+  *
 
-Change subject: dns: apply settings via script on unixoid systems
-......................................................................
+    *Updated, closed: community.openvpn.net wiki*
+    On May 12 around 14:30 CET the community wiki was switched to the
+    new wiki.
+    It is expected that there may be some dead links or some content
+    missing, we will work to update links and add content as
+    needed/reported.
+    lev__ and d12fk were added as users to the wiki during the meeting.
+    Since all seems to be working so far this topic can be closed.
 
+  *
 
-Patch Set 25: Code-Review+2
+    *Updated, closed: OpenVPN GUI improvements*
+    In OpenVPN GUI code wintun is now replaced with win-dco. Some code
+    cleanup still remains to be done.
+    OpenVPN GUI is also capable of adding new adapters (tap or win-dco)
+    as needed if more than one connection needs to be active at the same
+    time.
+    These changes are available in technical previews currently and will
+    go out as an official release with OpenVPN 2.7.
 
-(1 comment)
+  *
 
-File distro/dns-scripts/resolvconf_file-dns-updown.sh:
+    *Updated: testing framework improvements*
+    mattock reports that win-dco iroute testing is progressing but not
+    yet done.
+    server log tail output in t_server_null.sh on failure is now working.
 
-http://gerrit.openvpn.net/c/openvpn/+/838/comment/724c6b91_a56d4f67 :
-PS22, Line 85:
-> We are getting very close... but... [=E2=80=A6]
-Done
+  *
 
+    *Updated: Release 2.7*
+    Current estimates are to have all major code items in by May 1st and
+    then a release on July 1st.
+    We may try for an alpha release next week if possible.
+    Together with 2.7 a new DCO module based on upstreamed (linux
+    kernel) codebase will be released, the code for this is done, bugs
+    being fixed.
+    Only module versioning is in the works for DCO and this is expected
+    to be done soonish.
+    For Windows things look really good - auto-creation of adapters,
+    wintun removal. Some small items for DNS pending.
+    DNS looks promising, some very minor fixes left to get unix support
+    and some bugfixes.
 
+  *
 
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/838?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings
+    *Updated: data format v3 / epoch data keys*
+    Implementation in user space in OpenVPN2 and OpenVPN3 are both done now.
+    Developing support for epoch data keys in DCO Linux was waiting for
+    linux upstreaming. That is now done, so development can start.
+    Developing support for epoch data keys in DCO Windows is unblocked -
+    to be picked up by lev when he is able.
 
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: Ifbe4ffb44d3bfcaa50adb38cacb3436fcdc71b10
-Gerrit-Change-Number: 838
-Gerrit-PatchSet: 25
-Gerrit-Owner: d12fk <heiko@...515...>
-Gerrit-Reviewer: cron2 <gert@...1296...>
-Gerrit-Reviewer: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Attention: d12fk <heiko@...515...>
-Gerrit-Comment-Date: Wed, 14 May 2025 13:49:29 +0000
-Gerrit-HasComments: Yes
-Gerrit-Has-Labels: Yes
-Comment-In-Reply-To: cron2 <gert@...1296...>
-Comment-In-Reply-To: d12fk <heiko@...515...>
-Gerrit-MessageType: comment
+As always you're welcome to join at #openvpn-meeting on Libera IRC 
+network every Wednesday at 14:00 Central European Time.
 
---lbDtKqOGzyc=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Kind regards,
+Johan Draaisma
 
-<p> Attention is currently required from: d12fk, flichtenheld, plaisthos. <=
-/p>
-<p>Patch set 25:<span style=3D"border-radius: 3px; display: inline-block; m=
-argin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span=
-></p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/838?usp=3Demail">V=
-iew Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: =
-0;"><li style=3D"margin: 0; padding: 0;"><p>File distro/dns-scripts/resolvc=
-onf_file-dns-updown.sh:</p><ul style=3D"list-style: none; padding: 0;"><li =
-style=3D"margin: 0; padding: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;">=
-<a href=3D"http://gerrit.openvpn.net/c/openvpn/+/838/comment/724c6b91_a56d4=
-f67">Patch Set #22, Line 85:</a> <code style=3D"font-family:monospace,monos=
-pace"></code></p><p><blockquote style=3D"border-left: 1px solid #aaa; margi=
-n: 10px 0; padding: 0 10px;">We are getting very close... but... [=E2=80=A6=
-]</blockquote></p><p style=3D"white-space: pre-wrap; word-wrap: break-word;=
-">Done</p></li></ul></li></ul><p>To view, visit <a href=3D"http://gerrit.op=
-envpn.net/c/openvpn/+/838?usp=3Demail">change 838</a>. To unsubscribe, or f=
-or help writing mail filters, visit <a href=3D"http://gerrit.openvpn.net/se=
-ttings">settings</a>.</p><div itemscope itemtype=3D"http://schema.org/Email=
-Message"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.org/V=
-iewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openv=
-pn/+/838?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></d=
-iv></div>
+--------------8LFail0q0UbgmO6q18fjLBB5
+Content-Type: text/html; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: Ifbe4ffb44d3bfcaa50adb38cacb=
-3436fcdc71b10 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 838 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 25 </div>
-<div style=3D"display:none"> Gerrit-Owner: d12fk &lt;heiko@...515...&gt; </=
-div>
-<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
- </div>
-<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
-1...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
-41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: d12fk &lt;heiko@...515...&gt=
-; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Wed, 14 May 2025 13:49:29=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
-<div style=3D"display:none"> Comment-In-Reply-To: cron2 &lt;gert@...1296...=
-&gt; </div>
-<div style=3D"display:none"> Comment-In-Reply-To: d12fk &lt;heiko@...515...=
-&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  </head>
+  <body>
+    <p> Meeting summary for 14 May 2025:</p>
+    <ul
+style="box-sizing: inherit; list-style: circle; padding-left: 1rem; margin-top: 0px; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255); color: rgba(0, 0, 0, 0.85); font-family: -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Helvetica, Arial, sans-serif, &quot;Apple Color Emoji&quot;, &quot;Segoe UI Emoji&quot;, &quot;Segoe UI Symbol&quot;; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; text-align: start; text-indent: 0px; text-transform: none; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;">
+      <li
+style="box-sizing: inherit; margin-bottom: 0.2rem; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255); margin-left: 1.5rem; list-style-type: disc;">
+        <p
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);"><strong
+style="box-sizing: inherit; font-weight: bolder; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">Updated,
+            closed: community.openvpn.net wiki</strong><br
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
+          On May 12 around 14:30 CET the community wiki was switched to
+          the new wiki.<br
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
+          It is expected that there may be some dead links or some
+          content missing, we will work to update links and add content
+          as needed/reported.<br
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
+          lev__ and d12fk were added as users to the wiki during the
+          meeting.<br
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
+          Since all seems to be working so far this topic can be closed.</p>
+      </li>
+      <li
+style="box-sizing: inherit; margin-bottom: 0.2rem; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255); margin-left: 1.5rem; list-style-type: disc;">
+        <p
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);"><strong
+style="box-sizing: inherit; font-weight: bolder; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">Updated,
+            closed: OpenVPN GUI improvements</strong><br
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
+          In OpenVPN GUI code wintun is now replaced with win-dco. Some
+          code cleanup still remains to be done.<br
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
+          OpenVPN GUI is also capable of adding new adapters (tap or
+          win-dco) as needed if more than one connection needs to be
+          active at the same time.<br
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
+          These changes are available in technical previews currently
+          and will go out as an official release with OpenVPN 2.7.</p>
+      </li>
+      <li
+style="box-sizing: inherit; margin-bottom: 0.2rem; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255); margin-left: 1.5rem; list-style-type: disc;">
+        <p
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);"><strong
+style="box-sizing: inherit; font-weight: bolder; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">Updated:
+            testing framework improvements</strong><br
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
+          mattock reports that win-dco iroute testing is progressing but
+          not yet done.<br
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
+          server log tail output in t_server_null.sh on failure is now
+          working.</p>
+      </li>
+      <li
+style="box-sizing: inherit; margin-bottom: 0.2rem; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255); margin-left: 1.5rem; list-style-type: disc;">
+        <p
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);"><strong
+style="box-sizing: inherit; font-weight: bolder; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">Updated:
+            Release 2.7</strong><br
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
+          Current estimates are to have all major code items in by May
+          1st and then a release on July 1st.<br
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
+          We may try for an alpha release next week if possible.<br
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
+          Together with 2.7 a new DCO module based on upstreamed (linux
+          kernel) codebase will be released, the code for this is done,
+          bugs being fixed.<br
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
+          Only module versioning is in the works for DCO and this is
+          expected to be done soonish.<br
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
+          For Windows things look really good - auto-creation of
+          adapters, wintun removal. Some small items for DNS pending.<br
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
+          DNS looks promising, some very minor fixes left to get unix
+          support and some bugfixes.</p>
+      </li>
+      <li
+style="box-sizing: inherit; margin-bottom: 0.2rem; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255); margin-left: 1.5rem; list-style-type: disc;">
+        <p
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);"><strong
+style="box-sizing: inherit; font-weight: bolder; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">Updated:
+            data format v3 / epoch data keys</strong><br
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
+          Implementation in user space in OpenVPN2 and OpenVPN3 are both
+          done now.<br
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
+          Developing support for epoch data keys in DCO Linux was
+          waiting for linux upstreaming. That is now done, so
+          development can start.<br
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
+          Developing support for epoch data keys in DCO Windows is
+          unblocked - to be picked up by lev when he is able.</p>
+      </li>
+    </ul>
+    <p></p>
+    <p>As always you're welcome to join at #openvpn-meeting on Libera
+      IRC network every Wednesday at 14:00 Central European Time. </p>
+    <p>Kind regards,<br>
+      Johan Draaisma<br>
+    </p>
+  </body>
+</html>
 
-
---lbDtKqOGzyc=--
+--------------8LFail0q0UbgmO6q18fjLBB5--
 
