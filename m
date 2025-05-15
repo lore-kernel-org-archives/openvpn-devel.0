@@ -1,15 +1,15 @@
 From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Thu, 15 May 2025 09:57:00 +0000
+Date: Thu, 15 May 2025 15:00:16 +0000
 In-Reply-To: <gerrit.1747256571000.I7fc033a7ffee73045316763356a95d75ef23f5ad@...2715...>
 References: <gerrit.1747256571000.I7fc033a7ffee73045316763356a95d75ef23f5ad@...2715...>
 Reply-To: gert@...1296..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net, ralf@...2726..., frank@...2641...,
  antonio@...2726...
-Message-ID: <66b86ac8ebba38a444a1bcb53b16c79d29b845aa-EmailReviewComments-HTML@...2715...>
+Message-ID: <a2823f21eb2aa07046837515703139f7b6a8a5ee-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="+IqEwP60ZSQ="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="3xYAAt8f/j0="; charset=UTF-8
 Subject: [Openvpn-devel] [M] Change in openvpn[master]: Implement ovpn
  version detection
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -23,7 +23,7 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: ralf_lici <ralf@...2726...>
 Cc: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---+IqEwP60ZSQ=
+--3xYAAt8f/j0=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
@@ -37,27 +37,20 @@ Change subject: Implement ovpn version detection
 ......................................................................
 
 
-Patch Set 2:
+Patch Set 2: Code-Review+2
 
 (1 comment)
 
 Patchset:
 
 PS2:
-Running basic tests with "openvpn --version"
+test #5, with a current backport:
 
-Test #1 "no ovpn.ko around": `DCO version: N/A`
-Test #2 "ovpn.ko around, but not exporting anything" (older branch)": `DCO =
-version:
-N/A`
-Test #3 "modprobe ovpn.ko": `DCO version: 5.4.0-215-generic #235-Ubuntu SMP=
- Fri Apr 11 21:55:32 UTC 2025`
-Test #4: actually running an OpenVPN client, hoping for module autoload -> =
-works.
+```
+2025-05-15 16:59:43 DCO version: ovpn-net-next/development-sources-6.15.0-r=
+c5-0f03aa5
 
-so this is generally good (will add test #5 when I have a backports with ex=
-ported module version).  Interesting to keep in mind: `openvpn --version` w=
-ill not(!) autoload the module.
+```
 
 
 
@@ -81,41 +74,36 @@ Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
 Gerrit-Attention: flichtenheld <frank@...2641...>
 Gerrit-Attention: ordex <antonio@...2726...>
 Gerrit-Attention: ralf_lici <ralf@...2726...>
-Gerrit-Comment-Date: Thu, 15 May 2025 09:57:00 +0000
+Gerrit-Comment-Date: Thu, 15 May 2025 15:00:16 +0000
 Gerrit-HasComments: Yes
-Gerrit-Has-Labels: No
+Gerrit-Has-Labels: Yes
 Gerrit-MessageType: comment
 
---+IqEwP60ZSQ=
+--3xYAAt8f/j0=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <p> Attention is currently required from: flichtenheld, ordex, plaisthos, r=
 alf_lici. </p>
-<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1022?usp=3Demail">View =
-Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0;">=
-<li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-styl=
-e: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p styl=
-e=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/=
-1022?tab=3Dcomments">Patch Set #2:</a> </p><p style=3D"white-space: pre-wra=
-p; word-wrap: break-word;">Running basic tests with &quot;openvpn --version=
-&quot;</p><p style=3D"white-space: pre-wrap; word-wrap: break-word;">Test #=
-1 &quot;no ovpn.ko around&quot;: `DCO version: N/A`<br>Test #2 &quot;ovpn.k=
-o around, but not exporting anything&quot; (older branch)&quot;: `DCO versi=
-on: <br>N/A`<br>Test #3 &quot;modprobe ovpn.ko&quot;: `DCO version: 5.4.0-2=
-15-generic #235-Ubuntu SMP Fri Apr 11 21:55:32 UTC 2025`<br>Test #4: actual=
-ly running an OpenVPN client, hoping for module autoload -&gt; works.</p><p=
- style=3D"white-space: pre-wrap; word-wrap: break-word;">so this is general=
-ly good (will add test #5 when I have a backports with exported module vers=
-ion).  Interesting to keep in mind: `openvpn --version` will not(!) autoloa=
-d the module.</p></li></ul></li></ul><p>To view, visit <a href=3D"http://ge=
-rrit.openvpn.net/c/openvpn/+/1022?usp=3Demail">change 1022</a>. To unsubscr=
-ibe, or for help writing mail filters, visit <a href=3D"http://gerrit.openv=
-pn.net/settings">settings</a>.</p><div itemscope itemtype=3D"http://schema.=
-org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://sch=
-ema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.ne=
-t/c/openvpn/+/1022?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Ch=
-ange"/></div></div>
+<p>Patch set 2:<span style=3D"border-radius: 3px; display: inline-block; ma=
+rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1022?usp=3Demail">V=
+iew Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: =
+0;"><li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-=
+style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p =
+style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvp=
+n/+/1022?tab=3Dcomments">Patch Set #2:</a> </p><p style=3D"white-space: pre=
+-wrap; word-wrap: break-word;">test #5, with a current backport:</p><p styl=
+e=3D"white-space: pre-wrap; word-wrap: break-word;">```<br>2025-05-15 16:59=
+:43 DCO version: ovpn-net-next/development-sources-6.15.0-rc5-0f03aa5</p><p=
+ style=3D"white-space: pre-wrap; word-wrap: break-word;">```</p></li></ul><=
+/li></ul><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+=
+/1022?usp=3Demail">change 1022</a>. To unsubscribe, or for help writing mai=
+l filters, visit <a href=3D"http://gerrit.openvpn.net/settings">settings</a=
+>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div items=
+cope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link it=
+emprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1022?usp=3Dema=
+il"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
@@ -143,12 +131,12 @@ ts.sourceforge.net&gt; </div>
 &gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: ralf_lici &lt;ralf@...2804...=
 .&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Thu, 15 May 2025 09:57:00=
+<div style=3D"display:none"> Gerrit-Comment-Date: Thu, 15 May 2025 15:00:16=
  +0000 </div>
 <div style=3D"display:none"> Gerrit-HasComments: Yes </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: No </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
 <div style=3D"display:none"> Gerrit-MessageType: comment </div>
 
 
---+IqEwP60ZSQ=--
+--3xYAAt8f/j0=--
 
