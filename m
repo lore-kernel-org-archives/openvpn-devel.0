@@ -1,13 +1,14 @@
 From: "ordex (Code Review)" <gerrit@...515...>
-Date: Fri, 16 May 2025 20:25:55 +0000
+Date: Fri, 16 May 2025 20:28:12 +0000
+In-Reply-To: <gerrit.1747427153000.I104b4adeb9f65cce3487b82f35470174acba92bc@...2715...>
 References: <gerrit.1747427153000.I104b4adeb9f65cce3487b82f35470174acba92bc@...2715...>
 Reply-To: antonio@...2726..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <7403465d5cf5153a9d692c14c587321e1416acb5-HTML@...2715...>
+Message-ID: <4ceb3b72e88d967c69656f314a4698d4b97acb59-EmailReplacePatchSet-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="861X4wmDa+c="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="2JC0m/RQluc="; charset=UTF-8
 Subject: [Openvpn-devel] [S] Change in openvpn[master]: dco_linux: fix peer
  stats parsing with new ovpn kernel module
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -21,20 +22,19 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---861X4wmDa+c=
+--2JC0m/RQluc=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 Attention is currently required from: flichtenheld, plaisthos.
 
-Hello plaisthos, flichtenheld,
+Hello flichtenheld, plaisthos,
 
-I'd like you to do a code review.
-Please visit
+I'd like you to reexamine a change. Please visit
 
     http://gerrit.openvpn.net/c/openvpn/+/1025?usp=3Demail
 
-to review the following change.
+to look at the new patch set (#2).
 
 
 Change subject: dco_linux: fix peer stats parsing with new ovpn kernel modu=
@@ -69,14 +69,14 @@ watching the counters increasing:
 048
 
 Change-Id: I104b4adeb9f65cce3487b82f35470174acba92bc
+Closes: https://github.com/OpenVPN/openvpn/issues/746
 Signed-off-by: Antonio Quartulli <antonio@...2726...>
 ---
 M src/openvpn/dco_linux.c
 1 file changed, 21 insertions(+), 10 deletions(-)
 
 
-
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/25/1025/1
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/25/1025/2
 
 diff --git a/src/openvpn/dco_linux.c b/src/openvpn/dco_linux.c
 index a5f9e06..3f7965e 100644
@@ -179,130 +179,130 @@ Gerrit-Project: openvpn
 Gerrit-Branch: master
 Gerrit-Change-Id: I104b4adeb9f65cce3487b82f35470174acba92bc
 Gerrit-Change-Number: 1025
-Gerrit-PatchSet: 1
+Gerrit-PatchSet: 2
 Gerrit-Owner: ordex <antonio@...2726...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
 Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-MessageType: newchange
+Gerrit-MessageType: newpatchset
 
---861X4wmDa+c=
+--2JC0m/RQluc=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <p> Attention is currently required from: flichtenheld, plaisthos. </p>
-<p>ordex would like plaisthos and flichtenheld to <strong>review</strong> t=
-his change.
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1025?usp=3Demail">V=
-iew Change</a></p><pre style=3D"font-family: monospace,monospace; white-spa=
-ce: pre-wrap;">dco_linux: fix peer stats parsing with new ovpn kernel modul=
-e<br><br>The new ovpn kernel module has changed the netlink attribute<br>ty=
-pe of the fields containing the pkt/bytes counters in the<br>peer stats.<br=
-><br>We moved from uint64 to uint (a dynamic type can be either<br>32 or 64=
- bits), therefore the parsing code must be adapted<br>accordingly.<br><br>W=
-hile at it, also fix the peer object parsing in the P2P code<br>path.<br><b=
-r>The fix can be verified by enabling --status with verb 6 and<br>watching =
-the counters increasing:<br><br>	2025-05-16 22:23:56 us=3D649488 dco_get_pe=
-er_stats_multi<br>	2025-05-16 22:23:56 us=3D651008 dco_parse_peer_multi: pa=
-rsing message...<br>	2025-05-16 22:23:56 us=3D651734 dco_update_peer_stat /=
- dco_read_bytes: 116280<br>	2025-05-16 22:23:56 us=3D652682 dco_update_peer=
-_stat / dco_write_bytes: 115776<br>	2025-05-16 22:23:56 us=3D653467 dco_upd=
-ate_peer_stat / tun_read_bytes: 90048<br>	2025-05-16 22:23:56 us=3D654110 d=
-co_update_peer_stat / tun_write_bytes: 90048<br><br>Change-Id: I104b4adeb9f=
-65cce3487b82f35470174acba92bc<br>Signed-off-by: Antonio Quartulli &lt;anton=
-io@...2726...&gt;<br>---<br>M src/openvpn/dco_linux.c<br>1 file changed, 21=
- insertions(+), 10 deletions(-)<br><br></pre><pre style=3D"font-family: mon=
-ospace,monospace; white-space: pre-wrap;">git pull ssh://gerrit.openvpn.net=
-:29418/openvpn refs/changes/25/1025/1</pre><pre style=3D"font-family: monos=
-pace,monospace; white-space: pre-wrap;"><span>diff --git a/src/openvpn/dco_=
-linux.c b/src/openvpn/dco_linux.c</span><br><span>index a5f9e06..3f7965e 10=
-0644</span><br><span>--- a/src/openvpn/dco_linux.c</span><br><span>+++ b/sr=
-c/openvpn/dco_linux.c</span><br><span>@@ -908,12 +908,26 @@</span><br><span=
->     return ovpn_nl_recvmsgs(dco, __func__);</span><br><span> }</span><br>=
-<span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+/* libnl &lt=
-; 3.11.0 does not implement nla_get_uint() */</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+static uint64_t</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+ovpn_nla_get_uint(struct nlattr *attr)</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+    if (nla_len(attr) =3D=3D sizeof(uint32_t))</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+        return nla_get_u32(attr);</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+    else</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+        return nla_get_u64(attr);</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span>=
-<br><span> static void</span><br><span> dco_update_peer_stat(struct context=
-_2 *c2, struct nlattr *tb[], uint32_t id)</span><br><span> {</span><br><spa=
-n>     if (tb[OVPN_A_PEER_LINK_RX_BYTES])</span><br><span>     {</span><br>=
-<span style=3D"color: hsl(0, 100%, 40%);">-        c2-&gt;dco_read_bytes =
-=3D nla_get_u64(tb[OVPN_A_PEER_LINK_RX_BYTES]);</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+        c2-&gt;dco_read_bytes =3D ovpn_nla_get_=
-uint(tb[OVPN_A_PEER_LINK_RX_BYTES]);</span><br><span>         msg(D_DCO_DEB=
-UG, &quot;%s / dco_read_bytes: &quot; counter_format, __func__,</span><br><=
-span>             c2-&gt;dco_read_bytes);</span><br><span>     }</span><br>=
-<span>@@ -925,7 +939,7 @@</span><br><span> </span><br><span>     if (tb[OVP=
-N_A_PEER_LINK_TX_BYTES])</span><br><span>     {</span><br><span style=3D"co=
-lor: hsl(0, 100%, 40%);">-        c2-&gt;dco_write_bytes =3D nla_get_u64(tb=
-[OVPN_A_PEER_LINK_TX_BYTES]);</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+        c2-&gt;dco_write_bytes =3D ovpn_nla_get_uint(tb[OVPN_A_PE=
-ER_LINK_TX_BYTES]);</span><br><span>         msg(D_DCO_DEBUG, &quot;%s / dc=
-o_write_bytes: &quot; counter_format, __func__,</span><br><span>           =
-  c2-&gt;dco_write_bytes);</span><br><span>     }</span><br><span>@@ -937,7=
- +951,7 @@</span><br><span> </span><br><span>     if (tb[OVPN_A_PEER_VPN_RX=
-_BYTES])</span><br><span>     {</span><br><span style=3D"color: hsl(0, 100%=
-, 40%);">-        c2-&gt;tun_read_bytes =3D nla_get_u64(tb[OVPN_A_PEER_VPN_=
-RX_BYTES]);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        =
-c2-&gt;tun_read_bytes =3D ovpn_nla_get_uint(tb[OVPN_A_PEER_VPN_RX_BYTES]);<=
-/span><br><span>         msg(D_DCO_DEBUG, &quot;%s / tun_read_bytes: &quot;=
- counter_format, __func__,</span><br><span>             c2-&gt;tun_read_byt=
-es);</span><br><span>     }</span><br><span>@@ -949,7 +963,7 @@</span><br><=
-span> </span><br><span>     if (tb[OVPN_A_PEER_VPN_TX_BYTES])</span><br><sp=
-an>     {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        c2-&=
-gt;tun_write_bytes =3D nla_get_u64(tb[OVPN_A_PEER_VPN_TX_BYTES]);</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+        c2-&gt;tun_write_byte=
-s =3D ovpn_nla_get_uint(tb[OVPN_A_PEER_VPN_TX_BYTES]);</span><br><span>    =
-     msg(D_DCO_DEBUG, &quot;%s / tun_write_bytes: &quot; counter_format, __=
-func__,</span><br><span>             c2-&gt;tun_write_bytes);</span><br><sp=
-an>     }</span><br><span>@@ -1028,12 +1042,12 @@</span><br><span> dco_pars=
-e_peer(struct nl_msg *msg, void *arg)</span><br><span> {</span><br><span>  =
-   struct context *c =3D arg;</span><br><span style=3D"color: hsl(0, 100%, =
-40%);">-    struct nlattr *tb[OVPN_A_MAX];</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+    struct nlattr *tb[OVPN_A_MAX + 1];</span><br><sp=
-an>     struct genlmsghdr *gnlh =3D nlmsg_data(nlmsg_hdr(msg));</span><br><=
-span> </span><br><span>     msg(D_DCO_DEBUG, &quot;%s: parsing message...&q=
-uot;, __func__);</span><br><span> </span><br><span style=3D"color: hsl(0, 1=
-00%, 40%);">-    nla_parse(tb, OVPN_A_PEER_MAX, genlmsg_attrdata(gnlh, 0),<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+    nla_parse(tb, OV=
-PN_A_MAX, genlmsg_attrdata(gnlh, 0),</span><br><span>               genlmsg=
-_attrlen(gnlh, 0), NULL);</span><br><span> </span><br><span>     if (!tb[OV=
-PN_A_PEER])</span><br><span>@@ -1043,10 +1057,7 @@</span><br><span>     }</=
-span><br><span> </span><br><span>     struct nlattr *tb_peer[OVPN_A_PEER_MA=
-X + 1];</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><sp=
-an style=3D"color: hsl(0, 100%, 40%);">-    nla_parse(tb_peer, OVPN_A_PEER,=
-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-              nla_dat=
-a(tb[OVPN_A_PEER]),</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
-            nla_len(tb[OVPN_A_PEER]), NULL);</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+    nla_parse_nested(tb_peer, OVPN_A_PEER_MAX, tb[=
-OVPN_A_PEER], NULL);</span><br><span> </span><br><span>     if (!tb_peer[OV=
-PN_A_PEER_ID])</span><br><span>     {</span><br><span></span><br></pre><p>T=
-o view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1025?usp=3De=
-mail">change 1025</a>. To unsubscribe, or for help writing mail filters, vi=
-sit <a href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div it=
-emscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=
-=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url=
-" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1025?usp=3Demail"/><meta it=
-emprop=3D"name" content=3D"View Change"/></div></div>
+<p>ordex <strong>uploaded patch set #2</strong> to this change.</p><p><a hr=
+ef=3D"http://gerrit.openvpn.net/c/openvpn/+/1025?usp=3Demail">View Change</=
+a></p><pre style=3D"font-family: monospace,monospace; white-space: pre-wrap=
+;">dco_linux: fix peer stats parsing with new ovpn kernel module<br><br>The=
+ new ovpn kernel module has changed the netlink attribute<br>type of the fi=
+elds containing the pkt/bytes counters in the<br>peer stats.<br><br>We move=
+d from uint64 to uint (a dynamic type can be either<br>32 or 64 bits), ther=
+efore the parsing code must be adapted<br>accordingly.<br><br>While at it, =
+also fix the peer object parsing in the P2P code<br>path.<br><br>The fix ca=
+n be verified by enabling --status with verb 6 and<br>watching the counters=
+ increasing:<br><br>	2025-05-16 22:23:56 us=3D649488 dco_get_peer_stats_mul=
+ti<br>	2025-05-16 22:23:56 us=3D651008 dco_parse_peer_multi: parsing messag=
+e...<br>	2025-05-16 22:23:56 us=3D651734 dco_update_peer_stat / dco_read_by=
+tes: 116280<br>	2025-05-16 22:23:56 us=3D652682 dco_update_peer_stat / dco_=
+write_bytes: 115776<br>	2025-05-16 22:23:56 us=3D653467 dco_update_peer_sta=
+t / tun_read_bytes: 90048<br>	2025-05-16 22:23:56 us=3D654110 dco_update_pe=
+er_stat / tun_write_bytes: 90048<br><br>Change-Id: I104b4adeb9f65cce3487b82=
+f35470174acba92bc<br>Closes: https://github.com/OpenVPN/openvpn/issues/746<=
+br>Signed-off-by: Antonio Quartulli &lt;antonio@...2726...&gt;<br>---<br>M =
+src/openvpn/dco_linux.c<br>1 file changed, 21 insertions(+), 10 deletions(-=
+)<br><br></pre><pre style=3D"font-family: monospace,monospace; white-space:=
+ pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/25=
+/1025/2</pre><pre style=3D"font-family: monospace,monospace; white-space: p=
+re-wrap;"><span>diff --git a/src/openvpn/dco_linux.c b/src/openvpn/dco_linu=
+x.c</span><br><span>index a5f9e06..3f7965e 100644</span><br><span>--- a/src=
+/openvpn/dco_linux.c</span><br><span>+++ b/src/openvpn/dco_linux.c</span><b=
+r><span>@@ -908,12 +908,26 @@</span><br><span>     return ovpn_nl_recvmsgs(=
+dco, __func__);</span><br><span> }</span><br><span> </span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+/* libnl &lt; 3.11.0 does not implement n=
+la_get_uint() */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+sta=
+tic uint64_t</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ovpn_nl=
+a_get_uint(struct nlattr *attr)</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if=
+ (nla_len(attr) =3D=3D sizeof(uint32_t))</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+        return nla_get_u32(attr);</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+    else</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        return nla=
+_get_u64(attr);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> static void</span>=
+<br><span> dco_update_peer_stat(struct context_2 *c2, struct nlattr *tb[], =
+uint32_t id)</span><br><span> {</span><br><span>     if (tb[OVPN_A_PEER_LIN=
+K_RX_BYTES])</span><br><span>     {</span><br><span style=3D"color: hsl(0, =
+100%, 40%);">-        c2-&gt;dco_read_bytes =3D nla_get_u64(tb[OVPN_A_PEER_=
+LINK_RX_BYTES]);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+     c2-&gt;dco_read_bytes =3D ovpn_nla_get_uint(tb[OVPN_A_PEER_LINK_RX_BYT=
+ES]);</span><br><span>         msg(D_DCO_DEBUG, &quot;%s / dco_read_bytes: =
+&quot; counter_format, __func__,</span><br><span>             c2-&gt;dco_re=
+ad_bytes);</span><br><span>     }</span><br><span>@@ -925,7 +939,7 @@</span=
+><br><span> </span><br><span>     if (tb[OVPN_A_PEER_LINK_TX_BYTES])</span>=
+<br><span>     {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-     =
+   c2-&gt;dco_write_bytes =3D nla_get_u64(tb[OVPN_A_PEER_LINK_TX_BYTES]);</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+        c2-&gt;dco_wr=
+ite_bytes =3D ovpn_nla_get_uint(tb[OVPN_A_PEER_LINK_TX_BYTES]);</span><br><=
+span>         msg(D_DCO_DEBUG, &quot;%s / dco_write_bytes: &quot; counter_f=
+ormat, __func__,</span><br><span>             c2-&gt;dco_write_bytes);</spa=
+n><br><span>     }</span><br><span>@@ -937,7 +951,7 @@</span><br><span> </s=
+pan><br><span>     if (tb[OVPN_A_PEER_VPN_RX_BYTES])</span><br><span>     {=
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        c2-&gt;tun_re=
+ad_bytes =3D nla_get_u64(tb[OVPN_A_PEER_VPN_RX_BYTES]);</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+        c2-&gt;tun_read_bytes =3D ovpn_=
+nla_get_uint(tb[OVPN_A_PEER_VPN_RX_BYTES]);</span><br><span>         msg(D_=
+DCO_DEBUG, &quot;%s / tun_read_bytes: &quot; counter_format, __func__,</spa=
+n><br><span>             c2-&gt;tun_read_bytes);</span><br><span>     }</sp=
+an><br><span>@@ -949,7 +963,7 @@</span><br><span> </span><br><span>     if =
+(tb[OVPN_A_PEER_VPN_TX_BYTES])</span><br><span>     {</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-        c2-&gt;tun_write_bytes =3D nla_get_=
+u64(tb[OVPN_A_PEER_VPN_TX_BYTES]);</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+        c2-&gt;tun_write_bytes =3D ovpn_nla_get_uint(tb[OVPN=
+_A_PEER_VPN_TX_BYTES]);</span><br><span>         msg(D_DCO_DEBUG, &quot;%s =
+/ tun_write_bytes: &quot; counter_format, __func__,</span><br><span>       =
+      c2-&gt;tun_write_bytes);</span><br><span>     }</span><br><span>@@ -1=
+028,12 +1042,12 @@</span><br><span> dco_parse_peer(struct nl_msg *msg, void=
+ *arg)</span><br><span> {</span><br><span>     struct context *c =3D arg;</=
+span><br><span style=3D"color: hsl(0, 100%, 40%);">-    struct nlattr *tb[O=
+VPN_A_MAX];</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    stru=
+ct nlattr *tb[OVPN_A_MAX + 1];</span><br><span>     struct genlmsghdr *gnlh=
+ =3D nlmsg_data(nlmsg_hdr(msg));</span><br><span> </span><br><span>     msg=
+(D_DCO_DEBUG, &quot;%s: parsing message...&quot;, __func__);</span><br><spa=
+n> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-    nla_parse(tb, =
+OVPN_A_PEER_MAX, genlmsg_attrdata(gnlh, 0),</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+    nla_parse(tb, OVPN_A_MAX, genlmsg_attrdata(gnlh=
+, 0),</span><br><span>               genlmsg_attrlen(gnlh, 0), NULL);</span=
+><br><span> </span><br><span>     if (!tb[OVPN_A_PEER])</span><br><span>@@ =
+-1043,10 +1057,7 @@</span><br><span>     }</span><br><span> </span><br><spa=
+n>     struct nlattr *tb_peer[OVPN_A_PEER_MAX + 1];</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-    nla_parse(tb_peer, OVPN_A_PEER,</span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-              nla_data(tb[OVPN_A_PEER]),</span><br=
+><span style=3D"color: hsl(0, 100%, 40%);">-              nla_len(tb[OVPN_A=
+_PEER]), NULL);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+nla_parse_nested(tb_peer, OVPN_A_PEER_MAX, tb[OVPN_A_PEER], NULL);</span><b=
+r><span> </span><br><span>     if (!tb_peer[OVPN_A_PEER_ID])</span><br><spa=
+n>     {</span><br><span></span><br></pre><p>To view, visit <a href=3D"http=
+://gerrit.openvpn.net/c/openvpn/+/1025?usp=3Demail">change 1025</a>. To uns=
+ubscribe, or for help writing mail filters, visit <a href=3D"http://gerrit.=
+openvpn.net/settings">settings</a>.</p><div itemscope itemtype=3D"http://sc=
+hema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http:=
+//schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openv=
+pn.net/c/openvpn/+/1025?usp=3Demail"/><meta itemprop=3D"name" content=3D"Vi=
+ew Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
 <div style=3D"display:none"> Gerrit-Change-Id: I104b4adeb9f65cce3487b82f354=
 70174acba92bc </div>
 <div style=3D"display:none"> Gerrit-Change-Number: 1025 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
 <div style=3D"display:none"> Gerrit-Owner: ordex &lt;antonio@...2726...&gt;=
  </div>
 <div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
@@ -315,8 +315,8 @@ ts.sourceforge.net&gt; </div>
 ..1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
 41...&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: newchange </div>
+<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
 
 
---861X4wmDa+c=--
+--2JC0m/RQluc=--
 
