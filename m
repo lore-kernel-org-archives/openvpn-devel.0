@@ -1,16 +1,10 @@
-Date: Sat, 17 May 2025 11:42:35 +0200
+Date: Sat, 17 May 2025 11:50:58 +0200 (CEST)
+Message-Id: <202505170950.54H9ow0x079826@...2054...>
 From: Gert Doering <gert@...1296...>
-Message-ID: <aChaC74pfU6ywph8@...1296...>
-References: <gerrit.1733989644000.I3fb01ab76cf3df0874ba92e08f371d17607a8369@...2715...>
- <a7e11016a114631f281dc7c769e55533a80728ac-EmailReplacePatchSet-HTML@...2715...>
- <CAEsd45SvAi2eqYYqfajzVnwxK9TuN6cO9PskoQk2oNAC8pu_Qg@...278...>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="mzCyRDN4oCod/wM5"
-Content-Disposition: inline
-In-Reply-To: <CAEsd45SvAi2eqYYqfajzVnwxK9TuN6cO9PskoQk2oNAC8pu_Qg@...278...>
-Subject: Re: [Openvpn-devel] [L] Change in openvpn[master]: dns: don't
- publish env vars to non-dns scripts
+In-Reply-To: <20250517092637.2103-1-gert@...1296...>
+References: <20250517092637.2103-1-gert@...1296...>
+Subject: [Openvpn-devel] [PATCH applied] Re: dns: don't publish env vars to
+ non-dns scripts
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,82 +13,51 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: "Jonathan K. Bullard" <jkbullard@...277...>
-Cc: heiko@...515..., arne-openvpn@...1227..., openvpn-devel@lists.sourceforge.net, frank@...2641...
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: Heiko Hund <heiko@...2662...>
+Cc: openvpn-devel@lists.sourceforge.net
 
---mzCyRDN4oCod/wM5
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+As discussed, this is part of the DNS journey - this does not add 
+functionality, it just decouples old and new "backend API".
 
-Hi,
+That is, "--up" scripts will no longer see "dns_server_*" environment
+variables.  The assumption here is that "--up" scripts that deal with
+DNS servers are typically older, and will use "foreign_options_N" anyway,
+so do not benefit from the new-style environment variables - and, after
+quite a bit of discussion, we agreed that we need to decouple the "frontend"
+options (--dns/--dhcp_option DNS) from the backend environment variables
+anyway.
 
-On Sun, Jan 19, 2025 at 06:02:46PM -0500, Jonathan K. Bullard wrote:
-> Does this mean that if there are --dns options which override
-> --dns-options options, then (for macOS) the foreign_options_N
-> environment variables related to DNS will not be passed to the up/down
-> scripts? That would be a a *major* breaking change.
-
-As a side note: we discussed this a lot, and I think we've come up with
-a compromise that addresses existing deployments, and provides new and
-exciting functionality if needed.
-
-So, if all the DNS related patches are merged, what you have is
-
- - *if* there is an --up script, it will receive "foreign_options_N" for
-   DNS config, no matter if the config was pushed by means of "--dns ..."
-   or "--dhcp-option DNS ..."
-
-   In this case, --dns-updown is not run by default
-
- - the --up script will no longer receive "dns_server_..." env variables=20
-   -> compat scripts can use "foreign_options_N", and new scripts should
-   use the --dns-updown hook
-
- - if there is no --up script, or you use "--dns-updown $myscript" or
-   "--dns-updown force", the dns-updown script will be called to take
-   care of DNS.  In this case, if an --up script is run, it will NOT
-   receive any DNS related information (no foreign_options_N) to avoid
-   setting DNS info twice.
-
- - "--dns-updown disable" will unconditionally not run the dns-updown
-   script, for those users who do not want OpenVPN to manipulate their
-   DNS settings - this includes me, on servers that might have multiple
-   OpenVPN sessions, and "nothing must interfere with my server's DNS
-   config".  Somewhat of a special case, but there for a reason :-)
+So in one of the next patches in the series, "--dns" config coming in
+will be exported as "foreign_options_N" *if* --dns-updown is not in use
+(and that one will only ever see "dns_*" variables).
 
 
-... and, as Heiko has said, this is all 2.7 stuff, as the change is much
-too big and has too much potential to break something for users to sneak
-this in a minor 2.6.x release.
+I have not tested this beyond "does it compile and pass the existing
+--dns-updown script tests" - which is not much of an achievement as
+the code is just being moved around, and two calls (in the context of
+--up scripts) have been taken away, which is a code path not excercised
+in my test sets currently ("--up with DNS config").
 
-gert
---=20
-"If was one thing all people took for granted, was conviction that if you=20
- feed honest figures into a computer, honest figures come out. Never doubte=
-d=20
- it myself till I met a computer with a sense of humor."
-                             Robert A. Heinlein, The Moon is a Harsh Mistre=
-ss
+Your patch has been applied to the master branch.
 
-Gert Doering - Munich, Germany                             gert@...1296...
+commit 412c29c1cbf0565c94ffdbaa435ef3dc6a71e568
+Author: Heiko Hund
+Date:   Sat May 17 11:26:26 2025 +0200
 
---mzCyRDN4oCod/wM5
-Content-Type: application/pgp-signature; name=signature.asc
+     dns: don't publish env vars to non-dns scripts
 
------BEGIN PGP SIGNATURE-----
+     Signed-off-by: Heiko Hund <heiko@...2662...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <20250517092637.2103-1-gert@...1296...>
+     URL: https://www.mail-archive.com/search?l=mid&q=20250517092637.2103-1-gert@...1296...
+     Signed-off-by: Gert Doering <gert@...1296...>
 
-iQGcBAEBAgAGBQJoKFoLAAoJEB2Cnv7KVigS2zwL/2T0QlyAZE3sCKCeoD0RrGXc
-iGG48b/ceFv5QF3nBg6LKVbijSNKVAe5XjcSkYrapcYKEUvwrGdHeYg0sdHfqXJG
-QbsOvolRbaGaGlIloWnuDcG8BqGdHC7wqxk2J/DBqtcaGTb+unSjB2z+Janfixxz
-SBgJ4SRa/33wcsYPo5cLzAEe+BysWvhDy0GznLUC5cqf2N0EiPO3ffMZfBmdrynV
-yU7Epw8c/IUJR5ST4QzEcZ/3WEqkngAYcIyuP3yL+ygZWovj6jW5K+YER9GCP1w4
-k/tbZWkhZSFkiOVt4Eaw7jTC9uCkelroJfHbRYhDglDOk6Li6vrLODe7Yw65TX+f
-/U6bk+KvFhW/mr3EzyJcz0t3VLgiL/QtjQ4/490OPWPOQklpKAoYa7Q8joFPRjll
-R70wFGTjJxRkTV9wnbuH4iBvv7f+OThNW1qGD1QTre/IhxzAV9k9uaygzPhE57YT
-H8fbxHaKeQ7+SsQwDGbXzdoKBMKrnnGea7/lmhUWaQ==
-=w4ua
------END PGP SIGNATURE-----
 
---mzCyRDN4oCod/wM5--
+--
+kind regards,
+
+Gert Doering
+
 
