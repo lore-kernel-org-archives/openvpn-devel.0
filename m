@@ -1,11 +1,17 @@
-From: Gert Doering <gert@...1296...>
-Date: Sat, 17 May 2025 10:32:23 +0200
-Message-ID: <20250517083231.27977-1-gert@...1296...>
-In-Reply-To: <gerrit.1747427153000.I104b4adeb9f65cce3487b82f35470174acba92bc@...2715...>
-References: <gerrit.1747427153000.I104b4adeb9f65cce3487b82f35470174acba92bc@...2715...>
+From: "cron2 (Code Review)" <gerrit@...515...>
+Date: Sat, 17 May 2025 08:38:14 +0000
+In-Reply-To: <gerrit.1733989644000.I6b67e3a00dd84bf348b6af28115ee11138c3a111@...2715...>
+References: <gerrit.1733989644000.I6b67e3a00dd84bf348b6af28115ee11138c3a111@...2715...>
+Reply-To: gert@...1296..., arne-openvpn@...1227..., heiko@...515...,
+ openvpn-devel@lists.sourceforge.net, frank@...2641...,
+ max@...2606...
+Message-ID: <9915d7d001aea902071afd192fa78bb7c680167d-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v2] dco_linux: fix peer stats parsing with
- new ovpn kernel module
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="OlXKj5pMxZ0="; charset=UTF-8
+Subject: [Openvpn-devel] [L] Change in openvpn[master]: dns: support running
+ up/down command with privsep
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,133 +20,100 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: d12fk <heiko@...515...>
+Cc: flichtenheld <frank@...2641...>, MaxF <max@...2606...>, plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-From: Antonio Quartulli <antonio@...2726...>
+--OlXKj5pMxZ0=
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-The new ovpn kernel module has changed the netlink attribute
-type of the fields containing the pkt/bytes counters in the
-peer stats.
+Attention is currently required from: MaxF, d12fk, flichtenheld, plaisthos.
 
-We moved from uint64 to uint (a dynamic type can be either
-32 or 64 bits), therefore the parsing code must be adapted
-accordingly.
+cron2 has posted comments on this change. ( http://gerrit.openvpn.net/c/ope=
+nvpn/+/839?usp=3Demail )
 
-While at it, also fix the peer object parsing in the P2P code
-path.
+Change subject: dns: support running up/down command with privsep
+......................................................................
 
-The fix can be verified by enabling --status with verb 6 and
-watching the counters increasing:
 
-	2025-05-16 22:23:56 us=649488 dco_get_peer_stats_multi
-	2025-05-16 22:23:56 us=651008 dco_parse_peer_multi: parsing message...
-	2025-05-16 22:23:56 us=651734 dco_update_peer_stat / dco_read_bytes: 116280
-	2025-05-16 22:23:56 us=652682 dco_update_peer_stat / dco_write_bytes: 115776
-	2025-05-16 22:23:56 us=653467 dco_update_peer_stat / tun_read_bytes: 90048
-	2025-05-16 22:23:56 us=654110 dco_update_peer_stat / tun_write_bytes: 90048
+Patch Set 27: Code-Review+2
 
-Change-Id: I104b4adeb9f65cce3487b82f35470174acba92bc
-Closes: https://github.com/OpenVPN/openvpn/issues/746
-Signed-off-by: Antonio Quartulli <antonio@...2726...>
-Acked-by: Gert Doering <gert@...1296...>
----
 
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to master.
+--
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/839?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1025
-This mail reflects revision 2 of this Change.
+Gerrit-Project: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: I6b67e3a00dd84bf348b6af28115ee11138c3a111
+Gerrit-Change-Number: 839
+Gerrit-PatchSet: 27
+Gerrit-Owner: d12fk <heiko@...515...>
+Gerrit-Reviewer: MaxF <max@...2606...>
+Gerrit-Reviewer: cron2 <gert@...1296...>
+Gerrit-Reviewer: flichtenheld <frank@...2641...>
+Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Attention: flichtenheld <frank@...2641...>
+Gerrit-Attention: d12fk <heiko@...515...>
+Gerrit-Attention: MaxF <max@...2606...>
+Gerrit-Comment-Date: Sat, 17 May 2025 08:38:14 +0000
+Gerrit-HasComments: No
+Gerrit-Has-Labels: Yes
+Gerrit-MessageType: comment
 
-Acked-by according to Gerrit (reflected above):
-Gert Doering <gert@...1296...>
+--OlXKj5pMxZ0=
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-        
-diff --git a/src/openvpn/dco_linux.c b/src/openvpn/dco_linux.c
-index a5f9e06..3f7965e 100644
---- a/src/openvpn/dco_linux.c
-+++ b/src/openvpn/dco_linux.c
-@@ -908,12 +908,26 @@
-     return ovpn_nl_recvmsgs(dco, __func__);
- }
- 
-+/* libnl < 3.11.0 does not implement nla_get_uint() */
-+static uint64_t
-+ovpn_nla_get_uint(struct nlattr *attr)
-+{
-+    if (nla_len(attr) == sizeof(uint32_t))
-+    {
-+        return nla_get_u32(attr);
-+    }
-+    else
-+    {
-+        return nla_get_u64(attr);
-+    }
-+}
-+
- static void
- dco_update_peer_stat(struct context_2 *c2, struct nlattr *tb[], uint32_t id)
- {
-     if (tb[OVPN_A_PEER_LINK_RX_BYTES])
-     {
--        c2->dco_read_bytes = nla_get_u64(tb[OVPN_A_PEER_LINK_RX_BYTES]);
-+        c2->dco_read_bytes = ovpn_nla_get_uint(tb[OVPN_A_PEER_LINK_RX_BYTES]);
-         msg(D_DCO_DEBUG, "%s / dco_read_bytes: " counter_format, __func__,
-             c2->dco_read_bytes);
-     }
-@@ -925,7 +939,7 @@
- 
-     if (tb[OVPN_A_PEER_LINK_TX_BYTES])
-     {
--        c2->dco_write_bytes = nla_get_u64(tb[OVPN_A_PEER_LINK_TX_BYTES]);
-+        c2->dco_write_bytes = ovpn_nla_get_uint(tb[OVPN_A_PEER_LINK_TX_BYTES]);
-         msg(D_DCO_DEBUG, "%s / dco_write_bytes: " counter_format, __func__,
-             c2->dco_write_bytes);
-     }
-@@ -937,7 +951,7 @@
- 
-     if (tb[OVPN_A_PEER_VPN_RX_BYTES])
-     {
--        c2->tun_read_bytes = nla_get_u64(tb[OVPN_A_PEER_VPN_RX_BYTES]);
-+        c2->tun_read_bytes = ovpn_nla_get_uint(tb[OVPN_A_PEER_VPN_RX_BYTES]);
-         msg(D_DCO_DEBUG, "%s / tun_read_bytes: " counter_format, __func__,
-             c2->tun_read_bytes);
-     }
-@@ -949,7 +963,7 @@
- 
-     if (tb[OVPN_A_PEER_VPN_TX_BYTES])
-     {
--        c2->tun_write_bytes = nla_get_u64(tb[OVPN_A_PEER_VPN_TX_BYTES]);
-+        c2->tun_write_bytes = ovpn_nla_get_uint(tb[OVPN_A_PEER_VPN_TX_BYTES]);
-         msg(D_DCO_DEBUG, "%s / tun_write_bytes: " counter_format, __func__,
-             c2->tun_write_bytes);
-     }
-@@ -1028,12 +1042,12 @@
- dco_parse_peer(struct nl_msg *msg, void *arg)
- {
-     struct context *c = arg;
--    struct nlattr *tb[OVPN_A_MAX];
-+    struct nlattr *tb[OVPN_A_MAX + 1];
-     struct genlmsghdr *gnlh = nlmsg_data(nlmsg_hdr(msg));
- 
-     msg(D_DCO_DEBUG, "%s: parsing message...", __func__);
- 
--    nla_parse(tb, OVPN_A_PEER_MAX, genlmsg_attrdata(gnlh, 0),
-+    nla_parse(tb, OVPN_A_MAX, genlmsg_attrdata(gnlh, 0),
-               genlmsg_attrlen(gnlh, 0), NULL);
- 
-     if (!tb[OVPN_A_PEER])
-@@ -1043,10 +1057,7 @@
-     }
- 
-     struct nlattr *tb_peer[OVPN_A_PEER_MAX + 1];
--
--    nla_parse(tb_peer, OVPN_A_PEER,
--              nla_data(tb[OVPN_A_PEER]),
--              nla_len(tb[OVPN_A_PEER]), NULL);
-+    nla_parse_nested(tb_peer, OVPN_A_PEER_MAX, tb[OVPN_A_PEER], NULL);
- 
-     if (!tb_peer[OVPN_A_PEER_ID])
-     {
+<p> Attention is currently required from: MaxF, d12fk, flichtenheld, plaist=
+hos. </p>
+<p>Patch set 27:<span style=3D"border-radius: 3px; display: inline-block; m=
+argin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span=
+></p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/839?usp=3Demail">V=
+iew Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To vi=
+ew, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/839?usp=3Demail"=
+>change 839</a>. To unsubscribe, or for help writing mail filters, visit <a=
+ href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemscop=
+e itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"ac=
+tion" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=
+=3D"http://gerrit.openvpn.net/c/openvpn/+/839?usp=3Demail"/><meta itemprop=
+=3D"name" content=3D"View Change"/></div></div>
+
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I6b67e3a00dd84bf348b6af28115=
+ee11138c3a111 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 839 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 27 </div>
+<div style=3D"display:none"> Gerrit-Owner: d12fk &lt;heiko@...515...&gt; </=
+div>
+<div style=3D"display:none"> Gerrit-Reviewer: MaxF &lt;max@...2606...&gt; <=
+/div>
+<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
+ </div>
+<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
+1...&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
+.1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
+41...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: d12fk &lt;heiko@...515...&gt=
+; </div>
+<div style=3D"display:none"> Gerrit-Attention: MaxF &lt;max@...2606...&gt; =
+</div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Sat, 17 May 2025 08:38:14=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: No </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
+
+
+--OlXKj5pMxZ0=--
 
