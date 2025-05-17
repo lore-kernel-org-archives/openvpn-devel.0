@@ -1,17 +1,11 @@
-From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Sat, 17 May 2025 09:26:16 +0000
+From: Gert Doering <gert@...1296...>
+Date: Sat, 17 May 2025 11:26:26 +0200
+Message-ID: <20250517092637.2103-1-gert@...1296...>
 In-Reply-To: <gerrit.1733989644000.I3fb01ab76cf3df0874ba92e08f371d17607a8369@...2715...>
 References: <gerrit.1733989644000.I3fb01ab76cf3df0874ba92e08f371d17607a8369@...2715...>
-Reply-To: gert@...1296..., arne-openvpn@...1227..., heiko@...515...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...,
- lstipakov@...277...
-Message-ID: <a44ee583cf63a7a995c1ad6f9fbde501a54a350f-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="FVE/IMZbDWU="; charset=UTF-8
-Subject: [Openvpn-devel] [M] Change in openvpn[master]: dns: don't publish
- env vars to non-dns scripts
+Subject: [Openvpn-devel] [PATCH v28] dns: don't publish env vars to non-dns
+ scripts
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,97 +14,264 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: d12fk <heiko@...515...>
-Cc: stipa <lstipakov@...277...>, flichtenheld <frank@...2641...>, plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---FVE/IMZbDWU=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+From: Heiko Hund <heiko@...2662...>
 
-Attention is currently required from: d12fk, flichtenheld, plaisthos.
+With --dns-updown in place we no longer need --dns option related vars in
+the environment for other script hooks. Code for doing that is removed and
+the function to set --dns stuff made static, for internal use only.
 
-cron2 has posted comments on this change. ( http://gerrit.openvpn.net/c/ope=
-nvpn/+/840?usp=3Demail )
+Change-Id: I3fb01ab76cf3df0874ba92e08f371d17607a8369
+Signed-off-by: Heiko Hund <heiko@...2662...>
+Acked-by: Gert Doering <gert@...1296...>
+---
 
-Change subject: dns: don't publish env vars to non-dns scripts
-......................................................................
+This change was reviewed on Gerrit and approved by at least one
+developer. I request to merge it to master.
 
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/840
+This mail reflects revision 28 of this Change.
 
-Patch Set 28: Code-Review+2
+Acked-by according to Gerrit (reflected above):
+Gert Doering <gert@...1296...>
 
-
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/840?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings
-
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: I3fb01ab76cf3df0874ba92e08f371d17607a8369
-Gerrit-Change-Number: 840
-Gerrit-PatchSet: 28
-Gerrit-Owner: d12fk <heiko@...515...>
-Gerrit-Reviewer: cron2 <gert@...1296...>
-Gerrit-Reviewer: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-CC: stipa <lstipakov@...277...>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Attention: d12fk <heiko@...515...>
-Gerrit-Comment-Date: Sat, 17 May 2025 09:26:16 +0000
-Gerrit-HasComments: No
-Gerrit-Has-Labels: Yes
-Gerrit-MessageType: comment
-
---FVE/IMZbDWU=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<p> Attention is currently required from: d12fk, flichtenheld, plaisthos. <=
-/p>
-<p>Patch set 28:<span style=3D"border-radius: 3px; display: inline-block; m=
-argin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span=
-></p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/840?usp=3Demail">V=
-iew Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To vi=
-ew, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/840?usp=3Demail"=
->change 840</a>. To unsubscribe, or for help writing mail filters, visit <a=
- href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemscop=
-e itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"ac=
-tion" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=
-=3D"http://gerrit.openvpn.net/c/openvpn/+/840?usp=3Demail"/><meta itemprop=
-=3D"name" content=3D"View Change"/></div></div>
-
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I3fb01ab76cf3df0874ba92e08f3=
-71d17607a8369 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 840 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 28 </div>
-<div style=3D"display:none"> Gerrit-Owner: d12fk &lt;heiko@...515...&gt; </=
-div>
-<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
- </div>
-<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
-1...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: stipa &lt;lstipakov@...277...&gt; <=
-/div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
-41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: d12fk &lt;heiko@...515...&gt=
-; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Sat, 17 May 2025 09:26:16=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: No </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
-
-
---FVE/IMZbDWU=--
+        
+diff --git a/src/openvpn/dns.c b/src/openvpn/dns.c
+index 19de321..221e9a9 100644
+--- a/src/openvpn/dns.c
++++ b/src/openvpn/dns.c
+@@ -350,93 +350,6 @@
+     }
+ }
+ 
+-static void
+-setenv_dns_option(struct env_set *es,
+-                  const char *format, int i, int j,
+-                  const char *value)
+-{
+-    char name[64];
+-    bool name_ok = false;
+-
+-    if (j < 0)
+-    {
+-        name_ok = snprintf(name, sizeof(name), format, i);
+-    }
+-    else
+-    {
+-        name_ok = snprintf(name, sizeof(name), format, i, j);
+-    }
+-
+-    if (!name_ok)
+-    {
+-        msg(M_WARN, "WARNING: dns option setenv name buffer overflow");
+-    }
+-
+-    setenv_str(es, name, value);
+-}
+-
+-void
+-setenv_dns_options(const struct dns_options *o, struct env_set *es)
+-{
+-    struct gc_arena gc = gc_new();
+-    const struct dns_server *s;
+-    const struct dns_domain *d;
+-    int i, j;
+-
+-    for (i = 1, d = o->search_domains; d != NULL; i++, d = d->next)
+-    {
+-        setenv_dns_option(es, "dns_search_domain_%d", i, -1, d->name);
+-    }
+-
+-    for (i = 1, s = o->servers; s != NULL; i++, s = s->next)
+-    {
+-        for (j = 0; j < s->addr_count; ++j)
+-        {
+-            if (s->addr[j].family == AF_INET)
+-            {
+-                setenv_dns_option(es, "dns_server_%d_address_%d", i, j + 1,
+-                                  print_in_addr_t(s->addr[j].in.a4.s_addr, IA_NET_ORDER, &gc));
+-            }
+-            else
+-            {
+-                setenv_dns_option(es, "dns_server_%d_address_%d", i, j + 1,
+-                                  print_in6_addr(s->addr[j].in.a6, 0, &gc));
+-            }
+-            if (s->addr[j].port)
+-            {
+-                setenv_dns_option(es, "dns_server_%d_port_%d", i, j + 1,
+-                                  print_in_port_t(s->addr[j].port, &gc));
+-            }
+-        }
+-
+-        if (s->domains)
+-        {
+-            for (j = 1, d = s->domains; d != NULL; j++, d = d->next)
+-            {
+-                setenv_dns_option(es, "dns_server_%d_resolve_domain_%d", i, j, d->name);
+-            }
+-        }
+-
+-        if (s->dnssec)
+-        {
+-            setenv_dns_option(es, "dns_server_%d_dnssec", i, -1,
+-                              dnssec_value(s->dnssec));
+-        }
+-
+-        if (s->transport)
+-        {
+-            setenv_dns_option(es, "dns_server_%d_transport", i, -1,
+-                              transport_value(s->transport));
+-        }
+-        if (s->sni)
+-        {
+-            setenv_dns_option(es, "dns_server_%d_sni", i, -1, s->sni);
+-        }
+-    }
+-
+-    gc_free(&gc);
+-}
+-
+ #ifdef _WIN32
+ 
+ static void
+@@ -554,6 +467,93 @@
+ #else /* ifdef _WIN32 */
+ 
+ static void
++setenv_dns_option(struct env_set *es,
++                  const char *format, int i, int j,
++                  const char *value)
++{
++    char name[64];
++    bool name_ok = false;
++
++    if (j < 0)
++    {
++        name_ok = snprintf(name, sizeof(name), format, i);
++    }
++    else
++    {
++        name_ok = snprintf(name, sizeof(name), format, i, j);
++    }
++
++    if (!name_ok)
++    {
++        msg(M_WARN, "WARNING: dns option setenv name buffer overflow");
++    }
++
++    setenv_str(es, name, value);
++}
++
++static void
++setenv_dns_options(const struct dns_options *o, struct env_set *es)
++{
++    struct gc_arena gc = gc_new();
++    const struct dns_server *s;
++    const struct dns_domain *d;
++    int i, j;
++
++    for (i = 1, d = o->search_domains; d != NULL; i++, d = d->next)
++    {
++        setenv_dns_option(es, "dns_search_domain_%d", i, -1, d->name);
++    }
++
++    for (i = 1, s = o->servers; s != NULL; i++, s = s->next)
++    {
++        for (j = 0; j < s->addr_count; ++j)
++        {
++            if (s->addr[j].family == AF_INET)
++            {
++                setenv_dns_option(es, "dns_server_%d_address_%d", i, j + 1,
++                                  print_in_addr_t(s->addr[j].in.a4.s_addr, IA_NET_ORDER, &gc));
++            }
++            else
++            {
++                setenv_dns_option(es, "dns_server_%d_address_%d", i, j + 1,
++                                  print_in6_addr(s->addr[j].in.a6, 0, &gc));
++            }
++            if (s->addr[j].port)
++            {
++                setenv_dns_option(es, "dns_server_%d_port_%d", i, j + 1,
++                                  print_in_port_t(s->addr[j].port, &gc));
++            }
++        }
++
++        if (s->domains)
++        {
++            for (j = 1, d = s->domains; d != NULL; j++, d = d->next)
++            {
++                setenv_dns_option(es, "dns_server_%d_resolve_domain_%d", i, j, d->name);
++            }
++        }
++
++        if (s->dnssec)
++        {
++            setenv_dns_option(es, "dns_server_%d_dnssec", i, -1,
++                              dnssec_value(s->dnssec));
++        }
++
++        if (s->transport)
++        {
++            setenv_dns_option(es, "dns_server_%d_transport", i, -1,
++                              transport_value(s->transport));
++        }
++        if (s->sni)
++        {
++            setenv_dns_option(es, "dns_server_%d_sni", i, -1, s->sni);
++        }
++    }
++
++    gc_free(&gc);
++}
++
++static void
+ updown_env_set(bool up, const struct dns_options *o, const struct tuntap *tt, struct env_set *es)
+ {
+     setenv_str(es, "dev", tt->actual_name);
+diff --git a/src/openvpn/dns.h b/src/openvpn/dns.h
+index 4cc1e73..c56d603 100644
+--- a/src/openvpn/dns.h
++++ b/src/openvpn/dns.h
+@@ -168,14 +168,6 @@
+                      struct dns_updown_runner_info *duri);
+ 
+ /**
+- * Puts the DNS options into an environment set.
+- *
+- * @param   o           Pointer to the DNS options to set
+- * @param   es          Pointer to the env_set to set the options into
+- */
+-void setenv_dns_options(const struct dns_options *o, struct env_set *es);
+-
+-/**
+  * Prints configured DNS options.
+  *
+  * @param   o           Pointer to the DNS options to print
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index 3c1632f..810bb56 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -1059,11 +1059,6 @@
+             setenv_local_entry(es, o->ce.local_list->array[i], i+1);
+         }
+     }
+-
+-    if (!o->pull)
+-    {
+-        setenv_dns_options(&o->dns_options, es);
+-    }
+ }
+ 
+ #ifndef _WIN32
+@@ -4182,7 +4177,6 @@
+     if (success)
+     {
+         dns_options_postprocess_pull(&o->dns_options);
+-        setenv_dns_options(&o->dns_options, es);
+ #if defined(_WIN32) || defined(TARGET_ANDROID)
+         tuntap_options_copy_dns(o);
+ #else
 
