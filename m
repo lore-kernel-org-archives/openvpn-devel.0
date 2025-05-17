@@ -1,15 +1,15 @@
 From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Sat, 17 May 2025 09:51:22 +0000
+Date: Sat, 17 May 2025 09:51:24 +0000
 In-Reply-To: <gerrit.1733989644000.I3fb01ab76cf3df0874ba92e08f371d17607a8369@...2715...>
 References: <gerrit.1733989644000.I3fb01ab76cf3df0874ba92e08f371d17607a8369@...2715...>
 Reply-To: gert@...1296..., arne-openvpn@...1227..., heiko@...515...,
  openvpn-devel@lists.sourceforge.net, frank@...2641...,
  lstipakov@...277...
-Message-ID: <98e56d502d4505a2a7efcf93c9fe4a95c4d9568b-EmailReplacePatchSet-HTML@...2715...>
+Message-ID: <98e56d502d4505a2a7efcf93c9fe4a95c4d9568b-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="8O1PWKvDoIc="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="qo8XmhAG3ZM="; charset=UTF-8
 Subject: [Openvpn-devel] [M] Change in openvpn[master]: dns: don't publish
  env vars to non-dns scripts
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -20,19 +20,15 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: d12fk <heiko@...515...>, plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>, stipa <lstipakov@...277...>
+To: d12fk <heiko@...515...>
+Cc: stipa <lstipakov@...277...>, flichtenheld <frank@...2641...>, plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---8O1PWKvDoIc=
+--qo8XmhAG3ZM=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-cron2 has uploaded a new patch set (#29) to the change originally created b=
-y d12fk. ( http://gerrit.openvpn.net/c/openvpn/+/840?usp=3Demail )
-
-The following approvals got outdated and were removed:
-Code-Review+2 by cron2
-
+cron2 has submitted this change. ( http://gerrit.openvpn.net/c/openvpn/+/84=
+0?usp=3Demail )
 
 Change subject: dns: don't publish env vars to non-dns scripts
 ......................................................................
@@ -57,7 +53,7 @@ M src/openvpn/options.c
 3 files changed, 87 insertions(+), 101 deletions(-)
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/40/840/29
+
 
 diff --git a/src/openvpn/dns.c b/src/openvpn/dns.c
 index 19de321..221e9a9 100644
@@ -320,65 +316,62 @@ Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-CC: stipa <lstipakov@...277...>
-Gerrit-MessageType: newpatchset
+Gerrit-MessageType: merged
 
---8O1PWKvDoIc=
+--qo8XmhAG3ZM=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p>cron2 <strong>uploaded patch set #29</strong> to the change originally c=
-reated by d12fk.</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/840=
-?usp=3Demail">View Change</a></p><p>The following approvals got outdated an=
-d were removed:
-Code-Review+2 by cron2</p><pre style=3D"font-family: monospace,monospace; w=
-hite-space: pre-wrap;">dns: don&#39;t publish env vars to non-dns scripts<b=
-r><br>With --dns-updown in place we no longer need --dns option related var=
-s in<br>the environment for other script hooks. Code for doing that is remo=
-ved and<br>the function to set --dns stuff made static, for internal use on=
-ly.<br><br>Change-Id: I3fb01ab76cf3df0874ba92e08f371d17607a8369<br>Signed-o=
-ff-by: Heiko Hund &lt;heiko@...2662...&gt;<br>Acked-by: Gert Doering &lt;ge=
-rt@...1296...&gt;<br>Message-Id: &lt;20250517092637.2103-1-gert@...1296...&=
-gt;<br>URL: https://www.mail-archive.com/search?l=3Dmid&amp;q=3D20250517092=
-637.2103-1-gert@...1296...<br>Signed-off-by: Gert Doering &lt;gert@...1725...=
-..&gt;<br>---<br>M src/openvpn/dns.c<br>M src/openvpn/dns.h<br>M src/openvp=
-n/options.c<br>3 files changed, 87 insertions(+), 101 deletions(-)<br><br><=
-/pre><pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;=
-">git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/40/840/29</p=
-re><pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;">=
-<span>diff --git a/src/openvpn/dns.c b/src/openvpn/dns.c</span><br><span>in=
-dex 19de321..221e9a9 100644</span><br><span>--- a/src/openvpn/dns.c</span><=
-br><span>+++ b/src/openvpn/dns.c</span><br><span>@@ -350,93 +350,6 @@</span=
-><br><span>     }</span><br><span> }</span><br><span> </span><br><span styl=
-e=3D"color: hsl(0, 100%, 40%);">-static void</span><br><span style=3D"color=
-: hsl(0, 100%, 40%);">-setenv_dns_option(struct env_set *es,</span><br><spa=
-n style=3D"color: hsl(0, 100%, 40%);">-                  const char *format=
-, int i, int j,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-      =
-            const char *value)</span><br><span style=3D"color: hsl(0, 100%,=
- 40%);">-{</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    char na=
-me[64];</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    bool name_=
-ok =3D false;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><=
-br><span style=3D"color: hsl(0, 100%, 40%);">-    if (j &lt; 0)</span><br><=
-span style=3D"color: hsl(0, 100%, 40%);">-    {</span><br><span style=3D"co=
-lor: hsl(0, 100%, 40%);">-        name_ok =3D snprintf(name, sizeof(name), =
-format, i);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    }</spa=
-n><br><span style=3D"color: hsl(0, 100%, 40%);">-    else</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-    {</span><br><span style=3D"color: h=
-sl(0, 100%, 40%);">-        name_ok =3D snprintf(name, sizeof(name), format=
-, i, j);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    }</span><=
-br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"col=
-or: hsl(0, 100%, 40%);">-    if (!name_ok)</span><br><span style=3D"color: =
-hsl(0, 100%, 40%);">-    {</span><br><span style=3D"color: hsl(0, 100%, 40%=
-);">-        msg(M_WARN, &quot;WARNING: dns option setenv name buffer overf=
-low&quot;);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    }</spa=
-n><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"=
-color: hsl(0, 100%, 40%);">-    setenv_str(es, name, value);</span><br><spa=
-n style=3D"color: hsl(0, 100%, 40%);">-}</span><br><span style=3D"color: hs=
-l(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-vo=
-id</span><br><span style=3D"color: hsl(0, 100%, 40%);">-setenv_dns_options(=
-const struct dns_options *o, struct env_set *es)</span><br><span style=3D"c=
-olor: hsl(0, 100%, 40%);">-{</span><br><span style=3D"color: hsl(0, 100%, 4=
-0%);">-    struct gc_arena gc =3D gc_new();</span><br><span style=3D"color:=
- hsl(0, 100%, 40%);">-    const struct dns_server *s;</span><br><span style=
+<p>cron2 <strong>submitted</strong> this change.</p><p><a href=3D"http://ge=
+rrit.openvpn.net/c/openvpn/+/840?usp=3Demail">View Change</a></p><div style=
+=3D"white-space:pre-wrap"></div><pre style=3D"font-family: monospace,monosp=
+ace; white-space: pre-wrap;">dns: don&#39;t publish env vars to non-dns scr=
+ipts<br><br>With --dns-updown in place we no longer need --dns option relat=
+ed vars in<br>the environment for other script hooks. Code for doing that i=
+s removed and<br>the function to set --dns stuff made static, for internal =
+use only.<br><br>Change-Id: I3fb01ab76cf3df0874ba92e08f371d17607a8369<br>Si=
+gned-off-by: Heiko Hund &lt;heiko@...2662...&gt;<br>Acked-by: Gert Doering =
+&lt;gert@...1296...&gt;<br>Message-Id: &lt;20250517092637.2103-1-gert@...1711...=
+96...&gt;<br>URL: https://www.mail-archive.com/search?l=3Dmid&amp;q=3D20250=
+517092637.2103-1-gert@...1296...<br>Signed-off-by: Gert Doering &lt;gert@...1186...=
+.1296...&gt;<br>---<br>M src/openvpn/dns.c<br>M src/openvpn/dns.h<br>M src/=
+openvpn/options.c<br>3 files changed, 87 insertions(+), 101 deletions(-)<br=
+><br></pre>
+<pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><sp=
+an>diff --git a/src/openvpn/dns.c b/src/openvpn/dns.c</span><br><span>index=
+ 19de321..221e9a9 100644</span><br><span>--- a/src/openvpn/dns.c</span><br>=
+<span>+++ b/src/openvpn/dns.c</span><br><span>@@ -350,93 +350,6 @@</span><b=
+r><span>     }</span><br><span> }</span><br><span> </span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-static void</span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-setenv_dns_option(struct env_set *es,</span><br><span=
+ style=3D"color: hsl(0, 100%, 40%);">-                  const char *format,=
+ int i, int j,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-       =
+           const char *value)</span><br><span style=3D"color: hsl(0, 100%, =
+40%);">-{</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    char nam=
+e[64];</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    bool name_o=
+k =3D false;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-    if (j &lt; 0)</span><br><s=
+pan style=3D"color: hsl(0, 100%, 40%);">-    {</span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-        name_ok =3D snprintf(name, sizeof(name), f=
+ormat, i);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    }</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-    else</span><br><span st=
+yle=3D"color: hsl(0, 100%, 40%);">-    {</span><br><span style=3D"color: hs=
+l(0, 100%, 40%);">-        name_ok =3D snprintf(name, sizeof(name), format,=
+ i, j);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    }</span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"colo=
+r: hsl(0, 100%, 40%);">-    if (!name_ok)</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-    {</span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">-        msg(M_WARN, &quot;WARNING: dns option setenv name buffer overfl=
+ow&quot;);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    }</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"c=
+olor: hsl(0, 100%, 40%);">-    setenv_str(es, name, value);</span><br><span=
+ style=3D"color: hsl(0, 100%, 40%);">-}</span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-voi=
+d</span><br><span style=3D"color: hsl(0, 100%, 40%);">-setenv_dns_options(c=
+onst struct dns_options *o, struct env_set *es)</span><br><span style=3D"co=
+lor: hsl(0, 100%, 40%);">-{</span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">-    struct gc_arena gc =3D gc_new();</span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">-    const struct dns_server *s;</span><br><span style=
 =3D"color: hsl(0, 100%, 40%);">-    const struct dns_domain *d;</span><br><=
 span style=3D"color: hsl(0, 100%, 40%);">-    int i, j;</span><br><span sty=
 le=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 1=
@@ -606,8 +599,8 @@ div>
 ts.sourceforge.net&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: stipa &lt;lstipakov@...277...&gt; <=
 /div>
-<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
+<div style=3D"display:none"> Gerrit-MessageType: merged </div>
 
 
---8O1PWKvDoIc=--
+--qo8XmhAG3ZM=--
 
