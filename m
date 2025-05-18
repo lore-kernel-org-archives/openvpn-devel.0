@@ -1,11 +1,16 @@
-From: Gert Doering <gert@...1296...>
-Date: Mon, 19 May 2025 00:02:39 +0200
-Message-ID: <20250518220245.24489-1-gert@...1296...>
-In-Reply-To: <gerrit.1745405723000.Ica02244c9f0ac9b4690a51f940fda9d900465289@...2715...>
-References: <gerrit.1745405723000.Ica02244c9f0ac9b4690a51f940fda9d900465289@...2715...>
+From: "cron2 (Code Review)" <gerrit@...515...>
+Date: Sun, 18 May 2025 22:18:22 +0000
+In-Reply-To: <gerrit.1737029493000.Ie82bcc7a8e583de9156b185d71d1a323ed8df3fc@...2715...>
+References: <gerrit.1737029493000.Ie82bcc7a8e583de9156b185d71d1a323ed8df3fc@...2715...>
+Reply-To: gert@...1296..., arne-openvpn@...1227..., marco@...2726...,
+ openvpn-devel@lists.sourceforge.net, frank@...2641...
+Message-ID: <ecb2931f2c8188bca83b105640d3f0f02b42f9e9-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v4] Make --dh none behaviour default if not
- specified
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="RdxOhosXQJQ="; charset=UTF-8
+Subject: [Openvpn-devel] [L] Change in openvpn[master]: PUSH_UPDATE message
+ sender: enabling the server to send PUSH_UPDATE c...
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,109 +19,119 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: mrbff <marco@...2726...>
+Cc: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-From: Arne Schwabe <arne@...1227...>
+--RdxOhosXQJQ=
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Nowadays ciphers that are using still DH and not ECDH are rarely chosen
-as best cipher suite. Our man page even indicates that OpenSSL 1.0.1+
-supports ECDH cipher suites. So it does not feel useful to force
-specifying --dh anymore.
+Attention is currently required from: flichtenheld, mrbff, plaisthos.
 
-Side note: Custom generated Diffie Hellmann parameters are also
-discouraged nowadays. The newest OpenSSL FIPS libraries even flat
-out reject them:
+cron2 has posted comments on this change. ( http://gerrit.openvpn.net/c/ope=
+nvpn/+/869?usp=3Demail )
 
-   FIPS 186-4 type domain parameters no longer allowed in FIPS mode,
-   since the required validation routines were removed from FIPS 186-5
+Change subject: PUSH_UPDATE message sender: enabling the server to send PUS=
+H_UPDATE control messages
+......................................................................
 
-But instead of adding support for loading the well-known curve just make
-dh none the default and the recommended option as finite field Diffie
-Hellmann is being deprecated anyway
-(https://datatracker.ietf.org/doc/draft-ietf-tls-deprecate-obsolete-kex/)
-and not supported by TLS 1.3 at all.
 
-Change-Id: Ica02244c9f0ac9b4690a51f940fda9d900465289
-Signed-off-by: Arne Schwabe <arne-openvpn@...1227...>
-Acked-by: Gert Doering <gert@...1296...>
----
+Patch Set 5: Code-Review-1
 
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to master.
+(1 comment)
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/945
-This mail reflects revision 4 of this Change.
+Patchset:
 
-Signed-off-by line for the author was added as per our policy.
+PS5:
+This needs a patch to doc/management-notes.txt and the super-long text blob=
+ in test_push_update_msg.c needs to be wrapped to multiple lines
 
-Acked-by according to Gerrit (reflected above):
-Gert Doering <gert@...1296...>
+```
+ "foo bar "
+ "and so on "
+ "the saga goes"
+```
 
-        
-diff --git a/Changes.rst b/Changes.rst
-index a4f5e57..e297334 100644
---- a/Changes.rst
-+++ b/Changes.rst
-@@ -103,6 +103,11 @@
- - ``--x509-username-field`` will no longer automatically convert fieldnames to
-   uppercase. This is deprecated since OpenVPN 2.4, and has now been removed.
- 
-+- ``--dh none`` is now the default if ``--dh`` is not specified. Modern TLS
-+  implementations will prefer ECDH and other more modern algorithms anyway.
-+  And finite field Diffie Hellman is in the proces of being deprecated
-+  (see draft-ietf-tls-deprecate-obsolete-kex)
-+
- Overview of changes in 2.6
- ==========================
- 
-diff --git a/doc/man-sections/tls-options.rst b/doc/man-sections/tls-options.rst
-index 0638d09..012518b 100644
---- a/doc/man-sections/tls-options.rst
-+++ b/doc/man-sections/tls-options.rst
-@@ -171,16 +171,22 @@
- 
- 
- --dh file
--  File containing Diffie Hellman parameters in .pem format (required for
--  ``--tls-server`` only).
-+  File containing finite field Diffie Hellman parameters in .pem format (used
-+  by ``--tls-server`` only).
- 
--  Set ``file`` to :code:`none` to disable Diffie Hellman key exchange (and
--  use ECDH only). Note that this requires peers to be using an SSL library
--  that supports ECDH TLS cipher suites (e.g. OpenSSL 1.0.1+, or
--  mbed TLS 2.0+).
-+  Setting``file`` to :code:`none` to disable fine field Diffie Hellman
-+  key exchange (and to only use ECDH or newer hybrid key agreement algorithms
-+  like X25519MLKEM768 instead).
-+  Note that this requires peers to be using an SSL library that supports
-+  ECDH TLS cipher suites (e.g. OpenSSL 1.0.1+, or mbed TLS 2.0+). Starting
-+  with 2.7.0, this is the same as not specifying ``--dh`` at all.
- 
--  Use ``openssl dhparam -out dh2048.pem 2048`` to generate 2048-bit DH
--  parameters. Diffie Hellman parameters may be considered public.
-+  Diffie Hellman parameters can be generated using
-+  ``openssl dhparam -out dh2048.pem 2048`` but it is recommended to
-+  use ``none`` as finite field Diffie Hellman have been replaced
-+  by more modern variants like ECDH.
-+
-+  Diffie Hellman parameters may be considered public.
- 
- --ecdh-curve name
-   Specify the curve to use for elliptic curve Diffie Hellman. Available
-diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index 3c1632f..1c7b4bc 100644
---- a/src/openvpn/options.c
-+++ b/src/openvpn/options.c
-@@ -3708,8 +3708,6 @@
- 
-     if (o->tls_server)
-     {
--        /* Check that DH file is specified, or explicitly disabled */
--        notnull(o->dh_file, "DH file (--dh)");
-         if (streq(o->dh_file, "none"))
-         {
-             o->dh_file = NULL;
+
+
+--
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/869?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings
+
+Gerrit-Project: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: Ie82bcc7a8e583de9156b185d71d1a323ed8df3fc
+Gerrit-Change-Number: 869
+Gerrit-PatchSet: 5
+Gerrit-Owner: mrbff <marco@...2726...>
+Gerrit-Reviewer: cron2 <gert@...1296...>
+Gerrit-Reviewer: flichtenheld <frank@...2641...>
+Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Attention: flichtenheld <frank@...2641...>
+Gerrit-Attention: mrbff <marco@...2726...>
+Gerrit-Comment-Date: Sun, 18 May 2025 22:18:22 +0000
+Gerrit-HasComments: Yes
+Gerrit-Has-Labels: Yes
+Gerrit-MessageType: comment
+
+--RdxOhosXQJQ=
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<p> Attention is currently required from: flichtenheld, mrbff, plaisthos. <=
+/p>
+<p>Patch set 5:<span style=3D"border-radius: 3px; display: inline-block; ma=
+rgin: 0 2px; padding: 4px;background-color: #ffd4d4;">Code-Review -1</span>=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/869?usp=3Demail">Vi=
+ew Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0=
+;"><li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-s=
+tyle: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p s=
+tyle=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn=
+/+/869?tab=3Dcomments">Patch Set #5:</a> </p><p style=3D"white-space: pre-w=
+rap; word-wrap: break-word;">This needs a patch to doc/management-notes.txt=
+ and the super-long text blob in test_push_update_msg.c needs to be wrapped=
+ to multiple lines</p><pre style=3D"font-family: monospace,monospace; white=
+-space: pre-wrap;">```<br> &quot;foo bar &quot;<br> &quot;and so on &quot;<=
+br> &quot;the saga goes&quot;<br>```</pre></li></ul></li></ul><p>To view, v=
+isit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/869?usp=3Demail">chan=
+ge 869</a>. To unsubscribe, or for help writing mail filters, visit <a href=
+=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope ite=
+mtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"action"=
+ itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"h=
+ttp://gerrit.openvpn.net/c/openvpn/+/869?usp=3Demail"/><meta itemprop=3D"na=
+me" content=3D"View Change"/></div></div>
+
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: Ie82bcc7a8e583de9156b185d71d=
+1a323ed8df3fc </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 869 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 5 </div>
+<div style=3D"display:none"> Gerrit-Owner: mrbff &lt;marco@...2726...&gt; <=
+/div>
+<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
+ </div>
+<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
+1...&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
+.1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
+41...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: mrbff &lt;marco@...2726...&g=
+t; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Sun, 18 May 2025 22:18:22=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
+
+
+--RdxOhosXQJQ=--
 
