@@ -1,17 +1,11 @@
-From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Sun, 18 May 2025 17:23:10 +0000
+From: Gert Doering <gert@...1296...>
+Date: Sun, 18 May 2025 19:23:23 +0200
+Message-ID: <20250518172329.21239-1-gert@...1296...>
 In-Reply-To: <gerrit.1742977449000.Id9dbb4d3c550bd4c13f6ee97e67749686457d9fc@...2715...>
 References: <gerrit.1742977449000.Id9dbb4d3c550bd4c13f6ee97e67749686457d9fc@...2715...>
-Reply-To: gert@...1296..., arne-openvpn@...1227...,
- gianmarco@...2726..., openvpn-devel@lists.sourceforge.net,
- frank@...2641...
-Message-ID: <e0c3a2e98722af64f6260cc04e02373199954f73-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="147vPvcCKV0="; charset=UTF-8
-Subject: [Openvpn-devel] [XS] Change in openvpn[master]:
- Explicit-exit-notify and multisocket interaction
+Subject: [Openvpn-devel] [PATCH v2] Explicit-exit-notify and multisocket
+ interaction
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,109 +14,49 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: its_Giaan <gianmarco@...2726...>
-Cc: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---147vPvcCKV0=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+From: Gianmarco De Gregori <gianmarco@...2726...>
 
-Attention is currently required from: flichtenheld, its_Giaan, plaisthos.
+Check signals after timeout handling to avoid
+unusual delay when using explicit-exit-notify.
 
-cron2 has posted comments on this change. ( http://gerrit.openvpn.net/c/ope=
-nvpn/+/917?usp=3Demail )
+Github: fixes OpenVPN/openvpn#702
 
-Change subject: Explicit-exit-notify and multisocket interaction
-......................................................................
+Change-Id: Id9dbb4d3c550bd4c13f6ee97e67749686457d9fc
+Signed-off-by: Gianmarco De Gregori <gianmarco@...2726...>
+Acked-by: Gert Doering <gert@...1296...>
+---
 
+This change was reviewed on Gerrit and approved by at least one
+developer. I request to merge it to master.
 
-Patch Set 2: Code-Review+2
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/917
+This mail reflects revision 2 of this Change.
 
-(1 comment)
+Acked-by according to Gerrit (reflected above):
+Gert Doering <gert@...1296...>
 
-Patchset:
-
-PS2:
-tested, works, some more comment on timing and comparing to 2.6 in https://=
-github.com/OpenVPN/openvpn/issues/702
-
-
-
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/917?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings
-
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: Id9dbb4d3c550bd4c13f6ee97e67749686457d9fc
-Gerrit-Change-Number: 917
-Gerrit-PatchSet: 2
-Gerrit-Owner: its_Giaan <gianmarco@...2726...>
-Gerrit-Reviewer: cron2 <gert@...1296...>
-Gerrit-Reviewer: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: its_Giaan <gianmarco@...2726...>
-Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Comment-Date: Sun, 18 May 2025 17:23:10 +0000
-Gerrit-HasComments: Yes
-Gerrit-Has-Labels: Yes
-Gerrit-MessageType: comment
-
---147vPvcCKV0=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<p> Attention is currently required from: flichtenheld, its_Giaan, plaistho=
-s. </p>
-<p>Patch set 2:<span style=3D"border-radius: 3px; display: inline-block; ma=
-rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/917?usp=3Demail">Vi=
-ew Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0=
-;"><li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-s=
-tyle: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p s=
-tyle=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn=
-/+/917?tab=3Dcomments">Patch Set #2:</a> </p><p style=3D"white-space: pre-w=
-rap; word-wrap: break-word;">tested, works, some more comment on timing and=
- comparing to 2.6 in https://github.com/OpenVPN/openvpn/issues/702</p></li>=
-</ul></li></ul><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/ope=
-nvpn/+/917?usp=3Demail">change 917</a>. To unsubscribe, or for help writing=
- mail filters, visit <a href=3D"http://gerrit.openvpn.net/settings">setting=
-s</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div i=
-temscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><lin=
-k itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/917?usp=3D=
-email"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
-
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: Id9dbb4d3c550bd4c13f6ee97e67=
-749686457d9fc </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 917 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
-<div style=3D"display:none"> Gerrit-Owner: its_Giaan &lt;gianmarco@...2786...=
-..&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
- </div>
-<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
-1...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: its_Giaan &lt;gianmarco@...1665...=
-726...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
-41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Sun, 18 May 2025 17:23:10=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
-
-
---147vPvcCKV0=--
+        
+diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
+index a673ec1..8e2c4d4 100644
+--- a/src/openvpn/multi.c
++++ b/src/openvpn/multi.c
+@@ -4265,13 +4265,13 @@
+         {
+             /* process the I/O which triggered select */
+             multi_io_process_io(multi);
+-            MULTI_CHECK_SIG(multi);
+         }
+         else if (status == 0)
+         {
+             multi_io_action(multi, NULL, TA_TIMEOUT, false);
+         }
+ 
++        MULTI_CHECK_SIG(multi);
+         perf_pop();
+     }
+ }
 
