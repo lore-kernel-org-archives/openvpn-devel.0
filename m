@@ -1,14 +1,15 @@
 From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Sun, 18 May 2025 16:28:59 +0000
+Date: Sun, 18 May 2025 16:29:01 +0000
 In-Reply-To: <gerrit.1746807825000.I515f96c99f92ba144b60e8504cee74915de3efa3@...2715...>
 References: <gerrit.1746807825000.I515f96c99f92ba144b60e8504cee74915de3efa3@...2715...>
 Reply-To: gert@...1296..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <e4d94cb35df11a8da36838428165ba1e88885103-EmailReplacePatchSet-HTML@...2715...>
+ openvpn-devel@lists.sourceforge.net, frank@...2641...,
+ yura.uddr@...277...
+Message-ID: <e4d94cb35df11a8da36838428165ba1e88885103-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="JJ224Hb4SM0="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="/5Bc3ahWb1s="; charset=UTF-8
 Subject: [Openvpn-devel] [S] Change in openvpn[master]: GHA: Dependency and
  Actions update May 2025
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -19,19 +20,15 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: flichtenheld <frank@...2641...>, plaisthos <arne-openvpn@...1227...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: flichtenheld <frank@...2641...>
+Cc: uddr <yura.uddr@...277...>, plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---JJ224Hb4SM0=
+--/5Bc3ahWb1s=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-cron2 has uploaded a new patch set (#2) to the change originally created by=
- flichtenheld. ( http://gerrit.openvpn.net/c/openvpn/+/1001?usp=3Demail )
-
-The following approvals got outdated and were removed:
-Code-Review+2 by uddr
-
+cron2 has submitted this change. ( http://gerrit.openvpn.net/c/openvpn/+/10=
+01?usp=3Demail )
 
 Change subject: GHA: Dependency and Actions update May 2025
 ......................................................................
@@ -57,7 +54,7 @@ M renovate.json
 2 files changed, 22 insertions(+), 14 deletions(-)
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/01/1001/2
+
 
 diff --git a/.github/workflows/build.yaml b/.github/workflows/build.yaml
 index 0f5e617..d4fdc9d 100644
@@ -191,30 +188,27 @@ Gerrit-Owner: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-Reviewer: uddr <yura.uddr@...277...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-MessageType: newpatchset
+Gerrit-MessageType: merged
 
---JJ224Hb4SM0=
+--/5Bc3ahWb1s=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p>cron2 <strong>uploaded patch set #2</strong> to the change originally cr=
-eated by flichtenheld.</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn=
-/+/1001?usp=3Demail">View Change</a></p><p>The following approvals got outd=
-ated and were removed:
-Code-Review+2 by uddr</p><pre style=3D"font-family: monospace,monospace; wh=
-ite-space: pre-wrap;">GHA: Dependency and Actions update May 2025<br><br>ch=
-ore(deps): update dependency aws/aws-lc to v1.51.2<br>chore(deps): update g=
-ithub actions<br>chore(deps): update dependency libressl/portable to v4.1.0=
-<br>chore(config): migrate config renovate.json<br>chore(deps): update vcpk=
-g digest to b12aa38<br><br>Change-Id: I515f96c99f92ba144b60e8504cee74915de3=
-efa3<br>Signed-off-by: Frank Lichtenheld &lt;frank@...2641...&gt;<br>Acked-=
-by: Yuriy Darnobyt &lt;yura.uddr@...277...&gt;<br>Message-Id: &lt;202505181=
-53724.8099-1-gert@...1296...&gt;<br>URL: https://www.mail-archive.com/openv=
-pn-devel@lists.sourceforge.net/msg31682.html<br>Signed-off-by: Gert Doering=
- &lt;gert@...1296...&gt;<br>---<br>M .github/workflows/build.yaml<br>M reno=
-vate.json<br>2 files changed, 22 insertions(+), 14 deletions(-)<br><br></pr=
-e><pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;">g=
-it pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/01/1001/2</pre>=
+<p>cron2 <strong>submitted</strong> this change.</p><p><a href=3D"http://ge=
+rrit.openvpn.net/c/openvpn/+/1001?usp=3Demail">View Change</a></p><div styl=
+e=3D"white-space:pre-wrap"></div><pre style=3D"font-family: monospace,monos=
+pace; white-space: pre-wrap;">GHA: Dependency and Actions update May 2025<b=
+r><br>chore(deps): update dependency aws/aws-lc to v1.51.2<br>chore(deps): =
+update github actions<br>chore(deps): update dependency libressl/portable t=
+o v4.1.0<br>chore(config): migrate config renovate.json<br>chore(deps): upd=
+ate vcpkg digest to b12aa38<br><br>Change-Id: I515f96c99f92ba144b60e8504cee=
+74915de3efa3<br>Signed-off-by: Frank Lichtenheld &lt;frank@...2641...&gt;<b=
+r>Acked-by: Yuriy Darnobyt &lt;yura.uddr@...277...&gt;<br>Message-Id: &lt;2=
+0250518153724.8099-1-gert@...1296...&gt;<br>URL: https://www.mail-archive.c=
+om/openvpn-devel@lists.sourceforge.net/msg31682.html<br>Signed-off-by: Gert=
+ Doering &lt;gert@...1296...&gt;<br>---<br>M .github/workflows/build.yaml<b=
+r>M renovate.json<br>2 files changed, 22 insertions(+), 14 deletions(-)<br>=
+<br></pre>
 <pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><sp=
 an>diff --git a/.github/workflows/build.yaml b/.github/workflows/build.yaml=
 </span><br><span>index 0f5e617..d4fdc9d 100644</span><br><span>--- a/.githu=
@@ -344,8 +338,8 @@ e74915de3efa3 </div>
 gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
+<div style=3D"display:none"> Gerrit-MessageType: merged </div>
 
 
---JJ224Hb4SM0=--
+--/5Bc3ahWb1s=--
 
