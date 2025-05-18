@@ -1,11 +1,10 @@
+Date: Sun, 18 May 2025 19:27:09 +0200 (CEST)
+Message-Id: <202505181727.54IHR9nk040213@...2054...>
 From: Gert Doering <gert@...1296...>
-Date: Sun, 18 May 2025 19:23:23 +0200
-Message-ID: <20250518172329.21239-1-gert@...1296...>
-In-Reply-To: <gerrit.1742977449000.Id9dbb4d3c550bd4c13f6ee97e67749686457d9fc@...2715...>
-References: <gerrit.1742977449000.Id9dbb4d3c550bd4c13f6ee97e67749686457d9fc@...2715...>
-MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v2] Explicit-exit-notify and multisocket
- interaction
+In-Reply-To: <20250518172329.21239-1-gert@...1296...>
+References: <20250518172329.21239-1-gert@...1296...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Explicit-exit-notify and
+ multisocket interaction
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,47 +15,33 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Gianmarco De Gregori <gianmarco@...2726...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-From: Gianmarco De Gregori <gianmarco@...2726...>
+Does the job :-) - back to 2.6 level wrt "ctrl-c and EEN".
 
-Check signals after timeout handling to avoid
-unusual delay when using explicit-exit-notify.
+The whole event loop looks a bit unsatisfying, though, with checking
+the signals twice in such a short loop... but I guess this needs much
+deeper digging.
 
-Github: fixes OpenVPN/openvpn#702
+Your patch has been applied to the master branch.
 
-Change-Id: Id9dbb4d3c550bd4c13f6ee97e67749686457d9fc
-Signed-off-by: Gianmarco De Gregori <gianmarco@...2726...>
-Acked-by: Gert Doering <gert@...1296...>
----
+commit 565d7cf48120d4394258fc3f2aa1b710315cd4e9
+Author: Gianmarco De Gregori
+Date:   Sun May 18 19:23:23 2025 +0200
 
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to master.
+     Explicit-exit-notify and multisocket interaction
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/917
-This mail reflects revision 2 of this Change.
+     Signed-off-by: Gianmarco De Gregori <gianmarco@...2726...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <20250518172329.21239-1-gert@...1296...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg31688.html
+     Signed-off-by: Gert Doering <gert@...1296...>
 
-Acked-by according to Gerrit (reflected above):
-Gert Doering <gert@...1296...>
 
-        
-diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
-index a673ec1..8e2c4d4 100644
---- a/src/openvpn/multi.c
-+++ b/src/openvpn/multi.c
-@@ -4265,13 +4265,13 @@
-         {
-             /* process the I/O which triggered select */
-             multi_io_process_io(multi);
--            MULTI_CHECK_SIG(multi);
-         }
-         else if (status == 0)
-         {
-             multi_io_action(multi, NULL, TA_TIMEOUT, false);
-         }
- 
-+        MULTI_CHECK_SIG(multi);
-         perf_pop();
-     }
- }
+--
+kind regards,
+
+Gert Doering
+
 
