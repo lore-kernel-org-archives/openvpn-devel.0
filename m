@@ -1,16 +1,11 @@
-From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Sun, 18 May 2025 22:02:29 +0000
+From: Gert Doering <gert@...1296...>
+Date: Mon, 19 May 2025 00:02:39 +0200
+Message-ID: <20250518220245.24489-1-gert@...1296...>
 In-Reply-To: <gerrit.1745405723000.Ica02244c9f0ac9b4690a51f940fda9d900465289@...2715...>
 References: <gerrit.1745405723000.Ica02244c9f0ac9b4690a51f940fda9d900465289@...2715...>
-Reply-To: gert@...1296..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <2414efd66fa6fddaba5ae543b952af04350a9c52-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="PFKiG6LO+bQ="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: Make --dh none
- behaviour default if not specified
+Subject: [Openvpn-devel] [PATCH v4] Make --dh none behaviour default if not
+ specified
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,90 +14,109 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: plaisthos <arne-openvpn@...1227...>
-Cc: flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---PFKiG6LO+bQ=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+From: Arne Schwabe <arne@...1227...>
 
-Attention is currently required from: flichtenheld, plaisthos.
+Nowadays ciphers that are using still DH and not ECDH are rarely chosen
+as best cipher suite. Our man page even indicates that OpenSSL 1.0.1+
+supports ECDH cipher suites. So it does not feel useful to force
+specifying --dh anymore.
 
-cron2 has posted comments on this change. ( http://gerrit.openvpn.net/c/ope=
-nvpn/+/945?usp=3Demail )
+Side note: Custom generated Diffie Hellmann parameters are also
+discouraged nowadays. The newest OpenSSL FIPS libraries even flat
+out reject them:
 
-Change subject: Make --dh none behaviour default if not specified
-......................................................................
+   FIPS 186-4 type domain parameters no longer allowed in FIPS mode,
+   since the required validation routines were removed from FIPS 186-5
 
+But instead of adding support for loading the well-known curve just make
+dh none the default and the recommended option as finite field Diffie
+Hellmann is being deprecated anyway
+(https://datatracker.ietf.org/doc/draft-ietf-tls-deprecate-obsolete-kex/)
+and not supported by TLS 1.3 at all.
 
-Patch Set 4: Code-Review+2
+Change-Id: Ica02244c9f0ac9b4690a51f940fda9d900465289
+Signed-off-by: Arne Schwabe <arne-openvpn@...1227...>
+Acked-by: Gert Doering <gert@...1296...>
+---
 
+This change was reviewed on Gerrit and approved by at least one
+developer. I request to merge it to master.
 
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/945?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/945
+This mail reflects revision 4 of this Change.
 
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: Ica02244c9f0ac9b4690a51f940fda9d900465289
-Gerrit-Change-Number: 945
-Gerrit-PatchSet: 4
-Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
-Gerrit-Reviewer: cron2 <gert@...1296...>
-Gerrit-Reviewer: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Comment-Date: Sun, 18 May 2025 22:02:29 +0000
-Gerrit-HasComments: No
-Gerrit-Has-Labels: Yes
-Gerrit-MessageType: comment
+Signed-off-by line for the author was added as per our policy.
 
---PFKiG6LO+bQ=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Acked-by according to Gerrit (reflected above):
+Gert Doering <gert@...1296...>
 
-<p> Attention is currently required from: flichtenheld, plaisthos. </p>
-<p>Patch set 4:<span style=3D"border-radius: 3px; display: inline-block; ma=
-rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/945?usp=3Demail">Vi=
-ew Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To vie=
-w, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/945?usp=3Demail">=
-change 945</a>. To unsubscribe, or for help writing mail filters, visit <a =
-href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope=
- itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"act=
-ion" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=
-=3D"http://gerrit.openvpn.net/c/openvpn/+/945?usp=3Demail"/><meta itemprop=
-=3D"name" content=3D"View Change"/></div></div>
-
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: Ica02244c9f0ac9b4690a51f940f=
-da9d900465289 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 945 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 4 </div>
-<div style=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@...1711...=
-27...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
- </div>
-<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
-1...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
-41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Sun, 18 May 2025 22:02:29=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: No </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
-
-
---PFKiG6LO+bQ=--
+        
+diff --git a/Changes.rst b/Changes.rst
+index a4f5e57..e297334 100644
+--- a/Changes.rst
++++ b/Changes.rst
+@@ -103,6 +103,11 @@
+ - ``--x509-username-field`` will no longer automatically convert fieldnames to
+   uppercase. This is deprecated since OpenVPN 2.4, and has now been removed.
+ 
++- ``--dh none`` is now the default if ``--dh`` is not specified. Modern TLS
++  implementations will prefer ECDH and other more modern algorithms anyway.
++  And finite field Diffie Hellman is in the proces of being deprecated
++  (see draft-ietf-tls-deprecate-obsolete-kex)
++
+ Overview of changes in 2.6
+ ==========================
+ 
+diff --git a/doc/man-sections/tls-options.rst b/doc/man-sections/tls-options.rst
+index 0638d09..012518b 100644
+--- a/doc/man-sections/tls-options.rst
++++ b/doc/man-sections/tls-options.rst
+@@ -171,16 +171,22 @@
+ 
+ 
+ --dh file
+-  File containing Diffie Hellman parameters in .pem format (required for
+-  ``--tls-server`` only).
++  File containing finite field Diffie Hellman parameters in .pem format (used
++  by ``--tls-server`` only).
+ 
+-  Set ``file`` to :code:`none` to disable Diffie Hellman key exchange (and
+-  use ECDH only). Note that this requires peers to be using an SSL library
+-  that supports ECDH TLS cipher suites (e.g. OpenSSL 1.0.1+, or
+-  mbed TLS 2.0+).
++  Setting``file`` to :code:`none` to disable fine field Diffie Hellman
++  key exchange (and to only use ECDH or newer hybrid key agreement algorithms
++  like X25519MLKEM768 instead).
++  Note that this requires peers to be using an SSL library that supports
++  ECDH TLS cipher suites (e.g. OpenSSL 1.0.1+, or mbed TLS 2.0+). Starting
++  with 2.7.0, this is the same as not specifying ``--dh`` at all.
+ 
+-  Use ``openssl dhparam -out dh2048.pem 2048`` to generate 2048-bit DH
+-  parameters. Diffie Hellman parameters may be considered public.
++  Diffie Hellman parameters can be generated using
++  ``openssl dhparam -out dh2048.pem 2048`` but it is recommended to
++  use ``none`` as finite field Diffie Hellman have been replaced
++  by more modern variants like ECDH.
++
++  Diffie Hellman parameters may be considered public.
+ 
+ --ecdh-curve name
+   Specify the curve to use for elliptic curve Diffie Hellman. Available
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index 3c1632f..1c7b4bc 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -3708,8 +3708,6 @@
+ 
+     if (o->tls_server)
+     {
+-        /* Check that DH file is specified, or explicitly disabled */
+-        notnull(o->dh_file, "DH file (--dh)");
+         if (streq(o->dh_file, "none"))
+         {
+             o->dh_file = NULL;
 
