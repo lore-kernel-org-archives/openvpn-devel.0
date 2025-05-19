@@ -1,16 +1,10 @@
-From: "plaisthos (Code Review)" <gerrit@...515...>
-Date: Mon, 19 May 2025 13:27:48 +0000
+From: Gert Doering <gert@...1296...>
+Date: Mon, 19 May 2025 15:34:08 +0200
+Message-ID: <20250519133414.13843-1-gert@...1296...>
 In-Reply-To: <gerrit.1735395222000.I3bf775bbdea742575210606e174ccafe840677c9@...2715...>
 References: <gerrit.1735395222000.I3bf775bbdea742575210606e174ccafe840677c9@...2715...>
-Reply-To: arne-openvpn@...1227..., openvpn-devel@lists.sourceforge.net,
- frank@...2641...
-Message-ID: <0d03aea9cd9743ffb9e8b267ef1379a82861c51a-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="+wes5bFYeW4="; charset=UTF-8
-Subject: [Openvpn-devel] [M] Change in openvpn[master]: Doxygen: Fix missing
- parameter warnings
+Subject: [Openvpn-devel] [PATCH v5] Doxygen: Fix missing parameter warnings
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,81 +13,314 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: flichtenheld <frank@...2641...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---+wes5bFYeW4=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+From: Frank Lichtenheld <frank@...2641...>
 
-Attention is currently required from: flichtenheld.
+This fixes almost all of the remaining warnings in our
+doxygen. Mostly about missing parameters in otherwise
+documented functions (completely undocumented functions
+do not cause warnings).
 
-plaisthos has posted comments on this change. ( http://gerrit.openvpn.net/c=
-/openvpn/+/848?usp=3Demail )
+Other changes:
+ - Exclude out/ directory (used by CMakePresets.json)
+ - Output doxygen warnings into a separate file, which
+   can be used by CI systems to check for new warnings
+ - Increase DOT_GRAPH_MAX_NODES to avoid warnings about
+   some of the central header files (syshead.h and buffer.h)
 
-Change subject: Doxygen: Fix missing parameter warnings
-......................................................................
+Change-Id: I3bf775bbdea742575210606e174ccafe840677c9
+Signed-off-by: Frank Lichtenheld <frank@...2641...>
+Acked-by: Arne Schwabe <arne-openvpn@...1227...>
+---
 
+This change was reviewed on Gerrit and approved by at least one
+developer. I request to merge it to master.
 
-Patch Set 5: Code-Review+2
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/848
+This mail reflects revision 5 of this Change.
 
+Acked-by according to Gerrit (reflected above):
+Arne Schwabe <arne-openvpn@...1227...>
 
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/848?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings
-
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: I3bf775bbdea742575210606e174ccafe840677c9
-Gerrit-Change-Number: 848
-Gerrit-PatchSet: 5
-Gerrit-Owner: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Comment-Date: Mon, 19 May 2025 13:27:48 +0000
-Gerrit-HasComments: No
-Gerrit-Has-Labels: Yes
-Gerrit-MessageType: comment
-
---+wes5bFYeW4=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<p> Attention is currently required from: flichtenheld. </p>
-<p>Patch set 5:<span style=3D"border-radius: 3px; display: inline-block; ma=
-rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/848?usp=3Demail">Vi=
-ew Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To vie=
-w, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/848?usp=3Demail">=
-change 848</a>. To unsubscribe, or for help writing mail filters, visit <a =
-href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope=
- itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"act=
-ion" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=
-=3D"http://gerrit.openvpn.net/c/openvpn/+/848?usp=3Demail"/><meta itemprop=
-=3D"name" content=3D"View Change"/></div></div>
-
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I3bf775bbdea742575210606e174=
-ccafe840677c9 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 848 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 5 </div>
-<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
-.&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
-41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Mon, 19 May 2025 13:27:48=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: No </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
-
-
---+wes5bFYeW4=--
+        
+diff --git a/doc/doxygen/openvpn.doxyfile.in b/doc/doxygen/openvpn.doxyfile.in
+index 573b7c2..dd5f08f 100644
+--- a/doc/doxygen/openvpn.doxyfile.in
++++ b/doc/doxygen/openvpn.doxyfile.in
+@@ -852,7 +852,7 @@
+ # messages should be written. If left blank the output is written to standard
+ # error (stderr).
+ 
+-WARN_LOGFILE           =
++WARN_LOGFILE           = @abs_top_builddir@/doc/doxygen.warnings.log
+ 
+ #---------------------------------------------------------------------------
+ # Configuration options related to the input files
+@@ -938,7 +938,7 @@
+ # Note that relative paths are relative to the directory from which doxygen is
+ # run.
+ 
+-EXCLUDE                =
++EXCLUDE                = @abs_top_srcdir@/out/
+ 
+ # The EXCLUDE_SYMLINKS tag can be used to select whether or not files or
+ # directories that are symbolic links (a Unix file system feature) are excluded
+@@ -2600,7 +2600,7 @@
+ # Minimum value: 0, maximum value: 10000, default value: 50.
+ # This tag requires that the tag HAVE_DOT is set to YES.
+ 
+-DOT_GRAPH_MAX_NODES    = 50
++DOT_GRAPH_MAX_NODES    = 150
+ 
+ # The MAX_DOT_GRAPH_DEPTH tag can be used to set the maximum depth of the graphs
+ # generated by dot. A depth value of 3 means that only nodes reachable from the
+diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c
+index af1d008..ea8cce1 100644
+--- a/src/openvpn/forward.c
++++ b/src/openvpn/forward.c
+@@ -1523,10 +1523,10 @@
+  * IPv6 packet in buf and sends it directly back to the client via the tun
+  * device when used on a client and via the link if used on the server.
+  *
+- * @param buf       - The buf containing the packet for which the icmp6
+- *                    unreachable should be constructed.
+- *
+- * @param client    - determines whether to the send packet back via tun or link
++ * @param c         Tunnel context
++ * @param buf       The buf containing the packet for which the icmp6
++ *                  unreachable should be constructed.
++ * @param client    Determines whether to the send packet back via tun or link
+  */
+ void
+ ipv6_send_icmp_unreachable(struct context *c, struct buffer *buf, bool client)
+diff --git a/src/openvpn/fragment.h b/src/openvpn/fragment.h
+index 3cd0ee7..66994bb 100644
+--- a/src/openvpn/fragment.h
++++ b/src/openvpn/fragment.h
+@@ -454,10 +454,11 @@
+  * packets which have not yet been reassembled completely but are already
+  * older than their time-to-live.
+  *
+- * @param f            - The \c fragment_master structure for this VPN
+- *                       tunnel.
+- * @param frame        - The packet geometry parameters for this VPN
+- *                       tunnel.
++ * @param[in] f        The \c fragment_master structure for this VPN
++ *                     tunnel.
++ * @param[in] frame    The packet geometry parameters for this VPN
++ *                     tunnel.
++ * @param[out] tv      Will be set to time for next housekeeping.
+  */
+ static inline void
+ fragment_housekeeping(struct fragment_master *f, struct frame *frame, struct timeval *tv)
+diff --git a/src/openvpn/manage.c b/src/openvpn/manage.c
+index 0e73942..6baedb7 100644
+--- a/src/openvpn/manage.c
++++ b/src/openvpn/manage.c
+@@ -1059,8 +1059,9 @@
+  * @param man           The management interface struct
+  * @param cid_str       The CID in string form
+  * @param kid_str       The key ID in string form
+- * @param extra         The string to be send to the client containing
++ * @param extra         The string to be sent to the client containing
+  *                      the information of the additional steps
++ * @param timeout_str   The timeout value in string form
+  */
+ static void
+ man_client_pending_auth(struct management *man, const char *cid_str,
+diff --git a/src/openvpn/mudp.h b/src/openvpn/mudp.h
+index 37752e1..2fa4c4d 100644
+--- a/src/openvpn/mudp.h
++++ b/src/openvpn/mudp.h
+@@ -46,12 +46,13 @@
+  * it.  If no entry exists, this function handles its creation, and if
+  * successful, returns the newly created instance.
+  *
+- * @param m           - The single multi_context structure.
+- * @param sock        - Listening socket where this instance is connecting to
++ * @param m            The single multi_context structure.
++ * @param[out] floated Returns whether the client has floated.
++ * @param sock         Listening socket where this instance is connecting to
+  *
+  * @return A pointer to a multi_instance if one already existed for the
+  *     packet's source address or if one was a newly created successfully.
+- *      NULL if one did not yet exist and a new one was not created.
++ *     NULL if one did not yet exist and a new one was not created.
+  */
+ struct multi_instance *multi_get_create_instance_udp(struct multi_context *m, bool *floated,
+                                                      struct link_socket *sock);
+diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
+index a673ec1..8810f9e 100644
+--- a/src/openvpn/multi.c
++++ b/src/openvpn/multi.c
+@@ -4241,7 +4241,7 @@
+  * Main event loop for OpenVPN in point-to-multipoint server mode.
+  * @ingroup eventloop
+  *
+- * @param top - Top-level context structure.
++ * @param multi context structure
+  */
+ static void
+ tunnel_server_loop(struct multi_context *multi)
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index 99dd60a..31d07d8 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -3508,6 +3508,7 @@
+  * altered to guarantee compatibility with the version specified by the
+  * user via --compat-mode.
+  *
++ * @param o         Options state
+  * @param version   need compatibility with openvpn versions before the
+  *                  one specified (20401 = before 2.4.1)
+  * @return          whether compatibility should be enabled
+diff --git a/src/openvpn/ssl.h b/src/openvpn/ssl.h
+index c32cb6c..c158b35 100644
+--- a/src/openvpn/ssl.h
++++ b/src/openvpn/ssl.h
+@@ -281,13 +281,14 @@
+  * packet is inserted into the Reliability Layer and will be handled
+  * later.
+  *
+- * @param multi - The TLS multi structure associated with the VPN tunnel
++ * @param[in]  multi    The TLS multi structure associated with the VPN tunnel
+  *     of this packet.
+- * @param from - The source address of the packet.
+- * @param buf - A buffer structure containing the incoming packet.
+- * @param opt - Returns a crypto options structure with the appropriate security
+- *     parameters to handle the packet if it is a data channel packet.
+- * @param ad_start - Returns a pointer to the start of the authenticated data of
++ * @param[in]  from     The source address of the packet.
++ * @param[in]  buf      buffer structure containing the incoming packet.
++ * @param[out] opt      Returns a crypto options structure with the appropriate
++ *     security parameters to handle the packet if it is a data channel packet.
++ * @param[in] floated   Set whether the peer is allowed to have floated.
++ * @param[out] ad_start Returns a pointer to the start of the authenticated data
+  *     of this packet
+  *
+  * @return
+diff --git a/src/openvpn/ssl_backend.h b/src/openvpn/ssl_backend.h
+index e25727f..21abacc 100644
+--- a/src/openvpn/ssl_backend.h
++++ b/src/openvpn/ssl_backend.h
+@@ -241,6 +241,8 @@
+  *                              a string containing the information in the case
+  *                              of inline files.
+  * @param pkcs12_file_inline    True if pkcs12_file is an inline file.
++ * @param load_ca_file          True if CAs from the file should be added to
++ *                              the cert store and be trusted.
+  *
+  * @return                      1 if an error occurred, 0 if parsing was
+  *                              successful.
+@@ -313,6 +315,9 @@
+  *                              inline files.
+  * @param ca_file_inline        True if ca_file is an inline file
+  * @param ca_path               The path to load the CAs from
++ * @param tls_server            True if we are the server side of the TLS
++ *                              connection and should use the CA for verifying
++ *                              client certificates
+  */
+ void tls_ctx_load_ca(struct tls_root_ctx *ctx, const char *ca_file,
+                      bool ca_file_inline, const char *ca_path, bool tls_server);
+diff --git a/src/openvpn/ssl_ncp.h b/src/openvpn/ssl_ncp.h
+index 36be65b..d2e8300 100644
+--- a/src/openvpn/ssl_ncp.h
++++ b/src/openvpn/ssl_ncp.h
+@@ -66,7 +66,10 @@
+  * Make sure to call tls_session_update_crypto_params() after calling this
+  * function.
+  *
+- * @param gc   gc arena that is ONLY used to allocate the returned string
++ * @param server_list   Our own cipher list
++ * @param peer_info     Peer information
++ * @param remote_cipher Fallback cipher, ignored if peer sent \c IV_CIPHERS
++ * @param gc            gc arena that is used to allocate the returned string
+  *
+  * @returns NULL if no common cipher is available, otherwise the best common
+  * cipher
+diff --git a/src/openvpn/ssl_pkt.c b/src/openvpn/ssl_pkt.c
+index 689cd7f..e573859 100644
+--- a/src/openvpn/ssl_pkt.c
++++ b/src/openvpn/ssl_pkt.c
+@@ -295,8 +295,8 @@
+ /*
+  * This function is similar to tls_pre_decrypt, except it is called
+  * when we are in server mode and receive an initial incoming
+- * packet.  Note that we don't modify
+- * any state in our parameter objects.  The purpose is solely to
++ * packet.  Note that we don't modify any state in our parameter
++ * objects except state.  The purpose is solely to
+  * determine whether we should generate a client instance
+  * object, in which case true is returned.
+  *
+diff --git a/src/openvpn/ssl_pkt.h b/src/openvpn/ssl_pkt.h
+index b2c4b37..d5a5a2c 100644
+--- a/src/openvpn/ssl_pkt.h
++++ b/src/openvpn/ssl_pkt.h
+@@ -109,10 +109,6 @@
+     struct session_id server_session_id;
+ };
+ 
+-/**
+- *
+- * @param state
+- */
+ void free_tls_pre_decrypt_state(struct tls_pre_decrypt_state *state);
+ 
+ /**
+@@ -137,10 +133,11 @@
+  *
+  * This function is only used in the UDP p2mp server code path
+  *
+- * @param tas - The standalone TLS authentication setting structure for
++ * @param[in] tas    The standalone TLS authentication setting structure for
+  *     this process.
+- * @param from - The source address of the packet.
+- * @param buf - A buffer structure containing the incoming packet.
++ * @param[out] state The state struct to store information in.
++ * @param[in] from   The source address of the packet.
++ * @param[in] buf    buffer structure containing the incoming packet.
+  *
+  * @return
+  * @li True if the packet is valid and a new VPN tunnel should be created
+diff --git a/src/openvpn/ssl_util.h b/src/openvpn/ssl_util.h
+index 71a37d4..25f169c 100644
+--- a/src/openvpn/ssl_util.h
++++ b/src/openvpn/ssl_util.h
+@@ -39,6 +39,7 @@
+  *
+  * @param peer_info     The peer's peer_info
+  * @param var           The variable *including* =, e.g. IV_CIPHERS=
++ * @param gc            GC arena to allocate return value in
+  *
+  * @return  The content of the variable as NULL terminated string or NULL if the
+  *          variable cannot be found.
+diff --git a/src/openvpn/ssl_verify.h b/src/openvpn/ssl_verify.h
+index eba3832..3eb4082 100644
+--- a/src/openvpn/ssl_verify.h
++++ b/src/openvpn/ssl_verify.h
+@@ -153,7 +153,7 @@
+ /**
+  * Sets the common name field for the given tunnel
+  *
+- * @param multi         The tunnel to set the common name for
++ * @param session       The session to set the common name for
+  * @param common_name   The name to set the common name to
+  */
+ void
+diff --git a/src/openvpn/tls_crypt.h b/src/openvpn/tls_crypt.h
+index e98aae7..d6d4fba 100644
+--- a/src/openvpn/tls_crypt.h
++++ b/src/openvpn/tls_crypt.h
+@@ -204,6 +204,7 @@
+  * @param buf   Buffer containing a received P_CONTROL_HARD_RESET_CLIENT_V3
+  *              message.
+  * @param ctx   tls-wrap context to be initialized with the client key.
++ * @param opt   TLS options, used for \c tls-crypt-v2-verify script.
+  *
+  * @returns true if a key was successfully extracted.
+  */
 
