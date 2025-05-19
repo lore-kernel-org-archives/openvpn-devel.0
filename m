@@ -1,16 +1,15 @@
-From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Mon, 19 May 2025 09:52:26 +0000
-In-Reply-To: <gerrit.1745405723000.Ica02244c9f0ac9b4690a51f940fda9d900465289@...2715...>
-References: <gerrit.1745405723000.Ica02244c9f0ac9b4690a51f940fda9d900465289@...2715...>
-Reply-To: gert@...1296..., arne-openvpn@...1227...,
+From: "ordex (Code Review)" <gerrit@...515...>
+Date: Mon, 19 May 2025 10:36:41 +0000
+References: <gerrit.1747650999000.I568faa12a5960e8b69de23c2df413b70b231592c@...2715...>
+Reply-To: antonio@...2726..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <1c07b0f6517e687e62b52db9dfddf9ce135bbdc8-HTML@...2715...>
+Message-ID: <0e43fefba454f7feae249b8ba5947a2ec1f4c088-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="jKOofxTeaKE="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: Make --dh none
- behaviour default if not specified
+Content-Type: multipart/alternative; boundary="Ba/2mj0J9u0="; charset=UTF-8
+Subject: [Openvpn-devel] [S] Change in openvpn[master]: dco_linux: print
+ meaningful text when netlink message is not parsed
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,253 +18,181 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: plaisthos <arne-openvpn@...1227...>
-Cc: flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---jKOofxTeaKE=
+--Ba/2mj0J9u0=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-cron2 has submitted this change. ( http://gerrit.openvpn.net/c/openvpn/+/94=
-5?usp=3Demail )
+Attention is currently required from: flichtenheld, plaisthos.
 
-Change subject: Make --dh none behaviour default if not specified
+Hello plaisthos, flichtenheld,
+
+I'd like you to do a code review.
+Please visit
+
+    http://gerrit.openvpn.net/c/openvpn/+/1027?usp=3Demail
+
+to review the following change.
+
+
+Change subject: dco_linux: print meaningful text when netlink message is no=
+t parsed
 ......................................................................
 
-Make --dh none behaviour default if not specified
+dco_linux: print meaningful text when netlink message is not parsed
 
-Nowadays ciphers that are using still DH and not ECDH are rarely chosen
-as best cipher suite. Our man page even indicates that OpenSSL 1.0.1+
-supports ECDH cipher suites. So it does not feel useful to force
-specifying --dh anymore.
+We may bail out parsing an incoming DCO message because it may
+concern a different interface.
+In that case we print the following debug messages:
 
-Side note: Custom generated Diffie Hellmann parameters are also
-discouraged nowadays. The newest OpenSSL FIPS libraries even flat
-out reject them:
+    dco_do_read
+    ovpn-dco: ignoring message (type=3D5) for foreign ifindex 313
+    process_incoming_dco: received message of type 0 - ignoring
 
-   FIPS 186-4 type domain parameters no longer allowed in FIPS mode,
-   since the required validation routines were removed from FIPS 186-5
+However, the last message is confusing, because there is no message
+of type 0 being received, but the message_type was simply not
+initialized.
 
-But instead of adding support for loading the well-known curve just make
-dh none the default and the recommended option as finite field Diffie
-Hellmann is being deprecated anyway
-(https://datatracker.ietf.org/doc/draft-ietf-tls-deprecate-obsolete-kex/)
-and not supported by TLS 1.3 at all.
+Fix that by printing something more appropriate like:
 
-Change-Id: Ica02244c9f0ac9b4690a51f940fda9d900465289
-Signed-off-by: Arne Schwabe <arne-openvpn@...1227...>
-Acked-by: Gert Doering <gert@...1296...>
-Message-Id: <20250518220245.24489-1-gert@...1296...>
-URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg31=
-695.html
-Signed-off-by: Gert Doering <gert@...1296...>
+    process_incoming_dco: received message was not parsed
+
+Change-Id: I568faa12a5960e8b69de23c2df413b70b231592c
+Signed-off-by: Antonio Quartulli <antonio@...2726...>
 ---
-M Changes.rst
-M doc/man-sections/tls-options.rst
-M src/openvpn/options.c
-3 files changed, 19 insertions(+), 10 deletions(-)
+M src/openvpn/dco_linux.c
+M src/openvpn/forward.c
+2 files changed, 12 insertions(+), 0 deletions(-)
 
 
 
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/27/1027/1
 
-diff --git a/Changes.rst b/Changes.rst
-index a4f5e57..e297334 100644
---- a/Changes.rst
-+++ b/Changes.rst
-@@ -103,6 +103,11 @@
- - ``--x509-username-field`` will no longer automatically convert fieldname=
-s to
-   uppercase. This is deprecated since OpenVPN 2.4, and has now been remove=
-d.
-
-+- ``--dh none`` is now the default if ``--dh`` is not specified. Modern TLS
-+  implementations will prefer ECDH and other more modern algorithms anyway.
-+  And finite field Diffie Hellman is in the proces of being deprecated
-+  (see draft-ietf-tls-deprecate-obsolete-kex)
+diff --git a/src/openvpn/dco_linux.c b/src/openvpn/dco_linux.c
+index 3f7965e..29722cb 100644
+--- a/src/openvpn/dco_linux.c
++++ b/src/openvpn/dco_linux.c
+@@ -903,6 +903,12 @@
+ dco_do_read(dco_context_t *dco)
+ {
+     msg(D_DCO_DEBUG, __func__);
 +
- Overview of changes in 2.6
- =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D
-
-diff --git a/doc/man-sections/tls-options.rst b/doc/man-sections/tls-option=
-s.rst
-index 0638d09..db107e6 100644
---- a/doc/man-sections/tls-options.rst
-+++ b/doc/man-sections/tls-options.rst
-@@ -171,16 +171,22 @@
-
-
- --dh file
--  File containing Diffie Hellman parameters in .pem format (required for
--  ``--tls-server`` only).
-+  File containing finite field Diffie Hellman parameters in .pem format (u=
-sed
-+  by ``--tls-server`` only).
-
--  Set ``file`` to :code:`none` to disable Diffie Hellman key exchange (and
--  use ECDH only). Note that this requires peers to be using an SSL library
--  that supports ECDH TLS cipher suites (e.g. OpenSSL 1.0.1+, or
--  mbed TLS 2.0+).
-+  Set ``file`` to :code:`none` to disable fine field Diffie Hellman
-+  key exchange (and to only use ECDH or newer hybrid key agreement algorit=
-hms
-+  like X25519MLKEM768 instead).
-+  Note that this requires peers to be using an SSL library that supports
-+  ECDH TLS cipher suites (e.g. OpenSSL 1.0.1+, or mbed TLS 2.0+). Starting
-+  with 2.7.0, this is the same as not specifying ``--dh`` at all.
-
--  Use ``openssl dhparam -out dh2048.pem 2048`` to generate 2048-bit DH
--  parameters. Diffie Hellman parameters may be considered public.
-+  Diffie Hellman parameters can be generated using
-+  ``openssl dhparam -out dh2048.pem 2048`` but it is recommended to
-+  use ``none`` as finite field Diffie Hellman have been replaced
-+  by more modern variants like ECDH.
++    /* set the message type to an invalid value so that we later know
++     * if a message was properly parsed or we bailed out earlier
++     */
++    dco->dco_message_type =3D -1;
 +
-+  Diffie Hellman parameters may be considered public.
+     nl_cb_set(dco->nl_cb, NL_CB_VALID, NL_CB_CUSTOM, ovpn_handle_msg, dco);
 
- --ecdh-curve name
-   Specify the curve to use for elliptic curve Diffie Hellman. Available
-diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index 810bb56..6672b5c 100644
---- a/src/openvpn/options.c
-+++ b/src/openvpn/options.c
-@@ -3703,8 +3703,6 @@
+     return ovpn_nl_recvmsgs(dco, __func__);
+diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c
+index ed4cdb4..39c74af 100644
+--- a/src/openvpn/forward.c
++++ b/src/openvpn/forward.c
+@@ -1251,6 +1251,12 @@
 
-     if (o->tls_server)
-     {
--        /* Check that DH file is specified, or explicitly disabled */
--        notnull(o->dh_file, "DH file (--dh)");
-         if (streq(o->dh_file, "none"))
-         {
-             o->dh_file =3D NULL;
+     dco_do_read(dco);
+
++    if (dco->dco_message_type =3D=3D -1)
++    {
++        msg(D_DCO_DEBUG, "%s: received message was not parsed");
++        return;
++    }
++
+     /* FreeBSD currently sends us removal notifcation with the old peer-id=
+ in
+      * p2p mode with the ping timeout reason, so ignore that one to not sh=
+oot
+      * ourselves in the foot and removing the just established session */
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/945?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1027?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings
 
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: Ica02244c9f0ac9b4690a51f940fda9d900465289
-Gerrit-Change-Number: 945
-Gerrit-PatchSet: 5
-Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
-Gerrit-Reviewer: cron2 <gert@...1296...>
+Gerrit-Change-Id: I568faa12a5960e8b69de23c2df413b70b231592c
+Gerrit-Change-Number: 1027
+Gerrit-PatchSet: 1
+Gerrit-Owner: ordex <antonio@...2726...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-MessageType: merged
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Attention: flichtenheld <frank@...2641...>
+Gerrit-MessageType: newchange
 
---jKOofxTeaKE=
+--Ba/2mj0J9u0=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p>cron2 <strong>submitted</strong> this change.</p><p><a href=3D"http://ge=
-rrit.openvpn.net/c/openvpn/+/945?usp=3Demail">View Change</a></p><div style=
-=3D"white-space:pre-wrap"></div><pre style=3D"font-family: monospace,monosp=
-ace; white-space: pre-wrap;">Make --dh none behaviour default if not specif=
-ied<br><br>Nowadays ciphers that are using still DH and not ECDH are rarely=
- chosen<br>as best cipher suite. Our man page even indicates that OpenSSL 1=
-.0.1+<br>supports ECDH cipher suites. So it does not feel useful to force<b=
-r>specifying --dh anymore.<br><br>Side note: Custom generated Diffie Hellma=
-nn parameters are also<br>discouraged nowadays. The newest OpenSSL FIPS lib=
-raries even flat<br>out reject them:<br><br>   FIPS 186-4 type domain param=
-eters no longer allowed in FIPS mode,<br>   since the required validation r=
-outines were removed from FIPS 186-5<br><br>But instead of adding support f=
-or loading the well-known curve just make<br>dh none the default and the re=
-commended option as finite field Diffie<br>Hellmann is being deprecated any=
-way<br>(https://datatracker.ietf.org/doc/draft-ietf-tls-deprecate-obsolete-=
-kex/)<br>and not supported by TLS 1.3 at all.<br><br>Change-Id: Ica02244c9f=
-0ac9b4690a51f940fda9d900465289<br>Signed-off-by: Arne Schwabe &lt;arne-open=
-vpn@...1227...&gt;<br>Acked-by: Gert Doering &lt;gert@...1296...&gt;<br>Mes=
-sage-Id: &lt;20250518220245.24489-1-gert@...1296...&gt;<br>URL: https://www=
-.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg31695.html<br>Sign=
-ed-off-by: Gert Doering &lt;gert@...1296...&gt;<br>---<br>M Changes.rst<br>=
-M doc/man-sections/tls-options.rst<br>M src/openvpn/options.c<br>3 files ch=
-anged, 19 insertions(+), 10 deletions(-)<br><br></pre>
-<pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><sp=
-an>diff --git a/Changes.rst b/Changes.rst</span><br><span>index a4f5e57..e2=
-97334 100644</span><br><span>--- a/Changes.rst</span><br><span>+++ b/Change=
-s.rst</span><br><span>@@ -103,6 +103,11 @@</span><br><span> - ``--x509-user=
-name-field`` will no longer automatically convert fieldnames to</span><br><=
-span>   uppercase. This is deprecated since OpenVPN 2.4, and has now been r=
-emoved.</span><br><span> </span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+- ``--dh none`` is now the default if ``--dh`` is not specified. Mode=
-rn TLS</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  implementat=
-ions will prefer ECDH and other more modern algorithms anyway.</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+  And finite field Diffie Hellma=
-n is in the proces of being deprecated</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+  (see draft-ietf-tls-deprecate-obsolete-kex)</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> Overview of =
-changes in 2.6</span><br><span> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D</span><br><span> </span><br><span>diff=
- --git a/doc/man-sections/tls-options.rst b/doc/man-sections/tls-options.rs=
-t</span><br><span>index 0638d09..db107e6 100644</span><br><span>--- a/doc/m=
-an-sections/tls-options.rst</span><br><span>+++ b/doc/man-sections/tls-opti=
-ons.rst</span><br><span>@@ -171,16 +171,22 @@</span><br><span> </span><br><=
-span> </span><br><span> --dh file</span><br><span style=3D"color: hsl(0, 10=
-0%, 40%);">-  File containing Diffie Hellman parameters in .pem format (req=
-uired for</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  ``--tls-se=
-rver`` only).</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  File=
- containing finite field Diffie Hellman parameters in .pem format (used</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+  by ``--tls-server`` o=
-nly).</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);"=
->-  Set ``file`` to :code:`none` to disable Diffie Hellman key exchange (an=
-d</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  use ECDH only). No=
-te that this requires peers to be using an SSL library</span><br><span styl=
-e=3D"color: hsl(0, 100%, 40%);">-  that supports ECDH TLS cipher suites (e.=
-g. OpenSSL 1.0.1+, or</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
-  mbed TLS 2.0+).</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-Set ``file`` to :code:`none` to disable fine field Diffie Hellman</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+  key exchange (and to only u=
-se ECDH or newer hybrid key agreement algorithms</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+  like X25519MLKEM768 instead).</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+  Note that this requires peers to=
- be using an SSL library that supports</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+  ECDH TLS cipher suites (e.g. OpenSSL 1.0.1+, or mbed T=
-LS 2.0+). Starting</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
- with 2.7.0, this is the same as not specifying ``--dh`` at all.</span><br>=
-<span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-  Use ``openss=
-l dhparam -out dh2048.pem 2048`` to generate 2048-bit DH</span><br><span st=
-yle=3D"color: hsl(0, 100%, 40%);">-  parameters. Diffie Hellman parameters =
-may be considered public.</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+  Diffie Hellman parameters can be generated using</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+  ``openssl dhparam -out dh2048.pem 20=
-48`` but it is recommended to</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+  use ``none`` as finite field Diffie Hellman have been replaced<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+  by more modern var=
-iants like ECDH.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+  Diffie Hellman param=
-eters may be considered public.</span><br><span> </span><br><span> --ecdh-c=
-urve name</span><br><span>   Specify the curve to use for elliptic curve Di=
-ffie Hellman. Available</span><br><span>diff --git a/src/openvpn/options.c =
-b/src/openvpn/options.c</span><br><span>index 810bb56..6672b5c 100644</span=
-><br><span>--- a/src/openvpn/options.c</span><br><span>+++ b/src/openvpn/op=
-tions.c</span><br><span>@@ -3703,8 +3703,6 @@</span><br><span> </span><br><=
-span>     if (o-&gt;tls_server)</span><br><span>     {</span><br><span styl=
-e=3D"color: hsl(0, 100%, 40%);">-        /* Check that DH file is specified=
-, or explicitly disabled */</span><br><span style=3D"color: hsl(0, 100%, 40=
-%);">-        notnull(o-&gt;dh_file, &quot;DH file (--dh)&quot;);</span><br=
-><span>         if (streq(o-&gt;dh_file, &quot;none&quot;))</span><br><span=
->         {</span><br><span>             o-&gt;dh_file =3D NULL;</span><br>=
-<span></span><br></pre><p>To view, visit <a href=3D"http://gerrit.openvpn.n=
-et/c/openvpn/+/945?usp=3Demail">change 945</a>. To unsubscribe, or for help=
- writing mail filters, visit <a href=3D"http://gerrit.openvpn.net/settings"=
->settings</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage=
-"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewActi=
-on"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/94=
-5?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div></di=
-v>
+<p> Attention is currently required from: flichtenheld, plaisthos. </p>
+<p>ordex would like plaisthos and flichtenheld to <strong>review</strong> t=
+his change.
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1027?usp=3Demail">V=
+iew Change</a></p><pre style=3D"font-family: monospace,monospace; white-spa=
+ce: pre-wrap;">dco_linux: print meaningful text when netlink message is not=
+ parsed<br><br>We may bail out parsing an incoming DCO message because it m=
+ay<br>concern a different interface.<br>In that case we print the following=
+ debug messages:<br><br>    dco_do_read<br>    ovpn-dco: ignoring message (=
+type=3D5) for foreign ifindex 313<br>    process_incoming_dco: received mes=
+sage of type 0 - ignoring<br><br>However, the last message is confusing, be=
+cause there is no message<br>of type 0 being received, but the message_type=
+ was simply not<br>initialized.<br><br>Fix that by printing something more =
+appropriate like:<br><br>    process_incoming_dco: received message was not=
+ parsed<br><br>Change-Id: I568faa12a5960e8b69de23c2df413b70b231592c<br>Sign=
+ed-off-by: Antonio Quartulli &lt;antonio@...2726...&gt;<br>---<br>M src/ope=
+nvpn/dco_linux.c<br>M src/openvpn/forward.c<br>2 files changed, 12 insertio=
+ns(+), 0 deletions(-)<br><br></pre><pre style=3D"font-family: monospace,mon=
+ospace; white-space: pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/ope=
+nvpn refs/changes/27/1027/1</pre><pre style=3D"font-family: monospace,monos=
+pace; white-space: pre-wrap;"><span>diff --git a/src/openvpn/dco_linux.c b/=
+src/openvpn/dco_linux.c</span><br><span>index 3f7965e..29722cb 100644</span=
+><br><span>--- a/src/openvpn/dco_linux.c</span><br><span>+++ b/src/openvpn/=
+dco_linux.c</span><br><span>@@ -903,6 +903,12 @@</span><br><span> dco_do_re=
+ad(dco_context_t *dco)</span><br><span> {</span><br><span>     msg(D_DCO_DE=
+BUG, __func__);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+    /* set the message =
+type to an invalid value so that we later know</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+     * if a message was properly parsed or we ba=
+iled out earlier</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+  */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    dco-&gt;dco=
+_message_type =3D -1;</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+</span><br><span>     nl_cb_set(dco-&gt;nl_cb, NL_CB_VALID, NL_CB_CUSTOM,=
+ ovpn_handle_msg, dco);</span><br><span> </span><br><span>     return ovpn_=
+nl_recvmsgs(dco, __func__);</span><br><span>diff --git a/src/openvpn/forwar=
+d.c b/src/openvpn/forward.c</span><br><span>index ed4cdb4..39c74af 100644</=
+span><br><span>--- a/src/openvpn/forward.c</span><br><span>+++ b/src/openvp=
+n/forward.c</span><br><span>@@ -1251,6 +1251,12 @@</span><br><span> </span>=
+<br><span>     dco_do_read(dco);</span><br><span> </span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+    if (dco-&gt;dco_message_type =3D=3D -1)<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+        msg(D_DCO_DEBUG, &quot;%s:=
+ received message was not parsed&quot;);</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+        return;</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+</span><br><span>     /* FreeBSD currently sends us removal notifcation =
+with the old peer-id in</span><br><span>      * p2p mode with the ping time=
+out reason, so ignore that one to not shoot</span><br><span>      * ourselv=
+es in the foot and removing the just established session */</span><br><span=
+></span><br></pre><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/=
+openvpn/+/1027?usp=3Demail">change 1027</a>. To unsubscribe, or for help wr=
+iting mail filters, visit <a href=3D"http://gerrit.openvpn.net/settings">se=
+ttings</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><=
+div itemscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"=
+><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1027?=
+usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: Ica02244c9f0ac9b4690a51f940f=
-da9d900465289 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 945 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 5 </div>
-<div style=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@...1711...=
-27...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
+<div style=3D"display:none"> Gerrit-Change-Id: I568faa12a5960e8b69de23c2df4=
+13b70b231592c </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1027 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
+<div style=3D"display:none"> Gerrit-Owner: ordex &lt;antonio@...2726...&gt;=
  </div>
 <div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
 1...&gt; </div>
@@ -273,8 +200,12 @@ da9d900465289 </div>
 .1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: merged </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
+41...&gt; </div>
+<div style=3D"display:none"> Gerrit-MessageType: newchange </div>
 
 
---jKOofxTeaKE=--
+--Ba/2mj0J9u0=--
 
