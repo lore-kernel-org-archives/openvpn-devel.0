@@ -1,17 +1,15 @@
 From: "d12fk (Code Review)" <gerrit@...515...>
-Date: Mon, 19 May 2025 08:46:22 +0000
-In-Reply-To: <gerrit.1741299308000.I635c4018fb43b5976a39b6a90cb2e9cb2570cd6a@...2715...>
-References: <gerrit.1741299308000.I635c4018fb43b5976a39b6a90cb2e9cb2570cd6a@...2715...>
+Date: Mon, 19 May 2025 09:19:36 +0000
+References: <gerrit.1747646372000.I275bf939f43577427e14890e7093d63c5213ae5d@...2715...>
 Reply-To: heiko@...515..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...,
- lstipakov@...277...
-Message-ID: <439000d38673f623f37687ccb7b46012013732e1-EmailReviewComments-HTML@...2715...>
+ openvpn-devel@lists.sourceforge.net, frank@...2641...
+Message-ID: <5617f7beb62fcb16d011a8ecf064a8f67b18cfba-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="YbBskcbNgiI="; charset=UTF-8
-Subject: [Openvpn-devel] [L] Change in openvpn[master]: dns: deal with
- --dhcp-options when --dns is active
+Content-Type: multipart/alternative; boundary="J9bBFzOnnWc="; charset=UTF-8
+Subject: [Openvpn-devel] [M] Change in openvpn[master]: dns: fix potential
+ NULL pointer dereference
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,125 +18,293 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Cc: stipa <lstipakov@...277...>, flichtenheld <frank@...2641...>, plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---YbBskcbNgiI=
+--J9bBFzOnnWc=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: flichtenheld, plaisthos, stipa.
+Attention is currently required from: flichtenheld, plaisthos.
 
-d12fk has posted comments on this change. ( http://gerrit.openvpn.net/c/ope=
-nvpn/+/904?usp=3Demail )
+Hello plaisthos, flichtenheld,
 
-Change subject: dns: deal with --dhcp-options when --dns is active
+I'd like you to do a code review.
+Please visit
+
+    http://gerrit.openvpn.net/c/openvpn/+/1026?usp=3Demail
+
+to review the following change.
+
+
+Change subject: dns: fix potential NULL pointer dereference
 ......................................................................
 
+dns: fix potential NULL pointer dereference
 
-Patch Set 20:
+Fix issue reported by Coverity (CID 1646952): Dereferencing a pointer
+that might be NULL dvf when calling env_set_write_file.
 
-(1 comment)
+In addition to the fix, output a log line in case this happens, because
+it will influence to communication with the updown runner process, i.e.
+setting up / tearing down DNS things will not work as expected.
 
-File src/openvpn/options.c:
-
-http://gerrit.openvpn.net/c/openvpn/+/904/comment/b4f06df1_f654bf62 :
-PS15, Line 4299:         tuntap_options_postprocess_dns(o);
-> Why WIN32 and Android require special treatment? I see that it was not ad=
-ded in this patch, but stil [=E2=80=A6]
-The reason why is that both had DNS before and they were using the DNS rela=
-ted elements in `struct tuntap_options` which were filled by `--dhcp-option=
-`s. Now we want the dhcp-option also in the dns_option struct and vice vers=
-a, for compatibility. For tap-windows with DHCP: I think we now do double c=
-onfiguration of DNS, now that I think about it more. Don't know if this is =
-a problem that needs attention. What do you think?
+Change-Id: I275bf939f43577427e14890e7093d63c5213ae5d
+Signed-off-by: Heiko Hund <heiko@...2662...>
+---
+M src/openvpn/dns.c
+1 file changed, 35 insertions(+), 26 deletions(-)
 
 
+
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/26/1026/1
+
+diff --git a/src/openvpn/dns.c b/src/openvpn/dns.c
+index 9927961..1299a13 100644
+--- a/src/openvpn/dns.c
++++ b/src/openvpn/dns.c
+@@ -691,12 +691,13 @@
+ static const char *
+ write_dns_vars_file(bool up, const struct options *o, const struct tuntap =
+*tt, struct gc_arena *gc)
+ {
+-    struct env_set *es =3D env_set_create(gc);
+     const char *dvf =3D platform_create_temp_file(o->tmp_dir, "dvf", gc);
+-
+-    updown_env_set(up, &o->dns_options, tt, es);
+-    env_set_write_file(dvf, es);
+-
++    if (dvf)
++    {
++        struct env_set *es =3D env_set_create(gc);
++        updown_env_set(up, &o->dns_options, tt, es);
++        env_set_write_file(dvf, es);
++    }
+     return dvf;
+ }
+
+@@ -731,34 +732,42 @@
+         int rfd =3D updown_runner->fds[0];
+         int wfd =3D updown_runner->fds[1];
+         const char *dvf =3D write_dns_vars_file(up, o, tt, &gc);
+-        size_t dvf_size =3D strlen(dvf) + 1;
+-
+-        while (1)
++        if (!dvf)
+         {
+-            ssize_t len =3D write(wfd, dvf, dvf_size);
+-            if (len < dvf_size)
+-            {
+-                if (len =3D=3D -1 && errno =3D=3D EINTR)
+-                {
+-                    continue;
+-                }
+-                msg(M_ERR | M_ERRNO, "could not send dns vars filename");
+-            }
+-            break;
++            msg(M_ERR, "could not create dns vars file");
++            status =3D 1;
+         }
+-
+-        while (1)
++        else
+         {
+-            ssize_t len =3D read(rfd, &status, sizeof(status));
+-            if (len < sizeof(status))
++            size_t dvf_size =3D strlen(dvf) + 1;
++
++            while (1)
+             {
+-                if (len =3D=3D -1 && errno =3D=3D EINTR)
++                ssize_t len =3D write(wfd, dvf, dvf_size);
++                if (len < dvf_size)
+                 {
+-                    continue;
++                    if (len =3D=3D -1 && errno =3D=3D EINTR)
++                    {
++                        continue;
++                    }
++                    msg(M_ERR | M_ERRNO, "could not send dns vars filename=
+");
+                 }
+-                msg(M_ERR | M_ERRNO, "could not receive dns updown status"=
+);
++                break;
+             }
+-            break;
++
++            while (1)
++            {
++                ssize_t len =3D read(rfd, &status, sizeof(status));
++                if (len < sizeof(status))
++                {
++                    if (len =3D=3D -1 && errno =3D=3D EINTR)
++                    {
++                        continue;
++                    }
++                    msg(M_ERR | M_ERRNO, "could not receive dns updown sta=
+tus");
++                }
++                break;
++            }
+         }
+
+         gc_free(&gc);
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/904?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1026?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings
 
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: I635c4018fb43b5976a39b6a90cb2e9cb2570cd6a
-Gerrit-Change-Number: 904
-Gerrit-PatchSet: 20
+Gerrit-Change-Id: I275bf939f43577427e14890e7093d63c5213ae5d
+Gerrit-Change-Number: 1026
+Gerrit-PatchSet: 1
 Gerrit-Owner: d12fk <heiko@...515...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-Reviewer: stipa <lstipakov@...277...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
 Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Attention: stipa <lstipakov@...277...>
-Gerrit-Comment-Date: Mon, 19 May 2025 08:46:22 +0000
-Gerrit-HasComments: Yes
-Gerrit-Has-Labels: No
-Comment-In-Reply-To: stipa <lstipakov@...277...>
-Gerrit-MessageType: comment
+Gerrit-MessageType: newchange
 
---YbBskcbNgiI=
+--J9bBFzOnnWc=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p> Attention is currently required from: flichtenheld, plaisthos, stipa. <=
-/p>
-<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/904?usp=3Demail">View C=
-hange</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0;"><=
-li style=3D"margin: 0; padding: 0;"><p>File src/openvpn/options.c:</p><ul s=
-tyle=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0=
- 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn=
-.net/c/openvpn/+/904/comment/b4f06df1_f654bf62">Patch Set #15, Line 4299:</=
-a> <code style=3D"font-family:monospace,monospace">        tuntap_options_p=
-ostprocess_dns(o);</code></p><p><blockquote style=3D"border-left: 1px solid=
- #aaa; margin: 10px 0; padding: 0 10px;">Why WIN32 and Android require spec=
-ial treatment? I see that it was not added in this patch, but stil [=E2=80=
-=A6]</blockquote></p><p style=3D"white-space: pre-wrap; word-wrap: break-wo=
-rd;">The reason why is that both had DNS before and they were using the DNS=
- related elements in `struct tuntap_options` which were filled by `--dhcp-o=
-ption`s. Now we want the dhcp-option also in the dns_option struct and vice=
- versa, for compatibility. For tap-windows with DHCP: I think we now do dou=
-ble configuration of DNS, now that I think about it more. Don&#39;t know if=
- this is a problem that needs attention. What do you think?</p></li></ul></=
-li></ul><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/=
-904?usp=3Demail">change 904</a>. To unsubscribe, or for help writing mail f=
-ilters, visit <a href=3D"http://gerrit.openvpn.net/settings">settings</a>.<=
-/p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscop=
-e itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itemp=
-rop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/904?usp=3Demail"/=
-><meta itemprop=3D"name" content=3D"View Change"/></div></div>
+<p> Attention is currently required from: flichtenheld, plaisthos. </p>
+<p>d12fk would like plaisthos and flichtenheld to <strong>review</strong> t=
+his change.
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1026?usp=3Demail">V=
+iew Change</a></p><pre style=3D"font-family: monospace,monospace; white-spa=
+ce: pre-wrap;">dns: fix potential NULL pointer dereference<br><br>Fix issue=
+ reported by Coverity (CID 1646952): Dereferencing a pointer<br>that might =
+be NULL dvf when calling env_set_write_file.<br><br>In addition to the fix,=
+ output a log line in case this happens, because<br>it will influence to co=
+mmunication with the updown runner process, i.e.<br>setting up / tearing do=
+wn DNS things will not work as expected.<br><br>Change-Id: I275bf939f435774=
+27e14890e7093d63c5213ae5d<br>Signed-off-by: Heiko Hund &lt;heiko@...2662...=
+&gt;<br>---<br>M src/openvpn/dns.c<br>1 file changed, 35 insertions(+), 26 =
+deletions(-)<br><br></pre><pre style=3D"font-family: monospace,monospace; w=
+hite-space: pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/openvpn refs=
+/changes/26/1026/1</pre><pre style=3D"font-family: monospace,monospace; whi=
+te-space: pre-wrap;"><span>diff --git a/src/openvpn/dns.c b/src/openvpn/dns=
+.c</span><br><span>index 9927961..1299a13 100644</span><br><span>--- a/src/=
+openvpn/dns.c</span><br><span>+++ b/src/openvpn/dns.c</span><br><span>@@ -6=
+91,12 +691,13 @@</span><br><span> static const char *</span><br><span> writ=
+e_dns_vars_file(bool up, const struct options *o, const struct tuntap *tt, =
+struct gc_arena *gc)</span><br><span> {</span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-    struct env_set *es =3D env_set_create(gc);</span><br>=
+<span>     const char *dvf =3D platform_create_temp_file(o-&gt;tmp_dir, &qu=
+ot;dvf&quot;, gc);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-    updown_env_set(up, &=
+amp;o-&gt;dns_options, tt, es);</span><br><span style=3D"color: hsl(0, 100%=
+, 40%);">-    env_set_write_file(dvf, es);</span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+    if (dvf)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        struct env_=
+set *es =3D env_set_create(gc);</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+        updown_env_set(up, &amp;o-&gt;dns_options, tt, es);</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+        env_set_write_f=
+ile(dvf, es);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }<=
+/span><br><span>     return dvf;</span><br><span> }</span><br><span> </span=
+><br><span>@@ -731,34 +732,42 @@</span><br><span>         int rfd =3D updow=
+n_runner-&gt;fds[0];</span><br><span>         int wfd =3D updown_runner-&gt=
+;fds[1];</span><br><span>         const char *dvf =3D write_dns_vars_file(u=
+p, o, tt, &amp;gc);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
+      size_t dvf_size =3D strlen(dvf) + 1;</span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
+        while (1)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+      if (!dvf)</span><br><span>         {</span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">-            ssize_t len =3D write(wfd, dvf, dvf_size);=
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            if (len &=
+lt; dvf_size)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        =
+    {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-                =
+if (len =3D=3D -1 &amp;&amp; errno =3D=3D EINTR)</span><br><span style=3D"c=
+olor: hsl(0, 100%, 40%);">-                {</span><br><span style=3D"color=
+: hsl(0, 100%, 40%);">-                    continue;</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-                }</span><br><span style=3D"=
+color: hsl(0, 100%, 40%);">-                msg(M_ERR | M_ERRNO, &quot;coul=
+d not send dns vars filename&quot;);</span><br><span style=3D"color: hsl(0,=
+ 100%, 40%);">-            }</span><br><span style=3D"color: hsl(0, 100%, 4=
+0%);">-            break;</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+            msg(M_ERR, &quot;could not create dns vars file&quot;);</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+            status =
+=3D 1;</span><br><span>         }</span><br><span style=3D"color: hsl(0, 10=
+0%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        w=
+hile (1)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        els=
+e</span><br><span>         {</span><br><span style=3D"color: hsl(0, 100%, 4=
+0%);">-            ssize_t len =3D read(rfd, &amp;status, sizeof(status));<=
+/span><br><span style=3D"color: hsl(0, 100%, 40%);">-            if (len &l=
+t; sizeof(status))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+           size_t dvf_size =3D strlen(dvf) + 1;</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+            while (1)</span><br><span>             {</span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-                if (len =3D=3D -1 &=
+amp;&amp; errno =3D=3D EINTR)</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+                ssize_t len =3D write(wfd, dvf, dvf_size);</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+                if (len &l=
+t; dvf_size)</span><br><span>                 {</span><br><span style=3D"co=
+lor: hsl(0, 100%, 40%);">-                    continue;</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+                    if (len =3D=3D -1 &=
+amp;&amp; errno =3D=3D EINTR)</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+                    {</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+                        continue;</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+                    }</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+                    msg(M_ERR | M_ERRNO, &quot;=
+could not send dns vars filename&quot;);</span><br><span>                 }=
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">-                msg(M=
+_ERR | M_ERRNO, &quot;could not receive dns updown status&quot;);</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+                break;</span>=
+<br><span>             }</span><br><span style=3D"color: hsl(0, 100%, 40%);=
+">-            break;</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            while=
+ (1)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            {</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+                ssize=
+_t len =3D read(rfd, &amp;status, sizeof(status));</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+                if (len &lt; sizeof(status))=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+                {</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+                    i=
+f (len =3D=3D -1 &amp;&amp; errno =3D=3D EINTR)</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+                    {</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+                        continue;</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+                    }</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+                    msg(M_ERR=
+ | M_ERRNO, &quot;could not receive dns updown status&quot;);</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+                }</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+                break;</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+            }</span><br><span>  =
+       }</span><br><span> </span><br><span>         gc_free(&amp;gc);</span=
+><br><span></span><br></pre><p>To view, visit <a href=3D"http://gerrit.open=
+vpn.net/c/openvpn/+/1026?usp=3Demail">change 1026</a>. To unsubscribe, or f=
+or help writing mail filters, visit <a href=3D"http://gerrit.openvpn.net/se=
+ttings">settings</a>.</p><div itemscope itemtype=3D"http://schema.org/Email=
+Message"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.org/V=
+iewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openv=
+pn/+/1026?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></=
+div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I635c4018fb43b5976a39b6a90cb=
-2e9cb2570cd6a </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 904 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 20 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I275bf939f43577427e14890e709=
+3d63c5213ae5d </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1026 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
 <div style=3D"display:none"> Gerrit-Owner: d12fk &lt;heiko@...515...&gt; </=
 div>
 <div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
 1...&gt; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
 .1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: stipa &lt;lstipakov@...277...=
-&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
 ..1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
 41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: stipa &lt;lstipakov@...1663...=
-.&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Mon, 19 May 2025 08:46:22=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: No </div>
-<div style=3D"display:none"> Comment-In-Reply-To: stipa &lt;lstipakov@...1664...=
-7...&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
+<div style=3D"display:none"> Gerrit-MessageType: newchange </div>
 
 
---YbBskcbNgiI=--
+--J9bBFzOnnWc=--
 
