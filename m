@@ -1,16 +1,17 @@
-From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Sun, 18 May 2025 22:18:22 +0000
-In-Reply-To: <gerrit.1737029493000.Ie82bcc7a8e583de9156b185d71d1a323ed8df3fc@...2715...>
-References: <gerrit.1737029493000.Ie82bcc7a8e583de9156b185d71d1a323ed8df3fc@...2715...>
-Reply-To: gert@...1296..., arne-openvpn@...1227..., marco@...2726...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <ecb2931f2c8188bca83b105640d3f0f02b42f9e9-EmailReviewComments-HTML@...2715...>
+From: "d12fk (Code Review)" <gerrit@...515...>
+Date: Mon, 19 May 2025 08:46:22 +0000
+In-Reply-To: <gerrit.1741299308000.I635c4018fb43b5976a39b6a90cb2e9cb2570cd6a@...2715...>
+References: <gerrit.1741299308000.I635c4018fb43b5976a39b6a90cb2e9cb2570cd6a@...2715...>
+Reply-To: heiko@...515..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net, frank@...2641...,
+ lstipakov@...277...
+Message-ID: <439000d38673f623f37687ccb7b46012013732e1-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="RdxOhosXQJQ="; charset=UTF-8
-Subject: [Openvpn-devel] [L] Change in openvpn[master]: PUSH_UPDATE message
- sender: enabling the server to send PUSH_UPDATE c...
+Content-Type: multipart/alternative; boundary="YbBskcbNgiI="; charset=UTF-8
+Subject: [Openvpn-devel] [L] Change in openvpn[master]: dns: deal with
+ --dhcp-options when --dns is active
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,119 +20,125 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: mrbff <marco@...2726...>
-Cc: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Cc: stipa <lstipakov@...277...>, flichtenheld <frank@...2641...>, plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---RdxOhosXQJQ=
+--YbBskcbNgiI=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: flichtenheld, mrbff, plaisthos.
+Attention is currently required from: flichtenheld, plaisthos, stipa.
 
-cron2 has posted comments on this change. ( http://gerrit.openvpn.net/c/ope=
-nvpn/+/869?usp=3Demail )
+d12fk has posted comments on this change. ( http://gerrit.openvpn.net/c/ope=
+nvpn/+/904?usp=3Demail )
 
-Change subject: PUSH_UPDATE message sender: enabling the server to send PUS=
-H_UPDATE control messages
+Change subject: dns: deal with --dhcp-options when --dns is active
 ......................................................................
 
 
-Patch Set 5: Code-Review-1
+Patch Set 20:
 
 (1 comment)
 
-Patchset:
+File src/openvpn/options.c:
 
-PS5:
-This needs a patch to doc/management-notes.txt and the super-long text blob=
- in test_push_update_msg.c needs to be wrapped to multiple lines
-
-```
- "foo bar "
- "and so on "
- "the saga goes"
-```
+http://gerrit.openvpn.net/c/openvpn/+/904/comment/b4f06df1_f654bf62 :
+PS15, Line 4299:         tuntap_options_postprocess_dns(o);
+> Why WIN32 and Android require special treatment? I see that it was not ad=
+ded in this patch, but stil [=E2=80=A6]
+The reason why is that both had DNS before and they were using the DNS rela=
+ted elements in `struct tuntap_options` which were filled by `--dhcp-option=
+`s. Now we want the dhcp-option also in the dns_option struct and vice vers=
+a, for compatibility. For tap-windows with DHCP: I think we now do double c=
+onfiguration of DNS, now that I think about it more. Don't know if this is =
+a problem that needs attention. What do you think?
 
 
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/869?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/904?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings
 
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: Ie82bcc7a8e583de9156b185d71d1a323ed8df3fc
-Gerrit-Change-Number: 869
-Gerrit-PatchSet: 5
-Gerrit-Owner: mrbff <marco@...2726...>
-Gerrit-Reviewer: cron2 <gert@...1296...>
+Gerrit-Change-Id: I635c4018fb43b5976a39b6a90cb2e9cb2570cd6a
+Gerrit-Change-Number: 904
+Gerrit-PatchSet: 20
+Gerrit-Owner: d12fk <heiko@...515...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
+Gerrit-Reviewer: stipa <lstipakov@...277...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
 Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Attention: mrbff <marco@...2726...>
-Gerrit-Comment-Date: Sun, 18 May 2025 22:18:22 +0000
+Gerrit-Attention: stipa <lstipakov@...277...>
+Gerrit-Comment-Date: Mon, 19 May 2025 08:46:22 +0000
 Gerrit-HasComments: Yes
-Gerrit-Has-Labels: Yes
+Gerrit-Has-Labels: No
+Comment-In-Reply-To: stipa <lstipakov@...277...>
 Gerrit-MessageType: comment
 
---RdxOhosXQJQ=
+--YbBskcbNgiI=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p> Attention is currently required from: flichtenheld, mrbff, plaisthos. <=
+<p> Attention is currently required from: flichtenheld, plaisthos, stipa. <=
 /p>
-<p>Patch set 5:<span style=3D"border-radius: 3px; display: inline-block; ma=
-rgin: 0 2px; padding: 4px;background-color: #ffd4d4;">Code-Review -1</span>=
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/869?usp=3Demail">Vi=
-ew Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0=
-;"><li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-s=
-tyle: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p s=
-tyle=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn=
-/+/869?tab=3Dcomments">Patch Set #5:</a> </p><p style=3D"white-space: pre-w=
-rap; word-wrap: break-word;">This needs a patch to doc/management-notes.txt=
- and the super-long text blob in test_push_update_msg.c needs to be wrapped=
- to multiple lines</p><pre style=3D"font-family: monospace,monospace; white=
--space: pre-wrap;">```<br> &quot;foo bar &quot;<br> &quot;and so on &quot;<=
-br> &quot;the saga goes&quot;<br>```</pre></li></ul></li></ul><p>To view, v=
-isit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/869?usp=3Demail">chan=
-ge 869</a>. To unsubscribe, or for help writing mail filters, visit <a href=
-=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope ite=
-mtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"action"=
- itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"h=
-ttp://gerrit.openvpn.net/c/openvpn/+/869?usp=3Demail"/><meta itemprop=3D"na=
-me" content=3D"View Change"/></div></div>
+<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/904?usp=3Demail">View C=
+hange</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0;"><=
+li style=3D"margin: 0; padding: 0;"><p>File src/openvpn/options.c:</p><ul s=
+tyle=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0=
+ 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn=
+.net/c/openvpn/+/904/comment/b4f06df1_f654bf62">Patch Set #15, Line 4299:</=
+a> <code style=3D"font-family:monospace,monospace">        tuntap_options_p=
+ostprocess_dns(o);</code></p><p><blockquote style=3D"border-left: 1px solid=
+ #aaa; margin: 10px 0; padding: 0 10px;">Why WIN32 and Android require spec=
+ial treatment? I see that it was not added in this patch, but stil [=E2=80=
+=A6]</blockquote></p><p style=3D"white-space: pre-wrap; word-wrap: break-wo=
+rd;">The reason why is that both had DNS before and they were using the DNS=
+ related elements in `struct tuntap_options` which were filled by `--dhcp-o=
+ption`s. Now we want the dhcp-option also in the dns_option struct and vice=
+ versa, for compatibility. For tap-windows with DHCP: I think we now do dou=
+ble configuration of DNS, now that I think about it more. Don&#39;t know if=
+ this is a problem that needs attention. What do you think?</p></li></ul></=
+li></ul><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/=
+904?usp=3Demail">change 904</a>. To unsubscribe, or for help writing mail f=
+ilters, visit <a href=3D"http://gerrit.openvpn.net/settings">settings</a>.<=
+/p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscop=
+e itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itemp=
+rop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/904?usp=3Demail"/=
+><meta itemprop=3D"name" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: Ie82bcc7a8e583de9156b185d71d=
-1a323ed8df3fc </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 869 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 5 </div>
-<div style=3D"display:none"> Gerrit-Owner: mrbff &lt;marco@...2726...&gt; <=
-/div>
-<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
- </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I635c4018fb43b5976a39b6a90cb=
+2e9cb2570cd6a </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 904 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 20 </div>
+<div style=3D"display:none"> Gerrit-Owner: d12fk &lt;heiko@...515...&gt; </=
+div>
 <div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
 1...&gt; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
 .1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: stipa &lt;lstipakov@...277...=
+&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
 ..1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
 41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: mrbff &lt;marco@...2726...&g=
-t; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Sun, 18 May 2025 22:18:22=
+<div style=3D"display:none"> Gerrit-Attention: stipa &lt;lstipakov@...1663...=
+.&gt; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Mon, 19 May 2025 08:46:22=
  +0000 </div>
 <div style=3D"display:none"> Gerrit-HasComments: Yes </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: No </div>
+<div style=3D"display:none"> Comment-In-Reply-To: stipa &lt;lstipakov@...1664...=
+7...&gt; </div>
 <div style=3D"display:none"> Gerrit-MessageType: comment </div>
 
 
---RdxOhosXQJQ=--
+--YbBskcbNgiI=--
 
