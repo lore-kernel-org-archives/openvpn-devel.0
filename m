@@ -1,16 +1,12 @@
-From: "d12fk (Code Review)" <gerrit@...515...>
-Date: Tue, 20 May 2025 07:14:35 +0000
-In-Reply-To: <gerrit.1747646372000.I275bf939f43577427e14890e7093d63c5213ae5d@...2715...>
-References: <gerrit.1747646372000.I275bf939f43577427e14890e7093d63c5213ae5d@...2715...>
-Reply-To: heiko@...515..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <aa5db4fe5ea2785455e72e50345081fa3b21d9e6-EmailReplacePatchSet-HTML@...2715...>
+Message-ID: <76d9c751-a58f-4171-9fb3-361cc2159c5b@...2108...>
+Date: Tue, 20 May 2025 09:19:18 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="6vWaQXSfJxE="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: dns: fix potential
- NULL pointer dereference
+From: David Sommerseth <dazo+openvpn@...2108...>
+Content-Language: en-US
+Content-Type: multipart/signed; micalg=pgp-sha256;
+ protocol="application/pgp-signature";
+ boundary="------------3BbrsF3EZWSB8lLziGWoxQOA"
+Subject: [Openvpn-devel] OpenVPN 3 Linux v24.1 released
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,246 +15,209 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: openvpn-devel <Openvpn-devel@lists.sourceforge.net>, "openvpn-users@lists.sourceforge.net" <openvpn-users@lists.sourceforge.net>
 
---6vWaQXSfJxE=
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--------------3BbrsF3EZWSB8lLziGWoxQOA
+Content-Type: multipart/mixed; boundary="------------H0Ds0u9OVxSNtWM5ksZe296z";
+ protected-headers="v1"
+From: David Sommerseth <dazo+openvpn@...2108...>
+To: openvpn-devel <Openvpn-devel@lists.sourceforge.net>,
+ "openvpn-users@lists.sourceforge.net" <openvpn-users@lists.sourceforge.net>
+Message-ID: <76d9c751-a58f-4171-9fb3-361cc2159c5b@...2108...>
+Subject: OpenVPN 3 Linux v24.1 released
+
+--------------H0Ds0u9OVxSNtWM5ksZe296z
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: flichtenheld, plaisthos.
+OpenVPN 3 Linux v24 (Bugfix/security release)
 
-Hello flichtenheld, plaisthos,
+The v24.1 release is a small security and bugfix release.
 
-I'd like you to reexamine a change. Please visit
+* Security: CVE-2025-3908 - openvpn3-admin init-config follows symlink
+  Wolfgang Frisch from the SUSE security team reach out and
+  notified us of a potential issue with the openvpn3-admin init-config
+  command following symlinks when creating needed directories.  This
+  has been resolved and this command will no longer follow symlinks
+  and will insist the user running this command to setup these
+  directories manually with the correct ownership and privileges.
 
-    http://gerrit.openvpn.net/c/openvpn/+/1026?usp=3Demail
+* Bugfix: openvpn3 session-manage --log-level can crash the Session Manager
+  When changing the log-level for an on-going VPN session to an invalid
+  log-level value, the Session Manager process would fail and stop
+  running due to an uncaught exception.  The result would not affect
+  the currently on-going VPN sessions, but none of those sessions could
+  be managed via the session manager any more.  This has been fixed and
+  the Session Manager will now reply to the caller with an error message
+  instead.  This issue was reported by Wolfgang Frisch from the SUSE
+  security team.
 
-to look at the new patch set (#3).
+* Bugfix: Control character injection via command line arguments
+  All the command line arguments would pass on ASCII control characters
+  which could be used to inject misleading information into logs.  Since
+  none of the entry points of user data need ASCII control characters
+  except newline characters a few places, these characters are now
+  removed.  This issue was reported by Wolfgang Frisch from the SUSE
+  security team.
+
+* Bugfix: openvpn3-service-backendstart crash during shutdown
+  Occasionally the openvpn3-service-backendstart helper service could
+  crash during it's shutdown phase.  This was due to an uncaught
+  exception.  This has been resolved.
+
+* Bugfix: VPN session failing to start without org.freedesktop.hostname1
+  The current client code expected the org.freedesktop.hostname1
+  (systemd-hostnamed) service to be available.  On systems without
+  systemd, this would result in the client using a longer time to wait
+  for this service to appear before continuing.  Meanwhile, the Session
+  Manager would also not receive a response in time from this client
+  process, thus considering it unresponsive and stopping the VPN session
+  instead.  This has been resolved by querying the master D-Bus service
+  if the org.freedesktop.hostname1 service is available or not and just
+  continue without it, if it is unavailable.
+
+* Build fix: Meson clean-up
+  Newer Meson versions had several minor complaints about the build
+  configuration.  These issues should now be resolved and Meson should
+  no longer report any warnings.
+
+* Build fix: GCC-15 related build issues
+  The GCC-15 compiler now starts to complain about more issues which was
+  not raised by prior compiler versions with the same compiler flags.
+  Issues raised by GCC-15 are now fixed.
 
 
-Change subject: dns: fix potential NULL pointer dereference
-......................................................................
+Known issues:
 
-dns: fix potential NULL pointer dereference
-
-Fix issue reported by Coverity (CID 1646952): Dereferencing a pointer
-that might be NULL dvf when calling env_set_write_file.
-
-In addition to the fix, inline the write_dns_vars_file() helper function.
-Also output a log line in case this error happens, because when it
-happens it will hinder communication with the updown runner process, i.e.
-setting up / tearing down DNS things will not work as expected.
-
-Change-Id: I275bf939f43577427e14890e7093d63c5213ae5d
-Signed-off-by: Heiko Hund <heiko@...2662...>
----
-M src/openvpn/dns.c
-1 file changed, 15 insertions(+), 17 deletions(-)
+  - openvpn3-admin journal --since has a time zone related issue
+    and may not list all log events within the closest hours.
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/26/1026/3
+Credits
+-------
+Wolfgang Frisch from the SUSE security team for their bug
+and security reports.
 
-diff --git a/src/openvpn/dns.c b/src/openvpn/dns.c
-index 9927961..3c703cc 100644
---- a/src/openvpn/dns.c
-+++ b/src/openvpn/dns.c
-@@ -688,18 +688,6 @@
-     return true;
- }
 
--static const char *
--write_dns_vars_file(bool up, const struct options *o, const struct tuntap =
-*tt, struct gc_arena *gc)
--{
--    struct env_set *es =3D env_set_create(gc);
--    const char *dvf =3D platform_create_temp_file(o->tmp_dir, "dvf", gc);
--
--    updown_env_set(up, &o->dns_options, tt, es);
--    env_set_write_file(dvf, es);
--
--    return dvf;
--}
--
- static void
- run_up_down_command(bool up, struct options *o, const struct tuntap *tt, s=
-truct dns_updown_runner_info *updown_runner)
- {
-@@ -709,7 +697,7 @@
-         return;
-     }
+Supported Linux distributions
+-----------------------------
 
--    int status;
-+    int status =3D -1;
+  - Debian: 12
+  - Fedora: 40, 41, 42, Rawhide
+  - Red Hat Enterprise Linux 8, 9
+  - Ubuntu: 22.04, 24.04
 
-     if (!updown_runner->required)
-     {
-@@ -728,11 +716,19 @@
-         }
+Red Hat Enterprise Linux 10 is in tech preview.
 
-         struct gc_arena gc =3D gc_new();
--        int rfd =3D updown_runner->fds[0];
--        int wfd =3D updown_runner->fds[1];
--        const char *dvf =3D write_dns_vars_file(up, o, tt, &gc);
--        size_t dvf_size =3D strlen(dvf) + 1;
-+        const char *dvf =3D platform_create_temp_file(o->tmp_dir, "dvf", &=
-gc);
-+        if (!dvf)
-+        {
-+            msg(M_ERR, "could not create dns vars file");
-+            goto out_free;
-+        }
+Installation and getting started instructions can be found here:
 
-+        struct env_set *es =3D env_set_create(&gc);
-+        updown_env_set(up, &o->dns_options, tt, es);
-+        env_set_write_file(dvf, es);
-+
-+        int wfd =3D updown_runner->fds[1];
-+        size_t dvf_size =3D strlen(dvf) + 1;
-         while (1)
-         {
-             ssize_t len =3D write(wfd, dvf, dvf_size);
-@@ -747,6 +743,7 @@
-             break;
-         }
-
-+        int rfd =3D updown_runner->fds[0];
-         while (1)
-         {
-             ssize_t len =3D read(rfd, &status, sizeof(status));
-@@ -761,6 +758,7 @@
-             break;
-         }
-
-+out_free:
-         gc_free(&gc);
-     }
+  <https://community.openvpn.net/openvpn/wiki/OpenVPN3Linux>
 
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1026?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings
+kind regards,
 
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: I275bf939f43577427e14890e7093d63c5213ae5d
-Gerrit-Change-Number: 1026
-Gerrit-PatchSet: 3
-Gerrit-Owner: d12fk <heiko@...515...>
-Gerrit-Reviewer: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-MessageType: newpatchset
-
---6vWaQXSfJxE=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<p> Attention is currently required from: flichtenheld, plaisthos. </p>
-<p>d12fk <strong>uploaded patch set #3</strong> to this change.</p><p><a hr=
-ef=3D"http://gerrit.openvpn.net/c/openvpn/+/1026?usp=3Demail">View Change</=
-a></p><pre style=3D"font-family: monospace,monospace; white-space: pre-wrap=
-;">dns: fix potential NULL pointer dereference<br><br>Fix issue reported by=
- Coverity (CID 1646952): Dereferencing a pointer<br>that might be NULL dvf =
-when calling env_set_write_file.<br><br>In addition to the fix, inline the =
-write_dns_vars_file() helper function.<br>Also output a log line in case th=
-is error happens, because when it<br>happens it will hinder communication w=
-ith the updown runner process, i.e.<br>setting up / tearing down DNS things=
- will not work as expected.<br><br>Change-Id: I275bf939f43577427e14890e7093=
-d63c5213ae5d<br>Signed-off-by: Heiko Hund &lt;heiko@...2662...&gt;<br>---<b=
-r>M src/openvpn/dns.c<br>1 file changed, 15 insertions(+), 17 deletions(-)<=
-br><br></pre><pre style=3D"font-family: monospace,monospace; white-space: p=
-re-wrap;">git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/26/1=
-026/3</pre><pre style=3D"font-family: monospace,monospace; white-space: pre=
--wrap;"><span>diff --git a/src/openvpn/dns.c b/src/openvpn/dns.c</span><br>=
-<span>index 9927961..3c703cc 100644</span><br><span>--- a/src/openvpn/dns.c=
-</span><br><span>+++ b/src/openvpn/dns.c</span><br><span>@@ -688,18 +688,6 =
-@@</span><br><span>     return true;</span><br><span> }</span><br><span> </=
-span><br><span style=3D"color: hsl(0, 100%, 40%);">-static const char *</sp=
-an><br><span style=3D"color: hsl(0, 100%, 40%);">-write_dns_vars_file(bool =
-up, const struct options *o, const struct tuntap *tt, struct gc_arena *gc)<=
-/span><br><span style=3D"color: hsl(0, 100%, 40%);">-{</span><br><span styl=
-e=3D"color: hsl(0, 100%, 40%);">-    struct env_set *es =3D env_set_create(=
-gc);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    const char *d=
-vf =3D platform_create_temp_file(o-&gt;tmp_dir, &quot;dvf&quot;, gc);</span=
-><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"c=
-olor: hsl(0, 100%, 40%);">-    updown_env_set(up, &amp;o-&gt;dns_options, t=
-t, es);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    env_set_wr=
-ite_file(dvf, es);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</s=
-pan><br><span style=3D"color: hsl(0, 100%, 40%);">-    return dvf;</span><b=
-r><span style=3D"color: hsl(0, 100%, 40%);">-}</span><br><span style=3D"col=
-or: hsl(0, 100%, 40%);">-</span><br><span> static void</span><br><span> run=
-_up_down_command(bool up, struct options *o, const struct tuntap *tt, struc=
-t dns_updown_runner_info *updown_runner)</span><br><span> {</span><br><span=
->@@ -709,7 +697,7 @@</span><br><span>         return;</span><br><span>     =
-}</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
-  int status;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    in=
-t status =3D -1;</span><br><span> </span><br><span>     if (!updown_runner-=
-&gt;required)</span><br><span>     {</span><br><span>@@ -728,11 +716,19 @@<=
-/span><br><span>         }</span><br><span> </span><br><span>         struc=
-t gc_arena gc =3D gc_new();</span><br><span style=3D"color: hsl(0, 100%, 40=
-%);">-        int rfd =3D updown_runner-&gt;fds[0];</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-        int wfd =3D updown_runner-&gt;fds[1=
-];</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        const char =
-*dvf =3D write_dns_vars_file(up, o, tt, &amp;gc);</span><br><span style=3D"=
-color: hsl(0, 100%, 40%);">-        size_t dvf_size =3D strlen(dvf) + 1;</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+        const char *dv=
-f =3D platform_create_temp_file(o-&gt;tmp_dir, &quot;dvf&quot;, &amp;gc);</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+        if (!dvf)</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+        {</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+            msg(M_ERR, &quot;coul=
-d not create dns vars file&quot;);</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+            goto out_free;</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+        }</span><br><span> </span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+        struct env_set *es =3D env_set_create=
-(&amp;gc);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        u=
-pdown_env_set(up, &amp;o-&gt;dns_options, tt, es);</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+        env_set_write_file(dvf, es);</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+        int wfd =3D updown_runner-&gt;fds[1];<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+        size_t dvf_s=
-ize =3D strlen(dvf) + 1;</span><br><span>         while (1)</span><br><span=
->         {</span><br><span>             ssize_t len =3D write(wfd, dvf, dv=
-f_size);</span><br><span>@@ -747,6 +743,7 @@</span><br><span>             b=
-reak;</span><br><span>         }</span><br><span> </span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+        int rfd =3D updown_runner-&gt;fds[0]=
-;</span><br><span>         while (1)</span><br><span>         {</span><br><=
-span>             ssize_t len =3D read(rfd, &amp;status, sizeof(status));</=
-span><br><span>@@ -761,6 +758,7 @@</span><br><span>             break;</spa=
-n><br><span>         }</span><br><span> </span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+out_free:</span><br><span>         gc_free(&amp;gc);</=
-span><br><span>     }</span><br><span> </span><br><span></span><br></pre><p=
->To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1026?usp=
-=3Demail">change 1026</a>. To unsubscribe, or for help writing mail filters=
-, visit <a href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><di=
-v itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope item=
-prop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D=
-"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1026?usp=3Demail"/><met=
-a itemprop=3D"name" content=3D"View Change"/></div></div>
-
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I275bf939f43577427e14890e709=
-3d63c5213ae5d </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1026 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 3 </div>
-<div style=3D"display:none"> Gerrit-Owner: d12fk &lt;heiko@...515...&gt; </=
-div>
-<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
-1...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
-41...&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
+David Sommerseth
+OpenVPN Inc
 
 
---6vWaQXSfJxE=--
+---- Source tarballs ---------------------------------------------------
+* OpenVPN 3 Linux v24.1
+
+  <https://swupdate.openvpn.net/community/releases/openvpn3-linux-24.1.tar.=
+xz>
+  <https://swupdate.openvpn.net/community/releases/openvpn3-linux-24.1.tar.=
+xz.asc>
+
+---- SHA256 Checksums --------------------------------------------------
+
+7a85a6247f481a4eb998b79721a7ae87c27f43fea54d09d7cafc86c59cc94ded  openvpn3-=
+linux-24.1.tar.xz.asc
+c0e5db2cea4e9f2118b81425d3833b85821c515b72a53e21479c7a1f24d4bef0  openvpn3-=
+linux-24.1.tar.xz
+
+---- git references ----------------------------------------------------
+
+git repositories:
+
+ - OpenVPN 3 Linux
+   <https://codeberg.org/OpenVPN/openvpn3-linux> (PRIMARY)
+   <https://gitlab.com/openvpn/openvpn3-linux>   (code-only mirror)
+   <https://github.com/OpenVPN/openvpn3-linux>   (code-only mirror)
+
+   git tag: v24.1
+   git commit: 8bba2a15088bd0ef9c2f18ff29186e890a010add
+
+---- Changes from v24 to v24.1 --------------------------------------
+
+David Sommerseth (31):
+      build: Misc cleanup in Meson build scripts
+      build: Fix incorrect default value assignment for create_statedir opt=
+ion
+      common: Refactor Configuration::File to use std::filesystem
+      ovpn3cli/init-config: Refactor file/directory handling to use std::fi=
+lesystem
+      ovpn3cli/init-config: Don't follow symlinks setting up state/configs =
+dirs
+      sessionmgr: Catch incorrect log level requests in Session object
+      build: Fix minor meson complaint in addons/aws
+      build: Improve OpenVPN 3 Core library version extraction
+      events/log: Refactor Events::Log()
+      events/log: Simplify Events::Log::str() methods
+      events/log: Implement character filter in Events::Log
+      log: Extend LogSender with a Debug_wnl() method
+      log/core: Enable multi-line logging via the Core D-Bus logger
+      log/journal: Don't filter newlines from journald entries
+      log: Preserve the newlines in the log when openvpn3-service-log starts
+      tests: Add --allow-newline to logservice1 send subcommand
+      common/cmdargparser: Minor code cleanup in RegisterParsedArgs::regist=
+er_option()
+      common/cmdargparser: Filter out ASCII control characters from command=
+ line
+      common: Merge and move string ctrl char sanitizing to a shared functi=
+on
+      log: Filter strings coming via D-Bus calls
+      sessionmgr/client: Filter reason string to Pause D-Bus method call
+      common: Filter input value to RequiresQueue::UpdateEntry()
+      tests/request-queue: Remove unused local function
+      configmgr/test: Add tests for control chars in various configuration =
+profiles
+      configmgr: Remove control characters from various user input via D-Bus
+      netcfg: Remove control characters from the D-Bus method inputs
+      log: Add missing cstdint header in logmetadata.hpp
+      common: Check if org.freedesktop.hostname1 is available in PlatformIn=
+fo
+      client: Handle exceptions in ~BackendStarterSrv
+      build: Allow version tags to contain dots and minor version digits
+      configmgr/proxy: Ignore minor version number in feature check
+
+--------------------------------------------------------------------
+
+
+--------------H0Ds0u9OVxSNtWM5ksZe296z--
+
+--------------3BbrsF3EZWSB8lLziGWoxQOA
+Content-Type: application/pgp-signature; name="OpenPGP_signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="OpenPGP_signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAEBCAAdFiEEgDq5E1p1aZrNLFFkhs+UTJZx/fIFAmgsLPYACgkQhs+UTJZx
+/fIE3xAArbESjnBYNDSGJiAWIqsYE5Z+ORzLZQfNK40PMXPv1rp/4o7XY1jHRPss
+aAfyLOx87Q6HVHZwdMpXRP1EM183VXPKsDosh+A5k2F6F8qqwRsfidakyJlWTYr6
+gLhIsP8YFfrQrcxCAN8niGPDGOcPwu7GyjWNIFaxcCa+fGY6b2SSVAo43VmroS9a
++uVBXFHrC3motsnxIhkAerxngkp/p1dOJrAAusG7MQhgtrBtiC0979diovFFvU/z
+1E/Mbwv2dJfFlmahVJffqlXMglg4URra8Rg5l9kDadt/HPVxmEDonvFmljnlERmB
+yAmT5mw6pGxVk03TRjfwJvgpslXpbglXh4sKv8uHAsXZrwJykBYNHdN5Pdcrfknu
+YwcrFPwaoFjPlHYglG095hG8khsLupg1Dm4A5SxfA0/gk8+GwcvybAyf2Be9i0rZ
+HQEUhDlC912B3ybCmIeJKFKLpaz+b0R36tdhMyC6NIknKnEtIZwwg4tnqnSjgLr7
+RZD/jjRHIzsP+52XtbonCEci10Q4A7Iuv4Y4ormr+kO6R2C0rV5bqqaYU7y8gnuP
++5YkPRcQKUYyuViaQ5DjL24yy1H6s6C60Ig0dg8TOUndufxmjV66yfIyRt6f9qLT
+jRmL+UV1IS+EQrij9zGeoCoc1rQGvtfshcUKI4eKU8g4wVtXzVQ=
+=KcSE
+-----END PGP SIGNATURE-----
+
+--------------3BbrsF3EZWSB8lLziGWoxQOA--
 
