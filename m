@@ -1,15 +1,15 @@
 From: "d12fk (Code Review)" <gerrit@...515...>
-Date: Tue, 20 May 2025 08:30:00 +0000
+Date: Tue, 20 May 2025 08:42:48 +0000
 In-Reply-To: <gerrit.1747725275000.Ie3fcd845344fd0c3ce9a2f99612fb19fe5ebb2f1@...2715...>
 References: <gerrit.1747725275000.Ie3fcd845344fd0c3ce9a2f99612fb19fe5ebb2f1@...2715...>
 Reply-To: heiko@...515..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <e28fb126e0dcaf6b8d2090ab9e7fea0303958ffb-EmailReplacePatchSet-HTML@...2715...>
+Message-ID: <f6e92076fa3a222656fc70db1cb0095b1976c1b9-EmailReplacePatchSet-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="bn8uXApdjoU="; charset=UTF-8
-Subject: [Openvpn-devel] [XS] Change in openvpn[master]: win: fix collecting
+Content-Type: multipart/alternative; boundary="mu3E87/RIh0="; charset=UTF-8
+Subject: [Openvpn-devel] [S] Change in openvpn[master]: win: fix collecting
  DNS exclude data
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
@@ -22,7 +22,7 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---bn8uXApdjoU=
+--mu3E87/RIh0=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
@@ -34,7 +34,7 @@ I'd like you to reexamine a change. Please visit
 
     http://gerrit.openvpn.net/c/openvpn/+/1028?usp=3Demail
 
-to look at the new patch set (#2).
+to look at the new patch set (#3).
 
 
 Change subject: win: fix collecting DNS exclude data
@@ -55,13 +55,13 @@ Change-Id: Ie3fcd845344fd0c3ce9a2f99612fb19fe5ebb2f1
 Signed-off-by: Heiko Hund <heiko@...2662...>
 ---
 M src/openvpnserv/interactive.c
-1 file changed, 4 insertions(+), 4 deletions(-)
+1 file changed, 5 insertions(+), 5 deletions(-)
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/28/1028/2
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/28/1028/3
 
 diff --git a/src/openvpnserv/interactive.c b/src/openvpnserv/interactive.c
-index a1581a6..4b6c8b6 100644
+index a1581a6..bea8277 100644
 --- a/src/openvpnserv/interactive.c
 +++ b/src/openvpnserv/interactive.c
 @@ -2226,7 +2226,7 @@
@@ -91,9 +91,13 @@ h);
                      return NO_ERROR;
                  }
 
-@@ -2412,7 +2412,7 @@
-             /* Replace comma-delimters with semicolons, as required by NRP=
+@@ -2409,10 +2409,10 @@
+
+         if (v4_addrs_size || v6_addrs_size)
+         {
+-            /* Replace comma-delimters with semicolons, as required by NRP=
 T */
++            /* Replace delimters with semicolons, as required by NRPT */
              for (int j =3D 0; j < sizeof(data[0].addresses) && data[i].add=
 resses[j]; j++)
              {
@@ -113,7 +117,7 @@ Gerrit-Project: openvpn
 Gerrit-Branch: master
 Gerrit-Change-Id: Ie3fcd845344fd0c3ce9a2f99612fb19fe5ebb2f1
 Gerrit-Change-Number: 1028
-Gerrit-PatchSet: 2
+Gerrit-PatchSet: 3
 Gerrit-Owner: d12fk <heiko@...515...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
@@ -122,12 +126,12 @@ Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
 Gerrit-Attention: flichtenheld <frank@...2641...>
 Gerrit-MessageType: newpatchset
 
---bn8uXApdjoU=
+--mu3E87/RIh0=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <p> Attention is currently required from: flichtenheld, plaisthos. </p>
-<p>d12fk <strong>uploaded patch set #2</strong> to this change.</p><p><a hr=
+<p>d12fk <strong>uploaded patch set #3</strong> to this change.</p><p><a hr=
 ef=3D"http://gerrit.openvpn.net/c/openvpn/+/1028?usp=3Demail">View Change</=
 a></p><pre style=3D"font-family: monospace,monospace; white-space: pre-wrap=
 ;">win: fix collecting DNS exclude data<br><br>The size of the returned MUL=
@@ -138,12 +142,12 @@ tor.<br><br>DHCP assigned DNS server addresses are separated by space, not =
 comma.<br>These spaces were not replaced by semicolon, as the spec requires=
 .<br><br>Fixes: OpenVPN/openvpn#747<br>Change-Id: Ie3fcd845344fd0c3ce9a2f99=
 612fb19fe5ebb2f1<br>Signed-off-by: Heiko Hund &lt;heiko@...2662...&gt;<br>-=
---<br>M src/openvpnserv/interactive.c<br>1 file changed, 4 insertions(+), 4=
+--<br>M src/openvpnserv/interactive.c<br>1 file changed, 5 insertions(+), 5=
  deletions(-)<br><br></pre><pre style=3D"font-family: monospace,monospace; =
 white-space: pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/openvpn ref=
-s/changes/28/1028/2</pre><pre style=3D"font-family: monospace,monospace; wh=
+s/changes/28/1028/3</pre><pre style=3D"font-family: monospace,monospace; wh=
 ite-space: pre-wrap;"><span>diff --git a/src/openvpnserv/interactive.c b/sr=
-c/openvpnserv/interactive.c</span><br><span>index a1581a6..4b6c8b6 100644</=
+c/openvpnserv/interactive.c</span><br><span>index a1581a6..bea8277 100644</=
 span><br><span>--- a/src/openvpnserv/interactive.c</span><br><span>+++ b/sr=
 c/openvpnserv/interactive.c</span><br><span>@@ -2226,7 +2226,7 @@</span><br=
 ><span>                     {</span><br><span>                         /* T=
@@ -166,30 +170,34 @@ one */</span><br><span>                     *(pos + domain_len) =3D &#39;\0=
      *size +=3D 1;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
                    *size +=3D one_glyph;</span><br><span>                  =
    return NO_ERROR;</span><br><span>                 }</span><br><span> </s=
-pan><br><span>@@ -2412,7 +2412,7 @@</span><br><span>             /* Replace=
- comma-delimters with semicolons, as required by NRPT */</span><br><span>  =
-           for (int j =3D 0; j &lt; sizeof(data[0].addresses) &amp;&amp; da=
-ta[i].addresses[j]; j++)</span><br><span>             {</span><br><span sty=
-le=3D"color: hsl(0, 100%, 40%);">-                if (data[i].addresses[j] =
-=3D=3D &#39;,&#39;)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-                if (data[i].addresses[j] =3D=3D &#39;,&#39; || data[i].addr=
-esses[j] =3D=3D &#39; &#39;)</span><br><span>                 {</span><br><=
-span>                     data[i].addresses[j] =3D &#39;;&#39;;</span><br><=
-span>                 }</span><br><span></span><br></pre><p>To view, visit =
-<a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1028?usp=3Demail">change 1=
-028</a>. To unsubscribe, or for help writing mail filters, visit <a href=3D=
-"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope itemty=
-pe=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"action" it=
-emtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http=
-://gerrit.openvpn.net/c/openvpn/+/1028?usp=3Demail"/><meta itemprop=3D"name=
-" content=3D"View Change"/></div></div>
+pan><br><span>@@ -2409,10 +2409,10 @@</span><br><span> </span><br><span>   =
+      if (v4_addrs_size || v6_addrs_size)</span><br><span>         {</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-            /* Replace comma=
+-delimters with semicolons, as required by NRPT */</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+            /* Replace delimters with semico=
+lons, as required by NRPT */</span><br><span>             for (int j =3D 0;=
+ j &lt; sizeof(data[0].addresses) &amp;&amp; data[i].addresses[j]; j++)</sp=
+an><br><span>             {</span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">-                if (data[i].addresses[j] =3D=3D &#39;,&#39;)</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+                if (data[i].=
+addresses[j] =3D=3D &#39;,&#39; || data[i].addresses[j] =3D=3D &#39; &#39;)=
+</span><br><span>                 {</span><br><span>                     da=
+ta[i].addresses[j] =3D &#39;;&#39;;</span><br><span>                 }</spa=
+n><br><span></span><br></pre><p>To view, visit <a href=3D"http://gerrit.ope=
+nvpn.net/c/openvpn/+/1028?usp=3Demail">change 1028</a>. To unsubscribe, or =
+for help writing mail filters, visit <a href=3D"http://gerrit.openvpn.net/s=
+ettings">settings</a>.</p><div itemscope itemtype=3D"http://schema.org/Emai=
+lMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.org/=
+ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/open=
+vpn/+/1028?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/><=
+/div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
 <div style=3D"display:none"> Gerrit-Change-Id: Ie3fcd845344fd0c3ce9a2f99612=
 fb19fe5ebb2f1 </div>
 <div style=3D"display:none"> Gerrit-Change-Number: 1028 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 3 </div>
 <div style=3D"display:none"> Gerrit-Owner: d12fk &lt;heiko@...515...&gt; </=
 div>
 <div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
@@ -205,5 +213,5 @@ ts.sourceforge.net&gt; </div>
 <div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
 
 
---bn8uXApdjoU=--
+--mu3E87/RIh0=--
 
