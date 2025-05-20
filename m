@@ -1,14 +1,14 @@
 From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Tue, 20 May 2025 08:26:04 +0000
+Date: Tue, 20 May 2025 08:26:06 +0000
 In-Reply-To: <gerrit.1747646372000.I275bf939f43577427e14890e7093d63c5213ae5d@...2715...>
 References: <gerrit.1747646372000.I275bf939f43577427e14890e7093d63c5213ae5d@...2715...>
 Reply-To: gert@...1296..., arne-openvpn@...1227..., heiko@...515...,
  openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <1947143f16a8e2e87939a044a5e00223026751f0-EmailReplacePatchSet-HTML@...2715...>
+Message-ID: <1947143f16a8e2e87939a044a5e00223026751f0-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="kSo/4p5QW5A="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="RYqJqUziqv4="; charset=UTF-8
 Subject: [Openvpn-devel] [S] Change in openvpn[master]: dns: fix potential
  NULL pointer dereference
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -19,19 +19,15 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: d12fk <heiko@...515...>, plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: d12fk <heiko@...515...>
+Cc: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---kSo/4p5QW5A=
+--RYqJqUziqv4=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-cron2 has uploaded a new patch set (#4) to the change originally created by=
- d12fk. ( http://gerrit.openvpn.net/c/openvpn/+/1026?usp=3Demail )
-
-The following approvals got outdated and were removed:
-Code-Review+2 by cron2
-
+cron2 has submitted this change. ( http://gerrit.openvpn.net/c/openvpn/+/10=
+26?usp=3Demail )
 
 Change subject: dns: fix potential NULL pointer dereference
 ......................................................................
@@ -58,7 +54,7 @@ M src/openvpn/dns.c
 1 file changed, 15 insertions(+), 17 deletions(-)
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/26/1026/4
+
 
 diff --git a/src/openvpn/dns.c b/src/openvpn/dns.c
 index 221e9a9..283ce67 100644
@@ -151,98 +147,94 @@ Gerrit-Reviewer: cron2 <gert@...1296...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-MessageType: newpatchset
+Gerrit-MessageType: merged
 
---kSo/4p5QW5A=
+--RYqJqUziqv4=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p>cron2 <strong>uploaded patch set #4</strong> to the change originally cr=
-eated by d12fk.</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1026=
-?usp=3Demail">View Change</a></p><p>The following approvals got outdated an=
-d were removed:
-Code-Review+2 by cron2</p><pre style=3D"font-family: monospace,monospace; w=
-hite-space: pre-wrap;">dns: fix potential NULL pointer dereference<br><br>F=
-ix issue reported by Coverity (CID 1646952): Dereferencing a pointer<br>tha=
-t might be NULL dvf when calling env_set_write_file.<br><br>In addition to =
-the fix, inline the write_dns_vars_file() helper function.<br>Also output a=
- log line in case this error happens, because when it<br>happens it will hi=
-nder communication with the updown runner process, i.e.<br>setting up / tea=
-ring down DNS things will not work as expected.<br><br>Change-Id: I275bf939=
-f43577427e14890e7093d63c5213ae5d<br>Signed-off-by: Heiko Hund &lt;heiko@...493...=
-2662...&gt;<br>Acked-by: Gert Doering &lt;gert@...1296...&gt;<br>Message-Id=
-: &lt;20250520073354.17091-1-gert@...1296...&gt;<br>URL: https://www.mail-a=
-rchive.com/openvpn-devel@lists.sourceforge.net/msg31720.html<br>Signed-off-=
-by: Gert Doering &lt;gert@...1296...&gt;<br>---<br>M src/openvpn/dns.c<br>1=
- file changed, 15 insertions(+), 17 deletions(-)<br><br></pre><pre style=3D=
-"font-family: monospace,monospace; white-space: pre-wrap;">git pull ssh://g=
-errit.openvpn.net:29418/openvpn refs/changes/26/1026/4</pre><pre style=3D"f=
-ont-family: monospace,monospace; white-space: pre-wrap;"><span>diff --git a=
-/src/openvpn/dns.c b/src/openvpn/dns.c</span><br><span>index 221e9a9..283ce=
-67 100644</span><br><span>--- a/src/openvpn/dns.c</span><br><span>+++ b/src=
-/openvpn/dns.c</span><br><span>@@ -688,18 +688,6 @@</span><br><span>     re=
-turn true;</span><br><span> }</span><br><span> </span><br><span style=3D"co=
-lor: hsl(0, 100%, 40%);">-static const char *</span><br><span style=3D"colo=
-r: hsl(0, 100%, 40%);">-write_dns_vars_file(bool up, const struct options *=
-o, const struct tuntap *tt, struct gc_arena *gc)</span><br><span style=3D"c=
-olor: hsl(0, 100%, 40%);">-{</span><br><span style=3D"color: hsl(0, 100%, 4=
-0%);">-    struct env_set *es =3D env_set_create(gc);</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-    const char *dvf =3D platform_create_tem=
-p_file(o-&gt;tmp_dir, &quot;dvf&quot;, gc);</span><br><span style=3D"color:=
- hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
--    updown_env_set(up, &amp;o-&gt;dns_options, tt, es);</span><br><span st=
-yle=3D"color: hsl(0, 100%, 40%);">-    env_set_write_file(dvf, es);</span><=
-br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"col=
-or: hsl(0, 100%, 40%);">-    return dvf;</span><br><span style=3D"color: hs=
-l(0, 100%, 40%);">-}</span><br><span style=3D"color: hsl(0, 100%, 40%);">-<=
-/span><br><span> static void</span><br><span> run_up_down_command(bool up, =
-struct options *o, const struct tuntap *tt, struct dns_updown_runner_info *=
-updown_runner)</span><br><span> {</span><br><span>@@ -708,7 +696,7 @@</span=
-><br><span>         return;</span><br><span>     }</span><br><span> </span>=
-<br><span style=3D"color: hsl(0, 100%, 40%);">-    int status;</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+    int status =3D -1;</span><br=
-><span> </span><br><span>     if (!updown_runner-&gt;required)</span><br><s=
-pan>     {</span><br><span>@@ -727,11 +715,19 @@</span><br><span>         }=
-</span><br><span> </span><br><span>         struct gc_arena gc =3D gc_new()=
-;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        int rfd =3D =
-updown_runner-&gt;fds[0];</span><br><span style=3D"color: hsl(0, 100%, 40%)=
-;">-        int wfd =3D updown_runner-&gt;fds[1];</span><br><span style=3D"=
-color: hsl(0, 100%, 40%);">-        const char *dvf =3D write_dns_vars_file=
-(up, o, tt, &amp;gc);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
-        size_t dvf_size =3D strlen(dvf) + 1;</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+        const char *dvf =3D platform_create_temp_f=
-ile(o-&gt;tmp_dir, &quot;dvf&quot;, &amp;gc);</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+        if (!dvf)</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+        {</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+            msg(M_ERR, &quot;could not create dns vars file&q=
-uot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            g=
-oto out_free;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
-  }</span><br><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+        struct env_set *es =3D env_set_create(&amp;gc);</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+        updown_env_set(up, &amp;o-&gt=
-;dns_options, tt, es);</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+        env_set_write_file(dvf, es);</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+        int wfd =3D updown_runner-&gt;fds[1];</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+        size_t dvf_size =3D strlen(dvf) + 1;</sp=
-an><br><span>         while (1)</span><br><span>         {</span><br><span>=
-             ssize_t len =3D write(wfd, dvf, dvf_size);</span><br><span>@@ =
--746,6 +742,7 @@</span><br><span>             break;</span><br><span>      =
-   }</span><br><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+        int rfd =3D updown_runner-&gt;fds[0];</span><br><span>         w=
-hile (1)</span><br><span>         {</span><br><span>             ssize_t le=
-n =3D read(rfd, &amp;status, sizeof(status));</span><br><span>@@ -760,6 +75=
-7,7 @@</span><br><span>             break;</span><br><span>         }</span=
-><br><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+out_fre=
-e:</span><br><span>         gc_free(&amp;gc);</span><br><span>     }</span>=
-<br><span> </span><br><span></span><br></pre><p>To view, visit <a href=3D"h=
-ttp://gerrit.openvpn.net/c/openvpn/+/1026?usp=3Demail">change 1026</a>. To =
-unsubscribe, or for help writing mail filters, visit <a href=3D"http://gerr=
-it.openvpn.net/settings">settings</a>.</p><div itemscope itemtype=3D"http:/=
-/schema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"ht=
-tp://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.op=
-envpn.net/c/openvpn/+/1026?usp=3Demail"/><meta itemprop=3D"name" content=3D=
-"View Change"/></div></div>
+<p>cron2 <strong>submitted</strong> this change.</p><p><a href=3D"http://ge=
+rrit.openvpn.net/c/openvpn/+/1026?usp=3Demail">View Change</a></p><div styl=
+e=3D"white-space:pre-wrap"></div><pre style=3D"font-family: monospace,monos=
+pace; white-space: pre-wrap;">dns: fix potential NULL pointer dereference<b=
+r><br>Fix issue reported by Coverity (CID 1646952): Dereferencing a pointer=
+<br>that might be NULL dvf when calling env_set_write_file.<br><br>In addit=
+ion to the fix, inline the write_dns_vars_file() helper function.<br>Also o=
+utput a log line in case this error happens, because when it<br>happens it =
+will hinder communication with the updown runner process, i.e.<br>setting u=
+p / tearing down DNS things will not work as expected.<br><br>Change-Id: I2=
+75bf939f43577427e14890e7093d63c5213ae5d<br>Signed-off-by: Heiko Hund &lt;he=
+iko@...2662...&gt;<br>Acked-by: Gert Doering &lt;gert@...1296...&gt;<br>Mes=
+sage-Id: &lt;20250520073354.17091-1-gert@...1296...&gt;<br>URL: https://www=
+.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg31720.html<br>Sign=
+ed-off-by: Gert Doering &lt;gert@...1296...&gt;<br>---<br>M src/openvpn/dns=
+.c<br>1 file changed, 15 insertions(+), 17 deletions(-)<br><br></pre>
+<pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><sp=
+an>diff --git a/src/openvpn/dns.c b/src/openvpn/dns.c</span><br><span>index=
+ 221e9a9..283ce67 100644</span><br><span>--- a/src/openvpn/dns.c</span><br>=
+<span>+++ b/src/openvpn/dns.c</span><br><span>@@ -688,18 +688,6 @@</span><b=
+r><span>     return true;</span><br><span> }</span><br><span> </span><br><s=
+pan style=3D"color: hsl(0, 100%, 40%);">-static const char *</span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">-write_dns_vars_file(bool up, const s=
+truct options *o, const struct tuntap *tt, struct gc_arena *gc)</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-{</span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-    struct env_set *es =3D env_set_create(gc);</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-    const char *dvf =3D plat=
+form_create_temp_file(o-&gt;tmp_dir, &quot;dvf&quot;, gc);</span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-    updown_env_set(up, &amp;o-&gt;dns_options, tt, es);</sp=
+an><br><span style=3D"color: hsl(0, 100%, 40%);">-    env_set_write_file(dv=
+f, es);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-    return dvf;</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-}</span><br><span style=3D"color: hsl(0, =
+100%, 40%);">-</span><br><span> static void</span><br><span> run_up_down_co=
+mmand(bool up, struct options *o, const struct tuntap *tt, struct dns_updow=
+n_runner_info *updown_runner)</span><br><span> {</span><br><span>@@ -708,7 =
++696,7 @@</span><br><span>         return;</span><br><span>     }</span><br=
+><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-    int statu=
+s;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    int status =
+=3D -1;</span><br><span> </span><br><span>     if (!updown_runner-&gt;requi=
+red)</span><br><span>     {</span><br><span>@@ -727,11 +715,19 @@</span><br=
+><span>         }</span><br><span> </span><br><span>         struct gc_aren=
+a gc =3D gc_new();</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
+     int rfd =3D updown_runner-&gt;fds[0];</span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">-        int wfd =3D updown_runner-&gt;fds[1];</span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-        const char *dvf =3D wr=
+ite_dns_vars_file(up, o, tt, &amp;gc);</span><br><span style=3D"color: hsl(=
+0, 100%, 40%);">-        size_t dvf_size =3D strlen(dvf) + 1;</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+        const char *dvf =3D platf=
+orm_create_temp_file(o-&gt;tmp_dir, &quot;dvf&quot;, &amp;gc);</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+        if (!dvf)</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+        {</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+            msg(M_ERR, &quot;could not creat=
+e dns vars file&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+            goto out_free;</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+        }</span><br><span> </span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+        struct env_set *es =3D env_set_create(&amp;gc);<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+        updown_env_s=
+et(up, &amp;o-&gt;dns_options, tt, es);</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+        env_set_write_file(dvf, es);</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+        int wfd =3D updown_runner-&gt;fds[1];</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+        size_t dvf_size =3D str=
+len(dvf) + 1;</span><br><span>         while (1)</span><br><span>         {=
+</span><br><span>             ssize_t len =3D write(wfd, dvf, dvf_size);</s=
+pan><br><span>@@ -746,6 +742,7 @@</span><br><span>             break;</span=
+><br><span>         }</span><br><span> </span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+        int rfd =3D updown_runner-&gt;fds[0];</span><br=
+><span>         while (1)</span><br><span>         {</span><br><span>      =
+       ssize_t len =3D read(rfd, &amp;status, sizeof(status));</span><br><s=
+pan>@@ -760,6 +757,7 @@</span><br><span>             break;</span><br><span=
+>         }</span><br><span> </span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+out_free:</span><br><span>         gc_free(&amp;gc);</span><br><s=
+pan>     }</span><br><span> </span><br><span></span><br></pre><p>To view, v=
+isit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1026?usp=3Demail">cha=
+nge 1026</a>. To unsubscribe, or for help writing mail filters, visit <a hr=
+ef=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope i=
+temtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"actio=
+n" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D=
+"http://gerrit.openvpn.net/c/openvpn/+/1026?usp=3Demail"/><meta itemprop=3D=
+"name" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
@@ -260,8 +252,8 @@ div>
 .1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
+<div style=3D"display:none"> Gerrit-MessageType: merged </div>
 
 
---kSo/4p5QW5A=--
+--RYqJqUziqv4=--
 
