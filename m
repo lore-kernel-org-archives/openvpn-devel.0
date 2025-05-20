@@ -1,16 +1,11 @@
-From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Tue, 20 May 2025 07:33:15 +0000
+From: Gert Doering <gert@...1296...>
+Date: Tue, 20 May 2025 09:33:48 +0200
+Message-ID: <20250520073354.17091-1-gert@...1296...>
 In-Reply-To: <gerrit.1747646372000.I275bf939f43577427e14890e7093d63c5213ae5d@...2715...>
 References: <gerrit.1747646372000.I275bf939f43577427e14890e7093d63c5213ae5d@...2715...>
-Reply-To: gert@...1296..., arne-openvpn@...1227..., heiko@...515...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <582a55d05a13cd279f87874f5879266df06ea1f3-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="QBAaP6edyzY="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: dns: fix potential
- NULL pointer dereference
+Subject: [Openvpn-devel] [PATCH v3] dns: fix potential NULL pointer
+ dereference
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,94 +14,105 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: d12fk <heiko@...515...>
-Cc: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---QBAaP6edyzY=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+From: Heiko Hund <heiko@...2662...>
 
-Attention is currently required from: d12fk, flichtenheld, plaisthos.
+Fix issue reported by Coverity (CID 1646952): Dereferencing a pointer
+that might be NULL dvf when calling env_set_write_file.
 
-cron2 has posted comments on this change. ( http://gerrit.openvpn.net/c/ope=
-nvpn/+/1026?usp=3Demail )
+In addition to the fix, inline the write_dns_vars_file() helper function.
+Also output a log line in case this error happens, because when it
+happens it will hinder communication with the updown runner process, i.e.
+setting up / tearing down DNS things will not work as expected.
 
-Change subject: dns: fix potential NULL pointer dereference
-......................................................................
+Change-Id: I275bf939f43577427e14890e7093d63c5213ae5d
+Signed-off-by: Heiko Hund <heiko@...2662...>
+Acked-by: Gert Doering <gert@...1296...>
+---
 
+This change was reviewed on Gerrit and approved by at least one
+developer. I request to merge it to master.
 
-Patch Set 3: Code-Review+2
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1026
+This mail reflects revision 3 of this Change.
 
+Acked-by according to Gerrit (reflected above):
+Gert Doering <gert@...1296...>
 
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1026?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings
-
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: I275bf939f43577427e14890e7093d63c5213ae5d
-Gerrit-Change-Number: 1026
-Gerrit-PatchSet: 3
-Gerrit-Owner: d12fk <heiko@...515...>
-Gerrit-Reviewer: cron2 <gert@...1296...>
-Gerrit-Reviewer: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Attention: d12fk <heiko@...515...>
-Gerrit-Comment-Date: Tue, 20 May 2025 07:33:15 +0000
-Gerrit-HasComments: No
-Gerrit-Has-Labels: Yes
-Gerrit-MessageType: comment
-
---QBAaP6edyzY=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<p> Attention is currently required from: d12fk, flichtenheld, plaisthos. <=
-/p>
-<p>Patch set 3:<span style=3D"border-radius: 3px; display: inline-block; ma=
-rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1026?usp=3Demail">V=
-iew Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To vi=
-ew, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1026?usp=3Demail=
-">change 1026</a>. To unsubscribe, or for help writing mail filters, visit =
-<a href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemsc=
-ope itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"=
-action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" hr=
-ef=3D"http://gerrit.openvpn.net/c/openvpn/+/1026?usp=3Demail"/><meta itempr=
-op=3D"name" content=3D"View Change"/></div></div>
-
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I275bf939f43577427e14890e709=
-3d63c5213ae5d </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1026 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 3 </div>
-<div style=3D"display:none"> Gerrit-Owner: d12fk &lt;heiko@...515...&gt; </=
-div>
-<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
- </div>
-<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
-1...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
-41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: d12fk &lt;heiko@...515...&gt=
-; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Tue, 20 May 2025 07:33:15=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: No </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
-
-
---QBAaP6edyzY=--
+        
+diff --git a/src/openvpn/dns.c b/src/openvpn/dns.c
+index 9927961..3c703cc 100644
+--- a/src/openvpn/dns.c
++++ b/src/openvpn/dns.c
+@@ -688,18 +688,6 @@
+     return true;
+ }
+ 
+-static const char *
+-write_dns_vars_file(bool up, const struct options *o, const struct tuntap *tt, struct gc_arena *gc)
+-{
+-    struct env_set *es = env_set_create(gc);
+-    const char *dvf = platform_create_temp_file(o->tmp_dir, "dvf", gc);
+-
+-    updown_env_set(up, &o->dns_options, tt, es);
+-    env_set_write_file(dvf, es);
+-
+-    return dvf;
+-}
+-
+ static void
+ run_up_down_command(bool up, struct options *o, const struct tuntap *tt, struct dns_updown_runner_info *updown_runner)
+ {
+@@ -709,7 +697,7 @@
+         return;
+     }
+ 
+-    int status;
++    int status = -1;
+ 
+     if (!updown_runner->required)
+     {
+@@ -728,11 +716,19 @@
+         }
+ 
+         struct gc_arena gc = gc_new();
+-        int rfd = updown_runner->fds[0];
+-        int wfd = updown_runner->fds[1];
+-        const char *dvf = write_dns_vars_file(up, o, tt, &gc);
+-        size_t dvf_size = strlen(dvf) + 1;
++        const char *dvf = platform_create_temp_file(o->tmp_dir, "dvf", &gc);
++        if (!dvf)
++        {
++            msg(M_ERR, "could not create dns vars file");
++            goto out_free;
++        }
+ 
++        struct env_set *es = env_set_create(&gc);
++        updown_env_set(up, &o->dns_options, tt, es);
++        env_set_write_file(dvf, es);
++
++        int wfd = updown_runner->fds[1];
++        size_t dvf_size = strlen(dvf) + 1;
+         while (1)
+         {
+             ssize_t len = write(wfd, dvf, dvf_size);
+@@ -747,6 +743,7 @@
+             break;
+         }
+ 
++        int rfd = updown_runner->fds[0];
+         while (1)
+         {
+             ssize_t len = read(rfd, &status, sizeof(status));
+@@ -761,6 +758,7 @@
+             break;
+         }
+ 
++out_free:
+         gc_free(&gc);
+     }
+ 
 
