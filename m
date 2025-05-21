@@ -1,16 +1,11 @@
-From: "MaxF (Code Review)" <gerrit@...515...>
-Date: Wed, 21 May 2025 10:43:52 +0000
-In-Reply-To: <gerrit.1747746380000.I1204bc2ff85952160a86f0b9d1caae90e5065bc4@...2715...>
-References: <gerrit.1747746380000.I1204bc2ff85952160a86f0b9d1caae90e5065bc4@...2715...>
-Reply-To: max@...2606..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <06037aaf69a8b47f6d486aeb24410610a2e28404-EmailReplacePatchSet-HTML@...2715...>
+Content-Type: multipart/alternative;
+ boundary="------------J44KRCwhqGYKHh4QJpL0Hh7A"
+Message-ID: <5731b6b7-cfb6-47c9-b8ed-65bd5416877e@...2722...>
+Date: Wed, 21 May 2025 17:06:08 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="BOwJrFaXaqg="; charset=UTF-8
-Subject: [Openvpn-devel] [M] Change in openvpn[master]: Use
- mbedtls_ssl_export_keying_material()
+From: Johan Draaisma <johan@...2722...>
+Content-Language: en-US
+Subject: [Openvpn-devel]  IRC community meeting summary
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,422 +14,216 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: openvpn-devel@lists.sourceforge.net
 
---BOwJrFaXaqg=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+This is a multi-part message in MIME format.
+--------------J44KRCwhqGYKHh4QJpL0Hh7A
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-Attention is currently required from: flichtenheld, plaisthos.
+Meeting summary for 21 May 2025:
 
-Hello flichtenheld, plaisthos,
+  *
 
-I'd like you to reexamine a change. Please visit
+    *New: Changes to community pages on main website*
+    Company reached out to novaflash about proposed changes.
+    novaflash involved ordex and lev__ for feedback/ideas.
+    It's about cleaning up and revamping the community section, remove
+    old releases, focus on latest release, and so on.
+    Feedback from last time was incorporated: 'community' item was moved
+    out of main menu. Community gave feedback; it was moved back to main
+    menu.
+    Renaming of Community to open source can be done partially - got
+    pushback from openvpn inc CEO to rename community to open source in
+    the main menu. Rest of places we can update it though to mention
+    open source. Basic idea is to revamp the community page on main
+    website so it shows just the main download artifacts and release
+    notes of latest version, plus where community resources can be
+    found, plus where developers can be reached. A list of resources and
+    contact methods has been collected and while not set in stone will
+    be passed for an initial design to be reviewed later.
 
-    http://gerrit.openvpn.net/c/openvpn/+/1041?usp=3Demail
+  *
 
-to look at the new patch set (#2).
+    *Updated: Release 2.7*
+    Current estimates are to have all major code items in by May 1st and
+    then a release on July 1st.
+    Together with 2.7 a new Linux DCO module based on upstreamed (linux
+    kernel) codebase will be released, the code for this is done, bugs
+    being fixed.
+    Together with 2.7 a new Windows DCO module with server support will
+    be released. The code for this is done but needs more testing.
+    DNS changes are mostly in but some issues are still found on Windows
+    and need to be addressed.
+    Currently we feel that it looks reasonable to do a 2.7 alpha release
+    next week.
+    For the actual release we should still do a reformatting to
+    clang-format so master and 2.7 have the same formatting. Otherwise
+    backporting bugfixes will be a pain.
 
+  *
 
-Change subject: Use mbedtls_ssl_export_keying_material()
-......................................................................
+    *Updated: DCO tasks*
+    Implementation of epoch data keys in user space in OpenVPN2 and
+    OpenVPN3 are both done now. For Windows, Linux, and FreeBSD DCO this
+    implementation still needs to happen.
+    lev__ has started work on epoch data keys in Windows DCO. Windows
+    DCO has also support for server mode now so has some significant
+    changes coming with 2.7. Red Hat 9.6 introduced a change that breaks
+    the current production DCO kernel module code. A fix for this is
+    available now.
+    Programs that rely on this like Access Server and OpenVPN3 Linux
+    will push out an updated DCO kernel module with this fix soonish.
+    There are still some bugfixes for the backport copy of linux kernel
+    upstreamed version of DCO for 2.7 to be resolved.
 
-Use mbedtls_ssl_export_keying_material()
+  *
 
-Mbed TLS now has an implementation of the TLS-Exporter feature (though
-not yet in a released version). Use it if it's available.
+    *Updated: OpenVPN community meetup 2025*
+    https://community.openvpn.net/openvpn/wiki/CommunityMeetup2025
+    When: based on an availabilty poll and by agreement the weekend of
+    25 and 26 october as meeting days, with days before and after as
+    travel days, seems best.
+    Where: Napoli, Italy.
+    Meeting room: giaan will take a look into this.
+    Hotel: giaan will take a look into this.
+    Beer: yes.
+    T-shirts: yes.
 
-Change-Id: I1204bc2ff85952160a86f0b9d1caae90e5065bc4
-Signed-off-by: Max Fillinger <maximilian.fillinger@...2507...>
----
-M CMakeLists.txt
-M configure.ac
-M src/openvpn/ssl_mbedtls.c
-M src/openvpn/ssl_mbedtls.h
-4 files changed, 48 insertions(+), 18 deletions(-)
+As always you're welcome to join at #openvpn-meeting on Libera IRC 
+network every Wednesday at 14:00 Central European Time.
 
+Kind regards,
+Johan Draaisma
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/41/1041/2
+--------------J44KRCwhqGYKHh4QJpL0Hh7A
+Content-Type: text/html; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 40bffd4..0744eb4 100644
---- a/CMakeLists.txt
-+++ b/CMakeLists.txt
-@@ -302,6 +302,7 @@
-     check_symbol_exists(mbedtls_ctr_drbg_update_ret mbedtls/ctr_drbg.h HAV=
-E_MBEDTLS_CTR_DRBG_UPDATE_RET)
-     check_symbol_exists(mbedtls_ssl_conf_export_keys_ext_cb mbedtls/ssl.h =
-HAVE_MBEDTLS_SSL_CONF_EXPORT_KEYS_EXT_CB)
-     check_symbol_exists(mbedtls_ssl_set_export_keys_cb mbedtls/ssl.h HAVE_=
-MBEDTLS_SSL_SET_EXPORT_KEYS_CB)
-+    check_symbol_exists(mbedtls_ssl_export_keying_material mbedtls/ssl.h H=
-AVE_MBEDTLS_SSL_EXPORT_KEYING_MATERIAL)
-     check_include_files(psa/crypto.h HAVE_MBEDTLS_PSA_CRYPTO_H)
- endfunction()
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  </head>
+  <body>
+    <p> Meeting summary for 21 May 2025:</p>
+    <ul
+style="box-sizing: inherit; list-style: circle; padding-left: 1rem; margin-top: 0px; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255); color: rgba(0, 0, 0, 0.85); font-family: -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Helvetica, Arial, sans-serif, &quot;Apple Color Emoji&quot;, &quot;Segoe UI Emoji&quot;, &quot;Segoe UI Symbol&quot;; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; text-align: start; text-indent: 0px; text-transform: none; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;">
+      <li
+style="box-sizing: inherit; margin-bottom: 0.2rem; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255); margin-left: 1.5rem; list-style-type: disc;">
+        <p
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);"><strong
+style="box-sizing: inherit; font-weight: bolder; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">New:
+            Changes to community pages on main website</strong><br
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
+          Company reached out to novaflash about proposed changes.<br
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
+          novaflash involved ordex and lev__ for feedback/ideas.<br
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
+          It's about cleaning up and revamping the community section,
+          remove old releases, focus on latest release, and so on.<br
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
+          Feedback from last time was incorporated: 'community' item was
+          moved out of main menu. Community gave feedback; it was moved
+          back to main menu.<br
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
+          Renaming of Community to open source can be done partially -
+          got pushback from openvpn inc CEO to rename community to open
+          source in the main menu. Rest of places we can update it
+          though to mention open source. Basic idea is to revamp the
+          community page on main website so it shows just the main
+          download artifacts and release notes of latest version, plus
+          where community resources can be found, plus where developers
+          can be reached. A list of resources and contact methods has
+          been collected and while not set in stone will be passed for
+          an initial design to be reviewed later.</p>
+      </li>
+      <li
+style="box-sizing: inherit; margin-bottom: 0.2rem; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255); margin-left: 1.5rem; list-style-type: disc;">
+        <p
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);"><strong
+style="box-sizing: inherit; font-weight: bolder; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">Updated:
+            Release 2.7</strong><br
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
+          Current estimates are to have all major code items in by May
+          1st and then a release on July 1st.<br
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
+          Together with 2.7 a new Linux DCO module based on upstreamed
+          (linux kernel) codebase will be released, the code for this is
+          done, bugs being fixed.<br
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
+          Together with 2.7 a new Windows DCO module with server support
+          will be released. The code for this is done but needs more
+          testing.<br
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
+          DNS changes are mostly in but some issues are still found on
+          Windows and need to be addressed.<br
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
+          Currently we feel that it looks reasonable to do a 2.7 alpha
+          release next week.<br
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
+          For the actual release we should still do a reformatting to
+          clang-format so master and 2.7 have the same formatting.
+          Otherwise backporting bugfixes will be a pain.</p>
+      </li>
+      <li
+style="box-sizing: inherit; margin-bottom: 0.2rem; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255); margin-left: 1.5rem; list-style-type: disc;">
+        <p
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);"><strong
+style="box-sizing: inherit; font-weight: bolder; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">Updated:
+            DCO tasks</strong><br
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
+          Implementation of epoch data keys in user space in OpenVPN2
+          and OpenVPN3 are both done now. For Windows, Linux, and
+          FreeBSD DCO this implementation still needs to happen.<br
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
+          lev__ has started work on epoch data keys in Windows DCO.
+          Windows DCO has also support for server mode now so has some
+          significant changes coming with 2.7. Red Hat 9.6 introduced a
+          change that breaks the current production DCO kernel module
+          code. A fix for this is available now.<br
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
+          Programs that rely on this like Access Server and OpenVPN3
+          Linux will push out an updated DCO kernel module with this fix
+          soonish.<br
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
+          There are still some bugfixes for the backport copy of linux
+          kernel upstreamed version of DCO for 2.7 to be resolved.</p>
+      </li>
+      <li
+style="box-sizing: inherit; margin-bottom: 0.2rem; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255); margin-left: 1.5rem; list-style-type: disc;">
+        <p
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);"><strong
+style="box-sizing: inherit; font-weight: bolder; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">Updated:
+            OpenVPN community meetup 2025</strong><br
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
+          <a
+href="https://community.openvpn.net/openvpn/wiki/CommunityMeetup2025"
+style="box-sizing: inherit; background-color: transparent; color: rgb(24, 144, 255); text-decoration: none; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);"
+            class="moz-txt-link-freetext">https://community.openvpn.net/openvpn/wiki/CommunityMeetup2025</a><br
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
+          When: based on an availabilty poll and by agreement the
+          weekend of 25 and 26 october as meeting days, with days before
+          and after as travel days, seems best.<br
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
+          Where: Napoli, Italy.<br
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
+          Meeting room: giaan will take a look into this.<br
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
+          Hotel: giaan will take a look into this.<br
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
+          Beer: yes.<br
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
+          T-shirts: yes.</p>
+      </li>
+    </ul>
+    <p>As always you're welcome to join at #openvpn-meeting on Libera
+      IRC network every Wednesday at 14:00 Central European Time. </p>
+    <p>Kind regards,<br>
+      Johan Draaisma<br>
+    </p>
+  </body>
+</html>
 
-diff --git a/configure.ac b/configure.ac
-index 75367e8..daaf202 100644
---- a/configure.ac
-+++ b/configure.ac
-@@ -1065,19 +1065,28 @@
- 	)
-
- 	have_export_keying_material=3D"yes"
-+
- 	AC_CHECK_FUNC(
--		[mbedtls_ssl_conf_export_keys_ext_cb],
--		[AC_DEFINE([HAVE_MBEDTLS_SSL_CONF_EXPORT_KEYS_EXT_CB], [1], [yes])],
--		[AC_DEFINE([HAVE_MBEDTLS_SSL_CONF_EXPORT_KEYS_EXT_CB], [0], [no])]
-+		[mbedtls_ssl_export_keying_material],
-+		AC_DEFINE([HAVE_MBEDTLS_SSL_EXPORT_KEYING_MATERIAL], [1],
-+			[Have mbedtls_ssl_export_keying_material])
- 	)
--	if test "x$ac_cv_func_mbedtls_ssl_conf_export_keys_ext_cb" !=3D xyes; then
-+
-+	if test "x$ac_cv_func_mbedtls_ssl_export_keying_material" !=3D xyes; then
- 		AC_CHECK_FUNC(
--			[mbedtls_ssl_set_export_keys_cb],
--			[AC_DEFINE([HAVE_MBEDTLS_SSL_SET_EXPORT_KEYS_CB], [1], [yes])],
--			[AC_DEFINE([HAVE_MBEDTLS_SSL_SET_EXPORT_KEYS_CB], [0], [no])]
-+			[mbedtls_ssl_conf_export_keys_ext_cb],
-+			[AC_DEFINE([HAVE_MBEDTLS_SSL_CONF_EXPORT_KEYS_EXT_CB], [1], [yes])],
-+			[AC_DEFINE([HAVE_MBEDTLS_SSL_CONF_EXPORT_KEYS_EXT_CB], [0], [no])]
- 		)
--		if test "x$ac_cv_func_mbedtls_ssl_set_export_keys_cb" !=3D xyes; then
--			have_export_keying_material=3D"no"
-+		if test "x$ac_cv_func_mbedtls_ssl_conf_export_keys_ext_cb" !=3D xyes; th=
-en
-+			AC_CHECK_FUNC(
-+				[mbedtls_ssl_set_export_keys_cb],
-+				[AC_DEFINE([HAVE_MBEDTLS_SSL_SET_EXPORT_KEYS_CB], [1], [yes])],
-+				[AC_DEFINE([HAVE_MBEDTLS_SSL_SET_EXPORT_KEYS_CB], [0], [no])]
-+			)
-+			if test "x$ac_cv_func_mbedtls_ssl_set_export_keys_cb" !=3D xyes; then
-+				have_export_keying_material=3D"no"
-+			fi
- 		fi
- 	fi
-
-diff --git a/src/openvpn/ssl_mbedtls.c b/src/openvpn/ssl_mbedtls.c
-index ec3135a..03f8c80 100644
---- a/src/openvpn/ssl_mbedtls.c
-+++ b/src/openvpn/ssl_mbedtls.c
-@@ -253,8 +253,8 @@
-     memcpy(cache->master_secret, secret, sizeof(cache->master_secret));
-     cache->tls_prf_type =3D tls_prf_type;
- }
--#else  /* if HAVE_MBEDTLS_SSL_CONF_EXPORT_KEYS_EXT_CB */
--#error either HAVE_MBEDTLS_SSL_CONF_EXPORT_KEYS_EXT_CB or HAVE_MBEDTLS_SSL=
-_SET_EXPORT_KEYS_CB must be defined when HAVE_EXPORT_KEYING_MATERIAL is def=
-ined
-+#elif !HAVE_MBEDTLS_SSL_EXPORT_KEYING_MATERIAL
-+#error HAVE_MBEDTLS_SSL_CONF_EXPORT_KEYS_EXT_CB, HAVE_MBEDTLS_SSL_SET_EXPO=
-RT_KEYS_CB or HAVE_MBEDTLS_SSL_EXPORT_KEYING_MATERIAL must be set when HAVE=
-_EXPORT_KEYING_MATERIAL is defined
- #endif /* HAVE_MBEDTLS_SSL_CONF_EXPORT_KEYS_EXT_CB */
-
- bool
-@@ -264,6 +264,20 @@
- {
-     ASSERT(strlen(label) =3D=3D label_size);
-
-+#if HAVE_MBEDTLS_SSL_EXPORT_KEYING_MATERIAL
-+    /* Our version of mbed TLS has a built-in TLS-Exporter. */
-+
-+    mbedtls_ssl_context *ctx =3D session->key[KS_PRIMARY].ks_ssl.ctx;
-+    if (mbed_ok(mbedtls_ssl_export_keying_material(ctx, ekm, ekm_size, lab=
-el, label_size, NULL, 0, 0)))
-+    {
-+        return true;
-+    }
-+    else
-+    {
-+        return false;
-+    }
-+
-+#else  /* HAVE_MBEDTLS_SSL_EXPORT_KEYING_MATERIAL */
-     struct tls_key_cache *cache =3D &session->key[KS_PRIMARY].ks_ssl.tls_k=
-ey_cache;
-
-     /* If the type is NONE, we either have no cached secrets or
-@@ -288,7 +302,9 @@
-         secure_memzero(ekm, session->opt->ekm_size);
-         return false;
-     }
-+#endif  /* HAVE_MBEDTLS_SSL_EXPORT_KEYING_MATERIAL */
- }
-+
- #else  /* ifdef HAVE_EXPORT_KEYING_MATERIAL */
- bool
- key_state_export_keying_material(struct tls_session *session,
-@@ -1238,7 +1254,7 @@
-         mbedtls_ssl_conf_max_tls_version(ks_ssl->ssl_config, version);
-     }
-
--#if HAVE_MBEDTLS_SSL_CONF_EXPORT_KEYS_EXT_CB
-+#if HAVE_MBEDTLS_SSL_CONF_EXPORT_KEYS_EXT_CB && !HAVE_MBEDTLS_SSL_EXPORT_K=
-EYING_MATERIAL
-     /* Initialize keying material exporter, old style. */
-     mbedtls_ssl_conf_export_keys_ext_cb(ks_ssl->ssl_config,
-                                         mbedtls_ssl_export_keys_cb, sessio=
-n);
-@@ -1253,7 +1269,7 @@
-      * verification. */
-     ASSERT(mbed_ok(mbedtls_ssl_set_hostname(ks_ssl->ctx, NULL)));
-
--#if HAVE_MBEDTLS_SSL_SET_EXPORT_KEYS_CB
-+#if HAVE_MBEDTLS_SSL_SET_EXPORT_KEYS_CB && !HAVE_MBEDTLS_SSL_EXPORT_KEYING=
-_MATERIAL
-     /* Initialize keying material exporter, new style. */
-     mbedtls_ssl_set_export_keys_cb(ks_ssl->ctx, mbedtls_ssl_export_keys_cb=
-, session);
- #endif
-diff --git a/src/openvpn/ssl_mbedtls.h b/src/openvpn/ssl_mbedtls.h
-index ec30bb5..309dc7ce 100644
---- a/src/openvpn/ssl_mbedtls.h
-+++ b/src/openvpn/ssl_mbedtls.h
-@@ -85,16 +85,20 @@
-     void *sign_ctx;
- };
-
--#ifdef HAVE_EXPORT_KEYING_MATERIAL
--/** struct to cache TLS secrets for keying material exporter (RFC 5705).
-- * The constants (64 and 48) are inherent to TLS version and
-- * the whole keying material export will likely change when they change */
-+#if defined(HAVE_EXPORT_KEYING_MATERIAL) && !HAVE_MBEDTLS_SSL_EXPORT_KEYIN=
-G_MATERIAL
-+/**
-+ * struct to cache TLS secrets for keying material exporter (RFC 5705).
-+ * Not needed if the library itself implements the keying material exporte=
-r,
-+ * or if we can't obtain the secrets anyway.
-+ *
-+ * The constants 64 and 48 are inherent to TLS 1.2. For TLS 1.3, it is not
-+ * possible to obtain the exporter master secret from mbed TLS. */
- struct tls_key_cache {
-     unsigned char client_server_random[64];
-     mbedtls_tls_prf_types tls_prf_type;
-     unsigned char master_secret[48];
- };
--#else  /* ifdef HAVE_EXPORT_KEYING_MATERIAL */
-+#else  /* if defined(HAVE_EXPORT_KEYING_MATERIAL) && !HAVE_MBEDTLS_SSL_EXP=
-ORT_KEYING_MATERIAL */
- struct tls_key_cache { };
- #endif
-
-
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1041?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings
-
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: I1204bc2ff85952160a86f0b9d1caae90e5065bc4
-Gerrit-Change-Number: 1041
-Gerrit-PatchSet: 2
-Gerrit-Owner: MaxF <max@...2606...>
-Gerrit-Reviewer: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-MessageType: newpatchset
-
---BOwJrFaXaqg=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<p> Attention is currently required from: flichtenheld, plaisthos. </p>
-<p>MaxF <strong>uploaded patch set #2</strong> to this change.</p><p><a hre=
-f=3D"http://gerrit.openvpn.net/c/openvpn/+/1041?usp=3Demail">View Change</a=
-></p><pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;=
-">Use mbedtls_ssl_export_keying_material()<br><br>Mbed TLS now has an imple=
-mentation of the TLS-Exporter feature (though<br>not yet in a released vers=
-ion). Use it if it&#39;s available.<br><br>Change-Id: I1204bc2ff85952160a86=
-f0b9d1caae90e5065bc4<br>Signed-off-by: Max Fillinger &lt;maximilian.filling=
-er@...2507...&gt;<br>---<br>M CMakeLists.txt<br>M configure.ac<br>M src/ope=
-nvpn/ssl_mbedtls.c<br>M src/openvpn/ssl_mbedtls.h<br>4 files changed, 48 in=
-sertions(+), 18 deletions(-)<br><br></pre><pre style=3D"font-family: monosp=
-ace,monospace; white-space: pre-wrap;">git pull ssh://gerrit.openvpn.net:29=
-418/openvpn refs/changes/41/1041/2</pre><pre style=3D"font-family: monospac=
-e,monospace; white-space: pre-wrap;"><span>diff --git a/CMakeLists.txt b/CM=
-akeLists.txt</span><br><span>index 40bffd4..0744eb4 100644</span><br><span>=
---- a/CMakeLists.txt</span><br><span>+++ b/CMakeLists.txt</span><br><span>@=
-@ -302,6 +302,7 @@</span><br><span>     check_symbol_exists(mbedtls_ctr_drb=
-g_update_ret mbedtls/ctr_drbg.h HAVE_MBEDTLS_CTR_DRBG_UPDATE_RET)</span><br=
-><span>     check_symbol_exists(mbedtls_ssl_conf_export_keys_ext_cb mbedtls=
-/ssl.h HAVE_MBEDTLS_SSL_CONF_EXPORT_KEYS_EXT_CB)</span><br><span>     check=
-_symbol_exists(mbedtls_ssl_set_export_keys_cb mbedtls/ssl.h HAVE_MBEDTLS_SS=
-L_SET_EXPORT_KEYS_CB)</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+    check_symbol_exists(mbedtls_ssl_export_keying_material mbedtls/ssl.h =
-HAVE_MBEDTLS_SSL_EXPORT_KEYING_MATERIAL)</span><br><span>     check_include=
-_files(psa/crypto.h HAVE_MBEDTLS_PSA_CRYPTO_H)</span><br><span> endfunction=
-()</span><br><span> </span><br><span>diff --git a/configure.ac b/configure.=
-ac</span><br><span>index 75367e8..daaf202 100644</span><br><span>--- a/conf=
-igure.ac</span><br><span>+++ b/configure.ac</span><br><span>@@ -1065,19 +10=
-65,28 @@</span><br><span> 	)</span><br><span> </span><br><span> 	have_expor=
-t_keying_material=3D&quot;yes&quot;</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+</span><br><span> 	AC_CHECK_FUNC(</span><br><span style=3D"=
-color: hsl(0, 100%, 40%);">-		[mbedtls_ssl_conf_export_keys_ext_cb],</span>=
-<br><span style=3D"color: hsl(0, 100%, 40%);">-		[AC_DEFINE([HAVE_MBEDTLS_S=
-SL_CONF_EXPORT_KEYS_EXT_CB], [1], [yes])],</span><br><span style=3D"color: =
-hsl(0, 100%, 40%);">-		[AC_DEFINE([HAVE_MBEDTLS_SSL_CONF_EXPORT_KEYS_EXT_CB=
-], [0], [no])]</span><br><span style=3D"color: hsl(120, 100%, 40%);">+		[mb=
-edtls_ssl_export_keying_material],</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+		AC_DEFINE([HAVE_MBEDTLS_SSL_EXPORT_KEYING_MATERIAL], [1],<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+			[Have mbedtls_ssl=
-_export_keying_material])</span><br><span> 	)</span><br><span style=3D"colo=
-r: hsl(0, 100%, 40%);">-	if test &quot;x$ac_cv_func_mbedtls_ssl_conf_export=
-_keys_ext_cb&quot; !=3D xyes; then</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+	if =
-test &quot;x$ac_cv_func_mbedtls_ssl_export_keying_material&quot; !=3D xyes;=
- then</span><br><span> 		AC_CHECK_FUNC(</span><br><span style=3D"color: hsl=
-(0, 100%, 40%);">-			[mbedtls_ssl_set_export_keys_cb],</span><br><span styl=
-e=3D"color: hsl(0, 100%, 40%);">-			[AC_DEFINE([HAVE_MBEDTLS_SSL_SET_EXPORT=
-_KEYS_CB], [1], [yes])],</span><br><span style=3D"color: hsl(0, 100%, 40%);=
-">-			[AC_DEFINE([HAVE_MBEDTLS_SSL_SET_EXPORT_KEYS_CB], [0], [no])]</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+			[mbedtls_ssl_conf_export=
-_keys_ext_cb],</span><br><span style=3D"color: hsl(120, 100%, 40%);">+			[A=
-C_DEFINE([HAVE_MBEDTLS_SSL_CONF_EXPORT_KEYS_EXT_CB], [1], [yes])],</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+			[AC_DEFINE([HAVE_MBEDTLS_=
-SSL_CONF_EXPORT_KEYS_EXT_CB], [0], [no])]</span><br><span> 		)</span><br><s=
-pan style=3D"color: hsl(0, 100%, 40%);">-		if test &quot;x$ac_cv_func_mbedt=
-ls_ssl_set_export_keys_cb&quot; !=3D xyes; then</span><br><span style=3D"co=
-lor: hsl(0, 100%, 40%);">-			have_export_keying_material=3D&quot;no&quot;</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+		if test &quot;x$ac_=
-cv_func_mbedtls_ssl_conf_export_keys_ext_cb&quot; !=3D xyes; then</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+			AC_CHECK_FUNC(</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+				[mbedtls_ssl_set_export_key=
-s_cb],</span><br><span style=3D"color: hsl(120, 100%, 40%);">+				[AC_DEFIN=
-E([HAVE_MBEDTLS_SSL_SET_EXPORT_KEYS_CB], [1], [yes])],</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+				[AC_DEFINE([HAVE_MBEDTLS_SSL_SET_EXP=
-ORT_KEYS_CB], [0], [no])]</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+			)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+			if tes=
-t &quot;x$ac_cv_func_mbedtls_ssl_set_export_keys_cb&quot; !=3D xyes; then</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+				have_export_keyin=
-g_material=3D&quot;no&quot;</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+			fi</span><br><span> 		fi</span><br><span> 	fi</span><br><span> <=
-/span><br><span>diff --git a/src/openvpn/ssl_mbedtls.c b/src/openvpn/ssl_mb=
-edtls.c</span><br><span>index ec3135a..03f8c80 100644</span><br><span>--- a=
-/src/openvpn/ssl_mbedtls.c</span><br><span>+++ b/src/openvpn/ssl_mbedtls.c<=
-/span><br><span>@@ -253,8 +253,8 @@</span><br><span>     memcpy(cache-&gt;m=
-aster_secret, secret, sizeof(cache-&gt;master_secret));</span><br><span>   =
-  cache-&gt;tls_prf_type =3D tls_prf_type;</span><br><span> }</span><br><sp=
-an style=3D"color: hsl(0, 100%, 40%);">-#else  /* if HAVE_MBEDTLS_SSL_CONF_=
-EXPORT_KEYS_EXT_CB */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
-#error either HAVE_MBEDTLS_SSL_CONF_EXPORT_KEYS_EXT_CB or HAVE_MBEDTLS_SSL_=
-SET_EXPORT_KEYS_CB must be defined when HAVE_EXPORT_KEYING_MATERIAL is defi=
-ned</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#elif !HAVE_MBED=
-TLS_SSL_EXPORT_KEYING_MATERIAL</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+#error HAVE_MBEDTLS_SSL_CONF_EXPORT_KEYS_EXT_CB, HAVE_MBEDTLS_SS=
-L_SET_EXPORT_KEYS_CB or HAVE_MBEDTLS_SSL_EXPORT_KEYING_MATERIAL must be set=
- when HAVE_EXPORT_KEYING_MATERIAL is defined</span><br><span> #endif /* HAV=
-E_MBEDTLS_SSL_CONF_EXPORT_KEYS_EXT_CB */</span><br><span> </span><br><span>=
- bool</span><br><span>@@ -264,6 +264,20 @@</span><br><span> {</span><br><sp=
-an>     ASSERT(strlen(label) =3D=3D label_size);</span><br><span> </span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+#if HAVE_MBEDTLS_SSL_EXPORT_=
-KEYING_MATERIAL</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-/* Our version of mbed TLS has a built-in TLS-Exporter. */</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+    mbedtls_ssl_context *ctx =3D session-&gt;key[KS_PRI=
-MARY].ks_ssl.ctx;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-  if (mbed_ok(mbedtls_ssl_export_keying_material(ctx, ekm, ekm_size, label,=
- label_size, NULL, 0, 0)))</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
- return true;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+    else</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+        return false;</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+#else  /* HAVE_MBEDTLS_SSL_EXPORT_KEYING_MATERIAL */</span><br><span>     =
-struct tls_key_cache *cache =3D &amp;session-&gt;key[KS_PRIMARY].ks_ssl.tls=
-_key_cache;</span><br><span> </span><br><span>     /* If the type is NONE, =
-we either have no cached secrets or</span><br><span>@@ -288,7 +302,9 @@</sp=
-an><br><span>         secure_memzero(ekm, session-&gt;opt-&gt;ekm_size);</s=
-pan><br><span>         return false;</span><br><span>     }</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+#endif  /* HAVE_MBEDTLS_SSL_EXPORT_=
-KEYING_MATERIAL */</span><br><span> }</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+</span><br><span> #else  /* ifdef HAVE_EXPORT_KEYING_MATE=
-RIAL */</span><br><span> bool</span><br><span> key_state_export_keying_mate=
-rial(struct tls_session *session,</span><br><span>@@ -1238,7 +1254,7 @@</sp=
-an><br><span>         mbedtls_ssl_conf_max_tls_version(ks_ssl-&gt;ssl_confi=
-g, version);</span><br><span>     }</span><br><span> </span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-#if HAVE_MBEDTLS_SSL_CONF_EXPORT_KEYS_EXT_C=
-B</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#if HAVE_MBEDTLS_S=
-SL_CONF_EXPORT_KEYS_EXT_CB &amp;&amp; !HAVE_MBEDTLS_SSL_EXPORT_KEYING_MATER=
-IAL</span><br><span>     /* Initialize keying material exporter, old style.=
- */</span><br><span>     mbedtls_ssl_conf_export_keys_ext_cb(ks_ssl-&gt;ssl=
-_config,</span><br><span>                                         mbedtls_s=
-sl_export_keys_cb, session);</span><br><span>@@ -1253,7 +1269,7 @@</span><b=
-r><span>      * verification. */</span><br><span>     ASSERT(mbed_ok(mbedtl=
-s_ssl_set_hostname(ks_ssl-&gt;ctx, NULL)));</span><br><span> </span><br><sp=
-an style=3D"color: hsl(0, 100%, 40%);">-#if HAVE_MBEDTLS_SSL_SET_EXPORT_KEY=
-S_CB</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#if HAVE_MBEDTL=
-S_SSL_SET_EXPORT_KEYS_CB &amp;&amp; !HAVE_MBEDTLS_SSL_EXPORT_KEYING_MATERIA=
-L</span><br><span>     /* Initialize keying material exporter, new style. *=
-/</span><br><span>     mbedtls_ssl_set_export_keys_cb(ks_ssl-&gt;ctx, mbedt=
-ls_ssl_export_keys_cb, session);</span><br><span> #endif</span><br><span>di=
-ff --git a/src/openvpn/ssl_mbedtls.h b/src/openvpn/ssl_mbedtls.h</span><br>=
-<span>index ec30bb5..309dc7ce 100644</span><br><span>--- a/src/openvpn/ssl_=
-mbedtls.h</span><br><span>+++ b/src/openvpn/ssl_mbedtls.h</span><br><span>@=
-@ -85,16 +85,20 @@</span><br><span>     void *sign_ctx;</span><br><span> };=
-</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-#if=
-def HAVE_EXPORT_KEYING_MATERIAL</span><br><span style=3D"color: hsl(0, 100%=
-, 40%);">-/** struct to cache TLS secrets for keying material exporter (RFC=
- 5705).</span><br><span style=3D"color: hsl(0, 100%, 40%);">- * The constan=
-ts (64 and 48) are inherent to TLS version and</span><br><span style=3D"col=
-or: hsl(0, 100%, 40%);">- * the whole keying material export will likely ch=
-ange when they change */</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+#if defined(HAVE_EXPORT_KEYING_MATERIAL) &amp;&amp; !HAVE_MBEDTLS_SSL_=
-EXPORT_KEYING_MATERIAL</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+/**</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * struct to =
-cache TLS secrets for keying material exporter (RFC 5705).</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+ * Not needed if the library itself =
-implements the keying material exporter,</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+ * or if we can&#39;t obtain the secrets anyway.</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+ * The constants 64 and 48 are inherent t=
-o TLS 1.2. For TLS 1.3, it is not</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+ * possible to obtain the exporter master secret from mbed TL=
-S. */</span><br><span> struct tls_key_cache {</span><br><span>     unsigned=
- char client_server_random[64];</span><br><span>     mbedtls_tls_prf_types =
-tls_prf_type;</span><br><span>     unsigned char master_secret[48];</span><=
-br><span> };</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#else  /*=
- ifdef HAVE_EXPORT_KEYING_MATERIAL */</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+#else  /* if defined(HAVE_EXPORT_KEYING_MATERIAL) &amp;&a=
-mp; !HAVE_MBEDTLS_SSL_EXPORT_KEYING_MATERIAL */</span><br><span> struct tls=
-_key_cache { };</span><br><span> #endif</span><br><span> </span><br><span><=
-/span><br></pre><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/op=
-envpn/+/1041?usp=3Demail">change 1041</a>. To unsubscribe, or for help writ=
-ing mail filters, visit <a href=3D"http://gerrit.openvpn.net/settings">sett=
-ings</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><di=
-v itemscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><=
-link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1041?us=
-p=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
-
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I1204bc2ff85952160a86f0b9d1c=
-aae90e5065bc4 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1041 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
-<div style=3D"display:none"> Gerrit-Owner: MaxF &lt;max@...2606...&gt; </di=
-v>
-<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
-1...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
-41...&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
-
-
---BOwJrFaXaqg=--
+--------------J44KRCwhqGYKHh4QJpL0Hh7A--
 
