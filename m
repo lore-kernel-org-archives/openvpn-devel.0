@@ -1,10 +1,11 @@
-Message-ID: <eedcf175305a088df0eb7ec146dbe441.squirrel@...2890...>
-In-Reply-To: <20250507074438.1326755-1-walter.openvpn@...2889...>
+Message-ID: <f60dbf91-c2f8-495b-ba14-967e70629d1b@...1227...>
+Date: Thu, 22 May 2025 13:14:10 +0200
+MIME-Version: 1.0
 References: <1e8ccfd451cbf9e6d090bd6a6886e366.squirrel@...2890...>
  <20250507074438.1326755-1-walter.openvpn@...2889...>
-Date: Thu, 22 May 2025 07:09:38 -0000
-From: "Walter Doekes" <walter.openvpn@...2889...>
-MIME-Version: 1.0
+ <eedcf175305a088df0eb7ec146dbe441.squirrel@...2890...>
+From: Arne Schwabe <arne@...1227...>
+In-Reply-To: <eedcf175305a088df0eb7ec146dbe441.squirrel@...2890...>
 Subject: Re: [Openvpn-devel] [PATCH] multi.c: Allow floating to a new IP
  right after connection setup
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -15,94 +16,35 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain;charset=utf-8
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net, Arne Schwabe <arne@...1227...>
-
-Dear mailing list and Arne,
-
-I saw in the IRC meeting notes that 2.7 is about to be branched.
-
-I don't mean to push, but I personally think this bug is important enough
-to get looked at and fixed, preferably before 2.7.0 is made.
-
-Is this new patch good enough? Should I put it in Gerrit? Are there any
-questions about the functionality?
-
-I realise that I did not explain _why_ b364711486 breaks things. I'm also
-curious, but I think the author of that patch, or someone else more
-intimate with the codebase, can more easily explain. Regardless there is a
-bug in 2.6.x right now, and I'd would like it if a fix is upstreamed; be
-it my fix, or someone elses.
-
-Thanks!
-Walter
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+To: Walter Doekes <walter.openvpn@...2889...>, openvpn-devel@lists.sourceforge.net
 
 
-> From: Walter Doekes <walter+github@...2889...>
+Am 22.05.2025 um 09:09 schrieb Walter Doekes:
+> Dear mailing list and Arne,
 >
-> When you're connected to a VPN which is used as the default gateway, a
-> connection to a second VPN will cause a tunnel-in-tunnel traffic. If the
-> administrator of the second VPN wants to avoid that, by pushing its IP
-> as net_gateway, this means that the client's source IP switches right
-> after connect:
+> I saw in the IRC meeting notes that 2.7 is about to be branched.
 >
->   the client source IP switches, from
->   - the first-VPN-exit-IP, to the
->   - regular-ISP-exit-IP
+> I don't mean to push, but I personally think this bug is important enough
+> to get looked at and fixed, preferably before 2.7.0 is made.
 >
-> In openvpn 2.5 and below, this worked fine. Since openvpn 2.6,
-> specifially b364711486, this triggers the "Disallow float to an address
-> taken by another client" code. Since that change, the traffic from the
-> second source IP creates a second connection, which now needs special
-> handling in the check-floating-IP code.
+> Is this new patch good enough? Should I put it in Gerrit? Are there any
+> questions about the functionality?
 >
-> This change allows one to switch to the new IP, if it is still in an
-> unconnected state. That makes the use-case mentioned above work again.
->
-> Github: closes OpenVPN/openvpn#704
-> Signed-off-by: Walter Doekes <walter+github@...2889...>
-> ---
->  src/openvpn/multi.c | 15 ++++++++++++++-
->  1 file changed, 14 insertions(+), 1 deletion(-)
->
-> diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
-> index a2d3fd10..51a00b71 100644
-> --- a/src/openvpn/multi.c
-> +++ b/src/openvpn/multi.c
-> @@ -3236,8 +3236,21 @@ multi_process_float(struct multi_context *m, struct
-> multi_instance *mi,
->          struct tls_multi *m1 = mi->context.c2.tls_multi;
->          struct tls_multi *m2 = ex_mi->context.c2.tls_multi;
->
-> +        /* if the new connection is fresh and the old one is already
-> connected, this
-> +         * might be a legitimate move to a new IP by the original client;
-> +         * for example when the server IP is pushed as net_gateway to
-> escape from
-> +         * a double VPN. */
-> +        if (m1->multi_state == CAS_CONNECT_DONE
-> +            && m2->multi_state == CAS_NOT_CONNECTED
-> +            && m1->locked_cert_hash_set
-> +            && !m2->locked_cert_hash_set
-> +            && session_id_equal(&m1->session[TM_ACTIVE].session_id,
-> +                          &m2->session[TM_ACTIVE].session_id))
-> +        {
-> +            /* allow this case */
-> +        }
->          /* do not float if target address is taken by client with another
-> cert */
-> -        if (!cert_hash_compare(m1->locked_cert_hash_set,
-> m2->locked_cert_hash_set))
-> +        else if (!cert_hash_compare(m1->locked_cert_hash_set,
-> m2->locked_cert_hash_set))
->          {
->              msg(D_MULTI_LOW, "Disallow float to an address taken by
-> another client %s",
->                  multi_instance_string(ex_mi, false, &gc));
-> --
-> 2.34.1
->
->
+> I realise that I did not explain _why_ b364711486 breaks things. I'm also
+> curious, but I think the author of that patch, or someone else more
+> intimate with the codebase, can more easily explain. Regardless there is a
+> bug in 2.6.x right now, and I'd would like it if a fix is upstreamed; be
+> it my fix, or someone elses.
+
+The thing is that I do not really understand your scenario and how it 
+exactly breaks for you to the extend that I cannot reproduce the issue.
+
+You are saying that the client switches the IP address after connect. But that is just a regular float from the perspective of the VPN server. I still do not understand where the other connection that is already on that IP/port is coming from. It is also not an older connection as it is not a fully established connection either.
+
+In summary I am not able to either reproduce or understand what is happning in your scenario. And I do not want to apply a patch that I don't understand.
+
+Arne
 
 
