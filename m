@@ -1,17 +1,17 @@
-Content-Type: multipart/alternative;
- boundary="------------b5voTyuivIeyIMXA0TgVyDWD"
-Message-ID: <8ba925a1-85c9-4274-a512-32dcec35b147@...1227...>
-Date: Fri, 23 May 2025 02:26:42 +0200
+From: "cron2 (Code Review)" <gerrit@...515...>
+Date: Fri, 23 May 2025 06:09:55 +0000
+In-Reply-To: <gerrit.1747650999000.I568faa12a5960e8b69de23c2df413b70b231592c@...2715...>
+References: <gerrit.1747650999000.I568faa12a5960e8b69de23c2df413b70b231592c@...2715...>
+Reply-To: gert@...1296..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net, frank@...2641...,
+ antonio@...2726...
+Message-ID: <d736ba42ec07f82c3b954dba87fbac617d9e55f2-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-References: <1e8ccfd451cbf9e6d090bd6a6886e366.squirrel@...2890...>
- <20250507074438.1326755-1-walter.openvpn@...2889...>
- <eedcf175305a088df0eb7ec146dbe441.squirrel@...2890...>
- <f60dbf91-c2f8-495b-ba14-967e70629d1b@...1227...>
- <ef2598a79cf3efe9d343b514ab6c9e5c.squirrel@...2890...>
-From: Arne Schwabe <arne@...1227...>
-In-Reply-To: <ef2598a79cf3efe9d343b514ab6c9e5c.squirrel@...2890...>
-Subject: Re: [Openvpn-devel] [PATCH] multi.c: Allow floating to a new IP
- right after connection setup
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="/bSUwWVTwBs="; charset=UTF-8
+Subject: [Openvpn-devel] [XS] Change in openvpn[master]: dco_linux: avoid
+ bogus text when netlink message is not parsed
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,141 +20,119 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Walter Doekes <walter.openvpn@...2889...>, openvpn-devel@lists.sourceforge.net
+Cc: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-This is a multi-part message in MIME format.
---------------b5voTyuivIeyIMXA0TgVyDWD
-Content-Type: text/plain; charset="utf-8"; format="flowed"
-Content-Transfer-Encoding: 8bit
+--/bSUwWVTwBs=
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-> Totally fair that you don't want to apply a patch that you don't
-> understand. I on the other hand do not see why you're unable to reproduce.
->
-> The scenario is not at all complicated:
->
-> - Two vpn servers;
-> - first vpn server pushes a default gateway;
-> - second vpn server pushes its external IP as net_gateway (*);
-> - second vpn server immediately sees the client float from one IP to another.
+Attention is currently required from: flichtenheld, ordex, plaisthos.
 
-What I understand so far:
+cron2 has posted comments on this change. ( http://gerrit.openvpn.net/c/ope=
+nvpn/+/1027?usp=3Demail )
 
-- so you connect to vpn 1 first and that is a normal VPN with a default 
-gateway and you get VPN1 IP
+Change subject: dco_linux: avoid bogus text when netlink message is not par=
+sed
+......................................................................
 
-- Then via that VPN, you connect a 2nd VPN and you have as source the 
-VPN IP, so the 2nd VPN server only see the VPN1 IP.
 
-- after connection is established, you  do the host route directly to 
-the server.
+Patch Set 2:
 
-- 2nd VPN server sees a float from VPN1 IP to extern IP (EXTIP) of client
+(1 comment)
 
-- Server refuses the float since there is already a not fully 
-established connection on EXTIP
+File src/openvpn/forward.c:
 
-What I don't understand where the this not fully established connection 
-should be coming from. That would mean that the server would have need 
-to have received a valid connection attempt from EXTIP that was never 
-established. And I do not understand from you explaination where that 
-happens.
+http://gerrit.openvpn.net/c/openvpn/+/1027/comment/641ebff7_a3997926 :
+PS2, Line 1254:     /* no message was parsed - bail out */
+I would change this to
+```
+  /* no message for us to handle - platform specific code has logged detail=
+s */
+```
 
-> If you're unable to reproduce that, then:
->
-> - Either you're using a vastly different version and it has been fixed
-> since then (but not something that landed in debian/bookworm or
-> ubuntu/noble, and I _think_ I did try latest 2.6 as well);
-> - or you're using different settings (udp; auth/tls-auth; dev-tun;
-> subnet-topology);
-> - or there is some unknown factor involved that neither of us can think or
-> right now.
->
-> I will create a reproducer config so you can see the exact settings (apart
-> from the IP addresses).
->
-> In the mean time, can you confirm that you understand the scenario or ask
-> for additional clarification?
+because we do not really "bail out", we just do nothing because nothing is =
+to be done.
 
-I wrote again down what you basically told me and there is still this 
-mystery connection that blocks you. And there is no explaination why 
-this connection exist in the first place. You are fixing the sympton of 
-this ghost connection that blocks your float but from my perspective we 
-have not really established why it exists in the first place.
 
-Arne
 
---------------b5voTyuivIeyIMXA0TgVyDWD
-Content-Type: text/html; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+--
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1027?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings
 
-<!DOCTYPE html>
-<html>
-  <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-  </head>
-  <body>
-    <blockquote type="cite"
-      cite="mid:ef2598a79cf3efe9d343b514ab6c9e5c.squirrel@...2890...">
-      <pre wrap="" class="moz-quote-pre">
-Totally fair that you don't want to apply a patch that you don't
-understand. I on the other hand do not see why you're unable to reproduce.
+Gerrit-Project: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: I568faa12a5960e8b69de23c2df413b70b231592c
+Gerrit-Change-Number: 1027
+Gerrit-PatchSet: 2
+Gerrit-Owner: ordex <antonio@...2726...>
+Gerrit-Reviewer: cron2 <gert@...1296...>
+Gerrit-Reviewer: flichtenheld <frank@...2641...>
+Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Attention: flichtenheld <frank@...2641...>
+Gerrit-Attention: ordex <antonio@...2726...>
+Gerrit-Comment-Date: Fri, 23 May 2025 06:09:55 +0000
+Gerrit-HasComments: Yes
+Gerrit-Has-Labels: No
+Gerrit-MessageType: comment
 
-The scenario is not at all complicated:
+--/bSUwWVTwBs=
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-- Two vpn servers;
-- first vpn server pushes a default gateway;
-- second vpn server pushes its external IP as net_gateway (*);
-- second vpn server immediately sees the client float from one IP to another.
-</pre>
-    </blockquote>
-    <p>What I understand so far:<br>
-    </p>
-    <p>- so you connect to vpn 1 first and that is a normal VPN with a
-      default gateway and you get VPN1 IP<br>
-    </p>
-    <p>- Then via that VPN, you connect a 2nd VPN and you have as source
-      the VPN IP, so the 2nd VPN server only see the VPN1 IP.<br>
-    </p>
-    <p>- after connection is established, you  do the host route
-      directly to the server. <br>
-    </p>
-    <p>- 2nd VPN server sees a float from VPN1 IP to extern IP (EXTIP)
-      of client</p>
-    <p>- Server refuses the float since there is already a not fully
-      established connection on EXTIP</p>
-    <p>What I don't understand where the this not fully established
-      connection should be coming from. That would mean that the server
-      would have need to have received a valid connection attempt from
-      EXTIP that was never established. And I do not understand from you
-      explaination where that happens.<br>
-    </p>
-    <blockquote type="cite"
-      cite="mid:ef2598a79cf3efe9d343b514ab6c9e5c.squirrel@...2890...">
-      <pre wrap="" class="moz-quote-pre">
-If you're unable to reproduce that, then:
+<p> Attention is currently required from: flichtenheld, ordex, plaisthos. <=
+/p>
+<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1027?usp=3Demail">View =
+Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0;">=
+<li style=3D"margin: 0; padding: 0;"><p>File src/openvpn/forward.c:</p><ul =
+style=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 =
+0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvp=
+n.net/c/openvpn/+/1027/comment/641ebff7_a3997926">Patch Set #2, Line 1254:<=
+/a> <code style=3D"font-family:monospace,monospace">    /* no message was p=
+arsed - bail out */</code></p><pre style=3D"font-family: monospace,monospac=
+e; white-space: pre-wrap;">I would change this to <br>```<br>  /* no messag=
+e for us to handle - platform specific code has logged details */<br>```</p=
+re><p style=3D"white-space: pre-wrap; word-wrap: break-word;">because we do=
+ not really &quot;bail out&quot;, we just do nothing because nothing is to =
+be done.</p></li></ul></li></ul><p>To view, visit <a href=3D"http://gerrit.=
+openvpn.net/c/openvpn/+/1027?usp=3Demail">change 1027</a>. To unsubscribe, =
+or for help writing mail filters, visit <a href=3D"http://gerrit.openvpn.ne=
+t/settings">settings</a>.</p><div itemscope itemtype=3D"http://schema.org/E=
+mailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.o=
+rg/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/o=
+penvpn/+/1027?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"=
+/></div></div>
 
-- Either you're using a vastly different version and it has been fixed
-since then (but not something that landed in debian/bookworm or
-ubuntu/noble, and I _think_ I did try latest 2.6 as well);
-- or you're using different settings (udp; auth/tls-auth; dev-tun;
-subnet-topology);
-- or there is some unknown factor involved that neither of us can think or
-right now.
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I568faa12a5960e8b69de23c2df4=
+13b70b231592c </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1027 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
+<div style=3D"display:none"> Gerrit-Owner: ordex &lt;antonio@...2726...&gt;=
+ </div>
+<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
+ </div>
+<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
+1...&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
+.1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
+41...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: ordex &lt;antonio@...2726...=
+&gt; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Fri, 23 May 2025 06:09:55=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: No </div>
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
 
-I will create a reproducer config so you can see the exact settings (apart
-from the IP addresses).
 
-In the mean time, can you confirm that you understand the scenario or ask
-for additional clarification?
-</pre>
-    </blockquote>
-    <p><span style="white-space: pre-wrap">
-</span></p>
-    <p><span style="white-space: pre-wrap">I wrote again down what you basically told me and there is still this mystery connection that blocks you. And there is no explaination why this connection exist in the first place. You are fixing the sympton of this ghost connection that blocks your float but from my perspective we have not really established why it exists in the first place.</span></p>
-    <p><span style="white-space: pre-wrap">Arne
-</span></p>
-  </body>
-</html>
-
---------------b5voTyuivIeyIMXA0TgVyDWD--
+--/bSUwWVTwBs=--
 
