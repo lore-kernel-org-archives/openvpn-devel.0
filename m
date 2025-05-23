@@ -1,11 +1,10 @@
+Date: Fri, 23 May 2025 09:55:12 +0200 (CEST)
+Message-Id: <202505230755.54N7tCoA071781@...2054...>
 From: Gert Doering <gert@...1296...>
-Date: Fri, 23 May 2025 09:38:41 +0200
-Message-ID: <20250523073848.20848-1-gert@...1296...>
-In-Reply-To: <gerrit.1747650999000.I568faa12a5960e8b69de23c2df413b70b231592c@...2715...>
-References: <gerrit.1747650999000.I568faa12a5960e8b69de23c2df413b70b231592c@...2715...>
-MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v3] dco_linux: avoid bogus text when netlink
- message is not parsed
+In-Reply-To: <20250523073848.20848-1-gert@...1296...>
+References: <20250523073848.20848-1-gert@...1296...>
+Subject: [Openvpn-devel] [PATCH applied] Re: dco_linux: avoid bogus text
+ when netlink message is not parsed
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,54 +15,31 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Antonio Quartulli <antonio@...2726...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-From: Antonio Quartulli <antonio@...2726...>
+"Because it makes sense" :-) - this is one of the messages we can
+really live without in the log (and *if* there is something to report,
+the platform specific layer do so).
 
-We may bail out parsing an incoming DCO message because it may
-concern a different interface.
-In that case we print the following debug messages:
+Your patch has been applied to the master branch.
 
-    dco_do_read
-    ovpn-dco: ignoring message (type=5) for foreign ifindex 313
-    process_incoming_dco: received message of type 0 - ignoring
+commit 4a48841da2d4179a96348994f841661ec9e5ce1d
+Author: Antonio Quartulli
+Date:   Fri May 23 09:38:41 2025 +0200
 
-However, the last message is confusing, because there is no message
-of type 0 being received, but the message_type was simply not
-initialized.
+     dco_linux: avoid bogus text when netlink message is not parsed
 
-Bail out parsing earlier and avoid printing any bogus text.
+     Signed-off-by: Antonio Quartulli <antonio@...2726...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <20250523073848.20848-1-gert@...1296...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg31763.html
+     Signed-off-by: Gert Doering <gert@...1296...>
 
-Change-Id: I568faa12a5960e8b69de23c2df413b70b231592c
-Signed-off-by: Antonio Quartulli <antonio@...2726...>
-Acked-by: Gert Doering <gert@...1296...>
----
 
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to master.
+--
+kind regards,
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1027
-This mail reflects revision 3 of this Change.
+Gert Doering
 
-Acked-by according to Gerrit (reflected above):
-Gert Doering <gert@...1296...>
-
-        
-diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c
-index ed4cdb4..7134f30 100644
---- a/src/openvpn/forward.c
-+++ b/src/openvpn/forward.c
-@@ -1251,6 +1251,12 @@
- 
-     dco_do_read(dco);
- 
-+    /* no message for us to handle - platform specific code has logged details */
-+    if (dco->dco_message_type == 0)
-+    {
-+        return;
-+    }
-+
-     /* FreeBSD currently sends us removal notifcation with the old peer-id in
-      * p2p mode with the ping timeout reason, so ignore that one to not shoot
-      * ourselves in the foot and removing the just established session */
 
