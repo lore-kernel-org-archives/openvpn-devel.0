@@ -1,15 +1,15 @@
-From: "MaxF (Code Review)" <gerrit@...515...>
-Date: Fri, 23 May 2025 08:18:43 +0000
+From: "cron2 (Code Review)" <gerrit@...515...>
+Date: Fri, 23 May 2025 08:28:56 +0000
 In-Reply-To: <gerrit.1747937881000.Icbfffae877f8eca8d94721a4d54e140c50d4a550@...2715...>
 References: <gerrit.1747937881000.Icbfffae877f8eca8d94721a4d54e140c50d4a550@...2715...>
-Reply-To: max@...2606..., arne-openvpn@...1227...,
+Reply-To: gert@...1296..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net, frank@...2641...,
- gert@...1296...
-Message-ID: <0efe5d6c5670f80d64df1daaaec7fe8bb3777a69-EmailReviewComments-HTML@...2715...>
+ max@...2606...
+Message-ID: <c7e2f21225a10f317a48ae58045f4ed6453759d6-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="YF4P5jwD6U8="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="w6oLEmWC+d8="; charset=UTF-8
 Subject: [Openvpn-devel] [M] Change in openvpn[master]: Remove
  HAVE_EXPORT_KEYING_MATERIAL macro
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -20,16 +20,17 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
+To: MaxF <max@...2606...>
 Cc: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---YF4P5jwD6U8=
+--w6oLEmWC+d8=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: cron2, flichtenheld, plaisthos.
+Attention is currently required from: MaxF, flichtenheld, plaisthos.
 
-MaxF has posted comments on this change. ( http://gerrit.openvpn.net/c/open=
-vpn/+/1043?usp=3Demail )
+cron2 has posted comments on this change. ( http://gerrit.openvpn.net/c/ope=
+nvpn/+/1043?usp=3Demail )
 
 Change subject: Remove HAVE_EXPORT_KEYING_MATERIAL macro
 ......................................................................
@@ -42,11 +43,12 @@ Patch Set 1:
 Patchset:
 
 PS1:
-> for some reason, unrelated formatting changes to some of our macros have =
-sneaked into this patch, an [=E2=80=A6]
-My local uncrustify-hook didn't let me commit without making these changes.=
- What should I do? Remove the hook and revert these changes, and commit aga=
-in?
+> My local uncrustify-hook didn't let me commit without making these change=
+s. [=E2=80=A6]
+Do not believe what uncrustify tells you, if it's not exactly version 0.72.=
+0_f - you can change the hook to "just warn" (`# exit 1` at the end of .git=
+/hooks/pre-commit) and ignore warnings for everything that you did not touc=
+h.
 
 
 
@@ -66,39 +68,41 @@ Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: cron2 <gert@...1296...>
 Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Comment-Date: Fri, 23 May 2025 08:18:43 +0000
+Gerrit-Attention: MaxF <max@...2606...>
+Gerrit-Comment-Date: Fri, 23 May 2025 08:28:56 +0000
 Gerrit-HasComments: Yes
 Gerrit-Has-Labels: No
 Comment-In-Reply-To: cron2 <gert@...1296...>
+Comment-In-Reply-To: MaxF <max@...2606...>
 Gerrit-MessageType: comment
 
---YF4P5jwD6U8=
+--w6oLEmWC+d8=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p> Attention is currently required from: cron2, flichtenheld, plaisthos. <=
-/p>
+<p> Attention is currently required from: MaxF, flichtenheld, plaisthos. </=
+p>
 <p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1043?usp=3Demail">View =
 Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0;">=
 <li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-styl=
 e: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p styl=
 e=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/=
 1043?tab=3Dcomments">Patch Set #1:</a> </p><p><blockquote style=3D"border-l=
-eft: 1px solid #aaa; margin: 10px 0; padding: 0 10px;">for some reason, unr=
-elated formatting changes to some of our macros have sneaked into this patc=
-h, an [=E2=80=A6]</blockquote></p><p style=3D"white-space: pre-wrap; word-w=
-rap: break-word;">My local uncrustify-hook didn&#39;t let me commit without=
- making these changes. What should I do? Remove the hook and revert these c=
-hanges, and commit again?</p></li></ul></li></ul><p>To view, visit <a href=
-=3D"http://gerrit.openvpn.net/c/openvpn/+/1043?usp=3Demail">change 1043</a>=
-. To unsubscribe, or for help writing mail filters, visit <a href=3D"http:/=
-/gerrit.openvpn.net/settings">settings</a>.</p><div itemscope itemtype=3D"h=
-ttp://schema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=
-=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://ger=
-rit.openvpn.net/c/openvpn/+/1043?usp=3Demail"/><meta itemprop=3D"name" cont=
-ent=3D"View Change"/></div></div>
+eft: 1px solid #aaa; margin: 10px 0; padding: 0 10px;">My local uncrustify-=
+hook didn&#39;t let me commit without making these changes. [=E2=80=A6]</bl=
+ockquote></p><p style=3D"white-space: pre-wrap; word-wrap: break-word;">Do =
+not believe what uncrustify tells you, if it&#39;s not exactly version 0.72=
+.0_f - you can change the hook to &quot;just warn&quot; (`# exit 1` at the =
+end of .git/hooks/pre-commit) and ignore warnings for everything that you d=
+id not touch.</p></li></ul></li></ul><p>To view, visit <a href=3D"http://ge=
+rrit.openvpn.net/c/openvpn/+/1043?usp=3Demail">change 1043</a>. To unsubscr=
+ibe, or for help writing mail filters, visit <a href=3D"http://gerrit.openv=
+pn.net/settings">settings</a>.</p><div itemscope itemtype=3D"http://schema.=
+org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://sch=
+ema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.ne=
+t/c/openvpn/+/1043?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Ch=
+ange"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
@@ -118,18 +122,20 @@ v>
 ts.sourceforge.net&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
 ..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: cron2 &lt;gert@...1296...&gt=
-; </div>
 <div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
 41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Fri, 23 May 2025 08:18:43=
+<div style=3D"display:none"> Gerrit-Attention: MaxF &lt;max@...2606...&gt; =
+</div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Fri, 23 May 2025 08:28:56=
  +0000 </div>
 <div style=3D"display:none"> Gerrit-HasComments: Yes </div>
 <div style=3D"display:none"> Gerrit-Has-Labels: No </div>
 <div style=3D"display:none"> Comment-In-Reply-To: cron2 &lt;gert@...1296...=
 &gt; </div>
+<div style=3D"display:none"> Comment-In-Reply-To: MaxF &lt;max@...2606...&g=
+t; </div>
 <div style=3D"display:none"> Gerrit-MessageType: comment </div>
 
 
---YF4P5jwD6U8=--
+--w6oLEmWC+d8=--
 
