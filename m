@@ -1,16 +1,17 @@
-From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Sun, 25 May 2025 16:36:28 +0000
-In-Reply-To: <gerrit.1733837528000.I15d4946800cbfaead67a73450ff3b12193814e54@...2715...>
-References: <gerrit.1733837528000.I15d4946800cbfaead67a73450ff3b12193814e54@...2715...>
-Reply-To: gert@...1296..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <afed8aafb8acd25fb7bf90bc29ee41149d661083-EmailReviewComments-HTML@...2715...>
+Message-ID: <2bb3487e-6762-40ea-b6ad-2622a879ca21@...2889...>
+Date: Sun, 25 May 2025 22:27:56 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="D51TFYKP/l8="; charset=UTF-8
-Subject: [Openvpn-devel] [L] Change in openvpn[master]: Remove uncrustify
- config and scripts, switch GHA
+References: <1e8ccfd451cbf9e6d090bd6a6886e366.squirrel@...2890...>
+ <20250507074438.1326755-1-walter.openvpn@...2889...>
+ <eedcf175305a088df0eb7ec146dbe441.squirrel@...2890...>
+ <f60dbf91-c2f8-495b-ba14-967e70629d1b@...1227...>
+ <ef2598a79cf3efe9d343b514ab6c9e5c.squirrel@...2890...>
+ <8ba925a1-85c9-4274-a512-32dcec35b147@...1227...>
+Content-Language: en-US, sv-SE, nl
+From: Walter Doekes <walter.openvpn@...2889...>
+In-Reply-To: <8ba925a1-85c9-4274-a512-32dcec35b147@...1227...>
+Subject: Re: [Openvpn-devel] [PATCH] multi.c: Allow floating to a new IP
+ right after connection setup
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,112 +20,149 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: flichtenheld <frank@...2641...>
-Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"; format="flowed"
+Content-Transfer-Encoding: 8bit
+To: Arne Schwabe <arne@...1227...>, openvpn-devel@lists.sourceforge.net
 
---D51TFYKP/l8=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Good. Your understanding of the situation is the same.
 
-Attention is currently required from: flichtenheld, plaisthos.
+I did not yet make a reproducer config -- mostly because I don't think 
+we're doing anything non-standard. But I did double check that latest 
+2.6 is affected, tested both client and server.
 
-cron2 has posted comments on this change. ( http://gerrit.openvpn.net/c/ope=
-nvpn/+/830?usp=3Demail )
+And, I added some tracing code, and I observed the following:
 
-Change subject: Remove uncrustify config and scripts, switch GHA
-......................................................................
+>     else if (verdict == VERDICT_VALID_CONTROL_V1 || verdict == VERDICT_VALID_ACK_V1)
+>     {   
+>         /* ACK_V1 contains the peer id (our id) while CONTROL_V1 can but does not
+>          * need to contain the peer id */
+>         struct gc_arena gc = gc_new();
+> 
+>         bool ret = check_session_id_hmac(state, from, hmac, handwindow);
+> 
+>         const char *peer = print_link_socket_actual(&m->top.c2.from, &gc);
+>         if (!ret)
+>         {   
+>             msg(D_MULTI_MEDIUM, "Packet with invalid or missing SID from %s", peer);
+>         }
+>         else
+>         {   
+>             msg(D_MULTI_DEBUG, "Valid packet with HMAC challenge from peer (%s), "
+>                 "accepting new connection.", peer);
+>             //ret = false; // setting false here makes all setup fail
+>         }
+>         gc_free(&gc);
+> 
+>         msg(D_MULTI_MEDIUM, "do_pre_decrypt_check: verdict %d (%d)", verdict, ret);
+>         return ret;
+>     }
 
+This is the code that has the changed behaviour.
 
-Patch Set 8: Code-Review-1
+In the before situation, we had this:
 
-(1 comment)
+> --- a/src/openvpn/mudp.c
+> +++ b/src/openvpn/mudp.c
+> @@ -55,8 +55,10 @@ do_pre_decrypt_check(struct multi_context *m)
+>  
+>      if (verdict == VERDICT_INVALID || verdict == VERDICT_VALID_CONTROL_V1)
+>      {
+> +        msg(D_MULTI_MEDIUM, "do_pre_decrypt_check: verdict %d (false)", verdict);
+>          return false;
+>      }
+> +    msg(D_MULTI_MEDIUM, "do_pre_decrypt_check: verdict %d (true)", verdict);
+>      return true;
+>  }
+>  
 
-Patchset:
-
-PS8:
-we need to keep "a pre-commit" script for easy local installation of the pr=
-e-commit hook.  For those that change beween 2.6 and master/2.7 branches an=
-d commit to either of them, a git hook that does "is this an uncrustif bran=
-ch?  call uncrustify, if not, call clang-format" would be helpful.
-
-("dev-tools/" changes appropriately when changing branches, but .git/hooks/=
- does not)
-
-
-
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/830?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings
-
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: I15d4946800cbfaead67a73450ff3b12193814e54
-Gerrit-Change-Number: 830
-Gerrit-PatchSet: 8
-Gerrit-Owner: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: cron2 <gert@...1296...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Comment-Date: Sun, 25 May 2025 16:36:28 +0000
-Gerrit-HasComments: Yes
-Gerrit-Has-Labels: Yes
-Gerrit-MessageType: comment
-
---D51TFYKP/l8=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<p> Attention is currently required from: flichtenheld, plaisthos. </p>
-<p>Patch set 8:<span style=3D"border-radius: 3px; display: inline-block; ma=
-rgin: 0 2px; padding: 4px;background-color: #ffd4d4;">Code-Review -1</span>=
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/830?usp=3Demail">Vi=
-ew Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0=
-;"><li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-s=
-tyle: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p s=
-tyle=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn=
-/+/830?tab=3Dcomments">Patch Set #8:</a> </p><p style=3D"white-space: pre-w=
-rap; word-wrap: break-word;">we need to keep &quot;a pre-commit&quot; scrip=
-t for easy local installation of the pre-commit hook.  For those that chang=
-e beween 2.6 and master/2.7 branches and commit to either of them, a git ho=
-ok that does &quot;is this an uncrustif branch?  call uncrustify, if not, c=
-all clang-format&quot; would be helpful.</p><p style=3D"white-space: pre-wr=
-ap; word-wrap: break-word;">(&quot;dev-tools/&quot; changes appropriately w=
-hen changing branches, but .git/hooks/ does not)</p></li></ul></li></ul><p>=
-To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/830?usp=3De=
-mail">change 830</a>. To unsubscribe, or for help writing mail filters, vis=
-it <a href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div ite=
-mscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=
-=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url=
-" href=3D"http://gerrit.openvpn.net/c/openvpn/+/830?usp=3Demail"/><meta ite=
-mprop=3D"name" content=3D"View Change"/></div></div>
-
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I15d4946800cbfaead67a73450ff=
-3b12193814e54 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 830 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 8 </div>
-<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
-.&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
- </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
-41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Sun, 25 May 2025 16:36:28=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
+<time> do_pre_decrypt_check: verdict 1 (false)
+m->pending = (nil), float = 0 // in multi_process_incoming_link
+<time> Float requested for peer 0 to EXTIP:PORT
 
 
---D51TFYKP/l8=--
+In the after-situation, we have this:
+
+<time> do_pre_decrypt_check: verdict 2 (1)
+<time> MULTI: multi_create_instance called
+...
+m->pending = 0x5a36ce132f10, float = 0 // in multi_process_incoming_link
+<time> Float requested for peer 0 to EXTIP:PORT
+
+
+verdict is VERDICT_VALID_CONTROL_V1 in both cases (which changed from 1 
+to 2 after b364711486dc6371ad2659a5aa190941136f4f04), and the 
+do_pre_decrypt_check now returns TRUE.
+
+That TRUE-result results in calls to multi_create_instance, and now we 
+have that "mystery connection".
+
+
+When I find more time, I'll debug some more. But this might shed some 
+light on things for you.
+
+As far as I understand, the packet with VERDICT_VALID_CONTROL_V1 verdict 
+is now detected as a new valid connection setup. That creates a 
+connection on the new IP. And then the float gets rejected.
+
+Walter
+
+
+
+On 23-05-2025 02:26, Arne Schwabe wrote:
+>> Totally fair that you don't want to apply a patch that you don't
+>> understand. I on the other hand do not see why you're unable to reproduce.
+>>
+>> The scenario is not at all complicated:
+>>
+>> - Two vpn servers;
+>> - first vpn server pushes a default gateway;
+>> - second vpn server pushes its external IP as net_gateway (*);
+>> - second vpn server immediately sees the client float from one IP to another.
+> 
+> What I understand so far:
+> 
+> - so you connect to vpn 1 first and that is a normal VPN with a default 
+> gateway and you get VPN1 IP
+> 
+> - Then via that VPN, you connect a 2nd VPN and you have as source the 
+> VPN IP, so the 2nd VPN server only see the VPN1 IP.
+> 
+> - after connection is established, you  do the host route directly to 
+> the server.
+> 
+> - 2nd VPN server sees a float from VPN1 IP to extern IP (EXTIP) of client
+> 
+> - Server refuses the float since there is already a not fully 
+> established connection on EXTIP
+> 
+> What I don't understand where the this not fully established connection 
+> should be coming from. That would mean that the server would have need 
+> to have received a valid connection attempt from EXTIP that was never 
+> established. And I do not understand from you explaination where that 
+> happens.
+> 
+>> If you're unable to reproduce that, then:
+>>
+>> - Either you're using a vastly different version and it has been fixed
+>> since then (but not something that landed in debian/bookworm or
+>> ubuntu/noble, and I _think_ I did try latest 2.6 as well);
+>> - or you're using different settings (udp; auth/tls-auth; dev-tun;
+>> subnet-topology);
+>> - or there is some unknown factor involved that neither of us can think or
+>> right now.
+>>
+>> I will create a reproducer config so you can see the exact settings (apart
+>> from the IP addresses).
+>>
+>> In the mean time, can you confirm that you understand the scenario or ask
+>> for additional clarification?
+> 
+> I wrote again down what you basically told me and there is still this 
+> mystery connection that blocks you. And there is no explaination why 
+> this connection exist in the first place. You are fixing the sympton of 
+> this ghost connection that blocks your float but from my perspective we 
+> have not really established why it exists in the first place.
+> 
+> Arne
+> 
 
