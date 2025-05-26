@@ -1,17 +1,16 @@
 From: "flichtenheld (Code Review)" <gerrit@...515...>
-Date: Mon, 26 May 2025 09:54:45 +0000
-In-Reply-To: <gerrit.1730386897000.I2566ad493629e1f5fdfa6f6483b8973463404e3e@...2715...>
-References: <gerrit.1730386897000.I2566ad493629e1f5fdfa6f6483b8973463404e3e@...2715...>
+Date: Mon, 26 May 2025 10:35:54 +0000
+In-Reply-To: <gerrit.1730386897000.I40f6af10c5ee2f5aed4185d783fc622a2e3c19ff@...2715...>
+References: <gerrit.1730386897000.I40f6af10c5ee2f5aed4185d783fc622a2e3c19ff@...2715...>
 Reply-To: frank@...2641..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, antonio@...2726...,
- gert@...1296...
-Message-ID: <84229678ef8ca7dd8c42558da105529b6c410592-EmailReviewComments-HTML@...2715...>
+ openvpn-devel@lists.sourceforge.net
+Message-ID: <6611216b8cd063ee328a191cd81f24e370e736a8-EmailReplacePatchSet-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="snb4Tc2NWDo="; charset=UTF-8
-Subject: [Openvpn-devel] [XL] Change in openvpn[master]: Reformat the whole
- project with clang-format
+Content-Type: multipart/alternative; boundary="Ons1SkHNGU0="; charset=UTF-8
+Subject: [Openvpn-devel] [M] Change in openvpn[master]: Define a
+ .clang-format file for the project
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,149 +19,247 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: plaisthos <arne-openvpn@...1227...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---snb4Tc2NWDo=
+--Ons1SkHNGU0=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: cron2, ordex, plaisthos.
+Attention is currently required from: plaisthos.
 
-flichtenheld has posted comments on this change. ( http://gerrit.openvpn.ne=
-t/c/openvpn/+/791?usp=3Demail )
+Hello plaisthos,
 
-Change subject: Reformat the whole project with clang-format
+I'd like you to reexamine a change. Please visit
+
+    http://gerrit.openvpn.net/c/openvpn/+/790?usp=3Demail
+
+to look at the new patch set (#15).
+
+
+Change subject: Define a .clang-format file for the project
 ......................................................................
 
+Define a .clang-format file for the project
 
-Patch Set 18:
+Each of these statements has been reviewed but
+not all of them are obvious.
 
-(3 comments)
+Also add a pre-commit config to easily check the
+formatting.
 
-File src/openvpn/buffer.c:
-
-http://gerrit.openvpn.net/c/openvpn/+/791/comment/6892fcb6_41f2daaf :
-PS18, Line 850:     } while (c);
-> it should not do that
-Why?
-
-
-http://gerrit.openvpn.net/c/openvpn/+/791/comment/18dc39e2_b722d6bf :
-PS18, Line 915:             && c !=3D 127)) /* allow ascii non-control and =
-UTF-8, consider DEL to be a control */
-> this is ugly, but I guess the best way to fix it is to manually move the =
-comment before the if() lin [=E2=80=A6]
-Yes.
+Change-Id: I40f6af10c5ee2f5aed4185d783fc622a2e3c19ff
+Signed-off-by: Frank Lichtenheld <frank@...2641...>
+---
+A .clang-format
+A .pre-commit-config.yaml
+2 files changed, 59 insertions(+), 0 deletions(-)
 
 
-File src/openvpn/console_builtin.c:
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/90/790/15
 
-http://gerrit.openvpn.net/c/openvpn/+/791/comment/e785d1b2_41139a46 :
-PS18, Line 74:         msg(M_WARN | M_ERRNO, "get_console_input_win32(): un=
-expected error");
-> the extra spaces around `foo|bar` are not really to my liking ("this belo=
-ngs together" vibes)
-Interestingly one of the things we can't configure in clang-format. The spa=
-ce around binary operators is not optional.
-
-
+diff --git a/.clang-format b/.clang-format
+new file mode 100644
+index 0000000..c314fca
+--- /dev/null
++++ b/.clang-format
+@@ -0,0 +1,51 @@
++---
++BasedOnStyle: Mozilla
++AccessModifierOffset: '-4'
++AlignAfterOpenBracket: Align
++AlignConsecutiveMacros:
++  Enabled: true
++  AcrossEmptyLines: false
++  AcrossComments: true
++AlignEscapedNewlines: Left
++AlignOperands: true
++AlignTrailingComments:
++  Kind: Always
++  OverEmptyLines: 1
++AllowAllParametersOfDeclarationOnNextLine: true
++AllowShortBlocksOnASingleLine: Never
++AllowShortCaseLabelsOnASingleLine: false
++AllowShortFunctionsOnASingleLine: None
++AllowShortIfStatementsOnASingleLine: Never
++AllowShortLoopsOnASingleLine: false
++BinPackArguments: true
++BinPackParameters: true
++BreakAfterReturnType: AllDefinitions
++BreakBeforeBinaryOperators: NonAssignment
++BreakBeforeBraces: Allman
++BreakBeforeTernaryOperators: true
++BreakStringLiterals: false
++ColumnLimit: '100'
++ContinuationIndentWidth: '4'
++DerivePointerAlignment: false
++IndentCaseLabels: true
++IndentGotoLabels: false
++IndentWidth: '4'
++IndentWrappedFunctionNames: false
++KeepEmptyLinesAtTheStartOfBlocks: false
++MaxEmptyLinesToKeep: '2'
++PointerAlignment: Right
++ReflowComments: true
++SortIncludes: false
++SpaceAfterCStyleCast: false
++SpaceBeforeAssignmentOperators: true
++SpaceBeforeParens: ControlStatements
++SpacesBeforeTrailingComments: '2'
++SpacesInParens: Never
++TabWidth: '4'
++TypeNames: [DWORD]
++UseTab: Never
++WhitespaceSensitiveMacros: [_STRINGIFY]
++---
++Language: C
++---
++Language: Cpp
+diff --git a/.pre-commit-config.yaml b/.pre-commit-config.yaml
+new file mode 100644
+index 0000000..c1bca47
+--- /dev/null
++++ b/.pre-commit-config.yaml
+@@ -0,0 +1,8 @@
++repos:
++  - repo: https://github.com/pre-commit/mirrors-clang-format
++    rev: 'v20.1.0'
++    hooks:
++      - id: clang-format
++        files: \.[ch]$
++        # preserve upstream formatting
++        exclude: ^(src/compat/compat-lz4\.[ch]|src/openvpn/ovpn_dco_(linux=
+|win)\.h)$
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/791?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/790?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings
 
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: I2566ad493629e1f5fdfa6f6483b8973463404e3e
-Gerrit-Change-Number: 791
-Gerrit-PatchSet: 18
+Gerrit-Change-Id: I40f6af10c5ee2f5aed4185d783fc622a2e3c19ff
+Gerrit-Change-Number: 790
+Gerrit-PatchSet: 15
 Gerrit-Owner: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-CC: cron2 <gert@...1296...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-CC: ordex <antonio@...2726...>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: cron2 <gert@...1296...>
-Gerrit-Attention: ordex <antonio@...2726...>
-Gerrit-Comment-Date: Mon, 26 May 2025 09:54:45 +0000
-Gerrit-HasComments: Yes
-Gerrit-Has-Labels: No
-Comment-In-Reply-To: cron2 <gert@...1296...>
-Gerrit-MessageType: comment
+Gerrit-MessageType: newpatchset
 
---snb4Tc2NWDo=
+--Ons1SkHNGU0=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p> Attention is currently required from: cron2, ordex, plaisthos. </p>
-<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/791?usp=3Demail">View C=
-hange</a></p><p>3 comments:</p><ul style=3D"list-style: none; padding: 0;">=
-<li style=3D"margin: 0; padding: 0;"><p>File src/openvpn/buffer.c:</p><ul s=
-tyle=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0=
- 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn=
-.net/c/openvpn/+/791/comment/6892fcb6_41f2daaf">Patch Set #18, Line 850:</a=
-> <code style=3D"font-family:monospace,monospace">    } while (c);</code></=
-p><p><blockquote style=3D"border-left: 1px solid #aaa; margin: 10px 0; padd=
-ing: 0 10px;">it should not do that</blockquote></p><p style=3D"white-space=
-: pre-wrap; word-wrap: break-word;">Why?</p></li><li style=3D"margin: 0; pa=
-dding: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerr=
-it.openvpn.net/c/openvpn/+/791/comment/18dc39e2_b722d6bf">Patch Set #18, Li=
-ne 915:</a> <code style=3D"font-family:monospace,monospace">            &am=
-p;&amp; c !=3D 127)) /* allow ascii non-control and UTF-8, consider DEL to =
-be a control */</code></p><p><blockquote style=3D"border-left: 1px solid #a=
-aa; margin: 10px 0; padding: 0 10px;">this is ugly, but I guess the best wa=
-y to fix it is to manually move the comment before the if() lin [=E2=80=A6]=
-</blockquote></p><p style=3D"white-space: pre-wrap; word-wrap: break-word;"=
->Yes.</p></li></ul></li><li style=3D"margin: 0; padding: 0;"><p>File src/op=
-envpn/console_builtin.c:</p><ul style=3D"list-style: none; padding: 0;"><li=
- style=3D"margin: 0; padding: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"=
-><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/791/comment/e785d1b2_4113=
-9a46">Patch Set #18, Line 74:</a> <code style=3D"font-family:monospace,mono=
-space">        msg(M_WARN | M_ERRNO, &quot;get_console_input_win32(): unexp=
-ected error&quot;);</code></p><p><blockquote style=3D"border-left: 1px soli=
-d #aaa; margin: 10px 0; padding: 0 10px;">the extra spaces around `foo|bar`=
- are not really to my liking (&quot;this belongs together&quot; vibes)</blo=
-ckquote></p><p style=3D"white-space: pre-wrap; word-wrap: break-word;">Inte=
-restingly one of the things we can&#39;t configure in clang-format. The spa=
-ce around binary operators is not optional.</p></li></ul></li></ul><p>To vi=
-ew, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/791?usp=3Demail"=
->change 791</a>. To unsubscribe, or for help writing mail filters, visit <a=
- href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemscop=
-e itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"ac=
-tion" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=
-=3D"http://gerrit.openvpn.net/c/openvpn/+/791?usp=3Demail"/><meta itemprop=
-=3D"name" content=3D"View Change"/></div></div>
+<p> Attention is currently required from: plaisthos. </p>
+<p>flichtenheld <strong>uploaded patch set #15</strong> to this change.</p>=
+<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/790?usp=3Demail">View C=
+hange</a></p><pre style=3D"font-family: monospace,monospace; white-space: p=
+re-wrap;">Define a .clang-format file for the project<br><br>Each of these =
+statements has been reviewed but<br>not all of them are obvious.<br><br>Als=
+o add a pre-commit config to easily check the<br>formatting.<br><br>Change-=
+Id: I40f6af10c5ee2f5aed4185d783fc622a2e3c19ff<br>Signed-off-by: Frank Licht=
+enheld &lt;frank@...2641...&gt;<br>---<br>A .clang-format<br>A .pre-commit-=
+config.yaml<br>2 files changed, 59 insertions(+), 0 deletions(-)<br><br></p=
+re><pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;">=
+git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/90/790/15</pre=
+><pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><s=
+pan>diff --git a/.clang-format b/.clang-format</span><br><span>new file mod=
+e 100644</span><br><span>index 0000000..c314fca</span><br><span>--- /dev/nu=
+ll</span><br><span>+++ b/.clang-format</span><br><span>@@ -0,0 +1,51 @@</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+---</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+BasedOnStyle: Mozilla</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+AccessModifierOffset: &#39;-4&#39;</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+AlignAfterOpenBracket:=
+ Align</span><br><span style=3D"color: hsl(120, 100%, 40%);">+AlignConsecut=
+iveMacros:</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  Enabled=
+: true</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  AcrossEmpty=
+Lines: false</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  Acros=
+sComments: true</span><br><span style=3D"color: hsl(120, 100%, 40%);">+Alig=
+nEscapedNewlines: Left</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+AlignOperands: true</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+AlignTrailingComments:</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+  Kind: Always</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++  OverEmptyLines: 1</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++AllowAllParametersOfDeclarationOnNextLine: true</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+AllowShortBlocksOnASingleLine: Never</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+AllowShortCaseLabelsOnASingle=
+Line: false</span><br><span style=3D"color: hsl(120, 100%, 40%);">+AllowSho=
+rtFunctionsOnASingleLine: None</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+AllowShortIfStatementsOnASingleLine: Never</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+AllowShortLoopsOnASingleLine: false</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+BinPackArguments: true</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+BinPackParameters: tru=
+e</span><br><span style=3D"color: hsl(120, 100%, 40%);">+BreakAfterReturnTy=
+pe: AllDefinitions</span><br><span style=3D"color: hsl(120, 100%, 40%);">+B=
+reakBeforeBinaryOperators: NonAssignment</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+BreakBeforeBraces: Allman</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+BreakBeforeTernaryOperators: true</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+BreakStringLiterals: false</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+ColumnLimit: &#39;100&#39;<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+ContinuationIndentWi=
+dth: &#39;4&#39;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+Der=
+ivePointerAlignment: false</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+IndentCaseLabels: true</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+IndentGotoLabels: false</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+IndentWidth: &#39;4&#39;</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+IndentWrappedFunctionNames: false</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+KeepEmptyLinesAtTheStartOfBlocks: false</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+MaxEmptyLinesToKeep: =
+&#39;2&#39;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+PointerA=
+lignment: Right</span><br><span style=3D"color: hsl(120, 100%, 40%);">+Refl=
+owComments: true</span><br><span style=3D"color: hsl(120, 100%, 40%);">+Sor=
+tIncludes: false</span><br><span style=3D"color: hsl(120, 100%, 40%);">+Spa=
+ceAfterCStyleCast: false</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+SpaceBeforeAssignmentOperators: true</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+SpaceBeforeParens: ControlStatements</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+SpacesBeforeTrailingComments: &#39;2=
+&#39;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+SpacesInParens=
+: Never</span><br><span style=3D"color: hsl(120, 100%, 40%);">+TabWidth: &#=
+39;4&#39;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+TypeNames:=
+ [DWORD]</span><br><span style=3D"color: hsl(120, 100%, 40%);">+UseTab: Nev=
+er</span><br><span style=3D"color: hsl(120, 100%, 40%);">+WhitespaceSensiti=
+veMacros: [_STRINGIFY]</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+---</span><br><span style=3D"color: hsl(120, 100%, 40%);">+Language: C</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+---</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+Language: Cpp</span><br><span>diff --=
+git a/.pre-commit-config.yaml b/.pre-commit-config.yaml</span><br><span>new=
+ file mode 100644</span><br><span>index 0000000..c1bca47</span><br><span>--=
+- /dev/null</span><br><span>+++ b/.pre-commit-config.yaml</span><br><span>@=
+@ -0,0 +1,8 @@</span><br><span style=3D"color: hsl(120, 100%, 40%);">+repos=
+:</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  - repo: https://=
+github.com/pre-commit/mirrors-clang-format</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+    rev: &#39;v20.1.0&#39;</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+    hooks:</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+      - id: clang-format</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+        files: \.[ch]$</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+        # preserve upstream formatting</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+        exclude: ^(src/comp=
+at/compat-lz4\.[ch]|src/openvpn/ovpn_dco_(linux|win)\.h)$</span><br><span><=
+/span><br></pre><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/op=
+envpn/+/790?usp=3Demail">change 790</a>. To unsubscribe, or for help writin=
+g mail filters, visit <a href=3D"http://gerrit.openvpn.net/settings">settin=
+gs</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div =
+itemscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><li=
+nk itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/790?usp=
+=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I2566ad493629e1f5fdfa6f6483b=
-8973463404e3e </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 791 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 18 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I40f6af10c5ee2f5aed4185d783f=
+c622a2e3c19ff </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 790 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 15 </div>
 <div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
 .&gt; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
 .1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: cron2 &lt;gert@...1296...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: ordex &lt;antonio@...2726...&gt; </=
-div>
 <div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
 ..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: cron2 &lt;gert@...1296...&gt=
-; </div>
-<div style=3D"display:none"> Gerrit-Attention: ordex &lt;antonio@...2726...=
-&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Mon, 26 May 2025 09:54:45=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: No </div>
-<div style=3D"display:none"> Comment-In-Reply-To: cron2 &lt;gert@...1296...=
-&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
+<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
 
 
---snb4Tc2NWDo=--
+--Ons1SkHNGU0=--
 
