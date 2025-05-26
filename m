@@ -1,16 +1,15 @@
 From: "flichtenheld (Code Review)" <gerrit@...515...>
-Date: Mon, 26 May 2025 10:35:54 +0000
-In-Reply-To: <gerrit.1730386897000.I40f6af10c5ee2f5aed4185d783fc622a2e3c19ff@...2715...>
-References: <gerrit.1730386897000.I40f6af10c5ee2f5aed4185d783fc622a2e3c19ff@...2715...>
+Date: Mon, 26 May 2025 10:36:12 +0000
+References: <gerrit.1748255754000.I83831060fdf5588a0ada8d6abbedc7ce3ded4182@...2715...>
 Reply-To: frank@...2641..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net
-Message-ID: <6611216b8cd063ee328a191cd81f24e370e736a8-EmailReplacePatchSet-HTML@...2715...>
+Message-ID: <c93c532bc0feb2eea2b3a68042ba697f5d2c14da-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="Ons1SkHNGU0="; charset=UTF-8
-Subject: [Openvpn-devel] [M] Change in openvpn[master]: Define a
- .clang-format file for the project
+Content-Type: multipart/alternative; boundary="57uukC87hQM="; charset=UTF-8
+Subject: [Openvpn-devel] [S] Change in openvpn[master]: Fix various badly
+ placed comments in preparation for reformat
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -22,7 +21,7 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: plaisthos <arne-openvpn@...1227...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---Ons1SkHNGU0=
+--57uukC87hQM=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
@@ -30,226 +29,284 @@ Attention is currently required from: plaisthos.
 
 Hello plaisthos,
 
-I'd like you to reexamine a change. Please visit
+I'd like you to do a code review.
+Please visit
 
-    http://gerrit.openvpn.net/c/openvpn/+/790?usp=3Demail
+    http://gerrit.openvpn.net/c/openvpn/+/1030?usp=3Demail
 
-to look at the new patch set (#15).
+to review the following change.
 
 
-Change subject: Define a .clang-format file for the project
+Change subject: Fix various badly placed comments in preparation for reform=
+at
 ......................................................................
 
-Define a .clang-format file for the project
+Fix various badly placed comments in preparation for reformat
 
-Each of these statements has been reviewed but
-not all of them are obvious.
-
-Also add a pre-commit config to easily check the
-formatting.
-
-Change-Id: I40f6af10c5ee2f5aed4185d783fc622a2e3c19ff
+Change-Id: I83831060fdf5588a0ada8d6abbedc7ce3ded4182
 Signed-off-by: Frank Lichtenheld <frank@...2641...>
 ---
-A .clang-format
-A .pre-commit-config.yaml
-2 files changed, 59 insertions(+), 0 deletions(-)
+M src/openvpn/buffer.c
+M src/openvpn/multi_io.c
+M src/openvpn/networking.h
+M src/openvpn/options.c
+M src/openvpn/otime.c
+M src/openvpn/otime.h
+M src/openvpn/tun.h
+7 files changed, 15 insertions(+), 8 deletions(-)
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/90/790/15
 
-diff --git a/.clang-format b/.clang-format
-new file mode 100644
-index 0000000..c314fca
---- /dev/null
-+++ b/.clang-format
-@@ -0,0 +1,51 @@
-+---
-+BasedOnStyle: Mozilla
-+AccessModifierOffset: '-4'
-+AlignAfterOpenBracket: Align
-+AlignConsecutiveMacros:
-+  Enabled: true
-+  AcrossEmptyLines: false
-+  AcrossComments: true
-+AlignEscapedNewlines: Left
-+AlignOperands: true
-+AlignTrailingComments:
-+  Kind: Always
-+  OverEmptyLines: 1
-+AllowAllParametersOfDeclarationOnNextLine: true
-+AllowShortBlocksOnASingleLine: Never
-+AllowShortCaseLabelsOnASingleLine: false
-+AllowShortFunctionsOnASingleLine: None
-+AllowShortIfStatementsOnASingleLine: Never
-+AllowShortLoopsOnASingleLine: false
-+BinPackArguments: true
-+BinPackParameters: true
-+BreakAfterReturnType: AllDefinitions
-+BreakBeforeBinaryOperators: NonAssignment
-+BreakBeforeBraces: Allman
-+BreakBeforeTernaryOperators: true
-+BreakStringLiterals: false
-+ColumnLimit: '100'
-+ContinuationIndentWidth: '4'
-+DerivePointerAlignment: false
-+IndentCaseLabels: true
-+IndentGotoLabels: false
-+IndentWidth: '4'
-+IndentWrappedFunctionNames: false
-+KeepEmptyLinesAtTheStartOfBlocks: false
-+MaxEmptyLinesToKeep: '2'
-+PointerAlignment: Right
-+ReflowComments: true
-+SortIncludes: false
-+SpaceAfterCStyleCast: false
-+SpaceBeforeAssignmentOperators: true
-+SpaceBeforeParens: ControlStatements
-+SpacesBeforeTrailingComments: '2'
-+SpacesInParens: Never
-+TabWidth: '4'
-+TypeNames: [DWORD]
-+UseTab: Never
-+WhitespaceSensitiveMacros: [_STRINGIFY]
-+---
-+Language: C
-+---
-+Language: Cpp
-diff --git a/.pre-commit-config.yaml b/.pre-commit-config.yaml
-new file mode 100644
-index 0000000..c1bca47
---- /dev/null
-+++ b/.pre-commit-config.yaml
-@@ -0,0 +1,8 @@
-+repos:
-+  - repo: https://github.com/pre-commit/mirrors-clang-format
-+    rev: 'v20.1.0'
-+    hooks:
-+      - id: clang-format
-+        files: \.[ch]$
-+        # preserve upstream formatting
-+        exclude: ^(src/compat/compat-lz4\.[ch]|src/openvpn/ovpn_dco_(linux=
-|win)\.h)$
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/30/1030/1
+
+diff --git a/src/openvpn/buffer.c b/src/openvpn/buffer.c
+index b2a5bf5..4b83eeb 100644
+--- a/src/openvpn/buffer.c
++++ b/src/openvpn/buffer.c
+@@ -910,7 +910,8 @@
+     {
+         return true;
+     }
+-    if ((flags & CC_PRINT) && (c >=3D 32 && c !=3D 127)) /* allow ascii no=
+n-control and UTF-8, consider DEL to be a control */
++    /* allow ascii non-control and UTF-8, consider DEL to be a control */
++    if ((flags & CC_PRINT) && (c >=3D 32 && c !=3D 127))
+     {
+         return true;
+     }
+diff --git a/src/openvpn/multi_io.c b/src/openvpn/multi_io.c
+index 7f47319..6ab06bb 100644
+--- a/src/openvpn/multi_io.c
++++ b/src/openvpn/multi_io.c
+@@ -247,7 +247,8 @@
+         case TA_TUN_WRITE:
+             looking_for =3D TUN_WRITE;
+             tun_input_pending =3D NULL;
+-            c->c2.timeval.tv_sec =3D 1; /* For some reason, the Linux 2.2 =
+TUN/TAP driver hits this timeout */
++            /* For some reason, the Linux 2.2 TUN/TAP driver hits this tim=
+eout */
++            c->c2.timeval.tv_sec =3D 1;
+             perf_push(PERF_PROC_OUT_TUN_MTCP);
+             io_wait(c, IOW_TO_TUN);
+             perf_pop();
+diff --git a/src/openvpn/networking.h b/src/openvpn/networking.h
+index f06d6df..d9aca1e 100644
+--- a/src/openvpn/networking.h
++++ b/src/openvpn/networking.h
+@@ -302,7 +302,7 @@
+                      int metric);
+
+ /**
+- * Delete a route for an IPv4 address/network
++ * Delete a route for an IPv6 address/network
+  *
+  * @param ctx       the implementation specific context
+  * @param dst       the destination of the route
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index bcc18a5..4528edd 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -8398,9 +8398,10 @@
+         VERIFY_PERMISSION(OPT_P_DHCPDNS);
+         setenv_foreign_option(options, (const char **)p, 3, es);
+     }
+-    else if (streq(p[0], "route-method") && p[1] && !p[2]) /* ignore when =
+pushed to non-Windows OS */
++    else if (streq(p[0], "route-method") && p[1] && !p[2])
+     {
+         VERIFY_PERMISSION(OPT_P_ROUTE_EXTRAS);
++        /* ignore when pushed to non-Windows OS */
+     }
+ #endif /* ifdef _WIN32 */
+ #if PASSTOS_CAPABILITY
+diff --git a/src/openvpn/otime.c b/src/openvpn/otime.c
+index d77c99e..7a362e0 100644
+--- a/src/openvpn/otime.c
++++ b/src/openvpn/otime.c
+@@ -44,8 +44,10 @@
+ void
+ update_now(const time_t system_time)
+ {
+-    const int forward_threshold =3D 86400; /* threshold at which to dampen=
+ forward jumps */
+-    const int backward_trigger  =3D 10;  /* backward jump must be >=3D thi=
+s many seconds before we adjust */
++    /* threshold at which to dampen forward jumps */
++    const int forward_threshold =3D 86400;
++    /* backward jump must be >=3D this many seconds before we adjust */
++    const int backward_trigger =3D 10;
+     time_t real_time =3D system_time + now_adj;
+
+     if (real_time > now)
+diff --git a/src/openvpn/otime.h b/src/openvpn/otime.h
+index 9543732..04aa5c6 100644
+--- a/src/openvpn/otime.h
++++ b/src/openvpn/otime.h
+@@ -246,7 +246,8 @@
+ static inline bool
+ tv_within_sigma(const struct timeval *t1, const struct timeval *t2, unsign=
+ed int sigma)
+ {
+-    const int delta =3D tv_subtract(t1, t2, TV_WITHIN_SIGMA_MAX_SEC); /* s=
+igma should be less than 10 minutes */
++    /* sigma should be less than 10 minutes */
++    const int delta =3D tv_subtract(t1, t2, TV_WITHIN_SIGMA_MAX_SEC);
+     return -(int)sigma <=3D delta && delta <=3D (int)sigma;
+ }
+
+diff --git a/src/openvpn/tun.h b/src/openvpn/tun.h
+index de1876a..379a31a 100644
+--- a/src/openvpn/tun.h
++++ b/src/openvpn/tun.h
+@@ -212,7 +212,8 @@
+
+ #ifdef _WIN32
+     HANDLE hand;
+-    OVERLAPPED dco_new_peer_ov; /* used for async NEW_PEER dco call, which=
+ might wait for TCP connect */
++    /* used for async NEW_PEER dco call, which might wait for TCP connect =
+*/
++    OVERLAPPED dco_new_peer_ov;
+     struct overlapped_io reads;
+     struct overlapped_io writes;
+     struct rw_handle rw_handle;
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/790?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1030?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings
 
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: I40f6af10c5ee2f5aed4185d783fc622a2e3c19ff
-Gerrit-Change-Number: 790
-Gerrit-PatchSet: 15
+Gerrit-Change-Id: I83831060fdf5588a0ada8d6abbedc7ce3ded4182
+Gerrit-Change-Number: 1030
+Gerrit-PatchSet: 1
 Gerrit-Owner: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-MessageType: newpatchset
+Gerrit-MessageType: newchange
 
---Ons1SkHNGU0=
+--57uukC87hQM=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <p> Attention is currently required from: plaisthos. </p>
-<p>flichtenheld <strong>uploaded patch set #15</strong> to this change.</p>=
-<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/790?usp=3Demail">View C=
-hange</a></p><pre style=3D"font-family: monospace,monospace; white-space: p=
-re-wrap;">Define a .clang-format file for the project<br><br>Each of these =
-statements has been reviewed but<br>not all of them are obvious.<br><br>Als=
-o add a pre-commit config to easily check the<br>formatting.<br><br>Change-=
-Id: I40f6af10c5ee2f5aed4185d783fc622a2e3c19ff<br>Signed-off-by: Frank Licht=
-enheld &lt;frank@...2641...&gt;<br>---<br>A .clang-format<br>A .pre-commit-=
-config.yaml<br>2 files changed, 59 insertions(+), 0 deletions(-)<br><br></p=
+<p>flichtenheld would like plaisthos to <strong>review</strong> this change.
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1030?usp=3Demail">V=
+iew Change</a></p><pre style=3D"font-family: monospace,monospace; white-spa=
+ce: pre-wrap;">Fix various badly placed comments in preparation for reforma=
+t<br><br>Change-Id: I83831060fdf5588a0ada8d6abbedc7ce3ded4182<br>Signed-off=
+-by: Frank Lichtenheld &lt;frank@...2641...&gt;<br>---<br>M src/openvpn/buf=
+fer.c<br>M src/openvpn/multi_io.c<br>M src/openvpn/networking.h<br>M src/op=
+envpn/options.c<br>M src/openvpn/otime.c<br>M src/openvpn/otime.h<br>M src/=
+openvpn/tun.h<br>7 files changed, 15 insertions(+), 8 deletions(-)<br><br><=
+/pre><pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;=
+">git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/30/1030/1</p=
 re><pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;">=
-git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/90/790/15</pre=
-><pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><s=
-pan>diff --git a/.clang-format b/.clang-format</span><br><span>new file mod=
-e 100644</span><br><span>index 0000000..c314fca</span><br><span>--- /dev/nu=
-ll</span><br><span>+++ b/.clang-format</span><br><span>@@ -0,0 +1,51 @@</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+---</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+BasedOnStyle: Mozilla</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+AccessModifierOffset: &#39;-4&#39;</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+AlignAfterOpenBracket:=
- Align</span><br><span style=3D"color: hsl(120, 100%, 40%);">+AlignConsecut=
-iveMacros:</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  Enabled=
-: true</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  AcrossEmpty=
-Lines: false</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  Acros=
-sComments: true</span><br><span style=3D"color: hsl(120, 100%, 40%);">+Alig=
-nEscapedNewlines: Left</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+AlignOperands: true</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+AlignTrailingComments:</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+  Kind: Always</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+  OverEmptyLines: 1</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+AllowAllParametersOfDeclarationOnNextLine: true</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+AllowShortBlocksOnASingleLine: Never</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+AllowShortCaseLabelsOnASingle=
-Line: false</span><br><span style=3D"color: hsl(120, 100%, 40%);">+AllowSho=
-rtFunctionsOnASingleLine: None</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+AllowShortIfStatementsOnASingleLine: Never</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+AllowShortLoopsOnASingleLine: false</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+BinPackArguments: true</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+BinPackParameters: tru=
-e</span><br><span style=3D"color: hsl(120, 100%, 40%);">+BreakAfterReturnTy=
-pe: AllDefinitions</span><br><span style=3D"color: hsl(120, 100%, 40%);">+B=
-reakBeforeBinaryOperators: NonAssignment</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+BreakBeforeBraces: Allman</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+BreakBeforeTernaryOperators: true</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+BreakStringLiterals: false</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+ColumnLimit: &#39;100&#39;<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+ContinuationIndentWi=
-dth: &#39;4&#39;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+Der=
-ivePointerAlignment: false</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+IndentCaseLabels: true</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+IndentGotoLabels: false</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+IndentWidth: &#39;4&#39;</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+IndentWrappedFunctionNames: false</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+KeepEmptyLinesAtTheStartOfBlocks: false</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+MaxEmptyLinesToKeep: =
-&#39;2&#39;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+PointerA=
-lignment: Right</span><br><span style=3D"color: hsl(120, 100%, 40%);">+Refl=
-owComments: true</span><br><span style=3D"color: hsl(120, 100%, 40%);">+Sor=
-tIncludes: false</span><br><span style=3D"color: hsl(120, 100%, 40%);">+Spa=
-ceAfterCStyleCast: false</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+SpaceBeforeAssignmentOperators: true</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+SpaceBeforeParens: ControlStatements</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+SpacesBeforeTrailingComments: &#39;2=
-&#39;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+SpacesInParens=
-: Never</span><br><span style=3D"color: hsl(120, 100%, 40%);">+TabWidth: &#=
-39;4&#39;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+TypeNames:=
- [DWORD]</span><br><span style=3D"color: hsl(120, 100%, 40%);">+UseTab: Nev=
-er</span><br><span style=3D"color: hsl(120, 100%, 40%);">+WhitespaceSensiti=
-veMacros: [_STRINGIFY]</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+---</span><br><span style=3D"color: hsl(120, 100%, 40%);">+Language: C</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+---</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+Language: Cpp</span><br><span>diff --=
-git a/.pre-commit-config.yaml b/.pre-commit-config.yaml</span><br><span>new=
- file mode 100644</span><br><span>index 0000000..c1bca47</span><br><span>--=
-- /dev/null</span><br><span>+++ b/.pre-commit-config.yaml</span><br><span>@=
-@ -0,0 +1,8 @@</span><br><span style=3D"color: hsl(120, 100%, 40%);">+repos=
-:</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  - repo: https://=
-github.com/pre-commit/mirrors-clang-format</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+    rev: &#39;v20.1.0&#39;</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+    hooks:</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+      - id: clang-format</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+        files: \.[ch]$</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+        # preserve upstream formatting</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+        exclude: ^(src/comp=
-at/compat-lz4\.[ch]|src/openvpn/ovpn_dco_(linux|win)\.h)$</span><br><span><=
-/span><br></pre><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/op=
-envpn/+/790?usp=3Demail">change 790</a>. To unsubscribe, or for help writin=
-g mail filters, visit <a href=3D"http://gerrit.openvpn.net/settings">settin=
-gs</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div =
-itemscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><li=
-nk itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/790?usp=
-=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
+<span>diff --git a/src/openvpn/buffer.c b/src/openvpn/buffer.c</span><br><s=
+pan>index b2a5bf5..4b83eeb 100644</span><br><span>--- a/src/openvpn/buffer.=
+c</span><br><span>+++ b/src/openvpn/buffer.c</span><br><span>@@ -910,7 +910=
+,8 @@</span><br><span>     {</span><br><span>         return true;</span><b=
+r><span>     }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    if =
+((flags &amp; CC_PRINT) &amp;&amp; (c &gt;=3D 32 &amp;&amp; c !=3D 127)) /*=
+ allow ascii non-control and UTF-8, consider DEL to be a control */</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+    /* allow ascii non-cont=
+rol and UTF-8, consider DEL to be a control */</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+    if ((flags &amp; CC_PRINT) &amp;&amp; (c &gt=
+;=3D 32 &amp;&amp; c !=3D 127))</span><br><span>     {</span><br><span>    =
+     return true;</span><br><span>     }</span><br><span>diff --git a/src/o=
+penvpn/multi_io.c b/src/openvpn/multi_io.c</span><br><span>index 7f47319..6=
+ab06bb 100644</span><br><span>--- a/src/openvpn/multi_io.c</span><br><span>=
++++ b/src/openvpn/multi_io.c</span><br><span>@@ -247,7 +247,8 @@</span><br>=
+<span>         case TA_TUN_WRITE:</span><br><span>             looking_for =
+=3D TUN_WRITE;</span><br><span>             tun_input_pending =3D NULL;</sp=
+an><br><span style=3D"color: hsl(0, 100%, 40%);">-            c-&gt;c2.time=
+val.tv_sec =3D 1; /* For some reason, the Linux 2.2 TUN/TAP driver hits thi=
+s timeout */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
+     /* For some reason, the Linux 2.2 TUN/TAP driver hits this timeout */<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+            c-&gt;c2=
+.timeval.tv_sec =3D 1;</span><br><span>             perf_push(PERF_PROC_OUT=
+_TUN_MTCP);</span><br><span>             io_wait(c, IOW_TO_TUN);</span><br>=
+<span>             perf_pop();</span><br><span>diff --git a/src/openvpn/net=
+working.h b/src/openvpn/networking.h</span><br><span>index f06d6df..d9aca1e=
+ 100644</span><br><span>--- a/src/openvpn/networking.h</span><br><span>+++ =
+b/src/openvpn/networking.h</span><br><span>@@ -302,7 +302,7 @@</span><br><s=
+pan>                      int metric);</span><br><span> </span><br><span> /=
+**</span><br><span style=3D"color: hsl(0, 100%, 40%);">- * Delete a route f=
+or an IPv4 address/network</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+ * Delete a route for an IPv6 address/network</span><br><span>  *</s=
+pan><br><span>  * @param ctx       the implementation specific context</spa=
+n><br><span>  * @param dst       the destination of the route</span><br><sp=
+an>diff --git a/src/openvpn/options.c b/src/openvpn/options.c</span><br><sp=
+an>index bcc18a5..4528edd 100644</span><br><span>--- a/src/openvpn/options.=
+c</span><br><span>+++ b/src/openvpn/options.c</span><br><span>@@ -8398,9 +8=
+398,10 @@</span><br><span>         VERIFY_PERMISSION(OPT_P_DHCPDNS);</span>=
+<br><span>         setenv_foreign_option(options, (const char **)p, 3, es);=
+</span><br><span>     }</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>-    else if (streq(p[0], &quot;route-method&quot;) &amp;&amp; p[1] &amp;&=
+amp; !p[2]) /* ignore when pushed to non-Windows OS */</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+    else if (streq(p[0], &quot;route-met=
+hod&quot;) &amp;&amp; p[1] &amp;&amp; !p[2])</span><br><span>     {</span><=
+br><span>         VERIFY_PERMISSION(OPT_P_ROUTE_EXTRAS);</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+        /* ignore when pushed to non-W=
+indows OS */</span><br><span>     }</span><br><span> #endif /* ifdef _WIN32=
+ */</span><br><span> #if PASSTOS_CAPABILITY</span><br><span>diff --git a/sr=
+c/openvpn/otime.c b/src/openvpn/otime.c</span><br><span>index d77c99e..7a36=
+2e0 100644</span><br><span>--- a/src/openvpn/otime.c</span><br><span>+++ b/=
+src/openvpn/otime.c</span><br><span>@@ -44,8 +44,10 @@</span><br><span> voi=
+d</span><br><span> update_now(const time_t system_time)</span><br><span> {<=
+/span><br><span style=3D"color: hsl(0, 100%, 40%);">-    const int forward_=
+threshold =3D 86400; /* threshold at which to dampen forward jumps */</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-    const int backward_trig=
+ger  =3D 10;  /* backward jump must be &gt;=3D this many seconds before we =
+adjust */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    /* thr=
+eshold at which to dampen forward jumps */</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+    const int forward_threshold =3D 86400;</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+    /* backward jump must be =
+&gt;=3D this many seconds before we adjust */</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+    const int backward_trigger =3D 10;</span><br>=
+<span>     time_t real_time =3D system_time + now_adj;</span><br><span> </s=
+pan><br><span>     if (real_time &gt; now)</span><br><span>diff --git a/src=
+/openvpn/otime.h b/src/openvpn/otime.h</span><br><span>index 9543732..04aa5=
+c6 100644</span><br><span>--- a/src/openvpn/otime.h</span><br><span>+++ b/s=
+rc/openvpn/otime.h</span><br><span>@@ -246,7 +246,8 @@</span><br><span> sta=
+tic inline bool</span><br><span> tv_within_sigma(const struct timeval *t1, =
+const struct timeval *t2, unsigned int sigma)</span><br><span> {</span><br>=
+<span style=3D"color: hsl(0, 100%, 40%);">-    const int delta =3D tv_subtr=
+act(t1, t2, TV_WITHIN_SIGMA_MAX_SEC); /* sigma should be less than 10 minut=
+es */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    /* sigma s=
+hould be less than 10 minutes */</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+    const int delta =3D tv_subtract(t1, t2, TV_WITHIN_SIGMA_MA=
+X_SEC);</span><br><span>     return -(int)sigma &lt;=3D delta &amp;&amp; de=
+lta &lt;=3D (int)sigma;</span><br><span> }</span><br><span> </span><br><spa=
+n>diff --git a/src/openvpn/tun.h b/src/openvpn/tun.h</span><br><span>index =
+de1876a..379a31a 100644</span><br><span>--- a/src/openvpn/tun.h</span><br><=
+span>+++ b/src/openvpn/tun.h</span><br><span>@@ -212,7 +212,8 @@</span><br>=
+<span> </span><br><span> #ifdef _WIN32</span><br><span>     HANDLE hand;</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-    OVERLAPPED dco_new_p=
+eer_ov; /* used for async NEW_PEER dco call, which might wait for TCP conne=
+ct */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    /* used fo=
+r async NEW_PEER dco call, which might wait for TCP connect */</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+    OVERLAPPED dco_new_peer_ov;<=
+/span><br><span>     struct overlapped_io reads;</span><br><span>     struc=
+t overlapped_io writes;</span><br><span>     struct rw_handle rw_handle;</s=
+pan><br><span></span><br></pre><p>To view, visit <a href=3D"http://gerrit.o=
+penvpn.net/c/openvpn/+/1030?usp=3Demail">change 1030</a>. To unsubscribe, o=
+r for help writing mail filters, visit <a href=3D"http://gerrit.openvpn.net=
+/settings">settings</a>.</p><div itemscope itemtype=3D"http://schema.org/Em=
+ailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.or=
+g/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/op=
+envpn/+/1030?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/=
+></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I40f6af10c5ee2f5aed4185d783f=
-c622a2e3c19ff </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 790 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 15 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I83831060fdf5588a0ada8d6abbe=
+dc7ce3ded4182 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1030 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
 <div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
 .&gt; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
@@ -258,8 +315,8 @@ c622a2e3c19ff </div>
 ts.sourceforge.net&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
 ..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
+<div style=3D"display:none"> Gerrit-MessageType: newchange </div>
 
 
---Ons1SkHNGU0=--
+--57uukC87hQM=--
 
