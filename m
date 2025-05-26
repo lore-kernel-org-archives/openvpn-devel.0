@@ -1,17 +1,15 @@
 From: "flichtenheld (Code Review)" <gerrit@...515...>
-Date: Mon, 26 May 2025 10:40:42 +0000
-In-Reply-To: <gerrit.1730386897000.I2566ad493629e1f5fdfa6f6483b8973463404e3e@...2715...>
-References: <gerrit.1730386897000.I2566ad493629e1f5fdfa6f6483b8973463404e3e@...2715...>
+Date: Mon, 26 May 2025 11:27:45 +0000
+References: <gerrit.1748258863000.Ifd36651a3713dd6f2e585f0771f349178a494360@...2715...>
 Reply-To: frank@...2641..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, antonio@...2726...,
- gert@...1296...
-Message-ID: <039123843a4f42e1864f4313b2b64ffb3c27a86a-EmailReviewComments-HTML@...2715...>
+ openvpn-devel@lists.sourceforge.net
+Message-ID: <497fa634036c188a4d43a62c7b2d4adeac99411e-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="iUHS09Tj6OI="; charset=UTF-8
-Subject: [Openvpn-devel] [XL] Change in openvpn[master]: Reformat the whole
- project with clang-format
+Content-Type: multipart/alternative; boundary="CaCGM2Fzz6M="; charset=UTF-8
+Subject: [Openvpn-devel] [XS] Change in openvpn[release/2.6]:
+ git-pre-commit-uncrustify: Make sure to not run on branches with clan...
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,172 +18,137 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: plaisthos <arne-openvpn@...1227...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---iUHS09Tj6OI=
+--CaCGM2Fzz6M=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: cron2, ordex, plaisthos.
+Attention is currently required from: plaisthos.
 
-flichtenheld has posted comments on this change. ( http://gerrit.openvpn.ne=
-t/c/openvpn/+/791?usp=3Demail )
+Hello plaisthos,
 
-Change subject: Reformat the whole project with clang-format
+I'd like you to do a code review.
+Please visit
+
+    http://gerrit.openvpn.net/c/openvpn/+/1031?usp=3Demail
+
+to review the following change.
+
+
+Change subject: git-pre-commit-uncrustify: Make sure to not run on branches=
+ with clang-format
 ......................................................................
 
+git-pre-commit-uncrustify: Make sure to not run on branches with clang-form=
+at
 
-Patch Set 19:
+If a .clang-format file is present, do not run this hook.
+This allows to keep this installed while working also on
+newer branches that do not use uncrustify anymore.
 
-(4 comments)
-
-File src/openvpn/buffer.c:
-
-http://gerrit.openvpn.net/c/openvpn/+/791/comment/5fa573c3_de511cf1 :
-PS18, Line 850:     } while (c);
-> Why?
-As discussed on IRC this is actually correct for our current formatting.
-
-
-http://gerrit.openvpn.net/c/openvpn/+/791/comment/5173a895_ec42235c :
-PS18, Line 915:             && c !=3D 127)) /* allow ascii non-control and =
-UTF-8, consider DEL to be a control */
-> Yes.
-Done in separate commit.
+Change-Id: Ifd36651a3713dd6f2e585f0771f349178a494360
+Signed-off-by: Frank Lichtenheld <frank@...2641...>
+---
+M dev-tools/git-pre-commit-uncrustify.sh
+1 file changed, 6 insertions(+), 0 deletions(-)
 
 
-File src/openvpn/comp.h:
 
-http://gerrit.openvpn.net/c/openvpn/+/791/comment/ca6252bf_a8b50dfe :
-PS18, Line 93: bool check_compression_settings_valid(struct compress_option=
-s *info, int msglevel);
-> this is one of the changes I'm not sure we want - having the return type =
-on the line before gives us [=E2=80=A6]
-As discussed in IRC this is consistent with what we have. Switched the .cla=
-ng-format to use "AllDefinitions" instead which doesn't change anything but=
- better matches our policy.
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/31/1031/1
 
+diff --git a/dev-tools/git-pre-commit-uncrustify.sh b/dev-tools/git-pre-com=
+mit-uncrustify.sh
+index 9851c21..1f49086 100755
+--- a/dev-tools/git-pre-commit-uncrustify.sh
++++ b/dev-tools/git-pre-commit-uncrustify.sh
+@@ -58,6 +58,12 @@
+     exit 0
+ fi
 
-File src/openvpn/console_builtin.c:
-
-http://gerrit.openvpn.net/c/openvpn/+/791/comment/9b83c0b1_41c7cd5f :
-PS18, Line 74:         msg(M_WARN | M_ERRNO, "get_console_input_win32(): un=
-expected error");
-> Interestingly one of the things we can't configure in clang-format. [=E2=
-=80=A6]
-Done
-
-
++
++if [ -f .clang-format ]; then
++    echo "skipping uncrustify due to presence of .clang-format"
++    exit 0
++fi
++
+ # check whether the given file matches any of the set extensions
+ matches_extension() {
+     local filename=3D"$(basename -- "$1")"
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/791?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1031?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings
 
 Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: I2566ad493629e1f5fdfa6f6483b8973463404e3e
-Gerrit-Change-Number: 791
-Gerrit-PatchSet: 19
+Gerrit-Branch: release/2.6
+Gerrit-Change-Id: Ifd36651a3713dd6f2e585f0771f349178a494360
+Gerrit-Change-Number: 1031
+Gerrit-PatchSet: 1
 Gerrit-Owner: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-CC: cron2 <gert@...1296...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-CC: ordex <antonio@...2726...>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: cron2 <gert@...1296...>
-Gerrit-Attention: ordex <antonio@...2726...>
-Gerrit-Comment-Date: Mon, 26 May 2025 10:40:42 +0000
-Gerrit-HasComments: Yes
-Gerrit-Has-Labels: No
-Comment-In-Reply-To: cron2 <gert@...1296...>
-Comment-In-Reply-To: flichtenheld <frank@...2641...>
-Gerrit-MessageType: comment
+Gerrit-MessageType: newchange
 
---iUHS09Tj6OI=
+--CaCGM2Fzz6M=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p> Attention is currently required from: cron2, ordex, plaisthos. </p>
-<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/791?usp=3Demail">View C=
-hange</a></p><p>4 comments:</p><ul style=3D"list-style: none; padding: 0;">=
-<li style=3D"margin: 0; padding: 0;"><p>File src/openvpn/buffer.c:</p><ul s=
-tyle=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0=
- 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn=
-.net/c/openvpn/+/791/comment/5fa573c3_de511cf1">Patch Set #18, Line 850:</a=
-> <code style=3D"font-family:monospace,monospace">    } while (c);</code></=
-p><p><blockquote style=3D"border-left: 1px solid #aaa; margin: 10px 0; padd=
-ing: 0 10px;">Why?</blockquote></p><p style=3D"white-space: pre-wrap; word-=
-wrap: break-word;">As discussed on IRC this is actually correct for our cur=
-rent formatting.</p></li><li style=3D"margin: 0; padding: 0 0 0 16px;"><p s=
-tyle=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn=
-/+/791/comment/5173a895_ec42235c">Patch Set #18, Line 915:</a> <code style=
-=3D"font-family:monospace,monospace">            &amp;&amp; c !=3D 127)) /*=
- allow ascii non-control and UTF-8, consider DEL to be a control */</code><=
-/p><p><blockquote style=3D"border-left: 1px solid #aaa; margin: 10px 0; pad=
-ding: 0 10px;">Yes.</blockquote></p><p style=3D"white-space: pre-wrap; word=
--wrap: break-word;">Done in separate commit.</p></li></ul></li><li style=3D=
-"margin: 0; padding: 0;"><p>File src/openvpn/comp.h:</p><ul style=3D"list-s=
-tyle: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p s=
-tyle=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn=
-/+/791/comment/ca6252bf_a8b50dfe">Patch Set #18, Line 93:</a> <code style=
-=3D"font-family:monospace,monospace">bool check_compression_settings_valid(=
-struct compress_options *info, int msglevel);</code></p><p><blockquote styl=
-e=3D"border-left: 1px solid #aaa; margin: 10px 0; padding: 0 10px;">this is=
- one of the changes I&#39;m not sure we want - having the return type on th=
-e line before gives us [=E2=80=A6]</blockquote></p><p style=3D"white-space:=
- pre-wrap; word-wrap: break-word;">As discussed in IRC this is consistent w=
-ith what we have. Switched the .clang-format to use &quot;AllDefinitions&qu=
-ot; instead which doesn&#39;t change anything but better matches our policy=
-.</p></li></ul></li><li style=3D"margin: 0; padding: 0;"><p>File src/openvp=
-n/console_builtin.c:</p><ul style=3D"list-style: none; padding: 0;"><li sty=
-le=3D"margin: 0; padding: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a =
-href=3D"http://gerrit.openvpn.net/c/openvpn/+/791/comment/9b83c0b1_41c7cd5f=
-">Patch Set #18, Line 74:</a> <code style=3D"font-family:monospace,monospac=
-e">        msg(M_WARN | M_ERRNO, &quot;get_console_input_win32(): unexpecte=
-d error&quot;);</code></p><p><blockquote style=3D"border-left: 1px solid #a=
-aa; margin: 10px 0; padding: 0 10px;">Interestingly one of the things we ca=
-n&#39;t configure in clang-format. [=E2=80=A6]</blockquote></p><p style=3D"=
-white-space: pre-wrap; word-wrap: break-word;">Done</p></li></ul></li></ul>=
-<p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/791?usp=
-=3Demail">change 791</a>. To unsubscribe, or for help writing mail filters,=
- visit <a href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div=
- itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemp=
-rop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"=
-url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/791?usp=3Demail"/><meta =
-itemprop=3D"name" content=3D"View Change"/></div></div>
+<p> Attention is currently required from: plaisthos. </p>
+<p>flichtenheld would like plaisthos to <strong>review</strong> this change.
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1031?usp=3Demail">V=
+iew Change</a></p><pre style=3D"font-family: monospace,monospace; white-spa=
+ce: pre-wrap;">git-pre-commit-uncrustify: Make sure to not run on branches =
+with clang-format<br><br>If a .clang-format file is present, do not run thi=
+s hook.<br>This allows to keep this installed while working also on<br>newe=
+r branches that do not use uncrustify anymore.<br><br>Change-Id: Ifd36651a3=
+713dd6f2e585f0771f349178a494360<br>Signed-off-by: Frank Lichtenheld &lt;fra=
+nk@...2641...&gt;<br>---<br>M dev-tools/git-pre-commit-uncrustify.sh<br>1 f=
+ile changed, 6 insertions(+), 0 deletions(-)<br><br></pre><pre style=3D"fon=
+t-family: monospace,monospace; white-space: pre-wrap;">git pull ssh://gerri=
+t.openvpn.net:29418/openvpn refs/changes/31/1031/1</pre><pre style=3D"font-=
+family: monospace,monospace; white-space: pre-wrap;"><span>diff --git a/dev=
+-tools/git-pre-commit-uncrustify.sh b/dev-tools/git-pre-commit-uncrustify.s=
+h</span><br><span>index 9851c21..1f49086 100755</span><br><span>--- a/dev-t=
+ools/git-pre-commit-uncrustify.sh</span><br><span>+++ b/dev-tools/git-pre-c=
+ommit-uncrustify.sh</span><br><span>@@ -58,6 +58,12 @@</span><br><span>    =
+ exit 0</span><br><span> fi</span><br><span> </span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+if [ -f .clang-format ]; then</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+    echo &quot;skipping uncrustify due to presence of .cla=
+ng-format&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+exit 0</span><br><span style=3D"color: hsl(120, 100%, 40%);">+fi</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> # check whet=
+her the given file matches any of the set extensions</span><br><span> match=
+es_extension() {</span><br><span>     local filename=3D&quot;$(basename -- =
+&quot;$1&quot;)&quot;</span><br><span></span><br></pre><p>To view, visit <a=
+ href=3D"http://gerrit.openvpn.net/c/openvpn/+/1031?usp=3Demail">change 103=
+1</a>. To unsubscribe, or for help writing mail filters, visit <a href=3D"h=
+ttp://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope itemtype=
+=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"action" item=
+type=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http:/=
+/gerrit.openvpn.net/c/openvpn/+/1031?usp=3Demail"/><meta itemprop=3D"name" =
+content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I2566ad493629e1f5fdfa6f6483b=
-8973463404e3e </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 791 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 19 </div>
+<div style=3D"display:none"> Gerrit-Branch: release/2.6 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: Ifd36651a3713dd6f2e585f0771f=
+349178a494360 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1031 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
 <div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
 .&gt; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
 .1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: cron2 &lt;gert@...1296...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: ordex &lt;antonio@...2726...&gt; </=
-div>
 <div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
 ..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: cron2 &lt;gert@...1296...&gt=
-; </div>
-<div style=3D"display:none"> Gerrit-Attention: ordex &lt;antonio@...2726...=
-&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Mon, 26 May 2025 10:40:42=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: No </div>
-<div style=3D"display:none"> Comment-In-Reply-To: cron2 &lt;gert@...1296...=
-&gt; </div>
-<div style=3D"display:none"> Comment-In-Reply-To: flichtenheld &lt;frank@...1186...=
-.2641...&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
+<div style=3D"display:none"> Gerrit-MessageType: newchange </div>
 
 
---iUHS09Tj6OI=--
+--CaCGM2Fzz6M=--
 
