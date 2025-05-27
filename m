@@ -1,17 +1,10 @@
-From: "flichtenheld (Code Review)" <gerrit@...515...>
-Date: Tue, 27 May 2025 15:51:26 +0000
+From: Gert Doering <gert@...1296...>
+Date: Tue, 27 May 2025 18:03:50 +0200
+Message-ID: <20250527160356.10871-1-gert@...1296...>
 In-Reply-To: <gerrit.1747937881000.Icbfffae877f8eca8d94721a4d54e140c50d4a550@...2715...>
 References: <gerrit.1747937881000.Icbfffae877f8eca8d94721a4d54e140c50d4a550@...2715...>
-Reply-To: frank@...2641..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, max@...2606...,
- gert@...1296...
-Message-ID: <67ce52a143edd1c7b8b119f6e70e480b4b263b45-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="dAkoMjyYa+w="; charset=UTF-8
-Subject: [Openvpn-devel] [M] Change in openvpn[master]: Remove
- HAVE_EXPORT_KEYING_MATERIAL macro
+Subject: [Openvpn-devel] [PATCH v3] Remove HAVE_EXPORT_KEYING_MATERIAL macro
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,120 +13,333 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: MaxF <max@...2606...>
-Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---dAkoMjyYa+w=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+From: Max Fillinger <maximilian.fillinger@...2507...>
 
-Attention is currently required from: MaxF, cron2, plaisthos.
+This was always defined in all supported versions of OpenSSL and
+WolfSSL. EKM is available in mbedtls versions from 2.18.0 onwards.
 
-flichtenheld has posted comments on this change. ( http://gerrit.openvpn.ne=
-t/c/openvpn/+/1043?usp=3Demail )
+This commit breaks builds on Debian 11 with the stock mbed TLS package.
 
-Change subject: Remove HAVE_EXPORT_KEYING_MATERIAL macro
-......................................................................
+Change-Id: Icbfffae877f8eca8d94721a4d54e140c50d4a550
+Signed-off-by: MaxF <max@...2606...>
+Acked-by: Frank Lichtenheld <frank@...2641...>
+---
 
+This change was reviewed on Gerrit and approved by at least one
+developer. I request to merge it to master.
 
-Patch Set 3: Code-Review+2
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1043
+This mail reflects revision 3 of this Change.
 
-(1 comment)
+Signed-off-by line for the author was added as per our policy.
 
-Patchset:
+Acked-by according to Gerrit (reflected above):
+Frank Lichtenheld <frank@...2641...>
 
-PS1:
-> Debian 12 failed in one specific t_client test, not configure. So somethi=
-ng completely different. [=E2=80=A6]
-Done
-
-
-
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1043?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings
-
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: Icbfffae877f8eca8d94721a4d54e140c50d4a550
-Gerrit-Change-Number: 1043
-Gerrit-PatchSet: 3
-Gerrit-Owner: MaxF <max@...2606...>
-Gerrit-Reviewer: cron2 <gert@...1296...>
-Gerrit-Reviewer: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: cron2 <gert@...1296...>
-Gerrit-Attention: MaxF <max@...2606...>
-Gerrit-Comment-Date: Tue, 27 May 2025 15:51:26 +0000
-Gerrit-HasComments: Yes
-Gerrit-Has-Labels: Yes
-Comment-In-Reply-To: plaisthos <arne-openvpn@...1227...>
-Comment-In-Reply-To: flichtenheld <frank@...2641...>
-Comment-In-Reply-To: MaxF <max@...2606...>
-Gerrit-MessageType: comment
-
---dAkoMjyYa+w=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<p> Attention is currently required from: MaxF, cron2, plaisthos. </p>
-<p>Patch set 3:<span style=3D"border-radius: 3px; display: inline-block; ma=
-rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1043?usp=3Demail">V=
-iew Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: =
-0;"><li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-=
-style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p =
-style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvp=
-n/+/1043?tab=3Dcomments">Patch Set #1:</a> </p><p><blockquote style=3D"bord=
-er-left: 1px solid #aaa; margin: 10px 0; padding: 0 10px;">Debian 12 failed=
- in one specific t_client test, not configure. So something completely diff=
-erent. [=E2=80=A6]</blockquote></p><p style=3D"white-space: pre-wrap; word-=
-wrap: break-word;">Done</p></li></ul></li></ul><p>To view, visit <a href=3D=
-"http://gerrit.openvpn.net/c/openvpn/+/1043?usp=3Demail">change 1043</a>. T=
-o unsubscribe, or for help writing mail filters, visit <a href=3D"http://ge=
-rrit.openvpn.net/settings">settings</a>.</p><div itemscope itemtype=3D"http=
-://schema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"=
-http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.=
-openvpn.net/c/openvpn/+/1043?usp=3Demail"/><meta itemprop=3D"name" content=
-=3D"View Change"/></div></div>
-
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: Icbfffae877f8eca8d94721a4d54=
-e140c50d4a550 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1043 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 3 </div>
-<div style=3D"display:none"> Gerrit-Owner: MaxF &lt;max@...2606...&gt; </di=
-v>
-<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
- </div>
-<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
-1...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: cron2 &lt;gert@...1296...&gt=
-; </div>
-<div style=3D"display:none"> Gerrit-Attention: MaxF &lt;max@...2606...&gt; =
-</div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Tue, 27 May 2025 15:51:26=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
-<div style=3D"display:none"> Comment-In-Reply-To: plaisthos &lt;arne-openvp=
-n@...1227...&gt; </div>
-<div style=3D"display:none"> Comment-In-Reply-To: flichtenheld &lt;frank@...1186...=
-.2641...&gt; </div>
-<div style=3D"display:none"> Comment-In-Reply-To: MaxF &lt;max@...2606...&g=
-t; </div>
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
-
-
---dAkoMjyYa+w=--
+        
+diff --git a/config.h.cmake.in b/config.h.cmake.in
+index 5164ce3..5df0ac8 100644
+--- a/config.h.cmake.in
++++ b/config.h.cmake.in
+@@ -120,9 +120,6 @@
+ /* Define to 1 if you have the <err.h> header file. */
+ #cmakedefine HAVE_ERR_H
+ 
+-/* Crypto library supports keying material exporter */
+-#define HAVE_EXPORT_KEYING_MATERIAL 1
+-
+ /* Define to 1 if you have the <fcntl.h> header file. */
+ #cmakedefine HAVE_FCNTL_H
+ 
+diff --git a/configure.ac b/configure.ac
+index 75367e8..1b908e6 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -988,10 +988,6 @@
+ 		[AC_MSG_ERROR([OpenSSL check for AES-256-GCM support failed])]
+ 	)
+ 
+-	# All supported OpenSSL versions (>= 1.1.0)
+-	# have this feature
+-	have_export_keying_material="yes"
+-
+ 	CFLAGS="${saved_CFLAGS}"
+ 	LIBS="${saved_LIBS}"
+ 
+@@ -1064,7 +1060,6 @@
+ 		[AC_DEFINE([HAVE_MBEDTLS_SSL_TLS_PRF], [0], [no])]
+ 	)
+ 
+-	have_export_keying_material="yes"
+ 	AC_CHECK_FUNC(
+ 		[mbedtls_ssl_conf_export_keys_ext_cb],
+ 		[AC_DEFINE([HAVE_MBEDTLS_SSL_CONF_EXPORT_KEYS_EXT_CB], [1], [yes])],
+@@ -1077,7 +1072,7 @@
+ 			[AC_DEFINE([HAVE_MBEDTLS_SSL_SET_EXPORT_KEYS_CB], [0], [no])]
+ 		)
+ 		if test "x$ac_cv_func_mbedtls_ssl_set_export_keys_cb" != xyes; then
+-			have_export_keying_material="no"
++			AC_MSG_ERROR(This version of mbed TLS has no support for exporting key material.)
+ 		fi
+ 	fi
+ 
+@@ -1132,17 +1127,12 @@
+ 	)
+ 	AC_CHECK_HEADER([wolfssl/options.h],,[AC_MSG_ERROR([wolfSSL header wolfssl/options.h not found!])])
+ 
+-	# wolfSSL signal EKM support
+-	have_export_keying_material="yes"
+-
+ 	if test "${enable_wolfssl_options_h}" = "yes"; then
+ 		AC_DEFINE([EXTERNAL_OPTS_OPENVPN], [1], [Include options.h from wolfSSL library])
+ 	else
+ 		AC_DEFINE([WOLFSSL_USER_SETTINGS], [1], [Use custom user_settings.h file for wolfSSL library])
+ 	fi
+ 
+-	have_export_keying_material="yes"
+-
+ 	CFLAGS="${saved_CFLAGS}"
+ 	LIBS="${saved_LIBS}"
+ 
+@@ -1346,12 +1336,6 @@
+ test "${enable_dns_updown_by_default}" = "yes" && AC_DEFINE([ENABLE_DNS_UPDOWN_BY_DEFAULT], [1], [Enable dns-updown hook by default])
+ test "${enable_ntlm}" = "yes" && AC_DEFINE([ENABLE_NTLM], [1], [Enable NTLMv2 proxy support])
+ test "${enable_crypto_ofb_cfb}" = "yes" && AC_DEFINE([ENABLE_OFB_CFB_MODE], [1], [Enable OFB and CFB cipher modes])
+-if test "${have_export_keying_material}" = "yes"; then
+-	AC_DEFINE(
+-		[HAVE_EXPORT_KEYING_MATERIAL], [1],
+-		[Crypto library supports keying material exporter]
+-	)
+-fi
+ OPTIONAL_CRYPTO_CFLAGS="${OPTIONAL_CRYPTO_CFLAGS} ${CRYPTO_CFLAGS}"
+ OPTIONAL_CRYPTO_LIBS="${OPTIONAL_CRYPTO_LIBS} ${CRYPTO_LIBS}"
+ 
+diff --git a/src/openvpn/init.c b/src/openvpn/init.c
+index e0ba255..15eacab 100644
+--- a/src/openvpn/init.c
++++ b/src/openvpn/init.c
+@@ -3483,7 +3483,6 @@
+     to.comp_options = options->comp;
+ #endif
+ 
+-#ifdef HAVE_EXPORT_KEYING_MATERIAL
+     if (options->keying_material_exporter_label)
+     {
+         to.ekm_size = options->keying_material_exporter_length;
+@@ -3499,7 +3498,6 @@
+     {
+         to.ekm_size = 0;
+     }
+-#endif /* HAVE_EXPORT_KEYING_MATERIAL */
+ 
+     /* TLS handshake authentication (--tls-auth) */
+     if (options->ce.tls_auth_file)
+diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
+index 80dd0c0..a5eee01 100644
+--- a/src/openvpn/multi.c
++++ b/src/openvpn/multi.c
+@@ -1837,7 +1837,6 @@
+         c->c2.push_request_received = true;
+     }
+ 
+-#ifdef HAVE_EXPORT_KEYING_MATERIAL
+     if (proto & IV_PROTO_TLS_KEY_EXPORT)
+     {
+         o->imported_protocol_flags |= CO_USE_TLS_KEY_MATERIAL_EXPORT;
+@@ -1856,7 +1855,6 @@
+     {
+         o->imported_protocol_flags |= CO_USE_DYNAMIC_TLS_CRYPT;
+     }
+-#endif
+ 
+     if (proto & IV_PROTO_CC_EXIT_NOTIFY)
+     {
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index 6672b5c..6acec78 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -664,10 +664,8 @@
+ #endif
+     "--x509-track x  : Save peer X509 attribute x in environment for use by\n"
+     "                  plugins and management interface.\n"
+-#ifdef HAVE_EXPORT_KEYING_MATERIAL
+     "--keying-material-exporter label len : Save Exported Keying Material (RFC5705)\n"
+     "                  of len bytes (min. 16 bytes) using label in environment for use by plugins.\n"
+-#endif
+     "--remote-cert-ku v ... : Require that the peer certificate was signed with\n"
+     "                  explicit key usage, you can specify more than one value.\n"
+     "                  value should be given in hex format.\n"
+@@ -3594,10 +3592,6 @@
+             "calculation anymore or your security policy (e.g. FIPS 140-2) "
+             "forbids it. Connections will only work with peers running "
+             "OpenVPN 2.6.0 or higher)");
+-#ifndef HAVE_EXPORT_KEYING_MATERIAL
+-        msg(M_FATAL, "Keying Material Exporters (RFC 5705) not available either. "
+-            "No way to generate data channel keys left.");
+-#endif
+         if (o->mode == MODE_SERVER)
+         {
+             msg(M_WARN, "Automatically enabling option "
+@@ -8663,13 +8657,11 @@
+         /* NCP only option that is pushed by the server to enable EKM,
+          * should not be used by normal users in config files*/
+         VERIFY_PERMISSION(OPT_P_NCP)
+-#ifdef HAVE_EXPORT_KEYING_MATERIAL
+         if (streq(p[1], "tls-ekm"))
+         {
+             options->imported_protocol_flags |= CO_USE_TLS_KEY_MATERIAL_EXPORT;
+         }
+         else
+-#endif
+         {
+             msg(msglevel, "Unknown key-derivation method %s", p[1]);
+         }
+@@ -8686,7 +8678,6 @@
+             {
+                 options->imported_protocol_flags |= CO_USE_CC_EXIT_NOTIFY;
+             }
+-#ifdef HAVE_EXPORT_KEYING_MATERIAL
+             else if (streq(p[j], "tls-ekm"))
+             {
+                 options->imported_protocol_flags |= CO_USE_TLS_KEY_MATERIAL_EXPORT;
+@@ -8695,7 +8686,6 @@
+             {
+                 options->imported_protocol_flags |= CO_USE_DYNAMIC_TLS_CRYPT;
+             }
+-#endif
+             else if (streq(p[j], "aead-epoch"))
+             {
+                 options->imported_protocol_flags |= CO_EPOCH_DATA_KEY_FORMAT;
+@@ -9452,7 +9442,6 @@
+         options->use_peer_id = true;
+         options->peer_id = atoi_warn(p[1], msglevel);
+     }
+-#ifdef HAVE_EXPORT_KEYING_MATERIAL
+     else if (streq(p[0], "keying-material-exporter") && p[1] && p[2])
+     {
+         int ekm_length = positive_atoi(p[2], msglevel);
+@@ -9479,7 +9468,6 @@
+         options->keying_material_exporter_label = p[1];
+         options->keying_material_exporter_length = ekm_length;
+     }
+-#endif /* HAVE_EXPORT_KEYING_MATERIAL */
+     else if (streq(p[0], "allow-recursive-routing") && !p[1])
+     {
+         VERIFY_PERMISSION(OPT_P_GENERAL);
+diff --git a/src/openvpn/options.h b/src/openvpn/options.h
+index 8d1ef6c..b0b8d96 100644
+--- a/src/openvpn/options.h
++++ b/src/openvpn/options.h
+@@ -701,11 +701,9 @@
+     bool use_peer_id;
+     uint32_t peer_id;
+ 
+-#ifdef HAVE_EXPORT_KEYING_MATERIAL
+     /* Keying Material Exporters [RFC 5705] */
+     const char *keying_material_exporter_label;
+     int keying_material_exporter_length;
+-#endif
+     /* force using TLS key material export for data channel key generation */
+     bool force_key_material_export;
+ 
+diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
+index fd299ef..5ecf42b 100644
+--- a/src/openvpn/ssl.c
++++ b/src/openvpn/ssl.c
+@@ -2034,10 +2034,8 @@
+ 
+         buf_printf(&out, "IV_CIPHERS=%s\n", session->opt->config_ncp_ciphers);
+ 
+-#ifdef HAVE_EXPORT_KEYING_MATERIAL
+         iv_proto |= IV_PROTO_TLS_KEY_EXPORT;
+         iv_proto |= IV_PROTO_DYN_TLS_CRYPT;
+-#endif
+ 
+         buf_printf(&out, "IV_PROTO=%d\n", iv_proto);
+ 
+diff --git a/src/openvpn/ssl_mbedtls.c b/src/openvpn/ssl_mbedtls.c
+index ec3135a..6474f80 100644
+--- a/src/openvpn/ssl_mbedtls.c
++++ b/src/openvpn/ssl_mbedtls.c
+@@ -174,8 +174,6 @@
+     return ctx->initialised;
+ }
+ 
+-#ifdef HAVE_EXPORT_KEYING_MATERIAL
+-
+ #if HAVE_MBEDTLS_SSL_CONF_EXPORT_KEYS_EXT_CB
+ /*
+  * Key export callback for older versions of mbed TLS, to be used with
+@@ -254,7 +252,7 @@
+     cache->tls_prf_type = tls_prf_type;
+ }
+ #else  /* if HAVE_MBEDTLS_SSL_CONF_EXPORT_KEYS_EXT_CB */
+-#error either HAVE_MBEDTLS_SSL_CONF_EXPORT_KEYS_EXT_CB or HAVE_MBEDTLS_SSL_SET_EXPORT_KEYS_CB must be defined when HAVE_EXPORT_KEYING_MATERIAL is defined
++#error either mbedtls_ssl_conf_export_keys_ext_cb or mbedtls_ssl_set_export_keys_cb must be available in mbed TLS
+ #endif /* HAVE_MBEDTLS_SSL_CONF_EXPORT_KEYS_EXT_CB */
+ 
+ bool
+@@ -289,16 +287,6 @@
+         return false;
+     }
+ }
+-#else  /* ifdef HAVE_EXPORT_KEYING_MATERIAL */
+-bool
+-key_state_export_keying_material(struct tls_session *session,
+-                                 const char *label, size_t label_size,
+-                                 void *ekm, size_t ekm_size)
+-{
+-    /* Dummy function to avoid ifdefs in the common code */
+-    return false;
+-}
+-#endif /* HAVE_EXPORT_KEYING_MATERIAL */
+ 
+ bool
+ tls_ctx_set_options(struct tls_root_ctx *ctx, unsigned int ssl_flags)
+diff --git a/src/openvpn/ssl_mbedtls.h b/src/openvpn/ssl_mbedtls.h
+index ec30bb5..9ebb2ce 100644
+--- a/src/openvpn/ssl_mbedtls.h
++++ b/src/openvpn/ssl_mbedtls.h
+@@ -85,7 +85,6 @@
+     void *sign_ctx;
+ };
+ 
+-#ifdef HAVE_EXPORT_KEYING_MATERIAL
+ /** struct to cache TLS secrets for keying material exporter (RFC 5705).
+  * The constants (64 and 48) are inherent to TLS version and
+  * the whole keying material export will likely change when they change */
+@@ -94,9 +93,6 @@
+     mbedtls_tls_prf_types tls_prf_type;
+     unsigned char master_secret[48];
+ };
+-#else  /* ifdef HAVE_EXPORT_KEYING_MATERIAL */
+-struct tls_key_cache { };
+-#endif
+ 
+ /**
+  * Structure that wraps the TLS context. Contents differ depending on the
+diff --git a/src/openvpn/ssl_ncp.c b/src/openvpn/ssl_ncp.c
+index ead91da..a9cd470 100644
+--- a/src/openvpn/ssl_ncp.c
++++ b/src/openvpn/ssl_ncp.c
+@@ -446,7 +446,6 @@
+         session->opt->crypto_flags &= ~CO_EPOCH_DATA_KEY_FORMAT;
+     }
+ 
+-#if defined(HAVE_EXPORT_KEYING_MATERIAL)
+     if (iv_proto_peer & IV_PROTO_TLS_KEY_EXPORT)
+     {
+         session->opt->crypto_flags |= CO_USE_TLS_KEY_MATERIAL_EXPORT;
+@@ -479,7 +478,6 @@
+     {
+         session->opt->crypto_flags |= CO_USE_DYNAMIC_TLS_CRYPT;
+     }
+-#endif /* if defined(HAVE_EXPORT_KEYING_MATERIAL) */
+ }
+ 
+ void
 
