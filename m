@@ -1,15 +1,15 @@
 From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Wed, 28 May 2025 19:09:41 +0000
+Date: Wed, 28 May 2025 19:09:43 +0000
 In-Reply-To: <gerrit.1748268615000.I80a14b77fcc2fabf51af9f2d5ea0c36362cccb91@...2715...>
 References: <gerrit.1748268615000.I80a14b77fcc2fabf51af9f2d5ea0c36362cccb91@...2715...>
 Reply-To: gert@...1296..., arne-openvpn@...1227..., selva.nair@...277...,
  openvpn-devel@lists.sourceforge.net, frank@...2641...,
  lstipakov@...277...
-Message-ID: <9bfb0e0ba4d821431a4d4692cdf3fa639694ee0b-EmailReplacePatchSet-HTML@...2715...>
+Message-ID: <9bfb0e0ba4d821431a4d4692cdf3fa639694ee0b-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="pDpIYkokpDM="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="jUhGGnpjsHQ="; charset=UTF-8
 Subject: [Openvpn-devel] [L] Change in openvpn[master]: OpenVPN Release
  2.7_alpha1
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -20,16 +20,15 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: flichtenheld <frank@...2641...>, plaisthos <arne-openvpn@...1227...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>, selvanair <selva.nair@...277...>, stipa <lstipakov@...277...>
+To: flichtenheld <frank@...2641...>
+Cc: selvanair <selva.nair@...277...>, stipa <lstipakov@...277...>, plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---pDpIYkokpDM=
+--jUhGGnpjsHQ=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-cron2 has uploaded a new patch set (#7) to the change originally created by=
- flichtenheld. ( http://gerrit.openvpn.net/c/openvpn/+/1032?usp=3Demail )
-
+cron2 has submitted this change. ( http://gerrit.openvpn.net/c/openvpn/+/10=
+32?usp=3Demail )
 
 Change subject: OpenVPN Release 2.7_alpha1
 ......................................................................
@@ -54,7 +53,7 @@ M version.m4
 4 files changed, 903 insertions(+), 46 deletions(-)
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/32/1032/7
+
 
 diff --git a/ChangeLog b/ChangeLog
 index c26dd2e..c6e626b 100644
@@ -1245,958 +1244,957 @@ Gerrit-CC: cron2 <gert@...1296...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-CC: selvanair <selva.nair@...277...>
 Gerrit-CC: stipa <lstipakov@...277...>
-Gerrit-MessageType: newpatchset
+Gerrit-MessageType: merged
 
---pDpIYkokpDM=
+--jUhGGnpjsHQ=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p>cron2 <strong>uploaded patch set #7</strong> to the change originally cr=
-eated by flichtenheld.</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn=
-/+/1032?usp=3Demail">View Change</a></p><pre style=3D"font-family: monospac=
-e,monospace; white-space: pre-wrap;">OpenVPN Release 2.7_alpha1<br><br>vers=
-ion.m4, ChangeLog, Changes.rst<br><br>(ChangeLog in &quot;master&quot; will=
- revert to its normal state of &quot;empty&quot;<br>after release/2.7 is fo=
-rked off into its own branch)<br><br>Additionally, add test_common.h to tes=
-ts/unit_tests/openvpn/Makefile.am<br>(..._SOURCES) so it&#39;s packed into =
-the &quot;make dist&quot; tarball<br><br>Change-Id: I80a14b77fcc2fabf51af9f=
-2d5ea0c36362cccb91<br>Signed-off-by: Frank Lichtenheld &lt;frank@...2641...=
-&gt;<br>---<br>M ChangeLog<br>M Changes.rst<br>M tests/unit_tests/openvpn/M=
-akefile.am<br>M version.m4<br>4 files changed, 903 insertions(+), 46 deleti=
-ons(-)<br><br></pre><pre style=3D"font-family: monospace,monospace; white-s=
-pace: pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/openvpn refs/chang=
-es/32/1032/7</pre><pre style=3D"font-family: monospace,monospace; white-spa=
-ce: pre-wrap;"><span>diff --git a/ChangeLog b/ChangeLog</span><br><span>ind=
-ex c26dd2e..c6e626b 100644</span><br><span>--- a/ChangeLog</span><br><span>=
-+++ b/ChangeLog</span><br><span>@@ -1,7 +1,759 @@</span><br><span> OpenVPN =
-ChangeLog</span><br><span style=3D"color: hsl(0, 100%, 40%);">-Copyright (C=
-) 2002-2024 OpenVPN Inc &lt;sales@...515...&gt;</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+Copyright (C) 2002-2025 OpenVPN Inc &lt;sales@...220...=
-..515...&gt;</span><br><span> </span><br><span style=3D"color: hsl(0, 100%,=
- 40%);">-This file is not maintained in this branch of the OpenVPN git repo=
-sitory.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+2025.05.28 -=
-- Version 2.7_alpha1</span><br><span> </span><br><span style=3D"color: hsl(=
-0, 100%, 40%);">-Release branches (release/2.5, release/2.4, etc) have indi=
-vidual ChangeLog</span><br><span style=3D"color: hsl(0, 100%, 40%);">-files=
- with all changes relevant for these releases.</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+5andr0 (1):</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+      Implement server_poll_timeout for socks</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+Alexander von Gluck (4):</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+      Haiku: Introduce basic platform / tun =
-support</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      Haiku:=
- Add calls to manage routing table</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+      Haiku: change del to delete in route command. del is u=
-ndocumented</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      Ha=
-iku: Fix short interface path length</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+An=
-tonio Quartulli (32):</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+      disable DCO if --secret is specified</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+      dco: properly re-initialize dco_del_peer_rea=
-son</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      dco: bail =
-out when no peer-specific message is delivered</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+      dco: improve comment about hidden debug me=
-ssage</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      dco: pri=
-nt proper message in case of transport disconnection</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+      dco_linux: update license for ovpn_=
-dco_linux.h</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      Up=
-date issue templates</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+      Avoid warning about missing braces when initialising key struct</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+      dco: don&#39;t use=
- NetLink to exchange control packets</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+      dco: print version to log if available</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+      dco-linux: remove M_ERRNO f=
-lag when printing netlink error message</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+      multi: don&#39;t call DCO APIs if DCO is disabled=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      dco-freebsd: =
-use m-&gt;instances[] instead of m-&gt;hash</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+      dco-linux: implement dco_get_peer_stats{, mul=
-ti} API</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      config=
-ure.ac: fix typ0 in LIBCAPNG_CFALGS</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+      dco: fix crash when --multihome is used with --proto =
-tcp</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      dco: mark =
-peer as deleted from kernel after receiving CMD_DEL_PEER notification</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+      event/multi: add ev=
-ent_arg object to make event handling more generic</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+      pass link_socket object to i/o functio=
-ns</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      io_work: co=
-nvert shift argument to uintptr_t</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+      io_work: pass event_arg object to event handler in case=
- of socket event</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
-   sitnl: replace NLMSG_TAIL macro with noinline function</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+      override ai_family if &#39;loca=
-l&#39; numeric address was specified</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+      Adapt socket handling to support listening on multip=
-le sockets</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      all=
-ow user to specify &#39;local&#39; multiple times in config files</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+      dco_linux: extend netli=
-nk error cb with extra info</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+      man: extend --persist-tun section</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+      dco: pass remoteaddr only for UDP peers</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+      socket: use rem=
-ote proto when creating client sockets</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+      dco_linux: fix peer stats parsing with new ovpn ke=
-rnel module</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      so=
-cket: don&#39;t transfer bind family to socket in case of ANY address</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+      dco_linux: avoid bo=
-gus text when netlink message is not parsed</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+Aquila Macedo (1):</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+      doc: Correct typos in multiple documentation files</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+Arne Schwabe (190):</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+      Fix connection cookie not including address and=
- fix endianness in test</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+      Fix unit test of test_pkt on little endian Linux</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+      Disable DCO when TLS mode is n=
-ot used</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      Ignore=
- connection attempts while server is shutting down</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+      Improve debug logging of DCO swap key =
-message and Linux dco_new_peer</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+      Trigger a USR1 if dco_update_keys fails</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+      Set DCO_NOT_INSTALLED also for k=
-eys not in the get_key_scan range</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+      Ensure that argument to parse_line has always space for=
- final sentinel</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-  Improve documentation on user/password requirement and unicodize function=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      Eliminate or =
-comment empty blocks and switch fallthrough</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+      Remove unused gc_arena</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+      Fix corner case that might lead to =
-leaked file descriptor</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+      Deprecate NTLMv1 proxy auth method.</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+      Use include &quot;buffer.h&quot; instead of =
-include &lt;buffer.h&gt;</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+      Ensure that dco keepalive and mssfix options are also set in pur=
-e p2p mode</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      Mak=
-e management password check constant time</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+      Rename TM_UNTRUSTED to TM_INITIAL, always start=
- session in TM_INITIAL rather than TM_ACTIVE or TM_INITIAL</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+      Move dco_installed back to lin=
-k_socket from link_socket.info.actual</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+      Do not set nl socket buffer size</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+      Also drop incoming dco packet co=
-ntent when dropping the packet</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+      Improve logging when seeing a message for an unkown peer</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+      Ignore OVPN_DEL=
-_PEER_REASON_USERSPACE to avoid race conditions</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+      Replace custom min macro and use more C99=
- style in man_remote_entry_get</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+      Replace realloc with new gc_realloc function</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+      Add connect-freq-initial op=
-tion to limit initial connection responses</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+      Log peer-id if loglevel is D_DCO_DEBUG and dco=
- is enabled</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      De=
-precate OCC checking</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+      Workaround: make ovpn-dco more reliable</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+      Fix unaligned access in auth-token</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+      Update LibreSSL to 3.=
-7.0 in Github actions</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+      Add printing USAN stack trace on github actions</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+      Fix LibreSSL not building in Gith=
-ub Actions</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      Add=
- missing stdint.h includes in unit tests files</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+      Combine extra_tun/frame parameter of frame=
-_calculate_payload_overhead</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+      Update the last sections in the man page to a be a bit less o=
-utdated</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      Add bu=
-ilding unit tests with mingw to github actions</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+      Revise the cipher negotiation info about O=
-penVPN3 in the man page</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+      Exit if a proper message instead of segfault on Android without m=
-anagement</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      Use =
-proper print format/casting when converting msg_channel handle</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+      Reduce initialisation spam=
- from verb &lt;=3D 3 and print summary instead</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+      Dynamic tls-crypt for secure soft_reset/se=
-ssion renegotiation</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-      Set netlink socket to be non-blocking</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+      Ensure n =3D 2 is set in key2 struct in tls_c=
-rypt_v2_unwrap_client_key</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+      Fix memory leaks in open_tun_dco()</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+      Fix memory leaks in HMAC initial packet ge=
-neration</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      Use k=
-ey_state instead of multi for tls_send_payload parameter</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+      Make sending plain text control =
-message session aware</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+      Only update frame calculation if we have a valid link sockets</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+      Improve description=
- of compat-mode</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-  Simplify --compress parsing in options.c</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+      Refuse connection if server pushes an option c=
-ontradicting allow-compress</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+      Add &#39;allow-compression stub-only&#39; internally for DCO<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+      Parse compress=
-ion options and bail out when compression is disabled</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+      Remove unused variable line</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+      Add Apache2 linking w=
-ith for new commits</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-      Fix compile error on TARGET_ANDROID</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+      Fix use-after-free with EVP_CIPHER_free</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+      Remove key_type argum=
-ent from generate_key_random</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+      add basic CMake based build</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+      Avoid unused function warning/error on FreeBSD=
- (and potientially others)</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+      Do not blindly assume python3 is also the interpreter that run=
-s rst2html</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      Onl=
-y add -Wno-stringop-truncation on supported compilers</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+      fix warning with gcc 12.2.0 (compil=
-er bug?)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      Fix C=
-R_RESPONSE mangaement message using wrong key_id</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+      Print a more user-friendly error when tl=
-s-crypt-v2 client auth fails</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+      Ignore Ipv6 route delete request on Android and set ipv4 ver=
-bosity to 7</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      Mo=
-ck openvpn_exece on win32 also for test_tls_crypt</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+      Check if the -wrap argument is actually=
- supported by the platform&#39;s ld</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+      Revert commit 423ced962d</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+      Implement using --peer-fingerprint without=
- CA certificates</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
-   show extra info for OpenSSL errors</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+      Remove ability to use configurations without TLS by=
- default</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      Add w=
-arning for the --show-groups command that some groups are missing</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+      Print peer temporary ke=
-y details</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      Add =
-warning if a p2p NCP client connects to a p2mp server</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+      Remove openssl engine method for lo=
-ading the key</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
-Add undefined and abort on error to clang sanitize builds</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+      Add --enable-werror to all plat=
-forms in Github Actions</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+      Remove saving initial frame code</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+      Double check that we do not use a freed buffer=
- when freeing a session</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+      Fix using to_link buffer after freed</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+      Remove CMake custom compiler flags for REL=
-EASE and DEBUG build</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+      Do not check key_state buffers that are in S_UNDEF state</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+      Remove unused function pr=
-ototype crypto_adjust_frame_parameters</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+      Introduce report_command_status helper function</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+      Log SSL alerts m=
-ore prominently</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-  Remove unused/unneeded/add missing defines from configure/cmake</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+      Document tls-exit optio=
-n mainly as test option</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+      Remove dead remains of extract_x509_field_test</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+      Replace character_class_debug wi=
-th proper unit test</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-      Remove TEST_GET_DEFAULT_GATEWAY as it duplicates --show-gateway</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+      Fix check_session_b=
-uf_not_used using wrong index</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+      Add missing check for nl_socket_alloc failure</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+      Add check for nice in cmake=
- config</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      Minima=
-l Solaris/OpenIndiana support to Cmake and clean up -Werror</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+      Remove compat versionhelpers.=
-h and remove cmake/configure check for it</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+      Rename state_change to continue_tls_process</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+      Move tls_get_ciph=
-er_name_pair and get_num_elements to ssl_utils.c</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+      Fix building mbed TLS with CMake and all=
-ow specifying custom directories</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+      Extend the error message when TLS 1.0 PRF fails</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+      Fix unaligned access i=
-n macOS, FreeBSD, Solaris hwaddr</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+      Check PRF availability on initialisation and add --force=
--tls-key-material-export</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+      Make it more explicit and visible when pkg-config is not found</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+      Clarify that th=
-e tls-crypt-v2-verify has a very limited env set</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+      Move get_tmp_dir to win32-util.c and err=
-or out on failure</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-    Implement the --tls-export-cert feature</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+      Use mingw compile definition also to unit tes=
-ts</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      Add test_ss=
-l unit test and test export of PEM to file</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+      Remove conditional text for Apache2 linking ex=
-ception</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      Fix ss=
-l unit tests on OpenSSL 1.0.2</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+      Ensure that all unit tests use unbuffered stdout and stderr=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      Allow unit te=
-sts to fall back to hard coded location</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+      Add unit test for encrypting/decrypting data chan=
-nel</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      Print SSL =
-peer signature information in handshake debug details</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+      Implement generating TLS 1.0 PRF us=
-ing new OpenSSL 3.0 APIs</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+      Turn dead list test code into unit test</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+      Use snprintf instead of sprintf for ge=
-t_ssl_library_version</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+      Fix snprintf/swnprintf related compiler warnings</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+      Add bracket in fingerprint messa=
-ge and do not warn about missing verification</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+      Match ifdef for get_sigtype function with i=
-f ifdef of caller</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-    Remove/combine redundant call of EVP_CipherInit before EVP_CipherInit_E=
-x</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      Add missing =
-EVP_KDF_CTX_free in ssl_tls1_PRF</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+      Replace macos11 with macos14 in github runners</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+      Remove openvpn_snprintf=
- and similar functions</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+      Repeat the unknown command in errors from management interface</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+      Only run coverity=
- scan in OpenVPN/OpenVPN repository</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+      Support OpenBSD with cmake</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+      Workaround issue in LibreSSL crashing wh=
-en enumerating digests/ciphers</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+      Remove OpenSSL 1.0.2 support</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+      Remove custom TLS 1.0 PRF implementation on=
-ly used by LibreSSL/wolfSSL</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+      Allow the TLS session to send out TLS alerts</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+      Properly handle null bytes and=
- invalid characters in control messages</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+      Allow trailing \r and \n in control channel messa=
-ge</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      Add Ubuntu =
-24.04 runner to Github Actions</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+      Implement support for AEAD tag at the end</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+      Remove check for anonymous uni=
-ons from configure and cmake config</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+      Make read/write_tun_header static</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+      Avoid SIGUSR1 to SIGHUP remapping=
- when the configuration is read from stdin</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+      Move to common backend_driver type in struct t=
-untap</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      Introduc=
-e DRIVER_AFUNIX backend for use with lwipovpn</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+      Change dev null to be a driver type instead=
- of a special mode of tun/tap</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+      Use print_tun_backend_driver instead of custom code to prin=
-t type</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      Automat=
-ically enable ifconfig-exec/route-exec behaviour for afunix tun/tap</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+      Ensure that the AF_UN=
-IX socket pair has at least 65k of buffer space</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+      Fix check for CMake not detecting struct =
-cmsg</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      Remove nu=
-ll check after checking for checking for did_open_tun</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+      Remove a large number of unused str=
-ucts and functions</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-     Remove unused methods write_key/read_key</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+      Refuse clients if username or password is l=
-onger than USER_PASS_LEN</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+      Move should_trigger_renegotiation into its own function</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+      Change --reneg-bytes a=
-nd --reneg-packets to 64 bit counters</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+      Use XOR instead of concatenation for calculation of=
- IV from implicit IV</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+      Trigger renegotiation of data key if getting close to the AEAD usage=
- limit</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      Impleme=
-nt HKDF expand function based on RFC 8446</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+      Split init_key_ctx_bi into send/recv init</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+      Move initialisation=
- of implicit IVs to init_key_ctx_bi methods</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+      Change internal id of packet id to uint64</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+      Add small unit te=
-st for buf_chomp</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
-   Add building/testing with msbuild and the clang compiler</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+      Ensure that Python3 is availa=
-ble</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      Change API=
- of init_key_ctx to use struct key_parameters</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+      Allow DEFAULT in data-ciphers and report bo=
-th expanded and user set option</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+      Do not attempt to decrypt packets anymore after 2**36 fai=
-led decryptions</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-  Add methods to read/write packet ids for epoch data</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+      Implement methods to generate and m=
-anage OpenVPN Epoch keys</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+      Rename aead-tag-at-end to aead-epoch</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+      Improve peer fingerprint documentation</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+      Remove comparing=
- username to NULL in tls_lock_username</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+      Print warnings/errors when numerical parameters ca=
-nnot be parsed</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
- Add unit tests for atoi parsing options helper</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+      Improve error reporting from AF_UNIX tun/=
-tap support</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      Fi=
-x typo in positive_atoi</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+      Fix oversight of link socket code change in Android code path</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+      Implement epoch k=
-ey data format</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
- Extend the unit test for data channel packets with aead limit tests</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+      Add (fake) Android c=
-make building</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
-Add android build to Github Actions</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+      Reconnect when TCP is on use on network-change manage=
-ment command</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      I=
-mplement override-username</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+      Fix incorrect condition for checking password related check</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+      Directly use _co=
-untof in array initialisation</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+      Improve documentation for override-username</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+      Mention address if not unspec=
-ific on DNS failure</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-      Do not leave half-initialised key wrap struct when dynamic tls-crypt =
-fails</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      Allow tl=
-s-crypt-v2 to be setup only on initial packet of a session</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+      Use SSL_get0_peer_signature_na=
-me instead of SSL_get_peer_signature_nid</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+      Use USER_PASS_LEN instead of TLS_USERNAME_LEN fo=
-r override-username</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-      Also print key agreement when printing negotiated details</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+      Fix mbed TLS key exporter=
- functionality in 3.6.x and cmake</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+      Make --dh none behaviour default if not specified</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+Ben Boeckel (1):</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+      console_systemd: remove the timeout when =
-using &#39;systemd-ask-password&#39;</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+Ch=
-ristoph Schug (1):</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-     Update documentation references in systemd unit files</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+Corubba Smith (3):</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+      Support IPv6 towards port-share proxy receiver</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+      Document x509-use=
-rname-fields oid usage</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+      Remove x509-username-fields uppercasing</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+David Sommerseth (4):</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+      ssl_verify: Fix memleak if creating deferred auth control=
- files fails</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      n=
-tlm: Clarify details on NTLM phase 3 decoding</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+      Remove --tls-export-cert</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+      Remove superfluous x509_write_pe=
-m()</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+Franco Fichtner (1):</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+      Allow to set ifmode for exis=
-ting DCO interfaces in FreeBSD</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+Frank Li=
-chtenheld (174):</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
-   options.c: fix format security error when compiling without optimization=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      options.c: up=
-date usage description of --cipher</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+      Update copyright year to 2023</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+      xkey_pkcs11h_sign: fix dangling pointe=
-r</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      options: Alw=
-ays define options-&gt;management_flags</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+      check_engine_keys: make pass with OpenSSL 3</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+      documentation: upda=
-te &#39;unsupported options&#39; section</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+      Changes.rst: document removal of --keysize</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+      Windows: fix unused=
- function setenv_foreign_option</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+      Windows: fix unused variables in delete_route_ipv6</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+      Windows: fix wrong p=
-rintf format in x_check_status</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+      Windows: fix unused variable in win32_get_arch</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+      configure: enable DCO by =
-default on FreeBSD/Linux</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+      Windows: fix signedness errors with recv/send</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+      configure: fix formatting of --d=
-isable-lz4 and --enable-comp-stub</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+      tests/unit_tests: Fix &#39;make distcheck&#39; with sub=
-dir-objects enabled</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-      GHA: remove Ubuntu 18.04 builds</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+      vcpkg: request &quot;tools&quot; feature of openssl=
- for MSVC build</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-  Do not include net/in_systm.h</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+      version.sh: remove</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+      doc: run rst2* with --strict to catch warnings</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+      man page: Remove cr=
-uft from --topology documentation</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+      tests: do not include t_client.sh in dist</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+      vcpkg-ports/pkcs11-helper: =
-Make compatible with mingw build</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+      vcpkg-ports/pkcs11-helper: Convert CONTROL to vcpkg.json=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      vcpkg-ports/p=
-kcs11-helper: reference upstream PRs in patches</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+      dco_linux: properly close dco version fil=
-e</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      DCO: fix mem=
-ory leak in dco_get_peer_stats_multi for Linux</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+      Fix two unused assignments</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+      sample-plugins: Fix memleak i=
-n client-connect example plugin</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+      tests: Allow to override openvpn binary used</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+      test_buffer: add tests for=
- buf_catrunc and its caller format_hex_ex</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+      buffer: use memcpy in buf_catrunc</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+      options: remove --key-metho=
-d from usage message</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+      msvc-generate: include version.m4.in in tarball</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+      dist: add more missing files only =
-used in the MSVC build</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+      vcpkg-ports/pkcs11-helper: rename patches to make file names short=
-er</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      unit_tests:=
- Add missing cert_data.h to source list for unit tests</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+      dist: Include all documentation in=
- distribution</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
-CMake: Add complete MinGW and MSVC build</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+      Remove all traces of the previous MSVC build sys=
-tem</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      CMake: Add=
- /Brepro to MSVC link options</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+      GHA: update to run-vcpkg@...2735...</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+      test_tls_crypt: Improve mock() usag=
-e to be more portable</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+      CMake: Throw a clear error when config.h in top-level source direct=
-ory</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      CMake: Sup=
-port doc builds on Windows machines that do not have .py file association</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+      Remove old Trav=
-is CI related files</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-      README.cmake.md: Add new documentation for CMake buildsystem</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+      GHA: refactor mingw UT=
-s and add missing tls_crypt</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+      GHA: Add macos-13</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+      options: Do not hide variables from parent scope</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+      pkcs11_openssl: Disabl=
-e unused code</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
-route: Fix overriding return value of add_route3</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+      CMake: various small non-functional impr=
-ovements</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      GHA: =
-do not trigger builds in openvpn-build anymore</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+      Remove --no-replay option</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+      GHA: new workflow to submit sc=
-an to Coverity Scan service</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+      doc: fix argument name in --route-delay documentation</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+      Change type of frame.=
-mss_fix to uint16_t</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-      Remove last uses of inet_ntoa</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+      mss/mtu: make all size calculations use size_t</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+      dev-tools/gerrit-sen=
-d-mail.py: tool to send Gerrit patchsets to Patchwork</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+      gerrit-send-mail.py: Add patch vers=
-ion to subject</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
- Add mbedtls3 GHA build</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+      platform.c: Do not depend Windows build on HAVE_CHDIR</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+      sample-keys: renew for th=
-e next 10 years</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-  GHA: clean up libressl builds with newer libressl</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+      configure.ac: Remove unused AC_TYPE=
-_SIGNAL macro</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
-documentation: remove reference to removed option --show-proxy-settings</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+      unit_tests: remov=
-e includes for mock_msg.h</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+      buffer: add documentation for string_mod and extend related UT<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+      tests: disable=
- automake serial_tests</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+      documentation: improve documentation of --x509-track</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+      configure: allow to disable=
- NTLM</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      configur=
-e: enable silent rules by default</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+      misc: make get_auth_challenge static</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+      Remove support for NTLM v1 proxy=
- authentication</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-  GHA: increase verbosity for make check</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+      NTLM: add length check to add_security_buffer</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+      NTLM: increase s=
-ize of phase 2 response we can handle</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+      Fix various &#39;Uninitialized scalar variable&#39;=
- warnings from Coverity</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+      proxy-options.rst: Add proper documentation for --http-proxy-user=
--pass</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      NTLM: wh=
-en NTLMv1 is requested, try NTLMv2 instead</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+      buf_string_match_head_str: Fix Coverity issue =
-&#39;Unsigned compared against 0&#39;</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+      --http-proxy-user-pass: allow to specify in either =
-order with --http-proxy</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+      test_user_pass: new UT for get_user_pass</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+      test_user_pass: Add UTs for character =
-filtering</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      gerr=
-it-send-mail: Make output consistent across systems</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+      README.cmake.md: Document minimum r=
-equired CMake version for --preset</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+      documentation: Update and fix documentation for --push=
--peer-info</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      doc=
-umentation: Fixes for previous fixes to --push-peer-info</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+      test_user_pass: add basic tests =
-for static/dynamic challenges</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+      Fix typo --data-cipher-fallback</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+      samples: Remove tls-*.conf</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+      check_compression_settings_v=
-alid: Do not test for LZ4 in LZO check</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+      t_client.sh: Allow to skip tests</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+      gerrit-send-mail: add missing S=
-igned-off-by</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      U=
-pdate Copyright statements to 2024</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+      GHA: general update March 2024</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+      samples: Update sample configuratio=
-ns</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      documentati=
-on: make section levels consistent</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+      phase2_tcp_server: fix Coverity issue &#39;Dereference=
- after null check&#39;</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+      script-options.rst: Update ifconfig_* variables</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+      crypto_backend: fix type of enc =
-parameter</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      test=
-s: fork default automake test-driver</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+      forked-test-driver: Show test output always</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+      Change default of &quo=
-t;topology&quot; to &quot;subnet&quot;</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+      Use topology default of &quot;subnet&quot; only fo=
-r server mode</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
-Fix &#39;binary or&#39; vs &#39;boolean or&#39; related to server_bridge_pr=
-oxy_dhcp</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      confi=
-gure: update old copy of pkg.m4</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+      LZO: do not use lzoutils.h macros</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+      test_user_pass: Fix building with -=
--enable-systemd</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-  Remove &quot;experimental&quot; denotation for --fast-io</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+      t_server_null.sh: Fix failure =
-case</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      configure=
-: Add -Wstrict-prototypes and -Wold-style-definition</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+      configure: Try to detect LZO with p=
-kg-config</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      conf=
-igure: Switch to C11 by default</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+      Fix missing spaces in various messages</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+      console_systemd: rename query_us=
-er_exec to query_user_systemd</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+      configure: Allow to detect git checkout if .git is not a di=
-rectory</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      GHA: C=
-onfigure Renovate</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-    configure: Try to use pkg-config to detect mbedTLS</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+      tun: use is_tun_p2p more consisten=
-tly</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      Various fi=
-xes for -Wconversion errors</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+      generate_auth_token: simplify code</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+      GHA: Update dependency Mbed-TLS/mbedtls =
-to v3.6.1</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      GHA:=
- Enable t_server_null tests</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+      configure: Handle libnl-genl and libcap-ng consistent with ot=
-her libs</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      confi=
-gure: Review use of standard AC macros</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+      socket: Change return types of link_socket_write* =
-to ssize_t</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      GHA=
-: Pin dependencies</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-     GHA: Update macOS runners</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+      GHA: Simplify macOS builds</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+      Remove support for compression on send</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+      Fix wrong doxygen co=
-mments</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      Various=
- typo fixes</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      ma=
-cOS: Assume that net/if_utun.h is always present</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+      Fix some formatting related to if/else a=
-nd macros</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      Fix =
-memory leak in ntlm_support</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+      forward: Fix potential unaligned access in drop_if_recursive_=
-routing</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      GHA: G=
-eneral update December 2024</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+      Review doxygen warnings</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+      Regenerate doxygen config file with doxygen -u</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+      Fix &#39;uninitial=
-ized pointer read&#39; in openvpn_decrypt_aead</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+      ssl_openssl: Clean up unused functions and=
- add missing &quot;static&quot;</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+      Fix some trivial sign-compare compiler warnings</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+      tls_crypt_v2_write_clie=
-nt_key_file: Fix missing-field-initializers compiler warning</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+      openvpnserv: Fix some incons=
-istent usages of TEXT()</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+      Fix doxygen warnings in crypto_epoch.h</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+      GHA: Drop Ubuntu 20.04 and other mainten=
-ance</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      GHA: Publ=
-ish Doxygen documentation to Github Pages</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+      Add more &#39;intentional fallthrough&#39; comm=
-ents</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      Remove va=
-rious unused function parameters</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+      Remove unused function check_subnet_conflict</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+      options: Cleanup and simp=
-lify options_postprocess_verify_ce</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+      Apply text-removal.sh script to Windows codebase</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+      openvpnserv: Clean =
-up use of TEXT() from DNS patches</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+      Post tchar.h removal cleanup</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+      Fix compatibility with mbedTLS 2.28.10+ =
-and 3.6.3+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      t_s=
-erver_null_default.rc: Add some tests with --data-ciphers</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+      GHA: Pin version of CMake for a=
-ll builds</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      GHA:=
- Dependency and Actions update April 2025</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+      GHA: Make sure renovate notifies us about AWS L=
-C releases</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      Dox=
-ygen: Fix obsolete links to OpenSSL documentation</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+      GHA: Use CMake 4.0 and apply required f=
-ixes</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      Doxygen: =
-Clean up tls-crypt documentation</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+      Doxygen: Remove useless Python information</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+      Manually reformat some long=
- trailing comments</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-     CMake: Make sure to treat UNIT_TEST_SOURCEDIR as path</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+      CMake: Sync list of compiler f=
-lags with configure.ac</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+      CMake: Reorganize header and symbol tests</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+      GHA: Dependency and Actions update May=
- 2025</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      Doxygen:=
- Fix missing parameter warnings</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+      Changes.rst: Collect, fix, and improve entries for 2.7 re=
-lease</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+George Pchelkin (1):</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+      fix typo: dhcp-options to =
-dhcp-option in vpn-network-options.rst</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-Gert Doering (21):</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-     Change version.m4 to 2.7_git</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+      bandaid fix for TCP multipoint server crash with Linux-=
-DCO</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      Undo FreeB=
-SD 12.x workaround on IPv6 ifconfig for 12.4 and up</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+      Reduce logspam about &#39;dco_updat=
-e_keys: peer_id=3D-1&#39; in p2p server mode</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+      Fix OVPN_DEL_PEER_REASON_TRANSPORT_DISCONNEC=
-T breakage on FreeBSD+DCO</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+      Repair special-casing of EEXIST for Linux/SITNL route install</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+      Get rid of unus=
-ed &#39;bool tuntap_buffer&#39; arguments.</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+      FreeBSD 12.x workaround for IPv6 ifconfig is n=
-eeded on 12.4 as well</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+      Make received OCC exit messages more visible in log.</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+      OpenBSD: repair --show-gatew=
-ay</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      get_default=
-_gateway() HWADDR overhaul</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+      make t_server_null &#39;server alive?&#39; check more robust</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+      t_client.sh: co=
-nditionally skip ifconfig+route check</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+      send uname() release as IV_PLAT_VER=3D on non-windo=
-ws versions</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      op=
-tions: add IPv4 support to &#39;--show-gateway &lt;arg&gt;&#39;</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+      get_default_gateway(): im=
-plement platform support for Linux/SITNL</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+      get_default_gateway(): implement platform suppor=
-t for Linux/IPROUTE2</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+      add missing (void) to win32 function declarations</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+      add more (void) to windows speci=
-fic function prototypes and declarations</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+      Make &#39;lport 0&#39; no longer sufficient to d=
-o &#39;--bind&#39;.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-      Add information-gathering about DNS resolvers configured to t_client.=
-sh(.in)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+Gianmarco De Gregori (17):</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+      Persist-key: enabl=
-e persist-key option by default</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+      Minor fix to process_ip_header</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+      Http-proxy: fix bug preventing proxy cre=
-dentials caching</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
-   Ensures all params are ready before invoking dco_set_peer()</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+      Route: remove incorrect ro=
-utes on exit</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      F=
-ix for msbuild/mingw GHA failures</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+      multiproto: move generic event handling code in dedicat=
-ed files</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      Fix P=
-ASS_BY_VALUE issue in options_postprocess_mutate_le()</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+      mroute: adapt to new protocol handl=
-ing and hashing improvements</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+      mroute/management: repair mgmt client-kill for mroute with p=
-roto</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      Add suppo=
-rt for simultaneous use of UDP and TCP sockets</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+      Rename occurences of &#39;struct link_sock=
-et&#39; from &#39;ls&#39; to &#39;sock&#39;</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+      Fix FreeBSD-DCO and Multisocket interaction</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+      manpage: fix HT=
-ML format for --local</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+      Fix dco_win and multisocket interaction</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+      dco_linux: Introduce new uAPIs</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+      Explicit-exit-notify and=
- multisocket interaction</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+Heiko Hund (21=
-):</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      dns option:=
- allow up to eight addresses per server</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+      work around false positive warning with mingw 12<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+      dns option: re=
-move support for exclude-domains</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+      cmake: create and link compile_commands.json file</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+      cmake: symlink whole=
- build dir not just .json file</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+      Windows: enforce &#39;block-local&#39; with WFP filters</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+      add and send IV_=
-PROTO_DNS_OPTION_V2 flag</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+      dns: store IPv4 addresses in network byte order</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+      dns: clone options via pointer=
- instead of copy</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
-   service: add utf8to16 function that takes a size</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+      dns: support multiple domains witho=
-ut DHCP</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      dns: d=
-o not use netsh to set name server addresses</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+      win: calculate address string buffer size</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+      win: implement -=
--dns option support with NRPT</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+      dns: apply settings via script on unixoid systems</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+      fix typo in haikuos dns=
--updown script</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
- dns: support running up/down command with privsep</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+      dns: don&#39;t publish env vars to non=
--dns scripts</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      d=
-ns: fix potential NULL pointer dereference</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+      win: match search domains when creating exclud=
-e rules</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      win: f=
-ix collecting DNS exclude data</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+Heiko Wu=
-ndram (1):</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      Imp=
-lement Windows CA template match for Crypto-API selector</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+Ilia Shipitsin (3):</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+      src/openvpn/init.c: handle strdup failures</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+      sample/sample-plugins/=
-defer/multi-auth.c: handle strdup errors</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+      tests/unit_tests/openvpn/test_auth_token.c: hand=
-le strdup errors</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+Ilya Shipitsin (1):</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+      src/openvpn/dco_=
-freebsd.c: handle malloc failure</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+Julius=
-z Sosinowicz (1):</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-    Change include order for tests</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+Klem=
-ens Nanni (1):</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
- Fix tmp-dir documentation</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+Kristof Prov=
-ost (10):</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      Read=
- DCO traffic stats from the kernel</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+      dco: Update counters when a client disconnects</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+      Read the peer deletio=
-n reason from the kernel</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+      dco: cleanup FreeBSD dco_do_read()</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+      options.c: enforce a minimal fragment size<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+      configure: imp=
-rove FreeBSD DCO check</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+      dco: define OVPN_DEL_PEER_REASON_TRANSPORT_DISCONNECT on FreeBSD</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+      dco: print Free=
-BSD version</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      DC=
-O: support key rotation notifications</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+      dco-freebsd: dynamically re-allocate buffer if it&#=
-39;s too small</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+Lev Stipakov (63):</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+      Rename dco_get_peer=
-_stats to dco_get_peer_stats_multi</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+      management: add timer to output BYTECOUNT</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+      Introduce dco_get_peer_sta=
-ts API and Windows implementation</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+      git-version.py: proper support for tags</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+      msvc: upgrade to Visual Studi=
-o 2022</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      tun: mo=
-ve print_windows_driver() out of tun.h</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+      openvpnmsica: remove dco installer custom actions<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+      openvpnmsica: =
-remove unused declarations</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+      openvpnmsica: fix adapters discovery logic for DCO</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+      Allow certain DHCP option=
-s to be used without DHCP server</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+      dco-win: use proper calling convention on x86</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+      Improve format specifier=
- for socket handle in Windows</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+      Disable DCO if proxy is set via management</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+      Add logging for windows driver=
- selection process</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-     Avoid management log loop with verb &gt;=3D 6</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+      Support --inactive option for DCO</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+      Fix &#39;--inactiv=
-e &lt;time&gt; 0&#39; behavior for DCO</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+      Print DCO client stats on SIGUSR2</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+      Don&#39;t overwrite socket fla=
-gs when using DCO on Windows</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+      Support of DNS domain for DHCP-less drivers</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+      dco-win: support for --dev-nod=
-e</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      tapctl: gene=
-rate driver-specific adapter names</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+      openvpnmsica: link C runtime statically</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+      tun.c: enclose DNS domain in=
- single quotes in WMIC call</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+      manage.c: document missing KID parameter</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+      Set WINS servers via interactice s=
-ervice</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      CMake: =
-fix broken daemonization and syslog functionality</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+      Warn user if INFO control command is to=
-o long</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      CMake: =
-fix HAVE_DAEMON detection on Linux</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+      dco-win: get driver version</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+      dco: warn if DATA_V1 packets are sent to=
- userspace</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      con=
-fig.h: fix incorrect defines for _wopen()</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+      Make --dns options apply for tap-windows6 drive=
-r</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      Warn if push=
-ed options require DHCP</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+      tun.c: don&#39;t attempt to delete DNS and WINS servers if they&#=
-39;re not set</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
-win32: Enforce loading of plugins from a trusted directory</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+      interactive.c: disable remote =
-access to the service pipe</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+      interactive.c: Fix potential stack overflow issue</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+      Disable DCO if proxy is se=
-t via management</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
-   misc.c: remove unused code</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+      interactive.c: Improve access control for gui&lt;-&gt;servi=
-ce pipe</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      Use a =
-more robust way to get dco-win version</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+      dco: better naming for function parameters</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+      repair DNS address op=
-tion</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      dco-win: =
-factor out getting dco version</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+      dco-win: enable mode server on supported configuration</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+      dco-win: simplify=
- do_close_link_socket()</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+      route.c: change the signature of get_default_gateway()</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+      route.c: improve get_def=
-ault_gateway() logic on Windows</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+      mudp.c: keep offset value when resetting buffer</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+      multi.c: add iroutes af=
-ter dco peer is added</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+      dco-win: disable dco in server mode if multiple --local options def=
-ined</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      dco-win: =
-multipeer support</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-    dco-win: simplify control packets prepend code</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+      dco-win: kernel notifications</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+      dco-win: support for i=
-routes</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      dco-win=
-: Fix crash when cancelling pending operation</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+      Remove UINT8_MAX definition</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+      win: allow OpenVPN service ac=
-count to use any command-line options</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+      ssl_openssl.c: Prevent potential double-free</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+      win: refactor get_wi=
-ndows_version()</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-  win: create adapter on demand</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+      win: remove Wintun support</span><br><span style=3D"color=
+<p>cron2 <strong>submitted</strong> this change.</p><p><a href=3D"http://ge=
+rrit.openvpn.net/c/openvpn/+/1032?usp=3Demail">View Change</a></p><div styl=
+e=3D"white-space:pre-wrap"></div><pre style=3D"font-family: monospace,monos=
+pace; white-space: pre-wrap;">OpenVPN Release 2.7_alpha1<br><br>version.m4,=
+ ChangeLog, Changes.rst<br><br>(ChangeLog in &quot;master&quot; will revert=
+ to its normal state of &quot;empty&quot;<br>after release/2.7 is forked of=
+f into its own branch)<br><br>Additionally, add test_common.h to tests/unit=
+_tests/openvpn/Makefile.am<br>(..._SOURCES) so it&#39;s packed into the &qu=
+ot;make dist&quot; tarball<br><br>Change-Id: I80a14b77fcc2fabf51af9f2d5ea0c=
+36362cccb91<br>Signed-off-by: Frank Lichtenheld &lt;frank@...2641...&gt;<br=
+>---<br>M ChangeLog<br>M Changes.rst<br>M tests/unit_tests/openvpn/Makefile=
+.am<br>M version.m4<br>4 files changed, 903 insertions(+), 46 deletions(-)<=
+br><br></pre>
+<pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><sp=
+an>diff --git a/ChangeLog b/ChangeLog</span><br><span>index c26dd2e..c6e626=
+b 100644</span><br><span>--- a/ChangeLog</span><br><span>+++ b/ChangeLog</s=
+pan><br><span>@@ -1,7 +1,759 @@</span><br><span> OpenVPN ChangeLog</span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-Copyright (C) 2002-2024 OpenVP=
+N Inc &lt;sales@...515...&gt;</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+Copyright (C) 2002-2025 OpenVPN Inc &lt;sales@...515...&gt;</span=
+><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-This file=
+ is not maintained in this branch of the OpenVPN git repository.</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+2025.05.28 -- Version 2.7_alph=
+a1</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-R=
+elease branches (release/2.5, release/2.4, etc) have individual ChangeLog</=
+span><br><span style=3D"color: hsl(0, 100%, 40%);">-files with all changes =
+relevant for these releases.</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+5andr0 (1):</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++      Implement server_poll_timeout for socks</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+Alexander von Gluck (4):</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+      Haiku: Introduce basic platform / tun support</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+      Haiku: Add calls to mana=
+ge routing table</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+   Haiku: change del to delete in route command. del is undocumented</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+      Haiku: Fix short int=
+erface path length</span><br><span style=3D"color: hsl(120, 100%, 40%);">+<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+Antonio Quartulli (3=
+2):</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      disable DC=
+O if --secret is specified</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+      dco: properly re-initialize dco_del_peer_reason</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+      dco: bail out when no peer-s=
+pecific message is delivered</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+      dco: improve comment about hidden debug message</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+      dco: print proper message =
+in case of transport disconnection</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+      dco_linux: update license for ovpn_dco_linux.h</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+      Update issue template=
+s</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      Avoid warnin=
+g about missing braces when initialising key struct</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+      dco: don&#39;t use NetLink to excha=
+nge control packets</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+      dco: print version to log if available</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+      dco-linux: remove M_ERRNO flag when printing=
+ netlink error message</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+      multi: don&#39;t call DCO APIs if DCO is disabled</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+      dco-freebsd: use m-&gt;instanc=
+es[] instead of m-&gt;hash</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+      dco-linux: implement dco_get_peer_stats{, multi} API</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+      configure.ac: fix typ0 =
+in LIBCAPNG_CFALGS</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+     dco: fix crash when --multihome is used with --proto tcp</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+      dco: mark peer as deleted f=
+rom kernel after receiving CMD_DEL_PEER notification</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+      event/multi: add event_arg object t=
+o make event handling more generic</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+      pass link_socket object to i/o functions</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+      io_work: convert shift argu=
+ment to uintptr_t</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+    io_work: pass event_arg object to event handler in case of socket event=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      sitnl: replac=
+e NLMSG_TAIL macro with noinline function</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+      override ai_family if &#39;local&#39; numeric a=
+ddress was specified</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++      Adapt socket handling to support listening on multiple sockets</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+      allow user to speci=
+fy &#39;local&#39; multiple times in config files</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+      dco_linux: extend netlink error cb with=
+ extra info</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      ma=
+n: extend --persist-tun section</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+      dco: pass remoteaddr only for UDP peers</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+      socket: use remote proto when c=
+reating client sockets</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+      dco_linux: fix peer stats parsing with new ovpn kernel module</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+      socket: don&#39;t =
+transfer bind family to socket in case of ANY address</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+      dco_linux: avoid bogus text when ne=
+tlink message is not parsed</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+Aquila Mace=
+do (1):</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      doc: C=
+orrect typos in multiple documentation files</span><br><span style=3D"color=
 : hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+Marc Becker (5):</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+      unify code path for adding PKCS#11 providers</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+      use new pkcs11-helper interface to =
-add providers</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
-special handling for PKCS11 providers on win32</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+      vcpkg-ports/pkcs11-helper: support loader =
-flags</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      vcpkg-po=
-rts/pkcs11-helper: bump to version 1.30</span><br><span style=3D"color: hsl=
+%);">+Arne Schwabe (190):</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+      Fix connection cookie not including address and fix endianness =
+in test</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      Fix un=
+it test of test_pkt on little endian Linux</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+      Disable DCO when TLS mode is not used</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+      Ignore connection atte=
+mpts while server is shutting down</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+      Improve debug logging of DCO swap key message and Linu=
+x dco_new_peer</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
+ Trigger a USR1 if dco_update_keys fails</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+      Set DCO_NOT_INSTALLED also for keys not in the g=
+et_key_scan range</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+    Ensure that argument to parse_line has always space for final sentinel<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+      Improve docume=
+ntation on user/password requirement and unicodize function</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+      Eliminate or comment empty bl=
+ocks and switch fallthrough</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+      Remove unused gc_arena</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+      Fix corner case that might lead to leaked file descr=
+iptor</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      Deprecat=
+e NTLMv1 proxy auth method.</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+      Use include &quot;buffer.h&quot; instead of include &lt;buffe=
+r.h&gt;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      Ensure=
+ that dco keepalive and mssfix options are also set in pure p2p mode</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+      Make management pass=
+word check constant time</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+      Rename TM_UNTRUSTED to TM_INITIAL, always start session in TM_IN=
+ITIAL rather than TM_ACTIVE or TM_INITIAL</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+      Move dco_installed back to link_socket from lin=
+k_socket.info.actual</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++      Do not set nl socket buffer size</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+      Also drop incoming dco packet content when droppi=
+ng the packet</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
+Improve logging when seeing a message for an unkown peer</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+      Ignore OVPN_DEL_PEER_REASON_USER=
+SPACE to avoid race conditions</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+      Replace custom min macro and use more C99 style in man_rem=
+ote_entry_get</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
+Replace realloc with new gc_realloc function</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+      Add connect-freq-initial option to limit ini=
+tial connection responses</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+      Log peer-id if loglevel is D_DCO_DEBUG and dco is enabled</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+      Deprecate OCC check=
+ing</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      Workaround=
+: make ovpn-dco more reliable</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+      Fix unaligned access in auth-token</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+      Update LibreSSL to 3.7.0 in Github act=
+ions</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      Add print=
+ing USAN stack trace on github actions</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+      Fix LibreSSL not building in Github Actions</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+      Add missing stdint.h=
+ includes in unit tests files</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+      Combine extra_tun/frame parameter of frame_calculate_payloa=
+d_overhead</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      Upd=
+ate the last sections in the man page to a be a bit less outdated</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+      Add building unit tests=
+ with mingw to github actions</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+      Revise the cipher negotiation info about OpenVPN3 in the ma=
+n page</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      Exit if=
+ a proper message instead of segfault on Android without management</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+      Use proper print form=
+at/casting when converting msg_channel handle</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+      Reduce initialisation spam from verb &lt;=
+=3D 3 and print summary instead</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+      Dynamic tls-crypt for secure soft_reset/session renegotia=
+tion</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      Set netli=
+nk socket to be non-blocking</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+      Ensure n =3D 2 is set in key2 struct in tls_crypt_v2_unwrap_=
+client_key</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      Fix=
+ memory leaks in open_tun_dco()</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+      Fix memory leaks in HMAC initial packet generation</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+      Use key_state instea=
+d of multi for tls_send_payload parameter</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+      Make sending plain text control message session=
+ aware</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      Only up=
+date frame calculation if we have a valid link sockets</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+      Improve description of compat-mode=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      Simplify --co=
+mpress parsing in options.c</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+      Refuse connection if server pushes an option contradicting al=
+low-compress</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      A=
+dd &#39;allow-compression stub-only&#39; internally for DCO</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+      Parse compression options and=
+ bail out when compression is disabled</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+      Remove unused variable line</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+      Add Apache2 linking with for new co=
+mmits</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      Fix comp=
+ile error on TARGET_ANDROID</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+      Fix use-after-free with EVP_CIPHER_free</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+      Remove key_type argument from gener=
+ate_key_random</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
+ add basic CMake based build</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+      Avoid unused function warning/error on FreeBSD (and potienti=
+ally others)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      D=
+o not blindly assume python3 is also the interpreter that runs rst2html</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+      Only add -Wno-str=
+ingop-truncation on supported compilers</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+      fix warning with gcc 12.2.0 (compiler bug?)</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+      Fix CR_RESPONSE man=
+gaement message using wrong key_id</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+      Print a more user-friendly error when tls-crypt-v2 cli=
+ent auth fails</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
+ Ignore Ipv6 route delete request on Android and set ipv4 verbosity to 7</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+      Mock openvpn_exe=
+ce on win32 also for test_tls_crypt</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+      Check if the -wrap argument is actually supported by =
+the platform&#39;s ld</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+      Revert commit 423ced962d</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+      Implement using --peer-fingerprint without CA certificat=
+es</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      show extra =
+info for OpenSSL errors</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+      Remove ability to use configurations without TLS by default</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+      Add warning for the=
+ --show-groups command that some groups are missing</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+      Print peer temporary key details</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+      Add warning if a=
+ p2p NCP client connects to a p2mp server</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+      Remove openssl engine method for loading the ke=
+y</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      Add undefine=
+d and abort on error to clang sanitize builds</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+      Add --enable-werror to all platforms in Git=
+hub Actions</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      Re=
+move saving initial frame code</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+      Double check that we do not use a freed buffer when freein=
+g a session</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      Fi=
+x using to_link buffer after freed</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+      Remove CMake custom compiler flags for RELEASE and DEB=
+UG build</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      Do no=
+t check key_state buffers that are in S_UNDEF state</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+      Remove unused function prototype cr=
+ypto_adjust_frame_parameters</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+      Introduce report_command_status helper function</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+      Log SSL alerts more promin=
+ently</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      Remove u=
+nused/unneeded/add missing defines from configure/cmake</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+      Document tls-exit option mainly a=
+s test option</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
+Remove dead remains of extract_x509_field_test</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+      Replace character_class_debug with proper =
+unit test</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      Remo=
+ve TEST_GET_DEFAULT_GATEWAY as it duplicates --show-gateway</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+      Fix check_session_buf_not_use=
+d using wrong index</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+      Add missing check for nl_socket_alloc failure</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+      Add check for nice in cmake config<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+      Minimal Solari=
+s/OpenIndiana support to Cmake and clean up -Werror</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+      Remove compat versionhelpers.h and =
+remove cmake/configure check for it</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+      Rename state_change to continue_tls_process</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+      Move tls_get_cipher_nam=
+e_pair and get_num_elements to ssl_utils.c</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+      Fix building mbed TLS with CMake and allow spe=
+cifying custom directories</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+      Extend the error message when TLS 1.0 PRF fails</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+      Fix unaligned access in macO=
+S, FreeBSD, Solaris hwaddr</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+      Check PRF availability on initialisation and add --force-tls-k=
+ey-material-export</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+     Make it more explicit and visible when pkg-config is not found</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+      Clarify that the tls-=
+crypt-v2-verify has a very limited env set</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+      Move get_tmp_dir to win32-util.c and error out=
+ on failure</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      Im=
+plement the --tls-export-cert feature</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+      Use mingw compile definition also to unit tests</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+      Add test_ssl unit=
+ test and test export of PEM to file</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+      Remove conditional text for Apache2 linking exceptio=
+n</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      Fix ssl unit=
+ tests on OpenSSL 1.0.2</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+      Ensure that all unit tests use unbuffered stdout and stderr</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+      Allow unit tests to=
+ fall back to hard coded location</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+      Add unit test for encrypting/decrypting data channel</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+      Print SSL peer s=
+ignature information in handshake debug details</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+      Implement generating TLS 1.0 PRF using ne=
+w OpenSSL 3.0 APIs</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+     Turn dead list test code into unit test</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+      Use snprintf instead of sprintf for get_ssl_=
+library_version</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+  Fix snprintf/swnprintf related compiler warnings</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+      Add bracket in fingerprint message and=
+ do not warn about missing verification</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+      Match ifdef for get_sigtype function with if ifde=
+f of caller</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      Re=
+move/combine redundant call of EVP_CipherInit before EVP_CipherInit_Ex</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+      Add missing EVP_KD=
+F_CTX_free in ssl_tls1_PRF</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+      Replace macos11 with macos14 in github runners</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+      Remove openvpn_snprintf and s=
+imilar functions</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+   Repeat the unknown command in errors from management interface</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+      Only run coverity scan =
+in OpenVPN/OpenVPN repository</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+      Support OpenBSD with cmake</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+      Workaround issue in LibreSSL crashing when enu=
+merating digests/ciphers</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+      Remove OpenSSL 1.0.2 support</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+      Remove custom TLS 1.0 PRF implementation only use=
+d by LibreSSL/wolfSSL</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+      Allow the TLS session to send out TLS alerts</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+      Properly handle null bytes and inva=
+lid characters in control messages</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+      Allow trailing \r and \n in control channel message</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+      Add Ubuntu 24.04=
+ runner to Github Actions</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+      Implement support for AEAD tag at the end</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+      Remove check for anonymous unions f=
+rom configure and cmake config</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+      Make read/write_tun_header static</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+      Avoid SIGUSR1 to SIGHUP remapping when=
+ the configuration is read from stdin</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+      Move to common backend_driver type in struct tuntap=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      Introduce DRI=
+VER_AFUNIX backend for use with lwipovpn</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+      Change dev null to be a driver type instead of a=
+ special mode of tun/tap</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+      Use print_tun_backend_driver instead of custom code to print typ=
+e</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      Automaticall=
+y enable ifconfig-exec/route-exec behaviour for afunix tun/tap</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+      Ensure that the AF_UNIX so=
+cket pair has at least 65k of buffer space</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+      Fix check for CMake not detecting struct cmsg<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+      Remove null ch=
+eck after checking for checking for did_open_tun</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+      Remove a large number of unused structs =
+and functions</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
+Remove unused methods write_key/read_key</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+      Refuse clients if username or password is longer=
+ than USER_PASS_LEN</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+      Move should_trigger_renegotiation into its own function</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+      Change --reneg-bytes and --=
+reneg-packets to 64 bit counters</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+      Use XOR instead of concatenation for calculation of IV f=
+rom implicit IV</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+  Trigger renegotiation of data key if getting close to the AEAD usage limi=
+t</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      Implement HK=
+DF expand function based on RFC 8446</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+      Split init_key_ctx_bi into send/recv init</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+      Move initialisation of i=
+mplicit IVs to init_key_ctx_bi methods</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+      Change internal id of packet id to uint64</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+      Add small unit test fo=
+r buf_chomp</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      Ad=
+d building/testing with msbuild and the clang compiler</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+      Ensure that Python3 is available</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+      Change API of i=
+nit_key_ctx to use struct key_parameters</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+      Allow DEFAULT in data-ciphers and report both ex=
+panded and user set option</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+      Do not attempt to decrypt packets anymore after 2**36 failed d=
+ecryptions</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      Add=
+ methods to read/write packet ids for epoch data</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+      Implement methods to generate and manage=
+ OpenVPN Epoch keys</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+      Rename aead-tag-at-end to aead-epoch</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+      Improve peer fingerprint documentation</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+      Remove comparing user=
+name to NULL in tls_lock_username</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+      Print warnings/errors when numerical parameters cannot =
+be parsed</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      Add =
+unit tests for atoi parsing options helper</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+      Improve error reporting from AF_UNIX tun/tap s=
+upport</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      Fix typ=
+o in positive_atoi</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+     Fix oversight of link socket code change in Android code path</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+      Implement epoch key da=
+ta format</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      Exte=
+nd the unit test for data channel packets with aead limit tests</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+      Add (fake) Android cmake =
+building</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      Add a=
+ndroid build to Github Actions</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+      Reconnect when TCP is on use on network-change management =
+command</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      Implem=
+ent override-username</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+      Fix incorrect condition for checking password related check</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+      Directly use _countof=
+ in array initialisation</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+      Improve documentation for override-username</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+      Mention address if not unspecific =
+on DNS failure</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
+ Do not leave half-initialised key wrap struct when dynamic tls-crypt fails=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      Allow tls-cry=
+pt-v2 to be setup only on initial packet of a session</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+      Use SSL_get0_peer_signature_name in=
+stead of SSL_get_peer_signature_nid</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+      Use USER_PASS_LEN instead of TLS_USERNAME_LEN for ove=
+rride-username</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
+ Also print key agreement when printing negotiated details</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+      Fix mbed TLS key exporter func=
+tionality in 3.6.x and cmake</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+      Make --dh none behaviour default if not specified</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+Ben Boeckel (1):</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+      console_systemd: remove the timeout when using=
+ &#39;systemd-ask-password&#39;</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+Christo=
+ph Schug (1):</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
+Update documentation references in systemd unit files</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+Corubba Smith (3):</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+      Support IPv6 towards port-share proxy receiver</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+      Document x509-username=
+-fields oid usage</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+    Remove x509-username-fields uppercasing</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+David Sommerseth (4):</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+      ssl_verify: Fix memleak if creating deferred auth control file=
+s fails</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      ntlm: =
+Clarify details on NTLM phase 3 decoding</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+      Remove --tls-export-cert</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+      Remove superfluous x509_write_pem()=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+Franco Fichtner (1):</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+      Allow to set ifmode for existin=
+g DCO interfaces in FreeBSD</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+Frank Licht=
+enheld (174):</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
+options.c: fix format security error when compiling without optimization</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+      options.c: updat=
+e usage description of --cipher</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+      Update copyright year to 2023</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+      xkey_pkcs11h_sign: fix dangling pointer</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+      options: Always=
+ define options-&gt;management_flags</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+      check_engine_keys: make pass with OpenSSL 3</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+      documentation: update =
+&#39;unsupported options&#39; section</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+      Changes.rst: document removal of --keysize</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+      Windows: fix unused fu=
+nction setenv_foreign_option</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+      Windows: fix unused variables in delete_route_ipv6</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+      Windows: fix wrong prin=
+tf format in x_check_status</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+      Windows: fix unused variable in win32_get_arch</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+      configure: enable DCO by def=
+ault on FreeBSD/Linux</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+      Windows: fix signedness errors with recv/send</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+      configure: fix formatting of --disa=
+ble-lz4 and --enable-comp-stub</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+      tests/unit_tests: Fix &#39;make distcheck&#39; with subdir=
+-objects enabled</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+   GHA: remove Ubuntu 18.04 builds</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+      vcpkg: request &quot;tools&quot; feature of openssl fo=
+r MSVC build</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      D=
+o not include net/in_systm.h</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+      version.sh: remove</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+      doc: run rst2* with --strict to catch warnings</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+      man page: Remove cruft=
+ from --topology documentation</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+      tests: do not include t_client.sh in dist</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+      vcpkg-ports/pkcs11-helper: Mak=
+e compatible with mingw build</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+      vcpkg-ports/pkcs11-helper: Convert CONTROL to vcpkg.json</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+      vcpkg-ports/pkcs=
+11-helper: reference upstream PRs in patches</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+      dco_linux: properly close dco version file</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+      DCO: fix memory=
+ leak in dco_get_peer_stats_multi for Linux</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+      Fix two unused assignments</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+      sample-plugins: Fix memleak in c=
+lient-connect example plugin</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+      tests: Allow to override openvpn binary used</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+      test_buffer: add tests for bu=
+f_catrunc and its caller format_hex_ex</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+      buffer: use memcpy in buf_catrunc</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+      options: remove --key-method f=
+rom usage message</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+    msvc-generate: include version.m4.in in tarball</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+      dist: add more missing files only u=
+sed in the MSVC build</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+      vcpkg-ports/pkcs11-helper: rename patches to make file names shorte=
+r</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      unit_tests: =
+Add missing cert_data.h to source list for unit tests</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+      dist: Include all documentation in =
+distribution</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      C=
+Make: Add complete MinGW and MSVC build</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+      Remove all traces of the previous MSVC build syst=
+em</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      CMake: Add =
+/Brepro to MSVC link options</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+      GHA: update to run-vcpkg@...2735...</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+      test_tls_crypt: Improve mock() usage t=
+o be more portable</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+     CMake: Throw a clear error when config.h in top-level source directory=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      CMake: Suppor=
+t doc builds on Windows machines that do not have .py file association</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+      Remove old Travis =
+CI related files</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+   README.cmake.md: Add new documentation for CMake buildsystem</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+      GHA: refactor mingw UTs a=
+nd add missing tls_crypt</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+      GHA: Add macos-13</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+      options: Do not hide variables from parent scope</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+      pkcs11_openssl: Disable u=
+nused code</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      rou=
+te: Fix overriding return value of add_route3</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+      CMake: various small non-functional improve=
+ments</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      GHA: do =
+not trigger builds in openvpn-build anymore</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+      Remove --no-replay option</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+      GHA: new workflow to submit scan =
+to Coverity Scan service</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+      doc: fix argument name in --route-delay documentation</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+      Change type of frame.mss=
+_fix to uint16_t</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+   Remove last uses of inet_ntoa</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+      mss/mtu: make all size calculations use size_t</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+      dev-tools/gerrit-send-m=
+ail.py: tool to send Gerrit patchsets to Patchwork</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+      gerrit-send-mail.py: Add patch version=
+ to subject</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      Ad=
+d mbedtls3 GHA build</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++      platform.c: Do not depend Windows build on HAVE_CHDIR</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+      sample-keys: renew for the n=
+ext 10 years</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      G=
+HA: clean up libressl builds with newer libressl</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+      configure.ac: Remove unused AC_TYPE_SIGN=
+AL macro</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      docum=
+entation: remove reference to removed option --show-proxy-settings</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+      unit_tests: remove inc=
+ludes for mock_msg.h</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++      buffer: add documentation for string_mod and extend related UT</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+      tests: disable auto=
+make serial_tests</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+    documentation: improve documentation of --x509-track</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+      configure: allow to disable NTLM=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      configure: en=
+able silent rules by default</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+      misc: make get_auth_challenge static</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+      Remove support for NTLM v1 proxy au=
+thentication</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      G=
+HA: increase verbosity for make check</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+      NTLM: add length check to add_security_buffer</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+      NTLM: increase size=
+ of phase 2 response we can handle</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+      Fix various &#39;Uninitialized scalar variable&#39; wa=
+rnings from Coverity</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++      proxy-options.rst: Add proper documentation for --http-proxy-user-pa=
+ss</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      NTLM: when =
+NTLMv1 is requested, try NTLMv2 instead</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+      buf_string_match_head_str: Fix Coverity issue &#3=
+9;Unsigned compared against 0&#39;</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+      --http-proxy-user-pass: allow to specify in either ord=
+er with --http-proxy</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++      test_user_pass: new UT for get_user_pass</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+      test_user_pass: Add UTs for character fil=
+tering</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      gerrit-=
+send-mail: Make output consistent across systems</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+      README.cmake.md: Document minimum requir=
+ed CMake version for --preset</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+      documentation: Update and fix documentation for --push-peer=
+-info</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      document=
+ation: Fixes for previous fixes to --push-peer-info</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+      test_user_pass: add basic tests for=
+ static/dynamic challenges</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+      Fix typo --data-cipher-fallback</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+      samples: Remove tls-*.conf</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+      check_compression_settings_vali=
+d: Do not test for LZ4 in LZO check</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+      t_client.sh: Allow to skip tests</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+      gerrit-send-mail: add missing Sign=
+ed-off-by</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      Upda=
+te Copyright statements to 2024</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+      GHA: general update March 2024</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+      samples: Update sample configurations</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+      documentation: m=
+ake section levels consistent</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+      phase2_tcp_server: fix Coverity issue &#39;Dereference afte=
+r null check&#39;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+    script-options.rst: Update ifconfig_* variables</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+      crypto_backend: fix type of enc par=
+ameter</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      tests: =
+fork default automake test-driver</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+      forked-test-driver: Show test output always</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+      Change default of &quot;t=
+opology&quot; to &quot;subnet&quot;</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+      Use topology default of &quot;subnet&quot; only for s=
+erver mode</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      Fix=
+ &#39;binary or&#39; vs &#39;boolean or&#39; related to server_bridge_proxy=
+_dhcp</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      configur=
+e: update old copy of pkg.m4</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+      LZO: do not use lzoutils.h macros</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+      test_user_pass: Fix building with --enab=
+le-systemd</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      Rem=
+ove &quot;experimental&quot; denotation for --fast-io</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+      t_server_null.sh: Fix failure case<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+      configure: Add=
+ -Wstrict-prototypes and -Wold-style-definition</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+      configure: Try to detect LZO with pkg-con=
+fig</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      configure:=
+ Switch to C11 by default</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+      Fix missing spaces in various messages</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+      console_systemd: rename query_user_exe=
+c to query_user_systemd</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+      configure: Allow to detect git checkout if .git is not a director=
+y</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      GHA: Configu=
+re Renovate</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      co=
+nfigure: Try to use pkg-config to detect mbedTLS</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+      tun: use is_tun_p2p more consistently</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+      Various fixes fo=
+r -Wconversion errors</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+      generate_auth_token: simplify code</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+      GHA: Update dependency Mbed-TLS/mbedtls to v3.=
+6.1</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      GHA: Enabl=
+e t_server_null tests</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+      configure: Handle libnl-genl and libcap-ng consistent with other li=
+bs</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      configure: =
+Review use of standard AC macros</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+      socket: Change return types of link_socket_write* to ssi=
+ze_t</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      GHA: Pin =
+dependencies</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      G=
+HA: Update macOS runners</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+      GHA: Simplify macOS builds</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+      Remove support for compression on send</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+      Fix wrong doxygen comments=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      Various typo =
+fixes</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      macOS: A=
+ssume that net/if_utun.h is always present</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+      Fix some formatting related to if/else and mac=
+ros</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      Fix memory=
+ leak in ntlm_support</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+      forward: Fix potential unaligned access in drop_if_recursive_routin=
+g</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      GHA: General=
+ update December 2024</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+      Review doxygen warnings</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+      Regenerate doxygen config file with doxygen -u</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+      Fix &#39;uninitialized p=
+ointer read&#39; in openvpn_decrypt_aead</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+      ssl_openssl: Clean up unused functions and add m=
+issing &quot;static&quot;</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+      Fix some trivial sign-compare compiler warnings</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+      tls_crypt_v2_write_client_key=
+_file: Fix missing-field-initializers compiler warning</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+      openvpnserv: Fix some inconsistent=
+ usages of TEXT()</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+    Fix doxygen warnings in crypto_epoch.h</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+      GHA: Drop Ubuntu 20.04 and other maintenance</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+      GHA: Publish Do=
+xygen documentation to Github Pages</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+      Add more &#39;intentional fallthrough&#39; comments</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+      Remove various =
+unused function parameters</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+      Remove unused function check_subnet_conflict</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+      options: Cleanup and simplify o=
+ptions_postprocess_verify_ce</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+      Apply text-removal.sh script to Windows codebase</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+      openvpnserv: Clean up use=
+ of TEXT() from DNS patches</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+      Post tchar.h removal cleanup</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+      Fix compatibility with mbedTLS 2.28.10+ and 3.=
+6.3+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      t_server_=
+null_default.rc: Add some tests with --data-ciphers</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+      GHA: Pin version of CMake for all b=
+uilds</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      GHA: Dep=
+endency and Actions update April 2025</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+      GHA: Make sure renovate notifies us about AWS LC re=
+leases</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      Doxygen=
+: Fix obsolete links to OpenSSL documentation</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+      GHA: Use CMake 4.0 and apply required fixes=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      Doxygen: Clea=
+n up tls-crypt documentation</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+      Doxygen: Remove useless Python information</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+      Manually reformat some long tra=
+iling comments</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
+ CMake: Make sure to treat UNIT_TEST_SOURCEDIR as path</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+      CMake: Sync list of compiler flags=
+ with configure.ac</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+     CMake: Reorganize header and symbol tests</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+      GHA: Dependency and Actions update May 202=
+5</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      Doxygen: Fix=
+ missing parameter warnings</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+      Changes.rst: Collect, fix, and improve entries for 2.7 releas=
+e</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+George Pchelkin (1):</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+      fix typo: dhcp-options to dhcp=
+-option in vpn-network-options.rst</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+Gert=
+ Doering (21):</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
+ Change version.m4 to 2.7_git</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+      bandaid fix for TCP multipoint server crash with Linux-DCO<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+      Undo FreeBSD 1=
+2.x workaround on IPv6 ifconfig for 12.4 and up</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+      Reduce logspam about &#39;dco_update_keys=
+: peer_id=3D-1&#39; in p2p server mode</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+      Fix OVPN_DEL_PEER_REASON_TRANSPORT_DISCONNECT brea=
+kage on FreeBSD+DCO</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+      Repair special-casing of EEXIST for Linux/SITNL route install</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+      Get rid of unused &#3=
+9;bool tuntap_buffer&#39; arguments.</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+      FreeBSD 12.x workaround for IPv6 ifconfig is needed =
+on 12.4 as well</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+  Make received OCC exit messages more visible in log.</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+      OpenBSD: repair --show-gateway</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+      get_default_gatew=
+ay() HWADDR overhaul</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++      make t_server_null &#39;server alive?&#39; check more robust</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+      t_client.sh: conditio=
+nally skip ifconfig+route check</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+      send uname() release as IV_PLAT_VER=3D on non-windows ver=
+sions</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      options:=
+ add IPv4 support to &#39;--show-gateway &lt;arg&gt;&#39;</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+      get_default_gateway(): implemen=
+t platform support for Linux/SITNL</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+      get_default_gateway(): implement platform support for =
+Linux/IPROUTE2</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
+ add missing (void) to win32 function declarations</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+      add more (void) to windows specific fu=
+nction prototypes and declarations</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+      Make &#39;lport 0&#39; no longer sufficient to do &#39=
+;--bind&#39;.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
+Add information-gathering about DNS resolvers configured to t_client.sh(.in=
+)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+Gianmarco De Gregori (17):</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+      Persist-key: enable pers=
+ist-key option by default</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+      Minor fix to process_ip_header</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+      Http-proxy: fix bug preventing proxy credentia=
+ls caching</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      Ens=
+ures all params are ready before invoking dco_set_peer()</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+      Route: remove incorrect routes o=
+n exit</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      Fix for=
+ msbuild/mingw GHA failures</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+      multiproto: move generic event handling code in dedicated fil=
+es</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      Fix PASS_BY=
+_VALUE issue in options_postprocess_mutate_le()</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+      mroute: adapt to new protocol handling an=
+d hashing improvements</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+      mroute/management: repair mgmt client-kill for mroute with proto</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+      Add support for=
+ simultaneous use of UDP and TCP sockets</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+      Rename occurences of &#39;struct link_socket&#39=
+; from &#39;ls&#39; to &#39;sock&#39;</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+      Fix FreeBSD-DCO and Multisocket interaction</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+      manpage: fix HTML for=
+mat for --local</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+  Fix dco_win and multisocket interaction</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+      dco_linux: Introduce new uAPIs</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+      Explicit-exit-notify and multi=
+socket interaction</span><br><span style=3D"color: hsl(120, 100%, 40%);">+<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+Heiko Hund (21):</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+      dns option: allow=
+ up to eight addresses per server</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+      work around false positive warning with mingw 12</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+      dns option: remove s=
+upport for exclude-domains</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+      cmake: create and link compile_commands.json file</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+      cmake: symlink whole build=
+ dir not just .json file</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+      Windows: enforce &#39;block-local&#39; with WFP filters</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+      add and send IV_PROTO_=
+DNS_OPTION_V2 flag</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+     dns: store IPv4 addresses in network byte order</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+      dns: clone options via pointer inst=
+ead of copy</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      se=
+rvice: add utf8to16 function that takes a size</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+      dns: support multiple domains without DHCP=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      dns: do not u=
+se netsh to set name server addresses</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+      win: calculate address string buffer size</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+      win: implement --dns op=
+tion support with NRPT</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+      dns: apply settings via script on unixoid systems</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+      fix typo in haikuos dns-updown=
+ script</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      dns: s=
+upport running up/down command with privsep</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+      dns: don&#39;t publish env vars to non-dns sc=
+ripts</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      dns: fix=
+ potential NULL pointer dereference</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+      win: match search domains when creating exclude rules=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      win: fix coll=
+ecting DNS exclude data</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+Heiko Wundram (=
+1):</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      Implement =
+Windows CA template match for Crypto-API selector</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+Ilia Shipitsin (3):</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+      src/openvpn/init.c: handle strdup failures</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+      sample/sample-plugins/defer/m=
+ulti-auth.c: handle strdup errors</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+      tests/unit_tests/openvpn/test_auth_token.c: handle strd=
+up errors</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+Ilya Shipitsin (1):</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+      src/openvpn/dco_freebsd=
+.c: handle malloc failure</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+Juliusz Sosin=
+owicz (1):</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      Cha=
+nge include order for tests</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+Klemens Nan=
+ni (1):</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      Fix tm=
+p-dir documentation</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+Kristof Provost (10=
+):</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      Read DCO tr=
+affic stats from the kernel</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+      dco: Update counters when a client disconnects</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+      Read the peer deletion reaso=
+n from the kernel</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+    dco: cleanup FreeBSD dco_do_read()</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+      options.c: enforce a minimal fragment size</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+      configure: improve Fr=
+eeBSD DCO check</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+  dco: define OVPN_DEL_PEER_REASON_TRANSPORT_DISCONNECT on FreeBSD</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+      dco: print FreeBSD ver=
+sion</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      DCO: supp=
+ort key rotation notifications</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+      dco-freebsd: dynamically re-allocate buffer if it&#39;s to=
+o small</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+Lev Stipakov (63):</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+      Rename dco_get_peer_stats =
+to dco_get_peer_stats_multi</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+      management: add timer to output BYTECOUNT</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+      Introduce dco_get_peer_stats API =
+and Windows implementation</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+      git-version.py: proper support for tags</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+      msvc: upgrade to Visual Studio 2022=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      tun: move pri=
+nt_windows_driver() out of tun.h</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+      openvpnmsica: remove dco installer custom actions</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+      openvpnmsica: remove=
+ unused declarations</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++      openvpnmsica: fix adapters discovery logic for DCO</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+      Allow certain DHCP options to b=
+e used without DHCP server</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+      dco-win: use proper calling convention on x86</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+      Improve format specifier for s=
+ocket handle in Windows</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+      Disable DCO if proxy is set via management</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+      Add logging for windows driver sele=
+ction process</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
+Avoid management log loop with verb &gt;=3D 6</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+      Support --inactive option for DCO</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+      Fix &#39;--inactive &lt=
+;time&gt; 0&#39; behavior for DCO</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+      Print DCO client stats on SIGUSR2</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+      Don&#39;t overwrite socket flags wh=
+en using DCO on Windows</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+      Support of DNS domain for DHCP-less drivers</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+      dco-win: support for --dev-node</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+      tapctl: generate =
+driver-specific adapter names</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+      openvpnmsica: link C runtime statically</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+      tun.c: enclose DNS domain in sing=
+le quotes in WMIC call</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+      manage.c: document missing KID parameter</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+      Set WINS servers via interactice servic=
+e</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      CMake: fix b=
+roken daemonization and syslog functionality</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+      Warn user if INFO control command is too lon=
+g</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      CMake: fix H=
+AVE_DAEMON detection on Linux</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+      dco-win: get driver version</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+      dco: warn if DATA_V1 packets are sent to user=
+space</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      config.h=
+: fix incorrect defines for _wopen()</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+      Make --dns options apply for tap-windows6 driver</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+      Warn if pushed op=
+tions require DHCP</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+     tun.c: don&#39;t attempt to delete DNS and WINS servers if they&#39;re=
+ not set</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      win32=
+: Enforce loading of plugins from a trusted directory</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+      interactive.c: disable remote acces=
+s to the service pipe</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+      interactive.c: Fix potential stack overflow issue</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+      Disable DCO if proxy is set via=
+ management</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      mi=
+sc.c: remove unused code</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+      interactive.c: Improve access control for gui&lt;-&gt;service pi=
+pe</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      Use a more =
+robust way to get dco-win version</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+      dco: better naming for function parameters</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+      repair DNS address option<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+      dco-win: facto=
+r out getting dco version</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+      dco-win: enable mode server on supported configuration</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+      dco-win: simplify do_c=
+lose_link_socket()</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+     route.c: change the signature of get_default_gateway()</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+      route.c: improve get_default_=
+gateway() logic on Windows</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+      mudp.c: keep offset value when resetting buffer</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+      multi.c: add iroutes after d=
+co peer is added</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+   dco-win: disable dco in server mode if multiple --local options defined<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+      dco-win: multi=
+peer support</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      d=
+co-win: simplify control packets prepend code</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+      dco-win: kernel notifications</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+      dco-win: support for iroute=
+s</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      dco-win: Fix=
+ crash when cancelling pending operation</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+      Remove UINT8_MAX definition</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+      win: allow OpenVPN service account=
+ to use any command-line options</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+      ssl_openssl.c: Prevent potential double-free</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+      win: refactor get_windows=
+_version()</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      win=
+: create adapter on demand</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+      win: remove Wintun support</span><br><span style=3D"color: hsl=
 (120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+Marco Baffo (3):</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-    tun: removed unnecessary route installations</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+      IPv6 MADDR LOG: Wrap IPv6 addresses in s=
-quare brackets and print port when the port is specified</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+      get_default_gateway(): Prevent p=
-assing IPV4_INVALID_ADDR as a destination</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+Martin Rys (1):</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-     openvpn-[client|server].service: Remove syslog.target</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+Matthias Andree (1):</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+      make dist: Ship ovpn_dco_freebsd.h, too</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+Max Fillinger (10):</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+      Correct tls-crypt-v2 metadata length in m=
-an page</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      Fix me=
-ssage for too long tls-crypt-v2 metadata</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+      Add support for mbedtls 3.X.Y</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+      Update README.mbedtls</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+      Disable TLS 1.3 support =
-with mbed TLS</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
-Enable key export with mbed TLS 3.x.y</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+      Remove license warning from README.mbedtls</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+      mbedtls: Remove suppor=
-t for old TLS versions</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+      mbedtls: Warn if --tls-version-min is too low</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+      Remove HAVE_EXPORT_KEYING_MATERIAL=
- macro</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+Michael Baentsch (1):</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+      using OpenSSL3 API for E=
-VP PKEY type name reporting</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+Michael Nix=
- (1):</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      fix typo=
- in help text: --ignore-unknown-option</span><br><span style=3D"color: hsl(=
++Marc Becker (5):</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+    unify code path for adding PKCS#11 providers</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+      use new pkcs11-helper interface to add p=
+roviders</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      speci=
+al handling for PKCS11 providers on win32</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+      vcpkg-ports/pkcs11-helper: support loader flags=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      vcpkg-ports/p=
+kcs11-helper: bump to version 1.30</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+Marc=
+o Baffo (3):</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      t=
+un: removed unnecessary route installations</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+      IPv6 MADDR LOG: Wrap IPv6 addresses in square=
+ brackets and print port when the port is specified</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+      get_default_gateway(): Prevent pass=
+ing IPV4_INVALID_ADDR as a destination</span><br><span style=3D"color: hsl(=
 120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-Qingfang Deng (1):</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-     dco: fix source IP selection when multihome</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+Ralf Lici (3):</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+      Fix check_addr_clash argument order</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+      Handle missing DCO peer by restarting the =
-session</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      Implem=
-ent ovpn version detection</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+Reynir Bj=C3=
+Martin Rys (1):</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+  openvpn-[client|server].service: Remove syslog.target</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+Matthias Andree (1):</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+      make dist: Ship ovpn_dco_freebsd.h, too</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+Max Fillinger (10):</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+      Correct tls-crypt-v2 metadata length in man =
+page</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      Fix messa=
+ge for too long tls-crypt-v2 metadata</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+      Add support for mbedtls 3.X.Y</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+      Update README.mbedtls</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+      Disable TLS 1.3 support wit=
+h mbed TLS</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      Ena=
+ble key export with mbed TLS 3.x.y</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+      Remove license warning from README.mbedtls</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+      mbedtls: Remove support f=
+or old TLS versions</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+      mbedtls: Warn if --tls-version-min is too low</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+      Remove HAVE_EXPORT_KEYING_MATERIAL =
+macro</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+Michael Baentsch (1):</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+      using OpenSSL3 API for EV=
+P PKEY type name reporting</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+Michael Nix =
+(1):</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      fix typo =
+in help text: --ignore-unknown-option</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+Q=
+ingfang Deng (1):</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+    dco: fix source IP selection when multihome</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+Ralf Lici (3):</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+      Fix check_addr_clash argument order</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+      Handle missing DCO peer by restarting the s=
+ession</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      Impleme=
+nt ovpn version detection</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+Reynir Bj=C3=
 =B6rnsson (2):</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
  protocol_dump: tls-crypt support</span><br><span style=3D"color: hsl(120, =
 100%, 40%);">+      Only schedule_exit() once</span><br><span style=3D"colo=
@@ -2743,8 +2741,8 @@ ts.sourceforge.net&gt; </div>
 gt; </div>
 <div style=3D"display:none"> Gerrit-CC: stipa &lt;lstipakov@...277...&gt; <=
 /div>
-<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
+<div style=3D"display:none"> Gerrit-MessageType: merged </div>
 
 
---pDpIYkokpDM=--
+--jUhGGnpjsHQ=--
 
