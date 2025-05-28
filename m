@@ -1,16 +1,8 @@
-From: "flichtenheld (Code Review)" <gerrit@...515...>
-Date: Wed, 28 May 2025 08:52:05 +0000
-In-Reply-To: <gerrit.1748268615000.I80a14b77fcc2fabf51af9f2d5ea0c36362cccb91@...2715...>
-References: <gerrit.1748268615000.I80a14b77fcc2fabf51af9f2d5ea0c36362cccb91@...2715...>
-Reply-To: frank@...2641..., arne-openvpn@...1227..., selva.nair@...277...,
- openvpn-devel@lists.sourceforge.net, lstipakov@...277..., gert@...1296...
-Message-ID: <153d5bf0ceb38771ff12b4bdb554aac19b411d8f-EmailReviewComments-HTML@...2715...>
+From: Qingfang Deng <dqfext@...277...>
+Date: Wed, 28 May 2025 16:57:08 +0800
+Message-ID: <20250528085717.2964351-1-dqfext@...277...>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="ZMHeR6cK52E="; charset=UTF-8
-Subject: [Openvpn-devel] [M] Change in openvpn[master]: Changes.rst: Collect, fix,
- and improve entries for 2.7 release
+Subject: [Openvpn-devel] [PATCH ovpn-net-next] ovpn: pktid: use bitops.h API
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,121 +11,79 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Cc: selvanair <selva.nair@...277...>, stipa <lstipakov@...277...>, plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
+Cc: Antonio Quartulli <antonio@...515...>
 
---ZMHeR6cK52E=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Use bitops.h for replay window to simplify code.
 
-Attention is currently required from: cron2, plaisthos, selvanair, stipa.
+Signed-off-by: Qingfang Deng <dqfext@...277...>
+---
+ drivers/net/ovpn/pktid.c | 11 ++++-------
+ drivers/net/ovpn/pktid.h |  2 +-
+ 2 files changed, 5 insertions(+), 8 deletions(-)
 
-flichtenheld has posted comments on this change. ( http://gerrit.openvpn.ne=
-t/c/openvpn/+/1032?usp=3Demail )
+diff --git a/drivers/net/ovpn/pktid.c b/drivers/net/ovpn/pktid.c
+index 2f29049897e3..f1c243b84463 100644
+--- a/drivers/net/ovpn/pktid.c
++++ b/drivers/net/ovpn/pktid.c
+@@ -65,7 +65,7 @@ int ovpn_pktid_recv(struct ovpn_pktid_recv *pr, u32 pkt_id, u32 pkt_time)
+ 	if (likely(pkt_id == pr->id + 1)) {
+ 		/* well-formed ID sequence (incremented by 1) */
+ 		pr->base = REPLAY_INDEX(pr->base, -1);
+-		pr->history[pr->base / 8] |= (1 << (pr->base % 8));
++		__set_bit(pr->base, pr->history);
+ 		if (pr->extent < REPLAY_WINDOW_SIZE)
+ 			++pr->extent;
+ 		pr->id = pkt_id;
+@@ -77,14 +77,14 @@ int ovpn_pktid_recv(struct ovpn_pktid_recv *pr, u32 pkt_id, u32 pkt_time)
+ 			unsigned int i;
+ 
+ 			pr->base = REPLAY_INDEX(pr->base, -delta);
+-			pr->history[pr->base / 8] |= (1 << (pr->base % 8));
++			__set_bit(pr->base, pr->history);
+ 			pr->extent += delta;
+ 			if (pr->extent > REPLAY_WINDOW_SIZE)
+ 				pr->extent = REPLAY_WINDOW_SIZE;
+ 			for (i = 1; i < delta; ++i) {
+ 				unsigned int newb = REPLAY_INDEX(pr->base, i);
+ 
+-				pr->history[newb / 8] &= ~BIT(newb % 8);
++				__clear_bit(newb, pr->history);
+ 			}
+ 		} else {
+ 			pr->base = 0;
+@@ -103,14 +103,11 @@ int ovpn_pktid_recv(struct ovpn_pktid_recv *pr, u32 pkt_id, u32 pkt_time)
+ 			if (pkt_id > pr->id_floor) {
+ 				const unsigned int ri = REPLAY_INDEX(pr->base,
+ 								     delta);
+-				u8 *p = &pr->history[ri / 8];
+-				const u8 mask = (1 << (ri % 8));
+ 
+-				if (*p & mask) {
++				if (__test_and_set_bit(ri, pr->history)) {
+ 					ret = -EINVAL;
+ 					goto out;
+ 				}
+-				*p |= mask;
+ 			} else {
+ 				ret = -EINVAL;
+ 				goto out;
+diff --git a/drivers/net/ovpn/pktid.h b/drivers/net/ovpn/pktid.h
+index 0262d026d15e..21845f353bc8 100644
+--- a/drivers/net/ovpn/pktid.h
++++ b/drivers/net/ovpn/pktid.h
+@@ -34,7 +34,7 @@ struct ovpn_pktid_xmit {
+  */
+ struct ovpn_pktid_recv {
+ 	/* "sliding window" bitmask of recent packet IDs received */
+-	u8 history[REPLAY_WINDOW_BYTES];
++	DECLARE_BITMAP(history, REPLAY_WINDOW_SIZE);
+ 	/* bit position of deque base in history */
+ 	unsigned int base;
+ 	/* extent (in bits) of deque in history */
+-- 
+2.43.0
 
-Change subject: Changes.rst: Collect, fix, and improve entries for 2.7 rele=
-ase
-......................................................................
-
-
-Patch Set 4:
-
-(1 comment)
-
-File Changes.rst:
-
-http://gerrit.openvpn.net/c/openvpn/+/1032/comment/667a62fd_cac5bd3a :
-PS4, Line 187:
-> New option --providers to load optional OpenSSL3 providers
-That one was backported to 2.6 as part of the OpenSSL 3 support, so it is n=
-ot actually new in 2.7.
-
-
-
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1032?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings
-
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: I80a14b77fcc2fabf51af9f2d5ea0c36362cccb91
-Gerrit-Change-Number: 1032
-Gerrit-PatchSet: 4
-Gerrit-Owner: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-CC: cron2 <gert@...1296...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-CC: selvanair <selva.nair@...277...>
-Gerrit-CC: stipa <lstipakov@...277...>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: cron2 <gert@...1296...>
-Gerrit-Attention: selvanair <selva.nair@...277...>
-Gerrit-Attention: stipa <lstipakov@...277...>
-Gerrit-Comment-Date: Wed, 28 May 2025 08:52:05 +0000
-Gerrit-HasComments: Yes
-Gerrit-Has-Labels: No
-Comment-In-Reply-To: selvanair <selva.nair@...277...>
-Gerrit-MessageType: comment
-
---ZMHeR6cK52E=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<p> Attention is currently required from: cron2, plaisthos, selvanair, stip=
-a. </p>
-<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1032?usp=3Demail">View =
-Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0;">=
-<li style=3D"margin: 0; padding: 0;"><p>File Changes.rst:</p><ul style=3D"l=
-ist-style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"=
-><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/op=
-envpn/+/1032/comment/667a62fd_cac5bd3a">Patch Set #4, Line 187:</a> <code s=
-tyle=3D"font-family:monospace,monospace"></code></p><p><blockquote style=3D=
-"border-left: 1px solid #aaa; margin: 10px 0; padding: 0 10px;">New option =
---providers to load optional OpenSSL3 providers</blockquote></p><p style=3D=
-"white-space: pre-wrap; word-wrap: break-word;">That one was backported to =
-2.6 as part of the OpenSSL 3 support, so it is not actually new in 2.7.</p>=
-</li></ul></li></ul><p>To view, visit <a href=3D"http://gerrit.openvpn.net/=
-c/openvpn/+/1032?usp=3Demail">change 1032</a>. To unsubscribe, or for help =
-writing mail filters, visit <a href=3D"http://gerrit.openvpn.net/settings">=
-settings</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage"=
-><div itemscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewActio=
-n"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/103=
-2?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div></di=
-v>
-
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I80a14b77fcc2fabf51af9f2d5ea=
-0c36362cccb91 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1032 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 4 </div>
-<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
-.&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: cron2 &lt;gert@...1296...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: selvanair &lt;selva.nair@...277...&=
-gt; </div>
-<div style=3D"display:none"> Gerrit-CC: stipa &lt;lstipakov@...277...&gt; <=
-/div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: cron2 &lt;gert@...1296...&gt=
-; </div>
-<div style=3D"display:none"> Gerrit-Attention: selvanair &lt;selva.nair@...493...=
-277...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: stipa &lt;lstipakov@...1663...=
-.&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Wed, 28 May 2025 08:52:05=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: No </div>
-<div style=3D"display:none"> Comment-In-Reply-To: selvanair &lt;selva.nair@=
-...277...&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
-
-
---ZMHeR6cK52E=--
 
