@@ -1,8 +1,16 @@
-Date: Fri, 30 May 2025 11:32:10 +0200
-From: Frank Lichtenheld <frank@...2641...>
-Message-ID: <aDl7GvNseOsYrQjS@...2685...>
+From: "cron2 (Code Review)" <gerrit@...515...>
+Date: Sat, 31 May 2025 20:35:24 +0000
+In-Reply-To: <gerrit.1748612098000.I3dfead8e60da93f223e3333db7b8e01ead01a856@...2715...>
+References: <gerrit.1748612098000.I3dfead8e60da93f223e3333db7b8e01ead01a856@...2715...>
+Reply-To: gert@...1296..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net, frank@...2641...
+Message-ID: <20ca4f3485d86e8d390efae6b28dba5db785f2c3-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] OpenVPN 2.7_alpha1 released
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="s5mA3vbAyq8="; charset=UTF-8
+Subject: [Openvpn-devel] [L] Change in openvpn[master]: Update copyright
+ statements to 2025
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -11,53 +19,87 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-To: openvpn-devel@lists.sourceforge.net, openvpn-users@lists.sourceforge.net, openvpn-announce@lists.sourceforge.net
+To: flichtenheld <frank@...2641...>
+Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-The OpenVPN community project team is proud to release OpenVPN 2.7_alpha1.
-This is the first Alpha release for the feature release 2.7.0.
-As the "Alpha" name implies this is an early release build, this is not intended
-for production use.
+--s5mA3vbAyq8=
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Highlights of this release include:
-* Multi-socket support for servers -- Handle multiple addresses/ports/protocols
-  within one server
-* Improved Client support for DNS options
-  * Client implementations for Linux/BSD, included with the default install
-  * New client implementation for Windows, adding support for features like split
-    DNS and DNSSEC
-* Architectural improvements on Windows
-  * The block-local flag is now enforced with WFP filters
-  * Windows network adapters are now generated on demand
-  * Windows automatic service now runs as an unprivileged user
-  * Support for server mode in win-dco driver
-  * Note: Support for the wintun driver has been removed.
-    win-dco is now the default, tap-windows6 is the fallback solution for
-    use-cases not covered by win-dco.
-* Improved data channel
-  * Enforcement of AES-GCM usage limit
-  * Epoch data keys and packet format
-* Support for new upstream DCO Linux kernel module
-  * This release supports the new ovpn DCO Linux kernel module which will be
-    available in future upstream Linux kernel releases. Backports of the new
-    module to current kernels are available via the ovpn-backports project.
+Attention is currently required from: flichtenheld, plaisthos.
 
-More details can be found in the Changes document:
+cron2 has posted comments on this change. ( http://gerrit.openvpn.net/c/ope=
+nvpn/+/1035?usp=3Demail )
 
-<https://github.com/OpenVPN/openvpn/blob/master/Changes.rst>
+Change subject: Update copyright statements to 2025
+......................................................................
 
-Source code and Windows installers can be downloaded from our download page:
 
-<https://openvpn.net/community-downloads/>
+Patch Set 1: Code-Review+2
 
-Packages for Debian, Ubuntu, Fedora, RHEL, and openSUSE are available in the various
-official Community repositories:
 
-<https://community.openvpn.net/Pages/OpenVPN%20software%20repos>
+--
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1035?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings
 
-Regards,
--- 
-  Frank Lichtenheld
+Gerrit-Project: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: I3dfead8e60da93f223e3333db7b8e01ead01a856
+Gerrit-Change-Number: 1035
+Gerrit-PatchSet: 1
+Gerrit-Owner: flichtenheld <frank@...2641...>
+Gerrit-Reviewer: cron2 <gert@...1296...>
+Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Attention: flichtenheld <frank@...2641...>
+Gerrit-Comment-Date: Sat, 31 May 2025 20:35:24 +0000
+Gerrit-HasComments: No
+Gerrit-Has-Labels: Yes
+Gerrit-MessageType: comment
+
+--s5mA3vbAyq8=
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<p> Attention is currently required from: flichtenheld, plaisthos. </p>
+<p>Patch set 1:<span style=3D"border-radius: 3px; display: inline-block; ma=
+rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1035?usp=3Demail">V=
+iew Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To vi=
+ew, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1035?usp=3Demail=
+">change 1035</a>. To unsubscribe, or for help writing mail filters, visit =
+<a href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemsc=
+ope itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"=
+action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" hr=
+ef=3D"http://gerrit.openvpn.net/c/openvpn/+/1035?usp=3Demail"/><meta itempr=
+op=3D"name" content=3D"View Change"/></div></div>
+
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I3dfead8e60da93f223e3333db7b=
+8e01ead01a856 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1035 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
+<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
+.&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
+ </div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
+.1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
+41...&gt; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Sat, 31 May 2025 20:35:24=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: No </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
+
+
+--s5mA3vbAyq8=--
 
