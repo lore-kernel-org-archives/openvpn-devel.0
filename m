@@ -1,10 +1,16 @@
-Date: Mon, 2 Jun 2025 17:30:27 +0200 (CEST)
-Message-Id: <202506021530.552FURqE073596@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <20250602152115.27130-1-gert@...1296...>
-References: <20250602152115.27130-1-gert@...1296...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Do not segfault on missing --dh
- in server config
+From: "cron2 (Code Review)" <gerrit@...515...>
+Date: Mon, 2 Jun 2025 15:30:42 +0000
+In-Reply-To: <gerrit.1748876308000.I0e13595c1057c680e1065eae84ca94b273ed9ca1@...2715...>
+References: <gerrit.1748876308000.I0e13595c1057c680e1065eae84ca94b273ed9ca1@...2715...>
+Reply-To: gert@...1296..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net, frank@...2641...
+Message-ID: <32a7a6ba8a8a2044a1b839c948397592409cee75-EmailReplacePatchSet-HTML@...2715...>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="y7M76AInvnI="; charset=UTF-8
+Subject: [Openvpn-devel] [XS] Change in openvpn[master]: Do not segfault on
+ missing --dh in server config
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,36 +19,122 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: Frank Lichtenheld <frank@...2641...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: flichtenheld <frank@...2641...>, plaisthos <arne-openvpn@...1227...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-Apologies.
+--y7M76AInvnI=
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-"The more trivial a patch looks, the more testing it warrants"...
+cron2 has uploaded a new patch set (#2) to the change originally created by=
+ flichtenheld. ( http://gerrit.openvpn.net/c/openvpn/+/1037?usp=3Demail )
 
-Now *this* patch is rather trivial, and *have* verified that it, indeed,
-makes a config "with no --dh in it" work with no segfault.
+The following approvals got outdated and were removed:
+Code-Review+2 by cron2
 
-Your patch has been applied to the master branch.
 
-commit 92b9cb5e0363a1c19b76a5a6e5f36c9891406590
-Author: Frank Lichtenheld
-Date:   Mon Jun 2 17:21:08 2025 +0200
+Change subject: Do not segfault on missing --dh in server config
+......................................................................
 
-     Do not segfault on missing --dh in server config
+Do not segfault on missing --dh in server config
 
-     Signed-off-by: Frank Lichtenheld <frank@...2641...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20250602152115.27130-1-gert@...1296...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg31844.html
-     Signed-off-by: Gert Doering <gert@...1296...>
+Change-Id: I0e13595c1057c680e1065eae84ca94b273ed9ca1
+Signed-off-by: Frank Lichtenheld <frank@...2641...>
+Acked-by: Gert Doering <gert@...1296...>
+Message-Id: <20250602152115.27130-1-gert@...1296...>
+URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg31=
+844.html
+Signed-off-by: Gert Doering <gert@...1296...>
+---
+M src/openvpn/options.c
+1 file changed, 1 insertion(+), 1 deletion(-)
 
+
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/37/1037/2
+
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index 0d648ba..b9708343 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -3698,7 +3698,7 @@
+
+     if (o->tls_server)
+     {
+-        if (streq(o->dh_file, "none"))
++        if (o->dh_file && streq(o->dh_file, "none"))
+         {
+             o->dh_file =3D NULL;
+         }
 
 --
-kind regards,
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1037?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings
 
-Gert Doering
+Gerrit-Project: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: I0e13595c1057c680e1065eae84ca94b273ed9ca1
+Gerrit-Change-Number: 1037
+Gerrit-PatchSet: 2
+Gerrit-Owner: flichtenheld <frank@...2641...>
+Gerrit-Reviewer: cron2 <gert@...1296...>
+Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-MessageType: newpatchset
 
+--y7M76AInvnI=
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<p>cron2 <strong>uploaded patch set #2</strong> to the change originally cr=
+eated by flichtenheld.</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn=
+/+/1037?usp=3Demail">View Change</a></p><p>The following approvals got outd=
+ated and were removed:
+Code-Review+2 by cron2</p><pre style=3D"font-family: monospace,monospace; w=
+hite-space: pre-wrap;">Do not segfault on missing --dh in server config<br>=
+<br>Change-Id: I0e13595c1057c680e1065eae84ca94b273ed9ca1<br>Signed-off-by: =
+Frank Lichtenheld &lt;frank@...2641...&gt;<br>Acked-by: Gert Doering &lt;ge=
+rt@...1296...&gt;<br>Message-Id: &lt;20250602152115.27130-1-gert@...1296...=
+&gt;<br>URL: https://www.mail-archive.com/openvpn-devel@...1223...=
+et/msg31844.html<br>Signed-off-by: Gert Doering &lt;gert@...1296...&gt;<br>=
+---<br>M src/openvpn/options.c<br>1 file changed, 1 insertion(+), 1 deletio=
+n(-)<br><br></pre><pre style=3D"font-family: monospace,monospace; white-spa=
+ce: pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes=
+/37/1037/2</pre><pre style=3D"font-family: monospace,monospace; white-space=
+: pre-wrap;"><span>diff --git a/src/openvpn/options.c b/src/openvpn/options=
+.c</span><br><span>index 0d648ba..b9708343 100644</span><br><span>--- a/src=
+/openvpn/options.c</span><br><span>+++ b/src/openvpn/options.c</span><br><s=
+pan>@@ -3698,7 +3698,7 @@</span><br><span> </span><br><span>     if (o-&gt;=
+tls_server)</span><br><span>     {</span><br><span style=3D"color: hsl(0, 1=
+00%, 40%);">-        if (streq(o-&gt;dh_file, &quot;none&quot;))</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+        if (o-&gt;dh_file &amp=
+;&amp; streq(o-&gt;dh_file, &quot;none&quot;))</span><br><span>         {</=
+span><br><span>             o-&gt;dh_file =3D NULL;</span><br><span>       =
+  }</span><br><span></span><br></pre><p>To view, visit <a href=3D"http://ge=
+rrit.openvpn.net/c/openvpn/+/1037?usp=3Demail">change 1037</a>. To unsubscr=
+ibe, or for help writing mail filters, visit <a href=3D"http://gerrit.openv=
+pn.net/settings">settings</a>.</p><div itemscope itemtype=3D"http://schema.=
+org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://sch=
+ema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.ne=
+t/c/openvpn/+/1037?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Ch=
+ange"/></div></div>
+
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I0e13595c1057c680e1065eae84c=
+a94b273ed9ca1 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1037 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
+<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
+.&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
+ </div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
+.1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
+
+
+--y7M76AInvnI=--
 
