@@ -1,17 +1,16 @@
 From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Tue, 3 Jun 2025 14:19:00 +0000
-In-Reply-To: <gerrit.1747746380000.If5e832866b312a2f8a1ce6b4e00d40e3dcf63681@...2715...>
-References: <gerrit.1747746380000.If5e832866b312a2f8a1ce6b4e00d40e3dcf63681@...2715...>
+Date: Tue, 3 Jun 2025 14:20:17 +0000
+In-Reply-To: <gerrit.1748876308000.I480442a55025bfcce7cb68ec7564ff33b0b780e2@...2715...>
+References: <gerrit.1748876308000.I480442a55025bfcce7cb68ec7564ff33b0b780e2@...2715...>
 Reply-To: gert@...1296..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...,
- max@...2606...
-Message-ID: <59033a806e023e2c90b5896c02fc1c5fa3cdcc27-HTML@...2715...>
+ openvpn-devel@lists.sourceforge.net, frank@...2641...
+Message-ID: <b183cd4c8361cec3567d520d2bcb90f759c1c3b6-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="czocMN/PNPA="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: mbedtls: Allow TLS
- 1.3 if available
+Content-Type: multipart/alternative; boundary="+ARwR7uQYgY="; charset=UTF-8
+Subject: [Openvpn-devel] [XS] Change in openvpn[master]: t_server_null: Test
+ different permutations of --dh
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,181 +19,87 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: MaxF <max@...2606...>
-Cc: flichtenheld <frank@...2641...>, plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: flichtenheld <frank@...2641...>
+Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---czocMN/PNPA=
+--+ARwR7uQYgY=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-cron2 has submitted this change. ( http://gerrit.openvpn.net/c/openvpn/+/10=
-42?usp=3Demail )
+Attention is currently required from: flichtenheld, plaisthos.
 
-Change subject: mbedtls: Allow TLS 1.3 if available
+cron2 has posted comments on this change. ( http://gerrit.openvpn.net/c/ope=
+nvpn/+/1038?usp=3Demail )
+
+Change subject: t_server_null: Test different permutations of --dh
 ......................................................................
 
-mbedtls: Allow TLS 1.3 if available
 
-We need mbedtls_ssl_export_keying_material() to support TLS 1.3. The
-workaround we use for TLS 1.2 does not work for TLS 1.3.
+Patch Set 2: Code-Review+2
 
-Change-Id: If5e832866b312a2f8a1ce6b4e00d40e3dcf63681
-Signed-off-by: Max Fillinger <maximilian.fillinger@...2507...>
-Acked-by: Frank Lichtenheld <frank@...2641...>
-Message-Id: <20250603140631.11696-1-gert@...1296...>
-URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg31=
-858.html
-Signed-off-by: Gert Doering <gert@...1296...>
----
-M README.mbedtls
-M src/openvpn/ssl_mbedtls.c
-2 files changed, 13 insertions(+), 6 deletions(-)
-
-
-
-
-diff --git a/README.mbedtls b/README.mbedtls
-index c4f3924..a1012e9 100644
---- a/README.mbedtls
-+++ b/README.mbedtls
-@@ -26,5 +26,9 @@
-
- *************************************************************************
-
--Mbed TLS 3 has implemented (parts of) the TLS 1.3 protocol, but we have di=
-sabled
--support in OpenVPN because the TLS-Exporter function is not yet implemente=
-d.
-+Mbed TLS 3 has implemented TLS 1.3, but support in OpenVPN requires the
-+function mbedtls_ssl_export_keying_material() which is currently not in
-+any released version. It is available when building mbed TLS from source
-+(mbedtls-3.6 or development branch).
-+
-+Without this function, only TLS 1.2 is available.
-diff --git a/src/openvpn/ssl_mbedtls.c b/src/openvpn/ssl_mbedtls.c
-index 7452c30..ecccc26 100644
---- a/src/openvpn/ssl_mbedtls.c
-+++ b/src/openvpn/ssl_mbedtls.c
-@@ -1048,11 +1048,14 @@
- int
- tls_version_max(void)
- {
--#if defined(MBEDTLS_SSL_PROTO_TLS1_2)
-+    /* We need mbedtls_ssl_export_keying_material() to support TLS 1.3. */
-+#if defined(MBEDTLS_SSL_PROTO_TLS1_3) && defined(MBEDTLS_SSL_KEYING_MATERI=
-AL_EXPORT)
-+    return TLS_VER_1_3;
-+#elif defined(MBEDTLS_SSL_PROTO_TLS1_2)
-     return TLS_VER_1_2;
--#else /* defined(MBEDTLS_SSL_PROTO_TLS1_2) */
--    #error "mbedtls is compiled without support for TLS 1.2."
--#endif /* defined(MBEDTLS_SSL_PROTO_TLS1_2) */
-+#else
-+    #error mbedtls is compiled without support for TLS 1.2 or 1.3
-+#endif
- }
-
- /**
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1042?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1038?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings
 
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: If5e832866b312a2f8a1ce6b4e00d40e3dcf63681
-Gerrit-Change-Number: 1042
-Gerrit-PatchSet: 4
-Gerrit-Owner: MaxF <max@...2606...>
+Gerrit-Change-Id: I480442a55025bfcce7cb68ec7564ff33b0b780e2
+Gerrit-Change-Number: 1038
+Gerrit-PatchSet: 2
+Gerrit-Owner: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: cron2 <gert@...1296...>
-Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-MessageType: merged
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Attention: flichtenheld <frank@...2641...>
+Gerrit-Comment-Date: Tue, 03 Jun 2025 14:20:17 +0000
+Gerrit-HasComments: No
+Gerrit-Has-Labels: Yes
+Gerrit-MessageType: comment
 
---czocMN/PNPA=
+--+ARwR7uQYgY=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p>cron2 <strong>submitted</strong> this change.</p><p><a href=3D"http://ge=
-rrit.openvpn.net/c/openvpn/+/1042?usp=3Demail">View Change</a></p><div styl=
-e=3D"white-space:pre-wrap"></div><pre style=3D"font-family: monospace,monos=
-pace; white-space: pre-wrap;">mbedtls: Allow TLS 1.3 if available<br><br>We=
- need mbedtls_ssl_export_keying_material() to support TLS 1.3. The<br>worka=
-round we use for TLS 1.2 does not work for TLS 1.3.<br><br>Change-Id: If5e8=
-32866b312a2f8a1ce6b4e00d40e3dcf63681<br>Signed-off-by: Max Fillinger &lt;ma=
-ximilian.fillinger@...2507...&gt;<br>Acked-by: Frank Lichtenheld &lt;frank@=
-...2641...&gt;<br>Message-Id: &lt;20250603140631.11696-1-gert@...1296...&gt=
-;<br>URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/=
-msg31858.html<br>Signed-off-by: Gert Doering &lt;gert@...1296...&gt;<br>---=
-<br>M README.mbedtls<br>M src/openvpn/ssl_mbedtls.c<br>2 files changed, 13 =
-insertions(+), 6 deletions(-)<br><br></pre>
-<pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><sp=
-an>diff --git a/README.mbedtls b/README.mbedtls</span><br><span>index c4f39=
-24..a1012e9 100644</span><br><span>--- a/README.mbedtls</span><br><span>+++=
- b/README.mbedtls</span><br><span>@@ -26,5 +26,9 @@</span><br><span> </span=
-><br><span> ***************************************************************=
-**********</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 4=
-0%);">-Mbed TLS 3 has implemented (parts of) the TLS 1.3 protocol, but we h=
-ave disabled</span><br><span style=3D"color: hsl(0, 100%, 40%);">-support i=
-n OpenVPN because the TLS-Exporter function is not yet implemented.</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+Mbed TLS 3 has implemented =
-TLS 1.3, but support in OpenVPN requires the</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+function mbedtls_ssl_export_keying_material() whic=
-h is currently not in</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+any released version. It is available when building mbed TLS from source<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+(mbedtls-3.6 or deve=
-lopment branch).</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+Without this function,=
- only TLS 1.2 is available.</span><br><span>diff --git a/src/openvpn/ssl_mb=
-edtls.c b/src/openvpn/ssl_mbedtls.c</span><br><span>index 7452c30..ecccc26 =
-100644</span><br><span>--- a/src/openvpn/ssl_mbedtls.c</span><br><span>+++ =
-b/src/openvpn/ssl_mbedtls.c</span><br><span>@@ -1048,11 +1048,14 @@</span><=
-br><span> int</span><br><span> tls_version_max(void)</span><br><span> {</sp=
-an><br><span style=3D"color: hsl(0, 100%, 40%);">-#if defined(MBEDTLS_SSL_P=
-ROTO_TLS1_2)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    /* =
-We need mbedtls_ssl_export_keying_material() to support TLS 1.3. */</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+#if defined(MBEDTLS_SSL_PRO=
-TO_TLS1_3) &amp;&amp; defined(MBEDTLS_SSL_KEYING_MATERIAL_EXPORT)</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+    return TLS_VER_1_3;</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+#elif defined(MBEDTLS_SSL=
-_PROTO_TLS1_2)</span><br><span>     return TLS_VER_1_2;</span><br><span sty=
-le=3D"color: hsl(0, 100%, 40%);">-#else /* defined(MBEDTLS_SSL_PROTO_TLS1_2=
-) */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    #error &quot;=
-mbedtls is compiled without support for TLS 1.2.&quot;</span><br><span styl=
-e=3D"color: hsl(0, 100%, 40%);">-#endif /* defined(MBEDTLS_SSL_PROTO_TLS1_2=
-) */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#else</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+    #error mbedtls is compile=
-d without support for TLS 1.2 or 1.3</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+#endif</span><br><span> }</span><br><span> </span><br><spa=
-n> /**</span><br><span></span><br></pre><p>To view, visit <a href=3D"http:/=
-/gerrit.openvpn.net/c/openvpn/+/1042?usp=3Demail">change 1042</a>. To unsub=
-scribe, or for help writing mail filters, visit <a href=3D"http://gerrit.op=
-envpn.net/settings">settings</a>.</p><div itemscope itemtype=3D"http://sche=
-ma.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://=
-schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn=
-.net/c/openvpn/+/1042?usp=3Demail"/><meta itemprop=3D"name" content=3D"View=
- Change"/></div></div>
+<p> Attention is currently required from: flichtenheld, plaisthos. </p>
+<p>Patch set 2:<span style=3D"border-radius: 3px; display: inline-block; ma=
+rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1038?usp=3Demail">V=
+iew Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To vi=
+ew, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1038?usp=3Demail=
+">change 1038</a>. To unsubscribe, or for help writing mail filters, visit =
+<a href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemsc=
+ope itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"=
+action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" hr=
+ef=3D"http://gerrit.openvpn.net/c/openvpn/+/1038?usp=3Demail"/><meta itempr=
+op=3D"name" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: If5e832866b312a2f8a1ce6b4e00=
-d40e3dcf63681 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1042 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 4 </div>
-<div style=3D"display:none"> Gerrit-Owner: MaxF &lt;max@...2606...&gt; </di=
-v>
+<div style=3D"display:none"> Gerrit-Change-Id: I480442a55025bfcce7cb68ec756=
+4ff33b0b780e2 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1038 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
+<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
+.&gt; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
  </div>
-<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
-1...&gt; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
 .1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: merged </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
+41...&gt; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Tue, 03 Jun 2025 14:20:17=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: No </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
 
 
---czocMN/PNPA=--
+--+ARwR7uQYgY=--
 
