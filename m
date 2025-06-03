@@ -1,10 +1,17 @@
-From: Gert Doering <gert@...1296...>
-Date: Tue,  3 Jun 2025 16:06:24 +0200
-Message-ID: <20250603140631.11696-1-gert@...1296...>
-In-Reply-To: <gerrit.1747746380000.If5e832866b312a2f8a1ce6b4e00d40e3dcf63681@...2715...>
-References: <gerrit.1747746380000.If5e832866b312a2f8a1ce6b4e00d40e3dcf63681@...2715...>
+From: "cron2 (Code Review)" <gerrit@...515...>
+Date: Tue, 3 Jun 2025 14:12:47 +0000
+In-Reply-To: <gerrit.1747746380000.I1204bc2ff85952160a86f0b9d1caae90e5065bc4@...2715...>
+References: <gerrit.1747746380000.I1204bc2ff85952160a86f0b9d1caae90e5065bc4@...2715...>
+Reply-To: gert@...1296..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net, frank@...2641...,
+ max@...2606...
+Message-ID: <6726ade03739e1a245179bf5e6c41f2dbbc2bb29-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v3] mbedtls: Allow TLS 1.3 if available
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="BisQGUwHvEE="; charset=UTF-8
+Subject: [Openvpn-devel] [S] Change in openvpn[master]: Use
+ mbedtls_ssl_export_keying_material()
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,69 +20,116 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: MaxF <max@...2606...>
+Cc: flichtenheld <frank@...2641...>, plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-From: Max Fillinger <maximilian.fillinger@...2507...>
+--BisQGUwHvEE=
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-We need mbedtls_ssl_export_keying_material() to support TLS 1.3. The
-workaround we use for TLS 1.2 does not work for TLS 1.3.
+Attention is currently required from: MaxF, plaisthos.
 
-Change-Id: If5e832866b312a2f8a1ce6b4e00d40e3dcf63681
-Signed-off-by: Max Fillinger <maximilian.fillinger@...2507...>
-Acked-by: Gert Doering <gert@...1296...>
-Acked-by: Frank Lichtenheld <frank@...2641...>
----
+cron2 has posted comments on this change. ( http://gerrit.openvpn.net/c/ope=
+nvpn/+/1041?usp=3Demail )
 
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to master.
+Change subject: Use mbedtls_ssl_export_keying_material()
+......................................................................
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1042
-This mail reflects revision 3 of this Change.
 
-Acked-by according to Gerrit (reflected above):
-Gert Doering <gert@...1296...>
-Frank Lichtenheld <frank@...2641...>
+Patch Set 3:
 
-        
-diff --git a/README.mbedtls b/README.mbedtls
-index c4f3924..a1012e9 100644
---- a/README.mbedtls
-+++ b/README.mbedtls
-@@ -26,5 +26,9 @@
- 
- *************************************************************************
- 
--Mbed TLS 3 has implemented (parts of) the TLS 1.3 protocol, but we have disabled
--support in OpenVPN because the TLS-Exporter function is not yet implemented.
-+Mbed TLS 3 has implemented TLS 1.3, but support in OpenVPN requires the
-+function mbedtls_ssl_export_keying_material() which is currently not in
-+any released version. It is available when building mbed TLS from source
-+(mbedtls-3.6 or development branch).
-+
-+Without this function, only TLS 1.2 is available.
-diff --git a/src/openvpn/ssl_mbedtls.c b/src/openvpn/ssl_mbedtls.c
-index 0159166..b78439c 100644
---- a/src/openvpn/ssl_mbedtls.c
-+++ b/src/openvpn/ssl_mbedtls.c
-@@ -1048,11 +1048,14 @@
- int
- tls_version_max(void)
- {
--#if defined(MBEDTLS_SSL_PROTO_TLS1_2)
-+    /* We need mbedtls_ssl_export_keying_material() to support TLS 1.3. */
-+#if defined(MBEDTLS_SSL_PROTO_TLS1_3) && defined(MBEDTLS_SSL_KEYING_MATERIAL_EXPORT)
-+    return TLS_VER_1_3;
-+#elif defined(MBEDTLS_SSL_PROTO_TLS1_2)
-     return TLS_VER_1_2;
--#else /* defined(MBEDTLS_SSL_PROTO_TLS1_2) */
--    #error "mbedtls is compiled without support for TLS 1.2."
--#endif /* defined(MBEDTLS_SSL_PROTO_TLS1_2) */
-+#else
-+    #error mbedtls is compiled without support for TLS 1.2 or 1.3
-+#endif
- }
- 
- /**
+(1 comment)
+
+File CMakeLists.txt:
+
+http://gerrit.openvpn.net/c/openvpn/+/1041/comment/cb4b863e_7a90ad49 :
+PS2, Line 305:     check_symbol_exists(mbedtls_ssl_export_keying_material m=
+bedtls/ssl.h HAVE_MBEDTLS_SSL_EXPORT_KEYING_MATERIAL)
+> I saw your other commit and I think we can stop supporting TLS libraries =
+that do not support export  [=E2=80=A6]
+Done
+
+
+
+--
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1041?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings
+
+Gerrit-Project: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: I1204bc2ff85952160a86f0b9d1caae90e5065bc4
+Gerrit-Change-Number: 1041
+Gerrit-PatchSet: 3
+Gerrit-Owner: MaxF <max@...2606...>
+Gerrit-Reviewer: flichtenheld <frank@...2641...>
+Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
+Gerrit-CC: cron2 <gert@...1296...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Attention: MaxF <max@...2606...>
+Gerrit-Comment-Date: Tue, 03 Jun 2025 14:12:47 +0000
+Gerrit-HasComments: Yes
+Gerrit-Has-Labels: No
+Comment-In-Reply-To: plaisthos <arne-openvpn@...1227...>
+Comment-In-Reply-To: MaxF <max@...2606...>
+Gerrit-MessageType: comment
+
+--BisQGUwHvEE=
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<p> Attention is currently required from: MaxF, plaisthos. </p>
+<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1041?usp=3Demail">View =
+Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0;">=
+<li style=3D"margin: 0; padding: 0;"><p>File CMakeLists.txt:</p><ul style=
+=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 1=
+6px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net=
+/c/openvpn/+/1041/comment/cb4b863e_7a90ad49">Patch Set #2, Line 305:</a> <c=
+ode style=3D"font-family:monospace,monospace">    check_symbol_exists(mbedt=
+ls_ssl_export_keying_material mbedtls/ssl.h HAVE_MBEDTLS_SSL_EXPORT_KEYING_=
+MATERIAL)</code></p><p><blockquote style=3D"border-left: 1px solid #aaa; ma=
+rgin: 10px 0; padding: 0 10px;">I saw your other commit and I think we can =
+stop supporting TLS libraries that do not support export  [=E2=80=A6]</bloc=
+kquote></p><p style=3D"white-space: pre-wrap; word-wrap: break-word;">Done<=
+/p></li></ul></li></ul><p>To view, visit <a href=3D"http://gerrit.openvpn.n=
+et/c/openvpn/+/1041?usp=3Demail">change 1041</a>. To unsubscribe, or for he=
+lp writing mail filters, visit <a href=3D"http://gerrit.openvpn.net/setting=
+s">settings</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessa=
+ge"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAc=
+tion"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/=
+1041?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div><=
+/div>
+
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I1204bc2ff85952160a86f0b9d1c=
+aae90e5065bc4 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1041 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 3 </div>
+<div style=3D"display:none"> Gerrit-Owner: MaxF &lt;max@...2606...&gt; </di=
+v>
+<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
+1...&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
+.1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: cron2 &lt;gert@...1296...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: MaxF &lt;max@...2606...&gt; =
+</div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Tue, 03 Jun 2025 14:12:47=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: No </div>
+<div style=3D"display:none"> Comment-In-Reply-To: plaisthos &lt;arne-openvp=
+n@...1227...&gt; </div>
+<div style=3D"display:none"> Comment-In-Reply-To: MaxF &lt;max@...2606...&g=
+t; </div>
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
+
+
+--BisQGUwHvEE=--
 
