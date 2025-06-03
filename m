@@ -1,14 +1,14 @@
 From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Tue, 3 Jun 2025 14:26:36 +0000
+Date: Tue, 3 Jun 2025 14:26:38 +0000
 In-Reply-To: <gerrit.1748876308000.I480442a55025bfcce7cb68ec7564ff33b0b780e2@...2715...>
 References: <gerrit.1748876308000.I480442a55025bfcce7cb68ec7564ff33b0b780e2@...2715...>
 Reply-To: gert@...1296..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <4bb68209f58fcbe51b724c01b01f76eaa3b1b803-EmailReplacePatchSet-HTML@...2715...>
+Message-ID: <4bb68209f58fcbe51b724c01b01f76eaa3b1b803-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="hHiDUz3xeuw="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="S9Jn8lG1UFg="; charset=UTF-8
 Subject: [Openvpn-devel] [XS] Change in openvpn[master]: t_server_null: Test
  different permutations of --dh
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -19,19 +19,15 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: flichtenheld <frank@...2641...>, plaisthos <arne-openvpn@...1227...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: flichtenheld <frank@...2641...>
+Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---hHiDUz3xeuw=
+--S9Jn8lG1UFg=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-cron2 has uploaded a new patch set (#3) to the change originally created by=
- flichtenheld. ( http://gerrit.openvpn.net/c/openvpn/+/1038?usp=3Demail )
-
-The following approvals got outdated and were removed:
-Code-Review+2 by cron2
-
+cron2 has submitted this change. ( http://gerrit.openvpn.net/c/openvpn/+/10=
+38?usp=3Demail )
 
 Change subject: t_server_null: Test different permutations of --dh
 ......................................................................
@@ -54,7 +50,7 @@ M tests/t_server_null_default.rc
 1 file changed, 3 insertions(+), 3 deletions(-)
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/38/1038/3
+
 
 diff --git a/tests/t_server_null_default.rc b/tests/t_server_null_default.rc
 index ca8004a..365b5a8 100755
@@ -110,72 +106,69 @@ Gerrit-Owner: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: cron2 <gert@...1296...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-MessageType: newpatchset
+Gerrit-MessageType: merged
 
---hHiDUz3xeuw=
+--S9Jn8lG1UFg=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p>cron2 <strong>uploaded patch set #3</strong> to the change originally cr=
-eated by flichtenheld.</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn=
-/+/1038?usp=3Demail">View Change</a></p><p>The following approvals got outd=
-ated and were removed:
-Code-Review+2 by cron2</p><pre style=3D"font-family: monospace,monospace; w=
-hite-space: pre-wrap;">t_server_null: Test different permutations of --dh<b=
-r><br>Do not include --dh by default, since we do not actually<br>need it. =
-Use the different servers for different ways<br>of specifying it.<br><br>Ch=
-ange-Id: I480442a55025bfcce7cb68ec7564ff33b0b780e2<br>Signed-off-by: Frank =
-Lichtenheld &lt;frank@...2641...&gt;<br>Acked-by: Gert Doering &lt;gert@...493...=
-1296...&gt;<br>Message-Id: &lt;20250603142035.13685-1-gert@...1296...&gt;<b=
-r>URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg=
-31868.html<br>Signed-off-by: Gert Doering &lt;gert@...1296...&gt;<br>---<br=
->M tests/t_server_null_default.rc<br>1 file changed, 3 insertions(+), 3 del=
-etions(-)<br><br></pre><pre style=3D"font-family: monospace,monospace; whit=
-e-space: pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/openvpn refs/ch=
-anges/38/1038/3</pre><pre style=3D"font-family: monospace,monospace; white-=
-space: pre-wrap;"><span>diff --git a/tests/t_server_null_default.rc b/tests=
-/t_server_null_default.rc</span><br><span>index ca8004a..365b5a8 100755</sp=
-an><br><span>--- a/tests/t_server_null_default.rc</span><br><span>+++ b/tes=
-ts/t_server_null_default.rc</span><br><span>@@ -40,7 +40,7 @@</span><br><sp=
-an> SERVER_EXEC=3D&quot;${top_builddir}/src/openvpn/openvpn&quot;</span><br=
-><span> SERVER_BASE_OPTS=3D&quot;--daemon --local 127.0.0.1 --dev tun --top=
-ology subnet --max-clients $MAX_CLIENTS --persist-tun --verb 3 --duplicate-=
-cn&quot;</span><br><span> SERVER_CIPHER_OPTS=3D&quot;&quot;</span><br><span=
- style=3D"color: hsl(0, 100%, 40%);">-SERVER_CERT_OPTS=3D&quot;--ca ${CA} -=
--dh ${DH} --cert ${SERVER_CERT} --key ${SERVER_KEY} --tls-auth ${TA} 0&quot=
-;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+SERVER_CERT_OPTS=
-=3D&quot;--ca ${CA} --cert ${SERVER_CERT} --key ${SERVER_KEY} --tls-auth ${=
-TA} 0&quot;</span><br><span> SERVER_CONF_BASE=3D&quot;${SERVER_BASE_OPTS} $=
-{SERVER_CIPHER_OPTS} ${SERVER_CERT_OPTS}&quot;</span><br><span> </span><br>=
-<span> TEST_SERVER_LIST=3D&quot;1 2 3&quot;</span><br><span>@@ -55,13 +55,1=
-3 @@</span><br><span> SERVER_SERVER_2=3D&quot;--server 10.29.42.0 255.255.2=
-55.0&quot;</span><br><span> SERVER_MGMT_PORT_2=3D&quot;11195&quot;</span><b=
-r><span> SERVER_EXEC_2=3D&quot;${SERVER_EXEC}&quot;</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-SERVER_CONF_2=3D&quot;${SERVER_CONF_BASE} $=
-{SERVER_SERVER_2} --lport 1195 --proto tcp --management 127.0.0.1 ${SERVER_=
-MGMT_PORT_2}&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+S=
-ERVER_CONF_2=3D&quot;${SERVER_CONF_BASE} ${SERVER_SERVER_2} --lport 1195 --=
-proto tcp --management 127.0.0.1 ${SERVER_MGMT_PORT_2} --dh ${DH}&quot;</sp=
-an><br><span> </span><br><span> SERVER_NAME_3=3D&quot;t_server_null_server-=
-1196_udp&quot;</span><br><span> SERVER_SERVER_3=3D&quot;--server 10.29.43.0=
- 255.255.255.0&quot;</span><br><span> SERVER_MGMT_PORT_3=3D&quot;11196&quot=
-;</span><br><span> SERVER_EXEC_3=3D&quot;${SERVER_EXEC}&quot;</span><br><sp=
-an style=3D"color: hsl(0, 100%, 40%);">-SERVER_CONF_3=3D&quot;${SERVER_CONF=
-_BASE} ${SERVER_SERVER_3} --lport 1196 --proto udp --management 127.0.0.1 $=
-{SERVER_MGMT_PORT_3} --cipher AES-192-CBC --data-ciphers DEFAULT:AES-192-CB=
-C&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+SERVER_CONF_=
-3=3D&quot;${SERVER_CONF_BASE} ${SERVER_SERVER_3} --lport 1196 --proto udp -=
--management 127.0.0.1 ${SERVER_MGMT_PORT_3} --dh none --cipher AES-192-CBC =
---data-ciphers DEFAULT:AES-192-CBC&quot;</span><br><span> </span><br><span>=
- # Test client configurations</span><br><span> CLIENT_EXEC=3D&quot;${top_bu=
-ilddir}/src/openvpn/openvpn&quot;</span><br><span></span><br></pre><p>To vi=
-ew, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1038?usp=3Demail=
-">change 1038</a>. To unsubscribe, or for help writing mail filters, visit =
-<a href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemsc=
-ope itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"=
-action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" hr=
-ef=3D"http://gerrit.openvpn.net/c/openvpn/+/1038?usp=3Demail"/><meta itempr=
-op=3D"name" content=3D"View Change"/></div></div>
+<p>cron2 <strong>submitted</strong> this change.</p><p><a href=3D"http://ge=
+rrit.openvpn.net/c/openvpn/+/1038?usp=3Demail">View Change</a></p><div styl=
+e=3D"white-space:pre-wrap"></div><pre style=3D"font-family: monospace,monos=
+pace; white-space: pre-wrap;">t_server_null: Test different permutations of=
+ --dh<br><br>Do not include --dh by default, since we do not actually<br>ne=
+ed it. Use the different servers for different ways<br>of specifying it.<br=
+><br>Change-Id: I480442a55025bfcce7cb68ec7564ff33b0b780e2<br>Signed-off-by:=
+ Frank Lichtenheld &lt;frank@...2641...&gt;<br>Acked-by: Gert Doering &lt;g=
+ert@...1296...&gt;<br>Message-Id: &lt;20250603142035.13685-1-gert@...2132...=
+.&gt;<br>URL: https://www.mail-archive.com/openvpn-devel@...290...=
+net/msg31868.html<br>Signed-off-by: Gert Doering &lt;gert@...1296...&gt;<br=
+>---<br>M tests/t_server_null_default.rc<br>1 file changed, 3 insertions(+)=
+, 3 deletions(-)<br><br></pre>
+<pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><sp=
+an>diff --git a/tests/t_server_null_default.rc b/tests/t_server_null_defaul=
+t.rc</span><br><span>index ca8004a..365b5a8 100755</span><br><span>--- a/te=
+sts/t_server_null_default.rc</span><br><span>+++ b/tests/t_server_null_defa=
+ult.rc</span><br><span>@@ -40,7 +40,7 @@</span><br><span> SERVER_EXEC=3D&qu=
+ot;${top_builddir}/src/openvpn/openvpn&quot;</span><br><span> SERVER_BASE_O=
+PTS=3D&quot;--daemon --local 127.0.0.1 --dev tun --topology subnet --max-cl=
+ients $MAX_CLIENTS --persist-tun --verb 3 --duplicate-cn&quot;</span><br><s=
+pan> SERVER_CIPHER_OPTS=3D&quot;&quot;</span><br><span style=3D"color: hsl(=
+0, 100%, 40%);">-SERVER_CERT_OPTS=3D&quot;--ca ${CA} --dh ${DH} --cert ${SE=
+RVER_CERT} --key ${SERVER_KEY} --tls-auth ${TA} 0&quot;</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+SERVER_CERT_OPTS=3D&quot;--ca ${CA} --c=
+ert ${SERVER_CERT} --key ${SERVER_KEY} --tls-auth ${TA} 0&quot;</span><br><=
+span> SERVER_CONF_BASE=3D&quot;${SERVER_BASE_OPTS} ${SERVER_CIPHER_OPTS} ${=
+SERVER_CERT_OPTS}&quot;</span><br><span> </span><br><span> TEST_SERVER_LIST=
+=3D&quot;1 2 3&quot;</span><br><span>@@ -55,13 +55,13 @@</span><br><span> S=
+ERVER_SERVER_2=3D&quot;--server 10.29.42.0 255.255.255.0&quot;</span><br><s=
+pan> SERVER_MGMT_PORT_2=3D&quot;11195&quot;</span><br><span> SERVER_EXEC_2=
+=3D&quot;${SERVER_EXEC}&quot;</span><br><span style=3D"color: hsl(0, 100%, =
+40%);">-SERVER_CONF_2=3D&quot;${SERVER_CONF_BASE} ${SERVER_SERVER_2} --lpor=
+t 1195 --proto tcp --management 127.0.0.1 ${SERVER_MGMT_PORT_2}&quot;</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+SERVER_CONF_2=3D&quot;${S=
+ERVER_CONF_BASE} ${SERVER_SERVER_2} --lport 1195 --proto tcp --management 1=
+27.0.0.1 ${SERVER_MGMT_PORT_2} --dh ${DH}&quot;</span><br><span> </span><br=
+><span> SERVER_NAME_3=3D&quot;t_server_null_server-1196_udp&quot;</span><br=
+><span> SERVER_SERVER_3=3D&quot;--server 10.29.43.0 255.255.255.0&quot;</sp=
+an><br><span> SERVER_MGMT_PORT_3=3D&quot;11196&quot;</span><br><span> SERVE=
+R_EXEC_3=3D&quot;${SERVER_EXEC}&quot;</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-SERVER_CONF_3=3D&quot;${SERVER_CONF_BASE} ${SERVER_SERVER_3=
+} --lport 1196 --proto udp --management 127.0.0.1 ${SERVER_MGMT_PORT_3} --c=
+ipher AES-192-CBC --data-ciphers DEFAULT:AES-192-CBC&quot;</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+SERVER_CONF_3=3D&quot;${SERVER_CONF_=
+BASE} ${SERVER_SERVER_3} --lport 1196 --proto udp --management 127.0.0.1 ${=
+SERVER_MGMT_PORT_3} --dh none --cipher AES-192-CBC --data-ciphers DEFAULT:A=
+ES-192-CBC&quot;</span><br><span> </span><br><span> # Test client configura=
+tions</span><br><span> CLIENT_EXEC=3D&quot;${top_builddir}/src/openvpn/open=
+vpn&quot;</span><br><span></span><br></pre><p>To view, visit <a href=3D"htt=
+p://gerrit.openvpn.net/c/openvpn/+/1038?usp=3Demail">change 1038</a>. To un=
+subscribe, or for help writing mail filters, visit <a href=3D"http://gerrit=
+.openvpn.net/settings">settings</a>.</p><div itemscope itemtype=3D"http://s=
+chema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http=
+://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.open=
+vpn.net/c/openvpn/+/1038?usp=3Demail"/><meta itemprop=3D"name" content=3D"V=
+iew Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
@@ -191,8 +184,8 @@ op=3D"name" content=3D"View Change"/></div></div>
 .1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
+<div style=3D"display:none"> Gerrit-MessageType: merged </div>
 
 
---hHiDUz3xeuw=--
+--S9Jn8lG1UFg=--
 
