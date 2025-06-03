@@ -1,10 +1,9 @@
+Date: Tue, 3 Jun 2025 16:26:28 +0200 (CEST)
+Message-Id: <202506031426.553EQSIH021983@...2054...>
 From: Gert Doering <gert@...1296...>
-Date: Tue,  3 Jun 2025 16:20:29 +0200
-Message-ID: <20250603142035.13685-1-gert@...1296...>
-In-Reply-To: <gerrit.1748876308000.I480442a55025bfcce7cb68ec7564ff33b0b780e2@...2715...>
-References: <gerrit.1748876308000.I480442a55025bfcce7cb68ec7564ff33b0b780e2@...2715...>
-MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v2] t_server_null: Test different
+In-Reply-To: <20250603142035.13685-1-gert@...1296...>
+References: <20250603142035.13685-1-gert@...1296...>
+Subject: [Openvpn-devel] [PATCH applied] Re: t_server_null: Test different
  permutations of --dh
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
@@ -16,56 +15,33 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Frank Lichtenheld <frank@...2641...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-From: Frank Lichtenheld <frank@...2641...>
+Thanks, this is a very welcome addition to catch future oversights around
+--dh variants.
 
-Do not include --dh by default, since we do not actually
-need it. Use the different servers for different ways
-of specifying it.
+The buildbots have tested this, and found it to their liking :-) - I have
+just stared at it and liked it as well.
 
-Change-Id: I480442a55025bfcce7cb68ec7564ff33b0b780e2
-Signed-off-by: Frank Lichtenheld <frank@...2641...>
-Acked-by: Gert Doering <gert@...1296...>
----
+Your patch has been applied to the master branch.
 
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to master.
+commit 4d104a3857a21cf22774ba50b66fe575a682ae32
+Author: Frank Lichtenheld
+Date:   Tue Jun 3 16:20:29 2025 +0200
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1038
-This mail reflects revision 2 of this Change.
+     t_server_null: Test different permutations of --dh
 
-Acked-by according to Gerrit (reflected above):
-Gert Doering <gert@...1296...>
+     Signed-off-by: Frank Lichtenheld <frank@...2641...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <20250603142035.13685-1-gert@...1296...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg31868.html
+     Signed-off-by: Gert Doering <gert@...1296...>
 
-        
-diff --git a/tests/t_server_null_default.rc b/tests/t_server_null_default.rc
-index ca8004a..365b5a8 100755
---- a/tests/t_server_null_default.rc
-+++ b/tests/t_server_null_default.rc
-@@ -40,7 +40,7 @@
- SERVER_EXEC="${top_builddir}/src/openvpn/openvpn"
- SERVER_BASE_OPTS="--daemon --local 127.0.0.1 --dev tun --topology subnet --max-clients $MAX_CLIENTS --persist-tun --verb 3 --duplicate-cn"
- SERVER_CIPHER_OPTS=""
--SERVER_CERT_OPTS="--ca ${CA} --dh ${DH} --cert ${SERVER_CERT} --key ${SERVER_KEY} --tls-auth ${TA} 0"
-+SERVER_CERT_OPTS="--ca ${CA} --cert ${SERVER_CERT} --key ${SERVER_KEY} --tls-auth ${TA} 0"
- SERVER_CONF_BASE="${SERVER_BASE_OPTS} ${SERVER_CIPHER_OPTS} ${SERVER_CERT_OPTS}"
- 
- TEST_SERVER_LIST="1 2 3"
-@@ -55,13 +55,13 @@
- SERVER_SERVER_2="--server 10.29.42.0 255.255.255.0"
- SERVER_MGMT_PORT_2="11195"
- SERVER_EXEC_2="${SERVER_EXEC}"
--SERVER_CONF_2="${SERVER_CONF_BASE} ${SERVER_SERVER_2} --lport 1195 --proto tcp --management 127.0.0.1 ${SERVER_MGMT_PORT_2}"
-+SERVER_CONF_2="${SERVER_CONF_BASE} ${SERVER_SERVER_2} --lport 1195 --proto tcp --management 127.0.0.1 ${SERVER_MGMT_PORT_2} --dh ${DH}"
- 
- SERVER_NAME_3="t_server_null_server-1196_udp"
- SERVER_SERVER_3="--server 10.29.43.0 255.255.255.0"
- SERVER_MGMT_PORT_3="11196"
- SERVER_EXEC_3="${SERVER_EXEC}"
--SERVER_CONF_3="${SERVER_CONF_BASE} ${SERVER_SERVER_3} --lport 1196 --proto udp --management 127.0.0.1 ${SERVER_MGMT_PORT_3} --cipher AES-192-CBC --data-ciphers DEFAULT:AES-192-CBC"
-+SERVER_CONF_3="${SERVER_CONF_BASE} ${SERVER_SERVER_3} --lport 1196 --proto udp --management 127.0.0.1 ${SERVER_MGMT_PORT_3} --dh none --cipher AES-192-CBC --data-ciphers DEFAULT:AES-192-CBC"
- 
- # Test client configurations
- CLIENT_EXEC="${top_builddir}/src/openvpn/openvpn"
+
+--
+kind regards,
+
+Gert Doering
+
 
