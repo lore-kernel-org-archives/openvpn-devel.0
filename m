@@ -1,16 +1,15 @@
-From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Wed, 18 Jun 2025 08:49:18 +0000
-In-Reply-To: <gerrit.1749787477000.I48cec222d46c67e6620281cd8b2346323b546fcd@...2715...>
-References: <gerrit.1749787477000.I48cec222d46c67e6620281cd8b2346323b546fcd@...2715...>
-Reply-To: gert@...1296..., arne-openvpn@...1227..., heiko@...515...,
+From: "plaisthos (Code Review)" <gerrit@...515...>
+Date: Wed, 18 Jun 2025 09:12:08 +0000
+In-Reply-To: <gerrit.1750235257000.Ie0529c2074964b3be034f01e0ef53090a6edbd35@...2715...>
+References: <gerrit.1750235257000.Ie0529c2074964b3be034f01e0ef53090a6edbd35@...2715...>
+Reply-To: arne-openvpn@...1227..., rein.vanbaaren@...1435...,
  openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <cc6dda8ba4040c42804248659b41d376bd2b19cc-HTML@...2715...>
+Message-ID: <82de1c9e35ed1b4615fedb040ae4b6d63421ebbb-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="KXy3iZY0oxo="; charset=UTF-8
-Subject: [Openvpn-devel] [XS] Change in openvpn[master]: fix typo in haikuos
- dns-updown script
+Content-Type: multipart/alternative; boundary="lNuGNNUh0FM="; charset=UTF-8
+Subject: [Openvpn-devel] [M] Change in openvpn[master]: Added PQE to WolfSSL
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,119 +18,124 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: d12fk <heiko@...515...>
-Cc: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: comododragon <rein.vanbaaren@...1435...>
+Cc: flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---KXy3iZY0oxo=
+--lNuGNNUh0FM=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-cron2 has submitted this change. ( http://gerrit.openvpn.net/c/openvpn/+/10=
-61?usp=3Demail )
+Attention is currently required from: comododragon, flichtenheld.
 
-Change subject: fix typo in haikuos dns-updown script
+plaisthos has posted comments on this change. ( http://gerrit.openvpn.net/c=
+/openvpn/+/1046?usp=3Demail )
+
+Change subject: Added PQE to WolfSSL
 ......................................................................
 
-fix typo in haikuos dns-updown script
 
-Change-Id: I48cec222d46c67e6620281cd8b2346323b546fcd
-Signed-off-by: Heiko Hund <heiko@...2662...>
-Acked-by: Gert Doering <gert@...1296...>
-Message-Id: <20250618064900.3908-1-gert@...1296...>
-URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg31=
-911.html
-Signed-off-by: Gert Doering <gert@...1296...>
----
-M distro/dns-scripts/haikuos_file-dns-updown.sh
-1 file changed, 1 insertion(+), 1 deletion(-)
+Patch Set 1:
+
+(1 comment)
+
+Patchset:
+
+PS1:
+You don't need to close/reopen to update your patch, you can just push the =
+change again. But here is the same comment that I had on the original versi=
+on of the patch:
+
+I feel this is the wrong approach. We are trying to avoid the NID dance. An=
+d it seems that wolfSSL already has a function
+
+int wolfSSL_CTX_set1_groups_list(WOLFSSL_CTX *ctx, const char *list)
+
+that has the same (better) functionality of its SSL_CTX_set1_groups_list Op=
+enSSL equivalent. So rather than doing this NID dance, I would prefer that =
+we use the proper function instead.
+
+Maybe wolfSSL upstream can also be convinced to map this to SSL_CTX_set1_gr=
+oups_list as well.
 
 
-
-
-diff --git a/distro/dns-scripts/haikuos_file-dns-updown.sh b/distro/dns-scr=
-ipts/haikuos_file-dns-updown.sh
-index 777b72d..6da0954 100644
---- a/distro/dns-scripts/haikuos_file-dns-updown.sh
-+++ b/distro/dns-scripts/haikuos_file-dns-updown.sh
-@@ -28,7 +28,7 @@
-
- set -e +u
-
--conly_standard_server_ports() {
-+only_standard_server_ports() {
-     i=3D1
-     while true; do
-         eval addr=3D\"\$dns_server_${n}_address_${i}\"
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1061?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1046?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings
 
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: I48cec222d46c67e6620281cd8b2346323b546fcd
-Gerrit-Change-Number: 1061
-Gerrit-PatchSet: 3
-Gerrit-Owner: d12fk <heiko@...515...>
-Gerrit-Reviewer: cron2 <gert@...1296...>
+Gerrit-Change-Id: Ie0529c2074964b3be034f01e0ef53090a6edbd35
+Gerrit-Change-Number: 1046
+Gerrit-PatchSet: 1
+Gerrit-Owner: comododragon <rein.vanbaaren@...1435...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-MessageType: merged
+Gerrit-Attention: flichtenheld <frank@...2641...>
+Gerrit-Attention: comododragon <rein.vanbaaren@...1435...>
+Gerrit-Comment-Date: Wed, 18 Jun 2025 09:12:08 +0000
+Gerrit-HasComments: Yes
+Gerrit-Has-Labels: No
+Gerrit-MessageType: comment
 
---KXy3iZY0oxo=
+--lNuGNNUh0FM=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p>cron2 <strong>submitted</strong> this change.</p><p><a href=3D"http://ge=
-rrit.openvpn.net/c/openvpn/+/1061?usp=3Demail">View Change</a></p><div styl=
-e=3D"white-space:pre-wrap"></div><pre style=3D"font-family: monospace,monos=
-pace; white-space: pre-wrap;">fix typo in haikuos dns-updown script<br><br>=
-Change-Id: I48cec222d46c67e6620281cd8b2346323b546fcd<br>Signed-off-by: Heik=
-o Hund &lt;heiko@...2662...&gt;<br>Acked-by: Gert Doering &lt;gert@...1725...=
-..&gt;<br>Message-Id: &lt;20250618064900.3908-1-gert@...1296...&gt;<br>URL:=
- https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg31911.=
-html<br>Signed-off-by: Gert Doering &lt;gert@...1296...&gt;<br>---<br>M dis=
-tro/dns-scripts/haikuos_file-dns-updown.sh<br>1 file changed, 1 insertion(+=
-), 1 deletion(-)<br><br></pre>
-<pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><sp=
-an>diff --git a/distro/dns-scripts/haikuos_file-dns-updown.sh b/distro/dns-=
-scripts/haikuos_file-dns-updown.sh</span><br><span>index 777b72d..6da0954 1=
-00644</span><br><span>--- a/distro/dns-scripts/haikuos_file-dns-updown.sh</=
-span><br><span>+++ b/distro/dns-scripts/haikuos_file-dns-updown.sh</span><b=
-r><span>@@ -28,7 +28,7 @@</span><br><span> </span><br><span> set -e +u</spa=
-n><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-conly_st=
-andard_server_ports() {</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+only_standard_server_ports() {</span><br><span>     i=3D1</span><br><sp=
-an>     while true; do</span><br><span>         eval addr=3D\&quot;\$dns_se=
-rver_${n}_address_${i}\&quot;</span><br><span></span><br></pre><p>To view, =
-visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1061?usp=3Demail">ch=
-ange 1061</a>. To unsubscribe, or for help writing mail filters, visit <a h=
-ref=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope =
-itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"acti=
-on" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=
-=3D"http://gerrit.openvpn.net/c/openvpn/+/1061?usp=3Demail"/><meta itemprop=
-=3D"name" content=3D"View Change"/></div></div>
+<p> Attention is currently required from: comododragon, flichtenheld. </p>
+<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1046?usp=3Demail">View =
+Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0;">=
+<li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-styl=
+e: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p styl=
+e=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/=
+1046?tab=3Dcomments">Patch Set #1:</a> </p><p style=3D"white-space: pre-wra=
+p; word-wrap: break-word;">You don&#39;t need to close/reopen to update you=
+r patch, you can just push the change again. But here is the same comment t=
+hat I had on the original version of the patch:</p><p style=3D"white-space:=
+ pre-wrap; word-wrap: break-word;">I feel this is the wrong approach. We ar=
+e trying to avoid the NID dance. And it seems that wolfSSL already has a fu=
+nction </p><p style=3D"white-space: pre-wrap; word-wrap: break-word;">int w=
+olfSSL_CTX_set1_groups_list(WOLFSSL_CTX *ctx, const char *list)</p><p style=
+=3D"white-space: pre-wrap; word-wrap: break-word;">that has the same (bette=
+r) functionality of its SSL_CTX_set1_groups_list OpenSSL equivalent. So rat=
+her than doing this NID dance, I would prefer that we use the proper functi=
+on instead. </p><p style=3D"white-space: pre-wrap; word-wrap: break-word;">=
+Maybe wolfSSL upstream can also be convinced to map this to SSL_CTX_set1_gr=
+oups_list as well.</p></li></ul></li></ul><p>To view, visit <a href=3D"http=
+://gerrit.openvpn.net/c/openvpn/+/1046?usp=3Demail">change 1046</a>. To uns=
+ubscribe, or for help writing mail filters, visit <a href=3D"http://gerrit.=
+openvpn.net/settings">settings</a>.</p><div itemscope itemtype=3D"http://sc=
+hema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http:=
+//schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openv=
+pn.net/c/openvpn/+/1046?usp=3Demail"/><meta itemprop=3D"name" content=3D"Vi=
+ew Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I48cec222d46c67e6620281cd8b2=
-346323b546fcd </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1061 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 3 </div>
-<div style=3D"display:none"> Gerrit-Owner: d12fk &lt;heiko@...515...&gt; </=
-div>
-<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
- </div>
+<div style=3D"display:none"> Gerrit-Change-Id: Ie0529c2074964b3be034f01e0ef=
+53090a6edbd35 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1046 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
+<div style=3D"display:none"> Gerrit-Owner: comododragon &lt;rein.vanbaaren@=
+...1435...&gt; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
 1...&gt; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
 .1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: merged </div>
+<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
+41...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: comododragon &lt;rein.vanbaa=
+ren@...1435...&gt; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Wed, 18 Jun 2025 09:12:08=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: No </div>
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
 
 
---KXy3iZY0oxo=--
+--lNuGNNUh0FM=--
 
