@@ -1,10 +1,10 @@
+Date: Wed, 18 Jun 2025 16:08:16 +0200 (CEST)
+Message-Id: <202506181408.55IE8GLJ099682@...2054...>
 From: Gert Doering <gert@...1296...>
-Date: Wed, 18 Jun 2025 16:00:09 +0200
-Message-ID: <20250618140016.2766-1-gert@...1296...>
-In-Reply-To: <gerrit.1749198097000.I32effed9e273fbe8986d1f4e8da4a4d0ac216463@...2715...>
-References: <gerrit.1749198097000.I32effed9e273fbe8986d1f4e8da4a4d0ac216463@...2715...>
-MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v1] Multi-socket: local_list clean-up
+In-Reply-To: <20250618140016.2766-1-gert@...1296...>
+References: <20250618140016.2766-1-gert@...1296...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Multi-socket: local_list
+ clean-up
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,74 +15,31 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Gianmarco De Gregori <gianmarco@...2726...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-From: Gianmarco De Gregori <gianmarco@...2726...>
+Stared-at-code, looks good.  Tested on the server instance with lots of
+--local lines (+ some msg() calls to see l->len and l_capacity), and it
+does what it promises.  Thanks :-)
 
-Optimize the current local_list implementation
-by replacing the static array with a resizable
-one, as the static allocation serves no real
-purpose, particularly on the client side.
+Your patch has been applied to the master branch.
 
-Github: #682
+commit 9bb02bc34f5ecc85364fa7ab64e52b6c5c918055
+Author: Gianmarco De Gregori
+Date:   Wed Jun 18 16:00:09 2025 +0200
 
-Change-Id: I32effed9e273fbe8986d1f4e8da4a4d0ac216463
-Signed-off-by: Gianmarco De Gregori <gianmarco@...2726...>
-Acked-by: Gert Doering <gert@...1296...>
----
+     Multi-socket: local_list clean-up
 
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to master.
+     Signed-off-by: Gianmarco De Gregori <gianmarco@...2726...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <20250618140016.2766-1-gert@...1296...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg31927.html
+     Signed-off-by: Gert Doering <gert@...1296...>
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1039
-This mail reflects revision 1 of this Change.
 
-Acked-by according to Gerrit (reflected above):
-Gert Doering <gert@...1296...>
+--
+kind regards,
 
-        
-diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index 6ea01d4..70337b1 100644
---- a/src/openvpn/options.c
-+++ b/src/openvpn/options.c
-@@ -2212,12 +2212,20 @@
-     struct local_list *l = alloc_local_list_if_undef(ce, gc);
-     struct local_entry *e;
- 
--    if (l->len >= CONNECTION_LIST_SIZE)
-+    if (l->len >= l->capacity)
-     {
--        msg(msglevel, "Maximum number of 'local' options (%d) exceeded",
--            CONNECTION_LIST_SIZE);
-+        const int new_cap = l->capacity + 1;
-+        const size_t elem_size = sizeof(*l->array);
- 
--        return NULL;
-+        struct local_entry **new_array = gc_realloc(l->array, new_cap * elem_size, gc);
-+        if (!new_array)
-+        {
-+            msg(msglevel, "Unable to process more local options: out of memory. Number of entries = %d", l->len);
-+            return NULL;
-+        }
-+
-+        l->array = new_array;
-+        l->capacity = new_cap;
-     }
- 
-     ALLOC_OBJ_CLEAR_GC(e, struct local_entry, gc);
-diff --git a/src/openvpn/options.h b/src/openvpn/options.h
-index b28ad58..46ec32b 100644
---- a/src/openvpn/options.h
-+++ b/src/openvpn/options.h
-@@ -188,8 +188,9 @@
- 
- struct local_list
- {
-+    int capacity;
-     int len;
--    struct local_entry *array[CONNECTION_LIST_SIZE];
-+    struct local_entry **array;
- };
- 
- struct connection_list
+Gert Doering
+
 
