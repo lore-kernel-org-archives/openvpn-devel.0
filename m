@@ -1,10 +1,16 @@
-From: Yuriy Darnobyt <yuriy.darnobyt@...2722...>
-Content-Type: multipart/alternative;
- boundary="Apple-Mail=_5CDB0EC6-CA17-4C33-959D-3BB5DEB6E3D0"
-Mime-Version: 1.0 (Mac OS X Mail 16.0 \(3826.600.51.1.1\))
-Message-Id: <9F5CC7E1-D7A0-4C16-836D-DFFBD70D1E17@...2722...>
-Date: Fri, 20 Jun 2025 22:09:51 +0300
-Subject: [Openvpn-devel] OpenVPN 2.7_alpha2 released
+From: "plaisthos (Code Review)" <gerrit@...515...>
+Date: Sat, 21 Jun 2025 11:05:54 +0000
+In-Reply-To: <gerrit.1749787477000.Iade06a8454ccf53668deef61f07217ead8ec6c63@...2715...>
+References: <gerrit.1749787477000.Iade06a8454ccf53668deef61f07217ead8ec6c63@...2715...>
+Reply-To: arne-openvpn@...1227..., heiko@...515...,
+ openvpn-devel@lists.sourceforge.net, frank@...2641...
+Message-ID: <90aac10ec3951b0ef458a9537320c3d4d98d7eca-EmailReviewComments-HTML@...2715...>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="9JeY/JlEblU="; charset=UTF-8
+Subject: [Openvpn-devel] [M] Change in openvpn[master]: dns: add updown
+ script for macOS
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,161 +19,87 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: openvpn-devel@lists.sourceforge.net, openvpn-users@lists.sourceforge.net, openvpn-announce@lists.sourceforge.net
+To: d12fk <heiko@...515...>
+Cc: flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---Apple-Mail=_5CDB0EC6-CA17-4C33-959D-3BB5DEB6E3D0
-Content-Type: text/plain; charset="us-ascii"
+--9JeY/JlEblU=
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-The OpenVPN community project team is proud to release OpenVPN 2.7_alpha2.
-This is the second Alpha release for the feature release 2.7.0.
-As the Alpha name implies this is an early release build, this is not inten=
-ded=20
-for production use.
+Attention is currently required from: d12fk, flichtenheld.
 
-This release include security fix for CVE-2025-50054
+plaisthos has posted comments on this change. ( http://gerrit.openvpn.net/c=
+/openvpn/+/1062?usp=3Demail )
 
-Highlights of this release include:
-* Multi-socket support for servers -- Handle multiple addresses/ports/proto=
-cols=20
-within one server
-* Improved Client support for DNS options
-* Client implementations for Linux/BSD, included with the default install
-* New client implementation for Windows, adding support for features like s=
-plit=20
-DNS and DNSSEC
-* Architectural improvements on Windows
-* The block-local flag is now enforced with WFP filters
-* Windows network adapters are now generated on demand
-* Windows automatic service now runs as an unprivileged user
-* Support for server mode in win-dco driver
-Note: Support for the wintun driver has been removed. win-dco is now the=20
-default, tap-windows6 is the fallback solution for use-cases not covered by=
- win-dco.
-* Improved data channel
-* Enforcement of AES-GCM usage limit
-* Epoch data keys and packet format
-* Support for new upstream DCO Linux kernel module
-* This release supports the new ovpn DCO Linux kernel module which will be=
-=20
-available in future upstream Linux kernel releases. Backports of the new mo=
-dule=20
-to current kernels are available via the ovpn-backports project.
-* TLS 1.3 support with bleeding-edge mbedTLS versions
+Change subject: dns: add updown script for macOS
+......................................................................
 
-More details can be found in the Changes document:
 
-<https://github.com/OpenVPN/openvpn/blob/master/Changes.rst>
+Patch Set 3: Code-Review+2
 
-Source code and Windows installers can be downloaded from our download page:
 
-<https://openvpn.net/community-downloads/>
+--
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1062?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings
 
-Packages for Debian, Ubuntu, Fedora, RHEL, and openSUSE are available in th=
-e various
-official Community repositories:
+Gerrit-Project: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: Iade06a8454ccf53668deef61f07217ead8ec6c63
+Gerrit-Change-Number: 1062
+Gerrit-PatchSet: 3
+Gerrit-Owner: d12fk <heiko@...515...>
+Gerrit-Reviewer: flichtenheld <frank@...2641...>
+Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-Attention: flichtenheld <frank@...2641...>
+Gerrit-Attention: d12fk <heiko@...515...>
+Gerrit-Comment-Date: Sat, 21 Jun 2025 11:05:54 +0000
+Gerrit-HasComments: No
+Gerrit-Has-Labels: Yes
+Gerrit-MessageType: comment
 
-<https://community.openvpn.net/Pages/OpenVPN%20software%20repos>
-
-Kind regards,
-Yuriy Darnobyt
-
---Apple-Mail=_5CDB0EC6-CA17-4C33-959D-3BB5DEB6E3D0
-Content-Type: text/html; charset="us-ascii"
+--9JeY/JlEblU=
+Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<html><head><meta http-equiv=3D"content-type" content=3D"text/html; charset=
-=3Dus-ascii"></head><body style=3D"overflow-wrap: break-word; -webkit-nbsp-=
-mode: space; line-break: after-white-space;"><div><font color=3D"#000000"><=
-span style=3D"caret-color: rgb(0, 0, 0);">The OpenVPN community project tea=
-m is proud to release OpenVPN 2.7_alpha2.</span></font></div><div><font col=
-or=3D"#000000"><span style=3D"caret-color: rgb(0, 0, 0);">This is the secon=
-d Alpha release for the feature release 2.7.0.</span></font></div><div><fon=
-t color=3D"#000000"><span style=3D"caret-color: rgb(0, 0, 0);">As the Alpha=
- name implies this is an early release build, this is not intended&nbsp;</s=
-pan></font></div><div><font color=3D"#000000"><span style=3D"caret-color: r=
-gb(0, 0, 0);">for production use.</span></font></div><div><font color=3D"#0=
-00000"><span style=3D"caret-color: rgb(0, 0, 0);"><br></span></font></div><=
-div><font color=3D"#000000"><span style=3D"caret-color: rgb(0, 0, 0);">This=
- release include security fix for CVE-2025-50054</span></font></div><div><f=
-ont color=3D"#000000"><span style=3D"caret-color: rgb(0, 0, 0);"><br></span=
-></font></div><div><font color=3D"#000000"><span style=3D"caret-color: rgb(=
-0, 0, 0);">Highlights of this release include:</span></font></div><div><fon=
-t color=3D"#000000"><span style=3D"caret-color: rgb(0, 0, 0);">* Multi-sock=
-et support for servers -- Handle multiple addresses/ports/protocols&nbsp;</=
-span></font></div><div><font color=3D"#000000"><span style=3D"caret-color: =
-rgb(0, 0, 0);">within one server</span></font></div><div><font color=3D"#00=
-0000"><span style=3D"caret-color: rgb(0, 0, 0);">* Improved Client support =
-for DNS options</span></font></div><div><font color=3D"#000000"><span style=
-=3D"caret-color: rgb(0, 0, 0);">* Client implementations for Linux/BSD, inc=
-luded with the default install</span></font></div><div><font color=3D"#0000=
-00"><span style=3D"caret-color: rgb(0, 0, 0);">* New client implementation =
-for Windows, adding support for features like split&nbsp;</span></font></di=
-v><div><font color=3D"#000000"><span style=3D"caret-color: rgb(0, 0, 0);">D=
-NS and DNSSEC</span></font></div><div><font color=3D"#000000"><span style=
-=3D"caret-color: rgb(0, 0, 0);">* Architectural improvements on Windows</sp=
-an></font></div><div><font color=3D"#000000"><span style=3D"caret-color: rg=
-b(0, 0, 0);">* The block-local flag is now enforced with WFP filters</span>=
-</font></div><div><font color=3D"#000000"><span style=3D"caret-color: rgb(0=
-, 0, 0);">* Windows network adapters are now generated on demand</span></fo=
-nt></div><div><font color=3D"#000000"><span style=3D"caret-color: rgb(0, 0,=
- 0);">* Windows automatic service now runs as an unprivileged user</span></=
-font></div><div><font color=3D"#000000"><span style=3D"caret-color: rgb(0, =
-0, 0);">* Support for server mode in win-dco driver</span></font></div><div=
-><font color=3D"#000000"><span style=3D"caret-color: rgb(0, 0, 0);">Note: S=
-upport for the wintun driver has been removed. win-dco is now the&nbsp;</sp=
-an></font></div><div><font color=3D"#000000"><span style=3D"caret-color: rg=
-b(0, 0, 0);">default, tap-windows6 is the fallback solution for use-cases n=
-ot covered by win-dco.</span></font></div><div><font color=3D"#000000"><spa=
-n style=3D"caret-color: rgb(0, 0, 0);">* Improved data channel</span></font=
-></div><div><font color=3D"#000000"><span style=3D"caret-color: rgb(0, 0, 0=
-);">* Enforcement of AES-GCM usage limit</span></font></div><div><font colo=
-r=3D"#000000"><span style=3D"caret-color: rgb(0, 0, 0);">* Epoch data keys =
-and packet format</span></font></div><div><font color=3D"#000000"><span sty=
-le=3D"caret-color: rgb(0, 0, 0);">* Support for new upstream DCO Linux kern=
-el module</span></font></div><div><font color=3D"#000000"><span style=3D"ca=
-ret-color: rgb(0, 0, 0);">* This release supports the new ovpn DCO Linux ke=
-rnel module which will be&nbsp;</span></font></div><div><font color=3D"#000=
-000"><span style=3D"caret-color: rgb(0, 0, 0);">available in future upstrea=
-m Linux kernel releases. Backports of the new module&nbsp;</span></font></d=
-iv><div><font color=3D"#000000"><span style=3D"caret-color: rgb(0, 0, 0);">=
-to current kernels are available via the ovpn-backports project.</span></fo=
-nt></div><div><font color=3D"#000000"><span style=3D"caret-color: rgb(0, 0,=
- 0);">* TLS 1.3 support with bleeding-edge mbedTLS versions</span></font></=
-div><br style=3D"caret-color: rgb(0, 0, 0); color: rgb(0, 0, 0);"><span sty=
-le=3D"caret-color: rgb(0, 0, 0); color: rgb(0, 0, 0);">More details can be =
-found in the Changes document:</span><br style=3D"caret-color: rgb(0, 0, 0)=
-; color: rgb(0, 0, 0);"><br style=3D"caret-color: rgb(0, 0, 0); color: rgb(=
-0, 0, 0);"><span style=3D"caret-color: rgb(0, 0, 0); color: rgb(0, 0, 0);">=
-&lt;</span><a href=3D"https://github.com/OpenVPN/openvpn/blob/master/Change=
-s.rst">https://github.com/OpenVPN/openvpn/blob/master/Changes.rst</a><span =
-style=3D"caret-color: rgb(0, 0, 0); color: rgb(0, 0, 0);">&gt;</span><br st=
-yle=3D"caret-color: rgb(0, 0, 0); color: rgb(0, 0, 0);"><br style=3D"caret-=
-color: rgb(0, 0, 0); color: rgb(0, 0, 0);"><span style=3D"caret-color: rgb(=
-0, 0, 0); color: rgb(0, 0, 0);">Source code and Windows installers can be d=
-ownloaded from our download page:</span><br style=3D"caret-color: rgb(0, 0,=
- 0); color: rgb(0, 0, 0);"><br style=3D"caret-color: rgb(0, 0, 0); color: r=
-gb(0, 0, 0);"><span style=3D"caret-color: rgb(0, 0, 0); color: rgb(0, 0, 0)=
-;">&lt;</span><a href=3D"https://openvpn.net/community-downloads/">https://=
-openvpn.net/community-downloads/</a><span style=3D"caret-color: rgb(0, 0, 0=
-); color: rgb(0, 0, 0);">&gt;</span><br style=3D"caret-color: rgb(0, 0, 0);=
- color: rgb(0, 0, 0);"><br style=3D"caret-color: rgb(0, 0, 0); color: rgb(0=
-, 0, 0);"><span style=3D"caret-color: rgb(0, 0, 0); color: rgb(0, 0, 0);">P=
-ackages for Debian, Ubuntu, Fedora, RHEL, and openSUSE are available in the=
- various</span><br style=3D"caret-color: rgb(0, 0, 0); color: rgb(0, 0, 0);=
-"><span style=3D"caret-color: rgb(0, 0, 0); color: rgb(0, 0, 0);">official =
-Community repositories:</span><br style=3D"caret-color: rgb(0, 0, 0); color=
-: rgb(0, 0, 0);"><br style=3D"caret-color: rgb(0, 0, 0); color: rgb(0, 0, 0=
-);"><span style=3D"caret-color: rgb(0, 0, 0); color: rgb(0, 0, 0);">&lt;</s=
-pan><a href=3D"https://community.openvpn.net/Pages/OpenVPN%20software%20rep=
-os">https://community.openvpn.net/Pages/OpenVPN%20software%20repos</a><span=
- style=3D"caret-color: rgb(0, 0, 0); color: rgb(0, 0, 0);">&gt;</span><br s=
-tyle=3D"caret-color: rgb(0, 0, 0); color: rgb(0, 0, 0);"><br style=3D"caret=
--color: rgb(0, 0, 0); color: rgb(0, 0, 0);"><span style=3D"caret-color: rgb=
-(0, 0, 0); color: rgb(0, 0, 0);">Kind regards,</span><br style=3D"caret-col=
-or: rgb(0, 0, 0); color: rgb(0, 0, 0);"><font color=3D"#000000"><span style=
-=3D"caret-color: rgb(0, 0, 0);">Yuriy Darnobyt</span></font><br></body></ht=
-ml>=
+<p> Attention is currently required from: d12fk, flichtenheld. </p>
+<p>Patch set 3:<span style=3D"border-radius: 3px; display: inline-block; ma=
+rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1062?usp=3Demail">V=
+iew Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To vi=
+ew, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1062?usp=3Demail=
+">change 1062</a>. To unsubscribe, or for help writing mail filters, visit =
+<a href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemsc=
+ope itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"=
+action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" hr=
+ef=3D"http://gerrit.openvpn.net/c/openvpn/+/1062?usp=3Demail"/><meta itempr=
+op=3D"name" content=3D"View Change"/></div></div>
 
---Apple-Mail=_5CDB0EC6-CA17-4C33-959D-3BB5DEB6E3D0--
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: Iade06a8454ccf53668deef61f07=
+217ead8ec6c63 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1062 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 3 </div>
+<div style=3D"display:none"> Gerrit-Owner: d12fk &lt;heiko@...515...&gt; </=
+div>
+<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
+1...&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
+.1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
+41...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: d12fk &lt;heiko@...515...&gt=
+; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Sat, 21 Jun 2025 11:05:54=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: No </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
+
+
+--9JeY/JlEblU=--
 
