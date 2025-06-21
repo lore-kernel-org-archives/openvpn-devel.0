@@ -1,9 +1,16 @@
-Date: Sat, 21 Jun 2025 14:30:23 +0200 (CEST)
-Message-Id: <202506211230.55LCUNVL038618@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <20250621121301.27509-1-gert@...1296...>
-References: <20250621121301.27509-1-gert@...1296...>
-Subject: [Openvpn-devel] [PATCH applied] Re: dns: add updown script for macOS
+From: "cron2 (Code Review)" <gerrit@...515...>
+Date: Sat, 21 Jun 2025 12:30:35 +0000
+In-Reply-To: <gerrit.1749787477000.Iade06a8454ccf53668deef61f07217ead8ec6c63@...2715...>
+References: <gerrit.1749787477000.Iade06a8454ccf53668deef61f07217ead8ec6c63@...2715...>
+Reply-To: gert@...1296..., arne-openvpn@...1227..., heiko@...515...,
+ openvpn-devel@lists.sourceforge.net, frank@...2641...
+Message-ID: <2efdd9d0dd3a461659f3ff67613082342fb93ee1-EmailReplacePatchSet-HTML@...2715...>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="uVlvQ29elF4="; charset=UTF-8
+Subject: [Openvpn-devel] [M] Change in openvpn[master]: dns: add updown
+ script for macOS
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,35 +19,634 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: Heiko Hund <heiko@...2662...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: d12fk <heiko@...515...>, plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-I have not tested this myself, just stared a bit at the code if
-there are surprises lurking ("unquoted eval" and such).
+--uVlvQ29elF4=
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Arne has tested "all DNS via VPN" (was broken in v2) and "split DNS"
-and both work.  So here we go, more test reports welcome.
+cron2 has uploaded a new patch set (#4) to the change originally created by=
+ d12fk. ( http://gerrit.openvpn.net/c/openvpn/+/1062?usp=3Demail )
 
-Your patch has been applied to the master branch.
+The following approvals got outdated and were removed:
+Code-Review+2 by plaisthos
 
-commit a4db3c6e22fd48b83cc38a644762e33e0894b69b
-Author: Heiko Hund
-Date:   Sat Jun 21 14:12:54 2025 +0200
 
-     dns: add updown script for macOS
+Change subject: dns: add updown script for macOS
+......................................................................
 
-     Signed-off-by: Heiko Hund <heiko@...2662...>
-     Acked-by: Arne Schwabe <arne-openvpn@...1227...>
-     Message-Id: <20250621121301.27509-1-gert@...1296...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg31942.html
-     Signed-off-by: Gert Doering <gert@...1296...>
+dns: add updown script for macOS
 
+Change-Id: Iade06a8454ccf53668deef61f07217ead8ec6c63
+Signed-off-by: Heiko Hund <heiko@...2662...>
+Acked-by: Arne Schwabe <arne-openvpn@...1227...>
+Message-Id: <20250621121301.27509-1-gert@...1296...>
+URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg31=
+942.html
+Signed-off-by: Gert Doering <gert@...1296...>
+---
+M configure.ac
+M distro/dns-scripts/Makefile.am
+A distro/dns-scripts/macos-dns-updown.sh
+3 files changed, 219 insertions(+), 2 deletions(-)
+
+
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/62/1062/4
+
+diff --git a/configure.ac b/configure.ac
+index 8bdec32..02b45f8 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -364,8 +364,7 @@
+ 	*-*-darwin*)
+ 		AC_DEFINE([TARGET_DARWIN], [1], [Are we running on Mac OS X?])
+ 		AC_DEFINE_UNQUOTED([TARGET_PREFIX], ["M"], [Target prefix])
+-		AM_CONDITIONAL([ENABLE_DNS_UPDOWN], [false])
+-		AC_SUBST([DNS_UPDOWN_TYPE], ["resolvconf_file"])
++		AC_SUBST([DNS_UPDOWN_TYPE], ["macos"])
+ 		have_tap_header=3D"yes"
+ 		ac_cv_type_struct_in_pktinfo=3Dno
+ 		;;
+diff --git a/distro/dns-scripts/Makefile.am b/distro/dns-scripts/Makefile.am
+index 9fcd3f7..e3f9043 100644
+--- a/distro/dns-scripts/Makefile.am
++++ b/distro/dns-scripts/Makefile.am
+@@ -12,6 +12,7 @@
+ 	$(srcdir)/Makefile.in
+
+ EXTRA_DIST =3D \
++	macos-dns-updown.sh \
+ 	systemd-dns-updown.sh \
+ 	openresolv-dns-updown.sh \
+ 	haikuos_file-dns-updown.sh \
+diff --git a/distro/dns-scripts/macos-dns-updown.sh b/distro/dns-scripts/ma=
+cos-dns-updown.sh
+new file mode 100644
+index 0000000..89d6882
+--- /dev/null
++++ b/distro/dns-scripts/macos-dns-updown.sh
+@@ -0,0 +1,217 @@
++#!/bin/bash
++#
++# dns-updown - add/remove openvpn provided DNS information
++#
++# (C) Copyright 2025 OpenVPN Inc <sales@...515...>
++#
++# SPDX-License-Identifier: BSD-2-Clause
++#
++# Example env from openvpn (most are not applied):
++#
++#   dns_vars_file /tmp/openvpn_dvf_58b95c0c97b2db43afb5d745f986c53c.tmp
++#
++#      or
++#
++#   dev utun0
++#   script_type dns-up
++#   dns_search_domain_1 mycorp.in
++#   dns_search_domain_2 eu.mycorp.com
++#   dns_server_1_address_1 192.168.99.254
++#   dns_server_1_address_2 fd00::99:53
++#   dns_server_1_port_2 53
++#   dns_server_1_resolve_domain_1 mycorp.in
++#   dns_server_1_resolve_domain_2 eu.mycorp.com
++#   dns_server_1_dnssec true
++#   dns_server_1_transport DoH
++#   dns_server_1_sni dns.mycorp.in
++#
++
++[ -z "${dns_vars_file}" ] || . "${dns_vars_file}"
++
++itf_dns_key=3D"State:/Network/Service/openvpn-${dev}/DNS"
++dns_backup_key=3D"State:/Network/Service/openvpn-${dev}/DnsBackup"
++
++function primary_dns_key {
++    local uuid=3D$(echo "show State:/Network/Global/IPv4" | /usr/sbin/scut=
+il | grep "PrimaryService" | cut -d: -f2 | xargs)
++    echo "Setup:/Network/Service/${uuid}/DNS"
++}
++
++function only_standard_server_ports {
++    local i=3D1
++    while :; do
++        local addr_var=3Ddns_server_${n}_address_${i}
++        [ -n "${!addr_var}" ] || return 0
++
++        local port_var=3Ddns_server_${n}_port_${i}
++        [ -z "${!port_var}" -o "${!port_var}" =3D "53" ] || return 1
++
++        i=3D$((i+1))
++    done
++}
++
++function find_compat_profile {
++    local n=3D1
++    while :; do
++        local addr_var=3Ddns_server_${n}_address_1
++        [ -n "${!addr_var}" ] || {
++            echo "setting DNS failed, no compatible server profile"
++            exit 1
++        }
++
++        # Skip server profiles which require DNSSEC,
++        # secure transport or use a custom port
++        local dnssec_var=3Ddns_server_${n}_dnssec
++        local transport_var=3Ddns_server_${n}_transport
++        [ -z "${!transport_var}" -o "${!transport_var}" =3D "plain" ] \
++            && [ -z "${!dnssec_var}" -o "${!dnssec_var}" =3D "no" ] \
++            && only_standard_server_ports && break
++
++        n=3D$((n+1))
++    done
++    return $n
++}
++
++function get_search_domains {
++    local search_domains=3D""
++    local resolver=3D0
++    /usr/sbin/scutil --dns | while read line; do
++        if [[ "$line" =3D~ resolver.# ]]; then
++            resolver=3D$((resolver+1))
++        elif [ "$resolver" =3D 1 ] && [[ "$line" =3D~ search.domain ]]; th=
+en
++            search_domains+=3D"$(echo $line | cut -d: -f2 | xargs) "
++        elif [ "$resolver" -gt 1 ]; then
++            echo "$search_domains"
++            break
++        fi
++    done
++}
++
++function set_search_domains {
++    [ -n "$1" ] || return
++    dns_key=3D$(primary_dns_key)
++    search_domains=3D"${1}$(get_search_domains)"
++
++    local cmds=3D""
++    cmds+=3D"get ${dns_key}\n"
++    cmds+=3D"d.add SearchDomains * ${search_domains}\n"
++    cmds+=3D"set ${dns_key}\n"
++    echo -e "${cmds}" | /usr/sbin/scutil
++}
++
++function unset_search_domains {
++    [ -n "$1" ] || return
++    dns_key=3D$(primary_dns_key)
++    search_domains=3D"$(get_search_domains)"
++    search_domains=3D$(echo $search_domains | sed -e "s/$1//")
++
++    local cmds=3D""
++    cmds+=3D"get ${dns_key}\n"
++    cmds+=3D"d.add SearchDomains * ${search_domains}\n"
++    cmds+=3D"set ${dns_key}\n"
++    echo -e "${cmds}" | /usr/sbin/scutil
++}
++
++function set_dns {
++    find_compat_profile
++    local n=3D$?
++
++    local i=3D1
++    local addrs=3D""
++    while :; do
++        local addr_var=3Ddns_server_${n}_address_${i}
++        local addr=3D"${!addr_var}"
++        [ -n "$addr" ] || break
++
++        local port_var=3Ddns_server_${n}_port_${i}
++        if [ -n "${!port_var}" ]; then
++            if [[ "$addr" =3D~ : ]]; then
++                addr=3D"[$addr]"
++            fi
++            addrs+=3D"${addr}:${!port_var}${sni} "
++        else
++            addrs+=3D"${addr}${sni} "
++        fi
++        i=3D$((i+1))
++    done
++
++    i=3D1
++    local match_domains=3D""
++    while :; do
++        domain_var=3Ddns_server_${n}_resolve_domain_${i}
++        [ -n "${!domain_var}" ] || break
++        # Add as match domain, if it doesn't already exist
++        [[ "$match_domains" =3D~ (^| )${!domain_var}( |$) ]] \
++            || match_domains+=3D"${!domain_var} "
++        i=3D$((i+1))
++    done
++
++    i=3D1
++    local search_domains=3D""
++    while :; do
++        domain_var=3Ddns_search_domain_${i}
++        [ -n "${!domain_var}" ] || break
++        # Add as search domain, if it doesn't already exist
++        [[ "$search_domains" =3D~ (^| )${!domain_var}( |$) ]] \
++            || search_domains+=3D"${!domain_var} "
++        i=3D$((i+1))
++    done
++
++    if [ -n "$match_domains" ]; then
++        local cmds=3D""
++        cmds+=3D"d.init\n"
++        cmds+=3D"d.add ServerAddresses * ${addrs}\n"
++        cmds+=3D"d.add SupplementalMatchDomains * ${match_domains}\n"
++        cmds+=3D"d.add SupplementalMatchDomainsNoSearch # 1\n"
++        cmds+=3D"add ${itf_dns_key}\n"
++        echo -e "${cmds}" | /usr/sbin/scutil
++        set_search_domains "$search_domains"
++    else
++        local cmds=3D""
++        cmds+=3D"get $(primary_dns_key)\n"
++        cmds+=3D"set ${dns_backup_key}\n"
++        cmds+=3D"d.init\n"
++        cmds+=3D"d.add ServerAddresses * ${addrs}\n"
++        cmds+=3D"d.add SearchDomains * ${search_domains}\n"
++        cmds+=3D"d.add SearchOrder # 5000\n"
++        cmds+=3D"set $(primary_dns_key)\n"
++        echo -e "${cmds}" | /usr/sbin/scutil
++    fi
++
++    /usr/bin/dscacheutil -flushcache
++}
++
++function unset_dns {
++    find_compat_profile
++    local n=3D$?
++
++    local i=3D1
++    local search_domains=3D""
++    while :; do
++        domain_var=3Ddns_search_domain_${i}
++        [ -n "${!domain_var}" ] || break
++        # Add as search domain, if it doesn't already exist
++        [[ "$search_domains" =3D~ (^| )${!domain_var}( |$) ]] \
++            || search_domains+=3D"${!domain_var} "
++        i=3D$((i+1))
++    done
++
++    domain_var=3Ddns_server_${n}_resolve_domain_1
++    if [ -n "${!domain_var}" ]; then
++        echo "remove ${itf_dns_key}" | /usr/sbin/scutil
++        unset_search_domains "$search_domains"
++    else
++        local cmds=3D""
++        cmds+=3D"get ${dns_backup_key}\n"
++        cmds+=3D"set $(primary_dns_key)\n"
++        cmds+=3D"remove ${dns_backup_key}\n"
++        echo -e "${cmds}" | /usr/sbin/scutil
++    fi
++
++    /usr/bin/dscacheutil -flushcache
++}
++
++if [ "$script_type" =3D "dns-up" ]; then
++    set_dns
++else
++    unset_dns
++fi
 
 --
-kind regards,
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1062?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings
 
-Gert Doering
+Gerrit-Project: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: Iade06a8454ccf53668deef61f07217ead8ec6c63
+Gerrit-Change-Number: 1062
+Gerrit-PatchSet: 4
+Gerrit-Owner: d12fk <heiko@...515...>
+Gerrit-Reviewer: flichtenheld <frank@...2641...>
+Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-MessageType: newpatchset
 
+--uVlvQ29elF4=
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<p>cron2 <strong>uploaded patch set #4</strong> to the change originally cr=
+eated by d12fk.</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1062=
+?usp=3Demail">View Change</a></p><p>The following approvals got outdated an=
+d were removed:
+Code-Review+2 by plaisthos</p><pre style=3D"font-family: monospace,monospac=
+e; white-space: pre-wrap;">dns: add updown script for macOS<br><br>Change-I=
+d: Iade06a8454ccf53668deef61f07217ead8ec6c63<br>Signed-off-by: Heiko Hund &=
+lt;heiko@...2662...&gt;<br>Acked-by: Arne Schwabe &lt;arne-openvpn@...2639...=
+..&gt;<br>Message-Id: &lt;20250621121301.27509-1-gert@...1296...&gt;<br>URL=
+: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg31942=
+.html<br>Signed-off-by: Gert Doering &lt;gert@...1296...&gt;<br>---<br>M co=
+nfigure.ac<br>M distro/dns-scripts/Makefile.am<br>A distro/dns-scripts/maco=
+s-dns-updown.sh<br>3 files changed, 219 insertions(+), 2 deletions(-)<br><b=
+r></pre><pre style=3D"font-family: monospace,monospace; white-space: pre-wr=
+ap;">git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/62/1062/4=
+</pre><pre style=3D"font-family: monospace,monospace; white-space: pre-wrap=
+;"><span>diff --git a/configure.ac b/configure.ac</span><br><span>index 8bd=
+ec32..02b45f8 100644</span><br><span>--- a/configure.ac</span><br><span>+++=
+ b/configure.ac</span><br><span>@@ -364,8 +364,7 @@</span><br><span> 	*-*-d=
+arwin*)</span><br><span> 		AC_DEFINE([TARGET_DARWIN], [1], [Are we running =
+on Mac OS X?])</span><br><span> 		AC_DEFINE_UNQUOTED([TARGET_PREFIX], [&quo=
+t;M&quot;], [Target prefix])</span><br><span style=3D"color: hsl(0, 100%, 4=
+0%);">-		AM_CONDITIONAL([ENABLE_DNS_UPDOWN], [false])</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-		AC_SUBST([DNS_UPDOWN_TYPE], [&quot;resolv=
+conf_file&quot;])</span><br><span style=3D"color: hsl(120, 100%, 40%);">+		=
+AC_SUBST([DNS_UPDOWN_TYPE], [&quot;macos&quot;])</span><br><span> 		have_ta=
+p_header=3D&quot;yes&quot;</span><br><span> 		ac_cv_type_struct_in_pktinfo=
+=3Dno</span><br><span> 		;;</span><br><span>diff --git a/distro/dns-scripts=
+/Makefile.am b/distro/dns-scripts/Makefile.am</span><br><span>index 9fcd3f7=
+..e3f9043 100644</span><br><span>--- a/distro/dns-scripts/Makefile.am</span=
+><br><span>+++ b/distro/dns-scripts/Makefile.am</span><br><span>@@ -12,6 +1=
+2,7 @@</span><br><span> 	$(srcdir)/Makefile.in</span><br><span> </span><br>=
+<span> EXTRA_DIST =3D \</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+	macos-dns-updown.sh \</span><br><span> 	systemd-dns-updown.sh \</span>=
+<br><span> 	openresolv-dns-updown.sh \</span><br><span> 	haikuos_file-dns-u=
+pdown.sh \</span><br><span>diff --git a/distro/dns-scripts/macos-dns-updown=
+.sh b/distro/dns-scripts/macos-dns-updown.sh</span><br><span>new file mode =
+100644</span><br><span>index 0000000..89d6882</span><br><span>--- /dev/null=
+</span><br><span>+++ b/distro/dns-scripts/macos-dns-updown.sh</span><br><sp=
+an>@@ -0,0 +1,217 @@</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++#!/bin/bash</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+# dns-updown - add/remove=
+ openvpn provided DNS information</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+#</span><br><span style=3D"color: hsl(120, 100%, 40%);">+# (C=
+) Copyright 2025 OpenVPN Inc &lt;sales@...515...&gt;</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+#</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+# SPDX-License-Identifier: BSD-2-Clause</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+#</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+# Example env from openvpn (most are not applied):</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+#</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+#   dns_vars_file /tmp/openvpn_dvf_58b95c0c9=
+7b2db43afb5d745f986c53c.tmp</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+#</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#      or<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+#</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+#   dev utun0</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+#   script_type dns-up</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+#   dns_search_domain_1 mycorp.in</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+#   dns_search_domain_2 eu.=
+mycorp.com</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#   dns_s=
+erver_1_address_1 192.168.99.254</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+#   dns_server_1_address_2 fd00::99:53</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+#   dns_server_1_port_2 53</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+#   dns_server_1_resolve_domain_1 =
+mycorp.in</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#   dns_se=
+rver_1_resolve_domain_2 eu.mycorp.com</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+#   dns_server_1_dnssec true</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+#   dns_server_1_transport DoH</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+#   dns_server_1_sni dns.mycorp.in</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+#</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+[ -z &quot;${dns_vars_file}&quot; ] || . &quot;${dns_vars_f=
+ile}&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+itf_dns_key=3D&quot;State:/N=
+etwork/Service/openvpn-${dev}/DNS&quot;</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+dns_backup_key=3D&quot;State:/Network/Service/openvpn-$=
+{dev}/DnsBackup&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+function primary_=
+dns_key {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    local =
+uuid=3D$(echo &quot;show State:/Network/Global/IPv4&quot; | /usr/sbin/scuti=
+l | grep &quot;PrimaryService&quot; | cut -d: -f2 | xargs)</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+    echo &quot;Setup:/Network/Servic=
+e/${uuid}/DNS&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+function only_standard_server_ports {=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    local i=3D1</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+    while :; do</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+        local addr_var=3Ddn=
+s_server_${n}_address_${i}</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+        [ -n &quot;${!addr_var}&quot; ] || return 0</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+        local port_var=3Ddns_server_${n}_port_${i}</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+        [ -z &quot;${!po=
+rt_var}&quot; -o &quot;${!port_var}&quot; =3D &quot;53&quot; ] || return 1<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+        i=3D$((i+1))</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+    done</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+function fi=
+nd_compat_profile {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+    local n=3D1</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+while :; do</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        =
+local addr_var=3Ddns_server_${n}_address_1</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+        [ -n &quot;${!addr_var}&quot; ] || {</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+            echo &quot;sett=
+ing DNS failed, no compatible server profile&quot;</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+            exit 1</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+        }</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++        # Skip server profiles which require DNSSEC,</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+        # secure transport or use a custo=
+m port</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        local=
+ dnssec_var=3Ddns_server_${n}_dnssec</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+        local transport_var=3Ddns_server_${n}_transport</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+        [ -z &quot;${!=
+transport_var}&quot; -o &quot;${!transport_var}&quot; =3D &quot;plain&quot;=
+ ] \</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            &am=
+p;&amp; [ -z &quot;${!dnssec_var}&quot; -o &quot;${!dnssec_var}&quot; =3D &=
+quot;no&quot; ] \</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+          &amp;&amp; only_standard_server_ports &amp;&amp; break</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+        n=3D$((n+1))</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+    done</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+    return $n</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+function get_search_domains=
+ {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    local search_=
+domains=3D&quot;&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+    local resolver=3D0</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+    /usr/sbin/scutil --dns | while read line; do</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+        if [[ &quot;$line&quot; =3D~ res=
+olver.# ]]; then</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+         resolver=3D$((resolver+1))</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+        elif [ &quot;$resolver&quot; =3D 1 ] &amp;&amp; [[ =
+&quot;$line&quot; =3D~ search.domain ]]; then</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+            search_domains+=3D&quot;$(echo $line =
+| cut -d: -f2 | xargs) &quot;</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+        elif [ &quot;$resolver&quot; -gt 1 ]; then</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+            echo &quot;$search_dom=
+ains&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+         =
+   break</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        fi<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+    done</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+function set_search_domains {</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+    [ -n &quot;$1&quot; ] || return</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    dns_key=3D$(primary_dns_key)</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+    search_domains=3D&quot;$=
+{1}$(get_search_domains)&quot;</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    loca=
+l cmds=3D&quot;&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+    cmds+=3D&quot;get ${dns_key}\n&quot;</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+    cmds+=3D&quot;d.add SearchDomains * ${search_dom=
+ains}\n&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    cm=
+ds+=3D&quot;set ${dns_key}\n&quot;</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+    echo -e &quot;${cmds}&quot; | /usr/sbin/scutil</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+function unset_search_domains {</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+    [ -n &quot;$1&quot; ] || return</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+    dns_key=3D$(primary_dns_key)</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+    search_domains=3D&quo=
+t;$(get_search_domains)&quot;</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+    search_domains=3D$(echo $search_domains | sed -e &quot;s/$1//=
+&quot;)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+    local cmds=3D&quot;&quot;</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+    cmds+=3D&quot;get=
+ ${dns_key}\n&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+    cmds+=3D&quot;d.add SearchDomains * ${search_domains}\n&quot;</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+    cmds+=3D&quot;set ${dns_k=
+ey}\n&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    echo=
+ -e &quot;${cmds}&quot; | /usr/sbin/scutil</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+function set_d=
+ns {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    find_compat=
+_profile</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    local n=
+=3D$?</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+    local i=3D1</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+    local addrs=3D&quot;&quot;</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+    while :; do</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+        local addr_var=3Ddns_s=
+erver_${n}_address_${i}</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+        local addr=3D&quot;${!addr_var}&quot;</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+        [ -n &quot;$addr&quot; ] || break</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+        local port_var=3Ddns_server_${n}_=
+port_${i}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        if=
+ [ -n &quot;${!port_var}&quot; ]; then</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+            if [[ &quot;$addr&quot; =3D~ : ]]; then</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+                addr=3D&=
+quot;[$addr]&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+           fi</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
+      addrs+=3D&quot;${addr}:${!port_var}${sni} &quot;</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+        else</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+            addrs+=3D&quot;${addr}${sni} &quot;=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        fi</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+        i=3D$((i+1))</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+    done</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+    i=3D1</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+    local match_domains=3D&quot;&quot;</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+    while :; do</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+        domain_var=3Ddns_server_${n}_resolve_domain_=
+${i}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        [ -n &q=
+uot;${!domain_var}&quot; ] || break</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+        # Add as match domain, if it doesn&#39;t already ex=
+ist</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        [[ &quot=
+;$match_domains&quot; =3D~ (^| )${!domain_var}( |$) ]] \</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+            || match_domains+=3D&quot;=
+${!domain_var} &quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+        i=3D$((i+1))</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+    done</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+    i=3D1</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+    local search_domains=3D&quot;&quo=
+t;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    while :; do</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+        domain_var=3D=
+dns_search_domain_${i}</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+        [ -n &quot;${!domain_var}&quot; ] || break</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+        # Add as search domain, if it doe=
+sn&#39;t already exist</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+        [[ &quot;$search_domains&quot; =3D~ (^| )${!domain_var}( |$) ]] =
+\</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            || sea=
+rch_domains+=3D&quot;${!domain_var} &quot;</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+        i=3D$((i+1))</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+    done</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if=
+ [ -n &quot;$match_domains&quot; ]; then</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+        local cmds=3D&quot;&quot;</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+        cmds+=3D&quot;d.init\n&quot;</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+        cmds+=3D&quot;d=
+.add ServerAddresses * ${addrs}\n&quot;</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+        cmds+=3D&quot;d.add SupplementalMatchDomains * =
+${match_domains}\n&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+        cmds+=3D&quot;d.add SupplementalMatchDomainsNoSearch # 1\n&quo=
+t;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        cmds+=3D&=
+quot;add ${itf_dns_key}\n&quot;</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+        echo -e &quot;${cmds}&quot; | /usr/sbin/scutil</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+        set_search_domains &=
+quot;$search_domains&quot;</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+    else</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+    local cmds=3D&quot;&quot;</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+        cmds+=3D&quot;get $(primary_dns_key)\n&quot;</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+        cmds+=3D&quot;set ${dns_=
+backup_key}\n&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+        cmds+=3D&quot;d.init\n&quot;</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+        cmds+=3D&quot;d.add ServerAddresses * ${addrs}\n&q=
+uot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        cmds+=
+=3D&quot;d.add SearchDomains * ${search_domains}\n&quot;</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+        cmds+=3D&quot;d.add SearchOrde=
+r # 5000\n&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+     cmds+=3D&quot;set $(primary_dns_key)\n&quot;</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+        echo -e &quot;${cmds}&quot; | /usr/sb=
+in/scutil</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    fi</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    /usr/bin/dscacheutil -flushcache</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+function unset_dns {</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+    find_compat_profile</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+    local n=3D$?</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+  local i=3D1</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    lo=
+cal search_domains=3D&quot;&quot;</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+    while :; do</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+        domain_var=3Ddns_search_domain_${i}</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+        [ -n &quot;${!domain_var}&quot; ]=
+ || break</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        # =
+Add as search domain, if it doesn&#39;t already exist</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+        [[ &quot;$search_domains&quot; =
+=3D~ (^| )${!domain_var}( |$) ]] \</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+            || search_domains+=3D&quot;${!domain_var} &quot;=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        i=3D$((i+1)=
+)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    done</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+    domain_var=3Ddns_server_${n}_resolve_domain_=
+1</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if [ -n &quot;=
+${!domain_var}&quot; ]; then</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+        echo &quot;remove ${itf_dns_key}&quot; | /usr/sbin/scutil<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+        unset_search=
+_domains &quot;$search_domains&quot;</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+    else</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+        local cmds=3D&quot;&quot;</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+        cmds+=3D&quot;get ${dns_backup_key}\n&quot;</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+        cmds+=3D&quot;s=
+et $(primary_dns_key)\n&quot;</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+        cmds+=3D&quot;remove ${dns_backup_key}\n&quot;</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+        echo -e &quot;${cmds}&=
+quot; | /usr/sbin/scutil</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+    fi</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+    /usr/bin/dscacheutil -f=
+lushcache</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+if [ &quot;$script_type&quot; =3D &quot;dns-up&=
+quot; ]; then</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    se=
+t_dns</span><br><span style=3D"color: hsl(120, 100%, 40%);">+else</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+    unset_dns</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+fi</span><br><span></span><br></pre=
+><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1062?us=
+p=3Demail">change 1062</a>. To unsubscribe, or for help writing mail filter=
+s, visit <a href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><d=
+iv itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope ite=
+mprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=
+=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1062?usp=3Demail"/><=
+meta itemprop=3D"name" content=3D"View Change"/></div></div>
+
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: Iade06a8454ccf53668deef61f07=
+217ead8ec6c63 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1062 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 4 </div>
+<div style=3D"display:none"> Gerrit-Owner: d12fk &lt;heiko@...515...&gt; </=
+div>
+<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
+1...&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
+.1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
+
+
+--uVlvQ29elF4=--
 
