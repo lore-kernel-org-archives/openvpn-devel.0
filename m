@@ -1,16 +1,15 @@
-From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Mon, 23 Jun 2025 12:08:26 +0000
-In-Reply-To: <gerrit.1742993493000.I4ebe1158c36a641888131e824f59004a0f8fb4c5@...2715...>
-References: <gerrit.1742993493000.I4ebe1158c36a641888131e824f59004a0f8fb4c5@...2715...>
-Reply-To: gert@...1296..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, frank@...2641..., sasepp@...2783...
-Message-ID: <d02ce15b3f6881ec6edc81f4a33290877198a1e8-EmailReviewComments-HTML@...2715...>
+From: "ralf_lici (Code Review)" <gerrit@...515...>
+Date: Mon, 23 Jun 2025 13:12:38 +0000
+References: <gerrit.1750684356000.I4fa2d578f9c0a5a8aa24ca1d396102ef2ed9a425@...2715...>
+Reply-To: ralf@...2726..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net, frank@...2641...
+Message-ID: <36119a5eecabf4a2970145c53d64bf470f810f06-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="a0Z7IRWcG3I="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: t_server_null: add
- multi-socket testing
+Content-Type: multipart/alternative; boundary="AF1xgNONUSw="; charset=UTF-8
+Subject: [Openvpn-devel] [XS] Change in openvpn[master]: dco linux: avoid
+ redefining ovpn enums
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,112 +18,160 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: mattock <sasepp@...2783...>
-Cc: flichtenheld <frank@...2641...>, plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---a0Z7IRWcG3I=
+--AF1xgNONUSw=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: flichtenheld, mattock, plaisthos.
+Attention is currently required from: flichtenheld, plaisthos.
 
-cron2 has posted comments on this change. ( http://gerrit.openvpn.net/c/ope=
-nvpn/+/919?usp=3Demail )
+Hello plaisthos, flichtenheld,
 
-Change subject: t_server_null: add multi-socket testing
+I'd like you to do a code review.
+Please visit
+
+    http://gerrit.openvpn.net/c/openvpn/+/1064?usp=3Demail
+
+to review the following change.
+
+
+Change subject: dco linux: avoid redefining ovpn enums
 ......................................................................
 
+dco linux: avoid redefining ovpn enums
 
-Patch Set 6:
+Starting with Linux kernel version 6.16, a couple of ovpn-related enum
+definitions were introduced in the `include/uapi/linux/if_link.h`
+header. Redefining them in openvpn when they are already present in the
+system headers can lead to conflicts or build issues.
 
-(1 comment)
+This commit ensures that enum redefinitions are avoided by conditionally
+using the existing definitions from the system header when available.
 
-Patchset:
-
-PS6:
-The failures on NetBSD and OpenBSD are due to "by default there is only /de=
-v/tun0 to /dev/tun3, and no dynamic device nodes".  Running "sudo /dev/MAKE=
-DEV /dev/tun4" enables 1 community VPN + 4 test servers.
-
-We should re-test when the other BBs are fixed
+Change-Id: I4fa2d578f9c0a5a8aa24ca1d396102ef2ed9a425
+Signed-off-by: Ralf Lici <ralf@...2726...>
+---
+M src/openvpn/dco_linux.h
+1 file changed, 6 insertions(+), 1 deletion(-)
 
 
+
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/64/1064/1
+
+diff --git a/src/openvpn/dco_linux.h b/src/openvpn/dco_linux.h
+index 273a6ad..f6e2d13 100644
+--- a/src/openvpn/dco_linux.h
++++ b/src/openvpn/dco_linux.h
+@@ -40,6 +40,8 @@
+
+ /* OVPN section */
+
++#ifndef IFLA_OVPN_MAX
++
+ enum ovpn_mode {
+     OVPN_MODE_P2P,
+     OVPN_MODE_MP,
+@@ -50,9 +52,12 @@
+     IFLA_OVPN_MODE,
+
+     __IFLA_OVPN_AFTER_LAST,
+-    IFLA_OVPN_MAX =3D __IFLA_OVPN_AFTER_LAST - 1,
+ };
+=20
++#define IFLA_OVPN_MAX (__IFLA_OVPN_MAX - 1)
++
++#endif /* ifndef IFLA_OVPN_MAX */
++
+ typedef struct
+ {
+     struct nl_sock *nl_sock;
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/919?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1064?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings
 
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: I4ebe1158c36a641888131e824f59004a0f8fb4c5
-Gerrit-Change-Number: 919
-Gerrit-PatchSet: 6
-Gerrit-Owner: mattock <sasepp@...2783...>
+Gerrit-Change-Id: I4fa2d578f9c0a5a8aa24ca1d396102ef2ed9a425
+Gerrit-Change-Number: 1064
+Gerrit-PatchSet: 1
+Gerrit-Owner: ralf_lici <ralf@...2726...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-CC: cron2 <gert@...1296...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
 Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Attention: mattock <sasepp@...2783...>
-Gerrit-Comment-Date: Mon, 23 Jun 2025 12:08:26 +0000
-Gerrit-HasComments: Yes
-Gerrit-Has-Labels: No
-Gerrit-MessageType: comment
+Gerrit-MessageType: newchange
 
---a0Z7IRWcG3I=
+--AF1xgNONUSw=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p> Attention is currently required from: flichtenheld, mattock, plaisthos.=
- </p>
-<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/919?usp=3Demail">View C=
-hange</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0;"><=
-li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-style=
-: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p style=
-=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/9=
-19?tab=3Dcomments">Patch Set #6:</a> </p><p style=3D"white-space: pre-wrap;=
- word-wrap: break-word;">The failures on NetBSD and OpenBSD are due to &quo=
-t;by default there is only /dev/tun0 to /dev/tun3, and no dynamic device no=
-des&quot;.  Running &quot;sudo /dev/MAKEDEV /dev/tun4&quot; enables 1 commu=
-nity VPN + 4 test servers.</p><p style=3D"white-space: pre-wrap; word-wrap:=
- break-word;">We should re-test when the other BBs are fixed</p></li></ul><=
-/li></ul><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+=
-/919?usp=3Demail">change 919</a>. To unsubscribe, or for help writing mail =
-filters, visit <a href=3D"http://gerrit.openvpn.net/settings">settings</a>.=
-</p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemsco=
-pe itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link item=
-prop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/919?usp=3Demail"=
-/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
+<p> Attention is currently required from: flichtenheld, plaisthos. </p>
+<p>ralf_lici would like plaisthos and flichtenheld to <strong>review</stron=
+g> this change.
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1064?usp=3Demail">V=
+iew Change</a></p><pre style=3D"font-family: monospace,monospace; white-spa=
+ce: pre-wrap;">dco linux: avoid redefining ovpn enums<br><br>Starting with =
+Linux kernel version 6.16, a couple of ovpn-related enum<br>definitions wer=
+e introduced in the `include/uapi/linux/if_link.h`<br>header. Redefining th=
+em in openvpn when they are already present in the<br>system headers can le=
+ad to conflicts or build issues.<br><br>This commit ensures that enum redef=
+initions are avoided by conditionally<br>using the existing definitions fro=
+m the system header when available.<br><br>Change-Id: I4fa2d578f9c0a5a8aa24=
+ca1d396102ef2ed9a425<br>Signed-off-by: Ralf Lici &lt;ralf@...2726...&gt;<br=
+>---<br>M src/openvpn/dco_linux.h<br>1 file changed, 6 insertions(+), 1 del=
+etion(-)<br><br></pre><pre style=3D"font-family: monospace,monospace; white=
+-space: pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/openvpn refs/cha=
+nges/64/1064/1</pre><pre style=3D"font-family: monospace,monospace; white-s=
+pace: pre-wrap;"><span>diff --git a/src/openvpn/dco_linux.h b/src/openvpn/d=
+co_linux.h</span><br><span>index 273a6ad..f6e2d13 100644</span><br><span>--=
+- a/src/openvpn/dco_linux.h</span><br><span>+++ b/src/openvpn/dco_linux.h</=
+span><br><span>@@ -40,6 +40,8 @@</span><br><span> </span><br><span> /* OVPN=
+ section */</span><br><span> </span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+#ifndef IFLA_OVPN_MAX</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+</span><br><span> enum ovpn_mode {</span><br><span>     OVPN_MO=
+DE_P2P,</span><br><span>     OVPN_MODE_MP,</span><br><span>@@ -50,9 +52,12 =
+@@</span><br><span>     IFLA_OVPN_MODE,</span><br><span> </span><br><span> =
+    __IFLA_OVPN_AFTER_LAST,</span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">-    IFLA_OVPN_MAX =3D __IFLA_OVPN_AFTER_LAST - 1,</span><br><span> };=
+</span><br><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+#=
+define IFLA_OVPN_MAX (__IFLA_OVPN_MAX - 1)</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+#endif /* ifndef IFLA_OVPN_MAX */</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+</span><br><span> typedef struct</span><br><span> {</span=
+><br><span>     struct nl_sock *nl_sock;</span><br><span></span><br></pre><=
+p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1064?usp=
+=3Demail">change 1064</a>. To unsubscribe, or for help writing mail filters=
+, visit <a href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><di=
+v itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope item=
+prop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D=
+"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1064?usp=3Demail"/><met=
+a itemprop=3D"name" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I4ebe1158c36a641888131e824f5=
-9004a0f8fb4c5 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 919 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 6 </div>
-<div style=3D"display:none"> Gerrit-Owner: mattock &lt;sasepp@...2783...&gt=
+<div style=3D"display:none"> Gerrit-Change-Id: I4fa2d578f9c0a5a8aa24ca1d396=
+102ef2ed9a425 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1064 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
+<div style=3D"display:none"> Gerrit-Owner: ralf_lici &lt;ralf@...2726...&gt=
 ; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
 1...&gt; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
 .1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: cron2 &lt;gert@...1296...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
 ..1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
 41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: mattock &lt;sasepp@...2867...=
-.&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Mon, 23 Jun 2025 12:08:26=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: No </div>
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
+<div style=3D"display:none"> Gerrit-MessageType: newchange </div>
 
 
---a0Z7IRWcG3I=--
+--AF1xgNONUSw=--
 
