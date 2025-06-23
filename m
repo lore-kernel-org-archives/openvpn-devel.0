@@ -1,17 +1,16 @@
-From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Sun, 22 Jun 2025 11:36:19 +0000
-In-Reply-To: <gerrit.1708008760000.I3e4ebef484d2a04a383a65ede5617ee98bf218a7@...2715...>
-References: <gerrit.1708008760000.I3e4ebef484d2a04a383a65ede5617ee98bf218a7@...2715...>
-Reply-To: gert@...1296..., arne-openvpn@...1227...,
- gianmarco@...2726..., openvpn-devel@lists.sourceforge.net,
- frank@...2641...
-Message-ID: <e7952558a7909515c82943d94128d69fc0a25c08-EmailReplacePatchSet-HTML@...2715...>
+From: "mattock (Code Review)" <gerrit@...515...>
+Date: Mon, 23 Jun 2025 09:35:18 +0000
+In-Reply-To: <gerrit.1742993493000.I4ebe1158c36a641888131e824f59004a0f8fb4c5@...2715...>
+References: <gerrit.1742993493000.I4ebe1158c36a641888131e824f59004a0f8fb4c5@...2715...>
+Reply-To: sasepp@...2783..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net, frank@...2641...
+Message-ID: <76b99dbb2be7f3bfd86662ba4d45e620701abe54-EmailReplacePatchSet-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="4jBYLuLm8qg="; charset=UTF-8
-Subject: [Openvpn-devel] [M] Change in openvpn[master]: Route: add support
- for user defined routing table
+Content-Type: multipart/alternative; boundary="lx8zUhNlPdU="; charset=UTF-8
+Subject: [Openvpn-devel] [S] Change in openvpn[master]: t_server_null: add
+ multi-socket testing
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,764 +19,278 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: its_Giaan <gianmarco@...2726...>, plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>
+To: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---4jBYLuLm8qg=
+--lx8zUhNlPdU=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-cron2 has uploaded a new patch set (#10) to the change originally created b=
-y its_Giaan. ( http://gerrit.openvpn.net/c/openvpn/+/524?usp=3Demail )
+Attention is currently required from: flichtenheld, mattock, plaisthos.
+
+Hello flichtenheld, plaisthos,
+
+I'd like you to reexamine a change. Please visit
+
+    http://gerrit.openvpn.net/c/openvpn/+/919?usp=3Demail
+
+to look at the new patch set (#6).
 
 The following approvals got outdated and were removed:
-Code-Review+2 by cron2
+Code-Review-1 by flichtenheld
 
 
-Change subject: Route: add support for user defined routing table
+Change subject: t_server_null: add multi-socket testing
 ......................................................................
 
-Route: add support for user defined routing table
+t_server_null: add multi-socket testing
 
-Add the ability for users to specify a custom
-routing table where routes should be installed in.
-As of now routes are always installed in the main
-routing table of the operating system, however,
-with the new --route-table option it is possibile
-to specify the ID of the default routing table
-to be used by --route(-ipv6).
+This adds a new multi-socket server that listens on IPv4 and IPv6
+localhost addresses for TCP and UDP connections respectively. It also
+adds two success tests and one failure test with wrong protocol defined
+at the client side.
 
-Please note: this feature is currently supported
-only by Linux/SITNL.
-Support for other platforms should be added in related backends.
-
-Trac #1399
-Change-Id: I3e4ebef484d2a04a383a65ede5617ee98bf218a7
-Signed-off-by: Gianmarco De Gregori <gianmarco@...2726...>
-Acked-by: Gert Doering <gert@...1296...>
-Message-Id: <20250622110311.1140-1-gert@...1296...>
-URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg31=
-946.html
-Signed-off-by: Gert Doering <gert@...1296...>
+Change-Id: I4ebe1158c36a641888131e824f59004a0f8fb4c5
+Signed-off-by: Samuli Sepp=C3=A4nen <sasepp@...2705...>
 ---
-M doc/man-sections/vpn-network-options.rst
-M src/openvpn/helper.c
-M src/openvpn/init.c
-M src/openvpn/options.c
-M src/openvpn/options.h
-M src/openvpn/route.c
-M src/openvpn/route.h
-7 files changed, 68 insertions(+), 20 deletions(-)
+M tests/t_server_null_default.rc
+1 file changed, 27 insertions(+), 4 deletions(-)
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/24/524/10
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/19/919/6
 
-diff --git a/doc/man-sections/vpn-network-options.rst b/doc/man-sections/vp=
-n-network-options.rst
-index 40b8c19..4a64e8d 100644
---- a/doc/man-sections/vpn-network-options.rst
-+++ b/doc/man-sections/vpn-network-options.rst
-@@ -389,6 +389,14 @@
-   Like ``--redirect-gateway``, but omit actually changing the default gate=
-way.
-   Useful when pushing private subnets.
+diff --git a/tests/t_server_null_default.rc b/tests/t_server_null_default.rc
+index 41ec591..a1c68cd 100755
+--- a/tests/t_server_null_default.rc
++++ b/tests/t_server_null_default.rc
+@@ -38,12 +38,14 @@
+ MAX_CLIENTS=3D"10"
+ CLIENT_MATCH=3D"Test-Client"
+ SERVER_EXEC=3D"${top_builddir}/src/openvpn/openvpn"
+-SERVER_BASE_OPTS=3D"--local 127.0.0.1 --dev tun --topology subnet --max-cl=
+ients $MAX_CLIENTS --persist-tun --verb 3 --duplicate-cn"
++SERVER_BASE_OPTS=3D"--dev tun --topology subnet --max-clients $MAX_CLIENTS=
+ --persist-tun --verb 3 --duplicate-cn"
++SERVER_BIND_OPTS=3D"--local 127.0.0.1"
+ SERVER_CIPHER_OPTS=3D""
+ SERVER_CERT_OPTS=3D"--ca ${CA} --cert ${SERVER_CERT} --key ${SERVER_KEY} -=
+-tls-auth ${TA} 0"
+-SERVER_CONF_BASE=3D"${SERVER_BASE_OPTS} ${SERVER_CIPHER_OPTS} ${SERVER_CER=
+T_OPTS}"
++SERVER_CONF_BASE=3D"${SERVER_BASE_OPTS} ${SERVER_CIPHER_OPTS} ${SERVER_CER=
+T_OPTS} ${SERVER_BIND_OPTS}"
++SERVER_CONF_BASE_MULTISOCKET=3D"${SERVER_BASE_OPTS} ${SERVER_CIPHER_OPTS} =
+${SERVER_CERT_OPTS}"
 
-+--route-table id
-+  Specify a default table id for use with --route.
-+  By default, OpenVPN installs routes in the main routing
-+  table of the operating system, but with this option,
-+  a user defined routing table can be used instead.
+-TEST_SERVER_LIST=3D"1 2 3"
++TEST_SERVER_LIST=3D"1 2 3 4"
+
+ SERVER_NAME_1=3D"t_server_null_server-1194_udp"
+ SERVER_SERVER_1=3D"--server 10.29.41.0 255.255.255.0"
+@@ -63,6 +65,12 @@
+ SERVER_EXEC_3=3D"${SERVER_EXEC}"
+ SERVER_CONF_3=3D"${SERVER_CONF_BASE} ${SERVER_SERVER_3} --lport 1196 --pro=
+to udp --management 127.0.0.1 ${SERVER_MGMT_PORT_3} --dh none --cipher AES-=
+192-CBC --data-ciphers DEFAULT:AES-192-CBC"
+
++SERVER_NAME_4=3D"t_server_null_server-1197_multisocket_ipv4_ipv6"
++SERVER_SERVER_4=3D"--server 10.29.44.0 255.255.255.0"
++SERVER_MGMT_PORT_4=3D"11197"
++SERVER_EXEC_4=3D"${SERVER_EXEC}"
++SERVER_CONF_4=3D"${SERVER_CONF_BASE_MULTISOCKET} ${SERVER_SERVER_4} --loca=
+l 127.0.0.1 1197 tcp --local ::1 1197 udp --management 127.0.0.1 ${SERVER_M=
+GMT_PORT_4}"
 +
-+  (Supported on Linux only, on other platforms this is a no-op).
+ # Test client configurations
+ CLIENT_EXEC=3D"${top_builddir}/src/openvpn/openvpn"
+ CLIENT_BASE_OPTS=3D"--client --nobind --remote-cert-tls server --persist-t=
+un --verb 3 --resolv-retry infinite --connect-retry-max 3 --server-poll-tim=
+eout 5 --explicit-exit-notify 3 --script-security 2"
+@@ -72,7 +80,7 @@
+ CLIENT_CIPHER_OPTS=3D""
+ CLIENT_CERT_OPTS=3D"--ca ${CA} --cert ${CLIENT_CERT} --key ${CLIENT_KEY} -=
+-tls-auth ${TA} 1"
+
+-TEST_RUN_LIST=3D"1 1L 2 2L 3 4a 4b 4c"
++TEST_RUN_LIST=3D"1 1L 2 2L 3 4a 4b 4c 5a 5b 5c"
+ CLIENT_CONF_BASE=3D"${CLIENT_NULL_OPTS} ${CLIENT_BASE_OPTS} ${CLIENT_CIPHE=
+R_OPTS} ${CLIENT_CERT_OPTS}"
+ CLIENT_CONF_BASE_LWIP=3D"${CLIENT_LWIP_OPTS} ${CLIENT_BASE_OPTS} ${CLIENT_=
+CIPHER_OPTS} ${CLIENT_CERT_OPTS}"
+
+@@ -121,3 +129,18 @@
+ SHOULD_PASS_4c=3D"no"
+ CLIENT_EXEC_4c=3D"${CLIENT_EXEC}"
+ CLIENT_CONF_4c=3D"${CLIENT_CONF_BASE} --remote 127.0.0.1 1196 udp --proto =
+udp --cipher AES-192-CBC --data-ciphers AES-128-CBC"
 +
- --route args
-   Add route to routing table after connection is established. Multiple
-   routes can be specified. Routes will be automatically torn down in
-@@ -463,14 +471,20 @@
-   Setup IPv6 routing in the system to send the specified IPv6 network into
-   OpenVPN's *tun*.
-
--  Valid syntax:
-+  Valid syntaxes:
-   ::
-
--     route-ipv6 ipv6addr/bits [gateway] [metric]
-+     route-ipv6 ipv6addr/bits
-+     route-ipv6 ipv6addr/bits gateway
-+     route-ipv6 ipv6addr/bits gateway metric
-
--  The gateway parameter is only used for IPv6 routes across *tap* devices,
--  and if missing, the ``ipv6remote`` field from ``--ifconfig-ipv6`` or
--  ``--route-ipv6-gateway`` is used.
-+  ``gateway``
-+        Only used for IPv6 routes across *tap* devices,
-+        and if missing, the ``ipv6remote`` field from ``--ifconfig-ipv6`` =
-or
-+        ``--route-ipv6-gateway`` is used.
++TEST_NAME_5a=3D"t_server_null_client.sh-openvpn_current_multisocket_ipv4_t=
+cp"
++SHOULD_PASS_5a=3D"yes"
++CLIENT_EXEC_5a=3D"${CLIENT_EXEC}"
++CLIENT_CONF_5a=3D"${CLIENT_CONF_BASE} --remote 127.0.0.1 1197 tcp"
 +
-+  ``metric``
-+        default taken from ``--route-metric`` if set, otherwise :code:`0`.
-
- --route-gateway arg
-   Specify a default *gateway* for use with ``--route``.
-diff --git a/src/openvpn/helper.c b/src/openvpn/helper.c
-index 8761826..7cef9db 100644
---- a/src/openvpn/helper.c
-+++ b/src/openvpn/helper.c
-@@ -118,7 +118,8 @@
-                              print_in_addr_t(network, 0, &o->gc),
-                              print_in_addr_t(netmask, 0, &o->gc),
-                              NULL,
--                             NULL);
-+                             NULL,
-+                             o->route_default_table_id);
- }
-
- static void
-diff --git a/src/openvpn/init.c b/src/openvpn/init.c
-index 7d4eb85..77747a2 100644
---- a/src/openvpn/init.c
-+++ b/src/openvpn/init.c
-@@ -1566,7 +1566,7 @@
-         {
-             add_route_ipv6_to_option_list( options->routes_ipv6,
-                                            string_alloc(opt_list[i], optio=
-ns->routes_ipv6->gc),
--                                           NULL, NULL );
-+                                           NULL, NULL, options->route_defa=
-ult_table_id);
-         }
-     }
-
-diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index 3cf8c2a..7e26069 100644
---- a/src/openvpn/options.c
-+++ b/src/openvpn/options.c
-@@ -213,6 +213,10 @@
-     "                    pass --ifconfig parms by environment to scripts.\=
-n"
-     "--ifconfig-nowarn : Don't warn if the --ifconfig option on this side =
-of the\n"
-     "                    connection doesn't match the remote side.\n"
-+#ifdef TARGET_LINUX
-+    "--route-table table_id : Specify a custom routing table for use with =
---route(-ipv6).\n"
-+    "                           If not specified, the id of the default ro=
-uting table will be used.\n"
-+#endif
-     "--route network [netmask] [gateway] [metric] :\n"
-     "                  Add route to routing table after connection\n"
-     "                  is established.  Multiple routes can be specified.\=
-n"
-@@ -829,6 +833,7 @@
-     o->ce.mssfix =3D 0;
-     o->ce.mssfix_default =3D true;
-     o->ce.mssfix_encap =3D true;
-+    o->route_default_table_id =3D 0;
-     o->route_delay_window =3D 30;
-     o->resolve_retry_seconds =3D RESOLV_RETRY_INFINITE;
-     o->resolve_in_advance =3D false;
-@@ -1799,6 +1804,7 @@
-     SHOW_STR(route_script);
-     SHOW_STR(route_default_gateway);
-     SHOW_INT(route_default_metric);
-+    SHOW_INT(route_default_table_id);
-     SHOW_BOOL(route_noexec);
-     SHOW_INT(route_delay);
-     SHOW_INT(route_delay_window);
-@@ -7064,6 +7070,14 @@
-         cnol_check_alloc(options);
-         add_client_nat_to_option_list(options->client_nat, p[1], p[2], p[3=
-], p[4], msglevel);
-     }
-+    else if (streq(p[0], "route-table") && p[1] && !p[2])
-+    {
-+#ifndef ENABLE_SITNL
-+        msg(M_WARN, "NOTE: --route-table is supported only on Linux when S=
-ITNL is built-in");
-+#endif
-+        VERIFY_PERMISSION(OPT_P_ROUTE_TABLE);
-+        options->route_default_table_id =3D positive_atoi(p[1], msglevel);
-+    }
-     else if (streq(p[0], "route") && p[1] && !p[5])
-     {
-         VERIFY_PERMISSION(OPT_P_ROUTE);
-@@ -7085,8 +7099,9 @@
-                 msg(msglevel, "route parameter gateway '%s' must be a vali=
-d address", p[3]);
-                 goto err;
-             }
-+            /* p[4] is metric, if specified */
-         }
--        add_route_to_option_list(options->routes, p[1], p[2], p[3], p[4]);
-+        add_route_to_option_list(options->routes, p[1], p[2], p[3], p[4], =
-options->route_default_table_id);
-     }
-     else if (streq(p[0], "route-ipv6") && p[1] && !p[4])
-     {
-@@ -7104,9 +7119,9 @@
-                 msg(msglevel, "route-ipv6 parameter gateway '%s' must be a=
- valid address", p[2]);
-                 goto err;
-             }
--            /* p[3] is metric, if present */
-+            /* p[3] is metric, if specified */
-         }
--        add_route_ipv6_to_option_list(options->routes_ipv6, p[1], p[2], p[=
-3]);
-+        add_route_ipv6_to_option_list(options->routes_ipv6, p[1], p[2], p[=
-3], options->route_default_table_id);
-     }
-     else if (streq(p[0], "max-routes") && !p[2])
-     {
-diff --git a/src/openvpn/options.h b/src/openvpn/options.h
-index 46ec32b..56e85d7 100644
---- a/src/openvpn/options.h
-+++ b/src/openvpn/options.h
-@@ -427,6 +427,7 @@
-     const char *route_predown_script;
-     const char *route_default_gateway;
-     const char *route_ipv6_default_gateway;
-+    int route_default_table_id;
-     int route_default_metric;
-     bool route_noexec;
-     int route_delay;
-@@ -758,6 +759,7 @@
- #define OPT_P_PEER_ID         (1<<28)
- #define OPT_P_INLINE          (1<<29)
- #define OPT_P_PUSH_MTU        (1<<30)
-+#define OPT_P_ROUTE_TABLE     (1<<31)
-
- #define OPT_P_DEFAULT   (~(OPT_P_INSTANCE|OPT_P_PULL_MODE))
-
-diff --git a/src/openvpn/route.c b/src/openvpn/route.c
-index bd79a28..156262a 100644
---- a/src/openvpn/route.c
-+++ b/src/openvpn/route.c
-@@ -330,13 +330,11 @@
-     r->option =3D ro;
-
-     /* network */
--
-     if (!is_route_parm_defined(ro->network))
-     {
-         goto fail;
-     }
-
--
-     /* get_special_addr replaces specialaddr with a special ip addr
-      * like gw. getaddrinfo is called to convert a a addrinfo struct */
-
-@@ -442,6 +440,9 @@
-
-     r->flags |=3D RT_DEFINED;
-
-+    /* routing table id */
-+    r->table_id =3D ro->table_id;
++TEST_NAME_5b=3D"t_server_null_client.sh-openvpn_current_multisocket_ipv6_u=
+dp"
++SHOULD_PASS_5b=3D"yes"
++CLIENT_EXEC_5b=3D"${CLIENT_EXEC}"
++CLIENT_CONF_5b=3D"${CLIENT_CONF_BASE} --remote ::1 1197 udp"
 +
-     return true;
-
- fail:
-@@ -498,6 +499,9 @@
-
-     r6->flags |=3D RT_DEFINED;
-
-+    /* routing table id */
-+    r6->table_id =3D r6o->table_id;
-+
-     return true;
-
- fail:
-@@ -511,7 +515,8 @@
-                          const char *network,
-                          const char *netmask,
-                          const char *gateway,
--                         const char *metric)
-+                         const char *metric,
-+                         int table_id)
- {
-     struct route_option *ro;
-     ALLOC_OBJ_GC(ro, struct route_option, l->gc);
-@@ -519,6 +524,7 @@
-     ro->netmask =3D netmask;
-     ro->gateway =3D gateway;
-     ro->metric =3D metric;
-+    ro->table_id =3D table_id;
-     ro->next =3D l->routes;
-     l->routes =3D ro;
-=20
-@@ -528,13 +534,15 @@
- add_route_ipv6_to_option_list(struct route_ipv6_option_list *l,
-                               const char *prefix,
-                               const char *gateway,
--                              const char *metric)
-+                              const char *metric,
-+                              int table_id)
- {
-     struct route_ipv6_option *ro;
-     ALLOC_OBJ_GC(ro, struct route_ipv6_option, l->gc);
-     ro->prefix =3D prefix;
-     ro->gateway =3D gateway;
-     ro->metric =3D metric;
-+    ro->table_id =3D table_id;
-     ro->next =3D l->routes_ipv6;
-     l->routes_ipv6 =3D ro;
- }
-@@ -1610,9 +1618,10 @@
-         metric =3D r->metric;
-     }
-
-+
-     status =3D RTA_SUCCESS;
-     int ret =3D net_route_v4_add(ctx, &r->network, netmask_to_netbits2(r->=
-netmask),
--                               &r->gateway, iface, 0, metric);
-+                               &r->gateway, iface, r->table_id, metric);
-     if (ret =3D=3D -EEXIST)
-     {
-         msg(D_ROUTE, "NOTE: Linux route add command failed because route e=
-xists");
-@@ -2007,7 +2016,7 @@
-     status =3D RTA_SUCCESS;
-     int ret =3D net_route_v6_add(ctx, &r6->network, r6->netbits,
-                                gateway_needed ? &r6->gateway : NULL,
--                               device, 0, metric);
-+                               device, r6->table_id, metric);
-     if (ret =3D=3D -EEXIST)
-     {
-         msg(D_ROUTE, "NOTE: Linux route add command failed because route e=
-xists");
-@@ -2227,7 +2236,7 @@
-     }
-
-     if (net_route_v4_del(ctx, &r->network, netmask_to_netbits2(r->netmask),
--                         &r->gateway, NULL, 0, metric) < 0)
-+                         &r->gateway, NULL, r->table_id, metric) < 0)
-     {
-         msg(M_WARN, "ERROR: Linux route delete command failed");
-     }
-@@ -2452,7 +2461,7 @@
-     }
-
-     if (net_route_v6_del(ctx, &r6->network, r6->netbits,
--                         gateway_needed ? &r6->gateway : NULL, device, 0,
-+                         gateway_needed ? &r6->gateway : NULL, device, r6-=
->table_id,
-                          metric) < 0)
-     {
-         msg(M_WARN, "ERROR: Linux route v6 delete command failed");
-diff --git a/src/openvpn/route.h b/src/openvpn/route.h
-index aa3114c..237375c 100644
---- a/src/openvpn/route.h
-+++ b/src/openvpn/route.h
-@@ -69,6 +69,7 @@
-     in_addr_t remote_host;
-     int remote_host_local; /* TLA_x value */
-     struct route_bypass bypass;
-+    int table_id;
-     int default_metric;
- };
-
-@@ -77,6 +78,7 @@
-     const char *network;
-     const char *netmask;
-     const char *gateway;
-+    int table_id;
-     const char *metric;
- };
-
-@@ -101,6 +103,7 @@
-     const char *prefix;         /* e.g. "2001:db8:1::/64" */
-     const char *gateway;        /* e.g. "2001:db8:0::2" */
-     const char *metric;         /* e.g. "5" */
-+    int table_id;
- };
-
- struct route_ipv6_option_list {
-@@ -119,6 +122,7 @@
-     in_addr_t network;
-     in_addr_t netmask;
-     in_addr_t gateway;
-+    int table_id;
-     int metric;
- };
-
-@@ -129,6 +133,7 @@
-     unsigned int netbits;
-     struct in6_addr gateway;
-     int metric;
-+    int table_id;
-     /* gateway interface */
- #ifdef _WIN32
-     DWORD adapter_index;        /* interface or ~0 if undefined */
-@@ -290,12 +295,14 @@
-                               const char *network,
-                               const char *netmask,
-                               const char *gateway,
--                              const char *metric);
-+                              const char *metric,
-+                              int table_id);
-
- void add_route_ipv6_to_option_list(struct route_ipv6_option_list *l,
-                                    const char *prefix,
-                                    const char *gateway,
--                                   const char *metric);
-+                                   const char *metric,
-+                                   int table_id);
-
- bool init_route_list(struct route_list *rl,
-                      const struct route_option_list *opt,
++TEST_NAME_5c=3D"t_server_null_client.sh-openvpn_current_multisocket_ipv6_t=
+cp_fail"
++SHOULD_PASS_5c=3D"no"
++CLIENT_EXEC_5c=3D"${CLIENT_EXEC}"
++CLIENT_CONF_5c=3D"${CLIENT_CONF_BASE} --remote ::1 1197 tcp"
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/524?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/919?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings
 
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: I3e4ebef484d2a04a383a65ede5617ee98bf218a7
-Gerrit-Change-Number: 524
-Gerrit-PatchSet: 10
-Gerrit-Owner: its_Giaan <gianmarco@...2726...>
-Gerrit-Reviewer: cron2 <gert@...1296...>
+Gerrit-Change-Id: I4ebe1158c36a641888131e824f59004a0f8fb4c5
+Gerrit-Change-Number: 919
+Gerrit-PatchSet: 6
+Gerrit-Owner: mattock <sasepp@...2783...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Attention: flichtenheld <frank@...2641...>
+Gerrit-Attention: mattock <sasepp@...2783...>
 Gerrit-MessageType: newpatchset
 
---4jBYLuLm8qg=
+--lx8zUhNlPdU=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p>cron2 <strong>uploaded patch set #10</strong> to the change originally c=
-reated by its_Giaan.</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+=
-/524?usp=3Demail">View Change</a></p><p>The following approvals got outdate=
-d and were removed:
-Code-Review+2 by cron2</p><pre style=3D"font-family: monospace,monospace; w=
-hite-space: pre-wrap;">Route: add support for user defined routing table<br=
-><br>Add the ability for users to specify a custom<br>routing table where r=
-outes should be installed in.<br>As of now routes are always installed in t=
-he main<br>routing table of the operating system, however,<br>with the new =
---route-table option it is possibile<br>to specify the ID of the default ro=
-uting table<br>to be used by --route(-ipv6).<br><br>Please note: this featu=
-re is currently supported<br>only by Linux/SITNL.<br>Support for other plat=
-forms should be added in related backends.<br><br>Trac #1399<br>Change-Id: =
-I3e4ebef484d2a04a383a65ede5617ee98bf218a7<br>Signed-off-by: Gianmarco De Gr=
-egori &lt;gianmarco@...2726...&gt;<br>Acked-by: Gert Doering &lt;gert@...1711...=
-96...&gt;<br>Message-Id: &lt;20250622110311.1140-1-gert@...1296...&gt;<br>U=
-RL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg319=
-46.html<br>Signed-off-by: Gert Doering &lt;gert@...1296...&gt;<br>---<br>M =
-doc/man-sections/vpn-network-options.rst<br>M src/openvpn/helper.c<br>M src=
-/openvpn/init.c<br>M src/openvpn/options.c<br>M src/openvpn/options.h<br>M =
-src/openvpn/route.c<br>M src/openvpn/route.h<br>7 files changed, 68 inserti=
-ons(+), 20 deletions(-)<br><br></pre><pre style=3D"font-family: monospace,m=
-onospace; white-space: pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/o=
-penvpn refs/changes/24/524/10</pre><pre style=3D"font-family: monospace,mon=
-ospace; white-space: pre-wrap;"><span>diff --git a/doc/man-sections/vpn-net=
-work-options.rst b/doc/man-sections/vpn-network-options.rst</span><br><span=
->index 40b8c19..4a64e8d 100644</span><br><span>--- a/doc/man-sections/vpn-n=
-etwork-options.rst</span><br><span>+++ b/doc/man-sections/vpn-network-optio=
-ns.rst</span><br><span>@@ -389,6 +389,14 @@</span><br><span>   Like ``--red=
-irect-gateway``, but omit actually changing the default gateway.</span><br>=
-<span>   Useful when pushing private subnets.</span><br><span> </span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+--route-table id</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+  Specify a default table id for u=
-se with --route.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  B=
-y default, OpenVPN installs routes in the main routing</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+  table of the operating system, but wit=
-h this option,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  a u=
-ser defined routing table can be used instead.</span><br><span style=3D"col=
+<p> Attention is currently required from: flichtenheld, mattock, plaisthos.=
+ </p>
+<p>mattock <strong>uploaded patch set #6</strong> to this change.</p><p><a =
+href=3D"http://gerrit.openvpn.net/c/openvpn/+/919?usp=3Demail">View Change<=
+/a></p><p>The following approvals got outdated and were removed:
+Code-Review-1 by flichtenheld</p><pre style=3D"font-family: monospace,monos=
+pace; white-space: pre-wrap;">t_server_null: add multi-socket testing<br><b=
+r>This adds a new multi-socket server that listens on IPv4 and IPv6<br>loca=
+lhost addresses for TCP and UDP connections respectively. It also<br>adds t=
+wo success tests and one failure test with wrong protocol defined<br>at the=
+ client side.<br><br>Change-Id: I4ebe1158c36a641888131e824f59004a0f8fb4c5<b=
+r>Signed-off-by: Samuli Sepp=C3=A4nen &lt;sasepp@...2705...&gt;<br>---<br>M=
+ tests/t_server_null_default.rc<br>1 file changed, 27 insertions(+), 4 dele=
+tions(-)<br><br></pre><pre style=3D"font-family: monospace,monospace; white=
+-space: pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/openvpn refs/cha=
+nges/19/919/6</pre><pre style=3D"font-family: monospace,monospace; white-sp=
+ace: pre-wrap;"><span>diff --git a/tests/t_server_null_default.rc b/tests/t=
+_server_null_default.rc</span><br><span>index 41ec591..a1c68cd 100755</span=
+><br><span>--- a/tests/t_server_null_default.rc</span><br><span>+++ b/tests=
+/t_server_null_default.rc</span><br><span>@@ -38,12 +38,14 @@</span><br><sp=
+an> MAX_CLIENTS=3D&quot;10&quot;</span><br><span> CLIENT_MATCH=3D&quot;Test=
+-Client&quot;</span><br><span> SERVER_EXEC=3D&quot;${top_builddir}/src/open=
+vpn/openvpn&quot;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-SERV=
+ER_BASE_OPTS=3D&quot;--local 127.0.0.1 --dev tun --topology subnet --max-cl=
+ients $MAX_CLIENTS --persist-tun --verb 3 --duplicate-cn&quot;</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+SERVER_BASE_OPTS=3D&quot;--dev t=
+un --topology subnet --max-clients $MAX_CLIENTS --persist-tun --verb 3 --du=
+plicate-cn&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+SER=
+VER_BIND_OPTS=3D&quot;--local 127.0.0.1&quot;</span><br><span> SERVER_CIPHE=
+R_OPTS=3D&quot;&quot;</span><br><span> SERVER_CERT_OPTS=3D&quot;--ca ${CA} =
+--cert ${SERVER_CERT} --key ${SERVER_KEY} --tls-auth ${TA} 0&quot;</span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-SERVER_CONF_BASE=3D&quot;${SER=
+VER_BASE_OPTS} ${SERVER_CIPHER_OPTS} ${SERVER_CERT_OPTS}&quot;</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+SERVER_CONF_BASE=3D&quot;${SERVE=
+R_BASE_OPTS} ${SERVER_CIPHER_OPTS} ${SERVER_CERT_OPTS} ${SERVER_BIND_OPTS}&=
+quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+SERVER_CONF_BA=
+SE_MULTISOCKET=3D&quot;${SERVER_BASE_OPTS} ${SERVER_CIPHER_OPTS} ${SERVER_C=
+ERT_OPTS}&quot;</span><br><span> </span><br><span style=3D"color: hsl(0, 10=
+0%, 40%);">-TEST_SERVER_LIST=3D&quot;1 2 3&quot;</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+TEST_SERVER_LIST=3D&quot;1 2 3 4&quot;</span><=
+br><span> </span><br><span> SERVER_NAME_1=3D&quot;t_server_null_server-1194=
+_udp&quot;</span><br><span> SERVER_SERVER_1=3D&quot;--server 10.29.41.0 255=
+.255.255.0&quot;</span><br><span>@@ -63,6 +65,12 @@</span><br><span> SERVER=
+_EXEC_3=3D&quot;${SERVER_EXEC}&quot;</span><br><span> SERVER_CONF_3=3D&quot=
+;${SERVER_CONF_BASE} ${SERVER_SERVER_3} --lport 1196 --proto udp --manageme=
+nt 127.0.0.1 ${SERVER_MGMT_PORT_3} --dh none --cipher AES-192-CBC --data-ci=
+phers DEFAULT:AES-192-CBC&quot;</span><br><span> </span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+SERVER_NAME_4=3D&quot;t_server_null_server-11=
+97_multisocket_ipv4_ipv6&quot;</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+SERVER_SERVER_4=3D&quot;--server 10.29.44.0 255.255.255.0&quot;<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+SERVER_MGMT_PORT_4=
+=3D&quot;11197&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++SERVER_EXEC_4=3D&quot;${SERVER_EXEC}&quot;</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+SERVER_CONF_4=3D&quot;${SERVER_CONF_BASE_MULTISOCKE=
+T} ${SERVER_SERVER_4} --local 127.0.0.1 1197 tcp --local ::1 1197 udp --man=
+agement 127.0.0.1 ${SERVER_MGMT_PORT_4}&quot;</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+</span><br><span> # Test client configurations</s=
+pan><br><span> CLIENT_EXEC=3D&quot;${top_builddir}/src/openvpn/openvpn&quot=
+;</span><br><span> CLIENT_BASE_OPTS=3D&quot;--client --nobind --remote-cert=
+-tls server --persist-tun --verb 3 --resolv-retry infinite --connect-retry-=
+max 3 --server-poll-timeout 5 --explicit-exit-notify 3 --script-security 2&=
+quot;</span><br><span>@@ -72,7 +80,7 @@</span><br><span> CLIENT_CIPHER_OPTS=
+=3D&quot;&quot;</span><br><span> CLIENT_CERT_OPTS=3D&quot;--ca ${CA} --cert=
+ ${CLIENT_CERT} --key ${CLIENT_KEY} --tls-auth ${TA} 1&quot;</span><br><spa=
+n> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-TEST_RUN_LIST=3D&q=
+uot;1 1L 2 2L 3 4a 4b 4c&quot;</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+TEST_RUN_LIST=3D&quot;1 1L 2 2L 3 4a 4b 4c 5a 5b 5c&quot;</span>=
+<br><span> CLIENT_CONF_BASE=3D&quot;${CLIENT_NULL_OPTS} ${CLIENT_BASE_OPTS}=
+ ${CLIENT_CIPHER_OPTS} ${CLIENT_CERT_OPTS}&quot;</span><br><span> CLIENT_CO=
+NF_BASE_LWIP=3D&quot;${CLIENT_LWIP_OPTS} ${CLIENT_BASE_OPTS} ${CLIENT_CIPHE=
+R_OPTS} ${CLIENT_CERT_OPTS}&quot;</span><br><span> </span><br><span>@@ -121=
+,3 +129,18 @@</span><br><span> SHOULD_PASS_4c=3D&quot;no&quot;</span><br><s=
+pan> CLIENT_EXEC_4c=3D&quot;${CLIENT_EXEC}&quot;</span><br><span> CLIENT_CO=
+NF_4c=3D&quot;${CLIENT_CONF_BASE} --remote 127.0.0.1 1196 udp --proto udp -=
+-cipher AES-192-CBC --data-ciphers AES-128-CBC&quot;</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+TEST_NAME_5a=3D&quot;t_server_null_client.sh-openvpn_current=
+_multisocket_ipv4_tcp&quot;</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+SHOULD_PASS_5a=3D&quot;yes&quot;</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+CLIENT_EXEC_5a=3D&quot;${CLIENT_EXEC}&quot;</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+CLIENT_CONF_5a=3D&quot;${CLIEN=
+T_CONF_BASE} --remote 127.0.0.1 1197 tcp&quot;</span><br><span style=3D"col=
 or: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+  (Supported on Linux only, on other platforms this is a no-op).</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> --ro=
-ute args</span><br><span>   Add route to routing table after connection is =
-established. Multiple</span><br><span>   routes can be specified. Routes wi=
-ll be automatically torn down in</span><br><span>@@ -463,14 +471,20 @@</spa=
-n><br><span>   Setup IPv6 routing in the system to send the specified IPv6 =
-network into</span><br><span>   OpenVPN&#39;s *tun*.</span><br><span> </spa=
-n><br><span style=3D"color: hsl(0, 100%, 40%);">-  Valid syntax:</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+  Valid syntaxes:</span><br><s=
-pan>   ::</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40=
-%);">-     route-ipv6 ipv6addr/bits [gateway] [metric]</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+     route-ipv6 ipv6addr/bits</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+     route-ipv6 ipv6addr/bits =
-gateway</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     route-i=
-pv6 ipv6addr/bits gateway metric</span><br><span> </span><br><span style=3D=
-"color: hsl(0, 100%, 40%);">-  The gateway parameter is only used for IPv6 =
-routes across *tap* devices,</span><br><span style=3D"color: hsl(0, 100%, 4=
-0%);">-  and if missing, the ``ipv6remote`` field from ``--ifconfig-ipv6`` =
-or</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  ``--route-ipv6-ga=
-teway`` is used.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  `=
-`gateway``</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        O=
-nly used for IPv6 routes across *tap* devices,</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+        and if missing, the ``ipv6remote`` field=
- from ``--ifconfig-ipv6`` or</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+        ``--route-ipv6-gateway`` is used.</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+  ``metric``</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+        default taken from ``--route-metric`` if set, otherwise :code:=
-`0`.</span><br><span> </span><br><span> --route-gateway arg</span><br><span=
->   Specify a default *gateway* for use with ``--route``.</span><br><span>d=
-iff --git a/src/openvpn/helper.c b/src/openvpn/helper.c</span><br><span>ind=
-ex 8761826..7cef9db 100644</span><br><span>--- a/src/openvpn/helper.c</span=
-><br><span>+++ b/src/openvpn/helper.c</span><br><span>@@ -118,7 +118,8 @@</=
-span><br><span>                              print_in_addr_t(network, 0, &a=
-mp;o-&gt;gc),</span><br><span>                              print_in_addr_t=
-(netmask, 0, &amp;o-&gt;gc),</span><br><span>                              =
-NULL,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-                =
-             NULL);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-                             NULL,</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+                             o-&gt;route_default_table_id);<=
-/span><br><span> }</span><br><span> </span><br><span> static void</span><br=
-><span>diff --git a/src/openvpn/init.c b/src/openvpn/init.c</span><br><span=
->index 7d4eb85..77747a2 100644</span><br><span>--- a/src/openvpn/init.c</sp=
-an><br><span>+++ b/src/openvpn/init.c</span><br><span>@@ -1566,7 +1566,7 @@=
-</span><br><span>         {</span><br><span>             add_route_ipv6_to_=
-option_list( options-&gt;routes_ipv6,</span><br><span>                     =
-                       string_alloc(opt_list[i], options-&gt;routes_ipv6-&g=
-t;gc),</span><br><span style=3D"color: hsl(0, 100%, 40%);">-               =
-                            NULL, NULL );</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+                                           NULL, NULL=
-, options-&gt;route_default_table_id);</span><br><span>         }</span><br=
-><span>     }</span><br><span> </span><br><span>diff --git a/src/openvpn/op=
-tions.c b/src/openvpn/options.c</span><br><span>index 3cf8c2a..7e26069 1006=
-44</span><br><span>--- a/src/openvpn/options.c</span><br><span>+++ b/src/op=
-envpn/options.c</span><br><span>@@ -213,6 +213,10 @@</span><br><span>     &=
-quot;                    pass --ifconfig parms by environment to scripts.\n=
-&quot;</span><br><span>     &quot;--ifconfig-nowarn : Don&#39;t warn if the=
- --ifconfig option on this side of the\n&quot;</span><br><span>     &quot; =
-                   connection doesn&#39;t match the remote side.\n&quot;</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+#ifdef TARGET_LINUX</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+    &quot;--route-tabl=
-e table_id : Specify a custom routing table for use with --route(-ipv6).\n&=
-quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    &quot;    =
-                       If not specified, the id of the default routing tabl=
-e will be used.\n&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+#endif</span><br><span>     &quot;--route network [netmask] [gateway] [=
-metric] :\n&quot;</span><br><span>     &quot;                  Add route to=
- routing table after connection\n&quot;</span><br><span>     &quot;        =
-          is established.  Multiple routes can be specified.\n&quot;</span>=
-<br><span>@@ -829,6 +833,7 @@</span><br><span>     o-&gt;ce.mssfix =3D 0;</=
-span><br><span>     o-&gt;ce.mssfix_default =3D true;</span><br><span>     =
-o-&gt;ce.mssfix_encap =3D true;</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+    o-&gt;route_default_table_id =3D 0;</span><br><span>     o-=
-&gt;route_delay_window =3D 30;</span><br><span>     o-&gt;resolve_retry_sec=
-onds =3D RESOLV_RETRY_INFINITE;</span><br><span>     o-&gt;resolve_in_advan=
-ce =3D false;</span><br><span>@@ -1799,6 +1804,7 @@</span><br><span>     SH=
-OW_STR(route_script);</span><br><span>     SHOW_STR(route_default_gateway);=
-</span><br><span>     SHOW_INT(route_default_metric);</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    SHOW_INT(route_default_table_id);</sp=
-an><br><span>     SHOW_BOOL(route_noexec);</span><br><span>     SHOW_INT(ro=
-ute_delay);</span><br><span>     SHOW_INT(route_delay_window);</span><br><s=
-pan>@@ -7064,6 +7070,14 @@</span><br><span>         cnol_check_alloc(option=
-s);</span><br><span>         add_client_nat_to_option_list(options-&gt;clie=
-nt_nat, p[1], p[2], p[3], p[4], msglevel);</span><br><span>     }</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+    else if (streq(p[0], &quo=
-t;route-table&quot;) &amp;&amp; p[1] &amp;&amp; !p[2])</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+#ifndef ENABLE_SITNL</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+        msg(M_WARN, &quot;NOTE: --route-table is supp=
-orted only on Linux when SITNL is built-in&quot;);</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+#endif</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+        VERIFY_PERMISSION(OPT_P_ROUTE_TABLE);</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+        options-&gt;route_defau=
-lt_table_id =3D positive_atoi(p[1], msglevel);</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+    }</span><br><span>     else if (streq(p[0], =
-&quot;route&quot;) &amp;&amp; p[1] &amp;&amp; !p[5])</span><br><span>     {=
-</span><br><span>         VERIFY_PERMISSION(OPT_P_ROUTE);</span><br><span>@=
-@ -7085,8 +7099,9 @@</span><br><span>                 msg(msglevel, &quot;r=
-oute parameter gateway &#39;%s&#39; must be a valid address&quot;, p[3]);</=
-span><br><span>                 goto err;</span><br><span>             }</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+            /* p[4] is=
- metric, if specified */</span><br><span>         }</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-        add_route_to_option_list(options-&g=
-t;routes, p[1], p[2], p[3], p[4]);</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+        add_route_to_option_list(options-&gt;routes, p[1], p=
-[2], p[3], p[4], options-&gt;route_default_table_id);</span><br><span>     =
-}</span><br><span>     else if (streq(p[0], &quot;route-ipv6&quot;) &amp;&a=
-mp; p[1] &amp;&amp; !p[4])</span><br><span>     {</span><br><span>@@ -7104,=
-9 +7119,9 @@</span><br><span>                 msg(msglevel, &quot;route-ipv=
-6 parameter gateway &#39;%s&#39; must be a valid address&quot;, p[2]);</spa=
-n><br><span>                 goto err;</span><br><span>             }</span=
-><br><span style=3D"color: hsl(0, 100%, 40%);">-            /* p[3] is metr=
-ic, if present */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-          /* p[3] is metric, if specified */</span><br><span>         }</sp=
-an><br><span style=3D"color: hsl(0, 100%, 40%);">-        add_route_ipv6_to=
-_option_list(options-&gt;routes_ipv6, p[1], p[2], p[3]);</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+        add_route_ipv6_to_option_list(=
-options-&gt;routes_ipv6, p[1], p[2], p[3], options-&gt;route_default_table_=
-id);</span><br><span>     }</span><br><span>     else if (streq(p[0], &quot=
-;max-routes&quot;) &amp;&amp; !p[2])</span><br><span>     {</span><br><span=
->diff --git a/src/openvpn/options.h b/src/openvpn/options.h</span><br><span=
->index 46ec32b..56e85d7 100644</span><br><span>--- a/src/openvpn/options.h<=
-/span><br><span>+++ b/src/openvpn/options.h</span><br><span>@@ -427,6 +427,=
-7 @@</span><br><span>     const char *route_predown_script;</span><br><span=
->     const char *route_default_gateway;</span><br><span>     const char *r=
-oute_ipv6_default_gateway;</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+    int route_default_table_id;</span><br><span>     int route_defau=
-lt_metric;</span><br><span>     bool route_noexec;</span><br><span>     int=
- route_delay;</span><br><span>@@ -758,6 +759,7 @@</span><br><span> #define =
-OPT_P_PEER_ID         (1&lt;&lt;28)</span><br><span> #define OPT_P_INLINE  =
-        (1&lt;&lt;29)</span><br><span> #define OPT_P_PUSH_MTU        (1&lt;=
-&lt;30)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#define OPT_=
-P_ROUTE_TABLE     (1&lt;&lt;31)</span><br><span> </span><br><span> #define =
-OPT_P_DEFAULT   (~(OPT_P_INSTANCE|OPT_P_PULL_MODE))</span><br><span> </span=
-><br><span>diff --git a/src/openvpn/route.c b/src/openvpn/route.c</span><br=
-><span>index bd79a28..156262a 100644</span><br><span>--- a/src/openvpn/rout=
-e.c</span><br><span>+++ b/src/openvpn/route.c</span><br><span>@@ -330,13 +3=
-30,11 @@</span><br><span>     r-&gt;option =3D ro;</span><br><span> </span>=
-<br><span>     /* network */</span><br><span style=3D"color: hsl(0, 100%, 4=
-0%);">-</span><br><span>     if (!is_route_parm_defined(ro-&gt;network))</s=
-pan><br><span>     {</span><br><span>         goto fail;</span><br><span>  =
-   }</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">=
--</span><br><span>     /* get_special_addr replaces specialaddr with a spec=
-ial ip addr</span><br><span>      * like gw. getaddrinfo is called to conve=
-rt a a addrinfo struct */</span><br><span> </span><br><span>@@ -442,6 +440,=
-9 @@</span><br><span> </span><br><span>     r-&gt;flags |=3D RT_DEFINED;</s=
-pan><br><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-/* routing table id */</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+    r-&gt;table_id =3D ro-&gt;table_id;</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+</span><br><span>     return true;</span><br><span> =
-</span><br><span> fail:</span><br><span>@@ -498,6 +499,9 @@</span><br><span=
-> </span><br><span>     r6-&gt;flags |=3D RT_DEFINED;</span><br><span> </sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+    /* routing table id=
- */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    r6-&gt;table=
-_id =3D r6o-&gt;table_id;</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+</span><br><span>     return true;</span><br><span> </span><br><span>=
- fail:</span><br><span>@@ -511,7 +515,8 @@</span><br><span>                =
-          const char *network,</span><br><span>                          co=
-nst char *netmask,</span><br><span>                          const char *ga=
-teway,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-               =
-          const char *metric)</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+                         const char *metric,</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+                         int table_id)</=
-span><br><span> {</span><br><span>     struct route_option *ro;</span><br><=
-span>     ALLOC_OBJ_GC(ro, struct route_option, l-&gt;gc);</span><br><span>=
-@@ -519,6 +524,7 @@</span><br><span>     ro-&gt;netmask =3D netmask;</span>=
-<br><span>     ro-&gt;gateway =3D gateway;</span><br><span>     ro-&gt;metr=
-ic =3D metric;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    r=
-o-&gt;table_id =3D table_id;</span><br><span>     ro-&gt;next =3D l-&gt;rou=
-tes;</span><br><span>     l-&gt;routes =3D ro;</span><br><span> </span><br>=
-<span>@@ -528,13 +534,15 @@</span><br><span> add_route_ipv6_to_option_list(=
-struct route_ipv6_option_list *l,</span><br><span>                         =
-      const char *prefix,</span><br><span>                               co=
-nst char *gateway,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
-                           const char *metric)</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+                              const char *metric=
-,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+                  =
-            int table_id)</span><br><span> {</span><br><span>     struct ro=
-ute_ipv6_option *ro;</span><br><span>     ALLOC_OBJ_GC(ro, struct route_ipv=
-6_option, l-&gt;gc);</span><br><span>     ro-&gt;prefix =3D prefix;</span><=
-br><span>     ro-&gt;gateway =3D gateway;</span><br><span>     ro-&gt;metri=
-c =3D metric;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    ro=
--&gt;table_id =3D table_id;</span><br><span>     ro-&gt;next =3D l-&gt;rout=
-es_ipv6;</span><br><span>     l-&gt;routes_ipv6 =3D ro;</span><br><span> }<=
-/span><br><span>@@ -1610,9 +1618,10 @@</span><br><span>         metric =3D =
-r-&gt;metric;</span><br><span>     }</span><br><span> </span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+</span><br><span>     status =3D RTA_SUC=
-CESS;</span><br><span>     int ret =3D net_route_v4_add(ctx, &amp;r-&gt;net=
-work, netmask_to_netbits2(r-&gt;netmask),</span><br><span style=3D"color: h=
-sl(0, 100%, 40%);">-                               &amp;r-&gt;gateway, ifac=
-e, 0, metric);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
-                          &amp;r-&gt;gateway, iface, r-&gt;table_id, metric=
-);</span><br><span>     if (ret =3D=3D -EEXIST)</span><br><span>     {</spa=
-n><br><span>         msg(D_ROUTE, &quot;NOTE: Linux route add command faile=
-d because route exists&quot;);</span><br><span>@@ -2007,7 +2016,7 @@</span>=
-<br><span>     status =3D RTA_SUCCESS;</span><br><span>     int ret =3D net=
-_route_v6_add(ctx, &amp;r6-&gt;network, r6-&gt;netbits,</span><br><span>   =
-                             gateway_needed ? &amp;r6-&gt;gateway : NULL,</=
-span><br><span style=3D"color: hsl(0, 100%, 40%);">-                       =
-        device, 0, metric);</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+                               device, r6-&gt;table_id, metric);</s=
-pan><br><span>     if (ret =3D=3D -EEXIST)</span><br><span>     {</span><br=
-><span>         msg(D_ROUTE, &quot;NOTE: Linux route add command failed bec=
-ause route exists&quot;);</span><br><span>@@ -2227,7 +2236,7 @@</span><br><=
-span>     }</span><br><span> </span><br><span>     if (net_route_v4_del(ctx=
-, &amp;r-&gt;network, netmask_to_netbits2(r-&gt;netmask),</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-                         &amp;r-&gt;gat=
-eway, NULL, 0, metric) &lt; 0)</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+                         &amp;r-&gt;gateway, NULL, r-&gt;table_i=
-d, metric) &lt; 0)</span><br><span>     {</span><br><span>         msg(M_WA=
-RN, &quot;ERROR: Linux route delete command failed&quot;);</span><br><span>=
-     }</span><br><span>@@ -2452,7 +2461,7 @@</span><br><span>     }</span><=
-br><span> </span><br><span>     if (net_route_v6_del(ctx, &amp;r6-&gt;netwo=
-rk, r6-&gt;netbits,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
-                       gateway_needed ? &amp;r6-&gt;gateway : NULL, device,=
- 0,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+                =
-         gateway_needed ? &amp;r6-&gt;gateway : NULL, device, r6-&gt;table_=
-id,</span><br><span>                          metric) &lt; 0)</span><br><sp=
-an>     {</span><br><span>         msg(M_WARN, &quot;ERROR: Linux route v6 =
-delete command failed&quot;);</span><br><span>diff --git a/src/openvpn/rout=
-e.h b/src/openvpn/route.h</span><br><span>index aa3114c..237375c 100644</sp=
-an><br><span>--- a/src/openvpn/route.h</span><br><span>+++ b/src/openvpn/ro=
-ute.h</span><br><span>@@ -69,6 +69,7 @@</span><br><span>     in_addr_t remo=
-te_host;</span><br><span>     int remote_host_local; /* TLA_x value */</spa=
-n><br><span>     struct route_bypass bypass;</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+    int table_id;</span><br><span>     int default=
-_metric;</span><br><span> };</span><br><span> </span><br><span>@@ -77,6 +78=
-,7 @@</span><br><span>     const char *network;</span><br><span>     const =
-char *netmask;</span><br><span>     const char *gateway;</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+    int table_id;</span><br><span>    =
- const char *metric;</span><br><span> };</span><br><span> </span><br><span>=
-@@ -101,6 +103,7 @@</span><br><span>     const char *prefix;         /* e.g=
-. &quot;2001:db8:1::/64&quot; */</span><br><span>     const char *gateway; =
-       /* e.g. &quot;2001:db8:0::2&quot; */</span><br><span>     const char=
- *metric;         /* e.g. &quot;5&quot; */</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+    int table_id;</span><br><span> };</span><br><spa=
-n> </span><br><span> struct route_ipv6_option_list {</span><br><span>@@ -11=
-9,6 +122,7 @@</span><br><span>     in_addr_t network;</span><br><span>     =
-in_addr_t netmask;</span><br><span>     in_addr_t gateway;</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+    int table_id;</span><br><span>  =
-   int metric;</span><br><span> };</span><br><span> </span><br><span>@@ -12=
-9,6 +133,7 @@</span><br><span>     unsigned int netbits;</span><br><span>  =
-   struct in6_addr gateway;</span><br><span>     int metric;</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+    int table_id;</span><br><span>=
-     /* gateway interface */</span><br><span> #ifdef _WIN32</span><br><span=
->     DWORD adapter_index;        /* interface or ~0 if undefined */</span>=
-<br><span>@@ -290,12 +295,14 @@</span><br><span>                           =
-    const char *network,</span><br><span>                               con=
-st char *netmask,</span><br><span>                               const char=
- *gateway,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-           =
-                   const char *metric);</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+                              const char *metric,</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+                         =
-     int table_id);</span><br><span> </span><br><span> void add_route_ipv6_=
-to_option_list(struct route_ipv6_option_list *l,</span><br><span>          =
-                          const char *prefix,</span><br><span>             =
-                       const char *gateway,</span><br><span style=3D"color:=
- hsl(0, 100%, 40%);">-                                   const char *metric=
-);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+                 =
-                  const char *metric,</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+                                   int table_id);</span><=
-br><span> </span><br><span> bool init_route_list(struct route_list *rl,</sp=
-an><br><span>                      const struct route_option_list *opt,</sp=
-an><br><span></span><br></pre><p>To view, visit <a href=3D"http://gerrit.op=
-envpn.net/c/openvpn/+/524?usp=3Demail">change 524</a>. To unsubscribe, or f=
-or help writing mail filters, visit <a href=3D"http://gerrit.openvpn.net/se=
-ttings">settings</a>.</p><div itemscope itemtype=3D"http://schema.org/Email=
-Message"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.org/V=
-iewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openv=
-pn/+/524?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></d=
-iv></div>
+40%);">+TEST_NAME_5b=3D&quot;t_server_null_client.sh-openvpn_current_multis=
+ocket_ipv6_udp&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++SHOULD_PASS_5b=3D&quot;yes&quot;</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+CLIENT_EXEC_5b=3D&quot;${CLIENT_EXEC}&quot;</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+CLIENT_CONF_5b=3D&quot;${CLIENT_CONF_=
+BASE} --remote ::1 1197 udp&quot;</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+TEST_=
+NAME_5c=3D&quot;t_server_null_client.sh-openvpn_current_multisocket_ipv6_tc=
+p_fail&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+SHOULD_=
+PASS_5c=3D&quot;no&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+CLIENT_EXEC_5c=3D&quot;${CLIENT_EXEC}&quot;</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+CLIENT_CONF_5c=3D&quot;${CLIENT_CONF_BASE} --r=
+emote ::1 1197 tcp&quot;</span><br><span></span><br></pre><p>To view, visit=
+ <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/919?usp=3Demail">change 9=
+19</a>. To unsubscribe, or for help writing mail filters, visit <a href=3D"=
+http://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope itemtyp=
+e=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"action" ite=
+mtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http:=
+//gerrit.openvpn.net/c/openvpn/+/919?usp=3Demail"/><meta itemprop=3D"name" =
+content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I3e4ebef484d2a04a383a65ede56=
-17ee98bf218a7 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 524 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 10 </div>
-<div style=3D"display:none"> Gerrit-Owner: its_Giaan &lt;gianmarco@...2786...=
-..&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
- </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I4ebe1158c36a641888131e824f5=
+9004a0f8fb4c5 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 919 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 6 </div>
+<div style=3D"display:none"> Gerrit-Owner: mattock &lt;sasepp@...2783...&gt=
+; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
 1...&gt; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
 .1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
+41...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: mattock &lt;sasepp@...2867...=
+.&gt; </div>
 <div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
 
 
---4jBYLuLm8qg=--
+--lx8zUhNlPdU=--
 
