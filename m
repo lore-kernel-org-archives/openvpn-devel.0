@@ -1,16 +1,15 @@
-From: "mattock (Code Review)" <gerrit@...515...>
-Date: Mon, 23 Jun 2025 09:35:18 +0000
-In-Reply-To: <gerrit.1742993493000.I4ebe1158c36a641888131e824f59004a0f8fb4c5@...2715...>
-References: <gerrit.1742993493000.I4ebe1158c36a641888131e824f59004a0f8fb4c5@...2715...>
-Reply-To: sasepp@...2783..., arne-openvpn@...1227...,
+From: "comododragon (Code Review)" <gerrit@...515...>
+Date: Mon, 23 Jun 2025 10:49:27 +0000
+In-Reply-To: <gerrit.1750235257000.Ie0529c2074964b3be034f01e0ef53090a6edbd35@...2715...>
+References: <gerrit.1750235257000.Ie0529c2074964b3be034f01e0ef53090a6edbd35@...2715...>
+Reply-To: rein.vanbaaren@...1435..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <76b99dbb2be7f3bfd86662ba4d45e620701abe54-EmailReplacePatchSet-HTML@...2715...>
+Message-ID: <28d3f2f21b21ed97553d525f2da1f45285b52615-EmailReplacePatchSet-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="lx8zUhNlPdU="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: t_server_null: add
- multi-socket testing
+Content-Type: multipart/alternative; boundary="9EyxvtJooss="; charset=UTF-8
+Subject: [Openvpn-devel] [M] Change in openvpn[master]: Added PQE to WolfSSL
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -22,275 +21,265 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---lx8zUhNlPdU=
+--9EyxvtJooss=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: flichtenheld, mattock, plaisthos.
+Attention is currently required from: comododragon, flichtenheld.
 
 Hello flichtenheld, plaisthos,
 
 I'd like you to reexamine a change. Please visit
 
-    http://gerrit.openvpn.net/c/openvpn/+/919?usp=3Demail
+    http://gerrit.openvpn.net/c/openvpn/+/1046?usp=3Demail
 
-to look at the new patch set (#6).
-
-The following approvals got outdated and were removed:
-Code-Review-1 by flichtenheld
+to look at the new patch set (#2).
 
 
-Change subject: t_server_null: add multi-socket testing
+Change subject: Added PQE to WolfSSL
 ......................................................................
 
-t_server_null: add multi-socket testing
+Added PQE to WolfSSL
 
-This adds a new multi-socket server that listens on IPv4 and IPv6
-localhost addresses for TCP and UDP connections respectively. It also
-adds two success tests and one failure test with wrong protocol defined
-at the client side.
-
-Change-Id: I4ebe1158c36a641888131e824f59004a0f8fb4c5
-Signed-off-by: Samuli Sepp=C3=A4nen <sasepp@...2705...>
+Change-Id: Ie0529c2074964b3be034f01e0ef53090a6edbd35
 ---
-M tests/t_server_null_default.rc
-1 file changed, 27 insertions(+), 4 deletions(-)
+M README.wolfssl
+M src/openvpn/ssl_openssl.c
+2 files changed, 47 insertions(+), 8 deletions(-)
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/19/919/6
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/46/1046/2
 
-diff --git a/tests/t_server_null_default.rc b/tests/t_server_null_default.rc
-index 41ec591..a1c68cd 100755
---- a/tests/t_server_null_default.rc
-+++ b/tests/t_server_null_default.rc
-@@ -38,12 +38,14 @@
- MAX_CLIENTS=3D"10"
- CLIENT_MATCH=3D"Test-Client"
- SERVER_EXEC=3D"${top_builddir}/src/openvpn/openvpn"
--SERVER_BASE_OPTS=3D"--local 127.0.0.1 --dev tun --topology subnet --max-cl=
-ients $MAX_CLIENTS --persist-tun --verb 3 --duplicate-cn"
-+SERVER_BASE_OPTS=3D"--dev tun --topology subnet --max-clients $MAX_CLIENTS=
- --persist-tun --verb 3 --duplicate-cn"
-+SERVER_BIND_OPTS=3D"--local 127.0.0.1"
- SERVER_CIPHER_OPTS=3D""
- SERVER_CERT_OPTS=3D"--ca ${CA} --cert ${SERVER_CERT} --key ${SERVER_KEY} -=
--tls-auth ${TA} 0"
--SERVER_CONF_BASE=3D"${SERVER_BASE_OPTS} ${SERVER_CIPHER_OPTS} ${SERVER_CER=
-T_OPTS}"
-+SERVER_CONF_BASE=3D"${SERVER_BASE_OPTS} ${SERVER_CIPHER_OPTS} ${SERVER_CER=
-T_OPTS} ${SERVER_BIND_OPTS}"
-+SERVER_CONF_BASE_MULTISOCKET=3D"${SERVER_BASE_OPTS} ${SERVER_CIPHER_OPTS} =
-${SERVER_CERT_OPTS}"
-
--TEST_SERVER_LIST=3D"1 2 3"
-+TEST_SERVER_LIST=3D"1 2 3 4"
-
- SERVER_NAME_1=3D"t_server_null_server-1194_udp"
- SERVER_SERVER_1=3D"--server 10.29.41.0 255.255.255.0"
-@@ -63,6 +65,12 @@
- SERVER_EXEC_3=3D"${SERVER_EXEC}"
- SERVER_CONF_3=3D"${SERVER_CONF_BASE} ${SERVER_SERVER_3} --lport 1196 --pro=
-to udp --management 127.0.0.1 ${SERVER_MGMT_PORT_3} --dh none --cipher AES-=
-192-CBC --data-ciphers DEFAULT:AES-192-CBC"
-
-+SERVER_NAME_4=3D"t_server_null_server-1197_multisocket_ipv4_ipv6"
-+SERVER_SERVER_4=3D"--server 10.29.44.0 255.255.255.0"
-+SERVER_MGMT_PORT_4=3D"11197"
-+SERVER_EXEC_4=3D"${SERVER_EXEC}"
-+SERVER_CONF_4=3D"${SERVER_CONF_BASE_MULTISOCKET} ${SERVER_SERVER_4} --loca=
-l 127.0.0.1 1197 tcp --local ::1 1197 udp --management 127.0.0.1 ${SERVER_M=
-GMT_PORT_4}"
+diff --git a/README.wolfssl b/README.wolfssl
+index a5dfe31..27b9087 100644
+--- a/README.wolfssl
++++ b/README.wolfssl
+@@ -28,3 +28,40 @@
+  * blowfish support (BF-CBC), you must use something like
+    cipher AES-128-CBC to avoid trying to use BF-CBC
+  * Windows CryptoAPI support
 +
- # Test client configurations
- CLIENT_EXEC=3D"${top_builddir}/src/openvpn/openvpn"
- CLIENT_BASE_OPTS=3D"--client --nobind --remote-cert-tls server --persist-t=
-un --verb 3 --resolv-retry infinite --connect-retry-max 3 --server-poll-tim=
-eout 5 --explicit-exit-notify 3 --script-security 2"
-@@ -72,7 +80,7 @@
- CLIENT_CIPHER_OPTS=3D""
- CLIENT_CERT_OPTS=3D"--ca ${CA} --cert ${CLIENT_CERT} --key ${CLIENT_KEY} -=
--tls-auth ${TA} 1"
++*************************************************************************
++To build WolfSSL with these PQE, you'll want to configure it like this:
++
++```bash
++./configure --enable-openvpn --enable-kyber --enable-mlkem --enable-curve2=
+5519
++```
++
++WolfSSL supports the following Quantum Safe algorithms by specifying them =
+using the `tls-groups`
++option in a config.
++
++```
++ML_KEM_512
++ML_KEM_768
++ML_KEM_1024
++P256_ML_KEM_512
++P384_ML_KEM_768
++P256_ML_KEM_768
++P521_ML_KEM_1024
++P384_ML_KEM_1024
++X25519_ML_KEM_512
++X448_ML_KEM_768
++X25519_ML_KEM_768
++
++KYBER_LEVEL1
++KYBER_LEVEL3
++KYBER_LEVEL5
++
++P256_KYBER_LEVEL1
++P384_KYBER_LEVEL3
++P256_KYBER_LEVEL3
++P521_KYBER_LEVEL5
++
++X25519_KYBER_LEVEL1
++X448_KYBER_LEVEL3
++X25519_KYBER_LEVEL3
++```
+diff --git a/src/openvpn/ssl_openssl.c b/src/openvpn/ssl_openssl.c
+index 2fc77d8..dd3dcca 100644
+--- a/src/openvpn/ssl_openssl.c
++++ b/src/openvpn/ssl_openssl.c
+@@ -76,6 +76,8 @@
+ #include <openssl/applink.c>
+ #endif
 
--TEST_RUN_LIST=3D"1 1L 2 2L 3 4a 4b 4c"
-+TEST_RUN_LIST=3D"1 1L 2 2L 3 4a 4b 4c 5a 5b 5c"
- CLIENT_CONF_BASE=3D"${CLIENT_NULL_OPTS} ${CLIENT_BASE_OPTS} ${CLIENT_CIPHE=
-R_OPTS} ${CLIENT_CERT_OPTS}"
- CLIENT_CONF_BASE_LWIP=3D"${CLIENT_LWIP_OPTS} ${CLIENT_BASE_OPTS} ${CLIENT_=
-CIPHER_OPTS} ${CLIENT_CERT_OPTS}"
++#include "wolfssl_compat.h"
++
+ OSSL_LIB_CTX *tls_libctx; /* Global */
 
-@@ -121,3 +129,18 @@
- SHOULD_PASS_4c=3D"no"
- CLIENT_EXEC_4c=3D"${CLIENT_EXEC}"
- CLIENT_CONF_4c=3D"${CLIENT_CONF_BASE} --remote 127.0.0.1 1196 udp --proto =
-udp --cipher AES-192-CBC --data-ciphers AES-128-CBC"
-+
-+TEST_NAME_5a=3D"t_server_null_client.sh-openvpn_current_multisocket_ipv4_t=
-cp"
-+SHOULD_PASS_5a=3D"yes"
-+CLIENT_EXEC_5a=3D"${CLIENT_EXEC}"
-+CLIENT_CONF_5a=3D"${CLIENT_CONF_BASE} --remote 127.0.0.1 1197 tcp"
-+
-+TEST_NAME_5b=3D"t_server_null_client.sh-openvpn_current_multisocket_ipv6_u=
-dp"
-+SHOULD_PASS_5b=3D"yes"
-+CLIENT_EXEC_5b=3D"${CLIENT_EXEC}"
-+CLIENT_CONF_5b=3D"${CLIENT_CONF_BASE} --remote ::1 1197 udp"
-+
-+TEST_NAME_5c=3D"t_server_null_client.sh-openvpn_current_multisocket_ipv6_t=
-cp_fail"
-+SHOULD_PASS_5c=3D"no"
-+CLIENT_EXEC_5c=3D"${CLIENT_EXEC}"
-+CLIENT_CONF_5c=3D"${CLIENT_CONF_BASE} --remote ::1 1197 tcp"
+ static void unload_xkey_provider(void);
+@@ -560,7 +562,13 @@
+ tls_ctx_set_tls_groups(struct tls_root_ctx *ctx, const char *groups)
+ {
+     ASSERT(ctx);
+-#if OPENSSL_VERSION_NUMBER < 0x30000000L
++#if defined(ENABLE_CRYPTO_WOLFSSL) || OPENSSL_VERSION_NUMBER >=3D 0x300000=
+00L
++    if (!SSL_CTX_set1_groups_list(ctx->ctx, groups))
++    {
++        crypto_msg(M_FATAL, "Failed to set allowed TLS group list: %s",
++                groups);
++    }
++#else
+     struct gc_arena gc =3D gc_new();
+     /* This method could be as easy as
+      *  SSL_CTX_set1_groups_list(ctx->ctx, groups)
+@@ -607,13 +615,7 @@
+                    groups);
+     }
+     gc_free(&gc);
+-#else  /* if OPENSSL_VERSION_NUMBER < 0x30000000L */
+-    if (!SSL_CTX_set1_groups_list(ctx->ctx, groups))
+-    {
+-        crypto_msg(M_FATAL, "Failed to set allowed TLS group list: %s",
+-                   groups);
+-    }
+-#endif /* if OPENSSL_VERSION_NUMBER < 0x30000000L */
++#endif
+ }
+
+ void
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/919?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1046?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings
 
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: I4ebe1158c36a641888131e824f59004a0f8fb4c5
-Gerrit-Change-Number: 919
-Gerrit-PatchSet: 6
-Gerrit-Owner: mattock <sasepp@...2783...>
+Gerrit-Change-Id: Ie0529c2074964b3be034f01e0ef53090a6edbd35
+Gerrit-Change-Number: 1046
+Gerrit-PatchSet: 2
+Gerrit-Owner: comododragon <rein.vanbaaren@...1435...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
 Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Attention: mattock <sasepp@...2783...>
+Gerrit-Attention: comododragon <rein.vanbaaren@...1435...>
 Gerrit-MessageType: newpatchset
 
---lx8zUhNlPdU=
+--9EyxvtJooss=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p> Attention is currently required from: flichtenheld, mattock, plaisthos.=
- </p>
-<p>mattock <strong>uploaded patch set #6</strong> to this change.</p><p><a =
-href=3D"http://gerrit.openvpn.net/c/openvpn/+/919?usp=3Demail">View Change<=
-/a></p><p>The following approvals got outdated and were removed:
-Code-Review-1 by flichtenheld</p><pre style=3D"font-family: monospace,monos=
-pace; white-space: pre-wrap;">t_server_null: add multi-socket testing<br><b=
-r>This adds a new multi-socket server that listens on IPv4 and IPv6<br>loca=
-lhost addresses for TCP and UDP connections respectively. It also<br>adds t=
-wo success tests and one failure test with wrong protocol defined<br>at the=
- client side.<br><br>Change-Id: I4ebe1158c36a641888131e824f59004a0f8fb4c5<b=
-r>Signed-off-by: Samuli Sepp=C3=A4nen &lt;sasepp@...2705...&gt;<br>---<br>M=
- tests/t_server_null_default.rc<br>1 file changed, 27 insertions(+), 4 dele=
-tions(-)<br><br></pre><pre style=3D"font-family: monospace,monospace; white=
--space: pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/openvpn refs/cha=
-nges/19/919/6</pre><pre style=3D"font-family: monospace,monospace; white-sp=
-ace: pre-wrap;"><span>diff --git a/tests/t_server_null_default.rc b/tests/t=
-_server_null_default.rc</span><br><span>index 41ec591..a1c68cd 100755</span=
-><br><span>--- a/tests/t_server_null_default.rc</span><br><span>+++ b/tests=
-/t_server_null_default.rc</span><br><span>@@ -38,12 +38,14 @@</span><br><sp=
-an> MAX_CLIENTS=3D&quot;10&quot;</span><br><span> CLIENT_MATCH=3D&quot;Test=
--Client&quot;</span><br><span> SERVER_EXEC=3D&quot;${top_builddir}/src/open=
-vpn/openvpn&quot;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-SERV=
-ER_BASE_OPTS=3D&quot;--local 127.0.0.1 --dev tun --topology subnet --max-cl=
-ients $MAX_CLIENTS --persist-tun --verb 3 --duplicate-cn&quot;</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+SERVER_BASE_OPTS=3D&quot;--dev t=
-un --topology subnet --max-clients $MAX_CLIENTS --persist-tun --verb 3 --du=
-plicate-cn&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+SER=
-VER_BIND_OPTS=3D&quot;--local 127.0.0.1&quot;</span><br><span> SERVER_CIPHE=
-R_OPTS=3D&quot;&quot;</span><br><span> SERVER_CERT_OPTS=3D&quot;--ca ${CA} =
---cert ${SERVER_CERT} --key ${SERVER_KEY} --tls-auth ${TA} 0&quot;</span><b=
-r><span style=3D"color: hsl(0, 100%, 40%);">-SERVER_CONF_BASE=3D&quot;${SER=
-VER_BASE_OPTS} ${SERVER_CIPHER_OPTS} ${SERVER_CERT_OPTS}&quot;</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+SERVER_CONF_BASE=3D&quot;${SERVE=
-R_BASE_OPTS} ${SERVER_CIPHER_OPTS} ${SERVER_CERT_OPTS} ${SERVER_BIND_OPTS}&=
-quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+SERVER_CONF_BA=
-SE_MULTISOCKET=3D&quot;${SERVER_BASE_OPTS} ${SERVER_CIPHER_OPTS} ${SERVER_C=
-ERT_OPTS}&quot;</span><br><span> </span><br><span style=3D"color: hsl(0, 10=
-0%, 40%);">-TEST_SERVER_LIST=3D&quot;1 2 3&quot;</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+TEST_SERVER_LIST=3D&quot;1 2 3 4&quot;</span><=
-br><span> </span><br><span> SERVER_NAME_1=3D&quot;t_server_null_server-1194=
-_udp&quot;</span><br><span> SERVER_SERVER_1=3D&quot;--server 10.29.41.0 255=
-.255.255.0&quot;</span><br><span>@@ -63,6 +65,12 @@</span><br><span> SERVER=
-_EXEC_3=3D&quot;${SERVER_EXEC}&quot;</span><br><span> SERVER_CONF_3=3D&quot=
-;${SERVER_CONF_BASE} ${SERVER_SERVER_3} --lport 1196 --proto udp --manageme=
-nt 127.0.0.1 ${SERVER_MGMT_PORT_3} --dh none --cipher AES-192-CBC --data-ci=
-phers DEFAULT:AES-192-CBC&quot;</span><br><span> </span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+SERVER_NAME_4=3D&quot;t_server_null_server-11=
-97_multisocket_ipv4_ipv6&quot;</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+SERVER_SERVER_4=3D&quot;--server 10.29.44.0 255.255.255.0&quot;<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+SERVER_MGMT_PORT_4=
-=3D&quot;11197&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+SERVER_EXEC_4=3D&quot;${SERVER_EXEC}&quot;</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+SERVER_CONF_4=3D&quot;${SERVER_CONF_BASE_MULTISOCKE=
-T} ${SERVER_SERVER_4} --local 127.0.0.1 1197 tcp --local ::1 1197 udp --man=
-agement 127.0.0.1 ${SERVER_MGMT_PORT_4}&quot;</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+</span><br><span> # Test client configurations</s=
-pan><br><span> CLIENT_EXEC=3D&quot;${top_builddir}/src/openvpn/openvpn&quot=
-;</span><br><span> CLIENT_BASE_OPTS=3D&quot;--client --nobind --remote-cert=
--tls server --persist-tun --verb 3 --resolv-retry infinite --connect-retry-=
-max 3 --server-poll-timeout 5 --explicit-exit-notify 3 --script-security 2&=
-quot;</span><br><span>@@ -72,7 +80,7 @@</span><br><span> CLIENT_CIPHER_OPTS=
-=3D&quot;&quot;</span><br><span> CLIENT_CERT_OPTS=3D&quot;--ca ${CA} --cert=
- ${CLIENT_CERT} --key ${CLIENT_KEY} --tls-auth ${TA} 1&quot;</span><br><spa=
-n> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-TEST_RUN_LIST=3D&q=
-uot;1 1L 2 2L 3 4a 4b 4c&quot;</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+TEST_RUN_LIST=3D&quot;1 1L 2 2L 3 4a 4b 4c 5a 5b 5c&quot;</span>=
-<br><span> CLIENT_CONF_BASE=3D&quot;${CLIENT_NULL_OPTS} ${CLIENT_BASE_OPTS}=
- ${CLIENT_CIPHER_OPTS} ${CLIENT_CERT_OPTS}&quot;</span><br><span> CLIENT_CO=
-NF_BASE_LWIP=3D&quot;${CLIENT_LWIP_OPTS} ${CLIENT_BASE_OPTS} ${CLIENT_CIPHE=
-R_OPTS} ${CLIENT_CERT_OPTS}&quot;</span><br><span> </span><br><span>@@ -121=
-,3 +129,18 @@</span><br><span> SHOULD_PASS_4c=3D&quot;no&quot;</span><br><s=
-pan> CLIENT_EXEC_4c=3D&quot;${CLIENT_EXEC}&quot;</span><br><span> CLIENT_CO=
-NF_4c=3D&quot;${CLIENT_CONF_BASE} --remote 127.0.0.1 1196 udp --proto udp -=
--cipher AES-192-CBC --data-ciphers AES-128-CBC&quot;</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+TEST_NAME_5a=3D&quot;t_server_null_client.sh-openvpn_current=
-_multisocket_ipv4_tcp&quot;</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+SHOULD_PASS_5a=3D&quot;yes&quot;</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+CLIENT_EXEC_5a=3D&quot;${CLIENT_EXEC}&quot;</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+CLIENT_CONF_5a=3D&quot;${CLIEN=
-T_CONF_BASE} --remote 127.0.0.1 1197 tcp&quot;</span><br><span style=3D"col=
+<p> Attention is currently required from: comododragon, flichtenheld. </p>
+<p>comododragon <strong>uploaded patch set #2</strong> to this change.</p><=
+p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1046?usp=3Demail">View C=
+hange</a></p><pre style=3D"font-family: monospace,monospace; white-space: p=
+re-wrap;">Added PQE to WolfSSL<br><br>Change-Id: Ie0529c2074964b3be034f01e0=
+ef53090a6edbd35<br>---<br>M README.wolfssl<br>M src/openvpn/ssl_openssl.c<b=
+r>2 files changed, 47 insertions(+), 8 deletions(-)<br><br></pre><pre style=
+=3D"font-family: monospace,monospace; white-space: pre-wrap;">git pull ssh:=
+//gerrit.openvpn.net:29418/openvpn refs/changes/46/1046/2</pre><pre style=
+=3D"font-family: monospace,monospace; white-space: pre-wrap;"><span>diff --=
+git a/README.wolfssl b/README.wolfssl</span><br><span>index a5dfe31..27b908=
+7 100644</span><br><span>--- a/README.wolfssl</span><br><span>+++ b/README.=
+wolfssl</span><br><span>@@ -28,3 +28,40 @@</span><br><span>  * blowfish sup=
+port (BF-CBC), you must use something like</span><br><span>    cipher AES-1=
+28-CBC to avoid trying to use BF-CBC</span><br><span>  * Windows CryptoAPI =
+support</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+*******************************=
+******************************************</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+To build WolfSSL with these PQE, you&#39;ll want to =
+configure it like this:</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+```bash</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+./configure --enable-openvp=
+n --enable-kyber --enable-mlkem --enable-curve25519</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+```</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+W=
+olfSSL supports the following Quantum Safe algorithms by specifying them us=
+ing the `tls-groups` </span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+option in a config.</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+```</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+ML_KEM_512</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+ML_KEM_768</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+ML_KEM_1024</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+P256_ML_KEM_512</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+P384_ML_KEM_768</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+P256_ML_KEM_768</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+P521_ML_KEM_1024</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+P384_ML_KEM_1024</span><br><span style=3D"color: hsl(120, 100%, 40%);">+X=
+25519_ML_KEM_512</span><br><span style=3D"color: hsl(120, 100%, 40%);">+X44=
+8_ML_KEM_768</span><br><span style=3D"color: hsl(120, 100%, 40%);">+X25519_=
+ML_KEM_768</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+KYBER_LEVEL1</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+KYBER_LEVEL3</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+KYBER_LEVEL5</span><br><span style=3D"col=
 or: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+TEST_NAME_5b=3D&quot;t_server_null_client.sh-openvpn_current_multis=
-ocket_ipv6_udp&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+SHOULD_PASS_5b=3D&quot;yes&quot;</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+CLIENT_EXEC_5b=3D&quot;${CLIENT_EXEC}&quot;</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+CLIENT_CONF_5b=3D&quot;${CLIENT_CONF_=
-BASE} --remote ::1 1197 udp&quot;</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+TEST_=
-NAME_5c=3D&quot;t_server_null_client.sh-openvpn_current_multisocket_ipv6_tc=
-p_fail&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+SHOULD_=
-PASS_5c=3D&quot;no&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+CLIENT_EXEC_5c=3D&quot;${CLIENT_EXEC}&quot;</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+CLIENT_CONF_5c=3D&quot;${CLIENT_CONF_BASE} --r=
-emote ::1 1197 tcp&quot;</span><br><span></span><br></pre><p>To view, visit=
- <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/919?usp=3Demail">change 9=
-19</a>. To unsubscribe, or for help writing mail filters, visit <a href=3D"=
-http://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope itemtyp=
-e=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"action" ite=
-mtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http:=
-//gerrit.openvpn.net/c/openvpn/+/919?usp=3Demail"/><meta itemprop=3D"name" =
-content=3D"View Change"/></div></div>
+40%);">+P256_KYBER_LEVEL1</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+P384_KYBER_LEVEL3</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+P256_KYBER_LEVEL3</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+P521_KYBER_LEVEL5</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+X25519_KYBER_LEVEL1=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+X448_KYBER_LEVEL3</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+X25519_KYBER_LEVEL3</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+```</span><br><span>d=
+iff --git a/src/openvpn/ssl_openssl.c b/src/openvpn/ssl_openssl.c</span><br=
+><span>index 2fc77d8..dd3dcca 100644</span><br><span>--- a/src/openvpn/ssl_=
+openssl.c</span><br><span>+++ b/src/openvpn/ssl_openssl.c</span><br><span>@=
+@ -76,6 +76,8 @@</span><br><span> #include &lt;openssl/applink.c&gt;</span>=
+<br><span> #endif</span><br><span> </span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+#include &quot;wolfssl_compat.h&quot;</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+</span><br><span> OSSL_LIB_CTX *tls_libct=
+x; /* Global */</span><br><span> </span><br><span> static void unload_xkey_=
+provider(void);</span><br><span>@@ -560,7 +562,13 @@</span><br><span> tls_c=
+tx_set_tls_groups(struct tls_root_ctx *ctx, const char *groups)</span><br><=
+span> {</span><br><span>     ASSERT(ctx);</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-#if OPENSSL_VERSION_NUMBER &lt; 0x30000000L</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+#if defined(ENABLE_CRYPTO_WOLFS=
+SL) || OPENSSL_VERSION_NUMBER &gt;=3D 0x30000000L</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+    if (!SSL_CTX_set1_groups_list(ctx-&gt;ctx=
+, groups))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+        crypto_msg(M_FA=
+TAL, &quot;Failed to set allowed TLS group list: %s&quot;,</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+                groups);</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+#else</span><br><span>     struct gc_arena gc=
+ =3D gc_new();</span><br><span>     /* This method could be as easy as</spa=
+n><br><span>      *  SSL_CTX_set1_groups_list(ctx-&gt;ctx, groups)</span><b=
+r><span>@@ -607,13 +615,7 @@</span><br><span>                    groups);</=
+span><br><span>     }</span><br><span>     gc_free(&amp;gc);</span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">-#else  /* if OPENSSL_VERSION_NUMBER =
+&lt; 0x30000000L */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
+  if (!SSL_CTX_set1_groups_list(ctx-&gt;ctx, groups))</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-    {</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-        crypto_msg(M_FATAL, &quot;Failed to set allowed TLS=
+ group list: %s&quot;,</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
+-                   groups);</span><br><span style=3D"color: hsl(0, 100%, 4=
+0%);">-    }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#endif /*=
+ if OPENSSL_VERSION_NUMBER &lt; 0x30000000L */</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+#endif</span><br><span> }</span><br><span> </spa=
+n><br><span> void</span><br><span></span><br></pre><p>To view, visit <a hre=
+f=3D"http://gerrit.openvpn.net/c/openvpn/+/1046?usp=3Demail">change 1046</a=
+>. To unsubscribe, or for help writing mail filters, visit <a href=3D"http:=
+//gerrit.openvpn.net/settings">settings</a>.</p><div itemscope itemtype=3D"=
+http://schema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=
+=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://ger=
+rit.openvpn.net/c/openvpn/+/1046?usp=3Demail"/><meta itemprop=3D"name" cont=
+ent=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I4ebe1158c36a641888131e824f5=
-9004a0f8fb4c5 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 919 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 6 </div>
-<div style=3D"display:none"> Gerrit-Owner: mattock &lt;sasepp@...2783...&gt=
-; </div>
+<div style=3D"display:none"> Gerrit-Change-Id: Ie0529c2074964b3be034f01e0ef=
+53090a6edbd35 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1046 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
+<div style=3D"display:none"> Gerrit-Owner: comododragon &lt;rein.vanbaaren@=
+...1435...&gt; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
 1...&gt; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
 .1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
 41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: mattock &lt;sasepp@...2867...=
-.&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: comododragon &lt;rein.vanbaa=
+ren@...1435...&gt; </div>
 <div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
 
 
---lx8zUhNlPdU=--
+--9EyxvtJooss=--
 
