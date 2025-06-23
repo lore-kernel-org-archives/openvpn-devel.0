@@ -1,14 +1,15 @@
-From: "comododragon (Code Review)" <gerrit@...515...>
-Date: Mon, 23 Jun 2025 10:50:39 +0000
+From: "cron2 (Code Review)" <gerrit@...515...>
+Date: Mon, 23 Jun 2025 11:53:11 +0000
 In-Reply-To: <gerrit.1750235257000.Ie0529c2074964b3be034f01e0ef53090a6edbd35@...2715...>
 References: <gerrit.1750235257000.Ie0529c2074964b3be034f01e0ef53090a6edbd35@...2715...>
-Reply-To: rein.vanbaaren@...1435..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <a4d4afa6cda88858abfede5d8b89f3005471eed4-EmailReplacePatchSet-HTML@...2715...>
+Reply-To: gert@...1296..., arne-openvpn@...1227...,
+ rein.vanbaaren@...1435..., openvpn-devel@lists.sourceforge.net,
+ frank@...2641...
+Message-ID: <f1f623cb3fdc97b66347e0c959a19a3019d38f4a-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="KMS3T2ufo8U="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="7bbN1PeWrqM="; charset=UTF-8
 Subject: [Openvpn-devel] [M] Change in openvpn[master]: Added PQE to WolfSSL
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
@@ -18,120 +19,52 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: comododragon <rein.vanbaaren@...1435...>
+Cc: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---KMS3T2ufo8U=
+--7bbN1PeWrqM=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 Attention is currently required from: comododragon, flichtenheld.
 
-Hello flichtenheld, plaisthos,
-
-I'd like you to reexamine a change. Please visit
-
-    http://gerrit.openvpn.net/c/openvpn/+/1046?usp=3Demail
-
-to look at the new patch set (#3).
-
+cron2 has posted comments on this change. ( http://gerrit.openvpn.net/c/ope=
+nvpn/+/1046?usp=3Demail )
 
 Change subject: Added PQE to WolfSSL
 ......................................................................
 
-Added PQE to WolfSSL
 
-Change-Id: Ie0529c2074964b3be034f01e0ef53090a6edbd35
----
-M README.wolfssl
-M src/openvpn/ssl_openssl.c
-2 files changed, 45 insertions(+), 8 deletions(-)
+Patch Set 3: Code-Review-1
+
+(3 comments)
+
+Patchset:
+
+PS3:
+getting closer ;-)
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/46/1046/3
+File README.wolfssl:
 
-diff --git a/README.wolfssl b/README.wolfssl
-index a5dfe31..27b9087 100644
---- a/README.wolfssl
-+++ b/README.wolfssl
-@@ -28,3 +28,40 @@
-  * blowfish support (BF-CBC), you must use something like
-    cipher AES-128-CBC to avoid trying to use BF-CBC
-  * Windows CryptoAPI support
-+
-+*************************************************************************
-+To build WolfSSL with these PQE, you'll want to configure it like this:
-+
-+```bash
-+./configure --enable-openvpn --enable-kyber --enable-mlkem --enable-curve2=
-5519
-+```
-+
-+WolfSSL supports the following Quantum Safe algorithms by specifying them =
-using the `tls-groups`
-+option in a config.
-+
-+```
-+ML_KEM_512
-+ML_KEM_768
-+ML_KEM_1024
-+P256_ML_KEM_512
-+P384_ML_KEM_768
-+P256_ML_KEM_768
-+P521_ML_KEM_1024
-+P384_ML_KEM_1024
-+X25519_ML_KEM_512
-+X448_ML_KEM_768
-+X25519_ML_KEM_768
-+
-+KYBER_LEVEL1
-+KYBER_LEVEL3
-+KYBER_LEVEL5
-+
-+P256_KYBER_LEVEL1
-+P384_KYBER_LEVEL3
-+P256_KYBER_LEVEL3
-+P521_KYBER_LEVEL5
-+
-+X25519_KYBER_LEVEL1
-+X448_KYBER_LEVEL3
-+X25519_KYBER_LEVEL3
-+```
-diff --git a/src/openvpn/ssl_openssl.c b/src/openvpn/ssl_openssl.c
-index 2fc77d8..b873e54 100644
---- a/src/openvpn/ssl_openssl.c
-+++ b/src/openvpn/ssl_openssl.c
-@@ -560,7 +560,13 @@
- tls_ctx_set_tls_groups(struct tls_root_ctx *ctx, const char *groups)
- {
-     ASSERT(ctx);
--#if OPENSSL_VERSION_NUMBER < 0x30000000L
-+#if defined(ENABLE_CRYPTO_WOLFSSL) || OPENSSL_VERSION_NUMBER >=3D 0x300000=
-00L
-+    if (!SSL_CTX_set1_groups_list(ctx->ctx, groups))
-+    {
-+        crypto_msg(M_FATAL, "Failed to set allowed TLS group list: %s",
-+                groups);
-+    }
-+#else
-     struct gc_arena gc =3D gc_new();
-     /* This method could be as easy as
-      *  SSL_CTX_set1_groups_list(ctx->ctx, groups)
-@@ -607,13 +613,7 @@
-                    groups);
-     }
-     gc_free(&gc);
--#else  /* if OPENSSL_VERSION_NUMBER < 0x30000000L */
--    if (!SSL_CTX_set1_groups_list(ctx->ctx, groups))
--    {
--        crypto_msg(M_FATAL, "Failed to set allowed TLS group list: %s",
--                   groups);
--    }
--#endif /* if OPENSSL_VERSION_NUMBER < 0x30000000L */
-+#endif
- }
+http://gerrit.openvpn.net/c/openvpn/+/1046/comment/7ec159a7_61317087 :
+PS3, Line 40: option in a config.
+the textual logic is weird here - "to build with these PQE...", while "thes=
+e PQE" are only defined in the next paragraph...?
 
- void
+
+File src/openvpn/ssl_openssl.c:
+
+http://gerrit.openvpn.net/c/openvpn/+/1046/comment/e1a1e35c_b06c65eb :
+PS3, Line 564:     if (!SSL_CTX_set1_groups_list(ctx->ctx, groups))
+please do not do that - that is, move code blocks around, just to have an e=
+asier time in the #ifdef
+
+As far as I can see all the patch really does is "change the #ifdef", but w=
+ith a larger diff due to swapping the if/else parts this is harder to see, =
+and will also mess up "git blame"
+
+
 
 --
 To view, visit http://gerrit.openvpn.net/c/openvpn/+/1046?usp=3Demail
@@ -144,106 +77,58 @@ Gerrit-Change-Id: Ie0529c2074964b3be034f01e0ef53090a6edbd35
 Gerrit-Change-Number: 1046
 Gerrit-PatchSet: 3
 Gerrit-Owner: comododragon <rein.vanbaaren@...1435...>
+Gerrit-Reviewer: cron2 <gert@...1296...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: flichtenheld <frank@...2641...>
 Gerrit-Attention: comododragon <rein.vanbaaren@...1435...>
-Gerrit-MessageType: newpatchset
+Gerrit-Comment-Date: Mon, 23 Jun 2025 11:53:11 +0000
+Gerrit-HasComments: Yes
+Gerrit-Has-Labels: Yes
+Gerrit-MessageType: comment
 
---KMS3T2ufo8U=
+--7bbN1PeWrqM=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <p> Attention is currently required from: comododragon, flichtenheld. </p>
-<p>comododragon <strong>uploaded patch set #3</strong> to this change.</p><=
-p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1046?usp=3Demail">View C=
-hange</a></p><pre style=3D"font-family: monospace,monospace; white-space: p=
-re-wrap;">Added PQE to WolfSSL<br><br>Change-Id: Ie0529c2074964b3be034f01e0=
-ef53090a6edbd35<br>---<br>M README.wolfssl<br>M src/openvpn/ssl_openssl.c<b=
-r>2 files changed, 45 insertions(+), 8 deletions(-)<br><br></pre><pre style=
-=3D"font-family: monospace,monospace; white-space: pre-wrap;">git pull ssh:=
-//gerrit.openvpn.net:29418/openvpn refs/changes/46/1046/3</pre><pre style=
-=3D"font-family: monospace,monospace; white-space: pre-wrap;"><span>diff --=
-git a/README.wolfssl b/README.wolfssl</span><br><span>index a5dfe31..27b908=
-7 100644</span><br><span>--- a/README.wolfssl</span><br><span>+++ b/README.=
-wolfssl</span><br><span>@@ -28,3 +28,40 @@</span><br><span>  * blowfish sup=
-port (BF-CBC), you must use something like</span><br><span>    cipher AES-1=
-28-CBC to avoid trying to use BF-CBC</span><br><span>  * Windows CryptoAPI =
-support</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+*******************************=
-******************************************</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+To build WolfSSL with these PQE, you&#39;ll want to =
-configure it like this:</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+```bash</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+./configure --enable-openvp=
-n --enable-kyber --enable-mlkem --enable-curve25519</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+```</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+W=
-olfSSL supports the following Quantum Safe algorithms by specifying them us=
-ing the `tls-groups` </span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+option in a config.</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+```</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+ML_KEM_512</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+ML_KEM_768</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+ML_KEM_1024</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+P256_ML_KEM_512</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+P384_ML_KEM_768</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+P256_ML_KEM_768</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+P521_ML_KEM_1024</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+P384_ML_KEM_1024</span><br><span style=3D"color: hsl(120, 100%, 40%);">+X=
-25519_ML_KEM_512</span><br><span style=3D"color: hsl(120, 100%, 40%);">+X44=
-8_ML_KEM_768</span><br><span style=3D"color: hsl(120, 100%, 40%);">+X25519_=
-ML_KEM_768</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+KYBER_LEVEL1</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+KYBER_LEVEL3</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+KYBER_LEVEL5</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+P256_KYBER_LEVEL1</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+P384_KYBER_LEVEL3</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+P256_KYBER_LEVEL3</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+P521_KYBER_LEVEL5</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+X25519_KYBER_LEVEL1=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+X448_KYBER_LEVEL3</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+X25519_KYBER_LEVEL3</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+```</span><br><span>d=
-iff --git a/src/openvpn/ssl_openssl.c b/src/openvpn/ssl_openssl.c</span><br=
-><span>index 2fc77d8..b873e54 100644</span><br><span>--- a/src/openvpn/ssl_=
-openssl.c</span><br><span>+++ b/src/openvpn/ssl_openssl.c</span><br><span>@=
-@ -560,7 +560,13 @@</span><br><span> tls_ctx_set_tls_groups(struct tls_root=
-_ctx *ctx, const char *groups)</span><br><span> {</span><br><span>     ASSE=
-RT(ctx);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#if OPENSSL_V=
-ERSION_NUMBER &lt; 0x30000000L</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+#if defined(ENABLE_CRYPTO_WOLFSSL) || OPENSSL_VERSION_NUMBER &gt=
-;=3D 0x30000000L</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
- if (!SSL_CTX_set1_groups_list(ctx-&gt;ctx, groups))</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+        crypto_msg(M_FATAL, &quot;Failed to set allowed=
- TLS group list: %s&quot;,</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+                groups);</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#e=
-lse</span><br><span>     struct gc_arena gc =3D gc_new();</span><br><span> =
-    /* This method could be as easy as</span><br><span>      *  SSL_CTX_set=
-1_groups_list(ctx-&gt;ctx, groups)</span><br><span>@@ -607,13 +613,7 @@</sp=
-an><br><span>                    groups);</span><br><span>     }</span><br>=
-<span>     gc_free(&amp;gc);</span><br><span style=3D"color: hsl(0, 100%, 4=
-0%);">-#else  /* if OPENSSL_VERSION_NUMBER &lt; 0x30000000L */</span><br><s=
-pan style=3D"color: hsl(0, 100%, 40%);">-    if (!SSL_CTX_set1_groups_list(=
-ctx-&gt;ctx, groups))</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
-    {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        crypto_m=
-sg(M_FATAL, &quot;Failed to set allowed TLS group list: %s&quot;,</span><br=
-><span style=3D"color: hsl(0, 100%, 40%);">-                   groups);</sp=
-an><br><span style=3D"color: hsl(0, 100%, 40%);">-    }</span><br><span sty=
-le=3D"color: hsl(0, 100%, 40%);">-#endif /* if OPENSSL_VERSION_NUMBER &lt; =
-0x30000000L */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#endi=
-f</span><br><span> }</span><br><span> </span><br><span> void</span><br><spa=
-n></span><br></pre><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c=
-/openvpn/+/1046?usp=3Demail">change 1046</a>. To unsubscribe, or for help w=
-riting mail filters, visit <a href=3D"http://gerrit.openvpn.net/settings">s=
-ettings</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage">=
-<div itemscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction=
-"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1046=
-?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
+<p>Patch set 3:<span style=3D"border-radius: 3px; display: inline-block; ma=
+rgin: 0 2px; padding: 4px;background-color: #ffd4d4;">Code-Review -1</span>=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1046?usp=3Demail">V=
+iew Change</a></p><p>3 comments:</p><ul style=3D"list-style: none; padding:=
+ 0;"><li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list=
+-style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p=
+ style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openv=
+pn/+/1046?tab=3Dcomments">Patch Set #3:</a> </p><p style=3D"white-space: pr=
+e-wrap; word-wrap: break-word;">getting closer ;-)</p></li></ul></li><li st=
+yle=3D"margin: 0; padding: 0;"><p>File README.wolfssl:</p><ul style=3D"list=
+-style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p=
+ style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openv=
+pn/+/1046/comment/7ec159a7_61317087">Patch Set #3, Line 40:</a> <code style=
+=3D"font-family:monospace,monospace">option in a config.</code></p><p style=
+=3D"white-space: pre-wrap; word-wrap: break-word;">the textual logic is wei=
+rd here - &quot;to build with these PQE...&quot;, while &quot;these PQE&quo=
+t; are only defined in the next paragraph...?</p></li></ul></li><li style=
+=3D"margin: 0; padding: 0;"><p>File src/openvpn/ssl_openssl.c:</p><ul style=
+=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 1=
+6px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net=
+/c/openvpn/+/1046/comment/e1a1e35c_b06c65eb">Patch Set #3, Line 564:</a> <c=
+ode style=3D"font-family:monospace,monospace">    if (!SSL_CTX_set1_groups_=
+list(ctx-&gt;ctx, groups))</code></p><p style=3D"white-space: pre-wrap; wor=
+d-wrap: break-word;">please do not do that - that is, move code blocks arou=
+nd, just to have an easier time in the #ifdef</p><p style=3D"white-space: p=
+re-wrap; word-wrap: break-word;">As far as I can see all the patch really d=
+oes is &quot;change the #ifdef&quot;, but with a larger diff due to swappin=
+g the if/else parts this is harder to see, and will also mess up &quot;git =
+blame&quot;</p></li></ul></li></ul><p>To view, visit <a href=3D"http://gerr=
+it.openvpn.net/c/openvpn/+/1046?usp=3Demail">change 1046</a>. To unsubscrib=
+e, or for help writing mail filters, visit <a href=3D"http://gerrit.openvpn=
+.net/settings">settings</a>.</p><div itemscope itemtype=3D"http://schema.or=
+g/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://schem=
+a.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/=
+c/openvpn/+/1046?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Chan=
+ge"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
@@ -253,6 +138,8 @@ ettings</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage">=
 <div style=3D"display:none"> Gerrit-PatchSet: 3 </div>
 <div style=3D"display:none"> Gerrit-Owner: comododragon &lt;rein.vanbaaren@=
 ...1435...&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
+ </div>
 <div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
 1...&gt; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
@@ -263,8 +150,12 @@ ts.sourceforge.net&gt; </div>
 41...&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: comododragon &lt;rein.vanbaa=
 ren@...1435...&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Mon, 23 Jun 2025 11:53:11=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
 
 
---KMS3T2ufo8U=--
+--7bbN1PeWrqM=--
 
