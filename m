@@ -1,16 +1,11 @@
-From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Wed, 25 Jun 2025 16:25:31 +0000
-In-Reply-To: <gerrit.1750235257000.Ie0529c2074964b3be034f01e0ef53090a6edbd35@...2715...>
-References: <gerrit.1750235257000.Ie0529c2074964b3be034f01e0ef53090a6edbd35@...2715...>
-Reply-To: gert@...1296..., arne-openvpn@...1227...,
- rein.vanbaaren@...1435..., openvpn-devel@lists.sourceforge.net,
- frank@...2641...
-Message-ID: <38d66bc8b93b15282ccfc32ab64e8aee7fe8c7af-EmailReviewComments-HTML@...2715...>
+From: Gert Doering <gert@...1296...>
+Date: Wed, 25 Jun 2025 18:26:31 +0200
+Message-ID: <20250625162638.7769-1-gert@...1296...>
+In-Reply-To: <gerrit.1750855403000.I5d9535d46e5a5488f4a2b637a6fcb99aad668fee@...2715...>
+References: <gerrit.1750855403000.I5d9535d46e5a5488f4a2b637a6fcb99aad668fee@...2715...>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="uOYFe8GZpKE="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: Added PQE to WolfSSL
+Subject: [Openvpn-devel] [PATCH v1] dco linux: avoid sending local port to
+ ovpn
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,113 +14,53 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: comododragon <rein.vanbaaren@...1435...>
-Cc: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---uOYFe8GZpKE=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+From: Ralf Lici <ralf@...2726...>
 
-Attention is currently required from: comododragon, flichtenheld, plaisthos.
+When sending an OVPN_CMD_NEW_PEER netlink message to ovpn, we currently
+attempt to include the local port along with the local address. However,
+`dco_multi_get_localaddr()` does not record the port, so we end up
+sending a zero value. This zero is rejected by ovpn's netlink policy,
+leading to an error and aborted connection.
 
-cron2 has posted comments on this change. ( http://gerrit.openvpn.net/c/ope=
-nvpn/+/1046?usp=3Demail )
+Since openvpn does not actually need to send the local port because the
+module retrieves it directly from the socket, this commit ensures that
+only the local address is sent.
 
-Change subject: Added PQE to WolfSSL
-......................................................................
+Change-Id: I5d9535d46e5a5488f4a2b637a6fcb99aad668fee
+Signed-off-by: Ralf Lici <ralf@...2726...>
+Acked-by: Antonio Quartulli <antonio@...2726...>
+---
 
+This change was reviewed on Gerrit and approved by at least one
+developer. I request to merge it to master.
 
-Patch Set 5: Code-Review+1
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1068
+This mail reflects revision 1 of this Change.
 
-(1 comment)
+Acked-by according to Gerrit (reflected above):
+Antonio Quartulli <antonio@...2726...>
 
-Patchset:
-
-PS5:
-I'm generally fine with the change as it is now.
-
-Not being a crypto expert, I leave the final say to Arne (especially as the=
-re's open discussions)
-
-
-
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1046?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings
-
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: Ie0529c2074964b3be034f01e0ef53090a6edbd35
-Gerrit-Change-Number: 1046
-Gerrit-PatchSet: 5
-Gerrit-Owner: comododragon <rein.vanbaaren@...1435...>
-Gerrit-Reviewer: cron2 <gert@...1296...>
-Gerrit-Reviewer: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Attention: comododragon <rein.vanbaaren@...1435...>
-Gerrit-Comment-Date: Wed, 25 Jun 2025 16:25:31 +0000
-Gerrit-HasComments: Yes
-Gerrit-Has-Labels: Yes
-Gerrit-MessageType: comment
-
---uOYFe8GZpKE=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<p> Attention is currently required from: comododragon, flichtenheld, plais=
-thos. </p>
-<p>Patch set 5:<span style=3D"border-radius: 3px; display: inline-block; ma=
-rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +1</span>=
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1046?usp=3Demail">V=
-iew Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: =
-0;"><li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-=
-style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p =
-style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvp=
-n/+/1046?tab=3Dcomments">Patch Set #5:</a> </p><p style=3D"white-space: pre=
--wrap; word-wrap: break-word;">I&#39;m generally fine with the change as it=
- is now.</p><p style=3D"white-space: pre-wrap; word-wrap: break-word;">Not =
-being a crypto expert, I leave the final say to Arne (especially as there&#=
-39;s open discussions)</p></li></ul></li></ul><p>To view, visit <a href=3D"=
-http://gerrit.openvpn.net/c/openvpn/+/1046?usp=3Demail">change 1046</a>. To=
- unsubscribe, or for help writing mail filters, visit <a href=3D"http://ger=
-rit.openvpn.net/settings">settings</a>.</p><div itemscope itemtype=3D"http:=
-//schema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"h=
-ttp://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.o=
-penvpn.net/c/openvpn/+/1046?usp=3Demail"/><meta itemprop=3D"name" content=
-=3D"View Change"/></div></div>
-
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: Ie0529c2074964b3be034f01e0ef=
-53090a6edbd35 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1046 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 5 </div>
-<div style=3D"display:none"> Gerrit-Owner: comododragon &lt;rein.vanbaaren@=
-...1435...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
- </div>
-<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
-1...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
-41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: comododragon &lt;rein.vanbaa=
-ren@...1435...&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Wed, 25 Jun 2025 16:25:31=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
-
-
---uOYFe8GZpKE=--
+        
+diff --git a/src/openvpn/dco_linux.c b/src/openvpn/dco_linux.c
+index 0345413..22a445a 100644
+--- a/src/openvpn/dco_linux.c
++++ b/src/openvpn/dco_linux.c
+@@ -265,13 +265,11 @@
+         {
+             NLA_PUT(nl_msg, OVPN_A_PEER_LOCAL_IPV4, sizeof(struct in_addr),
+                     &((struct sockaddr_in *)localaddr)->sin_addr);
+-            NLA_PUT_U16(nl_msg, OVPN_A_PEER_LOCAL_PORT, ((struct sockaddr_in *)localaddr)->sin_port);
+         }
+         else if (localaddr->sa_family == AF_INET6)
+         {
+             NLA_PUT(nl_msg, OVPN_A_PEER_LOCAL_IPV6, sizeof(struct in6_addr),
+                     &((struct sockaddr_in6 *)localaddr)->sin6_addr);
+-            NLA_PUT_U16(nl_msg, OVPN_A_PEER_LOCAL_PORT, ((struct sockaddr_in6 *)localaddr)->sin6_port);
+         }
+     }
+ 
 
