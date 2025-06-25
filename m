@@ -1,11 +1,10 @@
+Date: Wed, 25 Jun 2025 18:49:29 +0200 (CEST)
+Message-Id: <202506251649.55PGnT6n041354@...2054...>
 From: Gert Doering <gert@...1296...>
-Date: Wed, 25 Jun 2025 18:26:31 +0200
-Message-ID: <20250625162638.7769-1-gert@...1296...>
-In-Reply-To: <gerrit.1750855403000.I5d9535d46e5a5488f4a2b637a6fcb99aad668fee@...2715...>
-References: <gerrit.1750855403000.I5d9535d46e5a5488f4a2b637a6fcb99aad668fee@...2715...>
-MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v1] dco linux: avoid sending local port to
- ovpn
+In-Reply-To: <20250625162638.7769-1-gert@...1296...>
+References: <20250625162638.7769-1-gert@...1296...>
+Subject: [Openvpn-devel] [PATCH applied] Re: dco linux: avoid sending local
+ port to ovpn
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,51 +15,37 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Ralf Lici <ralf@...2726...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-From: Ralf Lici <ralf@...2726...>
+I have tested this on Linux + DCO "client side" (which should not excercise
+this code path at all, so "no change") and have set up a server instance
+that has "--multihome" in the config - and as expected, the current code
+fails
 
-When sending an OVPN_CMD_NEW_PEER netlink message to ovpn, we currently
-attempt to include the local port along with the local address. However,
-`dco_multi_get_localaddr()` does not record the port, so we end up
-sending a zero value. This zero is rejected by ovpn's netlink policy,
-leading to an error and aborted connection.
+2025-06-25 18:37:44 us=736543 freebsd-74-amd64/udp6:194.97.140.3:51620 peer-id=0 Cannot add peer to DCO for freebsd-74-amd64/udp6:194.97.140.3:51620 peer-id=0: Numerical result out of range (-34)
 
-Since openvpn does not actually need to send the local port because the
-module retrieves it directly from the socket, this commit ensures that
-only the local address is sent.
+.. and the fixed code succeeds.  Well spotted... (I do have a --multihome
+server instance somewhere, but not "with DCO", meh - now I have one).
 
-Change-Id: I5d9535d46e5a5488f4a2b637a6fcb99aad668fee
-Signed-off-by: Ralf Lici <ralf@...2726...>
-Acked-by: Antonio Quartulli <antonio@...2726...>
----
+Your patch has been applied to the master branch.
 
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to master.
+commit 6c2bd6be4f8ac4f0b25aa05e2d5eb9bf6b736cd1
+Author: Ralf Lici
+Date:   Wed Jun 25 18:26:31 2025 +0200
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1068
-This mail reflects revision 1 of this Change.
+     dco linux: avoid sending local port to ovpn
 
-Acked-by according to Gerrit (reflected above):
-Antonio Quartulli <antonio@...2726...>
+     Signed-off-by: Ralf Lici <ralf@...2726...>
+     Acked-by: Antonio Quartulli <antonio@...2726...>
+     Message-Id: <20250625162638.7769-1-gert@...1296...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg31971.html
+     Signed-off-by: Gert Doering <gert@...1296...>
 
-        
-diff --git a/src/openvpn/dco_linux.c b/src/openvpn/dco_linux.c
-index 0345413..22a445a 100644
---- a/src/openvpn/dco_linux.c
-+++ b/src/openvpn/dco_linux.c
-@@ -265,13 +265,11 @@
-         {
-             NLA_PUT(nl_msg, OVPN_A_PEER_LOCAL_IPV4, sizeof(struct in_addr),
-                     &((struct sockaddr_in *)localaddr)->sin_addr);
--            NLA_PUT_U16(nl_msg, OVPN_A_PEER_LOCAL_PORT, ((struct sockaddr_in *)localaddr)->sin_port);
-         }
-         else if (localaddr->sa_family == AF_INET6)
-         {
-             NLA_PUT(nl_msg, OVPN_A_PEER_LOCAL_IPV6, sizeof(struct in6_addr),
-                     &((struct sockaddr_in6 *)localaddr)->sin6_addr);
--            NLA_PUT_U16(nl_msg, OVPN_A_PEER_LOCAL_PORT, ((struct sockaddr_in6 *)localaddr)->sin6_port);
-         }
-     }
- 
+
+--
+kind regards,
+
+Gert Doering
+
 
