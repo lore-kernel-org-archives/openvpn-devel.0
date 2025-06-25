@@ -1,18 +1,16 @@
-Message-ID: <866e86f674f55d0d39cce796f3f7ed9b.squirrel@...2890...>
-In-Reply-To: <d885df5e-c817-47e8-8d5d-586eb227ead5@...1227...>
-References: <1e8ccfd451cbf9e6d090bd6a6886e366.squirrel@...2890...>
- <20250507074438.1326755-1-walter.openvpn@...2889...>
- <eedcf175305a088df0eb7ec146dbe441.squirrel@...2890...>
- <f60dbf91-c2f8-495b-ba14-967e70629d1b@...1227...>
- <ef2598a79cf3efe9d343b514ab6c9e5c.squirrel@...2890...>
- <8ba925a1-85c9-4274-a512-32dcec35b147@...1227...>
- <2bb3487e-6762-40ea-b6ad-2622a879ca21@...2889...>
- <d885df5e-c817-47e8-8d5d-586eb227ead5@...1227...>
-Date: Wed, 25 Jun 2025 13:30:19 -0000
-From: "Walter Doekes" <walter.openvpn@...2889...>
+From: "cron2 (Code Review)" <gerrit@...515...>
+Date: Wed, 25 Jun 2025 16:25:31 +0000
+In-Reply-To: <gerrit.1750235257000.Ie0529c2074964b3be034f01e0ef53090a6edbd35@...2715...>
+References: <gerrit.1750235257000.Ie0529c2074964b3be034f01e0ef53090a6edbd35@...2715...>
+Reply-To: gert@...1296..., arne-openvpn@...1227...,
+ rein.vanbaaren@...1435..., openvpn-devel@lists.sourceforge.net,
+ frank@...2641...
+Message-ID: <38d66bc8b93b15282ccfc32ab64e8aee7fe8c7af-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-Subject: Re: [Openvpn-devel] [PATCH] multi.c: Allow floating to a new IP
- right after connection setup
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="uOYFe8GZpKE="; charset=UTF-8
+Subject: [Openvpn-devel] [S] Change in openvpn[master]: Added PQE to WolfSSL
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -21,75 +19,113 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain;charset=utf-8
-Content-Transfer-Encoding: 8bit
-To: Arne Schwabe <arne@...1227...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: comododragon <rein.vanbaaren@...1435...>
+Cc: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-Good. I backported the patch so it ran against the culprit version
-(b3647114).
+--uOYFe8GZpKE=
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-I got these mesages:
+Attention is currently required from: comododragon, flichtenheld, plaisthos.
 
+cron2 has posted comments on this change. ( http://gerrit.openvpn.net/c/ope=
+nvpn/+/1046?usp=3Demail )
 
-  SENT CONTROL [mycommonname]: 'PUSH_REPLY,route ... 255.255.255.255
-net_gateway,route-gateway 10.x.x.1,topology subnet,ping 15,ping-restart
-55,route 10.x.x.0 255.255.0.0 vpn_gateway,ifconfig 10.x.x.3
-255.255.255.0,peer-id 4,cipher AES-256-GCM' (status=1)
-
-  Packet with invalid or missing SID from [AF_INET]HOME_IP:33567
-
-  Float requested for peer 4 to HOME_IP:33567
-
-  peer 4 (mycommonname) floated from VPN_IP:33567 to [AF_INET]HOME_IP:33567
+Change subject: Added PQE to WolfSSL
+......................................................................
 
 
+Patch Set 5: Code-Review+1
 
-The "Packet with invalid or missing SID" is new to me. But other than
-that, it works.
+(1 comment)
 
-I also tried it against 2.6-latest (0169b4ad). Also works. There the
-message is:
+Patchset:
 
-  Packet (P_ACK_V1) with invalid or missing SID from [AF_INET]HOME_IP:46088
+PS5:
+I'm generally fine with the change as it is now.
 
-I can't tell if this new message is problematic or not. It doesn't
-negatively impact my connection setup. And I (now) know when to expect it.
+Not being a crypto expert, I leave the final say to Arne (especially as the=
+re's open discussions)
 
 
 
-As for your patch: there's a minor typo in your patch at ssl_pkt.h in the
-signature:
+--
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1046?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings
 
-"bool check_session_id_hmac" should be "bool pkt_is_ack"
+Gerrit-Project: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: Ie0529c2074964b3be034f01e0ef53090a6edbd35
+Gerrit-Change-Number: 1046
+Gerrit-PatchSet: 5
+Gerrit-Owner: comododragon <rein.vanbaaren@...1435...>
+Gerrit-Reviewer: cron2 <gert@...1296...>
+Gerrit-Reviewer: flichtenheld <frank@...2641...>
+Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Attention: flichtenheld <frank@...2641...>
+Gerrit-Attention: comododragon <rein.vanbaaren@...1435...>
+Gerrit-Comment-Date: Wed, 25 Jun 2025 16:25:31 +0000
+Gerrit-HasComments: Yes
+Gerrit-Has-Labels: Yes
+Gerrit-MessageType: comment
+
+--uOYFe8GZpKE=
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<p> Attention is currently required from: comododragon, flichtenheld, plais=
+thos. </p>
+<p>Patch set 5:<span style=3D"border-radius: 3px; display: inline-block; ma=
+rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +1</span>=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1046?usp=3Demail">V=
+iew Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: =
+0;"><li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-=
+style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p =
+style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvp=
+n/+/1046?tab=3Dcomments">Patch Set #5:</a> </p><p style=3D"white-space: pre=
+-wrap; word-wrap: break-word;">I&#39;m generally fine with the change as it=
+ is now.</p><p style=3D"white-space: pre-wrap; word-wrap: break-word;">Not =
+being a crypto expert, I leave the final say to Arne (especially as there&#=
+39;s open discussions)</p></li></ul></li></ul><p>To view, visit <a href=3D"=
+http://gerrit.openvpn.net/c/openvpn/+/1046?usp=3Demail">change 1046</a>. To=
+ unsubscribe, or for help writing mail filters, visit <a href=3D"http://ger=
+rit.openvpn.net/settings">settings</a>.</p><div itemscope itemtype=3D"http:=
+//schema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"h=
+ttp://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.o=
+penvpn.net/c/openvpn/+/1046?usp=3Demail"/><meta itemprop=3D"name" content=
+=3D"View Change"/></div></div>
+
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: Ie0529c2074964b3be034f01e0ef=
+53090a6edbd35 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1046 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 5 </div>
+<div style=3D"display:none"> Gerrit-Owner: comododragon &lt;rein.vanbaaren@=
+...1435...&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
+ </div>
+<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
+1...&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
+.1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
+41...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: comododragon &lt;rein.vanbaa=
+ren@...1435...&gt; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Wed, 25 Jun 2025 16:25:31=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
 
 
-Further, I would prefer if the commit message itself mentioned something
-about "floating IPs and 60 second timeout after connect" instead of "rare
-circumstances" which are not rare in 100% of my use cases. That might be
-beneficial to the next person who runs into this.
-
-
-Thanks for the fixes!
-
-Walter
-
-
-> Am 25.05.25 um 22:27 schrieb Walter Doekes:
->> Good. Your understanding of the situation is the same.
->>
->> I did not yet make a reproducer config -- mostly because I don't think
->> we're doing anything non-standard. But I did double check that latest
->> 2.6 is affected, tested both client and server.
->
-> With pcap dumps I think I got an understanding what is happening. Can
-> you see if this patch on the server fixes the problem for you? It is
-> marked as WIP since I want to have more unit tests but the code
-> shouldn't change.
->
-> https://gerrit.openvpn.net/c/openvpn/+/1067
->
-> Arne
->
-
+--uOYFe8GZpKE=--
 
