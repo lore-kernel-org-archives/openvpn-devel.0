@@ -1,16 +1,18 @@
-From: "ordex (Code Review)" <gerrit@...515...>
-Date: Wed, 25 Jun 2025 12:57:59 +0000
-In-Reply-To: <gerrit.1750855403000.I5d9535d46e5a5488f4a2b637a6fcb99aad668fee@...2715...>
-References: <gerrit.1750855403000.I5d9535d46e5a5488f4a2b637a6fcb99aad668fee@...2715...>
-Reply-To: antonio@...2726..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, ralf@...2726..., frank@...2641...
-Message-ID: <7a48ea36372fda0c27f127ae6894071ba19f3875-EmailReviewComments-HTML@...2715...>
+Message-ID: <866e86f674f55d0d39cce796f3f7ed9b.squirrel@...2890...>
+In-Reply-To: <d885df5e-c817-47e8-8d5d-586eb227ead5@...1227...>
+References: <1e8ccfd451cbf9e6d090bd6a6886e366.squirrel@...2890...>
+ <20250507074438.1326755-1-walter.openvpn@...2889...>
+ <eedcf175305a088df0eb7ec146dbe441.squirrel@...2890...>
+ <f60dbf91-c2f8-495b-ba14-967e70629d1b@...1227...>
+ <ef2598a79cf3efe9d343b514ab6c9e5c.squirrel@...2890...>
+ <8ba925a1-85c9-4274-a512-32dcec35b147@...1227...>
+ <2bb3487e-6762-40ea-b6ad-2622a879ca21@...2889...>
+ <d885df5e-c817-47e8-8d5d-586eb227ead5@...1227...>
+Date: Wed, 25 Jun 2025 13:30:19 -0000
+From: "Walter Doekes" <walter.openvpn@...2889...>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="eMLdEj27PFI="; charset=UTF-8
-Subject: [Openvpn-devel] [XS] Change in openvpn[master]: dco linux: avoid
- sending local port to ovpn
+Subject: Re: [Openvpn-devel] [PATCH] multi.c: Allow floating to a new IP
+ right after connection setup
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,112 +21,75 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: ralf_lici <ralf@...2726...>
-Cc: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain;charset=utf-8
+Content-Transfer-Encoding: 8bit
+To: Arne Schwabe <arne@...1227...>
+Cc: openvpn-devel@lists.sourceforge.net
 
---eMLdEj27PFI=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Good. I backported the patch so it ran against the culprit version
+(b3647114).
 
-Attention is currently required from: flichtenheld, plaisthos, ralf_lici.
-
-ordex has posted comments on this change. ( http://gerrit.openvpn.net/c/ope=
-nvpn/+/1068?usp=3Demail )
-
-Change subject: dco linux: avoid sending local port to ovpn
-......................................................................
+I got these mesages:
 
 
-Patch Set 1: Code-Review+2
+  SENT CONTROL [mycommonname]: 'PUSH_REPLY,route ... 255.255.255.255
+net_gateway,route-gateway 10.x.x.1,topology subnet,ping 15,ping-restart
+55,route 10.x.x.0 255.255.0.0 vpn_gateway,ifconfig 10.x.x.3
+255.255.255.0,peer-id 4,cipher AES-256-GCM' (status=1)
 
-(1 comment)
+  Packet with invalid or missing SID from [AF_INET]HOME_IP:33567
 
-Patchset:
+  Float requested for peer 4 to HOME_IP:33567
 
-PS1:
-thanks for spotting this! indeed this part of the code wasn't well tested.
-My may even drop the LOCAL_PORT from the API entirely as it doesn't make mu=
-ch sense (any socket is already bound to some port)
+  peer 4 (mycommonname) floated from VPN_IP:33567 to [AF_INET]HOME_IP:33567
 
 
 
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1068?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings
+The "Packet with invalid or missing SID" is new to me. But other than
+that, it works.
 
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: I5d9535d46e5a5488f4a2b637a6fcb99aad668fee
-Gerrit-Change-Number: 1068
-Gerrit-PatchSet: 1
-Gerrit-Owner: ralf_lici <ralf@...2726...>
-Gerrit-Reviewer: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: ordex <antonio@...2726...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Attention: ralf_lici <ralf@...2726...>
-Gerrit-Comment-Date: Wed, 25 Jun 2025 12:57:59 +0000
-Gerrit-HasComments: Yes
-Gerrit-Has-Labels: Yes
-Gerrit-MessageType: comment
+I also tried it against 2.6-latest (0169b4ad). Also works. There the
+message is:
 
---eMLdEj27PFI=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+  Packet (P_ACK_V1) with invalid or missing SID from [AF_INET]HOME_IP:46088
 
-<p> Attention is currently required from: flichtenheld, plaisthos, ralf_lic=
-i. </p>
-<p>Patch set 1:<span style=3D"border-radius: 3px; display: inline-block; ma=
-rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1068?usp=3Demail">V=
-iew Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: =
-0;"><li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-=
-style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p =
-style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvp=
-n/+/1068?tab=3Dcomments">Patch Set #1:</a> </p><p style=3D"white-space: pre=
--wrap; word-wrap: break-word;">thanks for spotting this! indeed this part o=
-f the code wasn&#39;t well tested.<br>My may even drop the LOCAL_PORT from =
-the API entirely as it doesn&#39;t make much sense (any socket is already b=
-ound to some port)</p></li></ul></li></ul><p>To view, visit <a href=3D"http=
-://gerrit.openvpn.net/c/openvpn/+/1068?usp=3Demail">change 1068</a>. To uns=
-ubscribe, or for help writing mail filters, visit <a href=3D"http://gerrit.=
-openvpn.net/settings">settings</a>.</p><div itemscope itemtype=3D"http://sc=
-hema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http:=
-//schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openv=
-pn.net/c/openvpn/+/1068?usp=3Demail"/><meta itemprop=3D"name" content=3D"Vi=
-ew Change"/></div></div>
-
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I5d9535d46e5a5488f4a2b637a6f=
-cb99aad668fee </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1068 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
-<div style=3D"display:none"> Gerrit-Owner: ralf_lici &lt;ralf@...2726...&gt=
-; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
-1...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: ordex &lt;antonio@...2726...&=
-gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
-41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: ralf_lici &lt;ralf@...2804...=
-.&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Wed, 25 Jun 2025 12:57:59=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
+I can't tell if this new message is problematic or not. It doesn't
+negatively impact my connection setup. And I (now) know when to expect it.
 
 
---eMLdEj27PFI=--
+
+As for your patch: there's a minor typo in your patch at ssl_pkt.h in the
+signature:
+
+"bool check_session_id_hmac" should be "bool pkt_is_ack"
+
+
+Further, I would prefer if the commit message itself mentioned something
+about "floating IPs and 60 second timeout after connect" instead of "rare
+circumstances" which are not rare in 100% of my use cases. That might be
+beneficial to the next person who runs into this.
+
+
+Thanks for the fixes!
+
+Walter
+
+
+> Am 25.05.25 um 22:27 schrieb Walter Doekes:
+>> Good. Your understanding of the situation is the same.
+>>
+>> I did not yet make a reproducer config -- mostly because I don't think
+>> we're doing anything non-standard. But I did double check that latest
+>> 2.6 is affected, tested both client and server.
+>
+> With pcap dumps I think I got an understanding what is happening. Can
+> you see if this patch on the server fixes the problem for you? It is
+> marked as WIP since I want to have more unit tests but the code
+> shouldn't change.
+>
+> https://gerrit.openvpn.net/c/openvpn/+/1067
+>
+> Arne
+>
+
 
