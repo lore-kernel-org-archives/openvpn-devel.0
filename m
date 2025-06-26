@@ -1,13 +1,14 @@
 From: "d12fk (Code Review)" <gerrit@...515...>
-Date: Thu, 26 Jun 2025 10:37:45 +0000
+Date: Thu, 26 Jun 2025 10:49:37 +0000
+In-Reply-To: <gerrit.1750934262000.I46132ebaf3bf3b16798b6f2416f7bf7272f5646b@...2715...>
 References: <gerrit.1750934262000.I46132ebaf3bf3b16798b6f2416f7bf7272f5646b@...2715...>
 Reply-To: heiko@...515..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <2ef8659a2c2e6d3c51653e1993a134c34526a353-HTML@...2715...>
+Message-ID: <ae9541a789f6ea84d16acdf99d7e1eb1c8283772-EmailReplacePatchSet-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="XBaBL7TKsNE="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="aq+rEjVLU+Y="; charset=UTF-8
 Subject: [Openvpn-devel] [XS] Change in openvpn[master]: dns: create NRPT
  registry key if it doesn't exist
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -21,20 +22,19 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---XBaBL7TKsNE=
+--aq+rEjVLU+Y=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 Attention is currently required from: flichtenheld, plaisthos.
 
-Hello plaisthos, flichtenheld,
+Hello flichtenheld, plaisthos,
 
-I'd like you to do a code review.
-Please visit
+I'd like you to reexamine a change. Please visit
 
     http://gerrit.openvpn.net/c/openvpn/+/1069?usp=3Demail
 
-to review the following change.
+to look at the new patch set (#2).
 
 
 Change subject: dns: create NRPT registry key if it doesn't exist
@@ -47,6 +47,7 @@ NRPT rules are stored. Tests have determined that NRPT is actually
 working when rules are created under the key. So, instead of failing if
 the key doesn't exist, we create it, and things will start working.
 
+Github: OpenVPN/openvpn#768
 Change-Id: I46132ebaf3bf3b16798b6f2416f7bf7272f5646b
 Signed-off-by: Heiko Hund <heiko@...2662...>
 ---
@@ -54,8 +55,7 @@ M src/openvpnserv/interactive.c
 1 file changed, 1 insertion(+), 1 deletion(-)
 
 
-
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/69/1069/1
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/69/1069/2
 
 diff --git a/src/openvpnserv/interactive.c b/src/openvpnserv/interactive.c
 index 3bd2722..0a00a6a 100644
@@ -82,60 +82,60 @@ Gerrit-Project: openvpn
 Gerrit-Branch: master
 Gerrit-Change-Id: I46132ebaf3bf3b16798b6f2416f7bf7272f5646b
 Gerrit-Change-Number: 1069
-Gerrit-PatchSet: 1
+Gerrit-PatchSet: 2
 Gerrit-Owner: d12fk <heiko@...515...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
 Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-MessageType: newchange
+Gerrit-MessageType: newpatchset
 
---XBaBL7TKsNE=
+--aq+rEjVLU+Y=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <p> Attention is currently required from: flichtenheld, plaisthos. </p>
-<p>d12fk would like plaisthos and flichtenheld to <strong>review</strong> t=
-his change.
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1069?usp=3Demail">V=
-iew Change</a></p><pre style=3D"font-family: monospace,monospace; white-spa=
-ce: pre-wrap;">dns: create NRPT registry key if it doesn&#39;t exist<br><br=
->Windows 2019 Server by default does not have the key where local system<br=
->NRPT rules are stored. Tests have determined that NRPT is actually<br>work=
-ing when rules are created under the key. So, instead of failing if<br>the =
-key doesn&#39;t exist, we create it, and things will start working.<br><br>=
-Change-Id: I46132ebaf3bf3b16798b6f2416f7bf7272f5646b<br>Signed-off-by: Heik=
-o Hund &lt;heiko@...2662...&gt;<br>---<br>M src/openvpnserv/interactive.c<b=
-r>1 file changed, 1 insertion(+), 1 deletion(-)<br><br></pre><pre style=3D"=
-font-family: monospace,monospace; white-space: pre-wrap;">git pull ssh://ge=
-rrit.openvpn.net:29418/openvpn refs/changes/69/1069/1</pre><pre style=3D"fo=
-nt-family: monospace,monospace; white-space: pre-wrap;"><span>diff --git a/=
-src/openvpnserv/interactive.c b/src/openvpnserv/interactive.c</span><br><sp=
-an>index 3bd2722..0a00a6a 100644</span><br><span>--- a/src/openvpnserv/inte=
-ractive.c</span><br><span>+++ b/src/openvpnserv/interactive.c</span><br><sp=
-an>@@ -2662,7 +2662,7 @@</span><br><span>     if (err =3D=3D ERROR_FILE_NOT=
-_FOUND)</span><br><span>     {</span><br><span>         *gpol =3D FALSE;</s=
-pan><br><span style=3D"color: hsl(0, 100%, 40%);">-        err =3D RegOpenK=
-eyExA(HKEY_LOCAL_MACHINE, sys_key, 0, KEY_ALL_ACCESS, &amp;nrpt);</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+        err =3D RegCreateKeyE=
-xA(HKEY_LOCAL_MACHINE, sys_key, 0, NULL, 0, 0, NULL, &amp;nrpt, NULL);</spa=
-n><br><span>         if (err)</span><br><span>         {</span><br><span>  =
-           nrpt =3D INVALID_HANDLE_VALUE;</span><br><span></span><br></pre>=
-<p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1069?usp=
-=3Demail">change 1069</a>. To unsubscribe, or for help writing mail filters=
-, visit <a href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><di=
-v itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope item=
-prop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D=
-"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1069?usp=3Demail"/><met=
-a itemprop=3D"name" content=3D"View Change"/></div></div>
+<p>d12fk <strong>uploaded patch set #2</strong> to this change.</p><p><a hr=
+ef=3D"http://gerrit.openvpn.net/c/openvpn/+/1069?usp=3Demail">View Change</=
+a></p><pre style=3D"font-family: monospace,monospace; white-space: pre-wrap=
+;">dns: create NRPT registry key if it doesn&#39;t exist<br><br>Windows 201=
+9 Server by default does not have the key where local system<br>NRPT rules =
+are stored. Tests have determined that NRPT is actually<br>working when rul=
+es are created under the key. So, instead of failing if<br>the key doesn&#3=
+9;t exist, we create it, and things will start working.<br><br>Github: Open=
+VPN/openvpn#768<br>Change-Id: I46132ebaf3bf3b16798b6f2416f7bf7272f5646b<br>=
+Signed-off-by: Heiko Hund &lt;heiko@...2662...&gt;<br>---<br>M src/openvpns=
+erv/interactive.c<br>1 file changed, 1 insertion(+), 1 deletion(-)<br><br><=
+/pre><pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;=
+">git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/69/1069/2</p=
+re><pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;">=
+<span>diff --git a/src/openvpnserv/interactive.c b/src/openvpnserv/interact=
+ive.c</span><br><span>index 3bd2722..0a00a6a 100644</span><br><span>--- a/s=
+rc/openvpnserv/interactive.c</span><br><span>+++ b/src/openvpnserv/interact=
+ive.c</span><br><span>@@ -2662,7 +2662,7 @@</span><br><span>     if (err =
+=3D=3D ERROR_FILE_NOT_FOUND)</span><br><span>     {</span><br><span>       =
+  *gpol =3D FALSE;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
+     err =3D RegOpenKeyExA(HKEY_LOCAL_MACHINE, sys_key, 0, KEY_ALL_ACCESS, =
+&amp;nrpt);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        =
+err =3D RegCreateKeyExA(HKEY_LOCAL_MACHINE, sys_key, 0, NULL, 0, 0, NULL, &=
+amp;nrpt, NULL);</span><br><span>         if (err)</span><br><span>        =
+ {</span><br><span>             nrpt =3D INVALID_HANDLE_VALUE;</span><br><s=
+pan></span><br></pre><p>To view, visit <a href=3D"http://gerrit.openvpn.net=
+/c/openvpn/+/1069?usp=3Demail">change 1069</a>. To unsubscribe, or for help=
+ writing mail filters, visit <a href=3D"http://gerrit.openvpn.net/settings"=
+>settings</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage=
+"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewActi=
+on"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/10=
+69?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div></d=
+iv>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
 <div style=3D"display:none"> Gerrit-Change-Id: I46132ebaf3bf3b16798b6f2416f=
 7bf7272f5646b </div>
 <div style=3D"display:none"> Gerrit-Change-Number: 1069 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
 <div style=3D"display:none"> Gerrit-Owner: d12fk &lt;heiko@...515...&gt; </=
 div>
 <div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
@@ -148,8 +148,8 @@ ts.sourceforge.net&gt; </div>
 ..1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
 41...&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: newchange </div>
+<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
 
 
---XBaBL7TKsNE=--
+--aq+rEjVLU+Y=--
 
