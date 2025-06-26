@@ -1,11 +1,15 @@
-From: Gert Doering <gert@...1296...>
-Date: Thu, 26 Jun 2025 11:30:00 +0200
-Message-ID: <20250626093006.24789-1-gert@...1296...>
-In-Reply-To: <gerrit.1750841904000.I55940b78e35f0e3d74aa6cba14378afed97a444e@...2715...>
-References: <gerrit.1750841904000.I55940b78e35f0e3d74aa6cba14378afed97a444e@...2715...>
+From: "d12fk (Code Review)" <gerrit@...515...>
+Date: Thu, 26 Jun 2025 10:37:45 +0000
+References: <gerrit.1750934262000.I46132ebaf3bf3b16798b6f2416f7bf7272f5646b@...2715...>
+Reply-To: heiko@...515..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net, frank@...2641...
+Message-ID: <2ef8659a2c2e6d3c51653e1993a134c34526a353-HTML@...2715...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v2] run forced --dns-updown without
- --script-security
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="XBaBL7TKsNE="; charset=UTF-8
+Subject: [Openvpn-devel] [XS] Change in openvpn[master]: dns: create NRPT
+ registry key if it doesn't exist
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,171 +18,138 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-From: Heiko Hund <heiko@...2662...>
+--XBaBL7TKsNE=
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Due to a shortcut in the `--dns-updown force' implementation, running the
-default dns-updown script required `--script-security 2'. This makes the
-forced default script run without --script-security set.
+Attention is currently required from: flichtenheld, plaisthos.
 
-Change-Id: I55940b78e35f0e3d74aa6cba14378afed97a444e
+Hello plaisthos, flichtenheld,
+
+I'd like you to do a code review.
+Please visit
+
+    http://gerrit.openvpn.net/c/openvpn/+/1069?usp=3Demail
+
+to review the following change.
+
+
+Change subject: dns: create NRPT registry key if it doesn't exist
+......................................................................
+
+dns: create NRPT registry key if it doesn't exist
+
+Windows 2019 Server by default does not have the key where local system
+NRPT rules are stored. Tests have determined that NRPT is actually
+working when rules are created under the key. So, instead of failing if
+the key doesn't exist, we create it, and things will start working.
+
+Change-Id: I46132ebaf3bf3b16798b6f2416f7bf7272f5646b
 Signed-off-by: Heiko Hund <heiko@...2662...>
-Acked-by: Frank Lichtenheld <frank@...2641...>
 ---
+M src/openvpnserv/interactive.c
+1 file changed, 1 insertion(+), 1 deletion(-)
 
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to master.
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1065
-This mail reflects revision 2 of this Change.
 
-Acked-by according to Gerrit (reflected above):
-Frank Lichtenheld <frank@...2641...>
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/69/1069/1
 
-        
-diff --git a/src/openvpn/dns.c b/src/openvpn/dns.c
-index 939ae09..ea3d91b 100644
---- a/src/openvpn/dns.c
-+++ b/src/openvpn/dns.c
-@@ -264,7 +264,7 @@
-     clone.servers = clone_dns_servers(o->servers, gc);
-     clone.servers_prepull = clone_dns_servers(o->servers_prepull, gc);
-     clone.updown = o->updown;
--    clone.user_set_updown = o->user_set_updown;
-+    clone.updown_flags = o->updown_flags;
- 
-     return clone;
- }
-@@ -580,7 +580,7 @@
-     argv_printf(&argv, "%s", o->updown);
-     argv_msg(M_INFO, &argv);
-     int res;
--    if (o->user_set_updown)
-+    if (dns_updown_user_set(o))
+diff --git a/src/openvpnserv/interactive.c b/src/openvpnserv/interactive.c
+index 3bd2722..0a00a6a 100644
+--- a/src/openvpnserv/interactive.c
++++ b/src/openvpnserv/interactive.c
+@@ -2662,7 +2662,7 @@
+     if (err =3D=3D ERROR_FILE_NOT_FOUND)
      {
-         res = openvpn_run_script(&argv, es, S_EXITCODE, "dns updown");
-     }
-@@ -692,7 +692,7 @@
- run_up_down_command(bool up, struct options *o, const struct tuntap *tt, struct dns_updown_runner_info *updown_runner)
- {
-     struct dns_options *dns = &o->dns_options;
--    if (!dns->updown || (o->up_script && !dns->user_set_updown))
-+    if (!dns->updown || (o->up_script && !dns_updown_user_set(dns) && !dns_updown_forced(dns)))
-     {
-         return;
-     }
-diff --git a/src/openvpn/dns.h b/src/openvpn/dns.h
-index 688daa7..d33f64e 100644
---- a/src/openvpn/dns.h
-+++ b/src/openvpn/dns.h
-@@ -42,13 +42,18 @@
-     DNS_TRANSPORT_TLS
- };
- 
-+enum dns_updown_flags {
-+    DNS_UPDOWN_NO_FLAGS,
-+    DNS_UPDOWN_USER_SET,
-+    DNS_UPDOWN_FORCED
-+};
-+
- struct dns_domain {
-     struct dns_domain *next;
-     const char *name;
- };
- 
--struct dns_server_addr
--{
-+struct dns_server_addr {
-     union {
-         struct in_addr a4;
-         struct in6_addr a6;
-@@ -103,7 +108,7 @@
-     struct dns_server *servers;
-     struct gc_arena gc;
-     const char *updown;
--    bool user_set_updown;
-+    enum dns_updown_flags updown_flags;
- };
- 
- /**
-@@ -195,4 +200,26 @@
-  */
- void show_dns_options(const struct dns_options *o);
- 
-+/**
-+ * Returns whether dns-updown is user defined
-+ *
-+ * @param   o           Pointer to the DNS options struct
-+ */
-+static inline bool
-+dns_updown_user_set(const struct dns_options *o)
-+{
-+    return o->updown_flags == DNS_UPDOWN_USER_SET;
-+}
-+
-+/**
-+ * Returns whether dns-updown is forced to run
-+ *
-+ * @param   o           Pointer to the DNS options struct
-+ */
-+static inline bool
-+dns_updown_forced(const struct dns_options *o)
-+{
-+    return o->updown_flags == DNS_UPDOWN_FORCED;
-+}
-+
- #endif /* ifndef DNS_H */
-diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index 7e26069..af097f8 100644
---- a/src/openvpn/options.c
-+++ b/src/openvpn/options.c
-@@ -3593,7 +3593,7 @@
-     struct gc_arena gc = gc_new();
-     struct dns_options *dns = &o->dns_options;
- 
--    if (dns->servers || dns->user_set_updown)
-+    if (dns->servers || dns_updown_user_set(dns) || dns_updown_forced(dns))
-     {
-         /* Clean up env from --dhcp-option DNS config */
-         struct buffer name = alloc_buf_gc(OPTION_PARM_SIZE, &gc);
-@@ -3667,7 +3667,7 @@
-             }
-         }
-     }
--    else if (o->up_script && !dns->user_set_updown)
-+    else if (o->up_script && !dns_updown_user_set(dns) && !dns_updown_forced(dns))
-     {
-         /* Set foreign option env vars from --dns config */
-         const char *p[] = { "dhcp-option", NULL, NULL };
-@@ -8182,15 +8182,15 @@
-         if (streq(p[1], "disable"))
+         *gpol =3D FALSE;
+-        err =3D RegOpenKeyExA(HKEY_LOCAL_MACHINE, sys_key, 0, KEY_ALL_ACCE=
+SS, &nrpt);
++        err =3D RegCreateKeyExA(HKEY_LOCAL_MACHINE, sys_key, 0, NULL, 0, 0=
+, NULL, &nrpt, NULL);
+         if (err)
          {
-             dns->updown = NULL;
--            dns->user_set_updown = false;
-+            dns->updown_flags = DNS_UPDOWN_NO_FLAGS;
-         }
-         else if (streq(p[1], "force"))
-         {
-             /* force dns-updown run, even if a --up script is defined */
--            if (dns->user_set_updown == false)
-+            if (!dns_updown_user_set(dns))
-             {
-                 dns->updown = DEFAULT_DNS_UPDOWN;
--                dns->user_set_updown = true;
-+                dns->updown_flags = DNS_UPDOWN_FORCED;
-             }
-         }
-         else
-@@ -8201,7 +8201,7 @@
-                 dns->updown = NULL;
-             }
-             set_user_script(options, &dns->updown, p[1], p[0], false);
--            dns->user_set_updown = true;
-+            dns->updown_flags = DNS_UPDOWN_USER_SET;
-         }
-     }
-     else if (streq(p[0], "dns") && p[1])
+             nrpt =3D INVALID_HANDLE_VALUE;
+
+--
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1069?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings
+
+Gerrit-Project: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: I46132ebaf3bf3b16798b6f2416f7bf7272f5646b
+Gerrit-Change-Number: 1069
+Gerrit-PatchSet: 1
+Gerrit-Owner: d12fk <heiko@...515...>
+Gerrit-Reviewer: flichtenheld <frank@...2641...>
+Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Attention: flichtenheld <frank@...2641...>
+Gerrit-MessageType: newchange
+
+--XBaBL7TKsNE=
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<p> Attention is currently required from: flichtenheld, plaisthos. </p>
+<p>d12fk would like plaisthos and flichtenheld to <strong>review</strong> t=
+his change.
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1069?usp=3Demail">V=
+iew Change</a></p><pre style=3D"font-family: monospace,monospace; white-spa=
+ce: pre-wrap;">dns: create NRPT registry key if it doesn&#39;t exist<br><br=
+>Windows 2019 Server by default does not have the key where local system<br=
+>NRPT rules are stored. Tests have determined that NRPT is actually<br>work=
+ing when rules are created under the key. So, instead of failing if<br>the =
+key doesn&#39;t exist, we create it, and things will start working.<br><br>=
+Change-Id: I46132ebaf3bf3b16798b6f2416f7bf7272f5646b<br>Signed-off-by: Heik=
+o Hund &lt;heiko@...2662...&gt;<br>---<br>M src/openvpnserv/interactive.c<b=
+r>1 file changed, 1 insertion(+), 1 deletion(-)<br><br></pre><pre style=3D"=
+font-family: monospace,monospace; white-space: pre-wrap;">git pull ssh://ge=
+rrit.openvpn.net:29418/openvpn refs/changes/69/1069/1</pre><pre style=3D"fo=
+nt-family: monospace,monospace; white-space: pre-wrap;"><span>diff --git a/=
+src/openvpnserv/interactive.c b/src/openvpnserv/interactive.c</span><br><sp=
+an>index 3bd2722..0a00a6a 100644</span><br><span>--- a/src/openvpnserv/inte=
+ractive.c</span><br><span>+++ b/src/openvpnserv/interactive.c</span><br><sp=
+an>@@ -2662,7 +2662,7 @@</span><br><span>     if (err =3D=3D ERROR_FILE_NOT=
+_FOUND)</span><br><span>     {</span><br><span>         *gpol =3D FALSE;</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-        err =3D RegOpenK=
+eyExA(HKEY_LOCAL_MACHINE, sys_key, 0, KEY_ALL_ACCESS, &amp;nrpt);</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+        err =3D RegCreateKeyE=
+xA(HKEY_LOCAL_MACHINE, sys_key, 0, NULL, 0, 0, NULL, &amp;nrpt, NULL);</spa=
+n><br><span>         if (err)</span><br><span>         {</span><br><span>  =
+           nrpt =3D INVALID_HANDLE_VALUE;</span><br><span></span><br></pre>=
+<p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1069?usp=
+=3Demail">change 1069</a>. To unsubscribe, or for help writing mail filters=
+, visit <a href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><di=
+v itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope item=
+prop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D=
+"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1069?usp=3Demail"/><met=
+a itemprop=3D"name" content=3D"View Change"/></div></div>
+
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I46132ebaf3bf3b16798b6f2416f=
+7bf7272f5646b </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1069 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
+<div style=3D"display:none"> Gerrit-Owner: d12fk &lt;heiko@...515...&gt; </=
+div>
+<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
+1...&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
+.1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
+41...&gt; </div>
+<div style=3D"display:none"> Gerrit-MessageType: newchange </div>
+
+
+--XBaBL7TKsNE=--
 
