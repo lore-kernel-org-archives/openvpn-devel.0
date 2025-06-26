@@ -1,20 +1,16 @@
-Message-ID: <163dd35d-fee8-4e7f-a6b3-c34bd2c18cb3@...1227...>
-Date: Thu, 26 Jun 2025 00:43:41 +0200
+From: "plaisthos (Code Review)" <gerrit@...515...>
+Date: Thu, 26 Jun 2025 08:11:35 +0000
+In-Reply-To: <gerrit.1750855087000.I6752dcd5aff3e5cea2b439366479e86751a1c403@...2715...>
+References: <gerrit.1750855087000.I6752dcd5aff3e5cea2b439366479e86751a1c403@...2715...>
+Reply-To: arne-openvpn@...1227..., openvpn-devel@lists.sourceforge.net,
+ frank@...2641...
+Message-ID: <10e4feae2c5efe551fb367d6b00fd022555262c9-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-References: <1e8ccfd451cbf9e6d090bd6a6886e366.squirrel@...2890...>
- <20250507074438.1326755-1-walter.openvpn@...2889...>
- <eedcf175305a088df0eb7ec146dbe441.squirrel@...2890...>
- <f60dbf91-c2f8-495b-ba14-967e70629d1b@...1227...>
- <ef2598a79cf3efe9d343b514ab6c9e5c.squirrel@...2890...>
- <8ba925a1-85c9-4274-a512-32dcec35b147@...1227...>
- <2bb3487e-6762-40ea-b6ad-2622a879ca21@...2889...>
- <d885df5e-c817-47e8-8d5d-586eb227ead5@...1227...>
- <866e86f674f55d0d39cce796f3f7ed9b.squirrel@...2890...>
-Content-Language: en-GB
-From: Arne Schwabe <arne@...1227...>
-In-Reply-To: <866e86f674f55d0d39cce796f3f7ed9b.squirrel@...2890...>
-Subject: Re: [Openvpn-devel] [PATCH] multi.c: Allow floating to a new IP
- right after connection setup
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="kSX5n6fimno="; charset=UTF-8
+Subject: [Openvpn-devel] [M] Change in openvpn[master]: Check message
+ id/acked ids too when doing sessionid cookie checks
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -23,80 +19,80 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-To: Walter Doekes <walter.openvpn@...2889...>
-Cc: openvpn-devel@lists.sourceforge.net
+Cc: flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-Am 25.06.25 um 15:30 schrieb Walter Doekes:
-> Good. I backported the patch so it ran against the culprit version
-> (b3647114).
-> 
-> I got these mesages:
-> 
-> 
->    SENT CONTROL [mycommonname]: 'PUSH_REPLY,route ... 255.255.255.255
-> net_gateway,route-gateway 10.x.x.1,topology subnet,ping 15,ping-restart
-> 55,route 10.x.x.0 255.255.0.0 vpn_gateway,ifconfig 10.x.x.3
-> 255.255.255.0,peer-id 4,cipher AES-256-GCM' (status=1)
-> 
->    Packet with invalid or missing SID from [AF_INET]HOME_IP:33567
-> 
->    Float requested for peer 4 to HOME_IP:33567
-> 
->    peer 4 (mycommonname) floated from VPN_IP:33567 to [AF_INET]HOME_IP:33567
-> 
-> 
-> 
-> The "Packet with invalid or missing SID" is new to me. But other than
-> that, it works.
+--kSX5n6fimno=
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Thanks for testing and confirming that it works.
+Attention is currently required from: flichtenheld.
 
-> I also tried it against 2.6-latest (0169b4ad). Also works. There the
-> message is:
-> 
->    Packet (P_ACK_V1) with invalid or missing SID from [AF_INET]HOME_IP:46088
-> 
-> I can't tell if this new message is problematic or not. It doesn't
-> negatively impact my connection setup. And I (now) know when to expect it.
-> 
-> 
-> 
-> As for your patch: there's a minor typo in your patch at ssl_pkt.h in the
-> signature:
-> 
-> "bool check_session_id_hmac" should be "bool pkt_is_ack"
+plaisthos has posted comments on this change. ( http://gerrit.openvpn.net/c=
+/openvpn/+/1067?usp=3Demail )
 
-Thanks will fix in the  next revision.
-
-> Further, I would prefer if the commit message itself mentioned something
-> about "floating IPs and 60 second timeout after connect" instead of "rare
-> circumstances" which are not rare in 100% of my use cases. That might be
-> beneficial to the next person who runs into this.
+Change subject: Check message id/acked ids too when doing sessionid cookie =
+checks
+......................................................................
 
 
-You need a connection that
-
-- starts on IP A
-- successfully floats to IP B by data packet
-- then has a control packet from IP A before any data packet can trigger 
-the float back to IP A
-
-In this scenario we would trigger a new connection coming before while 
-know we detect that this should not trigger a new connection as it is 
-not a new connection attempt. So instead of creating a new connection, 
-you see (at verb 4 or higher) the message
-
-    Packet (P_ACK_V1) with invalid or missing SID
-
-instead with the patch.
-
-I will update the commit message when the patch is no longer in draft 
-mode. I wanted to confirm that this is actually the problem/scenario we 
-are fixing before finishing the patch.
-
-Arne
+Set Ready For Review
 
 
+--
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1067?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings
+
+Gerrit-Project: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: I6752dcd5aff3e5cea2b439366479e86751a1c403
+Gerrit-Change-Number: 1067
+Gerrit-PatchSet: 2
+Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
+Gerrit-Reviewer: flichtenheld <frank@...2641...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-Attention: flichtenheld <frank@...2641...>
+Gerrit-Comment-Date: Thu, 26 Jun 2025 08:11:35 +0000
+Gerrit-HasComments: No
+Gerrit-Has-Labels: No
+Gerrit-MessageType: comment
+
+--kSX5n6fimno=
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<p> Attention is currently required from: flichtenheld. </p>
+<p style=3D"white-space: pre-wrap; word-wrap: break-word;">Set Ready For Re=
+view</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1067?usp=3Demai=
+l">View Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>T=
+o view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1067?usp=3De=
+mail">change 1067</a>. To unsubscribe, or for help writing mail filters, vi=
+sit <a href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div it=
+emscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=
+=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url=
+" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1067?usp=3Demail"/><meta it=
+emprop=3D"name" content=3D"View Change"/></div></div>
+
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I6752dcd5aff3e5cea2b43936647=
+9e86751a1c403 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1067 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
+<div style=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@...1711...=
+27...&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
+1...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
+41...&gt; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Thu, 26 Jun 2025 08:11:35=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: No </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: No </div>
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
+
+
+--kSX5n6fimno=--
 
