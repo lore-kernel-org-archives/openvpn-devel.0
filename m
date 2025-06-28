@@ -1,14 +1,14 @@
 From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Sat, 28 Jun 2025 16:22:46 +0000
+Date: Sat, 28 Jun 2025 16:22:48 +0000
 In-Reply-To: <gerrit.1750841904000.I55940b78e35f0e3d74aa6cba14378afed97a444e@...2715...>
 References: <gerrit.1750841904000.I55940b78e35f0e3d74aa6cba14378afed97a444e@...2715...>
 Reply-To: gert@...1296..., arne-openvpn@...1227..., heiko@...515...,
  openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <7ba4b5dd55873d4be225e3fbb8b3639c51e36578-EmailReplacePatchSet-HTML@...2715...>
+Message-ID: <7ba4b5dd55873d4be225e3fbb8b3639c51e36578-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="pCOwSuBpzw8="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="OJRZER5tEcQ="; charset=UTF-8
 Subject: [Openvpn-devel] [M] Change in openvpn[master]: run forced
  --dns-updown without --script-security
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -19,19 +19,15 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: d12fk <heiko@...515...>, plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: d12fk <heiko@...515...>
+Cc: flichtenheld <frank@...2641...>, plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---pCOwSuBpzw8=
+--OJRZER5tEcQ=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-cron2 has uploaded a new patch set (#4) to the change originally created by=
- d12fk. ( http://gerrit.openvpn.net/c/openvpn/+/1065?usp=3Demail )
-
-The following approvals got outdated and were removed:
-Code-Review+2 by flichtenheld
-
+cron2 has submitted this change. ( http://gerrit.openvpn.net/c/openvpn/+/10=
+65?usp=3Demail )
 
 Change subject: run forced --dns-updown without --script-security
 ......................................................................
@@ -56,7 +52,7 @@ M src/openvpn/options.c
 3 files changed, 39 insertions(+), 12 deletions(-)
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/65/1065/4
+
 
 diff --git a/src/openvpn/dns.c b/src/openvpn/dns.c
 index 939ae09..ea3d91b 100644
@@ -218,17 +214,15 @@ Gerrit-Owner: d12fk <heiko@...515...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-MessageType: newpatchset
+Gerrit-MessageType: merged
 
---pCOwSuBpzw8=
+--OJRZER5tEcQ=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p>cron2 <strong>uploaded patch set #4</strong> to the change originally cr=
-eated by d12fk.</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1065=
-?usp=3Demail">View Change</a></p><p>The following approvals got outdated an=
-d were removed:
-Code-Review+2 by flichtenheld</p><pre style=3D"font-family: monospace,monos=
+<p>cron2 <strong>submitted</strong> this change.</p><p><a href=3D"http://ge=
+rrit.openvpn.net/c/openvpn/+/1065?usp=3Demail">View Change</a></p><div styl=
+e=3D"white-space:pre-wrap"></div><pre style=3D"font-family: monospace,monos=
 pace; white-space: pre-wrap;">run forced --dns-updown without --script-secu=
 rity<br><br>Due to a shortcut in the `--dns-updown force&#39; implementatio=
 n, running the<br>default dns-updown script required `--script-security 2&#=
@@ -239,32 +233,30 @@ off-by: Heiko Hund &lt;heiko@...2662...&gt;<br>Acked-by: Frank Lichtenheld =
 1296...&gt;<br>URL: https://www.mail-archive.com/openvpn-devel@...1659...=
 forge.net/msg31994.html<br>Signed-off-by: Gert Doering &lt;gert@...1296...&=
 gt;<br>---<br>M src/openvpn/dns.c<br>M src/openvpn/dns.h<br>M src/openvpn/o=
-ptions.c<br>3 files changed, 39 insertions(+), 12 deletions(-)<br><br></pre=
-><pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;">gi=
-t pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/65/1065/4</pre><=
-pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><spa=
-n>diff --git a/src/openvpn/dns.c b/src/openvpn/dns.c</span><br><span>index =
-939ae09..ea3d91b 100644</span><br><span>--- a/src/openvpn/dns.c</span><br><=
-span>+++ b/src/openvpn/dns.c</span><br><span>@@ -264,7 +264,7 @@</span><br>=
-<span>     clone.servers =3D clone_dns_servers(o-&gt;servers, gc);</span><b=
-r><span>     clone.servers_prepull =3D clone_dns_servers(o-&gt;servers_prep=
-ull, gc);</span><br><span>     clone.updown =3D o-&gt;updown;</span><br><sp=
-an style=3D"color: hsl(0, 100%, 40%);">-    clone.user_set_updown =3D o-&gt=
-;user_set_updown;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-  clone.updown_flags =3D o-&gt;updown_flags;</span><br><span> </span><br><s=
-pan>     return clone;</span><br><span> }</span><br><span>@@ -580,7 +580,7 =
-@@</span><br><span>     argv_printf(&amp;argv, &quot;%s&quot;, o-&gt;updown=
-);</span><br><span>     argv_msg(M_INFO, &amp;argv);</span><br><span>     i=
-nt res;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    if (o-&gt;=
-user_set_updown)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
- if (dns_updown_user_set(o))</span><br><span>     {</span><br><span>       =
-  res =3D openvpn_run_script(&amp;argv, es, S_EXITCODE, &quot;dns updown&qu=
-ot;);</span><br><span>     }</span><br><span>@@ -692,7 +692,7 @@</span><br>=
-<span> run_up_down_command(bool up, struct options *o, const struct tuntap =
-*tt, struct dns_updown_runner_info *updown_runner)</span><br><span> {</span=
-><br><span>     struct dns_options *dns =3D &amp;o-&gt;dns_options;</span><=
-br><span style=3D"color: hsl(0, 100%, 40%);">-    if (!dns-&gt;updown || (o=
--&gt;up_script &amp;&amp; !dns-&gt;user_set_updown))</span><br><span style=
+ptions.c<br>3 files changed, 39 insertions(+), 12 deletions(-)<br><br></pre>
+<pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><sp=
+an>diff --git a/src/openvpn/dns.c b/src/openvpn/dns.c</span><br><span>index=
+ 939ae09..ea3d91b 100644</span><br><span>--- a/src/openvpn/dns.c</span><br>=
+<span>+++ b/src/openvpn/dns.c</span><br><span>@@ -264,7 +264,7 @@</span><br=
+><span>     clone.servers =3D clone_dns_servers(o-&gt;servers, gc);</span><=
+br><span>     clone.servers_prepull =3D clone_dns_servers(o-&gt;servers_pre=
+pull, gc);</span><br><span>     clone.updown =3D o-&gt;updown;</span><br><s=
+pan style=3D"color: hsl(0, 100%, 40%);">-    clone.user_set_updown =3D o-&g=
+t;user_set_updown;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+   clone.updown_flags =3D o-&gt;updown_flags;</span><br><span> </span><br><=
+span>     return clone;</span><br><span> }</span><br><span>@@ -580,7 +580,7=
+ @@</span><br><span>     argv_printf(&amp;argv, &quot;%s&quot;, o-&gt;updow=
+n);</span><br><span>     argv_msg(M_INFO, &amp;argv);</span><br><span>     =
+int res;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    if (o-&gt=
+;user_set_updown)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+  if (dns_updown_user_set(o))</span><br><span>     {</span><br><span>      =
+   res =3D openvpn_run_script(&amp;argv, es, S_EXITCODE, &quot;dns updown&q=
+uot;);</span><br><span>     }</span><br><span>@@ -692,7 +692,7 @@</span><br=
+><span> run_up_down_command(bool up, struct options *o, const struct tuntap=
+ *tt, struct dns_updown_runner_info *updown_runner)</span><br><span> {</spa=
+n><br><span>     struct dns_options *dns =3D &amp;o-&gt;dns_options;</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-    if (!dns-&gt;updown || (=
+o-&gt;up_script &amp;&amp; !dns-&gt;user_set_updown))</span><br><span style=
 =3D"color: hsl(120, 100%, 40%);">+    if (!dns-&gt;updown || (o-&gt;up_scri=
 pt &amp;&amp; !dns_updown_user_set(dns) &amp;&amp; !dns_updown_forced(dns))=
 )</span><br><span>     {</span><br><span>         return;</span><br><span> =
@@ -380,8 +372,8 @@ div>
 .1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
+<div style=3D"display:none"> Gerrit-MessageType: merged </div>
 
 
---pCOwSuBpzw8=--
+--OJRZER5tEcQ=--
 
