@@ -1,10 +1,9 @@
-Date: Mon, 30 Jun 2025 19:01:46 +0200 (CEST)
-Message-Id: <202506301701.55UH1kC4081555@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <20250630164207.10477-1-gert@...1296...>
-References: <20250630164207.10477-1-gert@...1296...>
-Subject: [Openvpn-devel] [PATCH applied] Re: packet_id: Fix build with
- --disable-debug
+From: Ralf Lici <ralf@...2726...>
+Date: Tue,  1 Jul 2025 14:47:44 +0200
+Message-ID: <20250701124744.259472-1-ralf@...2726...>
+MIME-Version: 1.0
+Subject: [Openvpn-devel] [PATCH ovpn-net-next] ovpn: reset GSO metadata
+ after decapsulation
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,30 +14,56 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Frank Lichtenheld <frank@...2641...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
-"Obviously correct" ;-) - not tested beyond what the buildbots do
-anyway.
+The ovpn_netdev_write() function is responsible for injecting
+decapsulated and decrypted packets back into the local network stack.
+Prior to this change, the skb could retain GSO metadata from the outer,
+encrypted tunnel packet. This original GSO metadata, relevant to the
+sender's context for the tunnel, becomes invalid and misleading for the
+local receive path once the inner packet is exposed.
 
-Your patch has been applied to the master branch.
+Leaving this stale metadata intact causes internal GSO validation checks
+further down the kernel's network stack (validate_xmit_skb()) to fail,
+leading to packet drops. The reasons for these failures vary by
+protocol, for example:
+- for ICMP, no offload handler is registered;
+- for TCP and UDP, the respective offload handlers return errors when
+  comparing skb->len to the outdated skb_shinfo(skb)->gso_size.
 
-commit 16c1da39e93578766acd6ba085f4960190fd6220
-Author: Frank Lichtenheld
-Date:   Mon Jun 30 18:42:01 2025 +0200
+By calling skb_gso_reset(skb) we ensure the inner packet is presented to
+gro_cells_receive() with a clean slate, correctly indicating it is an
+individual packet from the perspective of the local stack.
 
-     packet_id: Fix build with --disable-debug
+This change eliminates the "Driver has suspect GRO implementation, TCP
+performance may be compromised" warning and improves overall TCP
+performance by allowing GSO/GRO to function as intended on the
+decapsulated traffic. (Note: UDP GSO is not currently supported in ovpn)
 
-     Signed-off-by: Frank Lichtenheld <frank@...2641...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20250630164207.10477-1-gert@...1296...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg32013.html
-     Signed-off-by: Gert Doering <gert@...1296...>
+Signed-off-by: Ralf Lici <ralf@...2726...>
+---
+ drivers/net/ovpn/io.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
-
---
-kind regards,
-
-Gert Doering
+diff --git a/drivers/net/ovpn/io.c b/drivers/net/ovpn/io.c
+index ebf1e849506b..3e9e7f8444b3 100644
+--- a/drivers/net/ovpn/io.c
++++ b/drivers/net/ovpn/io.c
+@@ -62,6 +62,13 @@ static void ovpn_netdev_write(struct ovpn_peer *peer, struct sk_buff *skb)
+ 	unsigned int pkt_len;
+ 	int ret;
+ 
++	/*
++	 * GSO state from the transport layer is not valid for the tunnel/data
++	 * path. Reset all GSO fields to prevent any further GSO processing
++	 * from entering an inconsistent state.
++	 */
++	skb_gso_reset(skb);
++
+ 	/* we can't guarantee the packet wasn't corrupted before entering the
+ 	 * VPN, therefore we give other layers a chance to check that
+ 	 */
+-- 
+2.50.0
 
 
