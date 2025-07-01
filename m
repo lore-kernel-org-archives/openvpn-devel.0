@@ -1,12 +1,8 @@
-Date: Tue, 1 Jul 2025 15:51:43 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <aGPn76OGbp-DGqcN@...1296...>
-References: <20250701124744.259472-1-ralf@...2726...>
+Message-ID: <c62eff4b-b34d-4d27-891c-b9cb1b985958@...2181...>
+Date: Tue, 1 Jul 2025 16:15:30 +0200
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="7q4mCnLVpE+9P6xb"
-Content-Disposition: inline
-In-Reply-To: <20250701124744.259472-1-ralf@...2726...>
+Content-Language: en-US
+From: Antonio Quartulli <a@...2181...>
 Subject: Re: [Openvpn-devel] [PATCH ovpn-net-next] ovpn: reset GSO metadata
  after decapsulation
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -17,56 +13,38 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 To: Ralf Lici <ralf@...2726...>
-Cc: openvpn-devel@lists.sourceforge.net
+Cc: openvpn-devel@lists.sourceforge.net, Gert Doering <gert@...1296...>
 
---7q4mCnLVpE+9P6xb
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+Hi,
 
-Hi
+On 01/07/2025 15:51, Gert Doering wrote:
+> Hi
+> 
+> On Tue, Jul 01, 2025 at 02:47:44PM +0200, Ralf Lici wrote:
+>> By calling skb_gso_reset(skb) we ensure the inner packet is presented to
+>> gro_cells_receive() with a clean slate, correctly indicating it is an
+>> individual packet from the perspective of the local stack.
+> 
+> Amazing find.
+> 
+> I have tested this on my ubuntu 20.04 (backports) testbed that had the
+> "large ping tcp instance -> udp instance fail", and now everything succeeds
+> (this patch applied to "DCO version: ovpn-net-next/net-6.15.0-8f0bda6").
+> 
+> Tested-By: Gert Doering <gert@...1296...>
 
-On Tue, Jul 01, 2025 at 02:47:44PM +0200, Ralf Lici wrote:
-> By calling skb_gso_reset(skb) we ensure the inner packet is presented to
-> gro_cells_receive() with a clean slate, correctly indicating it is an
-> individual packet from the perspective of the local stack.
+Thanks a lot for testing this out!
+I slightly improved the commit message and added missing tags.
 
-Amazing find.
+The patch has been queued for sending to net.
 
-I have tested this on my ubuntu 20.04 (backports) testbed that had the
-"large ping tcp instance -> udp instance fail", and now everything succeeds
-(this patch applied to "DCO version: ovpn-net-next/net-6.15.0-8f0bda6").
+Regards,
 
-Tested-By: Gert Doering <gert@...1296...>
 
-gert
---=20
-"If was one thing all people took for granted, was conviction that if you=20
- feed honest figures into a computer, honest figures come out. Never doubte=
-d=20
- it myself till I met a computer with a sense of humor."
-                             Robert A. Heinlein, The Moon is a Harsh Mistre=
-ss
+-- 
+Antonio Quartulli
 
-Gert Doering - Munich, Germany                             gert@...1296...
-
---7q4mCnLVpE+9P6xb
-Content-Type: application/pgp-signature; name=signature.asc
-
------BEGIN PGP SIGNATURE-----
-
-iQGcBAEBAgAGBQJoY+fvAAoJEB2Cnv7KVigSrZML/0zvZInhwKFa5UVJltYM1MfA
-vCoI1G6zmkcMC7fDILj4vL0TJCkF7H8/QILpY/Cm6uE1rpyJci4bp4NJEOBOetYl
-YT9dvM2jWPViaLLrHib25rAqSSPazJUYrRpNodoHCRKHe0W7wMQzw47i1aBV0cgT
-8Ryf1+hkNbX8eXP3zzgb22uJjhqUPDIt7KlKpanBVxyU9zGjfb2kXMWhmoyYEdP1
-Gm38KmH+PvmdPsyHHfTrpLrbDSosa4ZTW9JQA3m0L5K5aL5b29vpAEhseDqqNGXY
-nc1meUlwfxgXLAerWGVRwC5IvB3BbEduRQgY1s3rZC+TwpHQ62MTDnNygha6A+/Y
-cu3hFG06bJxwx7xgsK/xPL7hJ1SM8jBAOCKDX+G0Uzlv2swoWvGWwBwtDil2zM7T
-XOKEq8P/YaV1cH5IAYesH3DxbQ2uUwCnvg3nXNFrw6sUdOB3LazxO3LEks3Lhhj/
-QUJEXW/2IFmR39NH1aroPESfCqCxq/LF/VogxYDNIA==
-=fHAR
------END PGP SIGNATURE-----
-
---7q4mCnLVpE+9P6xb--
 
