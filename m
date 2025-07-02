@@ -1,11 +1,15 @@
-Content-Type: multipart/alternative;
- boundary="------------a55ln8PbOtBRLpJm3jUbGqIp"
-Message-ID: <7bfacfa6-1f47-4076-92d5-309c7175f4c9@...2722...>
-Date: Wed, 2 Jul 2025 14:55:09 +0200
+From: "flichtenheld (Code Review)" <gerrit@...515...>
+Date: Wed, 2 Jul 2025 14:24:04 +0000
+References: <gerrit.1751466242000.Ia5a5b8d2a8ca5901346aad41efc4ff90a9a45273@...2715...>
+Reply-To: frank@...2641..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net
+Message-ID: <0b297145994bb4ca60cfc2c13092314863398646-HTML@...2715...>
 MIME-Version: 1.0
-From: Johan Draaisma <johan@...2722...>
-Content-Language: en-US
-Subject: [Openvpn-devel]  IRC community meeting summary
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="U6LCu5WE+Cw="; charset=UTF-8
+Subject: [Openvpn-devel] [S] Change in openvpn[master]: Fix new doxygen
+ warnings about using @return in void functions
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,267 +18,249 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: openvpn-devel@lists.sourceforge.net
+To: plaisthos <arne-openvpn@...1227...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-This is a multi-part message in MIME format.
---------------a55ln8PbOtBRLpJm3jUbGqIp
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+--U6LCu5WE+Cw=
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Meeting summary for 2 July 2025:
+Attention is currently required from: plaisthos.
 
+Hello plaisthos,
+
+I'd like you to do a code review.
+Please visit
+
+    http://gerrit.openvpn.net/c/openvpn/+/1072?usp=3Demail
+
+to review the following change.
+
+
+Change subject: Fix new doxygen warnings about using @return in void functi=
+ons
+......................................................................
+
+Fix new doxygen warnings about using @return in void functions
+
+These seem to have been added in a more recent doxygen version
+than I previously tested with.
+
+Change-Id: Ia5a5b8d2a8ca5901346aad41efc4ff90a9a45273
+Signed-off-by: Frank Lichtenheld <frank@...2641...>
+---
+M src/openvpn/crypto.h
+M src/openvpn/fragment.h
+M src/openvpn/push.c
+3 files changed, 8 insertions(+), 8 deletions(-)
+
+
+
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/72/1072/1
+
+diff --git a/src/openvpn/crypto.h b/src/openvpn/crypto.h
+index 5bd1ad5..68ad901 100644
+--- a/src/openvpn/crypto.h
++++ b/src/openvpn/crypto.h
+@@ -467,12 +467,12 @@
+  * If an error occurs during processing, then the \a buf %buffer is set to
+  * empty.
   *
-
-    *New: cve.mitre.org deprecation notice*
-    The MITRE CVE site we are linking to for all CVE record references
-    has a deprecation notice.
-    Instead cve.org is being advised as the site to use from now on.
-    Suggestion from novaflash is to search/replace all links and update
-    them accordingly to go to the new site.
-    novaflash will make an internal company ticket to update links on
-    the main site.
-    and novaflash will search/replace things on community wiki to do the
-    same.
-
+- * @param buf          - The %buffer containing the packet on which to
++ * @param[in,out] buf  - The %buffer containing the packet on which to
+  *                       perform security operations.
+  * @param work         - An initialized working %buffer.
+  * @param opt          - The security parameter state for this VPN tunnel.
   *
-
-    *New: minor issue on community.openvpn.net site*
-    While not causing critical issues, there are some cache related
-    issues caused by cloudflare.
-    This requires some finetuning of settings to solve issues like:
-    Logging in requires to use query string parameter to defeat cache.
-    Changes like enabling dark mode can linger in cache and affect other
-    visitors.
-    Sometimes pages added don't show in menu until cache is defeated in
-    some way.
-    The "are you human" screen is quite persistent and annoying, perhaps
-    it can be fixed.
-    novaflash is working with the company to look into finetuning the
-    cloudflare settings to address these issues.
-
+- * @return This function returns void.\n On return, the \a buf argument
++ * @note On return, the \a buf argument
+  *     will point to the resulting %buffer.  This %buffer will either
+  *     contain the processed packet ready for sending, or be empty if an
+  *     error occurred.
+diff --git a/src/openvpn/fragment.h b/src/openvpn/fragment.h
+index 5003c96..cc96057 100644
+--- a/src/openvpn/fragment.h
++++ b/src/openvpn/fragment.h
+@@ -309,7 +309,7 @@
   *
-
-    *New: format code using clang formatting*
-    It seems prudent to do this before the real 2.7 release.
-    It was discussed and there's some additional work to be paid either
-    on reviewer or submitter side.
-    Strategy will be; get all code into beta1, collect bugfixes,
-    reformat everything, then beta2.
-    Collect more bugfixes and then do release 2.7.0 and branch it off
-    into its own release branch.
-
+  * @param f            - The \c fragment_master structure for this VPN
+  *                       tunnel.
+- * @param buf          - A pointer to the buffer structure containing the
++ * @param[in,out] buf  - A pointer to the buffer structure containing the
+  *                       incoming packet.  This pointer will have been
+  *                       modified on return either to point to a
+  *                       completely reassembled packet, or to have length
+@@ -317,7 +317,8 @@
+  * @param frame        - The packet geometry parameters for this VPN
+  *                       tunnel.
   *
-
-    *Updated: Changes to community pages on main website*
-    Company has published the updated community
-    page:https://openvpn.net/community/
-    This design was created in collaboration with community members lev,
-    ordex, and novaflash.
-    If any changes are requested please relay them to novaflash as per
-    usual, and he will forward it internally.
-
+- * @return Void.\n On return, the \a buf argument will point to a buffer.
++ * @note On return the \a buf argument buffer will be modified
++ *     to communicate the result of the function.
+  *     The buffer will have nonzero length if the incoming packet passed
+  *     to this function was whole and unfragmented, or if it was the final
+  *     part of a fragmented packet thereby completing reassembly.  On the
+@@ -363,14 +364,15 @@
   *
-
-    *Updated: Release 2.7*
-    For the DNS related changes, the macOS DNS script is merged but
-    there's still some minor tweaks being made.
-    For multisocket, a bug report came in, and we're working to fix that.
-    For the DCO related changes, DCO+TCP is improving. Epoch data keys
-    still needs to be done, float has a patch ready for review, mssfix
-    not planned yet. For the live route updates changes, chances are
-    improving that it may get in to 2.7 after all.
-
+  * @param f            - The \c fragment_master structure for this VPN
+  *                       tunnel.
+- * @param buf          - A pointer to the buffer structure containing the
++ * @param[in,out] buf  - A pointer to the buffer structure containing the
+  *                       outgoing packet.  This pointer will be modified
+  *                       to point to a whole unfragmented packet or to the
+  *                       first part of a fragmented packet on return.
+  * @param frame        - The packet geometry parameters for this VPN
+  *                       tunnel.
   *
+- * @return Void.\n On return, the \a buf argument will point to a buffer.
++ * @note On return the \a buf argument buffer will be modified
++ *     to communicate the result of the function.
+  *     This buffer contains either the whole original outgoing packet if
+  *     fragmentation was not necessary, or the first part of the
+  *     fragmented outgoing packet if fragmentation was necessary. In both
+diff --git a/src/openvpn/push.c b/src/openvpn/push.c
+index fe289f1..ad8fa3d7 100644
+--- a/src/openvpn/push.c
++++ b/src/openvpn/push.c
+@@ -582,8 +582,6 @@
+  * @param tls_multi     tls multi context of VPN tunnel
+  * @param gc            gc arena for allocating push options
+  * @param push_list     push list to where options are added
+- *
+- * @return true on success, false on failure.
+  */
+ void
+ prepare_auth_token_push_reply(struct tls_multi *tls_multi, struct gc_arena=
+ *gc,
 
-    *Updated: push_update / live route updates*
-    For client-side support, company did QA on it against the current
-    only server implementation (cloudconnexa) and it works as expected.
-    cron2 will put reviewing it on his to-do list.
-    Server-side support patch is up and requires review and is a bit
-    more involved, lev__ and company QA will work on it.
+--
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1072?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings
 
-  *
+Gerrit-Project: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: Ia5a5b8d2a8ca5901346aad41efc4ff90a9a45273
+Gerrit-Change-Number: 1072
+Gerrit-PatchSet: 1
+Gerrit-Owner: flichtenheld <frank@...2641...>
+Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-MessageType: newchange
 
-    *Updated: OpenVPN community meetup 2025*
-    https://community.openvpn.net/openvpn/wiki/CommunityMeetup2025
-    When: weekend of 25 and 26 october.
-    Where: Napoli, Italy.
-    Meeting room: it looks like this may be
-    it;https://www.hotelparadisonapoli.it/en/home-page.aspxwe will work
-    to get budget cleared for this.
-    Hotel: probably Paradiso Napoli. Beer: yes.
-    T-shirts: yes.
+--U6LCu5WE+Cw=
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-As always you're welcome to join at #openvpn-meeting on Libera IRC 
-network every Wednesday at 14:00 Central European Time.
+<p> Attention is currently required from: plaisthos. </p>
+<p>flichtenheld would like plaisthos to <strong>review</strong> this change.
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1072?usp=3Demail">V=
+iew Change</a></p><pre style=3D"font-family: monospace,monospace; white-spa=
+ce: pre-wrap;">Fix new doxygen warnings about using @return in void functio=
+ns<br><br>These seem to have been added in a more recent doxygen version<br=
+>than I previously tested with.<br><br>Change-Id: Ia5a5b8d2a8ca5901346aad41=
+efc4ff90a9a45273<br>Signed-off-by: Frank Lichtenheld &lt;frank@...2641...&g=
+t;<br>---<br>M src/openvpn/crypto.h<br>M src/openvpn/fragment.h<br>M src/op=
+envpn/push.c<br>3 files changed, 8 insertions(+), 8 deletions(-)<br><br></p=
+re><pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;">=
+git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/72/1072/1</pre=
+><pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><s=
+pan>diff --git a/src/openvpn/crypto.h b/src/openvpn/crypto.h</span><br><spa=
+n>index 5bd1ad5..68ad901 100644</span><br><span>--- a/src/openvpn/crypto.h<=
+/span><br><span>+++ b/src/openvpn/crypto.h</span><br><span>@@ -467,12 +467,=
+12 @@</span><br><span>  * If an error occurs during processing, then the \a=
+ buf %buffer is set to</span><br><span>  * empty.</span><br><span>  *</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">- * @param buf          - Th=
+e %buffer containing the packet on which to</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+ * @param[in,out] buf  - The %buffer containing the=
+ packet on which to</span><br><span>  *                       perform secur=
+ity operations.</span><br><span>  * @param work         - An initialized wo=
+rking %buffer.</span><br><span>  * @param opt          - The security param=
+eter state for this VPN tunnel.</span><br><span>  *</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">- * @return This function returns void.\n On=
+ return, the \a buf argument</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+ * @note On return, the \a buf argument</span><br><span>  *     wi=
+ll point to the resulting %buffer.  This %buffer will either</span><br><spa=
+n>  *     contain the processed packet ready for sending, or be empty if an=
+</span><br><span>  *     error occurred.</span><br><span>diff --git a/src/o=
+penvpn/fragment.h b/src/openvpn/fragment.h</span><br><span>index 5003c96..c=
+c96057 100644</span><br><span>--- a/src/openvpn/fragment.h</span><br><span>=
++++ b/src/openvpn/fragment.h</span><br><span>@@ -309,7 +309,7 @@</span><br>=
+<span>  *</span><br><span>  * @param f            - The \c fragment_master =
+structure for this VPN</span><br><span>  *                       tunnel.</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">- * @param buf          -=
+ A pointer to the buffer structure containing the</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+ * @param[in,out] buf  - A pointer to the buf=
+fer structure containing the</span><br><span>  *                       inco=
+ming packet.  This pointer will have been</span><br><span>  *              =
+         modified on return either to point to a</span><br><span>  *       =
+                completely reassembled packet, or to have length</span><br>=
+<span>@@ -317,7 +317,8 @@</span><br><span>  * @param frame        - The pac=
+ket geometry parameters for this VPN</span><br><span>  *                   =
+    tunnel.</span><br><span>  *</span><br><span style=3D"color: hsl(0, 100%=
+, 40%);">- * @return Void.\n On return, the \a buf argument will point to a=
+ buffer.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @note On=
+ return the \a buf argument buffer will be modified</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+ *     to communicate the result of the f=
+unction.</span><br><span>  *     The buffer will have nonzero length if the=
+ incoming packet passed</span><br><span>  *     to this function was whole =
+and unfragmented, or if it was the final</span><br><span>  *     part of a =
+fragmented packet thereby completing reassembly.  On the</span><br><span>@@=
+ -363,14 +364,15 @@</span><br><span>  *</span><br><span>  * @param f       =
+     - The \c fragment_master structure for this VPN</span><br><span>  *   =
+                    tunnel.</span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">- * @param buf          - A pointer to the buffer structure containing=
+ the</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @param[in,ou=
+t] buf  - A pointer to the buffer structure containing the</span><br><span>=
+  *                       outgoing packet.  This pointer will be modified</=
+span><br><span>  *                       to point to a whole unfragmented p=
+acket or to the</span><br><span>  *                       first part of a f=
+ragmented packet on return.</span><br><span>  * @param frame        - The p=
+acket geometry parameters for this VPN</span><br><span>  *                 =
+      tunnel.</span><br><span>  *</span><br><span style=3D"color: hsl(0, 10=
+0%, 40%);">- * @return Void.\n On return, the \a buf argument will point to=
+ a buffer.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @note =
+On return the \a buf argument buffer will be modified</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+ *     to communicate the result of the f=
+unction.</span><br><span>  *     This buffer contains either the whole orig=
+inal outgoing packet if</span><br><span>  *     fragmentation was not neces=
+sary, or the first part of the</span><br><span>  *     fragmented outgoing =
+packet if fragmentation was necessary. In both</span><br><span>diff --git a=
+/src/openvpn/push.c b/src/openvpn/push.c</span><br><span>index fe289f1..ad8=
+fa3d7 100644</span><br><span>--- a/src/openvpn/push.c</span><br><span>+++ b=
+/src/openvpn/push.c</span><br><span>@@ -582,8 +582,6 @@</span><br><span>  *=
+ @param tls_multi     tls multi context of VPN tunnel</span><br><span>  * @=
+param gc            gc arena for allocating push options</span><br><span>  =
+* @param push_list     push list to where options are added</span><br><span=
+ style=3D"color: hsl(0, 100%, 40%);">- *</span><br><span style=3D"color: hs=
+l(0, 100%, 40%);">- * @return true on success, false on failure.</span><br>=
+<span>  */</span><br><span> void</span><br><span> prepare_auth_token_push_r=
+eply(struct tls_multi *tls_multi, struct gc_arena *gc,</span><br><span></sp=
+an><br></pre><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openv=
+pn/+/1072?usp=3Demail">change 1072</a>. To unsubscribe, or for help writing=
+ mail filters, visit <a href=3D"http://gerrit.openvpn.net/settings">setting=
+s</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div i=
+temscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><lin=
+k itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1072?usp=
+=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
 
-Kind regards,
-Johan Draaisma
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: Ia5a5b8d2a8ca5901346aad41efc=
+4ff90a9a45273 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1072 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
+<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
+.&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
+.1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-MessageType: newchange </div>
 
---------------a55ln8PbOtBRLpJm3jUbGqIp
-Content-Type: text/html; charset="utf-8"
-Content-Transfer-Encoding: 8bit
 
-<!DOCTYPE html>
-<html>
-  <head>
-    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
-  </head>
-  <body>
-    <p> Meeting summary for 2 July 2025:</p>
-    <ul
-style="box-sizing: inherit; list-style: circle; padding-left: 1rem; margin-top: 0px; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255); color: rgba(0, 0, 0, 0.85); font-family: -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Helvetica, Arial, sans-serif, &quot;Apple Color Emoji&quot;, &quot;Segoe UI Emoji&quot;, &quot;Segoe UI Symbol&quot;; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; text-align: start; text-indent: 0px; text-transform: none; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;">
-      <li
-style="box-sizing: inherit; margin-bottom: 0.2rem; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255); margin-left: 1.5rem; list-style-type: disc;">
-        <p
-style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);"><strong
-style="box-sizing: inherit; font-weight: bolder; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">New:
-            cve.mitre.org deprecation notice</strong><br
-style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
-          The MITRE CVE site we are linking to for all CVE record
-          references has a deprecation notice.<br
-style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
-          Instead cve.org is being advised as the site to use from now
-          on. Suggestion from novaflash is to search/replace all links
-          and update them accordingly to go to the new site.<br
-style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
-          novaflash will make an internal company ticket to update links
-          on the main site.<br
-style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
-          and novaflash will search/replace things on community wiki to
-          do the same.</p>
-      </li>
-      <li
-style="box-sizing: inherit; margin-bottom: 0.2rem; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255); margin-left: 1.5rem; list-style-type: disc;">
-        <p
-style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);"><strong
-style="box-sizing: inherit; font-weight: bolder; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">New:
-            minor issue on community.openvpn.net site</strong><br
-style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
-          While not causing critical issues, there are some cache
-          related issues caused by cloudflare.<br
-style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
-          This requires some finetuning of settings to solve issues
-          like: Logging in requires to use query string parameter to
-          defeat cache.<br
-style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
-          Changes like enabling dark mode can linger in cache and affect
-          other visitors.<br
-style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
-          Sometimes pages added don't show in menu until cache is
-          defeated in some way.<br
-style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
-          The "are you human" screen is quite persistent and annoying,
-          perhaps it can be fixed.<br
-style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
-          novaflash is working with the company to look into finetuning
-          the cloudflare settings to address these issues.</p>
-      </li>
-      <li
-style="box-sizing: inherit; margin-bottom: 0.2rem; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255); margin-left: 1.5rem; list-style-type: disc;">
-        <p
-style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);"><strong
-style="box-sizing: inherit; font-weight: bolder; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">New:
-            format code using clang formatting</strong><br
-style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
-          It seems prudent to do this before the real 2.7 release.<br
-style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
-          It was discussed and there's some additional work to be paid
-          either on reviewer or submitter side.<br
-style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
-          Strategy will be; get all code into beta1, collect bugfixes,
-          reformat everything, then beta2.<br
-style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
-          Collect more bugfixes and then do release 2.7.0 and branch it
-          off into its own release branch.</p>
-      </li>
-      <li
-style="box-sizing: inherit; margin-bottom: 0.2rem; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255); margin-left: 1.5rem; list-style-type: disc;">
-        <p
-style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);"><strong
-style="box-sizing: inherit; font-weight: bolder; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">Updated:
-            Changes to community pages on main website</strong><br
-style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
-          Company has published the updated community page:<span> </span><a
-            href="https://openvpn.net/community/"
-style="box-sizing: inherit; background-color: transparent; color: rgb(24, 144, 255); text-decoration: none; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);"
-            class="moz-txt-link-freetext">https://openvpn.net/community/</a><br
-style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
-          This design was created in collaboration with community
-          members lev, ordex, and novaflash.<br
-style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
-          If any changes are requested please relay them to novaflash as
-          per usual, and he will forward it internally.</p>
-      </li>
-      <li
-style="box-sizing: inherit; margin-bottom: 0.2rem; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255); margin-left: 1.5rem; list-style-type: disc;">
-        <p
-style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);"><strong
-style="box-sizing: inherit; font-weight: bolder; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">Updated:
-            Release 2.7</strong><br
-style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
-          For the DNS related changes, the macOS DNS script is merged
-          but there's still some minor tweaks being made.<br
-style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
-          For multisocket, a bug report came in, and we're working to
-          fix that.<br
-style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
-          For the DCO related changes, DCO+TCP is improving. Epoch data
-          keys still needs to be done, float has a patch ready for
-          review, mssfix not planned yet. For the live route updates
-          changes, chances are improving that it may get in to 2.7 after
-          all.</p>
-      </li>
-      <li
-style="box-sizing: inherit; margin-bottom: 0.2rem; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255); margin-left: 1.5rem; list-style-type: disc;">
-        <p
-style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);"><strong
-style="box-sizing: inherit; font-weight: bolder; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">Updated:
-            push_update / live route updates</strong><br
-style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
-          For client-side support, company did QA on it against the
-          current only server implementation (cloudconnexa) and it works
-          as expected.<br
-style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
-          cron2 will put reviewing it on his to-do list.<br
-style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
-          Server-side support patch is up and requires review and is a
-          bit more involved, lev__ and company QA will work on it.</p>
-      </li>
-      <li
-style="box-sizing: inherit; margin-bottom: 0.2rem; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255); margin-left: 1.5rem; list-style-type: disc;">
-        <p
-style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);"><strong
-style="box-sizing: inherit; font-weight: bolder; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">Updated:
-            OpenVPN community meetup 2025</strong><br
-style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
-          <a
-href="https://community.openvpn.net/openvpn/wiki/CommunityMeetup2025"
-style="box-sizing: inherit; background-color: transparent; color: rgb(24, 144, 255); text-decoration: none; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);"
-            class="moz-txt-link-freetext">https://community.openvpn.net/openvpn/wiki/CommunityMeetup2025</a><br
-style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
-          When: weekend of 25 and 26 october.<br
-style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
-          Where: Napoli, Italy.<br
-style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
-          Meeting room: it looks like this may be it;<span> </span><a
-            href="https://www.hotelparadisonapoli.it/en/home-page.aspx"
-style="box-sizing: inherit; background-color: transparent; color: rgb(24, 144, 255); text-decoration: none; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);"
-            class="moz-txt-link-freetext">https://www.hotelparadisonapoli.it/en/home-page.aspx</a><span> </span>we
-          will work to get budget cleared for this.<br
-style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
-          Hotel: probably Paradiso Napoli. Beer: yes.<br
-style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
-          T-shirts: yes.</p>
-      </li>
-    </ul>
-    <p>As always you're welcome to join at #openvpn-meeting on Libera
-      IRC network every Wednesday at 14:00 Central European Time. </p>
-    <p>Kind regards,<br>
-      Johan Draaisma<br>
-    </p>
-  </body>
-</html>
-
---------------a55ln8PbOtBRLpJm3jUbGqIp--
+--U6LCu5WE+Cw=--
 
