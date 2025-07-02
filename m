@@ -1,16 +1,11 @@
-From: "ordex (Code Review)" <gerrit@...515...>
-Date: Wed, 2 Jul 2025 14:31:03 +0000
+From: Gert Doering <gert@...1296...>
+Date: Wed,  2 Jul 2025 17:04:27 +0200
+Message-ID: <20250702150433.3871-1-gert@...1296...>
 In-Reply-To: <gerrit.1747748031000.Ia2b3eda18bd6dbce6c470037c7a01097e8147c29@...2715...>
 References: <gerrit.1747748031000.Ia2b3eda18bd6dbce6c470037c7a01097e8147c29@...2715...>
-Reply-To: antonio@...2726..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <3a3df4003544581f9dcb0c2238928e26a6479970-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="UvHoUgahy2E="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: Fix new doxygen
- warnings about using @return in void functions
+Subject: [Openvpn-devel] [PATCH v2] Fix new doxygen warnings about using
+ @return in void functions
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,88 +14,101 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: flichtenheld <frank@...2641...>
-Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---UvHoUgahy2E=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+From: Frank Lichtenheld <frank@...2641...>
 
-Attention is currently required from: flichtenheld, plaisthos.
+These seem to have been added in a more recent doxygen version
+than I previously tested with.
 
-ordex has posted comments on this change. ( http://gerrit.openvpn.net/c/ope=
-nvpn/+/1029?usp=3Demail )
+Change-Id: Ia2b3eda18bd6dbce6c470037c7a01097e8147c29
+Signed-off-by: Frank Lichtenheld <frank@...2641...>
+Acked-by: Antonio Quartulli <antonio@...2726...>
+---
 
-Change subject: Fix new doxygen warnings about using @return in void functi=
-ons
-......................................................................
+This change was reviewed on Gerrit and approved by at least one
+developer. I request to merge it to master.
 
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1029
+This mail reflects revision 2 of this Change.
 
-Patch Set 2: Code-Review+2
+Acked-by according to Gerrit (reflected above):
+Antonio Quartulli <antonio@...2726...>
 
-
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1029?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings
-
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: Ia2b3eda18bd6dbce6c470037c7a01097e8147c29
-Gerrit-Change-Number: 1029
-Gerrit-PatchSet: 2
-Gerrit-Owner: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: ordex <antonio@...2726...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Comment-Date: Wed, 02 Jul 2025 14:31:03 +0000
-Gerrit-HasComments: No
-Gerrit-Has-Labels: Yes
-Gerrit-MessageType: comment
-
---UvHoUgahy2E=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<p> Attention is currently required from: flichtenheld, plaisthos. </p>
-<p>Patch set 2:<span style=3D"border-radius: 3px; display: inline-block; ma=
-rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1029?usp=3Demail">V=
-iew Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To vi=
-ew, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1029?usp=3Demail=
-">change 1029</a>. To unsubscribe, or for help writing mail filters, visit =
-<a href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemsc=
-ope itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"=
-action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" hr=
-ef=3D"http://gerrit.openvpn.net/c/openvpn/+/1029?usp=3Demail"/><meta itempr=
-op=3D"name" content=3D"View Change"/></div></div>
-
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: Ia2b3eda18bd6dbce6c470037c7a=
-01097e8147c29 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1029 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
-<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
-.&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: ordex &lt;antonio@...2726...&=
-gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
-41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Wed, 02 Jul 2025 14:31:03=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: No </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
-
-
---UvHoUgahy2E=--
+        
+diff --git a/src/openvpn/crypto.h b/src/openvpn/crypto.h
+index 5bd1ad5..68ad901 100644
+--- a/src/openvpn/crypto.h
++++ b/src/openvpn/crypto.h
+@@ -467,12 +467,12 @@
+  * If an error occurs during processing, then the \a buf %buffer is set to
+  * empty.
+  *
+- * @param buf          - The %buffer containing the packet on which to
++ * @param[in,out] buf  - The %buffer containing the packet on which to
+  *                       perform security operations.
+  * @param work         - An initialized working %buffer.
+  * @param opt          - The security parameter state for this VPN tunnel.
+  *
+- * @return This function returns void.\n On return, the \a buf argument
++ * @note On return, the \a buf argument
+  *     will point to the resulting %buffer.  This %buffer will either
+  *     contain the processed packet ready for sending, or be empty if an
+  *     error occurred.
+diff --git a/src/openvpn/fragment.h b/src/openvpn/fragment.h
+index 5003c96..cc96057 100644
+--- a/src/openvpn/fragment.h
++++ b/src/openvpn/fragment.h
+@@ -309,7 +309,7 @@
+  *
+  * @param f            - The \c fragment_master structure for this VPN
+  *                       tunnel.
+- * @param buf          - A pointer to the buffer structure containing the
++ * @param[in,out] buf  - A pointer to the buffer structure containing the
+  *                       incoming packet.  This pointer will have been
+  *                       modified on return either to point to a
+  *                       completely reassembled packet, or to have length
+@@ -317,7 +317,8 @@
+  * @param frame        - The packet geometry parameters for this VPN
+  *                       tunnel.
+  *
+- * @return Void.\n On return, the \a buf argument will point to a buffer.
++ * @note On return the \a buf argument buffer will be modified
++ *     to communicate the result of the function.
+  *     The buffer will have nonzero length if the incoming packet passed
+  *     to this function was whole and unfragmented, or if it was the final
+  *     part of a fragmented packet thereby completing reassembly.  On the
+@@ -363,14 +364,15 @@
+  *
+  * @param f            - The \c fragment_master structure for this VPN
+  *                       tunnel.
+- * @param buf          - A pointer to the buffer structure containing the
++ * @param[in,out] buf  - A pointer to the buffer structure containing the
+  *                       outgoing packet.  This pointer will be modified
+  *                       to point to a whole unfragmented packet or to the
+  *                       first part of a fragmented packet on return.
+  * @param frame        - The packet geometry parameters for this VPN
+  *                       tunnel.
+  *
+- * @return Void.\n On return, the \a buf argument will point to a buffer.
++ * @note On return the \a buf argument buffer will be modified
++ *     to communicate the result of the function.
+  *     This buffer contains either the whole original outgoing packet if
+  *     fragmentation was not necessary, or the first part of the
+  *     fragmented outgoing packet if fragmentation was necessary. In both
+diff --git a/src/openvpn/push.c b/src/openvpn/push.c
+index fe289f1..ad8fa3d7 100644
+--- a/src/openvpn/push.c
++++ b/src/openvpn/push.c
+@@ -582,8 +582,6 @@
+  * @param tls_multi     tls multi context of VPN tunnel
+  * @param gc            gc arena for allocating push options
+  * @param push_list     push list to where options are added
+- *
+- * @return true on success, false on failure.
+  */
+ void
+ prepare_auth_token_push_reply(struct tls_multi *tls_multi, struct gc_arena *gc,
 
