@@ -1,17 +1,15 @@
-From: "stipa (Code Review)" <gerrit@...515...>
-Date: Thu, 3 Jul 2025 13:19:28 +0000
-In-Reply-To: <gerrit.1737029493000.Ie82bcc7a8e583de9156b185d71d1a323ed8df3fc@...2715...>
-References: <gerrit.1737029493000.Ie82bcc7a8e583de9156b185d71d1a323ed8df3fc@...2715...>
-Reply-To: lstipakov@...277..., arne-openvpn@...1227..., marco@...2726...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...,
- gert@...1296...
-Message-ID: <12c4397d6494c6f27c23bcf5d28d84e2cc9b160f-EmailReviewComments-HTML@...2715...>
+From: "d12fk (Code Review)" <gerrit@...515...>
+Date: Thu, 3 Jul 2025 19:41:36 +0000
+References: <gerrit.1751571694000.I7e9a0c668e0950257632452cfd9eeb236f0120f2@...2715...>
+Reply-To: heiko@...515..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net, frank@...2641...
+Message-ID: <f1722ef3eab9e65d9e8d0eac46f0ba54cb65e154-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="70nZ8uyp4oU="; charset=UTF-8
-Subject: [Openvpn-devel] [L] Change in openvpn[master]: PUSH_UPDATE message
- sender: enabling the server to send PUSH_UPDATE c...
+Content-Type: multipart/alternative; boundary="kFr4GWJZkCE="; charset=UTF-8
+Subject: [Openvpn-devel] [XS] Change in openvpn[master]: dns: do not run
+ updown scripts with lwipovpn
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,126 +18,154 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: mrbff <marco@...2726...>
-Cc: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---70nZ8uyp4oU=
+--kFr4GWJZkCE=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: cron2, flichtenheld, mrbff, plaisthos.
+Attention is currently required from: flichtenheld, plaisthos.
 
-stipa has posted comments on this change. ( http://gerrit.openvpn.net/c/ope=
-nvpn/+/869?usp=3Demail )
+Hello plaisthos, flichtenheld,
 
-Change subject: PUSH_UPDATE message sender: enabling the server to send PUS=
-H_UPDATE control messages
+I'd like you to do a code review.
+Please visit
+
+    http://gerrit.openvpn.net/c/openvpn/+/1077?usp=3Demail
+
+to review the following change.
+
+
+Change subject: dns: do not run updown scripts with lwipovpn
 ......................................................................
 
+dns: do not run updown scripts with lwipovpn
 
-Patch Set 7: Code-Review-1
+Running the script doesn't make sense with the AFUNIX dev node, so we
+simply clear any scripts that have been set before.
 
-(1 comment)
-
-Patchset:
-
-PS7:
-I did some testing and indeed I was able to send PUSH_UPDATE messages to th=
-e client. However it doesn't change the state on the server - for example, =
-after pushing new client IP address we got broken tunnel because server rej=
-ects packets with unknown source address.
-
-Are there plans to implement the second part too in 2.7 or later? At the mo=
-ment this implementation is not that useful.
+Change-Id: I7e9a0c668e0950257632452cfd9eeb236f0120f2
+Signed-off-by: Heiko Hund <heiko@...2662...>
+---
+M src/openvpn/options.c
+1 file changed, 8 insertions(+), 0 deletions(-)
 
 
 
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/869?usp=3Demail
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/77/1077/1
+
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index af097f8..0662b49 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -61,6 +61,7 @@
+ #include "xkey_common.h"
+ #include "dco.h"
+ #include "options_util.h"
++#include "tun_afunix.h"
+
+ #include <ctype.h>
+
+@@ -3593,6 +3594,13 @@
+     struct gc_arena gc =3D gc_new();
+     struct dns_options *dns =3D &o->dns_options;
+
++    if (is_tun_afunix(o->dev_node))
++    {
++        /* Disable running  dns-updown script with lwipovpn */
++        dns->updown_flags =3D DNS_UPDOWN_NO_FLAGS;
++        dns->updown =3D NULL;
++    }
++
+     if (dns->servers || dns_updown_user_set(dns) || dns_updown_forced(dns))
+     {
+         /* Clean up env from --dhcp-option DNS config */
+
+--=20
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1077?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings
 
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: Ie82bcc7a8e583de9156b185d71d1a323ed8df3fc
-Gerrit-Change-Number: 869
-Gerrit-PatchSet: 7
-Gerrit-Owner: mrbff <marco@...2726...>
-Gerrit-Reviewer: cron2 <gert@...1296...>
+Gerrit-Change-Id: I7e9a0c668e0950257632452cfd9eeb236f0120f2
+Gerrit-Change-Number: 1077
+Gerrit-PatchSet: 1
+Gerrit-Owner: d12fk <heiko@...515...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-Reviewer: stipa <lstipakov@...277...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: cron2 <gert@...1296...>
 Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Attention: mrbff <marco@...2726...>
-Gerrit-Comment-Date: Thu, 03 Jul 2025 13:19:28 +0000
-Gerrit-HasComments: Yes
-Gerrit-Has-Labels: Yes
-Gerrit-MessageType: comment
+Gerrit-MessageType: newchange
 
---70nZ8uyp4oU=
+--kFr4GWJZkCE=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p> Attention is currently required from: cron2, flichtenheld, mrbff, plais=
-thos. </p>
-<p>Patch set 7:<span style=3D"border-radius: 3px; display: inline-block; ma=
-rgin: 0 2px; padding: 4px;background-color: #ffd4d4;">Code-Review -1</span>=
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/869?usp=3Demail">Vi=
-ew Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0=
-;"><li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-s=
-tyle: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p s=
-tyle=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn=
-/+/869?tab=3Dcomments">Patch Set #7:</a> </p><p style=3D"white-space: pre-w=
-rap; word-wrap: break-word;">I did some testing and indeed I was able to se=
-nd PUSH_UPDATE messages to the client. However it doesn&#39;t change the st=
-ate on the server - for example, after pushing new client IP address we got=
- broken tunnel because server rejects packets with unknown source address.<=
-/p><p style=3D"white-space: pre-wrap; word-wrap: break-word;">Are there pla=
-ns to implement the second part too in 2.7 or later? At the moment this imp=
-lementation is not that useful.</p></li></ul></li></ul><p>To view, visit <a=
- href=3D"http://gerrit.openvpn.net/c/openvpn/+/869?usp=3Demail">change 869<=
-/a>. To unsubscribe, or for help writing mail filters, visit <a href=3D"htt=
-p://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope itemtype=
-=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"action" item=
-type=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http:/=
-/gerrit.openvpn.net/c/openvpn/+/869?usp=3Demail"/><meta itemprop=3D"name" c=
-ontent=3D"View Change"/></div></div>
+<p> Attention is currently required from: flichtenheld, plaisthos. </p>
+<p>d12fk would like plaisthos and flichtenheld to <strong>review</strong> t=
+his change.
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1077?usp=3Demail">V=
+iew Change</a></p><pre style=3D"font-family: monospace,monospace; white-spa=
+ce: pre-wrap;">dns: do not run updown scripts with lwipovpn<br><br>Running =
+the script doesn&#39;t make sense with the AFUNIX dev node, so we<br>simply=
+ clear any scripts that have been set before.<br><br>Change-Id: I7e9a0c668e=
+0950257632452cfd9eeb236f0120f2<br>Signed-off-by: Heiko Hund &lt;heiko@...2375...=
+62...&gt;<br>---<br>M src/openvpn/options.c<br>1 file changed, 8 insertions=
+(+), 0 deletions(-)<br><br></pre><pre style=3D"font-family: monospace,monos=
+pace; white-space: pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/openv=
+pn refs/changes/77/1077/1</pre><pre style=3D"font-family: monospace,monospa=
+ce; white-space: pre-wrap;"><span>diff --git a/src/openvpn/options.c b/src/=
+openvpn/options.c</span><br><span>index af097f8..0662b49 100644</span><br><=
+span>--- a/src/openvpn/options.c</span><br><span>+++ b/src/openvpn/options.=
+c</span><br><span>@@ -61,6 +61,7 @@</span><br><span> #include &quot;xkey_co=
+mmon.h&quot;</span><br><span> #include &quot;dco.h&quot;</span><br><span> #=
+include &quot;options_util.h&quot;</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+#include &quot;tun_afunix.h&quot;</span><br><span> </span><b=
+r><span> #include &lt;ctype.h&gt;</span><br><span> </span><br><span>@@ -359=
+3,6 +3594,13 @@</span><br><span>     struct gc_arena gc =3D gc_new();</span=
+><br><span>     struct dns_options *dns =3D &amp;o-&gt;dns_options;</span><=
+br><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (i=
+s_tun_afunix(o-&gt;dev_node))</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+    /* Disable running  dns-updown script with lwipovpn */</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+        dns-&gt;updown_flags =3D DNS=
+_UPDOWN_NO_FLAGS;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+      dns-&gt;updown =3D NULL;</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</s=
+pan><br><span>     if (dns-&gt;servers || dns_updown_user_set(dns) || dns_u=
+pdown_forced(dns))</span><br><span>     {</span><br><span>         /* Clean=
+ up env from --dhcp-option DNS config */</span><br><span></span><br></pre><=
+p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1077?usp=
+=3Demail">change 1077</a>. To unsubscribe, or for help writing mail filters=
+, visit <a href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><di=
+v itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope item=
+prop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D=
+"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1077?usp=3Demail"/><met=
+a itemprop=3D"name" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: Ie82bcc7a8e583de9156b185d71d=
-1a323ed8df3fc </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 869 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 7 </div>
-<div style=3D"display:none"> Gerrit-Owner: mrbff &lt;marco@...2726...&gt; <=
-/div>
-<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
- </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I7e9a0c668e0950257632452cfd9=
+eeb236f0120f2 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1077 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
+<div style=3D"display:none"> Gerrit-Owner: d12fk &lt;heiko@...515...&gt; </=
+div>
 <div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
 1...&gt; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
 .1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: stipa &lt;lstipakov@...277...=
-&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
 ..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: cron2 &lt;gert@...1296...&gt=
-; </div>
 <div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
 41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: mrbff &lt;marco@...2726...&g=
-t; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Thu, 03 Jul 2025 13:19:28=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
+<div style=3D"display:none"> Gerrit-MessageType: newchange </div>
 
 
---70nZ8uyp4oU=--
+--kFr4GWJZkCE=--
 
