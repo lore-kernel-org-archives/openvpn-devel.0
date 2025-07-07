@@ -1,15 +1,15 @@
 From: "comododragon (Code Review)" <gerrit@...515...>
-Date: Mon, 7 Jul 2025 09:23:48 +0000
+Date: Mon, 7 Jul 2025 11:03:59 +0000
 In-Reply-To: <gerrit.1750235257000.Ie0529c2074964b3be034f01e0ef53090a6edbd35@...2715...>
 References: <gerrit.1750235257000.Ie0529c2074964b3be034f01e0ef53090a6edbd35@...2715...>
 Reply-To: rein.vanbaaren@...1435..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net, frank@...2641...,
  gert@...1296...
-Message-ID: <6b016645c6a09b35e07af68a569f7ebcb1c44c00-EmailReplacePatchSet-HTML@...2715...>
+Message-ID: <77b71b5b96d38f6ee090adbad8286806a6d779f1-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="CvwXbQMauf8="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="jIhHh7+2c0U="; charset=UTF-8
 Subject: [Openvpn-devel] [S] Change in openvpn[master]: Added PQE to WolfSSL
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
@@ -19,101 +19,33 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Cc: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---CvwXbQMauf8=
+--jIhHh7+2c0U=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: comododragon, cron2, flichtenheld, pl=
-aisthos.
+Attention is currently required from: cron2, flichtenheld, plaisthos.
 
-Hello cron2, flichtenheld, plaisthos,
-
-I'd like you to reexamine a change. Please visit
-
-    http://gerrit.openvpn.net/c/openvpn/+/1046?usp=3Demail
-
-to look at the new patch set (#6).
-
-The following approvals got outdated and were removed:
-Code-Review+1 by cron2, Code-Review+1 by plaisthos
-
+comododragon has posted comments on this change. ( http://gerrit.openvpn.ne=
+t/c/openvpn/+/1046?usp=3Demail )
 
 Change subject: Added PQE to WolfSSL
 ......................................................................
 
-Added PQE to WolfSSL
 
-Change-Id: Ie0529c2074964b3be034f01e0ef53090a6edbd35
----
-M README.wolfssl
-M src/openvpn/ssl_openssl.c
-2 files changed, 31 insertions(+), 1 deletion(-)
+Patch Set 6:
+
+(1 comment)
+
+Patchset:
+
+PS5:
+> I tested the patch and it works and is also a lot cleaner than the first =
+version. [=E2=80=A6]
+Let me write this down so I can look at it later. Thanks!
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/46/1046/6
-
-diff --git a/README.wolfssl b/README.wolfssl
-index a5dfe31..7475164 100644
---- a/README.wolfssl
-+++ b/README.wolfssl
-@@ -28,3 +28,33 @@
-  * blowfish support (BF-CBC), you must use something like
-    cipher AES-128-CBC to avoid trying to use BF-CBC
-  * Windows CryptoAPI support
-+
-+*************************************************************************
-+To build WolfSSL with post-quantum KEMs built in, the following command is=
- used:
-+
-+./configure --enable-openvpn --enable-kyber=3Dall --enable-curve25519
-+
-+WolfSSL supports the following post-quantum KEMs and post-quantum hybrid K=
-EMs which must be specified
-+using the tls-groups option in an OpenVPN config. Unlike OpenSSL, which in=
-cludes X25519MLKEM768
-+in the default config, WolfSSL requires explicit configuration of tls-grou=
-ps to include
-+at least one post-quantum KEM.
-+
-+ML_KEM_512
-+ML_KEM_768
-+ML_KEM_1024
-+
-+P256_ML_KEM_512
-+X25519_ML_KEM_512
-+
-+P384_ML_KEM_768
-+P256_ML_KEM_768
-+X448_ML_KEM_768
-+X25519_ML_KEM_768
-+
-+P384_ML_KEM_1024
-+P521_ML_KEM_1024
-+
-+The naming conventions of algorithms differ between WolfSSL and OpenSSL. A=
-n example is that
-+OpenSSL omits underscores for their naming notation whereas WolfSSL expect=
-s them. Additionally,
-+OpenSSL does not accept the P curve notation and instead uses the equivale=
-nt secp notation.
-+A specific example is that WolfSSL expects P384_ML_KEM_1024, while OpenSSL=
- expects secp384r1MLKEM1024.
-diff --git a/src/openvpn/ssl_openssl.c b/src/openvpn/ssl_openssl.c
-index 2fc77d8..4c11cd4 100644
---- a/src/openvpn/ssl_openssl.c
-+++ b/src/openvpn/ssl_openssl.c
-@@ -560,7 +560,7 @@
- tls_ctx_set_tls_groups(struct tls_root_ctx *ctx, const char *groups)
- {
-     ASSERT(ctx);
--#if OPENSSL_VERSION_NUMBER < 0x30000000L
-+#if OPENSSL_VERSION_NUMBER < 0x30000000L && !defined(ENABLE_CRYPTO_WOLFSSL)
-     struct gc_arena gc =3D gc_new();
-     /* This method could be as easy as
-      *  SSL_CTX_set1_groups_list(ctx->ctx, groups)
 
 --
 To view, visit http://gerrit.openvpn.net/c/openvpn/+/1046?usp=3Demail
@@ -133,86 +65,35 @@ Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
 Gerrit-Attention: cron2 <gert@...1296...>
 Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Attention: comododragon <rein.vanbaaren@...1435...>
-Gerrit-MessageType: newpatchset
+Gerrit-Comment-Date: Mon, 07 Jul 2025 11:03:59 +0000
+Gerrit-HasComments: Yes
+Gerrit-Has-Labels: No
+Comment-In-Reply-To: plaisthos <arne-openvpn@...1227...>
+Gerrit-MessageType: comment
 
---CvwXbQMauf8=
+--jIhHh7+2c0U=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p> Attention is currently required from: comododragon, cron2, flichtenheld=
-, plaisthos. </p>
-<p>comododragon <strong>uploaded patch set #6</strong> to this change.</p><=
-p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1046?usp=3Demail">View C=
-hange</a></p><p>The following approvals got outdated and were removed:
-Code-Review+1 by cron2, Code-Review+1 by plaisthos</p><pre style=3D"font-fa=
-mily: monospace,monospace; white-space: pre-wrap;">Added PQE to WolfSSL<br>=
-<br>Change-Id: Ie0529c2074964b3be034f01e0ef53090a6edbd35<br>---<br>M README=
-.wolfssl<br>M src/openvpn/ssl_openssl.c<br>2 files changed, 31 insertions(+=
-), 1 deletion(-)<br><br></pre><pre style=3D"font-family: monospace,monospac=
-e; white-space: pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/openvpn =
-refs/changes/46/1046/6</pre><pre style=3D"font-family: monospace,monospace;=
- white-space: pre-wrap;"><span>diff --git a/README.wolfssl b/README.wolfssl=
-</span><br><span>index a5dfe31..7475164 100644</span><br><span>--- a/README=
-.wolfssl</span><br><span>+++ b/README.wolfssl</span><br><span>@@ -28,3 +28,=
-33 @@</span><br><span>  * blowfish support (BF-CBC), you must use something=
- like</span><br><span>    cipher AES-128-CBC to avoid trying to use BF-CBC<=
-/span><br><span>  * Windows CryptoAPI support</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+********************************************************************=
-*****</span><br><span style=3D"color: hsl(120, 100%, 40%);">+To build WolfS=
-SL with post-quantum KEMs built in, the following command is used:</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+./configure --enable-openvpn --enable-kyber=3Da=
-ll --enable-curve25519</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+WolfSSL supports=
- the following post-quantum KEMs and post-quantum hybrid KEMs which must be=
- specified </span><br><span style=3D"color: hsl(120, 100%, 40%);">+using th=
-e tls-groups option in an OpenVPN config. Unlike OpenSSL, which includes X2=
-5519MLKEM768 </span><br><span style=3D"color: hsl(120, 100%, 40%);">+in the=
- default config, WolfSSL requires explicit configuration of tls-groups to i=
-nclude </span><br><span style=3D"color: hsl(120, 100%, 40%);">+at least one=
- post-quantum KEM.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+ML_KEM_512</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+ML_KEM_768</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+ML_KEM_1024</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+P256_ML_KEM_512</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+X25519_ML_KEM_512</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+P384_ML_KEM_768=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+P256_ML_KEM_768</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+X448_ML_KEM_768</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+X25519_ML_KEM_768</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+P384_ML_KEM_1024</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+P521_ML_KEM_1024</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+The naming conventions of algorithms differ between WolfSSL and OpenSSL. =
-An example is that</span><br><span style=3D"color: hsl(120, 100%, 40%);">+O=
-penSSL omits underscores for their naming notation whereas WolfSSL expects =
-them. Additionally, </span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+OpenSSL does not accept the P curve notation and instead uses the equivale=
-nt secp notation. </span><br><span style=3D"color: hsl(120, 100%, 40%);">+A=
- specific example is that WolfSSL expects P384_ML_KEM_1024, while OpenSSL e=
-xpects secp384r1MLKEM1024.</span><br><span>diff --git a/src/openvpn/ssl_ope=
-nssl.c b/src/openvpn/ssl_openssl.c</span><br><span>index 2fc77d8..4c11cd4 1=
-00644</span><br><span>--- a/src/openvpn/ssl_openssl.c</span><br><span>+++ b=
-/src/openvpn/ssl_openssl.c</span><br><span>@@ -560,7 +560,7 @@</span><br><s=
-pan> tls_ctx_set_tls_groups(struct tls_root_ctx *ctx, const char *groups)</=
-span><br><span> {</span><br><span>     ASSERT(ctx);</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-#if OPENSSL_VERSION_NUMBER &lt; 0x30000000L=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#if OPENSSL_VERSION=
-_NUMBER &lt; 0x30000000L &amp;&amp; !defined(ENABLE_CRYPTO_WOLFSSL)</span><=
-br><span>     struct gc_arena gc =3D gc_new();</span><br><span>     /* This=
- method could be as easy as</span><br><span>      *  SSL_CTX_set1_groups_li=
-st(ctx-&gt;ctx, groups)</span><br><span></span><br></pre><p>To view, visit =
-<a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1046?usp=3Demail">change 1=
-046</a>. To unsubscribe, or for help writing mail filters, visit <a href=3D=
-"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope itemty=
-pe=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"action" it=
-emtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http=
-://gerrit.openvpn.net/c/openvpn/+/1046?usp=3Demail"/><meta itemprop=3D"name=
-" content=3D"View Change"/></div></div>
+<p> Attention is currently required from: cron2, flichtenheld, plaisthos. <=
+/p>
+<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1046?usp=3Demail">View =
+Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0;">=
+<li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-styl=
+e: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p styl=
+e=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/=
+1046?tab=3Dcomments">Patch Set #5:</a> </p><p><blockquote style=3D"border-l=
+eft: 1px solid #aaa; margin: 10px 0; padding: 0 10px;">I tested the patch a=
+nd it works and is also a lot cleaner than the first version. [=E2=80=A6]</=
+blockquote></p><p style=3D"white-space: pre-wrap; word-wrap: break-word;">L=
+et me write this down so I can look at it later. Thanks!</p></li></ul></li>=
+</ul><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/104=
+6?usp=3Demail">change 1046</a>. To unsubscribe, or for help writing mail fi=
+lters, visit <a href=3D"http://gerrit.openvpn.net/settings">settings</a>.</=
+p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope=
+ itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itempr=
+op=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1046?usp=3Demail"/=
+><meta itemprop=3D"name" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
@@ -236,10 +117,14 @@ ts.sourceforge.net&gt; </div>
 ; </div>
 <div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
 41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: comododragon &lt;rein.vanbaa=
-ren@...1435...&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Mon, 07 Jul 2025 11:03:59=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: No </div>
+<div style=3D"display:none"> Comment-In-Reply-To: plaisthos &lt;arne-openvp=
+n@...1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
 
 
---CvwXbQMauf8=--
+--jIhHh7+2c0U=--
 
