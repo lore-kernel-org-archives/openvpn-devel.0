@@ -1,17 +1,17 @@
 From: "mrbff (Code Review)" <gerrit@...515...>
 Date: Mon, 7 Jul 2025 17:15:46 +0000
-In-Reply-To: <gerrit.1732124549000.I507180d7397b6959844a30908010132bc3411067@...2715...>
-References: <gerrit.1732124549000.I507180d7397b6959844a30908010132bc3411067@...2715...>
+In-Reply-To: <gerrit.1737029493000.Ie82bcc7a8e583de9156b185d71d1a323ed8df3fc@...2715...>
+References: <gerrit.1737029493000.Ie82bcc7a8e583de9156b185d71d1a323ed8df3fc@...2715...>
 Reply-To: marco@...2726..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net, frank@...2641...,
- lstipakov@...277...
-Message-ID: <65b756d72106d18553d5a60600b034c8e5575140-EmailReplacePatchSet-HTML@...2715...>
+ lstipakov@...277..., gert@...1296...
+Message-ID: <cbfe9607dc2dddeb5894066253256d44f03739da-EmailReplacePatchSet-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="g0sCxzpp/jo="; charset=UTF-8
-Subject: [Openvpn-devel] [L] Change in openvpn[master]: PUSH_UPDATE: Added
- remove_option() and do_update().
+Content-Type: multipart/alternative; boundary="yeH0L9h9d5E="; charset=UTF-8
+Subject: [Openvpn-devel] [L] Change in openvpn[master]: PUSH_UPDATE message
+ sender: enabling the server to send PUSH_UPDATE c...
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -23,1292 +23,2391 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, stipa <lstipakov@...277...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---g0sCxzpp/jo=
+--yeH0L9h9d5E=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: flichtenheld, mrbff, plaisthos.
+Attention is currently required from: cron2, flichtenheld, mrbff, plaisthos=
+, stipa.
 
-Hello flichtenheld, plaisthos, stipa,
+Hello cron2, flichtenheld, plaisthos, stipa,
 
 I'd like you to reexamine a change. Please visit
 
-    http://gerrit.openvpn.net/c/openvpn/+/809?usp=3Demail
+    http://gerrit.openvpn.net/c/openvpn/+/869?usp=3Demail
 
-to look at the new patch set (#15).
+to look at the new patch set (#8).
 
-The change is no longer submittable: checks~ChecksSubmitRule is unsatisfied=
- now.
+The following approvals got outdated and were removed:
+Code-Review-1 by stipa
 
 
-Change subject: PUSH_UPDATE: Added remove_option() and do_update().
+Change subject: PUSH_UPDATE message sender: enabling the server to send PUS=
+H_UPDATE control messages
 ......................................................................
 
-PUSH_UPDATE: Added remove_option() and do_update().
+PUSH_UPDATE message sender: enabling the server to send PUSH_UPDATE control=
+ messages
 
-* Added remove_option() function and some utility functions to remove optio=
-ns at
-  runtime following the push-update logic.
-* Added do_update() function to close and reopen the tun and apply option u=
-pdates.
+Using the management interface you can now target one or more clients (via =
+broadcast,
+via cid, via common name, via address) and send a PUSH_UPDATE control messa=
+ge
+to update some options.
 
-Change-Id: I507180d7397b6959844a30908010132bc3411067
+Change-Id: Ie82bcc7a8e583de9156b185d71d1a323ed8df3fc
 Signed-off-by: Marco Baffo <marco@...2726...>
 ---
-M src/openvpn/init.c
-M src/openvpn/init.h
+M CMakeLists.txt
+M doc/management-notes.txt
+M src/openvpn/manage.c
+M src/openvpn/manage.h
 M src/openvpn/multi.c
-M src/openvpn/options.c
-M src/openvpn/push.c
-M src/openvpn/route.c
-M src/openvpn/route.h
-7 files changed, 373 insertions(+), 42 deletions(-)
+M src/openvpn/multi.h
+M src/openvpn/push.h
+M src/openvpn/push_util.c
+M tests/unit_tests/openvpn/Makefile.am
+M tests/unit_tests/openvpn/test_push_update_msg.c
+10 files changed, 824 insertions(+), 6 deletions(-)
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/09/809/15
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/69/869/8
 
-diff --git a/src/openvpn/init.c b/src/openvpn/init.c
-index 78ebb17..9ab5378 100644
---- a/src/openvpn/init.c
-+++ b/src/openvpn/init.c
-@@ -2470,7 +2470,7 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 54cf503..1381e03 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -861,6 +861,7 @@
+ 	    src/openvpn/push_util.c
+ 	    src/openvpn/options_util.c
+ 	    src/openvpn/otime.c
++        src/openvpn/list.c
+         )
 
-         if (pulled_options)
-         {
--            if (!do_deferred_options(c, option_types_found))
-+            if (!do_deferred_options(c, option_types_found, false))
-             {
-                 msg(D_PUSH_ERRORS, "ERROR: Failed to apply push options");
-                 return false;
-@@ -2594,6 +2594,55 @@
-     return true;
+     if (TARGET test_argv)
+diff --git a/doc/management-notes.txt b/doc/management-notes.txt
+index f1d2930..58393da 100644
+--- a/doc/management-notes.txt
++++ b/doc/management-notes.txt
+@@ -1028,6 +1028,51 @@
+ stored outside of the filesystem (e.g. in Mac OS X Keychain)
+ with OpenVPN via the management interface.
+
++COMMAND -- push-update-broad (OpenVPN 2.7 or higher)
++----------------------------------------------------
++Send a message to every connected client to update options at runtime.
++The updatable options are: "block-ipv6", "block-outside-dns", "dhcp-option=
+",
++"dns", "ifconfig", "ifconfig-ipv6", "redirect-gateway", "redirect-private",
++"route", "route-gateway", "route-ipv6", "route-metric", "topology",
++"tun-mtu", "keepalive". When a valid option is pushed, the receiving clien=
+t will
++delete every previous value and set new value, so the update of the option=
+ will
++not be incremental even when theoretically possible (ex. with "redirect-ga=
+teway").
++The '-' symbol in front of an option means the option should be removed.
++When an option is used with '-', it cannot take any parameter.
++The '?' symbol in front of an option means the option's update is optional
++so if the client do not support it, that option will just be ignored witho=
+ut
++making fail the entire command. The '-' and '?' symbols can be used togeth=
+er.
++
++Option Format Ex.
++  `-?option`, `-option`, `?option parameters` are valid formats,
++  `?-option` is not a valid format.
++
++Example
++  push-update-broad "route 10.10.10.1 255.255.255.255, -dns, ?tun-mtu 1400"
++
++COMMAND -- push-update-cid (OpenVPN 2.7 or higher)
++----------------------------------------------------
++Same as push-update-broad but you must target a single client using client=
+ id.
++
++Example
++  push-update-cid 42 "route 10.10.10.1 255.255.255.255, -dns, ?tun-mtu 140=
+0"
++
++COMMAND -- push-update-cn (OpenVPN 2.7 or higher)
++----------------------------------------------------
++Same as push-update-broad but target the clients based on the provided com=
+mon name
++(usually just one client per common name is permitted except if "duplicate=
+-cn" option is used).
++
++Example
++  push-update-cid Client0 "route 10.10.10.1 255.255.255.255, -dns, ?tun-mt=
+u 1400"
++
++COMMAND -- push-update-addr (OpenVPN 2.7 or higher)
++----------------------------------------------------
++Same as push-update-broad but target only the client(s) connecting from the
++provided address (real address). Support both IPv4 and IPv6.
++
++Example
++  push-update-addr 9.9.9.9 1234 "route 10.10.10.1 255.255.255.255, -dns, ?=
+tun-mtu 1400"
++
+ OUTPUT FORMAT
+ -------------
+
+diff --git a/src/openvpn/manage.c b/src/openvpn/manage.c
+index 8836e79..251b076 100644
+--- a/src/openvpn/manage.c
++++ b/src/openvpn/manage.c
+@@ -24,7 +24,6 @@
+ #ifdef HAVE_CONFIG_H
+ #include "config.h"
+ #endif
+-
+ #include "syshead.h"
+
+ #ifdef ENABLE_MANAGEMENT
+@@ -42,6 +41,7 @@
+ #include "manage.h"
+ #include "openvpn.h"
+ #include "dco.h"
++#include "push.h"
+
+ #include "memdbg.h"
+
+@@ -124,6 +124,11 @@
+     msg(M_CLIENT, "username type u        : Enter username u for a queried=
+ OpenVPN username.");
+     msg(M_CLIENT, "verb [n]               : Set log verbosity level to n, =
+or show if n is absent.");
+     msg(M_CLIENT, "version [n]            : Set client's version to n or s=
+how current version of daemon.");
++    msg(M_CLIENT, "push-update-broad options : Broadcast a message to upda=
+te the specified options.");
++    msg(M_CLIENT, "                            Ex. push-update-broad \"rou=
+te something, -dns\"");
++    msg(M_CLIENT, "push-update-cid CID options : Send an update message to=
+ the client identified by CID.");
++    msg(M_CLIENT, "push-update-cn CN options : Send an update message to t=
+he client(s) with the specified Common Name.");
++    msg(M_CLIENT, "push-update-addr ip port options : Send an update messa=
+ge to the client(s) connecting from the provided address.");
+     msg(M_CLIENT, "END");
  }
 
-+bool
-+do_update(struct context *c, unsigned int option_types_found)
+@@ -1335,6 +1340,154 @@
+ }
+
+ static void
++man_push_update(struct management *man, const char **p, const push_update_=
+type type)
 +{
-+    /* Not necessary since to receive the update the openvpn
-+     * instance must be up and running but just in case
-+     */
-+    if (!c->c2.do_up_ran)
++    if (type =3D=3D UPT_BROADCAST)
 +    {
-+        return false;
-+    }
++        if (!man->persist.callback.push_update_broadcast)
++        {
++            man_command_unsupported("push-update-broad");
++            return;
++        }
 +
-+    bool tt_dco_win =3D tuntap_is_dco_win(c->c1.tuntap);
-+    if (tt_dco_win)
++        const bool status =3D (*man->persist.callback.push_update_broadcas=
+t)(man->persist.callback.arg, p[1]);
++
++        if (status)
++        {
++            msg(M_CLIENT, "SUCCESS: push-update-broad command succeeded");
++        }
++        else
++        {
++            msg(M_CLIENT, "ERROR: push-update-broad command failed");
++        }
++    }
++    else if (type =3D=3D UPT_BY_CID)
 +    {
-+        msg(M_NONFATAL, "dco-win doesn't yet support reopening TUN device"=
++        if (!man->persist.callback.push_update_by_cid)
++        {
++            man_command_unsupported("push-update-cid");
++            return;
++        }
++
++        unsigned long cid =3D 0;
++
++        if (!parse_cid(p[1], &cid))
++        {
++            msg(M_CLIENT, "ERROR: push-update-cid fail during cid parsing"=
 );
-+        return false;
-+    }
-+
-+    if (!do_deferred_options(c, option_types_found, true))
-+    {
-+        msg(D_PUSH_ERRORS, "ERROR: Failed to apply push options");
-+        return false;
-+    }
-+
-+    do_close_tun(c, true);
-+
-+    management_sleep(1);
-+    int error_flags =3D 0;
-+    c->c2.did_open_tun =3D do_open_tun(c, &error_flags);
-+    update_time();
-+
-+    if (c->c2.did_open_tun)
-+    {
-+        /* if --route-delay was specified, start timer */
-+        if ((route_order(c->c1.tuntap) =3D=3D ROUTE_AFTER_TUN) && c->optio=
-ns.route_delay_defined)
-+        {
-+            event_timeout_init(&c->c2.route_wakeup, c->options.route_delay=
-, now);
-+            event_timeout_init(&c->c2.route_wakeup_expire, c->options.rout=
-e_delay + c->options.route_delay_window, now);
-+            tun_standby_init(c->c1.tuntap);
++            return;
 +        }
 +
-+        initialization_sequence_completed(c, error_flags);
-+    }
++        const bool status =3D (*man->persist.callback.push_update_by_cid)(=
+man->persist.callback.arg, cid, p[2]);
 +
-+    CLEAR(c->c1.pulled_options_digest_save);
-+
-+    return true;
-+}
-+
- /*
-  * These are the option categories which will be accepted by pull.
-  */
-@@ -2672,11 +2721,8 @@
-     return true;
- }
-
--/*
-- * Handle non-tun-related pulled options.
-- */
- bool
--do_deferred_options(struct context *c, const unsigned int found)
-+do_deferred_options(struct context *c, const unsigned int found, const boo=
-l is_update)
- {
-     if (found & OPT_P_MESSAGES)
-     {
-@@ -2784,7 +2830,7 @@
-     /* process (potentially) pushed options */
-     if (c->options.pull)
-     {
--        if (!check_pull_client_ncp(c, found))
-+        if (!is_update && !check_pull_client_ncp(c, found))
-         {
-             return false;
-         }
-diff --git a/src/openvpn/init.h b/src/openvpn/init.h
-index 5c6b9c1..25078a6 100644
---- a/src/openvpn/init.h
-+++ b/src/openvpn/init.h
-@@ -86,13 +86,29 @@
-            bool pulled_options,
-            unsigned int option_types_found);
-
-+/**
-+ * @brief A simplified version of the do_up() function. This function is c=
-alled
-+ *        after receiving a successful PUSH_UPDATE message. It closes and =
-reopens
-+ *        the TUN device to apply the updated options.
-+ *
-+ * @param c The context structure.
-+ * @param option_types_found The options found in the PUSH_UPDATE message.
-+ * @return true on success.
-+ * @return false on error.
-+ */
-+bool do_update(struct context *c, unsigned int option_types_found);
-+
- unsigned int pull_permission_mask(const struct context *c);
-
- const char *format_common_name(struct context *c, struct gc_arena *gc);
-
- void reset_coarse_timers(struct context *c);
-
--bool do_deferred_options(struct context *c, const unsigned int found);
-+/*
-+ * Handle non-tun-related pulled options.
-+ * Set `is_update` param to true to skip NCP check.
-+ */
-+bool do_deferred_options(struct context *c, const unsigned int found, cons=
-t bool is_update);
-
- void inherit_context_child(struct context *dest,
-                            const struct context *src,
-diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
-index a760e07..7f0d890 100644
---- a/src/openvpn/multi.c
-+++ b/src/openvpn/multi.c
-@@ -2423,7 +2423,7 @@
-     /*
-      * Process sourced options.
-      */
--    do_deferred_options(&mi->context, option_types_found);
-+    do_deferred_options(&mi->context, option_types_found, false);
-
-     /*
-      * make sure we got ifconfig settings from somewhere
-diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index 67fa906..6597610 100644
---- a/src/openvpn/options.c
-+++ b/src/openvpn/options.c
-@@ -1085,6 +1085,40 @@
-         gc_free(&gc);
-     }
- }
-+
-+static void
-+delete_all_dhcp_fo(struct options *o, struct env_item **list)
-+{
-+    struct env_item *current, *prev;
-+
-+    ASSERT(list);
-+
-+    for (current =3D *list, prev =3D NULL; current !=3D NULL; current =3D =
-current->next)
-+    {
-+        char *tmp_value =3D NULL;
-+        if (!strncmp(current->string, "foreign_option_", sizeof("foreign_o=
-ption_")-1))
++        if (status)
 +        {
-+            tmp_value =3D strchr(current->string, '=3D');
-+            if (tmp_value && ++tmp_value)
++            msg(M_CLIENT, "SUCCESS: push-update-cid command succeeded");
++        }
++        else
++        {
++            msg(M_CLIENT, "ERROR: push-update-cid command failed");
++        }
++    }
++    else if (type =3D=3D UPT_BY_CN)
++    {
++        if (!man->persist.callback.push_update_by_cn)
++        {
++            man_command_unsupported("push-update-cn");
++            return;
++        }
++
++        const bool status =3D (*man->persist.callback.push_update_by_cn)(m=
+an->persist.callback.arg, p[1], p[2]);
++
++        if (status)
++        {
++            msg(M_CLIENT, "SUCCESS: push-update-cn command succeeded");
++        }
++        else
++        {
++            msg(M_CLIENT, "ERROR: push-update-cn command failed");
++        }
++    }
++    else if (type =3D=3D UPT_BY_ADDR)
++    {
++        if (!man->persist.callback.push_update_by_addr)
++        {
++            man_command_unsupported("push-update-addr");
++            return;
++        }
++
++        const char *ip_str =3D p[1];
++        const char *port_str =3D p[2];
++        const char *options =3D p[3];
++
++        if (!strlen(ip_str) || !strlen(port_str))
++        {
++            msg(M_CLIENT, "ERROR: push-update-addr parse");
++            return;
++        }
++
++        struct addrinfo *res =3D NULL;
++        int port =3D atoi(port_str);
++
++        if (port < 1 || port > 65535)
++        {
++            msg(M_CLIENT, "ERROR: port number is out of range: %s", port_s=
+tr);
++            return;
++        }
++
++        int status =3D openvpn_getaddrinfo(GETADDR_MSG_VIRT_OUT, ip_str, p=
+ort_str, 0, NULL, AF_UNSPEC, &res);
++
++        if (status !=3D 0 || !res)
++        {
++            msg(M_CLIENT, "ERROR: error resolving address: %s (%s)", ip_st=
+r, gai_strerror(status));
++            return;
++        }
++
++        struct addrinfo *rp;
++        bool found_client =3D false;
++
++        /* Iterate through resolved addresses */
++        for (rp =3D res; rp !=3D NULL; rp =3D rp->ai_next)
++        {
++            struct openvpn_sockaddr saddr;
++            struct mroute_addr maddr;
++
++            CLEAR(saddr);
++            switch (rp->ai_family)
 +            {
-+                if (!strncmp(tmp_value, "dhcp-option ", sizeof("dhcp-optio=
-n ")-1))
-+                {
-+                    if (prev)
-+                    {
-+                        prev->next =3D current->next;
-+                    }
-+                    else
-+                    {
-+                        *list =3D current->next;
-+                    }
-+                    o->foreign_option_index--;
-+                }
++                case AF_INET:
++                    saddr.addr.in4 =3D *((struct sockaddr_in *)rp->ai_addr=
+);
++                    break;
++
++                case AF_INET6:
++                    saddr.addr.in6 =3D *((struct sockaddr_in6 *)rp->ai_add=
+r);
++                    break;
++
++                default:
++                    continue;
 +            }
-+        }
-+        prev =3D current;
-+    }
-+}
 +
- #endif /* ifndef _WIN32 */
-
- static in_addr_t
-@@ -3089,8 +3123,16 @@
-         msg(M_INFO, "Flag 'def1' added to --redirect-gateway (iservice is =
-in use)");
-         opt->routes->flags |=3D RG_DEF1;
-     }
-+    else if (opt->routes
-+             && ((opt->route_method !=3D ROUTE_METHOD_SERVICE)
-+                 || !(opt->routes->flags & RG_REROUTE_GW))
-+             && (opt->routes->flags & RG_DEF1))
-+    {
-+        msg(M_INFO, "Flag 'def1' removed from --redirect-gateway");
-+        opt->routes->flags &=3D ~RG_DEF1;
-+    }
- }
--#endif
-+#endif /* ifdef _WIN32 */
-
- /*
-  * Save/Restore certain option defaults before --pull is applied.
-@@ -5490,37 +5532,6 @@
-     }
- }
-
--void
--options_server_import(struct options *o,
--                      const char *filename,
--                      int msglevel,
--                      unsigned int permission_mask,
--                      unsigned int *option_types_found,
--                      struct env_set *es)
--{
--    msg(D_PUSH, "OPTIONS IMPORT: reading client specific options from: %s"=
-, filename);
--    read_config_file(o,
--                     filename,
--                     0,
--                     filename,
--                     0,
--                     msglevel,
--                     permission_mask,
--                     option_types_found,
--                     es);
--}
--
--void
--options_string_import(struct options *options,
--                      const char *config,
--                      const int msglevel,
--                      const unsigned int permission_mask,
--                      unsigned int *option_types_found,
--                      struct env_set *es)
--{
--    read_config_string("[CONFIG-STRING]", options, config, msglevel, permi=
-ssion_mask, option_types_found, es);
--}
--
- #define VERIFY_PERMISSION(mask) {                                         =
-   \
-         if (!verify_permission(p[0], file, line, (mask), permission_mask, =
-       \
-                                option_types_found, msglevel, options, is_i=
-nline)) \
-@@ -5623,6 +5634,198 @@
-     return options->forward_compatible ? M_WARN : msglevel;
- }
-
-+/**
-+ * @brief Resets options found in the PUSH_UPDATE message that are precede=
-d by the `-` flag.
-+ *        This function is used in push-updates to reset specified options.
-+ *        The number of parameters `p` must always be 1. If the permission=
- is verified,
-+ *        all related options are erased or reset to their default values.
-+ *        Upon successful permission verification (by VERIFY_PERMISSION()),
-+ *        `option_types_found` is filled with the flag corresponding to th=
-e option.
-+ *
-+ * @param c The context structure.
-+ * @param options A pointer to the options structure.
-+ * @param p An array of strings containing the options and their parameter=
-s.
-+ * @param is_inline A boolean indicating if the option is inline.
-+ * @param file The file where the function is called.
-+ * @param line The line number where the function is called.
-+ * @param msglevel The message level.
-+ * @param permission_mask The permission mask used by VERIFY_PERMISSION().
-+ * @param option_types_found A pointer to the variable where the flags cor=
-responding to the options found are stored.
-+ * @param es The environment set structure.
-+ */
-+static void
-+remove_option(struct context *c,
-+              struct options *options,
-+              char *p[],
-+              bool is_inline,
-+              const char *file,
-+              int line,
-+              const int msglevel,
-+              const unsigned int permission_mask,
-+              unsigned int *option_types_found,
-+              struct env_set *es)
-+{
-+    int msglevel_fc =3D msglevel_forward_compatible(options, msglevel);
-+
-+    if (streq(p[0], "ifconfig") && !p[1])
-+    {
-+        VERIFY_PERMISSION(OPT_P_UP);
-+        options->ifconfig_local =3D NULL;
-+        options->ifconfig_remote_netmask =3D NULL;
-+    }
-+    else if (streq(p[0], "ifconfig-ipv6") && !p[1])
-+    {
-+        VERIFY_PERMISSION(OPT_P_UP);
-+        options->ifconfig_ipv6_local =3D NULL;
-+        options->ifconfig_ipv6_netbits =3D 0;
-+        options->ifconfig_ipv6_remote =3D NULL;
-+    }
-+    else if (streq(p[0], "route") && !p[1])
-+    {
-+        VERIFY_PERMISSION(OPT_P_ROUTE);
-+        if (c->c1.route_list)
-+        {
-+            delete_routes_v4(c->c1.route_list, c->c1.tuntap,
-+                             ROUTE_OPTION_FLAGS(&c->options),
-+                             es, &c->net_ctx);
-+            if (options->routes)
++            if (!mroute_extract_openvpn_sockaddr(&maddr, &saddr, true))
 +            {
-+                options->routes->routes =3D NULL;
-+                options->routes->flags =3D 0;
++                continue;
 +            }
-+        }
-+    }
-+    else if (streq(p[0], "route-ipv6") && !p[1])
-+    {
-+        VERIFY_PERMISSION(OPT_P_ROUTE);
-+        if (c->c1.route_ipv6_list)
-+        {
-+            delete_routes_v6(c->c1.route_ipv6_list, c->c1.tuntap,
-+                             ROUTE_OPTION_FLAGS(&c->options),
-+                             es, &c->net_ctx);
-+            if (options->routes_ipv6)
-+            {
-+                options->routes_ipv6->routes_ipv6 =3D NULL;
-+                options->routes_ipv6->flags =3D 0;
-+            }
-+        }
-+    }
-+    else if (streq(p[0], "route-gateway") && !p[1])
-+    {
-+        VERIFY_PERMISSION(OPT_P_ROUTE_EXTRAS);
-+        options->route_gateway_via_dhcp =3D false;
-+        options->route_default_gateway =3D NULL;
-+    }
-+    else if (streq(p[0], "route-metric") && !p[1])
-+    {
-+        VERIFY_PERMISSION(OPT_P_ROUTE);
-+        options->route_default_metric =3D 0;
-+    }
-+    else if (streq(p[0], "push-continuation") && !p[1])
-+    {
-+        VERIFY_PERMISSION(OPT_P_PULL_MODE);
-+        options->push_continuation =3D 0;
-+    }
-+    else if ((streq(p[0], "redirect-gateway") || streq(p[0], "redirect-pri=
-vate")) && !p[1])
-+    {
-+        VERIFY_PERMISSION(OPT_P_ROUTE);
-+        if (options->routes)
-+        {
-+            options->routes->flags =3D 0;
-+        }
-+        if (options->routes_ipv6)
-+        {
-+            options->routes_ipv6->flags =3D 0;
-+        }
-+    }
-+    else if (streq(p[0], "dns") && !p[1])
-+    {
-+        VERIFY_PERMISSION(OPT_P_DHCPDNS);
-+        gc_free(&options->dns_options.gc);
-+        CLEAR(options->dns_options);
-+    }
-+    else if (streq(p[0], "topology") && !p[1])
-+    {
-+        VERIFY_PERMISSION(OPT_P_UP);
-+        options->topology =3D TOP_UNDEF;
-+        helper_setdefault_topology(options);
-+    }
-+    else if (streq(p[0], "tun-mtu") && !p[1])
-+    {
-+        VERIFY_PERMISSION(OPT_P_PUSH_MTU|OPT_P_CONNECTION);
-+        options->ce.tun_mtu =3D TUN_MTU_DEFAULT;
-+        options->ce.tun_mtu_defined =3D false;
-+        options->ce.occ_mtu =3D 0;
-+    }
-+    else if (streq(p[0], "block-ipv6") && !p[1])
-+    {
-+        VERIFY_PERMISSION(OPT_P_ROUTE);
-+        options->block_ipv6 =3D false;
-+    }
-+#if defined(_WIN32) || defined(TARGET_ANDROID)
-+    else if (streq(p[0], "dhcp-option") && !p[1])
-+    {
-+        struct tuntap_options *o =3D &options->tuntap_options;
-+        VERIFY_PERMISSION(OPT_P_DHCPDNS);
 +
-+        o->domain =3D NULL;
-+        o->netbios_scope =3D NULL;
-+        o->netbios_node_type =3D 0;
-+        o->dns6_len =3D 0;
-+        memset(o->dns6, 0, sizeof(o->dns6));
-+        o->dns_len =3D 0;
-+        memset(o->dns, 0, sizeof(o->dns));
-+        o->wins_len =3D 0;
-+        memset(o->wins, 0, sizeof(o->wins));
-+        o->ntp_len =3D 0;
-+        memset(o->ntp, 0, sizeof(o->ntp));
-+        o->nbdd_len =3D 0;
-+        memset(o->nbdd, 0, sizeof(o->nbdd));
-+        while (o->domain_search_list_len-- > 0)
-+        {
-+            o->domain_search_list[o->domain_search_list_len] =3D NULL;
-+        }
-+        o->disable_nbt =3D 0;
-+        o->dhcp_options =3D 0;
-+#if defined(TARGET_ANDROID)
-+        o->http_proxy_port =3D 0;
-+        o->http_proxy =3D NULL;
-+#endif
-+    }
-+#endif /* if defined(_WIN32) || defined(TARGET_ANDROID) */
-+#ifdef _WIN32
-+    else if (streq(p[0], "block-outside-dns") && !p[1])
-+    {
-+        VERIFY_PERMISSION(OPT_P_DHCPDNS);
-+        options->block_outside_dns =3D false;
-+    }
-+#else /* ifdef _WIN32 */
-+    else if (streq(p[0], "dhcp-option") && !p[1])
-+    {
-+        VERIFY_PERMISSION(OPT_P_DHCPDNS);
-+        delete_all_dhcp_fo(options, &es->list);
-+    }
-+#endif
-+    else
-+    {
-+        int i;
-+        int msglevel_unknown =3D msglevel_fc;
-+        /* Check if an option is in --ignore-unknown-option and
-+         * set warning level to non fatal */
-+        for (i =3D 0; options->ignore_unknown_option && options->ignore_un=
-known_option[i]; i++)
-+        {
-+            if (streq(p[0], options->ignore_unknown_option[i]))
++            if ((*man->persist.callback.push_update_by_addr)(man->persist.=
+callback.arg, &maddr, options))
 +            {
-+                msglevel_unknown =3D M_WARN;
++                msg(M_CLIENT, "SUCCESS: push-update sent to %s:%d", ip_str=
+, port);
++                found_client =3D true;
 +                break;
 +            }
 +        }
-+        msg(msglevel_unknown, "Unrecognized option or missing or extra par=
-ameter(s) in %s:%d: -%s (%s)", file, line, p[0], PACKAGE_VERSION);
++
++        if (!found_client)
++        {
++            msg(M_CLIENT, "ERROR: no client found at address %s:%d", ip_st=
+r, port);
++        }
++        freeaddrinfo(res);
 +    }
-+    return;
-+err:
-+    msg(msglevel, "Error occurred trying to remove %s option", p[0]);
 +}
++
++static void
+ man_dispatch_command(struct management *man, struct status_output *so, con=
+st char **p, const int nparms)
+ {
+     struct gc_arena gc =3D gc_new();
+@@ -1656,6 +1809,34 @@
+             man_remote(man, p);
+         }
+     }
++    else if (streq(p[0], "push-update-broad"))
++    {
++        if (man_need(man, p, 1, 0))
++        {
++            man_push_update(man, p, UPT_BROADCAST);
++        }
++    }
++    else if (streq(p[0], "push-update-cid"))
++    {
++        if (man_need(man, p, 2, 0))
++        {
++            man_push_update(man, p, UPT_BY_CID);
++        }
++    }
++    else if (streq(p[0], "push-update-cn"))
++    {
++        if (man_need(man, p, 2, 0))
++        {
++            man_push_update(man, p, UPT_BY_CN);
++        }
++    }
++    else if (streq(p[0], "push-update-addr"))
++    {
++        if (man_need(man, p, 3, 0))
++        {
++            man_push_update(man, p, UPT_BY_ADDR);
++        }
++    }
+ #if 1
+     else if (streq(p[0], "test"))
+     {
+diff --git a/src/openvpn/manage.h b/src/openvpn/manage.h
+index eb19a4e..fd7cb11 100644
+--- a/src/openvpn/manage.h
++++ b/src/openvpn/manage.h
+@@ -44,7 +44,6 @@
+ #define MF_EXTERNAL_KEY_PSSPAD      (1<<16)
+ #define MF_EXTERNAL_KEY_DIGEST      (1<<17)
+
+-
+ #ifdef ENABLE_MANAGEMENT
+
+ #include "misc.h"
+@@ -205,6 +204,10 @@
+ #endif
+     unsigned int (*remote_entry_count)(void *arg);
+     bool (*remote_entry_get)(void *arg, unsigned int index, char **remote);
++    bool (*push_update_broadcast)(void *arg, const char *options);
++    bool (*push_update_by_cid)(void *arg, unsigned long cid, const char *o=
+ptions);
++    bool (*push_update_by_cn)(void *arg, const char *cn, const char *optio=
+ns);
++    bool (*push_update_by_addr)(void *arg, const struct mroute_addr *maddr=
+, const char *options);
+ };
+
+ /*
+diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
+index 7f0d890..3daf358 100644
+--- a/src/openvpn/multi.c
++++ b/src/openvpn/multi.c
+@@ -4072,7 +4072,7 @@
+     }
+ }
+
+-static struct multi_instance *
++struct multi_instance *
+ lookup_by_cid(struct multi_context *m, const unsigned long cid)
+ {
+     if (m)
+@@ -4220,6 +4220,10 @@
+         cb.client_auth =3D management_client_auth;
+         cb.client_pending_auth =3D management_client_pending_auth;
+         cb.get_peer_info =3D management_get_peer_info;
++        cb.push_update_broadcast =3D management_callback_send_push_update_=
+broadcast;
++        cb.push_update_by_cid =3D management_callback_send_push_update_by_=
+cid;
++        cb.push_update_by_cn =3D management_callback_send_push_update_by_c=
+n;
++        cb.push_update_by_addr =3D management_callback_send_push_update_by=
+_addr;
+         management_set_callback(management, &cb);
+     }
+ #endif /* ifdef ENABLE_MANAGEMENT */
+diff --git a/src/openvpn/multi.h b/src/openvpn/multi.h
+index 40f7519..1e965a4 100644
+--- a/src/openvpn/multi.h
++++ b/src/openvpn/multi.h
+@@ -710,5 +710,10 @@
+  */
+ void multi_assign_peer_id(struct multi_context *m, struct multi_instance *=
+mi);
+
++#ifdef ENABLE_MANAGEMENT
++struct multi_instance *
++lookup_by_cid(struct multi_context *m, const unsigned long cid);
++
++#endif
+
+ #endif /* MULTI_H */
+diff --git a/src/openvpn/push.h b/src/openvpn/push.h
+index 18dfcd8..e67c3ac 100644
+--- a/src/openvpn/push.h
++++ b/src/openvpn/push.h
+@@ -42,6 +42,16 @@
+ #define PUSH_OPT_TO_REMOVE (1<<0)
+ #define PUSH_OPT_OPTIONAL (1<<1)
+
++/* Push-update message sender modes */
++typedef enum {
++    UPT_BROADCAST =3D 0,
++    UPT_BY_ADDR =3D 1,
++    UPT_BY_CN =3D 2,
++#ifdef ENABLE_MANAGEMENT
++    UPT_BY_CID =3D 3
++#endif
++} push_update_type;
++
+ int process_incoming_push_request(struct context *c);
+
+ /**
+@@ -134,4 +144,33 @@
+ void
+ receive_auth_pending(struct context *c, const struct buffer *buffer);
+
++/**
++ * @brief A function to send a PUSH_UPDATE control message from server to =
+client(s).
++ *
++ * @param m the multi_context, contains all the clients connected to this =
+server.
++ * @param target the target to which to send the message. It should be:
++ * `NULL` if `type =3D=3D UPT_BROADCAST`,
++ * a `mroute_addr *` if `type =3D=3D UPT_BY_ADDR`,
++ * a `char *` if `type =3D=3D UPT_BY_CN`,
++ * an `unsigned long *` if `type =3D=3D UPT_BY_CID`.
++ * @param msg a string containing the options to send.
++ * @param type the way to address the message (broadcast, by cid, by cn, b=
+y address).
++ * @param push_bundle_size the maximum size of a bundle of pushed option. =
+Just use PUSH_BUNDLE_SIZE macro.
++ * @return the number of clients to which the message was sent.
++ */
++int
++send_push_update(struct multi_context *m, const void *target, const char *=
+msg, const push_update_type type, const int push_bundle_size);
++
++#ifdef ENABLE_MANAGEMENT
++
++bool management_callback_send_push_update_broadcast(void *arg, const char =
+*options);
++
++bool management_callback_send_push_update_by_cid(void *arg, unsigned long =
+cid, const char *options);
++
++bool management_callback_send_push_update_by_cn(void *arg, const char *cn,=
+ const char *options);
++
++bool management_callback_send_push_update_by_addr(void *arg, const struct =
+mroute_addr *maddr, const char *options);
++
++#endif /* ifdef ENABLE_MANAGEMENT*/
++
+ #endif /* ifndef PUSH_H */
+diff --git a/src/openvpn/push_util.c b/src/openvpn/push_util.c
+index b4d1e8b..28b303e 100644
+--- a/src/openvpn/push_util.c
++++ b/src/openvpn/push_util.c
+@@ -3,6 +3,8 @@
+ #endif
+
+ #include "push.h"
++#include "multi.h"
++#include "ssl_verify.h"
+
+ int
+ process_incoming_push_update(struct context *c,
+@@ -42,3 +44,279 @@
+
+     return ret;
+ }
++
++/**
++ * Return index of last `,` or `0` if it didn't find any.
++ * If there is a comma at index `0` it's an error anyway
++ */
++static int
++find_first_comma_of_next_bundle(const char *str, int ix)
++{
++    while (ix > 0)
++    {
++        if (str[ix] =3D=3D ',')
++        {
++            return ix;
++        }
++        ix--;
++    }
++    return 0;
++}
++
++/* Allocate memory and asseble the final message */
++static char *
++forge_msg(const char *src, const char *continuation, struct gc_arena *gc)
++{
++    int src_len =3D strlen(src);
++    int con_len =3D continuation ? strlen(continuation) : 0;
++    char *ret =3D gc_malloc((src_len + sizeof(push_update_cmd) + con_len +=
+ 2) * sizeof(char), true, gc);
++    int i =3D sizeof(push_update_cmd) -1;
++
++    strcpy(ret, push_update_cmd);
++    ret[i++] =3D ',';
++    strcpy(&ret[i], src);
++    if (continuation)
++    {
++        i +=3D src_len;
++        strcpy(&ret[i], continuation);
++    }
++    return ret;
++}
++
++static char *
++gc_strdup(const char *src, struct gc_arena *gc)
++{
++    char *ret =3D gc_malloc((strlen(src) + 1) * sizeof(char), true, gc);
++
++    strcpy(ret, src);
++    return ret;
++}
++
++/* It split the messagge (if necessay) and fill msgs with the message chun=
+ks.
++ * Return `false` on failure an `true` on success.
++ */
++static bool
++message_splitter(char *str, char **msgs, struct gc_arena *gc, const int sa=
+fe_cap)
++{
++    if (!str || !*str)
++    {
++        return false;
++    }
++
++    int i =3D 0;
++    int im =3D 0;
++
++    while (*str)
++    {
++        /* + ',' - '/0' */
++        if (strlen(str) > safe_cap)
++        {
++            int ci =3D find_first_comma_of_next_bundle(str, safe_cap);
++            if (!ci)
++            {
++                /* if no commas were found go to fail, do not send any mes=
+sage */
++                return false;
++            }
++            str[ci] =3D '\0';
++            /* copy from i to (ci -1) */
++            msgs[im] =3D forge_msg(str, ",push-continuation 2", gc);
++            i =3D ci + 1;
++        }
++        else
++        {
++            if (im)
++            {
++                msgs[im] =3D forge_msg(str, ",push-continuation 1", gc);
++            }
++            else
++            {
++                msgs[im] =3D forge_msg(str, NULL, gc);
++            }
++            i =3D strlen(str);
++        }
++        str =3D &str[i];
++        im++;
++    }
++    return true;
++}
++
++/* It actually send the already divided messagge to one single client */
++static bool
++send_single_push_update(struct context *c, char **msgs)
++{
++    if (!msgs[0] || !*msgs[0])
++    {
++        return false;
++    }
++    int i =3D 0;
++    struct gc_arena gc =3D gc_new();
++
++    while (msgs[i] && *msgs[i])
++    {
++        unsigned int option_types_found =3D 0;
++        struct buffer buf =3D alloc_buf_gc(strlen(msgs[i]), &gc);
++
++        buf_write(&buf, msgs[i], strlen(msgs[i]));
++        if (!send_control_channel_string(c, msgs[i], D_PUSH))
++        {
++            return false;
++        }
++        i++;
++
++        /* After sending the control message, we update the options server=
+-side in the client's context */
++        buf_string_compare_advance(&buf, push_update_cmd);
++        if (process_incoming_push_update(c, pull_permission_mask(c), &opti=
+on_types_found, &buf) =3D=3D PUSH_MSG_ERROR)
++        {
++            msg(M_WARN, "Failed to process push update message sent to cli=
+ent ID: %u",
++                c->c2.tls_multi ? c->c2.tls_multi->peer_id : UINT32_MAX);
++            continue;
++        }
++        c->options.push_option_types_found |=3D option_types_found;
++        if (!options_postprocess_pull(&c->options, c->c2.es))
++        {
++            msg(M_WARN, "Failed to post-process push update message sent t=
+o client ID: %u",
++                c->c2.tls_multi ? c->c2.tls_multi->peer_id : UINT32_MAX);
++        }
++    }
++    gc_free(&gc);
++    return true;
++}
++
++int
++send_push_update(struct multi_context *m, const void *target, const char *=
+msg, const push_update_type type, const int push_bundle_size)
++{
++    if (!msg || !*msg || !m
++        || (!target && type !=3D UPT_BROADCAST))
++    {
++        return -EINVAL;
++    }
++
++    struct gc_arena gc =3D gc_new();
++    /* extra space for possible trailing ifconfig and push-continuation */
++    const int extra =3D 84 + sizeof(push_update_cmd);
++    /* push_bundle_size is the maximum size of a message, so if the message
++     * we want to send exceeds that size we have to split it into smaller =
+messages */
++    const int safe_cap =3D push_bundle_size - extra;
++    int msgs_num =3D (strlen(msg) / safe_cap) + ((strlen(msg) % safe_cap) =
+!=3D 0);
++    char **msgs =3D gc_malloc(sizeof(char *) * (msgs_num + 1), true, &gc);
++
++    msgs[msgs_num] =3D NULL;
++    if (!message_splitter(gc_strdup(msg, &gc), msgs, &gc, safe_cap))
++    {
++        gc_free(&gc);
++        return -EINVAL;
++    }
++
++#ifdef ENABLE_MANAGEMENT
++    if (type =3D=3D UPT_BY_CID)
++    {
++        struct multi_instance *mi =3D lookup_by_cid(m, *((unsigned long *)=
+target));
++
++        if (!mi)
++        {
++            return -ENOENT;
++        }
++        if (!mi->halt
++            && send_single_push_update(&mi->context, msgs))
++        {
++            gc_free(&gc);
++            return 1;
++        }
++        else
++        {
++            gc_free(&gc);
++            return 0;
++        }
++    }
++#endif /* ifdef ENABLE_MANAGEMENT */
++
++    int count =3D 0;
++    struct hash_iterator hi;
++    const struct hash_element *he;
++
++    hash_iterator_init(m->iter, &hi);
++    while ((he =3D hash_iterator_next(&hi)))
++    {
++        struct multi_instance *curr_mi =3D he->value;
++
++        if (curr_mi->halt)
++        {
++            continue;
++        }
++        if (type =3D=3D UPT_BY_ADDR && !mroute_addr_equal(target, &curr_mi=
+->real))
++        {
++            continue;
++        }
++        else if (type =3D=3D UPT_BY_CN)
++        {
++            const char *curr_cn =3D tls_common_name(curr_mi->context.c2.tl=
+s_multi, false);
++            if (strcmp(curr_cn, target))
++            {
++                continue;
++            }
++        }
++        /* Either we found a matching client or type is UPT_BROADCAST so w=
+e update every client */
++        if (!send_single_push_update(&curr_mi->context, msgs))
++        {
++            msg(M_CLIENT, "ERROR: Peer ID: %u has not been updated",
++                curr_mi->context.c2.tls_multi ? curr_mi->context.c2.tls_mu=
+lti->peer_id : UINT32_MAX);
++            continue;
++        }
++        count++;
++    }
++
++    hash_iterator_free(&hi);
++    gc_free(&gc);
++    return count;
++}
++
++#ifdef ENABLE_MANAGEMENT
++#define RETURN_UPDATE_STATUS(n_sent) \
++    do { \
++        if ((n_sent) > 0) { \
++            msg(M_CLIENT, "SUCCESS: %d client(s) updated", (n_sent)); \
++            return true; \
++        } else { \
++            msg(M_CLIENT, "ERROR: no client updated"); \
++            return false; \
++        } \
++    } while (0)
++
++
++bool
++management_callback_send_push_update_broadcast(void *arg, const char *opti=
+ons)
++{
++    int n_sent =3D send_push_update(arg, NULL, options, UPT_BROADCAST, PUS=
+H_BUNDLE_SIZE);
++
++    RETURN_UPDATE_STATUS(n_sent);
++}
++
++bool
++management_callback_send_push_update_by_cid(void *arg, unsigned long cid, =
+const char *options)
++{
++    int ret =3D send_push_update(arg, &cid, options, UPT_BY_CID, PUSH_BUND=
+LE_SIZE);
++
++    if (ret =3D=3D -ENOENT)
++    {
++        msg(M_CLIENT, "ERROR: no client found with CID: %lu", cid);
++    }
++
++    return (ret > 0);
++}
++
++bool
++management_callback_send_push_update_by_cn(void *arg, const char *cn, cons=
+t char *options)
++{
++    int n_sent =3D send_push_update(arg, cn, options, UPT_BY_CN, PUSH_BUND=
+LE_SIZE);
++
++    RETURN_UPDATE_STATUS(n_sent);
++}
++
++bool
++management_callback_send_push_update_by_addr(void *arg, const struct mrout=
+e_addr *maddr, const char *options)
++{
++    int n_sent =3D send_push_update(arg, maddr, options, UPT_BY_ADDR, PUSH=
+_BUNDLE_SIZE);
++
++    RETURN_UPDATE_STATUS(n_sent);
++}
++#endif /* ifdef ENABLE_MANAGEMENT */
+diff --git a/tests/unit_tests/openvpn/Makefile.am b/tests/unit_tests/openvp=
+n/Makefile.am
+index b24e03c..9a40512 100644
+--- a/tests/unit_tests/openvpn/Makefile.am
++++ b/tests/unit_tests/openvpn/Makefile.am
+@@ -343,4 +343,5 @@
+ 	$(top_srcdir)/src/openvpn/platform.c \
+ 	$(top_srcdir)/src/openvpn/push_util.c \
+ 	$(top_srcdir)/src/openvpn/options_util.c \
+-	$(top_srcdir)/src/openvpn/otime.c
+\ No newline at end of file
++	$(top_srcdir)/src/openvpn/otime.c \
++	$(top_srcdir)/src/openvpn/list.c
+\ No newline at end of file
+diff --git a/tests/unit_tests/openvpn/test_push_update_msg.c b/tests/unit_t=
+ests/openvpn/test_push_update_msg.c
+index d0876bc..8420510 100644
+--- a/tests/unit_tests/openvpn/test_push_update_msg.c
++++ b/tests/unit_tests/openvpn/test_push_update_msg.c
+@@ -8,6 +8,7 @@
+ #include <cmocka.h>
+ #include "push.h"
+ #include "options_util.h"
++#include "multi.h"
+
+ /* mocks */
+
+@@ -37,6 +38,12 @@
+ }
+
  bool
++options_postprocess_pull(struct options *options, struct env_set *es)
++{
++    return true;
++}
++
++bool
  apply_push_options(struct context *c,
                     struct options *options,
-@@ -5656,11 +5859,47 @@
-                 add_option(options, p, false, file, line_num, 0, msglevel,
-                            permission_mask, option_types_found, es);
-             }
-+            else if (push_update_option_flags & PUSH_OPT_TO_REMOVE)
-+            {
-+                remove_option(c, options, p, false, file, line_num, msglev=
-el,
-+                              permission_mask, option_types_found, es);
-+            }
-         }
+                    struct buffer *buf,
+@@ -94,6 +101,49 @@
      }
-     return true;
  }
-=20
-+void
-+options_server_import(struct options *o,
-+                      const char *filename,
-+                      int msglevel,
-+                      unsigned int permission_mask,
-+                      unsigned int *option_types_found,
-+                      struct env_set *es)
+
++const char *
++tls_common_name(const struct tls_multi *multi, const bool null)
 +{
-+    msg(D_PUSH, "OPTIONS IMPORT: reading client specific options from: %s"=
-, filename);
-+    read_config_file(o,
-+                     filename,
-+                     0,
-+                     filename,
-+                     0,
-+                     msglevel,
-+                     permission_mask,
-+                     option_types_found,
-+                     es);
++    return NULL;
 +}
 +
-+void
-+options_string_import(struct options *options,
-+                      const char *config,
-+                      const int msglevel,
-+                      const unsigned int permission_mask,
-+                      unsigned int *option_types_found,
-+                      struct env_set *es)
++#ifndef ENABLE_MANAGEMENT
++bool
++send_control_channel_string(struct context *c, const char *str, int msglev=
+el)
 +{
-+    read_config_string("[CONFIG-STRING]", options, config, msglevel, permi=
-ssion_mask, option_types_found, es);
++    return true;
++}
++#else  /* ifndef ENABLE_MANAGEMENT */
++char **res;
++int i;
++
++bool
++send_control_channel_string(struct context *c, const char *str, int msglev=
+el)
++{
++    if (res && res[i] && strcmp(res[i], str))
++    {
++        printf("\n\nexpected: %s\n\n  actual: %s\n\n", res[i], str);
++        return false;
++    }
++    i++;
++    return true;
 +}
 +
++struct multi_instance *
++lookup_by_cid(struct multi_context *m, const unsigned long cid)
++{
++    return *(m->instances);
++}
++
++bool
++mroute_extract_openvpn_sockaddr(struct mroute_addr *addr,
++                                const struct openvpn_sockaddr *osaddr,
++                                bool use_port)
++{
++    return true;
++}
++#endif /* ifndef ENABLE_MANAGEMENT */
++
+ /* tests */
+
  static void
- set_user_script(struct options *options,
-                 const char **script,
-diff --git a/src/openvpn/push.c b/src/openvpn/push.c
-index 0907226..a6c14ca 100644
---- a/src/openvpn/push.c
-+++ b/src/openvpn/push.c
-@@ -542,6 +542,11 @@
-                 {
-                     msg(M_WARN, "No updatable options found in incoming PU=
-SH_UPDATE message");
-                 }
-+                else if (!do_update(c, option_types_found))
-+                {
-+                    msg(D_PUSH_ERRORS, "Failed to update options");
-+                    goto error;
-+                }
-             }
-         }
-         event_timeout_clear(&c->c2.push_request_interval);
-diff --git a/src/openvpn/route.c b/src/openvpn/route.c
-index 156262a..89ebaee 100644
---- a/src/openvpn/route.c
-+++ b/src/openvpn/route.c
-@@ -1265,7 +1265,16 @@
-               const struct tuntap *tt, unsigned int flags,
-               const struct env_set *es, openvpn_net_ctx_t *ctx)
+@@ -124,7 +174,6 @@
+     free_buf(&buf);
+ }
+
+-
+ static void
+ test_incoming_push_message_error2(void **state)
  {
--    if (rl && rl->iflags & RL_ROUTES_ADDED)
-+    delete_routes_v4(rl, tt, flags, es, ctx);
-+    delete_routes_v6(rl6, tt, flags, es, ctx);
+@@ -209,6 +258,205 @@
+     free_buf(&buf);
+ }
+
++#ifdef ENABLE_MANAGEMENT
++char *r0[] =3D {
++    "PUSH_UPDATE,redirect-gateway local,route 192.168.1.0 255.255.255.0"
++};
++char *r1[] =3D {
++    "PUSH_UPDATE,-dhcp-option,blablalalalalalalalalalalalalf, lalalalalala=
+lalalalalalalalaf,push-continuation 2",
++    "PUSH_UPDATE, akakakakakakakakakakakaf, dhcp-option DNS 8.8.8.8,redire=
+ct-gateway local,push-continuation 2",
++    "PUSH_UPDATE,route 192.168.1.0 255.255.255.0,push-continuation 1"
++};
++char *r3[] =3D {
++    "PUSH_UPDATE,,,"
++};
++char *r4[] =3D {
++    "PUSH_UPDATE,-dhcp-option, blablalalalalalalalalalalalalf, lalalalalal=
+alalalalalalalalaf,push-continuation 2",
++    "PUSH_UPDATE, akakakakakakakakakakakaf,dhcp-option DNS 8.8.8.8, redire=
+ct-gateway local,push-continuation 2",
++    "PUSH_UPDATE, route 192.168.1.0 255.255.255.0,,push-continuation 1"
++};
++char *r5[] =3D {
++    "PUSH_UPDATE,,-dhcp-option, blablalalalalalalalalalalalalf, lalalalala=
+lalalalalalalalalaf,push-continuation 2",
++    "PUSH_UPDATE, akakakakakakakakakakakaf,dhcp-option DNS 8.8.8.8, redire=
+ct-gateway local,push-continuation 2",
++    "PUSH_UPDATE, route 192.168.1.0 255.255.255.0,push-continuation 1"
++};
++char *r6[] =3D {
++    "PUSH_UPDATE,-dhcp-option,blablalalalalalalalalalalalalf, lalalalalala=
+lalalalalalalalaf,push-continuation 2",
++    "PUSH_UPDATE, akakakakakakakakakakakaf, dhcp-option DNS 8.8.8.8, redir=
+ect-gateway 10.10.10.10,,push-continuation 2",
++    "PUSH_UPDATE, route 192.168.1.0 255.255.255.0,,push-continuation 1"
++};
++char *r7[] =3D {
++    "PUSH_UPDATE,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,=
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,push-continuation 2",
++    "PUSH_UPDATE,,,,,,,,,,,,,,,,,,,push-continuation 1"
++};
++char *r8[] =3D {
++    "PUSH_UPDATE,-dhcp-option,blablalalalalalalalalalalalalf, lalalalalala=
+lalalalalalalalaf,push-continuation 2",
++    "PUSH_UPDATE, akakakakakakakakakakakaf, dhcp-option DNS 8.8.8.8,redire=
+ct-gateway\n local,push-continuation 2",
++    "PUSH_UPDATE,route 192.168.1.0 255.255.255.0\n\n\n,push-continuation 1"
++};
++char *r9[] =3D {
++    "PUSH_UPDATE,,"
++};
++
++
++const char *msg0 =3D "redirect-gateway local,route 192.168.1.0 255.255.255=
+.0";
++const char *msg1 =3D "-dhcp-option,blablalalalalalalalalalalalalf, lalalal=
+alalalalalalalalalalaf,"
++                   " akakakakakakakakakakakaf, dhcp-option DNS 8.8.8.8,red=
+irect-gateway local,route 192.168.1.0 255.255.255.0";
++const char *msg2 =3D "";
++const char *msg3 =3D ",,";
++const char *msg4 =3D "-dhcp-option, blablalalalalalalalalalalalalf, lalala=
+lalalalalalalalalalalaf,"
++                   " akakakakakakakakakakakaf,dhcp-option DNS 8.8.8.8, red=
+irect-gateway local, route 192.168.1.0 255.255.255.0,";
++const char *msg5 =3D ",-dhcp-option, blablalalalalalalalalalalalalf, lalal=
+alalalalalalalalalalalaf,"
++                   " akakakakakakakakakakakaf,dhcp-option DNS 8.8.8.8, red=
+irect-gateway local, route 192.168.1.0 255.255.255.0";
++const char *msg6 =3D "-dhcp-option,blablalalalalalalalalalalalalf, lalalal=
+alalalalalalalalalalaf, akakakakakakakakakakakaf,"
++                   " dhcp-option DNS 8.8.8.8, redirect-gateway 10.10.10.10=
+,, route 192.168.1.0 255.255.255.0,";
++const char *msg7 =3D ",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,=
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,";
++const char *msg8 =3D "-dhcp-option,blablalalalalalalalalalalalalf, lalalal=
+alalalalalalalalalalaf, akakakakakakakakakakakaf,"
++                   " dhcp-option DNS 8.8.8.8,redirect-gateway\n local,rout=
+e 192.168.1.0 255.255.255.0\n\n\n";
++const char *msg9 =3D ",";
++const char *msg10 =3D "Voil=C3=A0! In view, a humble vaudevillian veteran =
+cast vicariously as both victim and villain by the vicissitudes"
++                    " of Fate. This visage no mere veneer of vanity is a v=
+estige of the vox populi now vacant vanished. However this"
++                    " valorous visitation of a by-gone vexation stands viv=
+ified and has vowed to vanquish these venal and virulent"
++                    " vermin vanguarding vice and vouchsafing the violentl=
+y vicious and voracious violation of volition. The only"
++                    " verdict is vengeance; a vendetta held as a votive no=
+t in vain for the value and veracity of such shall one"
++                    " day vindicate the vigilant and the virtuous. Verily =
+this vichyssoise of verbiage veers most verbose so let"
++                    " me simply add that it is my very good honor to meet =
+you and you may call me V.";
++
++#define PUSH_BUNDLE_SIZE_TEST 184
++
++static void
++test_send_push_msg0(void **state)
++{
++    i =3D 0;
++    res =3D r0;
++    struct multi_context *m =3D *state;
++    const unsigned long cid =3D 0;
++    assert_int_equal(send_push_update(m, &cid, msg0, UPT_BY_CID, PUSH_BUND=
+LE_SIZE_TEST), 1);
++}
++static void
++test_send_push_msg1(void **state)
++{
++    i =3D 0;
++    res =3D r1;
++    struct multi_context *m =3D *state;
++    const unsigned long cid =3D 0;
++    assert_int_equal(send_push_update(m, &cid, msg1, UPT_BY_CID, PUSH_BUND=
+LE_SIZE_TEST), 1);
 +}
 +
-+void
-+delete_routes_v4(struct route_list *rl, const struct tuntap *tt,
-+                 unsigned int flags, const struct env_set *es,
-+                 openvpn_net_ctx_t *ctx)
++static void
++test_send_push_msg2(void **state)
 +{
-+    if (rl && (rl->iflags & RL_ROUTES_ADDED))
-     {
-         struct route_ipv4 *r;
-         for (r =3D rl->routes; r; r =3D r->next)
-@@ -1281,8 +1290,14 @@
-     {
-         clear_route_list(rl);
-     }
++    i =3D 0;
++    res =3D NULL;
++    struct multi_context *m =3D *state;
++    const unsigned long cid =3D 0;
++    assert_int_equal(send_push_update(m, &cid, msg2, UPT_BY_CID, PUSH_BUND=
+LE_SIZE_TEST), -EINVAL);
 +}
-
--    if (rl6 && (rl6->iflags & RL_ROUTES_ADDED) )
-+void
-+delete_routes_v6(struct route_ipv6_list *rl6, const struct tuntap *tt,
-+                 unsigned int flags, const struct env_set *es,
-+                 openvpn_net_ctx_t *ctx)
++
++static void
++test_send_push_msg3(void **state)
 +{
-+    if (rl6 && (rl6->iflags & RL_ROUTES_ADDED))
-     {
-         struct route_ipv6 *r6;
-         for (r6 =3D rl6->routes_ipv6; r6; r6 =3D r6->next)
-diff --git a/src/openvpn/route.h b/src/openvpn/route.h
-index 237375c..b89ec9f 100644
---- a/src/openvpn/route.h
-+++ b/src/openvpn/route.h
-@@ -335,6 +335,16 @@
-                    const struct env_set *es,
-                    openvpn_net_ctx_t *ctx);
-
-+void
-+delete_routes_v4(struct route_list *rl, const struct tuntap *tt,
-+                 unsigned int flags, const struct env_set *es,
-+                 openvpn_net_ctx_t *ctx);
++    i =3D 0;
++    res =3D r3;
++    struct multi_context *m =3D *state;
++    const unsigned long cid =3D 0;
++    assert_int_equal(send_push_update(m, &cid, msg3, UPT_BY_CID, PUSH_BUND=
+LE_SIZE_TEST), 1);
++}
 +
-+void
-+delete_routes_v6(struct route_ipv6_list *rl6, const struct tuntap *tt,
-+                 unsigned int flags, const struct env_set *es,
-+                 openvpn_net_ctx_t *ctx);
++static void
++test_send_push_msg4(void **state)
++{
++    i =3D 0;
++    res =3D r4;
++    struct multi_context *m =3D *state;
++    const unsigned long cid =3D 0;
++    assert_int_equal(send_push_update(m, &cid, msg4, UPT_BY_CID, PUSH_BUND=
+LE_SIZE_TEST), 1);
++}
 +
- void setenv_routes(struct env_set *es, const struct route_list *rl);
++static void
++test_send_push_msg5(void **state)
++{
++    i =3D 0;
++    res =3D r5;
++    struct multi_context *m =3D *state;
++    const unsigned long cid =3D 0;
++    assert_int_equal(send_push_update(m, &cid, msg5, UPT_BY_CID, PUSH_BUND=
+LE_SIZE_TEST), 1);
++}
++
++static void
++test_send_push_msg6(void **state)
++{
++    i =3D 0;
++    res =3D r6;
++    struct multi_context *m =3D *state;
++    const unsigned long cid =3D 0;
++    assert_int_equal(send_push_update(m, &cid, msg6, UPT_BY_CID, PUSH_BUND=
+LE_SIZE_TEST), 1);
++}
++
++static void
++test_send_push_msg7(void **state)
++{
++    i =3D 0;
++    res =3D r7;
++    struct multi_context *m =3D *state;
++    const unsigned long cid =3D 0;
++    assert_int_equal(send_push_update(m, &cid, msg7, UPT_BY_CID, PUSH_BUND=
+LE_SIZE_TEST), 1);
++}
++
++static void
++test_send_push_msg8(void **state)
++{
++    i =3D 0;
++    res =3D r8;
++    struct multi_context *m =3D *state;
++    const unsigned long cid =3D 0;
++    assert_int_equal(send_push_update(m, &cid, msg8, UPT_BY_CID, PUSH_BUND=
+LE_SIZE_TEST), 1);
++}
++
++static void
++test_send_push_msg9(void **state)
++{
++    i =3D 0;
++    res =3D r9;
++    struct multi_context *m =3D *state;
++    const unsigned long cid =3D 0;
++    assert_int_equal(send_push_update(m, &cid, msg9, UPT_BY_CID, PUSH_BUND=
+LE_SIZE_TEST), 1);
++}
++
++static void
++test_send_push_msg10(void **state)
++{
++    i =3D 0;
++    res =3D NULL;
++    struct multi_context *m =3D *state;
++    const unsigned long cid =3D 0;
++    assert_int_equal(send_push_update(m, &cid, msg10, UPT_BY_CID, PUSH_BUN=
+DLE_SIZE_TEST), -EINVAL);
++}
++
++#undef PUSH_BUNDLE_SIZE_TEST
++
++static int
++setup2(void **state)
++{
++    struct multi_context *m =3D calloc(1, sizeof(struct multi_context));
++    m->instances =3D calloc(1, sizeof(struct multi_instance *));
++    struct multi_instance *mi =3D calloc(1, sizeof(struct multi_instance));
++    *(m->instances) =3D mi;
++    *state =3D m;
++    return 0;
++}
++
++static int
++teardown2(void **state)
++{
++    struct multi_context *m =3D *state;
++    free(*(m->instances));
++    free(m->instances);
++    free(m);
++    return 0;
++}
++#endif /* ifdef ENABLE_MANAGEMENT */
++
+ static int
+ setup(void **state)
+ {
+@@ -238,7 +486,20 @@
+         cmocka_unit_test_setup_teardown(test_incoming_push_message_1, setu=
+p, teardown),
+         cmocka_unit_test_setup_teardown(test_incoming_push_message_bad_for=
+mat, setup, teardown),
+         cmocka_unit_test_setup_teardown(test_incoming_push_message_mix, se=
+tup, teardown),
+-        cmocka_unit_test_setup_teardown(test_incoming_push_message_mix2, s=
+etup, teardown)
++        cmocka_unit_test_setup_teardown(test_incoming_push_message_mix2, s=
+etup, teardown),
++#ifdef ENABLE_MANAGEMENT
++        cmocka_unit_test_setup_teardown(test_send_push_msg0, setup2, teard=
+own2),
++        cmocka_unit_test_setup_teardown(test_send_push_msg1, setup2, teard=
+own2),
++        cmocka_unit_test_setup_teardown(test_send_push_msg2, setup2, teard=
+own2),
++        cmocka_unit_test_setup_teardown(test_send_push_msg3, setup2, teard=
+own2),
++        cmocka_unit_test_setup_teardown(test_send_push_msg4, setup2, teard=
+own2),
++        cmocka_unit_test_setup_teardown(test_send_push_msg5, setup2, teard=
+own2),
++        cmocka_unit_test_setup_teardown(test_send_push_msg6, setup2, teard=
+own2),
++        cmocka_unit_test_setup_teardown(test_send_push_msg7, setup2, teard=
+own2),
++        cmocka_unit_test_setup_teardown(test_send_push_msg8, setup2, teard=
+own2),
++        cmocka_unit_test_setup_teardown(test_send_push_msg9, setup2, teard=
+own2),
++        cmocka_unit_test_setup_teardown(test_send_push_msg10, setup2, tear=
+down2)
++#endif
+     };
 
- void setenv_routes_ipv6(struct env_set *es, const struct route_ipv6_list *=
-rl6);
+     return cmocka_run_group_tests(tests, NULL, NULL);
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/809?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/869?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings
 
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: I507180d7397b6959844a30908010132bc3411067
-Gerrit-Change-Number: 809
-Gerrit-PatchSet: 15
+Gerrit-Change-Id: Ie82bcc7a8e583de9156b185d71d1a323ed8df3fc
+Gerrit-Change-Number: 869
+Gerrit-PatchSet: 8
 Gerrit-Owner: mrbff <marco@...2726...>
+Gerrit-Reviewer: cron2 <gert@...1296...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-Reviewer: stipa <lstipakov@...277...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Attention: cron2 <gert@...1296...>
 Gerrit-Attention: flichtenheld <frank@...2641...>
+Gerrit-Attention: stipa <lstipakov@...277...>
 Gerrit-Attention: mrbff <marco@...2726...>
 Gerrit-MessageType: newpatchset
 
---g0sCxzpp/jo=
+--yeH0L9h9d5E=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p> Attention is currently required from: flichtenheld, mrbff, plaisthos. <=
-/p>
-<p>mrbff <strong>uploaded patch set #15</strong> to this change.</p><p><a h=
-ref=3D"http://gerrit.openvpn.net/c/openvpn/+/809?usp=3Demail">View Change</=
-a></p><p>The change is no longer submittable: checks~ChecksSubmitRule is un=
-satisfied now.</p><pre style=3D"font-family: monospace,monospace; white-spa=
-ce: pre-wrap;">PUSH_UPDATE: Added remove_option() and do_update().<br><br>*=
- Added remove_option() function and some utility functions to remove option=
-s at<br>  runtime following the push-update logic.<br>* Added do_update() f=
-unction to close and reopen the tun and apply option updates.<br><br>Change=
--Id: I507180d7397b6959844a30908010132bc3411067<br>Signed-off-by: Marco Baff=
-o &lt;marco@...2726...&gt;<br>---<br>M src/openvpn/init.c<br>M src/openvpn/=
-init.h<br>M src/openvpn/multi.c<br>M src/openvpn/options.c<br>M src/openvpn=
-/push.c<br>M src/openvpn/route.c<br>M src/openvpn/route.h<br>7 files change=
-d, 373 insertions(+), 42 deletions(-)<br><br></pre><pre style=3D"font-famil=
-y: monospace,monospace; white-space: pre-wrap;">git pull ssh://gerrit.openv=
-pn.net:29418/openvpn refs/changes/09/809/15</pre><pre style=3D"font-family:=
- monospace,monospace; white-space: pre-wrap;"><span>diff --git a/src/openvp=
-n/init.c b/src/openvpn/init.c</span><br><span>index 78ebb17..9ab5378 100644=
-</span><br><span>--- a/src/openvpn/init.c</span><br><span>+++ b/src/openvpn=
-/init.c</span><br><span>@@ -2470,7 +2470,7 @@</span><br><span> </span><br><=
-span>         if (pulled_options)</span><br><span>         {</span><br><spa=
-n style=3D"color: hsl(0, 100%, 40%);">-            if (!do_deferred_options=
-(c, option_types_found))</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+            if (!do_deferred_options(c, option_types_found, false))</s=
-pan><br><span>             {</span><br><span>                 msg(D_PUSH_ER=
-RORS, &quot;ERROR: Failed to apply push options&quot;);</span><br><span>   =
-              return false;</span><br><span>@@ -2594,6 +2594,55 @@</span><b=
-r><span>     return true;</span><br><span> }</span><br><span> </span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+bool</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+do_update(struct context *c, unsigned int optio=
-n_types_found)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+    /* Not necessary si=
-nce to receive the update the openvpn</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+     * instance must be up and running but just in case</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+     */</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+    if (!c-&gt;c2.do_up_ran)</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+        return false;</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+    bool tt_dco_win =3D tuntap_is_dco_win(c-&gt;c1.tuntap);</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+    if (tt_dco_win)</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+        msg(M_NONFATAL, &quot;dco-win doe=
-sn&#39;t yet support reopening TUN device&quot;);</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+        return false;</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+    if (!do_deferred_options(c, option_types_found, true))</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+        msg(D_PUSH_ERRORS, &quot;ERROR: Failed to=
- apply push options&quot;);</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+        return false;</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+    do_close_tun(c, tru=
-e);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+    management_sleep(1);</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+    int error_flags =3D 0;</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+    c-&gt;c2.did_open_t=
-un =3D do_open_tun(c, &amp;error_flags);</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+    update_time();</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+    if (c-&gt;c2.did_open_tun)</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-      /* if --route-delay was specified, start timer */</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+        if ((route_order(c-&gt;c1.tunta=
-p) =3D=3D ROUTE_AFTER_TUN) &amp;&amp; c-&gt;options.route_delay_defined)</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+        {</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+            event_timeout_init(&=
-amp;c-&gt;c2.route_wakeup, c-&gt;options.route_delay, now);</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+            event_timeout_init(&amp=
-;c-&gt;c2.route_wakeup_expire, c-&gt;options.route_delay + c-&gt;options.ro=
-ute_delay_window, now);</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+            tun_standby_init(c-&gt;c1.tuntap);</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+        }</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+        initialization_sequence_completed(c, error_flags);</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+    CLEAR(c-&gt;c1.pulled_options_digest_save);</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+    return true;</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</sp=
-an><br><span> /*</span><br><span>  * These are the option categories which =
-will be accepted by pull.</span><br><span>  */</span><br><span>@@ -2672,11 =
-+2721,8 @@</span><br><span>     return true;</span><br><span> }</span><br><=
-span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-/*</span><br><s=
-pan style=3D"color: hsl(0, 100%, 40%);">- * Handle non-tun-related pulled o=
-ptions.</span><br><span style=3D"color: hsl(0, 100%, 40%);">- */</span><br>=
-<span> bool</span><br><span style=3D"color: hsl(0, 100%, 40%);">-do_deferre=
-d_options(struct context *c, const unsigned int found)</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+do_deferred_options(struct context *c, c=
-onst unsigned int found, const bool is_update)</span><br><span> {</span><br=
-><span>     if (found &amp; OPT_P_MESSAGES)</span><br><span>     {</span><b=
-r><span>@@ -2784,7 +2830,7 @@</span><br><span>     /* process (potentially)=
- pushed options */</span><br><span>     if (c-&gt;options.pull)</span><br><=
-span>     {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        if=
- (!check_pull_client_ncp(c, found))</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+        if (!is_update &amp;&amp; !check_pull_client_ncp(c,=
- found))</span><br><span>         {</span><br><span>             return fal=
-se;</span><br><span>         }</span><br><span>diff --git a/src/openvpn/ini=
-t.h b/src/openvpn/init.h</span><br><span>index 5c6b9c1..25078a6 100644</spa=
-n><br><span>--- a/src/openvpn/init.h</span><br><span>+++ b/src/openvpn/init=
-.h</span><br><span>@@ -86,13 +86,29 @@</span><br><span>            bool pul=
-led_options,</span><br><span>            unsigned int option_types_found);<=
-/span><br><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+/*=
-*</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @brief A simpli=
-fied version of the do_up() function. This function is called</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+ *        after receiving a succe=
-ssful PUSH_UPDATE message. It closes and reopens</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+ *        the TUN device to apply the updated =
-options.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+ * @param c The context stru=
-cture.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @param opt=
-ion_types_found The options found in the PUSH_UPDATE message.</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+ * @return true on success.</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @return false on error=
-.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ */</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+bool do_update(struct context *c, =
-unsigned int option_types_found);</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+</span><br><span> unsigned int pull_permission_mask(const str=
-uct context *c);</span><br><span> </span><br><span> const char *format_comm=
-on_name(struct context *c, struct gc_arena *gc);</span><br><span> </span><b=
-r><span> void reset_coarse_timers(struct context *c);</span><br><span> </sp=
-an><br><span style=3D"color: hsl(0, 100%, 40%);">-bool do_deferred_options(=
-struct context *c, const unsigned int found);</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+/*</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+ * Handle non-tun-related pulled options.</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+ * Set `is_update` param to true to skip NCP=
- check.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ */</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+bool do_deferred_options(str=
-uct context *c, const unsigned int found, const bool is_update);</span><br>=
-<span> </span><br><span> void inherit_context_child(struct context *dest,</=
-span><br><span>                            const struct context *src,</span=
-><br><span>diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c</span><br=
-><span>index a760e07..7f0d890 100644</span><br><span>--- a/src/openvpn/mult=
-i.c</span><br><span>+++ b/src/openvpn/multi.c</span><br><span>@@ -2423,7 +2=
-423,7 @@</span><br><span>     /*</span><br><span>      * Process sourced op=
-tions.</span><br><span>      */</span><br><span style=3D"color: hsl(0, 100%=
-, 40%);">-    do_deferred_options(&amp;mi-&gt;context, option_types_found);=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    do_deferred_opt=
-ions(&amp;mi-&gt;context, option_types_found, false);</span><br><span> </sp=
-an><br><span>     /*</span><br><span>      * make sure we got ifconfig sett=
-ings from somewhere</span><br><span>diff --git a/src/openvpn/options.c b/sr=
-c/openvpn/options.c</span><br><span>index 67fa906..6597610 100644</span><br=
-><span>--- a/src/openvpn/options.c</span><br><span>+++ b/src/openvpn/option=
-s.c</span><br><span>@@ -1085,6 +1085,40 @@</span><br><span>         gc_free=
-(&amp;gc);</span><br><span>     }</span><br><span> }</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+static void</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+delete_all_dhcp_fo(struct options *o, struct env_item **list)</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+    struct env_item *current, *prev;</span><=
+<p> Attention is currently required from: cron2, flichtenheld, mrbff, plais=
+thos, stipa. </p>
+<p>mrbff <strong>uploaded patch set #8</strong> to this change.</p><p><a hr=
+ef=3D"http://gerrit.openvpn.net/c/openvpn/+/869?usp=3Demail">View Change</a=
+></p><p>The following approvals got outdated and were removed:
+Code-Review-1 by stipa</p><pre style=3D"font-family: monospace,monospace; w=
+hite-space: pre-wrap;">PUSH_UPDATE message sender: enabling the server to s=
+end PUSH_UPDATE control messages<br><br>Using the management interface you =
+can now target one or more clients (via broadcast,<br>via cid, via common n=
+ame, via address) and send a PUSH_UPDATE control message<br>to update some =
+options.<br><br>Change-Id: Ie82bcc7a8e583de9156b185d71d1a323ed8df3fc<br>Sig=
+ned-off-by: Marco Baffo &lt;marco@...2726...&gt;<br>---<br>M CMakeLists.txt=
+<br>M doc/management-notes.txt<br>M src/openvpn/manage.c<br>M src/openvpn/m=
+anage.h<br>M src/openvpn/multi.c<br>M src/openvpn/multi.h<br>M src/openvpn/=
+push.h<br>M src/openvpn/push_util.c<br>M tests/unit_tests/openvpn/Makefile.=
+am<br>M tests/unit_tests/openvpn/test_push_update_msg.c<br>10 files changed=
+, 824 insertions(+), 6 deletions(-)<br><br></pre><pre style=3D"font-family:=
+ monospace,monospace; white-space: pre-wrap;">git pull ssh://gerrit.openvpn=
+.net:29418/openvpn refs/changes/69/869/8</pre><pre style=3D"font-family: mo=
+nospace,monospace; white-space: pre-wrap;"><span>diff --git a/CMakeLists.tx=
+t b/CMakeLists.txt</span><br><span>index 54cf503..1381e03 100644</span><br>=
+<span>--- a/CMakeLists.txt</span><br><span>+++ b/CMakeLists.txt</span><br><=
+span>@@ -861,6 +861,7 @@</span><br><span> 	    src/openvpn/push_util.c</spa=
+n><br><span> 	    src/openvpn/options_util.c</span><br><span> 	    src/open=
+vpn/otime.c</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        =
+src/openvpn/list.c</span><br><span>         )</span><br><span> </span><br><=
+span>     if (TARGET test_argv)</span><br><span>diff --git a/doc/management=
+-notes.txt b/doc/management-notes.txt</span><br><span>index f1d2930..58393d=
+a 100644</span><br><span>--- a/doc/management-notes.txt</span><br><span>+++=
+ b/doc/management-notes.txt</span><br><span>@@ -1028,6 +1028,51 @@</span><b=
+r><span> stored outside of the filesystem (e.g. in Mac OS X Keychain)</span=
+><br><span> with OpenVPN via the management interface.</span><br><span> </s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+COMMAND -- push-update=
+-broad (OpenVPN 2.7 or higher)</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+----------------------------------------------------</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+Send a message to every connect=
+ed client to update options at runtime.</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+The updatable options are: &quot;block-ipv6&quot;, &quo=
+t;block-outside-dns&quot;, &quot;dhcp-option&quot;,</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+&quot;dns&quot;, &quot;ifconfig&quot;, &q=
+uot;ifconfig-ipv6&quot;, &quot;redirect-gateway&quot;, &quot;redirect-priva=
+te&quot;,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+&quot;rout=
+e&quot;, &quot;route-gateway&quot;, &quot;route-ipv6&quot;, &quot;route-met=
+ric&quot;, &quot;topology&quot;,</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+&quot;tun-mtu&quot;, &quot;keepalive&quot;. When a valid optio=
+n is pushed, the receiving client will</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+delete every previous value and set new value, so the up=
+date of the option will </span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+not be incremental even when theoretically possible (ex. with &quot;re=
+direct-gateway&quot;).</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+The &#39;-&#39; symbol in front of an option means the option should be =
+removed.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+When an opt=
+ion is used with &#39;-&#39;, it cannot take any parameter.</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+The &#39;?&#39; symbol in front of =
+an option means the option&#39;s update is optional</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+so if the client do not support it, that =
+option will just be ignored without</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+making fail the entire command. The &#39;-&#39; and &#39;?&=
+#39; symbols can be used together.</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+Opti=
+on Format Ex.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  `-?o=
+ption`, `-option`, `?option parameters` are valid formats,</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+  `?-option` is not a valid format.<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+Example</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+  push-update-broad &quot;route 10.10.10.1 255.255.=
+255.255, -dns, ?tun-mtu 1400&quot;</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+COMM=
+AND -- push-update-cid (OpenVPN 2.7 or higher)</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+------------------------------------------------=
+----</span><br><span style=3D"color: hsl(120, 100%, 40%);">+Same as push-up=
+date-broad but you must target a single client using client id.</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+Example</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+  push-update-cid 42 &quot;route 10.10.10.1 255.255.255.255, -=
+dns, ?tun-mtu 1400&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+COMMAND -- pus=
+h-update-cn (OpenVPN 2.7 or higher)</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+----------------------------------------------------</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+Same as push-update-broad =
+but target the clients based on the provided common name</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+(usually just one client per common na=
+me is permitted except if &quot;duplicate-cn&quot; option is used).</span><=
 br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+    ASSERT(list);</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+    for (current =3D *list, prev =3D NULL; current !=3D NULL; curre=
-nt =3D current-&gt;next)</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        c=
-har *tmp_value =3D NULL;</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+        if (!strncmp(current-&gt;string, &quot;foreign_option_&quot;, =
-sizeof(&quot;foreign_option_&quot;)-1))</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+        {</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+            tmp_value =3D strchr(current-&gt;string, &#39;=3D&#39=
-;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            if (=
-tmp_value &amp;&amp; ++tmp_value)</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+            {</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+                if (!strncmp(tmp_value, &quot;dhcp-option &quot;, s=
-izeof(&quot;dhcp-option &quot;)-1))</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+                {</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+                    if (prev)</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+                    {</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+                        prev-&gt;next =3D current=
--&gt;next;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+         =
-           }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
-             else</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-                  {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-                        *list =3D current-&gt;next;</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+                    }</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+                    o-&gt;foreign_optio=
-n_index--;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+         =
-       }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+           =
- }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        }</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+        prev =3D current;</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+</span><br><span> #endif /* ifndef _WIN32 */</span><b=
-r><span> </span><br><span> static in_addr_t</span><br><span>@@ -3089,8 +312=
-3,16 @@</span><br><span>         msg(M_INFO, &quot;Flag &#39;def1&#39; adde=
-d to --redirect-gateway (iservice is in use)&quot;);</span><br><span>      =
-   opt-&gt;routes-&gt;flags |=3D RG_DEF1;</span><br><span>     }</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+    else if (opt-&gt;routes</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+             &amp;&amp=
-; ((opt-&gt;route_method !=3D ROUTE_METHOD_SERVICE)</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+                 || !(opt-&gt;routes-&gt;=
-flags &amp; RG_REROUTE_GW))</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+             &amp;&amp; (opt-&gt;routes-&gt;flags &amp; RG_DEF1))</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+        msg(M_INFO, &quot;Flag &#39=
-;def1&#39; removed from --redirect-gateway&quot;);</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+        opt-&gt;routes-&gt;flags &amp;=3D ~R=
-G_DEF1;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span>=
-<br><span> }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#endif</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+#endif /* ifdef _WIN32=
- */</span><br><span> </span><br><span> /*</span><br><span>  * Save/Restore =
-certain option defaults before --pull is applied.</span><br><span>@@ -5490,=
-37 +5532,6 @@</span><br><span>     }</span><br><span> }</span><br><span> </=
-span><br><span style=3D"color: hsl(0, 100%, 40%);">-void</span><br><span st=
-yle=3D"color: hsl(0, 100%, 40%);">-options_server_import(struct options *o,=
-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-                     =
- const char *filename,</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
--                      int msglevel,</span><br><span style=3D"color: hsl(0,=
- 100%, 40%);">-                      unsigned int permission_mask,</span><b=
-r><span style=3D"color: hsl(0, 100%, 40%);">-                      unsigned=
- int *option_types_found,</span><br><span style=3D"color: hsl(0, 100%, 40%)=
-;">-                      struct env_set *es)</span><br><span style=3D"colo=
-r: hsl(0, 100%, 40%);">-{</span><br><span style=3D"color: hsl(0, 100%, 40%)=
-;">-    msg(D_PUSH, &quot;OPTIONS IMPORT: reading client specific options f=
-rom: %s&quot;, filename);</span><br><span style=3D"color: hsl(0, 100%, 40%)=
-;">-    read_config_file(o,</span><br><span style=3D"color: hsl(0, 100%, 40=
-%);">-                     filename,</span><br><span style=3D"color: hsl(0,=
- 100%, 40%);">-                     0,</span><br><span style=3D"color: hsl(=
-0, 100%, 40%);">-                     filename,</span><br><span style=3D"co=
-lor: hsl(0, 100%, 40%);">-                     0,</span><br><span style=3D"=
-color: hsl(0, 100%, 40%);">-                     msglevel,</span><br><span =
-style=3D"color: hsl(0, 100%, 40%);">-                     permission_mask,<=
-/span><br><span style=3D"color: hsl(0, 100%, 40%);">-                     o=
-ption_types_found,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
-                  es);</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
--}</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span st=
-yle=3D"color: hsl(0, 100%, 40%);">-void</span><br><span style=3D"color: hsl=
-(0, 100%, 40%);">-options_string_import(struct options *options,</span><br>=
-<span style=3D"color: hsl(0, 100%, 40%);">-                      const char=
- *config,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            =
-          const int msglevel,</span><br><span style=3D"color: hsl(0, 100%, =
-40%);">-                      const unsigned int permission_mask,</span><br=
-><span style=3D"color: hsl(0, 100%, 40%);">-                      unsigned =
-int *option_types_found,</span><br><span style=3D"color: hsl(0, 100%, 40%);=
-">-                      struct env_set *es)</span><br><span style=3D"color=
-: hsl(0, 100%, 40%);">-{</span><br><span style=3D"color: hsl(0, 100%, 40%);=
-">-    read_config_string(&quot;[CONFIG-STRING]&quot;, options, config, msg=
-level, permission_mask, option_types_found, es);</span><br><span style=3D"c=
-olor: hsl(0, 100%, 40%);">-}</span><br><span style=3D"color: hsl(0, 100%, 4=
-0%);">-</span><br><span> #define VERIFY_PERMISSION(mask) {                 =
-                           \</span><br><span>         if (!verify_permissio=
-n(p[0], file, line, (mask), permission_mask,        \</span><br><span>     =
-                           option_types_found, msglevel, options, is_inline=
-)) \</span><br><span>@@ -5623,6 +5634,198 @@</span><br><span>     return op=
-tions-&gt;forward_compatible ? M_WARN : msglevel;</span><br><span> }</span>=
-<br><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+/**</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @brief Resets options=
- found in the PUSH_UPDATE message that are preceded by the `-` flag.</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+ *        This function is=
- used in push-updates to reset specified options.</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+ *        The number of parameters `p` must a=
-lways be 1. If the permission is verified,</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+ *        all related options are erased or reset to=
- their default values.</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+ *        Upon successful permission verification (by VERIFY_PERMISSION(=
-)),</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *        `optio=
-n_types_found` is filled with the flag corresponding to the option.</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+ * @param c The context structure.</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+ * @param options A pointer t=
-o the options structure.</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+ * @param p An array of strings containing the options and their param=
-eters.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @param is_=
-inline A boolean indicating if the option is inline.</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+ * @param file The file where the functio=
-n is called.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @par=
-am line The line number where the function is called.</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+ * @param msglevel The message level.</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @param permission_ma=
-sk The permission mask used by VERIFY_PERMISSION().</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+ * @param option_types_found A pointer to=
- the variable where the flags corresponding to the options found are stored=
-.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @param es The e=
-nvironment set structure.</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+ */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+static voi=
-d</span><br><span style=3D"color: hsl(120, 100%, 40%);">+remove_option(stru=
-ct context *c,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
-         struct options *options,</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+              char *p[],</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+              bool is_inline,</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+              const char *file,</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+              int line,</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+              const int msglev=
-el,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+              co=
-nst unsigned int permission_mask,</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+              unsigned int *option_types_found,</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+              struct env_set *es)=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+    int msglevel_fc =3D msglevel_forw=
-ard_compatible(options, msglevel);</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-if (streq(p[0], &quot;ifconfig&quot;) &amp;&amp; !p[1])</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+        VERIFY_PERMISSION(OPT_P_UP);</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+        options-&gt;ifconfig_local =
-=3D NULL;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        op=
-tions-&gt;ifconfig_remote_netmask =3D NULL;</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+    else if (streq(p[0], &quot;ifconfig-ipv6&quot;) &amp;&amp; !p=
-[1])</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+        VERIFY_PERMISSION(OPT=
-_P_UP);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        opti=
-ons-&gt;ifconfig_ipv6_local =3D NULL;</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+        options-&gt;ifconfig_ipv6_netbits =3D 0;</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+        options-&gt;ifconfig=
-_ipv6_remote =3D NULL;</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    else if=
- (streq(p[0], &quot;route&quot;) &amp;&amp; !p[1])</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+        VERIFY_PERMISSION(OPT_P_ROUTE);</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+        if (c-&gt;c1.route_list)</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+        {</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+            delete_routes_v4(c-&gt;=
-c1.route_list, c-&gt;c1.tuntap,</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+                             ROUTE_OPTION_FLAGS(&amp;c-&gt;opti=
-ons),</span><br><span style=3D"color: hsl(120, 100%, 40%);">+              =
-               es, &amp;c-&gt;net_ctx);</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+            if (options-&gt;routes)</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+            {</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+                options-&gt;routes-&gt;routes=
- =3D NULL;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+         =
-       options-&gt;routes-&gt;flags =3D 0;</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+            }</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+        }</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    els=
-e if (streq(p[0], &quot;route-ipv6&quot;) &amp;&amp; !p[1])</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+        VERIFY_PERMISSION(OPT_P_ROUTE);</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+        if (c-&gt;c1.route_ip=
-v6_list)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        {</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+            delete_ro=
-utes_v6(c-&gt;c1.route_ipv6_list, c-&gt;c1.tuntap,</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+                             ROUTE_OPTION_FL=
-AGS(&amp;c-&gt;options),</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+                             es, &amp;c-&gt;net_ctx);</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+            if (options-&gt;routes_i=
-pv6)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            {</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+                optio=
-ns-&gt;routes_ipv6-&gt;routes_ipv6 =3D NULL;</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+                options-&gt;routes_ipv6-&gt;flags =
-=3D 0;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            }=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        }</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    else if (streq(p[0], &quot;route-gate=
-way&quot;) &amp;&amp; !p[1])</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
-   VERIFY_PERMISSION(OPT_P_ROUTE_EXTRAS);</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+        options-&gt;route_gateway_via_dhcp =3D false;=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        options-&gt=
-;route_default_gateway =3D NULL;</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-   else if (streq(p[0], &quot;route-metric&quot;) &amp;&amp; !p[1])</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+        VERIFY_PERMISSION(OPT_P_ROUTE);</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+        options-&gt;r=
-oute_default_metric =3D 0;</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    els=
-e if (streq(p[0], &quot;push-continuation&quot;) &amp;&amp; !p[1])</span><b=
+olor: hsl(120, 100%, 40%);">+Example</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+  push-update-cid Client0 &quot;route 10.10.10.1 255.255.2=
+55.255, -dns, ?tun-mtu 1400&quot;</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+COMMA=
+ND -- push-update-addr (OpenVPN 2.7 or higher)</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+------------------------------------------------=
+----</span><br><span style=3D"color: hsl(120, 100%, 40%);">+Same as push-up=
+date-broad but target only the client(s) connecting from the</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+provided address (real address). S=
+upport both IPv4 and IPv6.</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+Example</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+  push-update-addr 9.9.9=
+.9 1234 &quot;route 10.10.10.1 255.255.255.255, -dns, ?tun-mtu 1400&quot;</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> OUT=
+PUT FORMAT</span><br><span> -------------</span><br><span> </span><br><span=
+>diff --git a/src/openvpn/manage.c b/src/openvpn/manage.c</span><br><span>i=
+ndex 8836e79..251b076 100644</span><br><span>--- a/src/openvpn/manage.c</sp=
+an><br><span>+++ b/src/openvpn/manage.c</span><br><span>@@ -24,7 +24,6 @@</=
+span><br><span> #ifdef HAVE_CONFIG_H</span><br><span> #include &quot;config=
+.h&quot;</span><br><span> #endif</span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-</span><br><span> #include &quot;syshead.h&quot;</span><br><span=
+> </span><br><span> #ifdef ENABLE_MANAGEMENT</span><br><span>@@ -42,6 +41,7=
+ @@</span><br><span> #include &quot;manage.h&quot;</span><br><span> #includ=
+e &quot;openvpn.h&quot;</span><br><span> #include &quot;dco.h&quot;</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+#include &quot;push.h&quot;=
+</span><br><span> </span><br><span> #include &quot;memdbg.h&quot;</span><br=
+><span> </span><br><span>@@ -124,6 +124,11 @@</span><br><span>     msg(M_CL=
+IENT, &quot;username type u        : Enter username u for a queried OpenVPN=
+ username.&quot;);</span><br><span>     msg(M_CLIENT, &quot;verb [n]       =
+        : Set log verbosity level to n, or show if n is absent.&quot;);</sp=
+an><br><span>     msg(M_CLIENT, &quot;version [n]            : Set client&#=
+39;s version to n or show current version of daemon.&quot;);</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+    msg(M_CLIENT, &quot;push-updat=
+e-broad options : Broadcast a message to update the specified options.&quot=
+;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    msg(M_CLIENT=
+, &quot;                            Ex. push-update-broad \&quot;route some=
+thing, -dns\&quot;&quot;);</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+    msg(M_CLIENT, &quot;push-update-cid CID options : Send an update=
+ message to the client identified by CID.&quot;);</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+    msg(M_CLIENT, &quot;push-update-cn CN opt=
+ions : Send an update message to the client(s) with the specified Common Na=
+me.&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    msg(=
+M_CLIENT, &quot;push-update-addr ip port options : Send an update message t=
+o the client(s) connecting from the provided address.&quot;);</span><br><sp=
+an>     msg(M_CLIENT, &quot;END&quot;);</span><br><span> }</span><br><span>=
+ </span><br><span>@@ -1335,6 +1340,154 @@</span><br><span> }</span><br><spa=
+n> </span><br><span> static void</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+man_push_update(struct management *man, const char **p, const =
+push_update_type type)</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (type =
+=3D=3D UPT_BROADCAST)</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        if (=
+!man-&gt;persist.callback.push_update_broadcast)</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+        {</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+            man_command_unsupported(&quot;push-update-br=
+oad&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        =
+    return;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        =
+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+        const bool status =3D (*man-&=
+gt;persist.callback.push_update_broadcast)(man-&gt;persist.callback.arg, p[=
+1]);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+        if (status)</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+        {</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+            msg(M_CLIENT, &quot;SUCCESS: pus=
+h-update-broad command succeeded&quot;);</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+        }</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+        else</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+        {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
+      msg(M_CLIENT, &quot;ERROR: push-update-broad command failed&quot;);</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+        }</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+    else if (type =3D=3D UPT_BY_CID)</span><b=
 r><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+        VERIFY_PERMISSION(OPT_P_PULL_MODE=
-);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        options-&=
-gt;push_continuation =3D 0;</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    el=
-se if ((streq(p[0], &quot;redirect-gateway&quot;) || streq(p[0], &quot;redi=
-rect-private&quot;)) &amp;&amp; !p[1])</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+        VERIFY_PERMISSION(OPT_P_ROUTE);</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+        if (options-&gt;routes)</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+        {</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+            options-&gt;routes-&gt;flags =3D 0;<=
+=3D"color: hsl(120, 100%, 40%);">+        if (!man-&gt;persist.callback.pus=
+h_update_by_cid)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+     {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            m=
+an_command_unsupported(&quot;push-update-cid&quot;);</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+            return;</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+        }</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+        unsigned long cid =3D 0;</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+       if (!parse_cid(p[1], &amp;cid))</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+        {</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+            msg(M_CLIENT, &quot;ERROR: push-update-cid fail during=
+ cid parsing&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++            return;</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++        }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+        const bool status =
+=3D (*man-&gt;persist.callback.push_update_by_cid)(man-&gt;persist.callback=
+.arg, cid, p[2]);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+        if (status)</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+        {</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+            msg(M_CLIENT, &quot=
+;SUCCESS: push-update-cid command succeeded&quot;);</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+        }</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+        else</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+        {</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+            msg(M_CLIENT, &quot;ERROR: push-update-cid command faile=
+d&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        }<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+    else if (type =3D=3D UPT_BY_CN=
+)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+        if (!man-&gt;persist.cal=
+lback.push_update_by_cn)</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+        {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
+       man_command_unsupported(&quot;push-update-cn&quot;);</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+            return;</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+        }</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+        const bool status =3D (*man-&gt;persist.callback.push_up=
+date_by_cn)(man-&gt;persist.callback.arg, p[1], p[2]);</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+        if (status)</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+        {</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+            msg(M_CLIENT, &quot;SUCCESS: push-update-cn command succe=
+eded&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
+ }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        else</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+        {</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+            msg(M_CLIENT, &quot;ER=
+ROR: push-update-cn command failed&quot;);</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+        }</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+   else if (type =3D=3D UPT_BY_ADDR)</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+        if (!man-&gt;persist.callback.push_update_by_addr)</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+        {</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+            man_command_unsupported(&quot=
+;push-update-addr&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+            return;</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+        }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+        const char *ip_=
+str =3D p[1];</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
+  const char *port_str =3D p[2];</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+        const char *options =3D p[3];</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+        if (!strlen(ip_str) || !strlen(port_str))</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+        {</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+            msg(M_CLIENT, &quot;ERROR: pu=
+sh-update-addr parse&quot;);</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+            return;</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+        }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+        struct addri=
+nfo *res =3D NULL;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+       int port =3D atoi(port_str);</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+     if (port &lt; 1 || port &gt; 65535)</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+        {</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+            msg(M_CLIENT, &quot;ERROR: port number is out of ran=
+ge: %s&quot;, port_str);</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+            return;</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+        }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+        int status =3D o=
+penvpn_getaddrinfo(GETADDR_MSG_VIRT_OUT, ip_str, port_str, 0, NULL, AF_UNSP=
+EC, &amp;res);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+        if (status !=3D =
+0 || !res)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        {=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            msg(M_C=
+LIENT, &quot;ERROR: error resolving address: %s (%s)&quot;, ip_str, gai_str=
+error(status));</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+        return;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+        struct addrinfo *rp;</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+        bool found_clien=
+t =3D false;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+        /* Iterate through=
+ resolved addresses */</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+        for (rp =3D res; rp !=3D NULL; rp =3D rp-&gt;ai_next)</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+        {</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+            struct openvpn_sockaddr sadd=
+r;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            struc=
+t mroute_addr maddr;</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            CLEAR(=
+saddr);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            =
+switch (rp-&gt;ai_family)</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+            {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+                case AF_INET:</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+                    saddr.addr.in4 =3D *((struct sockaddr_in *)rp=
+-&gt;ai_addr);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
+               break;</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+                c=
+ase AF_INET6:</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
+              saddr.addr.in6 =3D *((struct sockaddr_in6 *)rp-&gt;ai_addr);<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+                    =
+break;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+                default:</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+                    continu=
+e;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            }</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+            if (!mroute_extract_openvpn_s=
+ockaddr(&amp;maddr, &amp;saddr, true))</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+            {</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+                continue;</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+            }</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
+      if ((*man-&gt;persist.callback.push_update_by_addr)(man-&gt;persist.c=
+allback.arg, &amp;maddr, options))</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+            {</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+                msg(M_CLIENT, &quot;SUCCESS: push-update sent to %=
+s:%d&quot;, ip_str, port);</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+                found_client =3D true;</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+                break;</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+            }</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+        }</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
+  if (!found_client)</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++        {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+         =
+   msg(M_CLIENT, &quot;ERROR: no client found at address %s:%d&quot;, ip_st=
+r, port);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        }<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+        freeaddrinfo=
+(res);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+static void</span><br><span> man_dispatch_command(struct managem=
+ent *man, struct status_output *so, const char **p, const int nparms)</span=
+><br><span> {</span><br><span>     struct gc_arena gc =3D gc_new();</span><=
+br><span>@@ -1656,6 +1809,34 @@</span><br><span>             man_remote(man=
+, p);</span><br><span>         }</span><br><span>     }</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+    else if (streq(p[0], &quot;push-upd=
+ate-broad&quot;))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+  {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        if (man_=
+need(man, p, 1, 0))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+        {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+          =
+  man_push_update(man, p, UPT_BROADCAST);</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+        }</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+  else if (streq(p[0], &quot;push-update-cid&quot;))</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+        if (man_need(man, p, 2, 0))</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+        {</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+            man_push_update(man, p, UPT_BY_CID);<=
 /span><br><span style=3D"color: hsl(120, 100%, 40%);">+        }</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+        if (options-&gt;routes=
-_ipv6)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        {</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+            options-&gt=
-;routes_ipv6-&gt;flags =3D 0;</span><br><span style=3D"color: hsl(120, 100%=
+<span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+    else if (streq(p[0], &quot;push-update-c=
+n&quot;))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+        if (man_need(man=
+, p, 2, 0))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        =
+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            man_pu=
+sh_update(man, p, UPT_BY_CN);</span><br><span style=3D"color: hsl(120, 100%=
 , 40%);">+        }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
     }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    else if (s=
-treq(p[0], &quot;dns&quot;) &amp;&amp; !p[1])</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+        VERIFY_PERMISSION(OPT_P_DHCPDNS);</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+        gc_free(&amp;options-&gt;dns_opti=
-ons.gc);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        CLE=
-AR(options-&gt;dns_options);</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    e=
-lse if (streq(p[0], &quot;topology&quot;) &amp;&amp; !p[1])</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+        VERIFY_PERMISSION(OPT_P_UP);</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+        options-&gt;topology =3D=
- TOP_UNDEF;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        =
-helper_setdefault_topology(options);</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+    else if (streq(p[0], &quot;tun-mtu&quot;) &amp;&amp; !p[1])</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+        VERIFY_PERMISSION(OPT_P_PUSH_MTU|=
-OPT_P_CONNECTION);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-       options-&gt;ce.tun_mtu =3D TUN_MTU_DEFAULT;</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+        options-&gt;ce.tun_mtu_defined =3D f=
-alse;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        option=
-s-&gt;ce.occ_mtu =3D 0;</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    else i=
-f (streq(p[0], &quot;block-ipv6&quot;) &amp;&amp; !p[1])</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+        VERIFY_PERMISSION(OPT_P_ROUTE);</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+        options-&gt;block_ipv6 =
-=3D false;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+#if defined(_WIN32) || =
-defined(TARGET_ANDROID)</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+    else if (streq(p[0], &quot;dhcp-option&quot;) &amp;&amp; !p[1])</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+        struct tuntap_options *o =3D =
-&amp;options-&gt;tuntap_options;</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+        VERIFY_PERMISSION(OPT_P_DHCPDNS);</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+        o-&gt;domain =3D NULL;</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+        o-&gt;netbios_scope =3D NULL;</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+        o-&gt;netbios_node_typ=
-e =3D 0;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        o-&=
-gt;dns6_len =3D 0;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-       memset(o-&gt;dns6, 0, sizeof(o-&gt;dns6));</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+        o-&gt;dns_len =3D 0;</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+        memset(o-&gt;dns, 0, sizeof(=
-o-&gt;dns));</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
- o-&gt;wins_len =3D 0;</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+        memset(o-&gt;wins, 0, sizeof(o-&gt;wins));</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+        o-&gt;ntp_len =3D 0;</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+        memset(o-&gt;ntp, 0, siz=
-eof(o-&gt;ntp));</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
-     o-&gt;nbdd_len =3D 0;</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+        memset(o-&gt;nbdd, 0, sizeof(o-&gt;nbdd));</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+        while (o-&gt;domain_search_li=
-st_len-- &gt; 0)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
-     {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            o=
--&gt;domain_search_list[o-&gt;domain_search_list_len] =3D NULL;</span><br><=
+treq(p[0], &quot;push-update-addr&quot;))</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+        if (man_need(man, p, 3, 0))</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+        {</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+            man_push_update(man, p, UPT_BY_ADDR);</span><br><=
 span style=3D"color: hsl(120, 100%, 40%);">+        }</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+        o-&gt;disable_nbt =3D 0;</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+        o-&gt;dhcp_options =
-=3D 0;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#if defined(T=
-ARGET_ANDROID)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
-   o-&gt;http_proxy_port =3D 0;</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+        o-&gt;http_proxy =3D NULL;</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+#endif</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-#endif /* if defined(_WIN32) || defined(TARGET_ANDROID) */</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+#ifdef _WIN32</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    else if (streq(p[0], &quot;block-outs=
-ide-dns&quot;) &amp;&amp; !p[1])</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-       VERIFY_PERMISSION(OPT_P_DHCPDNS);</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+        options-&gt;block_outside_dns =3D false;</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+#else /* ifdef _WIN32 */</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+    else if (streq(p[0], &quot;dhc=
-p-option&quot;) &amp;&amp; !p[1])</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-        VERIFY_PERMISSION(OPT_P_DHCPDNS);</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+        delete_all_dhcp_fo(options, &amp;es-&gt;list)=
-;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+#endif</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+    else</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+        int i;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-        int msglevel_unknown =3D msglevel_fc;</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+        /* Check if an option is in --ignore-unkn=
-own-option and</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
-    * set warning level to non fatal */</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+        for (i =3D 0; options-&gt;ignore_unknown_option=
- &amp;&amp; options-&gt;ignore_unknown_option[i]; i++)</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+        {</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+            if (streq(p[0], options-&gt;ignore_unk=
-nown_option[i]))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
-         {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+         =
-       msglevel_unknown =3D M_WARN;</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+                break;</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+            }</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+        }</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+        msg(msglevel_unknown, &quot;Unrecognized option or missing or ex=
-tra parameter(s) in %s:%d: -%s (%s)&quot;, file, line, p[0], PACKAGE_VERSIO=
-N);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+    return;</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+err:</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+    msg(msglevel, &quot;Error occurred trying to remo=
-ve %s option&quot;, p[0]);</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+}</span><br><span> bool</span><br><span> apply_push_options(struct c=
-ontext *c,</span><br><span>                    struct options *options,</sp=
-an><br><span>@@ -5656,11 +5859,47 @@</span><br><span>                 add_o=
-ption(options, p, false, file, line_num, 0, msglevel,</span><br><span>     =
-                       permission_mask, option_types_found, es);</span><br>=
-<span>             }</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+            else if (push_update_option_flags &amp; PUSH_OPT_TO_REMOVE)</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+            {</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+                remove_optio=
-n(c, options, p, false, file, line_num, msglevel,</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+                              permission_mask=
-, option_types_found, es);</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+            }</span><br><span>         }</span><br><span>     }</spa=
-n><br><span>     return true;</span><br><span> }</span><br><span> </span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+void</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+options_server_import(struct options *o,<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+                    =
-  const char *filename,</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+                      int msglevel,</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+                      unsigned int permission_mask,</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+                      u=
-nsigned int *option_types_found,</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+                      struct env_set *es)</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+    msg(D_PUSH, &quot;OPTIONS IMPORT: reading client speci=
-fic options from: %s&quot;, filename);</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+    read_config_file(o,</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+                     filename,</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+                     0,</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+                     filename,</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+                     0,</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+                     m=
-sglevel,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+           =
-          permission_mask,</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+                     option_types_found,</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+                     es);</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span> #if 1</span><br><s=
+pan>     else if (streq(p[0], &quot;test&quot;))</span><br><span>     {</sp=
+an><br><span>diff --git a/src/openvpn/manage.h b/src/openvpn/manage.h</span=
+><br><span>index eb19a4e..fd7cb11 100644</span><br><span>--- a/src/openvpn/=
+manage.h</span><br><span>+++ b/src/openvpn/manage.h</span><br><span>@@ -44,=
+7 +44,6 @@</span><br><span> #define MF_EXTERNAL_KEY_PSSPAD      (1&lt;&lt;1=
+6)</span><br><span> #define MF_EXTERNAL_KEY_DIGEST      (1&lt;&lt;17)</span=
+><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><b=
+r><span> #ifdef ENABLE_MANAGEMENT</span><br><span> </span><br><span> #inclu=
+de &quot;misc.h&quot;</span><br><span>@@ -205,6 +204,10 @@</span><br><span>=
+ #endif</span><br><span>     unsigned int (*remote_entry_count)(void *arg);=
+</span><br><span>     bool (*remote_entry_get)(void *arg, unsigned int inde=
+x, char **remote);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+   bool (*push_update_broadcast)(void *arg, const char *options);</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+    bool (*push_update_by_cid=
+)(void *arg, unsigned long cid, const char *options);</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    bool (*push_update_by_cn)(void *arg, =
+const char *cn, const char *options);</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+    bool (*push_update_by_addr)(void *arg, const struct m=
+route_addr *maddr, const char *options);</span><br><span> };</span><br><spa=
+n> </span><br><span> /*</span><br><span>diff --git a/src/openvpn/multi.c b/=
+src/openvpn/multi.c</span><br><span>index 7f0d890..3daf358 100644</span><br=
+><span>--- a/src/openvpn/multi.c</span><br><span>+++ b/src/openvpn/multi.c<=
+/span><br><span>@@ -4072,7 +4072,7 @@</span><br><span>     }</span><br><spa=
+n> }</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">=
+-static struct multi_instance *</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+struct multi_instance *</span><br><span> lookup_by_cid(struct m=
+ulti_context *m, const unsigned long cid)</span><br><span> {</span><br><spa=
+n>     if (m)</span><br><span>@@ -4220,6 +4220,10 @@</span><br><span>      =
+   cb.client_auth =3D management_client_auth;</span><br><span>         cb.c=
+lient_pending_auth =3D management_client_pending_auth;</span><br><span>    =
+     cb.get_peer_info =3D management_get_peer_info;</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+        cb.push_update_broadcast =3D mana=
+gement_callback_send_push_update_broadcast;</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+        cb.push_update_by_cid =3D management_callba=
+ck_send_push_update_by_cid;</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+        cb.push_update_by_cn =3D management_callback_send_push_upda=
+te_by_cn;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        cb=
+.push_update_by_addr =3D management_callback_send_push_update_by_addr;</spa=
+n><br><span>         management_set_callback(management, &amp;cb);</span><b=
+r><span>     }</span><br><span> #endif /* ifdef ENABLE_MANAGEMENT */</span>=
+<br><span>diff --git a/src/openvpn/multi.h b/src/openvpn/multi.h</span><br>=
+<span>index 40f7519..1e965a4 100644</span><br><span>--- a/src/openvpn/multi=
+.h</span><br><span>+++ b/src/openvpn/multi.h</span><br><span>@@ -710,5 +710=
+,10 @@</span><br><span>  */</span><br><span> void multi_assign_peer_id(stru=
+ct multi_context *m, struct multi_instance *mi);</span><br><span> </span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+#ifdef ENABLE_MANAGEMENT</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+struct multi_instance *=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+lookup_by_cid(struc=
+t multi_context *m, const unsigned long cid);</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+#endif</span><br><span> </span><br><span> #endif /* MULTI_H */</span=
+><br><span>diff --git a/src/openvpn/push.h b/src/openvpn/push.h</span><br><=
+span>index 18dfcd8..e67c3ac 100644</span><br><span>--- a/src/openvpn/push.h=
+</span><br><span>+++ b/src/openvpn/push.h</span><br><span>@@ -42,6 +42,16 @=
+@</span><br><span> #define PUSH_OPT_TO_REMOVE (1&lt;&lt;0)</span><br><span>=
+ #define PUSH_OPT_OPTIONAL (1&lt;&lt;1)</span><br><span> </span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+/* Push-update message sender modes *=
+/</span><br><span style=3D"color: hsl(120, 100%, 40%);">+typedef enum {</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+    UPT_BROADCAST =3D 0=
+,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    UPT_BY_ADDR =
+=3D 1,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    UPT_BY_CN=
+ =3D 2,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#ifdef ENABL=
+E_MANAGEMENT</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    UPT=
+_BY_CID =3D 3</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#endif=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+} push_update_type;=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> i=
+nt process_incoming_push_request(struct context *c);</span><br><span> </spa=
+n><br><span> /**</span><br><span>@@ -134,4 +144,33 @@</span><br><span> void=
+</span><br><span> receive_auth_pending(struct context *c, const struct buff=
+er *buffer);</span><br><span> </span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+/**</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @b=
+rief A function to send a PUSH_UPDATE control message from server to client=
+(s).</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+ * @param m the multi_context, c=
+ontains all the clients connected to this server.</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+ * @param target the target to which to send =
+the message. It should be:</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+ * `NULL` if `type =3D=3D UPT_BROADCAST`,</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+ * a `mroute_addr *` if `type =3D=3D UPT_BY_AD=
+DR`,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * a `char *` i=
+f `type =3D=3D UPT_BY_CN`,</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+ * an `unsigned long *` if `type =3D=3D UPT_BY_CID`.</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+ * @param msg a string containing t=
+he options to send.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+ * @param type the way to address the message (broadcast, by cid, by cn, by=
+ address).</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @param=
+ push_bundle_size the maximum size of a bundle of pushed option. Just use P=
+USH_BUNDLE_SIZE macro.</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+ * @return the number of clients to which the message was sent.</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+ */</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+int</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+send_push_update(struct multi_context *m, const void *target=
+, const char *msg, const push_update_type type, const int push_bundle_size)=
+;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+#ifdef ENABLE_MANAGEMENT</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+bool management_callback_send_push_update_broadcast=
+(void *arg, const char *options);</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+bool =
+management_callback_send_push_update_by_cid(void *arg, unsigned long cid, c=
+onst char *options);</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++</span><br><span style=3D"color: hsl(120, 100%, 40%);">+bool management_ca=
+llback_send_push_update_by_cn(void *arg, const char *cn, const char *option=
+s);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+bool management_callback_send_push_=
+update_by_addr(void *arg, const struct mroute_addr *maddr, const char *opti=
+ons);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+#endif /* ifdef ENABLE_MANAGEMENT=
+*/</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span>=
+ #endif /* ifndef PUSH_H */</span><br><span>diff --git a/src/openvpn/push_u=
+til.c b/src/openvpn/push_util.c</span><br><span>index b4d1e8b..28b303e 1006=
+44</span><br><span>--- a/src/openvpn/push_util.c</span><br><span>+++ b/src/=
+openvpn/push_util.c</span><br><span>@@ -3,6 +3,8 @@</span><br><span> #endif=
+</span><br><span> </span><br><span> #include &quot;push.h&quot;</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+#include &quot;multi.h&quot;</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+#include &quot;ssl_ver=
+ify.h&quot;</span><br><span> </span><br><span> int</span><br><span> process=
+_incoming_push_update(struct context *c,</span><br><span>@@ -42,3 +44,279 @=
+@</span><br><span> </span><br><span>     return ret;</span><br><span> }</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+/**</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+ * Return index of last `,` or `0` if it didn&#39;t find =
+any.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * If there is =
+a comma at index `0` it&#39;s an error anyway</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+ */</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+static int</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++find_first_comma_of_next_bundle(const char *str, int ix)</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+    while (ix &gt; 0)</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+        if (str[ix] =3D=3D &#39;,&#39;)</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+        {</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+            return ix;</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+        }</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+        ix--;</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    retur=
+n 0;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+/* Allocate memory and asseble the final message */<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+static char *</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+forge_msg(const char *src,=
+ const char *continuation, struct gc_arena *gc)</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+    int src_len =3D strlen(src);</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+    int con_len =3D continuation ? strlen(continuati=
+on) : 0;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    char *r=
+et =3D gc_malloc((src_len + sizeof(push_update_cmd) + con_len + 2) * sizeof=
+(char), true, gc);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+   int i =3D sizeof(push_update_cmd) -1;</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+    strcpy(ret, push_update_cmd);</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+    ret[i++] =3D &#39;,&#39;;</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+    strcpy(&amp;ret[i], src);</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+    if (continuation)</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+        i +=3D src_len;</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+        strcpy(&amp;ret[i], continuation);</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+    return ret;</span><br><span style=
 =3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+voi=
-d</span><br><span style=3D"color: hsl(120, 100%, 40%);">+options_string_imp=
-ort(struct options *options,</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+                      const char *config,</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+                      const int msglevel,</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+                      =
-const unsigned int permission_mask,</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+                      unsigned int *option_types_found,</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+                      s=
-truct env_set *es)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    read_config_str=
-ing(&quot;[CONFIG-STRING]&quot;, options, config, msglevel, permission_mask=
-, option_types_found, es);</span><br><span style=3D"color: hsl(120, 100%, 4=
+, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+sta=
+tic char *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+gc_strdup=
+(const char *src, struct gc_arena *gc)</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++    char *ret =3D gc_malloc((strlen(src) + 1) * sizeof(char), true, gc);</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+    strcpy(ret, src);</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+    return ret;</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+/* =
+It split the messagge (if necessay) and fill msgs with the message chunks.<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * Return `false` on=
+ failure an `true` on success.</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+ */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+stati=
+c bool</span><br><span style=3D"color: hsl(120, 100%, 40%);">+message_split=
+ter(char *str, char **msgs, struct gc_arena *gc, const int safe_cap)</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+    if (!str || !*str)</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+        return false;</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    int i =
+=3D 0;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    int im =
+=3D 0;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+    while (*str)</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+        /* + &#39;,&#39; - &#39;/0&#39; */</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+        if (strlen(str) &g=
+t; safe_cap)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
+ {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            int c=
+i =3D find_first_comma_of_next_bundle(str, safe_cap);</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+            if (!ci)</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+            {</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+                /* if no commas were found go =
+to fail, do not send any message */</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+                return false;</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+            }</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+            str[ci] =3D &#39;\0&#39;;</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+            /* copy from i to (ci -1)=
+ */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            msgs=
+[im] =3D forge_msg(str, &quot;,push-continuation 2&quot;, gc);</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+            i =3D ci + 1;</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+        }</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+        else</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+        {</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+            if (im)</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+            {</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+                msgs[im] =3D forge_msg(str, &quot;,push-c=
+ontinuation 1&quot;, gc);</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+            }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+            else</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+         {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+         =
+       msgs[im] =3D forge_msg(str, NULL, gc);</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+            }</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+            i =3D strlen(str);</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+        }</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+        str =3D &amp;str[i];</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+        im++;</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+    return true;</span><br><span style=3D"color: hsl(120, 100%, 4=
 0%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br>=
-<span> static void</span><br><span> set_user_script(struct options *options=
-,</span><br><span>                 const char **script,</span><br><span>dif=
-f --git a/src/openvpn/push.c b/src/openvpn/push.c</span><br><span>index 090=
-7226..a6c14ca 100644</span><br><span>--- a/src/openvpn/push.c</span><br><sp=
-an>+++ b/src/openvpn/push.c</span><br><span>@@ -542,6 +542,11 @@</span><br>=
-<span>                 {</span><br><span>                     msg(M_WARN, &=
-quot;No updatable options found in incoming PUSH_UPDATE message&quot;);</sp=
-an><br><span>                 }</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+                else if (!do_update(c, option_types_found))</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+                {</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+                    msg(D=
-_PUSH_ERRORS, &quot;Failed to update options&quot;);</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+                    goto error;</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+                }</span><br><=
-span>             }</span><br><span>         }</span><br><span>         eve=
-nt_timeout_clear(&amp;c-&gt;c2.push_request_interval);</span><br><span>diff=
- --git a/src/openvpn/route.c b/src/openvpn/route.c</span><br><span>index 15=
-6262a..89ebaee 100644</span><br><span>--- a/src/openvpn/route.c</span><br><=
-span>+++ b/src/openvpn/route.c</span><br><span>@@ -1265,7 +1265,16 @@</span=
-><br><span>               const struct tuntap *tt, unsigned int flags,</spa=
-n><br><span>               const struct env_set *es, openvpn_net_ctx_t *ctx=
-)</span><br><span> {</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
-   if (rl &amp;&amp; rl-&gt;iflags &amp; RL_ROUTES_ADDED)</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+    delete_routes_v4(rl, tt, flags, e=
-s, ctx);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    delete_=
-routes_v6(rl6, tt, flags, es, ctx);</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+void</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+delete_routes_v4(struct route_list *=
-rl, const struct tuntap *tt,</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+                 unsigned int flags, const struct env_set *es,</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+                 openvp=
-n_net_ctx_t *ctx)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (rl &amp;&amp=
-; (rl-&gt;iflags &amp; RL_ROUTES_ADDED))</span><br><span>     {</span><br><=
-span>         struct route_ipv4 *r;</span><br><span>         for (r =3D rl-=
-&gt;routes; r; r =3D r-&gt;next)</span><br><span>@@ -1281,8 +1290,14 @@</sp=
-an><br><span>     {</span><br><span>         clear_route_list(rl);</span><b=
-r><span>     }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</sp=
-an><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-    if =
-(rl6 &amp;&amp; (rl6-&gt;iflags &amp; RL_ROUTES_ADDED) )</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+void</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+delete_routes_v6(struct route_ipv6_list *rl6, const s=
-truct tuntap *tt,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-               unsigned int flags, const struct env_set *es,</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+                 openvpn_net_ctx_t=
- *ctx)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+    if (rl6 &amp;&amp; (rl6-&gt=
-;iflags &amp; RL_ROUTES_ADDED))</span><br><span>     {</span><br><span>    =
-     struct route_ipv6 *r6;</span><br><span>         for (r6 =3D rl6-&gt;ro=
-utes_ipv6; r6; r6 =3D r6-&gt;next)</span><br><span>diff --git a/src/openvpn=
-/route.h b/src/openvpn/route.h</span><br><span>index 237375c..b89ec9f 10064=
-4</span><br><span>--- a/src/openvpn/route.h</span><br><span>+++ b/src/openv=
-pn/route.h</span><br><span>@@ -335,6 +335,16 @@</span><br><span>           =
-         const struct env_set *es,</span><br><span>                    open=
-vpn_net_ctx_t *ctx);</span><br><span> </span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+void</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+delete_routes_v4(struct route_list *rl, const struct tuntap *tt,</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+                 unsigned =
-int flags, const struct env_set *es,</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+                 openvpn_net_ctx_t *ctx);</span><br><span =
+<span style=3D"color: hsl(120, 100%, 40%);">+/* It actually send the alread=
+y divided messagge to one single client */</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+static bool</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+send_single_push_update(struct context *c, char **msgs)</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    if (!msgs[0] || !*msgs[0])</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+        return false;</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+    int i =3D 0;</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+    struct gc_arena gc =3D gc_new();</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+    while (msgs[i] &amp;&amp; *msgs[i])</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+        unsigned int option_types_found =3D 0;</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+        struct buffer buf =
+=3D alloc_buf_gc(strlen(msgs[i]), &amp;gc);</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+        buf_write(&amp;buf, msgs[i], strlen(msgs[i]));</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+        if (!send_control_channel_s=
+tring(c, msgs[i], D_PUSH))</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+        {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+         return false;</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+        }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
+ i++;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+        /* After sending the cont=
+rol message, we update the options server-side in the client&#39;s context =
+*/</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        buf_strin=
+g_compare_advance(&amp;buf, push_update_cmd);</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+        if (process_incoming_push_update(c, pull_=
+permission_mask(c), &amp;option_types_found, &amp;buf) =3D=3D PUSH_MSG_ERRO=
+R)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        {</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+            msg(M_WARN, &qu=
+ot;Failed to process push update message sent to client ID: %u&quot;,</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+                c-&gt;c2.=
+tls_multi ? c-&gt;c2.tls_multi-&gt;peer_id : UINT32_MAX);</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+            continue;</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+        }</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+        c-&gt;options.push_option_types_found=
+ |=3D option_types_found;</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+        if (!options_postprocess_pull(&amp;c-&gt;options, c-&gt;c2.es=
+))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        {</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+            msg(M_WARN, &qu=
+ot;Failed to post-process push update message sent to client ID: %u&quot;,<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+                c-&g=
+t;c2.tls_multi ? c-&gt;c2.tls_multi-&gt;peer_id : UINT32_MAX);</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+        }</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+    gc_free(&amp;gc);</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+    return true;</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++</span><br><span style=3D"color: hsl(120, 100%, 40%);">+int</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+send_push_update(struct multi_cont=
+ext *m, const void *target, const char *msg, const push_update_type type, c=
+onst int push_bundle_size)</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (!ms=
+g || !*msg || !m</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+     || (!target &amp;&amp; type !=3D UPT_BROADCAST))</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+        return -EINVAL;</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    struc=
+t gc_arena gc =3D gc_new();</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+    /* extra space for possible trailing ifconfig and push-continua=
+tion */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    const in=
+t extra =3D 84 + sizeof(push_update_cmd);</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+    /* push_bundle_size is the maximum size of a mess=
+age, so if the message</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+     * we want to send exceeds that size we have to split it into smalle=
+r messages */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    co=
+nst int safe_cap =3D push_bundle_size - extra;</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+    int msgs_num =3D (strlen(msg) / safe_cap) + =
+((strlen(msg) % safe_cap) !=3D 0);</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+    char **msgs =3D gc_malloc(sizeof(char *) * (msgs_num + 1=
+), true, &amp;gc);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+    msgs[msgs_num] =
+=3D NULL;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (!m=
+essage_splitter(gc_strdup(msg, &amp;gc), msgs, &amp;gc, safe_cap))</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+        gc_free(&amp;gc);</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+        return -EINVAL;</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+#ifdef ENABLE_MANAGEMENT</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+    if (type =3D=3D UPT_BY_CID)</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+        struct multi_instance *mi =3D lookup_by_cid(m, *((uns=
+igned long *)target));</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        if (!mi)=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        {</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+            return -ENOENT;</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+        }</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+        if (!mi-&gt;halt</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+            &amp;&amp; sen=
+d_single_push_update(&amp;mi-&gt;context, msgs))</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+        {</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+            gc_free(&amp;gc);</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+            return 1;</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+        }</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+        else</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+        {</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+            gc_free(&amp;gc);</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+            return 0;</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+        }</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#endif /=
+* ifdef ENABLE_MANAGEMENT */</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    int co=
+unt =3D 0;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    struc=
+t hash_iterator hi;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+    const struct hash_element *he;</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+hash_iterator_init(m-&gt;iter, &amp;hi);</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+    while ((he =3D hash_iterator_next(&amp;hi)))</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+        struct multi_instance *curr_mi =
+=3D he-&gt;value;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+        if (curr_mi-&=
+gt;halt)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        {</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+            continue;=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        }</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+        if (type =3D=3D UPT_B=
+Y_ADDR &amp;&amp; !mroute_addr_equal(target, &amp;curr_mi-&gt;real))</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+        {</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+            continue;</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+        }</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+        else if (type =3D=3D UPT_BY_CN)</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+        {</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+            const char *curr_cn =
+=3D tls_common_name(curr_mi-&gt;context.c2.tls_multi, false);</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+            if (strcmp(curr_cn, t=
+arget))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            =
+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+                co=
+ntinue;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            =
+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        }</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+        /* Either we found a=
+ matching client or type is UPT_BROADCAST so we update every client */</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+        if (!send_single=
+_push_update(&amp;curr_mi-&gt;context, msgs))</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+        {</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+            msg(M_CLIENT, &quot;ERROR: Peer ID: %u has not =
+been updated&quot;,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+                curr_mi-&gt;context.c2.tls_multi ? curr_mi-&gt;context.c2.t=
+ls_multi-&gt;peer_id : UINT32_MAX);</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+            continue;</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+        }</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+        count++;</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+    hash_iterator_free(&amp;=
+hi);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    gc_free(&am=
+p;gc);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    return co=
+unt;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+#ifdef ENABLE_MANAGEMENT</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+#define RETURN_UPDATE_STATUS(n_sent) \</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+    do { \</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+        if ((n_sent) &gt; 0) { \</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+            msg(M_CLIENT=
+, &quot;SUCCESS: %d client(s) updated&quot;, (n_sent)); \</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+            return true; \</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+        } else { \</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+            msg(M_CLIENT, &quot=
+;ERROR: no client updated&quot;); \</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+            return false; \</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+        } \</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+    } while (0)</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+bool</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+management_callback_send_push_update_broa=
+dcast(void *arg, const char *options)</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+    int n_sent =3D send_push_update(arg, NULL, options, UPT_BROADCAST, PUSH=
+_BUNDLE_SIZE);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+    RETURN_UPDATE_STATUS=
+(n_sent);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+bool</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+management_callback_send_push_update_by_cid(void *arg, unsigne=
+d long cid, const char *options)</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    i=
+nt ret =3D send_push_update(arg, &amp;cid, options, UPT_BY_CID, PUSH_BUNDLE=
+_SIZE);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+    if (ret =3D=3D -ENOENT)</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+        msg(M_CLIENT, &quot;ERROR: no=
+ client found with CID: %lu&quot;, cid);</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    return (=
+ret &gt; 0);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+bool</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+management_callback_send_push_update_by_cn(void *arg, const=
+ char *cn, const char *options)</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    in=
+t n_sent =3D send_push_update(arg, cn, options, UPT_BY_CN, PUSH_BUNDLE_SIZE=
+);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+    RETURN_UPDATE_STATUS(n_sent);</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+bool</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++management_callback_send_push_update_by_addr(void *arg, const struct mrout=
+e_addr *maddr, const char *options)</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+  int n_sent =3D send_push_update(arg, maddr, options, UPT_BY_ADDR, PUSH_BU=
+NDLE_SIZE);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+    RETURN_UPDATE_STATUS(n_=
+sent);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+#endif /* ifdef ENABLE_MANAGEME=
+NT */</span><br><span>diff --git a/tests/unit_tests/openvpn/Makefile.am b/t=
+ests/unit_tests/openvpn/Makefile.am</span><br><span>index b24e03c..9a40512 =
+100644</span><br><span>--- a/tests/unit_tests/openvpn/Makefile.am</span><br=
+><span>+++ b/tests/unit_tests/openvpn/Makefile.am</span><br><span>@@ -343,4=
+ +343,5 @@</span><br><span> 	$(top_srcdir)/src/openvpn/platform.c \</span><=
+br><span> 	$(top_srcdir)/src/openvpn/push_util.c \</span><br><span> 	$(top_=
+srcdir)/src/openvpn/options_util.c \</span><br><span style=3D"color: hsl(0,=
+ 100%, 40%);">-	$(top_srcdir)/src/openvpn/otime.c</span><br><span>\ No newl=
+ine at end of file</span><br><span style=3D"color: hsl(120, 100%, 40%);">+	=
+$(top_srcdir)/src/openvpn/otime.c \</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+	$(top_srcdir)/src/openvpn/list.c</span><br><span>\ No newl=
+ine at end of file</span><br><span>diff --git a/tests/unit_tests/openvpn/te=
+st_push_update_msg.c b/tests/unit_tests/openvpn/test_push_update_msg.c</spa=
+n><br><span>index d0876bc..8420510 100644</span><br><span>--- a/tests/unit_=
+tests/openvpn/test_push_update_msg.c</span><br><span>+++ b/tests/unit_tests=
+/openvpn/test_push_update_msg.c</span><br><span>@@ -8,6 +8,7 @@</span><br><=
+span> #include &lt;cmocka.h&gt;</span><br><span> #include &quot;push.h&quot=
+;</span><br><span> #include &quot;options_util.h&quot;</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+#include &quot;multi.h&quot;</span><br><=
+span> </span><br><span> /* mocks */</span><br><span> </span><br><span>@@ -3=
+7,6 +38,12 @@</span><br><span> }</span><br><span> </span><br><span> bool</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+options_postprocess_pu=
+ll(struct options *options, struct env_set *es)</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+    return true;</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+bool</span><br><span> apply_pu=
+sh_options(struct context *c,</span><br><span>                    struct op=
+tions *options,</span><br><span>                    struct buffer *buf,</sp=
+an><br><span>@@ -94,6 +101,49 @@</span><br><span>     }</span><br><span> }<=
+/span><br><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+co=
+nst char *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+tls_commo=
+n_name(const struct tls_multi *multi, const bool null)</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+    return NULL;</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+#ifndef ENABLE_MANAGEME=
+NT</span><br><span style=3D"color: hsl(120, 100%, 40%);">+bool</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+send_control_channel_string(stru=
+ct context *c, const char *str, int msglevel)</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+    return true;</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#else  /* ifn=
+def ENABLE_MANAGEMENT */</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+char **res;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+int=
+ i;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+bool</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+send_control_channel_string(struct context *c, con=
+st char *str, int msglevel)</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (re=
+s &amp;&amp; res[i] &amp;&amp; strcmp(res[i], str))</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+        printf(&quot;\n\nexpected: %s\n\n  actual: %s\n=
+\n&quot;, res[i], str);</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+        return false;</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    i++;=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    return true;</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+struct multi_instance *</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+lookup_by_cid(struct multi_context *m, const unsigned l=
+ong cid)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+    return *(m-&gt;instances)=
+;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span =
 style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+void</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+delete_routes_v6(struct route_ipv6_list *rl6, const struct tuntap *tt,=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+                 un=
-signed int flags, const struct env_set *es,</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+                 openvpn_net_ctx_t *ctx);</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> void setenv=
-_routes(struct env_set *es, const struct route_list *rl);</span><br><span> =
-</span><br><span> void setenv_routes_ipv6(struct env_set *es, const struct =
-route_ipv6_list *rl6);</span><br><span></span><br></pre><p>To view, visit <=
-a href=3D"http://gerrit.openvpn.net/c/openvpn/+/809?usp=3Demail">change 809=
-</a>. To unsubscribe, or for help writing mail filters, visit <a href=3D"ht=
-tp://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope itemtype=
-=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"action" item=
-type=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http:/=
-/gerrit.openvpn.net/c/openvpn/+/809?usp=3Demail"/><meta itemprop=3D"name" c=
-ontent=3D"View Change"/></div></div>
+(120, 100%, 40%);">+bool</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+mroute_extract_openvpn_sockaddr(struct mroute_addr *addr,</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+                                =
+const struct openvpn_sockaddr *osaddr,</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+                                bool use_port)</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+    return true;</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+#endif /* ifndef ENABLE_MANAGEMENT */</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+</span><br><span> /* tests */</span><br><span> </s=
+pan><br><span> static void</span><br><span>@@ -124,7 +174,6 @@</span><br><s=
+pan>     free_buf(&amp;buf);</span><br><span> }</span><br><span> </span><br=
+><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span> static void</=
+span><br><span> test_incoming_push_message_error2(void **state)</span><br><=
+span> {</span><br><span>@@ -209,6 +258,205 @@</span><br><span>     free_buf=
+(&amp;buf);</span><br><span> }</span><br><span> </span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+#ifdef ENABLE_MANAGEMENT</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+char *r0[] =3D {</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+    &quot;PUSH_UPDATE,redirect-gateway local=
+,route 192.168.1.0 255.255.255.0&quot;</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+};</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+char *r1[] =3D {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+   &quot;PUSH_UPDATE,-dhcp-option,blablalalalalalalalalalalalalf, lalalalal=
+alalalalalalalalalaf,push-continuation 2&quot;,</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+    &quot;PUSH_UPDATE, akakakakakakakakakakakaf=
+, dhcp-option DNS 8.8.8.8,redirect-gateway local,push-continuation 2&quot;,=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    &quot;PUSH_UPDA=
+TE,route 192.168.1.0 255.255.255.0,push-continuation 1&quot;</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+};</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+char *r3[] =3D {</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+    &quot;PUSH_UPDATE,,,&quot;</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+};</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+char *r4[] =3D {</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+    &quot;PUSH_UPDATE,-dhcp-option, blablalalalalalalalalalal=
+alalf, lalalalalalalalalalalalalalaf,push-continuation 2&quot;,</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+    &quot;PUSH_UPDATE, akakakak=
+akakakakakakakaf,dhcp-option DNS 8.8.8.8, redirect-gateway local,push-conti=
+nuation 2&quot;,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+ &quot;PUSH_UPDATE, route 192.168.1.0 255.255.255.0,,push-continuation 1&qu=
+ot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+};</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+char *r5[] =3D {</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+    &quot;PUSH_UPDATE,,-dhcp-option,=
+ blablalalalalalalalalalalalalf, lalalalalalalalalalalalalalaf,push-continu=
+ation 2&quot;,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    &=
+quot;PUSH_UPDATE, akakakakakakakakakakakaf,dhcp-option DNS 8.8.8.8, redirec=
+t-gateway local,push-continuation 2&quot;,</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+    &quot;PUSH_UPDATE, route 192.168.1.0 255.255.255=
+.0,push-continuation 1&quot;</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+};</span><br><span style=3D"color: hsl(120, 100%, 40%);">+char *r6=
+[] =3D {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    &quot;P=
+USH_UPDATE,-dhcp-option,blablalalalalalalalalalalalalf, lalalalalalalalalal=
+alalalalaf,push-continuation 2&quot;,</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+    &quot;PUSH_UPDATE, akakakakakakakakakakakaf, dhcp-opt=
+ion DNS 8.8.8.8, redirect-gateway 10.10.10.10,,push-continuation 2&quot;,</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+    &quot;PUSH_UPDATE=
+, route 192.168.1.0 255.255.255.0,,push-continuation 1&quot;</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+};</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+char *r7[] =3D {</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+    &quot;PUSH_UPDATE,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,=
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,push-continuation =
+2&quot;,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    &quot;P=
+USH_UPDATE,,,,,,,,,,,,,,,,,,,push-continuation 1&quot;</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+};</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+char *r8[] =3D {</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+    &quot;PUSH_UPDATE,-dhcp-option,blablalalalalalalalalalal=
+alalf, lalalalalalalalalalalalalalaf,push-continuation 2&quot;,</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+    &quot;PUSH_UPDATE, akakakak=
+akakakakakakakaf, dhcp-option DNS 8.8.8.8,redirect-gateway\n local,push-con=
+tinuation 2&quot;,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+   &quot;PUSH_UPDATE,route 192.168.1.0 255.255.255.0\n\n\n,push-continuatio=
+n 1&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+};</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+char *r9[] =3D {</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+    &quot;PUSH_UPDATE,,&quot;<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+};</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+const char *msg0 =3D &quot;redirect-gateway local,route 192.168.1.0 255.255=
+.255.0&quot;;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+const =
+char *msg1 =3D &quot;-dhcp-option,blablalalalalalalalalalalalalf, lalalalal=
+alalalalalalalalalaf,&quot;</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+                   &quot; akakakakakakakakakakakaf, dhcp-option DNS=
+ 8.8.8.8,redirect-gateway local,route 192.168.1.0 255.255.255.0&quot;;</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+const char *msg2 =3D &qu=
+ot;&quot;;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+const cha=
+r *msg3 =3D &quot;,,&quot;;</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+const char *msg4 =3D &quot;-dhcp-option, blablalalalalalalalalalala=
+lalf, lalalalalalalalalalalalalalaf,&quot;</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+                   &quot; akakakakakakakakakakakaf,d=
+hcp-option DNS 8.8.8.8, redirect-gateway local, route 192.168.1.0 255.255.2=
+55.0,&quot;;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+const c=
+har *msg5 =3D &quot;,-dhcp-option, blablalalalalalalalalalalalalf, lalalala=
+lalalalalalalalalalaf,&quot;</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+                   &quot; akakakakakakakakakakakaf,dhcp-option DNS=
+ 8.8.8.8, redirect-gateway local, route 192.168.1.0 255.255.255.0&quot;;</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+const char *msg6 =3D &=
+quot;-dhcp-option,blablalalalalalalalalalalalalf, lalalalalalalalalalalalal=
+alaf, akakakakakakakakakakakaf,&quot;</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+                   &quot; dhcp-option DNS 8.8.8.8, redire=
+ct-gateway 10.10.10.10,, route 192.168.1.0 255.255.255.0,&quot;;</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+const char *msg7 =3D &quot;,,,=
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,=
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,&quot;;</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+const char *msg8 =3D &quot;-dhcp-option,blablalalalalalalal=
+alalalalalf, lalalalalalalalalalalalalalaf, akakakakakakakakakakakaf,&quot;=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+                   =
+&quot; dhcp-option DNS 8.8.8.8,redirect-gateway\n local,route 192.168.1.0 2=
+55.255.255.0\n\n\n&quot;;</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+const char *msg9 =3D &quot;,&quot;;</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+const char *msg10 =3D &quot;Voil=C3=A0! In view, a hu=
+mble vaudevillian veteran cast vicariously as both victim and villain by th=
+e vicissitudes&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++                    &quot; of Fate. This visage no mere veneer of vanity i=
+s a vestige of the vox populi now vacant vanished. However this&quot;</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+                    &quot=
+; valorous visitation of a by-gone vexation stands vivified and has vowed t=
+o vanquish these venal and virulent&quot;</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+                    &quot; vermin vanguarding vice an=
+d vouchsafing the violently vicious and voracious violation of volition. Th=
+e only&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
+             &quot; verdict is vengeance; a vendetta held as a votive not i=
+n vain for the value and veracity of such shall one&quot;</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+                    &quot; day vindic=
+ate the vigilant and the virtuous. Verily this vichyssoise of verbiage veer=
+s most verbose so let&quot;</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+                    &quot; me simply add that it is my very good ho=
+nor to meet you and you may call me V.&quot;;</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+#define PUSH_BUNDLE_SIZE_TEST 184</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+static void</span><br><span style=3D"color: hsl(120, 100%, 40%);">+test_s=
+end_push_msg0(void **state)</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    i =3D =
+0;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    res =3D r0;</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+    struct multi_cont=
+ext *m =3D *state;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+   const unsigned long cid =3D 0;</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+    assert_int_equal(send_push_update(m, &amp;cid, msg0, UPT_=
+BY_CID, PUSH_BUNDLE_SIZE_TEST), 1);</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+st=
+atic void</span><br><span style=3D"color: hsl(120, 100%, 40%);">+test_send_=
+push_msg1(void **state)</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    i =3D 0;</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+    res =3D r1;</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+    struct multi_context =
+*m =3D *state;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    c=
+onst unsigned long cid =3D 0;</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+    assert_int_equal(send_push_update(m, &amp;cid, msg1, UPT_BY_C=
+ID, PUSH_BUNDLE_SIZE_TEST), 1);</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+static void</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+test_send_push_msg2(void **state)=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+    i =3D 0;</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+    res =3D NULL;</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+    struct multi_context *m =3D *state;</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+    const unsigned long ci=
+d =3D 0;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_=
+int_equal(send_push_update(m, &amp;cid, msg2, UPT_BY_CID, PUSH_BUNDLE_SIZE_=
+TEST), -EINVAL);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+static void</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+test_send_push_msg3(void **state)</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+    i =3D 0;</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+    res =3D r3;</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+    struct multi_context *m =3D *state;</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    const unsigned long cid =3D 0;</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_int_equal(send_=
+push_update(m, &amp;cid, msg3, UPT_BY_CID, PUSH_BUNDLE_SIZE_TEST), 1);</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+static void</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+test_send_push_msg4(void **state)</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+    i =3D 0;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+res =3D r4;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    stru=
+ct multi_context *m =3D *state;</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+    const unsigned long cid =3D 0;</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+    assert_int_equal(send_push_update(m, &amp;ci=
+d, msg4, UPT_BY_CID, PUSH_BUNDLE_SIZE_TEST), 1);</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+static v=
+oid</span><br><span style=3D"color: hsl(120, 100%, 40%);">+test_send_push_m=
+sg5(void **state)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+    i =3D 0;</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+    res =3D r5;</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+    struct multi_context *m =3D=
+ *state;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    const u=
+nsigned long cid =3D 0;</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+    assert_int_equal(send_push_update(m, &amp;cid, msg5, UPT_BY_CID, PU=
+SH_BUNDLE_SIZE_TEST), 1);</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+static void</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+test_send_push_msg6(void **state)</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    i =3D 0;</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+    res =3D r6;</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+    struct multi_context *m =3D *state;</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+    const unsigned long cid =3D =
+0;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_int_eq=
+ual(send_push_update(m, &amp;cid, msg6, UPT_BY_CID, PUSH_BUNDLE_SIZE_TEST),=
+ 1);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+static void</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+test_send_push_msg7(void **state)</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+    i =3D 0;</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+    res =3D r7;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+    struct multi_context *m =3D *state;</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+    const unsigned long cid =3D 0;</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+    assert_int_equal(send_push_update(m,=
+ &amp;cid, msg7, UPT_BY_CID, PUSH_BUNDLE_SIZE_TEST), 1);</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+static void</span><br><span style=3D"color: hsl(120, 100%, 40%);">+test_sen=
+d_push_msg8(void **state)</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    i =3D 0;=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    res =3D r8;</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+    struct multi_contex=
+t *m =3D *state;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+ const unsigned long cid =3D 0;</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+    assert_int_equal(send_push_update(m, &amp;cid, msg8, UPT_BY=
+_CID, PUSH_BUNDLE_SIZE_TEST), 1);</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+static void</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+test_send_push_msg9(void **stat=
+e)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+    i =3D 0;</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    res =3D r9;</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+    struct multi_context *m =3D *state;</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+    const unsigned long c=
+id =3D 0;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    assert=
+_int_equal(send_push_update(m, &amp;cid, msg9, UPT_BY_CID, PUSH_BUNDLE_SIZE=
+_TEST), 1);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+static void</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+test_send_push_msg10(void **state)</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+    i =3D 0;</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+    res =3D NULL;</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+    struct multi_context *m =3D *state;</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+    const unsigned long cid =3D 0;</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+    assert_int_equal(send_push=
+_update(m, &amp;cid, msg10, UPT_BY_CID, PUSH_BUNDLE_SIZE_TEST), -EINVAL);</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+#undef PUSH_BUNDLE_SIZE_TEST</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+static int</span><br><span style=3D"color: hsl(120, 100%, 40%);">+se=
+tup2(void **state)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    struct multi_co=
+ntext *m =3D calloc(1, sizeof(struct multi_context));</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    m-&gt;instances =3D calloc(1, sizeof(=
+struct multi_instance *));</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+    struct multi_instance *mi =3D calloc(1, sizeof(struct multi_inst=
+ance));</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    *(m-&gt;=
+instances) =3D mi;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+   *state =3D m;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+ return 0;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+static int</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+teardown2(void **state)</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+    struct multi_context *m =3D *state;</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+    free(*(m-&gt;instances));</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+    free(m-&gt;instances);</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+    free(m);</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+    return 0;</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+#endif /* ifdef ENABLE_MANAGEMENT */</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+</span><br><span> static int</span><br><span> =
+setup(void **state)</span><br><span> {</span><br><span>@@ -238,7 +486,20 @@=
+</span><br><span>         cmocka_unit_test_setup_teardown(test_incoming_pus=
+h_message_1, setup, teardown),</span><br><span>         cmocka_unit_test_se=
+tup_teardown(test_incoming_push_message_bad_format, setup, teardown),</span=
+><br><span>         cmocka_unit_test_setup_teardown(test_incoming_push_mess=
+age_mix, setup, teardown),</span><br><span style=3D"color: hsl(0, 100%, 40%=
+);">-        cmocka_unit_test_setup_teardown(test_incoming_push_message_mix=
+2, setup, teardown)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+        cmocka_unit_test_setup_teardown(test_incoming_push_message_mix2, se=
+tup, teardown),</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#ifd=
+ef ENABLE_MANAGEMENT</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++        cmocka_unit_test_setup_teardown(test_send_push_msg0, setup2, teard=
+own2),</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        cmock=
+a_unit_test_setup_teardown(test_send_push_msg1, setup2, teardown2),</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+        cmocka_unit_test_se=
+tup_teardown(test_send_push_msg2, setup2, teardown2),</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+        cmocka_unit_test_setup_teardown(t=
+est_send_push_msg3, setup2, teardown2),</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+        cmocka_unit_test_setup_teardown(test_send_push_=
+msg4, setup2, teardown2),</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+        cmocka_unit_test_setup_teardown(test_send_push_msg5, setup2, =
+teardown2),</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        =
+cmocka_unit_test_setup_teardown(test_send_push_msg6, setup2, teardown2),</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+        cmocka_unit_te=
+st_setup_teardown(test_send_push_msg7, setup2, teardown2),</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+        cmocka_unit_test_setup_teard=
+own(test_send_push_msg8, setup2, teardown2),</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+        cmocka_unit_test_setup_teardown(test_send_=
+push_msg9, setup2, teardown2),</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+        cmocka_unit_test_setup_teardown(test_send_push_msg10, se=
+tup2, teardown2)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#en=
+dif</span><br><span>     };</span><br><span> </span><br><span>     return c=
+mocka_run_group_tests(tests, NULL, NULL);</span><br><span></span><br></pre>=
+<p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/869?usp=
+=3Demail">change 869</a>. To unsubscribe, or for help writing mail filters,=
+ visit <a href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div=
+ itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemp=
+rop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"=
+url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/869?usp=3Demail"/><meta =
+itemprop=3D"name" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I507180d7397b6959844a3090801=
-0132bc3411067 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 809 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 15 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: Ie82bcc7a8e583de9156b185d71d=
+1a323ed8df3fc </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 869 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 8 </div>
 <div style=3D"display:none"> Gerrit-Owner: mrbff &lt;marco@...2726...&gt; <=
 /div>
+<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
+ </div>
 <div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
 1...&gt; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
@@ -1319,12 +2418,16 @@ ontent=3D"View Change"/></div></div>
 ts.sourceforge.net&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
 ..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: cron2 &lt;gert@...1296...&gt=
+; </div>
 <div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
 41...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: stipa &lt;lstipakov@...1663...=
+.&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: mrbff &lt;marco@...2726...&g=
 t; </div>
 <div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
 
 
---g0sCxzpp/jo=--
+--yeH0L9h9d5E=--
 
