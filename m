@@ -1,10 +1,11 @@
-Date: Tue, 8 Jul 2025 18:50:52 +0200 (CEST)
-Message-Id: <202507081650.568Goqk8083913@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20250704082813.99654-2-spike@...1385...>
-References: <20250704082813.99654-2-spike@...1385...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Replace deprecated
- OpenSSL.crypto.load_crl
+Date: Tue,  8 Jul 2025 20:52:04 +0200
+Message-ID: <20250708185210.30421-1-gert@...1296...>
+In-Reply-To: <gerrit.1751571694000.I7e9a0c668e0950257632452cfd9eeb236f0120f2@...2715...>
+References: <gerrit.1751571694000.I7e9a0c668e0950257632452cfd9eeb236f0120f2@...2715...>
+MIME-Version: 1.0
+Subject: [Openvpn-devel] [PATCH v2] dns: do not run updown scripts with
+ lwipovpn
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,27 +16,52 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: spike@...1385...
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
-Thanks. Your patch has been applied to the master branch.
+From: Heiko Hund <heiko@...2662...>
 
-commit f2364488d36a758c8f2ac273af4642dc84b1b28f
-Author: Christian Schürmann
-Date:   Fri Jul 4 10:28:14 2025 +0200
+Running the script doesn't make sense with the AFUNIX dev node, so we
+simply clear any scripts that have been set before.
 
-     Replace deprecated OpenSSL.crypto.load_crl
+Change-Id: I7e9a0c668e0950257632452cfd9eeb236f0120f2
+Signed-off-by: Heiko Hund <heiko@...2662...>
+Acked-by: Arne Schwabe <arne-openvpn@...1227...>
+---
 
-     Signed-off-by: Christian Schürmann <spike@...1385...>
-     Acked-by: Arne Schwabe <arne@...1227...>
-     Message-Id: <20250704082813.99654-2-spike@...1385...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg32037.html
-     Signed-off-by: Gert Doering <gert@...1296...>
+This change was reviewed on Gerrit and approved by at least one
+developer. I request to merge it to master.
 
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1077
+This mail reflects revision 2 of this Change.
 
---
-kind regards,
+Acked-by according to Gerrit (reflected above):
+Arne Schwabe <arne-openvpn@...1227...>
 
-Gert Doering
-
+        
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index af097f8..0662b49 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -61,6 +61,7 @@
+ #include "xkey_common.h"
+ #include "dco.h"
+ #include "options_util.h"
++#include "tun_afunix.h"
+ 
+ #include <ctype.h>
+ 
+@@ -3593,6 +3594,13 @@
+     struct gc_arena gc = gc_new();
+     struct dns_options *dns = &o->dns_options;
+ 
++    if (is_tun_afunix(o->dev_node))
++    {
++        /* Disable running  dns-updown script with lwipovpn */
++        dns->updown_flags = DNS_UPDOWN_NO_FLAGS;
++        dns->updown = NULL;
++    }
++
+     if (dns->servers || dns_updown_user_set(dns) || dns_updown_forced(dns))
+     {
+         /* Clean up env from --dhcp-option DNS config */
 
