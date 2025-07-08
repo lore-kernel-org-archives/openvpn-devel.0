@@ -1,10 +1,16 @@
-Date: Tue, 8 Jul 2025 09:54:34 +0200 (CEST)
-Message-Id: <202507080754.5687sY1P068703@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <20250708073359.32549-1-gert@...1296...>
-References: <20250708073359.32549-1-gert@...1296...>
-Subject: [Openvpn-devel] [PATCH applied] Re: t_server_null: add multi-socket
- testing
+From: "cron2 (Code Review)" <gerrit@...515...>
+Date: Tue, 8 Jul 2025 07:54:53 +0000
+In-Reply-To: <gerrit.1742993493000.I4ebe1158c36a641888131e824f59004a0f8fb4c5@...2715...>
+References: <gerrit.1742993493000.I4ebe1158c36a641888131e824f59004a0f8fb4c5@...2715...>
+Reply-To: gert@...1296..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net, frank@...2641..., sasepp@...2783...
+Message-ID: <ea29da2f282308ef2f214b13b5a3818e533b4bd3-EmailReplacePatchSet-HTML@...2715...>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="rU9RH1QsSN8="; charset=UTF-8
+Subject: [Openvpn-devel] [S] Change in openvpn[master]: t_server_null: add
+ multi-socket testing
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,44 +19,272 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: samuli.seppanen@...277...
-Cc: openvpn-devel@lists.sourceforge.net
+To: mattock <sasepp@...2783...>, plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-The buildbots have tested this very thoroughly, I just figured out why
-it fails on NetBSD and OpenBSD - these systems, by default, have a limit
-of 4 tun devices and the BBs use one of them for the community VPN, 
-so when starting 4 server instances, we run out.
+--rU9RH1QsSN8=
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
- Fix: # cd /dev ; ./MAKEDEV tun4
+cron2 has uploaded a new patch set (#7) to the change originally created by=
+ mattock. ( http://gerrit.openvpn.net/c/openvpn/+/919?usp=3Demail )
 
-yes, nothing dynamic there...
+The following approvals got outdated and were removed:
+Code-Review+2 by cron2
 
-Also, we agreed that we should fix the number mapping "client instance 
-number -> server number" so that it's easier to maintain because we
-know "all client tests 4<x> go to server instance <4>" while it's a bit
-unorderly right now.  But this will be a different patch as it affects
-existing instances that are unrelated to *this* new feature.
 
-Your patch has been applied to the master branch.
+Change subject: t_server_null: add multi-socket testing
+......................................................................
 
-commit fd6d0f3cf67622c3ae052c5f94abd5fd70ee7995
-Author: Samuli Seppänen
-Date:   Tue Jul 8 09:33:51 2025 +0200
+t_server_null: add multi-socket testing
 
-     t_server_null: add multi-socket testing
+This adds a new multi-socket server that listens on IPv4 and IPv6
+localhost addresses for TCP and UDP connections respectively. It also
+adds two success tests and one failure test with wrong protocol defined
+at the client side.
 
-     Signed-off-by: Samuli Seppänen <sasepp@...2705...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20250708073359.32549-1-gert@...1296...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg32061.html
-     Signed-off-by: Gert Doering <gert@...1296...>
+Change-Id: I4ebe1158c36a641888131e824f59004a0f8fb4c5
+Signed-off-by: Samuli Sepp=C3=A4nen <sasepp@...2705...>
+Acked-by: Gert Doering <gert@...1296...>
+Message-Id: <20250708073359.32549-1-gert@...1296...>
+URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg32=
+061.html
+Signed-off-by: Gert Doering <gert@...1296...>
+---
+M tests/t_server_null_default.rc
+1 file changed, 27 insertions(+), 4 deletions(-)
 
+
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/19/919/7
+
+diff --git a/tests/t_server_null_default.rc b/tests/t_server_null_default.rc
+index 41ec591..a1c68cd 100755
+--- a/tests/t_server_null_default.rc
++++ b/tests/t_server_null_default.rc
+@@ -38,12 +38,14 @@
+ MAX_CLIENTS=3D"10"
+ CLIENT_MATCH=3D"Test-Client"
+ SERVER_EXEC=3D"${top_builddir}/src/openvpn/openvpn"
+-SERVER_BASE_OPTS=3D"--local 127.0.0.1 --dev tun --topology subnet --max-cl=
+ients $MAX_CLIENTS --persist-tun --verb 3 --duplicate-cn"
++SERVER_BASE_OPTS=3D"--dev tun --topology subnet --max-clients $MAX_CLIENTS=
+ --persist-tun --verb 3 --duplicate-cn"
++SERVER_BIND_OPTS=3D"--local 127.0.0.1"
+ SERVER_CIPHER_OPTS=3D""
+ SERVER_CERT_OPTS=3D"--ca ${CA} --cert ${SERVER_CERT} --key ${SERVER_KEY} -=
+-tls-auth ${TA} 0"
+-SERVER_CONF_BASE=3D"${SERVER_BASE_OPTS} ${SERVER_CIPHER_OPTS} ${SERVER_CER=
+T_OPTS}"
++SERVER_CONF_BASE=3D"${SERVER_BASE_OPTS} ${SERVER_CIPHER_OPTS} ${SERVER_CER=
+T_OPTS} ${SERVER_BIND_OPTS}"
++SERVER_CONF_BASE_MULTISOCKET=3D"${SERVER_BASE_OPTS} ${SERVER_CIPHER_OPTS} =
+${SERVER_CERT_OPTS}"
+
+-TEST_SERVER_LIST=3D"1 2 3"
++TEST_SERVER_LIST=3D"1 2 3 4"
+
+ SERVER_NAME_1=3D"t_server_null_server-1194_udp"
+ SERVER_SERVER_1=3D"--server 10.29.41.0 255.255.255.0"
+@@ -63,6 +65,12 @@
+ SERVER_EXEC_3=3D"${SERVER_EXEC}"
+ SERVER_CONF_3=3D"${SERVER_CONF_BASE} ${SERVER_SERVER_3} --lport 1196 --pro=
+to udp --management 127.0.0.1 ${SERVER_MGMT_PORT_3} --dh none --cipher AES-=
+192-CBC --data-ciphers DEFAULT:AES-192-CBC"
+
++SERVER_NAME_4=3D"t_server_null_server-1197_multisocket_ipv4_ipv6"
++SERVER_SERVER_4=3D"--server 10.29.44.0 255.255.255.0"
++SERVER_MGMT_PORT_4=3D"11197"
++SERVER_EXEC_4=3D"${SERVER_EXEC}"
++SERVER_CONF_4=3D"${SERVER_CONF_BASE_MULTISOCKET} ${SERVER_SERVER_4} --loca=
+l 127.0.0.1 1197 tcp --local ::1 1197 udp --management 127.0.0.1 ${SERVER_M=
+GMT_PORT_4}"
++
+ # Test client configurations
+ CLIENT_EXEC=3D"${top_builddir}/src/openvpn/openvpn"
+ CLIENT_BASE_OPTS=3D"--client --nobind --remote-cert-tls server --persist-t=
+un --verb 3 --resolv-retry infinite --connect-retry-max 3 --server-poll-tim=
+eout 5 --explicit-exit-notify 3 --script-security 2"
+@@ -72,7 +80,7 @@
+ CLIENT_CIPHER_OPTS=3D""
+ CLIENT_CERT_OPTS=3D"--ca ${CA} --cert ${CLIENT_CERT} --key ${CLIENT_KEY} -=
+-tls-auth ${TA} 1"
+
+-TEST_RUN_LIST=3D"1 1L 2 2L 3 4a 4b 4c"
++TEST_RUN_LIST=3D"1 1L 2 2L 3 4a 4b 4c 5a 5b 5c"
+ CLIENT_CONF_BASE=3D"${CLIENT_NULL_OPTS} ${CLIENT_BASE_OPTS} ${CLIENT_CIPHE=
+R_OPTS} ${CLIENT_CERT_OPTS}"
+ CLIENT_CONF_BASE_LWIP=3D"${CLIENT_LWIP_OPTS} ${CLIENT_BASE_OPTS} ${CLIENT_=
+CIPHER_OPTS} ${CLIENT_CERT_OPTS}"
+
+@@ -121,3 +129,18 @@
+ SHOULD_PASS_4c=3D"no"
+ CLIENT_EXEC_4c=3D"${CLIENT_EXEC}"
+ CLIENT_CONF_4c=3D"${CLIENT_CONF_BASE} --remote 127.0.0.1 1196 udp --proto =
+udp --cipher AES-192-CBC --data-ciphers AES-128-CBC"
++
++TEST_NAME_5a=3D"t_server_null_client.sh-openvpn_current_multisocket_ipv4_t=
+cp"
++SHOULD_PASS_5a=3D"yes"
++CLIENT_EXEC_5a=3D"${CLIENT_EXEC}"
++CLIENT_CONF_5a=3D"${CLIENT_CONF_BASE} --remote 127.0.0.1 1197 tcp"
++
++TEST_NAME_5b=3D"t_server_null_client.sh-openvpn_current_multisocket_ipv6_u=
+dp"
++SHOULD_PASS_5b=3D"yes"
++CLIENT_EXEC_5b=3D"${CLIENT_EXEC}"
++CLIENT_CONF_5b=3D"${CLIENT_CONF_BASE} --remote ::1 1197 udp"
++
++TEST_NAME_5c=3D"t_server_null_client.sh-openvpn_current_multisocket_ipv6_t=
+cp_fail"
++SHOULD_PASS_5c=3D"no"
++CLIENT_EXEC_5c=3D"${CLIENT_EXEC}"
++CLIENT_CONF_5c=3D"${CLIENT_CONF_BASE} --remote ::1 1197 tcp"
 
 --
-kind regards,
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/919?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings
 
-Gert Doering
+Gerrit-Project: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: I4ebe1158c36a641888131e824f59004a0f8fb4c5
+Gerrit-Change-Number: 919
+Gerrit-PatchSet: 7
+Gerrit-Owner: mattock <sasepp@...2783...>
+Gerrit-Reviewer: cron2 <gert@...1296...>
+Gerrit-Reviewer: flichtenheld <frank@...2641...>
+Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-MessageType: newpatchset
 
+--rU9RH1QsSN8=
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<p>cron2 <strong>uploaded patch set #7</strong> to the change originally cr=
+eated by mattock.</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/91=
+9?usp=3Demail">View Change</a></p><p>The following approvals got outdated a=
+nd were removed:
+Code-Review+2 by cron2</p><pre style=3D"font-family: monospace,monospace; w=
+hite-space: pre-wrap;">t_server_null: add multi-socket testing<br><br>This =
+adds a new multi-socket server that listens on IPv4 and IPv6<br>localhost a=
+ddresses for TCP and UDP connections respectively. It also<br>adds two succ=
+ess tests and one failure test with wrong protocol defined<br>at the client=
+ side.<br><br>Change-Id: I4ebe1158c36a641888131e824f59004a0f8fb4c5<br>Signe=
+d-off-by: Samuli Sepp=C3=A4nen &lt;sasepp@...2705...&gt;<br>Acked-by: Gert =
+Doering &lt;gert@...1296...&gt;<br>Message-Id: &lt;20250708073359.32549-1-g=
+ert@...1296...&gt;<br>URL: https://www.mail-archive.com/openvpn-devel@...1697...=
+.sourceforge.net/msg32061.html<br>Signed-off-by: Gert Doering &lt;gert@...1386...=
+296...&gt;<br>---<br>M tests/t_server_null_default.rc<br>1 file changed, 27=
+ insertions(+), 4 deletions(-)<br><br></pre><pre style=3D"font-family: mono=
+space,monospace; white-space: pre-wrap;">git pull ssh://gerrit.openvpn.net:=
+29418/openvpn refs/changes/19/919/7</pre><pre style=3D"font-family: monospa=
+ce,monospace; white-space: pre-wrap;"><span>diff --git a/tests/t_server_nul=
+l_default.rc b/tests/t_server_null_default.rc</span><br><span>index 41ec591=
+..a1c68cd 100755</span><br><span>--- a/tests/t_server_null_default.rc</span=
+><br><span>+++ b/tests/t_server_null_default.rc</span><br><span>@@ -38,12 +=
+38,14 @@</span><br><span> MAX_CLIENTS=3D&quot;10&quot;</span><br><span> CLI=
+ENT_MATCH=3D&quot;Test-Client&quot;</span><br><span> SERVER_EXEC=3D&quot;${=
+top_builddir}/src/openvpn/openvpn&quot;</span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-SERVER_BASE_OPTS=3D&quot;--local 127.0.0.1 --dev tun --to=
+pology subnet --max-clients $MAX_CLIENTS --persist-tun --verb 3 --duplicate=
+-cn&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+SERVER_BAS=
+E_OPTS=3D&quot;--dev tun --topology subnet --max-clients $MAX_CLIENTS --per=
+sist-tun --verb 3 --duplicate-cn&quot;</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+SERVER_BIND_OPTS=3D&quot;--local 127.0.0.1&quot;</span><=
+br><span> SERVER_CIPHER_OPTS=3D&quot;&quot;</span><br><span> SERVER_CERT_OP=
+TS=3D&quot;--ca ${CA} --cert ${SERVER_CERT} --key ${SERVER_KEY} --tls-auth =
+${TA} 0&quot;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-SERVER_C=
+ONF_BASE=3D&quot;${SERVER_BASE_OPTS} ${SERVER_CIPHER_OPTS} ${SERVER_CERT_OP=
+TS}&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+SERVER_CON=
+F_BASE=3D&quot;${SERVER_BASE_OPTS} ${SERVER_CIPHER_OPTS} ${SERVER_CERT_OPTS=
+} ${SERVER_BIND_OPTS}&quot;</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+SERVER_CONF_BASE_MULTISOCKET=3D&quot;${SERVER_BASE_OPTS} ${SERVER_C=
+IPHER_OPTS} ${SERVER_CERT_OPTS}&quot;</span><br><span> </span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-TEST_SERVER_LIST=3D&quot;1 2 3&quot;</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+TEST_SERVER_LIST=3D&quot=
+;1 2 3 4&quot;</span><br><span> </span><br><span> SERVER_NAME_1=3D&quot;t_s=
+erver_null_server-1194_udp&quot;</span><br><span> SERVER_SERVER_1=3D&quot;-=
+-server 10.29.41.0 255.255.255.0&quot;</span><br><span>@@ -63,6 +65,12 @@</=
+span><br><span> SERVER_EXEC_3=3D&quot;${SERVER_EXEC}&quot;</span><br><span>=
+ SERVER_CONF_3=3D&quot;${SERVER_CONF_BASE} ${SERVER_SERVER_3} --lport 1196 =
+--proto udp --management 127.0.0.1 ${SERVER_MGMT_PORT_3} --dh none --cipher=
+ AES-192-CBC --data-ciphers DEFAULT:AES-192-CBC&quot;</span><br><span> </sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+SERVER_NAME_4=3D&quot;t=
+_server_null_server-1197_multisocket_ipv4_ipv6&quot;</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+SERVER_SERVER_4=3D&quot;--server 10.29.44=
+.0 255.255.255.0&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+SERVER_MGMT_PORT_4=3D&quot;11197&quot;</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+SERVER_EXEC_4=3D&quot;${SERVER_EXEC}&quot;</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+SERVER_CONF_4=3D&quot;${SERVER=
+_CONF_BASE_MULTISOCKET} ${SERVER_SERVER_4} --local 127.0.0.1 1197 tcp --loc=
+al ::1 1197 udp --management 127.0.0.1 ${SERVER_MGMT_PORT_4}&quot;</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> # Test cli=
+ent configurations</span><br><span> CLIENT_EXEC=3D&quot;${top_builddir}/src=
+/openvpn/openvpn&quot;</span><br><span> CLIENT_BASE_OPTS=3D&quot;--client -=
+-nobind --remote-cert-tls server --persist-tun --verb 3 --resolv-retry infi=
+nite --connect-retry-max 3 --server-poll-timeout 5 --explicit-exit-notify 3=
+ --script-security 2&quot;</span><br><span>@@ -72,7 +80,7 @@</span><br><spa=
+n> CLIENT_CIPHER_OPTS=3D&quot;&quot;</span><br><span> CLIENT_CERT_OPTS=3D&q=
+uot;--ca ${CA} --cert ${CLIENT_CERT} --key ${CLIENT_KEY} --tls-auth ${TA} 1=
+&quot;</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);=
+">-TEST_RUN_LIST=3D&quot;1 1L 2 2L 3 4a 4b 4c&quot;</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+TEST_RUN_LIST=3D&quot;1 1L 2 2L 3 4a 4b 4=
+c 5a 5b 5c&quot;</span><br><span> CLIENT_CONF_BASE=3D&quot;${CLIENT_NULL_OP=
+TS} ${CLIENT_BASE_OPTS} ${CLIENT_CIPHER_OPTS} ${CLIENT_CERT_OPTS}&quot;</sp=
+an><br><span> CLIENT_CONF_BASE_LWIP=3D&quot;${CLIENT_LWIP_OPTS} ${CLIENT_BA=
+SE_OPTS} ${CLIENT_CIPHER_OPTS} ${CLIENT_CERT_OPTS}&quot;</span><br><span> <=
+/span><br><span>@@ -121,3 +129,18 @@</span><br><span> SHOULD_PASS_4c=3D&quo=
+t;no&quot;</span><br><span> CLIENT_EXEC_4c=3D&quot;${CLIENT_EXEC}&quot;</sp=
+an><br><span> CLIENT_CONF_4c=3D&quot;${CLIENT_CONF_BASE} --remote 127.0.0.1=
+ 1196 udp --proto udp --cipher AES-192-CBC --data-ciphers AES-128-CBC&quot;=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+TEST_NAME_5a=3D&quot;t_server_null_cli=
+ent.sh-openvpn_current_multisocket_ipv4_tcp&quot;</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+SHOULD_PASS_5a=3D&quot;yes&quot;</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+CLIENT_EXEC_5a=3D&quot;${CLIENT_=
+EXEC}&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+CLIENT_C=
+ONF_5a=3D&quot;${CLIENT_CONF_BASE} --remote 127.0.0.1 1197 tcp&quot;</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+TEST_NAME_5b=3D&quot;t_server_null_client.sh-=
+openvpn_current_multisocket_ipv6_udp&quot;</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+SHOULD_PASS_5b=3D&quot;yes&quot;</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+CLIENT_EXEC_5b=3D&quot;${CLIENT_EXEC}&q=
+uot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+CLIENT_CONF_5b=
+=3D&quot;${CLIENT_CONF_BASE} --remote ::1 1197 udp&quot;</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+TEST_NAME_5c=3D&quot;t_server_null_client.sh-openvpn_curr=
+ent_multisocket_ipv6_tcp_fail&quot;</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+SHOULD_PASS_5c=3D&quot;no&quot;</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+CLIENT_EXEC_5c=3D&quot;${CLIENT_EXEC}&quot;</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+CLIENT_CONF_5c=3D&quot;=
+${CLIENT_CONF_BASE} --remote ::1 1197 tcp&quot;</span><br><span></span><br>=
+</pre><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/91=
+9?usp=3Demail">change 919</a>. To unsubscribe, or for help writing mail fil=
+ters, visit <a href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p=
+><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope =
+itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itempro=
+p=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/919?usp=3Demail"/><=
+meta itemprop=3D"name" content=3D"View Change"/></div></div>
+
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I4ebe1158c36a641888131e824f5=
+9004a0f8fb4c5 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 919 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 7 </div>
+<div style=3D"display:none"> Gerrit-Owner: mattock &lt;sasepp@...2783...&gt=
+; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
+ </div>
+<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
+1...&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
+.1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
+
+
+--rU9RH1QsSN8=--
 
