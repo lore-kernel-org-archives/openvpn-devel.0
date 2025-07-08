@@ -1,16 +1,10 @@
-From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Tue, 8 Jul 2025 07:33:36 +0000
+From: Gert Doering <gert@...1296...>
+Date: Tue,  8 Jul 2025 09:33:51 +0200
+Message-ID: <20250708073359.32549-1-gert@...1296...>
 In-Reply-To: <gerrit.1742993493000.I4ebe1158c36a641888131e824f59004a0f8fb4c5@...2715...>
 References: <gerrit.1742993493000.I4ebe1158c36a641888131e824f59004a0f8fb4c5@...2715...>
-Reply-To: gert@...1296..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, frank@...2641..., sasepp@...2783...
-Message-ID: <a58c75497921c635b900c20940a36ea9faaf46a0-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="vIwPi2SR/do="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: t_server_null: add
- multi-socket testing
+Subject: [Openvpn-devel] [PATCH v6] t_server_null: add multi-socket testing
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,94 +13,93 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: mattock <sasepp@...2783...>
-Cc: flichtenheld <frank@...2641...>, plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---vIwPi2SR/do=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+From: Samuli Seppänen <samuli.seppanen@...277...>
 
-Attention is currently required from: flichtenheld, mattock, plaisthos.
+This adds a new multi-socket server that listens on IPv4 and IPv6
+localhost addresses for TCP and UDP connections respectively. It also
+adds two success tests and one failure test with wrong protocol defined
+at the client side.
 
-cron2 has posted comments on this change. ( http://gerrit.openvpn.net/c/ope=
-nvpn/+/919?usp=3Demail )
+Change-Id: I4ebe1158c36a641888131e824f59004a0f8fb4c5
+Signed-off-by: Samuli Seppänen <sasepp@...2705...>
+Acked-by: Gert Doering <gert@...1296...>
+---
 
-Change subject: t_server_null: add multi-socket testing
-......................................................................
+This change was reviewed on Gerrit and approved by at least one
+developer. I request to merge it to master.
 
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/919
+This mail reflects revision 6 of this Change.
 
-Patch Set 6: Code-Review+2
+Acked-by according to Gerrit (reflected above):
+Gert Doering <gert@...1296...>
 
-
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/919?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings
-
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: I4ebe1158c36a641888131e824f59004a0f8fb4c5
-Gerrit-Change-Number: 919
-Gerrit-PatchSet: 6
-Gerrit-Owner: mattock <sasepp@...2783...>
-Gerrit-Reviewer: cron2 <gert@...1296...>
-Gerrit-Reviewer: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Attention: mattock <sasepp@...2783...>
-Gerrit-Comment-Date: Tue, 08 Jul 2025 07:33:36 +0000
-Gerrit-HasComments: No
-Gerrit-Has-Labels: Yes
-Gerrit-MessageType: comment
-
---vIwPi2SR/do=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<p> Attention is currently required from: flichtenheld, mattock, plaisthos.=
- </p>
-<p>Patch set 6:<span style=3D"border-radius: 3px; display: inline-block; ma=
-rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/919?usp=3Demail">Vi=
-ew Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To vie=
-w, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/919?usp=3Demail">=
-change 919</a>. To unsubscribe, or for help writing mail filters, visit <a =
-href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope=
- itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"act=
-ion" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=
-=3D"http://gerrit.openvpn.net/c/openvpn/+/919?usp=3Demail"/><meta itemprop=
-=3D"name" content=3D"View Change"/></div></div>
-
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I4ebe1158c36a641888131e824f5=
-9004a0f8fb4c5 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 919 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 6 </div>
-<div style=3D"display:none"> Gerrit-Owner: mattock &lt;sasepp@...2783...&gt=
-; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
- </div>
-<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
-1...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
-41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: mattock &lt;sasepp@...2867...=
-.&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Tue, 08 Jul 2025 07:33:36=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: No </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
-
-
---vIwPi2SR/do=--
+        
+diff --git a/tests/t_server_null_default.rc b/tests/t_server_null_default.rc
+index 41ec591..a1c68cd 100755
+--- a/tests/t_server_null_default.rc
++++ b/tests/t_server_null_default.rc
+@@ -38,12 +38,14 @@
+ MAX_CLIENTS="10"
+ CLIENT_MATCH="Test-Client"
+ SERVER_EXEC="${top_builddir}/src/openvpn/openvpn"
+-SERVER_BASE_OPTS="--local 127.0.0.1 --dev tun --topology subnet --max-clients $MAX_CLIENTS --persist-tun --verb 3 --duplicate-cn"
++SERVER_BASE_OPTS="--dev tun --topology subnet --max-clients $MAX_CLIENTS --persist-tun --verb 3 --duplicate-cn"
++SERVER_BIND_OPTS="--local 127.0.0.1"
+ SERVER_CIPHER_OPTS=""
+ SERVER_CERT_OPTS="--ca ${CA} --cert ${SERVER_CERT} --key ${SERVER_KEY} --tls-auth ${TA} 0"
+-SERVER_CONF_BASE="${SERVER_BASE_OPTS} ${SERVER_CIPHER_OPTS} ${SERVER_CERT_OPTS}"
++SERVER_CONF_BASE="${SERVER_BASE_OPTS} ${SERVER_CIPHER_OPTS} ${SERVER_CERT_OPTS} ${SERVER_BIND_OPTS}"
++SERVER_CONF_BASE_MULTISOCKET="${SERVER_BASE_OPTS} ${SERVER_CIPHER_OPTS} ${SERVER_CERT_OPTS}"
+ 
+-TEST_SERVER_LIST="1 2 3"
++TEST_SERVER_LIST="1 2 3 4"
+ 
+ SERVER_NAME_1="t_server_null_server-1194_udp"
+ SERVER_SERVER_1="--server 10.29.41.0 255.255.255.0"
+@@ -63,6 +65,12 @@
+ SERVER_EXEC_3="${SERVER_EXEC}"
+ SERVER_CONF_3="${SERVER_CONF_BASE} ${SERVER_SERVER_3} --lport 1196 --proto udp --management 127.0.0.1 ${SERVER_MGMT_PORT_3} --dh none --cipher AES-192-CBC --data-ciphers DEFAULT:AES-192-CBC"
+ 
++SERVER_NAME_4="t_server_null_server-1197_multisocket_ipv4_ipv6"
++SERVER_SERVER_4="--server 10.29.44.0 255.255.255.0"
++SERVER_MGMT_PORT_4="11197"
++SERVER_EXEC_4="${SERVER_EXEC}"
++SERVER_CONF_4="${SERVER_CONF_BASE_MULTISOCKET} ${SERVER_SERVER_4} --local 127.0.0.1 1197 tcp --local ::1 1197 udp --management 127.0.0.1 ${SERVER_MGMT_PORT_4}"
++
+ # Test client configurations
+ CLIENT_EXEC="${top_builddir}/src/openvpn/openvpn"
+ CLIENT_BASE_OPTS="--client --nobind --remote-cert-tls server --persist-tun --verb 3 --resolv-retry infinite --connect-retry-max 3 --server-poll-timeout 5 --explicit-exit-notify 3 --script-security 2"
+@@ -72,7 +80,7 @@
+ CLIENT_CIPHER_OPTS=""
+ CLIENT_CERT_OPTS="--ca ${CA} --cert ${CLIENT_CERT} --key ${CLIENT_KEY} --tls-auth ${TA} 1"
+ 
+-TEST_RUN_LIST="1 1L 2 2L 3 4a 4b 4c"
++TEST_RUN_LIST="1 1L 2 2L 3 4a 4b 4c 5a 5b 5c"
+ CLIENT_CONF_BASE="${CLIENT_NULL_OPTS} ${CLIENT_BASE_OPTS} ${CLIENT_CIPHER_OPTS} ${CLIENT_CERT_OPTS}"
+ CLIENT_CONF_BASE_LWIP="${CLIENT_LWIP_OPTS} ${CLIENT_BASE_OPTS} ${CLIENT_CIPHER_OPTS} ${CLIENT_CERT_OPTS}"
+ 
+@@ -121,3 +129,18 @@
+ SHOULD_PASS_4c="no"
+ CLIENT_EXEC_4c="${CLIENT_EXEC}"
+ CLIENT_CONF_4c="${CLIENT_CONF_BASE} --remote 127.0.0.1 1196 udp --proto udp --cipher AES-192-CBC --data-ciphers AES-128-CBC"
++
++TEST_NAME_5a="t_server_null_client.sh-openvpn_current_multisocket_ipv4_tcp"
++SHOULD_PASS_5a="yes"
++CLIENT_EXEC_5a="${CLIENT_EXEC}"
++CLIENT_CONF_5a="${CLIENT_CONF_BASE} --remote 127.0.0.1 1197 tcp"
++
++TEST_NAME_5b="t_server_null_client.sh-openvpn_current_multisocket_ipv6_udp"
++SHOULD_PASS_5b="yes"
++CLIENT_EXEC_5b="${CLIENT_EXEC}"
++CLIENT_CONF_5b="${CLIENT_CONF_BASE} --remote ::1 1197 udp"
++
++TEST_NAME_5c="t_server_null_client.sh-openvpn_current_multisocket_ipv6_tcp_fail"
++SHOULD_PASS_5c="no"
++CLIENT_EXEC_5c="${CLIENT_EXEC}"
++CLIENT_CONF_5c="${CLIENT_CONF_BASE} --remote ::1 1197 tcp"
 
