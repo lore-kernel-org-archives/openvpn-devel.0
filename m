@@ -1,14 +1,14 @@
 From: "d12fk (Code Review)" <gerrit@...515...>
-Date: Wed, 9 Jul 2025 10:25:02 +0000
+Date: Wed, 9 Jul 2025 10:25:23 +0000
 In-Reply-To: <gerrit.1751514980000.I1aabd62e60dd18408a57baccbb0f4ebd6d2f8d67@...2715...>
 References: <gerrit.1751514980000.I1aabd62e60dd18408a57baccbb0f4ebd6d2f8d67@...2715...>
 Reply-To: heiko@...515..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <f55567c8740fa03478329d4975ec842539ce06c5-EmailReplacePatchSet-HTML@...2715...>
+Message-ID: <df66f7e2c0a66ef8d5b8deccd144d31fd4fb2817-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="LvayX8rXrfk="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="7+ISBAKJy5c="; charset=UTF-8
 Subject: [Openvpn-devel] [S] Change in openvpn[master]: mac dns: compare
  servers before restoring backup
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -19,92 +19,32 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Cc: flichtenheld <frank@...2641...>, plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---LvayX8rXrfk=
+--7+ISBAKJy5c=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: d12fk, plaisthos.
+Attention is currently required from: flichtenheld, plaisthos.
 
-Hello flichtenheld, plaisthos,
-
-I'd like you to reexamine a change. Please visit
-
-    http://gerrit.openvpn.net/c/openvpn/+/1075?usp=3Demail
-
-to look at the new patch set (#4).
-
+d12fk has posted comments on this change. ( http://gerrit.openvpn.net/c/ope=
+nvpn/+/1075?usp=3Demail )
 
 Change subject: mac dns: compare servers before restoring backup
 ......................................................................
 
-mac dns: compare servers before restoring backup
 
-In case anything changed the global DNS server addresses, while the
-tunnel was connected, do not restore the backup of the global DNS
-configuration we made when connecting. Doing so would likely change
-DNS to something unexpected. Instead just clear the backup and leave
-a message in the log.
+Patch Set 3:
 
-Change-Id: I1aabd62e60dd18408a57baccbb0f4ebd6d2f8d67
-Signed-off-by: Heiko Hund <heiko@...2662...>
----
-M distro/dns-scripts/macos-dns-updown.sh
-1 file changed, 14 insertions(+), 4 deletions(-)
+(1 comment)
+
+Patchset:
+
+PS2:
+> Before running the test: [=E2=80=A6]
+Thanks
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/75/1075/4
-
-diff --git a/distro/dns-scripts/macos-dns-updown.sh b/distro/dns-scripts/ma=
-cos-dns-updown.sh
-index 56f1009..73bbee9 100644
---- a/distro/dns-scripts/macos-dns-updown.sh
-+++ b/distro/dns-scripts/macos-dns-updown.sh
-@@ -111,6 +111,10 @@
-     property_value State:/Network/Global/DNS SearchDomains
- }
-
-+function get_server_addresses {
-+    property_value "$(primary_dns_key)" ServerAddresses
-+}
-+
- function set_search_domains {
-     [ -n "$1" ] || return
-     local dns_key=3D$(primary_dns_key)
-@@ -239,11 +243,10 @@
-
- function unset_dns {
-     local n=3D"$(find_compat_profile)"
--    local addresses=3D"$(addresses_string $n)"
--    local search_domains=3D"$(search_domains_string $n)"
-     local match_domains=3D"$(match_domains_string $n)"
-
-     if [ -n "$match_domains" ]; then
-+        local search_domains=3D"$(search_domains_string $n)"
-         echo "remove ${itf_dns_key}" | /usr/sbin/scutil
-         unset_search_domains "$search_domains"
-     else
-@@ -252,8 +255,15 @@
-         [[ "${dns_backup_key}" =3D~ ${dev}/ ]] || return
-
-         local cmds=3D""
--        cmds+=3D"get ${dns_backup_key}\n"
--        cmds+=3D"set $(primary_dns_key)\n"
-+        local servers=3D"$(get_server_addresses)"
-+        local addresses=3D"$(addresses_string $n)"
-+        # Only restore backup if the server addresses match
-+        if [ "${servers}" =3D "${addresses}" ]; then
-+            cmds+=3D"get ${dns_backup_key}\n"
-+            cmds+=3D"set $(primary_dns_key)\n"
-+        else
-+            echo "not restoring global DNS configuration, server addresses=
- have changed"
-+        fi
-         cmds+=3D"remove ${dns_backup_key}\n"
-         echo -e "${cmds}" | /usr/sbin/scutil
-     fi
 
 --
 To view, visit http://gerrit.openvpn.net/c/openvpn/+/1075?usp=3Demail
@@ -115,93 +55,48 @@ Gerrit-Project: openvpn
 Gerrit-Branch: master
 Gerrit-Change-Id: I1aabd62e60dd18408a57baccbb0f4ebd6d2f8d67
 Gerrit-Change-Number: 1075
-Gerrit-PatchSet: 4
+Gerrit-PatchSet: 3
 Gerrit-Owner: d12fk <heiko@...515...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: d12fk <heiko@...515...>
-Gerrit-MessageType: newpatchset
+Gerrit-Attention: flichtenheld <frank@...2641...>
+Gerrit-Comment-Date: Wed, 09 Jul 2025 10:25:23 +0000
+Gerrit-HasComments: Yes
+Gerrit-Has-Labels: No
+Comment-In-Reply-To: flichtenheld <frank@...2641...>
+Comment-In-Reply-To: d12fk <heiko@...515...>
+Gerrit-MessageType: comment
 
---LvayX8rXrfk=
+--7+ISBAKJy5c=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p> Attention is currently required from: d12fk, plaisthos. </p>
-<p>d12fk <strong>uploaded patch set #4</strong> to this change.</p><p><a hr=
-ef=3D"http://gerrit.openvpn.net/c/openvpn/+/1075?usp=3Demail">View Change</=
-a></p><pre style=3D"font-family: monospace,monospace; white-space: pre-wrap=
-;">mac dns: compare servers before restoring backup<br><br>In case anything=
- changed the global DNS server addresses, while the<br>tunnel was connected=
-, do not restore the backup of the global DNS<br>configuration we made when=
- connecting. Doing so would likely change<br>DNS to something unexpected. I=
-nstead just clear the backup and leave<br>a message in the log.<br><br>Chan=
-ge-Id: I1aabd62e60dd18408a57baccbb0f4ebd6d2f8d67<br>Signed-off-by: Heiko Hu=
-nd &lt;heiko@...2662...&gt;<br>---<br>M distro/dns-scripts/macos-dns-updown=
-.sh<br>1 file changed, 14 insertions(+), 4 deletions(-)<br><br></pre><pre s=
-tyle=3D"font-family: monospace,monospace; white-space: pre-wrap;">git pull =
-ssh://gerrit.openvpn.net:29418/openvpn refs/changes/75/1075/4</pre><pre sty=
-le=3D"font-family: monospace,monospace; white-space: pre-wrap;"><span>diff =
---git a/distro/dns-scripts/macos-dns-updown.sh b/distro/dns-scripts/macos-d=
-ns-updown.sh</span><br><span>index 56f1009..73bbee9 100644</span><br><span>=
---- a/distro/dns-scripts/macos-dns-updown.sh</span><br><span>+++ b/distro/d=
-ns-scripts/macos-dns-updown.sh</span><br><span>@@ -111,6 +111,10 @@</span><=
-br><span>     property_value State:/Network/Global/DNS SearchDomains</span>=
-<br><span> }</span><br><span> </span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+function get_server_addresses {</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+    property_value &quot;$(primary_dns_key)&quot; Se=
-rverAddresses</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> functi=
-on set_search_domains {</span><br><span>     [ -n &quot;$1&quot; ] || retur=
-n</span><br><span>     local dns_key=3D$(primary_dns_key)</span><br><span>@=
-@ -239,11 +243,10 @@</span><br><span> </span><br><span> function unset_dns =
-{</span><br><span>     local n=3D&quot;$(find_compat_profile)&quot;</span><=
-br><span style=3D"color: hsl(0, 100%, 40%);">-    local addresses=3D&quot;$=
-(addresses_string $n)&quot;</span><br><span style=3D"color: hsl(0, 100%, 40=
-%);">-    local search_domains=3D&quot;$(search_domains_string $n)&quot;</s=
-pan><br><span>     local match_domains=3D&quot;$(match_domains_string $n)&q=
-uot;</span><br><span> </span><br><span>     if [ -n &quot;$match_domains&qu=
-ot; ]; then</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        =
-local search_domains=3D&quot;$(search_domains_string $n)&quot;</span><br><s=
-pan>         echo &quot;remove ${itf_dns_key}&quot; | /usr/sbin/scutil</spa=
-n><br><span>         unset_search_domains &quot;$search_domains&quot;</span=
-><br><span>     else</span><br><span>@@ -252,8 +255,15 @@</span><br><span> =
-        [[ &quot;${dns_backup_key}&quot; =3D~ ${dev}/ ]] || return</span><b=
-r><span> </span><br><span>         local cmds=3D&quot;&quot;</span><br><spa=
-n style=3D"color: hsl(0, 100%, 40%);">-        cmds+=3D&quot;get ${dns_back=
-up_key}\n&quot;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-      =
-  cmds+=3D&quot;set $(primary_dns_key)\n&quot;</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+        local servers=3D&quot;$(get_server_addre=
-sses)&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        =
-local addresses=3D&quot;$(addresses_string $n)&quot;</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+        # Only restore backup if the serv=
-er addresses match</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-       if [ &quot;${servers}&quot; =3D &quot;${addresses}&quot; ]; then</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+            cmds+=3D&qu=
-ot;get ${dns_backup_key}\n&quot;</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+            cmds+=3D&quot;set $(primary_dns_key)\n&quot;</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+        else</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+            echo &quot;not resto=
-ring global DNS configuration, server addresses have changed&quot;</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+        fi</span><br><span> =
-        cmds+=3D&quot;remove ${dns_backup_key}\n&quot;</span><br><span>    =
-     echo -e &quot;${cmds}&quot; | /usr/sbin/scutil</span><br><span>     fi=
-</span><br><span></span><br></pre><p>To view, visit <a href=3D"http://gerri=
-t.openvpn.net/c/openvpn/+/1075?usp=3Demail">change 1075</a>. To unsubscribe=
-, or for help writing mail filters, visit <a href=3D"http://gerrit.openvpn.=
-net/settings">settings</a>.</p><div itemscope itemtype=3D"http://schema.org=
-/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://schema=
-.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c=
-/openvpn/+/1075?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Chang=
-e"/></div></div>
+<p> Attention is currently required from: flichtenheld, plaisthos. </p>
+<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1075?usp=3Demail">View =
+Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0;">=
+<li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-styl=
+e: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p styl=
+e=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/=
+1075?tab=3Dcomments">Patch Set #2:</a> </p><p><blockquote style=3D"border-l=
+eft: 1px solid #aaa; margin: 10px 0; padding: 0 10px;">Before running the t=
+est: [=E2=80=A6]</blockquote></p><p style=3D"white-space: pre-wrap; word-wr=
+ap: break-word;">Thanks</p></li></ul></li></ul><p>To view, visit <a href=3D=
+"http://gerrit.openvpn.net/c/openvpn/+/1075?usp=3Demail">change 1075</a>. T=
+o unsubscribe, or for help writing mail filters, visit <a href=3D"http://ge=
+rrit.openvpn.net/settings">settings</a>.</p><div itemscope itemtype=3D"http=
+://schema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"=
+http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.=
+openvpn.net/c/openvpn/+/1075?usp=3Demail"/><meta itemprop=3D"name" content=
+=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
 <div style=3D"display:none"> Gerrit-Change-Id: I1aabd62e60dd18408a57baccbb0=
 f4ebd6d2f8d67 </div>
 <div style=3D"display:none"> Gerrit-Change-Number: 1075 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 4 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 3 </div>
 <div style=3D"display:none"> Gerrit-Owner: d12fk &lt;heiko@...515...&gt; </=
 div>
 <div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
@@ -212,10 +107,18 @@ div>
 ts.sourceforge.net&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
 ..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: d12fk &lt;heiko@...515...&gt=
-; </div>
-<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
+<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
+41...&gt; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Wed, 09 Jul 2025 10:25:23=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: No </div>
+<div style=3D"display:none"> Comment-In-Reply-To: flichtenheld &lt;frank@...1186...=
+.2641...&gt; </div>
+<div style=3D"display:none"> Comment-In-Reply-To: d12fk &lt;heiko@...515...=
+&gt; </div>
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
 
 
---LvayX8rXrfk=--
+--7+ISBAKJy5c=--
 
