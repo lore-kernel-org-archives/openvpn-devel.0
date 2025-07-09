@@ -1,16 +1,16 @@
-From: "plaisthos (Code Review)" <gerrit@...515...>
-Date: Wed, 9 Jul 2025 09:25:26 +0000
-In-Reply-To: <gerrit.1751514980000.I7adfaa08df6a17545cca8264d7230b5e65e49719@...2715...>
-References: <gerrit.1751514980000.I7adfaa08df6a17545cca8264d7230b5e65e49719@...2715...>
-Reply-To: arne-openvpn@...1227..., heiko@...515...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <4f0a1b66333ffc0b9233f4eb44cb355216535e96-EmailReviewComments-HTML@...2715...>
+From: "flichtenheld (Code Review)" <gerrit@...515...>
+Date: Wed, 9 Jul 2025 10:08:40 +0000
+In-Reply-To: <gerrit.1751514980000.I1aabd62e60dd18408a57baccbb0f4ebd6d2f8d67@...2715...>
+References: <gerrit.1751514980000.I1aabd62e60dd18408a57baccbb0f4ebd6d2f8d67@...2715...>
+Reply-To: frank@...2641..., arne-openvpn@...1227..., heiko@...515...,
+ openvpn-devel@lists.sourceforge.net
+Message-ID: <c6f484299d7706e0a05519017b017b994bc5ee35-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="W7w+tYdmI5M="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: mac dns: do not run
- dns-updown in parallel
+Content-Type: multipart/alternative; boundary="DRws49qh9wg="; charset=UTF-8
+Subject: [Openvpn-devel] [S] Change in openvpn[master]: mac dns: compare
+ servers before restoring backup
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,89 +20,180 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 To: d12fk <heiko@...515...>
-Cc: flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---W7w+tYdmI5M=
+--DRws49qh9wg=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: d12fk, flichtenheld.
+Attention is currently required from: d12fk, plaisthos.
 
-plaisthos has posted comments on this change. ( http://gerrit.openvpn.net/c=
-/openvpn/+/1076?usp=3Demail )
+flichtenheld has posted comments on this change. ( http://gerrit.openvpn.ne=
+t/c/openvpn/+/1075?usp=3Demail )
 
-Change subject: mac dns: do not run dns-updown in parallel
+Change subject: mac dns: compare servers before restoring backup
 ......................................................................
 
 
-Patch Set 3:
+Patch Set 2: Code-Review-2
 
 (1 comment)
 
-File distro/dns-scripts/macos-dns-updown.sh:
+Patchset:
 
-http://gerrit.openvpn.net/c/openvpn/+/1076/comment/909b8361_68ade6ca :
-PS2, Line 30: lockfile=3D/tmp/openvpn-dns-updown.lock
-> Done
-Yeah. YOu probably did more reaseach than me. I just thought that there is =
-probably a better place than /tmp/
+PS2:
+> Could you please also post the output of `show State:/Network/Service/034=
+7C55F-C172-49FF-BECC-C533F0 [=E2=80=A6]
+Before running the test:
+
+```
+> show State:/Network/Service/0347C55F-C172-49FF-BECC-C533F04B4B13/DNS
+<dictionary> {
+  DomainName : flow.local
+  ServerAddresses : <array> {
+    0 : 172.31.32.1
+  }
+}
+> show State:/Network/Global/DNS
+<dictionary> {
+  SearchDomains : <array> {
+    0 : flow.local
+  }
+  ServerAddresses : <array> {
+    0 : 10.8.144.10
+    1 : 10.8.160.10
+    2 : 172.31.32.1
+  }
+  __CONFIGURATION_ID__ : Default: 0
+  __FLAGS__ : 2
+  __ORDER__ : 0
+}
+> show Setup:/Network/Service/0347C55F-C172-49FF-BECC-C533F04B4B13/DNS
+<dictionary> {
+  ServerAddresses : <array> {
+    0 : 10.8.144.10
+    1 : 10.8.160.10
+    2 : 172.31.32.1
+  }
+}
+```
+
+After running the test:
+
+```
+> show State:/Network/Service/0347C55F-C172-49FF-BECC-C533F04B4B13/DNS
+<dictionary> {
+  DomainName : flow.local
+  ServerAddresses : <array> {
+    0 : 172.31.32.1
+  }
+}
+> show State:/Network/Global/DNS
+<dictionary> {
+  SearchDomains : <array> {
+    0 : open.vpn
+  }
+  SearchOrder : 5000
+  ServerAddresses : <array> {
+    0 : 10.194.0.1
+  }
+  __CONFIGURATION_ID__ : Default: 0
+  __FLAGS__ : 2
+  __ORDER__ : 0
+}
+> show Setup:/Network/Service/0347C55F-C172-49FF-BECC-C533F04B4B13/DNS
+<dictionary> {
+  SearchDomains : <array> {
+    0 : open.vpn
+  }
+  SearchOrder : 5000
+  ServerAddresses : <array> {
+    0 : 10.194.0.1
+    1 : fd00:abcd:194::1
+  }
+}
+```
 
 
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1076?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1075?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings
 
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: I7adfaa08df6a17545cca8264d7230b5e65e49719
-Gerrit-Change-Number: 1076
-Gerrit-PatchSet: 3
+Gerrit-Change-Id: I1aabd62e60dd18408a57baccbb0f4ebd6d2f8d67
+Gerrit-Change-Number: 1075
+Gerrit-PatchSet: 2
 Gerrit-Owner: d12fk <heiko@...515...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: flichtenheld <frank@...2641...>
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
 Gerrit-Attention: d12fk <heiko@...515...>
-Gerrit-Comment-Date: Wed, 09 Jul 2025 09:25:26 +0000
+Gerrit-Comment-Date: Wed, 09 Jul 2025 10:08:40 +0000
 Gerrit-HasComments: Yes
-Gerrit-Has-Labels: No
-Comment-In-Reply-To: plaisthos <arne-openvpn@...1227...>
+Gerrit-Has-Labels: Yes
+Comment-In-Reply-To: flichtenheld <frank@...2641...>
 Comment-In-Reply-To: d12fk <heiko@...515...>
 Gerrit-MessageType: comment
 
---W7w+tYdmI5M=
+--DRws49qh9wg=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p> Attention is currently required from: d12fk, flichtenheld. </p>
-<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1076?usp=3Demail">View =
-Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0;">=
-<li style=3D"margin: 0; padding: 0;"><p>File distro/dns-scripts/macos-dns-u=
-pdown.sh:</p><ul style=3D"list-style: none; padding: 0;"><li style=3D"margi=
-n: 0; padding: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"htt=
-p://gerrit.openvpn.net/c/openvpn/+/1076/comment/909b8361_68ade6ca">Patch Se=
-t #2, Line 30:</a> <code style=3D"font-family:monospace,monospace">lockfile=
-=3D/tmp/openvpn-dns-updown.lock</code></p><p><blockquote style=3D"border-le=
-ft: 1px solid #aaa; margin: 10px 0; padding: 0 10px;">Done</blockquote></p>=
-<p style=3D"white-space: pre-wrap; word-wrap: break-word;">Yeah. YOu probab=
-ly did more reaseach than me. I just thought that there is probably a bette=
-r place than /tmp/</p></li></ul></li></ul><p>To view, visit <a href=3D"http=
-://gerrit.openvpn.net/c/openvpn/+/1076?usp=3Demail">change 1076</a>. To uns=
-ubscribe, or for help writing mail filters, visit <a href=3D"http://gerrit.=
-openvpn.net/settings">settings</a>.</p><div itemscope itemtype=3D"http://sc=
-hema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http:=
-//schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openv=
-pn.net/c/openvpn/+/1076?usp=3Demail"/><meta itemprop=3D"name" content=3D"Vi=
-ew Change"/></div></div>
+<p> Attention is currently required from: d12fk, plaisthos. </p>
+<p>Patch set 2:<span style=3D"border-radius: 3px; display: inline-block; ma=
+rgin: 0 2px; padding: 4px;background-color: #ffd4d4;">Code-Review -2</span>=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1075?usp=3Demail">V=
+iew Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: =
+0;"><li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-=
+style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p =
+style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvp=
+n/+/1075?tab=3Dcomments">Patch Set #2:</a> </p><p><blockquote style=3D"bord=
+er-left: 1px solid #aaa; margin: 10px 0; padding: 0 10px;">Could you please=
+ also post the output of `show State:/Network/Service/0347C55F-C172-49FF-BE=
+CC-C533F0 [=E2=80=A6]</blockquote></p><p style=3D"white-space: pre-wrap; wo=
+rd-wrap: break-word;">Before running the test:</p><pre style=3D"font-family=
+: monospace,monospace; white-space: pre-wrap;">```<br>&gt; show State:/Netw=
+ork/Service/0347C55F-C172-49FF-BECC-C533F04B4B13/DNS<br>&lt;dictionary&gt; =
+{<br>  DomainName : flow.local<br>  ServerAddresses : &lt;array&gt; {<br>  =
+  0 : 172.31.32.1<br>  }<br>}<br>&gt; show State:/Network/Global/DNS<br>&lt=
+;dictionary&gt; {<br>  SearchDomains : &lt;array&gt; {<br>    0 : flow.loca=
+l<br>  }<br>  ServerAddresses : &lt;array&gt; {<br>    0 : 10.8.144.10<br> =
+   1 : 10.8.160.10<br>    2 : 172.31.32.1<br>  }<br>  __CONFIGURATION_ID__ =
+: Default: 0<br>  __FLAGS__ : 2<br>  __ORDER__ : 0<br>}<br>&gt; show Setup:=
+/Network/Service/0347C55F-C172-49FF-BECC-C533F04B4B13/DNS<br>&lt;dictionary=
+&gt; {<br>  ServerAddresses : &lt;array&gt; {<br>    0 : 10.8.144.10<br>   =
+ 1 : 10.8.160.10<br>    2 : 172.31.32.1<br>  }<br>}<br>```</pre><p style=3D=
+"white-space: pre-wrap; word-wrap: break-word;">After running the test:</p>=
+<pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;">```=
+<br>&gt; show State:/Network/Service/0347C55F-C172-49FF-BECC-C533F04B4B13/D=
+NS<br>&lt;dictionary&gt; {<br>  DomainName : flow.local<br>  ServerAddresse=
+s : &lt;array&gt; {<br>    0 : 172.31.32.1<br>  }<br>}<br>&gt; show State:/=
+Network/Global/DNS<br>&lt;dictionary&gt; {<br>  SearchDomains : &lt;array&g=
+t; {<br>    0 : open.vpn<br>  }<br>  SearchOrder : 5000<br>  ServerAddresse=
+s : &lt;array&gt; {<br>    0 : 10.194.0.1<br>  }<br>  __CONFIGURATION_ID__ =
+: Default: 0<br>  __FLAGS__ : 2<br>  __ORDER__ : 0<br>}<br>&gt; show Setup:=
+/Network/Service/0347C55F-C172-49FF-BECC-C533F04B4B13/DNS<br>&lt;dictionary=
+&gt; {<br>  SearchDomains : &lt;array&gt; {<br>    0 : open.vpn<br>  }<br> =
+ SearchOrder : 5000<br>  ServerAddresses : &lt;array&gt; {<br>    0 : 10.19=
+4.0.1<br>    1 : fd00:abcd:194::1<br>  }<br>}<br>```</pre></li></ul></li></=
+ul><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1075?=
+usp=3Demail">change 1075</a>. To unsubscribe, or for help writing mail filt=
+ers, visit <a href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p>=
+<div itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope i=
+temprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=
+=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1075?usp=3Demail"/><=
+meta itemprop=3D"name" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I7adfaa08df6a17545cca8264d72=
-30b5e65e49719 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1076 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 3 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I1aabd62e60dd18408a57baccbb0=
+f4ebd6d2f8d67 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1075 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
 <div style=3D"display:none"> Gerrit-Owner: d12fk &lt;heiko@...515...&gt; </=
 div>
 <div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
@@ -111,20 +202,20 @@ div>
 .1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
-41...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: d12fk &lt;heiko@...515...&gt=
 ; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Wed, 09 Jul 2025 09:25:26=
+<div style=3D"display:none"> Gerrit-Comment-Date: Wed, 09 Jul 2025 10:08:40=
  +0000 </div>
 <div style=3D"display:none"> Gerrit-HasComments: Yes </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: No </div>
-<div style=3D"display:none"> Comment-In-Reply-To: plaisthos &lt;arne-openvp=
-n@...1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
+<div style=3D"display:none"> Comment-In-Reply-To: flichtenheld &lt;frank@...1186...=
+.2641...&gt; </div>
 <div style=3D"display:none"> Comment-In-Reply-To: d12fk &lt;heiko@...515...=
 &gt; </div>
 <div style=3D"display:none"> Gerrit-MessageType: comment </div>
 
 
---W7w+tYdmI5M=--
+--DRws49qh9wg=--
 
