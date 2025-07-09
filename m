@@ -1,16 +1,16 @@
-From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Wed, 9 Jul 2025 07:46:38 +0000
-In-Reply-To: <gerrit.1751571694000.I7e9a0c668e0950257632452cfd9eeb236f0120f2@...2715...>
-References: <gerrit.1751571694000.I7e9a0c668e0950257632452cfd9eeb236f0120f2@...2715...>
-Reply-To: gert@...1296..., arne-openvpn@...1227..., heiko@...515...,
+From: "d12fk (Code Review)" <gerrit@...515...>
+Date: Wed, 9 Jul 2025 08:57:04 +0000
+In-Reply-To: <gerrit.1751514980000.I7adfaa08df6a17545cca8264d7230b5e65e49719@...2715...>
+References: <gerrit.1751514980000.I7adfaa08df6a17545cca8264d7230b5e65e49719@...2715...>
+Reply-To: heiko@...515..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <c718ea059e79e57d81d3835d4db1f9a9edb207e4-EmailReplacePatchSet-HTML@...2715...>
+Message-ID: <d75956ca0364ae238705f0643dd5e09d4dbb69e7-EmailReplacePatchSet-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="PQk+VNeLQKM="; charset=UTF-8
-Subject: [Openvpn-devel] [XS] Change in openvpn[master]: dns: do not run
- updown scripts with lwipovpn
+Content-Type: multipart/alternative; boundary="dQNAIfpOpc0="; charset=UTF-8
+Subject: [Openvpn-devel] [S] Change in openvpn[master]: mac dns: do not run
+ dns-updown in parallel
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,140 +19,151 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: d12fk <heiko@...515...>, plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>
+To: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---PQk+VNeLQKM=
+--dQNAIfpOpc0=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-cron2 has uploaded a new patch set (#3) to the change originally created by=
- d12fk. ( http://gerrit.openvpn.net/c/openvpn/+/1077?usp=3Demail )
+Attention is currently required from: flichtenheld, plaisthos.
 
-The following approvals got outdated and were removed:
-Code-Review+2 by plaisthos
+Hello flichtenheld, plaisthos,
+
+I'd like you to reexamine a change. Please visit
+
+    http://gerrit.openvpn.net/c/openvpn/+/1076?usp=3Demail
+
+to look at the new patch set (#3).
 
 
-Change subject: dns: do not run updown scripts with lwipovpn
+Change subject: mac dns: do not run dns-updown in parallel
 ......................................................................
 
-dns: do not run updown scripts with lwipovpn
+mac dns: do not run dns-updown in parallel
 
-Running the script doesn't make sense with the AFUNIX dev node, so we
-simply clear any scripts that have been set before.
+In case more than one openvpn connection is coming up or going down at
+the same time, there is potential for breakage, since the operations
+performed are not atomic.
 
-Change-Id: I7e9a0c668e0950257632452cfd9eeb236f0120f2
+Introduce a locking mechanism, which let's scripts run in sequence, to
+prevent races between them.
+
+Change-Id: I7adfaa08df6a17545cca8264d7230b5e65e49719
 Signed-off-by: Heiko Hund <heiko@...2662...>
-Acked-by: Arne Schwabe <arne-openvpn@...1227...>
-Message-Id: <20250708185210.30421-1-gert@...1296...>
-URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg32=
-069.html
-Signed-off-by: Gert Doering <gert@...1296...>
 ---
-M src/openvpn/options.c
-1 file changed, 8 insertions(+), 0 deletions(-)
+M distro/dns-scripts/macos-dns-updown.sh
+1 file changed, 17 insertions(+), 0 deletions(-)
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/77/1077/3
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/76/1076/3
 
-diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index af097f8..0662b49 100644
---- a/src/openvpn/options.c
-+++ b/src/openvpn/options.c
-@@ -61,6 +61,7 @@
- #include "xkey_common.h"
- #include "dco.h"
- #include "options_util.h"
-+#include "tun_afunix.h"
+diff --git a/distro/dns-scripts/macos-dns-updown.sh b/distro/dns-scripts/ma=
+cos-dns-updown.sh
+index 282b034..065a725 100644
+--- a/distro/dns-scripts/macos-dns-updown.sh
++++ b/distro/dns-scripts/macos-dns-updown.sh
+@@ -26,6 +26,23 @@
+ #   dns_server_1_sni dns.mycorp.in
+ #
 
- #include <ctype.h>
-
-@@ -3593,6 +3594,13 @@
-     struct gc_arena gc =3D gc_new();
-     struct dns_options *dns =3D &o->dns_options;
-
-+    if (is_tun_afunix(o->dev_node))
-+    {
-+        /* Disable running  dns-updown script with lwipovpn */
-+        dns->updown_flags =3D DNS_UPDOWN_NO_FLAGS;
-+        dns->updown =3D NULL;
-+    }
++lockdir=3D/var/lock
++if [ ! -d "${lockdir}" ]; then
++    /bin/mkdir "${lockdir}"
++    /bin/chmod 1777 "${lockdir}"
++fi
 +
-     if (dns->servers || dns_updown_user_set(dns) || dns_updown_forced(dns))
-     {
-         /* Clean up env from --dhcp-option DNS config */
++i=3D1
++lockfile=3D"${lockdir}/openvpn-dns-updown.lock"
++while ! /usr/bin/shlock -f $lockfile -p $$; do
++    if [ $((++i)) -gt 10 ]; then
++        echo "dns-updown failed, could not acquire lock"
++        exit 1
++    fi
++    sleep 0.2
++done
++trap "/bin/rm -f ${lockfile}" EXIT
++
+ [ -z "${dns_vars_file}" ] || . "${dns_vars_file}"
+
+ itf_dns_key=3D"State:/Network/Service/openvpn-${dev}/DNS"
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1077?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1076?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings
 
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: I7e9a0c668e0950257632452cfd9eeb236f0120f2
-Gerrit-Change-Number: 1077
+Gerrit-Change-Id: I7adfaa08df6a17545cca8264d7230b5e65e49719
+Gerrit-Change-Number: 1076
 Gerrit-PatchSet: 3
 Gerrit-Owner: d12fk <heiko@...515...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Attention: flichtenheld <frank@...2641...>
 Gerrit-MessageType: newpatchset
 
---PQk+VNeLQKM=
+--dQNAIfpOpc0=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p>cron2 <strong>uploaded patch set #3</strong> to the change originally cr=
-eated by d12fk.</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1077=
-?usp=3Demail">View Change</a></p><p>The following approvals got outdated an=
-d were removed:
-Code-Review+2 by plaisthos</p><pre style=3D"font-family: monospace,monospac=
-e; white-space: pre-wrap;">dns: do not run updown scripts with lwipovpn<br>=
-<br>Running the script doesn&#39;t make sense with the AFUNIX dev node, so =
-we<br>simply clear any scripts that have been set before.<br><br>Change-Id:=
- I7e9a0c668e0950257632452cfd9eeb236f0120f2<br>Signed-off-by: Heiko Hund &lt=
-;heiko@...2662...&gt;<br>Acked-by: Arne Schwabe &lt;arne-openvpn@...1227...=
-&gt;<br>Message-Id: &lt;20250708185210.30421-1-gert@...1296...&gt;<br>URL: =
-https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg32069.h=
-tml<br>Signed-off-by: Gert Doering &lt;gert@...1296...&gt;<br>---<br>M src/=
-openvpn/options.c<br>1 file changed, 8 insertions(+), 0 deletions(-)<br><br=
-></pre><pre style=3D"font-family: monospace,monospace; white-space: pre-wra=
-p;">git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/77/1077/3<=
-/pre><pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;=
-"><span>diff --git a/src/openvpn/options.c b/src/openvpn/options.c</span><b=
-r><span>index af097f8..0662b49 100644</span><br><span>--- a/src/openvpn/opt=
-ions.c</span><br><span>+++ b/src/openvpn/options.c</span><br><span>@@ -61,6=
- +61,7 @@</span><br><span> #include &quot;xkey_common.h&quot;</span><br><sp=
-an> #include &quot;dco.h&quot;</span><br><span> #include &quot;options_util=
-.h&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#include &q=
-uot;tun_afunix.h&quot;</span><br><span> </span><br><span> #include &lt;ctyp=
-e.h&gt;</span><br><span> </span><br><span>@@ -3593,6 +3594,13 @@</span><br>=
-<span>     struct gc_arena gc =3D gc_new();</span><br><span>     struct dns=
-_options *dns =3D &amp;o-&gt;dns_options;</span><br><span> </span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+    if (is_tun_afunix(o-&gt;dev_nod=
-e))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+        /* Disable running  dn=
-s-updown script with lwipovpn */</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+        dns-&gt;updown_flags =3D DNS_UPDOWN_NO_FLAGS;</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+        dns-&gt;updown =3D N=
-ULL;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span>     if (dns=
--&gt;servers || dns_updown_user_set(dns) || dns_updown_forced(dns))</span><=
-br><span>     {</span><br><span>         /* Clean up env from --dhcp-option=
- DNS config */</span><br><span></span><br></pre><p>To view, visit <a href=
-=3D"http://gerrit.openvpn.net/c/openvpn/+/1077?usp=3Demail">change 1077</a>=
-. To unsubscribe, or for help writing mail filters, visit <a href=3D"http:/=
-/gerrit.openvpn.net/settings">settings</a>.</p><div itemscope itemtype=3D"h=
-ttp://schema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=
-=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://ger=
-rit.openvpn.net/c/openvpn/+/1077?usp=3Demail"/><meta itemprop=3D"name" cont=
-ent=3D"View Change"/></div></div>
+<p> Attention is currently required from: flichtenheld, plaisthos. </p>
+<p>d12fk <strong>uploaded patch set #3</strong> to this change.</p><p><a hr=
+ef=3D"http://gerrit.openvpn.net/c/openvpn/+/1076?usp=3Demail">View Change</=
+a></p><pre style=3D"font-family: monospace,monospace; white-space: pre-wrap=
+;">mac dns: do not run dns-updown in parallel<br><br>In case more than one =
+openvpn connection is coming up or going down at<br>the same time, there is=
+ potential for breakage, since the operations<br>performed are not atomic.<=
+br><br>Introduce a locking mechanism, which let&#39;s scripts run in sequen=
+ce, to<br>prevent races between them.<br><br>Change-Id: I7adfaa08df6a17545c=
+ca8264d7230b5e65e49719<br>Signed-off-by: Heiko Hund &lt;heiko@...2662...&gt=
+;<br>---<br>M distro/dns-scripts/macos-dns-updown.sh<br>1 file changed, 17 =
+insertions(+), 0 deletions(-)<br><br></pre><pre style=3D"font-family: monos=
+pace,monospace; white-space: pre-wrap;">git pull ssh://gerrit.openvpn.net:2=
+9418/openvpn refs/changes/76/1076/3</pre><pre style=3D"font-family: monospa=
+ce,monospace; white-space: pre-wrap;"><span>diff --git a/distro/dns-scripts=
+/macos-dns-updown.sh b/distro/dns-scripts/macos-dns-updown.sh</span><br><sp=
+an>index 282b034..065a725 100644</span><br><span>--- a/distro/dns-scripts/m=
+acos-dns-updown.sh</span><br><span>+++ b/distro/dns-scripts/macos-dns-updow=
+n.sh</span><br><span>@@ -26,6 +26,23 @@</span><br><span> #   dns_server_1_s=
+ni dns.mycorp.in</span><br><span> #</span><br><span> </span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+lockdir=3D/var/lock</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+if [ ! -d &quot;${lockdir}&quot; ]; then<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+    /bin/mkdir &quot=
+;${lockdir}&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+  /bin/chmod 1777 &quot;${lockdir}&quot;</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+fi</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+i=3D1</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+lockfile=3D&quot;${lockdir}/o=
+penvpn-dns-updown.lock&quot;</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+while ! /usr/bin/shlock -f $lockfile -p $$; do</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+    if [ $((++i)) -gt 10 ]; then</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+        echo &quot;dns-upd=
+own failed, could not acquire lock&quot;</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+        exit 1</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+    fi</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+    sleep 0.2</span><br><span style=3D"color: hsl(120, 100%, 40%);">+don=
+e</span><br><span style=3D"color: hsl(120, 100%, 40%);">+trap &quot;/bin/rm=
+ -f ${lockfile}&quot; EXIT</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+</span><br><span> [ -z &quot;${dns_vars_file}&quot; ] || . &quot;${d=
+ns_vars_file}&quot;</span><br><span> </span><br><span> itf_dns_key=3D&quot;=
+State:/Network/Service/openvpn-${dev}/DNS&quot;</span><br><span></span><br>=
+</pre><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/10=
+76?usp=3Demail">change 1076</a>. To unsubscribe, or for help writing mail f=
+ilters, visit <a href=3D"http://gerrit.openvpn.net/settings">settings</a>.<=
+/p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscop=
+e itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itemp=
+rop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1076?usp=3Demail"=
+/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I7e9a0c668e0950257632452cfd9=
-eeb236f0120f2 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1077 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I7adfaa08df6a17545cca8264d72=
+30b5e65e49719 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1076 </div>
 <div style=3D"display:none"> Gerrit-PatchSet: 3 </div>
 <div style=3D"display:none"> Gerrit-Owner: d12fk &lt;heiko@...515...&gt; </=
 div>
@@ -162,8 +173,12 @@ div>
 .1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
+41...&gt; </div>
 <div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
 
 
---PQk+VNeLQKM=--
+--dQNAIfpOpc0=--
 
