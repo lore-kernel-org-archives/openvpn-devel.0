@@ -1,11 +1,16 @@
-Content-Type: multipart/alternative;
- boundary="------------GTO01ARUIbBdWCDaHfojeB1d"
-Message-ID: <bd47e915-8373-4f57-8c00-d8aa187549d5@...2722...>
-Date: Wed, 9 Jul 2025 14:26:08 +0200
+From: "d12fk (Code Review)" <gerrit@...515...>
+Date: Wed, 9 Jul 2025 12:44:36 +0000
+In-Reply-To: <gerrit.1751514980000.Id6f70237c7205063b001528a40391678b0d093ac@...2715...>
+References: <gerrit.1751514980000.Id6f70237c7205063b001528a40391678b0d093ac@...2715...>
+Reply-To: heiko@...515..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net, frank@...2641...
+Message-ID: <3659ea8c7de6880fce9f10cafac3d5299097f424-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-From: Johan Draaisma <johan@...2722...>
-Content-Language: en-US
-Subject: [Openvpn-devel]  IRC community meeting summary
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="S6mkpzI0nOQ="; charset=UTF-8
+Subject: [Openvpn-devel] [M] Change in openvpn[master]: move macOS
+ dns-updown common code into functions
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,127 +19,108 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: openvpn-devel@lists.sourceforge.net
+Cc: flichtenheld <frank@...2641...>, plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-This is a multi-part message in MIME format.
---------------GTO01ARUIbBdWCDaHfojeB1d
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+--S6mkpzI0nOQ=
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Meeting summary for 9 July 2025:
+Attention is currently required from: flichtenheld, plaisthos.
 
-  *
+d12fk has posted comments on this change. ( http://gerrit.openvpn.net/c/ope=
+nvpn/+/1074?usp=3Demail )
 
-    *Updated, closed: Changes to community pages on main website*
-    Company has published the updated community
-    page:https://openvpn.net/community/
-    There were some issues related to community documentation living on
-    openvpn.net - this is resolved.
+Change subject: move macOS dns-updown common code into functions
+......................................................................
 
-  *
 
-    *Updated: cve.mitre.org deprecation notice*
-    The MITRE CVE site we are linking to for all CVE record references
-    has a deprecation notice. Instead cve.org is being advised as the
-    site to use from now on.
-    novaflash made an internal company ticket to update links on the
-    main site.
-    novaflash search/replaced all the CVE links on community wiki to the
-    new address.
+Patch Set 3:
 
-  *
+(1 comment)
 
-    *Updated: Release 2.7*
-    For macOS DNS script there is a patch up for review.
-    For multisocket, a bug report came in, and a patch is up for review.
-    For float and DCO, lev has an idea on how to implement it but needs
-    some agreement with ordex on adjustments for user space.
-    For the DCO related changes, DCO+TCP is improving. Epoch data keys
-    still needs to be done, mssfix not planned yet.
-    For the live route updates changes, chances are improving that it
-    may get in to 2.7 after all.
+File distro/dns-scripts/macos-dns-updown.sh:
 
-As always you're welcome to join at #openvpn-meeting on Libera IRC 
-network every Wednesday at 14:00 Central European Time.
+http://gerrit.openvpn.net/c/openvpn/+/1074/comment/aa674cbb_a590cc31 :
+PS3, Line 242:     local addresses=3D"$(addresses_string $n)"
+> addresses seems to be unused?
+Yeah, it will get used in #1075, slipped through. Think it's no biggie, as =
+both will be applied anyway.
 
-Kind regards,
-Johan Draaisma
 
---------------GTO01ARUIbBdWCDaHfojeB1d
-Content-Type: text/html; charset="utf-8"
-Content-Transfer-Encoding: 8bit
 
-<!DOCTYPE html>
-<html>
-  <head>
-    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
-  </head>
-  <body>
-    <p> Meeting summary for 9 July 2025:</p>
-    <ul
-style="box-sizing: inherit; list-style: circle; padding-left: 1rem; margin-top: 0px; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255); color: rgba(0, 0, 0, 0.85); font-family: -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Helvetica, Arial, sans-serif, &quot;Apple Color Emoji&quot;, &quot;Segoe UI Emoji&quot;, &quot;Segoe UI Symbol&quot;; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; text-align: start; text-indent: 0px; text-transform: none; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;">
-      <li
-style="box-sizing: inherit; margin-bottom: 0.2rem; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255); margin-left: 1.5rem; list-style-type: disc;">
-        <p
-style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);"><strong
-style="box-sizing: inherit; font-weight: bolder; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">Updated,
-            closed: Changes to community pages on main website</strong><br
-style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
-          Company has published the updated community page:<span> </span><a
-            href="https://openvpn.net/community/"
-style="box-sizing: inherit; background-color: transparent; color: rgb(24, 144, 255); text-decoration: none; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);"
-            class="moz-txt-link-freetext">https://openvpn.net/community/</a><br
-style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
-          There were some issues related to community documentation
-          living on openvpn.net - this is resolved.</p>
-      </li>
-      <li
-style="box-sizing: inherit; margin-bottom: 0.2rem; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255); margin-left: 1.5rem; list-style-type: disc;">
-        <p
-style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);"><strong
-style="box-sizing: inherit; font-weight: bolder; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">Updated:
-            cve.mitre.org deprecation notice</strong><br
-style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
-          The MITRE CVE site we are linking to for all CVE record
-          references has a deprecation notice. Instead cve.org is being
-          advised as the site to use from now on.<br
-style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
-          novaflash made an internal company ticket to update links on
-          the main site.<br
-style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
-          novaflash search/replaced all the CVE links on community wiki
-          to the new address.</p>
-      </li>
-      <li
-style="box-sizing: inherit; margin-bottom: 0.2rem; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255); margin-left: 1.5rem; list-style-type: disc;">
-        <p
-style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);"><strong
-style="box-sizing: inherit; font-weight: bolder; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">Updated:
-            Release 2.7</strong><br
-style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
-          For macOS DNS script there is a patch up for review.<br
-style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
-          For multisocket, a bug report came in, and a patch is up for
-          review.<br
-style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
-          For float and DCO, lev has an idea on how to implement it but
-          needs some agreement with ordex on adjustments for user space.<br
-style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
-          For the DCO related changes, DCO+TCP is improving. Epoch data
-          keys still needs to be done, mssfix not planned yet.<br
-style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
-          For the live route updates changes, chances are improving that
-          it may get in to 2.7 after all.</p>
-      </li>
-    </ul>
-    <p></p>
-    <p>As always you're welcome to join at #openvpn-meeting on Libera
-      IRC network every Wednesday at 14:00 Central European Time. </p>
-    <p>Kind regards,<br>
-      Johan Draaisma<br>
-    </p>
-  </body>
-</html>
+--
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1074?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings
 
---------------GTO01ARUIbBdWCDaHfojeB1d--
+Gerrit-Project: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: Id6f70237c7205063b001528a40391678b0d093ac
+Gerrit-Change-Number: 1074
+Gerrit-PatchSet: 3
+Gerrit-Owner: d12fk <heiko@...515...>
+Gerrit-Reviewer: flichtenheld <frank@...2641...>
+Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Attention: flichtenheld <frank@...2641...>
+Gerrit-Comment-Date: Wed, 09 Jul 2025 12:44:36 +0000
+Gerrit-HasComments: Yes
+Gerrit-Has-Labels: No
+Comment-In-Reply-To: flichtenheld <frank@...2641...>
+Gerrit-MessageType: comment
+
+--S6mkpzI0nOQ=
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<p> Attention is currently required from: flichtenheld, plaisthos. </p>
+<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1074?usp=3Demail">View =
+Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0;">=
+<li style=3D"margin: 0; padding: 0;"><p>File distro/dns-scripts/macos-dns-u=
+pdown.sh:</p><ul style=3D"list-style: none; padding: 0;"><li style=3D"margi=
+n: 0; padding: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"htt=
+p://gerrit.openvpn.net/c/openvpn/+/1074/comment/aa674cbb_a590cc31">Patch Se=
+t #3, Line 242:</a> <code style=3D"font-family:monospace,monospace">    loc=
+al addresses=3D&quot;$(addresses_string $n)&quot;</code></p><p><blockquote =
+style=3D"border-left: 1px solid #aaa; margin: 10px 0; padding: 0 10px;">add=
+resses seems to be unused?</blockquote></p><p style=3D"white-space: pre-wra=
+p; word-wrap: break-word;">Yeah, it will get used in #1075, slipped through=
+. Think it&#39;s no biggie, as both will be applied anyway.</p></li></ul></=
+li></ul><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/=
+1074?usp=3Demail">change 1074</a>. To unsubscribe, or for help writing mail=
+ filters, visit <a href=3D"http://gerrit.openvpn.net/settings">settings</a>=
+.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemsc=
+ope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link ite=
+mprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1074?usp=3Demai=
+l"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
+
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: Id6f70237c7205063b001528a403=
+91678b0d093ac </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1074 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 3 </div>
+<div style=3D"display:none"> Gerrit-Owner: d12fk &lt;heiko@...515...&gt; </=
+div>
+<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
+1...&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
+.1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
+41...&gt; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Wed, 09 Jul 2025 12:44:36=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: No </div>
+<div style=3D"display:none"> Comment-In-Reply-To: flichtenheld &lt;frank@...1186...=
+.2641...&gt; </div>
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
+
+
+--S6mkpzI0nOQ=--
 
