@@ -1,14 +1,14 @@
 From: "d12fk (Code Review)" <gerrit@...515...>
-Date: Wed, 9 Jul 2025 08:57:04 +0000
+Date: Wed, 9 Jul 2025 08:57:30 +0000
 In-Reply-To: <gerrit.1751514980000.I7adfaa08df6a17545cca8264d7230b5e65e49719@...2715...>
 References: <gerrit.1751514980000.I7adfaa08df6a17545cca8264d7230b5e65e49719@...2715...>
 Reply-To: heiko@...515..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <d75956ca0364ae238705f0643dd5e09d4dbb69e7-EmailReplacePatchSet-HTML@...2715...>
+Message-ID: <a0da478a40d464815227175a8e4b1421c59b19ef-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="dQNAIfpOpc0="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="GzyXdLvYjuM="; charset=UTF-8
 Subject: [Openvpn-devel] [S] Change in openvpn[master]: mac dns: do not run
  dns-updown in parallel
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -19,74 +19,34 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Cc: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---dQNAIfpOpc0=
+--GzyXdLvYjuM=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 Attention is currently required from: flichtenheld, plaisthos.
 
-Hello flichtenheld, plaisthos,
-
-I'd like you to reexamine a change. Please visit
-
-    http://gerrit.openvpn.net/c/openvpn/+/1076?usp=3Demail
-
-to look at the new patch set (#3).
-
+d12fk has posted comments on this change. ( http://gerrit.openvpn.net/c/ope=
+nvpn/+/1076?usp=3Demail )
 
 Change subject: mac dns: do not run dns-updown in parallel
 ......................................................................
 
-mac dns: do not run dns-updown in parallel
 
-In case more than one openvpn connection is coming up or going down at
-the same time, there is potential for breakage, since the operations
-performed are not atomic.
+Patch Set 3:
 
-Introduce a locking mechanism, which let's scripts run in sequence, to
-prevent races between them.
+(1 comment)
 
-Change-Id: I7adfaa08df6a17545cca8264d7230b5e65e49719
-Signed-off-by: Heiko Hund <heiko@...2662...>
----
-M distro/dns-scripts/macos-dns-updown.sh
-1 file changed, 17 insertions(+), 0 deletions(-)
+File distro/dns-scripts/macos-dns-updown.sh:
+
+http://gerrit.openvpn.net/c/openvpn/+/1076/comment/aa5d5f96_700b53e9 :
+PS2, Line 30: lockfile=3D/tmp/openvpn-dns-updown.lock
+> Did a little bit of research, but found nothing in particular about the m=
+issing /var/lock in macOS. [=E2=80=A6]
+Done
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/76/1076/3
-
-diff --git a/distro/dns-scripts/macos-dns-updown.sh b/distro/dns-scripts/ma=
-cos-dns-updown.sh
-index 282b034..065a725 100644
---- a/distro/dns-scripts/macos-dns-updown.sh
-+++ b/distro/dns-scripts/macos-dns-updown.sh
-@@ -26,6 +26,23 @@
- #   dns_server_1_sni dns.mycorp.in
- #
-
-+lockdir=3D/var/lock
-+if [ ! -d "${lockdir}" ]; then
-+    /bin/mkdir "${lockdir}"
-+    /bin/chmod 1777 "${lockdir}"
-+fi
-+
-+i=3D1
-+lockfile=3D"${lockdir}/openvpn-dns-updown.lock"
-+while ! /usr/bin/shlock -f $lockfile -p $$; do
-+    if [ $((++i)) -gt 10 ]; then
-+        echo "dns-updown failed, could not acquire lock"
-+        exit 1
-+    fi
-+    sleep 0.2
-+done
-+trap "/bin/rm -f ${lockfile}" EXIT
-+
- [ -z "${dns_vars_file}" ] || . "${dns_vars_file}"
-
- itf_dns_key=3D"State:/Network/Service/openvpn-${dev}/DNS"
 
 --
 To view, visit http://gerrit.openvpn.net/c/openvpn/+/1076?usp=3Demail
@@ -104,60 +64,37 @@ Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
 Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-MessageType: newpatchset
+Gerrit-Comment-Date: Wed, 09 Jul 2025 08:57:30 +0000
+Gerrit-HasComments: Yes
+Gerrit-Has-Labels: No
+Comment-In-Reply-To: plaisthos <arne-openvpn@...1227...>
+Comment-In-Reply-To: d12fk <heiko@...515...>
+Gerrit-MessageType: comment
 
---dQNAIfpOpc0=
+--GzyXdLvYjuM=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <p> Attention is currently required from: flichtenheld, plaisthos. </p>
-<p>d12fk <strong>uploaded patch set #3</strong> to this change.</p><p><a hr=
-ef=3D"http://gerrit.openvpn.net/c/openvpn/+/1076?usp=3Demail">View Change</=
-a></p><pre style=3D"font-family: monospace,monospace; white-space: pre-wrap=
-;">mac dns: do not run dns-updown in parallel<br><br>In case more than one =
-openvpn connection is coming up or going down at<br>the same time, there is=
- potential for breakage, since the operations<br>performed are not atomic.<=
-br><br>Introduce a locking mechanism, which let&#39;s scripts run in sequen=
-ce, to<br>prevent races between them.<br><br>Change-Id: I7adfaa08df6a17545c=
-ca8264d7230b5e65e49719<br>Signed-off-by: Heiko Hund &lt;heiko@...2662...&gt=
-;<br>---<br>M distro/dns-scripts/macos-dns-updown.sh<br>1 file changed, 17 =
-insertions(+), 0 deletions(-)<br><br></pre><pre style=3D"font-family: monos=
-pace,monospace; white-space: pre-wrap;">git pull ssh://gerrit.openvpn.net:2=
-9418/openvpn refs/changes/76/1076/3</pre><pre style=3D"font-family: monospa=
-ce,monospace; white-space: pre-wrap;"><span>diff --git a/distro/dns-scripts=
-/macos-dns-updown.sh b/distro/dns-scripts/macos-dns-updown.sh</span><br><sp=
-an>index 282b034..065a725 100644</span><br><span>--- a/distro/dns-scripts/m=
-acos-dns-updown.sh</span><br><span>+++ b/distro/dns-scripts/macos-dns-updow=
-n.sh</span><br><span>@@ -26,6 +26,23 @@</span><br><span> #   dns_server_1_s=
-ni dns.mycorp.in</span><br><span> #</span><br><span> </span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+lockdir=3D/var/lock</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+if [ ! -d &quot;${lockdir}&quot; ]; then<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+    /bin/mkdir &quot=
-;${lockdir}&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-  /bin/chmod 1777 &quot;${lockdir}&quot;</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+fi</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+i=3D1</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+lockfile=3D&quot;${lockdir}/o=
-penvpn-dns-updown.lock&quot;</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+while ! /usr/bin/shlock -f $lockfile -p $$; do</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+    if [ $((++i)) -gt 10 ]; then</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+        echo &quot;dns-upd=
-own failed, could not acquire lock&quot;</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+        exit 1</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+    fi</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+    sleep 0.2</span><br><span style=3D"color: hsl(120, 100%, 40%);">+don=
-e</span><br><span style=3D"color: hsl(120, 100%, 40%);">+trap &quot;/bin/rm=
- -f ${lockfile}&quot; EXIT</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+</span><br><span> [ -z &quot;${dns_vars_file}&quot; ] || . &quot;${d=
-ns_vars_file}&quot;</span><br><span> </span><br><span> itf_dns_key=3D&quot;=
-State:/Network/Service/openvpn-${dev}/DNS&quot;</span><br><span></span><br>=
-</pre><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/10=
-76?usp=3Demail">change 1076</a>. To unsubscribe, or for help writing mail f=
-ilters, visit <a href=3D"http://gerrit.openvpn.net/settings">settings</a>.<=
-/p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscop=
-e itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itemp=
-rop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1076?usp=3Demail"=
-/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
+<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1076?usp=3Demail">View =
+Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0;">=
+<li style=3D"margin: 0; padding: 0;"><p>File distro/dns-scripts/macos-dns-u=
+pdown.sh:</p><ul style=3D"list-style: none; padding: 0;"><li style=3D"margi=
+n: 0; padding: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"htt=
+p://gerrit.openvpn.net/c/openvpn/+/1076/comment/aa5d5f96_700b53e9">Patch Se=
+t #2, Line 30:</a> <code style=3D"font-family:monospace,monospace">lockfile=
+=3D/tmp/openvpn-dns-updown.lock</code></p><p><blockquote style=3D"border-le=
+ft: 1px solid #aaa; margin: 10px 0; padding: 0 10px;">Did a little bit of r=
+esearch, but found nothing in particular about the missing /var/lock in mac=
+OS. [=E2=80=A6]</blockquote></p><p style=3D"white-space: pre-wrap; word-wra=
+p: break-word;">Done</p></li></ul></li></ul><p>To view, visit <a href=3D"ht=
+tp://gerrit.openvpn.net/c/openvpn/+/1076?usp=3Demail">change 1076</a>. To u=
+nsubscribe, or for help writing mail filters, visit <a href=3D"http://gerri=
+t.openvpn.net/settings">settings</a>.</p><div itemscope itemtype=3D"http://=
+schema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"htt=
+p://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.ope=
+nvpn.net/c/openvpn/+/1076?usp=3Demail"/><meta itemprop=3D"name" content=3D"=
+View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
@@ -177,8 +114,16 @@ ts.sourceforge.net&gt; </div>
 ..1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
 41...&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Wed, 09 Jul 2025 08:57:30=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: No </div>
+<div style=3D"display:none"> Comment-In-Reply-To: plaisthos &lt;arne-openvp=
+n@...1227...&gt; </div>
+<div style=3D"display:none"> Comment-In-Reply-To: d12fk &lt;heiko@...515...=
+&gt; </div>
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
 
 
---dQNAIfpOpc0=--
+--GzyXdLvYjuM=--
 
