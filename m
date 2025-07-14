@@ -1,14 +1,14 @@
 From: "plaisthos (Code Review)" <gerrit@...515...>
-Date: Mon, 14 Jul 2025 13:08:51 +0000
+Date: Mon, 14 Jul 2025 12:41:25 +0000
 In-Reply-To: <gerrit.1752062243000.I0f325800ebeb20bd5ef3ff78e5c5fcf0f6f74efd@...2715...>
 References: <gerrit.1752062243000.I0f325800ebeb20bd5ef3ff78e5c5fcf0f6f74efd@...2715...>
 Reply-To: arne-openvpn@...1227..., openvpn-devel@lists.sourceforge.net,
  frank@...2641...
-Message-ID: <fdceeb19bf595f3d7ab5acdfd537544bc23364ab-EmailReplacePatchSet-HTML@...2715...>
+Message-ID: <efa99986e18ab5ca443d02e3b73ddae65e58fdc7-EmailReplacePatchSet-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="8V2sWOrw0bM="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="CcX2FtxJNQE="; charset=UTF-8
 Subject: [Openvpn-devel] [M] Change in openvpn[master]: Cleanup/simplify
  mbed TLS related define from autoconf
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -22,7 +22,7 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: flichtenheld <frank@...2641...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---8V2sWOrw0bM=
+--CcX2FtxJNQE=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
@@ -34,7 +34,7 @@ I'd like you to reexamine a change. Please visit
 
     http://gerrit.openvpn.net/c/openvpn/+/1081?usp=3Demail
 
-to look at the new patch set (#6).
+to look at the new patch set (#5).
 
 
 Change subject: Cleanup/simplify mbed TLS related define from autoconf
@@ -56,44 +56,23 @@ and mbedtls_cipher_check_tag. Having an mbed TLS version that does not
 support that is highly unlikely. It might have been a good check in
 PolarSSL's time but is not today anymore.
 
-This also adds some missing support for mbed 2.x related defines to
-cmake based build.
-
 Change-Id: I0f325800ebeb20bd5ef3ff78e5c5fcf0f6f74efd
 Signed-off-by: Arne Schwabe <arne@...1227...>
 ---
-M CMakeLists.txt
 M config.h.cmake.in
 M configure.ac
-M src/openvpn/crypto_mbedtls.c
 M src/openvpn/mbedtls_compat.h
 M src/openvpn/ssl_mbedtls.c
-6 files changed, 22 insertions(+), 40 deletions(-)
+4 files changed, 18 insertions(+), 36 deletions(-)
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/81/1081/6
-
-diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 40bffd4..75afcea 100644
---- a/CMakeLists.txt
-+++ b/CMakeLists.txt
-@@ -302,6 +302,7 @@
-     check_symbol_exists(mbedtls_ctr_drbg_update_ret mbedtls/ctr_drbg.h HAV=
-E_MBEDTLS_CTR_DRBG_UPDATE_RET)
-     check_symbol_exists(mbedtls_ssl_conf_export_keys_ext_cb mbedtls/ssl.h =
-HAVE_MBEDTLS_SSL_CONF_EXPORT_KEYS_EXT_CB)
-     check_symbol_exists(mbedtls_ssl_set_export_keys_cb mbedtls/ssl.h HAVE_=
-MBEDTLS_SSL_SET_EXPORT_KEYS_CB)
-+    check_symbol_exists(mbedtls_ssl_tls_prf mbedtls/ssl.h HAVE_MBEDTLS_SSL=
-_TLS_PRF)
-     check_include_files(psa/crypto.h HAVE_MBEDTLS_PSA_CRYPTO_H)
- endfunction()
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/81/1081/5
 
 diff --git a/config.h.cmake.in b/config.h.cmake.in
-index 5df0ac8..911f7d3 100644
+index 5df0ac8..48807ee 100644
 --- a/config.h.cmake.in
 +++ b/config.h.cmake.in
-@@ -370,10 +370,11 @@
+@@ -370,10 +370,10 @@
  #undef HAVE_VFORK_H
 
  /* Availability of different mbed TLS features and APIs */
@@ -105,15 +84,14 @@ index 5df0ac8..911f7d3 100644
 +#cmakedefine HAVE_MBEDTLS_SSL_SET_EXPORT_KEYS_CB
 +#cmakedefine HAVE_MBEDTLS_SSL_CONF_EXPORT_KEYS_EXT_CB
 +#cmakedefine HAVE_MBEDTLS_CTR_DRBG_UPDATE_RET
-+#cmakedefine HAVE_MBEDTLS_SSL_TLS_PRF
 
  /* Path to ifconfig tool */
  #define IFCONFIG_PATH "@IFCONFIG_PATH@"
 diff --git a/configure.ac b/configure.ac
-index 02b45f8..d74f08d 100644
+index 02b45f8..51c20ef 100644
 --- a/configure.ac
 +++ b/configure.ac
-@@ -1044,32 +1044,10 @@
+@@ -1044,31 +1044,11 @@
  		[AC_DEFINE([HAVE_MBEDTLS_PSA_CRYPTO_H], [0], [no])]
  	)
 
@@ -139,40 +117,14 @@ index 02b45f8..d74f08d 100644
 -		[AC_DEFINE([HAVE_MBEDTLS_SSL_CONF_EXPORT_KEYS_EXT_CB], [0], [no])]
 -	)
  	if test "x$ac_cv_func_mbedtls_ssl_conf_export_keys_ext_cb" !=3D xyes; then
--		AC_CHECK_FUNC(
+ 		AC_CHECK_FUNC(
 -			[mbedtls_ssl_set_export_keys_cb],
 -			[AC_DEFINE([HAVE_MBEDTLS_SSL_SET_EXPORT_KEYS_CB], [1], [yes])],
 -			[AC_DEFINE([HAVE_MBEDTLS_SSL_SET_EXPORT_KEYS_CB], [0], [no])]
--		)
-+		AC_CHECK_FUNCS([mbedtls_ssl_set_export_keys_cb])
++			[mbedtls_ssl_set_export_keys_cb]
+ 		)
  		if test "x$ac_cv_func_mbedtls_ssl_set_export_keys_cb" !=3D xyes; then
  			AC_CHECK_FUNC([mbedtls_ssl_export_keying_material])
- 			if test "x$ac_cv_func_mbedtls_ssl_export_keying_material" !=3D xyes; th=
-en
-diff --git a/src/openvpn/crypto_mbedtls.c b/src/openvpn/crypto_mbedtls.c
-index c05902d..1f3dcba 100644
---- a/src/openvpn/crypto_mbedtls.c
-+++ b/src/openvpn/crypto_mbedtls.c
-@@ -981,7 +981,7 @@
- }
- /* mbedtls-2.18.0 or newer implements tls_prf, but prf_tls1 is removed
-  * from recent versions, so we use our own implementation if necessary. */
--#if HAVE_MBEDTLS_SSL_TLS_PRF && defined(MBEDTLS_SSL_TLS_PRF_TLS1)
-+#if defined(HAVE_MBEDTLS_SSL_TLS_PRF) && defined(MBEDTLS_SSL_TLS_PRF_TLS1)
- bool
- ssl_tls1_PRF(const uint8_t *seed, int seed_len, const uint8_t *secret,
-              int secret_len, uint8_t *output, int output_len)
-@@ -990,7 +990,7 @@
-                                        secret_len, "", seed, seed_len, out=
-put,
-                                        output_len));
- }
--#else /* HAVE_MBEDTLS_SSL_TLS_PRF && defined(MBEDTLS_SSL_TLS_PRF_TLS1) */
-+#else /* defined(HAVE_MBEDTLS_SSL_TLS_PRF) && defined(MBEDTLS_SSL_TLS_PRF_=
-TLS1) */
- /*
-  * Generate the hash required by for the \c tls1_PRF function.
-  *
 diff --git a/src/openvpn/mbedtls_compat.h b/src/openvpn/mbedtls_compat.h
 index 145a7ae..68c4cc3 100644
 --- a/src/openvpn/mbedtls_compat.h
@@ -286,7 +238,7 @@ Gerrit-Project: openvpn
 Gerrit-Branch: master
 Gerrit-Change-Id: I0f325800ebeb20bd5ef3ff78e5c5fcf0f6f74efd
 Gerrit-Change-Number: 1081
-Gerrit-PatchSet: 6
+Gerrit-PatchSet: 5
 Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
@@ -294,12 +246,12 @@ Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
 Gerrit-Attention: flichtenheld <frank@...2641...>
 Gerrit-MessageType: newpatchset
 
---8V2sWOrw0bM=
+--CcX2FtxJNQE=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <p> Attention is currently required from: flichtenheld, plaisthos. </p>
-<p>plaisthos <strong>uploaded patch set #6</strong> to this change.</p><p><=
+<p>plaisthos <strong>uploaded patch set #5</strong> to this change.</p><p><=
 a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1081?usp=3Demail">View Chan=
 ge</a></p><pre style=3D"font-family: monospace,monospace; white-space: pre-=
 wrap;">Cleanup/simplify mbed TLS related define from autoconf<br><br>Instea=
@@ -311,201 +263,163 @@ EDTLS_SSL_KEYING_MATERIAL_EXPORT and mbedtls_ssl_export_keying_material.<br=
 ><br>Remove AEAD check that tests for presence of mbedtls_cipher_write_tag<=
 br>and mbedtls_cipher_check_tag. Having an mbed TLS version that does not<b=
 r>support that is highly unlikely. It might have been a good check in<br>Po=
-larSSL&#39;s time but is not today anymore.<br><br>This also adds some miss=
-ing support for mbed 2.x related defines to<br>cmake based build.<br><br>Ch=
-ange-Id: I0f325800ebeb20bd5ef3ff78e5c5fcf0f6f74efd<br>Signed-off-by: Arne S=
-chwabe &lt;arne@...1227...&gt;<br>---<br>M CMakeLists.txt<br>M config.h.cma=
-ke.in<br>M configure.ac<br>M src/openvpn/crypto_mbedtls.c<br>M src/openvpn/=
-mbedtls_compat.h<br>M src/openvpn/ssl_mbedtls.c<br>6 files changed, 22 inse=
-rtions(+), 40 deletions(-)<br><br></pre><pre style=3D"font-family: monospac=
-e,monospace; white-space: pre-wrap;">git pull ssh://gerrit.openvpn.net:2941=
-8/openvpn refs/changes/81/1081/6</pre><pre style=3D"font-family: monospace,=
-monospace; white-space: pre-wrap;"><span>diff --git a/CMakeLists.txt b/CMak=
-eLists.txt</span><br><span>index 40bffd4..75afcea 100644</span><br><span>--=
-- a/CMakeLists.txt</span><br><span>+++ b/CMakeLists.txt</span><br><span>@@ =
--302,6 +302,7 @@</span><br><span>     check_symbol_exists(mbedtls_ctr_drbg_=
-update_ret mbedtls/ctr_drbg.h HAVE_MBEDTLS_CTR_DRBG_UPDATE_RET)</span><br><=
-span>     check_symbol_exists(mbedtls_ssl_conf_export_keys_ext_cb mbedtls/s=
-sl.h HAVE_MBEDTLS_SSL_CONF_EXPORT_KEYS_EXT_CB)</span><br><span>     check_s=
-ymbol_exists(mbedtls_ssl_set_export_keys_cb mbedtls/ssl.h HAVE_MBEDTLS_SSL_=
-SET_EXPORT_KEYS_CB)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-    check_symbol_exists(mbedtls_ssl_tls_prf mbedtls/ssl.h HAVE_MBEDTLS_SSL_=
-TLS_PRF)</span><br><span>     check_include_files(psa/crypto.h HAVE_MBEDTLS=
-_PSA_CRYPTO_H)</span><br><span> endfunction()</span><br><span> </span><br><=
-span>diff --git a/config.h.cmake.in b/config.h.cmake.in</span><br><span>ind=
-ex 5df0ac8..911f7d3 100644</span><br><span>--- a/config.h.cmake.in</span><b=
-r><span>+++ b/config.h.cmake.in</span><br><span>@@ -370,10 +370,11 @@</span=
-><br><span> #undef HAVE_VFORK_H</span><br><span> </span><br><span> /* Avail=
-ability of different mbed TLS features and APIs */</span><br><span style=3D=
-"color: hsl(0, 100%, 40%);">-#cmakedefine01 HAVE_MBEDTLS_PSA_CRYPTO_H</span=
-><br><span style=3D"color: hsl(0, 100%, 40%);">-#define HAVE_MBEDTLS_SSL_TL=
-S_PRF 1</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#cmakedefine01=
- HAVE_MBEDTLS_SSL_SET_EXPORT_KEYS_CB</span><br><span style=3D"color: hsl(0,=
- 100%, 40%);">-#cmakedefine01 HAVE_MBEDTLS_CTR_DRBG_UPDATE_RET</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+#cmakedefine HAVE_MBEDTLS_PSA_CR=
-YPTO_H</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#cmakedefine =
-HAVE_MBEDTLS_SSL_SET_EXPORT_KEYS_CB</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+#cmakedefine HAVE_MBEDTLS_SSL_CONF_EXPORT_KEYS_EXT_CB</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+#cmakedefine HAVE_MBEDTLS=
-_CTR_DRBG_UPDATE_RET</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+#cmakedefine HAVE_MBEDTLS_SSL_TLS_PRF</span><br><span> </span><br><span> /=
-* Path to ifconfig tool */</span><br><span> #define IFCONFIG_PATH &quot;@IF=
-CONFIG_PATH@&quot;</span><br><span>diff --git a/configure.ac b/configure.ac=
-</span><br><span>index 02b45f8..d74f08d 100644</span><br><span>--- a/config=
-ure.ac</span><br><span>+++ b/configure.ac</span><br><span>@@ -1044,32 +1044=
-,10 @@</span><br><span> 		[AC_DEFINE([HAVE_MBEDTLS_PSA_CRYPTO_H], [0], [no]=
-)]</span><br><span> 	)</span><br><span> </span><br><span style=3D"color: hs=
-l(0, 100%, 40%);">-	AC_CHECK_FUNCS(</span><br><span style=3D"color: hsl(0, =
-100%, 40%);">-		[ \</span><br><span style=3D"color: hsl(0, 100%, 40%);">-		=
-	mbedtls_cipher_write_tag \</span><br><span style=3D"color: hsl(0, 100%, 40=
-%);">-			mbedtls_cipher_check_tag \</span><br><span style=3D"color: hsl(0, =
-100%, 40%);">-		],</span><br><span style=3D"color: hsl(0, 100%, 40%);">-		,=
-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-		[AC_MSG_ERROR([mbed=
- TLS check for AEAD support failed])]</span><br><span style=3D"color: hsl(0=
-, 100%, 40%);">-	)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+	=
-AC_CHECK_FUNCS([mbedtls_ssl_tls_prf mbedtls_ssl_conf_export_keys_ext_cb])</=
-span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-	AC_C=
-HECK_FUNC(</span><br><span style=3D"color: hsl(0, 100%, 40%);">-		[mbedtls_=
-ssl_tls_prf],</span><br><span style=3D"color: hsl(0, 100%, 40%);">-		[AC_DE=
-FINE([HAVE_MBEDTLS_SSL_TLS_PRF], [1], [yes])],</span><br><span style=3D"col=
-or: hsl(0, 100%, 40%);">-		[AC_DEFINE([HAVE_MBEDTLS_SSL_TLS_PRF], [0], [no]=
-)]</span><br><span style=3D"color: hsl(0, 100%, 40%);">-	)</span><br><span =
-style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0=
-, 100%, 40%);">-	AC_CHECK_FUNC(</span><br><span style=3D"color: hsl(0, 100%=
-, 40%);">-		[mbedtls_ssl_conf_export_keys_ext_cb],</span><br><span style=3D=
-"color: hsl(0, 100%, 40%);">-		[AC_DEFINE([HAVE_MBEDTLS_SSL_CONF_EXPORT_KEY=
-S_EXT_CB], [1], [yes])],</span><br><span style=3D"color: hsl(0, 100%, 40%);=
-">-		[AC_DEFINE([HAVE_MBEDTLS_SSL_CONF_EXPORT_KEYS_EXT_CB], [0], [no])]</sp=
-an><br><span style=3D"color: hsl(0, 100%, 40%);">-	)</span><br><span> 	if t=
-est &quot;x$ac_cv_func_mbedtls_ssl_conf_export_keys_ext_cb&quot; !=3D xyes;=
- then</span><br><span style=3D"color: hsl(0, 100%, 40%);">-		AC_CHECK_FUNC(=
-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-			[mbedtls_ssl_set_e=
-xport_keys_cb],</span><br><span style=3D"color: hsl(0, 100%, 40%);">-			[AC=
-_DEFINE([HAVE_MBEDTLS_SSL_SET_EXPORT_KEYS_CB], [1], [yes])],</span><br><spa=
-n style=3D"color: hsl(0, 100%, 40%);">-			[AC_DEFINE([HAVE_MBEDTLS_SSL_SET_=
-EXPORT_KEYS_CB], [0], [no])]</span><br><span style=3D"color: hsl(0, 100%, 4=
-0%);">-		)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+		AC_CHEC=
-K_FUNCS([mbedtls_ssl_set_export_keys_cb])</span><br><span> 		if test &quot;=
-x$ac_cv_func_mbedtls_ssl_set_export_keys_cb&quot; !=3D xyes; then</span><br=
-><span> 			AC_CHECK_FUNC([mbedtls_ssl_export_keying_material])</span><br><s=
-pan> 			if test &quot;x$ac_cv_func_mbedtls_ssl_export_keying_material&quot;=
- !=3D xyes; then</span><br><span>diff --git a/src/openvpn/crypto_mbedtls.c =
-b/src/openvpn/crypto_mbedtls.c</span><br><span>index c05902d..1f3dcba 10064=
-4</span><br><span>--- a/src/openvpn/crypto_mbedtls.c</span><br><span>+++ b/=
-src/openvpn/crypto_mbedtls.c</span><br><span>@@ -981,7 +981,7 @@</span><br>=
-<span> }</span><br><span> /* mbedtls-2.18.0 or newer implements tls_prf, bu=
-t prf_tls1 is removed</span><br><span>  * from recent versions, so we use o=
-ur own implementation if necessary. */</span><br><span style=3D"color: hsl(=
-0, 100%, 40%);">-#if HAVE_MBEDTLS_SSL_TLS_PRF &amp;&amp; defined(MBEDTLS_SS=
-L_TLS_PRF_TLS1)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#if =
-defined(HAVE_MBEDTLS_SSL_TLS_PRF) &amp;&amp; defined(MBEDTLS_SSL_TLS_PRF_TL=
-S1)</span><br><span> bool</span><br><span> ssl_tls1_PRF(const uint8_t *seed=
-, int seed_len, const uint8_t *secret,</span><br><span>              int se=
-cret_len, uint8_t *output, int output_len)</span><br><span>@@ -990,7 +990,7=
- @@</span><br><span>                                        secret_len, &qu=
-ot;&quot;, seed, seed_len, output,</span><br><span>                        =
-                output_len));</span><br><span> }</span><br><span style=3D"c=
-olor: hsl(0, 100%, 40%);">-#else /* HAVE_MBEDTLS_SSL_TLS_PRF &amp;&amp; def=
-ined(MBEDTLS_SSL_TLS_PRF_TLS1) */</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+#else /* defined(HAVE_MBEDTLS_SSL_TLS_PRF) &amp;&amp; defined=
-(MBEDTLS_SSL_TLS_PRF_TLS1) */</span><br><span> /*</span><br><span>  * Gener=
-ate the hash required by for the \c tls1_PRF function.</span><br><span>  *<=
-/span><br><span>diff --git a/src/openvpn/mbedtls_compat.h b/src/openvpn/mbe=
-dtls_compat.h</span><br><span>index 145a7ae..68c4cc3 100644</span><br><span=
->--- a/src/openvpn/mbedtls_compat.h</span><br><span>+++ b/src/openvpn/mbedt=
-ls_compat.h</span><br><span>@@ -48,7 +48,7 @@</span><br><span> #include &lt=
-;mbedtls/version.h&gt;</span><br><span> #include &lt;mbedtls/x509_crt.h&gt;=
-</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-#if=
- HAVE_MBEDTLS_PSA_CRYPTO_H</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+#ifdef HAVE_MBEDTLS_PSA_CRYPTO_H</span><br><span>     #include &lt;p=
-sa/crypto.h&gt;</span><br><span> #endif</span><br><span> </span><br><span>@=
-@ -61,14 +61,14 @@</span><br><span> static inline void</span><br><span> mbe=
-dtls_compat_psa_crypto_init(void)</span><br><span> {</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-#if HAVE_MBEDTLS_PSA_CRYPTO_H &amp;&amp; de=
-fined(MBEDTLS_PSA_CRYPTO_C)</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+#if defined(HAVE_MBEDTLS_PSA_CRYPTO_H) &amp;&amp; defined(MBEDTLS_P=
-SA_CRYPTO_C)</span><br><span>     if (psa_crypto_init() !=3D PSA_SUCCESS)</=
-span><br><span>     {</span><br><span>         msg(M_FATAL, &quot;mbedtls: =
-psa_crypto_init() failed&quot;);</span><br><span>     }</span><br><span> #e=
-lse</span><br><span>     return;</span><br><span style=3D"color: hsl(0, 100=
-%, 40%);">-#endif /* HAVE_MBEDTLS_PSA_CRYPTO_H &amp;&amp; defined(MBEDTLS_P=
-SA_CRYPTO_C) */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#end=
-if</span><br><span> }</span><br><span> </span><br><span> static inline mbed=
-tls_compat_group_id</span><br><span>@@ -96,7 +96,7 @@</span><br><span> {</s=
-pan><br><span> #if MBEDTLS_VERSION_NUMBER &gt; 0x03000000</span><br><span> =
-    return mbedtls_ctr_drbg_update(ctx, additional, add_len);</span><br><sp=
-an style=3D"color: hsl(0, 100%, 40%);">-#elif HAVE_MBEDTLS_CTR_DRBG_UPDATE_=
-RET</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#elif defined(HA=
-VE_MBEDTLS_CTR_DRBG_UPDATE_RET)</span><br><span>     return mbedtls_ctr_drb=
-g_update_ret(ctx, additional, add_len);</span><br><span> #else</span><br><s=
-pan>     mbedtls_ctr_drbg_update(ctx, additional, add_len);</span><br><span=
->diff --git a/src/openvpn/ssl_mbedtls.c b/src/openvpn/ssl_mbedtls.c</span><=
-br><span>index ecccc26..a4bb772 100644</span><br><span>--- a/src/openvpn/ss=
-l_mbedtls.c</span><br><span>+++ b/src/openvpn/ssl_mbedtls.c</span><br><span=
->@@ -173,8 +173,9 @@</span><br><span>     ASSERT(NULL !=3D ctx);</span><br>=
-<span>     return ctx-&gt;initialised;</span><br><span> }</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0,=
- 100%, 40%);">-#if HAVE_MBEDTLS_SSL_CONF_EXPORT_KEYS_EXT_CB</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+#ifdef MBEDTLS_SSL_KEYING_MATERIAL_=
-EXPORT</span><br><span style=3D"color: hsl(120, 100%, 40%);">+/* mbedtls_ss=
-l_export_keying_material does not need helper/callback methods */</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+#elif defined(HAVE_MBEDTLS_SS=
-L_CONF_EXPORT_KEYS_EXT_CB)</span><br><span> /*</span><br><span>  * Key expo=
-rt callback for older versions of mbed TLS, to be used with</span><br><span=
->  * mbedtls_ssl_conf_export_keys_ext_cb(). It is called with the master</s=
-pan><br><span>@@ -205,7 +206,7 @@</span><br><span> </span><br><span>     re=
-turn 0;</span><br><span> }</span><br><span style=3D"color: hsl(0, 100%, 40%=
-);">-#elif HAVE_MBEDTLS_SSL_SET_EXPORT_KEYS_CB</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+#elif defined(HAVE_MBEDTLS_SSL_SET_EXPORT_KEYS_C=
-B)</span><br><span> /*</span><br><span>  * Key export callback for newer ve=
-rsions of mbed TLS, to be used with</span><br><span>  * mbedtls_ssl_set_exp=
-ort_keys_cb(). When used with TLS 1.2, the callback</span><br><span>@@ -251=
-,10 +252,11 @@</span><br><span>     memcpy(cache-&gt;master_secret, secret,=
- sizeof(cache-&gt;master_secret));</span><br><span>     cache-&gt;tls_prf_t=
-ype =3D tls_prf_type;</span><br><span> }</span><br><span style=3D"color: hs=
-l(0, 100%, 40%);">-#elif !defined(MBEDTLS_SSL_KEYING_MATERIAL_EXPORT)</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+#else  /* ifdef MBEDTLS_S=
-SL_KEYING_MATERIAL_EXPORT */</span><br><span> #error mbedtls_ssl_conf_expor=
-t_keys_ext_cb, mbedtls_ssl_set_export_keys_cb or mbedtls_ssl_export_keying_=
-material must be available in mbed TLS</span><br><span> #endif /* HAVE_MBED=
-TLS_SSL_CONF_EXPORT_KEYS_EXT_CB */</span><br><span> </span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+</span><br><span> bool</span><br><span> k=
-ey_state_export_keying_material(struct tls_session *session,</span><br><spa=
-n>                                  const char *label, size_t label_size,</=
-span><br><span>@@ -1244,7 +1246,7 @@</span><br><span>         mbedtls_ssl_c=
-onf_max_tls_version(ks_ssl-&gt;ssl_config, version);</span><br><span>     }=
-</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-#if=
- HAVE_MBEDTLS_SSL_CONF_EXPORT_KEYS_EXT_CB &amp;&amp; !defined(MBEDTLS_SSL_K=
-EYING_MATERIAL_EXPORT)</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+#if defined(HAVE_MBEDTLS_SSL_CONF_EXPORT_KEYS_EXT_CB) &amp;&amp; !define=
-d(MBEDTLS_SSL_KEYING_MATERIAL_EXPORT)</span><br><span>     /* Initialize ke=
-ying material exporter, old style. */</span><br><span>     mbedtls_ssl_conf=
-_export_keys_ext_cb(ks_ssl-&gt;ssl_config,</span><br><span>                =
-                         mbedtls_ssl_export_keys_cb, session);</span><br><s=
-pan>@@ -1259,7 +1261,7 @@</span><br><span>      * verification. */</span><b=
-r><span>     ASSERT(mbed_ok(mbedtls_ssl_set_hostname(ks_ssl-&gt;ctx, NULL))=
-);</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-#=
-if HAVE_MBEDTLS_SSL_SET_EXPORT_KEYS_CB &amp;&amp; !defined(MBEDTLS_SSL_KEYI=
-NG_MATERIAL_EXPORT)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-#if defined(HAVE_MBEDTLS_SSL_SET_EXPORT_KEYS_CB) &amp;&amp; !defined(MBEDTL=
-S_SSL_KEYING_MATERIAL_EXPORT)</span><br><span>     /* Initialize keying mat=
-erial exporter, new style. */</span><br><span>     mbedtls_ssl_set_export_k=
-eys_cb(ks_ssl-&gt;ctx, mbedtls_ssl_export_keys_cb, session);</span><br><spa=
-n> #endif</span><br><span></span><br></pre><p>To view, visit <a href=3D"htt=
-p://gerrit.openvpn.net/c/openvpn/+/1081?usp=3Demail">change 1081</a>. To un=
-subscribe, or for help writing mail filters, visit <a href=3D"http://gerrit=
-.openvpn.net/settings">settings</a>.</p><div itemscope itemtype=3D"http://s=
-chema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http=
-://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.open=
-vpn.net/c/openvpn/+/1081?usp=3Demail"/><meta itemprop=3D"name" content=3D"V=
-iew Change"/></div></div>
+larSSL&#39;s time but is not today anymore.<br><br>Change-Id: I0f325800ebeb=
+20bd5ef3ff78e5c5fcf0f6f74efd<br>Signed-off-by: Arne Schwabe &lt;arne@...2068...=
+7...&gt;<br>---<br>M config.h.cmake.in<br>M configure.ac<br>M src/openvpn/m=
+bedtls_compat.h<br>M src/openvpn/ssl_mbedtls.c<br>4 files changed, 18 inser=
+tions(+), 36 deletions(-)<br><br></pre><pre style=3D"font-family: monospace=
+,monospace; white-space: pre-wrap;">git pull ssh://gerrit.openvpn.net:29418=
+/openvpn refs/changes/81/1081/5</pre><pre style=3D"font-family: monospace,m=
+onospace; white-space: pre-wrap;"><span>diff --git a/config.h.cmake.in b/co=
+nfig.h.cmake.in</span><br><span>index 5df0ac8..48807ee 100644</span><br><sp=
+an>--- a/config.h.cmake.in</span><br><span>+++ b/config.h.cmake.in</span><b=
+r><span>@@ -370,10 +370,10 @@</span><br><span> #undef HAVE_VFORK_H</span><b=
+r><span> </span><br><span> /* Availability of different mbed TLS features a=
+nd APIs */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#cmakedefin=
+e01 HAVE_MBEDTLS_PSA_CRYPTO_H</span><br><span style=3D"color: hsl(0, 100%, =
+40%);">-#define HAVE_MBEDTLS_SSL_TLS_PRF 1</span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">-#cmakedefine01 HAVE_MBEDTLS_SSL_SET_EXPORT_KEYS_CB</sp=
+an><br><span style=3D"color: hsl(0, 100%, 40%);">-#cmakedefine01 HAVE_MBEDT=
+LS_CTR_DRBG_UPDATE_RET</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+#cmakedefine HAVE_MBEDTLS_PSA_CRYPTO_H</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+#cmakedefine HAVE_MBEDTLS_SSL_SET_EXPORT_KEYS_CB</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+#cmakedefine HAVE_MBEDTL=
+S_SSL_CONF_EXPORT_KEYS_EXT_CB</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+#cmakedefine HAVE_MBEDTLS_CTR_DRBG_UPDATE_RET</span><br><span> </=
+span><br><span> /* Path to ifconfig tool */</span><br><span> #define IFCONF=
+IG_PATH &quot;@IFCONFIG_PATH@&quot;</span><br><span>diff --git a/configure.=
+ac b/configure.ac</span><br><span>index 02b45f8..51c20ef 100644</span><br><=
+span>--- a/configure.ac</span><br><span>+++ b/configure.ac</span><br><span>=
+@@ -1044,31 +1044,11 @@</span><br><span> 		[AC_DEFINE([HAVE_MBEDTLS_PSA_CRY=
+PTO_H], [0], [no])]</span><br><span> 	)</span><br><span> </span><br><span s=
+tyle=3D"color: hsl(0, 100%, 40%);">-	AC_CHECK_FUNCS(</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-		[ \</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-			mbedtls_cipher_write_tag \</span><br><span style=3D"colo=
+r: hsl(0, 100%, 40%);">-			mbedtls_cipher_check_tag \</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-		],</span><br><span style=3D"color: hsl(0,=
+ 100%, 40%);">-		,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-		[=
+AC_MSG_ERROR([mbed TLS check for AEAD support failed])]</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-	)</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+	AC_CHECK_FUNCS([mbedtls_ssl_tls_prf mbedtls_ssl_conf_expo=
+rt_keys_ext_cb])</span><br><span> </span><br><span style=3D"color: hsl(0, 1=
+00%, 40%);">-	AC_CHECK_FUNC(</span><br><span style=3D"color: hsl(0, 100%, 4=
+0%);">-		[mbedtls_ssl_tls_prf],</span><br><span style=3D"color: hsl(0, 100%=
+, 40%);">-		[AC_DEFINE([HAVE_MBEDTLS_SSL_TLS_PRF], [1], [yes])],</span><br>=
+<span style=3D"color: hsl(0, 100%, 40%);">-		[AC_DEFINE([HAVE_MBEDTLS_SSL_T=
+LS_PRF], [0], [no])]</span><br><span style=3D"color: hsl(0, 100%, 40%);">-	=
+)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-	AC_CHECK_FUNC(</span><br><span style=3D"=
+color: hsl(0, 100%, 40%);">-		[mbedtls_ssl_conf_export_keys_ext_cb],</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-		[AC_DEFINE([HAVE_MBEDTLS_S=
+SL_CONF_EXPORT_KEYS_EXT_CB], [1], [yes])],</span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">-		[AC_DEFINE([HAVE_MBEDTLS_SSL_CONF_EXPORT_KEYS_EXT_CB=
+], [0], [no])]</span><br><span style=3D"color: hsl(0, 100%, 40%);">-	)</spa=
+n><br><span> 	if test &quot;x$ac_cv_func_mbedtls_ssl_conf_export_keys_ext_c=
+b&quot; !=3D xyes; then</span><br><span> 		AC_CHECK_FUNC(</span><br><span s=
+tyle=3D"color: hsl(0, 100%, 40%);">-			[mbedtls_ssl_set_export_keys_cb],</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-			[AC_DEFINE([HAVE_MBED=
+TLS_SSL_SET_EXPORT_KEYS_CB], [1], [yes])],</span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">-			[AC_DEFINE([HAVE_MBEDTLS_SSL_SET_EXPORT_KEYS_CB], [=
+0], [no])]</span><br><span style=3D"color: hsl(120, 100%, 40%);">+			[mbedt=
+ls_ssl_set_export_keys_cb]</span><br><span> 		)</span><br><span> 		if test =
+&quot;x$ac_cv_func_mbedtls_ssl_set_export_keys_cb&quot; !=3D xyes; then</sp=
+an><br><span> 			AC_CHECK_FUNC([mbedtls_ssl_export_keying_material])</span>=
+<br><span>diff --git a/src/openvpn/mbedtls_compat.h b/src/openvpn/mbedtls_c=
+ompat.h</span><br><span>index 145a7ae..68c4cc3 100644</span><br><span>--- a=
+/src/openvpn/mbedtls_compat.h</span><br><span>+++ b/src/openvpn/mbedtls_com=
+pat.h</span><br><span>@@ -48,7 +48,7 @@</span><br><span> #include &lt;mbedt=
+ls/version.h&gt;</span><br><span> #include &lt;mbedtls/x509_crt.h&gt;</span=
+><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-#if HAVE_=
+MBEDTLS_PSA_CRYPTO_H</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++#ifdef HAVE_MBEDTLS_PSA_CRYPTO_H</span><br><span>     #include &lt;psa/cry=
+pto.h&gt;</span><br><span> #endif</span><br><span> </span><br><span>@@ -61,=
+14 +61,14 @@</span><br><span> static inline void</span><br><span> mbedtls_c=
+ompat_psa_crypto_init(void)</span><br><span> {</span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-#if HAVE_MBEDTLS_PSA_CRYPTO_H &amp;&amp; defined(M=
+BEDTLS_PSA_CRYPTO_C)</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++#if defined(HAVE_MBEDTLS_PSA_CRYPTO_H) &amp;&amp; defined(MBEDTLS_PSA_CRYP=
+TO_C)</span><br><span>     if (psa_crypto_init() !=3D PSA_SUCCESS)</span><b=
+r><span>     {</span><br><span>         msg(M_FATAL, &quot;mbedtls: psa_cry=
+pto_init() failed&quot;);</span><br><span>     }</span><br><span> #else</sp=
+an><br><span>     return;</span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">-#endif /* HAVE_MBEDTLS_PSA_CRYPTO_H &amp;&amp; defined(MBEDTLS_PSA_CRYP=
+TO_C) */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#endif</spa=
+n><br><span> }</span><br><span> </span><br><span> static inline mbedtls_com=
+pat_group_id</span><br><span>@@ -96,7 +96,7 @@</span><br><span> {</span><br=
+><span> #if MBEDTLS_VERSION_NUMBER &gt; 0x03000000</span><br><span>     ret=
+urn mbedtls_ctr_drbg_update(ctx, additional, add_len);</span><br><span styl=
+e=3D"color: hsl(0, 100%, 40%);">-#elif HAVE_MBEDTLS_CTR_DRBG_UPDATE_RET</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+#elif defined(HAVE_MBED=
+TLS_CTR_DRBG_UPDATE_RET)</span><br><span>     return mbedtls_ctr_drbg_updat=
+e_ret(ctx, additional, add_len);</span><br><span> #else</span><br><span>   =
+  mbedtls_ctr_drbg_update(ctx, additional, add_len);</span><br><span>diff -=
+-git a/src/openvpn/ssl_mbedtls.c b/src/openvpn/ssl_mbedtls.c</span><br><spa=
+n>index ecccc26..a4bb772 100644</span><br><span>--- a/src/openvpn/ssl_mbedt=
+ls.c</span><br><span>+++ b/src/openvpn/ssl_mbedtls.c</span><br><span>@@ -17=
+3,8 +173,9 @@</span><br><span>     ASSERT(NULL !=3D ctx);</span><br><span> =
+    return ctx-&gt;initialised;</span><br><span> }</span><br><span style=3D=
+"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, =
+40%);">-#if HAVE_MBEDTLS_SSL_CONF_EXPORT_KEYS_EXT_CB</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+#ifdef MBEDTLS_SSL_KEYING_MATERIAL_EXPORT=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+/* mbedtls_ssl_expo=
+rt_keying_material does not need helper/callback methods */</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+#elif defined(HAVE_MBEDTLS_SSL_CONF=
+_EXPORT_KEYS_EXT_CB)</span><br><span> /*</span><br><span>  * Key export cal=
+lback for older versions of mbed TLS, to be used with</span><br><span>  * m=
+bedtls_ssl_conf_export_keys_ext_cb(). It is called with the master</span><b=
+r><span>@@ -205,7 +206,7 @@</span><br><span> </span><br><span>     return 0=
+;</span><br><span> }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#=
+elif HAVE_MBEDTLS_SSL_SET_EXPORT_KEYS_CB</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+#elif defined(HAVE_MBEDTLS_SSL_SET_EXPORT_KEYS_CB)</sp=
+an><br><span> /*</span><br><span>  * Key export callback for newer versions=
+ of mbed TLS, to be used with</span><br><span>  * mbedtls_ssl_set_export_ke=
+ys_cb(). When used with TLS 1.2, the callback</span><br><span>@@ -251,10 +2=
+52,11 @@</span><br><span>     memcpy(cache-&gt;master_secret, secret, sizeo=
+f(cache-&gt;master_secret));</span><br><span>     cache-&gt;tls_prf_type =
+=3D tls_prf_type;</span><br><span> }</span><br><span style=3D"color: hsl(0,=
+ 100%, 40%);">-#elif !defined(MBEDTLS_SSL_KEYING_MATERIAL_EXPORT)</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+#else  /* ifdef MBEDTLS_SSL_K=
+EYING_MATERIAL_EXPORT */</span><br><span> #error mbedtls_ssl_conf_export_ke=
+ys_ext_cb, mbedtls_ssl_set_export_keys_cb or mbedtls_ssl_export_keying_mate=
+rial must be available in mbed TLS</span><br><span> #endif /* HAVE_MBEDTLS_=
+SSL_CONF_EXPORT_KEYS_EXT_CB */</span><br><span> </span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+</span><br><span> bool</span><br><span> key_st=
+ate_export_keying_material(struct tls_session *session,</span><br><span>   =
+                               const char *label, size_t label_size,</span>=
+<br><span>@@ -1244,7 +1246,7 @@</span><br><span>         mbedtls_ssl_conf_m=
+ax_tls_version(ks_ssl-&gt;ssl_config, version);</span><br><span>     }</spa=
+n><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-#if HAVE=
+_MBEDTLS_SSL_CONF_EXPORT_KEYS_EXT_CB &amp;&amp; !defined(MBEDTLS_SSL_KEYING=
+_MATERIAL_EXPORT)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#i=
+f defined(HAVE_MBEDTLS_SSL_CONF_EXPORT_KEYS_EXT_CB) &amp;&amp; !defined(MBE=
+DTLS_SSL_KEYING_MATERIAL_EXPORT)</span><br><span>     /* Initialize keying =
+material exporter, old style. */</span><br><span>     mbedtls_ssl_conf_expo=
+rt_keys_ext_cb(ks_ssl-&gt;ssl_config,</span><br><span>                     =
+                    mbedtls_ssl_export_keys_cb, session);</span><br><span>@=
+@ -1259,7 +1261,7 @@</span><br><span>      * verification. */</span><br><sp=
+an>     ASSERT(mbed_ok(mbedtls_ssl_set_hostname(ks_ssl-&gt;ctx, NULL)));</s=
+pan><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-#if HA=
+VE_MBEDTLS_SSL_SET_EXPORT_KEYS_CB &amp;&amp; !defined(MBEDTLS_SSL_KEYING_MA=
+TERIAL_EXPORT)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#if d=
+efined(HAVE_MBEDTLS_SSL_SET_EXPORT_KEYS_CB) &amp;&amp; !defined(MBEDTLS_SSL=
+_KEYING_MATERIAL_EXPORT)</span><br><span>     /* Initialize keying material=
+ exporter, new style. */</span><br><span>     mbedtls_ssl_set_export_keys_c=
+b(ks_ssl-&gt;ctx, mbedtls_ssl_export_keys_cb, session);</span><br><span> #e=
+ndif</span><br><span></span><br></pre><p>To view, visit <a href=3D"http://g=
+errit.openvpn.net/c/openvpn/+/1081?usp=3Demail">change 1081</a>. To unsubsc=
+ribe, or for help writing mail filters, visit <a href=3D"http://gerrit.open=
+vpn.net/settings">settings</a>.</p><div itemscope itemtype=3D"http://schema=
+.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://sc=
+hema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.n=
+et/c/openvpn/+/1081?usp=3Demail"/><meta itemprop=3D"name" content=3D"View C=
+hange"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
 <div style=3D"display:none"> Gerrit-Change-Id: I0f325800ebeb20bd5ef3ff78e5c=
 5fcf0f6f74efd </div>
 <div style=3D"display:none"> Gerrit-Change-Number: 1081 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 6 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 5 </div>
 <div style=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@...1711...=
 27...&gt; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
@@ -519,5 +433,5 @@ ts.sourceforge.net&gt; </div>
 <div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
 
 
---8V2sWOrw0bM=--
+--CcX2FtxJNQE=--
 
