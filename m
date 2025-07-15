@@ -1,10 +1,17 @@
-From: Gert Doering <gert@...1296...>
-Date: Tue, 15 Jul 2025 16:37:44 +0200
-Message-ID: <20250715143750.9719-1-gert@...1296...>
-In-Reply-To: <gerrit.1752140383000.I8cefa9a406fe90bb3cbe481304782c639691a3a0@...2715...>
-References: <gerrit.1752140383000.I8cefa9a406fe90bb3cbe481304782c639691a3a0@...2715...>
+From: "ralf_lici (Code Review)" <gerrit@...515...>
+Date: Tue, 15 Jul 2025 15:36:44 +0000
+In-Reply-To: <gerrit.1752486326000.I33e9272b4196c7634db2fb33a75ae4261660867f@...2715...>
+References: <gerrit.1752486326000.I33e9272b4196c7634db2fb33a75ae4261660867f@...2715...>
+Reply-To: ralf@...2726..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net, frank@...2641...,
+ lstipakov@...277..., antonio@...2726...
+Message-ID: <a5cdd031dd4a75bf57495076a2b5db87859fda36-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v3] reliable: Review and fix gc_arena usage
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="U8cBVRB2yQQ="; charset=UTF-8
+Subject: [Openvpn-devel] [M] Change in openvpn[master]: dco: Add support for
+ float notifications
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,363 +20,149 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+Cc: stipa <lstipakov@...277...>, plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-From: Frank Lichtenheld <frank@...2641...>
+--U8cBVRB2yQQ=
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Check for unused objects (in
-reliable_get_num_output_sequenced_available)
-and missing free (in reliable_can_get).
+Attention is currently required from: flichtenheld, ordex, plaisthos, stipa.
 
-While looking through the code, modernize
-the loop variable usage.
+ralf_lici has posted comments on this change. ( http://gerrit.openvpn.net/c=
+/openvpn/+/1084?usp=3Demail )
 
-Change-Id: I8cefa9a406fe90bb3cbe481304782c639691a3a0
-Signed-off-by: Frank Lichtenheld <frank@...2641...>
-Acked-by: Arne Schwabe <arne-openvpn@...1227...>
----
+Change subject: dco: Add support for float notifications
+......................................................................
 
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to master.
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1083
-This mail reflects revision 3 of this Change.
+Patch Set 1:
 
-Acked-by according to Gerrit (reflected above):
-Arne Schwabe <arne-openvpn@...1227...>
+(1 comment)
 
-        
-diff --git a/src/openvpn/reliable.c b/src/openvpn/reliable.c
-index 424d194..5505f56 100644
---- a/src/openvpn/reliable.c
-+++ b/src/openvpn/reliable.c
-@@ -98,8 +98,7 @@
- static inline bool
- reliable_ack_packet_id_present(struct reliable_ack *ack, packet_id_type pid)
- {
--    int i;
--    for (i = 0; i < ack->len; ++i)
-+    for (int i = 0; i < ack->len; ++i)
-     {
-         if (ack->packet_id[i] == pid)
-         {
-@@ -312,10 +311,7 @@
- const char *
- reliable_ack_print(struct buffer *buf, bool verbose, struct gc_arena *gc)
- {
--    int i;
-     uint8_t n_ack;
--    struct session_id sid_ack;
--    packet_id_type pid;
-     struct buffer out = alloc_buf_gc(256, gc);
- 
-     buf_printf(&out, "[");
-@@ -323,8 +319,9 @@
-     {
-         goto done;
-     }
--    for (i = 0; i < n_ack; ++i)
-+    for (int i = 0; i < n_ack; ++i)
-     {
-+        packet_id_type pid;
-         if (!buf_read(buf, &pid, sizeof(pid)))
-         {
-             goto done;
-@@ -334,6 +331,7 @@
-     }
-     if (n_ack)
-     {
-+        struct session_id sid_ack;
-         if (!session_id_read(&sid_ack, buf))
-         {
-             goto done;
-@@ -356,14 +354,12 @@
- void
- reliable_init(struct reliable *rel, int buf_size, int offset, int array_size, bool hold)
- {
--    int i;
--
-     CLEAR(*rel);
-     ASSERT(array_size > 0 && array_size <= RELIABLE_CAPACITY);
-     rel->hold = hold;
-     rel->size = array_size;
-     rel->offset = offset;
--    for (i = 0; i < rel->size; ++i)
-+    for (int i = 0; i < rel->size; ++i)
-     {
-         struct reliable_entry *e = &rel->array[i];
-         e->buf = alloc_buf(buf_size);
-@@ -378,8 +374,7 @@
-     {
-         return;
-     }
--    int i;
--    for (i = 0; i < rel->size; ++i)
-+    for (int i = 0; i < rel->size; ++i)
-     {
-         struct reliable_entry *e = &rel->array[i];
-         free_buf(&e->buf);
-@@ -391,8 +386,7 @@
- bool
- reliable_empty(const struct reliable *rel)
- {
--    int i;
--    for (i = 0; i < rel->size; ++i)
-+    for (int i = 0; i < rel->size; ++i)
-     {
-         const struct reliable_entry *e = &rel->array[i];
-         if (e->active)
-@@ -407,11 +401,10 @@
- void
- reliable_send_purge(struct reliable *rel, const struct reliable_ack *ack)
- {
--    int i, j;
--    for (i = 0; i < ack->len; ++i)
-+    for (int i = 0; i < ack->len; ++i)
-     {
-         packet_id_type pid = ack->packet_id[i];
--        for (j = 0; j < rel->size; ++j)
-+        for (int j = 0; j < rel->size; ++j)
-         {
-             struct reliable_entry *e = &rel->array[j];
-             if (e->active && e->packet_id == pid)
-@@ -449,10 +442,9 @@
- reliable_print_ids(const struct reliable *rel, struct gc_arena *gc)
- {
-     struct buffer out = alloc_buf_gc(256, gc);
--    int i;
- 
-     buf_printf(&out, "[" packet_id_format "]", (packet_id_print_type)rel->packet_id);
--    for (i = 0; i < rel->size; ++i)
-+    for (int i = 0; i < rel->size; ++i)
-     {
-         const struct reliable_entry *e = &rel->array[i];
-         if (e->active)
-@@ -468,9 +460,7 @@
- bool
- reliable_can_get(const struct reliable *rel)
- {
--    struct gc_arena gc = gc_new();
--    int i;
--    for (i = 0; i < rel->size; ++i)
-+    for (int i = 0; i < rel->size; ++i)
-     {
-         const struct reliable_entry *e = &rel->array[i];
-         if (!e->active)
-@@ -478,6 +468,7 @@
-             return true;
-         }
-     }
-+    struct gc_arena gc = gc_new();
-     dmsg(D_REL_LOW, "ACK no free receive buffer available: %s", reliable_print_ids(rel, &gc));
-     gc_free(&gc);
-     return false;
-@@ -488,12 +479,11 @@
- reliable_not_replay(const struct reliable *rel, packet_id_type id)
- {
-     struct gc_arena gc = gc_new();
--    int i;
-     if (reliable_pid_min(id, rel->packet_id))
-     {
-         goto bad;
-     }
--    for (i = 0; i < rel->size; ++i)
-+    for (int i = 0; i < rel->size; ++i)
-     {
-         const struct reliable_entry *e = &rel->array[i];
-         if (e->active && e->packet_id == id)
-@@ -514,19 +504,17 @@
- bool
- reliable_wont_break_sequentiality(const struct reliable *rel, packet_id_type id)
- {
--    struct gc_arena gc = gc_new();
--
-     const int ret = reliable_pid_in_range2(id, rel->packet_id, rel->size);
- 
-     if (!ret)
-     {
-+        struct gc_arena gc = gc_new();
-         dmsg(D_REL_LOW, "ACK " packet_id_format " breaks sequentiality: %s",
-              (packet_id_print_type)id, reliable_print_ids(rel, &gc));
-+        gc_free(&gc);
-     }
- 
-     dmsg(D_REL_DEBUG, "ACK RWBS rel->size=%d rel->packet_id=%08x id=%08x ret=%d", rel->size, rel->packet_id, id, ret);
--
--    gc_free(&gc);
-     return ret;
- }
- 
-@@ -534,8 +522,7 @@
- struct buffer *
- reliable_get_buf(struct reliable *rel)
- {
--    int i;
--    for (i = 0; i < rel->size; ++i)
-+    for (int i = 0; i < rel->size; ++i)
-     {
-         struct reliable_entry *e = &rel->array[i];
-         if (!e->active)
-@@ -550,7 +537,6 @@
- int
- reliable_get_num_output_sequenced_available(struct reliable *rel)
- {
--    struct gc_arena gc = gc_new();
-     packet_id_type min_id = 0;
-     bool min_id_defined = false;
- 
-@@ -573,7 +559,6 @@
-     {
-         ret -= subtract_pid(rel->packet_id, min_id);
-     }
--    gc_free(&gc);
-     return ret;
- }
- 
-@@ -581,14 +566,12 @@
- struct buffer *
- reliable_get_buf_output_sequenced(struct reliable *rel)
- {
--    struct gc_arena gc = gc_new();
--    int i;
-     packet_id_type min_id = 0;
-     bool min_id_defined = false;
-     struct buffer *ret = NULL;
- 
-     /* find minimum active packet_id */
--    for (i = 0; i < rel->size; ++i)
-+    for (int i = 0; i < rel->size; ++i)
-     {
-         const struct reliable_entry *e = &rel->array[i];
-         if (e->active)
-@@ -607,9 +590,10 @@
-     }
-     else
-     {
-+        struct gc_arena gc = gc_new();
-         dmsg(D_REL_LOW, "ACK output sequence broken: %s", reliable_print_ids(rel, &gc));
-+        gc_free(&gc);
-     }
--    gc_free(&gc);
-     return ret;
- }
- 
-@@ -617,8 +601,7 @@
- struct reliable_entry *
- reliable_get_entry_sequenced(struct reliable *rel)
- {
--    int i;
--    for (i = 0; i < rel->size; ++i)
-+    for (int i = 0; i < rel->size; ++i)
-     {
-         struct reliable_entry *e = &rel->array[i];
-         if (e->active && e->packet_id == rel->packet_id)
-@@ -634,9 +617,8 @@
- reliable_can_send(const struct reliable *rel)
- {
-     struct gc_arena gc = gc_new();
--    int i;
-     int n_active = 0, n_current = 0;
--    for (i = 0; i < rel->size; ++i)
-+    for (int i = 0; i < rel->size; ++i)
-     {
-         const struct reliable_entry *e = &rel->array[i];
-         if (e->active)
-@@ -662,11 +644,10 @@
- struct buffer *
- reliable_send(struct reliable *rel, int *opcode)
- {
--    int i;
-     struct reliable_entry *best = NULL;
-     const time_t local_now = now;
- 
--    for (i = 0; i < rel->size; ++i)
-+    for (int i = 0; i < rel->size; ++i)
-     {
-         struct reliable_entry *e = &rel->array[i];
- 
-@@ -701,10 +682,9 @@
- void
- reliable_schedule_now(struct reliable *rel)
- {
--    int i;
-     dmsg(D_REL_DEBUG, "ACK reliable_schedule_now");
-     rel->hold = false;
--    for (i = 0; i < rel->size; ++i)
-+    for (int i = 0; i < rel->size; ++i)
-     {
-         struct reliable_entry *e = &rel->array[i];
-         if (e->active)
-@@ -722,10 +702,9 @@
- {
-     struct gc_arena gc = gc_new();
-     interval_t ret = BIG_TIMEOUT;
--    int i;
-     const time_t local_now = now;
- 
--    for (i = 0; i < rel->size; ++i)
-+    for (int i = 0; i < rel->size; ++i)
-     {
-         const struct reliable_entry *e = &rel->array[i];
-         if (e->active)
-@@ -758,8 +737,7 @@
- reliable_mark_active_incoming(struct reliable *rel, struct buffer *buf,
-                               packet_id_type pid, int opcode)
- {
--    int i;
--    for (i = 0; i < rel->size; ++i)
-+    for (int i = 0; i < rel->size; ++i)
-     {
-         struct reliable_entry *e = &rel->array[i];
-         if (buf == &e->buf)
-@@ -790,8 +768,7 @@
- void
- reliable_mark_active_outgoing(struct reliable *rel, struct buffer *buf, int opcode)
- {
--    int i;
--    for (i = 0; i < rel->size; ++i)
-+    for (int i = 0; i < rel->size; ++i)
-     {
-         struct reliable_entry *e = &rel->array[i];
-         if (buf == &e->buf)
-@@ -817,8 +794,7 @@
- void
- reliable_mark_deleted(struct reliable *rel, struct buffer *buf)
- {
--    int i;
--    for (i = 0; i < rel->size; ++i)
-+    for (int i = 0; i < rel->size; ++i)
-     {
-         struct reliable_entry *e = &rel->array[i];
-         if (buf == &e->buf)
-@@ -836,10 +812,8 @@
- void
- reliable_ack_debug_print(const struct reliable_ack *ack, char *desc)
- {
--    int i;
--
-     printf("********* struct reliable_ack %s\n", desc);
--    for (i = 0; i < ack->len; ++i)
-+    for (int i = 0; i < ack->len; ++i)
-     {
-         printf("  %d: " packet_id_format "\n", i, (packet_id_print_type) ack->packet_id[i]);
-     }
-@@ -848,14 +822,13 @@
- void
- reliable_debug_print(const struct reliable *rel, char *desc)
- {
--    int i;
-     update_time();
- 
-     printf("********* struct reliable %s\n", desc);
-     printf("  initial_timeout=%d\n", (int)rel->initial_timeout);
-     printf("  packet_id=" packet_id_format "\n", rel->packet_id);
-     printf("  now=%" PRIi64 "\n", (int64_t)now);
--    for (i = 0; i < rel->size; ++i)
-+    for (int i = 0; i < rel->size; ++i)
-     {
-         const struct reliable_entry *e = &rel->array[i];
-         if (e->active)
+File src/openvpn/multi.c:
+
+http://gerrit.openvpn.net/c/openvpn/+/1084/comment/347abf04_7c9f0c38 :
+PS1, Line 3390:             if (extract_dco_float_peer_addr(peer_id, &m->to=
+p.c2.from.dest,
+> no, we can't trust the kernel. [=E2=80=A6]
+This isn=E2=80=99t actually a parsing of the kernel message, but rather a u=
+tility function to transpose the content of dco_float_peer_ss into m->top.c=
+2.from.dest. Since dco_float_peer_ss is constructed by parsing the kernel n=
+otification, it would never contain an incorrect address family, thanks to =
+a specific check in the Linux parser (ovpn_parse_float_addr()). OTOH, on Wi=
+ndows, we simply receive the sockaddr object from the kernel (if my underst=
+anding is correct), though I assume there=E2=80=99s a similar check in dco-=
+win.
+
+So this 'if' statement is probably redundant on Linux but might act as the =
+missing userspace check for Windows. But if you'd rather use an assert (sin=
+ce dco_float_peer_ss should never be ill-formed once we reach this point) w=
+e could add a check in dco_handle_overlapped_success() (or somewhere else i=
+n the dco_win-specific code) just to be safe.
+
+
+
+--
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1084?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings
+
+Gerrit-Project: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: I33e9272b4196c7634db2fb33a75ae4261660867f
+Gerrit-Change-Number: 1084
+Gerrit-PatchSet: 1
+Gerrit-Owner: ralf_lici <ralf@...2726...>
+Gerrit-Reviewer: flichtenheld <frank@...2641...>
+Gerrit-Reviewer: ordex <antonio@...2726...>
+Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-CC: stipa <lstipakov@...277...>
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Attention: flichtenheld <frank@...2641...>
+Gerrit-Attention: ordex <antonio@...2726...>
+Gerrit-Attention: stipa <lstipakov@...277...>
+Gerrit-Comment-Date: Tue, 15 Jul 2025 15:36:44 +0000
+Gerrit-HasComments: Yes
+Gerrit-Has-Labels: No
+Comment-In-Reply-To: ordex <antonio@...2726...>
+Comment-In-Reply-To: stipa <lstipakov@...277...>
+Gerrit-MessageType: comment
+
+--U8cBVRB2yQQ=
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<p> Attention is currently required from: flichtenheld, ordex, plaisthos, s=
+tipa. </p>
+<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1084?usp=3Demail">View =
+Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0;">=
+<li style=3D"margin: 0; padding: 0;"><p>File src/openvpn/multi.c:</p><ul st=
+yle=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 =
+0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.=
+net/c/openvpn/+/1084/comment/347abf04_7c9f0c38">Patch Set #1, Line 3390:</a=
+> <code style=3D"font-family:monospace,monospace">            if (extract_d=
+co_float_peer_addr(peer_id, &amp;m-&gt;top.c2.from.dest,</code></p><p><bloc=
+kquote style=3D"border-left: 1px solid #aaa; margin: 10px 0; padding: 0 10p=
+x;">no, we can&#39;t trust the kernel. [=E2=80=A6]</blockquote></p><p style=
+=3D"white-space: pre-wrap; word-wrap: break-word;">This isn=E2=80=99t actua=
+lly a parsing of the kernel message, but rather a utility function to trans=
+pose the content of dco_float_peer_ss into m-&gt;top.c2.from.dest. Since dc=
+o_float_peer_ss is constructed by parsing the kernel notification, it would=
+ never contain an incorrect address family, thanks to a specific check in t=
+he Linux parser (ovpn_parse_float_addr()). OTOH, on Windows, we simply rece=
+ive the sockaddr object from the kernel (if my understanding is correct), t=
+hough I assume there=E2=80=99s a similar check in dco-win.</p><p style=3D"w=
+hite-space: pre-wrap; word-wrap: break-word;">So this &#39;if&#39; statemen=
+t is probably redundant on Linux but might act as the missing userspace che=
+ck for Windows. But if you&#39;d rather use an assert (since dco_float_peer=
+_ss should never be ill-formed once we reach this point) we could add a che=
+ck in dco_handle_overlapped_success() (or somewhere else in the dco_win-spe=
+cific code) just to be safe.</p></li></ul></li></ul><p>To view, visit <a hr=
+ef=3D"http://gerrit.openvpn.net/c/openvpn/+/1084?usp=3Demail">change 1084</=
+a>. To unsubscribe, or for help writing mail filters, visit <a href=3D"http=
+://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope itemtype=3D=
+"http://schema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtyp=
+e=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://ge=
+rrit.openvpn.net/c/openvpn/+/1084?usp=3Demail"/><meta itemprop=3D"name" con=
+tent=3D"View Change"/></div></div>
+
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I33e9272b4196c7634db2fb33a75=
+ae4261660867f </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1084 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
+<div style=3D"display:none"> Gerrit-Owner: ralf_lici &lt;ralf@...2726...&gt=
+; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
+1...&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: ordex &lt;antonio@...2726...&=
+gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
+.1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: stipa &lt;lstipakov@...277...&gt; <=
+/div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
+41...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: ordex &lt;antonio@...2726...=
+&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: stipa &lt;lstipakov@...1663...=
+.&gt; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Tue, 15 Jul 2025 15:36:44=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: No </div>
+<div style=3D"display:none"> Comment-In-Reply-To: ordex &lt;antonio@...2787...=
+...&gt; </div>
+<div style=3D"display:none"> Comment-In-Reply-To: stipa &lt;lstipakov@...1664...=
+7...&gt; </div>
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
+
+
+--U8cBVRB2yQQ=--
 
